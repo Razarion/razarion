@@ -1,13 +1,16 @@
 package com.btxtech.client;
 
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.audio.AudioService;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.dom.client.MediaElement;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLAudioElement;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,15 +22,21 @@ import java.util.Map;
  * Created by Beat
  * 25.12.2016.
  */
-@ApplicationScoped
+@Singleton
 public class ClientAudioService extends AudioService {
     private static final int PARALLEL_PLAY_COUNT = 5;
     private static final double ENVIRONMENT_VOLUME = 0.1;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private final Map<Integer, Collection<HTMLAudioElement>> audios = new HashMap<>();
     private final Map<Integer, HTMLAudioElement> terrainLoopAudios = new HashMap<>();
     private boolean isMute = false;
+
+    @Inject
+    public ClientAudioService(AlarmService alarmService, ItemTypeService itemTypeService, TerrainUiService terrainUiService, ExceptionHandler exceptionHandler) {
+        super(alarmService, itemTypeService, terrainUiService);
+        this.exceptionHandler = exceptionHandler;
+    }
 
     @Override
     protected void playAudio(int audioId) {

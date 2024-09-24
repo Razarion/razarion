@@ -16,8 +16,13 @@ import javax.inject.Inject;
  */
 @Ignore
 public class DbPropertiesServiceTestRest extends IgnoreOldArquillianTest {
-    @Inject
+
     private DbPropertiesService dbPropertiesService;
+
+    @Inject
+    public DbPropertiesServiceTestRest(DbPropertiesService dbPropertiesService) {
+        this.dbPropertiesService = dbPropertiesService;
+    }
 
     @Test
     public void crud() throws Exception {

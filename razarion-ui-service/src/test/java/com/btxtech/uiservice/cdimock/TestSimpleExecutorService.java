@@ -3,14 +3,14 @@ package com.btxtech.uiservice.cdimock;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 24.01.2017.
  */
-@ApplicationScoped
+@Singleton
 public class TestSimpleExecutorService implements SimpleExecutorService {
     private final Logger logger = Logger.getLogger(TestSimpleExecutorService.class.getName());
 

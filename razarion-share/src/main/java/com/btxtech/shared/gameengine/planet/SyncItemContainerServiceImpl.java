@@ -51,28 +51,38 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     private static final int CELL_LENGTH_EXPONENT = 4; // 2 ^ exponent
     private static final int CELL_LENGTH = (int) Math.pow(2, CELL_LENGTH_EXPONENT);
     private Logger logger = Logger.getLogger(SyncItemContainerServiceImpl.class.getName());
-    @Inject
+
     private Provider<SyncBaseItem> syncBaseItemProvider;
-    @Inject
+
     private Provider<SyncResourceItem> syncResourceItemProvider;
-    @Inject
+
     private Provider<SyncBoxItem> syncBoxItemProvider;
-    @Inject
-    @Named(SyncItem.SYNC_PHYSICAL_AREA)
+
     private Provider<SyncPhysicalArea> syncPhysicalAreaInstance;
-    @Inject
-    @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
+
     private Provider<SyncPhysicalMovable> syncPhysicalMovableInstance;
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private Provider<GuardingItemService> guardingItemServiceInstanceInstance;
-    @Inject
+
     private Provider<BotService> botServices;
     private int lastItemId = 1;
     private final HashMap<Integer, SyncItem> items = new HashMap<>();
     private final HashMap<Index, SyncItemContainerCell> cells = new HashMap<>();
     private final Set<SyncBaseItem> pathingChangedItem = new HashSet<>();
+
+    @Inject
+    public SyncItemContainerServiceImpl(Provider<com.btxtech.shared.gameengine.planet.bot.BotService> botServices, Provider<com.btxtech.shared.gameengine.planet.GuardingItemService> guardingItemServiceInstanceInstance, TerrainService terrainService, Provider<com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable> syncPhysicalMovableInstance, Provider<com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea> syncPhysicalAreaInstance, Provider<com.btxtech.shared.gameengine.planet.model.SyncBoxItem> syncBoxItemProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncResourceItem> syncResourceItemProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncBaseItem> syncBaseItemProvider) {
+        this.botServices = botServices;
+        this.guardingItemServiceInstanceInstance = guardingItemServiceInstanceInstance;
+        this.terrainService = terrainService;
+        this.syncPhysicalMovableInstance = syncPhysicalMovableInstance;
+        this.syncPhysicalAreaInstance = syncPhysicalAreaInstance;
+        this.syncBoxItemProvider = syncBoxItemProvider;
+        this.syncResourceItemProvider = syncResourceItemProvider;
+        this.syncBaseItemProvider = syncBaseItemProvider;
+    }
 
     public void clear() {
         items.clear();

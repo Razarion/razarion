@@ -24,16 +24,25 @@ import java.util.Date;
  */
 @Ignore
 public class ChatPersistenceTestRest extends IgnoreOldArquillianTest {
-    @Inject
+
     private UserService userService;
-    @Inject
+
     private ChatPersistence chatPersistence;
-    @Inject
+
     private ClientSystemConnectionServiceTestHelper systemConnectionService;
-    @Inject
+
     private SessionHolder sessionHolder;
-    @Inject
+
     private SessionService sessionService;
+
+    @Inject
+    public ChatPersistenceTestRest(SessionService sessionService, SessionHolder sessionHolder, ClientSystemConnectionServiceTestHelper systemConnectionService, ChatPersistence chatPersistence, UserService userService) {
+        this.sessionService = sessionService;
+        this.sessionHolder = sessionHolder;
+        this.systemConnectionService = systemConnectionService;
+        this.chatPersistence = chatPersistence;
+        this.userService = userService;
+    }
 
     @Before
     public void before() throws Exception {

@@ -19,21 +19,32 @@ import javax.inject.Inject;
  */
 @Dependent
 public class RunGameUiControlTask extends AbstractStartupTask {
+
     // private Logger logger = Logger.getLogger(RunGameUiControlTask.class.getName());
-    @Inject
     private BabylonRendererService babylonRendererService;
-    @Inject
+
     private Boot boot;
-    @Inject
+
     private GameUiControl gameUiControl;
-    @Inject
+
     private GameEngineControl gameEngineControl;
-    @Inject
+
     private PerfmonService perfmonService;
-    @Inject
+
     private ClientPerformanceTrackerService clientPerformanceTrackerService;
-    @Inject
+
     private UserUiService userUiService;
+
+    @Inject
+    public RunGameUiControlTask(UserUiService userUiService, ClientPerformanceTrackerService clientPerformanceTrackerService, PerfmonService perfmonService, GameEngineControl gameEngineControl, GameUiControl gameUiControl, Boot boot, BabylonRendererService babylonRendererService) {
+        this.userUiService = userUiService;
+        this.clientPerformanceTrackerService = clientPerformanceTrackerService;
+        this.perfmonService = perfmonService;
+        this.gameEngineControl = gameEngineControl;
+        this.gameUiControl = gameUiControl;
+        this.boot = boot;
+        this.babylonRendererService = babylonRendererService;
+    }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {

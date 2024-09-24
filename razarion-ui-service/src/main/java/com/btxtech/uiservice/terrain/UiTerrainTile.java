@@ -20,14 +20,20 @@ import java.util.Set;
  */
 @Dependent
 public class UiTerrainTile {
+
     // private Logger logger = Logger.getLogger(UiTerrainTile.class.getName());
-    @Inject
     private TerrainUiService terrainUiService;
-    @Inject
+
     private BabylonRendererService babylonRendererService;
     private TerrainTile terrainTile;
     private BabylonTerrainTile babylonTerrainTile;
     private boolean active;
+
+    @Inject
+    public UiTerrainTile(BabylonRendererService babylonRendererService, TerrainUiService terrainUiService) {
+        this.babylonRendererService = babylonRendererService;
+        this.terrainUiService = terrainUiService;
+    }
 
     public void init(Index index) {
         terrainUiService.requestTerrainTile(index, this::terrainTileReceived);

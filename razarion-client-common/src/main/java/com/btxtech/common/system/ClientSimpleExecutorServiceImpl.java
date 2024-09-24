@@ -13,8 +13,13 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ClientSimpleExecutorServiceImpl implements SimpleExecutorService {
-    @Inject
+
     private Provider<ClientSimpleScheduledFutureImpl> instance;
+
+    @Inject
+    public ClientSimpleExecutorServiceImpl(Provider<com.btxtech.common.system.ClientSimpleScheduledFutureImpl> instance) {
+        this.instance = instance;
+    }
 
     @Override
     public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {

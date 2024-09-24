@@ -1,9 +1,11 @@
 package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.alarm.AlarmService;
 import org.junit.Assert;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,8 +14,13 @@ import java.util.Objects;
  * Created by Beat
  * 24.01.2017.
  */
-@ApplicationScoped
+@Singleton
 public class TestExceptionHandler extends ExceptionHandler {
+    @Inject
+    public TestExceptionHandler(AlarmService alarmService) {
+        super(alarmService);
+    }
+
     public static class TestExceptionHandlerEntry {
         private Throwable throwable;
         private String message;

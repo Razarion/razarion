@@ -24,14 +24,20 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_AUDIO_SERVICE;
  */
 public abstract class AudioService /* implements ViewService.ViewFieldListener */ {
     private Logger logger = Logger.getLogger(AudioService.class.getName());
-    @Inject
+
     private TerrainUiService terrainUiService;
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private AlarmService alarmService;
     private AudioConfig audioConfig;
     private double lastLandWaterProportion = -1;
+
+    public AudioService(AlarmService alarmService, ItemTypeService itemTypeService, TerrainUiService terrainUiService) {
+        this.alarmService = alarmService;
+        this.itemTypeService = itemTypeService;
+        this.terrainUiService = terrainUiService;
+    }
 
     protected abstract void playAudio(int audioId);
 
@@ -40,7 +46,7 @@ public abstract class AudioService /* implements ViewService.ViewFieldListener *
     public abstract void muteTerrainLoopAudio();
 
 
-    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
+    public void onGameUiControlInitEvent( GameUiControlInitEvent gameUiControlInitEvent) {
         this.audioConfig = gameUiControlInitEvent.getColdGameUiContext().getAudioConfig();
     }
 
@@ -85,7 +91,7 @@ public abstract class AudioService /* implements ViewService.ViewFieldListener *
         }
     }
 
-    public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+    public void onSelectionChanged( SelectionEvent selectionEvent) {
         if (selectionEvent.isSuppressAudio()) {
             return;
         }

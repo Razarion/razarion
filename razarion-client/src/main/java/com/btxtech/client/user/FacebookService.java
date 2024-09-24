@@ -8,7 +8,7 @@ import com.google.gwt.user.client.Window;
 import com.btxtech.client.Caller;
 import com.btxtech.client.RemoteCallback;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,16 +17,23 @@ import java.util.logging.Logger;
  * Created by Beat
  * on 15.03.2018.
  */
-@ApplicationScoped
+@Singleton
 public class FacebookService {
     private Logger logger = Logger.getLogger(FacebookService.class.getName());
-    @Inject
+
     private Caller<UserServiceProvider> caller;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private UserUiService userUiService;
     private Facebook.LoginStatusCallback statusCallback;
+
+    @Inject
+    public FacebookService(UserUiService userUiService, ExceptionHandler exceptionHandler, Caller<com.btxtech.shared.rest.UserServiceProvider> caller) {
+        this.userUiService = userUiService;
+        this.exceptionHandler = exceptionHandler;
+        this.caller = caller;
+    }
 
     public void activateFacebookAppStartLogin() {
         try {

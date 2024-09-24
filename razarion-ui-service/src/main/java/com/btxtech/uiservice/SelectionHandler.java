@@ -28,7 +28,7 @@ import com.btxtech.uiservice.item.ResourceUiService;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import com.btxtech.client.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Provider;
@@ -42,24 +42,34 @@ import java.util.Collection;
  * Time: 9:09:40 PM
  */
 @JsType
-@ApplicationScoped
+@Singleton
 // TODO Reanme to SelectionService
 public class SelectionHandler {
-    @Inject
+
     private Event<SelectionEvent> selectionEventEventTrigger;
-    @Inject
+
     private Provider<Group> groupInstance;
-    @Inject
+
     private BaseItemUiService baseItemUiService;
-    @Inject
+
     private ResourceUiService resourceUiService;
-    @Inject
+
     private BoxUiService boxUiService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private ActionServiceListener actionServiceListener;
     private Group selectedGroup;
     private SyncItemSimpleDto selectedOtherSyncItem;
+
+    @Inject
+    public SelectionHandler(ExceptionHandler exceptionHandler, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService, Provider<com.btxtech.uiservice.Group> groupInstance, Event<com.btxtech.uiservice.SelectionEvent> selectionEventEventTrigger) {
+        this.exceptionHandler = exceptionHandler;
+        this.boxUiService = boxUiService;
+        this.resourceUiService = resourceUiService;
+        this.baseItemUiService = baseItemUiService;
+        this.groupInstance = groupInstance;
+        this.selectionEventEventTrigger = selectionEventEventTrigger;
+    }
 
     public Group getOwnSelection() {
         return selectedGroup;
@@ -221,7 +231,7 @@ public class SelectionHandler {
         }
     }
 
-    public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {
+    public void onOwnSelectionChanged( SelectionEvent selectionEvent) {
         if (this.actionServiceListener != null) {
             this.actionServiceListener.onSelectionChanged();
         }

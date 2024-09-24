@@ -13,8 +13,13 @@ import javax.inject.Inject;
  */
 @Dependent
 public class LoadWorkerTask extends AbstractStartupTask {
-    @Inject
+
     private ClientGameEngineControl clientGameEngineControl;
+
+    @Inject
+    public LoadWorkerTask(ClientGameEngineControl clientGameEngineControl) {
+        this.clientGameEngineControl = clientGameEngineControl;
+    }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {

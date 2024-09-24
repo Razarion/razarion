@@ -27,26 +27,40 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_PROPERTY;
  */
 @WebListener
 public class ServletContextMonitor implements ServletContextListener {
-    @Inject
+
     private Logger logger;
-    @Inject
+
     private ServerTerrainShapeService serverTerrainShapeService;
-    @Inject
+
     private StaticGameConfigPersistence staticGameConfigPersistence;
-    @Inject
+
     private ServerGameEngineControl gameEngineService;
-    @Inject
+
     private ChatPersistence chatPersistence;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private ServerMgmt serverMgmt;
-    @Inject
+
     private AlarmService alarmService;
-    @Inject
+
     private Event<StaticGameInitEvent> gameEngineInitEvent;
-    @Inject
+
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+
+    @Inject
+    public ServletContextMonitor(ServerGameEngineCrudPersistence serverGameEngineCrudPersistence, Event<com.btxtech.shared.gameengine.StaticGameInitEvent> gameEngineInitEvent, AlarmService alarmService, ServerMgmt serverMgmt, ExceptionHandler exceptionHandler, ChatPersistence chatPersistence, ServerGameEngineControl gameEngineService, StaticGameConfigPersistence staticGameConfigPersistence, ServerTerrainShapeService serverTerrainShapeService, Logger logger) {
+        this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
+        this.gameEngineInitEvent = gameEngineInitEvent;
+        this.alarmService = alarmService;
+        this.serverMgmt = serverMgmt;
+        this.exceptionHandler = exceptionHandler;
+        this.chatPersistence = chatPersistence;
+        this.gameEngineService = gameEngineService;
+        this.staticGameConfigPersistence = staticGameConfigPersistence;
+        this.serverTerrainShapeService = serverTerrainShapeService;
+        this.logger = logger;
+    }
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {

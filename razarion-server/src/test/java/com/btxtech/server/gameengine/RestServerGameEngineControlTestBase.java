@@ -24,18 +24,28 @@ import java.util.List;
  */
 @Ignore
 public class RestServerGameEngineControlTestBase extends IgnoreOldArquillianTest {
-    @Inject
+
     private ServerGameEngineControl serverGameEngineControl;
-    @Inject
+
     private UserService userService;
-    @Inject
+
     private ServerLevelQuestService serverLevelQuestService;
-    @Inject
+
     private SessionHolder sessionHolder;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private PlanetBackupMongoDb planetBackupMongoDb;
+
+    @Inject
+    public RestServerGameEngineControlTestBase(PlanetBackupMongoDb planetBackupMongoDb, BaseItemService baseItemService, SessionHolder sessionHolder, ServerLevelQuestService serverLevelQuestService, UserService userService, ServerGameEngineControl serverGameEngineControl) {
+        this.planetBackupMongoDb = planetBackupMongoDb;
+        this.baseItemService = baseItemService;
+        this.sessionHolder = sessionHolder;
+        this.serverLevelQuestService = serverLevelQuestService;
+        this.userService = userService;
+        this.serverGameEngineControl = serverGameEngineControl;
+    }
 
     @Before
     public void before() throws Exception {

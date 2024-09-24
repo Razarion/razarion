@@ -57,31 +57,31 @@ import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNat
  */
 @Dependent
 public class SyncBaseItem extends SyncItem {
-    @Inject
+
     private Provider<SyncWeapon> syncWeaponProvider;
-    @Inject
+
     private Provider<SyncFactory> syncFactoryProvider;
-    @Inject
+
     private Provider<SyncBuilder> syncBuilderProvider;
-    @Inject
+
     private Provider<SyncHarvester> syncHarvesterProvider;
-    @Inject
+
     private Provider<SyncGenerator> syncGeneratorProvider;
-    @Inject
+
     private Provider<SyncConsumer> syncConsumerProvider;
-    @Inject
+
     private Provider<SyncItemContainer> syncItemContainerProvider;
-    @Inject
+
     private Provider<SyncHouse> syncHouseProvider;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private CommandService commandService;
-    @Inject
+
     private GameLogicService gameLogicService;
-    @Inject
+
     private BoxService boxService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
     private PlayerBase base;
     private double buildup;
@@ -99,6 +99,23 @@ public class SyncBaseItem extends SyncItem {
     private SyncBoxItem syncBoxItemToPick;
     private SyncBaseItem targetContainer;
     private SyncBaseItem containedIn;
+
+    @Inject
+    public SyncBaseItem(SyncItemContainerServiceImpl syncItemContainerService, BoxService boxService, GameLogicService gameLogicService, CommandService commandService, BaseItemService baseItemService, Provider<com.btxtech.shared.gameengine.planet.model.SyncHouse> syncHouseProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncItemContainer> syncItemContainerProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncConsumer> syncConsumerProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncGenerator> syncGeneratorProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncHarvester> syncHarvesterProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncBuilder> syncBuilderProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncFactory> syncFactoryProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncWeapon> syncWeaponProvider) {
+        this.syncItemContainerService = syncItemContainerService;
+        this.boxService = boxService;
+        this.gameLogicService = gameLogicService;
+        this.commandService = commandService;
+        this.baseItemService = baseItemService;
+        this.syncHouseProvider = syncHouseProvider;
+        this.syncItemContainerProvider = syncItemContainerProvider;
+        this.syncConsumerProvider = syncConsumerProvider;
+        this.syncGeneratorProvider = syncGeneratorProvider;
+        this.syncHarvesterProvider = syncHarvesterProvider;
+        this.syncBuilderProvider = syncBuilderProvider;
+        this.syncFactoryProvider = syncFactoryProvider;
+        this.syncWeaponProvider = syncWeaponProvider;
+    }
 
 
     public void setup(PlayerBase base) throws NoSuchItemTypeException {

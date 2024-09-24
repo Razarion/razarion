@@ -18,6 +18,8 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
@@ -31,13 +33,20 @@ import java.util.Set;
  */
 @Dependent
 public class BaseItemTypeComparison extends AbstractBaseItemComparison {
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private BaseItemService baseItemService;
     private Map<BaseItemType, Integer> remaining;
     private Map<BaseItemType, Integer> total;
     private Set<Integer> botIds;
+
+    @Inject
+    public BaseItemTypeComparison(GameLogicService gameLogicService, BotService botService, BaseItemService baseItemService, ItemTypeService itemTypeService) {
+        super(gameLogicService, botService);
+        this.baseItemService = baseItemService;
+        this.itemTypeService = itemTypeService;
+    }
 
     public void init(Map<BaseItemType, Integer> baseItemType, Integer includeExistingUserId, Set<Integer> botIds) {
         remaining = new HashMap<>();

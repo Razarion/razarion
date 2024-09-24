@@ -14,8 +14,13 @@ import java.util.List;
  */
 @Ignore
 public class TrackerPersistenceTestRest extends IgnoreOldArquillianTest {
-    @Inject
+
     private TrackerPersistence trackerPersistence;
+
+    @Inject
+    public TrackerPersistenceTestRest(TrackerPersistence trackerPersistence) {
+        this.trackerPersistence = trackerPersistence;
+    }
 
     @Test
     public void testReadSessionTracking() throws Exception {

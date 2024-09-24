@@ -21,10 +21,16 @@ import java.util.List;
  */
 @Ignore
 public class ItemTrackerPersistenceTestRest extends IgnoreOldArquillianTest {
-    @Inject
+
     private UserService userService;
-    @Inject
+
     private BaseItemService baseItemService;
+
+    @Inject
+    public ItemTrackerPersistenceTestRest(BaseItemService baseItemService, UserService userService) {
+        this.baseItemService = baseItemService;
+        this.userService = userService;
+    }
 
     @Before
     public void before() throws Exception {

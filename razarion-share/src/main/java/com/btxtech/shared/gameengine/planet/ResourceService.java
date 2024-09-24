@@ -25,10 +25,9 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,24 +39,28 @@ import java.util.Map;
  * Date: 08.05.2010
  * Time: 21:57:48
  */
-@ApplicationScoped
+@Singleton
 public class ResourceService {
-    @Inject
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
     private ItemTypeService itemTypeService;
-    @Inject
     private GameLogicService gameLogicService;
-    @Inject
     private Provider<ResourceRegion> instance;
-    @Inject
     private ExceptionHandler exceptionHandler;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
     private final Collection<ResourceRegion> resourceRegions = new ArrayList<>();
     private GameEngineMode gameEngineMode;
     private List<ResourceRegionConfig> resourceRegionConfigs;
 
-    public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
+    @Inject
+    public ResourceService(ExceptionHandler exceptionHandler, Provider<ResourceRegion> instance, GameLogicService gameLogicService, ItemTypeService itemTypeService, SyncItemContainerServiceImpl syncItemContainerService) {
+        this.exceptionHandler = exceptionHandler;
+        this.instance = instance;
+        this.gameLogicService = gameLogicService;
+        this.itemTypeService = itemTypeService;
+        this.syncItemContainerService = syncItemContainerService;
+    }
+
+    public void onPlanetActivation(PlanetActivationEvent planetActivationEvent) {
         switch (planetActivationEvent.getType()) {
 
             case INITIALIZE:

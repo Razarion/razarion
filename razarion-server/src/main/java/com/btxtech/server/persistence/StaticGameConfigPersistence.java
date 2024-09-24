@@ -6,14 +6,14 @@ import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 18.04.2017.
  */
-@ApplicationScoped
+@Singleton
 public class StaticGameConfigPersistence {
     @Inject
     private TerrainObjectCrudPersistence terrainObjectCrudPersistence;

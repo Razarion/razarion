@@ -14,7 +14,7 @@ import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -29,14 +29,14 @@ import java.util.logging.Logger;
  * Created by Beat
  * 06.01.2017.
  */
-@ApplicationScoped
+@Singleton
 public class ResourceUiService {
     private final Logger logger = Logger.getLogger(ResourceUiService.class.getName());
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private SelectionHandler selectionHandler;
-    @Inject
+
     private BabylonRendererService babylonRendererService;
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
     private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
@@ -46,6 +46,13 @@ public class ResourceUiService {
     private BabylonResourceItem selectedBabylonResourceItem;
     private Integer selectedOutOfViewId;
     private BabylonResourceItem hoverBabylonResourceItem;
+
+    @Inject
+    public ResourceUiService(BabylonRendererService babylonRendererService, SelectionHandler selectionHandler, ItemTypeService itemTypeService) {
+        this.babylonRendererService = babylonRendererService;
+        this.selectionHandler = selectionHandler;
+        this.itemTypeService = itemTypeService;
+    }
 
     public void clear() {
         resources.clear();
@@ -238,7 +245,7 @@ public class ResourceUiService {
         return resources.get(resourceItemId);
     }
 
-    public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+    public void onSelectionChanged( SelectionEvent selectionEvent) {
         selectedOutOfViewId = null;
         if (selectedBabylonResourceItem != null) {
             selectedBabylonResourceItem.select(false);

@@ -21,9 +21,9 @@ public class WebSocketWrapper {
     private static final int MAX_RETRIES = 5;
     private static final int MAX_ESTABLISH_CONNECTION_TIMEOUT = 5000;
     private final Logger logger = Logger.getLogger(WebSocketWrapper.class.getName());
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
     private int retries;
     private String url;
@@ -32,6 +32,12 @@ public class WebSocketWrapper {
     private Runnable serverRestartCallback;
     private Runnable connectionLostCallback;
     private InnerWebSocket innerWebSocket;
+
+    @Inject
+    public WebSocketWrapper(SimpleExecutorService simpleExecutorService, ExceptionHandler exceptionHandler) {
+        this.simpleExecutorService = simpleExecutorService;
+        this.exceptionHandler = exceptionHandler;
+    }
 
     public void start(String url, Runnable openCallback, EventListener messageEventCallback, Runnable serverRestartCallback, Runnable connectionLostCallback) {
         this.url = url;

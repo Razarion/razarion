@@ -22,14 +22,20 @@ import java.util.Set;
  */
 @Singleton
 public class EnergyService {
-    @Inject
+
     private Provider<BaseEnergy> baseEnergyInstance;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private final MapCollection<PlayerBase, SyncConsumer> changedSyncConsumers = new MapCollection<>();
     private final MapCollection<PlayerBase, SyncGenerator> changedSyncGenerators = new MapCollection<>();
     private final Set<PlayerBase> removedBases = new HashSet<>();
     private final HashMap<PlayerBase, BaseEnergy> baseEnergies = new HashMap<>();
+
+    @Inject
+    public EnergyService(ExceptionHandler exceptionHandler, Provider<com.btxtech.shared.gameengine.planet.energy.BaseEnergy> baseEnergyInstance) {
+        this.exceptionHandler = exceptionHandler;
+        this.baseEnergyInstance = baseEnergyInstance;
+    }
 
     public void consumerActivated(SyncConsumer syncConsumer) {
         synchronized (changedSyncConsumers) {

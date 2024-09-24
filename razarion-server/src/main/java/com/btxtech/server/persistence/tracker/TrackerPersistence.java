@@ -28,7 +28,7 @@ import com.mongodb.client.model.Aggregates;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 28.02.2017.
  */
-@ApplicationScoped
+@Singleton
 public class TrackerPersistence {
     // private final Logger logger = Logger.getLogger(TrackerPersistence.class.getName());
     @Inject

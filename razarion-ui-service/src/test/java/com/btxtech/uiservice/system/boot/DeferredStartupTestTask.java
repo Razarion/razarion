@@ -21,9 +21,14 @@ import javax.inject.Inject;
  * Time: 12:50:50
  */
 public class DeferredStartupTestTask extends AbstractStartupTask {
-    @Inject
+
     private StartupTestTaskMonitor startupTestTaskMonitor;
     protected DeferredStartup deferredStartup;
+
+    @Inject
+    public DeferredStartupTestTask(StartupTestTaskMonitor startupTestTaskMonitor) {
+        this.startupTestTaskMonitor = startupTestTaskMonitor;
+    }
 
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {

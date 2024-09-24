@@ -10,8 +10,12 @@ import javax.inject.Inject;
  * 24.06.2016.
  */
 public abstract class ExceptionHandler {
-    @Inject
+
     private AlarmService alarmService;
+
+    public ExceptionHandler(AlarmService alarmService) {
+        this.alarmService = alarmService;
+    }
 
     protected abstract void handleExceptionInternal(String message, Throwable t);
 

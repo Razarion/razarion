@@ -31,16 +31,16 @@ import java.util.function.Consumer;
 @JsType
 @Singleton
 public class InGameQuestVisualizationService {
+
     // private Logger logger = Logger.getLogger(InGameQuestVisualizationService.class.getName());
-    @Inject
     private GameUiControl gameUiControl;
-    @Inject
+
     private BaseItemUiService baseItemUiService;
-    @Inject
+
     private ResourceUiService resourceUiService;
-    @Inject
+
     private BoxUiService boxUiService;
-    @Inject
+
     private Provider<QuestInGamePlaceVisualization> instanceQuestInGamePlaceVisualization;
     private AbstractSyncItemSetPositionMonitor syncItemSetPositionMonitor;
     private QuestInGamePlaceVisualization questInGamePlaceVisualization;
@@ -51,6 +51,15 @@ public class InGameQuestVisualizationService {
     private Consumer<Boolean> suppressCallback;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
+
+    @Inject
+    public InGameQuestVisualizationService(Provider<com.btxtech.uiservice.questvisualization.QuestInGamePlaceVisualization> instanceQuestInGamePlaceVisualization, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService, GameUiControl gameUiControl) {
+        this.instanceQuestInGamePlaceVisualization = instanceQuestInGamePlaceVisualization;
+        this.boxUiService = boxUiService;
+        this.resourceUiService = resourceUiService;
+        this.baseItemUiService = baseItemUiService;
+        this.gameUiControl = gameUiControl;
+    }
 
     public void onQuestActivated(QuestConfig quest) {
         stop();

@@ -44,15 +44,15 @@ public class BotRunner {
     }
 
     private Logger log = Logger.getLogger(BotRunner.class.getName());
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private Provider<BotEnragementState> enragementStateInstance;
-    @Inject
+
     private Provider<IntruderHandler> intruderHandlerInstance;
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private BotConfig botConfig;
     private PlayerBaseFull base;
@@ -62,6 +62,15 @@ public class BotRunner {
     private IntervalState intervalState;
     private SimpleScheduledFuture botTimerFuture;
     private SimpleScheduledFuture botTickerFuture;
+
+    @Inject
+    public BotRunner(ExceptionHandler exceptionHandler, SimpleExecutorService simpleExecutorService, Provider<com.btxtech.shared.gameengine.planet.bot.IntruderHandler> intruderHandlerInstance, Provider<com.btxtech.shared.gameengine.planet.bot.BotEnragementState> enragementStateInstance, BaseItemService baseItemService) {
+        this.exceptionHandler = exceptionHandler;
+        this.simpleExecutorService = simpleExecutorService;
+        this.intruderHandlerInstance = intruderHandlerInstance;
+        this.enragementStateInstance = enragementStateInstance;
+        this.baseItemService = baseItemService;
+    }
 
     private class BotTicker implements Runnable {
         @Override

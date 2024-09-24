@@ -16,6 +16,8 @@ package com.btxtech.shared.gameengine.planet.quest;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
@@ -29,11 +31,17 @@ import java.util.Set;
  */
 @Dependent
 public class BaseItemCountComparison extends AbstractBaseItemComparison {
-    @Inject
+
     private BaseItemService baseItemService;
     private int count;
     private double countTotal;
     private Set<Integer> botIds;
+
+    @Inject
+    public BaseItemCountComparison(GameLogicService gameLogicService, BotService botService, BaseItemService baseItemService) {
+        super(gameLogicService, botService);
+        this.baseItemService = baseItemService;
+    }
 
     public void init(int count, Integer includeExistingUserId, Set<Integer> botIds) {
         this.count = count;

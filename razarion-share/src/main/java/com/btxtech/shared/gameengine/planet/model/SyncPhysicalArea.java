@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 @Named(SyncItem.SYNC_PHYSICAL_AREA)
 public class SyncPhysicalArea {
     private Logger logger = Logger.getLogger(SyncPhysicalArea.class.getName());
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
     private SyncItem syncItem;
     private DecimalPosition position;
@@ -32,6 +32,11 @@ public class SyncPhysicalArea {
     private double radius;
     private TerrainType terrainType;
     private Matrix4 modelMatrices;
+
+    @Inject
+    public SyncPhysicalArea(SyncItemContainerServiceImpl syncItemContainerService) {
+        this.syncItemContainerService = syncItemContainerService;
+    }
 
     public void init(SyncItem syncItem, double radius, boolean fixVerticalNorm, TerrainType terrainType, DecimalPosition position2d, double angle) {
         this.syncItem = syncItem;

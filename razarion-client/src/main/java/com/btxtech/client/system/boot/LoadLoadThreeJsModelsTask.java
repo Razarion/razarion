@@ -16,10 +16,16 @@ import javax.inject.Inject;
  */
 @Dependent
 public class LoadLoadThreeJsModelsTask extends AbstractStartupTask {
-    @Inject
+
     private GwtAngularService gwtAngularService;
-    @Inject
+
     private GameUiControl gameUiControl;
+
+    @Inject
+    public LoadLoadThreeJsModelsTask(GameUiControl gameUiControl, GwtAngularService gwtAngularService) {
+        this.gameUiControl = gameUiControl;
+        this.gwtAngularService = gwtAngularService;
+    }
 
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {

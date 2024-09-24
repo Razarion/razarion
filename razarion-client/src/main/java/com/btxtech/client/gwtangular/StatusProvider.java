@@ -9,19 +9,26 @@ import jsinterop.annotations.JsType;
 import com.btxtech.client.Caller;
 import com.btxtech.client.RemoteCallback;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.List;
 
 @JsType
-@ApplicationScoped
+@Singleton
 public class StatusProvider {
-    @Inject
+
     private AlarmService alarmService;
-    @Inject
+
     private Caller<AlarmServiceController> alarmServiceControllerCaller;
-    @Inject
+
     private ClientExceptionHandlerImpl exceptionHandler;
+
+    @Inject
+    public StatusProvider(ClientExceptionHandlerImpl exceptionHandler, Caller<com.btxtech.shared.rest.AlarmServiceController> alarmServiceControllerCaller, AlarmService alarmService) {
+        this.exceptionHandler = exceptionHandler;
+        this.alarmServiceControllerCaller = alarmServiceControllerCaller;
+        this.alarmService = alarmService;
+    }
     // TODO private Stats stats;
 
     @SuppressWarnings("unused") // Called by Angular

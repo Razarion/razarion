@@ -39,20 +39,31 @@ import java.util.function.Consumer;
  */
 @Ignore
 public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
-    @Inject
+
     private UserService userService;
-    @Inject
+
     private SessionHolder sessionHolder;
-    @Inject
+
     private ServerLevelQuestService serverLevelQuestService;
-    @Inject
+
     private ServerUnlockService serverUnlockService;
-    @Inject
+
     private ClientSystemConnectionServiceTestHelper systemConnectionService;
-    @Inject
+
     private SessionService sessionService;
-    @Inject
+
     private GameUiContextCrudPersistence gameUiContextCrudPersistence;
+
+    @Inject
+    public RestServerUnlockServiceTestBase(GameUiContextCrudPersistence gameUiContextCrudPersistence, SessionService sessionService, ClientSystemConnectionServiceTestHelper systemConnectionService, ServerUnlockService serverUnlockService, ServerLevelQuestService serverLevelQuestService, SessionHolder sessionHolder, UserService userService) {
+        this.gameUiContextCrudPersistence = gameUiContextCrudPersistence;
+        this.sessionService = sessionService;
+        this.systemConnectionService = systemConnectionService;
+        this.serverUnlockService = serverUnlockService;
+        this.serverLevelQuestService = serverLevelQuestService;
+        this.sessionHolder = sessionHolder;
+        this.userService = userService;
+    }
 
     @Before
     public void before() {

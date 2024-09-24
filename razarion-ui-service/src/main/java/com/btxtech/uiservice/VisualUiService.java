@@ -5,22 +5,26 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import com.btxtech.client.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 15.08.2016.
  */
-@ApplicationScoped
+@Singleton
 public class VisualUiService {
-    @Inject
+
     private Event<PlanetVisualConfig> planetVisualConfigTrigger;
     private PlanetVisualConfig planetVisualConfig;
 
-    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
+    @Inject
+    public VisualUiService(Event<com.btxtech.shared.dto.PlanetVisualConfig> planetVisualConfigTrigger) {
+        this.planetVisualConfigTrigger = planetVisualConfigTrigger;
+    }
+
+    public void onGameUiControlInitEvent( GameUiControlInitEvent gameUiControlInitEvent) {
         planetVisualConfig = gameUiControlInitEvent.getColdGameUiContext().getWarmGameUiContext().getPlanetVisualConfig();
         planetVisualConfigTrigger.fire(planetVisualConfig);
     }

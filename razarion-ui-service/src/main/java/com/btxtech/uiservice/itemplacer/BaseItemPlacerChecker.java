@@ -22,10 +22,10 @@ import java.util.Collection;
 @Dependent
 public class BaseItemPlacerChecker {
     private static final double SAFETY_DISTANCE = 0.2;
+
     // private Logger logger = Logger.getLogger(BaseItemPlacerChecker.class.getName());
-    @Inject
     private TerrainUiService terrainUiService;
-    @Inject
+
     private BaseItemUiService baseItemUiService;
     private Collection<DecimalPosition> relativeItemPositions;
     private boolean isAllowedAreaOk;
@@ -35,6 +35,12 @@ public class BaseItemPlacerChecker {
     private BaseItemType baseItemType;
     private PlaceConfig allowedArea;
     private double enemyFreeRadius;
+
+    @Inject
+    public BaseItemPlacerChecker(BaseItemUiService baseItemUiService, TerrainUiService terrainUiService) {
+        this.baseItemUiService = baseItemUiService;
+        this.terrainUiService = terrainUiService;
+    }
 
     public void init(BaseItemType baseItemType, BaseItemPlacerConfig baseItemPlacerConfig) {
         this.baseItemType = baseItemType;

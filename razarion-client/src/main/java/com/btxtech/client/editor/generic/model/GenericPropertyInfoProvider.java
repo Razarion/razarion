@@ -14,14 +14,20 @@ import java.util.Map;
 
 @Singleton
 public class GenericPropertyInfoProvider {
+
     // private static Logger logger = Logger.getLogger(GenericPropertyInfoProvider.class.getName());
-    @Inject
     private Caller<GenericPropertyEditorController> genericPropertyEditorController;
-    @Inject
+
     private ClientExceptionHandlerImpl exceptionHandler;
     private Map<String, Map<String, String>> listElementTypes;
     private Map<String, Map<String, CollectionReferenceInfo>> typesWithCollectionReference;
     private Map<String, Map<String, CustomEditorInfo>> typesWithCustomEditor;
+
+    @Inject
+    public GenericPropertyInfoProvider(ClientExceptionHandlerImpl exceptionHandler, Caller<com.btxtech.shared.rest.GenericPropertyEditorController> genericPropertyEditorController) {
+        this.exceptionHandler = exceptionHandler;
+        this.genericPropertyEditorController = genericPropertyEditorController;
+    }
 
     public void load() {
         if(listElementTypes != null) {

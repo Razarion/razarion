@@ -47,23 +47,34 @@ import static com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger.SY
 public class QuestService {
     private static final int TICKS_TO_SEND_DEFERRED = PlanetService.TICKS_PER_SECONDS * 2;
     private final Logger logger = Logger.getLogger(QuestService.class.getName());
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private Provider<CountComparison> countComparisonProvider;
-    @Inject
+
     private Provider<InventoryItemCountComparison> inventoryItemCountComparisonnProvider;
-    @Inject
+
     private Provider<BaseItemTypeComparison> baseItemTypeComparisonProvider;
-    @Inject
+
     private Provider<BaseItemCountComparison> baseItemCountComparisonProvider;
-    @Inject
+
     private Provider<BaseItemPositionComparison> baseItemPositionComparisonProvider;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private final Collection<QuestListener> questListeners = new ArrayList<>();
     private final Map<Integer, AbstractConditionProgress> progressMap = new HashMap<>();
     private int tickCount;
+
+    @Inject
+    public QuestService(ExceptionHandler exceptionHandler, Provider<com.btxtech.shared.gameengine.planet.quest.BaseItemPositionComparison> baseItemPositionComparisonProvider, Provider<com.btxtech.shared.gameengine.planet.quest.BaseItemCountComparison> baseItemCountComparisonProvider, Provider<com.btxtech.shared.gameengine.planet.quest.BaseItemTypeComparison> baseItemTypeComparisonProvider, Provider<com.btxtech.shared.gameengine.planet.quest.InventoryItemCountComparison> inventoryItemCountComparisonnProvider, Provider<com.btxtech.shared.gameengine.planet.quest.CountComparison> countComparisonProvider, ItemTypeService itemTypeService) {
+        this.exceptionHandler = exceptionHandler;
+        this.baseItemPositionComparisonProvider = baseItemPositionComparisonProvider;
+        this.baseItemCountComparisonProvider = baseItemCountComparisonProvider;
+        this.baseItemTypeComparisonProvider = baseItemTypeComparisonProvider;
+        this.inventoryItemCountComparisonnProvider = inventoryItemCountComparisonnProvider;
+        this.countComparisonProvider = countComparisonProvider;
+        this.itemTypeService = itemTypeService;
+    }
 
     public void activateCondition(int userId, QuestConfig questConfig) {
         AbstractComparison abstractComparison = null;

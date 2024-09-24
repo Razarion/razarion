@@ -9,7 +9,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBabylon
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -20,13 +20,19 @@ import java.util.List;
  * Created by Beat
  * 12.04.2017.
  */
-@ApplicationScoped
+@Singleton
 public class TerrainTileFactory {
+
     // private Logger logger = Logger.getLogger(TerrainTileFactory.class.getName());
-    @Inject
     private Provider<TerrainTileBuilder> terrainTileBuilderInstance;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
+
+    @Inject
+    public TerrainTileFactory(ExceptionHandler exceptionHandler, Provider<com.btxtech.shared.gameengine.planet.terrain.TerrainTileBuilder> terrainTileBuilderInstance) {
+        this.exceptionHandler = exceptionHandler;
+        this.terrainTileBuilderInstance = terrainTileBuilderInstance;
+    }
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShapeManager terrainShapeManager, PlanetConfig planetConfig) {
         TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(terrainTileIndex);

@@ -27,7 +27,7 @@ import elemental2.dom.DomGlobal;
 import elemental2.dom.Event;
 import elemental2.dom.MouseEvent;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -40,23 +40,31 @@ import java.util.logging.Logger;
  * Created by Beat
  * 03.03.2017.
  */
-@ApplicationScoped
+@Singleton
 public class ClientTrackerService implements TrackerService, StartupProgressListener {
     private static final String WINDOW_CLOSE = "Window closed -> move to DB";
     private static final String START_UUID = "uuid";
     private static final int DETAILED_TRACKING_DELAY = 1000 * 10;
     private final Logger logger = Logger.getLogger(ClientTrackerService.class.getName());
-    @Inject
+
     private Caller<TrackerProvider> trackingProvider;
-    @Inject
+
     private Boot boot;
-    @Inject
+
     private SimpleExecutorService detailedExecutionService;
-    @Inject
+
     private ClientExceptionHandlerImpl exceptionHandler;
     private TrackingContainer trackingContainer;
     private boolean detailedTracking = false;
     private SimpleScheduledFuture detailedTrackingFuture;
+
+    @Inject
+    public ClientTrackerService(ClientExceptionHandlerImpl exceptionHandler, SimpleExecutorService detailedExecutionService, Boot boot, Caller<com.btxtech.shared.rest.TrackerProvider> trackingProvider) {
+        this.exceptionHandler = exceptionHandler;
+        this.detailedExecutionService = detailedExecutionService;
+        this.boot = boot;
+        this.trackingProvider = trackingProvider;
+    }
 
     @Override
     public void trackGameUiControl(Date startTimeStamp) {
@@ -153,7 +161,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         sendEventTrackerItems();
     }
 
-    public void onSelectionEvent(@Observes SelectionEvent selectionEvent) {
+    public void onSelectionEvent( SelectionEvent selectionEvent) {
         if (!detailedTracking) {
             return;
         }

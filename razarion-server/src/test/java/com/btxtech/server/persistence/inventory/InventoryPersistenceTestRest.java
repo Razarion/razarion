@@ -15,9 +15,14 @@ import javax.inject.Inject;
  */
 @Ignore
 public class InventoryPersistenceTestRest extends IgnoreOldArquillianTest {
-    @Inject
+
     private InventoryItemCrudPersistence inventoryPersistence;
     private int baseItemTypeId;
+
+    @Inject
+    public InventoryPersistenceTestRest(InventoryItemCrudPersistence inventoryPersistence) {
+        this.inventoryPersistence = inventoryPersistence;
+    }
 
     @Test
     public void testCrud() throws Exception {

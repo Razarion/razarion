@@ -17,15 +17,22 @@ import java.util.function.Consumer;
  */
 @Singleton
 public class TerrainService {
+
     // private Logger logger = Logger.getLogger(TerrainService.class.getName());
-    @Inject
     private TerrainTypeService terrainTypeService;
-    @Inject
+
     private TerrainTileFactory terrainTileFactory;
-    @Inject
+
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private TerrainShapeManager terrainShape;
     private PlanetConfig planetConfig;
+
+    @Inject
+    public TerrainService(NativeTerrainShapeAccess nativeTerrainShapeAccess, TerrainTileFactory terrainTileFactory, TerrainTypeService terrainTypeService) {
+        this.nativeTerrainShapeAccess = nativeTerrainShapeAccess;
+        this.terrainTileFactory = terrainTileFactory;
+        this.terrainTypeService = terrainTypeService;
+    }
 
     public void setup(PlanetConfig planetConfig, Runnable finishCallback, Consumer<String> failCallback) {
         this.planetConfig = planetConfig;

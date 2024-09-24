@@ -3,7 +3,7 @@ package com.btxtech.server.system;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 14.03.2017.
  */
-@ApplicationScoped
+@Singleton
 public class FilePropertiesService {
     private static final String PROPERTY_FILE_NAME = "razarion.properties";
     private static final String FACEBOOK_APP_ID = "facebook.app_id";

@@ -9,23 +9,32 @@ import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.stream.Collectors;
 
 @JsType
-@ApplicationScoped
+@Singleton
 public class EditorFrontendProvider {
-    @Inject
+
     private GenericEditorFrontendProvider genericEditorFrontendProvider;
-    @Inject
+
     private PerfmonService perfmonService;
-    @Inject
+
     private GameEngineControl gameEngineControl;
-    @Inject
+
     private TerrainEditorService terrainEditorService;
-    @Inject
+
     private TerrainUiService terrainUiService;
+
+    @Inject
+    public EditorFrontendProvider(TerrainUiService terrainUiService, TerrainEditorService terrainEditorService, GameEngineControl gameEngineControl, PerfmonService perfmonService, GenericEditorFrontendProvider genericEditorFrontendProvider) {
+        this.terrainUiService = terrainUiService;
+        this.terrainEditorService = terrainEditorService;
+        this.gameEngineControl = gameEngineControl;
+        this.perfmonService = perfmonService;
+        this.genericEditorFrontendProvider = genericEditorFrontendProvider;
+    }
 
     @SuppressWarnings("unused") // Called by Angular
     public GenericEditorFrontendProvider getGenericEditorFrontendProvider() {

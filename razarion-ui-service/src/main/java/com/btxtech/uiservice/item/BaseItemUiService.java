@@ -56,25 +56,25 @@ import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toDec
 @JsType
 public class BaseItemUiService {
     private final Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private SelectionHandler selectionHandler;
-    @Inject
+
     private Provider<GameUiControl> gameUiControl;
-    @Inject
+
     private MainCockpitService cockpitService;
-    @Inject
+
     private ItemCockpitService itemCockpitService;
-    @Inject
+
     private ModalDialogManager modalDialogManager;
-    @Inject
+
     private UserUiService userUiService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private BabylonRendererService babylonRendererService;
-    @Inject
+
     private AudioService audioService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private final Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
@@ -97,6 +97,20 @@ public class BaseItemUiService {
     private final List<Integer> selectedOutOfViewIds = new ArrayList<>();
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
+
+    @Inject
+    public BaseItemUiService(AudioService audioService, BabylonRendererService babylonRendererService, ExceptionHandler exceptionHandler, UserUiService userUiService, ModalDialogManager modalDialogManager, ItemCockpitService itemCockpitService, MainCockpitService cockpitService, Provider<com.btxtech.uiservice.control.GameUiControl> gameUiControl, SelectionHandler selectionHandler, ItemTypeService itemTypeService) {
+        this.audioService = audioService;
+        this.babylonRendererService = babylonRendererService;
+        this.exceptionHandler = exceptionHandler;
+        this.userUiService = userUiService;
+        this.modalDialogManager = modalDialogManager;
+        this.itemCockpitService = itemCockpitService;
+        this.cockpitService = cockpitService;
+        this.gameUiControl = gameUiControl;
+        this.selectionHandler = selectionHandler;
+        this.itemTypeService = itemTypeService;
+    }
 
     public void clear() {
         bases.clear();
@@ -599,7 +613,7 @@ public class BaseItemUiService {
         this.viewFieldAabb = viewFieldAabb;
     }
 
-    public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+    public void onSelectionChanged( SelectionEvent selectionEvent) {
         selectedBabylonBaseItems.forEach(babylonBaseItem -> babylonBaseItem.select(false));
         selectedBabylonBaseItems.clear();
         selectedOutOfViewIds.clear();

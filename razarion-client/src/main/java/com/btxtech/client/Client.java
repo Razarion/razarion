@@ -17,14 +17,22 @@ import java.util.logging.Logger;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
+@Deprecated
 public class Client {
     private final Logger logger = Logger.getLogger(Client.class.getName());
-    @Inject
+
     private ClientExceptionHandlerImpl exceptionHandler;
-    @Inject
+
     private LifecycleService lifecycleService;
-    @Inject
+
     private GwtAngularService gwtAngularService;
+
+    @Inject
+    public Client(GwtAngularService gwtAngularService, LifecycleService lifecycleService, ClientExceptionHandlerImpl exceptionHandler) {
+        this.gwtAngularService = gwtAngularService;
+        this.lifecycleService = lifecycleService;
+        this.exceptionHandler = exceptionHandler;
+    }
 
     public Client() {
         GWT.setUncaughtExceptionHandler(e -> {

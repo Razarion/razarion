@@ -73,7 +73,7 @@ public class ItemVelocityCalculatorTest {
         TerrainShapeManager terrainServiceMock = EasyMock.createNiceMock(TerrainShapeManager.class);
         EasyMock.replay(terrainServiceMock);
         PathingAccess pathingAccess = new PathingAccess(terrainServiceMock);
-        TestExceptionHandler testExceptionHandler = new TestExceptionHandler();
+        TestExceptionHandler testExceptionHandler = new TestExceptionHandler(null);
         ItemVelocityCalculator itemVelocityCalculator = new ItemVelocityCalculator(syncItemContainerService, pathingAccess, testExceptionHandler);
 
         syncItemHelpers.forEach(syncItemHelper -> {

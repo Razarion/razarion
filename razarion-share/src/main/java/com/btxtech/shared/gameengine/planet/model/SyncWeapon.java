@@ -39,17 +39,17 @@ import javax.inject.Inject;
 @Dependent
 public class SyncWeapon extends SyncBaseAbility {
     private static final long CHECK_DELTA = 1000;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private ProjectileService projectileService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private PathingService pathingService;
-    @Inject
+
     private Provider<SyncTurret> syncTurretInstance;
-    @Inject
+
     private SyncService syncService;
     private WeaponType weaponType;
     private SyncBaseItem target;
@@ -58,6 +58,16 @@ public class SyncWeapon extends SyncBaseAbility {
     private DecimalPosition targetPosition; // Not Synchronized
     private long targetPositionLastCheck; // Not Synchronized
     private SyncTurret syncTurret;
+
+    @Inject
+    public SyncWeapon(SyncService syncService, Provider<com.btxtech.shared.gameengine.planet.model.SyncTurret> syncTurretInstance, PathingService pathingService, SyncItemContainerServiceImpl syncItemContainerService, ProjectileService projectileService, BaseItemService baseItemService) {
+        this.syncService = syncService;
+        this.syncTurretInstance = syncTurretInstance;
+        this.pathingService = pathingService;
+        this.syncItemContainerService = syncItemContainerService;
+        this.projectileService = projectileService;
+        this.baseItemService = baseItemService;
+    }
 
     public void init(WeaponType weaponType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);

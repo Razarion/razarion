@@ -25,11 +25,16 @@ import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray
  */
 @Singleton
 public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
-    @Inject
+
     private TerrainTypeService terrainTypeService;
     private PlanetConfig planetConfig;
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private int[] groundHeightMap;
+
+    @Inject
+    public TestNativeTerrainShapeAccess(TerrainTypeService terrainTypeService) {
+        this.terrainTypeService = terrainTypeService;
+    }
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {

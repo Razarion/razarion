@@ -22,7 +22,7 @@ import com.btxtech.uiservice.renderer.ViewField;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,31 +30,45 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @JsType
-@ApplicationScoped
+@Singleton
 public class InputService {
-    @Inject
+
     private TerrainUiService terrainUiService;
-    @Inject
+
     private BaseItemUiService baseItemUiService;
-    @Inject
+
     private ResourceUiService resourceUiService;
-    @Inject
+
     private BoxUiService boxUiService;
-    @Inject
+
     private InGameQuestVisualizationService inGameQuestVisualizationService;
-    @Inject
+
     private SelectionHandler selectionHandler;
-    @Inject
+
     private AudioService audioService;
-    @Inject
+
     private GameEngineControl gameEngineControl;
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private final MapCollection<Index, Consumer<TerrainType>> terrainTypeOnTerrainConsumers = new MapCollection<>();
     private boolean hasPendingMoveCommand;
     private MoveCommandEntry queuedMoveCommandEntry;
+
+    @Inject
+    public InputService(ExceptionHandler exceptionHandler, ItemTypeService itemTypeService, GameEngineControl gameEngineControl, AudioService audioService, SelectionHandler selectionHandler, InGameQuestVisualizationService inGameQuestVisualizationService, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService, TerrainUiService terrainUiService) {
+        this.exceptionHandler = exceptionHandler;
+        this.itemTypeService = itemTypeService;
+        this.gameEngineControl = gameEngineControl;
+        this.audioService = audioService;
+        this.selectionHandler = selectionHandler;
+        this.inGameQuestVisualizationService = inGameQuestVisualizationService;
+        this.boxUiService = boxUiService;
+        this.resourceUiService = resourceUiService;
+        this.baseItemUiService = baseItemUiService;
+        this.terrainUiService = terrainUiService;
+    }
 
     @SuppressWarnings("unused") // Called by Angular
     public void onViewFieldChanged(double bottomLeftX, double bottomLeftY, double bottomRightX, double bottomRightY, double topRightX, double topRightY, double topLeftX, double topLeftY) {

@@ -12,7 +12,7 @@ import elemental2.core.Uint16Array;
 import elemental2.dom.Response;
 import jsinterop.base.Js;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -25,15 +25,21 @@ import static elemental2.dom.DomGlobal.fetch;
  * Created by Beat
  * on 28.06.2017.
  */
-@ApplicationScoped
+@Singleton
 public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     private final Logger logger = Logger.getLogger(ClientNativeTerrainShapeAccess.class.getName());
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private NativeTerrainShape nativeTerrainShape;
     private Uint16Array terrainHeightMap;
+
+    @Inject
+    public ClientNativeTerrainShapeAccess(ExceptionHandler exceptionHandler, TerrainService terrainService) {
+        this.exceptionHandler = exceptionHandler;
+        this.terrainService = terrainService;
+    }
 
 
     @Override

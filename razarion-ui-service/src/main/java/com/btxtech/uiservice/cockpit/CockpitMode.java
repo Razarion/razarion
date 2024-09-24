@@ -15,7 +15,7 @@ package com.btxtech.uiservice.cockpit;
 
 import com.btxtech.uiservice.SelectionEvent;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.enterprise.event.Observes;
 
 /**
@@ -23,7 +23,7 @@ import javax.enterprise.event.Observes;
  * Date: 16.11.2010
  * Time: 22:52:52
  */
-@ApplicationScoped
+@Singleton
 public class CockpitMode {
     public enum Mode {
         UNLOAD

@@ -14,8 +14,10 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 /**
  * User: beat
@@ -27,6 +29,11 @@ public class CountComparison extends AbstractUpdatingComparison {
     private AbstractConditionProgress abstractConditionTrigger;
     private double count;
     private double countTotal;
+
+    @Inject
+    public CountComparison(GameLogicService gameLogicService) {
+        super(gameLogicService);
+    }
 
     public void init(int count) {
         this.count = count;

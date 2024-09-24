@@ -29,11 +29,17 @@ import javax.inject.Inject;
  */
 @Dependent
 public class SyncGenerator extends SyncBaseAbility {
-    @Inject
+
     private EnergyService energyService;
-    @Inject
+
     private BaseItemService baseItemService;
     private GeneratorType generatorType;
+
+    @Inject
+    public SyncGenerator(BaseItemService baseItemService, EnergyService energyService) {
+        this.baseItemService = baseItemService;
+        this.energyService = energyService;
+    }
 
     public void init(GeneratorType generatorType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);

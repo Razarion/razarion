@@ -15,7 +15,7 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.function.Consumer;
@@ -24,31 +24,43 @@ import java.util.function.Consumer;
  * Created by Beat
  * 21.02.2017.
  */
-@ApplicationScoped
+@Singleton
 public class UserUiService {
     private static final long SET_NAME_TIME = 1000 * 60 * 5;
     private static final long REGISTER_TIME = 1000 * 60 * 4;
+
     // private Logger logger = Logger.getLogger(UserUiService.class.getName());
-    @Inject
     private GameEngineControl gameEngineControl;
-    @Inject
+
     private LevelService levelService;
-    @Inject
+
     private MainCockpitService cockpitService;
-    @Inject
+
     private ItemCockpitService itemCockpitService;
-    @Inject
+
     private ModalDialogManager dialogManager;
-    @Inject
+
     private Provider<GameUiControl> gameUiControlInstance;
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
-    @Inject
+
     private ModalDialogManager modalDialogManager;
     private UserContext userContext;
     private Consumer<UserContext> userRegistrationCallback;
     private SimpleScheduledFuture setUserNameFuture;
     private SimpleScheduledFuture registerFuture;
+
+    @Inject
+    public UserUiService(ModalDialogManager modalDialogManager, SimpleExecutorService simpleExecutorService, Provider<com.btxtech.uiservice.control.GameUiControl> gameUiControlInstance, ModalDialogManager dialogManager, ItemCockpitService itemCockpitService, MainCockpitService cockpitService, LevelService levelService, GameEngineControl gameEngineControl) {
+        this.modalDialogManager = modalDialogManager;
+        this.simpleExecutorService = simpleExecutorService;
+        this.gameUiControlInstance = gameUiControlInstance;
+        this.dialogManager = dialogManager;
+        this.itemCockpitService = itemCockpitService;
+        this.cockpitService = cockpitService;
+        this.levelService = levelService;
+        this.gameEngineControl = gameEngineControl;
+    }
 
     public void init(UserContext userContext) {
         this.userContext = userContext;

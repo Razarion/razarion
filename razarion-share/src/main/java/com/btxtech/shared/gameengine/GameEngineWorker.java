@@ -73,38 +73,38 @@ import java.util.function.Consumer;
  * 18.07.2016.
  */
 public abstract class GameEngineWorker implements PlanetTickListener, QuestListener, GameLogicListener {
+
     // private Logger logger = Logger.getLogger(GameEngineWorker.class.getName());
-    @Inject
     private PlanetService planetService;
-    @Inject
+
     private Event<StaticGameInitEvent> staticGameInitEvent;
-    @Inject
+
     private BotService botService;
-    @Inject
+
     private ResourceService resourceService;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private QuestService questService;
-    @Inject
+
     private BoxService boxService;
-    @Inject
+
     private CommandService commandService;
-    @Inject
+
     private GameLogicService logicService;
-    @Inject
+
     private PerfmonService perfmonService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private Provider<AbstractServerGameConnection> connectionInstance;
-    @Inject
+
     private Provider<WorkerTrackerHandler> workerTrackerHandlerInstance;
-    @Inject
+
     private NativeMatrixFactory nativeMatrixFactory;
     private UserContext userContext;
     private PlayerBase playerBase;
@@ -116,6 +116,25 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private GameEngineMode gameEngineMode;
     private WorkerTrackerHandler workerTrackerHandler;
     private String gameSessionUuid;
+
+    public GameEngineWorker(NativeMatrixFactory nativeMatrixFactory, Provider<com.btxtech.shared.gameengine.WorkerTrackerHandler> workerTrackerHandlerInstance, Provider<com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection> connectionInstance, TerrainService terrainService, ExceptionHandler exceptionHandler, PerfmonService perfmonService, GameLogicService logicService, CommandService commandService, BoxService boxService, QuestService questService, SyncItemContainerServiceImpl syncItemContainerService, BaseItemService baseItemService, ResourceService resourceService, BotService botService, Event<com.btxtech.shared.gameengine.StaticGameInitEvent> staticGameInitEvent, PlanetService planetService) {
+        this.nativeMatrixFactory = nativeMatrixFactory;
+        this.workerTrackerHandlerInstance = workerTrackerHandlerInstance;
+        this.connectionInstance = connectionInstance;
+        this.terrainService = terrainService;
+        this.exceptionHandler = exceptionHandler;
+        this.perfmonService = perfmonService;
+        this.logicService = logicService;
+        this.commandService = commandService;
+        this.boxService = boxService;
+        this.questService = questService;
+        this.syncItemContainerService = syncItemContainerService;
+        this.baseItemService = baseItemService;
+        this.resourceService = resourceService;
+        this.botService = botService;
+        this.staticGameInitEvent = staticGameInitEvent;
+        this.planetService = planetService;
+    }
 
     protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
 

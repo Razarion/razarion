@@ -8,17 +8,22 @@ import elemental2.core.JsArray;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
 @JsType
-@ApplicationScoped
+@Singleton
 public class GenericEditorFrontendProvider {
-    @Inject
+
     private GenericPropertyInfoProvider genericPropertyInfoProvider;
     private final Logger logger = Logger.getLogger(GenericEditorFrontendProvider.class.getName());
+
+    @Inject
+    public GenericEditorFrontendProvider(GenericPropertyInfoProvider genericPropertyInfoProvider) {
+        this.genericPropertyInfoProvider = genericPropertyInfoProvider;
+    }
 
     @SuppressWarnings("unused") // Called by Angular
     public JsArray<String> collectionNames() {

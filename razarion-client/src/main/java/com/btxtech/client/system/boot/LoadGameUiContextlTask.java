@@ -23,15 +23,23 @@ import javax.inject.Inject;
 public class LoadGameUiContextlTask extends AbstractStartupTask {
     private static final String GAME_SESSION_ID_KEY = "gameSessionUuid";
     private static final String SESSION_ID_KEY = "sessionId";
+
     // private Logger logger = Logger.getLogger(LoadGameUiContextlTask.class.getName());
-    @Inject
     private GameUiControl gameUiControl;
-    @Inject
+
     private Caller<GameUiContextController> serviceCaller;
-    @Inject
+
     private FacebookService facebookService;
-    @Inject
+
     private ClientExceptionHandlerImpl exceptionHandler;
+
+    @Inject
+    public LoadGameUiContextlTask(ClientExceptionHandlerImpl exceptionHandler, FacebookService facebookService, Caller<com.btxtech.shared.rest.GameUiContextController> serviceCaller, GameUiControl gameUiControl) {
+        this.exceptionHandler = exceptionHandler;
+        this.facebookService = facebookService;
+        this.serviceCaller = serviceCaller;
+        this.gameUiControl = gameUiControl;
+    }
 
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {

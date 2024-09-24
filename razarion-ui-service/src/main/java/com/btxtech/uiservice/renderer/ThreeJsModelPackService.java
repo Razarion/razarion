@@ -4,13 +4,13 @@ import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.enterprise.event.Observes;
 import java.util.HashMap;
 import java.util.Map;
 
 @JsType
-@ApplicationScoped
+@Singleton
 public class ThreeJsModelPackService {
     private final Map<Integer, ThreeJsModelPackConfig> threeJsModelPackConfigs = new HashMap<>();
 

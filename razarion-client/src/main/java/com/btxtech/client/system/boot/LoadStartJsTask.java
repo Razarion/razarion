@@ -13,8 +13,13 @@ import javax.inject.Inject;
  */
 @Dependent
 public class LoadStartJsTask extends AbstractStartupTask {
-    @Inject
+
     private ExceptionHandler exceptionHandler;
+
+    @Inject
+    public LoadStartJsTask(ExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+    }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {

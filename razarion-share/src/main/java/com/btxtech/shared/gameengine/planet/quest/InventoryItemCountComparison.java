@@ -15,8 +15,10 @@ package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 /**
  * User: beat
@@ -27,6 +29,11 @@ import javax.enterprise.context.Dependent;
 public class InventoryItemCountComparison extends AbstractInventoryItemComparison {
     private double count;
     private double countTotal;
+
+    @Inject
+    public InventoryItemCountComparison(GameLogicService gameLogicService) {
+        super(gameLogicService);
+    }
 
     public void init(int count) {
         this.count = count;

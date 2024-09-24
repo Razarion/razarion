@@ -28,13 +28,20 @@ import java.util.logging.Logger;
 @Singleton
 public class GameLogicService {
     private Logger logger = Logger.getLogger(GameLogicService.class.getName());
-    @Inject
+
     private Provider<QuestService> questServiceInstance;
-    @Inject
+
     private Provider<BotService> botServiceInstance;
-    @Inject
+
     private Provider<GuardingItemService> guardingItemServiceInstance;
     private Optional<GameLogicListener> gameLogicListener = Optional.empty();
+
+    @Inject
+    public GameLogicService(Provider<com.btxtech.shared.gameengine.planet.GuardingItemService> guardingItemServiceInstance, Provider<com.btxtech.shared.gameengine.planet.bot.BotService> botServiceInstance, Provider<com.btxtech.shared.gameengine.planet.quest.QuestService> questServiceInstance) {
+        this.guardingItemServiceInstance = guardingItemServiceInstance;
+        this.botServiceInstance = botServiceInstance;
+        this.questServiceInstance = questServiceInstance;
+    }
 
     public void setGameLogicListener(GameLogicListener gameLogicListener) {
         this.gameLogicListener = Optional.of(gameLogicListener);

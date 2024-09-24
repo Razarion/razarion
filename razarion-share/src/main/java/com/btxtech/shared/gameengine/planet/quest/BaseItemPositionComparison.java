@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 @Dependent
 public class BaseItemPositionComparison extends AbstractTickComparison {
     private static final int MIN_TIME_TICK_DELAY = PlanetService.TICKS_PER_SECONDS * 5;
-    @Inject
+
     private BaseItemService baseItemService;
     private AbstractConditionProgress abstractConditionProgress;
     private Map<BaseItemType, Integer> itemTypes;
@@ -47,6 +48,12 @@ public class BaseItemPositionComparison extends AbstractTickComparison {
     private boolean isItemFulfilled;
     private Integer fulfilledTickCount;
     private final Collection<SyncBaseItem> fulfilledItems = new HashSet<>();
+
+    @Inject
+    public BaseItemPositionComparison(GameLogicService gameLogicService, BaseItemService baseItemService) {
+        super(gameLogicService);
+        this.baseItemService = baseItemService;
+    }
 
     public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer timeSeconds, int userId) {
         this.itemTypes = itemTypes;

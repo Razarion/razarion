@@ -48,41 +48,41 @@ import java.util.logging.Logger;
  * Created by Beat
  * 05.07.2016.
  */
-@Singleton // @ApplicationScoped lead to crashes with errai CDI
+@Singleton // @Singleton lead to crashes with errai CDI
 @JsType
 public class GameUiControl { // Equivalent worker class is PlanetService
     private final Logger logger = Logger.getLogger(GameUiControl.class.getName());
-    @Inject
+
     private Provider<Scene> sceneInstance;
-    @Inject
+
     private BaseItemUiService baseItemUiService;
-    @Inject
+
     private MainCockpitService cockpitService;
-    @Inject
+
     private QuestCockpitService questCockpitService;
-    @Inject
+
     private ChatUiService chatUiService;
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private TerrainTypeService terrainTypeService;
-    @Inject
+
     private LevelService levelService;
-    @Inject
+
     private InventoryTypeService inventoryTypeService;
-    @Inject
+
     private UserUiService userUiService;
-    @Inject
+
     private Boot boot;
-    @Inject
+
     private TrackerService trackerService;
-    @Inject
+
     private Event<GameUiControlInitEvent> gameUiControlInitEvent;
-    @Inject
+
     private ModalDialogManager modalDialogManager;
-    @Inject
+
     private Provider<ScreenCover> screenCover;
-    @Inject
+
     private Provider<AbstractServerSystemConnection> serverSystemConnectionInstance;
     private ColdGameUiContext coldGameUiContext;
     private int nextSceneNumber;
@@ -96,6 +96,26 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private int generating;
     private QuestConfig serverQuest;
     private QuestProgressInfo serverQuestProgress;
+
+    @Inject
+    public GameUiControl(Provider<com.btxtech.uiservice.control.AbstractServerSystemConnection> serverSystemConnectionInstance, Provider<com.btxtech.uiservice.cockpit.ScreenCover> screenCover, ModalDialogManager modalDialogManager, Event<com.btxtech.uiservice.control.GameUiControlInitEvent> gameUiControlInitEvent, TrackerService trackerService, Boot boot, UserUiService userUiService, InventoryTypeService inventoryTypeService, LevelService levelService, TerrainTypeService terrainTypeService, ItemTypeService itemTypeService, ChatUiService chatUiService, QuestCockpitService questCockpitService, MainCockpitService cockpitService, BaseItemUiService baseItemUiService, Provider<com.btxtech.uiservice.control.Scene> sceneInstance) {
+        this.serverSystemConnectionInstance = serverSystemConnectionInstance;
+        this.screenCover = screenCover;
+        this.modalDialogManager = modalDialogManager;
+        this.gameUiControlInitEvent = gameUiControlInitEvent;
+        this.trackerService = trackerService;
+        this.boot = boot;
+        this.userUiService = userUiService;
+        this.inventoryTypeService = inventoryTypeService;
+        this.levelService = levelService;
+        this.terrainTypeService = terrainTypeService;
+        this.itemTypeService = itemTypeService;
+        this.chatUiService = chatUiService;
+        this.questCockpitService = questCockpitService;
+        this.cockpitService = cockpitService;
+        this.baseItemUiService = baseItemUiService;
+        this.sceneInstance = sceneInstance;
+    }
 
     public void onWarmGameConfigLoaded(WarmGameUiContext warmGameUiContext) {
         this.coldGameUiContext.setWarmGameUiContext(warmGameUiContext);

@@ -24,16 +24,24 @@ import java.util.List;
  * 20.04.2017.
  */
 public abstract class AbstractServerGameConnection {
-    @Inject
+
     private GameEngineWorker gameEngineWorker;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private ResourceService resourceService;
-    @Inject
+
     private BoxService boxService;
-    @Inject
+
     private PlanetService planetService;
+
+    public AbstractServerGameConnection(PlanetService planetService, BoxService boxService, ResourceService resourceService, BaseItemService baseItemService, GameEngineWorker gameEngineWorker) {
+        this.planetService = planetService;
+        this.boxService = boxService;
+        this.resourceService = resourceService;
+        this.baseItemService = baseItemService;
+        this.gameEngineWorker = gameEngineWorker;
+    }
 
     protected abstract void sendToServer(String text);
 

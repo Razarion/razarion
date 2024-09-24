@@ -9,17 +9,22 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.Diplomacy;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-@ApplicationScoped
+@Singleton
 public class BabylonRendererService {
     private static final Logger LOG = Logger.getLogger(BabylonRendererService.class.getName());
 
-    @Inject
+
     private BabylonRenderServiceAccess babylonRenderServiceAccess;
+
+    @Inject
+    public BabylonRendererService(BabylonRenderServiceAccess babylonRenderServiceAccess) {
+        this.babylonRenderServiceAccess = babylonRenderServiceAccess;
+    }
 
     public BabylonTerrainTile createTerrainTile(TerrainTile terrainTile) {
         return babylonRenderServiceAccess.createTerrainTile(terrainTile);

@@ -5,13 +5,13 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 
 /**
  * Created by Beat
  * 24.09.2016.
  */
-@ApplicationScoped
+@Singleton
 public class ModalDialogManager {
     private Runnable levelUpCallback;
     private Runnable questPassedCallback;

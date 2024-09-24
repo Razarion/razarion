@@ -7,12 +7,23 @@ import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.inventory.InventoryUiService;
+import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.BoxUiService;
+import com.btxtech.uiservice.item.ResourceUiService;
+import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
+import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.btxtech.uiservice.user.UserUiService;
 import elemental2.dom.ErrorEvent;
 import elemental2.dom.Worker;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.logging.Logger;
@@ -21,16 +32,23 @@ import java.util.logging.Logger;
  * Created by Beat
  * 02.01.2017.
  */
-@ApplicationScoped
+@Singleton
 public class ClientGameEngineControl extends GameEngineControl {
     private final Logger logger = Logger.getLogger(ClientGameEngineControl.class.getName());
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private Provider<LifecycleService> lifecycleService;
     private Worker worker;
     private DeferredStartup deferredStartup;
     private QueueStatistics queueStatistics;
+
+    @Inject
+    public ClientGameEngineControl(Provider<com.btxtech.uiservice.terrain.InputService> inputServices, PerfmonService perfmonService, Boot boot, TerrainUiService terrainUiService, InventoryUiService inventoryUiService, UserUiService userUiService, SelectionHandler selectionHandler, GameUiControl gameUiControl, AudioService audioService, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService, Provider<com.btxtech.client.system.LifecycleService> lifecycleService, ExceptionHandler exceptionHandler) {
+        super(inputServices, perfmonService, exceptionHandler, boot, terrainUiService, inventoryUiService, userUiService, selectionHandler, gameUiControl, audioService, boxUiService, resourceUiService, baseItemUiService);
+        this.lifecycleService = lifecycleService;
+        this.exceptionHandler = exceptionHandler;
+    }
 
     @Override
     public boolean isStarted() {

@@ -4,11 +4,11 @@ import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.enterprise.event.Observes;
 
 @JsType
-@ApplicationScoped
+@Singleton
 public class AssetService {
     private MeshContainer[] meshContainers;
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {

@@ -1,10 +1,12 @@
 package com.btxtech.common.system;
 
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.alarm.AlarmService;
 import elemental2.dom.DomGlobal;
 import com.btxtech.client.ErrorCallback;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
+import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,10 +18,15 @@ import java.util.logging.Logger;
  * \, \(message\, throwable\) \-\> \{\n            logger\.log\(Level\.SEVERE\, \"(.*)?" \+ message\, throwable\)\;\n            return false\;\n        \}
  * , exceptionHandler.restErrorHandler("$1")
  */
-@ApplicationScoped
+@Singleton
 public class ClientExceptionHandlerImpl extends ExceptionHandler {
     private Logger logger = Logger.getLogger(ExceptionHandler.class.getName());
     private boolean windowClosing;
+
+    @Inject
+    public ClientExceptionHandlerImpl(AlarmService alarmService) {
+        super(alarmService);
+    }
 
     @Override
     protected void handleExceptionInternal(String message, Throwable t) {

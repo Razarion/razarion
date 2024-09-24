@@ -27,10 +27,15 @@ import java.util.List;
 
 @Dependent
 public class Path {
-    @Inject
+
     private TerrainService terrainService;
     private List<DecimalPosition> wayPositions;
     private DecimalPosition currentWayPoint;
+
+    @Inject
+    public Path(TerrainService terrainService) {
+        this.terrainService = terrainService;
+    }
 
     /**
      * @param path the path

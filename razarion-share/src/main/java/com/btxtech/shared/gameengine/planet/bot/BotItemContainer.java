@@ -60,23 +60,33 @@ import java.util.logging.Logger;
 public class BotItemContainer {
     private static final int KILL_ITERATION_MAXIMUM = 100;
     private Logger logger = Logger.getLogger(BotItemContainer.class.getName());
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private BotService botService;
-    @Inject
+
     private Provider<BotSyncBaseItem> baseItemInstance;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private final HashMap<SyncBaseItem, BotSyncBaseItem> botItems = new HashMap<>();
     private Need need;
     private String botName;
     private PlaceConfig realm;
     private CurrentItemBuildup currentItemBuildup = new CurrentItemBuildup();
+
+    @Inject
+    public BotItemContainer(ExceptionHandler exceptionHandler, Provider<com.btxtech.shared.gameengine.planet.bot.BotSyncBaseItem> baseItemInstance, BotService botService, SyncItemContainerServiceImpl syncItemContainerService, BaseItemService baseItemService, ItemTypeService itemTypeService) {
+        this.exceptionHandler = exceptionHandler;
+        this.baseItemInstance = baseItemInstance;
+        this.botService = botService;
+        this.syncItemContainerService = syncItemContainerService;
+        this.baseItemService = baseItemService;
+        this.itemTypeService = itemTypeService;
+    }
 
     public void init(Collection<BotItemConfig> botItems, PlaceConfig realm, String botName) {
         this.realm = realm;

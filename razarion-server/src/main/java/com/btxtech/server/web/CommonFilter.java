@@ -33,9 +33,9 @@ public class CommonFilter implements Filter {
 
     private static final String FRONTEND_FILE = CommonUrl.FRONTEND_ANGULAR_HTML_FILE.toUpperCase();
     private static final String BACKEND = CommonUrl.ANGULAR_BACKEND_PATH.toUpperCase();
-    @Inject
+
     private Logger logger;
-    @Inject
+
     private TrackerPersistence trackerPersistence;
     private Collection<String> excludePaths = convertFilterStrings(
             CommonUrl.APPLICATION_PATH,
@@ -59,6 +59,12 @@ public class CommonFilter implements Filter {
             ".ttf",
             ".woff"
     );
+
+    @Inject
+    public CommonFilter(TrackerPersistence trackerPersistence, Logger logger) {
+        this.trackerPersistence = trackerPersistence;
+        this.logger = logger;
+    }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

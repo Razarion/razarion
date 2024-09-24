@@ -19,14 +19,22 @@ import java.util.Date;
  */
 @Ignore
 public class RegisterServiceTestRest extends IgnoreOldArquillianTest {
-    @Inject
+
     private RegisterService registerService;
-    @Inject
+
     private UserService userService;
-    @Inject
+
     private SessionHolder sessionHolder;
-    @Inject
+
     private FakeEmailServer fakeEmailServer;
+
+    @Inject
+    public RegisterServiceTestRest(FakeEmailServer fakeEmailServer, SessionHolder sessionHolder, UserService userService, RegisterService registerService) {
+        this.fakeEmailServer = fakeEmailServer;
+        this.sessionHolder = sessionHolder;
+        this.userService = userService;
+        this.registerService = registerService;
+    }
 
     @Before
     public void before() throws Exception {

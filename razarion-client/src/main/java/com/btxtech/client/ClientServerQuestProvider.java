@@ -4,15 +4,21 @@ import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.rest.QuestController;
 import com.btxtech.uiservice.ServerQuestProvider;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 
-@ApplicationScoped
+@Singleton
 public class ClientServerQuestProvider implements ServerQuestProvider {
-    @Inject
+
     private Caller<QuestController> questProvider;
-    @Inject
+
     private ClientExceptionHandlerImpl exceptionHandler;
+
+    @Inject
+    public ClientServerQuestProvider(ClientExceptionHandlerImpl exceptionHandler, Caller<com.btxtech.shared.rest.QuestController> questProvider) {
+        this.exceptionHandler = exceptionHandler;
+        this.questProvider = questProvider;
+    }
 
     @Override
     public void activateNextPossibleQuest() {

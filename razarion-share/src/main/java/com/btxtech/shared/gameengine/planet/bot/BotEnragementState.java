@@ -30,7 +30,7 @@ public class BotEnragementState {
         void onEnrageUp(String botName, BotEnragementStateConfig botEnragementStateConfig, PlayerBase actor);
     }
 
-    @Inject
+
     private Provider<BotItemContainer> containerInstance;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
     private BotEnragementStateConfig currentBotEnragementStateConfig;
@@ -40,6 +40,11 @@ public class BotEnragementState {
     private String botName;
     private Map<PlayerBase, Integer> killsPerBase = new HashMap<>();
     private Listener listener;
+
+    @Inject
+    public BotEnragementState(Provider<com.btxtech.shared.gameengine.planet.bot.BotItemContainer> containerInstance) {
+        this.containerInstance = containerInstance;
+    }
 
     public void init(List<BotEnragementStateConfig> botEnragementStateConfigs, PlaceConfig realm, String botName, Listener listener) {
         this.botEnragementStateConfigs = botEnragementStateConfigs;

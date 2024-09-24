@@ -27,13 +27,20 @@ public class PathingService {
     // private static final Logger LOGGER = Logger.getLogger(PathingService.class.getName());
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
     public static final double RADIUS_GROW = 1;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
+
+    @Inject
+    public PathingService(ExceptionHandler exceptionHandler, TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService) {
+        this.exceptionHandler = exceptionHandler;
+        this.terrainService = terrainService;
+        this.syncItemContainerService = syncItemContainerService;
+    }
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return setupPathToDestination(syncItem, syncItem.getSyncPhysicalArea().getTerrainType(), destination, 0);

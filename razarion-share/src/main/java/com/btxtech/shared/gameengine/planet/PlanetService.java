@@ -36,31 +36,31 @@ public class PlanetService implements Runnable { // Only available in worker. On
     public static final int TICKS_PER_SECONDS = (int) (1000.0 / TICK_TIME_MILLI_SECONDS);
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
     private final Logger logger = Logger.getLogger(PlanetService.class.getName());
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private Event<PlanetActivationEvent> activationEvent;
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
-    @Inject
+
     private PathingService pathingService;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private QuestService questService;
-    @Inject
+
     private BoxService boxService;
-    @Inject
+
     private ProjectileService projectileService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private ResourceService resourceService;
-    @Inject
+
     private EnergyService energyService;
-    @Inject
+
     private SyncService syncService;
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
@@ -69,6 +69,23 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private final PlanetServiceTracker planetServiceTracker = new PlanetServiceTracker();
     private long tickCount;
     private GameEngineMode gameEngineMode;
+
+    @Inject
+    public PlanetService(SyncService syncService, EnergyService energyService, ResourceService resourceService, TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService, ProjectileService projectileService, BoxService boxService, QuestService questService, BaseItemService baseItemService, PathingService pathingService, SimpleExecutorService simpleExecutorService, Event<com.btxtech.shared.gameengine.planet.PlanetActivationEvent> activationEvent, ExceptionHandler exceptionHandler) {
+        this.syncService = syncService;
+        this.energyService = energyService;
+        this.resourceService = resourceService;
+        this.terrainService = terrainService;
+        this.syncItemContainerService = syncItemContainerService;
+        this.projectileService = projectileService;
+        this.boxService = boxService;
+        this.questService = questService;
+        this.baseItemService = baseItemService;
+        this.pathingService = pathingService;
+        this.simpleExecutorService = simpleExecutorService;
+        this.activationEvent = activationEvent;
+        this.exceptionHandler = exceptionHandler;
+    }
     // private List<DebugHelperStatic.TickData> tickDatas = new ArrayList<>();
 
     @PostConstruct

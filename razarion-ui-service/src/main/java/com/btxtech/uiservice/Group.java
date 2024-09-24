@@ -40,15 +40,22 @@ import java.util.stream.Collectors;
  */
 @Dependent
 public class Group {
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private BaseItemUiService baseItemUiService;
-    @Inject
+
     private SelectionHandler selectionHandler;
-    @Deprecated // Use syncBaseItemsMonitors
+    // Use syncBaseItemsMonitors
     private Collection<SyncBaseItemSimpleDto> syncBaseItems = new ArrayList<>();
     private Collection<SyncBaseItemMonitor> syncBaseItemsMonitors = new ArrayList<>();
+
+    @Inject
+    public Group(SelectionHandler selectionHandler, BaseItemUiService baseItemUiService, ItemTypeService itemTypeService) {
+        this.selectionHandler = selectionHandler;
+        this.baseItemUiService = baseItemUiService;
+        this.itemTypeService = itemTypeService;
+    }
 
     void setItems(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
         this.syncBaseItems = syncBaseItems;

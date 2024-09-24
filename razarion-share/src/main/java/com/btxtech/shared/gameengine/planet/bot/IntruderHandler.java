@@ -33,14 +33,20 @@ import java.util.Map;
  */
 @Dependent
 public class IntruderHandler {
+
     // private Logger logger = Logger.getLogger(IntruderHandler.class.getName());
-    @Inject
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private Map<SyncBaseItem, BotSyncBaseItem> intruders = new HashMap<>();
     private BotEnragementState botEnragementState;
     private PlaceConfig region;
+
+    @Inject
+    public IntruderHandler(ExceptionHandler exceptionHandler, SyncItemContainerServiceImpl syncItemContainerService) {
+        this.exceptionHandler = exceptionHandler;
+        this.syncItemContainerService = syncItemContainerService;
+    }
 
     public void init(BotEnragementState botEnragementState, PlaceConfig region) {
         this.botEnragementState = botEnragementState;

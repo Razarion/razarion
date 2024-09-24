@@ -20,16 +20,23 @@ import java.util.function.Consumer;
 @Dependent
 @JsType
 public class BaseItemPlacer {
-    @Inject
+
     private BaseItemPlacerChecker baseItemPlacerChecker;
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private boolean canBeCanceled;
     private Consumer<DecimalPosition> placeCallback;
     private BaseItemType baseItemType;
     private String errorText;
+
+    @Inject
+    public BaseItemPlacer(ExceptionHandler exceptionHandler, ItemTypeService itemTypeService, BaseItemPlacerChecker baseItemPlacerChecker) {
+        this.exceptionHandler = exceptionHandler;
+        this.itemTypeService = itemTypeService;
+        this.baseItemPlacerChecker = baseItemPlacerChecker;
+    }
 
     public BaseItemPlacer init(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<DecimalPosition> placeCallback) {
         baseItemType = itemTypeService.getBaseItemType(baseItemPlacerConfig.getBaseItemTypeId());

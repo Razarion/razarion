@@ -7,7 +7,7 @@ import com.btxtech.shared.system.JsInteropObjectFactory;
 import elemental2.core.Float32Array;
 import jsinterop.base.Js;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import java.util.List;
 
 import static com.btxtech.shared.utils.CollectionUtils.toArray;
@@ -16,7 +16,7 @@ import static com.btxtech.shared.utils.CollectionUtils.toArray;
  * Created by Beat
  * 01.04.2017.
  */
-@ApplicationScoped
+@Singleton
 public class ClientJsInteropObjectFactory implements JsInteropObjectFactory {
     @Override
     public Float32ArrayEmu newFloat32Array4Vertices(List<Vertex> vertices) {

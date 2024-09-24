@@ -15,7 +15,7 @@ import jsinterop.annotations.JsType;
 import com.btxtech.client.Caller;
 import com.btxtech.client.RemoteCallback;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,18 +23,27 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @JsType
-@ApplicationScoped
+@Singleton
 public class TerrainEditorService {
-    @Inject
+
     private ClientExceptionHandlerImpl exceptionHandler;
-    @Inject
+
     private Caller<TerrainEditorController> terrainEditorController;
-    @Inject
+
     private GameUiControl gameUiControl;
-    @Inject
+
     private Caller<TerrainObjectEditorController> terrainObjectEditorController;
-    @Inject
+
     private TerrainUiService terrainUiService;
+
+    @Inject
+    public TerrainEditorService(TerrainUiService terrainUiService, Caller<com.btxtech.shared.rest.TerrainObjectEditorController> terrainObjectEditorController, GameUiControl gameUiControl, Caller<com.btxtech.shared.rest.TerrainEditorController> terrainEditorController, ClientExceptionHandlerImpl exceptionHandler) {
+        this.terrainUiService = terrainUiService;
+        this.terrainObjectEditorController = terrainObjectEditorController;
+        this.gameUiControl = gameUiControl;
+        this.terrainEditorController = terrainEditorController;
+        this.exceptionHandler = exceptionHandler;
+    }
 
     @SuppressWarnings("unused") // Called by Angular
     public Promise<String> save(TerrainObjectPosition[] createdTerrainObjects, TerrainObjectPosition[] updatedTerrainObjects) {

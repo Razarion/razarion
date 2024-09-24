@@ -10,12 +10,19 @@ import java.util.List;
  * on 08.02.2018.
  */
 public class RestServerTestHelperAccessImpl implements RestServerTestHelperAccess {
-    @Inject
+
     private AccessServerTestHelper serverTestHelper;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private FakeEmailServer fakeEmailServer;
+
+    @Inject
+    public RestServerTestHelperAccessImpl(FakeEmailServer fakeEmailServer, ExceptionHandler exceptionHandler, RestServerTestHelperAccessImpl.AccessServerTestHelper serverTestHelper) {
+        this.fakeEmailServer = fakeEmailServer;
+        this.exceptionHandler = exceptionHandler;
+        this.serverTestHelper = serverTestHelper;
+    }
 
     public static class AccessServerTestHelper extends ServerTestHelper {
 

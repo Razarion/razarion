@@ -12,12 +12,17 @@ import java.util.List;
 
 @Dependent
 public class SlopeGeometryBuilder {
-    @Inject
+
     private JsInteropObjectFactory jsInteropObjectFactory;
     private List<Vertex> positions = new ArrayList<>();
     private List<Vertex> norms = new ArrayList<>();
     private List<DecimalPosition> uvs = new ArrayList<>();
     private List<Double> slopeFactors = new ArrayList<>();
+
+    @Inject
+    public SlopeGeometryBuilder(JsInteropObjectFactory jsInteropObjectFactory) {
+        this.jsInteropObjectFactory = jsInteropObjectFactory;
+    }
 
     public void addTriangleCorner(Vertex vertex, Vertex norm, DecimalPosition uv, double slopeFactor) {
         positions.add(vertex);

@@ -16,12 +16,17 @@ import javax.inject.Inject;
  */
 @Dependent
 public class QuestInGamePlaceVisualization {
-    @Inject
+
     private BabylonRendererService babylonRendererService;
     private PlaceConfig placeConfig;
     private DecimalPosition center;
     private Rectangle2D placeConfigBoundaryRect;
     private MarkerConfig markerConfig;
+
+    @Inject
+    public QuestInGamePlaceVisualization(BabylonRendererService babylonRendererService) {
+        this.babylonRendererService = babylonRendererService;
+    }
 
     public void init(PlaceConfig placeConfig, MarkerConfig markerConfig) {
         this.placeConfig = placeConfig;

@@ -36,21 +36,30 @@ import javax.inject.Inject;
  */
 @Dependent
 public class BotSyncBaseItem {
+
     // private Logger logger = Logger.getLogger(BotSyncBaseItem.class.getName());
-    @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private CommandService commandService;
-    @Inject
+
     private TerrainService terrainService;
     private SyncBaseItem syncBaseItem;
     private BotItemConfig botItemConfig;
     private boolean idle;
     private long idleTimeStamp;
+
+    @Inject
+    public BotSyncBaseItem(TerrainService terrainService, CommandService commandService, SyncItemContainerServiceImpl syncItemContainerService, BaseItemService baseItemService, ExceptionHandler exceptionHandler) {
+        this.terrainService = terrainService;
+        this.commandService = commandService;
+        this.syncItemContainerService = syncItemContainerService;
+        this.baseItemService = baseItemService;
+        this.exceptionHandler = exceptionHandler;
+    }
 
     public void init(SyncBaseItem syncBaseItem, BotItemConfig botItemConfig) {
         this.syncBaseItem = syncBaseItem;

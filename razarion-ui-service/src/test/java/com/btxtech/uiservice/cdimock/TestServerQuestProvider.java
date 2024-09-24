@@ -2,9 +2,9 @@ package com.btxtech.uiservice.cdimock;
 
 import com.btxtech.uiservice.ServerQuestProvider;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 
-@ApplicationScoped
+@Singleton
 public class TestServerQuestProvider implements ServerQuestProvider {
     @Override
     public void activateNextPossibleQuest() {

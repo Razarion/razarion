@@ -16,11 +16,16 @@ import java.util.List;
  */
 @Dependent
 public class TerrainTileBuilder {
-    @Inject
+
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private TerrainTile terrainTile;
     private final List<TerrainTileObjectList> terrainTileObjectLists = new ArrayList<>();
     private BabylonDecal[] babylonDecals;
+
+    @Inject
+    public TerrainTileBuilder(NativeTerrainShapeAccess nativeTerrainShapeAccess) {
+        this.nativeTerrainShapeAccess = nativeTerrainShapeAccess;
+    }
 
     public void init(Index terrainTileIndex) {
         terrainTile = new TerrainTile();

@@ -5,14 +5,14 @@ import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import java.util.function.Consumer;
 
 /**
  * Created by Beat
  * on 09.11.2017.
  */
-@ApplicationScoped
+@Singleton
 public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {

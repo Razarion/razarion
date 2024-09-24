@@ -22,17 +22,25 @@ import java.util.Iterator;
  */
 @Singleton
 public class ProjectileService {
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private GameLogicService gameLogicService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private final Collection<Projectile> projectiles = new ArrayList<>();
 
-    public void onPlanetActivation(@Observes PlanetActivationEvent ignore) {
+    @Inject
+    public ProjectileService(ExceptionHandler exceptionHandler, SyncItemContainerServiceImpl syncItemContainerService, GameLogicService gameLogicService, BaseItemService baseItemService) {
+        this.exceptionHandler = exceptionHandler;
+        this.syncItemContainerService = syncItemContainerService;
+        this.gameLogicService = gameLogicService;
+        this.baseItemService = baseItemService;
+    }
+
+    public void onPlanetActivation( PlanetActivationEvent ignore) {
         synchronized (projectiles) {
             projectiles.clear();
         }

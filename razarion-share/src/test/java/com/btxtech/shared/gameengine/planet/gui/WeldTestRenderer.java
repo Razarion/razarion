@@ -85,13 +85,13 @@ public class WeldTestRenderer {
     private static final Color RESOURCE_ITEM_TYPE_COLOR = new Color(0.8, 0.8, 0, 1);
     private static final Color BOX_ITEM_TYPE_COLOR = new Color(1, 0.0, 1, 1);
     private static final double SYNC_ITEM_DISPLAY_FRONT_ANGEL = MathHelper.gradToRad(60);
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private TerrainTypeService terrainTypeService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private ItemTypeService itemTypeService;
     private Canvas canvas;
     private GraphicsContext gc;
@@ -105,6 +105,14 @@ public class WeldTestRenderer {
     private double zMin = -2;
     private double zMax = 0.5;
     private WeldTestController weldTestController;
+
+    @Inject
+    public WeldTestRenderer(ItemTypeService itemTypeService, SyncItemContainerServiceImpl syncItemContainerService, TerrainTypeService terrainTypeService, TerrainService terrainService) {
+        this.itemTypeService = itemTypeService;
+        this.syncItemContainerService = syncItemContainerService;
+        this.terrainTypeService = terrainTypeService;
+        this.terrainService = terrainService;
+    }
 
     public void init(Canvas canvas, double scale) {
         this.canvas = canvas;
@@ -814,7 +822,7 @@ public class WeldTestRenderer {
             if (nativeTerrainShapeObjectList.terrainShapeObjectPositions != null) {
                 double radius = terrainTypeService.getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
                 Arrays.stream(nativeTerrainShapeObjectList.terrainShapeObjectPositions).forEach(nativeTerrainShapeObjectPosition -> {
-                     double correctedRadius = radius /* TODO * nativeTerrainShapeObjectPosition.scale*/;
+                    double correctedRadius = radius /* TODO * nativeTerrainShapeObjectPosition.scale*/;
                      gc.fillOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
                 });
             }

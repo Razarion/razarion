@@ -215,9 +215,9 @@ public class ServerTestHelper {
     private EntityManager entityManager;
     private EntityTransaction entityTransaction;
     private final List<List<CleanupAfterTest>> cleanupAfterTests = new ArrayList<>();
-    @Inject
+
     private UserService userService;
-    @Inject
+
     private BaseItemService baseItemService;
     private MongoClient mongoClient;
 

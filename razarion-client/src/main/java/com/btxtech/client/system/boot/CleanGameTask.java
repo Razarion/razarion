@@ -14,10 +14,16 @@ import javax.inject.Inject;
  */
 @Dependent
 public class CleanGameTask extends AbstractStartupTask {
-    @Inject
+
     private LifecycleService lifecycleService;
-    @Inject
+
     private UserUiService userUiService;
+
+    @Inject
+    public CleanGameTask(UserUiService userUiService, LifecycleService lifecycleService) {
+        this.userUiService = userUiService;
+        this.lifecycleService = lifecycleService;
+    }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {

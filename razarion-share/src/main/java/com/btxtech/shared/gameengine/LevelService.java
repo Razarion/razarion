@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.enterprise.event.Observes;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,7 +15,7 @@ import java.util.Map;
  * Created by Beat
  * 23.07.2016.
  */
-@ApplicationScoped
+@Singleton
 public class LevelService {
     private final Map<Integer, LevelConfig> levels = new HashMap<>();
     private final List<LevelConfig> orderedLevels = new ArrayList<>();

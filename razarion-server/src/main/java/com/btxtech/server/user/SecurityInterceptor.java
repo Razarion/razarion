@@ -15,10 +15,16 @@ import javax.interceptor.InvocationContext;
 @Interceptor
 @SecurityCheck
 public class SecurityInterceptor {
-    @Inject
+
     private SessionHolder sessionHolder;
-    @Inject
+
     private FilePropertiesService filePropertiesService;
+
+    @Inject
+    public SecurityInterceptor(FilePropertiesService filePropertiesService, SessionHolder sessionHolder) {
+        this.filePropertiesService = filePropertiesService;
+        this.sessionHolder = sessionHolder;
+    }
 
     @AroundInvoke
     public Object checkAuthentication(InvocationContext invocationContext) throws Exception {

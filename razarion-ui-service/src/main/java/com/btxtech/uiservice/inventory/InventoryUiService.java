@@ -27,24 +27,36 @@ import java.util.function.Consumer;
  */
 @JsType
 public class InventoryUiService {
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private GameUiControl gameUiControl;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private ModalDialogManager modalDialogManager;
-    @Inject
+
     private BaseItemPlacerService baseItemPlacerService;
-    @Inject
+
     private BaseItemUiService baseItemUiService;
-    @Inject
+
     private GameEngineControl gameEngineControl;
-    @Inject
+
     private ModalDialogManager dialogManager;
     private List<Integer> inventoryItemIds = new ArrayList<>();
     private List<Integer> inventoryArtifactIds = new ArrayList<>();
+
+    @Inject
+    public InventoryUiService(ModalDialogManager dialogManager, GameEngineControl gameEngineControl, BaseItemUiService baseItemUiService, BaseItemPlacerService baseItemPlacerService, ModalDialogManager modalDialogManager, ExceptionHandler exceptionHandler, GameUiControl gameUiControl, ItemTypeService itemTypeService) {
+        this.dialogManager = dialogManager;
+        this.gameEngineControl = gameEngineControl;
+        this.baseItemUiService = baseItemUiService;
+        this.baseItemPlacerService = baseItemPlacerService;
+        this.modalDialogManager = modalDialogManager;
+        this.exceptionHandler = exceptionHandler;
+        this.gameUiControl = gameUiControl;
+        this.itemTypeService = itemTypeService;
+    }
 
     @Deprecated // Done in angular
     public void provideInventoryInfo(Consumer<InventoryInfo> inventoryInfoConsumer) {

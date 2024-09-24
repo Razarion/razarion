@@ -29,18 +29,28 @@ import java.util.Collections;
  */
 @Ignore
 public class RestServerInventoryServiceTestBase extends IgnoreOldArquillianTest {
-    @Inject
+
     private ServerInventoryService serverInventoryService;
-    @Inject
+
     private InventoryTypeService inventoryTypeService;
-    @Inject
+
     private UserService userService;
-    @Inject
+
     private SessionHolder sessionHolder;
-    @Inject
+
     private ServerGameEngineControl serverGameEngineControl;
-    @Inject
+
     private BaseItemService baseItemService;
+
+    @Inject
+    public RestServerInventoryServiceTestBase(BaseItemService baseItemService, ServerGameEngineControl serverGameEngineControl, SessionHolder sessionHolder, UserService userService, InventoryTypeService inventoryTypeService, ServerInventoryService serverInventoryService) {
+        this.baseItemService = baseItemService;
+        this.serverGameEngineControl = serverGameEngineControl;
+        this.sessionHolder = sessionHolder;
+        this.userService = userService;
+        this.inventoryTypeService = inventoryTypeService;
+        this.serverInventoryService = serverInventoryService;
+    }
 
     @Before
     public void before() throws Exception {

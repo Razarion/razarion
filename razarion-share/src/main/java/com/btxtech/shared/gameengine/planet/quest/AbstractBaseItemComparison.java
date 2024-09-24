@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
 
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
@@ -25,9 +26,14 @@ import java.util.Set;
  * User: beat Date: 12.01.2011 Time: 12:05:40
  */
 public abstract class AbstractBaseItemComparison extends AbstractUpdatingComparison {
-    @Inject
+
     private BotService botService;
     private AbstractConditionProgress abstractConditionTrigger;
+
+    public AbstractBaseItemComparison(GameLogicService gameLogicService, BotService botService) {
+        super(gameLogicService);
+        this.botService = botService;
+    }
 
     protected abstract void privateOnSyncBaseItem(SyncBaseItem syncBaseItem);
 

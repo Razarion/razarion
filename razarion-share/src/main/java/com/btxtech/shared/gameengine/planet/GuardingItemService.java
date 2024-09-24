@@ -18,14 +18,21 @@ import java.util.List;
  */
 @Singleton
 public class GuardingItemService {
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private Provider<CommandService> commandService;
     private final Collection<SyncBaseItem> guardingItems = new ArrayList<>();
     private GameEngineMode gameEngineMode;
+
+    @Inject
+    public GuardingItemService(Provider<com.btxtech.shared.gameengine.planet.CommandService> commandService, ExceptionHandler exceptionHandler, SyncItemContainerServiceImpl syncItemContainerService) {
+        this.commandService = commandService;
+        this.exceptionHandler = exceptionHandler;
+        this.syncItemContainerService = syncItemContainerService;
+    }
 
     public void init(GameEngineMode gameEngineMode) {
         this.gameEngineMode = gameEngineMode;

@@ -14,10 +14,16 @@ import javax.inject.Inject;
  */
 @Dependent
 public class InitWarmWorkerTask extends AbstractStartupTask {
-    @Inject
+
     private GameEngineControl gameEngineControl;
-    @Inject
+
     private GameUiControl gameUiControl;
+
+    @Inject
+    public InitWarmWorkerTask(GameUiControl gameUiControl, GameEngineControl gameEngineControl) {
+        this.gameUiControl = gameUiControl;
+        this.gameEngineControl = gameEngineControl;
+    }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {

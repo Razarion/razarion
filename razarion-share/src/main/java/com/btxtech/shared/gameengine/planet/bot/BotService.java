@@ -28,12 +28,18 @@ import java.util.logging.Logger;
 @Singleton
 public class BotService {
     private final Logger logger = Logger.getLogger(BotService.class.getName());
-    @Inject
+
     private Provider<BotRunner> botRunnerInstance;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private final Collection<BotRunner> botRunners = new ArrayList<>();
     private Collection<BotConfig> botConfigs;
+
+    @Inject
+    public BotService(ExceptionHandler exceptionHandler, Provider<com.btxtech.shared.gameengine.planet.bot.BotRunner> botRunnerInstance) {
+        this.exceptionHandler = exceptionHandler;
+        this.botRunnerInstance = botRunnerInstance;
+    }
 
     public void startBots(Collection<BotConfig> botConfigs) {
         this.botConfigs = botConfigs;

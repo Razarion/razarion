@@ -13,7 +13,7 @@ import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.renderer.ViewField;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -28,18 +28,24 @@ import java.util.function.Consumer;
  * Created by Beat
  * 09.08.2015.
  */
-@ApplicationScoped
+@Singleton
 public class TerrainUiService {
+
     // private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
-    @Inject
     private GameEngineControl gameEngineControl;
-    @Inject
+
     private Provider<UiTerrainTile> uiTerrainTileInstance;
     private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
     private final Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
     private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
     private int tileXCount;
     private int tileYCount;
+
+    @Inject
+    public TerrainUiService(Provider<com.btxtech.uiservice.terrain.UiTerrainTile> uiTerrainTileInstance, GameEngineControl gameEngineControl) {
+        this.uiTerrainTileInstance = uiTerrainTileInstance;
+        this.gameEngineControl = gameEngineControl;
+    }
 
     public void setPlanetConfig(PlanetConfig planetConfig) {
         DecimalPosition planetSize = planetConfig.getSize();

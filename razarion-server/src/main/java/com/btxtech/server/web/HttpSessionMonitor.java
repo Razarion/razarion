@@ -3,7 +3,6 @@ package com.btxtech.server.web;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.server.user.PlayerSession;
-import com.btxtech.server.user.UserService;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -29,8 +28,6 @@ public class HttpSessionMonitor implements HttpSessionListener {
     private TrackerPersistence trackerPersistence;
     @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
-    private UserService userService;
     @Inject
     private SessionService sessionService;
     @Inject

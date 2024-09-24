@@ -35,34 +35,50 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_GAME_UI_CONTEXT
 public class Scene {
     public static final long FADE_DURATION = 2000; // Edit in razarion.css
     private Logger logger = Logger.getLogger(Scene.class.getName());
-    @Inject
+
     private ScreenCover screenCover;
-    @Inject
+
     private BabylonRendererService threeJsRendererService;
-    @Inject
+
     private GameUiControl gameUiControl;
-    @Inject
+
     private QuestCockpitService questCockpitService;
-    @Inject
+
     private BaseItemPlacerService baseItemPlacerService;
-    @Inject
+
     private ModalDialogManager modalDialogManager;
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
-    @Inject
+
     private AudioService audioService;
-    @Inject
+
     private GameEngineControl gameEngineControl;
-    @Inject
+
     private UserUiService userUiService;
-    @Inject
+
     private InGameQuestVisualizationService inGameQuestVisualizationService;
-    @Inject
+
     private ServerQuestProvider serverQuestProvider;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
     private boolean hasCompletionCallback;
     private boolean scrollBouncePrevention = true;
+
+    @Inject
+    public Scene(ServerQuestProvider serverQuestProvider, InGameQuestVisualizationService inGameQuestVisualizationService, UserUiService userUiService, GameEngineControl gameEngineControl, AudioService audioService, SimpleExecutorService simpleExecutorService, ModalDialogManager modalDialogManager, BaseItemPlacerService baseItemPlacerService, QuestCockpitService questCockpitService, GameUiControl gameUiControl, BabylonRendererService threeJsRendererService, ScreenCover screenCover) {
+        this.serverQuestProvider = serverQuestProvider;
+        this.inGameQuestVisualizationService = inGameQuestVisualizationService;
+        this.userUiService = userUiService;
+        this.gameEngineControl = gameEngineControl;
+        this.audioService = audioService;
+        this.simpleExecutorService = simpleExecutorService;
+        this.modalDialogManager = modalDialogManager;
+        this.baseItemPlacerService = baseItemPlacerService;
+        this.questCockpitService = questCockpitService;
+        this.gameUiControl = gameUiControl;
+        this.threeJsRendererService = threeJsRendererService;
+        this.screenCover = screenCover;
+    }
 
     public void init(SceneConfig sceneConfig) {
         this.sceneConfig = sceneConfig;

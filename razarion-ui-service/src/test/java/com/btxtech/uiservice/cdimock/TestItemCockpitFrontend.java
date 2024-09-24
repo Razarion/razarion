@@ -5,13 +5,13 @@ import com.btxtech.uiservice.cockpit.item.OtherItemCockpit;
 import com.btxtech.uiservice.cockpit.item.OwnItemCockpit;
 import com.btxtech.uiservice.cockpit.item.OwnMultipleIteCockpit;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 
 /**
  * Created by Beat
  * 24.01.2017.
  */
-@ApplicationScoped
+@Singleton
 public class TestItemCockpitFrontend implements ItemCockpitFrontend {
     @Override
     public void displayOwnSingleType(int count, OwnItemCockpit ownItemCockpit) {

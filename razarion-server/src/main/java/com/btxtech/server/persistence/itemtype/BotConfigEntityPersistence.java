@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -10,7 +10,7 @@ import javax.persistence.PersistenceContext;
  * Created by Beat
  * 15.08.2015.
  */
-@ApplicationScoped
+@Singleton
 public class BotConfigEntityPersistence {
     @PersistenceContext
     private EntityManager entityManager;

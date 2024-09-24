@@ -12,7 +12,7 @@ import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -27,14 +27,14 @@ import java.util.logging.Logger;
  * Created by Beat
  * 06.01.2017.
  */
-@ApplicationScoped
+@Singleton
 public class BoxUiService {
     private final Logger logger = Logger.getLogger(BoxUiService.class.getName());
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private SelectionHandler selectionHandler;
-    @Inject
+
     private BabylonRendererService babylonRendererService;
     private final Map<Integer, SyncBoxItemSimpleDto> boxes = new HashMap<>();
     private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
@@ -44,6 +44,13 @@ public class BoxUiService {
     private BabylonBoxItem selectedBabylonBoxItem;
     private Integer selectedOutOfViewId;
     private BabylonBoxItem hoverBabylonBoxItem;
+
+    @Inject
+    public BoxUiService(BabylonRendererService babylonRendererService, SelectionHandler selectionHandler, ItemTypeService itemTypeService) {
+        this.babylonRendererService = babylonRendererService;
+        this.selectionHandler = selectionHandler;
+        this.itemTypeService = itemTypeService;
+    }
 
     public void clear() {
         boxes.clear();
@@ -244,7 +251,7 @@ public class BoxUiService {
         }
     }
 
-    public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+    public void onSelectionChanged( SelectionEvent selectionEvent) {
         selectedOutOfViewId = null;
         if (selectedBabylonBoxItem != null) {
             selectedBabylonBoxItem.select(false);

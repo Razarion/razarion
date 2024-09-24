@@ -22,10 +22,16 @@ import java.util.logging.Logger;
 public class CompatibilityCheckerStartupTask extends AbstractStartupTask {
     private static final int RELOAD_DELAY = 2000;
     private static final Logger logger = Logger.getLogger(CompatibilityCheckerStartupTask.class.getName());
-    @Inject
+
     private Caller<ServerMgmtProvider> serverMgmt;
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
+
+    @Inject
+    public CompatibilityCheckerStartupTask(SimpleExecutorService simpleExecutorService, Caller<com.btxtech.shared.rest.ServerMgmtProvider> serverMgmt) {
+        this.simpleExecutorService = simpleExecutorService;
+        this.serverMgmt = serverMgmt;
+    }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {

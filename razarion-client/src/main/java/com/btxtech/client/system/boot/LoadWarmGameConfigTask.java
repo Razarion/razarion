@@ -15,10 +15,16 @@ import javax.inject.Inject;
  * 25.04.2017.
  */
 public class LoadWarmGameConfigTask extends AbstractStartupTask {
-    @Inject
+
     private Caller<GameUiContextController> gameUiControlControllerCaller;
-    @Inject
+
     private GameUiControl gameUiControl;
+
+    @Inject
+    public LoadWarmGameConfigTask(GameUiControl gameUiControl, Caller<com.btxtech.shared.rest.GameUiContextController> gameUiControlControllerCaller) {
+        this.gameUiControl = gameUiControl;
+        this.gameUiControlControllerCaller = gameUiControlControllerCaller;
+    }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {

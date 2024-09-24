@@ -10,7 +10,7 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,18 +21,25 @@ import java.util.List;
  * Created by Beat
  * 10.02.2017.
  */
-@ApplicationScoped
+@Singleton
 public class TrailService {
     private static final long CLEANUP_INTERVAL_MILLIS = 1000;
     public static final long VISIBLE_WRECKAGE_MILLIS = 30 * 1000;
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
-    @Inject
+
     private NativeMatrixFactory nativeMatrixFactory;
     private MapList<BaseItemType, ModelMatrices> wreckageModelMatrices = new MapList<>();
     private Collection<WreckageItem> wreckageItems = new ArrayList<>();
+
+    @Inject
+    public TrailService(NativeMatrixFactory nativeMatrixFactory, SimpleExecutorService simpleExecutorService, ItemTypeService itemTypeService) {
+        this.nativeMatrixFactory = nativeMatrixFactory;
+        this.simpleExecutorService = simpleExecutorService;
+        this.itemTypeService = itemTypeService;
+    }
 
     @PostConstruct
     public void postConstruct() {

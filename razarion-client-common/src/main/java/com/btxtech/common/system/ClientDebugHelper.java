@@ -14,11 +14,17 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ClientDebugHelper implements DebugHelper {
+
     // private Logger logger = Logger.getLogger(ClientDebugHelper.class.getName());
-    @Inject
     private Caller<LoggingProvider> caller;
-    @Inject
+
     private ClientExceptionHandlerImpl exceptionHandler;
+
+    @Inject
+    public ClientDebugHelper(ClientExceptionHandlerImpl exceptionHandler, Caller<com.btxtech.shared.rest.LoggingProvider> caller) {
+        this.exceptionHandler = exceptionHandler;
+        this.caller = caller;
+    }
 
     @Override
     public void debugToDb(String debugMessage) {

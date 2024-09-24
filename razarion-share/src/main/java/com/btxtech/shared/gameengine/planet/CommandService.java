@@ -31,28 +31,42 @@ import java.util.Collection;
  * 18.07.2016.
  */
 @Singleton
-public class CommandService { // Is part of the Base service
+public class CommandService {
+    // Is part of the Base service
     // private Logger logger = Logger.getLogger(CommandService.class.getName());
-    @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private PathingService pathingService;
-    @Inject
+
     private GameLogicService gameLogicService;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private ResourceService resourceService;
-    @Inject
+
     private BoxService boxService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private PlanetService planetService;
-    @Inject
+
     private GuardingItemService guardingItemService;
+
+    @Inject
+    public CommandService(GuardingItemService guardingItemService, PlanetService planetService, ItemTypeService itemTypeService, SyncItemContainerServiceImpl syncItemContainerService, BoxService boxService, ResourceService resourceService, BaseItemService baseItemService, GameLogicService gameLogicService, PathingService pathingService, ExceptionHandler exceptionHandler) {
+        this.guardingItemService = guardingItemService;
+        this.planetService = planetService;
+        this.itemTypeService = itemTypeService;
+        this.syncItemContainerService = syncItemContainerService;
+        this.boxService = boxService;
+        this.resourceService = resourceService;
+        this.baseItemService = baseItemService;
+        this.gameLogicService = gameLogicService;
+        this.pathingService = pathingService;
+        this.exceptionHandler = exceptionHandler;
+    }
 
     public void move(Collection<Integer> syncBaseItemIds, DecimalPosition destination) {
         for (int syncBaseItemId : syncBaseItemIds) {

@@ -41,20 +41,29 @@ import java.util.stream.Collectors;
 @Dependent
 public class SyncItemContainer extends SyncBaseAbility {
     public static final TerrainType DEFAULT_UNLOAD_TERRAIN_TYPE = TerrainType.LAND;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private GameLogicService gameLogicService;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private SyncService syncService;
     private ItemContainerType itemContainerType;
     private List<SyncBaseItem> containedItems = new ArrayList<>();
     private DecimalPosition unloadPos;
     private double maxContainingRadius;
+
+    @Inject
+    public SyncItemContainer(SyncService syncService, BaseItemService baseItemService, GameLogicService gameLogicService, TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService) {
+        this.syncService = syncService;
+        this.baseItemService = baseItemService;
+        this.gameLogicService = gameLogicService;
+        this.terrainService = terrainService;
+        this.syncItemContainerService = syncItemContainerService;
+    }
 
     public void init(ItemContainerType itemContainerType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);

@@ -25,12 +25,18 @@ import java.util.List;
  */
 @Ignore
 public class RestServerGameEnginePersistenceTestBase extends IgnoreOldArquillianTest {
-    @Inject
+
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
-    @Inject
+
     private PlanetCrudPersistence planetCrudPersistence;
-    @PersistenceContext
+
     private EntityManager entityManager;
+
+    @Inject
+    public RestServerGameEnginePersistenceTestBase(PlanetCrudPersistence planetCrudPersistence, ServerGameEngineCrudPersistence serverGameEngineCrudPersistence) {
+        this.planetCrudPersistence = planetCrudPersistence;
+        this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
+    }
 
     @Before
     public void before() throws Exception {

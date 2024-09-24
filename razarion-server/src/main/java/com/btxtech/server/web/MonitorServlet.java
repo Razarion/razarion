@@ -13,8 +13,13 @@ import javax.servlet.http.HttpServlet;
  */
 @WebServlet(urlPatterns = "/ignore", loadOnStartup = 1)
 public class MonitorServlet extends HttpServlet{
-    @Inject
+
     private ServerMgmt serverMgmt;
+
+    @Inject
+    public MonitorServlet(ServerMgmt serverMgmt) {
+        this.serverMgmt = serverMgmt;
+    }
 
     @Override
     public void destroy() {

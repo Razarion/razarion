@@ -16,10 +16,16 @@ import java.util.Locale;
  */
 @Ignore
 public class PlanetCrudPersistenceTestRest extends IgnoreOldArquillianTest {
-    @Inject
+
     private PlanetCrudPersistence planetCrudPersistence;
-    @Inject
+
     private GameUiContextCrudPersistence gameUiContextCrudPersistence;
+
+    @Inject
+    public PlanetCrudPersistenceTestRest(GameUiContextCrudPersistence gameUiContextCrudPersistence, PlanetCrudPersistence planetCrudPersistence) {
+        this.gameUiContextCrudPersistence = gameUiContextCrudPersistence;
+        this.planetCrudPersistence = planetCrudPersistence;
+    }
 
     @Test
     public void loadStaticGameConfig() throws Exception {

@@ -5,7 +5,12 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
+import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
+import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.inventory.InventoryUiService;
+import com.btxtech.uiservice.system.boot.Boot;
+import com.btxtech.uiservice.user.UserUiService;
 import elemental2.dom.Event;
 import elemental2.dom.MessageEvent;
 
@@ -18,12 +23,20 @@ import javax.inject.Inject;
  */
 @Dependent
 public class ClientServerSystemConnection extends AbstractServerSystemConnection {
-    @Inject
+
     private LifecycleService lifecycleService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private WebSocketWrapper webSocketWrapper;
+
+    @Inject
+    public ClientServerSystemConnection(WebSocketWrapper webSocketWrapper, ExceptionHandler exceptionHandler, LifecycleService lifecycleService, Boot boot, ChatUiService chatUiService, InventoryUiService inventoryUiService, UserUiService userUiService, GameUiControl gameUiControl) {
+        super(boot, chatUiService, inventoryUiService, userUiService, gameUiControl);
+        this.webSocketWrapper = webSocketWrapper;
+        this.exceptionHandler = exceptionHandler;
+        this.lifecycleService = lifecycleService;
+    }
 
     @Override
     public void init() {

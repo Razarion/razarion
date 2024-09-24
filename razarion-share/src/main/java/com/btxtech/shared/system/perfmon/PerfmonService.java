@@ -6,7 +6,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,14 +21,14 @@ import java.util.logging.Logger;
  * Date: 26.07.12
  * Time: 14:45
  */
-@ApplicationScoped
+@Singleton
 public class PerfmonService {
     public static final int COUNT = 100;
     public static final long DUMP_DELAY = 2000;
     private Logger logger = Logger.getLogger(PerfmonService.class.getName());
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private Map<PerfmonEnum, Long> enterTimes = new HashMap<>();
     private Collection<SampleEntry> sampleEntries = new ArrayList<>();
@@ -38,6 +38,12 @@ public class PerfmonService {
     private List<TerrainTileStatistic> terrainTileStatistics = new ArrayList<>();
     private String gameSessionUuid;
     private long samplingPeriodStart;
+
+    @Inject
+    public PerfmonService(ExceptionHandler exceptionHandler, SimpleExecutorService simpleExecutorService) {
+        this.exceptionHandler = exceptionHandler;
+        this.simpleExecutorService = simpleExecutorService;
+    }
 
     public void start(String gameSessionUuid) {
         this.gameSessionUuid = gameSessionUuid;

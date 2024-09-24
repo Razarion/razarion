@@ -22,16 +22,24 @@ import javax.inject.Inject;
  * 25.04.2017.
  */
 public abstract class AbstractServerSystemConnection {
-    @Inject
+
     private GameUiControl gameUiControl;
-    @Inject
+
     private UserUiService userUiService;
-    @Inject
+
     private InventoryUiService inventoryUiService;
-    @Inject
+
     private ChatUiService chatUiService;
-    @Inject
+
     private Boot boot;
+
+    public AbstractServerSystemConnection(Boot boot, ChatUiService chatUiService, InventoryUiService inventoryUiService, UserUiService userUiService, GameUiControl gameUiControl) {
+        this.boot = boot;
+        this.chatUiService = chatUiService;
+        this.inventoryUiService = inventoryUiService;
+        this.userUiService = userUiService;
+        this.gameUiControl = gameUiControl;
+    }
 
     protected abstract void sendToServer(String text);
 

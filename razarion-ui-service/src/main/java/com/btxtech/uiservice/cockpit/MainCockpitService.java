@@ -6,7 +6,7 @@ import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.uiservice.control.GameUiControl;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.function.Function;
 
@@ -14,12 +14,17 @@ import java.util.function.Function;
  * Created by Beat
  * 16.11.2016.
  */
-@ApplicationScoped
+@Singleton
 public class MainCockpitService {
-    @Inject
+
     private LevelService levelService;
     private MainCockpit mainCockpit;
     private Function<Integer, Rectangle> inventoryPositionProvider;
+
+    @Inject
+    public MainCockpitService(LevelService levelService) {
+        this.levelService = levelService;
+    }
 
     public void init(MainCockpit sideCockpit) {
         this.mainCockpit = sideCockpit;

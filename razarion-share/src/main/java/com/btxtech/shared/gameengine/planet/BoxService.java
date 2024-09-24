@@ -35,22 +35,31 @@ import java.util.stream.Collectors;
 @Singleton
 public class BoxService {
     private static final long TICK_TO_SLEEP_MS = 10 * PlanetService.TICKS_PER_SECONDS;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private GameLogicService gameLogicService;
-    @Inject
+
     private InventoryTypeService inventoryTypeService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
     private GameEngineMode gameEngineMode;
     private final Map<Integer, SyncBoxItem> boxes = new HashMap<>();
     private Collection<BoxRegion> boxRegion;
     private long ticksSinceLastCheck;
 
-    public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
+    @Inject
+    public BoxService(ExceptionHandler exceptionHandler, InventoryTypeService inventoryTypeService, GameLogicService gameLogicService, ItemTypeService itemTypeService, SyncItemContainerServiceImpl syncItemContainerService) {
+        this.exceptionHandler = exceptionHandler;
+        this.inventoryTypeService = inventoryTypeService;
+        this.gameLogicService = gameLogicService;
+        this.itemTypeService = itemTypeService;
+        this.syncItemContainerService = syncItemContainerService;
+    }
+
+    public void onPlanetActivation( PlanetActivationEvent planetActivationEvent) {
         switch (planetActivationEvent.getType()) {
             case INITIALIZE:
                 setup(planetActivationEvent);

@@ -19,9 +19,9 @@ import java.util.logging.Logger;
 public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
     private static final int MAX_OVERRUN_COUNT = 100;
     private Logger logger = Logger.getLogger(ClientSimpleScheduledFutureImpl.class.getName());
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private PerfmonService perfmonService;
     private Double timerId;
     private double milliSDelay;
@@ -31,6 +31,12 @@ public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
     private double expected;
     private DomGlobal.SetTimeoutCallbackFn callback;
     private int overrunCount;
+
+    @Inject
+    public ClientSimpleScheduledFutureImpl(PerfmonService perfmonService, ExceptionHandler exceptionHandler) {
+        this.perfmonService = perfmonService;
+        this.exceptionHandler = exceptionHandler;
+    }
 
     public void init(double milliSDelay, boolean repeating, PerfmonEnum perfmonEnum, Runnable runnable) {
         this.milliSDelay = milliSDelay;

@@ -16,7 +16,7 @@ import java.util.Set;
  */
 @Dependent
 public class BaseEnergy {
-    @Inject
+
     private GameLogicService gameLogicService;
     private int consuming;
     private int generating;
@@ -24,6 +24,11 @@ public class BaseEnergy {
     private final Set<SyncConsumer> syncConsumers = new HashSet<>();
     private final Object syncObject = new Object();
     private PlayerBase base;
+
+    @Inject
+    public BaseEnergy(GameLogicService gameLogicService) {
+        this.gameLogicService = gameLogicService;
+    }
 
     public void setBase(PlayerBase base) {
         this.base = base;

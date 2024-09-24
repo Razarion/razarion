@@ -48,47 +48,70 @@ public class LifecycleService {
     private static final int WATCHDOG_DELAY = 5000;
     private static final int RESTART_DELAY = 3000;
     private final Logger logger = Logger.getLogger(LifecycleService.class.getName());
-    @Inject
+
     private Boot boot;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private ClientTrackerService clientTrackerService;
-    @Inject
+
     private ClientPerformanceTrackerService clientPerformanceTrackerService;
-    @Inject
+
     private PerfmonService perfmonService;
-    @Inject
+
     private GameEngineControl gameEngineControl;
-    @Inject
+
     private BaseItemUiService baseItemUiService;
-    @Inject
+
     private BoxUiService boxUiService;
-    @Inject
+
     private ResourceUiService resourceUiService;
-    @Inject
+
     private TrailService trailService;
-    @Inject
+
     private TerrainUiService terrainUiService;
-    @Inject
+
     private AudioService audioService;
-    @Inject
+
     private Provider<ScreenCover> screenCover;
-    @Inject
+
     private GameUiControl gameUiControl;
-    @Inject
+
     private SelectionHandler selectionHandler;
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
-    @Inject
+
     private Caller<ServerMgmtProvider> serverMgmt;
-    @Inject
+
     private UserUiService userUiService;
-    @Inject
+
     private GwtAngularService gwtAngularService;
     private Consumer<ServerState> serverRestartCallback;
     private SimpleScheduledFuture simpleScheduledFuture;
     private boolean beforeUnload;
+
+    @Inject
+    public LifecycleService(GwtAngularService gwtAngularService, UserUiService userUiService, Caller<com.btxtech.shared.rest.ServerMgmtProvider> serverMgmt, SimpleExecutorService simpleExecutorService, SelectionHandler selectionHandler, GameUiControl gameUiControl, Provider<com.btxtech.uiservice.cockpit.ScreenCover> screenCover, AudioService audioService, TerrainUiService terrainUiService, TrailService trailService, ResourceUiService resourceUiService, BoxUiService boxUiService, BaseItemUiService baseItemUiService, GameEngineControl gameEngineControl, PerfmonService perfmonService, ClientPerformanceTrackerService clientPerformanceTrackerService, ClientTrackerService clientTrackerService, ExceptionHandler exceptionHandler, Boot boot) {
+        this.gwtAngularService = gwtAngularService;
+        this.userUiService = userUiService;
+        this.serverMgmt = serverMgmt;
+        this.simpleExecutorService = simpleExecutorService;
+        this.selectionHandler = selectionHandler;
+        this.gameUiControl = gameUiControl;
+        this.screenCover = screenCover;
+        this.audioService = audioService;
+        this.terrainUiService = terrainUiService;
+        this.trailService = trailService;
+        this.resourceUiService = resourceUiService;
+        this.boxUiService = boxUiService;
+        this.baseItemUiService = baseItemUiService;
+        this.gameEngineControl = gameEngineControl;
+        this.perfmonService = perfmonService;
+        this.clientPerformanceTrackerService = clientPerformanceTrackerService;
+        this.clientTrackerService = clientTrackerService;
+        this.exceptionHandler = exceptionHandler;
+        this.boot = boot;
+    }
 
     @PostConstruct
     public void postConstruct() {

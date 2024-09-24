@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  * 23.09.2016.
  */
 public class SimpleTestEnvironment {
-    private final static ExceptionHandler exceptionHandler = new ExceptionHandler() {
+    private final static ExceptionHandler exceptionHandler = new ExceptionHandler(null) {
         @Override
         protected void handleExceptionInternal(String message, Throwable t) {
             System.out.println("ExceptionHandler from com.btxtech.share.SimpleTestEnvironment: " + message);

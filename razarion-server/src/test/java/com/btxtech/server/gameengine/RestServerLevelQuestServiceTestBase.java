@@ -44,20 +44,30 @@ import java.util.concurrent.CountDownLatch;
  */
 @Ignore
 public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest {
-    @Inject
+
     private UserService userService;
-    @Inject
+
     private SessionHolder sessionHolder;
-    @Inject
+
     private ServerLevelQuestService serverLevelQuestService;
-    @Inject
+
     private GameUiContextCrudPersistence gameUiContextCrudPersistence;
-    @Inject
+
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
-    @Inject
+
     private ClientSystemConnectionServiceTestHelper systemConnectionService;
-    @Resource(name = "DefaultManagedScheduledExecutorService")
+
     private ManagedScheduledExecutorService scheduleExecutor;
+
+    @Inject
+    public RestServerLevelQuestServiceTestBase(ClientSystemConnectionServiceTestHelper systemConnectionService, ServerGameEngineCrudPersistence serverGameEngineCrudPersistence, GameUiContextCrudPersistence gameUiContextCrudPersistence, ServerLevelQuestService serverLevelQuestService, SessionHolder sessionHolder, UserService userService) {
+        this.systemConnectionService = systemConnectionService;
+        this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
+        this.gameUiContextCrudPersistence = gameUiContextCrudPersistence;
+        this.serverLevelQuestService = serverLevelQuestService;
+        this.sessionHolder = sessionHolder;
+        this.userService = userService;
+    }
 
     @Before
     public void before() throws Exception {

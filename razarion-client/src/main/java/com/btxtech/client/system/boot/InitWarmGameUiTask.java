@@ -13,8 +13,13 @@ import javax.inject.Inject;
  */
 @Dependent
 public class InitWarmGameUiTask extends AbstractStartupTask {
-    @Inject
+
     private GameUiControl gameUiControl;
+
+    @Inject
+    public InitWarmGameUiTask(GameUiControl gameUiControl) {
+        this.gameUiControl = gameUiControl;
+    }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {

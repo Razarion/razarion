@@ -33,18 +33,26 @@ import java.util.Set;
  */
 @Dependent
 public class ResourceRegion {
+
     // private Logger logger = Logger.getLogger(ResourceRegion.class.getName());
-    @Inject
     private ItemTypeService itemTypeService;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private ResourceService resourceService;
     private final Set<Integer> syncResourceItems = new HashSet<>();
     private ResourceRegionConfig resourceRegionConfig;
     private ResourceItemType resourceItemType;
+
+    @Inject
+    public ResourceRegion(ResourceService resourceService, SyncItemContainerServiceImpl syncItemContainerService, ExceptionHandler exceptionHandler, ItemTypeService itemTypeService) {
+        this.resourceService = resourceService;
+        this.syncItemContainerService = syncItemContainerService;
+        this.exceptionHandler = exceptionHandler;
+        this.itemTypeService = itemTypeService;
+    }
 
     public void init(ResourceRegionConfig resourceRegionConfig) {
         this.resourceRegionConfig = resourceRegionConfig;

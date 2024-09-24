@@ -42,22 +42,31 @@ import javax.inject.Inject;
 public class SyncFactory extends SyncBaseAbility {
     private static final double GIVE_UP_RELAY_MIN = Math.toRadians(5);
     private static final double RELAY_POINT_DISTANCE = 2;
+
     // private Logger log = Logger.getLogger(SyncFactory.class.getName());
-    @Inject
     private GameLogicService gameLogicService;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private CommandService commandService;
     private FactoryType factoryType;
     private BaseItemType toBeBuiltType;
     private double buildup;
     private DecimalPosition spawnPoint;
     private DecimalPosition rallyPoint;
+
+    @Inject
+    public SyncFactory(CommandService commandService, TerrainService terrainService, ItemTypeService itemTypeService, BaseItemService baseItemService, GameLogicService gameLogicService) {
+        this.commandService = commandService;
+        this.terrainService = terrainService;
+        this.itemTypeService = itemTypeService;
+        this.baseItemService = baseItemService;
+        this.gameLogicService = gameLogicService;
+    }
 
     public void init(FactoryType factoryType, SyncBaseItem syncBaseItem) throws NoSuchItemTypeException {
         super.init(syncBaseItem);

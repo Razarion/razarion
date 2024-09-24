@@ -41,24 +41,36 @@ import java.util.stream.Collectors;
  */
 @Ignore
 public class UserServiceTestRest extends IgnoreOldArquillianTest {
-    @Inject
+
     private Logger logger;
-    @Inject
+
     private UserService userService;
-    @Inject
+
     private SessionHolder sessionHolder;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private ServerLevelQuestService serverLevelQuestService;
-    @Inject
+
     private ClientGameConnectionServiceTestHelper clientGameConnectionServiceTestHelper;
-    @Resource(name = "DefaultManagedScheduledExecutorService")
+
     private ManagedScheduledExecutorService scheduleExecutor;
-    @Inject
+
     private HttpSession session;
-    @Inject
+
     private ServerUnlockService serverUnlockService;
+
+    @Inject
+    public UserServiceTestRest(ServerUnlockService serverUnlockService, HttpSession session, ClientGameConnectionServiceTestHelper clientGameConnectionServiceTestHelper, ServerLevelQuestService serverLevelQuestService, BaseItemService baseItemService, SessionHolder sessionHolder, UserService userService, Logger logger) {
+        this.serverUnlockService = serverUnlockService;
+        this.session = session;
+        this.clientGameConnectionServiceTestHelper = clientGameConnectionServiceTestHelper;
+        this.serverLevelQuestService = serverLevelQuestService;
+        this.baseItemService = baseItemService;
+        this.sessionHolder = sessionHolder;
+        this.userService = userService;
+        this.logger = logger;
+    }
 
     @Test
     public void registeredUser() throws Exception {
@@ -118,7 +130,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
         setupPlanetWithSlopes();
 
         runInTransaction(entityManager -> {
-                    UserEntity existingUser = new UserEntity();
+            UserEntity existingUser = new UserEntity();
                     existingUser.setName("Existing User");
                     entityManager.persist(existingUser);
                 }
@@ -273,7 +285,7 @@ public class UserServiceTestRest extends IgnoreOldArquillianTest {
         // Prepare
         SingleHolder<Integer> holder = new SingleHolder<>();
         runInTransaction(entityManager -> {
-                    UserEntity existingUser = new UserEntity();
+            UserEntity existingUser = new UserEntity();
                     existingUser.fromFacebookUserLoginInfo("0123456789", Locale.ENGLISH);
                     existingUser.setXp(123);
                     existingUser.setName("gegel");

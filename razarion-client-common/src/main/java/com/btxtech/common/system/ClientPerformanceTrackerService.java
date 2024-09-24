@@ -8,7 +8,7 @@ import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 import com.btxtech.client.Caller;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.logging.Logger;
@@ -17,19 +17,27 @@ import java.util.logging.Logger;
  * Created by Beat
  * 27.03.2017.
  */
-@ApplicationScoped
+@Singleton
 public class ClientPerformanceTrackerService {
     private static final long SEND_SERVER_INTERVAL = 10000;
     private Logger logger = Logger.getLogger(ClientPerformanceTrackerService.class.getName());
-    @Inject
+
     private Caller<TrackerProvider> providerCaller;
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
-    @Inject
+
     private PerfmonService perfmonService;
-    @Inject
+
     private ClientExceptionHandlerImpl exceptionHandler;
     private SimpleScheduledFuture simpleScheduledFuture;
+
+    @Inject
+    public ClientPerformanceTrackerService(ClientExceptionHandlerImpl exceptionHandler, PerfmonService perfmonService, SimpleExecutorService simpleExecutorService, Caller<com.btxtech.shared.rest.TrackerProvider> providerCaller) {
+        this.exceptionHandler = exceptionHandler;
+        this.perfmonService = perfmonService;
+        this.simpleExecutorService = simpleExecutorService;
+        this.providerCaller = providerCaller;
+    }
 
     public void start() {
 //    TODO   if (simpleScheduledFuture != null) {

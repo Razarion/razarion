@@ -8,21 +8,28 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.uiservice.Colors;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 13.02.2017.
  */
-@ApplicationScoped
+@Singleton
 public class ItemUiService {
-    @Inject
+
     private BaseItemUiService baseItemUiService;
-    @Inject
+
     private ResourceUiService resourceUiService;
-    @Inject
+
     private BoxUiService boxUiService;
+
+    @Inject
+    public ItemUiService(BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService) {
+        this.boxUiService = boxUiService;
+        this.resourceUiService = resourceUiService;
+        this.baseItemUiService = baseItemUiService;
+    }
 
     public SyncItemMonitor monitorSyncItem(SyncItemSimpleDto syncItem) {
         if (syncItem instanceof SyncBoxItemSimpleDto) {

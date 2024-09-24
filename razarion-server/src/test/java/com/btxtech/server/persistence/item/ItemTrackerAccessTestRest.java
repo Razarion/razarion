@@ -17,8 +17,13 @@ import java.util.List;
  */
 @Ignore
 public class ItemTrackerAccessTestRest extends IgnoreOldArquillianTest {
-    @Inject
+
     private ItemTrackerAccess itemTrackerAccess;
+
+    @Inject
+    public ItemTrackerAccessTestRest(ItemTrackerAccess itemTrackerAccess) {
+        this.itemTrackerAccess = itemTrackerAccess;
+    }
 
     @Before
     public void before() throws Exception {

@@ -53,36 +53,52 @@ import java.util.function.Consumer;
  * 02.01.2017.
  */
 public abstract class GameEngineControl {
+
     // private Logger logger = Logger.getLogger(GameEngineControl.class.getName());
-    @Inject
     private BaseItemUiService baseItemUiService;
-    @Inject
+
     private ResourceUiService resourceUiService;
-    @Inject
+
     private BoxUiService boxUiService;
-    @Inject
+
     private AudioService audioService;
-    @Inject
+
     private GameUiControl gameUiControl;
-    @Inject
+
     private SelectionHandler selectionHandler;
-    @Inject
+
     private UserUiService userUiService;
-    @Inject
+
     private InventoryUiService inventoryUiService;
-    @Inject
+
     private TerrainUiService terrainUiService;
-    @Inject
+
     private Boot boot;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private PerfmonService perfmonService;
-    @Inject
+
     private Provider<InputService> inputServices;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
     private Runnable stopCallback;
+
+    public GameEngineControl(Provider<com.btxtech.uiservice.terrain.InputService> inputServices, PerfmonService perfmonService, ExceptionHandler exceptionHandler, Boot boot, TerrainUiService terrainUiService, InventoryUiService inventoryUiService, UserUiService userUiService, SelectionHandler selectionHandler, GameUiControl gameUiControl, AudioService audioService, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService) {
+        this.inputServices = inputServices;
+        this.perfmonService = perfmonService;
+        this.exceptionHandler = exceptionHandler;
+        this.boot = boot;
+        this.terrainUiService = terrainUiService;
+        this.inventoryUiService = inventoryUiService;
+        this.userUiService = userUiService;
+        this.selectionHandler = selectionHandler;
+        this.gameUiControl = gameUiControl;
+        this.audioService = audioService;
+        this.boxUiService = boxUiService;
+        this.resourceUiService = resourceUiService;
+        this.baseItemUiService = baseItemUiService;
+    }
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 

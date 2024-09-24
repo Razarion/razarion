@@ -28,12 +28,18 @@ public abstract class Boot {
     private AbstractStartupTask waitingTask;
     private boolean failed;
     private String gameSessionUuid;
-    @Inject
+
     private Provider<AbstractStartupTask> taskInstance;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private AlarmService alarmService;
+
+    public Boot(AlarmService alarmService, ExceptionHandler exceptionHandler, Provider<com.btxtech.uiservice.system.boot.AbstractStartupTask> taskInstance) {
+        this.alarmService = alarmService;
+        this.exceptionHandler = exceptionHandler;
+        this.taskInstance = taskInstance;
+    }
 
     protected abstract StartupSeq getWarm();
 

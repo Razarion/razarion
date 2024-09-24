@@ -1,6 +1,6 @@
 package com.btxtech.shared.system.alarm;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Date;

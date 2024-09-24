@@ -3,7 +3,7 @@ package com.btxtech.uiservice.itemplacer;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.inject.Provider;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -14,14 +14,19 @@ import java.util.function.Consumer;
  * Created by Beat
  * 30.10.2016.
  */
-@ApplicationScoped
+@Singleton
 public class BaseItemPlacerService {
-    @Inject
+
     private Provider<BaseItemPlacer> instance;
     private BaseItemPlacer baseItemPlacer;
     private BaseItemPlacerPresenter baseItemPlacerPresenter;
     private Consumer<Collection<DecimalPosition>> executionCallback;
     private final Collection<BaseItemPlacerListener> listeners = new ArrayList<>();
+
+    @Inject
+    public BaseItemPlacerService(Provider<com.btxtech.uiservice.itemplacer.BaseItemPlacer> instance) {
+        this.instance = instance;
+    }
 
     public void init(BaseItemPlacerPresenter baseItemPlacerPresenter) {
         this.baseItemPlacerPresenter = baseItemPlacerPresenter;

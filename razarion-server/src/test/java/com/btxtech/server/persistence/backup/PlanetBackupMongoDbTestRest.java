@@ -19,8 +19,13 @@ import java.util.List;
  */
 @Ignore
 public class PlanetBackupMongoDbTestRest extends IgnoreOldArquillianTest {
-    @Inject
+
     private PlanetBackupMongoDb planetBackupMongoDb;
+
+    @Inject
+    public PlanetBackupMongoDbTestRest(PlanetBackupMongoDb planetBackupMongoDb) {
+        this.planetBackupMongoDb = planetBackupMongoDb;
+    }
 
     @Before
     public void before() throws Exception {

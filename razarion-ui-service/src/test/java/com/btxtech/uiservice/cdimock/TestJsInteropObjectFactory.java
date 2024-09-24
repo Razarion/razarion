@@ -5,14 +5,14 @@ import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import java.util.List;
 
 /**
  * Created by Beat
  * 01.04.2017.
  */
-@ApplicationScoped
+@Singleton
 public class TestJsInteropObjectFactory implements JsInteropObjectFactory {
     @Override
     public Float32ArrayEmu newFloat32Array4Vertices(List<Vertex> vertices) {

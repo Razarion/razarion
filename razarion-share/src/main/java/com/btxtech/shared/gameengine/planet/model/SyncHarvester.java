@@ -32,15 +32,22 @@ import javax.inject.Inject;
  */
 @Dependent
 public class SyncHarvester extends SyncBaseAbility {
-    @Inject
+
     private GameLogicService gameLogicService;
-    @Inject
+
     private ResourceService resourceService;
-    @Inject
+
     private BaseItemService baseItemService;
     private HarvesterType harvesterType;
     private SyncResourceItem resource;
     private boolean harvesting;
+
+    @Inject
+    public SyncHarvester(BaseItemService baseItemService, ResourceService resourceService, GameLogicService gameLogicService) {
+        this.baseItemService = baseItemService;
+        this.resourceService = resourceService;
+        this.gameLogicService = gameLogicService;
+    }
 
     public void init(HarvesterType harvesterType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);

@@ -14,10 +14,16 @@ import javax.inject.Inject;
  */
 @Dependent
 public class InitRendererTask extends AbstractStartupTask {
-    @Inject
+
     private BabylonRendererService threeJsRendererService;
-    @Inject
+
     private AssetService assetService;
+
+    @Inject
+    public InitRendererTask(AssetService assetService, BabylonRendererService threeJsRendererService) {
+        this.assetService = assetService;
+        this.threeJsRendererService = threeJsRendererService;
+    }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {

@@ -26,11 +26,15 @@ import java.util.Date;
  */
 public abstract class WorkerTrackerHandler {
     private static final int DETAILED_TRACKING_DELAY = 1000 * 5;
-    @Inject
+
     private SimpleExecutorService simpleExecutorService;
     private TrackingContainer trackingContainer;
     private String gameSessionUuid;
     private SimpleScheduledFuture simpleScheduledFuture;
+
+    public WorkerTrackerHandler(SimpleExecutorService simpleExecutorService) {
+        this.simpleExecutorService = simpleExecutorService;
+    }
 
     protected abstract void sendToServer(TrackingContainer tmpTrackingContainer);
 

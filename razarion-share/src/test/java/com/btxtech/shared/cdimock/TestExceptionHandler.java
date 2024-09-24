@@ -1,8 +1,10 @@
 package com.btxtech.shared.cdimock;
 
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.alarm.AlarmService;
 import org.junit.Assert;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,11 @@ import java.util.Objects;
  */
 @Singleton
 public class TestExceptionHandler extends ExceptionHandler {
+    @Inject
+    public TestExceptionHandler(AlarmService alarmService) {
+        super(alarmService);
+    }
+
     public static class TestExceptionHandlerEntry {
         private Throwable throwable;
         private String message;

@@ -45,23 +45,33 @@ import javax.inject.Inject;
  */
 @Dependent
 public class SyncBuilder extends SyncBaseAbility {
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private GameLogicService gameLogicService;
-    @Inject
+
     private BaseItemService baseItemService;
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private SyncService syncService;
     private BuilderType builderType;
     private SyncBaseItem currentBuildup;
     private DecimalPosition toBeBuildPosition;
     private BaseItemType toBeBuiltType;
     private boolean building;
+
+    @Inject
+    public SyncBuilder(SyncService syncService, SyncItemContainerServiceImpl syncItemContainerService, TerrainService terrainService, BaseItemService baseItemService, GameLogicService gameLogicService, ItemTypeService itemTypeService) {
+        this.syncService = syncService;
+        this.syncItemContainerService = syncItemContainerService;
+        this.terrainService = terrainService;
+        this.baseItemService = baseItemService;
+        this.gameLogicService = gameLogicService;
+        this.itemTypeService = itemTypeService;
+    }
 
     public void init(BuilderType builderType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);

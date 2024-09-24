@@ -12,8 +12,13 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ClientGameConnectionServiceTestHelper {
-    @Inject
+
     private ClientGameConnectionService clientGameConnectionService;
+
+    @Inject
+    public ClientGameConnectionServiceTestHelper(ClientGameConnectionService clientGameConnectionService) {
+        this.clientGameConnectionService = clientGameConnectionService;
+    }
 
     public TestClientGameConnection connectClient(PlayerSession playerSession) {
         TestClientGameConnection testClientGameConnection = new TestClientGameConnection(playerSession);

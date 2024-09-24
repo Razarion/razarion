@@ -15,9 +15,14 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class WeldDisplay extends Application {
-    @Inject
+
     private WeldTestController gameEngineMonitorController;
     private static WeldDisplay uglyFxHackThis;
+
+    @Inject
+    public WeldDisplay(WeldTestController gameEngineMonitorController) {
+        this.gameEngineMonitorController = gameEngineMonitorController;
+    }
 
     public void show(Object[] userObject) {
         uglyFxHackThis = this;

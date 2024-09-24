@@ -38,61 +38,61 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.toNode;
  */
 @Singleton
 public class WeldTestController implements Initializable {
-    @Inject
+
     private WeldTestRenderer weldTestRenderer;
-    @Inject
+
     private PlanetService planetService;
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private Provider<ScenarioPlaybackController> instance;
-    @FXML
+
     private AnchorPane anchorPanel;
-    @FXML
+
     private Canvas canvas;
-    @FXML
+
     private Slider zoomSlider;
-    @FXML
+
     private TextField scaleField;
-    @FXML
+
     private TextField mouseLabel;
-    @FXML
+
     private TextField zMinField;
-    @FXML
+
     private TextField zMaxField;
-    @FXML
+
     private CheckBox terrainTileWaterCheck;
-    @FXML
+
     private CheckBox terrainTileGroundCheck;
-    @FXML
+
     private CheckBox terrainTileSlopeCheck;
-    @FXML
+
     private CheckBox terrainTileHeightCheck;
-    @FXML
+
     private CheckBox terrainTileTerrainObjectCheck;
-    @FXML
+
     private CheckBox terrainTileTerrainTypeCheck;
-    @FXML
+
     private CheckBox shapeAccessCheck;
-    @FXML
+
     private CheckBox shapeTerrainTypeCheck;
-    @FXML
+
     private CheckBox shapeTerrainHeightCheck;
-    @FXML
+
     private CheckBox shapeFractionalSlopeCheck;
-    @FXML
+
     private CheckBox shapeObstaclesCheck;
-    @FXML
+
     private CheckBox groundSlopeConnectionsCheck;
-    @FXML
+
     private CheckBox shapeWaterCheck;
-    @FXML
+
     private CheckBox shapeTerrainObjectCheck;
-    @FXML
+
     private CheckBox syncItemsCheck;
-    @FXML
+
     private AnchorPane gameEnginePlaybackContainer;
-    @FXML
+
     private Label tickCountLabel;
     private DecimalPosition mousePosition;
     private Object[] userObjects;
@@ -102,6 +102,14 @@ public class WeldTestController implements Initializable {
     private int tickCount;
     private List<DecimalPosition> polygon;
     private List<DecimalPosition> positions;
+
+    @Inject
+    public WeldTestController(Provider<com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController> instance, TerrainService terrainService, PlanetService planetService, WeldTestRenderer weldTestRenderer) {
+        this.instance = instance;
+        this.terrainService = terrainService;
+        this.planetService = planetService;
+        this.weldTestRenderer = weldTestRenderer;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

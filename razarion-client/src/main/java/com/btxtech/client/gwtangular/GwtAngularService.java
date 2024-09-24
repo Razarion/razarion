@@ -24,47 +24,68 @@ import elemental2.dom.DomGlobal;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-@ApplicationScoped
+@Singleton
 public class GwtAngularService {
-    @Inject
+
     private GameUiControl gameUiControl;
-    @Inject
+
     private EditorFrontendProvider editorFrontendProvider;
-    @Inject
+
     private MainCockpitService cockpitService;
-    @Inject
+
     private ItemCockpitService itemCockpitService;
-    @Inject
+
     private QuestCockpitService questCockpitService;
-    @Inject
+
     private BaseItemPlacerService baseItemPlacerService;
-    @Inject
+
     private StatusProvider statusProvider;
-    @Inject
+
     private InputService inputService;
-    @Inject
+
     private SelectionHandler selectionHandler;
-    @Inject
+
     private TerrainTypeService terrainTypeService;
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private ThreeJsModelPackService threeJsModelPackService;
-    @Inject
+
     private BaseItemUiService baseItemUiService;
-    @Inject
+
     private ModalDialogManager modalDialogManager;
-    @Inject
+
     private InventoryTypeService inventoryTypeService;
-    @Inject
+
     private InventoryUiService inventoryUiService;
-    @Inject
+
     private InGameQuestVisualizationService inGameQuestVisualizationService;
     private GwtAngularFacade gwtAngularFacade;
+
+    @Inject
+    public GwtAngularService(InGameQuestVisualizationService inGameQuestVisualizationService, InventoryUiService inventoryUiService, InventoryTypeService inventoryTypeService, ModalDialogManager modalDialogManager, BaseItemUiService baseItemUiService, ThreeJsModelPackService threeJsModelPackService, ItemTypeService itemTypeService, TerrainTypeService terrainTypeService, SelectionHandler selectionHandler, InputService inputService, StatusProvider statusProvider, BaseItemPlacerService baseItemPlacerService, QuestCockpitService questCockpitService, ItemCockpitService itemCockpitService, MainCockpitService cockpitService, EditorFrontendProvider editorFrontendProvider, GameUiControl gameUiControl) {
+        this.inGameQuestVisualizationService = inGameQuestVisualizationService;
+        this.inventoryUiService = inventoryUiService;
+        this.inventoryTypeService = inventoryTypeService;
+        this.modalDialogManager = modalDialogManager;
+        this.baseItemUiService = baseItemUiService;
+        this.threeJsModelPackService = threeJsModelPackService;
+        this.itemTypeService = itemTypeService;
+        this.terrainTypeService = terrainTypeService;
+        this.selectionHandler = selectionHandler;
+        this.inputService = inputService;
+        this.statusProvider = statusProvider;
+        this.baseItemPlacerService = baseItemPlacerService;
+        this.questCockpitService = questCockpitService;
+        this.itemCockpitService = itemCockpitService;
+        this.cockpitService = cockpitService;
+        this.editorFrontendProvider = editorFrontendProvider;
+        this.gameUiControl = gameUiControl;
+    }
 
     public void init() {
         gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMap<Object>>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));

@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.system.boot;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Beat
  * 24.01.2017.
  */
-@ApplicationScoped
+@Singleton
 public class StartupTestTaskMonitor {
     private List<DeferredStartupTestTask> deferredStartupTestTasks = new ArrayList<>();
     private List<DeferredBackgroundStartupTestTask> deferredBackgroundStartupTestTasks = new ArrayList<>();

@@ -63,29 +63,29 @@ import java.util.stream.Collectors;
 public class BaseItemService {
     private Logger logger = Logger.getLogger(BaseItemService.class.getName());
     private static final double ITEM_SELL_FACTOR = 0.5;
-    @Inject
+
     private ExceptionHandler exceptionHandler;
-    @Inject
+
     private GameLogicService gameLogicService;
-    @Inject
+
     private SyncItemContainerServiceImpl syncItemContainerService;
-    @Inject
+
     private LevelService levelService;
-    @Inject
+
     private ItemTypeService itemTypeService;
-    @Inject
+
     private EnergyService energyService;
-    @Inject
+
     private InventoryTypeService inventoryTypeService;
-    @Inject
+
     private BoxService boxService;
-    @Inject
+
     private TerrainService terrainService;
-    @Inject
+
     private GuardingItemService guardingItemService;
-    @Inject
+
     private SyncService syncService;
-    @Inject
+
     private DebugHelper debugHelper;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId = 1;
@@ -96,7 +96,23 @@ public class BaseItemService {
     private GameEngineMode gameEngineMode;
     private final PriorityQueue<TickInfo> pendingReceivedTickInfos = new PriorityQueue<>(Comparator.comparingDouble(TickInfo::getTickCount));
 
-    public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
+    @Inject
+    public BaseItemService(DebugHelper debugHelper, SyncService syncService, GuardingItemService guardingItemService, TerrainService terrainService, BoxService boxService, InventoryTypeService inventoryTypeService, EnergyService energyService, ItemTypeService itemTypeService, LevelService levelService, SyncItemContainerServiceImpl syncItemContainerService, GameLogicService gameLogicService, ExceptionHandler exceptionHandler) {
+        this.debugHelper = debugHelper;
+        this.syncService = syncService;
+        this.guardingItemService = guardingItemService;
+        this.terrainService = terrainService;
+        this.boxService = boxService;
+        this.inventoryTypeService = inventoryTypeService;
+        this.energyService = energyService;
+        this.itemTypeService = itemTypeService;
+        this.levelService = levelService;
+        this.syncItemContainerService = syncItemContainerService;
+        this.gameLogicService = gameLogicService;
+        this.exceptionHandler = exceptionHandler;
+    }
+
+    public void onPlanetActivation( PlanetActivationEvent planetActivationEvent) {
         activeItems.clear();
         activeItemQueue.clear();
         bases.clear();

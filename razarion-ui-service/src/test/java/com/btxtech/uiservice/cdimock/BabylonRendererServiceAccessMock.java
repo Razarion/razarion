@@ -16,13 +16,13 @@ import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-@ApplicationScoped
+@Singleton
 public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAccess {
     private final List<BabylonBaseItemMock> babylonBaseItemMocks = new ArrayList<>();
     private final List<BabylonResourceItemMock> babylonResourceItemMocks = new ArrayList<>();

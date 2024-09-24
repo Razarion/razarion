@@ -26,9 +26,9 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
-import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 
 /**
  * User: beat
@@ -42,12 +42,12 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
     private static final double STOP_DETECTION_OTHER_UNITS_RADIOS = 20;
     private static final double ANGLE_SLOW_DOWN = 0.1;
+
     // private Logger logger = Logger.getLogger(SyncPhysicalMovable.class.getName());
-    @Inject
     private Provider<Path> instancePath;
+
     //    @Inject
 //    private DebugHelper debugHelper;
-    @Inject
     private SyncItemContainerServiceImpl syncItemContainerService;
     private double acceleration; // Meter per square second
     private double maxSpeed; // Meter per second
@@ -59,6 +59,13 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private boolean crowded;
     private Double startAngleSlowDown;
     private Double endAngleSlowDown;
+
+    @Inject
+    public SyncPhysicalMovable(SyncItemContainerServiceImpl syncItemContainerService, Provider<com.btxtech.shared.gameengine.datatypes.Path> instancePath) {
+        super(syncItemContainerService);
+        this.syncItemContainerService = syncItemContainerService;
+        this.instancePath = instancePath;
+    }
 
     public void init(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, DecimalPosition position2d, double angle) {
         super.init(syncItem, physicalAreaConfig.getRadius(), physicalAreaConfig.isFixVerticalNorm(), physicalAreaConfig.getTerrainType(), position2d, angle);
