@@ -161,7 +161,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>3.1.4.Final</version> <!-- Must match version from (unity) asset converter-->
+            <version>3.14.0.Final</version> <!-- Must match version from (unity) asset converter-->
             <scope>test</scope>
         </dependency>
         <dependency>
