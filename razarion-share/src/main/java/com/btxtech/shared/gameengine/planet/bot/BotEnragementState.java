@@ -7,9 +7,8 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +21,7 @@ import java.util.Set;
  * Date: 14.06.12
  * Time: 12:44
  */
-@Dependent
+
 public class BotEnragementState {
     public interface Listener {
         void onEnrageNormal(String botName, BotEnragementStateConfig botEnragementStateConfig);

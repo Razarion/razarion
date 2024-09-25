@@ -1,11 +1,9 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +12,7 @@ import java.util.List;
  * Created by Beat
  * 03.04.2017.
  */
-@Dependent
+
 public class TerrainTileBuilder {
 
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;

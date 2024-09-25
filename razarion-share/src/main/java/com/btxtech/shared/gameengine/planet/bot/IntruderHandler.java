@@ -19,7 +19,6 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +30,7 @@ import java.util.Map;
  * Date: 22.09.2010
  * Time: 19:01:40
  */
-@Dependent
+
 public class IntruderHandler {
 
     // private Logger logger = Logger.getLogger(IntruderHandler.class.getName());

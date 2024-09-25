@@ -1,20 +1,19 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.client.gwtangular.GwtAngularService;
-import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
+import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 07.03.2016.
  */
-@Dependent
+
 public class LoadLoadThreeJsModelsTask extends AbstractStartupTask {
 
     private GwtAngularService gwtAngularService;

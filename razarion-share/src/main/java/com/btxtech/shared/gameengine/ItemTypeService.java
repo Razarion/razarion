@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import jsinterop.annotations.JsType;
 
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Comparator;
@@ -26,6 +27,10 @@ public class ItemTypeService {
     private final HashMap<Integer, BoxItemType> boxItemTypes = new HashMap<>();
     private double maxRadius;
     private double maxVelocity;
+
+    @Inject
+    public ItemTypeService() {
+    }
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
         init(engineInitEvent.getStaticGameConfig());

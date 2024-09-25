@@ -1,5 +1,6 @@
 package com.btxtech.shared.system.alarm;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -10,6 +11,10 @@ import java.util.List;
 public class AlarmService {
     private List<Alarm> alarms = new ArrayList<>();
     private List<AlarmServiceListener> listeners = new ArrayList<>();
+
+    @Inject
+    public AlarmService() {
+    }
 
     public void riseAlarm(Alarm.Type type) {
         riseAlarm(type, null, null);

@@ -4,6 +4,7 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import jsinterop.annotations.JsType;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.enterprise.event.Observes;
 import java.util.Collection;
@@ -18,6 +19,10 @@ import java.util.List;
 @JsType
 public class InventoryTypeService {
     private final HashMap<Integer, InventoryItem> inventoryItems = new HashMap<>();
+
+    @Inject
+    public InventoryTypeService() {
+    }
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
         init(engineInitEvent.getStaticGameConfig());

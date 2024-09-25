@@ -17,7 +17,6 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -25,7 +24,7 @@ import javax.inject.Inject;
  * Date: 04.12.2009
  * Time: 20:08:41
  */
-@Dependent
+
 public class SyncResourceItem extends SyncItem {
 
     private ResourceService resourceService;

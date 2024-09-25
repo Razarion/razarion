@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import jsinterop.annotations.JsType;
 
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,6 +27,10 @@ public class TerrainTypeService {
     private final Map<Integer, WaterConfig> waterConfigs = new HashMap<>();
     private final Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
     private final Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
+
+    @Inject
+    public TerrainTypeService() {
+    }
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
         init(engineInitEvent.getStaticGameConfig());

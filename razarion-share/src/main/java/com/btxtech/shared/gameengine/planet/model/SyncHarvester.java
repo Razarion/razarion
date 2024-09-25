@@ -22,7 +22,6 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -30,7 +29,7 @@ import javax.inject.Inject;
  * Date: 22.11.2009
  * Time: 13:30:50
  */
-@Dependent
+
 public class SyncHarvester extends SyncBaseAbility {
 
     private GameLogicService gameLogicService;

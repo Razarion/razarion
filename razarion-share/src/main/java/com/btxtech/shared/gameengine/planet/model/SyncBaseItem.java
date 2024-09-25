@@ -44,7 +44,6 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
@@ -55,7 +54,7 @@ import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNat
  * Date: 04.12.2009
  * Time: 19:11:49
  */
-@Dependent
+
 public class SyncBaseItem extends SyncItem {
 
     private Provider<SyncWeapon> syncWeaponProvider;

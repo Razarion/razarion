@@ -13,14 +13,12 @@
 
 package com.btxtech.uiservice.system.boot;
 
-import javax.enterprise.context.Dependent;
-
 /**
  * User: beat
  * Date: 18.02.2010
  * Time: 12:50:50
  */
-@Dependent
+
 public class SimpleWaitForBackgroundStartupTestTask extends AbstractStartupTask {
 
     @Override

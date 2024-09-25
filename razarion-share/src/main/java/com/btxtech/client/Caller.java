@@ -1,10 +1,23 @@
 package com.btxtech.client;
 
-public interface Caller<T> {
-    T call();
+import javax.inject.Inject;
 
-    T call(RemoteCallback<?> callback);
+public class Caller<T> {
 
-    T call(RemoteCallback<?> callback, ErrorCallback<?> errorCallback);
+    @Inject
+    public Caller() {
+    }
+
+    public T call() {
+        throw new UnsupportedOperationException();
+    }
+
+    public T call(RemoteCallback<?> callback) {
+        throw new UnsupportedOperationException();
+    }
+
+    public T call(RemoteCallback<?> callback, ErrorCallback<?> errorCallback) {
+        throw new UnsupportedOperationException();
+    }
 
 }

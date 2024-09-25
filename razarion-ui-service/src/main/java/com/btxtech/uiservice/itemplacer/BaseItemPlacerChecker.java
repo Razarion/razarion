@@ -9,7 +9,6 @@ import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +18,7 @@ import java.util.Collection;
  * Date: 01.05.13
  * Time: 12:55
  */
-@Dependent
+
 public class BaseItemPlacerChecker {
     private static final double SAFETY_DISTANCE = 0.2;
 

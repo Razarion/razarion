@@ -13,6 +13,7 @@
 
 package com.btxtech.uiservice;
 
+import com.btxtech.client.Event;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
@@ -28,11 +29,9 @@ import com.btxtech.uiservice.item.ResourceUiService;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
-import javax.inject.Singleton;
-import com.btxtech.client.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -50,11 +49,11 @@ public class SelectionHandler {
 
     private Provider<Group> groupInstance;
 
-    private BaseItemUiService baseItemUiService;
+    private Provider<BaseItemUiService> baseItemUiService;
 
-    private ResourceUiService resourceUiService;
+    private Provider<ResourceUiService> resourceUiService;
 
-    private BoxUiService boxUiService;
+    private Provider<BoxUiService> boxUiService;
 
     private ExceptionHandler exceptionHandler;
     private ActionServiceListener actionServiceListener;
@@ -62,7 +61,7 @@ public class SelectionHandler {
     private SyncItemSimpleDto selectedOtherSyncItem;
 
     @Inject
-    public SelectionHandler(ExceptionHandler exceptionHandler, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService, Provider<com.btxtech.uiservice.Group> groupInstance, Event<com.btxtech.uiservice.SelectionEvent> selectionEventEventTrigger) {
+    public SelectionHandler(ExceptionHandler exceptionHandler, Provider<BoxUiService> boxUiService, Provider<ResourceUiService> resourceUiService, Provider<BaseItemUiService> baseItemUiService, Provider<com.btxtech.uiservice.Group> groupInstance, Event<com.btxtech.uiservice.SelectionEvent> selectionEventEventTrigger) {
         this.exceptionHandler = exceptionHandler;
         this.boxUiService = boxUiService;
         this.resourceUiService = resourceUiService;
@@ -121,18 +120,18 @@ public class SelectionHandler {
     public void selectRectangle(double xStart, double yStart, double width, double height) {
         try {
             Rectangle2D rectangle = new Rectangle2D(xStart, yStart, width, height);
-            Collection<SyncBaseItemSimpleDto> selectedBaseItems = baseItemUiService.findItemsInRect(rectangle);
+            Collection<SyncBaseItemSimpleDto> selectedBaseItems = baseItemUiService.get().findItemsInRect(rectangle);
             if (!selectedBaseItems.isEmpty()) {
                 onBaseItemsSelected(selectedBaseItems);
                 return;
             }
-            Collection<SyncBoxItemSimpleDto> selectedBoxItems = boxUiService.findItemsInRect(rectangle);
+            Collection<SyncBoxItemSimpleDto> selectedBoxItems = boxUiService.get().findItemsInRect(rectangle);
             if (!selectedBoxItems.isEmpty()) {
                 setOtherItemSelected(CollectionUtils.getFirst(selectedBoxItems));
                 return;
             }
 
-            Collection<SyncResourceItemSimpleDto> selectedResourceItems = resourceUiService.findItemsInRect(rectangle);
+            Collection<SyncResourceItemSimpleDto> selectedResourceItems = resourceUiService.get().findItemsInRect(rectangle);
             if (!selectedResourceItems.isEmpty()) {
                 setOtherItemSelected(CollectionUtils.getFirst(selectedResourceItems));
                 return;
@@ -148,7 +147,7 @@ public class SelectionHandler {
         Collection<SyncBaseItemSimpleDto> own = new ArrayList<>();
         SyncBaseItemSimpleDto other = null;
         for (SyncBaseItemSimpleDto selectedSyncBaseItem : selectedBaseItems) {
-            if (baseItemUiService.isMyOwnProperty(selectedSyncBaseItem)) {
+            if (baseItemUiService.get().isMyOwnProperty(selectedSyncBaseItem)) {
                 own.add(selectedSyncBaseItem);
             } else {
                 other = selectedSyncBaseItem;

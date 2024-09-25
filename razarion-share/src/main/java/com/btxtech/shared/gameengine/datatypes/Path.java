@@ -20,12 +20,11 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
 
 
-@Dependent
+
 public class Path {
 
     private TerrainService terrainService;

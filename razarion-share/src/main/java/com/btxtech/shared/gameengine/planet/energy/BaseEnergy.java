@@ -5,7 +5,6 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.model.SyncConsumer;
 import com.btxtech.shared.gameengine.planet.model.SyncGenerator;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +13,7 @@ import java.util.Set;
  * Created by Beat
  * on 21.08.2017.
  */
-@Dependent
+
 public class BaseEnergy {
 
     private GameLogicService gameLogicService;

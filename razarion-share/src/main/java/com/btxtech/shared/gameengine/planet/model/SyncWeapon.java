@@ -27,16 +27,15 @@ import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 /**
  * User: beat
  * Date: 18.11.2009
  * Time: 16:02:26
  */
-@Dependent
+
 public class SyncWeapon extends SyncBaseAbility {
     private static final long CHECK_DELTA = 1000;
 

@@ -88,6 +88,8 @@ public class GwtAngularService {
     }
 
     public void init() {
+        DomGlobal.console.error("GwtAngularService init");
+
         gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMap<Object>>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
         gwtAngularFacade.gameUiControl = gameUiControl;
         gwtAngularFacade.language = I18nHelper.getLanguage();

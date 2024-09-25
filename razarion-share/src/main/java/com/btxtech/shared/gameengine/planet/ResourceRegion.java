@@ -21,7 +21,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +30,7 @@ import java.util.Set;
  * Date: 09.05.2010
  * Time: 11:36:12
  */
-@Dependent
+
 public class ResourceRegion {
 
     // private Logger logger = Logger.getLogger(ResourceRegion.class.getName());

@@ -18,7 +18,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 20.04.2017.
  */
-@Dependent
+
 public class ClientServerGameConnection extends AbstractServerGameConnection {
     @Inject
     private ExceptionHandler exceptionHandler;

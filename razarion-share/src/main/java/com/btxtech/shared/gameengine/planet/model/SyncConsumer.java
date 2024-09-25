@@ -20,7 +20,6 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -28,7 +27,7 @@ import javax.inject.Inject;
  * Date: 22.11.2009
  * Time: 13:30:50
  */
-@Dependent
+
 public class SyncConsumer extends SyncBaseAbility {
 
     private EnergyService energyService;

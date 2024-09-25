@@ -22,7 +22,6 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.SyncBaseItemMonitor;
 import com.btxtech.uiservice.item.SyncItemMonitor;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +37,7 @@ import java.util.stream.Collectors;
  * Date: 09.11.2009
  * Time: 23:05:45
  */
-@Dependent
+
 public class Group {
 
     private ItemTypeService itemTypeService;

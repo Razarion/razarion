@@ -2,7 +2,6 @@ package com.btxtech.uiservice.cockpit.item;
 
 
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -25,9 +24,9 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.SyncItemMonitor;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 
-import javax.inject.Singleton;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,15 +39,15 @@ public class ItemCockpitService {
     // private Logger logger = Logger.getLogger(ItemCockpitService.class.getName());
     private ItemTypeService itemTypeService;
 
-    private BaseItemUiService baseItemUiService;
+    private Provider<BaseItemUiService> baseItemUiService;
 
-    private GameUiControl gameUiControl;
+    private Provider<GameUiControl> gameUiControl;
 
     private BaseItemPlacerService baseItemPlacerService;
 
     private AudioService audioService;
 
-    private GameEngineControl gameEngineControl;
+    private Provider<GameEngineControl> gameEngineControl;
 
     private ExceptionHandler exceptionHandler;
 
@@ -57,7 +56,7 @@ public class ItemCockpitService {
     private Collection<BuildupItemCockpit> buildupItemCockpits = new ArrayList<>();
 
     @Inject
-    public ItemCockpitService(SelectionHandler selectionHandler, ExceptionHandler exceptionHandler, GameEngineControl gameEngineControl, AudioService audioService, BaseItemPlacerService baseItemPlacerService, GameUiControl gameUiControl, BaseItemUiService baseItemUiService, ItemTypeService itemTypeService) {
+    public ItemCockpitService(SelectionHandler selectionHandler, ExceptionHandler exceptionHandler, Provider<GameEngineControl> gameEngineControl, AudioService audioService, BaseItemPlacerService baseItemPlacerService, Provider<GameUiControl> gameUiControl, Provider<BaseItemUiService> baseItemUiService, ItemTypeService itemTypeService) {
         this.selectionHandler = selectionHandler;
         this.exceptionHandler = exceptionHandler;
         this.gameEngineControl = gameEngineControl;
@@ -132,7 +131,7 @@ public class ItemCockpitService {
         if (otherSelection instanceof SyncBaseItemSimpleDto) {
             itemType = itemTypeService.getBaseItemType(otherSelection.getItemTypeId());
             SyncBaseItemSimpleDto syncBaseItem = (SyncBaseItemSimpleDto) otherSelection;
-            PlayerBaseDto base = baseItemUiService.getBase(syncBaseItem.getBaseId());
+            PlayerBaseDto base = baseItemUiService.get().getBase(syncBaseItem.getBaseId());
             switch (base.getCharacter()) {
                 case HUMAN:
                     if (base.getUserId() == null) {
@@ -179,7 +178,7 @@ public class ItemCockpitService {
                 BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemType.getId());
                 baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
                     audioService.onCommandSent();
-                    gameEngineControl.buildCmd(selectedGroup.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
+                    gameEngineControl.get().buildCmd(selectedGroup.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
                 });
             };
         } else if (baseItemType.getFactoryType() != null) {
@@ -191,14 +190,14 @@ public class ItemCockpitService {
                         .filter(syncBaseItemMonitor -> syncBaseItemMonitor.getConstructingBaseItemTypeId() == null)
                         .map(SyncItemMonitor::getSyncItemId)
                         .findFirst()
-                        .ifPresent(factoryId -> gameEngineControl.fabricateCmd(factoryId, itemType));
+                        .ifPresent(factoryId -> gameEngineControl.get().fabricateCmd(factoryId, itemType));
             };
         } else {
             return null;
         }
 
         return ableToBuildIds.stream()
-                .filter(itemTypeId -> gameUiControl.getPlanetConfig().imitation4ItemType(itemTypeId) > 0)
+                .filter(itemTypeId -> gameUiControl.get().getPlanetConfig().imitation4ItemType(itemTypeId) > 0)
                 .map(itemTypeId -> {
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
             BuildupItemCockpit buildupItemInfo = new BuildupItemCockpit() {
@@ -218,16 +217,16 @@ public class ItemCockpitService {
 
                 @Override
                 public void updateState() {
-                    itemCount = baseItemUiService.getMyItemCount(itemType.getId());
-                    itemLimit = gameUiControl.getMyLimitation4ItemType(itemType.getId());
+                    itemCount = baseItemUiService.get().getMyItemCount(itemType.getId());
+                    itemLimit = gameUiControl.get().getMyLimitation4ItemType(itemType.getId());
 
-                    if (baseItemUiService.isMyLevelLimitation4ItemTypeExceeded(itemType, 1)) {
+                    if (baseItemUiService.get().isMyLevelLimitation4ItemTypeExceeded(itemType, 1)) {
                         tooltip = I18nHelper.getConstants().tooltipNoBuildLimit(I18nHelper.getLocalizedString(itemType.getI18nName()));
                         enabled = false;
-                    } else if (baseItemUiService.isMyHouseSpaceExceeded(itemType, 1)) {
+                    } else if (baseItemUiService.get().isMyHouseSpaceExceeded(itemType, 1)) {
                         tooltip = I18nHelper.getConstants().tooltipNoBuildHouseSpace(I18nHelper.getLocalizedString(itemType.getI18nName()));
                         enabled = false;
-                    } else if (itemType.getPrice() > baseItemUiService.getResources()) {
+                    } else if (itemType.getPrice() > baseItemUiService.get().getResources()) {
                         tooltip = I18nHelper.getConstants().tooltipNoBuildMoney(I18nHelper.getLocalizedString(itemType.getI18nName()));
                         enabled = false;
                     } else {
@@ -260,10 +259,10 @@ public class ItemCockpitService {
         ownInfoPanel.imageUrl = CommonUrl.getImageServiceUrlSafe(baseItemType.getThumbnail());
         ownInfoPanel.itemTypeName = I18nHelper.getLocalizedString(baseItemType.getI18nName());
         ownInfoPanel.itemTypeDescr = I18nHelper.getLocalizedString(baseItemType.getI18nDescription());
-        if (!gameUiControl.isSellSuppressed()) {
+        if (!gameUiControl.get().isSellSuppressed()) {
             ownInfoPanel.sellHandler = () -> {
                 // TODO display question dialog
-                gameEngineControl.sellItems(items);
+                gameEngineControl.get().sellItems(items);
             };
         }
         return ownInfoPanel;

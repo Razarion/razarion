@@ -35,7 +35,6 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -43,7 +42,7 @@ import javax.inject.Inject;
  * Date: 21.11.2009
  * Time: 23:53:39
  */
-@Dependent
+
 public class SyncBuilder extends SyncBaseAbility {
 
     private ItemTypeService itemTypeService;

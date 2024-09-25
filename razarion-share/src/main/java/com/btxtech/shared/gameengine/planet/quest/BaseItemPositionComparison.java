@@ -22,7 +22,6 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * User: beat Date: 18.07.2010 Time: 21:06:41
  */
-@Dependent
+
 public class BaseItemPositionComparison extends AbstractTickComparison {
     private static final int MIN_TIME_TICK_DELAY = PlanetService.TICKS_PER_SECONDS * 5;
 

@@ -129,6 +129,7 @@ public class LifecycleService {
     }
 
     public void startCold() {
+        DomGlobal.console.error("LifecycleService startCold");
         try {
             boot.start(GameStartupSeq.COLD);
         } catch (Throwable throwable) {

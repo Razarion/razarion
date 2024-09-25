@@ -22,7 +22,6 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +30,7 @@ import java.util.Set;
 /**
  * User: beat Date: 18.07.2010 Time: 21:06:41
  */
-@Dependent
+
 public class BaseItemTypeComparison extends AbstractBaseItemComparison {
 
     private ItemTypeService itemTypeService;

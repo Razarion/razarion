@@ -6,7 +6,6 @@ import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import elemental2.dom.DomGlobal;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -15,7 +14,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 28.06.2016.
  */
-@Dependent
+
 public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
     private static final int MAX_OVERRUN_COUNT = 100;
     private Logger logger = Logger.getLogger(ClientSimpleScheduledFutureImpl.class.getName());

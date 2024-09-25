@@ -4,14 +4,13 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 06.03.2017.
  */
-@Dependent
+
 public class LoadStartJsTask extends AbstractStartupTask {
 
     private ExceptionHandler exceptionHandler;

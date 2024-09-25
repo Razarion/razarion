@@ -10,14 +10,13 @@ import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 07.02.2016.
  */
-@Dependent
+
 public class RunGameUiControlTask extends AbstractStartupTask {
 
     // private Logger logger = Logger.getLogger(RunGameUiControlTask.class.getName());

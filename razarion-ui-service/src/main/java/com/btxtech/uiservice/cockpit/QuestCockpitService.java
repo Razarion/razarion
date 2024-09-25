@@ -4,6 +4,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.uiservice.control.GameUiControl;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.logging.Logger;
@@ -16,6 +17,10 @@ import java.util.logging.Logger;
 public class QuestCockpitService {
     private final Logger logger = Logger.getLogger(GameUiControl.class.getName());
     private QuestCockpit questCockpit;
+
+    @Inject
+    public QuestCockpitService() {
+    }
 
     public void init(QuestCockpit questCockpit) {
         this.questCockpit = questCockpit;

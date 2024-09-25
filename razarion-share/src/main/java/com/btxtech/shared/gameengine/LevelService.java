@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.enterprise.event.Observes;
 import java.util.ArrayList;
@@ -19,6 +20,10 @@ import java.util.Map;
 public class LevelService {
     private final Map<Integer, LevelConfig> levels = new HashMap<>();
     private final List<LevelConfig> orderedLevels = new ArrayList<>();
+
+    @Inject
+    public LevelService() {
+    }
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
         init(engineInitEvent.getStaticGameConfig());

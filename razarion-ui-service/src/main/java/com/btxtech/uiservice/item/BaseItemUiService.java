@@ -32,9 +32,8 @@ import com.btxtech.uiservice.user.UserUiService;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.event.Observes;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,7 +68,7 @@ public class BaseItemUiService {
 
     private ModalDialogManager modalDialogManager;
 
-    private UserUiService userUiService;
+    private Provider<UserUiService> userUiService;
 
     private ExceptionHandler exceptionHandler;
 
@@ -99,7 +98,7 @@ public class BaseItemUiService {
     private Rectangle2D viewFieldAabb;
 
     @Inject
-    public BaseItemUiService(AudioService audioService, BabylonRendererService babylonRendererService, ExceptionHandler exceptionHandler, UserUiService userUiService, ModalDialogManager modalDialogManager, ItemCockpitService itemCockpitService, MainCockpitService cockpitService, Provider<com.btxtech.uiservice.control.GameUiControl> gameUiControl, SelectionHandler selectionHandler, ItemTypeService itemTypeService) {
+    public BaseItemUiService(AudioService audioService, BabylonRendererService babylonRendererService, ExceptionHandler exceptionHandler, Provider<UserUiService> userUiService, ModalDialogManager modalDialogManager, ItemCockpitService itemCockpitService, MainCockpitService cockpitService, Provider<com.btxtech.uiservice.control.GameUiControl> gameUiControl, SelectionHandler selectionHandler, ItemTypeService itemTypeService) {
         this.audioService = audioService;
         this.babylonRendererService = babylonRendererService;
         this.exceptionHandler = exceptionHandler;
@@ -324,7 +323,7 @@ public class BaseItemUiService {
             if (bases.put(playerBase.getBaseId(), playerBase) != null) {
                 logger.warning("Base already exists: " + playerBase);
             }
-            if (playerBase.getUserId() != null && playerBase.getUserId().equals(userUiService.getUserContext().getUserId())) {
+            if (playerBase.getUserId() != null && playerBase.getUserId().equals(userUiService.get().getUserContext().getUserId())) {
                 myBase = playerBase;
                 gameUiControl.get().onOwnBaseCreated();
             }

@@ -20,7 +20,6 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Set;
 
@@ -29,7 +28,7 @@ import java.util.Set;
  * Date: 27.12.2010
  * Time: 16:31:29
  */
-@Dependent
+
 public class BaseItemCountComparison extends AbstractBaseItemComparison {
 
     private BaseItemService baseItemService;

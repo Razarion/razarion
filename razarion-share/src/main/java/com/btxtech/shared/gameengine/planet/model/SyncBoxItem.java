@@ -16,14 +16,12 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 
-import javax.enterprise.context.Dependent;
-
 /**
  * User: beat
  * Date: 04.12.2009
  * Time: 20:08:41
  */
-@Dependent
+
 public class SyncBoxItem extends SyncItem {
     private int ttlCount; // Is not synchronized
     private boolean alive; // Synchronized in super class

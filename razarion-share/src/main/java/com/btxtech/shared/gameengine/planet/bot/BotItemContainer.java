@@ -39,9 +39,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,7 +55,7 @@ import java.util.logging.Logger;
  * Date: 18.09.2010
  * Time: 11:41:21
  */
-@Dependent
+
 public class BotItemContainer {
     private static final int KILL_ITERATION_MAXIMUM = 100;
     private Logger logger = Logger.getLogger(BotItemContainer.class.getName());

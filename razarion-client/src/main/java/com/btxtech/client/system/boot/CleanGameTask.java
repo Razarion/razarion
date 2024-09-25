@@ -5,14 +5,13 @@ import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 25.04.2017.
  */
-@Dependent
+
 public class CleanGameTask extends AbstractStartupTask {
 
     private LifecycleService lifecycleService;

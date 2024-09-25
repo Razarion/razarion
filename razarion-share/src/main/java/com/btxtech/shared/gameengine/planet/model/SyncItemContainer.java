@@ -27,7 +27,6 @@ import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,7 @@ import java.util.stream.Collectors;
  * Date: 01.05.2010
  * Time: 11:38:49
  */
-@Dependent
+
 public class SyncItemContainer extends SyncBaseAbility {
     public static final TerrainType DEFAULT_UNLOAD_TERRAIN_TYPE = TerrainType.LAND;
 

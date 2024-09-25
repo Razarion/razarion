@@ -8,7 +8,6 @@ import com.btxtech.shared.system.SimpleScheduledFuture;
 import elemental2.dom.EventListener;
 import elemental2.dom.WebSocket;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.logging.Logger;
 
@@ -16,7 +15,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * on 05.03.2018.
  */
-@Dependent
+
 public class WebSocketWrapper {
     private static final int MAX_RETRIES = 5;
     private static final int MAX_ESTABLISH_CONNECTION_TIMEOUT = 5000;

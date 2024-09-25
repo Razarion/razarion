@@ -7,14 +7,12 @@ import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * on 04.03.2018.
  */
-@Dependent
 public class QuestInGamePlaceVisualization {
 
     private BabylonRendererService babylonRendererService;

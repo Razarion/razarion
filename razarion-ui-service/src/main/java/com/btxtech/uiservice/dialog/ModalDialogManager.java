@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -17,6 +18,10 @@ public class ModalDialogManager {
     private Runnable questPassedCallback;
     private Runnable baseLostCallback;
     private ModelDialogPresenter modelDialogPresenter;
+
+    @Inject
+    public ModalDialogManager() {
+    }
 
     public void init(ModelDialogPresenter modelDialogPresenter) {
         this.modelDialogPresenter = modelDialogPresenter;

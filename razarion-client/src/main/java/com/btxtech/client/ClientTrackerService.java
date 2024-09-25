@@ -59,7 +59,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private SimpleScheduledFuture detailedTrackingFuture;
 
     @Inject
-    public ClientTrackerService(ClientExceptionHandlerImpl exceptionHandler, SimpleExecutorService detailedExecutionService, Boot boot, Caller<com.btxtech.shared.rest.TrackerProvider> trackingProvider) {
+    public ClientTrackerService(ClientExceptionHandlerImpl exceptionHandler, SimpleExecutorService detailedExecutionService, Boot boot, Caller<TrackerProvider> trackingProvider) {
         this.exceptionHandler = exceptionHandler;
         this.detailedExecutionService = detailedExecutionService;
         this.boot = boot;

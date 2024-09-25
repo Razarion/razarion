@@ -7,7 +7,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.ExceptionHandler;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -17,7 +16,7 @@ import java.util.function.Consumer;
  * Date: 02.05.2013
  * Time: 18:02
  */
-@Dependent
+
 @JsType
 public class BaseItemPlacer {
 

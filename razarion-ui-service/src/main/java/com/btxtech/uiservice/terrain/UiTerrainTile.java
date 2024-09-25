@@ -10,7 +10,6 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Set;
 
@@ -18,7 +17,7 @@ import java.util.Set;
  * Created by Beat
  * 31.03.2017.
  */
-@Dependent
+
 public class UiTerrainTile {
 
     // private Logger logger = Logger.getLogger(UiTerrainTile.class.getName());

@@ -18,14 +18,12 @@ import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException
 import com.btxtech.shared.gameengine.datatypes.itemtype.HouseType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
-import javax.enterprise.context.Dependent;
-
 /**
  * User: beat
  * Date: 14.09.2010
  * Time: 13:28:48
  */
-@Dependent
+
 public class SyncHouse extends SyncBaseAbility {
     private HouseType houseType;
 

@@ -17,7 +17,6 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -25,7 +24,7 @@ import javax.inject.Inject;
  * Date: 27.12.2010
  * Time: 16:31:29
  */
-@Dependent
+
 public class InventoryItemCountComparison extends AbstractInventoryItemComparison {
     private double count;
     private double countTotal;

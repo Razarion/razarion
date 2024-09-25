@@ -1,5 +1,7 @@
 package com.btxtech.client.system.boot;
 
+import com.btxtech.client.Caller;
+import com.btxtech.client.RemoteCallback;
 import com.btxtech.client.user.FacebookService;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ColdGameUiContext;
@@ -9,17 +11,14 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.google.gwt.user.client.Window;
-import com.btxtech.client.Caller;
-import com.btxtech.client.RemoteCallback;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 07.02.2016.
  */
-@Dependent
+
 public class LoadGameUiContextlTask extends AbstractStartupTask {
     private static final String GAME_SESSION_ID_KEY = "gameSessionUuid";
     private static final String SESSION_ID_KEY = "sessionId";

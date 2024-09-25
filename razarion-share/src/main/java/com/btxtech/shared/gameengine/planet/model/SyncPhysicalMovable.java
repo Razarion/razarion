@@ -25,7 +25,6 @@ import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -36,7 +35,7 @@ import javax.inject.Provider;
  * Time: 14:39:38
  */
 // See: com.btxtech.shared.gameengine.planet.pathing.Unit (before 16.09.2016, git ref: 2c78588f58aa2863f5c49a5a4d44662467c8be1e)
-@Dependent
+
 @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
 public class SyncPhysicalMovable extends SyncPhysicalArea {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;

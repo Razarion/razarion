@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import jsinterop.annotations.JsType;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.enterprise.event.Observes;
 import java.util.HashMap;
@@ -13,6 +14,10 @@ import java.util.Map;
 @Singleton
 public class ThreeJsModelPackService {
     private final Map<Integer, ThreeJsModelPackConfig> threeJsModelPackConfigs = new HashMap<>();
+
+    @Inject
+    public ThreeJsModelPackService() {
+    }
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
         threeJsModelPackConfigs.clear();

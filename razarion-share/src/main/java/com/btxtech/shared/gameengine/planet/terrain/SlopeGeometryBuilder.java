@@ -5,12 +5,11 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-@Dependent
+
 public class SlopeGeometryBuilder {
 
     private JsInteropObjectFactory jsInteropObjectFactory;

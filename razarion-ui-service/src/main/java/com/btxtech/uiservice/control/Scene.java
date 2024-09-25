@@ -19,7 +19,6 @@ import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -30,7 +29,7 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_GAME_UI_CONTEXT
  * Created by Beat
  * 05.07.2016.
  */
-@Dependent
+
 // Better name: something with game-control
 public class Scene {
     public static final long FADE_DURATION = 2000; // Edit in razarion.css

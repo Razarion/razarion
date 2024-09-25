@@ -13,7 +13,7 @@ import javax.inject.Inject;
  * Created by Beat
  * on 01.06.2017.
  */
-@Dependent
+
 public class ClientWorkerTrackerHandler extends WorkerTrackerHandler {
     // private Logger logger = Logger.getLogger(WorkerTrackerHandler.class.getName());
     @Inject

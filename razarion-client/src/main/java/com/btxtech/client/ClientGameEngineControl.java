@@ -18,6 +18,7 @@ import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
+import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 import elemental2.dom.ErrorEvent;
@@ -44,7 +45,7 @@ public class ClientGameEngineControl extends GameEngineControl {
     private QueueStatistics queueStatistics;
 
     @Inject
-    public ClientGameEngineControl(Provider<com.btxtech.uiservice.terrain.InputService> inputServices, PerfmonService perfmonService, Boot boot, TerrainUiService terrainUiService, InventoryUiService inventoryUiService, UserUiService userUiService, SelectionHandler selectionHandler, GameUiControl gameUiControl, AudioService audioService, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService, Provider<com.btxtech.client.system.LifecycleService> lifecycleService, ExceptionHandler exceptionHandler) {
+    public ClientGameEngineControl(Provider<InputService> inputServices, PerfmonService perfmonService, Boot boot, TerrainUiService terrainUiService, InventoryUiService inventoryUiService, UserUiService userUiService, SelectionHandler selectionHandler, GameUiControl gameUiControl, AudioService audioService, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService, Provider<com.btxtech.client.system.LifecycleService> lifecycleService, ExceptionHandler exceptionHandler) {
         super(inputServices, perfmonService, exceptionHandler, boot, terrainUiService, inventoryUiService, userUiService, selectionHandler, gameUiControl, audioService, boxUiService, resourceUiService, baseItemUiService);
         this.lifecycleService = lifecycleService;
         this.exceptionHandler = exceptionHandler;

@@ -14,14 +14,13 @@ import com.btxtech.uiservice.user.UserUiService;
 import elemental2.dom.Event;
 import elemental2.dom.MessageEvent;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 25.04.2017.
  */
-@Dependent
+
 public class ClientServerSystemConnection extends AbstractServerSystemConnection {
 
     private LifecycleService lifecycleService;

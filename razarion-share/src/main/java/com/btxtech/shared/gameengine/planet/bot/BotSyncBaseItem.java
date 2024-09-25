@@ -26,7 +26,6 @@ import com.btxtech.shared.gameengine.planet.pathing.TerrainDestinationFinder;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -34,7 +33,7 @@ import javax.inject.Inject;
  * Date: 17.09.2010
  * Time: 20:05:33
  */
-@Dependent
+
 public class BotSyncBaseItem {
 
     // private Logger logger = Logger.getLogger(BotSyncBaseItem.class.getName());

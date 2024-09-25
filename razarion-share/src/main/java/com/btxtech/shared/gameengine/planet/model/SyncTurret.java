@@ -6,13 +6,11 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.enterprise.context.Dependent;
-
 /**
  * Created by Beat
  * 18.11.2016.
  */
-@Dependent
+
 public class SyncTurret {
     private static final double MAX_DELTA_ANGLE = Math.toRadians(1);
     private SyncBaseItem syncBaseItem;

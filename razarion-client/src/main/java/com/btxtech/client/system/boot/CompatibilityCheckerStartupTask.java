@@ -1,15 +1,14 @@
 package com.btxtech.client.system.boot;
 
+import com.btxtech.client.Caller;
+import com.btxtech.client.RemoteCallback;
 import com.btxtech.shared.Constants;
 import com.btxtech.shared.rest.ServerMgmtProvider;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.google.gwt.user.client.Window;
-import com.btxtech.client.Caller;
-import com.btxtech.client.RemoteCallback;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +17,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 06.03.2017.
  */
-@Dependent
+
 public class CompatibilityCheckerStartupTask extends AbstractStartupTask {
     private static final int RELOAD_DELAY = 2000;
     private static final Logger logger = Logger.getLogger(CompatibilityCheckerStartupTask.class.getName());

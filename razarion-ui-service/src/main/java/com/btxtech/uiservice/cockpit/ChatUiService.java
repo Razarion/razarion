@@ -2,6 +2,7 @@ package com.btxtech.uiservice.cockpit;
 
 import com.btxtech.shared.datatypes.ChatMessage;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,10 @@ public class ChatUiService {
     private static final int MESSAGE_COUNT = 100;
     private ChatCockpit chatCockpit;
     private List<ChatMessage> chatMessages = new ArrayList<>();
+
+    @Inject
+    public ChatUiService() {
+    }
 
     public void start() {
         if (chatCockpit == null) {

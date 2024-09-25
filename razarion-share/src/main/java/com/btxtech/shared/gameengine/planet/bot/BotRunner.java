@@ -24,9 +24,8 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +35,7 @@ import java.util.logging.Logger;
  * Date: 21.05.2010
  * Time: 21:51:58
  */
-@Dependent
+
 public class BotRunner {
     private enum IntervalState {
         INACTIVE,

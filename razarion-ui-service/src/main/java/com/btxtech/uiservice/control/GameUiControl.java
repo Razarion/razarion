@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.control;
 
+import com.btxtech.client.Event;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
@@ -33,9 +34,8 @@ import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.user.UserUiService;
 import jsinterop.annotations.JsType;
 
-import com.btxtech.client.Event;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,7 +71,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     private InventoryTypeService inventoryTypeService;
 
-    private UserUiService userUiService;
+    private Provider<UserUiService> userUiService;
 
     private Boot boot;
 
@@ -98,7 +98,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private QuestProgressInfo serverQuestProgress;
 
     @Inject
-    public GameUiControl(Provider<com.btxtech.uiservice.control.AbstractServerSystemConnection> serverSystemConnectionInstance, Provider<com.btxtech.uiservice.cockpit.ScreenCover> screenCover, ModalDialogManager modalDialogManager, Event<com.btxtech.uiservice.control.GameUiControlInitEvent> gameUiControlInitEvent, TrackerService trackerService, Boot boot, UserUiService userUiService, InventoryTypeService inventoryTypeService, LevelService levelService, TerrainTypeService terrainTypeService, ItemTypeService itemTypeService, ChatUiService chatUiService, QuestCockpitService questCockpitService, MainCockpitService cockpitService, BaseItemUiService baseItemUiService, Provider<com.btxtech.uiservice.control.Scene> sceneInstance) {
+    public GameUiControl(Provider<com.btxtech.uiservice.control.AbstractServerSystemConnection> serverSystemConnectionInstance, Provider<com.btxtech.uiservice.cockpit.ScreenCover> screenCover, ModalDialogManager modalDialogManager, Event<com.btxtech.uiservice.control.GameUiControlInitEvent> gameUiControlInitEvent, TrackerService trackerService, Boot boot, Provider<UserUiService> userUiService, InventoryTypeService inventoryTypeService, LevelService levelService, TerrainTypeService terrainTypeService, ItemTypeService itemTypeService, ChatUiService chatUiService, QuestCockpitService questCockpitService, MainCockpitService cockpitService, BaseItemUiService baseItemUiService, Provider<com.btxtech.uiservice.control.Scene> sceneInstance) {
         this.serverSystemConnectionInstance = serverSystemConnectionInstance;
         this.screenCover = screenCover;
         this.modalDialogManager = modalDialogManager;
@@ -155,7 +155,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public void start() {
         startTimeStamp = new Date();
-        cockpitService.show(userUiService.getUserContext());
+        cockpitService.show(userUiService.get().getUserContext());
         chatUiService.start();
         nextSceneNumber = 0;
         if (gameEngineMode == GameEngineMode.SLAVE) {
@@ -236,7 +236,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public void setColdGameUiContext(ColdGameUiContext coldGameUiContext) {
         this.coldGameUiContext = coldGameUiContext;
-        userUiService.init(coldGameUiContext.getUserContext());
+        userUiService.get().init(coldGameUiContext.getUserContext());
         cockpitService.blinkAvailableUnlock(coldGameUiContext.getWarmGameUiContext().isAvailableUnlocks());
 
         AlarmRaiser.onNull(coldGameUiContext.getWarmGameUiContext(), Alarm.Type.NO_WARM_GAME_UI_CONTEXT);
@@ -264,13 +264,13 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void setGameInfo(NativeTickInfo nativeTickInfo) {
         baseItemUiService.updateGameInfo(nativeTickInfo);
         if (nativeTickInfo.xpFromKills > 0) {
-            userUiService.increaseXp(nativeTickInfo.xpFromKills);
+            userUiService.get().increaseXp(nativeTickInfo.xpFromKills);
         }
     }
 
     public int getMyLimitation4ItemType(int itemTypeId) {
-        int unlockedCount = userUiService.getUserContext().getUnlockedItemLimit().getOrDefault(itemTypeId, 0);
-        int levelCount = levelService.getLevel(userUiService.getUserContext().getLevelId()).limitation4ItemType(itemTypeId);
+        int unlockedCount = userUiService.get().getUserContext().getUnlockedItemLimit().getOrDefault(itemTypeId, 0);
+        int levelCount = levelService.getLevel(userUiService.get().getUserContext().getLevelId()).limitation4ItemType(itemTypeId);
         int planetCount = getPlanetConfig().imitation4ItemType(itemTypeId);
         return Math.min(levelCount + unlockedCount, planetCount);
     }
