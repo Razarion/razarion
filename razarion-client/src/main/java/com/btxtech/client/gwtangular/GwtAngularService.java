@@ -25,7 +25,6 @@ import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
 
 import javax.inject.Singleton;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 @Singleton
@@ -66,6 +65,10 @@ public class GwtAngularService {
     private InGameQuestVisualizationService inGameQuestVisualizationService;
     private GwtAngularFacade gwtAngularFacade;
 
+    public static GwtAngularFacade getGwtAngularFacade() {
+        return Js.uncheckedCast(Js.<JsPropertyMap<Object>>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
+    }
+
     @Inject
     public GwtAngularService(InGameQuestVisualizationService inGameQuestVisualizationService, InventoryUiService inventoryUiService, InventoryTypeService inventoryTypeService, ModalDialogManager modalDialogManager, BaseItemUiService baseItemUiService, ThreeJsModelPackService threeJsModelPackService, ItemTypeService itemTypeService, TerrainTypeService terrainTypeService, SelectionHandler selectionHandler, InputService inputService, StatusProvider statusProvider, BaseItemPlacerService baseItemPlacerService, QuestCockpitService questCockpitService, ItemCockpitService itemCockpitService, MainCockpitService cockpitService, EditorFrontendProvider editorFrontendProvider, GameUiControl gameUiControl) {
         this.inGameQuestVisualizationService = inGameQuestVisualizationService;
@@ -90,7 +93,7 @@ public class GwtAngularService {
     public void init() {
         DomGlobal.console.error("GwtAngularService init");
 
-        gwtAngularFacade = Js.uncheckedCast(Js.<JsPropertyMap<Object>>uncheckedCast(DomGlobal.window).get("gwtAngularFacade"));
+        gwtAngularFacade = getGwtAngularFacade();
         gwtAngularFacade.gameUiControl = gameUiControl;
         gwtAngularFacade.language = I18nHelper.getLanguage();
         gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
@@ -119,15 +122,4 @@ public class GwtAngularService {
     public GwtAngularBoot getGwtAngularBoot() {
         return gwtAngularFacade.gwtAngularBoot;
     }
-
-    @Produces
-    public BabylonRenderServiceAccess babylonRenderServiceAccess() {
-        return gwtAngularFacade.babylonRenderServiceAccess;
-    }
-
-    @Produces
-    public ScreenCover screenCover() {
-        return gwtAngularFacade.screenCover;
-    }
-
 }

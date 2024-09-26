@@ -1,9 +1,11 @@
 package com.btxtech.client;
 
+import com.btxtech.client.gwtangular.GwtAngularFacade;
 import com.btxtech.client.system.ClientServerSystemConnection;
 import com.btxtech.client.system.boot.BootImpl;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.common.system.ClientSimpleExecutorServiceImpl;
+import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -18,8 +20,18 @@ import com.btxtech.uiservice.system.boot.Boot;
 import dagger.Module;
 import dagger.Provides;
 
+import javax.inject.Inject;
+
+import static com.btxtech.client.gwtangular.GwtAngularService.getGwtAngularFacade;
+
 @Module
 public class RazarionClientModule {
+    private final GwtAngularFacade gwtAngularFacade;
+
+    @Inject
+    public RazarionClientModule() {
+        this.gwtAngularFacade = getGwtAngularFacade();
+    }
 
     @Provides
     public SimpleExecutorService simpleExecutorService() {
@@ -48,7 +60,7 @@ public class RazarionClientModule {
 
     @Provides
     public BabylonRenderServiceAccess babylonRenderServiceAccess() {
-        return null; // TODO
+        return gwtAngularFacade.babylonRenderServiceAccess;
     }
 
     @Provides
@@ -58,7 +70,12 @@ public class RazarionClientModule {
 
     @Provides
     public NativeMatrixFactory bativeMatrixFactory() {
-        return null; // TODO
+        return new NativeMatrixFactory() {
+            @Override
+            public NativeMatrix createFromColumnMajorArray(double[] array) {
+                return super.createFromColumnMajorArray(array);
+            }
+        }; // TODO
     }
 
     @Provides
@@ -73,6 +90,6 @@ public class RazarionClientModule {
 
     @Provides
     public ScreenCover screenCover() {
-        return null; // TODO
+        return gwtAngularFacade.screenCover;
     }
 }

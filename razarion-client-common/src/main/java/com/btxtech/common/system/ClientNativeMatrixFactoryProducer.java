@@ -3,7 +3,6 @@ package com.btxtech.common.system;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.inject.Singleton;
-import javax.enterprise.inject.Produces;
 
 /**
  * Created by Beat
@@ -13,7 +12,7 @@ import javax.enterprise.inject.Produces;
 public class ClientNativeMatrixFactoryProducer {
     private NativeMatrixFactory nativeMatrixFactory = new NativeMatrixFactory() {};
 
-    @Produces
+    // TODO  @Produces
     public NativeMatrixFactory getNativeMatrixFactory() {
         return nativeMatrixFactory;
     }
