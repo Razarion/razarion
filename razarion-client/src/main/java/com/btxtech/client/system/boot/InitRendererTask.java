@@ -3,9 +3,8 @@ package com.btxtech.client.system.boot;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
-
-import javax.inject.Inject;
 
 /**
  * Created by Beat
@@ -13,19 +12,14 @@ import javax.inject.Inject;
  */
 
 public class InitRendererTask extends AbstractStartupTask {
+    private final BootContext bootContext;
 
-    private BabylonRendererService threeJsRendererService;
-
-    private AssetService assetService;
-
-    @Inject
-    public InitRendererTask(AssetService assetService, BabylonRendererService threeJsRendererService) {
-        this.assetService = assetService;
-        this.threeJsRendererService = threeJsRendererService;
+    public InitRendererTask(BootContext bootContext) {
+        this.bootContext = bootContext;
     }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        threeJsRendererService.runRenderer(assetService.getMeshContainers());
+        bootContext.runRenderer(bootContext.getAssetService().getMeshContainers());
     }
 }

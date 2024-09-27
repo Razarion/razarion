@@ -3,6 +3,7 @@ package com.btxtech.client.system.boot;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
 import javax.inject.Inject;
@@ -13,15 +14,10 @@ import javax.inject.Inject;
  */
 
 public class InitWorkerTask extends AbstractStartupTask {
+    private final BootContext bootContext;
 
-    private GameEngineControl gameEngineControl;
-
-    private GameUiControl gameUiControl;
-
-    @Inject
-    public InitWorkerTask(GameUiControl gameUiControl, GameEngineControl gameEngineControl) {
-        this.gameUiControl = gameUiControl;
-        this.gameEngineControl = gameEngineControl;
+    public InitWorkerTask(BootContext bootContext) {
+        this.bootContext = bootContext;
     }
 
     @Override
@@ -29,6 +25,6 @@ public class InitWorkerTask extends AbstractStartupTask {
         deferredStartup.setDeferred();
         deferredStartup.setBackground();
 
-        gameEngineControl.init(gameUiControl.getColdGameUiContext(), deferredStartup);
+        bootContext.initGameEngineControl(bootContext.getGameUiControl().getColdGameUiContext(), deferredStartup);
     }
 }

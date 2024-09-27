@@ -1,7 +1,7 @@
 package com.btxtech.client.system.boot;
 
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
 import javax.inject.Inject;
@@ -12,16 +12,15 @@ import javax.inject.Inject;
  */
 
 public class InitGameUiTask extends AbstractStartupTask {
-
-    private GameUiControl gameUiControl;
+    private final BootContext context;
 
     @Inject
-    public InitGameUiTask(GameUiControl gameUiControl) {
-        this.gameUiControl = gameUiControl;
+    public InitGameUiTask(BootContext bootContext) {
+        this.context = bootContext;
     }
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        gameUiControl.init();
+        context.getGameUiControl().init();
     }
 }

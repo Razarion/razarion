@@ -8,13 +8,10 @@ import elemental2.dom.DomGlobal;
 public class RazarionClient implements EntryPoint {
     @Override
     public void onModuleLoad() {
-        DomGlobal.console.error("RazarionClient init");
-
         RazarionClientComponent component = DaggerRazarionClientComponent.create();
         GwtAngularService gwtAngularService = component.gwtAngularService();
         LifecycleService lifecycleService = component.lifecycleService();
 
-        DomGlobal.console.error("RazarionClient start");
         gwtAngularService.init();
         lifecycleService.startCold();
     }

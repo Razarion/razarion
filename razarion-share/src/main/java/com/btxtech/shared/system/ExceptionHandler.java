@@ -29,5 +29,4 @@ public abstract class ExceptionHandler {
         }
         handleExceptionInternal(message, throwable);
     }
-
 }

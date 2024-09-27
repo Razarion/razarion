@@ -28,7 +28,7 @@ public enum AlarmRaisingTestTaskEnum implements StartupTaskEnum {
     }
 
     @Override
-    public Class<? extends AbstractStartupTask> getTaskClass() {
-        return taskClass;
+    public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+        return new AlarmRaisingTestTask();
     }
 }

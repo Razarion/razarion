@@ -15,7 +15,7 @@ public class ClientServerQuestProvider implements ServerQuestProvider {
     private ClientExceptionHandlerImpl exceptionHandler;
 
     @Inject
-    public ClientServerQuestProvider(ClientExceptionHandlerImpl exceptionHandler, Caller<com.btxtech.shared.rest.QuestController> questProvider) {
+    public ClientServerQuestProvider(ClientExceptionHandlerImpl exceptionHandler, Caller<QuestController> questProvider) {
         this.exceptionHandler = exceptionHandler;
         this.questProvider = questProvider;
     }

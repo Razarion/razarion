@@ -1,14 +1,17 @@
 package com.btxtech.client;
 
 import com.btxtech.client.gwtangular.GwtAngularFacade;
+import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.system.ClientServerSystemConnection;
 import com.btxtech.client.system.boot.BootImpl;
+import com.btxtech.client.user.FacebookService;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.common.system.ClientSimpleExecutorServiceImpl;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.ServerQuestProvider;
 import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.audio.AudioService;
@@ -16,11 +19,13 @@ import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.system.boot.Boot;
 import dagger.Module;
 import dagger.Provides;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import static com.btxtech.client.gwtangular.GwtAngularService.getGwtAngularFacade;
 
@@ -54,8 +59,13 @@ public class RazarionClientModule {
     }
 
     @Provides
-    public Boot boot() {
-        return new BootImpl(null, null, null);
+    public Boot boot(AlarmService alarmService,
+                     Provider<ClientGameEngineControl> clientGameEngineControl,
+                     FacebookService facebookService,
+                     GwtAngularService gwtAngularService,
+                     GameEngineControl gameEngineControl,
+                     BabylonRendererService threeJsRendererService) {
+        return new BootImpl(alarmService, clientGameEngineControl, facebookService, gwtAngularService, gameEngineControl, threeJsRendererService);
     }
 
     @Provides

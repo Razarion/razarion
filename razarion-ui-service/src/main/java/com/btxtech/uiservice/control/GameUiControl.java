@@ -73,7 +73,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     private Provider<UserUiService> userUiService;
 
-    private Boot boot;
+    private Provider<Boot> boot;
 
     private TrackerService trackerService;
 
@@ -98,7 +98,22 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private QuestProgressInfo serverQuestProgress;
 
     @Inject
-    public GameUiControl(Provider<com.btxtech.uiservice.control.AbstractServerSystemConnection> serverSystemConnectionInstance, Provider<com.btxtech.uiservice.cockpit.ScreenCover> screenCover, ModalDialogManager modalDialogManager, Event<com.btxtech.uiservice.control.GameUiControlInitEvent> gameUiControlInitEvent, TrackerService trackerService, Boot boot, Provider<UserUiService> userUiService, InventoryTypeService inventoryTypeService, LevelService levelService, TerrainTypeService terrainTypeService, ItemTypeService itemTypeService, ChatUiService chatUiService, QuestCockpitService questCockpitService, MainCockpitService cockpitService, BaseItemUiService baseItemUiService, Provider<com.btxtech.uiservice.control.Scene> sceneInstance) {
+    public GameUiControl(Provider<AbstractServerSystemConnection> serverSystemConnectionInstance,
+                         Provider<ScreenCover> screenCover,
+                         ModalDialogManager modalDialogManager,
+                         Event<GameUiControlInitEvent> gameUiControlInitEvent,
+                         TrackerService trackerService,
+                         Provider<Boot> boot,
+                         Provider<UserUiService> userUiService,
+                         InventoryTypeService inventoryTypeService,
+                         LevelService levelService,
+                         TerrainTypeService terrainTypeService,
+                         ItemTypeService itemTypeService,
+                         ChatUiService chatUiService,
+                         QuestCockpitService questCockpitService,
+                         MainCockpitService cockpitService,
+                         BaseItemUiService baseItemUiService,
+                         Provider<Scene> sceneInstance) {
         this.serverSystemConnectionInstance = serverSystemConnectionInstance;
         this.screenCover = screenCover;
         this.modalDialogManager = modalDialogManager;
@@ -225,7 +240,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             // TODO Temporary fix for showing move to first multiplayer planet. Pervents loading new planet if multiplayer planet is done. Because there is no new planet
             modalDialogManager.showLeaveStartTutorial(() -> {
                 screenCover.get().fadeInLoadingCover();
-                boot.startWarm(); // Replace by LifecycleService. Move boot back to client package. Not needed in DevTools.
+                boot.get().startWarm(); // Replace by LifecycleService. Move boot back to client package. Not needed in DevTools.
             });
         }
     }

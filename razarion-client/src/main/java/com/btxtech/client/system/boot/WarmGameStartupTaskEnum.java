@@ -1,6 +1,7 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 
 /**
@@ -26,7 +27,7 @@ public enum WarmGameStartupTaskEnum implements StartupTaskEnum {
     }
 
     @Override
-    public Class<? extends AbstractStartupTask> getTaskClass() {
-        return taskClass;
+    public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+        throw new UnsupportedOperationException();
     }
 }

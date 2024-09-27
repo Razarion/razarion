@@ -2,9 +2,12 @@ package com.btxtech.client.system.boot;
 
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
 import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -12,20 +15,14 @@ import javax.inject.Inject;
  */
 
 public class LoadStartJsTask extends AbstractStartupTask {
-
-    private ExceptionHandler exceptionHandler;
-
-    @Inject
-    public LoadStartJsTask(ExceptionHandler exceptionHandler) {
-        this.exceptionHandler = exceptionHandler;
-    }
+    private final Logger logger = Logger.getLogger(Boot.class.getName());
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
         try {
             overrideStartTime((long) getNativeCtlStartTime());
         } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
+            logger.log(Level.SEVERE, "LoadStartJsTask overrideStartTime failed", throwable);
         }
     }
 

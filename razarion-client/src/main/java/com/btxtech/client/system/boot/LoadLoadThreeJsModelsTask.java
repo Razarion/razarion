@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
 import javax.inject.Inject;
@@ -15,15 +16,10 @@ import javax.inject.Inject;
  */
 
 public class LoadLoadThreeJsModelsTask extends AbstractStartupTask {
+    private final BootContext bootContext;
 
-    private GwtAngularService gwtAngularService;
-
-    private GameUiControl gameUiControl;
-
-    @Inject
-    public LoadLoadThreeJsModelsTask(GameUiControl gameUiControl, GwtAngularService gwtAngularService) {
-        this.gameUiControl = gameUiControl;
-        this.gwtAngularService = gwtAngularService;
+    public LoadLoadThreeJsModelsTask(BootContext bootContext) {
+        this.bootContext = bootContext;
     }
 
     @Override
@@ -31,12 +27,12 @@ public class LoadLoadThreeJsModelsTask extends AbstractStartupTask {
         deferredStartup.setDeferred();
         deferredStartup.setBackground();
 
-        ThreeJsModelConfig[] threeJsModelConfigs = gameUiControl.getColdGameUiContext()
+        ThreeJsModelConfig[] threeJsModelConfigs = bootContext.getGameUiControl().getColdGameUiContext()
                 .getStaticGameConfig()
                 .getThreeJsModelConfigs()
                 .toArray(new ThreeJsModelConfig[0]);
 
-        ParticleSystemConfig[] particleSystemConfigs = gameUiControl.getColdGameUiContext()
+        ParticleSystemConfig[] particleSystemConfigs = bootContext.getGameUiControl().getColdGameUiContext()
                 .getStaticGameConfig()
                 .getParticleSystemConfigs()
                 .toArray(new ParticleSystemConfig[0]);
@@ -47,7 +43,7 @@ public class LoadLoadThreeJsModelsTask extends AbstractStartupTask {
         }
 
         // Injection does not work here
-        gwtAngularService.getGwtAngularBoot().loadThreeJsModels(threeJsModelConfigs, particleSystemConfigs)
+        bootContext.loadThreeJsModels(threeJsModelConfigs, particleSystemConfigs)
                 .then(ignore -> {
                     deferredStartup.finished();
                     return null;

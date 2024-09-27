@@ -1,16 +1,14 @@
 package com.btxtech.uiservice.system.boot;
 
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.ExceptionUtil;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.inject.Provider;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -19,7 +17,7 @@ import java.util.logging.Logger;
  * Time: 10:56:33
  */
 public abstract class Boot {
-    private Logger logger = Logger.getLogger(Boot.class.getName());
+    private final Logger logger = Logger.getLogger(Boot.class.getName());
     private Collection<StartupProgressListener> listeners = new ArrayList<>();
     private List<AbstractStartupTask> startupList = new ArrayList<>();
     private List<DeferredStartup> deferredStartups = new ArrayList<>();
@@ -29,19 +27,15 @@ public abstract class Boot {
     private boolean failed;
     private String gameSessionUuid;
 
-    private Provider<AbstractStartupTask> taskInstance;
-
-    private ExceptionHandler exceptionHandler;
-
     private AlarmService alarmService;
 
-    public Boot(AlarmService alarmService, ExceptionHandler exceptionHandler, Provider<com.btxtech.uiservice.system.boot.AbstractStartupTask> taskInstance) {
+    public Boot(AlarmService alarmService) {
         this.alarmService = alarmService;
-        this.exceptionHandler = exceptionHandler;
-        this.taskInstance = taskInstance;
     }
 
     protected abstract StartupSeq getWarm();
+
+    protected abstract BootContext createBootContext();
 
     public void addStartupProgressListener(StartupProgressListener startupProgressListener) {
         listeners.add(startupProgressListener);
@@ -88,7 +82,7 @@ public abstract class Boot {
             try {
                 listener.onNextTask(task.getTaskEnum());
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                logger.log(Level.SEVERE, "Listener.onNextTask() failed", t);
             }
         }
         try {
@@ -98,6 +92,7 @@ public abstract class Boot {
             onTaskFailed(task, are);
             return;
         } catch (Throwable t) {
+            logger.log(Level.SEVERE, "", t);
             onTaskFailed(task, t);
             return;
         }
@@ -213,18 +208,18 @@ public abstract class Boot {
     }
 
     public void raiseAlarmIfNeeded(Throwable t) {
-         if(t instanceof AlarmRaisedException) {
-             alarmService.riseAlarm((AlarmRaisedException) t);
-         }
+        if (t instanceof AlarmRaisedException) {
+            alarmService.riseAlarm((AlarmRaisedException) t);
+        }
     }
 
     private void setupStartupSeq(StartupSeq startupSeq) {
         startupList.clear();
+        BootContext bootContext = createBootContext();
         for (StartupTaskEnum startupTaskEnum : startupSeq.getAbstractStartupTaskEnum()) {
-            // TODO AbstractStartupTask abstractStartupTask = taskInstance.select(startupTaskEnum.getTaskClass()).get();
-            // TODO abstractStartupTask.setTaskEnum(startupTaskEnum);
-            // TODO startupList.add(abstractStartupTask);
-            throw new UnsupportedOperationException("Need to be fixed");
+            AbstractStartupTask abstractStartupTask = startupTaskEnum.createAbstractStartupTask(bootContext);
+            abstractStartupTask.setTaskEnum(startupTaskEnum);
+            startupList.add(abstractStartupTask);
         }
     }
 

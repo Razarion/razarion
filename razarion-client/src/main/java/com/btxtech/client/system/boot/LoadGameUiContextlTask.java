@@ -9,10 +9,13 @@ import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.GameUiContextController;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.google.gwt.user.client.Window;
 
 import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -22,22 +25,14 @@ import javax.inject.Inject;
 public class LoadGameUiContextlTask extends AbstractStartupTask {
     private static final String GAME_SESSION_ID_KEY = "gameSessionUuid";
     private static final String SESSION_ID_KEY = "sessionId";
-
-    // private Logger logger = Logger.getLogger(LoadGameUiContextlTask.class.getName());
-    private GameUiControl gameUiControl;
+    private static final Logger logger = Logger.getLogger(LoadGameUiContextlTask.class.getName());
+    private final BootContext bootContext;
 
     private Caller<GameUiContextController> serviceCaller;
 
-    private FacebookService facebookService;
-
-    private ClientExceptionHandlerImpl exceptionHandler;
-
     @Inject
-    public LoadGameUiContextlTask(ClientExceptionHandlerImpl exceptionHandler, FacebookService facebookService, Caller<com.btxtech.shared.rest.GameUiContextController> serviceCaller, GameUiControl gameUiControl) {
-        this.exceptionHandler = exceptionHandler;
-        this.facebookService = facebookService;
-        this.serviceCaller = serviceCaller;
-        this.gameUiControl = gameUiControl;
+    public LoadGameUiContextlTask(BootContext bootContext) {
+        this.bootContext = bootContext;
     }
 
     @Override
@@ -45,14 +40,14 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
         deferredStartup.setDeferred();
         serviceCaller.call((RemoteCallback<ColdGameUiContext>) coldGameUiContext -> {
             try {
-                gameUiControl.setColdGameUiContext(coldGameUiContext);
-                facebookService.activateFacebookAppStartLogin();
+                bootContext.getGameUiControl().setColdGameUiContext(coldGameUiContext);
+                bootContext.activateFacebookAppStartLogin();
                 deferredStartup.finished();
             } catch (Throwable throwable) {
                 deferredStartup.failed(throwable);
             }
         }, (message, throwable) -> {
-            exceptionHandler.restErrorHandler("GameUiContextController.loadColdGameUiContext()");
+            logger.log(Level.SEVERE, "LoadGameUiContextlTask failed: " + message, throwable);
             deferredStartup.failed(throwable);
             return false;
         }).loadColdGameUiContext(setupGameUiControlInput());

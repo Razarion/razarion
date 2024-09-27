@@ -30,7 +30,7 @@ public enum DeferredTestTaskEnum implements StartupTaskEnum {
     }
 
     @Override
-    public Class<? extends AbstractStartupTask> getTaskClass() {
-        return taskClass;
+    public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+        throw new UnsupportedOperationException();
     }
 }

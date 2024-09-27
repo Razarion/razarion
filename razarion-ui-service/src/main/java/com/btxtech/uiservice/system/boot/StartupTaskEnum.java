@@ -19,7 +19,7 @@ package com.btxtech.uiservice.system.boot;
  * Time: 19:36:23
  */
 public interface StartupTaskEnum {
-    Class<? extends AbstractStartupTask> getTaskClass();
+    AbstractStartupTask createAbstractStartupTask(BootContext bootContext);
 
     String name();
 

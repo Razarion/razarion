@@ -14,6 +14,7 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 
 /**
@@ -22,35 +23,72 @@ import com.btxtech.uiservice.system.boot.StartupTaskEnum;
  * Time: 18:21:15
  */
 public enum ColdGameStartupTaskEnum implements StartupTaskEnum {
-    LOAD_START_JS(LoadStartJsTask.class),
-    COMPATIBILITY_CHECK(CompatibilityCheckerStartupTask.class),
-    LOAD_AND_START_WORKER(LoadWorkerTask.class),
-    LOAD_GAME_UI_CONTEXT_CONFIG(LoadGameUiContextlTask.class),
-    LOAD_THREE_JS_MODELS(LoadLoadThreeJsModelsTask.class),
+    LOAD_START_JS(LoadStartJsTask.class) {
+        @Override
+        public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+            return new LoadStartJsTask();
+        }
+    },
+    COMPATIBILITY_CHECK(CompatibilityCheckerStartupTask.class) {
+        @Override
+        public CompatibilityCheckerStartupTask createAbstractStartupTask(BootContext bootContext) {
+            return new CompatibilityCheckerStartupTask(bootContext);
+        }
+    },
+    LOAD_AND_START_WORKER(LoadWorkerTask.class) {
+        @Override
+        public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+            return new LoadWorkerTask(bootContext);
+        }
+    },
+    LOAD_GAME_UI_CONTEXT_CONFIG(LoadGameUiContextlTask.class) {
+        @Override
+        public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+            return new LoadGameUiContextlTask(bootContext);
+        }
+    },
+    LOAD_THREE_JS_MODELS(LoadLoadThreeJsModelsTask.class) {
+        @Override
+        public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+            return new LoadLoadThreeJsModelsTask(bootContext);
+        }
+    },
     INIT_WORKER(InitWorkerTask.class) {
+        @Override
+        public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+            return new InitWorkerTask(bootContext);
+        }
+
         @Override
         public StartupTaskEnum[] getWaitForBackgroundTasks() {
             return new StartupTaskEnum[]{LOAD_AND_START_WORKER};
         }
     },
-    INIT_GAME_UI(InitGameUiTask.class),
+    INIT_GAME_UI(InitGameUiTask.class) {
+        @Override
+        public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+            return new InitGameUiTask(bootContext);
+        }
+    },
     INIT_RENDERER(InitRendererTask.class) {
+        @Override
+        public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+            return new InitRendererTask(bootContext);
+        }
+
         @Override
         public StartupTaskEnum[] getWaitForBackgroundTasks() {
             return new StartupTaskEnum[]{INIT_WORKER, LOAD_THREE_JS_MODELS};
         }
     },
-    RUN_GAME(RunGameUiControlTask.class);
-
-    private Class<? extends AbstractStartupTask> taskClass;
+    RUN_GAME(RunGameUiControlTask.class) {
+        @Override
+        public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {
+            return new RunGameUiControlTask(bootContext);
+        }
+    };
 
     ColdGameStartupTaskEnum(Class<? extends AbstractStartupTask> taskClass) {
-        this.taskClass = taskClass;
-    }
-
-    @Override
-    public Class<? extends AbstractStartupTask> getTaskClass() {
-        return taskClass;
     }
 
 }
