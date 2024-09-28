@@ -24,9 +24,9 @@ public class Vertex {
     public static final Vertex Z_NORM = new Vertex(0, 0, 1);
     public static final Vertex Z_NORM_NEG = new Vertex(0, 0, -1);
 
-    private double x;
-    private double y;
-    private double z;
+    double x; // Package private due to dominokit serialization. The variable is still readonly
+    double y; // Package private due to dominokit serialization. The variable is still readonly
+    double z; // Package private due to dominokit serialization. The variable is still readonly
 
     // Used by Errai
     @JsIgnore

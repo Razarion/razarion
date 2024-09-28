@@ -6,7 +6,7 @@ import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.ServerState;
-import com.btxtech.shared.rest.ServerMgmtProvider;
+import com.btxtech.shared.rest.ServerMgmtController;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -81,7 +81,7 @@ public class LifecycleService {
 
     private SimpleExecutorService simpleExecutorService;
 
-    private Caller<ServerMgmtProvider> serverMgmt;
+    private Caller<ServerMgmtController> serverMgmt;
 
     private UserUiService userUiService;
 
@@ -91,7 +91,7 @@ public class LifecycleService {
     private boolean beforeUnload;
 
     @Inject
-    public LifecycleService(GwtAngularService gwtAngularService, UserUiService userUiService, Caller<com.btxtech.shared.rest.ServerMgmtProvider> serverMgmt, SimpleExecutorService simpleExecutorService, SelectionHandler selectionHandler, GameUiControl gameUiControl, Provider<com.btxtech.uiservice.cockpit.ScreenCover> screenCover, AudioService audioService, TerrainUiService terrainUiService, TrailService trailService, ResourceUiService resourceUiService, BoxUiService boxUiService, BaseItemUiService baseItemUiService, GameEngineControl gameEngineControl, PerfmonService perfmonService, ClientPerformanceTrackerService clientPerformanceTrackerService, ClientTrackerService clientTrackerService, ExceptionHandler exceptionHandler, Boot boot) {
+    public LifecycleService(GwtAngularService gwtAngularService, UserUiService userUiService, Caller<ServerMgmtController> serverMgmt, SimpleExecutorService simpleExecutorService, SelectionHandler selectionHandler, GameUiControl gameUiControl, Provider<com.btxtech.uiservice.cockpit.ScreenCover> screenCover, AudioService audioService, TerrainUiService terrainUiService, TrailService trailService, ResourceUiService resourceUiService, BoxUiService boxUiService, BaseItemUiService baseItemUiService, GameEngineControl gameEngineControl, PerfmonService perfmonService, ClientPerformanceTrackerService clientPerformanceTrackerService, ClientTrackerService clientTrackerService, ExceptionHandler exceptionHandler, Boot boot) {
         this.gwtAngularService = gwtAngularService;
         this.userUiService = userUiService;
         this.serverMgmt = serverMgmt;

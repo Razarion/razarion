@@ -33,6 +33,10 @@ public class PlanetConfig implements Config {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String getInternalName() {
         return internalName;
@@ -109,7 +113,7 @@ public class PlanetConfig implements Config {
     }
 
     public PlanetConfig id(int id) {
-        this.id = id;
+        setId(id);
         return this;
     }
 

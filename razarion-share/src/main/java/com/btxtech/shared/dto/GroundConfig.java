@@ -25,6 +25,10 @@ public class GroundConfig implements Config {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getInternalName() {
         return internalName;
     }
@@ -66,7 +70,7 @@ public class GroundConfig implements Config {
     }
 
     public GroundConfig id(int id) {
-        this.id = id;
+        setId(id);
         return this;
     }
 

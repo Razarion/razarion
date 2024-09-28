@@ -20,8 +20,8 @@ import java.util.List;
 public class Polygon2D {
 
     // private Logger logger = Logger.getLogger(Polygon2D.class.getName());
-    private List<DecimalPosition> corners = new ArrayList<>();
-    private List<Line> lines = new ArrayList<>();
+    List<DecimalPosition> corners = new ArrayList<>(); // Package private due to dominokit serialization. The variable is still readonly
+    List<Line> lines = new ArrayList<>(); // Package private due to dominokit serialization. The variable is still readonly
 
     /**
      * Used by Errai

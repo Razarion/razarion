@@ -13,11 +13,11 @@ import java.util.Collection;
 public class Line {
     private static final double MIN_M_INFINITE = Math.tan(MathHelper.gradToRad(89.99999999));
     private static final double MIN_M_ZERO = Math.tan(MathHelper.gradToRad(0.000000001));
-    private DecimalPosition point1;
-    private DecimalPosition point2;
-    private DecimalPosition norm;
-    private double m;
-    private double c;
+    DecimalPosition point1; // Package private due to dominokit serialization. The variable is still readonly
+    DecimalPosition point2; // Package private due to dominokit serialization. The variable is still readonly
+    DecimalPosition norm; // Package private due to dominokit serialization. The variable is still readonly
+    double m; // Package private due to dominokit serialization. The variable is still readonly
+    double c; // Package private due to dominokit serialization. The variable is still readonly
 
     /**
      * Used by GWT

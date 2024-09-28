@@ -27,7 +27,6 @@
           <option name="goals">
             <list>
               <option value="clean" />
-              <option value="source:jar" />
               <option value="install" />
               <option value="-DskipTests=true" />
             </list>

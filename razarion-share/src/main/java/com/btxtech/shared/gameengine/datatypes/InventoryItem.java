@@ -31,8 +31,12 @@ public class InventoryItem implements Config {
         return id;
     }
 
-    public InventoryItem id(int id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public InventoryItem id(int id) {
+        setId(id);
         return this;
     }
 
@@ -40,8 +44,12 @@ public class InventoryItem implements Config {
         return i18nName;
     }
 
-    public InventoryItem i18nName(I18nString i18nName) {
+    public void setI18nName(I18nString i18nName) {
         this.i18nName = i18nName;
+    }
+
+    public InventoryItem i18nName(I18nString i18nName) {
+        setI18nName(i18nName);
         return this;
     }
 

@@ -12,17 +12,25 @@ public class GameUiControlInput {
         return playbackGameSessionUuid;
     }
 
-    public GameUiControlInput setPlaybackGameSessionUuid(String playbackGameSessionUuid) {
+    public void setPlaybackGameSessionUuid(String playbackGameSessionUuid) {
         this.playbackGameSessionUuid = playbackGameSessionUuid;
-        return this;
     }
 
     public String getPlaybackSessionUuid() {
         return playbackSessionUuid;
     }
 
-    public GameUiControlInput setPlaybackSessionUuid(String playbackSessionUuid) {
+    public void setPlaybackSessionUuid(String playbackSessionUuid) {
         this.playbackSessionUuid = playbackSessionUuid;
+    }
+
+    public GameUiControlInput playbackGameSessionUuid(String playbackGameSessionUuid) {
+        setPlaybackGameSessionUuid(playbackGameSessionUuid);
+        return this;
+    }
+
+    public GameUiControlInput playbackSessionUuid(String playbackSessionUuid) {
+        setPlaybackSessionUuid(playbackSessionUuid);
         return this;
     }
 

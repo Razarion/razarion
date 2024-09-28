@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
-import com.btxtech.shared.rest.ServerMgmtProvider;
+import com.btxtech.shared.rest.ServerMgmtController;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -15,7 +15,7 @@ import elemental2.promise.Promise;
 
 public class BootContext {
     private SimpleExecutorService simpleExecutorService;
-    private Caller<ServerMgmtProvider> serverMgmt;
+    private Caller<ServerMgmtController> serverMgmt;
     private GameEngineControl gameEngineControl;
     private GameUiControl gameUiControl;
     private AssetService assetService;
@@ -25,7 +25,7 @@ public class BootContext {
         return simpleExecutorService;
     }
 
-    public Caller<ServerMgmtProvider> getServerMgmt() {
+    public Caller<ServerMgmtController> getServerMgmt() {
         return serverMgmt;
     }
 

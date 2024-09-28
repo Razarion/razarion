@@ -1,13 +1,7 @@
 package com.btxtech.client.system.boot;
 
-import com.btxtech.client.Caller;
-import com.btxtech.client.RemoteCallback;
-import com.btxtech.client.user.FacebookService;
-import com.btxtech.common.system.ClientExceptionHandlerImpl;
-import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
-import com.btxtech.shared.rest.GameUiContextController;
-import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.shared.rest.GameUiContextControllerFactory;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -28,8 +22,6 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
     private static final Logger logger = Logger.getLogger(LoadGameUiContextlTask.class.getName());
     private final BootContext bootContext;
 
-    private Caller<GameUiContextController> serviceCaller;
-
     @Inject
     public LoadGameUiContextlTask(BootContext bootContext) {
         this.bootContext = bootContext;
@@ -38,19 +30,21 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        serviceCaller.call((RemoteCallback<ColdGameUiContext>) coldGameUiContext -> {
-            try {
-                bootContext.getGameUiControl().setColdGameUiContext(coldGameUiContext);
-                bootContext.activateFacebookAppStartLogin();
-                deferredStartup.finished();
-            } catch (Throwable throwable) {
-                deferredStartup.failed(throwable);
-            }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "LoadGameUiContextlTask failed: " + message, throwable);
-            deferredStartup.failed(throwable);
-            return false;
-        }).loadColdGameUiContext(setupGameUiControlInput());
+        GameUiContextControllerFactory.INSTANCE.loadColdGameUiContext(setupGameUiControlInput())
+                .onSuccess(coldGameUiContext -> {
+                    try {
+                        bootContext.getGameUiControl().setColdGameUiContext(coldGameUiContext);
+                        bootContext.activateFacebookAppStartLogin();
+                        deferredStartup.finished();
+                    } catch (Throwable throwable) {
+                        deferredStartup.failed(throwable);
+                    }
+                })
+                .onFailed(fail -> {
+                    logger.log(Level.SEVERE, "LoadGameUiContextlTask failed: " + fail.getStatusText(), fail.getThrowable());
+                    deferredStartup.failed(fail.getThrowable());
+                })
+                .send();
     }
 
     private GameUiControlInput setupGameUiControlInput() {

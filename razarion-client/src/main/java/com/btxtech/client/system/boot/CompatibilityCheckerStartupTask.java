@@ -1,9 +1,7 @@
 package com.btxtech.client.system.boot;
 
-import com.btxtech.client.Caller;
-import com.btxtech.client.RemoteCallback;
 import com.btxtech.shared.Constants;
-import com.btxtech.shared.rest.ServerMgmtProvider;
+import com.btxtech.shared.rest.ServerMgmtControllerFactory;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.BootContext;
@@ -30,17 +28,16 @@ public class CompatibilityCheckerStartupTask extends AbstractStartupTask {
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        bootContext.getServerMgmt().call((RemoteCallback<Integer>) interfaceVersion -> {
+        ServerMgmtControllerFactory.INSTANCE.getInterfaceVersion().onSuccess(interfaceVersion -> {
             if (Constants.INTERFACE_VERSION == interfaceVersion) {
                 deferredStartup.finished();
             } else {
                 logger.log(Level.SEVERE, "CompatibilityCheckerStartupTask wrong client interface version: " + Constants.INTERFACE_VERSION + ". Server interface version: " + interfaceVersion);
                 bootContext.getSimpleExecutorService().schedule(RELOAD_DELAY, Window.Location::reload, SimpleExecutorService.Type.RELOAD_CLIENT_WRONG_INTERFACE_VERSION);
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerMgmt.getInterfaceVersion failed: " + message, throwable);
+        }).onFailed(fail -> {
+            logger.log(Level.SEVERE, "ServerMgmt.getInterfaceVersion failed: " + fail.getStatusText(), fail.getThrowable());
             deferredStartup.finished();
-            return false;
-        }).getInterfaceVersion();
+        }).send();
     }
 }

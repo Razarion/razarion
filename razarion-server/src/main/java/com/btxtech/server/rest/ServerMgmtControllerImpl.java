@@ -3,7 +3,7 @@ package com.btxtech.server.rest;
 import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.shared.Constants;
 import com.btxtech.shared.datatypes.ServerState;
-import com.btxtech.shared.rest.ServerMgmtProvider;
+import com.btxtech.shared.rest.ServerMgmtController;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -12,7 +12,7 @@ import javax.inject.Inject;
  * Created by Beat
  * on 16.02.2018.
  */
-public class ServerMgmtProviderImpl implements ServerMgmtProvider {
+public class ServerMgmtControllerImpl implements ServerMgmtController {
     @Inject
     private ServerMgmt serverMgmt;
     @Inject

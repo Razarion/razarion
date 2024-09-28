@@ -21,6 +21,10 @@ public class TerrainObjectConfig implements Config {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String getInternalName() {
         return internalName;
@@ -66,7 +70,7 @@ public class TerrainObjectConfig implements Config {
     }
 
     public TerrainObjectConfig id(int id) {
-        this.id = id;
+        setId(id);
         return this;
     }
 

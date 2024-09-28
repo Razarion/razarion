@@ -24,8 +24,12 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
         return id;
     }
 
-    public T id(int id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    public T id(int id) {
+        setId(id);
         return (T) this;
     }
 

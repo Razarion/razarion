@@ -27,8 +27,9 @@ import java.util.Objects;
  */
 @Embeddable
 public class Rectangle2D {
-    private DecimalPosition start;
-    private DecimalPosition end; // Exclusive
+    DecimalPosition start; // Package private due to dominokit serialization. The variable is still readonly
+    // Exclusive
+    DecimalPosition end; // Package private due to dominokit serialization. The variable is still readonly
 
     /**
      * Used by Errai

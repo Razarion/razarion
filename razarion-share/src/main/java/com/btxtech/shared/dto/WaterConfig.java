@@ -35,6 +35,10 @@ public class WaterConfig implements Config {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String getInternalName() {
         return internalName;
@@ -150,7 +154,7 @@ public class WaterConfig implements Config {
     }
 
     public WaterConfig id(int id) {
-        this.id = id;
+        setId(id);
         return this;
     }
 

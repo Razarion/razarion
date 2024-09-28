@@ -13,10 +13,10 @@ import java.util.List;
 @Embeddable
 public class Color {
     public static final Color GREY = new Color(0.5, 0.5, 0.5);
-    private double r;
-    private double g;
-    private double b;
-    private double a;
+    double r; // Package private due to dominokit serialization. The variable is still readonly
+    double g; // Protected due to dominokit serialization. The variable is still readonly
+    double b; // Protected due to dominokit serialization. The variable is still readonly
+    double a; // Protected due to dominokit serialization. The variable is still readonly
 
     // Used by Errai
     public Color() {

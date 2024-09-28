@@ -1,7 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.datatypes.ServerState;
+import org.dominokit.rest.shared.request.service.annotations.RequestFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,7 +13,8 @@ import javax.ws.rs.core.MediaType;
  * on 16.02.2018.
  */
 @Path(CommonUrl.SERVER_MGMT)
-public interface ServerMgmtProvider {
+@RequestFactory
+public interface ServerMgmtController {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("serverstatus")

@@ -23,6 +23,10 @@ public class ParticleSystemConfig implements Config {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String getInternalName() {
         return internalName;
@@ -66,7 +70,7 @@ public class ParticleSystemConfig implements Config {
     }
 
     public ParticleSystemConfig id(int id) {
-        this.id = id;
+        setId(id);
         return this;
     }
 
