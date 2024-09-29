@@ -111,10 +111,7 @@ public class LifecycleService {
         this.clientTrackerService = clientTrackerService;
         this.exceptionHandler = exceptionHandler;
         this.boot = boot;
-    }
 
-    @PostConstruct
-    public void postConstruct() {
         boot.addStartupProgressListener(clientTrackerService);
         boot.addStartupProgressListener(new StartupProgressListener() {
             @Override

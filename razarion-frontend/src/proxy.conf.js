@@ -1,7 +1,7 @@
 const PROXY_CONFIG = [
   {
     context: [
-      "/razarion_client",
+      "/com.btxtech.client.RazarionClient",
       "/NativeRazarion.js",
       "/rest",
       "/gz",

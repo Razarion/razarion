@@ -1,11 +1,9 @@
 package com.btxtech.uiservice.system.boot;
 
-import com.btxtech.client.Caller;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
-import com.btxtech.shared.rest.ServerMgmtController;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -14,19 +12,22 @@ import com.btxtech.uiservice.user.UserUiService;
 import elemental2.promise.Promise;
 
 public class BootContext {
-    private SimpleExecutorService simpleExecutorService;
-    private Caller<ServerMgmtController> serverMgmt;
-    private GameEngineControl gameEngineControl;
-    private GameUiControl gameUiControl;
-    private AssetService assetService;
-    private UserUiService userUiService;
+    private final SimpleExecutorService simpleExecutorService;
+    private final GameEngineControl gameEngineControl;
+    private final GameUiControl gameUiControl;
+    private final AssetService assetService;
+    private final UserUiService userUiService;
+
+    public BootContext(SimpleExecutorService simpleExecutorService, GameEngineControl gameEngineControl, GameUiControl gameUiControl, AssetService assetService, UserUiService userUiService) {
+        this.simpleExecutorService = simpleExecutorService;
+        this.gameEngineControl = gameEngineControl;
+        this.gameUiControl = gameUiControl;
+        this.assetService = assetService;
+        this.userUiService = userUiService;
+    }
 
     public SimpleExecutorService getSimpleExecutorService() {
         return simpleExecutorService;
-    }
-
-    public Caller<ServerMgmtController> getServerMgmt() {
-        return serverMgmt;
     }
 
     public GameUiControl getGameUiControl() {

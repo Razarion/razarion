@@ -12,15 +12,18 @@ import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
+import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.ServerQuestProvider;
 import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.system.boot.Boot;
+import com.btxtech.uiservice.user.UserUiService;
 import dagger.Module;
 import dagger.Provides;
 
@@ -62,10 +65,23 @@ public class RazarionClientModule {
     public Boot boot(AlarmService alarmService,
                      Provider<ClientGameEngineControl> clientGameEngineControl,
                      FacebookService facebookService,
-                     GwtAngularService gwtAngularService,
+                     Provider<GwtAngularService> gwtAngularService,
                      GameEngineControl gameEngineControl,
-                     BabylonRendererService threeJsRendererService) {
-        return new BootImpl(alarmService, clientGameEngineControl, facebookService, gwtAngularService, gameEngineControl, threeJsRendererService);
+                     GameUiControl gameUiControl,
+                     BabylonRendererService threeJsRendererService,
+                     SimpleExecutorService simpleExecutorService,
+                     AssetService assetService,
+                     UserUiService userUiService) {
+        return new BootImpl(alarmService,
+                clientGameEngineControl,
+                facebookService,
+                gwtAngularService,
+                gameEngineControl,
+                gameUiControl,
+                threeJsRendererService,
+                simpleExecutorService,
+                assetService,
+                userUiService);
     }
 
     @Provides
@@ -74,8 +90,8 @@ public class RazarionClientModule {
     }
 
     @Provides
-    public TrackerService trackerService() {
-        return new ClientTrackerService(null, null, null, null);
+    public TrackerService trackerService(SimpleExecutorService simpleExecutorService, Provider<Boot> boot) {
+        return new ClientTrackerService(simpleExecutorService, boot);
     }
 
     @Provides

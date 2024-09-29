@@ -176,6 +176,12 @@
                     <moduleName>com.btxtech.client.RazarionClient</moduleName>
                     <moduleShortName>app</moduleShortName>
                     <webappDirectory>${project.basedir}/../razarion-server/src/main/webapp</webappDirectory>
+                    <compilerArgs>
+                        <arg>-generateJsInteropExports</arg>
+                    </compilerArgs>
+                    <codeserverArgs>
+                        <arg>-generateJsInteropExports</arg>
+                    </codeserverArgs>
                 </configuration>
             </plugin>
         </plugins>

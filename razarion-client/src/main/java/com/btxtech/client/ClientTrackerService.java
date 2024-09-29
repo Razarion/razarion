@@ -1,7 +1,6 @@
 package com.btxtech.client;
 
 import com.btxtech.client.utils.GwtUtils;
-import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.MouseButtonTracking;
 import com.btxtech.shared.datatypes.tracking.MouseMoveTracking;
@@ -13,7 +12,7 @@ import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.rest.TrackerProvider;
+import com.btxtech.shared.rest.TrackerControllerFactory;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.SelectionEvent;
@@ -27,9 +26,9 @@ import elemental2.dom.DomGlobal;
 import elemental2.dom.Event;
 import elemental2.dom.MouseEvent;
 
-import javax.inject.Singleton;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,34 +45,28 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private static final String START_UUID = "uuid";
     private static final int DETAILED_TRACKING_DELAY = 1000 * 10;
     private final Logger logger = Logger.getLogger(ClientTrackerService.class.getName());
-
-    private Caller<TrackerProvider> trackingProvider;
-
-    private Boot boot;
-
-    private SimpleExecutorService detailedExecutionService;
-
-    private ClientExceptionHandlerImpl exceptionHandler;
+    private final Provider<Boot> boot;
+    private final SimpleExecutorService simpleExecutorService;
     private TrackingContainer trackingContainer;
     private boolean detailedTracking = false;
     private SimpleScheduledFuture detailedTrackingFuture;
 
     @Inject
-    public ClientTrackerService(ClientExceptionHandlerImpl exceptionHandler, SimpleExecutorService detailedExecutionService, Boot boot, Caller<TrackerProvider> trackingProvider) {
-        this.exceptionHandler = exceptionHandler;
-        this.detailedExecutionService = detailedExecutionService;
+    public ClientTrackerService(SimpleExecutorService simpleExecutorService, Provider<Boot> boot) {
+        this.simpleExecutorService = simpleExecutorService;
         this.boot = boot;
-        this.trackingProvider = trackingProvider;
     }
 
     @Override
     public void trackGameUiControl(Date startTimeStamp) {
         GameUiControlTrackerInfo gameUiControlTrackerInfo = new GameUiControlTrackerInfo();
         gameUiControlTrackerInfo.setStartTime(startTimeStamp);
-        gameUiControlTrackerInfo.setGameSessionUuid(boot.getGameSessionUuid());
+        gameUiControlTrackerInfo.setGameSessionUuid(boot.get().getGameSessionUuid());
         gameUiControlTrackerInfo.setDuration((int) (startTimeStamp.getTime() - System.currentTimeMillis()));
-        trackingProvider.call(response -> {
-        }, exceptionHandler.restErrorHandler("TrackerProvider.gameUiControlTrackerInfo() trackGameUiControl")).gameUiControlTrackerInfo(gameUiControlTrackerInfo);
+        TrackerControllerFactory.INSTANCE
+                .gameUiControlTrackerInfo(gameUiControlTrackerInfo)
+                .onFailed(fail -> logger.log(Level.SEVERE, "TrackerProvider.gameUiControlTrackerInfo() onFailed: " + fail.getStatusText(), fail.getThrowable()))
+                .send();
     }
 
     @Override
@@ -81,41 +74,51 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         SceneTrackerInfo sceneTrackerInfo = new SceneTrackerInfo();
         sceneTrackerInfo.setStartTime(startTimeStamp);
         sceneTrackerInfo.setInternalName(sceneInternalName);
-        sceneTrackerInfo.setGameSessionUuid(boot.getGameSessionUuid());
+        sceneTrackerInfo.setGameSessionUuid(boot.get().getGameSessionUuid());
         sceneTrackerInfo.setDuration((int) (System.currentTimeMillis() - startTimeStamp.getTime()));
-        trackingProvider.call(response -> {
-        }, exceptionHandler.restErrorHandler("TrackerProvider.sceneTrackerInfo() trackScene")).sceneTrackerInfo(sceneTrackerInfo);
+        TrackerControllerFactory.INSTANCE
+                .sceneTrackerInfo(sceneTrackerInfo)
+                .onFailed(fail -> logger.log(Level.SEVERE, "TrackerProvider.sceneTrackerInfo() trackScene: " + fail.getStatusText(), fail.getThrowable()))
+                .send();
     }
 
     @Override
     public void onTaskFinished(AbstractStartupTask task) {
-        trackingProvider.call(response -> {
-        }, exceptionHandler.restErrorHandler("TrackerProvider.startupTask() onTaskFinished")).startupTask(createStartupTaskJson(task, null));
+        TrackerControllerFactory.INSTANCE
+                .startupTask(createStartupTaskJson(task, null))
+                .onFailed(fail -> logger.log(Level.SEVERE, "TrackerProvider.startupTask() onTaskFinished: " + fail.getStatusText(), fail.getThrowable()))
+                .send();
     }
 
     @Override
     public void onTaskFailed(AbstractStartupTask task, String error, Throwable t) {
         logger.log(Level.SEVERE, "onTaskFailed: " + task + " error:" + error, t);
-        trackingProvider.call(response -> {
-        }, exceptionHandler.restErrorHandler("TrackerProvider.startupTask() onTaskFailed")).startupTask(createStartupTaskJson(task, error));
+        TrackerControllerFactory.INSTANCE
+                .startupTask(createStartupTaskJson(task, error))
+                .onFailed(fail -> logger.log(Level.SEVERE, "TrackerProvider.startupTask() onTaskFailed: " + fail.getStatusText(), fail.getThrowable()))
+                .send();
     }
 
     @Override
     public void onStartupFinished(List<StartupTaskInfo> taskInfo, long totalTime) {
-        trackingProvider.call(response -> {
-        }, exceptionHandler.restErrorHandler("TrackerProvider.startupTerminated() onStartupFinished")).startupTerminated(createStartupTerminatedJson(totalTime, true));
+        TrackerControllerFactory.INSTANCE
+                .startupTerminated(createStartupTerminatedJson(totalTime, true))
+                .onFailed(fail -> logger.log(Level.SEVERE, "TrackerProvider.startupTerminated() onStartupFinished: " + fail.getStatusText(), fail.getThrowable()))
+                .send();
     }
 
     @Override
     public void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
+        TrackerControllerFactory.INSTANCE
+                .startupTerminated(createStartupTerminatedJson(totalTime, false))
+                .onFailed(fail -> logger.log(Level.SEVERE, "TrackerProvider.startupTerminated() onStartupFailed: " + fail.getStatusText(), fail.getThrowable()))
+                .send();
         logger.severe("onStartupFailed: " + taskInfo + " totalTime:" + totalTime);
-        trackingProvider.call(response -> {
-        }, exceptionHandler.restErrorHandler("TrackerProvider.startupTerminated() onStartupFailed")).startupTerminated(createStartupTerminatedJson(totalTime, false));
     }
 
     private StartupTaskJson createStartupTaskJson(AbstractStartupTask task, String error) {
         StartupTaskJson startupTaskJson = new StartupTaskJson();
-        startupTaskJson.setGameSessionUuid(boot.getGameSessionUuid());
+        startupTaskJson.setGameSessionUuid(boot.get().getGameSessionUuid());
         startupTaskJson.setStartTime(new Date(task.getStartTime())).setDuration((int) task.getDuration());
         startupTaskJson.setTaskEnum(task.getTaskEnum().name()).setError(error);
         return startupTaskJson;
@@ -123,7 +126,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
 
     private StartupTerminatedJson createStartupTerminatedJson(long totalTime, boolean success) {
         StartupTerminatedJson startupTerminatedJson = new StartupTerminatedJson();
-        startupTerminatedJson.setGameSessionUuid(boot.getGameSessionUuid());
+        startupTerminatedJson.setGameSessionUuid(boot.get().getGameSessionUuid());
         startupTerminatedJson.successful(success).totalTime((int) totalTime);
         return startupTerminatedJson;
     }
@@ -134,7 +137,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         stopDetailedTracking();
         detailedTracking = true;
         createTrackingContainer();
-        detailedTrackingFuture = detailedExecutionService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
+        detailedTrackingFuture = simpleExecutorService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
 
         // TODO viewService.addViewFieldListeners(this);
         DomGlobal.document.addEventListener("mousemove", this::onMouseMove, true);
@@ -142,11 +145,13 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         DomGlobal.document.addEventListener("mouseup", this::onMouseButtonUp, true);
         // TODO clientModalDialogManager.setTrackerCallback(this::trackDialog);
 
-        TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId).setGameSessionUuid(boot.getGameSessionUuid());
+        TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId).setGameSessionUuid(boot.get().getGameSessionUuid());
         // TODO trackingStart.setBrowserWindowDimension(gameCanvas.getWindowDimenionForPlayback());
         initDetailedTracking(trackingStart);
-        trackingProvider.call(response -> {
-        }, exceptionHandler.restErrorHandler("TrackerProvider.trackingStart()")).trackingStart(trackingStart);
+        TrackerControllerFactory.INSTANCE
+                .trackingStart(trackingStart)
+                .onFailed(fail -> logger.log(Level.SEVERE, "TrackerProvider.trackingStart(): " + fail.getStatusText(), fail.getThrowable()))
+                .send();
     }
 
     @Override
@@ -161,7 +166,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         sendEventTrackerItems();
     }
 
-    public void onSelectionEvent( SelectionEvent selectionEvent) {
+    public void onSelectionEvent(SelectionEvent selectionEvent) {
         if (!detailedTracking) {
             return;
         }
@@ -187,7 +192,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
             initDetailedTracking(mouseMoveTracking);
             trackingContainer.addMouseMoveTrackings(mouseMoveTracking);
         } catch (Exception e) {
-            exceptionHandler.handleException("ClientTrackerService.onMouseMove()", e);
+            logger.log(Level.SEVERE, "ClientTrackerService.onMouseMove()", e);
         }
     }
 
@@ -198,7 +203,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
             initDetailedTracking(mouseButtonTracking);
             trackingContainer.addMouseButtonTrackings(mouseButtonTracking);
         } catch (Exception e) {
-            exceptionHandler.handleException("ClientTrackerService.onMouseButton()", e);
+            logger.log(Level.SEVERE, "ClientTrackerService.onMouseButton()", e);
         }
     }
 
@@ -209,7 +214,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
             initDetailedTracking(mouseButtonTracking);
             trackingContainer.addMouseButtonTrackings(mouseButtonTracking);
         } catch (Exception e) {
-            exceptionHandler.handleException("ClientTrackerService.onMouseButton()", e);
+            logger.log(Level.SEVERE, "ClientTrackerService.onMouseButton()", e);
         }
     }
 
@@ -223,12 +228,14 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         }
         TrackingContainer tmpTrackingContainer = trackingContainer;
         createTrackingContainer();
-        trackingProvider.call(response -> {
-        }, exceptionHandler.restErrorHandler("TrackerProvider.detailedTracking()")).detailedTracking(tmpTrackingContainer);
+        TrackerControllerFactory.INSTANCE
+                .detailedTracking(tmpTrackingContainer)
+                .onFailed(fail -> logger.log(Level.SEVERE, "TrackerProvider.detailedTracking(): " + fail.getStatusText(), fail.getThrowable()))
+                .send();
     }
 
     private void createTrackingContainer() {
         trackingContainer = new TrackingContainer();
-        trackingContainer.setGameSessionUuid(boot.getGameSessionUuid());
+        trackingContainer.setGameSessionUuid(boot.get().getGameSessionUuid());
     }
 }

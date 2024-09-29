@@ -3,8 +3,9 @@ package com.btxtech.common.system.logging;
 import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.dto.StackTraceElementLogInfo;
 import com.btxtech.shared.dto.ThrownLogInfo;
+import com.btxtech.shared.rest.LoggingControllerFactory;
+import com.btxtech.shared.utils.ExceptionUtil;
 import com.google.gwt.core.client.GWT;
-import elemental2.dom.DomGlobal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,22 +17,17 @@ import java.util.logging.LogRecord;
  */
 public class JsonLogService {
     public static void doLog(LogRecord logRecord) {
-        DomGlobal.console.error(logRecord);
-//        RestClient.create(LoggingProvider.class, (RequestCallback) response -> {
-//        }, (message, throwable) -> {
-//            FallbackLog.fallbackXhrLog("Error callback: JSON log failed: " + ExceptionUtil.setupStackTrace(message + "", throwable) + " Original log record: " + FallbackLog.toString(logRecord));
-//            return false;
-//        }).jsonLogger(toLogRecordInfo(logRecord));
+        LoggingControllerFactory.INSTANCE.jsonLogger(toLogRecordInfo(logRecord))
+                .onFailed(fail -> FallbackLog.fallbackXhrLog("Error callback: JSON log failed: "
+                        + ExceptionUtil.setupStackTrace(fail.getStatusText(), fail.getThrowable())
+                        + " Original log record: " + FallbackLog.toString(logRecord)))
+                .send();
     }
 
     private static LogRecordInfo toLogRecordInfo(LogRecord logRecord) {
         LogRecordInfo logRecordInfo = new LogRecordInfo();
         logRecordInfo.setLevel(logRecord.getLevel() != null ? logRecord.getLevel().toString() : null);
-        // TODO not available in GWT  logRecordInfo.setSequenceNumber(Long.toString(logRecord.getSequenceNumber()));
-        // TODO not available in GWT logRecordInfo.setSourceClassName(logRecord.getSourceClassName());
-        // TODO not available in GWT logRecordInfo.setSourceMethodName(logRecord.getSourceMethodName());
         logRecordInfo.setMessage(logRecord.getMessage());
-        // TODO not available in GWT logRecordInfo.setThreadID(logRecord.getThreadID());
         logRecordInfo.setMillis(Long.toString(logRecord.getMillis()));
 
         logRecordInfo.setThrown(setupThrownLogInfo(logRecord.getThrown()));

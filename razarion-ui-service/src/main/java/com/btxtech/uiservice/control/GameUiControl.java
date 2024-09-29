@@ -75,7 +75,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     private Provider<Boot> boot;
 
-    private TrackerService trackerService;
+    private Provider<TrackerService> trackerService;
 
     private Event<GameUiControlInitEvent> gameUiControlInitEvent;
 
@@ -102,7 +102,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
                          Provider<ScreenCover> screenCover,
                          ModalDialogManager modalDialogManager,
                          Event<GameUiControlInitEvent> gameUiControlInitEvent,
-                         TrackerService trackerService,
+                         Provider<TrackerService> trackerService,
                          Provider<Boot> boot,
                          Provider<UserUiService> userUiService,
                          InventoryTypeService inventoryTypeService,
@@ -179,7 +179,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         }
         if (gameEngineMode == GameEngineMode.MASTER) {
             if (coldGameUiContext.getWarmGameUiContext().isDetailedTracking()) {
-                trackerService.startDetailedTracking(getPlanetConfig().getId());
+                trackerService.get().startDetailedTracking(getPlanetConfig().getId());
             }
             scenes = coldGameUiContext.getWarmGameUiContext().getSceneConfigs();
             if (scenes.isEmpty()) {
@@ -222,7 +222,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             logger.warning("sceneStartTimeStamp == null");
             return;
         }
-        trackerService.trackScene(sceneStartTimeStamp, currentScene.getSceneConfig().getInternalName());
+        trackerService.get().trackScene(sceneStartTimeStamp, currentScene.getSceneConfig().getInternalName());
         sceneStartTimeStamp = null;
     }
 
@@ -230,12 +230,12 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         if (startTimeStamp == null) {
             logger.warning("startTimeStamp == null");
         } else {
-            trackerService.trackGameUiControl(startTimeStamp);
+            trackerService.get().trackGameUiControl(startTimeStamp);
             startTimeStamp = null;
         }
         if (gameEngineMode == GameEngineMode.MASTER) {
             if (coldGameUiContext.getWarmGameUiContext().isDetailedTracking()) {
-                trackerService.stopDetailedTracking();
+                trackerService.get().stopDetailedTracking();
             }
             // TODO Temporary fix for showing move to first multiplayer planet. Pervents loading new planet if multiplayer planet is done. Because there is no new planet
             modalDialogManager.showLeaveStartTutorial(() -> {

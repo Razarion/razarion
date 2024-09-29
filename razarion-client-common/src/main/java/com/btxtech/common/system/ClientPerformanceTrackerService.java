@@ -1,6 +1,6 @@
 package com.btxtech.common.system;
 
-import com.btxtech.shared.rest.TrackerProvider;
+import com.btxtech.shared.rest.TrackerController;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonService;
@@ -22,7 +22,7 @@ public class ClientPerformanceTrackerService {
     private static final long SEND_SERVER_INTERVAL = 10000;
     private Logger logger = Logger.getLogger(ClientPerformanceTrackerService.class.getName());
 
-    private Caller<TrackerProvider> providerCaller;
+    private Caller<TrackerController> providerCaller;
 
     private SimpleExecutorService simpleExecutorService;
 
@@ -32,7 +32,7 @@ public class ClientPerformanceTrackerService {
     private SimpleScheduledFuture simpleScheduledFuture;
 
     @Inject
-    public ClientPerformanceTrackerService(ClientExceptionHandlerImpl exceptionHandler, PerfmonService perfmonService, SimpleExecutorService simpleExecutorService, Caller<com.btxtech.shared.rest.TrackerProvider> providerCaller) {
+    public ClientPerformanceTrackerService(ClientExceptionHandlerImpl exceptionHandler, PerfmonService perfmonService, SimpleExecutorService simpleExecutorService, Caller<TrackerController> providerCaller) {
         this.exceptionHandler = exceptionHandler;
         this.perfmonService = perfmonService;
         this.simpleExecutorService = simpleExecutorService;

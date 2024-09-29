@@ -9,6 +9,7 @@ import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
+import org.dominokit.rest.shared.request.service.annotations.RequestFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -21,7 +22,8 @@ import java.util.List;
  * 03.03.2017.
  */
 @Path(CommonUrl.TRACKER_PATH)
-public interface TrackerProvider {
+@RequestFactory
+public interface TrackerController {
     @POST
     @Path("startupTask")
     @Consumes(MediaType.APPLICATION_JSON)

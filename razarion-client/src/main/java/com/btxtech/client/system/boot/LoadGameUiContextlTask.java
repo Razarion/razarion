@@ -37,6 +37,7 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
                         bootContext.activateFacebookAppStartLogin();
                         deferredStartup.finished();
                     } catch (Throwable throwable) {
+                        logger.log(Level.SEVERE, "LoadGameUiContextlTask failed", throwable);
                         deferredStartup.failed(throwable);
                     }
                 })

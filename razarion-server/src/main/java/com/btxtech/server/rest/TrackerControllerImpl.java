@@ -8,22 +8,20 @@ import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
-import com.btxtech.shared.rest.TrackerProvider;
+import com.btxtech.shared.rest.TrackerController;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 03.03.2017.
  */
-public class TrackerProviderImpl implements TrackerProvider {
-    private Logger logger = Logger.getLogger(TrackerProviderImpl.class.getName());
+public class TrackerControllerImpl implements TrackerController {
+    // private Logger logger = Logger.getLogger(TrackerControllerImpl.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject

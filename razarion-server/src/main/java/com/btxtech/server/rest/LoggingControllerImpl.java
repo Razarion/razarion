@@ -6,7 +6,7 @@ import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.dto.StackTraceElementLogInfo;
 import com.btxtech.shared.dto.ThrownLogInfo;
-import com.btxtech.shared.rest.LoggingProvider;
+import com.btxtech.shared.rest.LoggingController;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.google.gwt.core.server.StackTraceDeobfuscator;
 
@@ -27,11 +27,11 @@ import java.util.logging.Logger;
  * Created by Beat
  * 18.02.2017.
  */
-public class LoggingProviderImpl implements LoggingProvider {
+public class LoggingControllerImpl implements LoggingController {
     //    private final static String TEMP_DIR = "C:\\Users\\Beat\\AppData\\Local\\Temp";/
 //    private final static String MODULE_NAME = "com.btxtech.Razarion-Client";
 //    private final static String SIMPLE_MODULE_NAME = "razarion_client";
-    private Logger logger = Logger.getLogger(LoggingProviderImpl.class.getName());
+    private Logger logger = Logger.getLogger(LoggingControllerImpl.class.getName());
     @Inject
     private SessionHolder sessionHolder;
     @Inject

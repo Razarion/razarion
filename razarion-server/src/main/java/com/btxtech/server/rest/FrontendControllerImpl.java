@@ -91,7 +91,7 @@ public class FrontendControllerImpl implements FrontendController {
         if (clientLogRecord.getError() != null) {
             aditionalString += "\nError: " + clientLogRecord.getError();
         }
-        logger.warning("FrontendLogger log: " + LoggingProviderImpl.setupUserWebString(sessionHolder) + "\nMessage: " + clientLogRecord.getMessage() + aditionalString);
+        logger.warning("FrontendLogger log: " + LoggingControllerImpl.setupUserWebString(sessionHolder) + "\nMessage: " + clientLogRecord.getMessage() + aditionalString);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class FrontendControllerImpl implements FrontendController {
 
     @Override
     public Response simpleLog(String errorMessage, String timestamp, String pathName) {
-        logger.severe("FrontendLogger simpleLog: " + LoggingProviderImpl.setupUserWebString(sessionHolder) + "\nError message: " + errorMessage + "\nTimestamp: " + DateUtil.getDateStringMillis(timestamp) + "\nPath name:" + pathName);
+        logger.severe("FrontendLogger simpleLog: " + LoggingControllerImpl.setupUserWebString(sessionHolder) + "\nError message: " + errorMessage + "\nTimestamp: " + DateUtil.getDateStringMillis(timestamp) + "\nPath name:" + pathName);
         return Response.ok(PIXEL_BYTES).build();
     }
 

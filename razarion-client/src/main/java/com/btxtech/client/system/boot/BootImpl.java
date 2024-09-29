@@ -7,13 +7,17 @@ import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
+import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
+import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.system.boot.StartupSeq;
+import com.btxtech.uiservice.user.UserUiService;
 import elemental2.promise.Promise;
 
 import javax.inject.Inject;
@@ -28,23 +32,35 @@ import javax.inject.Singleton;
 public class BootImpl extends Boot {
     private final Provider<ClientGameEngineControl> clientGameEngineControl;
     private final FacebookService facebookService;
-    private final GwtAngularService gwtAngularService;
+    private final Provider<GwtAngularService> gwtAngularService;
     private final GameEngineControl gameEngineControl;
+    private final GameUiControl gameUiControl;
     private final BabylonRendererService threeJsRendererService;
+    private final SimpleExecutorService simpleExecutorService;
+    private final AssetService assetService;
+    private final UserUiService userUiService;
 
     @Inject
     public BootImpl(AlarmService alarmService,
                     Provider<ClientGameEngineControl> clientGameEngineControl,
                     FacebookService facebookService,
-                    GwtAngularService gwtAngularService,
+                    Provider<GwtAngularService> gwtAngularService,
                     GameEngineControl gameEngineControl,
-                    BabylonRendererService threeJsRendererService) {
+                    GameUiControl gameUiControl,
+                    BabylonRendererService threeJsRendererService,
+                    SimpleExecutorService simpleExecutorService,
+                    AssetService assetService,
+                    UserUiService userUiService) {
         super(alarmService);
         this.clientGameEngineControl = clientGameEngineControl;
         this.facebookService = facebookService;
         this.gwtAngularService = gwtAngularService;
         this.gameEngineControl = gameEngineControl;
+        this.gameUiControl = gameUiControl;
         this.threeJsRendererService = threeJsRendererService;
+        this.simpleExecutorService = simpleExecutorService;
+        this.assetService = assetService;
+        this.userUiService = userUiService;
     }
 
     @Override
@@ -54,7 +70,7 @@ public class BootImpl extends Boot {
 
     @Override
     protected BootContext createBootContext() {
-        return new BootContext() {
+        return new BootContext(simpleExecutorService, gameEngineControl, gameUiControl, assetService, userUiService) {
             @Override
             public void loadWorker(DeferredStartup deferredStartup) {
                 clientGameEngineControl.get().loadWorker(deferredStartup);
@@ -67,7 +83,7 @@ public class BootImpl extends Boot {
 
             @Override
             public Promise<Void> loadThreeJsModels(ThreeJsModelConfig[] threeJsModelConfigs, ParticleSystemConfig[] particleSystemConfigs) {
-                return gwtAngularService.getGwtAngularBoot().loadThreeJsModels(threeJsModelConfigs, particleSystemConfigs);
+                return gwtAngularService.get().getGwtAngularBoot().loadThreeJsModels(threeJsModelConfigs, particleSystemConfigs);
             }
 
             @Override
