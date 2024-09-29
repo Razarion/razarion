@@ -116,13 +116,9 @@
                         <failOnError>true</failOnError>
                         <compilerArgs>
                             <arg>-generateJsInteropExports</arg>
-                            <arg>-style</arg>
-                            <arg>PRETTY</arg>
                         </compilerArgs>
                         <codeserverArgs>
                             <arg>-generateJsInteropExports</arg>
-                            <arg>-style</arg>
-                            <arg>PRETTY</arg>
                         </codeserverArgs>
                     </configuration>
                     <dependencies>
