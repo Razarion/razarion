@@ -531,8 +531,6 @@ export class GameComponent implements OnInit, ScreenCover {
   private startGame(): void {
     GameComponent.insertGameScript('window.RAZ_startTime = new Date().getTime();');
     GameComponent.insertMeta('gwt:property', "locale=" + this.frontendService.getLanguage());
-    GameComponent.insertGameScript('erraiBusRemoteCommunicationEnabled = false;');
-    GameComponent.insertGameScript('erraiJaxRsJacksonMarshallingActive = true;');
     GameComponent.loadGameScriptUrl('/NativeRazarion.js');
     GameComponent.loadGameScriptUrl('/com.btxtech.client.RazarionClient/com.btxtech.client.RazarionClient.nocache.js');
   }

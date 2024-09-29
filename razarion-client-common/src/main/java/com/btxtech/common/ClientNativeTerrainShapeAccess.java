@@ -6,19 +6,20 @@ import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
-import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.core.ArrayBufferView;
 import elemental2.core.Uint16Array;
 import elemental2.dom.Response;
 import jsinterop.base.Js;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.NODE_X_COUNT;
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.NODE_Y_COUNT;
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.TILE_NODE_SIZE;
 import static elemental2.dom.DomGlobal.fetch;
 
 /**
@@ -31,16 +32,13 @@ public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
 
     private TerrainService terrainService;
 
-    private ExceptionHandler exceptionHandler;
     private NativeTerrainShape nativeTerrainShape;
     private Uint16Array terrainHeightMap;
 
     @Inject
-    public ClientNativeTerrainShapeAccess(ExceptionHandler exceptionHandler, TerrainService terrainService) {
-        this.exceptionHandler = exceptionHandler;
+    public ClientNativeTerrainShapeAccess(TerrainService terrainService) {
         this.terrainService = terrainService;
     }
-
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
@@ -145,7 +143,7 @@ public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
                     }
                 }
             } catch (Throwable t) {
-                exceptionHandler.handleException("sourceHeightMapStart: " + sourceHeightMapStart + " sourceHeightMapEnd: " + sourceHeightMapEnd + " tileHeightMapStart: " + tileHeightMapStart, t);
+                logger.log(Level.SEVERE, "sourceHeightMapStart: " + sourceHeightMapStart + " sourceHeightMapEnd: " + sourceHeightMapEnd + " tileHeightMapStart: " + tileHeightMapStart, t);
             }
         }
         return Js.uncheckedCast(resultArray);

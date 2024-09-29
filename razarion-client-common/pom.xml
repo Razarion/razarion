@@ -26,7 +26,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-share</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
             <classifier>sources</classifier>
         </dependency>
         <!-- GWT -->
@@ -34,13 +33,11 @@
             <groupId>org.gwtproject</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${gwt.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.elemental2</groupId>
             <artifactId>elemental2-dom</artifactId>
             <version>${gwt.elemental2.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.dominokit</groupId>

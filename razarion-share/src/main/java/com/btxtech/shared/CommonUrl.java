@@ -15,8 +15,8 @@ public class CommonUrl {
     public static final String LOGOUT_PAGE = "/logout";
     // GWT code path
     public static final String CLIENT_PATH = "/razarion_client";
-    public static final String CLIENT_WORKER_PATH = "/razarion_client_worker";
-    public static final String CLIENT_WORKER_SCRIPT = CLIENT_WORKER_PATH + "/razarion_client_worker.nocache.js";
+    public static final String CLIENT_WORKER_PATH = "/com.btxtech.worker.RazarionClientWorker";
+    public static final String CLIENT_WORKER_SCRIPT = CLIENT_WORKER_PATH + "/com.btxtech.worker.RazarionClientWorker.nocache.js";
     // Web socket
     public static final String GAME_CONNECTION_WEB_SOCKET_ENDPOINT = "/gameconnection";
     public static final String SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT = "/systemconnection";

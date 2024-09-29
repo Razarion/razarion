@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.control;
 
-import com.btxtech.client.Event;
+import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;

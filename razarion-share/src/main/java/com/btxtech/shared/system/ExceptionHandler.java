@@ -9,6 +9,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 24.06.2016.
  */
+@Deprecated
 public abstract class ExceptionHandler {
 
     private AlarmService alarmService;

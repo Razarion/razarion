@@ -13,7 +13,7 @@
 
 package com.btxtech.uiservice;
 
-import com.btxtech.client.Event;
+import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;

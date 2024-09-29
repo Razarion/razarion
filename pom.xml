@@ -114,9 +114,19 @@
                     <configuration>
                         <sourceLevel>1.8</sourceLevel>
                         <failOnError>true</failOnError>
+                        <compilerArgs>
+                            <arg>-generateJsInteropExports</arg>
+                            <arg>-style</arg>
+                            <arg>PRETTY</arg>
+                        </compilerArgs>
+                        <codeserverArgs>
+                            <arg>-generateJsInteropExports</arg>
+                            <arg>-style</arg>
+                            <arg>PRETTY</arg>
+                        </codeserverArgs>
                     </configuration>
                     <dependencies>
-                    <!-- Prevent Codeserver from running in background-->
+                        <!-- Prevent Codeserver from running in background-->
                         <dependency>
                             <groupId>org.codehaus.plexus</groupId>
                             <artifactId>plexus-utils</artifactId>
@@ -144,7 +154,7 @@
 
     <modules>
         <module>razarion-client</module>
-        <!--        <module>razarion-client-worker</module>-->
+        <module>razarion-client-worker</module>
         <module>razarion-client-common</module>
         <module>razarion-ui-service</module>
         <!--        <module>razarion-nnl-pathing</module>-->

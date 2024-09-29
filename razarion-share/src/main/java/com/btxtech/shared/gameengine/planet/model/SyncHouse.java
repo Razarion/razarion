@@ -18,6 +18,8 @@ import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException
 import com.btxtech.shared.gameengine.datatypes.itemtype.HouseType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
+import javax.inject.Inject;
+
 /**
  * User: beat
  * Date: 14.09.2010
@@ -26,6 +28,10 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
 public class SyncHouse extends SyncBaseAbility {
     private HouseType houseType;
+
+    @Inject
+    public SyncHouse() {
+    }
 
     public void init(HouseType houseType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);

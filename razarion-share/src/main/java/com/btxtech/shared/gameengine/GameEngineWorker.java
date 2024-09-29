@@ -59,9 +59,8 @@ import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
 
 import javax.annotation.PostConstruct;
-import com.btxtech.client.Event;
+import com.btxtech.shared.deprecated.Event;
 import javax.inject.Provider;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

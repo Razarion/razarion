@@ -5,8 +5,8 @@ import com.btxtech.shared.rest.GameUiContextController;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
-import com.btxtech.client.Caller;
-import com.btxtech.client.RemoteCallback;
+import com.btxtech.shared.deprecated.Caller;
+import com.btxtech.shared.deprecated.RemoteCallback;
 
 import javax.inject.Inject;
 

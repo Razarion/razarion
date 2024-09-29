@@ -47,7 +47,7 @@ public class RazarionClientModule {
     }
 
     @Provides
-    public AudioService sudioService() {
+    public AudioService audioService() {
         return new ClientAudioService(null, null, null, null);
     }
 
@@ -95,7 +95,7 @@ public class RazarionClientModule {
     }
 
     @Provides
-    public NativeMatrixFactory bativeMatrixFactory() {
+    public NativeMatrixFactory nativeMatrixFactory() {
         return new NativeMatrixFactory() {
             @Override
             public NativeMatrix createFromColumnMajorArray(double[] array) {

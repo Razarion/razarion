@@ -5,8 +5,8 @@ import com.btxtech.shared.rest.UserServiceProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.user.client.Window;
-import com.btxtech.client.Caller;
-import com.btxtech.client.RemoteCallback;
+import com.btxtech.shared.deprecated.Caller;
+import com.btxtech.shared.deprecated.RemoteCallback;
 
 import javax.inject.Singleton;
 import javax.inject.Inject;

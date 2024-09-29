@@ -6,7 +6,7 @@ import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
 import javax.inject.Singleton;
-import com.btxtech.client.Event;
+import com.btxtech.shared.deprecated.Event;
 import javax.inject.Inject;
 
 /**

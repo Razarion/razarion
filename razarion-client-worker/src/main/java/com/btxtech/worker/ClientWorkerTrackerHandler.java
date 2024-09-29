@@ -1,13 +1,13 @@
 package com.btxtech.worker;
 
-import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.gameengine.WorkerTrackerHandler;
-import com.btxtech.shared.rest.TrackerProvider;
-import com.btxtech.client.Caller;
+import com.btxtech.shared.rest.TrackerControllerFactory;
+import com.btxtech.shared.system.SimpleExecutorService;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -15,15 +15,17 @@ import javax.inject.Inject;
  */
 
 public class ClientWorkerTrackerHandler extends WorkerTrackerHandler {
-    // private Logger logger = Logger.getLogger(WorkerTrackerHandler.class.getName());
+    private final Logger logger = Logger.getLogger(ClientWorkerTrackerHandler.class.getName());
+
     @Inject
-    private ClientExceptionHandlerImpl exceptionHandler;
-    @Inject
-    private Caller<TrackerProvider> trackingProvider;
+    public ClientWorkerTrackerHandler(SimpleExecutorService simpleExecutorService) {
+        super(simpleExecutorService);
+    }
 
     @Override
     protected void sendToServer(TrackingContainer tmpTrackingContainer) {
-        trackingProvider.call(response -> {
-        }, exceptionHandler.restErrorHandler("detailedTracking failed: ")).detailedTracking(tmpTrackingContainer);
+        TrackerControllerFactory.INSTANCE.detailedTracking(tmpTrackingContainer).onFailed(fail -> {
+            logger.log(Level.SEVERE, "detailedTracking failed: " + fail.getStatusText(), fail.getThrowable());
+        });
     }
 }

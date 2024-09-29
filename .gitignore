@@ -8,7 +8,7 @@ razarion-dev-tools/razarion-dev-tools.iml
 razarion-server/razarion-server.iml
 razarion-server/src/test/resources/docker/stage/wildfly/ROOT.war
 razarion-server/src/main/webapp/com.btxtech.client.RazarionClient
-razarion-server/src/main/webapp/razarion_client_worker
+razarion-server/src/main/webapp/com.btxtech.worker.RazarionClientWorker
 razarion-server/src/main/webapp/debug
 razarion-server/src/main/webapp/WEB-INF/deploy
 razarion-server/src/main/webapp/marketinghist/node_modules/

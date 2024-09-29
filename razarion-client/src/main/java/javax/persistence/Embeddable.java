@@ -1,7 +1,7 @@
 package javax.persistence;
 
 /**
- * Nur wegen gwt-dev mode
+ * Due to gwt codeserver
  */
 public @interface Embeddable {
 }

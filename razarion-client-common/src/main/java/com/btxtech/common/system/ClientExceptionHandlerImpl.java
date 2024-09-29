@@ -3,7 +3,7 @@ package com.btxtech.common.system;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
 import elemental2.dom.DomGlobal;
-import com.btxtech.client.ErrorCallback;
+import com.btxtech.shared.deprecated.ErrorCallback;
 
 import javax.inject.Singleton;
 import javax.inject.Inject;
@@ -19,6 +19,7 @@ import java.util.logging.Logger;
  * , exceptionHandler.restErrorHandler("$1")
  */
 @Singleton
+@Deprecated
 public class ClientExceptionHandlerImpl extends ExceptionHandler {
     private Logger logger = Logger.getLogger(ExceptionHandler.class.getName());
     private boolean windowClosing;

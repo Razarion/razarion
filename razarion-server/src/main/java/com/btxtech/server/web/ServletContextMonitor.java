@@ -12,7 +12,7 @@ import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
 
-import com.btxtech.client.Event;
+import com.btxtech.shared.deprecated.Event;
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

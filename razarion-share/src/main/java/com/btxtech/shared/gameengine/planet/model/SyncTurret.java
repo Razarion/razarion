@@ -6,6 +6,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.utils.MathHelper;
 
+import javax.inject.Inject;
+
 /**
  * Created by Beat
  * 18.11.2016.
@@ -16,6 +18,10 @@ public class SyncTurret {
     private SyncBaseItem syncBaseItem;
     private TurretType turretType;
     private double angle;
+
+    @Inject
+    public SyncTurret() {
+    }
 
     public void init(SyncBaseItem syncBaseItem, TurretType turretType) {
         this.syncBaseItem = syncBaseItem;

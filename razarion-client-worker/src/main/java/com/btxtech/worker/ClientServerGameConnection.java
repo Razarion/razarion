@@ -3,29 +3,41 @@ package com.btxtech.worker;
 import com.btxtech.common.system.WebSocketWrapper;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineWorker;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.BoxService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.system.ConnectionMarshaller;
-import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.dom.Event;
 import elemental2.dom.MessageEvent;
-import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 20.04.2017.
  */
-
 public class ClientServerGameConnection extends AbstractServerGameConnection {
+    private final Logger logger = Logger.getLogger(ClientServerGameConnection.class.getName());
+    private final GameEngineWorker gameEngineWorker;
+    private final WebSocketWrapper webSocketWrapper;
+
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
-    private GameEngineWorker gameEngineWorker;
-    @Inject
-    private WebSocketWrapper webSocketWrapper;
+    public ClientServerGameConnection(GameEngineWorker gameEngineWorker,
+                                      WebSocketWrapper webSocketWrapper,
+                                      PlanetService planetService,
+                                      BoxService boxService,
+                                      ResourceService resourceService,
+                                      BaseItemService baseItemService) {
+        super(planetService, boxService, resourceService, baseItemService, gameEngineWorker);
+        this.gameEngineWorker = gameEngineWorker;
+        this.webSocketWrapper = webSocketWrapper;
+    }
 
     @Override
     public void init() {
@@ -34,7 +46,7 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
                 this::handleMessage,
                 () -> {
                 },
-                () -> gameEngineWorker.onConnectionLost());
+                gameEngineWorker::onConnectionLost);
     }
 
     private void handleMessage(Event event) {
@@ -42,7 +54,7 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
             MessageEvent messageEvent = (MessageEvent) event;
             handleMessage((String) messageEvent.data);
         } catch (Throwable throwable) {
-            exceptionHandler.handleException("ClientServerGameConnection.handleMessage() failed", throwable);
+            logger.log(Level.SEVERE, "ClientServerGameConnection.handleMessage() failed", throwable);
         }
     }
 
@@ -53,12 +65,14 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
 
     @Override
     protected String toJson(Object param) {
-        return MarshallingWrapper.toJSON(param);
+        // return MarshallingWrapper.toJSON(param);
+        throw new UnsupportedOperationException("TODO.........MarshallingWrapper.toJSON(param)");
     }
 
     @Override
     protected Object fromJson(String jsonString, GameConnectionPacket packet) {
-        return MarshallingWrapper.fromJSON(jsonString, packet.getTheClass());
+        // return MarshallingWrapper.fromJSON(jsonString, packet.getTheClass());
+        throw new UnsupportedOperationException("TODO.........MarshallingWrapper.fromJSON(jsonString, packet.getTheClass())");
     }
 
     @Override

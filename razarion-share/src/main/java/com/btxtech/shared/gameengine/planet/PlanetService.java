@@ -16,7 +16,7 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
 import javax.annotation.PostConstruct;
-import com.btxtech.client.Event;
+import com.btxtech.shared.deprecated.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;

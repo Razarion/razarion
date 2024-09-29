@@ -13,8 +13,14 @@
 
     <artifactId>razarion-client-worker</artifactId>
     <name>Razarion Client Worker</name>
+    <packaging>gwt-app</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.jsinterop</groupId>
+            <artifactId>jsinterop-annotations</artifactId>
+            <version>2.0.0</version>
+        </dependency>
         <!-- Razarion -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -26,36 +32,55 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-share</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
             <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-client-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <!-- use for GWT compilation only -->
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-client-common</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
             <classifier>sources</classifier>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-client-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- GWT -->
         <dependency>
             <groupId>org.gwtproject</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${gwt.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.gwtproject</groupId>
             <artifactId>gwt-dev</artifactId>
             <version>${gwt.version}</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.dominokit</groupId>
+            <artifactId>domino-rest-client</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.dagger</groupId>
+            <artifactId>dagger-gwt</artifactId>
+            <version>${com.google.dagger.version}</version>
+        </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>JBOSS_NEXUS</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
 
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -63,54 +88,44 @@
 
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.pulgin.version}</version>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
                 <configuration>
-                    <warSourceDirectory>${project.parent.basedir}${raz.web-dir}</warSourceDirectory>
-                    <logLevel>WARN</logLevel>
-                    <noServer>true</noServer>
-                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M</extraJvmArgs>
-                    <!--<extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</extraJvmArgs>-->
-                    <runTarget>webgl.html</runTarget>
-                    <hostedWebapp>src/main/webapp</hostedWebapp>
-                    <strict>true</strict>
-                    <inplace>true</inplace>
-                    <deploy>${project.parent.basedir}${raz.web-dir}debug</deploy>
-                    <!--<saveSource>true</saveSource>-->
-                    <!--<saveSourceOutput>${project.parent.basedir}${raz.web-dir}debug</saveSourceOutput>-->
-                    <!--<style>DETAILED</style>-->
-                    <!-- Only work with modified gwt-maven-plugin -->
-                    <!-- mvn gwt:run-codeserver -->
-                    <!-- Adds addition -src to the CodeServer -->
-                    <!-- Modified -->
-                    <!-- org.codehaus.mojo.gwt.shell.SuperDevModeMojo-->
-                    <!-- 1) Add new class attribute
-                         /**
-                           * A directory containing GWT source to be prepended to the classpath for compiling.
-                           * <p>
-                           * Can be set from command line using '-Dgwt.sources=...'
-                           */
-                           @Parameter(property = "gwt.sources")
-                           private String[] sources;
-
-                           2) set -src cmd arguments before calling CodeServer
-                           if(sources != null) {
-                               for (String source : sources) {
-                                   cmd.arg( "-src" ).arg(source);
-                                   System.out.println("add source: " + source);
-                               }
-                           }
-                           System.out.println(cmd);
-                           -->
-                    <sources>
-                        <source>${project.parent.basedir}/razarion-share/src/main/java</source>
-                        <source>${project.parent.basedir}/razarion-ui-service/src/main/java</source>
-                        <source>${project.parent.basedir}/razarion-client-common/src/main/java</source>
-                    </sources>
+                    <filesets>
+                        <fileset>
+                            <directory>${basedir}</directory>
+                            <includes>
+                                <include>src/main/webapp/app/</include>
+                                <include>src/main/webapp/WEB-INF/deploy/</include>
+                                <include>src/main/webapp/WEB-INF/lib/</include>
+                                <include>**/gwt-unitCache/**</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.dagger</groupId>
+                            <artifactId>dagger-compiler</artifactId>
+                            <version>${com.google.dagger.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.ltgt.gwt.maven</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <configuration>
+                    <moduleName>com.btxtech.worker.RazarionClientWorker</moduleName>
+                    <moduleShortName>RazarionClientWorker</moduleShortName>
+                    <webappDirectory>${project.basedir}/../razarion-server/src/main/webapp</webappDirectory>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

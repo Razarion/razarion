@@ -28,10 +28,9 @@ import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.user.client.Window;
 import elemental2.dom.DomGlobal;
-import com.btxtech.client.Caller;
-import com.btxtech.client.RemoteCallback;
+import com.btxtech.shared.deprecated.Caller;
+import com.btxtech.shared.deprecated.RemoteCallback;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Provider;
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -6,7 +6,7 @@ import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
-import com.btxtech.client.Caller;
+import com.btxtech.shared.deprecated.Caller;
 
 import javax.inject.Singleton;
 import javax.inject.Inject;

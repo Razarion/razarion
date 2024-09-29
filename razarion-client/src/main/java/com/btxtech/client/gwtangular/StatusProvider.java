@@ -6,8 +6,8 @@ import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
-import com.btxtech.client.Caller;
-import com.btxtech.client.RemoteCallback;
+import com.btxtech.shared.deprecated.Caller;
+import com.btxtech.shared.deprecated.RemoteCallback;
 
 import javax.inject.Singleton;
 import javax.inject.Inject;

@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManage
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.function.Consumer;
 
@@ -23,12 +24,12 @@ public class TerrainService {
 
     private TerrainTileFactory terrainTileFactory;
 
-    private NativeTerrainShapeAccess nativeTerrainShapeAccess;
+    private Provider<NativeTerrainShapeAccess> nativeTerrainShapeAccess;
     private TerrainShapeManager terrainShape;
     private PlanetConfig planetConfig;
 
     @Inject
-    public TerrainService(NativeTerrainShapeAccess nativeTerrainShapeAccess, TerrainTileFactory terrainTileFactory, TerrainTypeService terrainTypeService) {
+    public TerrainService(Provider<NativeTerrainShapeAccess> nativeTerrainShapeAccess, TerrainTileFactory terrainTileFactory, TerrainTypeService terrainTypeService) {
         this.nativeTerrainShapeAccess = nativeTerrainShapeAccess;
         this.terrainTileFactory = terrainTileFactory;
         this.terrainTypeService = terrainTypeService;
@@ -44,7 +45,7 @@ public class TerrainService {
     }
 
     private void setup(Runnable finishCallback, Consumer<String> failCallback) {
-        terrainShape = new TerrainShapeManager(terrainTypeService, nativeTerrainShapeAccess);
+        terrainShape = new TerrainShapeManager(terrainTypeService, nativeTerrainShapeAccess.get());
         terrainShape.lazyInit(planetConfig, finishCallback, failCallback);
     }
 

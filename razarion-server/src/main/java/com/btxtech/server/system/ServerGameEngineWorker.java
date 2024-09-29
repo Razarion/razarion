@@ -1,6 +1,6 @@
 package com.btxtech.server.system;
 
-import com.btxtech.client.Event;
+import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;

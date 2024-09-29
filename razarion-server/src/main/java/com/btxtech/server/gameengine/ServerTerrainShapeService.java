@@ -12,7 +12,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrain
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
 
-import com.btxtech.client.Event;
+import com.btxtech.shared.deprecated.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;

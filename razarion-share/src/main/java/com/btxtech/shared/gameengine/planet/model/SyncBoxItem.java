@@ -16,6 +16,8 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 
+import javax.inject.Inject;
+
 /**
  * User: beat
  * Date: 04.12.2009
@@ -25,6 +27,10 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 public class SyncBoxItem extends SyncItem {
     private int ttlCount; // Is not synchronized
     private boolean alive; // Synchronized in super class
+
+    @Inject
+    public SyncBoxItem() {
+    }
 
     public void setup(int ttlCount) {
         this.ttlCount = ttlCount;

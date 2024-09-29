@@ -1,4 +1,4 @@
-package com.btxtech.client;
+package com.btxtech.shared.deprecated;
 
 import javax.inject.Inject;
 

@@ -5,7 +5,7 @@ import com.btxtech.shared.dto.editor.CollectionReferenceInfo;
 import com.btxtech.shared.dto.editor.CustomEditorInfo;
 import com.btxtech.shared.dto.editor.GenericPropertyInfo;
 import com.btxtech.shared.rest.GenericPropertyEditorController;
-import com.btxtech.client.Caller;
+import com.btxtech.shared.deprecated.Caller;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

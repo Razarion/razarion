@@ -1,6 +1,7 @@
 package com.btxtech.client;
 
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
+import com.btxtech.shared.deprecated.Caller;
 import com.btxtech.shared.rest.QuestController;
 import com.btxtech.uiservice.ServerQuestProvider;
 
