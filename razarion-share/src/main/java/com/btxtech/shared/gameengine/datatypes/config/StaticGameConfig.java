@@ -1,16 +1,17 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
  * Created by Beat
  * 18.07.2016.
  */
+@JSONMapper
 public class StaticGameConfig {
     private List<GroundConfig> groundConfigs;
     private List<WaterConfig> waterConfigs;

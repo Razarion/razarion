@@ -1,5 +1,6 @@
 package com.btxtech.common;
 
+import com.btxtech.shared.RazarionSharedDominokitJsonRegistry;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
@@ -33,18 +34,36 @@ import jsinterop.base.Any;
 import jsinterop.base.Js;
 import jsinterop.base.JsArrayLike;
 import jsinterop.base.JsPropertyMap;
+import org.dominokit.jackson.DefaultJsonDeserializationContext;
+import org.dominokit.jackson.DefaultJsonSerializationContext;
+import org.dominokit.jackson.JsonDeserializationContext;
+import org.dominokit.jackson.JsonSerializationContext;
+import org.dominokit.jackson.ObjectReader;
+import org.dominokit.jackson.ObjectWriter;
+import org.dominokit.jackson.deser.BaseNumberJsonDeserializer;
+import org.dominokit.jackson.deser.BooleanJsonDeserializer;
+import org.dominokit.jackson.deser.StringJsonDeserializer;
+import org.dominokit.jackson.registration.TypeToken;
+import org.dominokit.jackson.ser.BaseNumberJsonSerializer;
+import org.dominokit.jackson.ser.BooleanJsonSerializer;
+import org.dominokit.jackson.ser.EnumJsonSerializer;
+import org.dominokit.jackson.ser.StringJsonSerializer;
+import org.dominokit.jackson.stream.JsonReader;
+import org.dominokit.jackson.stream.JsonWriter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 03.01.2017.
  */
 public class WorkerMarshaller {
-    // private static Logger LOGGER = Logger.getLogger(WorkerMarshaller.class.getName());
+    private static final Logger logger = Logger.getLogger(WorkerMarshaller.class.getName());
     private static final int COMMAND_OFFSET = 0;
     private static final int DATA_OFFSET_0 = 1;
     private static final int DATA_OFFSET_1 = 2;
@@ -360,30 +379,72 @@ public class WorkerMarshaller {
     }
 
     private static String toJson(Object object) {
-        // RestClient.setJacksonMarshallingActive(false); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
-        try {
-            if (object == null) {
+        if (object == null) {
+            return "null";
+        } else {
+            try {
+                ObjectWriter<?> objectWriter = RazarionSharedDominokitJsonRegistry
+                        .getInstance()
+                        .getWriter(TypeToken.of(object.getClass()));
+                if (objectWriter != null) {
+                    return objectWriter.write(Js.uncheckedCast(object));
+                }
+                JsonSerializationContext context = DefaultJsonSerializationContext.builder().build();
+                JsonWriter writer = context.newJsonWriter();
+
+                if (object instanceof String) {
+                    StringJsonSerializer.getInstance().serialize(writer, (String) object, context);
+                } else if (object instanceof Integer) {
+                    BaseNumberJsonSerializer.IntegerJsonSerializer.getInstance().serialize(writer, (Integer) object, context);
+                } else if (object instanceof Double) {
+                    BaseNumberJsonSerializer.DoubleJsonSerializer.getInstance().serialize(writer, (Double) object, context);
+                } else if (object instanceof Boolean) {
+                    BooleanJsonSerializer.getInstance().serialize(writer, (Boolean) object, context);
+                } else if (object instanceof Enum) {
+                    EnumJsonSerializer.getInstance().serialize(writer, object, context);
+                } else {
+                    throw new IllegalArgumentException("Unsupported type: " + object.getClass().getName());
+                }
+                return writer.getOutput();
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "WorkerMarshaller.toJson() can not handle: " + object.getClass(), t);
                 return "null";
-            } else {
-                // return MarshallingWrapper.toJSON(object);
-                return null;
             }
-        } finally {
-            // RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         }
     }
 
     private static <T> T fromJson(String json, Class<T> type) {
-        // RestClient.setJacksonMarshallingActive(false); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
-        try {
-            if ("null".equals(json)) {
-                return null;
-            } else {
-                // return MarshallingWrapper.fromJSON(json, type);
+        if ("null".equals(json)) {
+            return null;
+        } else {
+            try {
+                ObjectReader<?> objectReader = RazarionSharedDominokitJsonRegistry
+                        .getInstance()
+                        .getReader(TypeToken.of(type));
+                if (objectReader != null) {
+                    return Js.uncheckedCast(objectReader.read(json));
+                }
+                JsonDeserializationContext context = DefaultJsonDeserializationContext.builder().build();
+                JsonReader reader = context.newJsonReader(json);
+
+                if (type == String.class) {
+                    return Js.uncheckedCast(StringJsonDeserializer.getInstance().deserialize(reader, context));
+                } else if (type == Integer.class) {
+                    return Js.uncheckedCast(BaseNumberJsonDeserializer.IntegerJsonDeserializer.getInstance().deserialize(reader, context));
+                } else if (type == Double.class) {
+                    return Js.uncheckedCast(BaseNumberJsonDeserializer.DoubleJsonDeserializer.getInstance().deserialize(reader, context));
+                } else if (type == Boolean.class) {
+                    return Js.uncheckedCast(BooleanJsonDeserializer.getInstance().deserialize(reader, context));
+                } else if (type == GameEngineMode.class) {
+                    String enumString = json.replace("\"", "");
+                    return Js.uncheckedCast(GameEngineMode.valueOf(enumString));
+                } else {
+                    throw new IllegalArgumentException("Unsupported type: " + type);
+                }
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "WorkerMarshaller.fromJson() can not handle: " + type + " json: " + json, t);
                 return null;
             }
-        } finally {
-            // RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         }
     }
 

@@ -59,7 +59,7 @@
         <dependency>
             <groupId>org.dominokit</groupId>
             <artifactId>domino-rest-client</artifactId>
-            <version>1.0.2</version>
+            <version>${org.dominokit.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.dagger</groupId>

@@ -1,12 +1,15 @@
 package com.btxtech.shared.datatypes;
 
 
+import org.dominokit.jackson.annotation.JSONMapper;
+
 import java.util.Map;
 
 /**
  * Created by Beat
  * 30.08.2016.
  */
+@JSONMapper
 public class UserContext {
     public enum RegisterState {
         UNREGISTERED,

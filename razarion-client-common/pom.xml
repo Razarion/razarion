@@ -42,7 +42,12 @@
         <dependency>
             <groupId>org.dominokit</groupId>
             <artifactId>domino-rest-client</artifactId>
-            <version>1.0.2</version>
+            <version>${org.dominokit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dominokit</groupId>
+            <artifactId>domino-jackson</artifactId>
+            <version>${org.dominokit.version}</version>
         </dependency>
     </dependencies>
 

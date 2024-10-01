@@ -10,6 +10,7 @@
     <inherits name="elemental2.dom.Dom"/>
     <inherits name="dagger.Dagger"/>
     <inherits name="org.dominokit.rest.Rest"/>
+    <inherits name="org.dominokit.jackson.Jackson"/>
 
     <source path=""/>
 
