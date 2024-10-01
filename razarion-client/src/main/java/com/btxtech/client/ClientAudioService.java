@@ -2,7 +2,6 @@ package com.btxtech.client;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -10,13 +9,16 @@ import com.google.gwt.dom.client.MediaElement;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLAudioElement;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -26,16 +28,14 @@ import java.util.Map;
 public class ClientAudioService extends AudioService {
     private static final int PARALLEL_PLAY_COUNT = 5;
     private static final double ENVIRONMENT_VOLUME = 0.1;
-
-    private ExceptionHandler exceptionHandler;
+    private final Logger logger = Logger.getLogger(ClientAudioService.class.getName());
     private final Map<Integer, Collection<HTMLAudioElement>> audios = new HashMap<>();
     private final Map<Integer, HTMLAudioElement> terrainLoopAudios = new HashMap<>();
     private boolean isMute = false;
 
     @Inject
-    public ClientAudioService(AlarmService alarmService, ItemTypeService itemTypeService, TerrainUiService terrainUiService, ExceptionHandler exceptionHandler) {
+    public ClientAudioService(AlarmService alarmService, ItemTypeService itemTypeService, Provider<TerrainUiService> terrainUiService) {
         super(alarmService, itemTypeService, terrainUiService);
-        this.exceptionHandler = exceptionHandler;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ClientAudioService extends AudioService {
                 audio.play();
             }
         } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
+            logger.log(Level.SEVERE, "playAudio failed: " + audioId, throwable);
         }
     }
 
@@ -63,7 +63,7 @@ public class ClientAudioService extends AudioService {
             }
             audio.volume = (float) (volume * ENVIRONMENT_VOLUME);
         } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
+            logger.log(Level.SEVERE, "playTerrainLoopAudio failed: " + audioId, throwable);
         }
     }
 
@@ -118,7 +118,7 @@ public class ClientAudioService extends AudioService {
                 return null;
             }
         } catch (Exception e) {
-            exceptionHandler.handleException("ClientAudioService.getAudio() " + audioId, e);
+            logger.log(Level.SEVERE, "ClientAudioService.getAudio() " + audioId, e);
             return null;
         }
     }

@@ -5,8 +5,9 @@ import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
 /**
  * Created by Beat
@@ -16,7 +17,7 @@ import javax.inject.Inject;
 public class TestAudioService extends AudioService {
 
     @Inject
-    public TestAudioService(AlarmService alarmService, ItemTypeService itemTypeService, TerrainUiService terrainUiService) {
+    public TestAudioService(AlarmService alarmService, ItemTypeService itemTypeService, Provider<TerrainUiService> terrainUiService) {
         super(alarmService, itemTypeService, terrainUiService);
     }
 

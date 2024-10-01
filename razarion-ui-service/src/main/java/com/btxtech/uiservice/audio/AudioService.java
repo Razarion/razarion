@@ -12,8 +12,7 @@ import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_AUDIO_SERVICE;
@@ -23,17 +22,17 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_AUDIO_SERVICE;
  * 24.12.2016.
  */
 public abstract class AudioService /* implements ViewService.ViewFieldListener */ {
-    private Logger logger = Logger.getLogger(AudioService.class.getName());
+    private final Logger logger = Logger.getLogger(AudioService.class.getName());
 
-    private TerrainUiService terrainUiService;
+    private final Provider<TerrainUiService> terrainUiService;
 
-    private ItemTypeService itemTypeService;
+    private final ItemTypeService itemTypeService;
 
-    private AlarmService alarmService;
+    private final AlarmService alarmService;
     private AudioConfig audioConfig;
     private double lastLandWaterProportion = -1;
 
-    public AudioService(AlarmService alarmService, ItemTypeService itemTypeService, TerrainUiService terrainUiService) {
+    public AudioService(AlarmService alarmService, ItemTypeService itemTypeService, Provider<TerrainUiService> terrainUiService) {
         this.alarmService = alarmService;
         this.itemTypeService = itemTypeService;
         this.terrainUiService = terrainUiService;
@@ -46,7 +45,7 @@ public abstract class AudioService /* implements ViewService.ViewFieldListener *
     public abstract void muteTerrainLoopAudio();
 
 
-    public void onGameUiControlInitEvent( GameUiControlInitEvent gameUiControlInitEvent) {
+    public void onGameUiControlInitEvent(GameUiControlInitEvent gameUiControlInitEvent) {
         this.audioConfig = gameUiControlInitEvent.getColdGameUiContext().getAudioConfig();
     }
 
@@ -76,7 +75,6 @@ public abstract class AudioService /* implements ViewService.ViewFieldListener *
         BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
         Integer audioId = baseItemType.getSpawnAudioId();
         if (audioId == null) {
-            return;
         }
         // TODO if (!nativeSyncBaseItemTickInfo.contained) {
         // TODO    if (viewService.getCurrentViewField().isInside(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo))) {
@@ -91,7 +89,7 @@ public abstract class AudioService /* implements ViewService.ViewFieldListener *
         }
     }
 
-    public void onSelectionChanged( SelectionEvent selectionEvent) {
+    public void onSelectionChanged(SelectionEvent selectionEvent) {
         if (selectionEvent.isSuppressAudio()) {
             return;
         }
@@ -122,7 +120,7 @@ public abstract class AudioService /* implements ViewService.ViewFieldListener *
     }
 
     public AudioConfig getAudioConfig() {
-        if(audioConfig == null) {
+        if (audioConfig == null) {
             logger.warning("Using Fallback. No audio config.");
             return new AudioConfig();
         }
@@ -131,16 +129,16 @@ public abstract class AudioService /* implements ViewService.ViewFieldListener *
 
     // TODO @Override
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
-        if(getAudioConfig().getTerrainLoopLand() == null) {
+        if (getAudioConfig().getTerrainLoopLand() == null) {
             alarmService.riseAlarm(INVALID_AUDIO_SERVICE, "TerrainLoopLand");
             return;
         }
-        if(getAudioConfig().getTerrainLoopWater() == null) {
+        if (getAudioConfig().getTerrainLoopWater() == null) {
             alarmService.riseAlarm(INVALID_AUDIO_SERVICE, "TerrainLoopWater");
             return;
         }
 
-        double landWaterProportion = terrainUiService.calculateLandWaterProportion();
+        double landWaterProportion = terrainUiService.get().calculateLandWaterProportion();
         if (MathHelper.compareWithPrecision(lastLandWaterProportion, landWaterProportion, 0.05)) {
             return;
         }

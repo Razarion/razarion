@@ -24,7 +24,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
@@ -43,51 +42,48 @@ import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.inject.Provider;
-import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 02.01.2017.
  */
 public abstract class GameEngineControl {
-
-    // private Logger logger = Logger.getLogger(GameEngineControl.class.getName());
-    private BaseItemUiService baseItemUiService;
-
-    private ResourceUiService resourceUiService;
-
-    private BoxUiService boxUiService;
-
-    private AudioService audioService;
-
-    private GameUiControl gameUiControl;
-
-    private SelectionHandler selectionHandler;
-
-    private UserUiService userUiService;
-
-    private InventoryUiService inventoryUiService;
-
-    private TerrainUiService terrainUiService;
-
-    private Boot boot;
-
-    private ExceptionHandler exceptionHandler;
-
-    private PerfmonService perfmonService;
-
-    private Provider<InputService> inputServices;
+    private final Logger logger = Logger.getLogger(GameEngineControl.class.getName());
+    private final BaseItemUiService baseItemUiService;
+    private final ResourceUiService resourceUiService;
+    private final BoxUiService boxUiService;
+    private final AudioService audioService;
+    private final GameUiControl gameUiControl;
+    private final SelectionHandler selectionHandler;
+    private final UserUiService userUiService;
+    private final InventoryUiService inventoryUiService;
+    private final TerrainUiService terrainUiService;
+    private final Provider<Boot> boot;
+    private final PerfmonService perfmonService;
+    private final Provider<InputService> inputServices;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
     private Runnable stopCallback;
 
-    public GameEngineControl(Provider<com.btxtech.uiservice.terrain.InputService> inputServices, PerfmonService perfmonService, ExceptionHandler exceptionHandler, Boot boot, TerrainUiService terrainUiService, InventoryUiService inventoryUiService, UserUiService userUiService, SelectionHandler selectionHandler, GameUiControl gameUiControl, AudioService audioService, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService) {
+    public GameEngineControl(Provider<InputService> inputServices,
+                             PerfmonService perfmonService,
+                             Provider<Boot> boot,
+                             TerrainUiService terrainUiService,
+                             InventoryUiService inventoryUiService,
+                             UserUiService userUiService,
+                             SelectionHandler selectionHandler,
+                             GameUiControl gameUiControl,
+                             AudioService audioService,
+                             BoxUiService boxUiService,
+                             ResourceUiService resourceUiService,
+                             BaseItemUiService baseItemUiService) {
         this.inputServices = inputServices;
         this.perfmonService = perfmonService;
-        this.exceptionHandler = exceptionHandler;
         this.boot = boot;
         this.terrainUiService = terrainUiService;
         this.inventoryUiService = inventoryUiService;
@@ -131,13 +127,13 @@ public abstract class GameEngineControl {
         this.deferredStartup = initializationReferredStartup;
         sendToWorker(GameEngineControlPackage.Command.INITIALIZE, coldGameUiContext.getStaticGameConfig(), coldGameUiContext.getWarmGameUiContext().getPlanetConfig(),
                 userUiService.getUserContext(), coldGameUiContext.getWarmGameUiContext().getGameEngineMode(), coldGameUiContext.getWarmGameUiContext().isDetailedTracking(),
-                boot.getGameSessionUuid());
+                boot.get().getGameSessionUuid());
     }
 
     public void initWarm(PlanetConfig planetConfig, GameEngineMode gameEngineMode, DeferredStartup deferredStartup) {
         this.terrainUiService.setPlanetConfig(planetConfig);
         this.deferredStartup = deferredStartup;
-        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, userUiService.getUserContext(), gameEngineMode, boot.getGameSessionUuid());
+        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, userUiService.getUserContext(), gameEngineMode, boot.get().getGameSessionUuid());
     }
 
     void startBots(List<BotConfig> botConfigs) {
@@ -250,7 +246,7 @@ public abstract class GameEngineControl {
                 // effectVisualizationService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
             }
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, "Exception in onTickUpdate", t);
         }
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
         perfmonService.onLeft(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);

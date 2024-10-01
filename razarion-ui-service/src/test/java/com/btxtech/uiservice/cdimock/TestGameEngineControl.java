@@ -5,7 +5,6 @@ import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
@@ -20,9 +19,9 @@ import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST;
@@ -37,8 +36,30 @@ public class TestGameEngineControl extends GameEngineControl {
     private final Logger logger = Logger.getLogger(TestGameEngineControl.class.getName());
 
     @Inject
-    public TestGameEngineControl(Provider<InputService> inputServices, PerfmonService perfmonService, ExceptionHandler exceptionHandler, Boot boot, TerrainUiService terrainUiService, InventoryUiService inventoryUiService, UserUiService userUiService, SelectionHandler selectionHandler, GameUiControl gameUiControl, AudioService audioService, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService) {
-        super(inputServices, perfmonService, exceptionHandler, boot, terrainUiService, inventoryUiService, userUiService, selectionHandler, gameUiControl, audioService, boxUiService, resourceUiService, baseItemUiService);
+    public TestGameEngineControl(Provider<InputService> inputServices,
+                                 PerfmonService perfmonService,
+                                 Provider<Boot> boot,
+                                 TerrainUiService terrainUiService,
+                                 InventoryUiService inventoryUiService,
+                                 UserUiService userUiService,
+                                 SelectionHandler selectionHandler,
+                                 GameUiControl gameUiControl,
+                                 AudioService audioService,
+                                 BoxUiService boxUiService,
+                                 ResourceUiService resourceUiService,
+                                 BaseItemUiService baseItemUiService) {
+        super(inputServices,
+                perfmonService,
+                boot,
+                terrainUiService,
+                inventoryUiService,
+                userUiService,
+                selectionHandler,
+                gameUiControl,
+                audioService,
+                boxUiService,
+                resourceUiService,
+                baseItemUiService);
     }
 
     @Override
@@ -50,7 +71,7 @@ public class TestGameEngineControl extends GameEngineControl {
     @Override
     protected void sendToWorker(GameEngineControlPackage.Command command, Object... data) {
         logger.info("sendToWorker(): " + command + " data: " + data);
-        if(command == TERRAIN_TILE_REQUEST) {
+        if (command == TERRAIN_TILE_REQUEST) {
             TerrainTile terrainTile = new TerrainTile();
             terrainTile.setIndex((Index) data[0]);
             dispatch(new GameEngineControlPackage(TERRAIN_TILE_RESPONSE, terrainTile));

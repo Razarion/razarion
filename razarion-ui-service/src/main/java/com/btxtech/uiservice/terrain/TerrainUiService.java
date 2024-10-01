@@ -13,9 +13,9 @@ import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.renderer.ViewField;
 
-import javax.inject.Singleton;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,19 +30,17 @@ import java.util.function.Consumer;
  */
 @Singleton
 public class TerrainUiService {
-
-    // private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
-    private GameEngineControl gameEngineControl;
-
-    private Provider<UiTerrainTile> uiTerrainTileInstance;
-    private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
     private final Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
     private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
+    // private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
+    private final Provider<GameEngineControl> gameEngineControl;
+    private final Provider<UiTerrainTile> uiTerrainTileInstance;
+    private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
     private int tileXCount;
     private int tileYCount;
 
     @Inject
-    public TerrainUiService(Provider<com.btxtech.uiservice.terrain.UiTerrainTile> uiTerrainTileInstance, GameEngineControl gameEngineControl) {
+    public TerrainUiService(Provider<UiTerrainTile> uiTerrainTileInstance, Provider<GameEngineControl> gameEngineControl) {
         this.uiTerrainTileInstance = uiTerrainTileInstance;
         this.gameEngineControl = gameEngineControl;
     }
@@ -164,7 +162,7 @@ public class TerrainUiService {
 
     public void requestTerrainTile(Index terrainTileIndex, Consumer<TerrainTile> terrainTileConsumer) {
         terrainTileConsumers.put(terrainTileIndex, terrainTileConsumer);
-        gameEngineControl.requestTerrainTile(terrainTileIndex);
+        gameEngineControl.get().requestTerrainTile(terrainTileIndex);
     }
 
     public void onTerrainTileResponse(TerrainTile terrainTile) {

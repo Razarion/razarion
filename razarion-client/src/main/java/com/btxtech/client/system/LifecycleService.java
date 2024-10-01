@@ -6,6 +6,8 @@ import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.ServerState;
+import com.btxtech.shared.deprecated.Caller;
+import com.btxtech.shared.deprecated.RemoteCallback;
 import com.btxtech.shared.rest.ServerMgmtController;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -28,11 +30,9 @@ import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.user.client.Window;
 import elemental2.dom.DomGlobal;
-import com.btxtech.shared.deprecated.Caller;
-import com.btxtech.shared.deprecated.RemoteCallback;
 
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.function.Consumer;
@@ -48,49 +48,66 @@ public class LifecycleService {
     private static final int RESTART_DELAY = 3000;
     private final Logger logger = Logger.getLogger(LifecycleService.class.getName());
 
-    private Boot boot;
+    private final Boot boot;
 
     private ExceptionHandler exceptionHandler;
 
-    private ClientTrackerService clientTrackerService;
+    private final ClientTrackerService clientTrackerService;
 
-    private ClientPerformanceTrackerService clientPerformanceTrackerService;
+    private final ClientPerformanceTrackerService clientPerformanceTrackerService;
 
-    private PerfmonService perfmonService;
+    private final PerfmonService perfmonService;
 
-    private GameEngineControl gameEngineControl;
+    private final Provider<GameEngineControl> gameEngineControl;
 
-    private BaseItemUiService baseItemUiService;
+    private final BaseItemUiService baseItemUiService;
 
-    private BoxUiService boxUiService;
+    private final BoxUiService boxUiService;
 
-    private ResourceUiService resourceUiService;
+    private final ResourceUiService resourceUiService;
 
-    private TrailService trailService;
+    private final TrailService trailService;
 
-    private TerrainUiService terrainUiService;
+    private final TerrainUiService terrainUiService;
 
-    private AudioService audioService;
+    private final AudioService audioService;
 
-    private Provider<ScreenCover> screenCover;
+    private final Provider<ScreenCover> screenCover;
 
-    private GameUiControl gameUiControl;
+    private final GameUiControl gameUiControl;
 
-    private SelectionHandler selectionHandler;
+    private final SelectionHandler selectionHandler;
 
-    private SimpleExecutorService simpleExecutorService;
+    private final SimpleExecutorService simpleExecutorService;
 
-    private Caller<ServerMgmtController> serverMgmt;
+    private final Caller<ServerMgmtController> serverMgmt;
 
-    private UserUiService userUiService;
+    private final UserUiService userUiService;
 
-    private GwtAngularService gwtAngularService;
+    private final GwtAngularService gwtAngularService;
     private Consumer<ServerState> serverRestartCallback;
     private SimpleScheduledFuture simpleScheduledFuture;
     private boolean beforeUnload;
 
     @Inject
-    public LifecycleService(GwtAngularService gwtAngularService, UserUiService userUiService, Caller<ServerMgmtController> serverMgmt, SimpleExecutorService simpleExecutorService, SelectionHandler selectionHandler, GameUiControl gameUiControl, Provider<com.btxtech.uiservice.cockpit.ScreenCover> screenCover, AudioService audioService, TerrainUiService terrainUiService, TrailService trailService, ResourceUiService resourceUiService, BoxUiService boxUiService, BaseItemUiService baseItemUiService, GameEngineControl gameEngineControl, PerfmonService perfmonService, ClientPerformanceTrackerService clientPerformanceTrackerService, ClientTrackerService clientTrackerService, ExceptionHandler exceptionHandler, Boot boot) {
+    public LifecycleService(GwtAngularService gwtAngularService,
+                            UserUiService userUiService,
+                            Caller<ServerMgmtController> serverMgmt,
+                            SimpleExecutorService simpleExecutorService,
+                            SelectionHandler selectionHandler,
+                            GameUiControl gameUiControl,
+                            Provider<ScreenCover> screenCover,
+                            AudioService audioService,
+                            TerrainUiService terrainUiService,
+                            TrailService trailService,
+                            ResourceUiService resourceUiService,
+                            BoxUiService boxUiService,
+                            BaseItemUiService baseItemUiService,
+                            Provider<GameEngineControl> gameEngineControl,
+                            PerfmonService perfmonService,
+                            ClientPerformanceTrackerService clientPerformanceTrackerService,
+                            ClientTrackerService clientTrackerService,
+                            Boot boot) {
         this.gwtAngularService = gwtAngularService;
         this.userUiService = userUiService;
         this.serverMgmt = serverMgmt;
@@ -108,7 +125,6 @@ public class LifecycleService {
         this.perfmonService = perfmonService;
         this.clientPerformanceTrackerService = clientPerformanceTrackerService;
         this.clientTrackerService = clientTrackerService;
-        this.exceptionHandler = exceptionHandler;
         this.boot = boot;
 
         boot.addStartupProgressListener(clientTrackerService);
@@ -175,7 +191,7 @@ public class LifecycleService {
     }
 
     public void clearAndHold(DeferredStartup deferredStartup) {
-        gameEngineControl.stop(() -> {
+        gameEngineControl.get().stop(() -> {
             baseItemUiService.clear();
             boxUiService.clear();
             resourceUiService.clear();

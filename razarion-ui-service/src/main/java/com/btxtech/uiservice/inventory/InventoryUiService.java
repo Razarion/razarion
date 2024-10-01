@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -17,9 +16,12 @@ import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import jsinterop.annotations.JsType;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -27,33 +29,30 @@ import java.util.function.Consumer;
  */
 @JsType
 public class InventoryUiService {
-
-    private ItemTypeService itemTypeService;
-
-    private GameUiControl gameUiControl;
-
-    private ExceptionHandler exceptionHandler;
-
-    private ModalDialogManager modalDialogManager;
-
-    private BaseItemPlacerService baseItemPlacerService;
-
-    private BaseItemUiService baseItemUiService;
-
-    private GameEngineControl gameEngineControl;
-
-    private ModalDialogManager dialogManager;
-    private List<Integer> inventoryItemIds = new ArrayList<>();
-    private List<Integer> inventoryArtifactIds = new ArrayList<>();
+    private final Logger logger = Logger.getLogger(InventoryUiService.class.getName());
+    private final ItemTypeService itemTypeService;
+    private final GameUiControl gameUiControl;
+    private final ModalDialogManager modalDialogManager;
+    private final BaseItemPlacerService baseItemPlacerService;
+    private final BaseItemUiService baseItemUiService;
+    private final Provider<GameEngineControl> gameEngineControl;
+    private final ModalDialogManager dialogManager;
+    private final List<Integer> inventoryItemIds = new ArrayList<>();
+    private final List<Integer> inventoryArtifactIds = new ArrayList<>();
 
     @Inject
-    public InventoryUiService(ModalDialogManager dialogManager, GameEngineControl gameEngineControl, BaseItemUiService baseItemUiService, BaseItemPlacerService baseItemPlacerService, ModalDialogManager modalDialogManager, ExceptionHandler exceptionHandler, GameUiControl gameUiControl, ItemTypeService itemTypeService) {
+    public InventoryUiService(ModalDialogManager dialogManager,
+                              Provider<GameEngineControl> gameEngineControl,
+                              BaseItemUiService baseItemUiService,
+                              BaseItemPlacerService baseItemPlacerService,
+                              ModalDialogManager modalDialogManager,
+                              GameUiControl gameUiControl,
+                              ItemTypeService itemTypeService) {
         this.dialogManager = dialogManager;
         this.gameEngineControl = gameEngineControl;
         this.baseItemUiService = baseItemUiService;
         this.baseItemPlacerService = baseItemPlacerService;
         this.modalDialogManager = modalDialogManager;
-        this.exceptionHandler = exceptionHandler;
         this.gameUiControl = gameUiControl;
         this.itemTypeService = itemTypeService;
     }
@@ -81,9 +80,9 @@ public class InventoryUiService {
     @SuppressWarnings("unused") // Called by Angular
     public void useItem(InventoryItem inventoryItem) {
         if (inventoryItem.getRazarion() != null && inventoryItem.getRazarion() > 0) {
-            gameEngineControl.useInventoryItem(new UseInventoryItem().setInventoryId(inventoryItem.getId()));
+            gameEngineControl.get().useInventoryItem(new UseInventoryItem().setInventoryId(inventoryItem.getId()));
             if (gameUiControl.getGameEngineMode() == GameEngineMode.MASTER) {
-                inventoryItemIds.remove((Integer)inventoryItem.getId());
+                inventoryItemIds.remove((Integer) inventoryItem.getId());
             }
         } else if (inventoryItem.hasBaseItemTypeId()) {
             try {
@@ -98,15 +97,15 @@ public class InventoryUiService {
                     baseItemPlacerConfig.setBaseItemCount(inventoryItem.getBaseItemTypeCount());
                     baseItemPlacerConfig.setEnemyFreeRadius(inventoryItem.getBaseItemTypeFreeRange());
                     baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
-                        gameEngineControl.useInventoryItem(new UseInventoryItem().setInventoryId(inventoryItem.getId()).setPositions(new ArrayList<>(decimalPositions)));
+                        gameEngineControl.get().useInventoryItem(new UseInventoryItem().setInventoryId(inventoryItem.getId()).setPositions(new ArrayList<>(decimalPositions)));
                         if (gameUiControl.getGameEngineMode() == GameEngineMode.MASTER) {
-                            inventoryItemIds.remove((Integer)inventoryItem.getId());
+                            inventoryItemIds.remove((Integer) inventoryItem.getId());
                         }
                     });
                     // TODO gameTipService.onInventoryItemPlacerActivated(inventoryItem);
                 }
             } catch (Throwable e) {
-                exceptionHandler.handleException("InventoryUiService.useItem()", e);
+                logger.log(Level.SEVERE, "InventoryUiService.useItem()", e);
             }
         }
     }

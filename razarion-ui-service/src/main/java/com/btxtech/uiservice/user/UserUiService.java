@@ -15,9 +15,9 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 
-import javax.inject.Singleton;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.function.Consumer;
 
 /**
@@ -28,30 +28,29 @@ import java.util.function.Consumer;
 public class UserUiService {
     private static final long SET_NAME_TIME = 1000 * 60 * 5;
     private static final long REGISTER_TIME = 1000 * 60 * 4;
-
     // private Logger logger = Logger.getLogger(UserUiService.class.getName());
-    private GameEngineControl gameEngineControl;
-
-    private LevelService levelService;
-
-    private MainCockpitService cockpitService;
-
-    private ItemCockpitService itemCockpitService;
-
-    private ModalDialogManager dialogManager;
-
-    private Provider<GameUiControl> gameUiControlInstance;
-
-    private SimpleExecutorService simpleExecutorService;
-
-    private ModalDialogManager modalDialogManager;
+    private final Provider<GameEngineControl> gameEngineControl;
+    private final LevelService levelService;
+    private final MainCockpitService cockpitService;
+    private final ItemCockpitService itemCockpitService;
+    private final ModalDialogManager dialogManager;
+    private final Provider<GameUiControl> gameUiControlInstance;
+    private final SimpleExecutorService simpleExecutorService;
+    private final ModalDialogManager modalDialogManager;
     private UserContext userContext;
     private Consumer<UserContext> userRegistrationCallback;
     private SimpleScheduledFuture setUserNameFuture;
     private SimpleScheduledFuture registerFuture;
 
     @Inject
-    public UserUiService(ModalDialogManager modalDialogManager, SimpleExecutorService simpleExecutorService, Provider<com.btxtech.uiservice.control.GameUiControl> gameUiControlInstance, ModalDialogManager dialogManager, ItemCockpitService itemCockpitService, MainCockpitService cockpitService, LevelService levelService, GameEngineControl gameEngineControl) {
+    public UserUiService(ModalDialogManager modalDialogManager,
+                         SimpleExecutorService simpleExecutorService,
+                         Provider<GameUiControl> gameUiControlInstance,
+                         ModalDialogManager dialogManager,
+                         ItemCockpitService itemCockpitService,
+                         MainCockpitService cockpitService,
+                         LevelService levelService,
+                         Provider<GameEngineControl> gameEngineControl) {
         this.modalDialogManager = modalDialogManager;
         this.simpleExecutorService = simpleExecutorService;
         this.gameUiControlInstance = gameUiControlInstance;
@@ -109,7 +108,7 @@ public class UserUiService {
             LevelConfig newLevelConfig = levelService.getNextLevel(levelConfig);
             userContext.levelId(newLevelConfig.getId());
             userContext.xp(0);
-            gameEngineControl.updateLevel(newLevelConfig.getId());
+            gameEngineControl.get().updateLevel(newLevelConfig.getId());
             cockpitService.updateLevelAndXp(userContext);
             itemCockpitService.onStateChanged();
             dialogManager.onLevelPassed(new LevelUpPacket().userContext(userContext));
@@ -159,7 +158,7 @@ public class UserUiService {
     }
 
     public void onUserRegistered(boolean emailNotVerified) {
-        if(emailNotVerified) {
+        if (emailNotVerified) {
             userContext.registerState(UserContext.RegisterState.EMAIL_UNVERIFIED);
         } else {
             userContext.registerState(UserContext.RegisterState.EMAIL_VERIFIED);

@@ -18,16 +18,15 @@ import java.util.logging.Logger;
  */
 public abstract class Boot {
     private final Logger logger = Logger.getLogger(Boot.class.getName());
-    private Collection<StartupProgressListener> listeners = new ArrayList<>();
-    private List<AbstractStartupTask> startupList = new ArrayList<>();
-    private List<DeferredStartup> deferredStartups = new ArrayList<>();
-    private List<DeferredStartup> deferredBackgroundStartups = new ArrayList<>();
-    private List<AbstractStartupTask> finishedTasks = new ArrayList<>();
+    private final Collection<StartupProgressListener> listeners = new ArrayList<>();
+    private final List<AbstractStartupTask> startupList = new ArrayList<>();
+    private final List<DeferredStartup> deferredStartups = new ArrayList<>();
+    private final List<DeferredStartup> deferredBackgroundStartups = new ArrayList<>();
+    private final List<AbstractStartupTask> finishedTasks = new ArrayList<>();
+    private final AlarmService alarmService;
     private AbstractStartupTask waitingTask;
     private boolean failed;
     private String gameSessionUuid;
-
-    private AlarmService alarmService;
 
     public Boot(AlarmService alarmService) {
         this.alarmService = alarmService;
@@ -92,7 +91,7 @@ public abstract class Boot {
             onTaskFailed(task, are);
             return;
         } catch (Throwable t) {
-            logger.log(Level.SEVERE, "", t);
+            logger.log(Level.SEVERE, "Boot.runTask() failed: " + t.getMessage(), t);
             onTaskFailed(task, t);
             return;
         }

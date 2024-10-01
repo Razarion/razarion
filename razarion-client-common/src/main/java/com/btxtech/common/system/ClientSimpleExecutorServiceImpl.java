@@ -13,8 +13,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ClientSimpleExecutorServiceImpl implements SimpleExecutorService {
-
-    private Provider<ClientSimpleScheduledFutureImpl> instance;
+    private final Provider<ClientSimpleScheduledFutureImpl> instance;
 
     @Inject
     public ClientSimpleExecutorServiceImpl(Provider<ClientSimpleScheduledFutureImpl> instance) {

@@ -17,11 +17,9 @@ import java.util.logging.Logger;
 
 public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
     private static final int MAX_OVERRUN_COUNT = 100;
-    private Logger logger = Logger.getLogger(ClientSimpleScheduledFutureImpl.class.getName());
-
-    private ExceptionHandler exceptionHandler;
-
-    private PerfmonService perfmonService;
+    private final Logger logger = Logger.getLogger(ClientSimpleScheduledFutureImpl.class.getName());
+    private final ExceptionHandler exceptionHandler;
+    private final PerfmonService perfmonService;
     private Double timerId;
     private double milliSDelay;
     private boolean repeating;

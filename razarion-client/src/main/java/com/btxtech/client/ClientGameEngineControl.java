@@ -6,7 +6,6 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
@@ -24,9 +23,10 @@ import com.btxtech.uiservice.user.UserUiService;
 import elemental2.dom.ErrorEvent;
 import elemental2.dom.Worker;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -36,19 +36,38 @@ import java.util.logging.Logger;
 @Singleton
 public class ClientGameEngineControl extends GameEngineControl {
     private final Logger logger = Logger.getLogger(ClientGameEngineControl.class.getName());
-
-    private ExceptionHandler exceptionHandler;
-
-    private Provider<LifecycleService> lifecycleService;
+    private final Provider<LifecycleService> lifecycleService;
     private Worker worker;
     private DeferredStartup deferredStartup;
     private QueueStatistics queueStatistics;
 
     @Inject
-    public ClientGameEngineControl(Provider<InputService> inputServices, PerfmonService perfmonService, Boot boot, TerrainUiService terrainUiService, InventoryUiService inventoryUiService, UserUiService userUiService, SelectionHandler selectionHandler, GameUiControl gameUiControl, AudioService audioService, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService, Provider<com.btxtech.client.system.LifecycleService> lifecycleService, ExceptionHandler exceptionHandler) {
-        super(inputServices, perfmonService, exceptionHandler, boot, terrainUiService, inventoryUiService, userUiService, selectionHandler, gameUiControl, audioService, boxUiService, resourceUiService, baseItemUiService);
+    public ClientGameEngineControl(Provider<InputService> inputServices,
+                                   PerfmonService perfmonService,
+                                   Provider<Boot> boot,
+                                   TerrainUiService terrainUiService,
+                                   InventoryUiService inventoryUiService,
+                                   UserUiService userUiService,
+                                   SelectionHandler selectionHandler,
+                                   GameUiControl gameUiControl,
+                                   AudioService audioService,
+                                   BoxUiService boxUiService,
+                                   ResourceUiService resourceUiService,
+                                   BaseItemUiService baseItemUiService,
+                                   Provider<LifecycleService> lifecycleService) {
+        super(inputServices,
+                perfmonService,
+                boot,
+                terrainUiService,
+                inventoryUiService,
+                userUiService,
+                selectionHandler,
+                gameUiControl,
+                audioService,
+                boxUiService,
+                resourceUiService,
+                baseItemUiService);
         this.lifecycleService = lifecycleService;
-        this.exceptionHandler = exceptionHandler;
     }
 
     @Override
@@ -70,7 +89,7 @@ public class ClientGameEngineControl extends GameEngineControl {
                         queueStatistics.received(controlPackage.getCommand());
                     }
                 } catch (Throwable t) {
-                    exceptionHandler.handleException("ClientGameEngineControl: exception processing package on client. Data: " + data, t);
+                    logger.log(Level.SEVERE, "ClientGameEngineControl: exception processing package on client. Data: " + data, t);
                 }
             };
             worker.onerror = this::handleErrors;
@@ -92,7 +111,7 @@ public class ClientGameEngineControl extends GameEngineControl {
         try {
             worker.postMessage(WorkerMarshaller.marshall(new GameEngineControlPackage(command, data)));
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, "worker.postMessage() failed: " + command, t);
         }
     }
 
