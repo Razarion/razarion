@@ -17,12 +17,11 @@ import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnect
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 /**
  * Created by Beat
@@ -32,8 +31,36 @@ import javax.inject.Provider;
 public class ServerGameEngineWorker extends GameEngineWorker {
 
     @Inject
-    public ServerGameEngineWorker(NativeMatrixFactory nativeMatrixFactory, Provider<WorkerTrackerHandler> workerTrackerHandlerInstance, Provider<AbstractServerGameConnection> connectionInstance, TerrainService terrainService, ExceptionHandler exceptionHandler, PerfmonService perfmonService, GameLogicService logicService, CommandService commandService, BoxService boxService, QuestService questService, SyncItemContainerServiceImpl syncItemContainerService, BaseItemService baseItemService, ResourceService resourceService, BotService botService, Event<StaticGameInitEvent> staticGameInitEvent, PlanetService planetService) {
-        super(nativeMatrixFactory, workerTrackerHandlerInstance, connectionInstance, terrainService, exceptionHandler, perfmonService, logicService, commandService, boxService, questService, syncItemContainerService, baseItemService, resourceService, botService, staticGameInitEvent, planetService);
+    public ServerGameEngineWorker(NativeMatrixFactory nativeMatrixFactory,
+                                  Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
+                                  Provider<AbstractServerGameConnection> connectionInstance,
+                                  TerrainService terrainService,
+                                  PerfmonService perfmonService,
+                                  GameLogicService logicService,
+                                  CommandService commandService,
+                                  BoxService boxService,
+                                  QuestService questService,
+                                  SyncItemContainerServiceImpl syncItemContainerService,
+                                  BaseItemService baseItemService,
+                                  ResourceService resourceService,
+                                  BotService botService,
+                                  Event<StaticGameInitEvent> staticGameInitEvent,
+                                  PlanetService planetService) {
+        super(nativeMatrixFactory,
+                workerTrackerHandlerInstance,
+                connectionInstance,
+                terrainService,
+                perfmonService,
+                logicService,
+                commandService,
+                boxService,
+                questService,
+                syncItemContainerService,
+                baseItemService,
+                resourceService,
+                botService,
+                staticGameInitEvent,
+                planetService);
     }
 
     @Override

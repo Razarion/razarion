@@ -17,6 +17,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
  */
 @JsType
 @Embeddable
+@JSONMapper
 public class DecimalPosition {
     public static final DecimalPosition NULL = new DecimalPosition(0, 0);
     public static final DecimalPosition EAST = new DecimalPosition(1, 0);

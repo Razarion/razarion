@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
+import com.btxtech.shared.rest.TerrainShapeControllerFactory;
 import elemental2.core.ArrayBufferView;
 import elemental2.core.Uint16Array;
 import elemental2.dom.Response;
@@ -29,9 +30,7 @@ import static elemental2.dom.DomGlobal.fetch;
 @Singleton
 public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     private final Logger logger = Logger.getLogger(ClientNativeTerrainShapeAccess.class.getName());
-
-    private TerrainService terrainService;
-
+    private final TerrainService terrainService;
     private NativeTerrainShape nativeTerrainShape;
     private Uint16Array terrainHeightMap;
 
@@ -45,20 +44,20 @@ public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
         nativeTerrainShape = null;
         terrainHeightMap = null;
 
-        fetch(CommonUrl.terrainShapeController(planetId))
-                .then(Response::json)
-                .then(data -> {
-                    nativeTerrainShape = Js.uncheckedCast(data);
+        TerrainShapeControllerFactory.INSTANCE
+                .getTerrainShape(planetId)
+                .onSuccess(nativeTerrainShape -> {
+                    this.nativeTerrainShape = nativeTerrainShape;
+
                     if (terrainHeightMap != null) {
                         loadedCallback.accept(nativeTerrainShape);
                     }
-                    return null;
-                }).
-                catch_(error -> {
-                    logger.warning("Error loading " + CommonUrl.terrainShapeController(planetId) + " " + error);
-                    failCallback.accept(error.toString());
-                    return null;
-                });
+                })
+                .onFailed(fail -> {
+                    logger.log(Level.SEVERE, "Error loading " + CommonUrl.terrainShapeController(planetId) + " " + fail.getStatusText(), fail.getThrowable());
+                    failCallback.accept(fail.getStatusText());
+                })
+                .send();
 
         fetch(CommonUrl.terrainHeightMapController(planetId))
                 .then(Response::arrayBuffer)

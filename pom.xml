@@ -117,9 +117,13 @@
                         <failOnError>true</failOnError>
                         <compilerArgs>
                             <arg>-generateJsInteropExports</arg>
+<!--                            <arg>-style</arg>-->
+<!--                            <arg>DETAILED</arg>-->
                         </compilerArgs>
                         <codeserverArgs>
                             <arg>-generateJsInteropExports</arg>
+<!--                            <arg>-style</arg>-->
+<!--                            <arg>DETAILED</arg>-->
                         </codeserverArgs>
                     </configuration>
                     <dependencies>

@@ -34,13 +34,14 @@ public class WorkerLinker extends SelectionScriptLinker {
 
     @Override
     protected String getModuleSuffix2(TreeLogger logger, LinkerContext context, String strongName) throws UnableToCompleteException {
-        int fragmentId = 0;
-        String sourceMapUrl = getSourceMapUrl(context, strongName, fragmentId);
-        if (sourceMapUrl != null) {
-            return "\n//# sourceMappingURL=" + sourceMapUrl + " " + "\n//# sourceURL=" + context.getModuleName() + "-" + fragmentId + ".js\n";
-        } else {
-            return "";
-        }
+//        int fragmentId = 0;
+//        String sourceMapUrl = getSourceMapUrl(context, strongName, fragmentId);
+//        if (sourceMapUrl != null) {
+//            return "\n//# sourceMappingURL=" + sourceMapUrl + " " + "\n//# sourceURL=" + context.getModuleName() + "-" + fragmentId + ".js\n";
+//        } else {
+//            return "";
+//        }
+        return "\n//# sourceMappingURL=symbolMaps/" + strongName + "_sourceMap0.json";
     }
 
     @Override

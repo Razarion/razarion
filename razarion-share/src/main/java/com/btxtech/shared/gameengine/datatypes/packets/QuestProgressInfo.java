@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.packets;
 
 import jsinterop.annotations.JsType;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import java.util.Map;
  * on 09.08.2017.
  */
 @JsType
+@JSONMapper
 public class QuestProgressInfo {
     private Integer count;
     private Map<Integer, Integer> typeCount;

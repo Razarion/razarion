@@ -1,10 +1,10 @@
 package com.btxtech.worker;
 
 
-import com.btxtech.shared.deprecated.Event;
 import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
+import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
@@ -21,10 +21,10 @@ import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnect
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
+import elemental2.core.Global;
 import elemental2.dom.DedicatedWorkerGlobalScope;
-import elemental2.dom.MessageEvent;
+import elemental2.dom.DomGlobal;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -37,7 +37,6 @@ import java.util.logging.Logger;
  */
 public class ClientGameEngineWorker extends GameEngineWorker {
     private final Logger logger = Logger.getLogger(ClientGameEngineWorker.class.getName());
-    private final ClientExceptionHandlerImpl exceptionHandler;
     private final ClientPerformanceTrackerService clientPerformanceTrackerService;
 
     @Inject
@@ -45,7 +44,6 @@ public class ClientGameEngineWorker extends GameEngineWorker {
                                   Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
                                   Provider<AbstractServerGameConnection> connectionInstance,
                                   TerrainService terrainService,
-                                  ExceptionHandler exceptionHandler,
                                   PerfmonService perfmonService,
                                   GameLogicService logicService,
                                   CommandService commandService,
@@ -57,13 +55,11 @@ public class ClientGameEngineWorker extends GameEngineWorker {
                                   BotService botService,
                                   Event<StaticGameInitEvent> staticGameInitEvent,
                                   PlanetService planetService,
-                                  ClientExceptionHandlerImpl exceptionHandler1,
                                   ClientPerformanceTrackerService clientPerformanceTrackerService) {
         super(nativeMatrixFactory,
                 workerTrackerHandlerInstance,
                 connectionInstance,
                 terrainService,
-                exceptionHandler,
                 perfmonService,
                 logicService,
                 commandService,
@@ -75,7 +71,6 @@ public class ClientGameEngineWorker extends GameEngineWorker {
                 botService,
                 staticGameInitEvent,
                 planetService);
-        this.exceptionHandler = exceptionHandler1;
         this.clientPerformanceTrackerService = clientPerformanceTrackerService;
     }
 

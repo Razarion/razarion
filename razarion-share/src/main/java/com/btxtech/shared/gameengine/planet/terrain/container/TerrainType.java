@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.utils.CollectionUtils;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 import java.util.Set;
 

@@ -2,12 +2,14 @@ package com.btxtech.shared.gameengine.datatypes.workerdto;
 
 import com.btxtech.shared.gameengine.datatypes.Character;
 import jsinterop.annotations.JsType;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 /**
  * Created by Beat
  * 07.01.2017.
  */
 @JsType
+@JSONMapper
 public class PlayerBaseDto {
     private int baseId;
     private String name;

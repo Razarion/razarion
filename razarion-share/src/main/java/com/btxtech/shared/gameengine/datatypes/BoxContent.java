@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes;
 
 import jsinterop.annotations.JsType;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +11,9 @@ import java.util.List;
  * 26.10.2016.
  */
 @JsType
+@JSONMapper
 public class BoxContent {
-    private final List<InventoryItem> inventoryItems = new ArrayList<>();
+    private List<InventoryItem> inventoryItems = new ArrayList<>();
     private int crystals;
 
     public void addInventoryItem(InventoryItem inventoryItem) {
@@ -34,5 +36,13 @@ public class BoxContent {
 
     public int getCrystals() {
         return crystals;
+    }
+
+    public void setInventoryItems(List<InventoryItem> inventoryItems) {
+        this.inventoryItems = inventoryItems;
+    }
+
+    public void setCrystals(int crystals) {
+        this.crystals = crystals;
     }
 }

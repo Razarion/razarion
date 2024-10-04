@@ -6,7 +6,7 @@ import jsinterop.annotations.JsType;
  * Created by Beat
  * on 28.06.2017.
  */
-@JsType(name = "NativeTerrainShape", isNative = true, namespace = "com.btxtech.shared.json")
+@JsType(name = "NativeTerrainShape", namespace = "com.btxtech.shared.json")
 public class NativeTerrainShape {
     public NativeTerrainShapeTile[][] nativeTerrainShapeTiles;
 

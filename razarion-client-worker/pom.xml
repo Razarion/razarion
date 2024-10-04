@@ -124,6 +124,7 @@
                     <moduleName>com.btxtech.worker.RazarionClientWorker</moduleName>
                     <moduleShortName>RazarionClientWorker</moduleShortName>
                     <webappDirectory>${project.basedir}/../razarion-server/src/main/webapp</webappDirectory>
+                    <deploy>${project.basedir}/../razarion-server/src/main/webapp</deploy>
                 </configuration>
             </plugin>
         </plugins>

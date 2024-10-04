@@ -27,6 +27,7 @@
 
     <!-- Only support recent browsers -->
     <set-property name="user.agent" value="gecko1_8,safari"/>
+    <set-property name="compiler.useSourceMaps" value="true"/>
 
     <define-linker name="webworkerlinker" class="com.btxtech.linker.WorkerLinker"/>
     <add-linker name="webworkerlinker"/>

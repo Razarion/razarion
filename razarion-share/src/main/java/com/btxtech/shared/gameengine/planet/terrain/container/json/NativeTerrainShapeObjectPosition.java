@@ -6,7 +6,7 @@ import jsinterop.annotations.JsType;
  * Created by Beat
  * on 19.01.2018.
  */
-@JsType(name = "NativeTerrainShapeObjectPosition", isNative = true, namespace = "com.btxtech.shared.json")
+@JsType(name = "NativeTerrainShapeObjectPosition", namespace = "com.btxtech.shared.json")
 public class NativeTerrainShapeObjectPosition {
     public int terrainObjectId;
     public double x;

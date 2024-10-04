@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
+import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
@@ -54,18 +55,18 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
 
 import javax.annotation.PostConstruct;
-import com.btxtech.shared.deprecated.Event;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -73,7 +74,7 @@ import java.util.function.Consumer;
  */
 public abstract class GameEngineWorker implements PlanetTickListener, QuestListener, GameLogicListener {
 
-    // private Logger logger = Logger.getLogger(GameEngineWorker.class.getName());
+    private final Logger logger = Logger.getLogger(GameEngineWorker.class.getName());
     private PlanetService planetService;
 
     private Event<StaticGameInitEvent> staticGameInitEvent;
@@ -96,8 +97,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     private PerfmonService perfmonService;
 
-    private ExceptionHandler exceptionHandler;
-
     private TerrainService terrainService;
 
     private Provider<AbstractServerGameConnection> connectionInstance;
@@ -116,12 +115,25 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private WorkerTrackerHandler workerTrackerHandler;
     private String gameSessionUuid;
 
-    public GameEngineWorker(NativeMatrixFactory nativeMatrixFactory, Provider<com.btxtech.shared.gameengine.WorkerTrackerHandler> workerTrackerHandlerInstance, Provider<com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection> connectionInstance, TerrainService terrainService, ExceptionHandler exceptionHandler, PerfmonService perfmonService, GameLogicService logicService, CommandService commandService, BoxService boxService, QuestService questService, SyncItemContainerServiceImpl syncItemContainerService, BaseItemService baseItemService, ResourceService resourceService, BotService botService, Event<com.btxtech.shared.gameengine.StaticGameInitEvent> staticGameInitEvent, PlanetService planetService) {
+    public GameEngineWorker(NativeMatrixFactory nativeMatrixFactory,
+                            Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
+                            Provider<AbstractServerGameConnection> connectionInstance,
+                            TerrainService terrainService,
+                            PerfmonService perfmonService,
+                            GameLogicService logicService,
+                            CommandService commandService,
+                            BoxService boxService,
+                            QuestService questService,
+                            SyncItemContainerServiceImpl syncItemContainerService,
+                            BaseItemService baseItemService,
+                            ResourceService resourceService,
+                            BotService botService,
+                            Event<StaticGameInitEvent> staticGameInitEvent,
+                            PlanetService planetService) {
         this.nativeMatrixFactory = nativeMatrixFactory;
         this.workerTrackerHandlerInstance = workerTrackerHandlerInstance;
         this.connectionInstance = connectionInstance;
         this.terrainService = terrainService;
-        this.exceptionHandler = exceptionHandler;
         this.perfmonService = perfmonService;
         this.logicService = logicService;
         this.commandService = commandService;
@@ -248,7 +260,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             commandService.move(syncBaseItemIds, destination);
             sendToClient(GameEngineControlPackage.Command.COMMAND_MOVE_ACK);
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, "GameEngineWorker.commandMove() failed", t);
             sendToClient(GameEngineControlPackage.Command.COMMAND_MOVE_ACK);
         }
     }
@@ -268,7 +280,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, failString);
             });
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, "GameEngineWorker.initialise()", t);
             sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, ExceptionUtil.setupStackTrace(null, t));
         }
     }
@@ -283,7 +295,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, failString);
             });
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, "GameEngineWorker.initialiseWarm()", t);
             sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, ExceptionUtil.setupStackTrace(null, t));
         }
     }
@@ -379,8 +391,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 serverConnection.close();
                 serverConnection = null;
             }
-        } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, "GameEngineWorker.stop() failed", t);
         }
         sendToClient(GameEngineControlPackage.Command.STOP_RESPONSE);
     }
@@ -406,7 +418,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                         tmp.add(syncBaseItem.createNativeSyncBaseItemTickInfo());
                     }
                 } catch (Throwable t) {
-                    exceptionHandler.handleException("onPostTick failed syncItem: " + syncItem, t);
+                    logger.log(Level.SEVERE, "onPostTick failed syncItem: " + syncItem, t);
                 }
                 return null;
             });
@@ -421,8 +433,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 nativeTickInfo.resources = (int) playerBase.getResources();
             }
             sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE, nativeTickInfo);
-        } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, "GameEngineWorker.onPostTick() failed", t);
             sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE_FAIL);
         }
     }
@@ -773,7 +785,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                     nodeIndex,
                     terrainService.getPathingAccess().getTerrainType(nodeIndex));
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, "GameEngineWorker.getTerrainType() failed", t);
             sendToClient(GameEngineControlPackage.Command.GET_TERRAIN_TYPE_ANSWER, nodeIndex, TerrainType.BLOCKED);
 
         }

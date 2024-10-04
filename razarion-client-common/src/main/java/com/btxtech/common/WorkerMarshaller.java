@@ -438,6 +438,9 @@ public class WorkerMarshaller {
                 } else if (type == GameEngineMode.class) {
                     String enumString = json.replace("\"", "");
                     return Js.uncheckedCast(GameEngineMode.valueOf(enumString));
+                } else if (type == TerrainType.class) {
+                    String enumString = json.replace("\"", "");
+                    return Js.uncheckedCast(GameEngineMode.valueOf(enumString));
                 } else {
                     throw new IllegalArgumentException("Unsupported type: " + type);
                 }

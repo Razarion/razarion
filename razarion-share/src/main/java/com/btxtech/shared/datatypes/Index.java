@@ -16,6 +16,7 @@ package com.btxtech.shared.datatypes;
 import com.btxtech.shared.utils.MathHelper;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.List;
  */
 @Embeddable
 @JsType
+@JSONMapper
 public class Index {
     public static final Index ZERO = new Index(0, 0);
 
