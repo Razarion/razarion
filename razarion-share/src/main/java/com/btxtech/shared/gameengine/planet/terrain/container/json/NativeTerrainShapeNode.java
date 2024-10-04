@@ -7,6 +7,7 @@ import jsinterop.annotations.JsType;
  * on 28.06.2017.
  */
 @JsType(name = "NativeTerrainShapeNode", isNative = true, namespace = "com.btxtech.shared.json")
+@Deprecated
 public class NativeTerrainShapeNode {
     public double[] fullDrivewayHeights; // bl, br, tr, tl
     public Double gameEngineHeight;

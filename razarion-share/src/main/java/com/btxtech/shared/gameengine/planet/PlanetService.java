@@ -85,13 +85,9 @@ public class PlanetService implements Runnable { // Only available in worker. On
         this.simpleExecutorService = simpleExecutorService;
         this.activationEvent = activationEvent;
         this.exceptionHandler = exceptionHandler;
-    }
-    // private List<DebugHelperStatic.TickData> tickDatas = new ArrayList<>();
-
-    @PostConstruct
-    public void postConstruct() {
         scheduledFuture = simpleExecutorService.scheduleAtFixedRate(TICK_TIME_MILLI_SECONDS, false, this, SimpleExecutorService.Type.GAME_ENGINE);
     }
+    // private List<DebugHelperStatic.TickData> tickDatas = new ArrayList<>();
 
     public void initialise(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, Runnable finishCallback, Consumer<String> failCallback) {
         this.planetConfig = planetConfig;

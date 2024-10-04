@@ -1,12 +1,14 @@
 package com.btxtech.shared.gameengine.datatypes.command;
 
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 /**
  * User: beat
  * Date: 21.05.12
  * Time: 00:27
  */
+@JSONMapper
 public class PickupBoxCommand extends PathToDestinationCommand {
     private int synBoxItemId;
 

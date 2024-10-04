@@ -15,12 +15,14 @@ package com.btxtech.shared.gameengine.datatypes.command;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 /**
  * User: beat
  * Date: 05.05.2010
  * Time: 12:27:00
  */
+@JSONMapper
 public class UnloadContainerCommand extends /*PathToDestinationCommand*/ BaseCommand {
     private DecimalPosition unloadPos;
 

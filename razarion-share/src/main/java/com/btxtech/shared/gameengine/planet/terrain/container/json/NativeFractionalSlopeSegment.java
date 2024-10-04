@@ -7,6 +7,7 @@ import jsinterop.annotations.JsType;
  * on 27.06.2017.
  */
 @JsType(name = "NativeFractionalSlopeSegment", isNative = true, namespace = "com.btxtech.shared.json")
+@Deprecated
 public class NativeFractionalSlopeSegment {
     public double xI;
     public double yI;

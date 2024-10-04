@@ -5,13 +5,12 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,10 +38,6 @@ public class TrailService {
         this.nativeMatrixFactory = nativeMatrixFactory;
         this.simpleExecutorService = simpleExecutorService;
         this.itemTypeService = itemTypeService;
-    }
-
-    @PostConstruct
-    public void postConstruct() {
         simpleExecutorService.scheduleAtFixedRate(CLEANUP_INTERVAL_MILLIS, true, this::cleanup, SimpleExecutorService.Type.TRAIL_SERVICE);
     }
 

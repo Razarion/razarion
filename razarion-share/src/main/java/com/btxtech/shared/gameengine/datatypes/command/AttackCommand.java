@@ -15,12 +15,14 @@ package com.btxtech.shared.gameengine.datatypes.command;
 
 
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 /**
  * User: beat
  * Date: Aug 1, 2009
  * Time: 1:04:16 PM
  */
+@JSONMapper
 public class AttackCommand extends PathToDestinationCommand {
     private int target;
     private boolean followTarget;

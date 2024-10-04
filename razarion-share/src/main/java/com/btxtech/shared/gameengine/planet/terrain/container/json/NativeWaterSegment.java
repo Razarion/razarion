@@ -7,6 +7,7 @@ import jsinterop.annotations.JsType;
  * on 28.06.2017.
  */
 @JsType(name = "NativeWaterSegment", isNative = true, namespace = "com.btxtech.shared.json")
+@Deprecated
 public class NativeWaterSegment {
     public int groundConfigId;
     public NativeVertex[][] polygons;

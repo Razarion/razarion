@@ -1,9 +1,12 @@
 package com.btxtech.shared.gameengine.datatypes.packets;
 
+import org.dominokit.jackson.annotation.JSONMapper;
+
 /**
  * Created by Beat
  * 24.04.2017.
  */
+@JSONMapper
 public class SyncResourceItemInfo {
     private int id;
     private int resourceItemTypeId;

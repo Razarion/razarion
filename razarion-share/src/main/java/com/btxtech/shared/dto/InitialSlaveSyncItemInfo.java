@@ -4,6 +4,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * Created by Beat
  * 08.05.2017.
  */
+@JSONMapper
 public class InitialSlaveSyncItemInfo {
     private double tickCount;
     private Integer actualBaseId;

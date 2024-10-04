@@ -378,7 +378,7 @@ public class WorkerMarshaller {
         return new GameEngineControlPackage(command, data.toArray());
     }
 
-    private static String toJson(Object object) {
+    public static String toJson(Object object) {
         if (object == null) {
             return "null";
         } else {
@@ -413,7 +413,7 @@ public class WorkerMarshaller {
         }
     }
 
-    private static <T> T fromJson(String json, Class<T> type) {
+    public static <T> T fromJson(String json, Class<T> type) {
         if ("null".equals(json)) {
             return null;
         } else {

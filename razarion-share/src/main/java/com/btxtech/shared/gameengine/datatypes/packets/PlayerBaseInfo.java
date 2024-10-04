@@ -1,11 +1,13 @@
 package com.btxtech.shared.gameengine.datatypes.packets;
 
 import com.btxtech.shared.gameengine.datatypes.Character;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 /**
  * Created by Beat
  * 16.04.2017.
  */
+@JSONMapper
 public class PlayerBaseInfo {
     private int baseId;
     private String name;

@@ -7,6 +7,7 @@ import jsinterop.annotations.JsType;
  * on 27.06.2017.
  */
 @JsType(name = "NativeObstacle", isNative = true, namespace = "com.btxtech.shared.json")
+@Deprecated
 public class NativeObstacle {
     public Double x1;
     public Double y1;

@@ -57,6 +57,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
+import elemental2.dom.DomGlobal;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Provider;
@@ -145,15 +146,11 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         this.botService = botService;
         this.staticGameInitEvent = staticGameInitEvent;
         this.planetService = planetService;
-    }
-
-    protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
-
-    @PostConstruct
-    public void postConstruct() {
         questService.addQuestListener(this);
         logicService.setGameLogicListener(this);
     }
+
+    protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
 
     protected void dispatch(GameEngineControlPackage controlPackage) {
         switch (controlPackage.getCommand()) {

@@ -40,6 +40,10 @@ public abstract class BaseCommand {
         return timeStamp;
     }
 
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
     public void updateTimeStamp() {
         timeStamp = new Date();
     }

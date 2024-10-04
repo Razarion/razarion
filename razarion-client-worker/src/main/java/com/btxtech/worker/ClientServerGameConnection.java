@@ -1,5 +1,6 @@
 package com.btxtech.worker;
 
+import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.common.system.WebSocketWrapper;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineWorker;
@@ -14,7 +15,6 @@ import elemental2.dom.Event;
 import elemental2.dom.MessageEvent;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,7 +54,7 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
             MessageEvent messageEvent = (MessageEvent) event;
             handleMessage((String) messageEvent.data);
         } catch (Throwable throwable) {
-            logger.log(Level.SEVERE, "ClientServerGameConnection.handleMessage() failed", throwable);
+            logger.log(Level.SEVERE, "ClientServerGameConnection.handleMessage() failed: " + ((MessageEvent) event).data, throwable);
         }
     }
 
@@ -65,14 +65,12 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
 
     @Override
     protected String toJson(Object param) {
-        // return MarshallingWrapper.toJSON(param);
-        throw new UnsupportedOperationException("TODO.........MarshallingWrapper.toJSON(param)");
+        return WorkerMarshaller.toJson(param);
     }
 
     @Override
     protected Object fromJson(String jsonString, GameConnectionPacket packet) {
-        // return MarshallingWrapper.fromJSON(jsonString, packet.getTheClass());
-        throw new UnsupportedOperationException("TODO.........MarshallingWrapper.fromJSON(jsonString, packet.getTheClass())");
+        return WorkerMarshaller.fromJson(jsonString, packet.getTheClass());
     }
 
     @Override

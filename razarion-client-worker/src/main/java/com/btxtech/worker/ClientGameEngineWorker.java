@@ -2,7 +2,6 @@ package com.btxtech.worker;
 
 
 import com.btxtech.common.WorkerMarshaller;
-import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
@@ -22,9 +21,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import elemental2.core.Global;
 import elemental2.dom.DedicatedWorkerGlobalScope;
-import elemental2.dom.DomGlobal;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
