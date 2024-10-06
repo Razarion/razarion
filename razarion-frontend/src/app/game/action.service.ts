@@ -47,22 +47,22 @@ export class ActionService implements ActionServiceListener {
     this.gwtAngularService.gwtAngularFacade.inputService.terrainClicked(GwtInstance.newDecimalPosition(xTerrainPosition, yTerrainPosition));
   }
 
-  addCursoHandler(cursorTypeHandler: (selectionInfo: SelectionInfo) => void) {
+  addCursorHandler(cursorTypeHandler: (selectionInfo: SelectionInfo) => void) {
     this.cursorTypeHandlers.push(cursorTypeHandler);
   }
 
-  removeCursoHandler(cursorTypeHandler: (selectionInfo: SelectionInfo) => void) {
+  removeCursorHandler(cursorTypeHandler: (selectionInfo: SelectionInfo) => void) {
     this.cursorTypeHandlers.splice(this.cursorTypeHandlers.indexOf(cursorTypeHandler), 1);
   }
 
   setupSelectionInfo(): SelectionInfo {
     let selectionInfo = new SelectionInfo();
-    selectionInfo.hasOwnSelection = this.gwtAngularService.gwtAngularFacade.selectionHandler.hasOwnSelection();
+    selectionInfo.hasOwnSelection = this.gwtAngularService.gwtAngularFacade.selectionService.hasOwnSelection();
     if (selectionInfo.hasOwnSelection) {
-      selectionInfo.hasOwnMovable = this.gwtAngularService.gwtAngularFacade.selectionHandler.hasOwnMovable();
+      selectionInfo.hasOwnMovable = this.gwtAngularService.gwtAngularFacade.selectionService.hasOwnMovable();
     }
-    selectionInfo.hasAttackers = this.gwtAngularService.gwtAngularFacade.selectionHandler.hasAttackers();
-    selectionInfo.hasHarvesters = this.gwtAngularService.gwtAngularFacade.selectionHandler.hasHarvesters();
+    selectionInfo.hasAttackers = this.gwtAngularService.gwtAngularFacade.selectionService.hasAttackers();
+    selectionInfo.hasHarvesters = this.gwtAngularService.gwtAngularFacade.selectionService.hasHarvesters();
     return selectionInfo;
   }
 }

@@ -110,7 +110,7 @@ export class BabylonItemImpl implements BabylonItem {
         return;
       }
     }
-    actionService.addCursoHandler(this.itemCursorTypeHandler);
+    actionService.addCursorHandler(this.itemCursorTypeHandler);
 
     this.container.getChildMeshes().forEach(function (childMesh) {
       childMesh.actionManager = actionManager;
@@ -148,7 +148,7 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   dispose(): void {
-    this.actionService.removeCursoHandler(this.itemCursorTypeHandler);
+    this.actionService.removeCursorHandler(this.itemCursorTypeHandler);
     this.container.getChildMeshes().forEach(childMesh => {
       this.rendererService.shadowGenerator.removeShadowCaster(childMesh, true);
     });

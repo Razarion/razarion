@@ -47,7 +47,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
     }
 
     public T title(String title) {
-        this.title = title;
+        setTitle(title);
         return (T) this;
     }
 
@@ -56,7 +56,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
     }
 
     public T description(String description) {
-        this.description = description;
+        setDescription(description);
         return (T) this;
     }
 
@@ -65,7 +65,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
     }
 
     public T xp(int xp) {
-        this.xp = xp;
+        setXp(xp);
         return (T) this;
     }
 

@@ -20,7 +20,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
@@ -33,6 +32,8 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -41,37 +42,29 @@ import java.util.Collection;
  */
 @JsType
 @Singleton
-// TODO Reanme to SelectionService
-public class SelectionHandler {
-
-    private SelectionEventService selectionEventService;
-
-    private Provider<Group> groupInstance;
-
-    private Provider<BaseItemUiService> baseItemUiService;
-
-    private Provider<ResourceUiService> resourceUiService;
-
-    private Provider<BoxUiService> boxUiService;
-
-    private ExceptionHandler exceptionHandler;
+public class SelectionService {
+    private final Logger logger = Logger.getLogger(SelectionService.class.getName());
+    private final SelectionEventService selectionEventService;
+    private final Provider<Group> groupInstance;
+    private final Provider<BaseItemUiService> baseItemUiService;
+    private final Provider<ResourceUiService> resourceUiService;
+    private final Provider<BoxUiService> boxUiService;
     private ActionServiceListener actionServiceListener;
     private Group selectedGroup;
     private SyncItemSimpleDto selectedOtherSyncItem;
 
     @Inject
-    public SelectionHandler(ExceptionHandler exceptionHandler,
-                            Provider<BoxUiService> boxUiService,
+    public SelectionService(Provider<BoxUiService> boxUiService,
                             Provider<ResourceUiService> resourceUiService,
                             Provider<BaseItemUiService> baseItemUiService,
                             Provider<com.btxtech.uiservice.Group> groupInstance,
                             SelectionEventService selectionEventService) {
-        this.exceptionHandler = exceptionHandler;
         this.boxUiService = boxUiService;
         this.resourceUiService = resourceUiService;
         this.baseItemUiService = baseItemUiService;
         this.groupInstance = groupInstance;
         this.selectionEventService = selectionEventService;
+        selectionEventService.receiveSelectionEvent(this::onOwnSelectionChanged);
     }
 
     public Group getOwnSelection() {
@@ -143,7 +136,7 @@ public class SelectionHandler {
 
             clearSelection(false);
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, "selectRectangle failed", t);
         }
     }
 
@@ -234,7 +227,7 @@ public class SelectionHandler {
         }
     }
 
-    public void onOwnSelectionChanged( SelectionEvent selectionEvent) {
+    public void onOwnSelectionChanged(SelectionEvent selectionEvent) {
         if (this.actionServiceListener != null) {
             this.actionServiceListener.onSelectionChanged();
         }

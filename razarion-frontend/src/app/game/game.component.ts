@@ -82,7 +82,7 @@ export class GameComponent implements OnInit, ScreenCover {
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
-      this.gwtAngularService.gwtAngularFacade.selectionHandler = this.gameMockService.mockSelectionHandler();
+      this.gwtAngularService.gwtAngularFacade.selectionService = this.gameMockService.mockSelectionService();
       this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameMockService.gameUiControl;
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;

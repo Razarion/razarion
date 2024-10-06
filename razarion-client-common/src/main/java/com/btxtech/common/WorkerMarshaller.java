@@ -31,7 +31,6 @@ import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsArrayNumber;
 import elemental2.core.JsArray;
 import elemental2.core.JsObject;
-import elemental2.dom.DomGlobal;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
 import jsinterop.base.JsArrayLike;
@@ -370,7 +369,7 @@ public class WorkerMarshaller {
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), QuestProgressInfo.class));
                 break;
             case SELL_ITEMS:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), IdsDto.class));
                 break;
             case INITIAL_SLAVE_SYNCHRONIZED:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), DecimalPosition.class));

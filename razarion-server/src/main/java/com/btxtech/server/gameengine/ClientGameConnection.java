@@ -9,6 +9,7 @@ import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -28,7 +29,6 @@ import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -109,7 +109,7 @@ public class ClientGameConnection {
                 commandService.executeCommand((BaseCommand) param);
                 break;
             case SELL_ITEMS:
-                baseItemService.sellItems((List<Integer>) param, getPlayerBase());
+                baseItemService.sellItems(((IdsDto) param).getIds(), getPlayerBase());
                 break;
             case USE_INVENTORY_ITEM:
                 serverInventoryService.useInventoryItem((UseInventoryItem) param, getPlayerSession(), getPlayerBaseFull());

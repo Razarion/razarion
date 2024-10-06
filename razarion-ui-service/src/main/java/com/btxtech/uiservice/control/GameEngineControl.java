@@ -29,7 +29,7 @@ import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
-import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -59,7 +59,7 @@ public abstract class GameEngineControl {
     private final BoxUiService boxUiService;
     private final AudioService audioService;
     private final GameUiControl gameUiControl;
-    private final SelectionHandler selectionHandler;
+    private final SelectionService selectionService;
     private final UserUiService userUiService;
     private final InventoryUiService inventoryUiService;
     private final TerrainUiService terrainUiService;
@@ -76,7 +76,7 @@ public abstract class GameEngineControl {
                              TerrainUiService terrainUiService,
                              InventoryUiService inventoryUiService,
                              UserUiService userUiService,
-                             SelectionHandler selectionHandler,
+                             SelectionService selectionService,
                              GameUiControl gameUiControl,
                              AudioService audioService,
                              BoxUiService boxUiService,
@@ -88,7 +88,7 @@ public abstract class GameEngineControl {
         this.terrainUiService = terrainUiService;
         this.inventoryUiService = inventoryUiService;
         this.userUiService = userUiService;
-        this.selectionHandler = selectionHandler;
+        this.selectionService = selectionService;
         this.gameUiControl = gameUiControl;
         this.audioService = audioService;
         this.boxUiService = boxUiService;
@@ -236,13 +236,13 @@ public abstract class GameEngineControl {
         perfmonService.onEntered(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
         try {
             if (nativeTickInfo.killedSyncBaseItems != null) {
-                selectionHandler.baseItemRemoved(nativeTickInfo.killedSyncBaseItems);
+                selectionService.baseItemRemoved(nativeTickInfo.killedSyncBaseItems);
                 baseItemUiService.onSyncBaseItemsExplode(nativeTickInfo.killedSyncBaseItems);
             }
             baseItemUiService.updateSyncBaseItems(nativeTickInfo.updatedNativeSyncBaseItemTickInfos);
             gameUiControl.setGameInfo(nativeTickInfo);
             if (nativeTickInfo.removeSyncBaseItemIds != null) {
-                selectionHandler.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
+                selectionService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
                 // effectVisualizationService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
             }
         } catch (Throwable t) {

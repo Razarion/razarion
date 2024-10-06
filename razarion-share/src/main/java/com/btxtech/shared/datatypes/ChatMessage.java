@@ -1,9 +1,12 @@
 package com.btxtech.shared.datatypes;
 
+import org.dominokit.jackson.annotation.JSONMapper;
+
 /**
  * Created by Beat
  * on 29.12.2017.
  */
+@JSONMapper
 public class ChatMessage {
     private int userId;
     private String userName;

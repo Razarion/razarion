@@ -1,11 +1,14 @@
 package com.btxtech.shared.datatypes;
 
+import org.dominokit.jackson.annotation.JSONMapper;
+
 import java.util.Map;
 
 /**
  * Created by Beat
  * on 24.09.2017.
  */
+@JSONMapper
 public class UnlockedItemPacket {
     private Map<Integer, Integer> unlockedItemLimit;
     private boolean availableUnlocks;

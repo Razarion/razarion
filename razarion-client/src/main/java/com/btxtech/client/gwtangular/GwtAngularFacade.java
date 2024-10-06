@@ -5,7 +5,7 @@ import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.ActionServiceListener;
-import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.QuestCockpit;
 import com.btxtech.uiservice.cockpit.ScreenCover;
@@ -27,7 +27,6 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true)
 public abstract class GwtAngularFacade {
-    public abstract void onCrash();
     // Initialized by Angular called by GWT (GameEngine & UI-Engine event)
     public GwtAngularBoot gwtAngularBoot;  // Initialized by Angular
     public ScreenCover screenCover; // Initialized by Angular
@@ -44,11 +43,13 @@ public abstract class GwtAngularFacade {
     public EditorFrontendProvider editorFrontendProvider;  // Initialized by GWT
     public StatusProvider statusProvider; // Initialized by GWT
     public InputService inputService; // Initialized by GWT
-    public SelectionHandler selectionHandler; // Initialized by GWT
+    public SelectionService selectionService; // Initialized by GWT
     public TerrainTypeService terrainTypeService; // Initialized by GWT
     public ItemTypeService itemTypeService; // Initialized by GWT
     public ThreeJsModelPackService threeJsModelPackService; // Initialized by GWT
-    public BaseItemUiService baseItemUiService ; // Initialized by GWT
+    public BaseItemUiService baseItemUiService; // Initialized by GWT
     public InventoryTypeService inventoryTypeService; // Initialized by GWT
     public InventoryUiService inventoryUiService; // Initialized by GWT
+
+    public abstract void onCrash();
 }

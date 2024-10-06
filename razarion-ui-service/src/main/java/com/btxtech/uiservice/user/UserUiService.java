@@ -123,7 +123,7 @@ public class UserUiService {
         userContext = levelUpPacket.getUserContext();
         cockpitService.updateLevelAndXp(userContext);
         itemCockpitService.onStateChanged();
-        cockpitService.blinkAvailableUnlock(levelUpPacket.getAvailableUnlocks());
+        cockpitService.blinkAvailableUnlock(levelUpPacket.isAvailableUnlocks());
         dialogManager.onLevelPassed(levelUpPacket);
     }
 

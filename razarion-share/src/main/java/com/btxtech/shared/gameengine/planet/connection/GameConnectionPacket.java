@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.system.ConnectionMarshaller;
 
 import java.util.List;
@@ -57,10 +58,10 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     MOVE_COMMAND(MoveCommand.class),
     PICK_BOX_COMMAND(PickupBoxCommand.class),
     // Cockpit
-    SELL_ITEMS(List.class),
+    SELL_ITEMS(IdsDto.class),
     USE_INVENTORY_ITEM(UseInventoryItem.class);
 
-    private Class<?> theClass;
+    private final Class<?> theClass;
 
     GameConnectionPacket(Class<?> theClass) {
         this.theClass = theClass;

@@ -2,7 +2,6 @@
 <module>
     <inherits name="com.google.gwt.activity.Activity"/>
     <inherits name="com.google.gwt.user.User"/>
-    <inherits name="com.google.gwt.user.theme.clean.Clean"/>
     <inherits name="com.google.web.bindery.requestfactory.RequestFactory"/>
     <inherits name='com.btxtech.Razarion-Share'/>
     <inherits name="com.btxtech.Razarion-Ui-Service"/>
@@ -17,15 +16,15 @@
     <entry-point class="com.btxtech.client.RazarionClient"/>
 
     <replace-with class="com.btxtech.common.system.logging.RestRemoteLogHandler">
-        <when-type-is class="com.google.gwt.logging.client.SimpleRemoteLogHandler" />
+        <when-type-is class="com.google.gwt.logging.client.SimpleRemoteLogHandler"/>
         <any>
-            <when-property-is name="gwt.logging.enabled" value="TRUE" />
-            <when-property-is name="gwt.logging.simpleRemoteHandler" value="ENABLED" />
+            <when-property-is name="gwt.logging.enabled" value="TRUE"/>
+            <when-property-is name="gwt.logging.simpleRemoteHandler" value="ENABLED"/>
         </any>
     </replace-with>
     <set-property name="gwt.logging.enabled" value="TRUE"/>
     <set-property name="gwt.logging.logLevel" value="WARNING"/>
-    <set-property name="gwt.logging.simpleRemoteHandler" value="ENABLED" />
+    <set-property name="gwt.logging.simpleRemoteHandler" value="ENABLED"/>
 
     <!-- Only support recent browsers -->
     <set-property name="user.agent" value="gecko1_8,safari"/>

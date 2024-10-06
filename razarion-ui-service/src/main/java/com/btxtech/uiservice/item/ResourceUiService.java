@@ -9,7 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleD
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionEventService;
-import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.MarkerConfig;
@@ -32,15 +32,12 @@ import java.util.logging.Logger;
 @Singleton
 public class ResourceUiService {
     private final Logger logger = Logger.getLogger(ResourceUiService.class.getName());
-
-    private ItemTypeService itemTypeService;
-
-    private SelectionHandler selectionHandler;
-
-    private BabylonRendererService babylonRendererService;
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
-    private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
     private final Map<Integer, BabylonResourceItem> babylonResourceItems = new HashMap<>();
+    private final ItemTypeService itemTypeService;
+    private final SelectionService selectionService;
+    private final BabylonRendererService babylonRendererService;
+    private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
     private BabylonResourceItem selectedBabylonResourceItem;
@@ -49,11 +46,11 @@ public class ResourceUiService {
 
     @Inject
     public ResourceUiService(BabylonRendererService babylonRendererService,
-                             SelectionHandler selectionHandler,
+                             SelectionService selectionService,
                              ItemTypeService itemTypeService,
                              SelectionEventService selectionEventService) {
         this.babylonRendererService = babylonRendererService;
-        this.selectionHandler = selectionHandler;
+        this.selectionService = selectionService;
         this.itemTypeService = itemTypeService;
         selectionEventService.receiveSelectionEvent(this::onSelectionChanged);
     }
@@ -81,7 +78,7 @@ public class ResourceUiService {
             if (resource == null) {
                 throw new IllegalStateException("No resource for id: " + id);
             }
-            selectionHandler.resourceItemRemove(resource);
+            selectionService.resourceItemRemove(resource);
         }
         updateBabylonResourceItems();
     }

@@ -1,9 +1,12 @@
 package com.btxtech.shared.datatypes;
 
+import org.dominokit.jackson.annotation.JSONMapper;
+
 /**
  * Created by Beat
  * on 22.09.2017.
  */
+@JSONMapper
 public class LevelUpPacket {
     private UserContext userContext;
     private boolean availableUnlocks;
@@ -16,7 +19,7 @@ public class LevelUpPacket {
         this.userContext = userContext;
     }
 
-    public boolean getAvailableUnlocks() {
+    public boolean isAvailableUnlocks() {
         return availableUnlocks;
     }
 

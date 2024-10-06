@@ -1,6 +1,6 @@
 // ---------- Root ----------
 
-import { ConditionTrigger } from "../generated/razarion-share";
+import {ConditionTrigger} from "../generated/razarion-share";
 
 export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
@@ -16,7 +16,7 @@ export abstract class GwtAngularFacade {
   statusProvider!: StatusProvider;
   babylonRenderServiceAccess!: BabylonRenderServiceAccess;
   inputService!: InputService;
-  selectionHandler!: SelectionHandler;
+  selectionService!: SelectionService;
   terrainTypeService!: TerrainTypeService;
   itemTypeService!: ItemTypeService;
   threeJsModelPackService!: ThreeJsModelPackService;
@@ -142,7 +142,7 @@ export interface InputService {
   getTerrainTypeOnTerrain(nodeIndex: Index): Promise<any>;
 }
 
-export interface SelectionHandler {
+export interface SelectionService {
   hasOwnSelection(): boolean;
 
   hasOwnMovable(): boolean;
@@ -610,16 +610,6 @@ export enum RadarState {
   NONE = "NONE",
   NO_POWER = "NO_POWER",
   WORKING = "WORKING",
-}
-
-export enum CursorType {
-  GO = "GO",
-  ATTACK = "ATTACK",
-  COLLECT = "COLLECT",
-  LOAD = "LOAD",
-  UNLOAD = "UNLOAD",
-  FINALIZE_BUILD = "FINALIZE_BUILD",
-  PICKUP = "PICKUP"
 }
 
 export interface ActionServiceListener {

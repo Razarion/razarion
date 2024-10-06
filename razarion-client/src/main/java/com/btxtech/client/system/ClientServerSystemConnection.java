@@ -1,9 +1,9 @@
 package com.btxtech.client.system;
 
+import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.common.system.WebSocketWrapper;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.LifecyclePacket;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
@@ -15,6 +15,8 @@ import elemental2.dom.Event;
 import elemental2.dom.MessageEvent;
 
 import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -22,18 +24,20 @@ import javax.inject.Inject;
  */
 
 public class ClientServerSystemConnection extends AbstractServerSystemConnection {
-
-    private LifecycleService lifecycleService;
-
-    private ExceptionHandler exceptionHandler;
-
-    private WebSocketWrapper webSocketWrapper;
+    private final Logger logger = Logger.getLogger(ClientServerSystemConnection.class.getName());
+    private final LifecycleService lifecycleService;
+    private final WebSocketWrapper webSocketWrapper;
 
     @Inject
-    public ClientServerSystemConnection(WebSocketWrapper webSocketWrapper, ExceptionHandler exceptionHandler, LifecycleService lifecycleService, Boot boot, ChatUiService chatUiService, InventoryUiService inventoryUiService, UserUiService userUiService, GameUiControl gameUiControl) {
+    public ClientServerSystemConnection(WebSocketWrapper webSocketWrapper,
+                                        LifecycleService lifecycleService,
+                                        Boot boot,
+                                        ChatUiService chatUiService,
+                                        InventoryUiService inventoryUiService,
+                                        UserUiService userUiService,
+                                        GameUiControl gameUiControl) {
         super(boot, chatUiService, inventoryUiService, userUiService, gameUiControl);
         this.webSocketWrapper = webSocketWrapper;
-        this.exceptionHandler = exceptionHandler;
         this.lifecycleService = lifecycleService;
     }
 
@@ -53,7 +57,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
             MessageEvent messageEvent = (MessageEvent) event;
             handleMessage((String) messageEvent.data);
         } catch (Throwable throwable) {
-            exceptionHandler.handleException("ClientServerGameConnection.handleMessage() failed", throwable);
+            logger.log(Level.SEVERE, "ClientServerGameConnection.handleMessage() failed: " + ((MessageEvent) event).data, throwable);
         }
     }
 
@@ -64,8 +68,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
 
     @Override
     protected String toJson(Object param) {
-        // return MarshallingWrapper.toJSON(param);
-        return null;
+        return WorkerMarshaller.toJson(param);
     }
 
     @Override
@@ -73,8 +76,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
         if (packet.getTheClass() == Void.class) {
             return null;
         } else {
-            // return MarshallingWrapper.fromJSON(jsonString, packet.getTheClass());
-            return null;
+            return WorkerMarshaller.fromJson(jsonString, packet.getTheClass());
         }
     }
 

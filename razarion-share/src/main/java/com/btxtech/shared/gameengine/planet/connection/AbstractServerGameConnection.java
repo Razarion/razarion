@@ -10,32 +10,29 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.system.ConnectionMarshaller;
 
-import javax.inject.Inject;
-import java.util.List;
-
 /**
  * Created by Beat
  * 20.04.2017.
  */
 public abstract class AbstractServerGameConnection {
+    private final GameEngineWorker gameEngineWorker;
+    private final BaseItemService baseItemService;
+    private final ResourceService resourceService;
+    private final BoxService boxService;
+    private final PlanetService planetService;
 
-    private GameEngineWorker gameEngineWorker;
-
-    private BaseItemService baseItemService;
-
-    private ResourceService resourceService;
-
-    private BoxService boxService;
-
-    private PlanetService planetService;
-
-    public AbstractServerGameConnection(PlanetService planetService, BoxService boxService, ResourceService resourceService, BaseItemService baseItemService, GameEngineWorker gameEngineWorker) {
+    public AbstractServerGameConnection(PlanetService planetService,
+                                        BoxService boxService,
+                                        ResourceService resourceService,
+                                        BaseItemService baseItemService,
+                                        GameEngineWorker gameEngineWorker) {
         this.planetService = planetService;
         this.boxService = boxService;
         this.resourceService = resourceService;
@@ -61,7 +58,7 @@ public abstract class AbstractServerGameConnection {
         sendToServer(ConnectionMarshaller.marshall(baseCommand.connectionPackage(), toJson(baseCommand)));
     }
 
-    public void sellItems(List<Integer> items) {
+    public void sellItems(IdsDto items) {
         sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SELL_ITEMS, toJson(items)));
     }
 
@@ -110,7 +107,7 @@ public abstract class AbstractServerGameConnection {
                 gameEngineWorker.onInitialSlaveSyncItemInfo((InitialSlaveSyncItemInfo) param);
                 break;
             case TICK_COUNT_RESPONSE:
-                planetService.setTickCount((long)((double) param));
+                planetService.setTickCount((long) ((double) param));
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);

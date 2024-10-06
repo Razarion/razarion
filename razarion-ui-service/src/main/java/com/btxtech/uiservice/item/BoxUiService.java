@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionEventService;
-import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.renderer.BabylonBoxItem;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.MarkerConfig;
@@ -30,28 +30,25 @@ import java.util.logging.Logger;
 @Singleton
 public class BoxUiService {
     private final Logger logger = Logger.getLogger(BoxUiService.class.getName());
-
-    private ItemTypeService itemTypeService;
-
-    private SelectionHandler selectionHandler;
-
-    private BabylonRendererService babylonRendererService;
     private final Map<Integer, SyncBoxItemSimpleDto> boxes = new HashMap<>();
+    private final Map<Integer, BabylonBoxItem> babylonBoxItems = new HashMap<>();
+    private final ItemTypeService itemTypeService;
+    private final SelectionService selectionService;
+    private final BabylonRendererService babylonRendererService;
     private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
-    private final Map<Integer, BabylonBoxItem> babylonBoxItems = new HashMap<>();
     private BabylonBoxItem selectedBabylonBoxItem;
     private Integer selectedOutOfViewId;
     private BabylonBoxItem hoverBabylonBoxItem;
 
     @Inject
     public BoxUiService(BabylonRendererService babylonRendererService,
-                        SelectionHandler selectionHandler,
+                        SelectionService selectionService,
                         ItemTypeService itemTypeService,
                         SelectionEventService selectionEventService) {
         this.babylonRendererService = babylonRendererService;
-        this.selectionHandler = selectionHandler;
+        this.selectionService = selectionService;
         this.itemTypeService = itemTypeService;
         selectionEventService.receiveSelectionEvent(this::onSelectionChanged);
     }
@@ -79,7 +76,7 @@ public class BoxUiService {
             if (box == null) {
                 throw new IllegalStateException("No box for id: " + id);
             }
-            selectionHandler.boxItemRemove(box);
+            selectionService.boxItemRemove(box);
         }
         updateBabylonBoxItems();
     }

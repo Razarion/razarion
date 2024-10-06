@@ -35,7 +35,7 @@ import {
   QuestConfig,
   QuestProgressInfo,
   ResourceItemType,
-  SelectionHandler,
+  SelectionService,
   ShapeTransform,
   SlopeConfig,
   StatusProvider,
@@ -868,8 +868,8 @@ export class GameMockService {
     });
   }
 
-  mockSelectionHandler(): SelectionHandler {
-    return new class implements SelectionHandler {
+  mockSelectionService(): SelectionService {
+    return new class implements SelectionService {
       hasOwnSelection(): boolean {
         return false;
       }

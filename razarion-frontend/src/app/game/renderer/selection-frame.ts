@@ -97,7 +97,7 @@ export class SelectionFrame {
       return;
     }
 
-    this.gwtAngularService.gwtAngularFacade.selectionHandler.selectRectangle(
+    this.gwtAngularService.gwtAngularFacade.selectionService.selectRectangle(
       Math.min(this.startTerrainPosition.x, endTerrainPosition.x),
       Math.min(this.startTerrainPosition.z, endTerrainPosition.z),
       Math.abs(this.startTerrainPosition.x - endTerrainPosition.x),

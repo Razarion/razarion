@@ -18,7 +18,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionEventService;
-import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -56,28 +56,26 @@ import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toDec
 @JsType
 public class BaseItemUiService {
     private final Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
-
-    private ItemTypeService itemTypeService;
-
-    private SelectionHandler selectionHandler;
-
-    private Provider<GameUiControl> gameUiControl;
-
-    private MainCockpitService cockpitService;
-
-    private ItemCockpitService itemCockpitService;
-
-    private ModalDialogManager modalDialogManager;
-
-    private Provider<UserUiService> userUiService;
-
-    private ExceptionHandler exceptionHandler;
-
-    private BabylonRendererService babylonRendererService;
-
-    private AudioService audioService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private final Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
+    private final MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
+    private final MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
+    private final Map<Integer, BabylonBaseItem> babylonBaseItems = new HashMap<>();
+    private final MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
+    private final MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
+    private final MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
+    private final List<BabylonBaseItem> selectedBabylonBaseItems = new ArrayList<>();
+    private final List<Integer> selectedOutOfViewIds = new ArrayList<>();
+    private final ItemTypeService itemTypeService;
+    private final SelectionService selectionService;
+    private final Provider<GameUiControl> gameUiControl;
+    private final MainCockpitService cockpitService;
+    private final ItemCockpitService itemCockpitService;
+    private final ModalDialogManager modalDialogManager;
+    private final Provider<UserUiService> userUiService;
+    private final ExceptionHandler exceptionHandler;
+    private final BabylonRendererService babylonRendererService;
+    private final AudioService audioService;
     private PlayerBaseDto myBase;
     private int resources;
     private int houseSpace;
@@ -85,16 +83,8 @@ public class BaseItemUiService {
     private int itemCount;
     private boolean hasRadar;
     private NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
-    private final MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
-    private final MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
-    private final Map<Integer, BabylonBaseItem> babylonBaseItems = new HashMap<>();
-    private final MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
-    private final MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
-    private final MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
     private long lastUpdateTimeStamp;
     private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
-    private final List<BabylonBaseItem> selectedBabylonBaseItems = new ArrayList<>();
-    private final List<Integer> selectedOutOfViewIds = new ArrayList<>();
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
 
@@ -107,7 +97,7 @@ public class BaseItemUiService {
                              ItemCockpitService itemCockpitService,
                              MainCockpitService cockpitService,
                              Provider<GameUiControl> gameUiControl,
-                             SelectionHandler selectionHandler,
+                             SelectionService selectionService,
                              ItemTypeService itemTypeService,
                              SelectionEventService selectionEventService) {
         this.audioService = audioService;
@@ -118,7 +108,7 @@ public class BaseItemUiService {
         this.itemCockpitService = itemCockpitService;
         this.cockpitService = cockpitService;
         this.gameUiControl = gameUiControl;
-        this.selectionHandler = selectionHandler;
+        this.selectionService = selectionService;
         this.itemTypeService = itemTypeService;
         selectionEventService.receiveSelectionEvent(this::onSelectionChanged);
     }
@@ -194,12 +184,9 @@ public class BaseItemUiService {
                     }
                     continue;
                 }
-                boolean attackAble = true;
+                boolean attackAble = !isSpawning || !isBuildup;
                 // Spawning
-                if (isSpawning && isBuildup) {
-                    attackAble = false;
-                    // TODO spawningModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.spawning, null));
-                }
+                // TODO spawningModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.spawning, null));
                 // Buildup
                 if (!isSpawning && !isBuildup) {
                     attackAble = false;
@@ -354,7 +341,7 @@ public class BaseItemUiService {
             }
         }
         if (wasMyBase) {
-            selectionHandler.onMyBaseRemoved();
+            selectionService.onMyBaseRemoved();
             modalDialogManager.onShowBaseLost();
             gameUiControl.get().onBaseLost();
         }
@@ -624,7 +611,7 @@ public class BaseItemUiService {
         this.viewFieldAabb = viewFieldAabb;
     }
 
-    private void onSelectionChanged( SelectionEvent selectionEvent) {
+    private void onSelectionChanged(SelectionEvent selectionEvent) {
         selectedBabylonBaseItems.forEach(babylonBaseItem -> babylonBaseItem.select(false));
         selectedBabylonBaseItems.clear();
         selectedOutOfViewIds.clear();

@@ -16,7 +16,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionEventService;
-import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -39,26 +39,26 @@ import java.util.function.Consumer;
 public class ItemCockpitService {
 
     // private Logger logger = Logger.getLogger(ItemCockpitService.class.getName());
-    private ItemTypeService itemTypeService;
+    private final ItemTypeService itemTypeService;
 
-    private Provider<BaseItemUiService> baseItemUiService;
+    private final Provider<BaseItemUiService> baseItemUiService;
 
-    private Provider<GameUiControl> gameUiControl;
+    private final Provider<GameUiControl> gameUiControl;
 
-    private BaseItemPlacerService baseItemPlacerService;
+    private final BaseItemPlacerService baseItemPlacerService;
 
-    private AudioService audioService;
+    private final AudioService audioService;
 
-    private Provider<GameEngineControl> gameEngineControl;
+    private final Provider<GameEngineControl> gameEngineControl;
 
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
 
-    private SelectionHandler selectionHandler;
+    private final SelectionService selectionService;
     private ItemCockpitFrontend itemCockpitFrontend;
-    private Collection<BuildupItemCockpit> buildupItemCockpits = new ArrayList<>();
+    private final Collection<BuildupItemCockpit> buildupItemCockpits = new ArrayList<>();
 
     @Inject
-    public ItemCockpitService(SelectionHandler selectionHandler,
+    public ItemCockpitService(SelectionService selectionService,
                               ExceptionHandler exceptionHandler,
                               Provider<GameEngineControl> gameEngineControl,
                               AudioService audioService,
@@ -67,7 +67,7 @@ public class ItemCockpitService {
                               Provider<BaseItemUiService> baseItemUiService,
                               ItemTypeService itemTypeService,
                               SelectionEventService selectionEventService) {
-        this.selectionHandler = selectionHandler;
+        this.selectionService = selectionService;
         this.exceptionHandler = exceptionHandler;
         this.gameEngineControl = gameEngineControl;
         this.audioService = audioService;
@@ -123,7 +123,7 @@ public class ItemCockpitService {
                 @Override
                 public void onSelect() {
                     try {
-                        selectionHandler.keepOnlyOwnOfType(entry.getKey());
+                        selectionService.keepOnlyOwnOfType(entry.getKey());
                     } catch (Throwable t) {
                         exceptionHandler.handleException(t);
                     }

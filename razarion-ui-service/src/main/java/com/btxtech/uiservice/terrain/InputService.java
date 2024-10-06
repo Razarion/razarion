@@ -11,7 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -22,8 +22,8 @@ import com.btxtech.uiservice.renderer.ViewField;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -33,36 +33,36 @@ import java.util.stream.Collectors;
 @Singleton
 public class InputService {
 
-    private TerrainUiService terrainUiService;
-
-    private BaseItemUiService baseItemUiService;
-
-    private ResourceUiService resourceUiService;
-
-    private BoxUiService boxUiService;
-
-    private InGameQuestVisualizationService inGameQuestVisualizationService;
-
-    private SelectionHandler selectionHandler;
-
-    private AudioService audioService;
-
-    private GameEngineControl gameEngineControl;
-
-    private ItemTypeService itemTypeService;
-
-    private ExceptionHandler exceptionHandler;
     private final MapCollection<Index, Consumer<TerrainType>> terrainTypeOnTerrainConsumers = new MapCollection<>();
+    private final TerrainUiService terrainUiService;
+    private final BaseItemUiService baseItemUiService;
+    private final ResourceUiService resourceUiService;
+    private final BoxUiService boxUiService;
+    private final InGameQuestVisualizationService inGameQuestVisualizationService;
+    private final SelectionService selectionService;
+    private final AudioService audioService;
+    private final GameEngineControl gameEngineControl;
+    private final ItemTypeService itemTypeService;
+    private final ExceptionHandler exceptionHandler;
     private boolean hasPendingMoveCommand;
     private MoveCommandEntry queuedMoveCommandEntry;
 
     @Inject
-    public InputService(ExceptionHandler exceptionHandler, ItemTypeService itemTypeService, GameEngineControl gameEngineControl, AudioService audioService, SelectionHandler selectionHandler, InGameQuestVisualizationService inGameQuestVisualizationService, BoxUiService boxUiService, ResourceUiService resourceUiService, BaseItemUiService baseItemUiService, TerrainUiService terrainUiService) {
+    public InputService(ExceptionHandler exceptionHandler,
+                        ItemTypeService itemTypeService,
+                        GameEngineControl gameEngineControl,
+                        AudioService audioService,
+                        SelectionService selectionService,
+                        InGameQuestVisualizationService inGameQuestVisualizationService,
+                        BoxUiService boxUiService,
+                        ResourceUiService resourceUiService,
+                        BaseItemUiService baseItemUiService,
+                        TerrainUiService terrainUiService) {
         this.exceptionHandler = exceptionHandler;
         this.itemTypeService = itemTypeService;
         this.gameEngineControl = gameEngineControl;
         this.audioService = audioService;
-        this.selectionHandler = selectionHandler;
+        this.selectionService = selectionService;
         this.inGameQuestVisualizationService = inGameQuestVisualizationService;
         this.boxUiService = boxUiService;
         this.resourceUiService = resourceUiService;
@@ -89,16 +89,16 @@ public class InputService {
     public void ownItemClicked(int syncItemId, BaseItemType baseItemType) {
         try {
             SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.getItem4Id(syncItemId);
-            if (selectionHandler.hasOwnSelection()) {
+            if (selectionService.hasOwnSelection()) {
                 if (syncBaseItem.checkBuildup() && baseItemType.getItemContainerType() != null) {
-                    Collection<SyncBaseItemSimpleDto> contained = selectionHandler.getOwnSelection().getSyncBaseItemsMonitors().stream().filter(monitor -> baseItemType.getItemContainerType().isAbleToContain(monitor.getSyncBaseItemState().getSyncBaseItem().getItemTypeId())).map(monitor -> monitor.getSyncBaseItemState().getSyncBaseItem()).collect(Collectors.toList());
+                    Collection<SyncBaseItemSimpleDto> contained = selectionService.getOwnSelection().getSyncBaseItemsMonitors().stream().filter(monitor -> baseItemType.getItemContainerType().isAbleToContain(monitor.getSyncBaseItemState().getSyncBaseItem().getItemTypeId())).map(monitor -> monitor.getSyncBaseItemState().getSyncBaseItem()).collect(Collectors.toList());
                     if (!contained.isEmpty()) {
                         audioService.onCommandSent();
                         gameEngineControl.loadContainerCmd(contained, syncBaseItem);
                         return;
                     }
                 } else if (!syncBaseItem.checkBuildup()) {
-                    Collection<SyncBaseItemSimpleDto> builders = selectionHandler.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
+                    Collection<SyncBaseItemSimpleDto> builders = selectionService.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
                     if (!builders.isEmpty()) {
                         audioService.onCommandSent();
                         gameEngineControl.finalizeBuildCmd(builders, syncBaseItem);
@@ -106,7 +106,7 @@ public class InputService {
                     }
                 }
             }
-            selectionHandler.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
+            selectionService.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -116,7 +116,7 @@ public class InputService {
     public void friendItemClicked(int syncItemId) {
         try {
             SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.getItem4Id(syncItemId);
-            selectionHandler.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
+            selectionService.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -126,16 +126,16 @@ public class InputService {
     public void enemyItemClicked(int syncItemId) {
         try {
             SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.getItem4Id(syncItemId);
-            if (selectionHandler.hasOwnSelection()) {
-                Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem.getItemTypeId());
+            if (selectionService.hasOwnSelection()) {
+                Collection<SyncBaseItemSimpleDto> attackers = selectionService.getOwnSelection().getAttackers(syncBaseItem.getItemTypeId());
                 if (!attackers.isEmpty()) {
                     audioService.onCommandSent();
                     gameEngineControl.attackCmd(attackers, syncBaseItem);
                 } else {
-                    selectionHandler.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
+                    selectionService.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
                 }
             } else {
-                selectionHandler.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
+                selectionService.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -146,16 +146,16 @@ public class InputService {
     public void resourceItemClicked(int syncItemId) {
         try {
             SyncResourceItemSimpleDto syncResourceItem = resourceUiService.getItem4Id(syncItemId);
-            if (selectionHandler.hasOwnSelection()) {
-                Collection<SyncBaseItemSimpleDto> harvesters = selectionHandler.getOwnSelection().getHarvesters();
+            if (selectionService.hasOwnSelection()) {
+                Collection<SyncBaseItemSimpleDto> harvesters = selectionService.getOwnSelection().getHarvesters();
                 if (!harvesters.isEmpty()) {
                     audioService.onCommandSent();
                     gameEngineControl.harvestCmd(harvesters, syncResourceItem);
                 } else {
-                    selectionHandler.setOtherItemSelected(syncResourceItem);
+                    selectionService.setOtherItemSelected(syncResourceItem);
                 }
             } else {
-                selectionHandler.setOtherItemSelected(syncResourceItem);
+                selectionService.setOtherItemSelected(syncResourceItem);
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -166,16 +166,16 @@ public class InputService {
     public void boxItemClicked(int syncItemId) {
         try {
             SyncBoxItemSimpleDto syncBoxItem = boxUiService.getItem4Id(syncItemId);
-            if (selectionHandler.hasOwnSelection()) {
-                Collection<SyncBaseItemSimpleDto> pickers = selectionHandler.getOwnSelection().getMovables();
+            if (selectionService.hasOwnSelection()) {
+                Collection<SyncBaseItemSimpleDto> pickers = selectionService.getOwnSelection().getMovables();
                 if (!pickers.isEmpty()) {
                     audioService.onCommandSent();
                     gameEngineControl.pickBoxCmd(pickers, syncBoxItem);
                 } else {
-                    selectionHandler.setOtherItemSelected(syncBoxItem);
+                    selectionService.setOtherItemSelected(syncBoxItem);
                 }
             } else {
-                selectionHandler.setOtherItemSelected(syncBoxItem);
+                selectionService.setOtherItemSelected(syncBoxItem);
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -185,10 +185,10 @@ public class InputService {
     @SuppressWarnings("unused") // Called by Babylonjs
     public void terrainClicked(DecimalPosition terrainPosition) {
         try {
-            if (!selectionHandler.hasOwnSelection()) {
+            if (!selectionService.hasOwnSelection()) {
                 return;
             }
-            Collection<SyncBaseItemSimpleDto> movables = selectionHandler.getOwnSelection().getMovables();
+            Collection<SyncBaseItemSimpleDto> movables = selectionService.getOwnSelection().getMovables();
             movables = movables.stream().filter(syncBaseItemSimpleDto -> {
                 TerrainType terrainType = itemTypeService.getBaseItemType(syncBaseItemSimpleDto.getItemTypeId()).getPhysicalAreaConfig().getTerrainType();
                 return terrainUiService.isTerrainFreeInDisplay(terrainPosition, terrainType);

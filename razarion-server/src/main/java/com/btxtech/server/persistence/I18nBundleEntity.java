@@ -51,8 +51,7 @@ public class I18nBundleEntity {
         if (localizedStrings == null) {
             localizedStrings = new HashMap<>();
         }
-        String language = I18nString.convert();
-        localizedStrings.put(language, string);
+        localizedStrings.put("EN", string);
     }
 
     public boolean isEmpty() {
@@ -68,17 +67,14 @@ public class I18nBundleEntity {
     }
 
     public I18nString toI18nString() {
-        Map<String, String> localizedStrings = new HashMap<>();
         if (this.localizedStrings != null) {
-            for (Map.Entry<String, String> entry : this.localizedStrings.entrySet()) {
-                localizedStrings.put(I18nString.convert(), entry.getValue());
+            String en = this.localizedStrings.get("EN");
+            if (en != null) {
+                return new I18nString().string(en);
             }
+            return new I18nString().string(localizedStrings.get("DE"));
         }
-        String en = localizedStrings.get("EN");
-        if (en != null) {
-            return new I18nString().string(en);
-        }
-        return new I18nString().string(localizedStrings.get("DE"));
+        return new I18nString().string("???");
     }
 
     public void fromI18nString(I18nString i18nString) {

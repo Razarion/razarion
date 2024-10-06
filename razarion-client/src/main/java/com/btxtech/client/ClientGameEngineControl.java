@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -48,7 +48,7 @@ public class ClientGameEngineControl extends GameEngineControl {
                                    TerrainUiService terrainUiService,
                                    InventoryUiService inventoryUiService,
                                    UserUiService userUiService,
-                                   SelectionHandler selectionHandler,
+                                   SelectionService selectionService,
                                    GameUiControl gameUiControl,
                                    AudioService audioService,
                                    BoxUiService boxUiService,
@@ -61,7 +61,7 @@ public class ClientGameEngineControl extends GameEngineControl {
                 terrainUiService,
                 inventoryUiService,
                 userUiService,
-                selectionHandler,
+                selectionService,
                 gameUiControl,
                 audioService,
                 boxUiService,

@@ -13,7 +13,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -47,44 +47,25 @@ public class LifecycleService {
     private static final int WATCHDOG_DELAY = 5000;
     private static final int RESTART_DELAY = 3000;
     private final Logger logger = Logger.getLogger(LifecycleService.class.getName());
-
     private final Boot boot;
-
-    private ExceptionHandler exceptionHandler;
-
     private final ClientTrackerService clientTrackerService;
-
     private final ClientPerformanceTrackerService clientPerformanceTrackerService;
-
     private final PerfmonService perfmonService;
-
     private final Provider<GameEngineControl> gameEngineControl;
-
     private final BaseItemUiService baseItemUiService;
-
     private final BoxUiService boxUiService;
-
     private final ResourceUiService resourceUiService;
-
     private final TrailService trailService;
-
     private final TerrainUiService terrainUiService;
-
     private final AudioService audioService;
-
     private final Provider<ScreenCover> screenCover;
-
     private final GameUiControl gameUiControl;
-
-    private final SelectionHandler selectionHandler;
-
+    private final SelectionService selectionService;
     private final SimpleExecutorService simpleExecutorService;
-
     private final Caller<ServerMgmtController> serverMgmt;
-
     private final UserUiService userUiService;
-
     private final GwtAngularService gwtAngularService;
+    private ExceptionHandler exceptionHandler;
     private Consumer<ServerState> serverRestartCallback;
     private SimpleScheduledFuture simpleScheduledFuture;
     private boolean beforeUnload;
@@ -94,7 +75,7 @@ public class LifecycleService {
                             UserUiService userUiService,
                             Caller<ServerMgmtController> serverMgmt,
                             SimpleExecutorService simpleExecutorService,
-                            SelectionHandler selectionHandler,
+                            SelectionService selectionService,
                             GameUiControl gameUiControl,
                             Provider<ScreenCover> screenCover,
                             AudioService audioService,
@@ -112,7 +93,7 @@ public class LifecycleService {
         this.userUiService = userUiService;
         this.serverMgmt = serverMgmt;
         this.simpleExecutorService = simpleExecutorService;
-        this.selectionHandler = selectionHandler;
+        this.selectionService = selectionService;
         this.gameUiControl = gameUiControl;
         this.screenCover = screenCover;
         this.audioService = audioService;
@@ -203,7 +184,7 @@ public class LifecycleService {
         // TODO gameCanvas.stopRenderLoop();
         clientPerformanceTrackerService.stop();
         perfmonService.stop();
-        selectionHandler.clearSelection(true);
+        selectionService.clearSelection(true);
         trailService.clear();
         terrainUiService.clear();
         audioService.muteTerrainLoopAudio();

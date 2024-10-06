@@ -56,7 +56,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         actionManager.hoverCursor = "default"
       }
     }
-    actionService.addCursoHandler(this.cursorTypeHandler);
+    actionService.addCursorHandler(this.cursorTypeHandler);
 
     this.groundMesh = new Mesh("Ground", rendererService.getScene());
     let vertexData = this.createVertexData(terrainTile.getGroundHeightMap());

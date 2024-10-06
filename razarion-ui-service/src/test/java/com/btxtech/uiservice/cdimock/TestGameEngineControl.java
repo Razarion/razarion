@@ -6,7 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickI
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -42,7 +42,7 @@ public class TestGameEngineControl extends GameEngineControl {
                                  TerrainUiService terrainUiService,
                                  InventoryUiService inventoryUiService,
                                  UserUiService userUiService,
-                                 SelectionHandler selectionHandler,
+                                 SelectionService selectionHandler,
                                  GameUiControl gameUiControl,
                                  AudioService audioService,
                                  BoxUiService boxUiService,

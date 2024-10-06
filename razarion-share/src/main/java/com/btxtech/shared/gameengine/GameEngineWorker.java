@@ -670,7 +670,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             baseItemService.sellItems(items.getIds(), playerBase);
         } else if (gameEngineMode == GameEngineMode.SLAVE) {
             if (serverConnection != null) {
-                serverConnection.sellItems(items.getIds());
+                serverConnection.sellItems(items);
             }
         } else {
             throw new IllegalStateException("GameEngineWorker.sellItems() illegal gameEngineMode: " + gameEngineMode);

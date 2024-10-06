@@ -39,26 +39,20 @@ import java.util.stream.Collectors;
  */
 
 public class Group {
-
-    private ItemTypeService itemTypeService;
-
-    private BaseItemUiService baseItemUiService;
-
-    private SelectionHandler selectionHandler;
+    private final ItemTypeService itemTypeService;
+    private final BaseItemUiService baseItemUiService;
+    private final SelectionService selectionService;
     // Use syncBaseItemsMonitors
     private Collection<SyncBaseItemSimpleDto> syncBaseItems = new ArrayList<>();
-    private Collection<SyncBaseItemMonitor> syncBaseItemsMonitors = new ArrayList<>();
+    private final Collection<SyncBaseItemMonitor> syncBaseItemsMonitors = new ArrayList<>();
 
     @Inject
-    public Group(SelectionHandler selectionHandler, BaseItemUiService baseItemUiService, ItemTypeService itemTypeService) {
-        this.selectionHandler = selectionHandler;
+    public Group(SelectionService selectionService,
+                 BaseItemUiService baseItemUiService,
+                 ItemTypeService itemTypeService) {
+        this.selectionService = selectionService;
         this.baseItemUiService = baseItemUiService;
         this.itemTypeService = itemTypeService;
-    }
-
-    void setItems(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
-        this.syncBaseItems = syncBaseItems;
-        syncBaseItems.forEach(this::addMonitor);
     }
 
     public void addItem(SyncBaseItemSimpleDto syncBaseItem) {
@@ -69,7 +63,7 @@ public class Group {
     private void addMonitor(SyncBaseItemSimpleDto syncBaseItem) {
         SyncBaseItemMonitor syncBaseItemMonitor = baseItemUiService.monitorSyncItem(syncBaseItem.getId());
         syncBaseItemsMonitors.add(syncBaseItemMonitor);
-        syncBaseItemMonitor.setContainedChangeListener(syncItemMonitor -> selectionHandler.baseItemRemoved(new int[]{syncBaseItem.getId()}));
+        syncBaseItemMonitor.setContainedChangeListener(syncItemMonitor -> selectionService.baseItemRemoved(new int[]{syncBaseItem.getId()}));
     }
 
     public boolean onlyFactories() {
@@ -124,6 +118,11 @@ public class Group {
 
     public Collection<SyncBaseItemSimpleDto> getItems() {
         return syncBaseItemsMonitors.stream().map(monitor -> monitor.getSyncBaseItemState().getSyncBaseItem()).collect(Collectors.toList());
+    }
+
+    void setItems(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
+        this.syncBaseItems = syncBaseItems;
+        syncBaseItems.forEach(this::addMonitor);
     }
 
     public Collection<SyncBaseItemMonitor> getSyncBaseItemsMonitors() {
