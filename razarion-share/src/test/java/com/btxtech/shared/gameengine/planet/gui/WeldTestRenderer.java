@@ -19,7 +19,6 @@ import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
@@ -30,12 +29,8 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.DiffTriangleElement;
-import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
-import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
 import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
@@ -679,30 +674,6 @@ public class WeldTestRenderer {
         }
     }
 
-    private void displayNode(DecimalPosition absoluteTile, Index nodeRelativeIndex, TerrainShapeNode terrainShapeNode) {
-        DecimalPosition absolute = TerrainUtil.toNodeAbsolute(nodeRelativeIndex).add(absoluteTile);
-        gc.setLineWidth(LINE_WIDTH);
-        gc.setStroke(Color.BLACK);
-        gc.strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-        if (weldTestController.renderShapeObstacles()) {
-            displayObstacles(terrainShapeNode);
-        }
-        if (weldTestController.renderGroundSlopeConnections()) {
-            displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
-        }
-        if (weldTestController.renderShapeWater()) {
-            displayShapeWater(terrainShapeNode.getWaterSegments());
-        }
-        if (weldTestController.renderShapeTerrainType() && terrainShapeNode.getTerrainType() != null) {
-            gc.setFill(color4TerrainType(terrainShapeNode.getTerrainType()));
-            gc.fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
-        }
-        if (weldTestController.renderShapeTerrainHeight() && terrainShapeNode.getGameEngineHeightOrNull() != null) {
-            gc.setFill(color4Z(terrainShapeNode.getGameEngineHeightOrNull()));
-            gc.fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
-        }
-        displaySubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
-    }
 
     private void displayGroundSlopeConnections(Map<Integer, List<List<Vertex>>> groundSlopeConnectionList) {
         if (groundSlopeConnectionList == null) {
@@ -731,84 +702,6 @@ public class WeldTestRenderer {
                 strokeVertexPolygon(waterSegment, LINE_WIDTH, Color.BLUE, true);
             }
         });
-    }
-
-    private void displayObstacles(TerrainShapeNode terrainShapeNode) {
-        if (terrainShapeNode.getObstacles() == null) {
-            return;
-        }
-        for (Obstacle obstacle : terrainShapeNode.getObstacles()) {
-            if (obstacle instanceof ObstacleSlope) {
-                ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
-                gc.setStroke(new Color(1.0, 0.0, 0.0, 0.3));
-                gc.strokeLine(obstacleSlope.getPoint1().getX(), obstacleSlope.getPoint1().getY(), obstacleSlope.getPoint2().getX(), obstacleSlope.getPoint2().getY());
-                gc.setStroke(new Color(0.0, 1.0, 0.0, 0.3));
-                gc.strokeLine(obstacleSlope.getPoint1().getX(), obstacleSlope.getPoint1().getY(), obstacleSlope.getPoint1().getX() + obstacleSlope.getPoint1Direction().getX(), obstacleSlope.getPoint1().getY() + obstacleSlope.getPoint1Direction().getY());
-//                gc.setStroke(new Color(0.0, 1.0, 0.0, 0.3));
-//                gc.strokeLine(obstacleSlope.getPoint2().getX(), obstacleSlope.getPoint2().getY(), obstacleSlope.getPoint2().getX() + obstacleSlope.getPoint2Direction().getX(), obstacleSlope.getPoint2().getY() + obstacleSlope.getPoint2Direction().getY());
-            } else if (obstacle instanceof ObstacleTerrainObject) {
-                ObstacleTerrainObject obstacleTerrainObject = (ObstacleTerrainObject) obstacle;
-                gc.setStroke(Color.RED);
-                gc.fillOval(obstacleTerrainObject.getCircle().getCenter().getX() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getCenter().getY() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius());
-            } else {
-                throw new IllegalArgumentException("Unknown: " + obstacle);
-            }
-        }
-    }
-
-    private void displaySubNodes(int depth, DecimalPosition absolute, TerrainShapeSubNode[] terrainShapeSubNodes) {
-        if (terrainShapeSubNodes == null) {
-            return;
-        }
-        double subLength = TerrainUtil.calculateSubNodeLength(depth);
-        TerrainShapeSubNode bottomLeft = terrainShapeSubNodes[0];
-        if (bottomLeft != null) {
-            displaySubNode(depth, absolute, bottomLeft);
-        }
-        TerrainShapeSubNode bottomRight = terrainShapeSubNodes[1];
-        if (bottomRight != null) {
-            displaySubNode(depth, absolute.add(subLength, 0), bottomRight);
-        }
-        TerrainShapeSubNode topRight = terrainShapeSubNodes[2];
-        if (topRight != null) {
-            displaySubNode(depth, absolute.add(subLength, subLength), topRight);
-        }
-        TerrainShapeSubNode topLeft = terrainShapeSubNodes[3];
-        if (topLeft != null) {
-            displaySubNode(depth, absolute.add(0, subLength), topLeft);
-        }
-    }
-
-    private void displaySubNode(int depth, DecimalPosition absolute, TerrainShapeSubNode terrainShapeSubNode) {
-        double subLength = TerrainUtil.calculateSubNodeLength(depth);
-        gc.setStroke(Color.BLUEVIOLET);
-        gc.setLineWidth(LINE_WIDTH);
-        // gc.strokeRect(absolute.getX(), absolute.getY(), subLength, subLength);
-        displaySubNodes(depth + 1, absolute, terrainShapeSubNode.getTerrainShapeSubNodes());
-        if (weldTestController.renderShapeTerrainType() && terrainShapeSubNode.getTerrainType() != null) {
-            gc.setFill(color4TerrainType(terrainShapeSubNode.getTerrainType()));
-            gc.fillRect(absolute.getX(), absolute.getY(), subLength - 0.1, subLength - 0.1);
-        }
-        if (weldTestController.renderShapeTerrainHeight() && terrainShapeSubNode.getHeight() != null) {
-            gc.setFill(color4Z(terrainShapeSubNode.getHeight()));
-            gc.fillRect(absolute.getX(), absolute.getY(), subLength - 0.1, subLength - 0.1);
-        }
-    }
-
-    private void displayFractionalSlope(List<FractionalSlope> fractionalSlopes) {
-        if (fractionalSlopes == null) {
-            return;
-        }
-        for (FractionalSlope fractionalSlope : fractionalSlopes) {
-            List<DecimalPosition> inner = new ArrayList<>();
-            List<DecimalPosition> outer = new ArrayList<>();
-            for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
-                inner.add(fractionalSlopeSegment.getInner());
-                outer.add(fractionalSlopeSegment.getOuter());
-            }
-            strokeLine(inner, LINE_WIDTH, Color.PINK, true);
-            strokeLine(outer, LINE_WIDTH, Color.AQUA, true);
-        }
     }
 
     private void displayShapeTerrainObject(NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists) {

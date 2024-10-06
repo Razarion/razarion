@@ -18,7 +18,6 @@ public class Color {
     double b; // Protected due to dominokit serialization. The variable is still readonly
     double a; // Protected due to dominokit serialization. The variable is still readonly
 
-    // Used by Errai
     public Color() {
     }
 

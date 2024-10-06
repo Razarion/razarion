@@ -16,7 +16,6 @@
     <packaging>gwt-app</packaging>
 
     <properties>
-        <!-- errai 4.0.0.Beta6 is not working -->
         <javaee.version>1.0.2.Final</javaee.version>
     </properties>
 

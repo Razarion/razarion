@@ -5,7 +5,6 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
-import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeObstacle;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -111,19 +110,6 @@ public class DebugHelperStatic {
                 generate(syncPhysicalMovable.getPreferredVelocity()) +
                 ")";
         add2printOnTick("physicalAreas.add(" + stringBuilder + ");");
-    }
-
-    public static void addOrcaAdd(ObstacleSlope obstacleSlope) {
-        NativeObstacle nativeObstacle = obstacleSlope.toNativeObstacle();
-        add2printOnTick("\nobstacles.add(GameTestHelper.createObstacleSlope("
-                + generate(new DecimalPosition(nativeObstacle.x1, nativeObstacle.y1))
-                + ", " + generate(new DecimalPosition(nativeObstacle.x2, nativeObstacle.y2))
-                + ", " + generate(new DecimalPosition(nativeObstacle.pDx, nativeObstacle.pDy))
-                + ", " + nativeObstacle.p1C
-                + ", " + generate(new DecimalPosition(nativeObstacle.p1Dx, nativeObstacle.p1Dy))
-                + ", " + nativeObstacle.p2C
-                + ", " + generate(new DecimalPosition(nativeObstacle.p2Dx, nativeObstacle.p2Dy))
-                + "));");
     }
 
     public static void printAfterTick(DebugHelper debugHelper) {

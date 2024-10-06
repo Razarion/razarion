@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeObstacle;
 
 import java.util.Objects;
 
@@ -18,35 +17,8 @@ public class ObstacleTerrainObject extends Obstacle {
         this.circle = circle;
     }
 
-    public ObstacleTerrainObject(NativeObstacle nativeObstacle) {
-        circle = new Circle2D(new DecimalPosition(nativeObstacle.xC, nativeObstacle.yC), nativeObstacle.r);
-    }
-
-    @Override
-    public boolean isPiercing(Line line) {
-        return circle.doesLineCut(line);
-    }
-
-    @Override
-    public boolean isIntersect(Circle2D circle2D) {
-        return circle.isIntersect(circle2D);
-    }
-
     public Circle2D getCircle() {
         return circle;
-    }
-
-    public static boolean isValidNative(NativeObstacle nativeObstacle) {
-        return nativeObstacle.xC != null && nativeObstacle.yC != null && nativeObstacle.r != null;
-    }
-
-    @Override
-    public NativeObstacle toNativeObstacle() {
-        NativeObstacle nativeObstacle = new NativeObstacle();
-        nativeObstacle.xC = circle.getCenter().getX();
-        nativeObstacle.yC = circle.getCenter().getY();
-        nativeObstacle.r = circle.getRadius();
-        return nativeObstacle;
     }
 
     @Override

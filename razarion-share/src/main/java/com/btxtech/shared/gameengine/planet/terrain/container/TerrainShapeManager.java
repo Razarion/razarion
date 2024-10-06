@@ -144,10 +144,6 @@ public class TerrainShapeManager {
         return terrainShapeTile;
     }
 
-    public <T> T terrainImpactCallback(DecimalPosition absolutePosition, TerrainImpactCallback<T> terrainImpactCallback) {
-        return terrainImpactCallback.landNoTile(TerrainUtil.toTile(absolutePosition));
-    }
-
     public PathingAccess getPathingAccess() {
         return pathingAccess;
     }

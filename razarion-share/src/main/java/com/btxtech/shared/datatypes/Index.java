@@ -103,7 +103,7 @@ public class Index {
     }
 
     /**
-     * Should only be called by the frameworks: e.g. Errai, MonogDB etc
+     * Should only be called by the frameworks: e.g. MonogDB etc
      *
      * @param x x value
      */
@@ -112,7 +112,7 @@ public class Index {
     }
 
     /**
-     * Should only be called by the frameworks: e.g. Errai, MonogDB etc
+     * Should only be called by the frameworks: e.g. MonogDB etc
      *
      * @param y y value
      */

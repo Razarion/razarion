@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeObstacle;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.Comparator;
@@ -32,26 +31,6 @@ public class ObstacleSlope extends Obstacle {
         point1Direction = point2.sub(point1).normalize();
         point2Convex = point2.angle(next, point1) <= MathHelper.HALF_RADIANT;
         point2Direction = next.sub(point2).normalize();
-    }
-
-    public ObstacleSlope(NativeObstacle nativeObstacle) {
-        point1 = new DecimalPosition(nativeObstacle.x1, nativeObstacle.y1);
-        point2 = new DecimalPosition(nativeObstacle.x2, nativeObstacle.y2);
-        previousDirection = new DecimalPosition(nativeObstacle.pDx, nativeObstacle.pDy);
-        point1Convex = nativeObstacle.p1C;
-        point1Direction = new DecimalPosition(nativeObstacle.p1Dx, nativeObstacle.p1Dy);
-        point2Convex = nativeObstacle.p2C;
-        point2Direction = new DecimalPosition(nativeObstacle.p2Dx, nativeObstacle.p2Dy);
-    }
-
-    @Override
-    public boolean isPiercing(Line line) {
-        return createLine().getCrossInclusive(line) != null;
-    }
-
-    @Override
-    public boolean isIntersect(Circle2D circle2D) {
-        return circle2D.doesLineCut(createLine());
     }
 
     public Line createLine() {
@@ -95,30 +74,6 @@ public class ObstacleSlope extends Obstacle {
 
     public DecimalPosition getNearestPoint(DecimalPosition position) {
         return createLine().getNearestPointOnLine(position);
-    }
-
-    @Override
-    public NativeObstacle toNativeObstacle() {
-        NativeObstacle nativeObstacle = new NativeObstacle();
-        nativeObstacle.x1 = point1.getX();
-        nativeObstacle.y1 = point1.getY();
-        nativeObstacle.x2 = point2.getX();
-        nativeObstacle.y2 = point2.getY();
-        nativeObstacle.pDx = previousDirection.getX();
-        nativeObstacle.pDy = previousDirection.getY();
-        nativeObstacle.p1C = point1Convex;
-        nativeObstacle.p1Dx = point1Direction.getX();
-        nativeObstacle.p1Dy = point1Direction.getY();
-        nativeObstacle.p2C = point2Convex;
-        nativeObstacle.p2Dx = point2Direction.getX();
-        nativeObstacle.p2Dy = point2Direction.getY();
-        return nativeObstacle;
-    }
-
-    public static boolean isValidNative(NativeObstacle nativeObstacle) {
-        return nativeObstacle.x1 != null && nativeObstacle.y1 != null && nativeObstacle.x2 != null && nativeObstacle.y2 != null
-                && nativeObstacle.pDx != null && nativeObstacle.pDy != null && nativeObstacle.p1C != null
-                && nativeObstacle.p1Dx != null && nativeObstacle.p1Dy != null && nativeObstacle.p2C != null && nativeObstacle.p2Dx != null && nativeObstacle.p2Dy != null;
     }
 
     public static void sortObstacleSlope(DecimalPosition pivot, List<ObstacleSlope> obstacleSlopes) {

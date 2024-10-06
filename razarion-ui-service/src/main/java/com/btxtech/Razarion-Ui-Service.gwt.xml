@@ -3,12 +3,6 @@
 
     <inherits name='com.btxtech.Razarion-Share'/>
 
-    <!--<inherits name="org.jboss.errai.ui.Cordova" />-->
-
-    <!--<replace-with class="org.jboss.errai.demo.client.local.Config">-->
-        <!--<when-type-is class="org.jboss.errai.bus.client.framework.Configuration" />-->
-    <!--</replace-with>-->
-
     <!--<set-property name="phonegap.logging.consoleHandler"-->
                   <!--value="DISABLED" />-->
 
