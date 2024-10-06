@@ -5,7 +5,6 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.enterprise.event.Observes;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -22,11 +21,8 @@ public class LevelService {
     private final List<LevelConfig> orderedLevels = new ArrayList<>();
 
     @Inject
-    public LevelService() {
-    }
-
-    public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
-        init(engineInitEvent.getStaticGameConfig());
+    public LevelService(InitializeService initializeService) {
+        initializeService.receiveStaticGameConfig(this::init);
     }
 
     public void init(StaticGameConfig staticGameConfig) {

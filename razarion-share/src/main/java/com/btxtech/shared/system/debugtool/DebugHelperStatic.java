@@ -209,7 +209,7 @@ public class DebugHelperStatic {
         }
 
         public void addSyncBaseItem(SyncBaseItem syncBaseItem) {
-            if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
+            if (!syncBaseItem.getAbstractSyncPhysical().canMove()) {
                 return;
             }
             if (tickSyncBaseItems == null) {
@@ -217,10 +217,10 @@ public class DebugHelperStatic {
             }
             TickSyncBaseItem tickSyncBaseItem = new TickSyncBaseItem();
             tickSyncBaseItem.setId(syncBaseItem.getId());
-            tickSyncBaseItem.setPosition(syncBaseItem.getSyncPhysicalArea().getPosition());
+            tickSyncBaseItem.setPosition(syncBaseItem.getAbstractSyncPhysical().getPosition());
             tickSyncBaseItem.setVelocity(syncBaseItem.getSyncPhysicalMovable().getVelocity());
-            tickSyncBaseItem.setAngle(syncBaseItem.getSyncPhysicalArea().getAngle());
-            tickSyncBaseItem.setRadius(syncBaseItem.getSyncPhysicalArea().getRadius());
+            tickSyncBaseItem.setAngle(syncBaseItem.getAbstractSyncPhysical().getAngle());
+            tickSyncBaseItem.setRadius(syncBaseItem.getAbstractSyncPhysical().getRadius());
             if (syncBaseItem.getSyncPhysicalMovable().getPath() != null) {
                 tickSyncBaseItem.setPath(syncBaseItem.getSyncPhysicalMovable().getPath().getWayPositions());
             }

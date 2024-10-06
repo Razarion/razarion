@@ -14,9 +14,8 @@ import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
 
-import javax.inject.Singleton;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -245,7 +244,7 @@ public class ResourceUiService {
         return resources.get(resourceItemId);
     }
 
-    public void onSelectionChanged( SelectionEvent selectionEvent) {
+    public void onSelectionChanged(SelectionEvent selectionEvent) {
         selectedOutOfViewId = null;
         if (selectedBabylonResourceItem != null) {
             selectedBabylonResourceItem.select(false);

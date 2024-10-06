@@ -2,17 +2,15 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
-import com.btxtech.shared.gameengine.StaticGameInitEvent;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
 
-import com.btxtech.shared.deprecated.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
@@ -21,6 +19,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.TERRAIN_SHAPE_SETUP_FAILED;
@@ -32,17 +32,15 @@ import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray
  */
 @Singleton
 public class ServerTerrainShapeService {
-    // private Logger logger = Logger.getLogger(ServerTerrainShapeService.class.getName());
+    final private Logger logger = Logger.getLogger(ServerTerrainShapeService.class.getName());
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
     private AlarmService alarmService;
     @Inject
-    private Event<StaticGameInitEvent> gameEngineInitEvent;
+    private InitializeService initializeService;
     @Inject
     private StaticGameConfigPersistence staticGameConfigPersistence;
     @Inject
@@ -57,7 +55,7 @@ public class ServerTerrainShapeService {
                 createTerrainShape(botConfigs, planetConfig);
             } catch (Throwable t) {
                 alarmService.riseAlarm(TERRAIN_SHAPE_SETUP_FAILED, planetConfig.getId());
-                exceptionHandler.handleException(t);
+                logger.log(Level.SEVERE, "createTerrainShape failed", t);
             }
         });
     }
@@ -67,7 +65,7 @@ public class ServerTerrainShapeService {
             groundHeightMap = setupGroundHeightMap(planetCrudPersistence.getCompressedHeightMap(planetConfig.getId()));
         } catch (Throwable t) {
             alarmService.riseAlarm(TERRAIN_SHAPE_SETUP_FAILED, planetConfig.getId());
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, "createTerrainShape failed", t);
         }
 
         TerrainShapeManager terrainShape = new TerrainShapeManager(planetConfig,
@@ -79,7 +77,7 @@ public class ServerTerrainShapeService {
     }
 
     public void createTerrainShape(List<BotConfig> botConfigs, int planetConfigId) {
-        gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
+        initializeService.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         createTerrainShape(botConfigs, planetCrudPersistence.read(planetConfigId));
     }
 

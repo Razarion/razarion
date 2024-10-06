@@ -2,13 +2,13 @@ package com.btxtech.uiservice.audio;
 
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.AudioConfig;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.SelectionEvent;
-import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
@@ -23,19 +23,20 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_AUDIO_SERVICE;
  */
 public abstract class AudioService /* implements ViewService.ViewFieldListener */ {
     private final Logger logger = Logger.getLogger(AudioService.class.getName());
-
     private final Provider<TerrainUiService> terrainUiService;
-
     private final ItemTypeService itemTypeService;
-
     private final AlarmService alarmService;
     private AudioConfig audioConfig;
     private double lastLandWaterProportion = -1;
 
-    public AudioService(AlarmService alarmService, ItemTypeService itemTypeService, Provider<TerrainUiService> terrainUiService) {
+    public AudioService(AlarmService alarmService,
+                        ItemTypeService itemTypeService,
+                        Provider<TerrainUiService> terrainUiService,
+                        InitializeService initializeService) {
         this.alarmService = alarmService;
         this.itemTypeService = itemTypeService;
         this.terrainUiService = terrainUiService;
+        initializeService.receiveColdGameUiContext(coldGameUiContext -> this.audioConfig = coldGameUiContext.getAudioConfig());
     }
 
     protected abstract void playAudio(int audioId);
@@ -43,11 +44,6 @@ public abstract class AudioService /* implements ViewService.ViewFieldListener *
     protected abstract void playTerrainLoopAudio(int audioId, double volume);
 
     public abstract void muteTerrainLoopAudio();
-
-
-    public void onGameUiControlInitEvent(GameUiControlInitEvent gameUiControlInitEvent) {
-        this.audioConfig = gameUiControlInitEvent.getColdGameUiContext().getAudioConfig();
-    }
 
     public void playAudioSafe(Integer audioItemConfigId) {
         if (audioItemConfigId != null) {

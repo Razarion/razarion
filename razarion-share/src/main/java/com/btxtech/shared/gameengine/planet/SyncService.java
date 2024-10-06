@@ -1,10 +1,10 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
-import javax.enterprise.event.Observes;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,8 +21,8 @@ public abstract class SyncService {
     private final Set<Integer> ids = new HashSet<>();
     private GameEngineMode gameEngineMode;
 
-    public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
-        gameEngineMode = planetActivationEvent.getGameEngineMode();
+    public SyncService(InitializeService initializeService) {
+        initializeService.receivePlanetActivationEvent(planetActivationEvent -> gameEngineMode = planetActivationEvent.getGameEngineMode());
     }
 
     public void notifySendSyncBaseItem(SyncBaseItem syncBaseItem) {

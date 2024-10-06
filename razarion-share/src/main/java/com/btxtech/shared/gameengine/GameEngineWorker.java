@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
-import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
@@ -57,9 +56,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
-import elemental2.dom.DomGlobal;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,7 +75,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private final Logger logger = Logger.getLogger(GameEngineWorker.class.getName());
     private PlanetService planetService;
 
-    private Event<StaticGameInitEvent> staticGameInitEvent;
+    private InitializeService initializeService;
 
     private BotService botService;
 
@@ -129,7 +126,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                             BaseItemService baseItemService,
                             ResourceService resourceService,
                             BotService botService,
-                            Event<StaticGameInitEvent> staticGameInitEvent,
+                            InitializeService initializeService,
                             PlanetService planetService) {
         this.nativeMatrixFactory = nativeMatrixFactory;
         this.workerTrackerHandlerInstance = workerTrackerHandlerInstance;
@@ -144,7 +141,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         this.baseItemService = baseItemService;
         this.resourceService = resourceService;
         this.botService = botService;
-        this.staticGameInitEvent = staticGameInitEvent;
+        this.initializeService = initializeService;
         this.planetService = planetService;
         questService.addQuestListener(this);
         logicService.setGameLogicListener(this);
@@ -265,7 +262,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, boolean detailedTracking, String gameSessionUuid) {
         try {
             this.gameSessionUuid = gameSessionUuid;
-            staticGameInitEvent.fire(new StaticGameInitEvent(staticGameConfig));
+            initializeService.setStaticGameConfig(staticGameConfig);
             planetService.addTickListener(this);
             initWarmInternal(planetConfig, userContext, gameEngineMode, () -> {
                 if (gameEngineMode == GameEngineMode.MASTER && detailedTracking) {
@@ -332,13 +329,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             }
             BaseItemType baseItemType = syncBaseItem.getBaseItemType();
             if (baseItemType.getFactoryType() != null) {
-                factoryPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition());
+                factoryPosition.setO(syncBaseItem.getAbstractSyncPhysical().getPosition());
                 return true;
             }
             if (baseItemType.getBuilderType() != null) {
-                builderPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition());
+                builderPosition.setO(syncBaseItem.getAbstractSyncPhysical().getPosition());
             }
-            unitPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition());
+            unitPosition.setO(syncBaseItem.getAbstractSyncPhysical().getPosition());
             return null;
         });
 
@@ -441,7 +438,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         SyncResourceItemSimpleDto syncResourceItemSimpleDto = new SyncResourceItemSimpleDto();
         syncResourceItemSimpleDto.setId(syncResourceItem.getId());
         syncResourceItemSimpleDto.setItemTypeId(syncResourceItem.getItemType().getId());
-        syncResourceItemSimpleDto.setPosition(syncResourceItem.getSyncPhysicalArea().getPosition());
+        syncResourceItemSimpleDto.setPosition(syncResourceItem.getAbstractSyncPhysical().getPosition());
         sendToClient(GameEngineControlPackage.Command.RESOURCE_CREATED, syncResourceItemSimpleDto);
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onResourceCreated(syncResourceItem);
@@ -461,7 +458,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         SyncBoxItemSimpleDto syncBoxItemSimpleDto = new SyncBoxItemSimpleDto();
         syncBoxItemSimpleDto.setId(syncBoxItem.getId());
         syncBoxItemSimpleDto.setItemTypeId(syncBoxItem.getItemType().getId());
-        syncBoxItemSimpleDto.setPosition(syncBoxItem.getSyncPhysicalArea().getPosition());
+        syncBoxItemSimpleDto.setPosition(syncBoxItem.getAbstractSyncPhysical().getPosition());
         sendToClient(GameEngineControlPackage.Command.BOX_CREATED, syncBoxItemSimpleDto);
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onBoxCreated(syncBoxItem);
@@ -757,8 +754,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             nativeSimpleSyncBaseItemTickInfo.itemTypeId = item.getBaseItemType().getId();
             nativeSimpleSyncBaseItemTickInfo.contained = item.isContainedIn();
             if (!nativeSimpleSyncBaseItemTickInfo.contained) {
-                nativeSimpleSyncBaseItemTickInfo.x = item.getSyncPhysicalArea().getPosition().getX();
-                nativeSimpleSyncBaseItemTickInfo.y = item.getSyncPhysicalArea().getPosition().getY();
+                nativeSimpleSyncBaseItemTickInfo.x = item.getAbstractSyncPhysical().getPosition().getX();
+                nativeSimpleSyncBaseItemTickInfo.y = item.getAbstractSyncPhysical().getPosition().getY();
             }
             return nativeSimpleSyncBaseItemTickInfo;
         }).toArray(value -> new NativeSimpleSyncBaseItemTickInfo[killedSyncBaseItems.size()]);

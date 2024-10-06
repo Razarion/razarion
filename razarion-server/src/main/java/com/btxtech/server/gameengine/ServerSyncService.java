@@ -1,5 +1,6 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.SyncService;
 
@@ -14,6 +15,11 @@ import javax.inject.Singleton;
 public class ServerSyncService extends SyncService {
     @Inject
     private ClientGameConnectionService clientGameConnectionService;
+
+    @Inject
+    public ServerSyncService(InitializeService initializeService) {
+        super(initializeService);
+    }
 
     @Override
     protected void internSendTickInfo(TickInfo tickInfo) {

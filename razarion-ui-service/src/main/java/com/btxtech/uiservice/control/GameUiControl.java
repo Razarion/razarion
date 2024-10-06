@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.control;
 
-import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
@@ -8,6 +7,7 @@ import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
@@ -77,7 +77,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     private Provider<TrackerService> trackerService;
 
-    private Event<GameUiControlInitEvent> gameUiControlInitEvent;
+    private InitializeService initializeService;
 
     private ModalDialogManager modalDialogManager;
 
@@ -101,7 +101,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public GameUiControl(Provider<AbstractServerSystemConnection> serverSystemConnectionInstance,
                          Provider<ScreenCover> screenCover,
                          ModalDialogManager modalDialogManager,
-                         Event<GameUiControlInitEvent> gameUiControlInitEvent,
+                         InitializeService initializeService,
                          Provider<TrackerService> trackerService,
                          Provider<Boot> boot,
                          Provider<UserUiService> userUiService,
@@ -117,7 +117,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         this.serverSystemConnectionInstance = serverSystemConnectionInstance;
         this.screenCover = screenCover;
         this.modalDialogManager = modalDialogManager;
-        this.gameUiControlInitEvent = gameUiControlInitEvent;
+        this.initializeService = initializeService;
         this.trackerService = trackerService;
         this.boot = boot;
         this.userUiService = userUiService;
@@ -146,7 +146,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         terrainTypeService.init(coldGameUiContext.getStaticGameConfig());
         levelService.init(coldGameUiContext.getStaticGameConfig());
         inventoryTypeService.init(coldGameUiContext.getStaticGameConfig());
-        gameUiControlInitEvent.fire(new GameUiControlInitEvent(coldGameUiContext));
+        initializeService.setColdGameUiContext(coldGameUiContext);
         AlarmRaiser.onNull(getPlanetConfig(),
                 Alarm.Type.INVALID_GAME_UI_CONTEXT,
                 "No planet",

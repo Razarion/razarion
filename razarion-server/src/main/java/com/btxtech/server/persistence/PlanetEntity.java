@@ -8,7 +8,6 @@ import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.persistence.AttributeOverride;
@@ -70,27 +69,6 @@ public class PlanetEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BaseItemTypeEntity startBaseItemType;
-    @AttributeOverrides({
-            @AttributeOverride(name = "x", column = @Column(name = "lightDirectionX")),
-            @AttributeOverride(name = "y", column = @Column(name = "lightDirectionY")),
-            @AttributeOverride(name = "z", column = @Column(name = "lightDirectionZ")),
-    })
-    private Vertex lightDirection;
-    @AttributeOverrides({
-            @AttributeOverride(name = "r", column = @Column(name = "ambientR")),
-            @AttributeOverride(name = "g", column = @Column(name = "ambientG")),
-            @AttributeOverride(name = "b", column = @Column(name = "ambientB")),
-            @AttributeOverride(name = "a", column = @Column(name = "ambientA")),
-    })
-    private Color ambient;
-    @AttributeOverrides({
-            @AttributeOverride(name = "r", column = @Column(name = "diffuseR")),
-            @AttributeOverride(name = "g", column = @Column(name = "diffuseG")),
-            @AttributeOverride(name = "b", column = @Column(name = "diffuseB")),
-            @AttributeOverride(name = "a", column = @Column(name = "diffuseA")),
-    })
-    private Color diffuse;
-    private double shadowAlpha;
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] miniMapImage;
@@ -135,22 +113,6 @@ public class PlanetEntity {
         }
         this.itemTypeLimitation.clear();
         this.itemTypeLimitation.putAll(itemTypeLimitation);
-    }
-
-    public PlanetVisualConfig toPlanetVisualConfig() {
-        PlanetVisualConfig planetVisualConfig = new PlanetVisualConfig();
-        planetVisualConfig.setShadowAlpha(shadowAlpha);
-        planetVisualConfig.setLightDirection(Optional.ofNullable(lightDirection).orElse(Vertex.Z_NORM_NEG));
-        planetVisualConfig.setAmbient(Optional.ofNullable(ambient).orElse(Color.GREY));
-        planetVisualConfig.setDiffuse(Optional.ofNullable(diffuse).orElse(Color.GREY));
-        return planetVisualConfig;
-    }
-
-    public void fromPlanetVisualConfig(PlanetVisualConfig planetVisualConfig) {
-        lightDirection = planetVisualConfig.getLightDirection();
-        shadowAlpha = planetVisualConfig.getShadowAlpha();
-        ambient = planetVisualConfig.getAmbient();
-        diffuse = planetVisualConfig.getDiffuse();
     }
 
     @Deprecated

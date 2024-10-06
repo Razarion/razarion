@@ -14,10 +14,10 @@ public class PlanetActivationEvent {
         STOP
     }
 
-    private PlanetConfig planetConfig;
-    private GameEngineMode gameEngineMode;
-    private MasterPlanetConfig masterPlanetConfig;
-    private Type type;
+    private final PlanetConfig planetConfig;
+    private final GameEngineMode gameEngineMode;
+    private final MasterPlanetConfig masterPlanetConfig;
+    private final Type type;
 
     public PlanetActivationEvent(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, Type type) {
         this.planetConfig = planetConfig;

@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -18,7 +19,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -51,15 +51,21 @@ public class BoxService {
     private long ticksSinceLastCheck;
 
     @Inject
-    public BoxService(ExceptionHandler exceptionHandler, InventoryTypeService inventoryTypeService, GameLogicService gameLogicService, ItemTypeService itemTypeService, SyncItemContainerServiceImpl syncItemContainerService) {
+    public BoxService(ExceptionHandler exceptionHandler,
+                      InventoryTypeService inventoryTypeService,
+                      GameLogicService gameLogicService,
+                      ItemTypeService itemTypeService,
+                      SyncItemContainerServiceImpl syncItemContainerService,
+                      InitializeService initializeService) {
         this.exceptionHandler = exceptionHandler;
         this.inventoryTypeService = inventoryTypeService;
         this.gameLogicService = gameLogicService;
         this.itemTypeService = itemTypeService;
         this.syncItemContainerService = syncItemContainerService;
+        initializeService.receivePlanetActivationEvent(this::onPlanetActivation);
     }
 
-    public void onPlanetActivation( PlanetActivationEvent planetActivationEvent) {
+    private void onPlanetActivation(PlanetActivationEvent planetActivationEvent) {
         switch (planetActivationEvent.getType()) {
             case INITIALIZE:
                 setup(planetActivationEvent);
@@ -272,7 +278,7 @@ public class BoxService {
             return;
         }
         if (MathHelper.isRandomPossibility(syncBaseItem.getDropBoxPossibility())) {
-            dropBox(dropBoxItemTypeId, syncBaseItem.getSyncPhysicalArea().getPosition(), MathHelper.getRandomAngle());
+            dropBox(dropBoxItemTypeId, syncBaseItem.getAbstractSyncPhysical().getPosition(), MathHelper.getRandomAngle());
         }
     }
 }

@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -27,7 +28,6 @@ import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -73,7 +73,14 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     private final Set<SyncBaseItem> pathingChangedItem = new HashSet<>();
 
     @Inject
-    public SyncItemContainerServiceImpl(Provider<com.btxtech.shared.gameengine.planet.bot.BotService> botServices, Provider<com.btxtech.shared.gameengine.planet.GuardingItemService> guardingItemServiceInstanceInstance, TerrainService terrainService, Provider<com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable> syncPhysicalMovableInstance, Provider<com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea> syncPhysicalAreaInstance, Provider<com.btxtech.shared.gameengine.planet.model.SyncBoxItem> syncBoxItemProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncResourceItem> syncResourceItemProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncBaseItem> syncBaseItemProvider) {
+    public SyncItemContainerServiceImpl(Provider<BotService> botServices,
+                                        Provider<GuardingItemService> guardingItemServiceInstanceInstance,
+                                        TerrainService terrainService,
+                                        Provider<SyncPhysicalMovable> syncPhysicalMovableInstance,
+                                        Provider<SyncPhysicalArea> syncPhysicalAreaInstance,
+                                        Provider<SyncBoxItem> syncBoxItemProvider,
+                                        Provider<SyncResourceItem> syncResourceItemProvider,
+                                        Provider<SyncBaseItem> syncBaseItemProvider) {
         this.botServices = botServices;
         this.guardingItemServiceInstanceInstance = guardingItemServiceInstanceInstance;
         this.terrainService = terrainService;
@@ -105,7 +112,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
                 if (!includeDead && !syncItem.isAlive()) {
                     continue;
                 }
-                if (!includeNoPosition && !syncItem.getSyncPhysicalArea().hasPosition()) {
+                if (!includeNoPosition && !syncItem.getAbstractSyncPhysical().hasPosition()) {
                     continue;
                 }
                 T result = itemIteratorHandler.handleItem(syncItem);
@@ -158,7 +165,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
                 if (!includeDead && !syncBaseItem.isAlive()) {
                     continue;
                 }
-                if (!includeNoPosition && !syncBaseItem.getSyncPhysicalArea().hasPosition()) {
+                if (!includeNoPosition && !syncBaseItem.getAbstractSyncPhysical().hasPosition()) {
                     continue;
                 }
                 T result = itemIteratorHandler.apply(syncBaseItem);
@@ -219,15 +226,15 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
 
     public SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position2d, double zRotation) {
         SyncBaseItem syncBaseItem = syncBaseItemProvider.get();
-        SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position2d, zRotation);
-        initAndAdd(baseItemType, syncBaseItem, syncPhysicalArea);
+        AbstractSyncPhysical abstractSyncPhysical = createSyncPhysicalArea(syncBaseItem, baseItemType, position2d, zRotation);
+        initAndAdd(baseItemType, syncBaseItem, abstractSyncPhysical);
         return syncBaseItem;
     }
 
     public SyncBaseItem createSyncBaseItemSlave(BaseItemType baseItemType, int syncItemId, DecimalPosition position2d, double zRotation) {
         SyncBaseItem syncBaseItem = syncBaseItemProvider.get();
-        SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position2d, zRotation);
-        initAndAddSlave(baseItemType, syncItemId, syncBaseItem, syncPhysicalArea);
+        AbstractSyncPhysical abstractSyncPhysical = createSyncPhysicalArea(syncBaseItem, baseItemType, position2d, zRotation);
+        initAndAddSlave(baseItemType, syncItemId, syncBaseItem, abstractSyncPhysical);
         return syncBaseItem;
     }
 
@@ -264,9 +271,9 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
         return syncBoxItem;
     }
 
-    private void initAndAdd(ItemType itemType, SyncItem syncItem, SyncPhysicalArea syncPhysicalArea) {
+    private void initAndAdd(ItemType itemType, SyncItem syncItem, AbstractSyncPhysical abstractSyncPhysical) {
         synchronized (items) {
-            syncItem.init(lastItemId, itemType, syncPhysicalArea);
+            syncItem.init(lastItemId, itemType, abstractSyncPhysical);
             SyncItem old = items.put(lastItemId, syncItem);
             if (old != null) {
                 throw new IllegalArgumentException("SyncItemContainerService.initAndAdd(). Id is not free. New: " + syncItem + " old: " + old);
@@ -275,9 +282,9 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
         }
     }
 
-    private void initAndAddSlave(ItemType itemType, int syncItemId, SyncItem syncItem, SyncPhysicalArea syncPhysicalArea) {
+    private void initAndAddSlave(ItemType itemType, int syncItemId, SyncItem syncItem, AbstractSyncPhysical abstractSyncPhysical) {
         synchronized (items) {
-            syncItem.init(syncItemId, itemType, syncPhysicalArea);
+            syncItem.init(syncItemId, itemType, abstractSyncPhysical);
             SyncItem old = items.put(syncItemId, syncItem);
             if (old != null) {
                 throw new IllegalArgumentException("SyncItemContainerService.initAndAddSlave(). Id is not free. New: " + syncItem + " old: " + old);
@@ -286,7 +293,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
         }
     }
 
-    private SyncPhysicalArea createSyncPhysicalArea(SyncBaseItem syncBaseItem, BaseItemType baseItemType, DecimalPosition position2d, double zRotation) {
+    private AbstractSyncPhysical createSyncPhysicalArea(SyncBaseItem syncBaseItem, BaseItemType baseItemType, DecimalPosition position2d, double zRotation) {
         PhysicalAreaConfig physicalAreaConfig = baseItemType.getPhysicalAreaConfig();
         if (physicalAreaConfig.fulfilledMovable()) {
             SyncPhysicalMovable syncPhysicalMovable = syncPhysicalMovableInstance.get();
@@ -338,7 +345,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     private boolean hasItemsInRange(DecimalPosition position, double radius) {
-        return iterateOverItems(false, false, false, syncItem -> syncItem.getSyncPhysicalArea().overlap(position, radius));
+        return iterateOverItems(false, false, false, syncItem -> syncItem.getAbstractSyncPhysical().overlap(position, radius));
     }
 
     public Collection<SyncBaseItem> findEnemyItems(final PlayerBase playerBase, PlaceConfig region) {
@@ -382,7 +389,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     public Collection<SyncBaseItem> findBaseItemInRect(Rectangle2D rectangle) {
         Collection<SyncBaseItem> result = new ArrayList<>();
         iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            if (syncBaseItem.getSyncPhysicalArea().overlap(rectangle)) {
+            if (syncBaseItem.getAbstractSyncPhysical().overlap(rectangle)) {
                 result.add(syncBaseItem);
             }
             return null;
@@ -491,7 +498,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     public void afterPathingServiceTick() {
         synchronized (pathingChangedItem) {
             pathingChangedItem.forEach(syncBaseItem -> {
-                if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
+                if (!syncBaseItem.getAbstractSyncPhysical().canMove()) {
                     logger.severe("SyncItemContainerService.afterPathingServiceTick() Received SyncBaseItem which can not move");
                     return;
                 }
@@ -507,7 +514,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
                 return;
             }
         }
-        Index cellIndex = position2Index(syncItem.getSyncPhysicalArea().getPosition());
+        Index cellIndex = position2Index(syncItem.getAbstractSyncPhysical().getPosition());
         removeFromCell(cellIndex, syncItem);
     }
 
@@ -554,8 +561,8 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     @Override
     public void iterateCellRadiusItem(DecimalPosition center, double radius, Consumer<SyncItem> callback) {
         Set<SyncItem> syncItems = new TreeSet<>((o1, o2) -> {
-            double distance1 = o1.getSyncPhysicalArea().getPosition().getDistance(center);
-            double distance2 = o2.getSyncPhysicalArea().getPosition().getDistance(center);
+            double distance1 = o1.getAbstractSyncPhysical().getPosition().getDistance(center);
+            double distance2 = o2.getAbstractSyncPhysical().getPosition().getDistance(center);
             int comparision = Double.compare(distance1, distance2);
             if (comparision == 0) {
                 return Integer.compare(o1.getId(), o2.getId());
@@ -563,7 +570,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
             return comparision;
         });
         iterateCellQuadItem(center, 2.0 * radius + CELL_LENGTH, syncItem -> {
-            if (syncItem.getSyncPhysicalArea().getPosition().getDistance(center) <= radius) {
+            if (syncItem.getAbstractSyncPhysical().getPosition().getDistance(center) <= radius) {
                 syncItems.add(syncItem);
             }
         });
@@ -585,7 +592,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
             DoubleHolder<SyncBaseItem, Double> best = new DoubleHolder<>();
             iterateCellQuadBaseItem(wayPosition, width, syncBaseItem -> {
                 if (syncBaseItem.getBase().getCharacter().isHuman()) {
-                    double distance = syncBaseItem.getSyncPhysicalArea().getPosition().getDistance(wayPosition);
+                    double distance = syncBaseItem.getAbstractSyncPhysical().getPosition().getDistance(wayPosition);
                     if (best.getO1() != null) {
                         if (best.getO2() > distance) {
                             best.setO1(syncBaseItem);

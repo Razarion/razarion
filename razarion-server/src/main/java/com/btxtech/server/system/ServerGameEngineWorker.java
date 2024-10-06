@@ -1,9 +1,8 @@
 package com.btxtech.server.system;
 
-import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
-import com.btxtech.shared.gameengine.StaticGameInitEvent;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.WorkerTrackerHandler;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
@@ -44,7 +43,7 @@ public class ServerGameEngineWorker extends GameEngineWorker {
                                   BaseItemService baseItemService,
                                   ResourceService resourceService,
                                   BotService botService,
-                                  Event<StaticGameInitEvent> staticGameInitEvent,
+                                  InitializeService initializeService,
                                   PlanetService planetService) {
         super(nativeMatrixFactory,
                 workerTrackerHandlerInstance,
@@ -59,7 +58,7 @@ public class ServerGameEngineWorker extends GameEngineWorker {
                 baseItemService,
                 resourceService,
                 botService,
-                staticGameInitEvent,
+                initializeService,
                 planetService);
     }
 

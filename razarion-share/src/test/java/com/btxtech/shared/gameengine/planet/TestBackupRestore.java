@@ -162,7 +162,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         // Base 2
         Assert.assertEquals(3, playerBaseFull2Restore.getItemCount());
         SyncBaseItem factory2Restore = findSyncBaseItem(playerBaseFull2Restore, FallbackConfig.GENERATOR_ITEM_TYPE_ID);
-        Assert.assertEquals(new DecimalPosition(40, 40), factory2Restore.getSyncPhysicalArea().getPosition());
+        Assert.assertEquals(new DecimalPosition(40, 40), factory2Restore.getAbstractSyncPhysical().getPosition());
 
         // Check energy restore 2
         assertEnergy(0, 0, playerBaseFull1Restore);

@@ -191,7 +191,7 @@ public class SyncBaseItem extends SyncItem {
         health = syncBaseItemInfo.getHealth();
         spawnProgress = syncBaseItemInfo.getSpawnProgress();
         setBuildup(syncBaseItemInfo.getBuildup());
-        getSyncPhysicalArea().synchronize(syncBaseItemInfo.getSyncPhysicalAreaInfo());
+        getAbstractSyncPhysical().synchronize(syncBaseItemInfo.getSyncPhysicalAreaInfo());
 
         if (syncBaseItemInfo.getSyncBoxItemId() != null) {
             syncBoxItemToPick = boxService.getSyncBoxItem(syncBaseItemInfo.getSyncBoxItemId());
@@ -243,7 +243,7 @@ public class SyncBaseItem extends SyncItem {
     public SyncBaseItemInfo getSyncInfo() {
         SyncBaseItemInfo syncBaseItemInfo = new SyncBaseItemInfo();
         syncBaseItemInfo.setId(getId());
-        syncBaseItemInfo.setSyncPhysicalAreaInfo(getSyncPhysicalArea().getSyncPhysicalAreaInfo());
+        syncBaseItemInfo.setSyncPhysicalAreaInfo(getAbstractSyncPhysical().getSyncPhysicalAreaInfo());
         syncBaseItemInfo.setItemTypeId(getItemType().getId());
         syncBaseItemInfo.setBaseId(base.getBaseId());
         syncBaseItemInfo.setHealth(health);
@@ -294,7 +294,7 @@ public class SyncBaseItem extends SyncItem {
     }
 
     public boolean isIdle() {
-        return isBuildup() && !isSpawning() && !getSyncPhysicalArea().hasDestination() && !isAbilityActive() && syncBoxItemToPick == null && targetContainer == null;
+        return isBuildup() && !isSpawning() && !getAbstractSyncPhysical().hasDestination() && !isAbilityActive() && syncBoxItemToPick == null && targetContainer == null;
     }
 
     private boolean isAbilityActive() {
@@ -352,12 +352,12 @@ public class SyncBaseItem extends SyncItem {
             return syncItemContainer.tick();
         }
 
-        return getSyncPhysicalArea().hasDestination();
+        return getAbstractSyncPhysical().hasDestination();
     }
 
     public void stop(boolean stopMovable) {
         if (stopMovable) {
-            getSyncPhysicalArea().stop();
+            getAbstractSyncPhysical().stop();
         }
 
         syncBoxItemToPick = null;
@@ -397,7 +397,7 @@ public class SyncBaseItem extends SyncItem {
         }
 
         if (baseCommand instanceof MoveCommand) {
-            ((SyncPhysicalMovable) getSyncPhysicalArea()).setPath(((MoveCommand) baseCommand).getSimplePath());
+            ((SyncPhysicalMovable) getAbstractSyncPhysical()).setPath(((MoveCommand) baseCommand).getSimplePath());
             return;
         }
 
@@ -452,7 +452,7 @@ public class SyncBaseItem extends SyncItem {
             throw new IllegalArgumentException("Can not contain oneself: " + this);
         }
         targetContainer = syncItemContainerService.getSyncBaseItemSave(loadContainerCommand.getItemContainer());
-        ((SyncPhysicalMovable) getSyncPhysicalArea()).setPath(loadContainerCommand.getSimplePath());
+        ((SyncPhysicalMovable) getAbstractSyncPhysical()).setPath(loadContainerCommand.getSimplePath());
     }
 
     public SyncItem getTarget() {
@@ -602,15 +602,15 @@ public class SyncBaseItem extends SyncItem {
 
     public void setContained(SyncBaseItem itemContainer) {
         this.containedIn = itemContainer;
-        getSyncPhysicalArea().setPosition2d(null, false);
-        if (getSyncPhysicalArea().canMove()) {
+        getAbstractSyncPhysical().setPosition2d(null, false);
+        if (getAbstractSyncPhysical().canMove()) {
             getSyncPhysicalMovable().stop();
         }
     }
 
     public void clearContained(DecimalPosition position) {
         containedIn = null;
-        getSyncPhysicalArea().setPosition2d(position, false);
+        getAbstractSyncPhysical().setPosition2d(position, false);
     }
 
     public SyncBaseItem getContainedIn() {
@@ -626,8 +626,8 @@ public class SyncBaseItem extends SyncItem {
             stop(true);
             return false;
         }
-        if (!getSyncPhysicalArea().isInRange(getBaseItemType().getBoxPickupRange(), syncBoxItemToPick)) {
-            if (!getSyncPhysicalArea().canMove()) {
+        if (!getAbstractSyncPhysical().isInRange(getBaseItemType().getBoxPickupRange(), syncBoxItemToPick)) {
+            if (!getAbstractSyncPhysical().canMove()) {
                 throw new IllegalStateException("SyncBaseItem out of range from Box and getSyncPhysicalArea can not move");
             }
             if (!getSyncPhysicalMovable().hasDestination()) {
@@ -646,7 +646,7 @@ public class SyncBaseItem extends SyncItem {
             stop(true);
             return false;
         }
-        if (getSyncPhysicalArea().isInRange(targetContainer.getSyncItemContainer().getRange(), targetContainer)) {
+        if (getAbstractSyncPhysical().isInRange(targetContainer.getSyncItemContainer().getRange(), targetContainer)) {
             targetContainer.getSyncItemContainer().load(this);
             stop(true);
             return false;
@@ -717,14 +717,14 @@ public class SyncBaseItem extends SyncItem {
             if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
                 nativeSyncBaseItemTickInfo.turretAngle = syncWeapon.getSyncTurret().getAngle();
             }
-            nativeSyncBaseItemTickInfo.x = getSyncPhysicalArea().getPosition().getX();
-            nativeSyncBaseItemTickInfo.y = getSyncPhysicalArea().getPosition().getY();
-            nativeSyncBaseItemTickInfo.angle = getSyncPhysicalArea().getAngle();
+            nativeSyncBaseItemTickInfo.x = getAbstractSyncPhysical().getPosition().getX();
+            nativeSyncBaseItemTickInfo.y = getAbstractSyncPhysical().getPosition().getY();
+            nativeSyncBaseItemTickInfo.angle = getAbstractSyncPhysical().getAngle();
             if (syncHarvester != null && syncHarvester.isHarvesting()) {
-                nativeSyncBaseItemTickInfo.harvestingResourcePosition = toNativeDecimalPosition(syncHarvester.getResource().getSyncPhysicalArea().getPosition());
+                nativeSyncBaseItemTickInfo.harvestingResourcePosition = toNativeDecimalPosition(syncHarvester.getResource().getAbstractSyncPhysical().getPosition());
             }
             if (syncBuilder != null && syncBuilder.isBuilding()) {
-                nativeSyncBaseItemTickInfo.buildingPosition = toNativeDecimalPosition(syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition());
+                nativeSyncBaseItemTickInfo.buildingPosition = toNativeDecimalPosition(syncBuilder.getCurrentBuildup().getAbstractSyncPhysical().getPosition());
                 nativeSyncBaseItemTickInfo.constructing = syncBuilder.getCurrentBuildup().getBuildup();
                 nativeSyncBaseItemTickInfo.constructingBaseItemTypeId = syncBuilder.getCurrentBuildup().getBaseItemType().getId();
             }

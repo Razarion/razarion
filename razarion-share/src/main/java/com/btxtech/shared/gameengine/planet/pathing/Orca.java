@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
@@ -52,7 +53,7 @@ public class Orca {
         //DebugHelperStatic.addOrcaCreate(syncPhysicalMovable);
     }
 
-    public void add(SyncPhysicalArea other) {
+    public void add(AbstractSyncPhysical other) {
         DecimalPosition otherVelocity = null;
         double reciprocalFactor = 1.0;
         if (other instanceof SyncPhysicalMovable) {

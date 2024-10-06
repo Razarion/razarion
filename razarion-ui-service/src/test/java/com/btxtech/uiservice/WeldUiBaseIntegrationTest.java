@@ -4,8 +4,8 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -20,7 +20,6 @@ import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.gui.AbstractUiTestGuiRenderer;
 import com.btxtech.uiservice.gui.UiTestGuiDisplay;
 import com.btxtech.uiservice.i18n.I18nConstants;
@@ -51,11 +50,11 @@ public class WeldUiBaseIntegrationTest {
         Weld weld = new Weld();
         weldContainer = weld.initialize();
 
-        weldContainer.getBeanManager().fireEvent(new GameUiControlInitEvent(coldGameUiContext));
+        getWeldBean(InitializeService.class).setColdGameUiContext(coldGameUiContext);
     }
 
-    protected void setupUiEnvironment(PlanetVisualConfig planetVisualConfig) {
-        setupUiEnvironment(new ColdGameUiContext().warmGameUiContext(new WarmGameUiContext().planetVisualConfig(planetVisualConfig)));
+    protected void setupUiEnvironment() {
+        setupUiEnvironment(new ColdGameUiContext().warmGameUiContext(new WarmGameUiContext()));
     }
 
     protected <T> T getWeldBean(Class<T> clazz) {

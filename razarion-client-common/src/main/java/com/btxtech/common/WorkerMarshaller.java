@@ -30,6 +30,7 @@ import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsArrayNumber;
 import elemental2.core.JsArray;
 import elemental2.core.JsObject;
+import elemental2.dom.DomGlobal;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
 import jsinterop.base.JsArrayLike;
@@ -57,6 +58,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static jsinterop.base.Js.asInt;
 
 /**
  * Created by Beat
@@ -440,7 +443,7 @@ public class WorkerMarshaller {
                     return Js.uncheckedCast(GameEngineMode.valueOf(enumString));
                 } else if (type == TerrainType.class) {
                     String enumString = json.replace("\"", "");
-                    return Js.uncheckedCast(GameEngineMode.valueOf(enumString));
+                    return Js.uncheckedCast(TerrainType.valueOf(enumString));
                 } else {
                     throw new IllegalArgumentException("Unsupported type: " + type);
                 }
@@ -513,8 +516,8 @@ public class WorkerMarshaller {
         Any[] array = Js.asArray(data);
         TerrainTile terrainTile = new TerrainTile();
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
-        terrainTile.setGroundConfigId(array[1].asInt()); // GWT DevMode crashes here
-        terrainTile.setWaterConfigId(array[2].asInt());
+        terrainTile.setGroundConfigId(getIssueNumber(array[1]));
+        terrainTile.setWaterConfigId(getIssueNumber(array[2]));
         terrainTile.setBabylonDecals(demarshallBabylonDecals(array[3]));
         terrainTile.setGroundHeightMap(Js.uncheckedCast(array[4].asArrayLike()));
         terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[5]));
@@ -585,5 +588,12 @@ public class WorkerMarshaller {
         return new Vertex(jsArray[0].asDouble(),
                 jsArray[1].asDouble(),
                 jsArray[2].asDouble());
+    }
+
+    private static int getIssueNumber(Any any) {
+        if (any instanceof Number) {
+            return ((Number) any).intValue();
+        }
+        return asInt(Js.asPropertyMap(any).get(JsObject.keys(any).getAt(0)));
     }
 }

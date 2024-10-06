@@ -8,11 +8,10 @@ import com.btxtech.server.persistence.chat.ChatPersistence;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
-import com.btxtech.shared.gameengine.StaticGameInitEvent;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
 
-import com.btxtech.shared.deprecated.Event;
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -44,14 +43,23 @@ public class ServletContextMonitor implements ServletContextListener {
 
     private AlarmService alarmService;
 
-    private Event<StaticGameInitEvent> gameEngineInitEvent;
+    private InitializeService initializeService;
 
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
 
     @Inject
-    public ServletContextMonitor(ServerGameEngineCrudPersistence serverGameEngineCrudPersistence, Event<com.btxtech.shared.gameengine.StaticGameInitEvent> gameEngineInitEvent, AlarmService alarmService, ServerMgmt serverMgmt, ExceptionHandler exceptionHandler, ChatPersistence chatPersistence, ServerGameEngineControl gameEngineService, StaticGameConfigPersistence staticGameConfigPersistence, ServerTerrainShapeService serverTerrainShapeService, Logger logger) {
+    public ServletContextMonitor(ServerGameEngineCrudPersistence serverGameEngineCrudPersistence,
+                                 InitializeService initializeService,
+                                 AlarmService alarmService,
+                                 ServerMgmt serverMgmt,
+                                 ExceptionHandler exceptionHandler,
+                                 ChatPersistence chatPersistence,
+                                 ServerGameEngineControl gameEngineService,
+                                 StaticGameConfigPersistence staticGameConfigPersistence,
+                                 ServerTerrainShapeService serverTerrainShapeService,
+                                 Logger logger) {
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
-        this.gameEngineInitEvent = gameEngineInitEvent;
+        this.initializeService = initializeService;
         this.alarmService = alarmService;
         this.serverMgmt = serverMgmt;
         this.exceptionHandler = exceptionHandler;
@@ -67,12 +75,12 @@ public class ServletContextMonitor implements ServletContextListener {
         serverMgmt.setServerState(ServerState.STARTING);
         alarmService.addListener(alarm -> {
             // Temporarily suppress INVALID_PROPERTY
-            if(alarm.getType() != INVALID_PROPERTY) {
+            if (alarm.getType() != INVALID_PROPERTY) {
                 logger.severe(alarm.toString());
             }
         });
         try {
-            gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
+            initializeService.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }

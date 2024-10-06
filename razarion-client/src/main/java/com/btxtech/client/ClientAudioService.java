@@ -1,6 +1,7 @@
 package com.btxtech.client;
 
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.audio.AudioService;
@@ -34,8 +35,14 @@ public class ClientAudioService extends AudioService {
     private boolean isMute = false;
 
     @Inject
-    public ClientAudioService(AlarmService alarmService, ItemTypeService itemTypeService, Provider<TerrainUiService> terrainUiService) {
-        super(alarmService, itemTypeService, terrainUiService);
+    public ClientAudioService(AlarmService alarmService,
+                              ItemTypeService itemTypeService,
+                              Provider<TerrainUiService> terrainUiService,
+                              InitializeService initializeService) {
+        super(alarmService,
+                itemTypeService,
+                terrainUiService,
+                initializeService);
     }
 
     @Override

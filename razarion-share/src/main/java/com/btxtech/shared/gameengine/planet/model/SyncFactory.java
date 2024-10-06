@@ -171,9 +171,9 @@ public class SyncFactory extends SyncBaseAbility {
                 maxToBeBuiltItemRadius = Math.max(maxToBeBuiltItemRadius, toBeBuilt.getPhysicalAreaConfig().getRadius());
                 toBeBuiltItemTerrainType = toBeBuilt.getPhysicalAreaConfig().getTerrainType();
             }
-            double totalRadius = maxToBeBuiltItemRadius + getSyncBaseItem().getSyncPhysicalArea().getRadius() + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE;
+            double totalRadius = maxToBeBuiltItemRadius + getSyncBaseItem().getAbstractSyncPhysical().getRadius() + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE;
 
-            spawnPoint = findFreePosition(getSyncBaseItem().getSyncPhysicalArea().getPosition(), maxToBeBuiltItemRadius, toBeBuiltItemTerrainType, totalRadius, false);
+            spawnPoint = findFreePosition(getSyncBaseItem().getAbstractSyncPhysical().getPosition(), maxToBeBuiltItemRadius, toBeBuiltItemTerrainType, totalRadius, false);
 
             rallyPoint = findFreePosition(spawnPoint, maxToBeBuiltItemRadius, toBeBuiltItemTerrainType, RELAY_POINT_DISTANCE, true);
         }

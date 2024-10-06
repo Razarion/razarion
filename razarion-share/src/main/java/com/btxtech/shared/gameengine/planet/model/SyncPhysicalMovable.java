@@ -26,7 +26,6 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
 
 /**
@@ -36,8 +35,7 @@ import javax.inject.Provider;
  */
 // See: com.btxtech.shared.gameengine.planet.pathing.Unit (before 16.09.2016, git ref: 2c78588f58aa2863f5c49a5a4d44662467c8be1e)
 
-@Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
-public class SyncPhysicalMovable extends SyncPhysicalArea {
+public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
     private static final double STOP_DETECTION_OTHER_UNITS_RADIOS = 20;
     private static final double ANGLE_SLOW_DOWN = 0.1;
@@ -60,7 +58,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private Double endAngleSlowDown;
 
     @Inject
-    public SyncPhysicalMovable(SyncItemContainerServiceImpl syncItemContainerService, Provider<com.btxtech.shared.gameengine.datatypes.Path> instancePath) {
+    public SyncPhysicalMovable(SyncItemContainerServiceImpl syncItemContainerService, Provider<Path> instancePath) {
         super(syncItemContainerService);
         this.syncItemContainerService = syncItemContainerService;
         this.instancePath = instancePath;
@@ -148,12 +146,12 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 if (otherSyncBaseItem.equals(getSyncItem())) {
                     return;
                 }
-                if (!otherSyncBaseItem.getSyncPhysicalArea().canMove() || otherSyncBaseItem.getSyncPhysicalMovable().hasDestination()) {
+                if (!otherSyncBaseItem.getAbstractSyncPhysical().canMove() || otherSyncBaseItem.getSyncPhysicalMovable().hasDestination()) {
                     return;
                 }
-                double distance = getSyncItem().getSyncPhysicalArea().getDistance(otherSyncBaseItem);
+                double distance = getSyncItem().getAbstractSyncPhysical().getDistance(otherSyncBaseItem);
                 if (distance < 1) {
-                    double otherTargetDistance = otherSyncBaseItem.getSyncPhysicalArea().getDistance(path.getCurrentWayPoint(), 0);
+                    double otherTargetDistance = otherSyncBaseItem.getAbstractSyncPhysical().getDistance(path.getCurrentWayPoint(), 0);
                     if (otherTargetDistance < 2) {
                         stop();
                         return; // TODO Ugly performance: can not stop iteration of syncItemContainerService.iterateCellQuadBaseItem()

@@ -56,10 +56,10 @@ public class Scenario {
     final protected SyncBaseItem createSyncBaseItemSimplePath(int baseItemTypeId, DecimalPosition position, DecimalPosition destination) {
         try {
             SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, 0, playerBase1, true);
-            if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
+            if (syncBaseItem.getAbstractSyncPhysical().canMove() && destination != null) {
                 SimplePath path = new SimplePath();
                 path.setWayPositions(Collections.singletonList(destination));
-                ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setPath(path);
+                ((SyncPhysicalMovable) syncBaseItem.getAbstractSyncPhysical()).setPath(path);
             }
             createdSyncBaseItems.add(syncBaseItem);
             return syncBaseItem;
@@ -71,9 +71,9 @@ public class Scenario {
     final protected SyncBaseItem createSyncBaseItem(int baseItemTypeId, DecimalPosition position, DecimalPosition destination) {
         try {
             SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, 0, playerBase1, true);
-            if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
+            if (syncBaseItem.getAbstractSyncPhysical().canMove() && destination != null) {
                 SimplePath path = pathingService.setupPathToDestination(syncBaseItem, destination);
-                ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setPath(path);
+                ((SyncPhysicalMovable) syncBaseItem.getAbstractSyncPhysical()).setPath(path);
             }
             createdSyncBaseItems.add(syncBaseItem);
             return syncBaseItem;

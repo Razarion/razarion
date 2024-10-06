@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
 import com.btxtech.uiservice.renderer.ViewField;
 import org.junit.Test;
@@ -14,7 +13,7 @@ public class TerrainUiServiceTest extends WeldUiBaseIntegrationTest {
 
     @Test
     public void onViewChanged() {
-        setupUiEnvironment(new PlanetVisualConfig());
+        setupUiEnvironment();
         TerrainUiService terrainUiService = getWeldBean(TerrainUiService.class);
         ViewField viewField = new ViewField(0);
         viewField.setBottomLeft(new DecimalPosition(10, 0));

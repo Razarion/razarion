@@ -99,7 +99,7 @@ public class SyncWeapon extends SyncBaseAbility {
             }
 
             if (syncTurret != null) {
-                syncTurret.tick(target.getSyncPhysicalArea().getPosition());
+                syncTurret.tick(target.getAbstractSyncPhysical().getPosition());
             }
 
             if (!isInRange(target)) {
@@ -107,7 +107,7 @@ public class SyncWeapon extends SyncBaseAbility {
                     stop();
                     return false;
                 }
-                if (!getSyncPhysicalArea().canMove()) {
+                if (!getAbstractSyncPhysical().canMove()) {
                     throw new IllegalStateException("SyncWeapon out of range from Target and getSyncPhysicalArea can not move");
                 }
                 if (!getSyncPhysicalMovable().hasDestination()) {
@@ -122,8 +122,8 @@ public class SyncWeapon extends SyncBaseAbility {
                 // Check if target has moved away
                 if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
                     if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis()) {
-                        if (!targetPosition.equals(target.getSyncPhysicalArea().getPosition())) {
-                            targetPosition = target.getSyncPhysicalArea().getPosition();
+                        if (!targetPosition.equals(target.getAbstractSyncPhysical().getPosition())) {
+                            targetPosition = target.getAbstractSyncPhysical().getPosition();
                             getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
                             syncService.notifySendSyncBaseItem(getSyncBaseItem());
                         }
@@ -137,7 +137,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 getSyncPhysicalMovable().stop();
             }
 
-            if (syncTurret != null && !syncTurret.isOnTarget(target.getSyncPhysicalArea().getPosition())) {
+            if (syncTurret != null && !syncTurret.isOnTarget(target.getAbstractSyncPhysical().getPosition())) {
                 return true;
             }
 
@@ -170,7 +170,7 @@ public class SyncWeapon extends SyncBaseAbility {
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
         if (syncBaseItemInfo.getTarget() != null) {
             target = syncItemContainerService.getSyncBaseItemSave(syncBaseItemInfo.getTarget());
-            targetPosition = target.getSyncPhysicalArea().getPosition();
+            targetPosition = target.getAbstractSyncPhysical().getPosition();
             targetPositionLastCheck = System.currentTimeMillis();
         } else {
             target = null;
@@ -213,7 +213,7 @@ public class SyncWeapon extends SyncBaseAbility {
         if (followTarget) {
             getSyncPhysicalMovable().setPath(attackCommand.getSimplePath());
         }
-        targetPosition = target.getSyncPhysicalArea().getPosition();
+        targetPosition = target.getAbstractSyncPhysical().getPosition();
         targetPositionLastCheck = System.currentTimeMillis();
     }
 
@@ -223,13 +223,13 @@ public class SyncWeapon extends SyncBaseAbility {
 
     boolean isAttackAllowed(SyncItem target) {
         return target instanceof SyncBaseItem
-                && getSyncPhysicalArea().hasPosition()
-                && target.getSyncPhysicalArea().hasPosition()
+                && getAbstractSyncPhysical().hasPosition()
+                && target.getAbstractSyncPhysical().hasPosition()
                 && !isItemTypeDisallowed((SyncBaseItem) target);
     }
 
     boolean isInRange(SyncBaseItem target) throws TargetHasNoPositionException {
-        return getSyncBaseItem().getSyncPhysicalArea().isInRange(weaponType.getRange(), target);
+        return getSyncBaseItem().getAbstractSyncPhysical().isInRange(weaponType.getRange(), target);
     }
 
     public WeaponType getWeaponType() {

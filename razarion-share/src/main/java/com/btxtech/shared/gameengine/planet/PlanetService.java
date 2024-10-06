@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.MasterPlanetConfig;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -15,8 +16,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
-import javax.annotation.PostConstruct;
-import com.btxtech.shared.deprecated.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
     private ExceptionHandler exceptionHandler;
 
-    private Event<PlanetActivationEvent> activationEvent;
+    private InitializeService initializeService;
 
     private SimpleExecutorService simpleExecutorService;
 
@@ -71,7 +70,19 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private GameEngineMode gameEngineMode;
 
     @Inject
-    public PlanetService(SyncService syncService, EnergyService energyService, ResourceService resourceService, TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService, ProjectileService projectileService, BoxService boxService, QuestService questService, BaseItemService baseItemService, PathingService pathingService, SimpleExecutorService simpleExecutorService, Event<com.btxtech.shared.gameengine.planet.PlanetActivationEvent> activationEvent, ExceptionHandler exceptionHandler) {
+    public PlanetService(SyncService syncService,
+                         EnergyService energyService,
+                         ResourceService resourceService,
+                         TerrainService terrainService,
+                         SyncItemContainerServiceImpl syncItemContainerService,
+                         ProjectileService projectileService,
+                         BoxService boxService,
+                         QuestService questService,
+                         BaseItemService baseItemService,
+                         PathingService pathingService,
+                         SimpleExecutorService simpleExecutorService,
+                         InitializeService initializeService,
+                         ExceptionHandler exceptionHandler) {
         this.syncService = syncService;
         this.energyService = energyService;
         this.resourceService = resourceService;
@@ -83,7 +94,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
         this.baseItemService = baseItemService;
         this.pathingService = pathingService;
         this.simpleExecutorService = simpleExecutorService;
-        this.activationEvent = activationEvent;
+        this.initializeService = initializeService;
         this.exceptionHandler = exceptionHandler;
         scheduledFuture = simpleExecutorService.scheduleAtFixedRate(TICK_TIME_MILLI_SECONDS, false, this, SimpleExecutorService.Type.GAME_ENGINE);
     }
@@ -94,7 +105,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
         this.gameEngineMode = gameEngineMode;
         syncItemContainerService.clear();
         terrainService.setup(planetConfig, () -> {
-            activationEvent.fire(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, PlanetActivationEvent.Type.INITIALIZE));
+            initializeService.setPlanetActivationEvent(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, PlanetActivationEvent.Type.INITIALIZE));
             finishCallback.run();
         }, failCallback);
     }
@@ -107,7 +118,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
     public void stop() {
         scheduledFuture.cancel();
-        activationEvent.fire(new PlanetActivationEvent(null, null, null, PlanetActivationEvent.Type.STOP));
+        initializeService.setPlanetActivationEvent(new PlanetActivationEvent(null, null, null, PlanetActivationEvent.Type.STOP));
         syncItemContainerService.clear();
         terrainService.clean();
     }

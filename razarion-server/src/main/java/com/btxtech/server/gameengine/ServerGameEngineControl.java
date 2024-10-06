@@ -11,7 +11,7 @@ import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
-import com.btxtech.shared.gameengine.StaticGameInitEvent;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -39,7 +39,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.enterprise.context.ApplicationScoped;
-import com.btxtech.shared.deprecated.Event;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +53,7 @@ import java.util.logging.Logger;
 public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PlanetTickListener {
     private final Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
     @Inject
-    private Event<StaticGameInitEvent> gameEngineInitEvent;
+    private InitializeService initializeService;
     @Inject
     private PlanetService planetService;
     @Inject
@@ -133,7 +132,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void reloadStatic() {
         synchronized (reloadLook) {
             long time = System.currentTimeMillis();
-            gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
+            initializeService.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
             logger.info("reloadStatic(). Time used: " + (System.currentTimeMillis() - time));
         }
     }

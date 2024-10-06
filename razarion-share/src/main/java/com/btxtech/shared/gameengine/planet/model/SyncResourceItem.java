@@ -52,14 +52,14 @@ public class SyncResourceItem extends SyncItem {
     }
 
     public void synchronize(SyncResourceItemInfo syncResourceItemInfo) {
-        getSyncPhysicalArea().synchronize(syncResourceItemInfo.getSyncPhysicalAreaInfo());
+        getAbstractSyncPhysical().synchronize(syncResourceItemInfo.getSyncPhysicalAreaInfo());
         amount = syncResourceItemInfo.getAmount();
     }
 
     public SyncResourceItemInfo getSyncInfo() {
         SyncResourceItemInfo syncResourceItemInfo = new SyncResourceItemInfo();
         syncResourceItemInfo.setId(getId());
-        syncResourceItemInfo.setSyncPhysicalAreaInfo(getSyncPhysicalArea().getSyncPhysicalAreaInfo());
+        syncResourceItemInfo.setSyncPhysicalAreaInfo(getAbstractSyncPhysical().getSyncPhysicalAreaInfo());
         syncResourceItemInfo.setResourceItemTypeId(getItemType().getId());
         syncResourceItemInfo.setAmount(amount);
         return syncResourceItemInfo;

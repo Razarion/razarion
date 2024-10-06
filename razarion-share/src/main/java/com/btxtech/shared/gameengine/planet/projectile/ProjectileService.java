@@ -9,7 +9,6 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class ProjectileService {
         this.baseItemService = baseItemService;
     }
 
-    public void onPlanetActivation( PlanetActivationEvent ignore) {
+    public void onPlanetActivation(PlanetActivationEvent ignore) {
         synchronized (projectiles) {
             projectiles.clear();
         }
@@ -53,12 +52,12 @@ public class ProjectileService {
             // projectileDetonation(projectileGroup);
             throw new UnsupportedOperationException();
         }
-        Projectile projectile = new Projectile(actor, target.getSyncPhysicalArea().getPosition());
+        Projectile projectile = new Projectile(actor, target.getAbstractSyncPhysical().getPosition());
         synchronized (projectiles) {
             projectiles.add(projectile);
         }
 
-        gameLogicService.onProjectileFired(actor, target.getSyncPhysicalArea().getPosition());
+        gameLogicService.onProjectileFired(actor, target.getAbstractSyncPhysical().getPosition());
     }
 
     public void tick() {
@@ -82,7 +81,7 @@ public class ProjectileService {
         gameLogicService.onProjectileDetonation(detonationProjectile.getActor(), detonationProjectile.getTarget());
         Collection<SyncBaseItem> possibleTargets = syncItemContainerService.findBaseItemInRect(Rectangle2D.generateRectangleFromMiddlePoint(detonationProjectile.getTarget(), weaponType.getRange(), weaponType.getRange()));
         for (SyncBaseItem target : possibleTargets) {
-            if (!target.getSyncPhysicalArea().overlap(detonationProjectile.getTarget(), weaponType.getDetonationRadius())) {
+            if (!target.getAbstractSyncPhysical().overlap(detonationProjectile.getTarget(), weaponType.getDetonationRadius())) {
                 continue;
             }
             if (!baseItemService.isEnemy(detonationProjectile.getActor(), target)) {

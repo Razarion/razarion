@@ -102,7 +102,7 @@ public class PositionMarker {
         private Color color;
 
         public SyncItem(com.btxtech.shared.gameengine.planet.model.SyncItem syncItem, Color color) {
-            circle2D = new Circle2D(syncItem.getSyncPhysicalArea().getPosition(), syncItem.getSyncPhysicalMovable().getRadius());
+            circle2D = new Circle2D(syncItem.getAbstractSyncPhysical().getPosition(), syncItem.getSyncPhysicalMovable().getRadius());
             this.color = color;
         }
 

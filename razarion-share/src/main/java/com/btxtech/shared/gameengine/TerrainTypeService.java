@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
@@ -29,11 +28,8 @@ public class TerrainTypeService {
     private final Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
 
     @Inject
-    public TerrainTypeService() {
-    }
-
-    public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
-        init(engineInitEvent.getStaticGameConfig());
+    public TerrainTypeService(InitializeService initializeService) {
+        initializeService.receiveStaticGameConfig(this::init);
     }
 
     public void init(StaticGameConfig staticGameConfig) {

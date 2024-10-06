@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -16,6 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController;
+import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -858,11 +858,11 @@ public class WeldTestRenderer {
     }
 
     public void drawSyncItem(SyncItem syncItem) {
-        SyncPhysicalArea syncPhysicalArea = syncItem.getSyncPhysicalArea();
-        if (!syncPhysicalArea.hasPosition()) {
+        AbstractSyncPhysical abstractSyncPhysical = syncItem.getAbstractSyncPhysical();
+        if (!abstractSyncPhysical.hasPosition()) {
             return;
         }
-        DecimalPosition position = syncPhysicalArea.getPosition();
+        DecimalPosition position = abstractSyncPhysical.getPosition();
         if (syncItem instanceof SyncBaseItem) {
             gc.setFill(BASE_ITEM_TYPE_COLOR);
         } else if (syncItem instanceof SyncResourceItem) {
@@ -872,16 +872,16 @@ public class WeldTestRenderer {
         } else {
             throw new IllegalArgumentException("Unknown SyncItem: " + syncItem);
         }
-        if (syncItem.getSyncPhysicalArea().canMove()) {
-            fillDirectionMarker(syncItem.getSyncPhysicalArea().getPosition(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
+        if (syncItem.getAbstractSyncPhysical().canMove()) {
+            fillDirectionMarker(syncItem.getAbstractSyncPhysical().getPosition(), syncItem.getAbstractSyncPhysical().getRadius(), syncItem.getAbstractSyncPhysical().getAngle());
             gc.setStroke(BASE_ITEM_TYPE_LINE_COLOR);
             gc.setLineWidth(0.1);
-            strokeDirectionMarker(syncItem.getSyncPhysicalArea().getPosition(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
+            strokeDirectionMarker(syncItem.getAbstractSyncPhysical().getPosition(), syncItem.getAbstractSyncPhysical().getRadius(), syncItem.getAbstractSyncPhysical().getAngle());
             gc.setStroke(BASE_ITEM_TYPE_HEADING_COLOR);
             gc.setLineWidth(0.5);
-            createHeadingLine(syncItem.getSyncPhysicalArea().getPosition(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
+            createHeadingLine(syncItem.getAbstractSyncPhysical().getPosition(), syncItem.getAbstractSyncPhysical().getRadius(), syncItem.getAbstractSyncPhysical().getAngle());
         } else {
-            gc.fillOval(position.getX() - syncPhysicalArea.getRadius(), position.getY() - syncPhysicalArea.getRadius(), syncPhysicalArea.getRadius() * 2, syncPhysicalArea.getRadius() * 2);
+            gc.fillOval(position.getX() - abstractSyncPhysical.getRadius(), position.getY() - abstractSyncPhysical.getRadius(), abstractSyncPhysical.getRadius() * 2, abstractSyncPhysical.getRadius() * 2);
         }
 
         if (syncItem instanceof SyncBaseItem) {
@@ -889,13 +889,13 @@ public class WeldTestRenderer {
             if (syncBaseItem.getSyncWeapon() != null) {
                 // TODO
             }
-            if (syncBaseItem.getSyncPhysicalArea().canMove()) {
+            if (syncBaseItem.getAbstractSyncPhysical().canMove()) {
                 Path path = syncBaseItem.getSyncPhysicalMovable().getPath();
                 if (path != null && path.getCurrentWayPoint() != null) {
                     strokeCurveDecimalPosition(path.getWayPositions(), 0.1, Color.CADETBLUE, true);
                     gc.setStroke(Color.BLUEVIOLET);
                     gc.setLineWidth(0.5);
-                    gc.strokeLine(syncBaseItem.getSyncPhysicalArea().getPosition().getX(), syncBaseItem.getSyncPhysicalArea().getPosition().getY(), path.getCurrentWayPoint().getX(), path.getCurrentWayPoint().getY());
+                    gc.strokeLine(syncBaseItem.getAbstractSyncPhysical().getPosition().getX(), syncBaseItem.getAbstractSyncPhysical().getPosition().getY(), path.getCurrentWayPoint().getX(), path.getCurrentWayPoint().getY());
                 }
             }
         }

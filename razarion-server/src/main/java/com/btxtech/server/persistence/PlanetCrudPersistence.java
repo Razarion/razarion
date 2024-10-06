@@ -7,7 +7,6 @@ import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -209,14 +208,6 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
             }
         }
         throw new IllegalArgumentException("No TerrainObjectPositionEntity on planet for id: " + id);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void updatePlanetVisualConfig(int planetId, PlanetVisualConfig planetVisualConfig) {
-        PlanetEntity planetEntity = getEntity(planetId);
-        planetEntity.fromPlanetVisualConfig(planetVisualConfig);
-        entityManager.merge(planetEntity);
     }
 
     @Transactional

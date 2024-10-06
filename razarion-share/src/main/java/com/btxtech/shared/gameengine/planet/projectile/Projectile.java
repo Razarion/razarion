@@ -18,7 +18,7 @@ public class Projectile {
 
     Projectile(SyncBaseItem actor, DecimalPosition target) {
         this.actor = actor;
-        this.start = actor.getSyncPhysicalArea().getPosition();
+        this.start = actor.getAbstractSyncPhysical().getPosition();
         this.target = target;
         position = start;
         tickDistance = actor.getSyncWeapon().getWeaponType().getProjectileSpeed() * PlanetService.TICK_FACTOR;

@@ -17,6 +17,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.ResourceRegionConfig;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
@@ -52,15 +53,21 @@ public class ResourceService {
     private List<ResourceRegionConfig> resourceRegionConfigs;
 
     @Inject
-    public ResourceService(ExceptionHandler exceptionHandler, Provider<ResourceRegion> instance, GameLogicService gameLogicService, ItemTypeService itemTypeService, SyncItemContainerServiceImpl syncItemContainerService) {
+    public ResourceService(ExceptionHandler exceptionHandler,
+                           Provider<ResourceRegion> instance,
+                           GameLogicService gameLogicService,
+                           ItemTypeService itemTypeService,
+                           SyncItemContainerServiceImpl syncItemContainerService,
+                           InitializeService initializeService) {
         this.exceptionHandler = exceptionHandler;
         this.instance = instance;
         this.gameLogicService = gameLogicService;
         this.itemTypeService = itemTypeService;
         this.syncItemContainerService = syncItemContainerService;
+        initializeService.receivePlanetActivationEvent(this::onPlanetActivation);
     }
 
-    public void onPlanetActivation(PlanetActivationEvent planetActivationEvent) {
+    private void onPlanetActivation(PlanetActivationEvent planetActivationEvent) {
         switch (planetActivationEvent.getType()) {
 
             case INITIALIZE:

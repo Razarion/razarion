@@ -34,8 +34,8 @@ public abstract class SyncBaseAbility {
         return syncBaseItem;
     }
 
-    public SyncPhysicalArea getSyncPhysicalArea() {
-        return syncBaseItem.getSyncPhysicalArea();
+    public AbstractSyncPhysical getAbstractSyncPhysical() {
+        return syncBaseItem.getAbstractSyncPhysical();
     }
 
     public SyncPhysicalMovable getSyncPhysicalMovable() {

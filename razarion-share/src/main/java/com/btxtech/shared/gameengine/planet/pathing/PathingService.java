@@ -6,9 +6,9 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.SynchronizationSendingContext;
+import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
@@ -43,20 +43,20 @@ public class PathingService {
     }
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
-        return setupPathToDestination(syncItem, syncItem.getSyncPhysicalArea().getTerrainType(), destination, 0);
+        return setupPathToDestination(syncItem, syncItem.getAbstractSyncPhysical().getTerrainType(), destination, 0);
     }
 
     public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, SyncItem target) {
-        return setupPathToDestination(syncBaseItem, range, target.getSyncPhysicalArea().getTerrainType(), target.getSyncPhysicalArea().getPosition(), target.getSyncPhysicalArea().getRadius());
+        return setupPathToDestination(syncBaseItem, range, target.getAbstractSyncPhysical().getTerrainType(), target.getAbstractSyncPhysical().getPosition(), target.getAbstractSyncPhysical().getRadius());
     }
 
     public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, TerrainType targetTerrainType, DecimalPosition targetPosition, double targetRadius) {
-        double totalRange = syncBaseItem.getSyncPhysicalArea().getRadius() + targetRadius + range;
+        double totalRange = syncBaseItem.getAbstractSyncPhysical().getRadius() + targetRadius + range;
         return setupPathToDestination(syncBaseItem, targetTerrainType, targetPosition, totalRange);
     }
 
     private SimplePath setupPathToDestination(SyncBaseItem syncItem, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
-        return setupPathToDestination(syncItem.getSyncPhysicalArea().getPosition(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getTerrainType(), targetTerrainType, destination, totalRange);
+        return setupPathToDestination(syncItem.getAbstractSyncPhysical().getPosition(), syncItem.getAbstractSyncPhysical().getRadius(), syncItem.getAbstractSyncPhysical().getTerrainType(), targetTerrainType, destination, totalRange);
     }
 
     public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType terrainType, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
@@ -140,13 +140,13 @@ public class PathingService {
 
     private void calculateItemVelocity() {
         ItemVelocityCalculator itemVelocityCalculator = new ItemVelocityCalculator(syncItemContainerService, terrainService.getPathingAccess(), exceptionHandler);
-        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> itemVelocityCalculator.analyse(syncBaseItem.getSyncPhysicalArea()));
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> itemVelocityCalculator.analyse(syncBaseItem.getAbstractSyncPhysical()));
         itemVelocityCalculator.calculateVelocity();
     }
 
     private void setupPreferredVelocity() {
         syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
-            if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
+            if (!syncBaseItem.getAbstractSyncPhysical().canMove()) {
                 return;
             }
             syncBaseItem.getSyncPhysicalMovable().setupPreferredVelocity();
@@ -155,27 +155,27 @@ public class PathingService {
 
     private void implementPosition() {
         syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
-            SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
-            if (!syncPhysicalArea.canMove()) {
+            AbstractSyncPhysical abstractSyncPhysical = syncBaseItem.getAbstractSyncPhysical();
+            if (!abstractSyncPhysical.canMove()) {
                 return;
             }
-            ((SyncPhysicalMovable) syncPhysicalArea).implementPosition();
+            ((SyncPhysicalMovable) abstractSyncPhysical).implementPosition();
         });
     }
 
 
     private void checkDestination() {
         syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
-            if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
+            if (!syncBaseItem.getAbstractSyncPhysical().canMove()) {
                 return;
             }
-            ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).stopIfDestinationReached();
+            ((SyncPhysicalMovable) syncBaseItem.getAbstractSyncPhysical()).stopIfDestinationReached();
         });
     }
 
     private void finalization() {
         syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
-            if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
+            if (!syncBaseItem.getAbstractSyncPhysical().canMove()) {
                 return;
             }
 

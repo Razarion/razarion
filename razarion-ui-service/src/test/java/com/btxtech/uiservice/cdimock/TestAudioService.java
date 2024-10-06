@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.cdimock;
 
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.audio.AudioService;
@@ -17,8 +18,14 @@ import javax.inject.Singleton;
 public class TestAudioService extends AudioService {
 
     @Inject
-    public TestAudioService(AlarmService alarmService, ItemTypeService itemTypeService, Provider<TerrainUiService> terrainUiService) {
-        super(alarmService, itemTypeService, terrainUiService);
+    public TestAudioService(AlarmService alarmService,
+                            ItemTypeService itemTypeService,
+                            Provider<TerrainUiService> terrainUiService,
+                            InitializeService initializeService) {
+        super(alarmService,
+                itemTypeService,
+                terrainUiService,
+                initializeService);
     }
 
     @Override

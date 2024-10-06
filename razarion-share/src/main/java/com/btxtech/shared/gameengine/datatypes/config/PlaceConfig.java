@@ -95,12 +95,12 @@ public class PlaceConfig {
     public boolean checkInside(SyncItem syncItem) {
         if (position != null) {
             if (radius != null) {
-                return syncItem.getSyncPhysicalArea().overlap(position, radius);
+                return syncItem.getAbstractSyncPhysical().overlap(position, radius);
             } else {
-                return syncItem.getSyncPhysicalArea().overlap(position);
+                return syncItem.getAbstractSyncPhysical().overlap(position);
             }
         } else if (polygon2D != null) {
-            return polygon2D.isInside(syncItem.getSyncPhysicalArea().getPosition());
+            return polygon2D.isInside(syncItem.getAbstractSyncPhysical().getPosition());
         } else {
             throw new IllegalStateException("Invalid PlaceConfig");
         }

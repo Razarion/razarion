@@ -168,7 +168,7 @@ public class CommandService {
         SyncBaseItem target = syncItemContainerService.getSyncBaseItemSave(targetId);
         for (int attackerId : attackerIds) {
             SyncBaseItem attacker = syncItemContainerService.getSyncBaseItemSave(attackerId);
-            attack(attacker, target, attacker.getSyncPhysicalArea().canMove());
+            attack(attacker, target, attacker.getAbstractSyncPhysical().canMove());
         }
     }
 

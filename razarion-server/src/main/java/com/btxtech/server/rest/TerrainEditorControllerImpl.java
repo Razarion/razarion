@@ -3,7 +3,6 @@ package com.btxtech.server.rest;
 import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.rest.TerrainEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -36,17 +35,6 @@ public class TerrainEditorControllerImpl implements TerrainEditorController {
             if (terrainEditorUpdate.getDeletedTerrainObjectsIds() != null && !terrainEditorUpdate.getDeletedTerrainObjectsIds().isEmpty()) {
                 planetCrudPersistence.deleteTerrainObjectPositionIds(planetId, terrainEditorUpdate.getDeletedTerrainObjectsIds());
             }
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public void updatePlanetVisualConfig(int planetId, PlanetVisualConfig planetVisualConfig) {
-        try {
-            planetCrudPersistence.updatePlanetVisualConfig(planetId, planetVisualConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

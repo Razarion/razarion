@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
@@ -224,9 +225,9 @@ public abstract class AbstractTestGuiRenderer {
         gc.fillPolygon(xCorners, yCorners, polygon.size());
     }
 
-    protected void strokeSyncPhysicalArea(SyncPhysicalArea syncPhysicalArea, double lineWidth, Paint color) {
-        if (syncPhysicalArea instanceof SyncPhysicalMovable) {
-            if (((SyncPhysicalMovable) syncPhysicalArea).getVelocity() != null) {
+    protected void strokeSyncPhysicalArea(AbstractSyncPhysical abstractSyncPhysical, double lineWidth, Paint color) {
+        if (abstractSyncPhysical instanceof SyncPhysicalMovable) {
+            if (((SyncPhysicalMovable) abstractSyncPhysical).getVelocity() != null) {
                 gc.setStroke(color);
             } else {
                 gc.setStroke(Color.DARKGRAY);
@@ -235,10 +236,10 @@ public abstract class AbstractTestGuiRenderer {
             gc.setStroke(Color.LIGHTGRAY);
         }
         gc.setLineWidth(lineWidth);
-        gc.strokeOval(syncPhysicalArea.getPosition().getX() - syncPhysicalArea.getRadius(),
-                syncPhysicalArea.getPosition().getY() - syncPhysicalArea.getRadius(),
-                2 * syncPhysicalArea.getRadius(),
-                2 * syncPhysicalArea.getRadius());
+        gc.strokeOval(abstractSyncPhysical.getPosition().getX() - abstractSyncPhysical.getRadius(),
+                abstractSyncPhysical.getPosition().getY() - abstractSyncPhysical.getRadius(),
+                2 * abstractSyncPhysical.getRadius(),
+                2 * abstractSyncPhysical.getRadius());
     }
 
     protected void strokeSyncPhysicalMovable(SyncPhysicalMovable syncPhysicalMovable, double lineWidth, Paint color) {

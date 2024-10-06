@@ -3,10 +3,9 @@ package com.btxtech.worker;
 
 import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
-import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
-import com.btxtech.shared.gameengine.StaticGameInitEvent;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.WorkerTrackerHandler;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
@@ -25,6 +24,7 @@ import elemental2.dom.DedicatedWorkerGlobalScope;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,6 +32,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 30.12.2016.
  */
+@Singleton
 public class ClientGameEngineWorker extends GameEngineWorker {
     private final Logger logger = Logger.getLogger(ClientGameEngineWorker.class.getName());
     private final ClientPerformanceTrackerService clientPerformanceTrackerService;
@@ -50,7 +51,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
                                   BaseItemService baseItemService,
                                   ResourceService resourceService,
                                   BotService botService,
-                                  Event<StaticGameInitEvent> staticGameInitEvent,
+                                  InitializeService initializeService,
                                   PlanetService planetService,
                                   ClientPerformanceTrackerService clientPerformanceTrackerService) {
         super(nativeMatrixFactory,
@@ -66,7 +67,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
                 baseItemService,
                 resourceService,
                 botService,
-                staticGameInitEvent,
+                initializeService,
                 planetService);
         this.clientPerformanceTrackerService = clientPerformanceTrackerService;
     }

@@ -7,7 +7,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import jsinterop.annotations.JsType;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
@@ -29,11 +28,8 @@ public class ItemTypeService {
     private double maxVelocity;
 
     @Inject
-    public ItemTypeService() {
-    }
-
-    public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
-        init(engineInitEvent.getStaticGameConfig());
+    public ItemTypeService(InitializeService initializeService) {
+        initializeService.receiveStaticGameConfig(this::init);
     }
 
     public void init(StaticGameConfig staticGameConfig) {
@@ -54,6 +50,7 @@ public class ItemTypeService {
         }
         return resourceItemType;
     }
+
     @SuppressWarnings("unused") // Called by Angular
     public ResourceItemType getResourceItemTypeAngular(int resourceItemTypeId) {
         return getResourceItemType(resourceItemTypeId);

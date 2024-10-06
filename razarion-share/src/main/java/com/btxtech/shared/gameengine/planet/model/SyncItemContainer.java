@@ -160,8 +160,8 @@ public class SyncItemContainer extends SyncBaseAbility {
             throw new IllegalArgumentException("Can not contain oneself: " + this);
         }
 
-        if (syncBaseItem.getSyncPhysicalArea().getTerrainType() != DEFAULT_UNLOAD_TERRAIN_TYPE) {
-            throw new IllegalArgumentException("Container " + getSyncBaseItem() + " does only allow '" + DEFAULT_UNLOAD_TERRAIN_TYPE + "'. Given type:" + syncBaseItem.getSyncPhysicalArea().getTerrainType());
+        if (syncBaseItem.getAbstractSyncPhysical().getTerrainType() != DEFAULT_UNLOAD_TERRAIN_TYPE) {
+            throw new IllegalArgumentException("Container " + getSyncBaseItem() + " does only allow '" + DEFAULT_UNLOAD_TERRAIN_TYPE + "'. Given type:" + syncBaseItem.getAbstractSyncPhysical().getTerrainType());
         }
 
         if (!itemContainerType.isAbleToContain(syncBaseItem.getBaseItemType().getId())) {
@@ -170,12 +170,12 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     private boolean allowedUnload() throws ItemDoesNotExistException {
-        return getSyncPhysicalArea().isInRange(getRange(), unloadPos) && terrainService.getPathingAccess().isTerrainTypeAllowed(DEFAULT_UNLOAD_TERRAIN_TYPE, unloadPos, maxContainingRadius);
+        return getAbstractSyncPhysical().isInRange(getRange(), unloadPos) && terrainService.getPathingAccess().isTerrainTypeAllowed(DEFAULT_UNLOAD_TERRAIN_TYPE, unloadPos, maxContainingRadius);
     }
 
     private void setupMaxContainingRadius() {
         if (containedItems != null && !containedItems.isEmpty()) {
-            maxContainingRadius = containedItems.stream().map(contained -> contained.getSyncPhysicalArea().getRadius()).max(Double::compare).orElse(0.0);
+            maxContainingRadius = containedItems.stream().map(contained -> contained.getAbstractSyncPhysical().getRadius()).max(Double::compare).orElse(0.0);
         } else {
             maxContainingRadius = 0;
         }

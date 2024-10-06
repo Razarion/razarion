@@ -14,7 +14,6 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 
 /**
@@ -23,17 +22,15 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
  * Time: 14:17:17
  */
 public abstract class SyncItem {
-    public static final String SYNC_PHYSICAL_AREA = "SYNC_PHYSICAL_AREA";
-    public static final String SYNC_PHYSICAL_MOVABLE = "SYNC_PHYSICAL_MOVABLE";
     private int id;
     // Own states
     private ItemType itemType;
-    private SyncPhysicalArea syncPhysicalArea;
+    private AbstractSyncPhysical abstractSyncPhysical;
 
-    public void init(int id, ItemType itemType, SyncPhysicalArea syncPhysicalArea) {
+    public void init(int id, ItemType itemType, AbstractSyncPhysical abstractSyncPhysical) {
         this.id = id;
         this.itemType = itemType;
-        this.syncPhysicalArea = syncPhysicalArea;
+        this.abstractSyncPhysical = abstractSyncPhysical;
     }
 
     public int getId() {
@@ -51,21 +48,21 @@ public abstract class SyncItem {
     @Deprecated
     public abstract boolean isAlive();
 
-    public SyncPhysicalArea getSyncPhysicalArea() {
-        return syncPhysicalArea;
+    public AbstractSyncPhysical getAbstractSyncPhysical() {
+        return abstractSyncPhysical;
     }
 
     public SyncPhysicalMovable getSyncPhysicalMovable() {
-        if (syncPhysicalArea instanceof SyncPhysicalMovable) {
-            return (SyncPhysicalMovable) syncPhysicalArea;
+        if (abstractSyncPhysical instanceof SyncPhysicalMovable) {
+            return (SyncPhysicalMovable) abstractSyncPhysical;
         }
         throw new IllegalStateException("SyncItem does not have a SyncPhysicalMovable: " + this);
     }
 
     @Override
     public String toString() {
-        if(syncPhysicalArea != null) {
-            return "SyncItem: id=" + id + "|" + itemType + "|" + syncPhysicalArea.getPosition();
+        if (abstractSyncPhysical != null) {
+            return "SyncItem: id=" + id + "|" + itemType + "|" + abstractSyncPhysical.getPosition();
         } else {
             return "SyncItem: id=" + id + "|" + itemType + "|no syncPhysicalArea";
         }

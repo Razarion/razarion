@@ -1,12 +1,11 @@
 package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.asset.MeshContainer;
-import com.btxtech.uiservice.control.GameUiControlInitEvent;
+import com.btxtech.shared.gameengine.InitializeService;
 import jsinterop.annotations.JsType;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.enterprise.event.Observes;
 
 @JsType
 @Singleton
@@ -14,13 +13,12 @@ public class AssetService {
     private MeshContainer[] meshContainers;
 
     @Inject
-    public AssetService() {
-    }
-
-    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        if (gameUiControlInitEvent.getColdGameUiContext().getMeshContainers() != null) {
-            meshContainers = gameUiControlInitEvent.getColdGameUiContext().getMeshContainers().toArray(new MeshContainer[0]);
-        }
+    public AssetService(InitializeService initializeService) {
+        initializeService.receiveColdGameUiContext(coldGameUiContext -> {
+            if (coldGameUiContext.getMeshContainers() != null) {
+                meshContainers = coldGameUiContext.getMeshContainers().toArray(new MeshContainer[0]);
+            }
+        });
     }
 
     public MeshContainer[] getMeshContainers() {

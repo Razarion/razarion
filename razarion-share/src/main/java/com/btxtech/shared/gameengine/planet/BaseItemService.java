@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
@@ -37,7 +38,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.debugtool.DebugHelper;
 import com.btxtech.shared.utils.CollectionUtils;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -97,7 +97,19 @@ public class BaseItemService {
     private final PriorityQueue<TickInfo> pendingReceivedTickInfos = new PriorityQueue<>(Comparator.comparingDouble(TickInfo::getTickCount));
 
     @Inject
-    public BaseItemService(DebugHelper debugHelper, SyncService syncService, GuardingItemService guardingItemService, TerrainService terrainService, BoxService boxService, InventoryTypeService inventoryTypeService, EnergyService energyService, ItemTypeService itemTypeService, LevelService levelService, SyncItemContainerServiceImpl syncItemContainerService, GameLogicService gameLogicService, ExceptionHandler exceptionHandler) {
+    public BaseItemService(DebugHelper debugHelper,
+                           SyncService syncService,
+                           GuardingItemService guardingItemService,
+                           TerrainService terrainService,
+                           BoxService boxService,
+                           InventoryTypeService inventoryTypeService,
+                           EnergyService energyService,
+                           ItemTypeService itemTypeService,
+                           LevelService levelService,
+                           SyncItemContainerServiceImpl syncItemContainerService,
+                           GameLogicService gameLogicService,
+                           ExceptionHandler exceptionHandler,
+                           InitializeService initializeService) {
         this.debugHelper = debugHelper;
         this.syncService = syncService;
         this.guardingItemService = guardingItemService;
@@ -110,9 +122,11 @@ public class BaseItemService {
         this.syncItemContainerService = syncItemContainerService;
         this.gameLogicService = gameLogicService;
         this.exceptionHandler = exceptionHandler;
+
+        initializeService.receivePlanetActivationEvent(this::onPlanetActivation);
     }
 
-    public void onPlanetActivation( PlanetActivationEvent planetActivationEvent) {
+    private void onPlanetActivation(PlanetActivationEvent planetActivationEvent) {
         activeItems.clear();
         activeItemQueue.clear();
         bases.clear();

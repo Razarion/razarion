@@ -84,7 +84,7 @@ public class SyncBuilder extends SyncBaseAbility {
     public synchronized boolean tick() {
         if (!isInRange()) {
             building = false;
-            if (!getSyncPhysicalArea().canMove()) {
+            if (!getAbstractSyncPhysical().canMove()) {
                 throw new IllegalStateException("SyncBuilder out of range from build position and getSyncPhysicalArea can not move: " + getSyncBaseItem());
             }
             if (!getSyncPhysicalMovable().hasDestination()) {
@@ -165,9 +165,9 @@ public class SyncBuilder extends SyncBaseAbility {
 
     private boolean isInRange() {
         if (currentBuildup != null) {
-            return getSyncBaseItem().getSyncPhysicalArea().isInRange(builderType.getRange(), currentBuildup);
+            return getSyncBaseItem().getAbstractSyncPhysical().isInRange(builderType.getRange(), currentBuildup);
         } else if (toBeBuildPosition != null && toBeBuiltType != null) {
-            return getSyncBaseItem().getSyncPhysicalArea().isInRange(builderType.getRange(), toBeBuildPosition, toBeBuiltType);
+            return getSyncBaseItem().getAbstractSyncPhysical().isInRange(builderType.getRange(), toBeBuildPosition, toBeBuiltType);
         } else {
             throw new IllegalStateException();
         }

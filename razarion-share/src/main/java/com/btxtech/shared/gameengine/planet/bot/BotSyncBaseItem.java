@@ -88,19 +88,19 @@ public class BotSyncBaseItem {
     }
 
     public boolean isAbleToAttack(SyncBaseItem target) {
-        return syncBaseItem.getSyncWeapon() != null && syncBaseItem.getSyncPhysicalArea().canMove() && !syncBaseItem.getSyncWeapon().isItemTypeDisallowed(target)
+        return syncBaseItem.getSyncWeapon() != null && syncBaseItem.getAbstractSyncPhysical().canMove() && !syncBaseItem.getSyncWeapon().isItemTypeDisallowed(target)
                 && TerrainDestinationFinder.isAllowed(terrainService.getPathingAccess(),
                 syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius() + syncBaseItem.getSyncWeapon().getWeaponType().getRange() + target.getBaseItemType().getPhysicalAreaConfig().getRadius(),
-                target.getSyncPhysicalArea().getPosition(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getTerrainType(),
+                target.getAbstractSyncPhysical().getPosition(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getTerrainType(),
                 target.getBaseItemType().getPhysicalAreaConfig().getTerrainType());
     }
 
     public boolean isAbleToHarvest() {
-        return syncBaseItem.getSyncHarvester() != null && syncBaseItem.getSyncPhysicalArea().canMove();
+        return syncBaseItem.getSyncHarvester() != null && syncBaseItem.getAbstractSyncPhysical().canMove();
     }
 
     public boolean canMove() {
-        return syncBaseItem.getSyncPhysicalArea().canMove();
+        return syncBaseItem.getAbstractSyncPhysical().canMove();
     }
 
     public void buildBuilding(DecimalPosition position, BaseItemType toBeBuilt) {
@@ -189,7 +189,7 @@ public class BotSyncBaseItem {
     }
 
     public DecimalPosition getPosition() {
-        return syncBaseItem.getSyncPhysicalArea().getPosition();
+        return syncBaseItem.getAbstractSyncPhysical().getPosition();
     }
 
     private void setIdle() {

@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
@@ -32,13 +33,13 @@ public class ItemVelocityCalculator {
         this.exceptionHandler = exceptionHandler;
     }
 
-    public void analyse(SyncPhysicalArea syncPhysicalArea) {
+    public void analyse(AbstractSyncPhysical abstractSyncPhysical) {
         try {
-            if (!syncPhysicalArea.canMove()) {
+            if (!abstractSyncPhysical.canMove()) {
                 return;
             }
 
-            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
+            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) abstractSyncPhysical;
             if (syncPhysicalMovable.isMoving()) {
                 Orca orca = new Orca(syncPhysicalMovable);
                 // debugHelper.debugToConsole("new Orca1");
@@ -111,7 +112,7 @@ public class ItemVelocityCalculator {
 //                }
                 return;
             }
-            SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
+            AbstractSyncPhysical other = otherSyncItem.getAbstractSyncPhysical();
             if (other instanceof SyncPhysicalMovable) {
                 SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
 //                if (DebugHelperStatic.isCurrentTick(21) && syncBaseItem.getId() == 9) {

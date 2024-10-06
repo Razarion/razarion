@@ -7,9 +7,9 @@ import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
+import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -148,7 +149,7 @@ public class AbstractIntegrationTest {
     }
 
     public void fireStaticGameConfig(StaticGameConfig staticGameConfig) {
-        weldContainer.event().select(StaticGameInitEvent.class).fire(new StaticGameInitEvent(staticGameConfig));
+        getWeldBean(InitializeService.class).setStaticGameConfig(staticGameConfig);
     }
 
     public boolean isBaseServiceActive(SyncBaseItem... ignores) {
@@ -168,12 +169,12 @@ public class AbstractIntegrationTest {
 
     public boolean isPathingServiceMoving() {
         return getSyncItemContainerService().iterateOverBaseItems(false, false, false, syncBaseItem -> {
-            SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
-            if (!syncPhysicalArea.canMove()) {
+            AbstractSyncPhysical abstractSyncPhysical = syncBaseItem.getAbstractSyncPhysical();
+            if (!abstractSyncPhysical.canMove()) {
                 return null;
             }
 
-            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
+            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) abstractSyncPhysical;
             if (syncPhysicalMovable.hasDestination() || syncPhysicalMovable.isMoving()) {
                 return true;
             }

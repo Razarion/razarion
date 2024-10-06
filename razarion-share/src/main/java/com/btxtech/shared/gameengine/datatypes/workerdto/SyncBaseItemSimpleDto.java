@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
+import org.dominokit.jackson.annotation.JSONMapper;
+
 /**
  * Created by Beat
  * 05.01.2017.
@@ -13,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes.workerdto;
  * <p>
  * This is only used on the client side. This is no longer used in the game engine
  */
+@JSONMapper
 public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snapshot or volatile
     private int baseId;
     private double buildup;

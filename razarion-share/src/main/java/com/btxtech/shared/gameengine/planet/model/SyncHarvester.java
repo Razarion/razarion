@@ -114,7 +114,7 @@ public class SyncHarvester extends SyncBaseAbility {
     }
 
     public boolean isInRange(SyncResourceItem target) throws TargetHasNoPositionException {
-        return getSyncPhysicalArea().isInRange(harvesterType.getRange(), target);
+        return getAbstractSyncPhysical().isInRange(harvesterType.getRange(), target);
     }
 
     public SyncResourceItem getResource() {

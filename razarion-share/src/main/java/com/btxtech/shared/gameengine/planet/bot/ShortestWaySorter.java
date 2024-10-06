@@ -102,7 +102,7 @@ public class ShortestWaySorter {
 
         public TargetDistance(BotSyncBaseItem attacker, T target) throws TargetHasNoPositionException {
             this.target = target;
-            distance = attacker.getSyncBaseItem().getSyncPhysicalArea().getDistance(target);
+            distance = attacker.getSyncBaseItem().getAbstractSyncPhysical().getDistance(target);
         }
     }
 

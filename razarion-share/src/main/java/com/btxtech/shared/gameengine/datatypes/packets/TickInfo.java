@@ -1,7 +1,10 @@
 package com.btxtech.shared.gameengine.datatypes.packets;
 
+import org.dominokit.jackson.annotation.JSONMapper;
+
 import java.util.List;
 
+@JSONMapper
 public class TickInfo {
     private double tickCount;
     private List<SyncBaseItemInfo> syncBaseItemInfos;

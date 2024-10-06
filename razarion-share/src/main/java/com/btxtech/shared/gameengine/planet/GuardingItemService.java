@@ -116,11 +116,11 @@ public class GuardingItemService {
     }
 
     private SyncBaseItem findNearestEnemy(SyncBaseItem guardingItem) {
-        Collection<SyncBaseItem> enemyItems = syncItemContainerService.findEnemyItems(guardingItem.getBase(), new PlaceConfig().position(guardingItem.getSyncPhysicalArea().getPosition()).radius(guardingItem.getBaseItemType().getWeaponType().getRange() + guardingItem.getSyncPhysicalArea().getRadius()));
+        Collection<SyncBaseItem> enemyItems = syncItemContainerService.findEnemyItems(guardingItem.getBase(), new PlaceConfig().position(guardingItem.getAbstractSyncPhysical().getPosition()).radius(guardingItem.getBaseItemType().getWeaponType().getRange() + guardingItem.getAbstractSyncPhysical().getRadius()));
         double distance = Double.MAX_VALUE;
         SyncBaseItem nearest = null;
         for (SyncBaseItem enemyItem : enemyItems) {
-            double tmpDistance = enemyItem.getSyncPhysicalArea().getDistance(guardingItem);
+            double tmpDistance = enemyItem.getAbstractSyncPhysical().getDistance(guardingItem);
             if (distance > tmpDistance) {
                 distance = tmpDistance;
                 nearest = enemyItem;

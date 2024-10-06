@@ -64,7 +64,7 @@ public class SyncBoxItem extends SyncItem {
     public SyncBoxItemInfo getSyncInfo() {
         SyncBoxItemInfo syncBoxItemInfo = new SyncBoxItemInfo();
         syncBoxItemInfo.setId(getId());
-        syncBoxItemInfo.setSyncPhysicalAreaInfo(getSyncPhysicalArea().getSyncPhysicalAreaInfo());
+        syncBoxItemInfo.setSyncPhysicalAreaInfo(getAbstractSyncPhysical().getSyncPhysicalAreaInfo());
         syncBoxItemInfo.setBoxItemTypeId(getItemType().getId());
         return syncBoxItemInfo;
     }

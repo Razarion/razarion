@@ -1,5 +1,6 @@
 package com.btxtech.common;
 
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.SyncService;
 
@@ -12,8 +13,10 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class DummyClientSyncServer extends SyncService {
+
     @Inject
-    public DummyClientSyncServer() {
+    public DummyClientSyncServer(InitializeService initializeService) {
+        super(initializeService);
     }
 
     @Override

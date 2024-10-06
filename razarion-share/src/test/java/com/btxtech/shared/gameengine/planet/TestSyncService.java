@@ -1,7 +1,9 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -11,6 +13,11 @@ import javax.inject.Singleton;
 @Singleton
 public class TestSyncService extends SyncService {
     private final TestWebSocket testWebSocket = new TestWebSocket();
+
+    @Inject
+    public TestSyncService(InitializeService initializeService) {
+        super(initializeService);
+    }
 
     public TestWebSocket getTestWebSocket() {
         return testWebSocket;

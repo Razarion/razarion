@@ -6,7 +6,6 @@ import jsinterop.annotations.JsType;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.enterprise.event.Observes;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -21,11 +20,8 @@ public class InventoryTypeService {
     private final HashMap<Integer, InventoryItem> inventoryItems = new HashMap<>();
 
     @Inject
-    public InventoryTypeService() {
-    }
-
-    public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
-        init(engineInitEvent.getStaticGameConfig());
+    public InventoryTypeService(InitializeService initializeService) {
+        initializeService.receiveStaticGameConfig(this::init);
     }
 
     public void init(StaticGameConfig staticGameConfig) {

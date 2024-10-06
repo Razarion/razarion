@@ -80,7 +80,6 @@ public class GameUiContextEntity {
         warmGameUiContext.setGameUiControlConfigId(id);
         if (planetEntity != null) {
             warmGameUiContext.setPlanetConfig(planetEntity.toPlanetConfig());
-            warmGameUiContext.setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
         }
         warmGameUiContext.setSceneConfigs(setupScenes(locale));
         warmGameUiContext.setGameEngineMode(gameEngineMode);

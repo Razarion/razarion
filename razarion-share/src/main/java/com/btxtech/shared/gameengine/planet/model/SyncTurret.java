@@ -61,10 +61,10 @@ public class SyncTurret {
     }
 
     private double calculateAbsoluteTargetAngle(DecimalPosition target) {
-        return syncBaseItem.getSyncPhysicalArea().getPosition().getAngle(target);
+        return syncBaseItem.getAbstractSyncPhysical().getPosition().getAngle(target);
     }
 
     private double calculateAbsoluteTurretAngle() {
-        return angle + syncBaseItem.getSyncPhysicalArea().getAngle();
+        return angle + syncBaseItem.getAbstractSyncPhysical().getAngle();
     }
 }
