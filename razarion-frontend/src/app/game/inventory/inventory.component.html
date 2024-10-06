@@ -5,7 +5,7 @@
             <div class="product-list-item">
                 <img [src]="getImageUrl(inventoryItem.getImageId())" />
                 <div class="product-list-detail">
-                    <div class="product-name">{{inventoryItem.getI18nName().getString(gwtAngularService.gwtAngularFacade.language)}}</div>
+                    <div class="product-name">{{inventoryItem.getI18nName().getString()}}</div>
                 </div>
                 <div class="product-list-action">
                     <p-button icon="pi pi-play" label="Use" (onClick)="onUse(inventoryItem)"></p-button>

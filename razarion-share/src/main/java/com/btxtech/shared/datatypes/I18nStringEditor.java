@@ -7,7 +7,6 @@ package com.btxtech.shared.datatypes;
 public class I18nStringEditor {
     private int id;
     private String enString;
-    private String deString;
 
     public int getId() {
         return id;
@@ -24,15 +23,6 @@ public class I18nStringEditor {
 
     public I18nStringEditor setEnString(String enString) {
         this.enString = enString;
-        return this;
-    }
-
-    public String getDeString() {
-        return deString;
-    }
-
-    public I18nStringEditor setDeString(String deString) {
-        this.deString = deString;
         return this;
     }
 }

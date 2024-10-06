@@ -181,11 +181,11 @@ export class QuestCockpitComponent implements QuestCockpit {
       this.setupSingleCount(textCount);
     } else if (this.conditionConfig?.getComparisonConfig().toTypeCountAngular()?.length) {
       this.conditionConfig.getComparisonConfig().toTypeCountAngular().forEach((itemTypeIdCount) => {
-        let actualCount = this.findCurrentItemTypeCount(itemTypeIdCount[0]);  
+        let actualCount = this.findCurrentItemTypeCount(itemTypeIdCount[0]);
         let itemTypeI18nName =this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(GwtHelper.gwtIssueNumber(itemTypeIdCount[0])).getI18nName();
         let itemTypeName = "???";
         if(itemTypeI18nName) {
-          itemTypeName = itemTypeI18nName.getString(this.gwtAngularService.gwtAngularFacade.language);
+          itemTypeName = itemTypeI18nName.getString();
         }
         this.progressRows.push({
           text: `${itemTypeName} ${textSpecific} ${actualCount} of ${itemTypeIdCount[1]}`,

@@ -13,7 +13,7 @@ import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.QuestCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
-import com.btxtech.uiservice.i18n.I18nHelper;
+import com.btxtech.uiservice.i18n.I18nConstants;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
@@ -167,7 +167,7 @@ public class Scene {
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            questCockpitService.showQuestSideBar(new QuestDescriptionConfig().title(I18nHelper.getConstants().placeStartItemTitle()).description(I18nHelper.getConstants().placeStartItemDescription()).hidePassedDialog(true), false);
+            questCockpitService.showQuestSideBar(new QuestDescriptionConfig().title(I18nConstants.placeStartItemTitle()).description(I18nConstants.placeStartItemDescription()).hidePassedDialog(true), false);
         }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
@@ -188,7 +188,7 @@ public class Scene {
             // TODO gameTipService.start(sceneConfig.getGameTipConfig());
         }
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
-            if(!gameUiControl.hasActiveServerQuest()) {
+            if (!gameUiControl.hasActiveServerQuest()) {
                 serverQuestProvider.activateNextPossibleQuest();
             }
             hasCompletionCallback = true;

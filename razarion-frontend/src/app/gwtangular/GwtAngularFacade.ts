@@ -5,7 +5,6 @@ import { ConditionTrigger } from "../generated/razarion-share";
 export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
   gameUiControl!: GameUiControl;
-  language!: string;
   screenCover!: ScreenCover;
   actionServiceListener!: ActionServiceListener;
   mainCockpit!: MainCockpit;
@@ -96,7 +95,7 @@ export interface Rectangle {
 }
 
 export interface I18nString {
-  getString(language: string): string;
+  getString(): string;
 }
 
 export interface Alarm {

@@ -24,7 +24,7 @@ public class QuestControllerImpl implements QuestController {
     @Override
     public List<QuestConfig> readMyOpenQuests() {
         try {
-            return serverLevelQuestService.readOpenQuestForDialog(sessionHolder.getPlayerSession().getUserContext(), sessionHolder.getPlayerSession().getLocale());
+            return serverLevelQuestService.readOpenQuestForDialog(sessionHolder.getPlayerSession().getUserContext());
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -34,7 +34,7 @@ public class QuestControllerImpl implements QuestController {
     @Override
     public void activateQuest(int questId) {
         try {
-            serverLevelQuestService.activateQuest(sessionHolder.getPlayerSession().getUserContext(), questId, sessionHolder.getPlayerSession().getLocale());
+            serverLevelQuestService.activateQuest(sessionHolder.getPlayerSession().getUserContext(), questId);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

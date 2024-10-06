@@ -85,9 +85,9 @@ public class ServerLevelQuestService implements QuestListener {
         }
     }
 
-    public SlaveQuestInfo getSlaveQuestInfo(Locale locale, int userId) {
+    public SlaveQuestInfo getSlaveQuestInfo(int userId) {
         SlaveQuestInfo slaveQuestInfo = new SlaveQuestInfo();
-        slaveQuestInfo.setActiveQuest(userService.findActiveQuestConfig4CurrentUser(locale));
+        slaveQuestInfo.setActiveQuest(userService.findActiveQuestConfig4CurrentUser());
         slaveQuestInfo.setQuestProgressInfo(questService.getQuestProgressInfo(userId));
         return slaveQuestInfo;
     }
@@ -156,8 +156,8 @@ public class ServerLevelQuestService implements QuestListener {
         }
     }
 
-    public List<QuestConfig> readOpenQuestForDialog(UserContext userContext, Locale locale) {
-        return serverGameEngineCrudPersistence.getQuests4Dialog(levelCrudPersistence.getEntity(userContext.getLevelId()), readActiveOrPassedQuestIds(userContext), locale);
+    public List<QuestConfig> readOpenQuestForDialog(UserContext userContext) {
+        return serverGameEngineCrudPersistence.getQuests4Dialog(levelCrudPersistence.getEntity(userContext.getLevelId()), readActiveOrPassedQuestIds(userContext));
     }
 
     @Transactional
@@ -166,17 +166,17 @@ public class ServerLevelQuestService implements QuestListener {
     }
 
     @Transactional // Needs to be @Transactional if a quest if fulfilled during activation and a new quest is activated
-    public void activateQuest(UserContext userContext, int questId, Locale locale) {
+    public void activateQuest(UserContext userContext, int questId) {
         int userId = userContext.getUserId();
         if (questService.hasActiveQuest(userId)) {
             questService.deactivateActorCondition(userId);
             clientSystemConnectionService.onQuestActivated(userId, null);
             QuestConfig oldQuest;
-            oldQuest = userService.getActiveQuest(userId, locale);
+            oldQuest = userService.getActiveQuest(userId);
             userService.clearActiveQuest(userId);
             historyPersistence.get().onQuest(userId, oldQuest, QuestHistoryEntity.Type.QUEST_DEACTIVATED);
         }
-        QuestConfig newQuest = serverGameEngineCrudPersistence.getAndVerifyQuest(userContext.getLevelId(), questId, locale);
+        QuestConfig newQuest = serverGameEngineCrudPersistence.getAndVerifyQuest(userContext.getLevelId(), questId);
         if (readActiveOrPassedQuestIds(userContext).contains(newQuest.getId())) {
             throw new IllegalArgumentException("Given quest is passed");
         }

@@ -386,7 +386,7 @@ export class GameMockService {
 
           getI18nName(): I18nString {
             return new class implements I18nString {
-              getString(language: string): string {
+              getString(): string {
                 return "Viper";
               }
             };
@@ -433,7 +433,7 @@ export class GameMockService {
         return new class implements ResourceItemType {
           getI18nName(): I18nString {
             return new class implements I18nString {
-              getString(language: string): string {
+              getString(): string {
                 return "I18nString";
               }
             };
@@ -469,7 +469,7 @@ export class GameMockService {
         return new class implements InventoryItem {
           getI18nName(): I18nString {
             return new class implements I18nString {
-              getString(language: string): string {
+              getString(): string {
                 return "Viper Pack";
               }
             }

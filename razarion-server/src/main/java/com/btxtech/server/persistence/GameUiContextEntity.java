@@ -56,7 +56,7 @@ public class GameUiContextEntity {
                 .id(id)
                 .internalName(internalName)
                 .gameEngineMode(gameEngineMode)
-                .scenes(setupScenes(Locale.US))
+                .scenes(setupScenes())
                 .detailedTracking(detailedTracking);
         if (minimalLevel != null) {
             gameUiContextConfig.setMinimalLevelId(minimalLevel.getId());
@@ -75,23 +75,23 @@ public class GameUiContextEntity {
         detailedTracking = config.isDetailedTracking();
     }
 
-    public WarmGameUiContext toGameWarmGameUiControlConfig(Locale locale) {
+    public WarmGameUiContext toGameWarmGameUiControlConfig() {
         WarmGameUiContext warmGameUiContext = new WarmGameUiContext();
         warmGameUiContext.setGameUiControlConfigId(id);
         if (planetEntity != null) {
             warmGameUiContext.setPlanetConfig(planetEntity.toPlanetConfig());
         }
-        warmGameUiContext.setSceneConfigs(setupScenes(locale));
+        warmGameUiContext.setSceneConfigs(setupScenes());
         warmGameUiContext.setGameEngineMode(gameEngineMode);
         warmGameUiContext.setDetailedTracking(detailedTracking);
         return warmGameUiContext;
     }
 
-    private List<SceneConfig> setupScenes(Locale locale) {
+    private List<SceneConfig> setupScenes() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         if (scenes != null) {
             for (SceneEntity scene : scenes) {
-                sceneConfigs.add(scene.toSceneConfig(locale));
+                sceneConfigs.add(scene.toSceneConfig());
             }
         }
         return sceneConfigs;

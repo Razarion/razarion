@@ -14,10 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-
-import static com.btxtech.shared.datatypes.I18nString.DEFAULT;
 
 /**
  * User: beat
@@ -39,27 +36,22 @@ public class I18nBundleEntity {
         return id;
     }
 
-    public String getString(Locale locale) {
+    public String getString() {
         if (localizedStrings == null) {
             return null;
         }
-
-        String language = I18nString.convert(locale != null ? locale.getLanguage() : DEFAULT);
-        return toI18nString().getString(language);
+        return toI18nString().getString();
     }
 
-    public String getStringOrNull(Locale locale) {
-        if (localizedStrings == null) {
-            return null;
-        }
-        return localizedStrings.get(I18nString.convert(locale.getLanguage()));
+    public String getStringOrNull() {
+        return getString();
     }
 
-    public void putString(Locale locale, String string) {
+    public void putString(String string) {
         if (localizedStrings == null) {
             localizedStrings = new HashMap<>();
         }
-        String language = I18nString.convert(locale.getLanguage());
+        String language = I18nString.convert();
         localizedStrings.put(language, string);
     }
 
@@ -77,11 +69,16 @@ public class I18nBundleEntity {
 
     public I18nString toI18nString() {
         Map<String, String> localizedStrings = new HashMap<>();
-        if (this.localizedStrings != null)
+        if (this.localizedStrings != null) {
             for (Map.Entry<String, String> entry : this.localizedStrings.entrySet()) {
-                localizedStrings.put(I18nString.convert(entry.getKey()), entry.getValue());
+                localizedStrings.put(I18nString.convert(), entry.getValue());
             }
-        return new I18nString(localizedStrings);
+        }
+        String en = localizedStrings.get("EN");
+        if (en != null) {
+            return new I18nString().string(en);
+        }
+        return new I18nString().string(localizedStrings.get("DE"));
     }
 
     public void fromI18nString(I18nString i18nString) {
@@ -89,11 +86,7 @@ public class I18nBundleEntity {
             localizedStrings = new HashMap<>();
         }
         localizedStrings.clear();
-        if (i18nString.getLocalizedStrings() != null) {
-            for (Map.Entry<String, String> entry : i18nString.getLocalizedStrings().entrySet()) {
-                localizedStrings.put(entry.getKey(), entry.getValue());
-            }
-        }
+        localizedStrings.put("EN", i18nString.getString());
     }
 
     @Override

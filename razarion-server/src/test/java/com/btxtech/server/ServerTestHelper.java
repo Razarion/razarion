@@ -100,7 +100,6 @@ import org.junit.Assert;
 import org.junit.Before;
 
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -579,9 +578,9 @@ public class ServerTestHelper {
             ServerLevelQuestEntity serverLevelQuestEntityL4 = new ServerLevelQuestEntity();
             serverLevelQuestEntityL4.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_4_ID));
             QuestConfigEntity questConfigEntityL41 = new QuestConfigEntity();
-            questConfigEntityL41.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L4 1").xp(100).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().count(1))), Locale.US);
+            questConfigEntityL41.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L4 1").xp(100).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).comparisonConfig(new ComparisonConfig().count(1))));
             QuestConfigEntity questConfigEntityL42 = new QuestConfigEntity();
-            questConfigEntityL42.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L4 2").xp(200).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().count(2))), Locale.US);
+            questConfigEntityL42.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L4 2").xp(200).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().count(2))));
             serverLevelQuestEntityL4.setServerLevelQuestEntryEntities(Arrays.asList(
                     new ServerLevelQuestEntryEntity().quest(questConfigEntityL41).orderColumn(1),
                     new ServerLevelQuestEntryEntity().quest(questConfigEntityL42).orderColumn(2)));
@@ -589,11 +588,11 @@ public class ServerTestHelper {
             ServerLevelQuestEntity serverLevelQuestEntityL5 = new ServerLevelQuestEntity();
             serverLevelQuestEntityL5.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_5_ID));
             QuestConfigEntity questConfigEntityL51 = new QuestConfigEntity();
-            questConfigEntityL51.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L5 1").xp(100).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.BOX_PICKED).comparisonConfig(new ComparisonConfig().count(1))), Locale.US);
+            questConfigEntityL51.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L5 1").xp(100).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.BOX_PICKED).comparisonConfig(new ComparisonConfig().count(1))));
             QuestConfigEntity questConfigEntityL52 = new QuestConfigEntity();
-            questConfigEntityL52.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L5 2").xp(200).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.BASE_KILLED).comparisonConfig(new ComparisonConfig().count(2))), Locale.US);
+            questConfigEntityL52.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L5 2").xp(200).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.BASE_KILLED).comparisonConfig(new ComparisonConfig().count(2))));
             QuestConfigEntity questConfigEntityL53 = new QuestConfigEntity();
-            questConfigEntityL53.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L5 3").xp(50).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.HARVEST).comparisonConfig(new ComparisonConfig().count(100))), Locale.US);
+            questConfigEntityL53.fromQuestConfig(null, null, new QuestConfig().internalName("Test Server Quest L5 3").xp(50).conditionConfig(new ConditionConfig().conditionTrigger(ConditionTrigger.HARVEST).comparisonConfig(new ComparisonConfig().count(100))));
             serverLevelQuestEntityL5.setServerLevelQuestEntryEntities(Arrays.asList(
                     new ServerLevelQuestEntryEntity().quest(questConfigEntityL51).orderColumn(1),
                     new ServerLevelQuestEntryEntity().quest(questConfigEntityL52).orderColumn(2),
@@ -686,9 +685,10 @@ public class ServerTestHelper {
     }
 
     protected I18nString i18nHelper(String string) {
-        Map<String, String> localizedStrings = new HashMap<>();
-        localizedStrings.put(I18nString.DE, string);
-        return new I18nString(localizedStrings);
+        // Map<String, String> localizedStrings = new HashMap<>();
+        // localizedStrings.put(I18nString.DE, string);
+        //return new I18nString(localizedStrings);
+        throw new UnsupportedOperationException();
     }
 
     protected <T> T persistInTransaction(T object) {
@@ -943,7 +943,7 @@ public class ServerTestHelper {
     protected QuestConfig readQuestConfig(int questId) {
         SingleHolder<QuestConfig> holder = new SingleHolder<>();
         runInTransaction(entityManager -> {
-            holder.setO(entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(Locale.US));
+            holder.setO(entityManager.find(QuestConfigEntity.class, questId).toQuestConfig());
         });
         return holder.getO();
     }

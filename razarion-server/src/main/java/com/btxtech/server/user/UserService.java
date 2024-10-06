@@ -346,7 +346,7 @@ public class UserService {
             userEntity.setActiveQuest(newQuest);
             entityManager.merge(userEntity);
             if (newQuest != null) {
-                return newQuest.toQuestConfig(userEntity.getLocale());
+                return newQuest.toQuestConfig();
             }
         }
         return null;
@@ -360,10 +360,10 @@ public class UserService {
     }
 
     @Transactional
-    public QuestConfig getActiveQuest(int userId, Locale locale) {
+    public QuestConfig getActiveQuest(int userId) {
         QuestConfigEntity questConfigEntity = getUserEntity(userId).getActiveQuest();
         if (questConfigEntity != null) {
-            return questConfigEntity.toQuestConfig(locale);
+            return questConfigEntity.toQuestConfig();
         }
         return null;
     }
@@ -408,13 +408,12 @@ public class UserService {
             userQuery.where(from.join(UserEntity_.activeQuest).get(QuestConfigEntity_.id).in(questIds));
         }
 
-        return entityManager.createQuery(userQuery).getResultList().stream().collect(Collectors.toMap(UserEntity::getId, user -> user.getActiveQuest().toQuestConfig(user.getLocale()), (a, b) -> b));
+        return entityManager.createQuery(userQuery).getResultList().stream().collect(Collectors.toMap(UserEntity::getId, user -> user.getActiveQuest().toQuestConfig(), (a, b) -> b));
     }
 
     @Transactional
-    public QuestConfig findActiveQuestConfig4CurrentUser(Locale locale) {
-        return getActiveQuest(sessionHolder.getPlayerSession().getUserContext().getUserId(),
-                locale);
+    public QuestConfig findActiveQuestConfig4CurrentUser() {
+        return getActiveQuest(sessionHolder.getPlayerSession().getUserContext().getUserId());
     }
 
     public UserEntity getUserEntity(int userId) {

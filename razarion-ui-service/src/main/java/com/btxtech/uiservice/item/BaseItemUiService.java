@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.SelectionEvent;
+import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
@@ -98,7 +99,17 @@ public class BaseItemUiService {
     private Rectangle2D viewFieldAabb;
 
     @Inject
-    public BaseItemUiService(AudioService audioService, BabylonRendererService babylonRendererService, ExceptionHandler exceptionHandler, Provider<UserUiService> userUiService, ModalDialogManager modalDialogManager, ItemCockpitService itemCockpitService, MainCockpitService cockpitService, Provider<com.btxtech.uiservice.control.GameUiControl> gameUiControl, SelectionHandler selectionHandler, ItemTypeService itemTypeService) {
+    public BaseItemUiService(AudioService audioService,
+                             BabylonRendererService babylonRendererService,
+                             ExceptionHandler exceptionHandler,
+                             Provider<UserUiService> userUiService,
+                             ModalDialogManager modalDialogManager,
+                             ItemCockpitService itemCockpitService,
+                             MainCockpitService cockpitService,
+                             Provider<GameUiControl> gameUiControl,
+                             SelectionHandler selectionHandler,
+                             ItemTypeService itemTypeService,
+                             SelectionEventService selectionEventService) {
         this.audioService = audioService;
         this.babylonRendererService = babylonRendererService;
         this.exceptionHandler = exceptionHandler;
@@ -109,6 +120,7 @@ public class BaseItemUiService {
         this.gameUiControl = gameUiControl;
         this.selectionHandler = selectionHandler;
         this.itemTypeService = itemTypeService;
+        selectionEventService.receiveSelectionEvent(this::onSelectionChanged);
     }
 
     public void clear() {
@@ -612,7 +624,7 @@ public class BaseItemUiService {
         this.viewFieldAabb = viewFieldAabb;
     }
 
-    public void onSelectionChanged( SelectionEvent selectionEvent) {
+    private void onSelectionChanged( SelectionEvent selectionEvent) {
         selectedBabylonBaseItems.forEach(babylonBaseItem -> babylonBaseItem.select(false));
         selectedBabylonBaseItems.clear();
         selectedOutOfViewIds.clear();

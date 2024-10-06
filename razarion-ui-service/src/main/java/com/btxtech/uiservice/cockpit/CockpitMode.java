@@ -16,7 +16,6 @@ package com.btxtech.uiservice.cockpit;
 import com.btxtech.uiservice.SelectionEvent;
 
 import javax.inject.Singleton;
-import javax.enterprise.event.Observes;
 
 /**
  * User: beat
@@ -43,7 +42,7 @@ public class CockpitMode {
         return mode;
     }
 
-    public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+    public void onSelectionChanged(SelectionEvent selectionEvent) {
         clear();
     }
 

@@ -78,7 +78,7 @@ public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersisten
 
     @Override
     protected ServerGameEngineConfig toConfig(ServerGameEngineConfigEntity entity) {
-        return entity.toServerGameEngineConfig(Locale.GERMAN);
+        return entity.toServerGameEngineConfig();
     }
 
     @Override
@@ -89,8 +89,7 @@ public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersisten
                 levelCrudPersistence,
                 baseItemTypeCrudPersistence,
                 botConfigEntityPersistence,
-                babylonMaterialCrudPersistence,
-                Locale.GERMAN);
+                babylonMaterialCrudPersistence);
     }
 
     @Transactional
@@ -137,8 +136,11 @@ public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersisten
     }
 
     @Transactional
-    public List<QuestConfig> getQuests4Dialog(LevelEntity level, Collection<Integer> ignoreQuests, Locale locale) {
-        return getQuests4Level(level, ignoreQuests).stream().map(questEntity -> questEntity.toQuestConfig(locale)).collect(Collectors.toList());
+    public List<QuestConfig> getQuests4Dialog(LevelEntity level, Collection<Integer> ignoreQuests) {
+        return getQuests4Level(level, ignoreQuests)
+                .stream()
+                .map(QuestConfigEntity::toQuestConfig)
+                .collect(Collectors.toList());
     }
 
     private List<QuestConfigEntity> getQuests4Level(LevelEntity level, Collection<Integer> ignoreQuests) {
@@ -178,7 +180,7 @@ public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersisten
     }
 
     @Transactional
-    public QuestConfig getAndVerifyQuest(int levelId, int questId, Locale locale) {
+    public QuestConfig getAndVerifyQuest(int levelId, int questId) {
         // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
         // ServerGameEngineConfigEntity is not considered in this query
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -191,7 +193,7 @@ public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersisten
         if (userLevelEntity.getNumber() < questLevelEntity.getNumber()) {
             throw new IllegalArgumentException("The user is not allowed to activate a quest due to wrong level. questLevelEntity: " + questLevelEntity + " userLevelEntity: " + userLevelEntity);
         }
-        return entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(locale);
+        return entityManager.find(QuestConfigEntity.class, questId).toQuestConfig();
     }
 
     private ServerGameEngineConfigEntity serverGameEngineConfigEntity() {
@@ -241,7 +243,7 @@ public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersisten
                 serverLevelQuestConfigs,
                 ServerGameEngineConfigEntity::getServerLevelQuestEntities,
                 ServerLevelQuestConfig::getId,
-                (serverLevelQuestConfig, serverLevelQuestEntity) -> serverLevelQuestEntity.fromServerLevelQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence, Locale.GERMAN),
+                (serverLevelQuestConfig, serverLevelQuestEntity) -> serverLevelQuestEntity.fromServerLevelQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence),
                 ServerLevelQuestEntity::new,
                 ServerLevelQuestEntity::getId);
     }

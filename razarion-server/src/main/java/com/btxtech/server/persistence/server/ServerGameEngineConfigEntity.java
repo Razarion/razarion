@@ -68,7 +68,7 @@ public class ServerGameEngineConfigEntity {
     @JoinColumn(nullable = false, name = "serverGameEngineConfig")
     private List<ServerLevelQuestEntity> serverLevelQuestEntities;
 
-    public ServerGameEngineConfig toServerGameEngineConfig(Locale locale) {
+    public ServerGameEngineConfig toServerGameEngineConfig() {
         return new ServerGameEngineConfig()
                 .id(id)
                 .internalName(internalName)
@@ -76,7 +76,7 @@ public class ServerGameEngineConfigEntity {
                 .resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
                 .startRegionConfigs(toConfigList(startRegionConfigs, StartRegionConfigEntity::toStartRegionConfig))
                 .botConfigs(toConfigList(botConfigs, BotConfigEntity::toBotConfig))
-                .serverLevelQuestConfig(toConfigList(serverLevelQuestEntities, serverLevelQuestEntity -> serverLevelQuestEntity.toServerLevelQuestConfig(locale)))
+                .serverLevelQuestConfig(toConfigList(serverLevelQuestEntities, ServerLevelQuestEntity::toServerLevelQuestConfig))
                 .boxRegionConfigs(toConfigList(boxRegionConfigs, ServerBoxRegionConfigEntity::toBoxRegionConfig));
     }
 
@@ -86,8 +86,7 @@ public class ServerGameEngineConfigEntity {
                                            LevelCrudPersistence levelCrudPersistence,
                                            BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
                                            BotConfigEntityPersistence botConfigEntityPersistence,
-                                           BabylonMaterialCrudPersistence babylonMaterialCrudPersistence,
-                                           Locale locale) {
+                                           BabylonMaterialCrudPersistence babylonMaterialCrudPersistence) {
         internalName = config.getInternalName();
         planetEntity = planetCrudPersistence.getEntity(config.getPlanetConfigId());
         resourceRegionConfigs = fromConfigs(resourceRegionConfigs,
@@ -105,7 +104,7 @@ public class ServerGameEngineConfigEntity {
         serverLevelQuestEntities = fromConfigs(serverLevelQuestEntities,
                 config.getServerLevelQuestConfigs(),
                 ServerLevelQuestEntity::new,
-                (serverLevelQuestEntity, serverLevelQuestConfig) -> serverLevelQuestEntity.fromServerLevelQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence, locale));
+                (serverLevelQuestEntity, serverLevelQuestConfig) -> serverLevelQuestEntity.fromServerLevelQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, serverLevelQuestConfig, levelCrudPersistence));
     }
 
     public Integer getId() {

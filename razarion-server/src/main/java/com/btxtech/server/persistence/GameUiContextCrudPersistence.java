@@ -129,7 +129,7 @@ public class GameUiContextCrudPersistence extends AbstractConfigCrudPersistence<
         entities.clear();
         scenes.forEach(sceneConfig -> {
             SceneEntity sceneEntity = getOrCreate(sceneConfig, originals);
-            fromConfig(sceneEntity, sceneConfig, Locale.US);
+            fromConfig(sceneEntity, sceneConfig);
             entities.add(sceneEntity);
         });
     }
@@ -142,7 +142,7 @@ public class GameUiContextCrudPersistence extends AbstractConfigCrudPersistence<
     }
 
     @Transactional
-    public ColdGameUiContext loadCold(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
+    public ColdGameUiContext loadCold(GameUiControlInput gameUiControlInput, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
         ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
         coldGameUiContext.staticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         coldGameUiContext.userContext(userContext);
@@ -157,13 +157,13 @@ public class GameUiContextCrudPersistence extends AbstractConfigCrudPersistence<
         if (gameUiControlInput.checkPlayback()) {
             coldGameUiContext.warmGameUiContext(trackerPersistence.setupWarmGameUiControlConfig(gameUiControlInput));
         } else {
-            coldGameUiContext.warmGameUiContext(loadWarm(locale, userContext));
+            coldGameUiContext.warmGameUiContext(loadWarm(userContext));
         }
         return coldGameUiContext;
     }
 
     @Transactional
-    public WarmGameUiContext loadWarm(Locale locale, UserContext userContext) {
+    public WarmGameUiContext loadWarm(UserContext userContext) {
         if (userContext.getLevelId() == null) {
             return null;
         }
@@ -171,10 +171,10 @@ public class GameUiContextCrudPersistence extends AbstractConfigCrudPersistence<
         if (gameUiContextEntity == null) {
             return null;
         }
-        WarmGameUiContext warmGameUiContext = gameUiContextEntity.toGameWarmGameUiControlConfig(locale);
+        WarmGameUiContext warmGameUiContext = gameUiContextEntity.toGameWarmGameUiControlConfig();
         if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
             warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
-            warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getUserId()));
+            warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(userContext.getUserId()));
             warmGameUiContext.setAvailableUnlocks(serverUnlockService.hasAvailableUnlocks(userContext));
         }
         return warmGameUiContext;
@@ -196,8 +196,8 @@ public class GameUiContextCrudPersistence extends AbstractConfigCrudPersistence<
         return gameUiContextEntity;
     }
 
-    private void fromConfig(SceneEntity sceneEntity, SceneConfig sceneConfig, Locale locale) {
-        sceneEntity.fromSceneConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, sceneConfig, locale);
+    private void fromConfig(SceneEntity sceneEntity, SceneConfig sceneConfig) {
+        sceneEntity.fromSceneConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, sceneConfig);
         sceneEntity.clearBotConfigEntities();
         if (sceneConfig.getBotConfigs() != null) {
             for (BotConfig botConfig : sceneConfig.getBotConfigs()) {

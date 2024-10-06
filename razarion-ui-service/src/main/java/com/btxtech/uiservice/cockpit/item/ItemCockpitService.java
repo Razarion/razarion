@@ -15,10 +15,12 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.SelectionEvent;
+import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.i18n.I18nConstants;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.SyncItemMonitor;
@@ -56,7 +58,15 @@ public class ItemCockpitService {
     private Collection<BuildupItemCockpit> buildupItemCockpits = new ArrayList<>();
 
     @Inject
-    public ItemCockpitService(SelectionHandler selectionHandler, ExceptionHandler exceptionHandler, Provider<GameEngineControl> gameEngineControl, AudioService audioService, BaseItemPlacerService baseItemPlacerService, Provider<GameUiControl> gameUiControl, Provider<BaseItemUiService> baseItemUiService, ItemTypeService itemTypeService) {
+    public ItemCockpitService(SelectionHandler selectionHandler,
+                              ExceptionHandler exceptionHandler,
+                              Provider<GameEngineControl> gameEngineControl,
+                              AudioService audioService,
+                              BaseItemPlacerService baseItemPlacerService,
+                              Provider<GameUiControl> gameUiControl,
+                              Provider<BaseItemUiService> baseItemUiService,
+                              ItemTypeService itemTypeService,
+                              SelectionEventService selectionEventService) {
         this.selectionHandler = selectionHandler;
         this.exceptionHandler = exceptionHandler;
         this.gameEngineControl = gameEngineControl;
@@ -65,13 +75,14 @@ public class ItemCockpitService {
         this.gameUiControl = gameUiControl;
         this.baseItemUiService = baseItemUiService;
         this.itemTypeService = itemTypeService;
+        selectionEventService.receiveSelectionEvent(this::onOwnSelectionChanged);
     }
 
     public void init(ItemCockpitFrontend itemCockpitFrontend) {
         this.itemCockpitFrontend = itemCockpitFrontend;
     }
 
-    public void onOwnSelectionChanged( SelectionEvent selectionEvent) {
+    private void onOwnSelectionChanged(SelectionEvent selectionEvent) {
         switch (selectionEvent.getType()) {
             case CLEAR:
                 buildupItemCockpits.forEach(BuildupItemCockpit::releaseMonitor); // TODO releaseMonitor
@@ -119,7 +130,7 @@ public class ItemCockpitService {
                 }
             };
             ownMultipleItemInfo.count = entry.getValue().size();
-            ownMultipleItemInfo.tooltip = I18nHelper.getConstants().tooltipSelect(I18nHelper.getLocalizedString(entry.getKey().getI18nName()));
+            ownMultipleItemInfo.tooltip = I18nConstants.tooltipSelect((entry.getKey().getI18nName().getString()));
             ownMultipleItemInfo.ownItemCockpit = createSimpleOwnItemCockpit(entry.getKey(), entry.getValue());
             return ownMultipleItemInfo;
         }).toArray(OwnMultipleIteCockpit[]::new);
@@ -135,22 +146,22 @@ public class ItemCockpitService {
             switch (base.getCharacter()) {
                 case HUMAN:
                     if (base.getUserId() == null) {
-                        otherInfoPanel.baseName = I18nHelper.getConstants().unregisteredUser();
+                        otherInfoPanel.baseName = I18nConstants.unregisteredUser();
                     } else if (base.getName() == null || base.getName().trim().isEmpty()) {
-                        otherInfoPanel.baseName = I18nHelper.getConstants().unnamedUser();
+                        otherInfoPanel.baseName = I18nConstants.unnamedUser();
                     } else {
                         otherInfoPanel.baseName = base.getName();
                     }
-                    otherInfoPanel.type = I18nHelper.getConstants().playerFriend();
+                    otherInfoPanel.type = I18nConstants.playerFriend();
                     otherInfoPanel.friend = true;
                     break;
                 case BOT:
                     otherInfoPanel.baseName = base.getName();
-                    otherInfoPanel.type = I18nHelper.getConstants().botEnemy();
+                    otherInfoPanel.type = I18nConstants.botEnemy();
                     break;
                 case BOT_NCP:
                     otherInfoPanel.baseName = base.getName();
-                    otherInfoPanel.type = I18nHelper.getConstants().botNpc();
+                    otherInfoPanel.type = I18nConstants.botNpc();
                     otherInfoPanel.friend = true;
                     break;
                 default:
@@ -199,53 +210,53 @@ public class ItemCockpitService {
         return ableToBuildIds.stream()
                 .filter(itemTypeId -> gameUiControl.get().getPlanetConfig().imitation4ItemType(itemTypeId) > 0)
                 .map(itemTypeId -> {
-            BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
-            BuildupItemCockpit buildupItemInfo = new BuildupItemCockpit() {
-                @Override
-                public void onBuild() {
-                    try {
-                        onBuildCallback.accept(itemType);
-                    } catch (Throwable t) {
-                        exceptionHandler.handleException(t);
-                    }
-                }
+                    BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
+                    BuildupItemCockpit buildupItemInfo = new BuildupItemCockpit() {
+                        @Override
+                        public void onBuild() {
+                            try {
+                                onBuildCallback.accept(itemType);
+                            } catch (Throwable t) {
+                                exceptionHandler.handleException(t);
+                            }
+                        }
 
-                @Override
-                public void setAngularZoneRunner(AngularZoneRunner angularZoneRunner) {
-                    this.angularZoneRunner = angularZoneRunner;
-                }
+                        @Override
+                        public void setAngularZoneRunner(AngularZoneRunner angularZoneRunner) {
+                            this.angularZoneRunner = angularZoneRunner;
+                        }
 
-                @Override
-                public void updateState() {
-                    itemCount = baseItemUiService.get().getMyItemCount(itemType.getId());
-                    itemLimit = gameUiControl.get().getMyLimitation4ItemType(itemType.getId());
+                        @Override
+                        public void updateState() {
+                            itemCount = baseItemUiService.get().getMyItemCount(itemType.getId());
+                            itemLimit = gameUiControl.get().getMyLimitation4ItemType(itemType.getId());
 
-                    if (baseItemUiService.get().isMyLevelLimitation4ItemTypeExceeded(itemType, 1)) {
-                        tooltip = I18nHelper.getConstants().tooltipNoBuildLimit(I18nHelper.getLocalizedString(itemType.getI18nName()));
-                        enabled = false;
-                    } else if (baseItemUiService.get().isMyHouseSpaceExceeded(itemType, 1)) {
-                        tooltip = I18nHelper.getConstants().tooltipNoBuildHouseSpace(I18nHelper.getLocalizedString(itemType.getI18nName()));
-                        enabled = false;
-                    } else if (itemType.getPrice() > baseItemUiService.get().getResources()) {
-                        tooltip = I18nHelper.getConstants().tooltipNoBuildMoney(I18nHelper.getLocalizedString(itemType.getI18nName()));
-                        enabled = false;
-                    } else {
-                        tooltip = I18nHelper.getConstants().tooltipBuild(I18nHelper.getLocalizedString(itemType.getI18nName()));
-                        enabled = true;
+                            if (baseItemUiService.get().isMyLevelLimitation4ItemTypeExceeded(itemType, 1)) {
+                                tooltip = I18nConstants.tooltipNoBuildLimit(I18nHelper.getLocalizedString(itemType.getI18nName()));
+                                enabled = false;
+                            } else if (baseItemUiService.get().isMyHouseSpaceExceeded(itemType, 1)) {
+                                tooltip = I18nConstants.tooltipNoBuildHouseSpace(I18nHelper.getLocalizedString(itemType.getI18nName()));
+                                enabled = false;
+                            } else if (itemType.getPrice() > baseItemUiService.get().getResources()) {
+                                tooltip = I18nConstants.tooltipNoBuildMoney(I18nHelper.getLocalizedString(itemType.getI18nName()));
+                                enabled = false;
+                            } else {
+                                tooltip = I18nConstants.tooltipBuild(I18nHelper.getLocalizedString(itemType.getI18nName()));
+                                enabled = true;
 
-                    }
-                }
+                            }
+                        }
 
-                @Override
-                public void updateResources(int resources) {
-                    if (itemType.getPrice() > resources && enabled) {
-                        tooltip = I18nHelper.getConstants().tooltipNoBuildMoney(I18nHelper.getLocalizedString(itemType.getI18nName()));
-                        enabled = false;
-                    } else if (itemType.getPrice() <= resources && !enabled) {
-                        updateState();
-                    }
-                }
-            };
+                        @Override
+                        public void updateResources(int resources) {
+                            if (itemType.getPrice() > resources && enabled) {
+                                tooltip = I18nConstants.tooltipNoBuildMoney(I18nHelper.getLocalizedString(itemType.getI18nName()));
+                                enabled = false;
+                            } else if (itemType.getPrice() <= resources && !enabled) {
+                                updateState();
+                            }
+                        }
+                    };
                     buildupItemInfo.imageUrl = CommonUrl.getImageServiceUrlSafe(itemType.getThumbnail());
                     buildupItemInfo.price = itemType.getPrice();
                     buildupItemInfo.updateState();

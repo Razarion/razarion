@@ -3,6 +3,7 @@ package com.btxtech.uiservice.cdimock;
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.system.alarm.AlarmService;
+import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
@@ -21,11 +22,13 @@ public class TestAudioService extends AudioService {
     public TestAudioService(AlarmService alarmService,
                             ItemTypeService itemTypeService,
                             Provider<TerrainUiService> terrainUiService,
-                            InitializeService initializeService) {
+                            InitializeService initializeService,
+                            SelectionEventService selectionEventService) {
         super(alarmService,
                 itemTypeService,
                 terrainUiService,
-                initializeService);
+                initializeService,
+                selectionEventService);
     }
 
     @Override

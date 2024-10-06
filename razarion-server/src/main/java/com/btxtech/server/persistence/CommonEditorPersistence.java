@@ -11,7 +11,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +28,12 @@ public class CommonEditorPersistence {
         CriteriaQuery<I18nBundleEntity> query = criteriaBuilder.createQuery(I18nBundleEntity.class);
         Root<I18nBundleEntity> root = query.from(I18nBundleEntity.class);
         CriteriaQuery<I18nBundleEntity> userSelect = query.select(root);
-        return entityManager.createQuery(userSelect).getResultList().stream().map(i18nBundleEntity -> new I18nStringEditor().setId(i18nBundleEntity.getId()).setEnString(i18nBundleEntity.getStringOrNull(Locale.ENGLISH)).setDeString(i18nBundleEntity.getStringOrNull(Locale.GERMAN))).collect(Collectors.toList());
+        return entityManager.createQuery(userSelect).getResultList()
+                .stream()
+                .map(i18nBundleEntity -> new I18nStringEditor()
+                        .setId(i18nBundleEntity.getId())
+                        .setEnString(i18nBundleEntity.getString()))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -37,8 +41,7 @@ public class CommonEditorPersistence {
     public void saveI8NEntries(List<I18nStringEditor> i18nStringEditors) {
         for (I18nStringEditor i18nStringEditor : i18nStringEditors) {
             I18nBundleEntity i18nBundleEntity = entityManager.find(I18nBundleEntity.class, i18nStringEditor.getId());
-            i18nBundleEntity.putString(Locale.ENGLISH, i18nStringEditor.getEnString());
-            i18nBundleEntity.putString(Locale.GERMAN, i18nStringEditor.getDeString());
+            i18nBundleEntity.putString(i18nStringEditor.getEnString());
             entityManager.merge(i18nBundleEntity);
         }
     }

@@ -5,7 +5,7 @@
             <div class="product-list-item">
                 <img [src]="getImageUrl(levelUnlockConfig.thumbnail)" />
                 <div class="product-list-detail">
-                    <div class="product-name"> {{gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(levelUnlockConfig.baseItemType).getI18nName().getString(gwtAngularService.gwtAngularFacade.language)}}   +{{levelUnlockConfig.baseItemTypeCount}}</div>
+                    <div class="product-name"> {{gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(levelUnlockConfig.baseItemType).getI18nName().getString()}}   +{{levelUnlockConfig.baseItemTypeCount}}</div>
                     <div class="product-name">Crystals {{levelUnlockConfig.crystalCost}}</div>
                 </div>
                 <div class="product-list-action">

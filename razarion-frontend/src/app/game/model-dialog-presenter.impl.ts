@@ -30,7 +30,7 @@ export class ModelDialogPresenterImpl implements ModelDialogPresenter {
 
     showUseInventoryItemLimitExceeded(baseItemType: BaseItemType): void {
         this.zone.run(() => {
-            this.post("Item limit exceeded", [baseItemType.getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language)]);
+            this.post("Item limit exceeded", [baseItemType.getI18nName().getString()]);
         });
     }
 
@@ -54,7 +54,7 @@ export class ModelDialogPresenterImpl implements ModelDialogPresenter {
             }
             if (boxContent.toInventoryItemArray() && boxContent.toInventoryItemArray().length > 0) {
                 boxContent.toInventoryItemArray().map(inventoryItem => {
-                    messgaeLine.push(`${inventoryItem.getI18nName().getString(this.gwtAngularService.gwtAngularFacade.language)}`);
+                    messgaeLine.push(`${inventoryItem.getI18nName().getString()}`);
                 });
             }
             this.post("Box picked", messgaeLine);

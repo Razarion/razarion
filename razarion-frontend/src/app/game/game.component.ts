@@ -136,7 +136,7 @@ export class GameComponent implements OnInit, ScreenCover {
               let baseItemType = new class implements BaseItemType {
                 getI18nName(): I18nString {
                   return new class implements I18nString {
-                    getString(language: string): string {
+                    getString(): string {
                       return "I18nString";
                     }
                   };

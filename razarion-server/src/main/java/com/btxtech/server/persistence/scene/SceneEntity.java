@@ -132,13 +132,13 @@ public class SceneEntity implements ObjectNameIdProvider {
         return id;
     }
 
-    public SceneConfig toSceneConfig(Locale locale) {
+    public SceneConfig toSceneConfig() {
         SceneConfig sceneConfig = new SceneConfig().setId(id).internalName(internalName);
         if (i18nIntroText != null) {
-            sceneConfig.introText(i18nIntroText.getString(locale));
+            sceneConfig.introText(i18nIntroText.getString());
         }
         if (questConfig != null) {
-            sceneConfig.questConfig(questConfig.toQuestConfig(locale));
+            sceneConfig.questConfig(questConfig.toQuestConfig());
         }
         sceneConfig.viewFieldConfig(viewFieldConfig);
         if (botConfigEntities != null && !botConfigEntities.isEmpty()) {
@@ -223,12 +223,12 @@ public class SceneEntity implements ObjectNameIdProvider {
         sceneConfig.duration(duration);
 
         if (scrollUiQuestTargetRectangle != null && scrollUiQuestI18nTitle != null) {
-            ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setScrollTargetRectangle(scrollUiQuestTargetRectangle).title(scrollUiQuestI18nTitle.getString(locale));
+            ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setScrollTargetRectangle(scrollUiQuestTargetRectangle).title(scrollUiQuestI18nTitle.getString());
             if (scrollUiQuestI18nDescription != null) {
-                scrollUiQuest.description(scrollUiQuestI18nDescription.getString(locale));
+                scrollUiQuest.description(scrollUiQuestI18nDescription.getString());
             }
             if (scrollUiQuestI18nPassedMessage != null) {
-                scrollUiQuest.passedMessage(scrollUiQuestI18nPassedMessage.getString(locale));
+                scrollUiQuest.passedMessage(scrollUiQuestI18nPassedMessage.getString());
             }
             if (scrollUiQuestI18nHidePassedDialog != null) {
                 scrollUiQuest.hidePassedDialog(scrollUiQuestI18nHidePassedDialog);
@@ -254,17 +254,17 @@ public class SceneEntity implements ObjectNameIdProvider {
         return sceneConfig;
     }
 
-    public void fromSceneConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, SceneConfig sceneConfig, Locale locale) {
+    public void fromSceneConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, SceneConfig sceneConfig) {
         internalName = sceneConfig.getInternalName();
         if (sceneConfig.getIntroText() != null && !sceneConfig.getIntroText().trim().isEmpty()) {
             i18nIntroText = new I18nBundleEntity();
-            i18nIntroText.putString(locale, sceneConfig.getIntroText());
+            i18nIntroText.putString(sceneConfig.getIntroText());
         }
         if (sceneConfig.getQuestConfig() != null) {
             if (questConfig == null) {
                 questConfig = new QuestConfigEntity();
             }
-            questConfig.fromQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, sceneConfig.getQuestConfig(), locale);
+            questConfig.fromQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, sceneConfig.getQuestConfig());
         } else {
             questConfig = null;
         }
@@ -288,15 +288,15 @@ public class SceneEntity implements ObjectNameIdProvider {
         if (sceneConfig.getScrollUiQuest() != null) {
             if (sceneConfig.getScrollUiQuest().getTitle() != null) {
                 scrollUiQuestI18nTitle = new I18nBundleEntity();
-                scrollUiQuestI18nTitle.putString(locale, sceneConfig.getScrollUiQuest().getTitle());
+                scrollUiQuestI18nTitle.putString(sceneConfig.getScrollUiQuest().getTitle());
             }
             if (sceneConfig.getScrollUiQuest().getDescription() != null) {
                 scrollUiQuestI18nDescription = new I18nBundleEntity();
-                scrollUiQuestI18nDescription.putString(locale, sceneConfig.getScrollUiQuest().getDescription());
+                scrollUiQuestI18nDescription.putString(sceneConfig.getScrollUiQuest().getDescription());
             }
             if (sceneConfig.getScrollUiQuest().getPassedMessage() != null) {
                 scrollUiQuestI18nPassedMessage = new I18nBundleEntity();
-                scrollUiQuestI18nPassedMessage.putString(locale, sceneConfig.getScrollUiQuest().getPassedMessage());
+                scrollUiQuestI18nPassedMessage.putString(sceneConfig.getScrollUiQuest().getPassedMessage());
             }
             scrollUiQuestI18nHidePassedDialog = sceneConfig.getScrollUiQuest().isHidePassedDialog();
             scrollUiQuestTargetRectangle = sceneConfig.getScrollUiQuest().getScrollTargetRectangle();

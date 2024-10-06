@@ -13,7 +13,7 @@ import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
-import com.btxtech.uiservice.i18n.I18nHelper;
+import com.btxtech.uiservice.i18n.I18nConstants;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -183,7 +183,7 @@ public class UserUiService {
 
     public void onEmailVerified() {
         userContext.registerState(UserContext.RegisterState.EMAIL_UNVERIFIED);
-        modalDialogManager.showMessageDialog(I18nHelper.getConstants().registerThanks(), I18nHelper.getConstants().registerThanksLong());
+        modalDialogManager.showMessageDialog(I18nConstants.registerThanks(), I18nConstants.registerThanksLong());
     }
 
     public void clearSetUserNameTimer() {

@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickI
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.SelectionEvent;
+import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
@@ -32,11 +33,13 @@ public abstract class AudioService /* implements ViewService.ViewFieldListener *
     public AudioService(AlarmService alarmService,
                         ItemTypeService itemTypeService,
                         Provider<TerrainUiService> terrainUiService,
-                        InitializeService initializeService) {
+                        InitializeService initializeService,
+                        SelectionEventService selectionEventService) {
         this.alarmService = alarmService;
         this.itemTypeService = itemTypeService;
         this.terrainUiService = terrainUiService;
         initializeService.receiveColdGameUiContext(coldGameUiContext -> this.audioConfig = coldGameUiContext.getAudioConfig());
+        selectionEventService.receiveSelectionEvent(this::onSelectionChanged);
     }
 
     protected abstract void playAudio(int audioId);
@@ -85,7 +88,7 @@ public abstract class AudioService /* implements ViewService.ViewFieldListener *
         }
     }
 
-    public void onSelectionChanged(SelectionEvent selectionEvent) {
+    private void onSelectionChanged(SelectionEvent selectionEvent) {
         if (selectionEvent.isSuppressAudio()) {
             return;
         }

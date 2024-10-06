@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -9,7 +8,8 @@ import java.util.stream.Collectors;
  * 08.01.2017.
  */
 public class SyncItemSimpleDtoUtils {
-    public static List<Integer> toIds(Collection<? extends SyncItemSimpleDto> syncItemSimpleDtos) {
-        return syncItemSimpleDtos.stream().map(SyncItemSimpleDto::getId).collect(Collectors.toList());
+    public static IdsDto toIds(Collection<? extends SyncItemSimpleDto> syncItemSimpleDtos) {
+        return new IdsDto()
+                .ids(syncItemSimpleDtos.stream().map(SyncItemSimpleDto::getId).collect(Collectors.toList()));
     }
 }

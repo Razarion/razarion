@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.uiservice.SelectionEvent;
+import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.renderer.BabylonBoxItem;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
@@ -45,10 +46,14 @@ public class BoxUiService {
     private BabylonBoxItem hoverBabylonBoxItem;
 
     @Inject
-    public BoxUiService(BabylonRendererService babylonRendererService, SelectionHandler selectionHandler, ItemTypeService itemTypeService) {
+    public BoxUiService(BabylonRendererService babylonRendererService,
+                        SelectionHandler selectionHandler,
+                        ItemTypeService itemTypeService,
+                        SelectionEventService selectionEventService) {
         this.babylonRendererService = babylonRendererService;
         this.selectionHandler = selectionHandler;
         this.itemTypeService = itemTypeService;
+        selectionEventService.receiveSelectionEvent(this::onSelectionChanged);
     }
 
     public void clear() {
@@ -250,7 +255,7 @@ public class BoxUiService {
         }
     }
 
-    public void onSelectionChanged(SelectionEvent selectionEvent) {
+    private void onSelectionChanged(SelectionEvent selectionEvent) {
         selectedOutOfViewId = null;
         if (selectedBabylonBoxItem != null) {
             selectedBabylonBoxItem.select(false);

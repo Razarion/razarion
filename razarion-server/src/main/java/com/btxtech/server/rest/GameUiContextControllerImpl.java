@@ -32,7 +32,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
     public ColdGameUiContext loadColdGameUiContext(GameUiControlInput gameUiControlInput) {
         UserContext userContext = userService.getUserContextFromSession();
         try {
-            return gameUiContextCrudPersistence.loadCold(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
+            return gameUiContextCrudPersistence.loadCold(gameUiControlInput, userContext);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             return new ColdGameUiContext().userContext(userContext);
@@ -43,7 +43,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
     public WarmGameUiContext loadWarmGameUiContext() {
         try {
             UserContext userContext = userService.getUserContextFromSession();
-            return gameUiContextCrudPersistence.loadWarm(sessionHolder.getPlayerSession().getLocale(), userContext);
+            return gameUiContextCrudPersistence.loadWarm(userContext);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             return null;

@@ -63,15 +63,18 @@ public class ServerLevelQuestEntity implements ObjectNameIdProvider {
         this.serverLevelQuestEntryEntities = serverLevelQuestEntryEntities;
     }
 
-    public ServerLevelQuestConfig toServerLevelQuestConfig(Locale locale) {
+    public ServerLevelQuestConfig toServerLevelQuestConfig() {
         return new ServerLevelQuestConfig()
                 .id(id)
                 .internalName(internalName)
                 .minimalLevelId(extractId(minimalLevel, LevelEntity::getId))
-                .questConfigs(toConfigList(serverLevelQuestEntryEntities, questConfigEntity -> questConfigEntity.getQuest().toQuestConfig(locale)));
+                .questConfigs(toConfigList(serverLevelQuestEntryEntities, questConfigEntity -> questConfigEntity.getQuest().toQuestConfig()));
     }
 
-    public void fromServerLevelQuestConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ServerLevelQuestConfig serverLevelQuestConfig, LevelCrudPersistence levelCrudPersistence, Locale locale) {
+    public void fromServerLevelQuestConfig(BotConfigEntityPersistence botConfigEntityPersistence,
+                                           BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
+                                           ServerLevelQuestConfig serverLevelQuestConfig,
+                                           LevelCrudPersistence levelCrudPersistence) {
         internalName = serverLevelQuestConfig.getInternalName();
         minimalLevel = levelCrudPersistence.getEntity(serverLevelQuestConfig.getMinimalLevelId());
 
@@ -86,7 +89,7 @@ public class ServerLevelQuestEntity implements ObjectNameIdProvider {
                 serverLevelQuestConfig.getQuestConfigs(),
                 () -> new ServerLevelQuestEntryEntity().quest(new QuestConfigEntity()),
                 (serverLevelQuestEntryEntity, questConfig) -> {
-                    serverLevelQuestEntryEntity.getQuest().fromQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, questConfig, locale);
+                    serverLevelQuestEntryEntity.getQuest().fromQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, questConfig);
                     serverLevelQuestEntryEntity.setOrderColumn(savedOrder.get(questConfig));
                 },
                 QuestDescriptionConfig::getId,

@@ -80,10 +80,8 @@ public class WeldUiBaseIntegrationTest {
         alarmService.getAlarms().forEach(alarm -> LOG.severe(alarm.toString()));
     }
 
+    @Deprecated
     protected void setupI18nConstants() {
-        I18nConstants i18nConstants = EasyMock.createNiceMock(I18nConstants.class);
-        EasyMock.replay(i18nConstants);
-        I18nHelper.setConstants(i18nConstants);
     }
 
     protected void createBase(int userId, int baseId) {

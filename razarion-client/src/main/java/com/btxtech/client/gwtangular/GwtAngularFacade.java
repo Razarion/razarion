@@ -40,7 +40,6 @@ public abstract class GwtAngularFacade {
     public ModelDialogPresenter modelDialogPresenter; // Initialized by Angular
     // Initialized by GWT called by Angular (user input)
     public GameUiControl gameUiControl; // Initialized by GWT
-    public String language; // Initialized by GWT
     public InGameQuestVisualizationService inGameQuestVisualizationService;  // Initialized by GWT
     public EditorFrontendProvider editorFrontendProvider;  // Initialized by GWT
     public StatusProvider statusProvider; // Initialized by GWT

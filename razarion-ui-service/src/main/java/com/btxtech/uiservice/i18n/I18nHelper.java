@@ -11,29 +11,11 @@ import jsinterop.annotations.JsType;
  */
 @JsType
 public class I18nHelper {
-    private static I18nConstants constants;
-    private static String language = "default";
 
     public static String getLocalizedString(I18nString i18nString) {
         if(i18nString == null) {
             return "???";
         }
-        return i18nString.getString(language);
-    }
-
-    public static String getLanguage() {
-        return language;
-    }
-
-    public static void setLanguage(String language) {
-        I18nHelper.language = language;
-    }
-
-    public static I18nConstants getConstants() {
-        return constants;
-    }
-
-    public static void setConstants(I18nConstants constants) {
-        I18nHelper.constants = constants;
+        return i18nString.getString();
     }
 }

@@ -110,7 +110,7 @@ export class QuestDialogComponent implements OnInit {
         const count = questConfig.conditionConfig.comparisonConfig.typeCount[key];
         let itemTypeI8nName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(parseInt(key)).getI18nName();
         if (itemTypeI8nName) {
-          let itemTypeName = itemTypeI8nName.getString(this.gwtAngularService.gwtAngularFacade.language);
+          let itemTypeName = itemTypeI8nName.getString();
           result.push(`${count} ${itemTypeName} ${textSpecific}`);
         } else {
           result.push(`${count} ??? ${textSpecific}`);

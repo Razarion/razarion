@@ -13,7 +13,6 @@
 
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.deprecated.Event;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
@@ -45,7 +44,7 @@ import java.util.Collection;
 // TODO Reanme to SelectionService
 public class SelectionHandler {
 
-    private Event<SelectionEvent> selectionEventEventTrigger;
+    private SelectionEventService selectionEventService;
 
     private Provider<Group> groupInstance;
 
@@ -61,13 +60,18 @@ public class SelectionHandler {
     private SyncItemSimpleDto selectedOtherSyncItem;
 
     @Inject
-    public SelectionHandler(ExceptionHandler exceptionHandler, Provider<BoxUiService> boxUiService, Provider<ResourceUiService> resourceUiService, Provider<BaseItemUiService> baseItemUiService, Provider<com.btxtech.uiservice.Group> groupInstance, Event<com.btxtech.uiservice.SelectionEvent> selectionEventEventTrigger) {
+    public SelectionHandler(ExceptionHandler exceptionHandler,
+                            Provider<BoxUiService> boxUiService,
+                            Provider<ResourceUiService> resourceUiService,
+                            Provider<BaseItemUiService> baseItemUiService,
+                            Provider<com.btxtech.uiservice.Group> groupInstance,
+                            SelectionEventService selectionEventService) {
         this.exceptionHandler = exceptionHandler;
         this.boxUiService = boxUiService;
         this.resourceUiService = resourceUiService;
         this.baseItemUiService = baseItemUiService;
         this.groupInstance = groupInstance;
-        this.selectionEventEventTrigger = selectionEventEventTrigger;
+        this.selectionEventService = selectionEventService;
     }
 
     public Group getOwnSelection() {
@@ -107,13 +111,13 @@ public class SelectionHandler {
     public void setOtherItemSelected(SyncItemSimpleDto syncItemSimpleDto) {
         clearSelection(true);
         selectedOtherSyncItem = syncItemSimpleDto;
-        selectionEventEventTrigger.fire(new SelectionEvent(syncItemSimpleDto));
+        selectionEventService.fire(new SelectionEvent(syncItemSimpleDto));
     }
 
     private void setItemGroupSelected(Group selectedGroup) {
         clearSelection(true);
         this.selectedGroup = selectedGroup;
-        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, false));
+        selectionEventService.fire(new SelectionEvent(selectedGroup, false));
     }
 
     @SuppressWarnings("unused") // Called by Angular
@@ -164,7 +168,7 @@ public class SelectionHandler {
 
     public void keepOnlyOwnOfType(BaseItemType baseItemType) {
         selectedGroup.keepOnlyOwnOfType(baseItemType);
-        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, false));
+        selectionEventService.fire(new SelectionEvent(selectedGroup, false));
     }
 
     public void clearSelection(boolean suppressAudio) {
@@ -173,7 +177,7 @@ public class SelectionHandler {
             selectedGroup.release();
         }
         selectedGroup = null;
-        selectionEventEventTrigger.fire(new SelectionEvent(suppressAudio));
+        selectionEventService.fire(new SelectionEvent(suppressAudio));
     }
 
     @JsIgnore
@@ -189,7 +193,7 @@ public class SelectionHandler {
                 if (selectedGroup.isEmpty()) {
                     clearSelection(true);
                 } else {
-                    selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, true));
+                    selectionEventService.fire(new SelectionEvent(selectedGroup, true));
                 }
             }
         } else if (selectedOtherSyncItem != null && selectedOtherSyncItem instanceof SyncBaseItemSimpleDto) {

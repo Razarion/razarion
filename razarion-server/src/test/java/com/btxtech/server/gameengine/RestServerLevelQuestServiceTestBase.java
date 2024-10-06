@@ -91,15 +91,15 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
 
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_2_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContextFromSession().getLevelId().intValue());
-        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
+        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(userContext).getSlavePlanetConfig());
 
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_3_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContextFromSession().getLevelId().intValue());
-        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
+        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(userContext).getSlavePlanetConfig());
 
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_4_ID);
         Assert.assertEquals(LEVEL_4_ID, userService.getUserContextFromSession().getLevelId().intValue());
-        Assert.assertEquals(SERVER_QUEST_ID_L4_1, gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest().getId().intValue());
+        Assert.assertEquals(SERVER_QUEST_ID_L4_1, gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest().getId().intValue());
 
         assertCount(1, QuestHistoryEntity.class);
         assertCount(3, LevelHistoryEntity.class);
@@ -119,18 +119,18 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContextFromSession().getLevelId().intValue());
         assertUser("0000001", LEVEL_1_ID, null);
         Assert.assertTrue(userService.findActiveQuests4Users(serverGameEngineCrudPersistence.readAllQuestIds()).entrySet().isEmpty());
-        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
+        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(userContext).getSlavePlanetConfig());
 
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_3_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContextFromSession().getLevelId().intValue());
         assertUser("0000001", LEVEL_1_ID, null);
         Assert.assertTrue(userService.findActiveQuests4Users(serverGameEngineCrudPersistence.readAllQuestIds()).entrySet().isEmpty());
-        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
+        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(userContext).getSlavePlanetConfig());
 
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_4_ID);
         Assert.assertEquals(LEVEL_4_ID, userService.getUserContextFromSession().getLevelId().intValue());
         assertUser("0000001", LEVEL_4_ID, SERVER_QUEST_ID_L4_1);
-        Assert.assertEquals(SERVER_QUEST_ID_L4_1, gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest().getId().intValue());
+        Assert.assertEquals(SERVER_QUEST_ID_L4_1, gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest().getId().intValue());
 
         Map<Integer, QuestConfig> map = userService.findActiveQuests4Users(serverGameEngineCrudPersistence.readAllQuestIds());
         Assert.assertEquals(1, map.size());
@@ -176,7 +176,7 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(0, userContext.getXp());
         Assert.assertEquals(LEVEL_4_ID, userContext.getLevelId().intValue());
-        QuestConfig actualQuestConfigL41 = gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest();
+        QuestConfig actualQuestConfigL41 = gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest();
         Assert.assertEquals(SERVER_QUEST_ID_L4_1, actualQuestConfigL41.getId().intValue());
         TestHelper.assertCollection(sessionHolder.getPlayerSession().getUnregisteredUser().getCompletedQuestIds());
         Assert.assertEquals(SERVER_QUEST_ID_L4_1, sessionHolder.getPlayerSession().getUnregisteredUser().getActiveQuest().getId().intValue());
@@ -185,7 +185,7 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(100, userContext.getXp());
         Assert.assertEquals(LEVEL_4_ID, userContext.getLevelId().intValue());
-        QuestConfig actualQuestConfigL42 = gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest();
+        QuestConfig actualQuestConfigL42 = gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest();
         Assert.assertEquals(SERVER_QUEST_ID_L4_2, actualQuestConfigL42.getId().intValue());
         TestHelper.assertCollection(sessionHolder.getPlayerSession().getUnregisteredUser().getCompletedQuestIds(), SERVER_QUEST_ID_L4_1);
         Assert.assertEquals(SERVER_QUEST_ID_L4_2, sessionHolder.getPlayerSession().getUnregisteredUser().getActiveQuest().getId().intValue());
@@ -194,7 +194,7 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(0, userContext.getXp());
         Assert.assertEquals(LEVEL_5_ID, userContext.getLevelId().intValue());
-        QuestConfig actualQuestConfigL51 = gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest();
+        QuestConfig actualQuestConfigL51 = gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest();
         Assert.assertEquals(SERVER_QUEST_ID_L5_1, actualQuestConfigL51.getId().intValue());
         TestHelper.assertCollection(sessionHolder.getPlayerSession().getUnregisteredUser().getCompletedQuestIds(), SERVER_QUEST_ID_L4_1, SERVER_QUEST_ID_L4_2);
         Assert.assertEquals(SERVER_QUEST_ID_L5_1, sessionHolder.getPlayerSession().getUnregisteredUser().getActiveQuest().getId().intValue());
@@ -203,7 +203,7 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(100, userContext.getXp());
         Assert.assertEquals(LEVEL_5_ID, userContext.getLevelId().intValue());
-        QuestConfig actualQuestConfigL52 = gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest();
+        QuestConfig actualQuestConfigL52 = gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest();
         Assert.assertEquals(SERVER_QUEST_ID_L5_2, actualQuestConfigL52.getId().intValue());
         TestHelper.assertCollection(sessionHolder.getPlayerSession().getUnregisteredUser().getCompletedQuestIds(), SERVER_QUEST_ID_L4_1, SERVER_QUEST_ID_L4_2, SERVER_QUEST_ID_L5_1);
         Assert.assertEquals(SERVER_QUEST_ID_L5_2, sessionHolder.getPlayerSession().getUnregisteredUser().getActiveQuest().getId().intValue());
@@ -212,7 +212,7 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(300, userContext.getXp());
         Assert.assertEquals(LEVEL_5_ID, userContext.getLevelId().intValue());
-        QuestConfig actualQuestConfigL53 = gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest();
+        QuestConfig actualQuestConfigL53 = gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest();
         Assert.assertEquals(SERVER_QUEST_ID_L5_3, actualQuestConfigL53.getId().intValue());
         TestHelper.assertCollection(sessionHolder.getPlayerSession().getUnregisteredUser().getCompletedQuestIds(), SERVER_QUEST_ID_L4_1, SERVER_QUEST_ID_L4_2, SERVER_QUEST_ID_L5_1, SERVER_QUEST_ID_L5_2);
         Assert.assertEquals(SERVER_QUEST_ID_L5_3, sessionHolder.getPlayerSession().getUnregisteredUser().getActiveQuest().getId().intValue());
@@ -221,7 +221,7 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(350, userContext.getXp());
         Assert.assertEquals(LEVEL_5_ID, userContext.getLevelId().intValue());
-        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest());
+        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest());
         TestHelper.assertCollection(sessionHolder.getPlayerSession().getUnregisteredUser().getCompletedQuestIds(), SERVER_QUEST_ID_L4_1, SERVER_QUEST_ID_L4_2, SERVER_QUEST_ID_L5_1, SERVER_QUEST_ID_L5_2, SERVER_QUEST_ID_L5_3);
         Assert.assertNull(sessionHolder.getPlayerSession().getUnregisteredUser().getActiveQuest());
 
@@ -304,7 +304,7 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(0, userContext.getXp());
         Assert.assertEquals(LEVEL_4_ID, userContext.getLevelId().intValue());
-        QuestConfig actualQuestConfigL41 = gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest();
+        QuestConfig actualQuestConfigL41 = gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest();
         assertDbUserLevelXp(userContext.getUserId(), LEVEL_4_ID, SERVER_QUEST_ID_L4_1, 0);
         Assert.assertEquals(SERVER_QUEST_ID_L4_1, actualQuestConfigL41.getId().intValue());
         // L4 first quest passed
@@ -312,7 +312,7 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(100, userContext.getXp());
         Assert.assertEquals(LEVEL_4_ID, userContext.getLevelId().intValue());
-        QuestConfig actualQuestConfigL42 = gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest();
+        QuestConfig actualQuestConfigL42 = gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest();
         assertDbUserLevelXp(userContext.getUserId(), LEVEL_4_ID, SERVER_QUEST_ID_L4_2, 100, SERVER_QUEST_ID_L4_1);
         Assert.assertEquals(SERVER_QUEST_ID_L4_2, actualQuestConfigL42.getId().intValue());
         // L4 Second quest passed
@@ -320,7 +320,7 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(0, userContext.getXp());
         Assert.assertEquals(LEVEL_5_ID, userContext.getLevelId().intValue());
-        QuestConfig actualQuestConfigL51 = gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest();
+        QuestConfig actualQuestConfigL51 = gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest();
         assertDbUserLevelXp(userContext.getUserId(), LEVEL_5_ID, SERVER_QUEST_ID_L5_1, 0, SERVER_QUEST_ID_L4_1, SERVER_QUEST_ID_L4_2);
         Assert.assertEquals(SERVER_QUEST_ID_L5_1, actualQuestConfigL51.getId().intValue());
         // L5 First quest passed
@@ -328,7 +328,7 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(100, userContext.getXp());
         Assert.assertEquals(LEVEL_5_ID, userContext.getLevelId().intValue());
-        QuestConfig actualQuestConfigL52 = gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest();
+        QuestConfig actualQuestConfigL52 = gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest();
         assertDbUserLevelXp(userContext.getUserId(), LEVEL_5_ID, SERVER_QUEST_ID_L5_2, 100, SERVER_QUEST_ID_L4_1, SERVER_QUEST_ID_L4_2, SERVER_QUEST_ID_L5_1);
         Assert.assertEquals(SERVER_QUEST_ID_L5_2, actualQuestConfigL52.getId().intValue());
         // L5 Second quest passed
@@ -336,14 +336,14 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(300, userContext.getXp());
         Assert.assertEquals(LEVEL_5_ID, userContext.getLevelId().intValue());
-        QuestConfig actualQuestConfigL53 = gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest();
+        QuestConfig actualQuestConfigL53 = gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest();
         assertDbUserLevelXp(userContext.getUserId(), LEVEL_5_ID, SERVER_QUEST_ID_L5_3, 300, SERVER_QUEST_ID_L4_1, SERVER_QUEST_ID_L4_2, SERVER_QUEST_ID_L5_1, SERVER_QUEST_ID_L5_2);
         Assert.assertEquals(SERVER_QUEST_ID_L5_3, actualQuestConfigL53.getId().intValue());
         // L5 Third quest passed
         executeInGameEngineThread(() -> serverLevelQuestService.onQuestPassed(userId, actualQuestConfigL53));
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(350, userContext.getXp());
-        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest());
+        Assert.assertNull(gameUiContextCrudPersistence.loadWarm(userContext).getSlaveQuestInfo().getActiveQuest());
         assertDbUserLevelXp(userId, LEVEL_5_ID, null, 350, SERVER_QUEST_ID_L4_1, SERVER_QUEST_ID_L4_2, SERVER_QUEST_ID_L5_1, SERVER_QUEST_ID_L5_2, SERVER_QUEST_ID_L5_3);
         Assert.assertEquals(LEVEL_5_ID, userContext.getLevelId().intValue());
 
@@ -465,37 +465,37 @@ public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest
         UserContext userContext = userService.getUserContextFromSession();
         int userId = userContext.getUserId();
         // Level 1: no server quests
-        List<QuestConfig> actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext, Locale.US);
+        List<QuestConfig> actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext);
         TestHelper.assertObjectNameIdProviders(actualQuestConfigs);
         // Level 4: 2 server quests one quest active
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_4_ID);
-        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext, Locale.US);
+        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext);
         TestHelper.assertObjectNameIdProviders(actualQuestConfigs, SERVER_QUEST_ID_L4_2);
         // Activate quest
-        serverLevelQuestService.activateQuest(userContext, SERVER_QUEST_ID_L4_2, Locale.US);
-        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext, Locale.US);
+        serverLevelQuestService.activateQuest(userContext, SERVER_QUEST_ID_L4_2);
+        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext);
         TestHelper.assertObjectNameIdProviders(actualQuestConfigs, SERVER_QUEST_ID_L4_1);
         // Pass Quest
         serverLevelQuestService.onQuestPassed(userId, readQuestConfig(SERVER_QUEST_ID_L4_2));
-        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext, Locale.US);
+        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext);
         TestHelper.assertObjectNameIdProviders(actualQuestConfigs);
         // Activate quest wrong level
         try {
-            serverLevelQuestService.activateQuest(userContext, SERVER_QUEST_ID_L5_1, Locale.US);
+            serverLevelQuestService.activateQuest(userContext, SERVER_QUEST_ID_L5_1);
             Assert.fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         // Activate passed quest
         try {
-            serverLevelQuestService.activateQuest(userContext, SERVER_QUEST_ID_L4_2, Locale.US);
+            serverLevelQuestService.activateQuest(userContext, SERVER_QUEST_ID_L4_2);
             Assert.fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         // Level up LEVEL_5_ID
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_5_ID);
-        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext, Locale.US);
+        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext);
         TestHelper.assertObjectNameIdProviders(actualQuestConfigs, SERVER_QUEST_ID_L5_1, SERVER_QUEST_ID_L5_2, SERVER_QUEST_ID_L5_3);
 
         EasyMock.verify(questServiceMock);

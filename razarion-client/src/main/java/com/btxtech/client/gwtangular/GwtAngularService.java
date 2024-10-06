@@ -91,7 +91,6 @@ public class GwtAngularService {
     public void init() {
         gwtAngularFacade = getGwtAngularFacade();
         gwtAngularFacade.gameUiControl = gameUiControl;
-        gwtAngularFacade.language = I18nHelper.getLanguage();
         gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
         gwtAngularFacade.inGameQuestVisualizationService = inGameQuestVisualizationService;
         gwtAngularFacade.statusProvider = statusProvider;

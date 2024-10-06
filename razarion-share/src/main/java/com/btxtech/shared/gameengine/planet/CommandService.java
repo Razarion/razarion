@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -68,8 +69,8 @@ public class CommandService {
         this.exceptionHandler = exceptionHandler;
     }
 
-    public void move(Collection<Integer> syncBaseItemIds, DecimalPosition destination) {
-        for (int syncBaseItemId : syncBaseItemIds) {
+    public void move(IdsDto syncBaseItemIds, DecimalPosition destination) {
+        for (int syncBaseItemId : syncBaseItemIds.getIds()) {
             SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(syncBaseItemId);
             move(syncBaseItem, destination);
         }
@@ -120,9 +121,9 @@ public class CommandService {
         executeCommand(builderFinalizeCommand);
     }
 
-    public void finalizeBuild(Collection<Integer> builderIds, int buildingId) {
+    public void finalizeBuild(IdsDto builderIds, int buildingId) {
         SyncBaseItem building = syncItemContainerService.getSyncBaseItemSave(buildingId);
-        for (int builderId : builderIds) {
+        for (int builderId : builderIds.getIds()) {
             SyncBaseItem builder = syncItemContainerService.getSyncBaseItemSave(builderId);
             finalizeBuild(builder, building);
         }
@@ -142,9 +143,9 @@ public class CommandService {
         executeCommand(factoryCommand);
     }
 
-    public void harvest(Collection<Integer> harvesterIds, int resourceId) {
+    public void harvest(IdsDto harvesterIds, int resourceId) {
         SyncResourceItem resource = resourceService.getSyncResourceItem(resourceId);
-        for (int harvesterId : harvesterIds) {
+        for (int harvesterId : harvesterIds.getIds()) {
             SyncBaseItem harvester = syncItemContainerService.getSyncBaseItemSave(harvesterId);
             harvest(harvester, resource);
         }
@@ -164,9 +165,9 @@ public class CommandService {
         executeCommand(harvestCommand);
     }
 
-    public void attack(Collection<Integer> attackerIds, int targetId) {
+    public void attack(IdsDto attackerIds, int targetId) {
         SyncBaseItem target = syncItemContainerService.getSyncBaseItemSave(targetId);
-        for (int attackerId : attackerIds) {
+        for (int attackerId : attackerIds.getIds()) {
             SyncBaseItem attacker = syncItemContainerService.getSyncBaseItemSave(attackerId);
             attack(attacker, target, attacker.getAbstractSyncPhysical().canMove());
         }
@@ -191,9 +192,9 @@ public class CommandService {
         executeCommand(attackCommand);
     }
 
-    public void pickupBox(Collection<Integer> pickerIds, int boxId) {
+    public void pickupBox(IdsDto pickerIds, int boxId) {
         SyncBoxItem box = boxService.getSyncBoxItem(boxId);
-        for (int pickerId : pickerIds) {
+        for (int pickerId : pickerIds.getIds()) {
             SyncBaseItem picker = syncItemContainerService.getSyncBaseItemSave(pickerId);
             pickupBox(picker, box);
         }
@@ -213,9 +214,9 @@ public class CommandService {
         executeCommand(pickupBoxCommand);
     }
 
-    public void loadContainer(Collection<Integer> containedIds, int containerId) {
+    public void loadContainer(IdsDto containedIds, int containerId) {
         SyncBaseItem container = syncItemContainerService.getSyncBaseItemSave(containerId);
-        for (int containedId : containedIds) {
+        for (int containedId : containedIds.getIds()) {
             SyncBaseItem contained = syncItemContainerService.getSyncBaseItemSave(containedId);
             loadContainer(contained, container);
         }

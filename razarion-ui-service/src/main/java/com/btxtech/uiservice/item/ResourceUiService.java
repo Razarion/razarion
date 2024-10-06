@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionEvent;
+import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
@@ -47,10 +48,14 @@ public class ResourceUiService {
     private BabylonResourceItem hoverBabylonResourceItem;
 
     @Inject
-    public ResourceUiService(BabylonRendererService babylonRendererService, SelectionHandler selectionHandler, ItemTypeService itemTypeService) {
+    public ResourceUiService(BabylonRendererService babylonRendererService,
+                             SelectionHandler selectionHandler,
+                             ItemTypeService itemTypeService,
+                             SelectionEventService selectionEventService) {
         this.babylonRendererService = babylonRendererService;
         this.selectionHandler = selectionHandler;
         this.itemTypeService = itemTypeService;
+        selectionEventService.receiveSelectionEvent(this::onSelectionChanged);
     }
 
     public void clear() {
@@ -244,7 +249,7 @@ public class ResourceUiService {
         return resources.get(resourceItemId);
     }
 
-    public void onSelectionChanged(SelectionEvent selectionEvent) {
+    private void onSelectionChanged(SelectionEvent selectionEvent) {
         selectedOutOfViewId = null;
         if (selectedBabylonResourceItem != null) {
             selectedBabylonResourceItem.select(false);

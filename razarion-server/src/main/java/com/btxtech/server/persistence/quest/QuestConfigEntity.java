@@ -1,10 +1,8 @@
 package com.btxtech.server.persistence.quest;
 
+import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
-import com.btxtech.server.persistence.level.LevelEntity;
-import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
-import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -15,11 +13,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by Beat
@@ -49,16 +44,16 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
         return id;
     }
 
-    public QuestConfig toQuestConfig(Locale locale) {
+    public QuestConfig toQuestConfig() {
         QuestConfig questConfig = new QuestConfig().id(id).internalName(internalName).xp(xp).razarion(razarion).crystal(crystal);
         if (title != null) {
-            questConfig.title(title.getString(locale));
+            questConfig.title(title.getString());
         }
         if (description != null) {
-            questConfig.description(description.getString(locale));
+            questConfig.description(description.getString());
         }
         if (passedMessage != null) {
-            questConfig.passedMessage(passedMessage.getString(locale));
+            questConfig.passedMessage(passedMessage.getString());
         }
         if (conditionConfigEntity != null) {
             questConfig.conditionConfig(conditionConfigEntity.toQuestConfig()).hidePassedDialog(hidePassedDialog);
@@ -66,13 +61,13 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
         return questConfig;
     }
 
-    public void fromQuestConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, QuestConfig questConfig, Locale locale) {
+    public void fromQuestConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, QuestConfig questConfig) {
         internalName = questConfig.getInternalName();
         if (questConfig.getTitle() != null) {
             if (title == null) {
                 title = new I18nBundleEntity();
             }
-            title.putString(locale, questConfig.getTitle());
+            title.putString(questConfig.getTitle());
         } else {
             title = null;
         }
@@ -80,7 +75,7 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
             if (description == null) {
                 description = new I18nBundleEntity();
             }
-            description.putString(locale, questConfig.getDescription());
+            description.putString(questConfig.getDescription());
         } else {
             description = null;
         }
@@ -91,7 +86,7 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
             if (passedMessage == null) {
                 passedMessage = new I18nBundleEntity();
             }
-            passedMessage.putString(locale, questConfig.getPassedMessage());
+            passedMessage.putString(questConfig.getPassedMessage());
         } else {
             passedMessage = null;
         }

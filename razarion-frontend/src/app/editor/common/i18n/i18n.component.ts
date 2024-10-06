@@ -16,14 +16,14 @@ export class I18nComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    if (this.i18n?.localizedStrings) {
-      this.displayString = this.i18n.localizedStrings.EN;
+    if (this.i18n) {
+      this.displayString = this.i18n.string;
     }
   }
 
   onChange() {
     this.i18n = {
-      localizedStrings: { EN: this.displayString }
+      string: this.displayString
     };
     this.i18nChange.emit(this.i18n);
 

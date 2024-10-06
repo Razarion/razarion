@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
@@ -244,11 +245,11 @@ public class WorkerMarshaller {
 //                data.add(fromJson(array[DATA_OFFSET_3].asString(), List.class));
                 break;
             case COMMAND_ATTACK:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), IdsDto.class));
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_FINALIZE_BUILD:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), IdsDto.class));
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_BUILD:
@@ -261,19 +262,19 @@ public class WorkerMarshaller {
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_HARVEST:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), IdsDto.class));
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_MOVE:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), IdsDto.class));
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), DecimalPosition.class));
                 break;
             case COMMAND_PICK_BOX:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), IdsDto.class));
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_LOAD_CONTAINER:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), IdsDto.class));
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_UNLOAD_CONTAINER:

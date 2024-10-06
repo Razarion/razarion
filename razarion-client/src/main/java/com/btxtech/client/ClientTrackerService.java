@@ -16,6 +16,7 @@ import com.btxtech.shared.rest.TrackerControllerFactory;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.SelectionEvent;
+import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.Boot;
@@ -52,9 +53,12 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private SimpleScheduledFuture detailedTrackingFuture;
 
     @Inject
-    public ClientTrackerService(SimpleExecutorService simpleExecutorService, Provider<Boot> boot) {
+    public ClientTrackerService(SimpleExecutorService simpleExecutorService,
+                                Provider<Boot> boot,
+                                SelectionEventService selectionEventService) {
         this.simpleExecutorService = simpleExecutorService;
         this.boot = boot;
+        selectionEventService.receiveSelectionEvent(this::onSelectionEvent);
     }
 
     @Override
@@ -166,7 +170,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         sendEventTrackerItems();
     }
 
-    public void onSelectionEvent(SelectionEvent selectionEvent) {
+    private void onSelectionEvent(SelectionEvent selectionEvent) {
         if (!detailedTracking) {
             return;
         }

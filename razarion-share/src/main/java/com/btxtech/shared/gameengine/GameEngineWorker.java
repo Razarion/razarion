@@ -26,6 +26,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
@@ -188,10 +189,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 activateQuest(userContext.getUserId(), (QuestConfig) controlPackage.getData(0));
                 break;
             case COMMAND_ATTACK:
-                commandService.attack((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
+                commandService.attack((IdsDto) controlPackage.getData(0), (int) controlPackage.getData(1));
                 break;
             case COMMAND_FINALIZE_BUILD:
-                commandService.finalizeBuild((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
+                commandService.finalizeBuild((IdsDto) controlPackage.getData(0), (int) controlPackage.getData(1));
                 break;
             case COMMAND_BUILD:
                 commandService.build((int) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1), (int) controlPackage.getData(2));
@@ -200,16 +201,16 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 commandService.fabricate((int) controlPackage.getData(0), (int) controlPackage.getData(1));
                 break;
             case COMMAND_HARVEST:
-                commandService.harvest((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
+                commandService.harvest((IdsDto) controlPackage.getData(0), (int) controlPackage.getData(1));
                 break;
             case COMMAND_MOVE:
-                commandMove((List<Integer>) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
+                commandMove((IdsDto) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
                 break;
             case COMMAND_PICK_BOX:
-                commandService.pickupBox((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
+                commandService.pickupBox((IdsDto) controlPackage.getData(0), (int) controlPackage.getData(1));
                 break;
             case COMMAND_LOAD_CONTAINER:
-                commandService.loadContainer((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
+                commandService.loadContainer((IdsDto) controlPackage.getData(0), (int) controlPackage.getData(1));
                 break;
             case COMMAND_UNLOAD_CONTAINER:
                 commandService.unloadContainer((int) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
@@ -239,7 +240,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 boxService.onSlaveSyncBoxItemChanged((SyncBoxItemInfo) controlPackage.getData(0));
                 break;
             case SELL_ITEMS:
-                sellItems((List<Integer>) controlPackage.getData(0));
+                sellItems((IdsDto) controlPackage.getData(0));
                 break;
             case GET_TERRAIN_TYPE:
                 getTerrainType((Index) controlPackage.getData(0));
@@ -249,7 +250,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private void commandMove(Collection<Integer> syncBaseItemIds, DecimalPosition destination) {
+    private void commandMove(IdsDto syncBaseItemIds, DecimalPosition destination) {
         try {
             commandService.move(syncBaseItemIds, destination);
             sendToClient(GameEngineControlPackage.Command.COMMAND_MOVE_ACK);
@@ -664,12 +665,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         perfmonService.onTerrainTile(terrainTileIndex, System.currentTimeMillis() - time);
     }
 
-    private void sellItems(List<Integer> items) {
+    private void sellItems(IdsDto items) {
         if (gameEngineMode == GameEngineMode.MASTER) {
-            baseItemService.sellItems(items, playerBase);
+            baseItemService.sellItems(items.getIds(), playerBase);
         } else if (gameEngineMode == GameEngineMode.SLAVE) {
             if (serverConnection != null) {
-                serverConnection.sellItems(items);
+                serverConnection.sellItems(items.getIds());
             }
         } else {
             throw new IllegalStateException("GameEngineWorker.sellItems() illegal gameEngineMode: " + gameEngineMode);
