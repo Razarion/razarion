@@ -195,14 +195,13 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   private loadEditorTerrainTiles() {
-    this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService().getAllBabylonTerrainTile().forEach(babylonTerrainTile => {
-      this.setupEditorTerrainTile((<BabylonTerrainTileImpl>babylonTerrainTile));
+    this.renderService.getAllBabylonTerrainTile().forEach(babylonTerrainTile => {
+       this.setupEditorTerrainTile(babylonTerrainTile);
     });
   }
 
   private setupEditorTerrainTile(babylonTerrainTile: BabylonTerrainTileImpl) {
     let index = babylonTerrainTile.terrainTile.getIndex();
-    console.info(`setupEditorTerrainTile ${index.getX()}:${index.getY()}`)
     if (babylonTerrainTile.getGroundMesh().material) {
       babylonTerrainTile.getGroundMesh().material!.wireframe = this.wireframe;
     }

@@ -2,6 +2,7 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 /**
@@ -41,27 +42,27 @@ public class TerrainObjectPosition {
         this.position = position;
     }
 
-    public Vertex getRotation() {
+    public @Nullable Vertex getRotation() {
         return rotation;
     }
 
-    public void setRotation(Vertex rotation) {
+    public void setRotation(@Nullable Vertex rotation) {
         this.rotation = rotation;
     }
 
-    public Vertex getScale() {
+    public @Nullable Vertex getScale() {
         return scale;
     }
 
-    public void setScale(Vertex scale) {
+    public void setScale(@Nullable Vertex scale) {
         this.scale = scale;
     }
 
-    public Vertex getOffset() {
+    public @Nullable Vertex getOffset() {
         return offset;
     }
 
-    public void setOffset(Vertex offset) {
+    public void setOffset(@Nullable Vertex offset) {
         this.offset = offset;
     }
 

@@ -1,6 +1,5 @@
 package com.btxtech.client.gwtangular;
 
-import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -40,7 +39,6 @@ public abstract class GwtAngularFacade {
     // Initialized by GWT called by Angular (user input)
     public GameUiControl gameUiControl; // Initialized by GWT
     public InGameQuestVisualizationService inGameQuestVisualizationService;  // Initialized by GWT
-    public EditorFrontendProvider editorFrontendProvider;  // Initialized by GWT
     public StatusProvider statusProvider; // Initialized by GWT
     public InputService inputService; // Initialized by GWT
     public SelectionService selectionService; // Initialized by GWT

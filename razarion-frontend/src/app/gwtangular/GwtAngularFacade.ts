@@ -12,7 +12,6 @@ export abstract class GwtAngularFacade {
   questCockpit!: QuestCockpit;
   inGameQuestVisualizationService!: InGameQuestVisualizationService;
   baseItemPlacerPresenter!: BaseItemPlacerPresenter;
-  editorFrontendProvider!: EditorFrontendProvider;
   statusProvider!: StatusProvider;
   babylonRenderServiceAccess!: BabylonRenderServiceAccess;
   inputService!: InputService;
@@ -770,36 +769,12 @@ export interface ModelDialogPresenter {
   showSetUserNameDialog(): void;
 }
 
-// ---------- Editor ----------
-export interface EditorFrontendProvider {
-  getGenericEditorFrontendProvider(): GenericEditorFrontendProvider;
-
-  getTerrainEditorService(): TerrainEditorService;
-}
-
-export interface GenericEditorFrontendProvider {
-  collectionNames(): string[];
-
-  requestObjectNameIds(collectionName: string): Promise<ObjectNameId[]>;
-
-  getPathForCollection(collectionName: string): string;
-}
-
 export interface ObjectNameId {
   id: number;
   internalName: string;
 
   toString(): string;
 }
-
-export interface TerrainEditorService {
-  getAllTerrainObjects(): Promise<ObjectNameId[]>;
-
-  save(createdTerrainObjects: TerrainObjectPosition[], updatedTerrainObjects: TerrainObjectPosition[]): Promise<string>;
-
-  getAllBabylonTerrainTile(): BabylonTerrainTile[];
-}
-
 
 export interface TerrainSlopePosition {
   id: number | null;

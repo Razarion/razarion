@@ -137,12 +137,6 @@
           styleClass="p-button-sm" (onClick)="openUserMgmt()"></p-button>
       </div>
     </p-panel>
-    <p-panel header="Experimental" [toggleable]="true" [collapsed]="true">
-      <div class="mb-2" *ngFor="let collectionName of collectionNames;">
-        <p-button type="button" label="{{collectionName}}" icon="pi pi-cog" [style]="{'width':'13em'}"
-          styleClass="p-button-sm" (onClick)="openConfigurationEditor(collectionName)"></p-button>
-      </div>
-    </p-panel>
   </div>
 
 </div>

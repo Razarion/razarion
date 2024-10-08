@@ -1,10 +1,8 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   ObjectNameId,
-  TerrainEditorService,
   TerrainObjectConfig,
-  TerrainObjectModel,
-  TerrainObjectPosition
+  TerrainObjectModel
 } from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {MessageService} from "primeng/api";
@@ -27,6 +25,13 @@ import {UPDATE_RADIUS_REST_CALL} from "../../common";
 import {HttpClient} from "@angular/common/http";
 import {EditorPanel} from '../editor-model';
 import {TerrainObjectGeneratorComponent} from "./terrain-object-generator/terrain-object-generator.component";
+import {
+  TerrainEditorControllerClient,
+  TerrainEditorUpdate, TerrainObjectEditorControllerClient,
+  TerrainObjectPosition
+} from "../../generated/razarion-share";
+import {TypescriptGenerator} from "../../backend/typescript-generator";
+import {GeneratedRestHelper} from "../../common/generated-rest-helper";
 
 @Component({
   selector: 'object-terrain-editor',
@@ -34,7 +39,6 @@ import {TerrainObjectGeneratorComponent} from "./terrain-object-generator/terrai
 })
 export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy {
   private readonly discRadiusMaterial: SimpleMaterial;
-  terrainEditorService: TerrainEditorService;
   terrainObjectConfigs: { objectNameId: ObjectNameId, name: string }[] = [];
   newTerrainObjectConfig: any;
   onOffOptions: any[] = [{label: 'Off', value: false}, {label: 'On', value: true}];
@@ -53,6 +57,8 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
   private updatedTerrainObjects: TerrainObjectPosition[] = [];
   gizmoManager: GizmoManager;
   private selectionTransformNodeObservable: Nullable<Observer<TransformNode>> = null;
+  private terrainEditorControllerClient: TerrainEditorControllerClient;
+  private terrainObjectEditorControllerClient: TerrainObjectEditorControllerClient;
 
   constructor(private gwtAngularService: GwtAngularService,
               private messageService: MessageService,
@@ -61,7 +67,6 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
               private editorService: EditorService,
               private httpClient: HttpClient) {
     super();
-    this.terrainEditorService = gwtAngularService.gwtAngularFacade.editorFrontendProvider.getTerrainEditorService();
     this.gizmoManager = new GizmoManager(babylonRenderServiceAccess.getScene());
     this.gizmoManager.positionGizmoEnabled = true;
     this.gizmoManager.rotationGizmoEnabled = false;
@@ -71,22 +76,29 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
     this.discRadiusMaterial = new SimpleMaterial(`Radius`, babylonRenderServiceAccess.getScene());
     this.discRadiusMaterial.diffuseColor = Color3.Yellow();
     this.discRadiusMaterial.backFaceCulling = false;
+
+    this.terrainEditorControllerClient = new TerrainEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
+    this.terrainObjectEditorControllerClient = new TerrainObjectEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
 
+
   ngOnInit(): void {
-    this.terrainEditorService.getAllTerrainObjects().then(terrainObjects => {
-      this.terrainObjectConfigs = [];
-      terrainObjects.forEach(terrainObject => {
-        this.terrainObjectConfigs.push({name: terrainObject.toString(), objectNameId: terrainObject})
-      });
-      this.newTerrainObjectConfig = this.terrainObjectConfigs[0];
-      this.terrainObjectGenerator.init(this.terrainObjectConfigs, (terrainObjectModel: TerrainObjectModel, node: TransformNode) => {
-        let terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
-        terrainObjectPosition.setTerrainObjectConfigId(terrainObjectModel.terrainObjectId);
-        this.updateTerrainObjectPosition(node, terrainObjectPosition);
-        this.newTerrainObjects.push(terrainObjectPosition);
-      });
-    });
+    this.terrainObjectEditorControllerClient
+      .getObjectNameIds()
+      .then(objectNameIds => {
+        this.terrainObjectConfigs = [];
+        objectNameIds.forEach(objectNameId => {
+          this.terrainObjectConfigs.push({name: `${objectNameId.internalName} '${objectNameId.id}'`, objectNameId: objectNameId})
+        });
+        this.newTerrainObjectConfig = this.terrainObjectConfigs[0];
+        this.terrainObjectGenerator.init(this.terrainObjectConfigs, (terrainObjectModel: TerrainObjectModel, node: TransformNode) => {
+          let terrainObjectPosition = GeneratedRestHelper.newTerrainObjectPosition();
+          terrainObjectPosition.terrainObjectConfigId = terrainObjectModel.terrainObjectId;
+          this.updateTerrainObjectPosition(node, terrainObjectPosition);
+          this.newTerrainObjects.push(terrainObjectPosition);
+        });
+
+      })
   }
 
   ngOnDestroy(): void {
@@ -153,26 +165,31 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
   }
 
   save() {
-    this.terrainEditorService.save(this.newTerrainObjects, this.updatedTerrainObjects)
-      .then(okString => {
-        this.newTerrainObjects = [];
-        this.updatedTerrainObjects = [];
-        this.clearSelection();
-        this.messageService.add({
-          severity: 'success',
-          life: 300,
-          summary: okString
-        })
-      })
-      .catch(error => {
-        console.error(error);
-        this.messageService.add({
-          severity: 'error',
-          summary: `Save terrain failed`,
-          detail: error.message || `${JSON.stringify(error)}`,
-          sticky: true
-        });
-      });
+    let terrainEditorUpdate:TerrainEditorUpdate =  {
+      createdTerrainObjects: this.newTerrainObjects,
+      updatedTerrainObjects: this.updatedTerrainObjects,
+      deletedTerrainObjectsIds: []
+    }
+    this.terrainEditorControllerClient
+      .updateTerrain(this.editorService.getPlanetId(), terrainEditorUpdate)
+      .then(()=>{
+            this.newTerrainObjects = [];
+            this.updatedTerrainObjects = [];
+            this.clearSelection();
+            this.messageService.add({
+              severity: 'success',
+              life: 300,
+              summary: 'Terrain objects saved'
+            })
+      }).catch(reason => {
+          console.error(reason);
+          this.messageService.add({
+            severity: 'error',
+            summary: `Save terrain objects failed`,
+            detail: reason.message || `${JSON.stringify(reason)}`,
+            sticky: true
+          });
+    })
   }
 
   private selectActiveTerrainObject(node: TransformNode, isNew: boolean) {
@@ -182,8 +199,8 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
     let terrainObjectPosition: TerrainObjectPosition;
 
     if (isNew) {
-      terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
-      terrainObjectPosition.setTerrainObjectConfigId(this.newTerrainObjectConfig.objectNameId.id);
+      terrainObjectPosition = GeneratedRestHelper.newTerrainObjectPosition();
+      terrainObjectPosition.terrainObjectConfigId = this.newTerrainObjectConfig.objectNameId.id;
       this.updateTerrainObjectPosition(node, terrainObjectPosition);
       let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(node);
       razarionMetadata!.editorHintTerrainObjectPosition = terrainObjectPosition;
@@ -196,9 +213,9 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
       if (razarionMetadata!.id) {
         let to = this.findUpdatedTerrainObjectPosition(razarionMetadata!.id);
         if (!to) {
-          terrainObjectPosition = GwtInstance.newTerrainObjectPosition();
-          terrainObjectPosition.setId(razarionMetadata?.id!);
-          terrainObjectPosition.setTerrainObjectConfigId(razarionMetadata?.configId!);
+          terrainObjectPosition = GeneratedRestHelper.newTerrainObjectPosition();
+          terrainObjectPosition.id=razarionMetadata?.id!;
+          terrainObjectPosition.terrainObjectConfigId = razarionMetadata?.configId!;
           this.updatedTerrainObjects.push(terrainObjectPosition);
         } else {
           terrainObjectPosition = to;
@@ -226,14 +243,14 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
 
   private findUpdatedTerrainObjectPosition(id: number): TerrainObjectPosition | undefined {
     return this.updatedTerrainObjects.find((o) => {
-      return o.getId() === id
+      return o.id === id
     });
   }
 
   private updateTerrainObjectPosition(node: TransformNode, terrainObjectPosition: TerrainObjectPosition) {
-    terrainObjectPosition.setPosition(GwtInstance.newDecimalPosition(node.position.x, node.position.z))
-    terrainObjectPosition.setRotation(GwtInstance.newVertex(node.rotation.x, node.rotation.z, node.rotation.z))
-    terrainObjectPosition.setScale(GwtInstance.newVertex(node.scaling.x, node.scaling.z, node.scaling.z))
+    terrainObjectPosition.position = GeneratedRestHelper.newDecimalPosition(node.position.x, node.position.z);
+    terrainObjectPosition.rotation = GeneratedRestHelper.newVertex(node.rotation.x, node.rotation.z, node.rotation.z);
+    terrainObjectPosition.scale = GeneratedRestHelper.newVertex(node.scaling.x, node.scaling.z, node.scaling.z);
   }
 
   public clearSelection() {

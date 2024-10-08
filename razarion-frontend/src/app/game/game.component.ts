@@ -87,7 +87,6 @@ export class GameComponent implements OnInit, ScreenCover {
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
         this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
-        this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.gwtAngularService.gwtAngularFacade.threeJsModelPackService = this.gameMockService.mockThreeJsModelPackService;
         this.gameMockService.loadMockStaticGameConfig().then(() => {
           this.gameMockService.loadMockAssetConfig().then(() => {
@@ -372,7 +371,6 @@ export class GameComponent implements OnInit, ScreenCover {
           });
         });
       } else {
-        this.gwtAngularService.gwtAngularFacade.editorFrontendProvider = this.gameMockService.editorFrontendProvider;
         this.mainCockpitComponent.show(true);
         this.mainCockpitComponent.showRadar(RadarState.NO_POWER);
         this.mainCockpitComponent.displayXps(5, 20);

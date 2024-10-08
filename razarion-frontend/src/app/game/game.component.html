@@ -51,7 +51,7 @@
   </div>
 </p-dialog>
 
-<p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog" (onShow)="editorDialogComponent.onShow()">
+<p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog">
   <editor-dialog #editorDialogComponent [mainCockpitComponent]="mainCockpit"
     [gameComponent]="getGameComponent()"></editor-dialog>
 </p-dialog>

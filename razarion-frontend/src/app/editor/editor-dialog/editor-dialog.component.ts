@@ -1,19 +1,15 @@
 import { Component, Input, Type } from "@angular/core";
-import { GwtAngularService } from "../../gwtangular/GwtAngularService";
 import { EditorModel, EditorPanel, GenericPropertyEditorModel } from "../editor-model";
 import { MainCockpitComponent } from "../../game/cockpit/main/main-cockpit.component";
-import { RenderEngineComponent } from "../render-engine/render-engine.component";
 import { GameComponent } from "../../game/game.component";
 import { ServerPanelComponent } from "../server-panel/server-panel.component";
 import { BackupRestoreComponent } from "../backup-restore/backup-restore.component";
 import { ImageEditorComponent } from "../image-editor/image-editor.component";
-import { CollectionSelectorComponent } from "../property-table/collection-selector.component";
 import { BabylonRenderServiceAccessImpl } from "../../game/renderer/babylon-render-service-access-impl.service";
 import { ServerQuestEditorComponent } from "../server-quest-editor/server-quest-editor.component";
 import { ServerBotEditorComponent } from "../server-bot-editor/server-bot-editor.component";
 import { ServerStartRegionComponent } from "../server-start-region/server-start-region.component";
 import { ServerResourceRegionComponent } from "../server-resource-region/server-resource-region.component";
-import { ManuallyCrudContainerComponent } from "../crud-editors/crud-container/manually-crud-container.component";
 import { EditorService } from "../editor-service";
 import { LevelEditorComponent } from "../crud-editors/level-editor/level-editor.component";
 import { GeneratedCrudContainerComponent } from "../crud-editors/crud-container/generated-crud-container.component";
@@ -36,22 +32,15 @@ import { PropertyEditorComponent } from "../property-editor/property-editor.comp
 })
 export class EditorDialogComponent {
   editors: Map<string, Type<EditorPanel>> = new Map<string, Type<EditorPanel>>();
-  collectionNames: string[] = [];
   @Input("gameComponent")
   gameComponent!: GameComponent;
   @Input("mainCockpitComponent")
   mainCockpitComponent!: MainCockpitComponent;
 
-  constructor(private gwtAngularService: GwtAngularService,
-    private renderService: BabylonRenderServiceAccessImpl,
+  constructor(private renderService: BabylonRenderServiceAccessImpl,
     private editorService: EditorService) {
-    this.editors.set("Babylon.js", RenderEngineComponent)
     this.editors.set("Server Control", ServerPanelComponent)
     this.editors.set("Backup Restore", BackupRestoreComponent)
-  }
-
-  onShow() {
-    this.collectionNames = this.gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().collectionNames();
   }
 
   openLevelEditor() {
@@ -62,11 +51,6 @@ export class EditorDialogComponent {
   openPropertyEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Properties", PropertyEditorComponent));
-  }
-  
-  openConfigurationEditor(collectionName: string) {
-    this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new GenericPropertyEditorModel(CollectionSelectorComponent, collectionName));
   }
 
   openAdministrationEditor(name: string, editorComponent: Type<any>) {

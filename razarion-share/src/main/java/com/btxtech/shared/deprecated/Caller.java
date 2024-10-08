@@ -8,16 +8,8 @@ public class Caller<T> {
     public Caller() {
     }
 
-    public T call() {
-        throw new UnsupportedOperationException();
-    }
-
-    public T call(RemoteCallback<?> callback) {
-        throw new UnsupportedOperationException();
-    }
-
     public T call(RemoteCallback<?> callback, ErrorCallback<?> errorCallback) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("---- com.btxtech.shared.deprecated.Caller ----");
     }
 
 }

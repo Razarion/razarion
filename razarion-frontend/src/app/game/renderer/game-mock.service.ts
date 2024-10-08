@@ -12,9 +12,7 @@ import {
   DecimalPosition,
   Diplomacy,
   DrivewayConfig,
-  EditorFrontendProvider,
   GameUiControl,
-  GenericEditorFrontendProvider,
   GroundConfig,
   GroundSplattingConfig,
   HarvesterType,
@@ -39,10 +37,7 @@ import {
   ShapeTransform,
   SlopeConfig,
   StatusProvider,
-  TerrainEditorService,
   TerrainObjectConfig,
-  TerrainObjectModel,
-  TerrainObjectPosition,
   TerrainTile,
   TerrainTileObjectList,
   TerrainTypeService,
@@ -121,62 +116,6 @@ export class GameMockService {
 
     requestServerAlarms(): Promise<Alarm[]> {
       throw new Error("Method not implemented.");
-    }
-  };
-
-  editorFrontendProvider: EditorFrontendProvider = new class implements EditorFrontendProvider {
-    getGenericEditorFrontendProvider(): GenericEditorFrontendProvider {
-      return new class implements GenericEditorFrontendProvider {
-        collectionNames(): string[] {
-          return ["Svelte-jsoneditor"];
-        }
-
-        requestObjectNameIds(collectionName: string): Promise<ObjectNameId[]> {
-          return Promise.resolve([new class implements ObjectNameId {
-            id = -99999;
-            internalName = "Svelte-jsoneditor";
-          }]);
-        }
-
-        getPathForCollection(collectionName: string): string {
-          return `editor/${collectionName}`;
-        }
-
-      };
-    }
-    getTerrainEditorService(): TerrainEditorService {
-      return new class implements TerrainEditorService {
-        getAllTerrainObjects(): Promise<ObjectNameId[]> {
-          let objectNameIds: ObjectNameId[] = [];
-          staticGameConfigJson.terrainObjectConfigs.forEach((terrainObjectConfigJson: any) => {
-            objectNameIds.push(new class implements ObjectNameId {
-              id: number = terrainObjectConfigJson.id;
-              internalName: string = terrainObjectConfigJson.internalName;
-
-              toString(): string {
-                return `${this.internalName} (${this.id})`;
-              }
-            })
-          });
-
-          return Promise.resolve(objectNameIds);
-        }
-
-
-        save(createdTerrainObjects: TerrainObjectPosition[], updatedTerrainObjects: TerrainObjectPosition[]): Promise<string> {
-          console.info("---- Save TerrainObjectPosition ----");
-          console.info("createdTerrainObjects");
-          console.info(createdTerrainObjects);
-          console.info("updatedTerrainObjects");
-          console.info(updatedTerrainObjects);
-          return Promise.resolve("Mock, see console");
-        }
-
-
-        getAllBabylonTerrainTile(): BabylonTerrainTile[] {
-          return displayMockTerrainTile;
-        }
-      }
     }
   };
 

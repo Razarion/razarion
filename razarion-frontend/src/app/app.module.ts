@@ -56,7 +56,6 @@ import { RadToDegreePipe } from "./common/pipes/rad-to-degree-pipe";
 import { BabylonRenderServiceAccessImpl } from './game/renderer/babylon-render-service-access-impl.service';
 import { GameMockService } from './game/renderer/game-mock.service';
 import { BabylonModelService } from './game/renderer/babylon-model.service';
-import { CollectionSelectorComponent } from "./editor/property-table/collection-selector.component";
 import { OverlayPanelModule } from "primeng/overlaypanel";
 import { ListboxModule } from "primeng/listbox";
 import { ToolbarModule } from "primeng/toolbar";
@@ -162,7 +161,6 @@ import { PropertyEditorComponent } from './editor/property-editor/property-edito
     RadToDegreePipe,
     ImageEditorComponent,
     ImageGalleryItemComponent,
-    CollectionSelectorComponent,
     AngleVector3EditorComponent,
     Vector3EditorComponent,
     TerrainObjectPositionComponent,

@@ -69,17 +69,18 @@ export class RenderEngineComponent extends EditorPanel implements OnDestroy {
     if (environment.gwtMock) {
       this.dropDownBabylonModels = gameMockService.getThreeJsModels();
     } else {
-      gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().requestObjectNameIds("Three.js Model")
-        .then((value: any) => this.dropDownBabylonModels = value,
-          (reason: any) => {
-            console.error(reason);
-            this.messageService.add({
-              severity: 'error',
-              summary: `Can not load THREE_JS_MODEL configs`,
-              detail: reason,
-              sticky: true
-            });
-          });
+      throw new Error("Not Implemented getThreeJsModels()");
+      // gwtAngularService.gwtAngularFacade.editorFrontendProvider.getGenericEditorFrontendProvider().requestObjectNameIds("Three.js Model")
+      //   .then((value: any) => this.dropDownBabylonModels = value,
+      //     (reason: any) => {
+      //       console.error(reason);
+      //       this.messageService.add({
+      //         severity: 'error',
+      //         summary: `Can not load THREE_JS_MODEL configs`,
+      //         detail: reason,
+      //         sticky: true
+      //       });
+      //     });
     }
     this.pointerInfoObservable = renderEngine.getScene().onPointerObservable.add((pointerInfo: PointerInfo) => {
       if (!this.gwtAngularService.gwtAngularFacade.inputService) {

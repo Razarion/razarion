@@ -1,6 +1,5 @@
 package com.btxtech.client.gwtangular;
 
-import com.btxtech.client.editor.EditorFrontendProvider;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -27,7 +26,6 @@ import javax.inject.Singleton;
 @Singleton
 public class GwtAngularService {
     private final GameUiControl gameUiControl;
-    private final EditorFrontendProvider editorFrontendProvider;
     private final MainCockpitService cockpitService;
     private final ItemCockpitService itemCockpitService;
     private final QuestCockpitService questCockpitService;
@@ -61,7 +59,6 @@ public class GwtAngularService {
                              QuestCockpitService questCockpitService,
                              ItemCockpitService itemCockpitService,
                              MainCockpitService cockpitService,
-                             EditorFrontendProvider editorFrontendProvider,
                              GameUiControl gameUiControl) {
         this.inGameQuestVisualizationService = inGameQuestVisualizationService;
         this.inventoryUiService = inventoryUiService;
@@ -78,7 +75,6 @@ public class GwtAngularService {
         this.questCockpitService = questCockpitService;
         this.itemCockpitService = itemCockpitService;
         this.cockpitService = cockpitService;
-        this.editorFrontendProvider = editorFrontendProvider;
         this.gameUiControl = gameUiControl;
     }
 
@@ -89,7 +85,6 @@ public class GwtAngularService {
     public void init() {
         gwtAngularFacade = getGwtAngularFacade();
         gwtAngularFacade.gameUiControl = gameUiControl;
-        gwtAngularFacade.editorFrontendProvider = editorFrontendProvider;
         gwtAngularFacade.inGameQuestVisualizationService = inGameQuestVisualizationService;
         gwtAngularFacade.statusProvider = statusProvider;
         gwtAngularFacade.inputService = inputService;

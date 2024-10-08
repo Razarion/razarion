@@ -1,6 +1,6 @@
 import {Component} from "@angular/core";
 import {TransformNode, Vector3} from "@babylonjs/core";
-import {TerrainObjectPosition} from "../../gwtangular/GwtAngularFacade";
+import {TerrainObjectPosition} from "../../generated/razarion-share";
 
 @Component({
   selector: 'terrain-object-position',

@@ -1,30 +1,27 @@
-import { Injectable } from "@angular/core";
+import {Injectable} from "@angular/core";
 import {
   BabylonBaseItem,
+  BabylonBoxItem,
   BabylonRenderServiceAccess,
   BabylonResourceItem,
-  BaseItemPlacer,
+  BabylonTerrainTile,
   BaseItemPlacerPresenter,
   BaseItemType,
+  BoxItemType,
+  DecimalPosition,
   Diplomacy,
+  MarkerConfig,
   MeshContainer,
+  PlaceConfig,
   ResourceItemType,
   ShapeTransform,
-  TerrainObjectPosition,
   TerrainSlopePosition,
   TerrainTile,
-  BabylonTerrainTile,
-  DecimalPosition,
-  BabylonBoxItem,
-  BoxItemType,
-  MarkerConfig,
-  PlaceConfig,
-  ParticleSystemConfig,
 } from "src/app/gwtangular/GwtAngularFacade";
-import { BabylonTerrainTileImpl } from "./babylon-terrain-tile.impl";
-import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
-import { BabylonModelService } from "./babylon-model.service";
-import { ThreeJsWaterRenderService } from "./three-js-water-render.service";
+import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
+import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
+import {BabylonModelService} from "./babylon-model.service";
+import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import {
   AbstractMesh,
   Color3,
@@ -33,7 +30,6 @@ import {
   Engine,
   FreeCamera,
   InputBlock,
-  Material,
   Matrix,
   Mesh,
   MeshBuilder,
@@ -41,7 +37,6 @@ import {
   NodeMaterial,
   Nullable,
   ParticleSystem,
-  PointerEventTypes,
   PolygonMeshBuilder,
   Quaternion,
   Ray,
@@ -54,22 +49,22 @@ import {
   Vector3,
   VertexBuffer
 } from "@babylonjs/core";
-import { SimpleMaterial } from "@babylonjs/materials";
-import { GwtHelper } from "../../gwtangular/GwtHelper";
-import { PickingInfo } from "@babylonjs/core/Collisions/pickingInfo";
-import { BabylonBaseItemImpl } from "./babylon-base-item.impl";
-import { BabylonResourceItemImpl } from "./babylon-resource-item.impl";
-import { SelectionFrame } from "./selection-frame";
-import { GwtInstance } from "src/app/gwtangular/GwtInstance";
-import { BabylonBoxItemImpl } from "./babylon-box-item.impl";
-import { Geometry } from "src/app/common/geometry";
-import { PlaceConfigComponent } from "src/app/editor/common/place-config/place-config.component";
-import { LocationVisualization } from "src/app/editor/common/place-config/location-visualization";
-import { ActionService } from "../action.service";
-import { BaseItemPlacerPresenterImpl } from "./base-item-placer-presenter.impl";
-import { getImageUrl } from "src/app/common";
-import { UiConfigCollection } from "src/app/generated/razarion-share";
-import { UiConfigCollectionService } from "../ui-config-collection.service";
+import {SimpleMaterial} from "@babylonjs/materials";
+import {GwtHelper} from "../../gwtangular/GwtHelper";
+import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
+import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
+import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
+import {SelectionFrame} from "./selection-frame";
+import {GwtInstance} from "src/app/gwtangular/GwtInstance";
+import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
+import {Geometry} from "src/app/common/geometry";
+import {PlaceConfigComponent} from "src/app/editor/common/place-config/place-config.component";
+import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
+import {ActionService} from "../action.service";
+import {BaseItemPlacerPresenterImpl} from "./base-item-placer-presenter.impl";
+import {getImageUrl} from "src/app/common";
+import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {TerrainObjectPosition} from "../../generated/razarion-share";
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -153,14 +148,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private outOfViewPlane?: Mesh;
   private placeMarkerMesh?: Mesh;
   baseItemPlacerActive = false;
+  private editorTerrainTileContainer: BabylonTerrainTileImpl[] = [];
   private editorTerrainTileCreationCallback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined;
   private interpolationListeners: BabylonBaseItemImpl[] = [];
 
   constructor(private gwtAngularService: GwtAngularService,
-    private babylonModelService: BabylonModelService,
-    private uiConfigCollectionService: UiConfigCollectionService,
-    private threeJsWaterRenderService: ThreeJsWaterRenderService,
-    private actionService: ActionService) {
+              private babylonModelService: BabylonModelService,
+              private uiConfigCollectionService: UiConfigCollectionService,
+              private threeJsWaterRenderService: ThreeJsWaterRenderService,
+              private actionService: ActionService) {
   }
 
   public static color4Diplomacy(diplomacy: Diplomacy): Color3 {
@@ -285,6 +281,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       if (this.editorTerrainTileCreationCallback) {
         this.editorTerrainTileCreationCallback(babylonTerrainTileImpl);
       }
+      this.editorTerrainTileContainer.push(babylonTerrainTileImpl);
       return babylonTerrainTileImpl;
     } catch (e) {
       console.error(`Error createTerrainTile() with index ${terrainTile.getIndex()}`)
@@ -404,7 +401,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         return;
       }
       if (!this.outOfViewPlane) {
-        this.outOfViewPlane = MeshBuilder.CreatePlane("Out of view plane", { size: markerConfig.outOfViewSize }, this.scene);
+        this.outOfViewPlane = MeshBuilder.CreatePlane("Out of view plane", {size: markerConfig.outOfViewSize}, this.scene);
         this.outOfViewPlane.parent = this.camera;
         this.outOfViewPlane.position.z = markerConfig.outOfViewDistanceFromCamera;
         this.outOfViewPlane.rotation.x = this.camera.rotation.x;
@@ -480,7 +477,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   private createPlaceDiscMarker(placeConfig: PlaceConfig): Mesh {
     let radius = placeConfig.toRadiusAngular() || 1;
-    const diskMesh = MeshBuilder.CreateDisc("Place marker", { radius: radius }, this.scene);
+    const diskMesh = MeshBuilder.CreateDisc("Place marker", {radius: radius}, this.scene);
     diskMesh.position.x = placeConfig.getPosition()?.getX()!;
     diskMesh.position.y = 0.1 + LocationVisualization.getHeightFromTerrain(placeConfig.getPosition()?.getX()!, placeConfig.getPosition()?.getY()!, this);
     diskMesh.position.z = placeConfig.getPosition()?.getY()!;
@@ -632,7 +629,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       import("@babylonjs/inspector"),
       import("@babylonjs/node-editor")
     ]).then((_values) => {
-      this.scene.debugLayer.show({ enableClose: true, embedMode: true });
+      this.scene.debugLayer.show({enableClose: true, embedMode: true});
     });
   }
 
@@ -863,6 +860,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
     }
     return particleSystem;
+  }
+
+  getAllBabylonTerrainTile(): BabylonTerrainTileImpl[] {
+    return this.editorTerrainTileContainer;
   }
 
 }

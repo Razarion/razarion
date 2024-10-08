@@ -16,7 +16,6 @@ import com.btxtech.uiservice.renderer.ViewField;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -167,12 +166,5 @@ public class TerrainUiService {
 
     public void onTerrainTileResponse(TerrainTile terrainTile) {
         terrainTileConsumers.remove(terrainTile.getIndex()).accept(terrainTile);
-    }
-
-    public Collection<UiTerrainTile> getAllUiTerrainTiles() {
-        Collection<UiTerrainTile> allUiTerrainTiles = new ArrayList<UiTerrainTile>();
-        allUiTerrainTiles.addAll(displayTerrainTiles.values());
-        allUiTerrainTiles.addAll(cacheTerrainTiles.values());
-        return allUiTerrainTiles;
     }
 }
