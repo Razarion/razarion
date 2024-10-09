@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IntIntMap;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
@@ -231,7 +232,7 @@ public class WorkerMarshaller {
                 break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
-                data.add(fromJson(array[DATA_OFFSET_1].asString(), Map.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), IntIntMap.class));
                 data.add(fromJson(array[DATA_OFFSET_2].asString(), Integer.class));
                 data.add(fromJson(array[DATA_OFFSET_3].asString(), String.class));
                 data.add(fromJson(array[DATA_OFFSET_4].asString(), DecimalPosition.class));

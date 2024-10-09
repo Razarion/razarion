@@ -10,104 +10,104 @@ package com.btxtech.uiservice.i18n;
 public interface I18nConstants {
     // Common
     static String unregisteredUser() {
-        return "unregisteredUser";
+        return "Unregistered user";
     }
 
     static String unnamedUser() {
-        return "unnamedUser";
+        return "Unnamed user";
     }
 
     static String no() {
-        return "no";
+        return "No";
     }
 
     static String planet() {
-        return "planet";
+        return "Planet";
     }
 
     static String filter() {
-        return "filter";
+        return "Filter";
     }
 
     static String start() {
-        return "start";
+        return "Start";
     }
 
     static String date() {
-        return "date";
+        return "Date";
     }
 
     static String time() {
-        return "time";
+        return "Time";
     }
 
     static String name() {
-        return "name";
+        return "Name";
     }
 
     static String send() {
-        return "send";
+        return "Send";
     }
 
     static String message() {
-        return "message";
+        return "Message";
     }
 
     // Login logout
     static String registerThanks() {
-        return "registerThanks";
+        return "Thank you";
     }
 
     static String registerThanksLong() {
-        return "registerThanksLong";
+        return "Registration completed successfully. Razarion can be used without any restrictions.";
     }
 
     static String placeStartItemTitle() {
-        return "placeStartItemTitle";
+        return "Place";
     }
 
     static String placeStartItemDescription() {
-        return "placeStartItemDescription";
+        return "Choose your starting point and place the start unit.";
     }
 
     // Dead-end and new base
     static String tooltipBuild(String itemName) {
-        return "tooltipBuild";
+        return "Build " + itemName;
     }
 
     static String tooltipNoBuildLimit(String itemName) {
-        return "tooltipNoBuildLimit";
+        return "Build of " + itemName + " not possible. Item limit exceeded. Go to the next level!";
     }
 
     static String tooltipNoBuildHouseSpace(String itemName) {
-        return "tooltipNoBuildHouseSpace";
+        return "Build of " + itemName + " not possible. House space exceeded. Build more houses!";
     }
 
     static String tooltipNoBuildMoney(String itemName) {
-        return "tooltipNoBuildMoney";
+        return "Build off " + itemName + " not possible. Not enough Razarion. Earn more Razarion!";
     }
 
     static String botEnemy() {
-        return "botEnemy";
+        return "Bot enemy";
     }
 
     static String botNpc() {
-        return "botNpc";
+        return "NPC";
     }
 
     static String playerFriend() {
-        return "playerFriend";
+        return "Other player";
     }
 
     static String tooltipSelect(String itemName) {
-        return "tooltipSelect." + itemName;
+        return "Select " + itemName;
     }
 
     static String created() {
-        return "created";
+        return "Created";
     }
 
     static String create() {
-        return "create";
+        return "Create";
     }
 }

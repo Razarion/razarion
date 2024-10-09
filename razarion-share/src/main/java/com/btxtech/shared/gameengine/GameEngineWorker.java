@@ -27,6 +27,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IntIntMap;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
@@ -62,7 +63,6 @@ import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -177,7 +177,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 resourceService.createResources((Collection<ResourceItemPosition>) controlPackage.getSingleData());
                 break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
-                createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (Map<Integer, Integer>) controlPackage.getData(1), (Integer) controlPackage.getData(2), (String) controlPackage.getData(3), (DecimalPosition) controlPackage.getData(4));
+                createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (IntIntMap) controlPackage.getData(1), (Integer) controlPackage.getData(2), (String) controlPackage.getData(3), (DecimalPosition) controlPackage.getData(4));
                 break;
             case USE_INVENTORY_ITEM:
                 useInventoryItem((UseInventoryItem) controlPackage.getData(0));
@@ -349,14 +349,14 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         return unitPosition.getO();
     }
 
-    private void createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, int userId, String name, DecimalPosition position) {
+    private void createHumanBaseWithBaseItem(int levelId, IntIntMap unlockedItemLimit, int userId, String name, DecimalPosition position) {
         if (serverConnection != null) {
             serverConnection.createHumanBaseWithBaseItem(position);
         } else {
             if (name.equals("")) {
                 name = null;
             }
-            playerBase = baseItemService.createHumanBaseWithBaseItem(levelId, unlockedItemLimit, userId, name, position);
+            playerBase = baseItemService.createHumanBaseWithBaseItem(levelId, unlockedItemLimit.getMap(), userId, name, position);
         }
     }
 

@@ -2,6 +2,7 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import org.dominokit.rest.shared.request.service.annotations.RequestFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -16,6 +17,7 @@ import java.util.List;
  * on 29.08.2017.
  */
 @Path(CommonUrl.QUEST_CONTROLLER_PATH)
+@RequestFactory
 public interface QuestController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)

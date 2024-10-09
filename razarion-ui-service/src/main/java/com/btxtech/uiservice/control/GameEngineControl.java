@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IntIntMap;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
@@ -152,7 +153,7 @@ public abstract class GameEngineControl {
     public void createHumanBaseWithBaseItem(DecimalPosition position) {
         sendToWorker(GameEngineControlPackage.Command.CREATE_HUMAN_BASE_WITH_BASE_ITEM,
                 userUiService.getUserContext().getLevelId(),
-                userUiService.getUserContext().getUnlockedItemLimit(),
+                new IntIntMap().map(userUiService.getUserContext().getUnlockedItemLimit()),
                 userUiService.getUserContext().getUserId(),
                 userUiService.getUserContext().getName() == null ? "" : userUiService.getUserContext().getName(), // Errai demarsheller is not able to handle top level null JSON object
                 position);

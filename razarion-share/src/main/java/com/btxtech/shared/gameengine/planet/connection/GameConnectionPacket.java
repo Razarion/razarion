@@ -20,8 +20,6 @@ import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.system.ConnectionMarshaller;
 
-import java.util.List;
-
 /**
  * Created by Beat
  * 21.04.2017.
