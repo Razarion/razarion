@@ -20,12 +20,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.DiffTriangleElement;
@@ -51,7 +46,6 @@ import javafx.scene.paint.Stop;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -546,83 +540,6 @@ public class WeldTestRenderer {
         drawTriangles(slopeGeometry.getPositions());
     }
 
-
-    private void drawNodes(TerrainNode[][] terrainNodes, Index index) {
-        if (terrainNodes == null) {
-            return;
-        }
-        for (int x = 0; x < TerrainUtil.TERRAIN_TILE_NODES_COUNT; x++) {
-            for (int y = 0; y < TerrainUtil.TERRAIN_TILE_NODES_COUNT; y++) {
-                TerrainNode terrainNode = terrainNodes[x][y];
-                if (terrainNode != null) {
-                    DecimalPosition absoluteNodePosition = TerrainUtil.toTileAbsolute(index).add(TerrainUtil.toNodeAbsolute(new Index(x, y)));
-                    drawNode(terrainNode, absoluteNodePosition);
-                }
-            }
-        }
-    }
-
-    private void drawNode(TerrainNode terrainNode, DecimalPosition absoluteNodePosition) {
-        if (weldTestController.renderTerrainTileTerrainType()) {
-            TerrainType terrainType = TerrainType.fromOrdinal(terrainNode.getTerrainType());
-            if (terrainType != null) {
-                gc.setFill(color4TerrainType(terrainType));
-                gc.fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
-            }
-        }
-        if (weldTestController.renderTerrainTileHeight()) {
-            gc.setFill(color4Z(terrainNode.getHeight()));
-            gc.fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
-        }
-        drawSubNodes(terrainNode.getTerrainSubNodes(), absoluteNodePosition, 0);
-    }
-
-    private void drawSubNodes(TerrainSubNode[][] terrainSubNodes, DecimalPosition absolutePosition, int depth) {
-        if (terrainSubNodes == null) {
-            return;
-        }
-        double subNodeLength = TerrainUtil.calculateSubNodeLength(depth);
-        for (int x = 0; x < terrainSubNodes.length; x++) {
-            for (int y = 0; y < terrainSubNodes.length; y++) {
-                TerrainSubNode terrainSubNode = terrainSubNodes[x][y];
-                if (terrainSubNode != null) {
-                    drawSubNode(terrainSubNode, absolutePosition.add(x * subNodeLength, y * subNodeLength), subNodeLength, depth);
-                }
-            }
-        }
-    }
-
-    private void drawSubNode(TerrainSubNode terrainSubNode, DecimalPosition absolutePosition, double subNodeLength, int depth) {
-        if (weldTestController.renderTerrainTileTerrainType()) {
-            TerrainType terrainType = TerrainType.fromOrdinal(terrainSubNode.getTerrainType());
-            if (terrainType != null) {
-                gc.setFill(color4TerrainType(terrainType));
-                gc.fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
-            }
-        }
-        if (weldTestController.renderTerrainTileHeight()) {
-            if (terrainSubNode.getHeight() != null) {
-                gc.setFill(color4Z(terrainSubNode.getHeight()));
-                gc.fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
-            }
-        }
-
-//        gc.setStroke(new Color(0, 0, 1, 1));
-//        gc.strokeRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
-//        if (terrainSubNode.getTerrainSubNodes() == null) {
-//            if (terrainSubNode.isLand() == null || !terrainSubNode.isLand()) {
-//                gc.setFill(new Color(1, 0, 0, 0.5));
-//                gc.fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
-//            }
-//
-//            double height = terrainSubNode.getHeight();
-//            double v = (height + 5) / 25.0;
-//            gc.setFill(Color.color(v, v, v, 0.5));
-//            gc.fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
-//        }
-        drawSubNodes(terrainSubNode.getTerrainSubNodes(), absolutePosition, depth + 1);
-
-    }
 
     private void doRenderShape() {
         for (int x = 0; x < actual.getTileXCount(); x++) {

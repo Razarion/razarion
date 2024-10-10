@@ -245,9 +245,7 @@ export class BabylonItemImpl implements BabylonItem {
       this.visualizationMarkerDisc.parent = this.container;
       (<NodeMaterial>this.visualizationMarkerDisc.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
     } else {
-      if (!this.visualizationMarkerDisc) {
-        console.warn("!this.visualizationMarkerDisc")
-      } else {
+      if (this.visualizationMarkerDisc) {
         this.visualizationMarkerDisc.dispose();
         this.visualizationMarkerDisc = null;
       }

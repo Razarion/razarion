@@ -9,8 +9,6 @@ import com.btxtech.shared.gameengine.WorkerTrackerHandler;
 import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
-import com.btxtech.shared.nativejs.NativeMatrix;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.debugtool.DebugHelper;
@@ -20,16 +18,6 @@ import dagger.Provides;
 
 @Module
 public abstract class RazarionClientWorkerModule {
-    @Provides
-    public static NativeMatrixFactory nativeMatrixFactory() {
-        return new NativeMatrixFactory() {
-            @Override
-            public NativeMatrix createFromColumnMajorArray(double[] array) {
-                return super.createFromColumnMajorArray(array);
-            }
-        }; // TODO
-    }
-
 
     @Provides
     public static DebugHelper debugHelper() {

@@ -2,16 +2,12 @@ package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
 
 import javax.inject.Inject;
-import java.util.Set;
 
 /**
  * Created by Beat
@@ -19,11 +15,9 @@ import java.util.Set;
  */
 
 public class UiTerrainTile {
-
     // private Logger logger = Logger.getLogger(UiTerrainTile.class.getName());
-    private TerrainUiService terrainUiService;
-
-    private BabylonRendererService babylonRendererService;
+    private final TerrainUiService terrainUiService;
+    private final BabylonRendererService babylonRendererService;
     private TerrainTile terrainTile;
     private BabylonTerrainTile babylonTerrainTile;
     private boolean active;
@@ -71,59 +65,11 @@ public class UiTerrainTile {
         return TerrainType.isAllowed(terrainType, getTerrainType(position));
     }
 
-    public boolean isAtLeaseOneTerrainFree(DecimalPosition terrainPosition, Set<TerrainType> terrainTypes) {
-        return findNode(terrainPosition, new TerrainTileAccess<Boolean>() {
-            @Override
-            public Boolean terrainTileNotLoaded() {
-                return false;
-            }
-
-            @Override
-            public Boolean onTerrainTile() {
-                return terrainTypes.size() == 1 && CollectionUtils.getFirst(terrainTypes) == TerrainType.LAND;
-            }
-
-            @Override
-            public Boolean onTerrainNode(TerrainNode terrainNode) {
-                return TerrainType.isAtLeaseOneAllowedOrdinal(terrainTypes, terrainNode.getTerrainType());
-            }
-
-            @Override
-            public Boolean onTerrainSubNode(TerrainSubNode terrainSubNode) {
-                return TerrainType.isAtLeaseOneAllowedOrdinal(terrainTypes, terrainSubNode.getTerrainType());
-            }
-        });
-    }
-
     public TerrainType getTerrainType(DecimalPosition terrainPosition) {
-        return findNode(terrainPosition, new TerrainTileAccess<TerrainType>() {
-            @Override
-            public TerrainType terrainTileNotLoaded() {
-                return null;
-            }
-
-            @Override
-            public TerrainType onTerrainTile() {
-                return null;
-            }
-
-            @Override
-            public TerrainType onTerrainNode(TerrainNode terrainNode) {
-                return TerrainType.fromOrdinal(terrainNode.getTerrainType());
-            }
-
-            @Override
-            public TerrainType onTerrainSubNode(TerrainSubNode terrainSubNode) {
-                return TerrainType.fromOrdinal(terrainSubNode.getTerrainType());
-            }
-        });
+        return findNode(terrainPosition, () -> null);
     }
 
     private <T> T findNode(DecimalPosition terrainPosition, TerrainTileAccess<T> terrainTileAccess) {
         return terrainTileAccess.onTerrainTile();
-    }
-
-    public BabylonTerrainTile getBabylonTerrainTile() {
-        return babylonTerrainTile;
     }
 }

@@ -55,7 +55,6 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
 
@@ -74,39 +73,23 @@ import java.util.logging.Logger;
 public abstract class GameEngineWorker implements PlanetTickListener, QuestListener, GameLogicListener {
 
     private final Logger logger = Logger.getLogger(GameEngineWorker.class.getName());
-    private PlanetService planetService;
-
-    private InitializeService initializeService;
-
-    private BotService botService;
-
-    private ResourceService resourceService;
-
-    private BaseItemService baseItemService;
-
-    private SyncItemContainerServiceImpl syncItemContainerService;
-
-    private QuestService questService;
-
-    private BoxService boxService;
-
-    private CommandService commandService;
-
-    private GameLogicService logicService;
-
-    private PerfmonService perfmonService;
-
-    private TerrainService terrainService;
-
-    private Provider<AbstractServerGameConnection> connectionInstance;
-
-    private Provider<WorkerTrackerHandler> workerTrackerHandlerInstance;
-
-    private NativeMatrixFactory nativeMatrixFactory;
+    private final List<SyncBaseItem> killedSyncBaseItems = new ArrayList<>();
+    private final List<Integer> removedSyncBaseItemIds = new ArrayList<>();
+    private final PlanetService planetService;
+    private final InitializeService initializeService;
+    private final BotService botService;
+    private final ResourceService resourceService;
+    private final BaseItemService baseItemService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
+    private final QuestService questService;
+    private final BoxService boxService;
+    private final CommandService commandService;
+    private final PerfmonService perfmonService;
+    private final TerrainService terrainService;
+    private final Provider<AbstractServerGameConnection> connectionInstance;
+    private final Provider<WorkerTrackerHandler> workerTrackerHandlerInstance;
     private UserContext userContext;
     private PlayerBase playerBase;
-    private List<SyncBaseItem> killedSyncBaseItems = new ArrayList<>();
-    private List<Integer> removedSyncBaseItemIds = new ArrayList<>();
     private int xpFromKills;
     private boolean sendTickUpdate;
     private AbstractServerGameConnection serverConnection;
@@ -114,8 +97,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private WorkerTrackerHandler workerTrackerHandler;
     private String gameSessionUuid;
 
-    public GameEngineWorker(NativeMatrixFactory nativeMatrixFactory,
-                            Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
+    public GameEngineWorker(Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
                             Provider<AbstractServerGameConnection> connectionInstance,
                             TerrainService terrainService,
                             PerfmonService perfmonService,
@@ -129,12 +111,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                             BotService botService,
                             InitializeService initializeService,
                             PlanetService planetService) {
-        this.nativeMatrixFactory = nativeMatrixFactory;
         this.workerTrackerHandlerInstance = workerTrackerHandlerInstance;
         this.connectionInstance = connectionInstance;
         this.terrainService = terrainService;
         this.perfmonService = perfmonService;
-        this.logicService = logicService;
         this.commandService = commandService;
         this.boxService = boxService;
         this.questService = questService;
@@ -149,6 +129,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
+
+    protected abstract int[] convertIntArray(int[] intArray);
 
     protected void dispatch(GameEngineControlPackage controlPackage) {
         switch (controlPackage.getCommand()) {
@@ -353,7 +335,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         if (serverConnection != null) {
             serverConnection.createHumanBaseWithBaseItem(position);
         } else {
-            if (name.equals("")) {
+            if (name.isEmpty()) {
                 name = null;
             }
             playerBase = baseItemService.createHumanBaseWithBaseItem(levelId, unlockedItemLimit.getMap(), userId, name, position);
@@ -770,7 +752,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
         int[] removedIds = removedSyncBaseItemIds.stream().mapToInt(integer -> integer).toArray();
         removedSyncBaseItemIds.clear();
-        return nativeMatrixFactory.intArrayConverter(removedIds);
+        return convertIntArray(removedIds);
     }
 
 

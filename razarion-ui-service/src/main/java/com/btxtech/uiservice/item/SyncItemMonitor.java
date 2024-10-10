@@ -1,8 +1,6 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 
 import java.util.function.Consumer;
 

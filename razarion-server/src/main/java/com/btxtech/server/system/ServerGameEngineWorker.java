@@ -15,7 +15,6 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 
 import javax.inject.Inject;
@@ -30,8 +29,7 @@ import javax.inject.Singleton;
 public class ServerGameEngineWorker extends GameEngineWorker {
 
     @Inject
-    public ServerGameEngineWorker(NativeMatrixFactory nativeMatrixFactory,
-                                  Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
+    public ServerGameEngineWorker(Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
                                   Provider<AbstractServerGameConnection> connectionInstance,
                                   TerrainService terrainService,
                                   PerfmonService perfmonService,
@@ -45,8 +43,7 @@ public class ServerGameEngineWorker extends GameEngineWorker {
                                   BotService botService,
                                   InitializeService initializeService,
                                   PlanetService planetService) {
-        super(nativeMatrixFactory,
-                workerTrackerHandlerInstance,
+        super(workerTrackerHandlerInstance,
                 connectionInstance,
                 terrainService,
                 perfmonService,
@@ -64,6 +61,11 @@ public class ServerGameEngineWorker extends GameEngineWorker {
 
     @Override
     protected void sendToClient(GameEngineControlPackage.Command command, Object... object) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected int[] convertIntArray(int[] intArray) {
         throw new UnsupportedOperationException();
     }
 }

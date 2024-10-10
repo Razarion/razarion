@@ -52,6 +52,7 @@ public class GameEngineControlPackage {
         UPDATE_LEVEL,
         // Base items
         SYNC_ITEM_START_SPAWNED,
+        @Deprecated
         SYNC_ITEM_IDLE,
         // Boxes
         CREATE_BOXES,

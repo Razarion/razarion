@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
@@ -23,7 +22,6 @@ import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
@@ -58,12 +56,7 @@ public class BaseItemUiService {
     private final Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private final Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
-    private final MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
-    private final MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
     private final Map<Integer, BabylonBaseItem> babylonBaseItems = new HashMap<>();
-    private final MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
-    private final MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
-    private final MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
     private final List<BabylonBaseItem> selectedBabylonBaseItems = new ArrayList<>();
     private final List<Integer> selectedOutOfViewIds = new ArrayList<>();
     private final ItemTypeService itemTypeService;
@@ -83,7 +76,6 @@ public class BaseItemUiService {
     private int itemCount;
     private boolean hasRadar;
     private NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
-    private long lastUpdateTimeStamp;
     private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
@@ -122,13 +114,7 @@ public class BaseItemUiService {
         usedHouseSpace = 0;
         itemCount = 0;
         nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
-        spawningModelMatrices.clear();
-        buildupModelMatrices.clear();
         babylonBaseItems.clear();
-        harvestModelMatrices.clear();
-        builderModelMatrices.clear();
-        weaponTurretModelMatrices.clear();
-        lastUpdateTimeStamp = 0;
         syncBaseItemSetPositionMonitor = null;
         selectedBabylonBaseItems.clear();
         selectedOutOfViewIds.clear();
@@ -136,14 +122,8 @@ public class BaseItemUiService {
 
     public void updateSyncBaseItems(NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos) {
         // May be easier if replaced with SyncItemState and SyncItemMonitor
-        lastUpdateTimeStamp = System.currentTimeMillis();
         this.nativeSyncBaseItemTickInfos = nativeSyncBaseItemTickInfos;
-        spawningModelMatrices.clear();
-        buildupModelMatrices.clear();
         Collection<Integer> leftoversAliveBabylonBaseItems = new ArrayList<>(babylonBaseItems.keySet());
-        harvestModelMatrices.clear();
-        builderModelMatrices.clear();
-        weaponTurretModelMatrices.clear();
         int tmpItemCount = 0;
         int houseSpace = 0;
         int usedHouseSpace = 0;

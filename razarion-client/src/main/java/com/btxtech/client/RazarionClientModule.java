@@ -5,8 +5,6 @@ import com.btxtech.client.system.ClientServerSystemConnection;
 import com.btxtech.client.system.boot.BootImpl;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.common.system.ClientSimpleExecutorServiceImpl;
-import com.btxtech.shared.nativejs.NativeMatrix;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.ServerQuestProvider;
@@ -26,16 +24,6 @@ import static com.btxtech.client.gwtangular.GwtAngularService.getGwtAngularFacad
 @Module
 public abstract class RazarionClientModule {
     private static final GwtAngularFacade gwtAngularFacade = getGwtAngularFacade();
-
-    @Provides
-    public static NativeMatrixFactory nativeMatrixFactory() {
-        return new NativeMatrixFactory() {
-            @Override
-            public NativeMatrix createFromColumnMajorArray(double[] array) {
-                return super.createFromColumnMajorArray(array);
-            }
-        }; // TODO
-    }
 
     @Provides
     public static BabylonRenderServiceAccess babylonRenderServiceAccess() {

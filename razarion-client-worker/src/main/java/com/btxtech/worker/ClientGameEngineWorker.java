@@ -18,9 +18,11 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.google.gwt.core.client.JsArrayInteger;
+import elemental2.core.JsArray;
 import elemental2.dom.DedicatedWorkerGlobalScope;
+import jsinterop.base.Js;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -38,8 +40,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     private final ClientPerformanceTrackerService clientPerformanceTrackerService;
 
     @Inject
-    public ClientGameEngineWorker(NativeMatrixFactory nativeMatrixFactory,
-                                  Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
+    public ClientGameEngineWorker(Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
                                   Provider<AbstractServerGameConnection> connectionInstance,
                                   TerrainService terrainService,
                                   PerfmonService perfmonService,
@@ -54,8 +55,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
                                   InitializeService initializeService,
                                   PlanetService planetService,
                                   ClientPerformanceTrackerService clientPerformanceTrackerService) {
-        super(nativeMatrixFactory,
-                workerTrackerHandlerInstance,
+        super(workerTrackerHandlerInstance,
                 connectionInstance,
                 terrainService,
                 perfmonService,
@@ -103,5 +103,14 @@ public class ClientGameEngineWorker extends GameEngineWorker {
 
     public static native DedicatedWorkerGlobalScope getDedicatedWorkerGlobalScope() /*-{
         return self;
+    }-*/;
+
+    @Override
+    protected native int[] convertIntArray(int[] intArray) /*-{
+        var result = [];
+        for (i = 0; i < intArray.length; i++) {
+            result[i] = intArray[i];
+        }
+        return result;
     }-*/;
 }

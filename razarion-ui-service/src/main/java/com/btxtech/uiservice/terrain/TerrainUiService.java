@@ -115,16 +115,6 @@ public class TerrainUiService {
         }
     }
 
-    public boolean isAtLeaseOneTerrainFreeInDisplay(DecimalPosition terrainPosition, Set<TerrainType> terrainTypes) {
-        Index terrainTile = TerrainUtil.toTile(terrainPosition);
-        UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
-        if (uiTerrainTile == null) {
-            throw new IllegalStateException("TerrainUiService.isAtLeaseOneTerrainFreeInDisplay(DecimalPosition) UiTerrainTile not loaded: " + terrainTile);
-        }
-
-        return uiTerrainTile.isAtLeaseOneTerrainFree(terrainPosition, terrainTypes);
-    }
-
     public boolean isTerrainFreeInDisplay(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
         for (DecimalPosition terrainPosition : terrainPositions) {
             TerrainType terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();
