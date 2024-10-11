@@ -118,8 +118,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         if (pickingInfo && pickingInfo.hit) {
           const decal = MeshBuilder.CreateDecal("Bot ground", this.groundMesh, {
             position: pickingInfo!.pickedPoint!,
-            size: new Vector3(babylonDecal.xSize, babylonDecal.ySize, 10),
-            normal: pickingInfo.getNormal(true)!
+            size: new Vector3(babylonDecal.ySize, babylonDecal.xSize, 10),
+            normal: new Vector3(0,1,0)
           });
           decal.material = material;
           decal.material.zOffset = -2
