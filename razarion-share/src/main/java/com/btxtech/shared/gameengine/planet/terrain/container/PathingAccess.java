@@ -75,6 +75,9 @@ public class PathingAccess {
         if (terrainShapeTile == null) {
             return false;
         }
+        if(terrainShapeTile.getNativeTerrainShapeObjectLists() == null) {
+            return false;
+        }
         for (NativeTerrainShapeObjectList nativeTerrainShapeObjectList : terrainShapeTile.getNativeTerrainShapeObjectLists()) {
             double radius = terrainShape.getTerrainTypeService().getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
             if (radius > 0.0) {
