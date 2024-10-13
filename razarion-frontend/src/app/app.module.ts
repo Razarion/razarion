@@ -86,7 +86,6 @@ import { GroundComponent } from './editor/common/ground/ground.component';
 import { WaterComponent } from './editor/common/water/water.component';
 import { BabylonModelComponent } from './editor/common/babylon-model/babylon-model.component';
 import { ProgressSpinnerModule } from "primeng/progressspinner";
-import { TerrainEditor2dComponent } from './terrain-editor2d/terrain-editor2d.component';
 import { MenuModule } from 'primeng/menu';
 import { TerrainObjectGeneratorComponent } from './editor/terrain-editor/terrain-object-generator/terrain-object-generator.component';
 import { BackendComponent } from './backend/backend.component';
@@ -180,7 +179,6 @@ import { PropertyEditorComponent } from './editor/property-editor/property-edito
     GroundComponent,
     WaterComponent,
     BabylonModelComponent,
-    TerrainEditor2dComponent,
     TerrainObjectGeneratorComponent,
     BackendComponent,
     LevelEditorComponent,

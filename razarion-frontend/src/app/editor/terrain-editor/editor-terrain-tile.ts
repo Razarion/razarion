@@ -46,7 +46,7 @@ export class EditorTerrainTile {
     if (!this.positions) {
       return;
     }
-    
+
     for (let i = 0; i < this.positions.length; i++) {
       let oldPosition = this.positions[i];
       if (!oldPosition) {
@@ -140,7 +140,9 @@ export class EditorTerrainTile {
     let yOffset = BabylonTerrainTileImpl.NODE_Y_COUNT / 2 + this.index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
     var decalSize = new Vector3(BabylonTerrainTileImpl.NODE_X_COUNT, BabylonTerrainTileImpl.NODE_Y_COUNT, 100);
     var decal = MeshBuilder.CreateDecal("Terrain type", this.babylonTerrainTileImpl!.getGroundMesh(), {
-      position: new Vector3(xOffset, 0.5, yOffset), normal: new Vector3(0, 1, 0), size: decalSize
+      position: new Vector3(xOffset, 0.5, yOffset),
+      normal: new Vector3(0, 1, 0),
+      size: decalSize,
     });
     var decalMaterial = new StandardMaterial("decalMat", this.renderService.getScene());
     decalMaterial.diffuseTexture = this.createDynamicTexture();
@@ -148,6 +150,7 @@ export class EditorTerrainTile {
     decalMaterial.specularColor = new Color3(0, 0, 0)
     decal.material = decalMaterial;
     decal.isPickable = false;
+    decal.setParent(this.babylonTerrainTileImpl!.getGroundMesh());
     return decal
   }
 
@@ -159,8 +162,17 @@ export class EditorTerrainTile {
     const canvas = document.createElement('canvas');
     canvas.width = BabylonTerrainTileImpl.NODE_X_COUNT * factor;
     canvas.height = BabylonTerrainTileImpl.NODE_Y_COUNT * factor;
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    var  context = canvas.getContext('2d')!
+    context.translate(centerX, centerY);
+    context.rotate(-Math.PI / 2);
+    context.translate(-centerX, -centerY);
+
     this.drawMiniMap(
-      canvas.getContext('2d')!,
+      context,
+      false,
       factor,
       effectiveBorder,
       "rgba(0, 0, 255, 0.5)",
@@ -170,7 +182,7 @@ export class EditorTerrainTile {
     return dynamicTexture;
   }
 
-  drawMiniMap(context: CanvasRenderingContext2D, factor: number, effectiveBorder: number, waterColor: string, landColor: string, blockedColor: string) {
+  drawMiniMap(context: CanvasRenderingContext2D, flipY: boolean, factor: number, effectiveBorder: number, waterColor: string, landColor: string, blockedColor: string) {
     let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE) + 1;
     let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE) + 1;
     for (let y = 0; y < yCount - 1; y++) {
@@ -194,8 +206,8 @@ export class EditorTerrainTile {
             context.fillStyle = "rgba(1, 1, 1, 1)";
         }
         context.fillRect(
-          (x + 1) * factor - effectiveBorder * 2,
-          (yCount - y + 1) * factor - effectiveBorder * 2,
+          (xCount - x - 1) * factor - effectiveBorder * 2,
+          (flipY ? (yCount - y + 1) : (y + 1)) * factor - effectiveBorder * 2,
           factor - effectiveBorder * 2,
           factor - effectiveBorder * 2);
       }

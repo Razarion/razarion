@@ -123,7 +123,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           });
           decal.material = material;
           decal.material.zOffset = -2
-          decal.setParent(this.container);
+          decal.setParent(this.groundMesh);
           decal.receiveShadows = true;
           decal.actionManager = actionManager;
           BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(decal, RazarionMetadataType.GROUND, undefined, undefined);

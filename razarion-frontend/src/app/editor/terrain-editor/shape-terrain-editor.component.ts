@@ -317,6 +317,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
         context.translate(xCanvas, yCanvas);
         editorTerrainTile.drawMiniMap(
           context,
+          true,
           factor,
           0,
           "rgba(0, 0, 255, 0.5)",

@@ -8,13 +8,11 @@ import {EmailVerification} from "./emailverification/email-verification.componen
 import {LogoutComponent} from "./logout/logout.component";
 import {ResetPasswordComponent} from "./resetpassword/reset-password.component";
 import {ChangePasswordComponent} from "./resetpassword/change-password.component";
-import {TerrainEditor2dComponent} from "./terrain-editor2d/terrain-editor2d.component";
 import {BackendComponent} from "./backend/backend.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'game', component: GameComponent},
-  {path: 'terrain-editor', component: TerrainEditor2dComponent},
   {path: 'backend', component: BackendComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'nocookies', component: NoCookies},

@@ -4,12 +4,13 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.system.ExceptionHandler;
 import jsinterop.annotations.JsType;
 
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -19,20 +20,16 @@ import java.util.function.Consumer;
 
 @JsType
 public class BaseItemPlacer {
-
-    private BaseItemPlacerChecker baseItemPlacerChecker;
-
-    private ItemTypeService itemTypeService;
-
-    private ExceptionHandler exceptionHandler;
+    private final Logger logger = Logger.getLogger(BaseItemPlacer.class.getName());
+    private final BaseItemPlacerChecker baseItemPlacerChecker;
+    private final ItemTypeService itemTypeService;
     private boolean canBeCanceled;
     private Consumer<DecimalPosition> placeCallback;
     private BaseItemType baseItemType;
     private String errorText;
 
     @Inject
-    public BaseItemPlacer(ExceptionHandler exceptionHandler, ItemTypeService itemTypeService, BaseItemPlacerChecker baseItemPlacerChecker) {
-        this.exceptionHandler = exceptionHandler;
+    public BaseItemPlacer(ItemTypeService itemTypeService, BaseItemPlacerChecker baseItemPlacerChecker) {
         this.itemTypeService = itemTypeService;
         this.baseItemPlacerChecker = baseItemPlacerChecker;
     }
@@ -60,7 +57,7 @@ public class BaseItemPlacer {
             baseItemPlacerChecker.check(position);
             setupErrorText();
         } catch (Exception e) {
-            exceptionHandler.handleException("BaseItemPlacer.onMove() " + position, e);
+            logger.log(Level.SEVERE, "BaseItemPlacer.onMove() " + position, e);
         }
     }
 
@@ -72,7 +69,7 @@ public class BaseItemPlacer {
             setupErrorText();
             placeCallback.accept(position);
         } catch (Exception e) {
-            exceptionHandler.handleException("BaseItemPlacer.onMove() " + position, e);
+            logger.log(Level.SEVERE, "BaseItemPlacer.onPlace() " + position, e);
         }
     }
 
