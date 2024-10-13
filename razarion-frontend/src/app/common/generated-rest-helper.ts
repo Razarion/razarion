@@ -18,8 +18,8 @@ export class GeneratedRestHelper {
 
   static newTerrainObjectPosition(): TerrainObjectPosition {
     return new class implements TerrainObjectPosition {
-      id=-9876543210
-      terrainObjectConfigId=-1234567890
+      id=-987654321
+      terrainObjectConfigId=-123456789
       position=GeneratedRestHelper.newDecimalPosition(0,0);
       scale=null;
       rotation= null;
