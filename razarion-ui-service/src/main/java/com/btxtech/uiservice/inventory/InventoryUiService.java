@@ -93,9 +93,9 @@ public class InventoryUiService {
                     modalDialogManager.showUseInventoryHouseSpaceExceeded();
                 } else {
                     BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig();
-                    baseItemPlacerConfig.setBaseItemTypeId(baseItemType.getId());
-                    baseItemPlacerConfig.setBaseItemCount(inventoryItem.getBaseItemTypeCount());
-                    baseItemPlacerConfig.setEnemyFreeRadius(inventoryItem.getBaseItemTypeFreeRange());
+                    baseItemPlacerConfig.baseItemTypeId(baseItemType.getId());
+                    baseItemPlacerConfig.baseItemCount(inventoryItem.getBaseItemTypeCount());
+                    baseItemPlacerConfig.enemyFreeRadius(inventoryItem.getBaseItemTypeFreeRange());
                     baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
                         gameEngineControl.get().useInventoryItem(new UseInventoryItem().setInventoryId(inventoryItem.getId()).setPositions(new ArrayList<>(decimalPositions)));
                         if (gameUiControl.getGameEngineMode() == GameEngineMode.MASTER) {

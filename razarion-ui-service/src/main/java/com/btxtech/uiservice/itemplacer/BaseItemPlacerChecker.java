@@ -20,12 +20,10 @@ import java.util.Collection;
  */
 
 public class BaseItemPlacerChecker {
-    private static final double SAFETY_DISTANCE = 0.2;
-
     // private Logger logger = Logger.getLogger(BaseItemPlacerChecker.class.getName());
-    private TerrainUiService terrainUiService;
-
-    private BaseItemUiService baseItemUiService;
+    private static final double SAFETY_DISTANCE = 0.2;
+    private final TerrainUiService terrainUiService;
+    private final BaseItemUiService baseItemUiService;
     private Collection<DecimalPosition> relativeItemPositions;
     private boolean isAllowedAreaOk;
     private boolean isTerrainOk;
@@ -58,7 +56,7 @@ public class BaseItemPlacerChecker {
         if (isEnemiesOk) {
             isItemsOk = !baseItemUiService.hasItemsInRangeInViewField(absoluteItemPositions, baseItemType.getPhysicalAreaConfig().getRadius());
         }
-        isTerrainOk = isItemsOk && terrainUiService.isTerrainFreeInDisplay(absoluteItemPositions, baseItemType);
+        isTerrainOk = isItemsOk && terrainUiService.isTerrainFree(absoluteItemPositions, baseItemType);
     }
 
     public boolean isAllowedAreaOk() {

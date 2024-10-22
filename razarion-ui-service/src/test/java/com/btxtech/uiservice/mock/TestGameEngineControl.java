@@ -1,6 +1,7 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
@@ -26,6 +27,7 @@ import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST;
 import static com.btxtech.shared.gameengine.GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE;
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.heightToUnit16;
 
 /**
  * Created by Beat
@@ -74,8 +76,13 @@ public class TestGameEngineControl extends GameEngineControl {
         if (command == TERRAIN_TILE_REQUEST) {
             TerrainTile terrainTile = new TerrainTile();
             terrainTile.setIndex((Index) data[0]);
+            terrainTile.setGroundHeightMap(setupTerrainTileGroundHeightMap((Index) data[0]));
             dispatch(new GameEngineControlPackage(TERRAIN_TILE_RESPONSE, terrainTile));
         }
+    }
+
+    private Uint16ArrayEmu setupTerrainTileGroundHeightMap(Index tileIndex) {
+        return new TestUint16Array(new int[]{});
     }
 
     @Override

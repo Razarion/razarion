@@ -23,6 +23,7 @@ export abstract class GwtAngularFacade {
   modelDialogPresenter!: ModelDialogPresenter;
   inventoryTypeService!: InventoryTypeService;
   inventoryUiService!: InventoryUiService;
+  terrainUiService!: TerrainUiService;
 
   abstract onCrash(): void;
 }
@@ -503,6 +504,14 @@ export enum Diplomacy {
   BOX = "BOX",
 }
 
+export enum TerrainType {
+  LAND = "LAND",
+  WATER = "WATER",
+  LAND_COAST = "LAND_COAST",
+  WATER_COAST = "WATER_COAST",
+  BLOCKED = "BLOCKED",
+}
+
 export interface MarkerConfig {
   radius: number;
   nodesMaterialId: number | null;
@@ -747,6 +756,11 @@ export interface InventoryTypeService {
 
 export interface InventoryUiService {
   useItem(inventoryItem: InventoryItem): void;
+}
+
+export interface TerrainUiService {
+
+   getTerrainType(terrainPosition: DecimalPosition): TerrainType
 }
 
 // ---------- Dialog ----------

@@ -1,10 +1,10 @@
-import { Index, InputService, TerrainTile } from "../../gwtangular/GwtAngularFacade";
-import { Color3, Mesh, MeshBuilder, StandardMaterial, Texture, Vector3, VertexBuffer, VertexData } from "@babylonjs/core";
-import { BabylonTerrainTileImpl } from 'src/app/game/renderer/babylon-terrain-tile.impl';
-import { AbstractBrush, BrushContext } from "./brushes/abstract-brush";
-import { BabylonRenderServiceAccessImpl } from "src/app/game/renderer/babylon-render-service-access-impl.service";
-import { GwtInstance } from "src/app/gwtangular/GwtInstance";
-import { TerrainType } from "src/app/generated/razarion-share";
+import {Index, InputService, TerrainType, TerrainUiService} from "../../gwtangular/GwtAngularFacade";
+import {Color3, Mesh, MeshBuilder, StandardMaterial, Texture, Vector3, VertexBuffer, VertexData} from "@babylonjs/core";
+import {BabylonTerrainTileImpl} from 'src/app/game/renderer/babylon-terrain-tile.impl';
+import {AbstractBrush, BrushContext} from "./brushes/abstract-brush";
+import {BabylonRenderServiceAccessImpl} from "src/app/game/renderer/babylon-render-service-access-impl.service";
+import {GwtInstance} from "src/app/gwtangular/GwtInstance";
+import {GwtHelper} from "../../gwtangular/GwtHelper";
 
 export class EditorTerrainTile {
   private positions?: Vector3[];
@@ -12,7 +12,10 @@ export class EditorTerrainTile {
   private decalMesh: Mesh | null = null;
   private decalMeshWorker: Mesh | null = null;
 
-  constructor(private renderService: BabylonRenderServiceAccessImpl, private inputeService: InputService, private index: Index) {
+  constructor(private renderService: BabylonRenderServiceAccessImpl,
+              private inputService: InputService,
+              private terrainUiService: TerrainUiService,
+              private index: Index) {
   }
 
   setBabylonTerrainTile(babylonTerrainTileImpl: BabylonTerrainTileImpl) {
@@ -167,32 +170,51 @@ export class EditorTerrainTile {
     const centerY = canvas.height / 2;
     var  context = canvas.getContext('2d')!
     context.translate(centerX, centerY);
-    context.rotate(-Math.PI / 2);
+    context.rotate(Math.PI / 2);
     context.translate(-centerX, -centerY);
 
     this.drawMiniMap(
       context,
-      false,
+      true,
       factor,
       effectiveBorder,
       "rgba(0, 0, 255, 0.5)",
       "rgba(0, 255, 0, 0.5)",
       "rgba(255, 0, 0, 0.5)");
-    const dynamicTexture = new Texture(canvas.toDataURL(), this.renderService.getScene());
-    return dynamicTexture;
+    return new Texture(canvas.toDataURL(), this.renderService.getScene());
   }
 
   drawMiniMap(context: CanvasRenderingContext2D, flipY: boolean, factor: number, effectiveBorder: number, waterColor: string, landColor: string, blockedColor: string) {
-    let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE) + 1;
-    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE) + 1;
-    for (let y = 0; y < yCount - 1; y++) {
-      for (let x = 0; x < xCount - 1; x++) {
-        const blHeight = this.positions![x + y * xCount].y;
-        const brHeight = this.positions![x + 1 + y * xCount].y;
-        const tlHeight = this.positions![x + (y + 1) * xCount].y;
-        const trHeight = this.positions![x + 1 + (y + 1) * xCount].y;
+    let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    let xNodeTile = (this.index.getX() * BabylonTerrainTileImpl.NODE_X_COUNT) * BabylonTerrainTileImpl.NODE_SIZE;
+    let yNodeTile = (this.index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT) * BabylonTerrainTileImpl.NODE_SIZE;
+    for (let x = 0; x < xCount; x++) {
+      for (let y = 0; y < yCount; y++) {
+        // const blHeight = this.positions![x + y * xCount].y;
+        // const brHeight = this.positions![x + 1 + y * xCount].y;
+        // const tlHeight = this.positions![x + (y + 1) * xCount].y;
+        // const trHeight = this.positions![x + 1 + (y + 1) * xCount].y;
+        //
+        // switch (EditorTerrainTile.setupTerrainType(blHeight, brHeight, trHeight, tlHeight)) {
+        //   case TerrainType.WATER:
+        //     context.fillStyle = waterColor;
+        //     break;
+        //   case TerrainType.LAND:
+        //     context.fillStyle = landColor;
+        //     break;
+        //   case TerrainType.BLOCKED:
+        //     context.fillStyle = blockedColor;
+        //     break;
+        //   default:
+        //     context.fillStyle = "rgba(1, 1, 1, 1)";
+        // }
 
-        switch (EditorTerrainTile.setupTerrainType(blHeight, brHeight, trHeight, tlHeight)) {
+        let terrainType = GwtHelper.gwtIssueStringEnum(
+          this.terrainUiService.getTerrainType(GwtInstance.newDecimalPosition(x + xNodeTile,y + yNodeTile)),
+          TerrainType
+        );
+        switch (terrainType) {
           case TerrainType.WATER:
             context.fillStyle = waterColor;
             break;
@@ -205,9 +227,16 @@ export class EditorTerrainTile {
           default:
             context.fillStyle = "rgba(1, 1, 1, 1)";
         }
+
+        // if(y < BabylonTerrainTileImpl.NODE_Y_COUNT / 2) {
+        //   context.fillStyle = "rgba(255, 0, 0, 0.5)";
+        // } else {
+        //   context.fillStyle = "rgba(0, 255, 0, 0.5)";
+        // }
+
         context.fillRect(
-          (xCount - x - 1) * factor - effectiveBorder * 2,
-          (flipY ? (yCount - y + 1) : (y + 1)) * factor - effectiveBorder * 2,
+          (x + 1) * factor - effectiveBorder * 2,
+          (flipY ? (yCount - y - 1) : (y + 1)) * factor - effectiveBorder * 2,
           factor - effectiveBorder * 2,
           factor - effectiveBorder * 2);
       }
@@ -256,8 +285,8 @@ export class EditorTerrainTile {
     canvas.height = BabylonTerrainTileImpl.NODE_Y_COUNT * factor;
     const context = canvas.getContext('2d')!;
 
-    let xCount = BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE;
-    let yCount = BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE;
+    let xCount = BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE;
+    let yCount = BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE;
 
     const xNodeOffest = this.index.getX() * xCount;
     const yNodeOffest = this.index.getY() * yCount;
@@ -266,7 +295,7 @@ export class EditorTerrainTile {
 
     for (let y = 0; y < yCount; y++) {
       for (let x = 0; x < xCount; x++) {
-        this.inputeService.getTerrainTypeOnTerrain(GwtInstance.newIndex(x + xNodeOffest, y + yNodeOffest))
+        this.inputService.getTerrainTypeOnTerrain(GwtInstance.newIndex(x + xNodeOffest, y + yNodeOffest))
           .then(terrainType => {
             const terrainTypeString = terrainType.d // Ugly gwt enum hack
 

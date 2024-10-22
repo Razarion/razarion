@@ -1,38 +1,33 @@
 package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
-import com.btxtech.shared.gameengine.InitializeService;
-import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.alarm.AlarmService;
-import com.btxtech.uiservice.cdimock.BabylonRendererServiceAccessMock;
-import com.btxtech.uiservice.cdimock.TestItemCockpitFrontend;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.gui.AbstractUiTestGuiRenderer;
 import com.btxtech.uiservice.gui.UiTestGuiDisplay;
-import com.btxtech.uiservice.i18n.I18nConstants;
-import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.item.BoxUiService;
-import com.btxtech.uiservice.item.ResourceUiService;
+import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
+import com.btxtech.uiservice.mock.TestItemCockpitFrontend;
+import com.btxtech.uiservice.mock.TestMainCockpit;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import javafx.scene.paint.Color;
-import org.easymock.EasyMock;
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
 
 import java.util.logging.Logger;
 
@@ -40,23 +35,34 @@ import java.util.logging.Logger;
  * Created by Beat
  * on 23.08.2017.
  */
-public class WeldUiBaseIntegrationTest {
-    // ... work in progress ...
-    private WeldContainer weldContainer;
-    private final Logger LOG = Logger.getLogger(WeldUiBaseIntegrationTest.class.getName());
+public class DaggerUiBaseIntegrationTest {
+    private final Logger LOG = Logger.getLogger(DaggerUiBaseIntegrationTest.class.getName());
+    private final TestUiServiceDagger testUiServiceDagger;
+
+    public DaggerUiBaseIntegrationTest() {
+        testUiServiceDagger = DaggerTestUiServiceDagger.builder().build();
+    }
 
     protected void setupUiEnvironment(ColdGameUiContext coldGameUiContext) {
-        // Init weld
-        Weld weld = new Weld();
-        weldContainer = weld.initialize();
+        testUiServiceDagger.mainCockpitService().init(new TestMainCockpit());
 
-        getWeldBean(InitializeService.class).setColdGameUiContext(coldGameUiContext);
+        testUiServiceDagger.initializeService().setColdGameUiContext(coldGameUiContext);
+        testUiServiceDagger.terrainUiService().setPlanetConfig(coldGameUiContext.getWarmGameUiContext().getPlanetConfig());
+        testUiServiceDagger.gameUiControl().setColdGameUiContext(coldGameUiContext);
+        testUiServiceDagger.gameUiControl().init();
     }
 
     protected void setupUiEnvironment() {
         setupUiEnvironment(new ColdGameUiContext().warmGameUiContext(new WarmGameUiContext()));
     }
 
+    public TestUiServiceDagger getTestUiServiceDagger() {
+        return testUiServiceDagger;
+    }
+
+    //----------------------------
+
+    @Deprecated
     protected <T> T getWeldBean(Class<T> clazz) {
         // return weldContainer.instance().select(clazz).get();
         return null;
@@ -70,8 +76,8 @@ public class WeldUiBaseIntegrationTest {
         return getWeldBean(TerrainUiService.class);
     }
 
-    protected BabylonRendererServiceAccessMock getBabylonRendererServiceAccessMock() {
-        return getWeldBean(BabylonRendererServiceAccessMock.class);
+    protected BabylonRenderServiceAccessMock getBabylonRendererServiceAccessMock() {
+        return getWeldBean(BabylonRenderServiceAccessMock.class);
     }
 
     protected void setupAlarmService() {
@@ -108,9 +114,9 @@ public class WeldUiBaseIntegrationTest {
         return syncBoxItemSimpleDto;
     }
 
-    protected BabylonRendererServiceAccessMock.BabylonBaseItemMock findBaseItem(int id) {
-        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
-        for (BabylonRendererServiceAccessMock.BabylonBaseItemMock babylonBaseItemMock : babylonRendererServiceAccessMock.getBabylonBaseItemMocks()) {
+    protected BabylonRenderServiceAccessMock.BabylonBaseItemMock findBaseItem(int id) {
+        BabylonRenderServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRenderServiceAccessMock.class);
+        for (BabylonRenderServiceAccessMock.BabylonBaseItemMock babylonBaseItemMock : babylonRendererServiceAccessMock.getBabylonBaseItemMocks()) {
             if (babylonBaseItemMock.getId() == id) {
                 return babylonBaseItemMock;
             }
@@ -183,15 +189,40 @@ public class WeldUiBaseIntegrationTest {
         });
     }
 
-    public void display() {
-        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
-        ResourceItemType resourceItemType = getWeldBean(ItemTypeService.class).getResourceItemType(FallbackConfig.RESOURCE_ITEM_TYPE_ID);
+    public void showDisplay(Object... customRender) {
+        BabylonRenderServiceAccessMock babylonRendererServiceAccessMock = getTestUiServiceDagger().babylonRenderServiceAccessMock();
+        ResourceItemType resourceItemType = getTestUiServiceDagger().itemTypeService().getResourceItemType(FallbackConfig.RESOURCE_ITEM_TYPE_ID);
         double radiusResource = resourceItemType.getRadius();
-        BoxItemType boxItemType = getWeldBean(ItemTypeService.class).getBoxItemType(FallbackConfig.BOX_ITEM_TYPE_ID);
+        BoxItemType boxItemType = getTestUiServiceDagger().itemTypeService().getBoxItemType(FallbackConfig.BOX_ITEM_TYPE_ID);
         double radiusBox = boxItemType.getRadius();
         UiTestGuiDisplay.show(new AbstractUiTestGuiRenderer() {
             @Override
             protected void doRender() {
+                // TerrainType
+                babylonRendererServiceAccessMock.getBabylonTerrainTileMocks().forEach(babylonTerrainTileMock -> {
+                    for (int x = 0; x < TerrainUtil.NODE_X_COUNT; x++) {
+                        for (int y = 0; y < TerrainUtil.NODE_Y_COUNT; y++) {
+                            Index nodeIndex = new Index(x, y).add(TerrainUtil.tileIndexToNodeIndex(babylonTerrainTileMock.getTerrainTile().getIndex()));
+                            DecimalPosition terrainPosition = TerrainUtil.nodeIndexToTerrainPosition(nodeIndex);
+
+                            TerrainType terrainType = getTestUiServiceDagger().terrainUiService().getTerrainType(terrainPosition);
+                            switch (terrainType) {
+                                case WATER:
+                                    getGc().setFill(Color.BLUE);
+                                    break;
+                                case LAND:
+                                    getGc().setFill(Color.GREEN);
+                                    break;
+                                case BLOCKED:
+                                    getGc().setFill(Color.BLUE);
+                                    break;
+                                default:
+                                    throw new IllegalArgumentException("Unknown terrain type: " + terrainType);
+                            }
+                            getGc().fillRect(terrainPosition.getX() + 0.25, terrainPosition.getY() + 0.25, 0.5, 0.5);
+                        }
+                    }
+                });
                 // Resource marker
                 babylonRendererServiceAccessMock.getBabylonResourceItemMocks().forEach(babylonResourceItemMock -> {
                     if (babylonResourceItemMock.getMarkerConfig() != null) {
@@ -203,7 +234,7 @@ public class WeldUiBaseIntegrationTest {
                     }
                 });
                 // Resource
-                getWeldBean(ResourceUiService.class).getResources().forEach((integer, syncResourceItemSimpleDto) -> {
+                getTestUiServiceDagger().resourceUiService().getResources().forEach((integer, syncResourceItemSimpleDto) -> {
                     getGc().setFill(Color.PINK);
                     getGc().fillOval(syncResourceItemSimpleDto.getPosition().getX() - radiusResource,
                             syncResourceItemSimpleDto.getPosition().getY() - radiusResource,
@@ -222,7 +253,7 @@ public class WeldUiBaseIntegrationTest {
                     }
                 });
                 // Box
-                getWeldBean(BoxUiService.class).getBoxes().forEach((integer, syncBoxItemSimpleDto) -> {
+                getTestUiServiceDagger().boxUiService().getBoxes().forEach((integer, syncBoxItemSimpleDto) -> {
                     getGc().setFill(Color.LIGHTGREEN);
                     getGc().fillOval(syncBoxItemSimpleDto.getPosition().getX() - radiusBox,
                             syncBoxItemSimpleDto.getPosition().getY() - radiusBox,
@@ -251,14 +282,13 @@ public class WeldUiBaseIntegrationTest {
                             2 * radius);
 
                 });
-
-                // Field
-                ViewField viewField = getWeldBean(ResourceUiService.class).getViewField();
+                // ViewField
+                ViewField viewField = getTestUiServiceDagger().resourceUiService().getViewField();
                 if (viewField != null) {
                     strokePolygon(viewField.toList(), 1, Color.BLACK, false);
                 }
             }
-        });
+        }, customRender);
     }
 
 }

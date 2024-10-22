@@ -6,9 +6,8 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
-import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import java.util.ArrayList;
@@ -22,12 +21,12 @@ public class ItemVelocityCalculator {
     private static final int MAX_PUSH_AWAY_DEEP = 10;
     private static final Logger LOGGER = Logger.getLogger(ItemVelocityCalculator.class.getName());
     private final SyncItemContainerService syncItemContainerService;
-    private final PathingAccess pathingAccess;
+    private final TerrainAnalyzer pathingAccess;
     private final ExceptionHandler exceptionHandler;
     private Collection<Orca> orcas = new ArrayList<>();
     private Collection<SyncPhysicalMovable> pushAways = new LinkedList<>();
 
-    public ItemVelocityCalculator(SyncItemContainerService syncItemContainerService, PathingAccess pathingAccess, ExceptionHandler exceptionHandler) {
+    public ItemVelocityCalculator(SyncItemContainerService syncItemContainerService, TerrainAnalyzer pathingAccess, ExceptionHandler exceptionHandler) {
         this.syncItemContainerService = syncItemContainerService;
         this.pathingAccess = pathingAccess;
         this.exceptionHandler = exceptionHandler;

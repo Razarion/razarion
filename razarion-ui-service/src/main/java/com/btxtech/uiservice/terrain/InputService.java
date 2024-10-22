@@ -191,7 +191,7 @@ public class InputService {
             Collection<SyncBaseItemSimpleDto> movables = selectionService.getOwnSelection().getMovables();
             movables = movables.stream().filter(syncBaseItemSimpleDto -> {
                 TerrainType terrainType = itemTypeService.getBaseItemType(syncBaseItemSimpleDto.getItemTypeId()).getPhysicalAreaConfig().getTerrainType();
-                return terrainUiService.isTerrainFreeInDisplay(terrainPosition, terrainType);
+                return terrainUiService.isTerrainFree(terrainPosition, terrainType);
             }).collect(Collectors.toList());
             if (movables.isEmpty()) {
                 return;

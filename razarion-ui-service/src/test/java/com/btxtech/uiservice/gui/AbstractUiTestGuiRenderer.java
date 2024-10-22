@@ -2,6 +2,7 @@ package com.btxtech.uiservice.gui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.gui.userobject.MouseMoveRender;
 import javafx.event.Event;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -24,6 +25,7 @@ public abstract class AbstractUiTestGuiRenderer {
     private double scale;
     private DecimalPosition shift = new DecimalPosition(0, 0);
     private DecimalPosition lastShiftPosition;
+    private MouseMoveRender mouseMoveCallback;
 
 
     protected abstract void doRender();
@@ -33,7 +35,7 @@ public abstract class AbstractUiTestGuiRenderer {
         this.scale = scale;
     }
 
-    protected GraphicsContext getGc() {
+    public GraphicsContext getGc() {
         return gc;
     }
 
@@ -82,6 +84,12 @@ public abstract class AbstractUiTestGuiRenderer {
         gc.translate(canvasWidth / 2.0, canvasHeight / 2.0);
         gc.scale(scale, -scale);
         gc.translate(shift.getX(), shift.getY());
+    }
+
+    private void doCustomRender() {
+        if (mouseMoveCallback != null) {
+            mouseMoveCallback.render(gc);
+        }
     }
 
     protected void postRender() {
@@ -144,6 +152,8 @@ public abstract class AbstractUiTestGuiRenderer {
 
         doRender();
 
+        doCustomRender();
+
         postRender();
     }
 
@@ -189,4 +199,7 @@ public abstract class AbstractUiTestGuiRenderer {
         }
     }
 
+    public void setMouseMoveCallback(MouseMoveRender mouseMoveCallback) {
+        this.mouseMoveCallback = mouseMoveCallback;
+    }
 }

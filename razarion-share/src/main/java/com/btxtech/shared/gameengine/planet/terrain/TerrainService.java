@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
@@ -54,8 +54,8 @@ public class TerrainService {
         return terrainTileFactory.generateTerrainTile(terrainTileIndex, terrainShape, planetConfig);
     }
 
-    public PathingAccess getPathingAccess() {
-        return terrainShape.getPathingAccess();
+    public TerrainAnalyzer getPathingAccess() {
+        return terrainShape.getTerrainAnalyzer();
     }
 
     public TerrainShapeManager getTerrainShape() {

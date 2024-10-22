@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
+import com.btxtech.uiservice.DaggerUiBaseIntegrationTest;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.ViewField;
@@ -17,7 +17,7 @@ import java.util.Collections;
 import static com.btxtech.shared.dto.FallbackConfig.BUILDER_ITEM_TYPE_ID;
 import static com.btxtech.shared.dto.FallbackConfig.FACTORY_ITEM_TYPE_ID;
 
-public class InputServiceTest extends WeldUiBaseIntegrationTest {
+public class InputServiceTest extends DaggerUiBaseIntegrationTest {
 
     @Test
     public void InputService() {

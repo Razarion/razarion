@@ -1,7 +1,6 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -16,6 +15,7 @@ import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,20 +23,25 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 @Singleton
-public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAccess {
+public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAccess {
+    private final Logger logger = Logger.getLogger(BabylonRenderServiceAccessMock.class.getName());
+    private final List<BabylonTerrainTileMock> babylonTerrainTileMocks = new ArrayList<>();
     private final List<BabylonBaseItemMock> babylonBaseItemMocks = new ArrayList<>();
     private final List<BabylonResourceItemMock> babylonResourceItemMocks = new ArrayList<>();
     private final List<BabylonBoxItemMock> babylonBoxItemMocks = new ArrayList<>();
 
-    private final Logger logger = Logger.getLogger(BabylonRendererServiceAccessMock.class.getName());
-
     private MarkerConfig showOutOfViewMarkerConfig;
     private double showOutOfViewAngle;
 
+    @Inject
+    public BabylonRenderServiceAccessMock() {
+    }
+
     @Override
     public BabylonTerrainTile createTerrainTile(TerrainTile terrainTile) {
-        logger.warning("createTerrainTile()");
-        return null;
+        BabylonTerrainTileMock babylonTerrainTileMock = new BabylonTerrainTileMock(terrainTile);
+        babylonTerrainTileMocks.add(babylonTerrainTileMock);
+        return babylonTerrainTileMock;
     }
 
     @Override
@@ -68,6 +73,10 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
     @Override
     public void runRenderer(MeshContainer[] meshContainers) {
         logger.warning("initMeshContainers()");
+    }
+
+    public List<BabylonTerrainTileMock> getBabylonTerrainTileMocks() {
+        return babylonTerrainTileMocks;
     }
 
     public List<BabylonBaseItemMock> getBabylonBaseItemMocks() {
@@ -339,7 +348,7 @@ public class BabylonRendererServiceAccessMock implements BabylonRenderServiceAcc
         public void setAngle(double angle) {
 
         }
-        
+
         @Override
         public void select(boolean active) {
 

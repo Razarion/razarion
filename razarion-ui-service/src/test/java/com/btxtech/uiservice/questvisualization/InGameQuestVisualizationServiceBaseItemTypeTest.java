@@ -11,12 +11,11 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
-import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
-import com.btxtech.uiservice.cdimock.BabylonRendererServiceAccessMock;
+import com.btxtech.uiservice.DaggerUiBaseIntegrationTest;
+import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.terrain.InputService;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,7 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InGameQuestVisualizationServiceBaseItemTypeTest extends WeldUiBaseIntegrationTest {
+public class InGameQuestVisualizationServiceBaseItemTypeTest extends DaggerUiBaseIntegrationTest {
     private static final int OWN_BASE_ITEM_ID = 1;
     private static final int BOT_BASE_ITEM_ID = 3;
 
@@ -68,7 +67,7 @@ public class InGameQuestVisualizationServiceBaseItemTypeTest extends WeldUiBaseI
 
         getWeldBean(BaseItemUiService.class).updateSyncBaseItems(nativeSyncBaseItemTickInfos);
 
-        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
+        BabylonRenderServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRenderServiceAccessMock.class);
         Assert.assertNull(babylonRendererServiceAccessMock.getShowOutOfViewMarkerConfig());
         Assert.assertEquals(3, babylonRendererServiceAccessMock.getBabylonBaseItemMocks().size());
         Assert.assertNotNull(findBaseItem(1).getMarkerConfig());
@@ -136,7 +135,7 @@ public class InGameQuestVisualizationServiceBaseItemTypeTest extends WeldUiBaseI
 
         getWeldBean(BaseItemUiService.class).updateSyncBaseItems(nativeSyncBaseItemTickInfos);
 
-        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
+        BabylonRenderServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRenderServiceAccessMock.class);
         Assert.assertNotNull(babylonRendererServiceAccessMock.getShowOutOfViewMarkerConfig());
         Assert.assertEquals(85.6, Math.toDegrees(babylonRendererServiceAccessMock.getShowOutOfViewAngle()), 0.1);
         Assert.assertEquals(0, babylonRendererServiceAccessMock.getBabylonBaseItemMocks().size());

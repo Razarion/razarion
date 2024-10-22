@@ -3,11 +3,18 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
+import elemental2.core.Uint16Array;
+import jsinterop.base.Js;
 
 import javax.inject.Inject;
+
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.terrainPositionToTileIndex;
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.tileIndexToNodeIndex;
 
 /**
  * Created by Beat
@@ -19,6 +26,7 @@ public class UiTerrainTile {
     private final TerrainUiService terrainUiService;
     private final BabylonRendererService babylonRendererService;
     private TerrainTile terrainTile;
+    private TerrainAnalyzer terrainAnalyzer;
     private BabylonTerrainTile babylonTerrainTile;
     private boolean active;
 
@@ -46,6 +54,9 @@ public class UiTerrainTile {
 
     private void terrainTileReceived(TerrainTile terrainTile) {
         this.terrainTile = terrainTile;
+        Uint16Array heightMap = Js.uncheckedCast(terrainTile.getGroundHeightMap());
+        terrainAnalyzer = new TerrainAnalyzer(i -> heightMap.getAt(i).intValue()
+                , null);
         babylonTerrainTile = babylonRendererService.createTerrainTile(terrainTile);
 
         if (active) {
@@ -66,10 +77,11 @@ public class UiTerrainTile {
     }
 
     public TerrainType getTerrainType(DecimalPosition terrainPosition) {
-        return findNode(terrainPosition, () -> null);
-    }
+        Index nodeIndex = TerrainUtil.terrainPositionToNodeIndex(terrainPosition);
+        Index tileIndex = terrainPositionToTileIndex(terrainPosition);
+        Index nodeTileIndex = tileIndexToNodeIndex(tileIndex);
+        Index analyzeIndex = nodeIndex.sub(nodeTileIndex);
 
-    private <T> T findNode(DecimalPosition terrainPosition, TerrainTileAccess<T> terrainTileAccess) {
-        return terrainTileAccess.onTerrainTile();
+        return terrainAnalyzer.getTerrainType(analyzeIndex);
     }
 }

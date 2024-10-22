@@ -49,7 +49,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
 
     @Override
     public Uint16ArrayEmu createTileGroundHeightMap(Index terrainTileIndex) {
-        return new TestUint16Array();
+        return new TestUint16Array(new int[]{});
     }
 
     @Override

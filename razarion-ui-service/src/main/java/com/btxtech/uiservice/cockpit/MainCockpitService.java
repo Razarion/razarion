@@ -16,8 +16,7 @@ import java.util.function.Function;
  */
 @Singleton
 public class MainCockpitService {
-
-    private LevelService levelService;
+    private final LevelService levelService;
     private MainCockpit mainCockpit;
     private Function<Integer, Rectangle> inventoryPositionProvider;
 
@@ -89,7 +88,6 @@ public class MainCockpitService {
 
     public void blinkAvailableUnlock(boolean show) {
         mainCockpit.blinkAvailableUnlock(show);
-
     }
 
 }

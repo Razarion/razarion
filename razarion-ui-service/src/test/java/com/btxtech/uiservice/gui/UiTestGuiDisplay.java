@@ -1,14 +1,10 @@
 package com.btxtech.uiservice.gui;
 
-import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Created by Beat
@@ -16,16 +12,18 @@ import java.util.Collections;
  */
 public class UiTestGuiDisplay extends Application {
     private static AbstractUiTestGuiRenderer abstractUiTestGuiRenderer;
+    private static Object[] customRenders;
 
-    public static void show(AbstractUiTestGuiRenderer abstractUiTestGuiRenderer) {
+    public static void show(AbstractUiTestGuiRenderer abstractUiTestGuiRenderer, Object... customRenders) {
         UiTestGuiDisplay.abstractUiTestGuiRenderer = abstractUiTestGuiRenderer;
+        UiTestGuiDisplay.customRenders = customRenders;
         Application.launch(UiTestGuiDisplay.class);
     }
 
     @Override
     public void start(final Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/UiTestGuiApplication.fxml"));
-        loader.setControllerFactory(param -> new UiTestGuiControl(abstractUiTestGuiRenderer));
+        loader.setControllerFactory(param -> new UiTestGuiController(abstractUiTestGuiRenderer, customRenders));
         Parent root = loader.load();
         stage.setTitle("Ui Test GUI");
         stage.setScene(new Scene(root));

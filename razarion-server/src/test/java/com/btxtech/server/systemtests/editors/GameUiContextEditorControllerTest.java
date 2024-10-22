@@ -362,7 +362,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
     }
 
     private void setUserSpawnScene(SceneConfig sceneConfigs) {
-        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0).setSuggestedPosition(new DecimalPosition(135, 85));
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().enemyFreeRadius(10.0).suggestedPosition(new DecimalPosition(135, 85));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
         ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(buildupItemTypeCount));
@@ -489,7 +489,7 @@ public class GameUiContextEditorControllerTest extends AbstractCrudTest<GameUiCo
         botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
         botConfigs.add(new BotConfig().auxiliaryId(NPC_BOT_OUTPOST_2_AUX).actionDelay(3000).botEnragementStateConfigs(botEnragementStateConfigs).name("Roger").npc(true));
         // User Spawn
-        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0).setAllowedArea(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(80, 260, 50, 50)));
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().enemyFreeRadius(10.0).allowedArea(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(80, 260, 50, 50)));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
         ConditionConfig conditionConfig = new ConditionConfig().conditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).comparisonConfig(new ComparisonConfig().typeCount(buildupItemTypeCount));

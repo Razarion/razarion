@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
 import com.btxtech.shared.system.debugtool.DebugHelper;
 

@@ -12,6 +12,8 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.renderer.ViewField;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -20,7 +22,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -28,6 +29,7 @@ import java.util.function.Consumer;
  * 09.08.2015.
  */
 @Singleton
+@JsType
 public class TerrainUiService {
     private final Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
     private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
@@ -44,12 +46,14 @@ public class TerrainUiService {
         this.gameEngineControl = gameEngineControl;
     }
 
+    @JsIgnore
     public void setPlanetConfig(PlanetConfig planetConfig) {
         DecimalPosition planetSize = planetConfig.getSize();
-        tileXCount = TerrainUtil.toTileCeil(planetSize).getX();
-        tileYCount = TerrainUtil.toTileCeil(planetSize).getY();
+        tileXCount = TerrainUtil.terrainPositionToTileIndexCeil(planetSize).getX();
+        tileYCount = TerrainUtil.terrainPositionToTileIndexCeil(planetSize).getY();
     }
 
+    @JsIgnore
     public void clear() {
         clearTerrainTiles();
     }
@@ -65,6 +69,7 @@ public class TerrainUiService {
         cacheTerrainTiles.clear();
     }
 
+    @JsIgnore
     public void onViewChanged(ViewField viewField, Rectangle2D viewFieldAabb) {
         Collection<Index> display = GeometricUtil.rasterizeTerrainViewField(viewFieldAabb, viewField.toPolygon());
 
@@ -99,6 +104,7 @@ public class TerrainUiService {
         displayTerrainTiles = newDisplayTerrainTiles;
     }
 
+    @JsIgnore
     public double calculateLandWaterProportion() {
         double value = 0;
         int count = 0;
@@ -115,33 +121,37 @@ public class TerrainUiService {
         }
     }
 
-    public boolean isTerrainFreeInDisplay(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
+    @JsIgnore
+    public boolean isTerrainFree(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
+        double radius = baseItemType.getPhysicalAreaConfig().getRadius();
+        TerrainType terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();
         for (DecimalPosition terrainPosition : terrainPositions) {
-            TerrainType terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();
-            if (!isTerrainFreeInDisplay(terrainPosition, baseItemType.getPhysicalAreaConfig().getRadius(), terrainType)) {
+            if (!isTerrainFree(terrainPosition, radius, terrainType)) {
                 return false;
             }
         }
         return true;
     }
 
-    public boolean isTerrainFreeInDisplay(DecimalPosition terrainPosition, double radius, TerrainType terrainType) {
+    @JsIgnore
+    public boolean isTerrainFree(DecimalPosition terrainPosition, double radius, TerrainType terrainType) {
         if (terrainType.isAreaCheck()) {
-            List<Index> subNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-            for (Index subNodeIndex : subNodeIndices) {
-                DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(subNodeIndex).add(terrainPosition);
-                if (!isTerrainFreeInDisplay(scanPosition, terrainType)) {
+            List<Index> nodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.NODE_SIZE);
+            for (Index nodeIndex : nodeIndices) {
+                DecimalPosition scanPosition = TerrainUtil.nodeIndexToTerrainPosition(nodeIndex).add(terrainPosition);
+                if (!isTerrainFree(scanPosition, terrainType)) {
                     return false;
                 }
             }
         } else {
-            return isTerrainFreeInDisplay(terrainPosition, terrainType);
+            return isTerrainFree(terrainPosition, terrainType);
         }
         return true;
     }
 
-    public boolean isTerrainFreeInDisplay(DecimalPosition terrainPosition, TerrainType terrainType) {
-        Index terrainTile = TerrainUtil.toTile(terrainPosition);
+    @JsIgnore
+    public boolean isTerrainFree(DecimalPosition terrainPosition, TerrainType terrainType) {
+        Index terrainTile = TerrainUtil.terrainPositionToTileIndex(terrainPosition);
         UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
         if (uiTerrainTile == null) {
             return false;
@@ -149,11 +159,25 @@ public class TerrainUiService {
         return uiTerrainTile.isTerrainTypeAllowed(terrainType, terrainPosition);
     }
 
+    public TerrainType getTerrainType(DecimalPosition terrainPosition) {
+        Index terrainTileIndex = TerrainUtil.terrainPositionToTileIndex(terrainPosition);
+        UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTileIndex);
+        if (uiTerrainTile == null) {
+            uiTerrainTile = cacheTerrainTiles.get(terrainTileIndex);
+        }
+        if (uiTerrainTile == null) {
+            return TerrainType.BLOCKED;
+        }
+        return uiTerrainTile.getTerrainType(terrainPosition);
+    }
+
+    @JsIgnore
     public void requestTerrainTile(Index terrainTileIndex, Consumer<TerrainTile> terrainTileConsumer) {
         terrainTileConsumers.put(terrainTileIndex, terrainTileConsumer);
         gameEngineControl.get().requestTerrainTile(terrainTileIndex);
     }
 
+    @JsIgnore
     public void onTerrainTileResponse(TerrainTile terrainTile) {
         terrainTileConsumers.remove(terrainTile.getIndex()).accept(terrainTile);
     }

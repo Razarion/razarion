@@ -16,6 +16,7 @@ import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
 import com.btxtech.uiservice.terrain.InputService;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental2.dom.DomGlobal;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
@@ -41,6 +42,7 @@ public class GwtAngularService {
     private final InventoryTypeService inventoryTypeService;
     private final InventoryUiService inventoryUiService;
     private final InGameQuestVisualizationService inGameQuestVisualizationService;
+    private final TerrainUiService terrainUiService;
     private GwtAngularFacade gwtAngularFacade;
 
     @Inject
@@ -59,7 +61,8 @@ public class GwtAngularService {
                              QuestCockpitService questCockpitService,
                              ItemCockpitService itemCockpitService,
                              MainCockpitService cockpitService,
-                             GameUiControl gameUiControl) {
+                             GameUiControl gameUiControl,
+                             TerrainUiService terrainUiService) {
         this.inGameQuestVisualizationService = inGameQuestVisualizationService;
         this.inventoryUiService = inventoryUiService;
         this.inventoryTypeService = inventoryTypeService;
@@ -76,6 +79,7 @@ public class GwtAngularService {
         this.itemCockpitService = itemCockpitService;
         this.cockpitService = cockpitService;
         this.gameUiControl = gameUiControl;
+        this.terrainUiService = terrainUiService;
     }
 
     public static GwtAngularFacade getGwtAngularFacade() {
@@ -95,6 +99,7 @@ public class GwtAngularService {
         gwtAngularFacade.baseItemUiService = baseItemUiService;
         gwtAngularFacade.inventoryTypeService = inventoryTypeService;
         gwtAngularFacade.inventoryUiService = inventoryUiService;
+        gwtAngularFacade.terrainUiService = terrainUiService;
         cockpitService.init(gwtAngularFacade.mainCockpit);
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
         questCockpitService.init(gwtAngularFacade.questCockpit);

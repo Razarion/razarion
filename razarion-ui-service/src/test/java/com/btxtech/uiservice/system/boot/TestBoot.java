@@ -2,24 +2,14 @@ package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaisedException;
-import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.shared.utils.ExceptionUtil;
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
 
-import static org.easymock.EasyMock.contains;
-import static org.easymock.EasyMock.createStrictMock;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.geq;
-import static org.easymock.EasyMock.notNull;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 /**
  * User: beat
@@ -29,7 +19,6 @@ import static org.easymock.EasyMock.verify;
 public class TestBoot {
     private static final String ERROR_TEXT = "error_wsxedcrfv";
     private static final AlarmRaisedException ALARM_RAISED_EXCEPTION = new AlarmRaisedException(Alarm.Type.FAIL_START_GAME_ENGINE, "xxaazz", 182);
-    private WeldContainer weldContainer;
 
     @Test
     public void runSimple() {
@@ -618,7 +607,7 @@ public class TestBoot {
     }
 
     public static class AbstractStartupTaskEquals implements IArgumentMatcher {
-        private StartupTaskEnum taskEnum;
+        private final StartupTaskEnum taskEnum;
         private String errorString;
 
         public AbstractStartupTaskEquals(StartupTaskEnum taskEnum) {
@@ -646,8 +635,8 @@ public class TestBoot {
     }
 
     private Boot createClientRunner() {
-        Weld weld = new Weld();
-        weldContainer = weld.initialize();
+        // TODO Weld weld = new Weld();
+        // weldContainer = weld.initialize();
         // return weldContainer.instance().select(Boot.class).get();
         return null;
     }

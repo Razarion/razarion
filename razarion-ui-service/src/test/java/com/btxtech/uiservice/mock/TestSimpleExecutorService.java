@@ -1,8 +1,9 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.logging.Logger;
 
@@ -13,6 +14,10 @@ import java.util.logging.Logger;
 @Singleton
 public class TestSimpleExecutorService implements SimpleExecutorService {
     private final Logger logger = Logger.getLogger(TestSimpleExecutorService.class.getName());
+
+    @Inject
+    public TestSimpleExecutorService() {
+    }
 
     @Override
     public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {

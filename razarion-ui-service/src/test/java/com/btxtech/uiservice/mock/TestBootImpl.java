@@ -1,6 +1,5 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.BootContext;
@@ -15,6 +14,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class TestBootImpl extends Boot {
+
     @Inject
     public TestBootImpl(AlarmService alarmService) {
         super(alarmService);

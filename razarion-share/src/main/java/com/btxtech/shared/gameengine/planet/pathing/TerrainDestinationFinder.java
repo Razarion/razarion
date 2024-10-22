@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.DoubleHolder;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
@@ -26,11 +26,11 @@ public class TerrainDestinationFinder {
     private TerrainType terrainType;
     private DecimalPosition destination;
     private double distance;
-    private PathingAccess pathingAccess;
+    private TerrainAnalyzer pathingAccess;
     private DecimalPosition reachableDestination;
     private PathingNodeWrapper pathingNodeWrapper;
 
-    public TerrainDestinationFinder(DecimalPosition position, DecimalPosition destination, double distance, double radius, TerrainType terrainType, PathingAccess pathingAccess) {
+    public TerrainDestinationFinder(DecimalPosition position, DecimalPosition destination, double distance, double radius, TerrainType terrainType, TerrainAnalyzer pathingAccess) {
         this.position = position;
         this.radius = radius;
         this.terrainType = terrainType;
@@ -65,7 +65,7 @@ public class TerrainDestinationFinder {
         return pathingNodeWrapper;
     }
 
-    public static boolean isAllowed(PathingAccess pathingAccess, double distance, DecimalPosition targetPosition, double radius, TerrainType actorTerrainType, TerrainType targetTerrainType) {
+    public static boolean isAllowed(TerrainAnalyzer pathingAccess, double distance, DecimalPosition targetPosition, double radius, TerrainType actorTerrainType, TerrainType targetTerrainType) {
         if (!differentTerrain(actorTerrainType, targetTerrainType)) {
             return true;
         }
@@ -81,7 +81,7 @@ public class TerrainDestinationFinder {
         return actor != target;
     }
 
-    private static void calculatePosition(PathingAccess pathingAccess, double distance, DecimalPosition destination, double radius, TerrainType terrainType, Predicate<DecimalPosition> callback) {
+    private static void calculatePosition(TerrainAnalyzer pathingAccess, double distance, DecimalPosition destination, double radius, TerrainType terrainType, Predicate<DecimalPosition> callback) {
         // TODO
         List<Index> indices = GeometricUtil.rasterizeCircle(new Circle2D(new DecimalPosition(0, 0), distance - 2.0 * TerrainUtil.MIN_SUB_NODE_LENGTH), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         Collection<DecimalPosition> allowedPositions = new ArrayList<>();

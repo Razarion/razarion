@@ -14,12 +14,12 @@ import java.util.function.Consumer;
 public class PathingNodeWrapper {
     private final TerrainType terrainType;
     private final Index nodeIndex;
-    private final PathingAccess pathingAccess;
+    private final TerrainAnalyzer terrainAnalyzer;
 
-    public PathingNodeWrapper(Index nodeIndex, TerrainType terrainType, PathingAccess pathingAccess) {
+    public PathingNodeWrapper(Index nodeIndex, TerrainType terrainType, TerrainAnalyzer terrainAnalyzer) {
         this.terrainType = terrainType;
         this.nodeIndex = nodeIndex;
-        this.pathingAccess = pathingAccess;
+        this.terrainAnalyzer = terrainAnalyzer;
     }
 
     public boolean isFree(TerrainType terrainType) {
@@ -32,7 +32,7 @@ public class PathingNodeWrapper {
 
     public DecimalPosition getCenter() {
         return TerrainUtil.nodeIndexToTerrainPosition(nodeIndex)
-                .add(TerrainUtil.NODE_X_DISTANCE / 2.0, TerrainUtil.NODE_Y_DISTANCE / 2.0);
+                .add(TerrainUtil.NODE_SIZE / 2.0, TerrainUtil.NODE_SIZE / 2.0);
     }
 
     public void provideNorthSuccessors(AStarContext aStarContext, Consumer<PathingNodeWrapper> northNodeHandler) {
@@ -53,12 +53,12 @@ public class PathingNodeWrapper {
 
     private void provideSuccessors(AStarContext aStarContext, Index direction, Consumer<PathingNodeWrapper> northNodeHandler) {
         Index neighborNodeIndex = nodeIndex.add(direction);
-        if (!pathingAccess.isNodeInBoundary(neighborNodeIndex)) {
+        if (!terrainAnalyzer.isNodeInBoundary(neighborNodeIndex)) {
             return;
         }
-        TerrainType neighborTerrainType = pathingAccess.getTerrainType(neighborNodeIndex);
+        TerrainType neighborTerrainType = terrainAnalyzer.getTerrainType(neighborNodeIndex);
         if (aStarContext.isAllowed(neighborTerrainType)) {
-            northNodeHandler.accept(new PathingNodeWrapper(neighborNodeIndex, neighborTerrainType, pathingAccess));
+            northNodeHandler.accept(new PathingNodeWrapper(neighborNodeIndex, neighborTerrainType, terrainAnalyzer));
         }
     }
 
@@ -84,10 +84,10 @@ public class PathingNodeWrapper {
         if (aStarContext.hasScope()) {
             for (Index scopeNodeIndex : aStarContext.getScopeNodeIndices()) {
                 Index scanNodeIndex = nodeIndex.add(scopeNodeIndex);
-                if (!pathingAccess.isNodeInBoundary(scanNodeIndex)) {
+                if (!terrainAnalyzer.isNodeInBoundary(scanNodeIndex)) {
                     return true;
                 }
-                if (!aStarContext.isAllowed(pathingAccess.getTerrainType(scanNodeIndex))) {
+                if (!aStarContext.isAllowed(terrainAnalyzer.getTerrainType(scanNodeIndex))) {
                     return true;
                 }
             }

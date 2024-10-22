@@ -1,8 +1,9 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
 import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.renderer.ViewField;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Date;
 
@@ -12,6 +13,11 @@ import java.util.Date;
  */
 @Singleton
 public class TestTrackerService implements TrackerService {
+
+    @Inject
+    public TestTrackerService() {
+    }
+
     @Override
     public void trackGameUiControl(Date startTimeStamp) {
         throw new UnsupportedOperationException();

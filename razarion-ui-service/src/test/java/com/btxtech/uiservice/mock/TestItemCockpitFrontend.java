@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
 import com.btxtech.uiservice.cockpit.item.ItemCockpitFrontend;
 import com.btxtech.uiservice.cockpit.item.OtherItemCockpit;

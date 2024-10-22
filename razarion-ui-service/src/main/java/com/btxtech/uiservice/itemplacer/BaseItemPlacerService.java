@@ -17,15 +17,15 @@ import java.util.function.Consumer;
 @Singleton
 public class BaseItemPlacerService {
 
-    private Provider<BaseItemPlacer> instance;
+    private Provider<BaseItemPlacer> provider;
     private BaseItemPlacer baseItemPlacer;
     private BaseItemPlacerPresenter baseItemPlacerPresenter;
     private Consumer<Collection<DecimalPosition>> executionCallback;
     private final Collection<BaseItemPlacerListener> listeners = new ArrayList<>();
 
     @Inject
-    public BaseItemPlacerService(Provider<com.btxtech.uiservice.itemplacer.BaseItemPlacer> instance) {
-        this.instance = instance;
+    public BaseItemPlacerService(Provider<BaseItemPlacer> provider) {
+        this.provider = provider;
     }
 
     public void init(BaseItemPlacerPresenter baseItemPlacerPresenter) {
@@ -34,7 +34,7 @@ public class BaseItemPlacerService {
 
     public void activate(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<Collection<DecimalPosition>> executionCallback) {
         this.executionCallback = executionCallback;
-        baseItemPlacer = instance.get().init(baseItemPlacerConfig, canBeCanceled, this::onPlace);
+        baseItemPlacer = provider.get().init(baseItemPlacerConfig, canBeCanceled, this::onPlace);
         baseItemPlacerPresenter.activate(baseItemPlacer);
         new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.activatePlacer(baseItemPlacer));
     }

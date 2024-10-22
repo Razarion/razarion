@@ -16,6 +16,7 @@ import java.util.Objects;
  */
 @Singleton
 public class TestExceptionHandler extends ExceptionHandler {
+
     @Inject
     public TestExceptionHandler(AlarmService alarmService) {
         super(alarmService);

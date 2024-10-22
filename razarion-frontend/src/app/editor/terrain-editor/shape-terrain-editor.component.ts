@@ -68,7 +68,10 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
     for (let y = 0; y < this.yTileCount; y++) {
       this.editorTerrainTiles[y] = [];
       for (let x = 0; x < this.xTileCount; x++) {
-        this.editorTerrainTiles[y][x] = new EditorTerrainTile(renderService, gwtAngularService.gwtAngularFacade.inputService, GwtInstance.newIndex(x, y));
+        this.editorTerrainTiles[y][x] = new EditorTerrainTile(renderService,
+          gwtAngularService.gwtAngularFacade.inputService,
+          gwtAngularService.gwtAngularFacade.terrainUiService,
+          GwtInstance.newIndex(x, y));
       }
     }
 
@@ -291,7 +294,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
     const context = canvas.getContext('2d')!;
     context.fillStyle = "rgba(0, 0, 0, 1)";
     context.fillRect(0, 0, canvas.width, canvas.height)
-    const factor = RadarComponent.MINI_MAP_IMAGE_WIDTH / (this.xTileCount * BabylonTerrainTileImpl.NODE_X_DISTANCE * BabylonTerrainTileImpl.NODE_X_COUNT);
+    const factor = RadarComponent.MINI_MAP_IMAGE_WIDTH / (this.xTileCount * BabylonTerrainTileImpl.NODE_SIZE * BabylonTerrainTileImpl.NODE_X_COUNT);
 
     let y = 0;
     const self = this;
@@ -308,10 +311,10 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   private drawMiniMapLine(y: number, context: CanvasRenderingContext2D, factor: number) {
     for (let x = 0; x < this.xTileCount; x++) {
       let editorTerrainTile = this.editorTerrainTiles[y][x];
-      const xNodeTile = x * BabylonTerrainTileImpl.NODE_X_DISTANCE * BabylonTerrainTileImpl.NODE_X_COUNT;
-      const yNodeTile = y * BabylonTerrainTileImpl.NODE_Y_DISTANCE * BabylonTerrainTileImpl.NODE_Y_COUNT;
+      const xNodeTile = x * BabylonTerrainTileImpl.NODE_SIZE * BabylonTerrainTileImpl.NODE_X_COUNT;
+      const yNodeTile = y * BabylonTerrainTileImpl.NODE_SIZE * BabylonTerrainTileImpl.NODE_Y_COUNT;
       const xCanvas = xNodeTile * factor;
-      const yCanvas = (((this.yTileCount - 1) * BabylonTerrainTileImpl.NODE_Y_DISTANCE * BabylonTerrainTileImpl.NODE_Y_COUNT) - yNodeTile) * factor;
+      const yCanvas = (((this.yTileCount - 1) * BabylonTerrainTileImpl.NODE_SIZE * BabylonTerrainTileImpl.NODE_Y_COUNT) - yNodeTile) * factor;
 
       if (editorTerrainTile.hasPositions()) {
         context.translate(xCanvas, yCanvas);
@@ -353,7 +356,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
             return TerrainType.LAND;
           }
           const trHeight = BabylonTerrainTileImpl.uint16ToHeight(originalUint16HeightMap[indexTop + 1]);
-          return EditorTerrainTile.setupTerrainType(blHeight, brHeight, trHeight, tlHeight);
+          return <any>EditorTerrainTile.setupTerrainType(blHeight, brHeight, trHeight, tlHeight);
         }
         context.translate(xCanvas, yCanvas);
 
@@ -375,10 +378,10 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
             }
             indexNode++;
             context.fillRect(
-              xNode * BabylonTerrainTileImpl.NODE_X_DISTANCE * factor,
-              (BabylonTerrainTileImpl.NODE_Y_COUNT - yNode) * BabylonTerrainTileImpl.NODE_Y_DISTANCE * factor,
-              BabylonTerrainTileImpl.NODE_X_DISTANCE * factor,
-              BabylonTerrainTileImpl.NODE_Y_DISTANCE * factor);
+              xNode * BabylonTerrainTileImpl.NODE_SIZE * factor,
+              (BabylonTerrainTileImpl.NODE_Y_COUNT - yNode) * BabylonTerrainTileImpl.NODE_SIZE * factor,
+              BabylonTerrainTileImpl.NODE_SIZE * factor,
+              BabylonTerrainTileImpl.NODE_SIZE * factor);
           }
         }
         context.translate(-xCanvas, -yCanvas);

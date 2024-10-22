@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence.scene;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 
 import javax.persistence.AttributeOverride;
@@ -44,7 +43,7 @@ public class StartPointPlacerEntity {
         if ((allowedArea == null || allowedArea.isEmpty()) && suggestedPosition == null && enemyFreeRadius == null) {
                 return null;
         }
-        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setSuggestedPosition(suggestedPosition).setEnemyFreeRadius(enemyFreeRadius);
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().suggestedPosition(suggestedPosition).enemyFreeRadius(enemyFreeRadius);
         if (allowedArea != null && !allowedArea.isEmpty()) {
             // TODO baseItemPlacerConfig.setAllowedArea(new Polygon2D(allowedArea));
             throw new UnsupportedOperationException("...TODO...");

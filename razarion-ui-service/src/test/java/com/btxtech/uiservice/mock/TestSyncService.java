@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;

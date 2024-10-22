@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Uint16ArrayEmu;

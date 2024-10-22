@@ -126,12 +126,12 @@ public class Scene {
             gameEngineControl.executeBotCommands(sceneConfig.getKillBotCommandConfigs());
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
-            sceneConfig.getStartPointPlacerConfig().setBaseItemCount(1);
+            sceneConfig.getStartPointPlacerConfig().baseItemCount(1);
             AlarmRaiser.onNull(gameUiControl.getPlanetConfig().getStartBaseItemTypeId(),
                     INVALID_GAME_UI_CONTEXT,
                     "No Start base item type in planet",
                     gameUiControl.getPlanetConfig().getId());
-            sceneConfig.getStartPointPlacerConfig().setBaseItemTypeId(gameUiControl.getPlanetConfig().getStartBaseItemTypeId());
+            sceneConfig.getStartPointPlacerConfig().baseItemTypeId(gameUiControl.getPlanetConfig().getStartBaseItemTypeId());
             baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), false, decimalPositions -> {
                 if (decimalPositions.size() != 1) {
                     throw new IllegalArgumentException("To create a new human base, only one base item is allowed. Given: " + decimalPositions.size());

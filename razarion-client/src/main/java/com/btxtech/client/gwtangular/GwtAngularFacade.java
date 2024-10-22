@@ -19,6 +19,7 @@ import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
 import com.btxtech.uiservice.terrain.InputService;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import jsinterop.annotations.JsType;
 
 /**
@@ -48,6 +49,7 @@ public abstract class GwtAngularFacade {
     public BaseItemUiService baseItemUiService; // Initialized by GWT
     public InventoryTypeService inventoryTypeService; // Initialized by GWT
     public InventoryUiService inventoryUiService; // Initialized by GWT
+    public TerrainUiService terrainUiService; // Initialized by GWT
 
     public abstract void onCrash();
 }

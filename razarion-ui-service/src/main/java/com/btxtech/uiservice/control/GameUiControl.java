@@ -26,7 +26,6 @@ import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
-import com.btxtech.uiservice.cockpit.QuestCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -52,38 +51,21 @@ import java.util.logging.Logger;
 @JsType
 public class GameUiControl { // Equivalent worker class is PlanetService
     private final Logger logger = Logger.getLogger(GameUiControl.class.getName());
-
-    private Provider<Scene> sceneInstance;
-
-    private BaseItemUiService baseItemUiService;
-
-    private MainCockpitService cockpitService;
-
-    private QuestCockpitService questCockpitService;
-
-    private ChatUiService chatUiService;
-
-    private ItemTypeService itemTypeService;
-
-    private TerrainTypeService terrainTypeService;
-
-    private LevelService levelService;
-
-    private InventoryTypeService inventoryTypeService;
-
-    private Provider<UserUiService> userUiService;
-
-    private Provider<Boot> boot;
-
-    private Provider<TrackerService> trackerService;
-
-    private InitializeService initializeService;
-
-    private ModalDialogManager modalDialogManager;
-
-    private Provider<ScreenCover> screenCover;
-
-    private Provider<AbstractServerSystemConnection> serverSystemConnectionInstance;
+    private final Provider<Scene> sceneInstance;
+    private final BaseItemUiService baseItemUiService;
+    private final MainCockpitService cockpitService;
+    private final ChatUiService chatUiService;
+    private final ItemTypeService itemTypeService;
+    private final TerrainTypeService terrainTypeService;
+    private final LevelService levelService;
+    private final InventoryTypeService inventoryTypeService;
+    private final Provider<UserUiService> userUiService;
+    private final Provider<Boot> boot;
+    private final Provider<TrackerService> trackerService;
+    private final InitializeService initializeService;
+    private final ModalDialogManager modalDialogManager;
+    private final Provider<ScreenCover> screenCover;
+    private final Provider<AbstractServerSystemConnection> serverSystemConnectionInstance;
     private ColdGameUiContext coldGameUiContext;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -110,7 +92,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
                          TerrainTypeService terrainTypeService,
                          ItemTypeService itemTypeService,
                          ChatUiService chatUiService,
-                         QuestCockpitService questCockpitService,
                          MainCockpitService cockpitService,
                          BaseItemUiService baseItemUiService,
                          Provider<Scene> sceneInstance) {
@@ -126,7 +107,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         this.terrainTypeService = terrainTypeService;
         this.itemTypeService = itemTypeService;
         this.chatUiService = chatUiService;
-        this.questCockpitService = questCockpitService;
         this.cockpitService = cockpitService;
         this.baseItemUiService = baseItemUiService;
         this.sceneInstance = sceneInstance;
@@ -326,8 +306,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         // Fade out
         sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet fade out").removeLoadingCover(true));
         // User Spawn
-        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0).setSuggestedPosition(position);
-        baseItemPlacerConfig.setAllowedArea(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion());
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().enemyFreeRadius(10.0).suggestedPosition(position);
+        baseItemPlacerConfig.allowedArea(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion());
         sceneConfigs.add(new SceneConfig().internalName("Multiplayer wait for base created").waitForBaseCreated(true).startPointPlacerConfig(baseItemPlacerConfig));
         sceneConfigs.add(new SceneConfig().internalName("script: Process Server Quests").processServerQuests(true));
         return sceneConfigs;
@@ -454,8 +434,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             }
             cockpitService.onEnergyChanged(0, 0);
             scenes = new ArrayList<>();
-            BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0);
-            baseItemPlacerConfig.setAllowedArea(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion());
+            BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().enemyFreeRadius(10.0);
+            baseItemPlacerConfig.allowedArea(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion());
             scenes.add(new SceneConfig().internalName("Multiplayer wait for base created").waitForBaseCreated(true).startPointPlacerConfig(baseItemPlacerConfig));
             scenes.add(new SceneConfig().internalName("script: Process Server Quests").processServerQuests(true));
             nextSceneNumber = 0;

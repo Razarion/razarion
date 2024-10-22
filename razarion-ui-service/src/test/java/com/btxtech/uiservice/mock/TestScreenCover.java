@@ -1,7 +1,8 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
 import com.btxtech.uiservice.cockpit.ScreenCover;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -10,28 +11,28 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class TestScreenCover implements ScreenCover {
+
+    @Inject
+    public TestScreenCover() {
+    }
+
     @Override
     public void showStoryCover(String html) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
     public void hideStoryCover() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
     public void removeLoadingCover() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
     public void fadeOutLoadingCover() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
     public void fadeInLoadingCover() {
-        throw new UnsupportedOperationException();
     }
 }

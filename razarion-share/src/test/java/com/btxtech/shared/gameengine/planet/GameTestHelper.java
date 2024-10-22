@@ -1,26 +1,18 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
-import com.btxtech.shared.gameengine.datatypes.Path;
-import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.CollectionUtils;
-import org.easymock.EasyMock;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.easymock.EasyMock.anyDouble;
 import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expect;
 
 /**
  * Created by Beat

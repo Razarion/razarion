@@ -24,11 +24,13 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
  * Created by Beat
  * on 19.06.2017.
  */
-public class PathingAccess {
+public class TerrainAnalyzer {
+    private final HeightMapAccess heightMapAccess;
     private final TerrainShapeManager terrainShape;
     private final Map<Index, TerrainType> terrainTypeCache = new HashMap<>();
 
-    public PathingAccess(TerrainShapeManager terrainShape) {
+    public TerrainAnalyzer(HeightMapAccess heightMapAccess, TerrainShapeManager terrainShape) {
+        this.heightMapAccess = heightMapAccess;
         this.terrainShape = terrainShape;
     }
 
@@ -38,15 +40,17 @@ public class PathingAccess {
             return cached;
         }
 
-        TerrainType terrainType = getTerrainTypeNoCache(terrainNodeIndex);
+        TerrainType terrainType = analyze(terrainNodeIndex);
         terrainTypeCache.put(terrainNodeIndex, terrainType);
 
         return terrainType;
     }
 
-    private TerrainType getTerrainTypeNoCache(Index terrainNodeIndex) {
-        if (isBlockedByTerrainObject(terrainNodeIndex)) {
-            return TerrainType.BLOCKED;
+    private TerrainType analyze(Index terrainNodeIndex) {
+        if(terrainShape != null) {
+            if (isBlockedByTerrainObject(terrainNodeIndex)) {
+                return TerrainType.BLOCKED;
+            }
         }
 
         double blHeight = getHeightNodeAt(terrainNodeIndex);
@@ -101,12 +105,17 @@ public class PathingAccess {
     public int getUInt16GroundHeightAt(Index terrainNodeIndex) {
         Index terrainTileIndex = nodeIndexToTileIndex(terrainNodeIndex);
 
-        int startTileNodeIndex = TILE_NODE_SIZE * (terrainTileIndex.getY() * terrainShape.getTileXCount() + terrainTileIndex.getX());
+        int startTileNodeIndex = 0;
+        int yAddition = 1;
+        if (terrainShape != null) {
+            yAddition = 0;
+            startTileNodeIndex = TILE_NODE_SIZE * (terrainTileIndex.getY() * terrainShape.getTileXCount() + terrainTileIndex.getX());
+        }
 
         Index offset = terrainNodeIndex.sub(terrainTileIndex.scale(NODE_X_COUNT, NODE_Y_COUNT));
-        int offsetTileNodeIndex = offset.getY() * NODE_X_COUNT + offset.getX();
+        int offsetTileNodeIndex = offset.getY() * (NODE_X_COUNT + yAddition) + offset.getX();
 
-        return terrainShape.getNativeTerrainShapeAccess().getGroundHeightAt(startTileNodeIndex + offsetTileNodeIndex);
+        return heightMapAccess.getUInt16HeightAt(startTileNodeIndex + offsetTileNodeIndex);
     }
 
     public boolean isTerrainTypeAllowed(TerrainType terrainType, Index nodeIndex) {
@@ -119,7 +128,7 @@ public class PathingAccess {
         }
         Index nodeIndex = terrainPositionToNodeIndex(terrainPosition);
         if (terrainType.isAreaCheck()) {
-            List<Index> rasterOffsets = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.NODE_X_DISTANCE);
+            List<Index> rasterOffsets = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.NODE_SIZE);
             for (Index rasterOffset : rasterOffsets) {
                 if (!isTerrainTypeAllowed(terrainType, nodeIndex.add(rasterOffset))) {
                     return false;

@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.gui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.uiservice.gui.userobject.MouseMoveRender;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,13 +13,14 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 /**
  * Created by Beat
  * 09.04.2017.
  */
-public class UiTestGuiControl implements Initializable {
+public class UiTestGuiController implements Initializable {
     @FXML
     private AnchorPane anchorPanel;
     @FXML
@@ -29,10 +31,16 @@ public class UiTestGuiControl implements Initializable {
     private TextField scaleField;
     @FXML
     private TextField mouseLabel;
-    private AbstractUiTestGuiRenderer abstractUiTestGuiRenderer;
+    private final AbstractUiTestGuiRenderer abstractUiTestGuiRenderer;
+    private MouseMoveRender mouseMoveCallback;
 
-    public UiTestGuiControl(AbstractUiTestGuiRenderer abstractUiTestGuiRenderer) {
+    public UiTestGuiController(AbstractUiTestGuiRenderer abstractUiTestGuiRenderer, Object[] customRenders) {
         this.abstractUiTestGuiRenderer = abstractUiTestGuiRenderer;
+        Arrays.stream(customRenders).forEach(customRender -> {
+            if (customRender instanceof MouseMoveRender) {
+                mouseMoveCallback = (MouseMoveRender) customRender;
+            }
+        });
     }
 
     @Override
@@ -83,6 +91,12 @@ public class UiTestGuiControl implements Initializable {
     public void onMouseMoved(Event event) {
         DecimalPosition position = abstractUiTestGuiRenderer.convertMouseToModel(event);
         mouseLabel.setText(String.format("%.2f:%.2f", position.getX(), position.getY()));
+        if (mouseMoveCallback != null) {
+            mouseMoveCallback.onMouseMove(position);
+            abstractUiTestGuiRenderer.setMouseMoveCallback(mouseMoveCallback);
+            abstractUiTestGuiRenderer.render();
+            abstractUiTestGuiRenderer.setMouseMoveCallback(null);
+        }
     }
 
     public void onMousePressed(MouseEvent event) {

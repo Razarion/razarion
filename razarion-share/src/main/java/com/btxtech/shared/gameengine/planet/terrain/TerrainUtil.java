@@ -13,9 +13,8 @@ public interface TerrainUtil {
     int NODE_X_COUNT = 160;
     int NODE_Y_COUNT = 160;
     int TILE_NODE_SIZE = NODE_X_COUNT * NODE_Y_COUNT;
-    double NODE_X_DISTANCE = 1;
-    double NODE_Y_DISTANCE = 1;
     double HEIGHT_PRECISION = 0.1;
+    double NODE_SIZE = 1;
     double HEIGHT_MIN = -200;
     double WATER_LEVEL = 0;
     double HEIGHT_DEFAULT = 0.5;
@@ -24,16 +23,20 @@ public interface TerrainUtil {
         return terrainPosition.divide(NODE_X_COUNT, NODE_Y_COUNT).toIndexFloor();
     }
 
+    static Index terrainPositionToTileIndexCeil(DecimalPosition terrainPosition) {
+        return terrainPosition.divide(NODE_X_COUNT, NODE_Y_COUNT).toIndexCeil();
+    }
+
     static Index terrainPositionToNodeIndex(DecimalPosition terrainPosition) {
-        return terrainPosition.divide(NODE_X_DISTANCE, NODE_Y_DISTANCE).toIndex();
+        return terrainPosition.divide(NODE_SIZE, NODE_SIZE).toIndex();
     }
 
     static DecimalPosition nodeIndexToTerrainPosition(Index nodeIndex) {
-        return new DecimalPosition(nodeIndex.scale(NODE_X_DISTANCE, NODE_Y_DISTANCE));
+        return new DecimalPosition(nodeIndex.scale(NODE_SIZE, NODE_SIZE));
     }
 
     static DecimalPosition nodeIndexToMiddleTerrainPosition(Index nodeIndex) {
-        return nodeIndexToTerrainPosition(nodeIndex).add(TerrainUtil.NODE_X_DISTANCE / 2.0, TerrainUtil.NODE_Y_DISTANCE / 2.0);
+        return nodeIndexToTerrainPosition(nodeIndex).add(TerrainUtil.NODE_SIZE / 2.0, TerrainUtil.NODE_SIZE / 2.0);
     }
 
     static Index nodeIndexToTileIndex(Index nodeIndex) {

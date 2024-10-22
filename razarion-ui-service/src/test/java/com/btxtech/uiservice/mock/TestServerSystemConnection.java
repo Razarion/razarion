@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.cdimock;
+package com.btxtech.uiservice.mock;
 
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.SystemConnectionPacket;
@@ -9,11 +9,13 @@ import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.user.UserUiService;
 
+import javax.inject.Inject;
 import java.util.logging.Logger;
 
 public class TestServerSystemConnection extends AbstractServerSystemConnection {
-    private Logger logger = Logger.getLogger(TestServerSystemConnection.class.getName());
+    private final Logger logger = Logger.getLogger(TestServerSystemConnection.class.getName());
 
+    @Inject
     public TestServerSystemConnection(Boot boot, ChatUiService chatUiService, InventoryUiService inventoryUiService, UserUiService userUiService, GameUiControl gameUiControl) {
         super(boot, chatUiService, inventoryUiService, userUiService, gameUiControl);
     }

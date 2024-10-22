@@ -19,8 +19,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // See: GWT Java Code TerrainUtil
   static readonly NODE_X_COUNT = 160;
   static readonly NODE_Y_COUNT = 160;
-  static readonly NODE_X_DISTANCE = 1;
-  static readonly NODE_Y_DISTANCE = 1;
+  static readonly NODE_SIZE = 1;
   static readonly HEIGHT_PRECISION = 0.1;
   static readonly HEIGHT_MIN = -200;
   static readonly WATER_LEVEL = 0;
@@ -181,8 +180,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const indices = [];
     const positions = [];
     const normals = [];
-    let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_X_DISTANCE) + 1;
-    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_Y_DISTANCE) + 1;
+    let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     let xOffset = this.terrainTile.getIndex().getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
     let yOffset = this.terrainTile.getIndex().getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
 
@@ -191,9 +190,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       for (let x = 0; x < xCount; x++) {
         const index = x + y * xCount;
         positions.push(
-          x * BabylonTerrainTileImpl.NODE_X_DISTANCE + xOffset,
+          x * BabylonTerrainTileImpl.NODE_SIZE + xOffset,
           BabylonTerrainTileImpl.setupHeight(index, groundHeightMap),
-          y * BabylonTerrainTileImpl.NODE_Y_DISTANCE + yOffset);
+          y * BabylonTerrainTileImpl.NODE_SIZE + yOffset);
         normals.push(0, 0, 0);
       }
     }

@@ -132,7 +132,7 @@ public final class FallbackConfig {
     public static void setupHarbour(List<BaseItemType> baseItemTypes) {
         BaseItemType harbour = new BaseItemType();
         harbour.health(40).id(HARBOUR_ITEM_TYPE_ID).setInternalName("Harbour test");
-        harbour.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER_COAST).radius(4.5));
+        harbour.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).radius(4.5));
         harbour.setFactoryType(new FactoryType().setAbleToBuildIds(Arrays.asList(SHIP_ATTACKER_ITEM_TYPE_ID, SHIP_HARVESTER_ITEM_TYPE_ID, SHIP_TRANSPORTER_ITEM_TYPE_ID)).setProgress(3));
         baseItemTypes.add(harbour);
     }

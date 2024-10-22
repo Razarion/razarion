@@ -186,7 +186,7 @@ public class ItemCockpitService {
         if (baseItemType.getBuilderType() != null) {
             ableToBuildIds = baseItemType.getBuilderType().getAbleToBuildIds();
             onBuildCallback = (itemType) -> {
-                BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemType.getId());
+                BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().baseItemCount(1).baseItemTypeId(itemType.getId());
                 baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
                     audioService.onCommandSent();
                     gameEngineControl.get().buildCmd(selectedGroup.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);

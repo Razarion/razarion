@@ -29,7 +29,7 @@ public class TerrainShapeManager {
     private final NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private final TerrainTypeService terrainTypeService;
     private TerrainShapeTile[][] terrainShapeTiles;
-    private PathingAccess pathingAccess;
+    private TerrainAnalyzer terrainAnalyzer;
     private DecimalPosition planetSize;
     private int tileXCount;
     private int tileYCount;
@@ -47,7 +47,9 @@ public class TerrainShapeManager {
         this.terrainTypeService = terrainTypeService;
         long time = System.currentTimeMillis();
         this.nativeTerrainShapeAccess = null;
-        pathingAccess = new PathingAccess(this);
+        terrainAnalyzer = new TerrainAnalyzer(
+                index -> getNativeTerrainShapeAccess().getGroundHeightAt(index),
+                this);
         setupDimension(planetConfig);
         terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
         TerrainShapeManagerSetup terrainShapeSetup = new TerrainShapeManagerSetup(this, terrainTypeService, alarmService);
@@ -57,7 +59,9 @@ public class TerrainShapeManager {
     }
 
     public void lazyInit(PlanetConfig planetConfig, Runnable finishCallback, Consumer<String> failCallback) {
-        pathingAccess = new PathingAccess(this);
+        terrainAnalyzer = new TerrainAnalyzer(
+                index -> getNativeTerrainShapeAccess().getGroundHeightAt(index),
+                this);
         setupDimension(planetConfig);
         nativeTerrainShapeAccess.load(planetConfig.getId(), nativeTerrainShape -> {
             try {
@@ -144,14 +148,14 @@ public class TerrainShapeManager {
         return terrainShapeTile;
     }
 
-    public PathingAccess getPathingAccess() {
-        return pathingAccess;
+    public TerrainAnalyzer getTerrainAnalyzer() {
+        return terrainAnalyzer;
     }
 
     public boolean isSightBlocked(Line line) {
-        return GeometricUtil.rasterizeLine(line, (int) TerrainUtil.NODE_X_DISTANCE)
+        return GeometricUtil.rasterizeLine(line, (int) TerrainUtil.NODE_SIZE)
                 .stream()
-                .map(nodeIndex -> pathingAccess.getTerrainType(nodeIndex))
+                .map(nodeIndex -> terrainAnalyzer.getTerrainType(nodeIndex))
                 .anyMatch(terrainType -> terrainType != TerrainType.LAND);
     }
 

@@ -2,26 +2,24 @@ package com.btxtech.uiservice.questvisualization;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
-import com.btxtech.uiservice.cdimock.BabylonRendererServiceAccessMock;
+import com.btxtech.uiservice.DaggerUiBaseIntegrationTest;
+import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.terrain.InputService;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
 
-public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTest {
+public class InGameQuestVisualizationServiceTest extends DaggerUiBaseIntegrationTest {
     @Test
     public void activateResourceInsideScrollOutside() {
         ColdGameUiContext coldGameUiContext = setup();
@@ -35,10 +33,10 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
                 new ConditionConfig().conditionTrigger(ConditionTrigger.HARVEST).comparisonConfig(new ComparisonConfig().count(10))));
 
 
-        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
+        BabylonRenderServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRenderServiceAccessMock.class);
         Assert.assertNull(babylonRendererServiceAccessMock.getShowOutOfViewMarkerConfig());
         Assert.assertEquals(1, babylonRendererServiceAccessMock.getBabylonResourceItemMocks().size());
-        BabylonRendererServiceAccessMock.BabylonResourceItemMock babylonResourceItemMock = babylonRendererServiceAccessMock.getBabylonResourceItemMocks().get(0);
+        BabylonRenderServiceAccessMock.BabylonResourceItemMock babylonResourceItemMock = babylonRendererServiceAccessMock.getBabylonResourceItemMocks().get(0);
         Assert.assertNotNull(babylonResourceItemMock.getMarkerConfig());
 
         getWeldBean(InputService.class).onViewFieldChanged(
@@ -65,7 +63,7 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
         getWeldBean(InGameQuestVisualizationService.class).onQuestActivated(new QuestConfig().conditionConfig(
                 new ConditionConfig().conditionTrigger(ConditionTrigger.HARVEST).comparisonConfig(new ComparisonConfig().count(10))));
 
-        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
+        BabylonRenderServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRenderServiceAccessMock.class);
         Assert.assertNotNull(babylonRendererServiceAccessMock.getShowOutOfViewMarkerConfig());
         Assert.assertEquals(90, Math.toDegrees(babylonRendererServiceAccessMock.getShowOutOfViewAngle()), 0.1);
         Assert.assertEquals(0, babylonRendererServiceAccessMock.getBabylonResourceItemMocks().size());
@@ -78,7 +76,7 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
 
         Assert.assertNull(babylonRendererServiceAccessMock.getShowOutOfViewMarkerConfig());
         Assert.assertEquals(1, babylonRendererServiceAccessMock.getBabylonResourceItemMocks().size());
-        BabylonRendererServiceAccessMock.BabylonResourceItemMock babylonResourceItemMock = babylonRendererServiceAccessMock.getBabylonResourceItemMocks().get(0);
+        BabylonRenderServiceAccessMock.BabylonResourceItemMock babylonResourceItemMock = babylonRendererServiceAccessMock.getBabylonResourceItemMocks().get(0);
         Assert.assertNotNull(babylonResourceItemMock.getMarkerConfig());
     }
 
@@ -95,10 +93,10 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
                 new ConditionConfig().conditionTrigger(ConditionTrigger.BOX_PICKED).comparisonConfig(new ComparisonConfig().count(10))));
 
 
-        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
+        BabylonRenderServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRenderServiceAccessMock.class);
         Assert.assertNull(babylonRendererServiceAccessMock.getShowOutOfViewMarkerConfig());
         Assert.assertEquals(1, babylonRendererServiceAccessMock.getBabylonBoxItemMocks().size());
-        BabylonRendererServiceAccessMock.BabylonBoxItemMock babylonBoxItemMock = babylonRendererServiceAccessMock.getBabylonBoxItemMocks().get(0);
+        BabylonRenderServiceAccessMock.BabylonBoxItemMock babylonBoxItemMock = babylonRendererServiceAccessMock.getBabylonBoxItemMocks().get(0);
         Assert.assertNotNull(babylonBoxItemMock.getMarkerConfig());
 
         getWeldBean(InputService.class).onViewFieldChanged(
@@ -125,7 +123,7 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
         getWeldBean(InGameQuestVisualizationService.class).onQuestActivated(new QuestConfig().conditionConfig(
                 new ConditionConfig().conditionTrigger(ConditionTrigger.BOX_PICKED).comparisonConfig(new ComparisonConfig().count(10))));
 
-        BabylonRendererServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
+        BabylonRenderServiceAccessMock babylonRendererServiceAccessMock = getWeldBean(BabylonRenderServiceAccessMock.class);
         Assert.assertNotNull(babylonRendererServiceAccessMock.getShowOutOfViewMarkerConfig());
         Assert.assertEquals(90, Math.toDegrees(babylonRendererServiceAccessMock.getShowOutOfViewAngle()), 0.1);
         Assert.assertEquals(0, babylonRendererServiceAccessMock.getBabylonBoxItemMocks().size());
@@ -138,7 +136,7 @@ public class InGameQuestVisualizationServiceTest extends WeldUiBaseIntegrationTe
 
         Assert.assertNull(babylonRendererServiceAccessMock.getShowOutOfViewMarkerConfig());
         Assert.assertEquals(1, babylonRendererServiceAccessMock.getBabylonBoxItemMocks().size());
-        BabylonRendererServiceAccessMock.BabylonBoxItemMock babylonBoxItemMock = babylonRendererServiceAccessMock.getBabylonBoxItemMocks().get(0);
+        BabylonRenderServiceAccessMock.BabylonBoxItemMock babylonBoxItemMock = babylonRendererServiceAccessMock.getBabylonBoxItemMocks().get(0);
         Assert.assertNotNull(babylonBoxItemMock.getMarkerConfig());
     }
 

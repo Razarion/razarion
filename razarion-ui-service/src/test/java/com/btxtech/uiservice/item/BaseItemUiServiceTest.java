@@ -6,8 +6,8 @@ import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.uiservice.Diplomacy;
-import com.btxtech.uiservice.WeldUiBaseIntegrationTest;
-import com.btxtech.uiservice.cdimock.BabylonRendererServiceAccessMock;
+import com.btxtech.uiservice.DaggerUiBaseIntegrationTest;
+import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.InputService;
 import org.junit.Assert;
@@ -18,7 +18,7 @@ import java.util.Collections;
 import static com.btxtech.shared.dto.FallbackConfig.BUILDER_ITEM_TYPE_ID;
 import static com.btxtech.test.shared.SharedTestHelper.assertDecimalPosition;
 
-public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
+public class BaseItemUiServiceTest extends DaggerUiBaseIntegrationTest {
     @Test
     public void test() {
         // Init
@@ -62,9 +62,9 @@ public class BaseItemUiServiceTest extends WeldUiBaseIntegrationTest {
         BaseItemUiService baseItemUiService = getWeldBean(BaseItemUiService.class);
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
 
-        BabylonRendererServiceAccessMock threeJsRendererServiceAccessMock = getWeldBean(BabylonRendererServiceAccessMock.class);
+        BabylonRenderServiceAccessMock threeJsRendererServiceAccessMock = getWeldBean(BabylonRenderServiceAccessMock.class);
         Assert.assertEquals(1, threeJsRendererServiceAccessMock.getBabylonBaseItemMocks().size());
-        BabylonRendererServiceAccessMock.BabylonBaseItemMock babylonBaseItemMock = threeJsRendererServiceAccessMock.getBabylonBaseItemMocks().get(0);
+        BabylonRenderServiceAccessMock.BabylonBaseItemMock babylonBaseItemMock = threeJsRendererServiceAccessMock.getBabylonBaseItemMocks().get(0);
         assertDecimalPosition(new DecimalPosition(274, 100), babylonBaseItemMock.getPosition());
         Assert.assertEquals(0, babylonBaseItemMock.getAngle(), 0.0001);
         Assert.assertEquals(babylonBaseItemMock.getDiplomacy(), Diplomacy.OWN);

@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
-import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gui.AbstractTestGuiRenderer;
@@ -72,7 +72,7 @@ public class ItemVelocityCalculatorTest {
         });
         TerrainShapeManager terrainServiceMock = EasyMock.createNiceMock(TerrainShapeManager.class);
         EasyMock.replay(terrainServiceMock);
-        PathingAccess pathingAccess = new PathingAccess(terrainServiceMock);
+        TerrainAnalyzer pathingAccess = new TerrainAnalyzer(null, terrainServiceMock);
         TestExceptionHandler testExceptionHandler = new TestExceptionHandler(null);
         ItemVelocityCalculator itemVelocityCalculator = new ItemVelocityCalculator(syncItemContainerService, pathingAccess, testExceptionHandler);
 

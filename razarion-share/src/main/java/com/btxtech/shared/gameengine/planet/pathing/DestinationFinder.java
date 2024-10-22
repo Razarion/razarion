@@ -2,8 +2,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -21,13 +20,13 @@ public class DestinationFinder {
     private PathingNodeWrapper destinationNode;
     private TerrainType terrainType;
     private List<Index> subNodeIndexScope;
-    private PathingAccess pathingAccess;
+    private TerrainAnalyzer pathingAccess;
     private PathingNodeWrapper found;
     private AStarContext aStarContext;
     private Set<PathingNodeWrapper> openList = new HashSet<>();
     private Set<PathingNodeWrapper> closeList = new HashSet<>();
 
-    public DestinationFinder(DecimalPosition destination, PathingNodeWrapper destinationNode, TerrainType terrainType, List<Index> subNodeIndexScope, PathingAccess pathingAccess) {
+    public DestinationFinder(DecimalPosition destination, PathingNodeWrapper destinationNode, TerrainType terrainType, List<Index> subNodeIndexScope, TerrainAnalyzer pathingAccess) {
         this.destination = destination;
         this.destinationNode = destinationNode;
         this.terrainType = terrainType;
