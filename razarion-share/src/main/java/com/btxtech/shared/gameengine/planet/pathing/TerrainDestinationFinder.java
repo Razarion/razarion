@@ -21,13 +21,12 @@ import java.util.function.Predicate;
  * on 20.11.2017.
  */
 public class TerrainDestinationFinder {
-    private DecimalPosition position;
-    private double radius;
-    private TerrainType terrainType;
-    private DecimalPosition destination;
-    private double distance;
-    private TerrainAnalyzer pathingAccess;
-    private DecimalPosition reachableDestination;
+    private final DecimalPosition position;
+    private final double radius;
+    private final TerrainType terrainType;
+    private final DecimalPosition destination;
+    private final double distance;
+    private final TerrainAnalyzer pathingAccess;
     private PathingNodeWrapper pathingNodeWrapper;
 
     public TerrainDestinationFinder(DecimalPosition position, DecimalPosition destination, double distance, double radius, TerrainType terrainType, TerrainAnalyzer pathingAccess) {
@@ -57,7 +56,7 @@ public class TerrainDestinationFinder {
         if (result.getO1() == null) {
             throw new IllegalArgumentException("TerrainDestinationFinder.find(): no reachable terrain destination found. position: " + position + " destination: " + destination + " distance: " + distance + " radius: " + radius + " terrainType: " + terrainType);
         }
-        reachableDestination = result.getO1();
+        DecimalPosition reachableDestination = result.getO1();
         pathingNodeWrapper = pathingAccess.getPathingNodeWrapper(reachableDestination);
     }
 
@@ -81,18 +80,18 @@ public class TerrainDestinationFinder {
         return actor != target;
     }
 
-    private static void calculatePosition(TerrainAnalyzer pathingAccess, double distance, DecimalPosition destination, double radius, TerrainType terrainType, Predicate<DecimalPosition> callback) {
-        // TODO
-        List<Index> indices = GeometricUtil.rasterizeCircle(new Circle2D(new DecimalPosition(0, 0), distance - 2.0 * TerrainUtil.MIN_SUB_NODE_LENGTH), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-        Collection<DecimalPosition> allowedPositions = new ArrayList<>();
-//        for (Index index : indices) {
-//            DecimalPosition scanPosition = index.add(destination);
-//            if (pathingAccess.isTerrainTypeAllowed(terrainType, scanPosition)) {
-//                allowedPositions.add(scanPosition);
-//            }
-//        }
+    private static void calculatePosition(TerrainAnalyzer pathingAccess, double distance, DecimalPosition destinationPosition, double radius, TerrainType terrainType, Predicate<DecimalPosition> callback) {
+        List<Index> indices = GeometricUtil.rasterizeCircle(new Circle2D(new DecimalPosition(0, 0), distance - 2.0 * TerrainUtil.NODE_SIZE), (int) TerrainUtil.NODE_SIZE);
+        Collection<Index> allowedNodeIndices = new ArrayList<>();
+        Index destination = TerrainUtil.terrainPositionToNodeIndex(destinationPosition);
+        for (Index index : indices) {
+            Index scanPosition = index.add(destination);
+            if (pathingAccess.isTerrainTypeAllowed(terrainType, scanPosition)) {
+                allowedNodeIndices.add(scanPosition);
+            }
+        }
 
-        for (DecimalPosition allowedPosition : allowedPositions) {
+        for (Index allowedPosition : allowedNodeIndices) {
             PathingNodeWrapper pathingNodeWrapper = pathingAccess.getPathingNodeWrapper(allowedPosition);
             if (pathingNodeWrapper.isFree(terrainType)) {
                 DecimalPosition aStarPosition = pathingNodeWrapper.getCenter();

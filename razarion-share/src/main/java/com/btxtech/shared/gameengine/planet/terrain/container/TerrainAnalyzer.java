@@ -159,9 +159,13 @@ public class TerrainAnalyzer {
         return !terrainShape.isSightBlocked(line) && !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2);
     }
 
+    public PathingNodeWrapper getPathingNodeWrapper(Index nodeIndex) {
+        return new PathingNodeWrapper(nodeIndex, getTerrainType(nodeIndex), this);
+    }
+
     public PathingNodeWrapper getPathingNodeWrapper(DecimalPosition terrainPosition) {
         Index nodeIndex = TerrainUtil.terrainPositionToNodeIndex(terrainPosition);
-        return new PathingNodeWrapper(nodeIndex, getTerrainType(nodeIndex), this);
+        return getPathingNodeWrapper(nodeIndex);
     }
 
     public boolean isNodeInBoundary(Index nodeIndex) {
