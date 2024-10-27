@@ -28,7 +28,7 @@ import static com.btxtech.shared.dto.FallbackConfig.WATER_CONFIG_ID;
  * Created by Beat
  * 03.04.2017.
  */
-public class TerrainObjectServiceTest extends WeldTerrainServiceTestBase {
+public class TerrainObjectServiceTest extends DaggerTerrainServiceTestBase {
 
     @Test
     @Ignore

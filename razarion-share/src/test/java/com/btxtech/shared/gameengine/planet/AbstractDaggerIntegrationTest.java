@@ -1,17 +1,16 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.DaggerTestShareDagger;
 import com.btxtech.shared.SimpleTestEnvironment;
-import com.btxtech.shared.cdimock.TestNativeTerrainShapeAccess;
-import com.btxtech.shared.cdimock.TestSimpleExecutorService;
-import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
+import com.btxtech.shared.TestShareDagger;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
@@ -19,17 +18,19 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
-import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
+import com.btxtech.shared.gameengine.planet.gui.WeldTestController;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.mock.TestNativeTerrainShapeAccess;
+import com.btxtech.shared.mock.TestSimpleExecutorService;
+import com.btxtech.shared.mock.TestSimpleScheduledFuture;
 import com.btxtech.shared.mocks.TestFloat32Array;
 import com.btxtech.shared.mocks.TestFloat32ArraySerializer;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -37,8 +38,6 @@ import com.btxtech.shared.system.alarm.AlarmService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.Assert;
 
 import java.io.File;
@@ -55,15 +54,12 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 23.08.2017.
  */
-public class AbstractIntegrationTest {
-    private WeldContainer weldContainer;
-    private TestSimpleExecutorService testSimpleExecutorService;
+public class AbstractDaggerIntegrationTest {
+    private TestShareDagger testShareDagger;
     private BaseItemService baseItemService;
     private TestGameLogicListener testGameLogicListener;
     private PlanetConfig planetConfig;
     private StaticGameConfig staticGameConfig;
-    private PlanetService planetService;
-    private AlarmService alarmService;
 
     public static void assertContainingSyncItemIds(Collection<? extends SyncItem> expected, int... actualIds) {
         List<Integer> expectedIds = expected.stream().map(SyncItem::getId).collect(Collectors.toList());
@@ -76,28 +72,28 @@ public class AbstractIntegrationTest {
     protected void setupEnvironment(StaticGameConfig staticGameConfig, PlanetConfig planetConfig) {
         this.staticGameConfig = staticGameConfig;
         this.planetConfig = planetConfig;
-        // Init weld
-        Weld weld = new Weld();
-        weldContainer = weld.initialize();
-        testSimpleExecutorService = getWeldBean(TestSimpleExecutorService.class);
+        // Init Dagger
+        testShareDagger = DaggerTestShareDagger.builder().build();
         // Init static game
-        baseItemService = getWeldBean(BaseItemService.class);
-        planetService = getWeldBean(PlanetService.class);
-        alarmService = getWeldBean(AlarmService.class);
+        baseItemService = testShareDagger.baseItemService();
         testGameLogicListener = new TestGameLogicListener();
-        getWeldBean(GameLogicService.class).setGameLogicListener(testGameLogicListener);
+        testShareDagger.gameLogicService().setGameLogicListener(testGameLogicListener);
         fireStaticGameConfig(staticGameConfig);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
-        getTestNativeTerrainShapeAccess().loadHeightMap("/CompressedHeightMap.bin", AbstractIntegrationTest.class);
+        getTestNativeTerrainShapeAccess().loadHeightMap("/CompressedHeightMap.bin", AbstractDaggerIntegrationTest.class);
     }
 
+    public TestShareDagger getTestShareDagger() {
+        return testShareDagger;
+    }
+
+    @Deprecated
     public <T> T getWeldBean(Class<T> clazz) {
-        // return weldContainer.instance().select(clazz).get();
-        return null;
+        throw new UnsupportedOperationException("... Use Dagger ...");
     }
 
     public TestSimpleExecutorService getTestSimpleExecutorService() {
-        return testSimpleExecutorService;
+        return testShareDagger.testSimpleExecutorService();
     }
 
     public BaseItemService getBaseItemService() {
@@ -105,7 +101,7 @@ public class AbstractIntegrationTest {
     }
 
     public SyncItemContainerServiceImpl getSyncItemContainerService() {
-        return getWeldBean(SyncItemContainerServiceImpl.class);
+        return testShareDagger.syncItemContainerService();
     }
 
     public ItemTypeService getItemTypeService() {
@@ -137,7 +133,7 @@ public class AbstractIntegrationTest {
     }
 
     public TestNativeTerrainShapeAccess getTestNativeTerrainShapeAccess() {
-        return getWeldBean(TestNativeTerrainShapeAccess.class);
+        return testShareDagger.testNativeTerrainShapeAccess();
     }
 
     public List<SyncBaseItemInfo> getSyncBaseItemInfos() {
@@ -149,7 +145,7 @@ public class AbstractIntegrationTest {
     }
 
     public void fireStaticGameConfig(StaticGameConfig staticGameConfig) {
-        getWeldBean(InitializeService.class).setStaticGameConfig(staticGameConfig);
+        testShareDagger.initializeService().setStaticGameConfig(staticGameConfig);
     }
 
     public boolean isBaseServiceActive(SyncBaseItem... ignores) {
@@ -297,11 +293,11 @@ public class AbstractIntegrationTest {
     }
 
     public PlanetService getPlanetService() {
-        return planetService;
+        return testShareDagger.planetService();
     }
 
     public AlarmService getAlarmService() {
-        return alarmService;
+        return testShareDagger.alarmService();
     }
 
     public PlayerBase getPlayerBase(UserContext userContext) {
@@ -347,7 +343,7 @@ public class AbstractIntegrationTest {
     }
 
     public void showDisplay(Object... userObject) {
-        getWeldBean(WeldDisplay.class).show(userObject);
+        WeldDisplay.show(userObject, testShareDagger);
     }
 
     public void exportTriangles(String director, Index... terrainTileIndices) {

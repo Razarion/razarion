@@ -109,7 +109,11 @@ public class TerrainShapeManagerSetup {
                 }
                 nativeTerrainShapeObjectLists[terrainObjectIdIndex++] = nativeTerrainShapeObjectList;
             }
-            terrainShape.getOrCreateTerrainShapeTile(tileIndex).setNativeTerrainShapeObjectLists(nativeTerrainShapeObjectLists);
+            try {
+                terrainShape.getOrCreateTerrainShapeTile(tileIndex).setNativeTerrainShapeObjectLists(nativeTerrainShapeObjectLists);
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "Can not handle terrain object with id: " + nativeTerrainShapeObjectLists[0].terrainObjectConfigId, t);
+            }
         });
     }
 
@@ -127,7 +131,11 @@ public class TerrainShapeManagerSetup {
         });
 
         tileDecals.getMap().forEach((tileIndex, nativeBabylonDecals) -> {
-            terrainShape.getOrCreateTerrainShapeTile(tileIndex).setNativeBabylonDecals(nativeBabylonDecals.toArray(new NativeBabylonDecal[0]));
+            try {
+                terrainShape.getOrCreateTerrainShapeTile(tileIndex).setNativeBabylonDecals(nativeBabylonDecals.toArray(new NativeBabylonDecal[0]));
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "Can not handle BotDecals in tile index: " + tileIndex, t);
+            }
         });
 
 

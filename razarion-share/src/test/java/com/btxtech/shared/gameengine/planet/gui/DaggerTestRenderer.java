@@ -59,7 +59,7 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.terrainPo
  * on 30.06.2017.
  */
 @Singleton
-public class WeldTestRenderer {
+public class DaggerTestRenderer {
     public static final double LINE_WIDTH = 0.1;
     public static final double FAT_LINE_WIDTH = 0.3;
     private static final int GRID_SPACING_100 = 100;
@@ -74,14 +74,10 @@ public class WeldTestRenderer {
     private static final Color RESOURCE_ITEM_TYPE_COLOR = new Color(0.8, 0.8, 0, 1);
     private static final Color BOX_ITEM_TYPE_COLOR = new Color(1, 0.0, 1, 1);
     private static final double SYNC_ITEM_DISPLAY_FRONT_ANGEL = MathHelper.gradToRad(60);
-
-    private TerrainService terrainService;
-
-    private TerrainTypeService terrainTypeService;
-
-    private SyncItemContainerServiceImpl syncItemContainerService;
-
-    private ItemTypeService itemTypeService;
+    private final TerrainService terrainService;
+    private final TerrainTypeService terrainTypeService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
+    private final ItemTypeService itemTypeService;
     private Canvas canvas;
     private GraphicsContext gc;
     private double scale;
@@ -96,7 +92,7 @@ public class WeldTestRenderer {
     private WeldTestController weldTestController;
 
     @Inject
-    public WeldTestRenderer(ItemTypeService itemTypeService, SyncItemContainerServiceImpl syncItemContainerService, TerrainTypeService terrainTypeService, TerrainService terrainService) {
+    public DaggerTestRenderer(ItemTypeService itemTypeService, SyncItemContainerServiceImpl syncItemContainerService, TerrainTypeService terrainTypeService, TerrainService terrainService) {
         this.itemTypeService = itemTypeService;
         this.syncItemContainerService = syncItemContainerService;
         this.terrainTypeService = terrainTypeService;

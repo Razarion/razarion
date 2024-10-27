@@ -13,9 +13,9 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
-import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
+import com.btxtech.shared.gameengine.planet.DaggerSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
-import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
+import com.btxtech.shared.gameengine.planet.terrain.DaggerTerrainServiceTestBase;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,10 +31,10 @@ import static com.btxtech.shared.dto.FallbackConfig.DRIVEWAY_ID_ID;
  * Created by Beat
  * on 12.04.2018.
  */
-public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
+public class ScenarioBaseTest extends DaggerTerrainServiceTestBase {
     private static final int MAX_TICK_COUNT = 1000;
     public static final String SAVE_DIRECTORY = TestHelper.SAVE_DIRECTORY + "pathing//move";
-    private WeldSlaveEmulator slave;
+    private DaggerSlaveEmulator slave;
 
     @Before
     public void before() {
@@ -112,7 +112,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         scenario.setup(playerBase1, getItemTypeService(), getBaseItemService(), getPathingService());
         scenario.createSyncItems();
 
-        slave = new WeldSlaveEmulator();
+        slave = new DaggerSlaveEmulator();
         slave.connectToMaster(createLevel1UserContext(), this);
 
         ScenarioTicks actualTicks = runScenario();

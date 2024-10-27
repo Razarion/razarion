@@ -15,7 +15,7 @@ import java.util.Collections;
  * Created by Beat
  * 29.03.2017.
  */
-public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
+public class GroundTerrainServiceTest extends DaggerTerrainServiceTestBase {
     @Test
     public void testGroundTileGeneration1() {
         setupTerrainTypeService(null, null, null, null, null, null, null, null, null, null, null, null);

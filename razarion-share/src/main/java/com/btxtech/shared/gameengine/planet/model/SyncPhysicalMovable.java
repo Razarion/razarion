@@ -39,13 +39,9 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
     private static final double STOP_DETECTION_OTHER_UNITS_RADIOS = 20;
     private static final double ANGLE_SLOW_DOWN = 0.1;
-
     // private Logger logger = Logger.getLogger(SyncPhysicalMovable.class.getName());
-    private Provider<Path> instancePath;
-
-    //    @Inject
-//    private DebugHelper debugHelper;
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final Provider<Path> instancePath;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
     private double acceleration; // Meter per square second
     private double maxSpeed; // Meter per second
     private double angularVelocity; // Rad per second

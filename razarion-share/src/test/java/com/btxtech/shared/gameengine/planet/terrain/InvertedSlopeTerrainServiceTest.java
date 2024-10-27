@@ -25,7 +25,7 @@ import static com.btxtech.shared.dto.FallbackConfig.DRIVEWAY_ID_ID;
  * Created by Beat
  * on 21.11.2017.
  */
-public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
+public class InvertedSlopeTerrainServiceTest extends DaggerTerrainServiceTestBase {
 
     @Test
     public void testWater() {

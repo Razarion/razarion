@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Beat
  * on 29.08.2017.
  */
-public class ResourceServiceTest extends WeldMasterBaseTest {
+public class ResourceServiceTest extends DaggerMasterBaseTest {
     private List<ResourceRegionConfig> resourceRegionConfigs;
 
     @Override

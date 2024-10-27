@@ -45,7 +45,7 @@ public class ServerTerrainShapeService {
     private StaticGameConfigPersistence staticGameConfigPersistence;
     @Inject
     private BotService botService;
-    private Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
+    private final Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
     private int[] groundHeightMap;
 
     public void start(List<BotConfig> botConfigs) {
@@ -68,12 +68,12 @@ public class ServerTerrainShapeService {
             logger.log(Level.SEVERE, "createTerrainShape failed", t);
         }
 
-        TerrainShapeManager terrainShape = new TerrainShapeManager(planetConfig,
+        TerrainShapeManager terrainShapeManager = new TerrainShapeManager(planetConfig,
                 terrainTypeService,
                 alarmService,
                 planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()),
                 BotService.generateBotDecals(botConfigs));
-        terrainShapes.put(planetConfig.getId(), terrainShape.toNativeTerrainShape());
+        terrainShapes.put(planetConfig.getId(), terrainShapeManager.toNativeTerrainShape());
     }
 
     public void createTerrainShape(List<BotConfig> botConfigs, int planetConfigId) {

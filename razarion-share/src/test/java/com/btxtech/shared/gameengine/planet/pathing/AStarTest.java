@@ -58,7 +58,7 @@ public class AStarTest extends AStarBaseTest {
     @Test
     @Ignore
     public void slopeError() {
-        SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(4, TerrainType.LAND, new DecimalPosition(170, 151));
+        SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(4, TerrainType.LAND, new DecimalPosition(170, 151), getSyncItemContainerService());
         try {
             getPathingService().setupPathToDestination(syncBaseItem, new DecimalPosition(70, 117));
             Assert.fail("Fail expected. Destination is not free");
@@ -71,7 +71,7 @@ public class AStarTest extends AStarBaseTest {
     @Test
     @Ignore
     public void landWaterError() {
-        SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(4, TerrainType.LAND, new DecimalPosition(76, 92));
+        SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(4, TerrainType.LAND, new DecimalPosition(76, 92), getSyncItemContainerService());
         try {
             getPathingService().setupPathToDestination(syncBaseItem, new DecimalPosition(100.375, 226.0));
             Assert.fail("Fail expected. Destination is not free");
@@ -84,7 +84,7 @@ public class AStarTest extends AStarBaseTest {
     @Test
     @Ignore
     public void waterLandError() {
-        SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(4, TerrainType.WATER, new DecimalPosition(153, 296));
+        SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(4, TerrainType.WATER, new DecimalPosition(153, 296), getSyncItemContainerService());
         try {
             getPathingService().setupPathToDestination(syncBaseItem, new DecimalPosition(274, 233));
             Assert.fail("Fail expected. Destination is not free");

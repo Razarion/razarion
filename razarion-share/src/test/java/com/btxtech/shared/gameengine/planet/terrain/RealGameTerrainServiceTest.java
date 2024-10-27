@@ -12,16 +12,10 @@ import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.mocks.TestFloat32Array;
-import com.btxtech.shared.mocks.TestFloat32ArraySerializer;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import javafx.scene.paint.Color;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import static com.btxtech.shared.RestClientHelper.readColdGameUiContext;
@@ -31,7 +25,7 @@ import static com.btxtech.shared.RestClientHelper.readColdGameUiContext;
  * on 14.11.2017.
  */
 @Ignore
-public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
+public class RealGameTerrainServiceTest extends DaggerTerrainServiceTestBase {
 
     @Test
     public void readFromServer() throws IOException {
@@ -68,7 +62,7 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
     }
 
     protected SimplePath setupPath(DecimalPosition target, double radius, TerrainType actorTerrainType, DecimalPosition actorPosition) {
-        SyncBaseItem actor = GameTestHelper.createMockSyncBaseItem(radius, actorTerrainType, actorPosition);
+        SyncBaseItem actor = GameTestHelper.createMockSyncBaseItem(radius, actorTerrainType, actorPosition, null);
         return getPathingService().setupPathToDestination(actor, target);
     }
 

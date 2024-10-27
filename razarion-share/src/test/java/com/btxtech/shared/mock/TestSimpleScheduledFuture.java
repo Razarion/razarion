@@ -1,4 +1,4 @@
-package com.btxtech.shared.cdimock;
+package com.btxtech.shared.mock;
 
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;

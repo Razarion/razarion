@@ -23,7 +23,7 @@ import java.util.List;
  * Created by Beat
  * 03.04.2017.
  */
-public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
+public class SlopeTerrainServiceTest extends DaggerTerrainServiceTestBase {
     @Test
     public void testSlope() {
         List<SlopeConfig> slopeConfigs = Collections.singletonList(new SlopeConfig()

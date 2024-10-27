@@ -7,8 +7,8 @@ import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.planet.TestGameLogicListener;
-import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
-import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
+import com.btxtech.shared.gameengine.planet.DaggerMasterBaseTest;
+import com.btxtech.shared.gameengine.planet.DaggerSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.utils.CollectionUtils;
 import org.junit.Assert;
@@ -18,7 +18,7 @@ import org.junit.Test;
  * Created by Beat
  * on 21.08.2017.
  */
-public class EnergyServiceTest extends WeldMasterBaseTest {
+public class EnergyServiceTest extends DaggerMasterBaseTest {
 
     @Test
     public void testMaster() {
@@ -109,7 +109,7 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(50, 50), userContext);
         tickPlanetServiceBaseServiceActive();
         // Connect permanent slave and verify slave
-        WeldSlaveEmulator permanentSalve = new WeldSlaveEmulator();
+        DaggerSlaveEmulator permanentSalve = new DaggerSlaveEmulator();
         permanentSalve.connectToMaster(userContext, this);
         assertConnectedSlave(0, 0, permanentSalve, userContext);
         Assert.assertTrue(permanentSalve.getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
@@ -201,7 +201,7 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         Assert.assertEquals("Generating", generatingExpected, energyStateChangedEntry.getGenerating());
     }
 
-    private void assertGameLogicListener(int consumingExpected, int generatingExpected, WeldSlaveEmulator weldSlaveEmulator, UserContext userContext) {
+    private void assertGameLogicListener(int consumingExpected, int generatingExpected, DaggerSlaveEmulator weldSlaveEmulator, UserContext userContext) {
         Assert.assertEquals(1, weldSlaveEmulator.getTestGameLogicListener().getEnergyStateChangedEntries().size());
         TestGameLogicListener.EnergyStateChangedEntry energyStateChangedEntry = weldSlaveEmulator.getTestGameLogicListener().getEnergyStateChangedEntries().get(0);
         Assert.assertEquals("Base", weldSlaveEmulator.getPlayerBase(userContext), energyStateChangedEntry.getBase());
@@ -211,14 +211,14 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
     }
 
     private void assertNewConnectedSlave(int consumingExpected, int generatingExpected, UserContext userContext) {
-        WeldSlaveEmulator slaveNew = new WeldSlaveEmulator();
+        DaggerSlaveEmulator slaveNew = new DaggerSlaveEmulator();
         slaveNew.connectToMaster(userContext, this);
         slaveNew.tickPlanetService();
         assertEnergy(consumingExpected, generatingExpected, slaveNew.getEnergyService(), slaveNew.getPlayerBase(userContext));
         slaveNew.disconnectFromMaster();
     }
 
-    private void assertConnectedSlave(int consumingExpected, int generatingExpected, WeldSlaveEmulator permanentSalve, UserContext userContext) {
+    private void assertConnectedSlave(int consumingExpected, int generatingExpected, DaggerSlaveEmulator permanentSalve, UserContext userContext) {
         permanentSalve.tickPlanetService();
         while (permanentSalve.hasPendingReceivedTickInfos()) {
             permanentSalve.tickPlanetService();

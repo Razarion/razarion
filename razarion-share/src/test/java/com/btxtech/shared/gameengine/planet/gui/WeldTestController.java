@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.gui;
 
+import com.btxtech.shared.TestShareDagger;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController;
@@ -7,7 +8,6 @@ import com.btxtech.shared.gameengine.planet.gui.userobject.InstanceStringGenerat
 import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.TestCaseGenerator;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -22,9 +22,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 
-import javax.inject.Provider;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,63 +33,56 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.toNode;
  * Created by Beat
  * 09.04.2017.
  */
-@Singleton
 public class WeldTestController implements Initializable {
-
-    private WeldTestRenderer weldTestRenderer;
-
-    private PlanetService planetService;
-
-    private TerrainService terrainService;
-
-    private Provider<ScenarioPlaybackController> instance;
-
+    private final DaggerTestRenderer weldTestRenderer;
+    private final PlanetService planetService;
+    @FXML
     private AnchorPane anchorPanel;
-
+    @FXML
     private Canvas canvas;
-
+    @FXML
     private Slider zoomSlider;
-
+    @FXML
     private TextField scaleField;
-
+    @FXML
     private TextField mouseLabel;
-
+    @FXML
     private TextField zMinField;
-
+    @FXML
     private TextField zMaxField;
-
+    @FXML
     private CheckBox terrainTileWaterCheck;
-
+    @FXML
     private CheckBox terrainTileGroundCheck;
-
+    @FXML
     private CheckBox terrainTileSlopeCheck;
-
+    @FXML
     private CheckBox terrainTileHeightCheck;
-
+    @FXML
     private CheckBox terrainTileTerrainObjectCheck;
-
+    @FXML
     private CheckBox terrainTileTerrainTypeCheck;
-
+    @FXML
     private CheckBox shapeAccessCheck;
-
+    @FXML
     private CheckBox shapeTerrainTypeCheck;
-
+    @FXML
     private CheckBox shapeTerrainHeightCheck;
-
+    @FXML
     private CheckBox shapeFractionalSlopeCheck;
-
+    @FXML
     private CheckBox shapeObstaclesCheck;
-
+    @FXML
     private CheckBox groundSlopeConnectionsCheck;
-
+    @FXML
     private CheckBox shapeWaterCheck;
-
+    @FXML
     private CheckBox shapeTerrainObjectCheck;
-
+    @FXML
     private CheckBox syncItemsCheck;
-
+    @FXML
     private AnchorPane gameEnginePlaybackContainer;
-
+    @FXML
     private Label tickCountLabel;
     private DecimalPosition mousePosition;
     private Object[] userObjects;
@@ -103,12 +93,11 @@ public class WeldTestController implements Initializable {
     private List<DecimalPosition> polygon;
     private List<DecimalPosition> positions;
 
-    @Inject
-    public WeldTestController(Provider<com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController> instance, TerrainService terrainService, PlanetService planetService, WeldTestRenderer weldTestRenderer) {
-        this.instance = instance;
-        this.terrainService = terrainService;
-        this.planetService = planetService;
-        this.weldTestRenderer = weldTestRenderer;
+    public WeldTestController(Object[] userObjects, TestShareDagger testShareDagger) {
+        weldTestRenderer = testShareDagger.daggerTestRenderer();
+        weldTestRenderer.setup(this, userObjects);
+        setUserObjects(userObjects);
+        planetService = testShareDagger.planetService();
     }
 
     @Override
@@ -221,8 +210,9 @@ public class WeldTestController implements Initializable {
             } else if (userObject instanceof TestCaseGenerator) {
                 testCaseGenerator = (TestCaseGenerator) userObject;
             } else if (userObject instanceof ScenarioPlayback) {
-                scenarioPlaybackController = instance.get();
-                scenarioPlaybackController.setScenarioPlayback((ScenarioPlayback) userObject, () -> weldTestRenderer.render(scenarioPlaybackController));
+                // scenarioPlaybackController = instance.get();
+                // scenarioPlaybackController.setScenarioPlayback((ScenarioPlayback) userObject, () -> weldTestRenderer.render(scenarioPlaybackController));
+                throw new UnsupportedOperationException("ScenarioPlayback not supported");
             } else {
                 userObjectsCopy.add(userObject);
             }

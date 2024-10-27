@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
+import com.btxtech.shared.mock.TestSimpleScheduledFuture;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 31.08.2017.
  */
-public class TestBackupRestore extends WeldMasterBaseTest {
+public class TestBackupRestore extends DaggerMasterBaseTest {
     @Test
     public void test() {
         setupMasterEnvironment();

@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
+import com.btxtech.shared.gameengine.planet.DaggerSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class BuildTest extends BaseBasicTest {
         setup();
 
         UserContext userContext = createLevel1UserContext();
-        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        DaggerSlaveEmulator permSlave = new DaggerSlaveEmulator();
         permSlave.connectToMaster(userContext, this);
 
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(167, 136), userContext);
@@ -51,7 +51,7 @@ public class BuildTest extends BaseBasicTest {
         setup();
 
         UserContext userContext = createLevel1UserContext();
-        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        DaggerSlaveEmulator permSlave = new DaggerSlaveEmulator();
         permSlave.connectToMaster(userContext, this);
 
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(240, 130), userContext);

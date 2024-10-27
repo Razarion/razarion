@@ -62,7 +62,7 @@ public class PathTest extends AStarBaseTest {
     }
 
     private void assertPath(DecimalPosition expected, Path path, double radius, DecimalPosition inputPosition) {
-        path.setupCurrentWayPoint(GameTestHelper.createSyncPhysicalMovable(radius, TerrainType.LAND, inputPosition, null));
+        path.setupCurrentWayPoint(GameTestHelper.createSyncPhysicalMovable(radius, TerrainType.LAND, inputPosition, null, getSyncItemContainerService()));
         TestHelper.assertDecimalPosition("Unexpected getCurrentWayPoint()", expected, path.getCurrentWayPoint());
     }
 

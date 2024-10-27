@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -10,8 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
+import com.btxtech.shared.gameengine.planet.terrain.DaggerTerrainServiceTestBase;
 import javafx.scene.paint.Color;
 import org.junit.Test;
 
@@ -24,7 +22,7 @@ import java.util.List;
  * Created by Beat
  * on 12.07.2017.
  */
-public class ProvideSouthSuccessors extends WeldTerrainServiceTestBase {
+public class ProvideSouthSuccessors extends DaggerTerrainServiceTestBase {
 
     private void setup() {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();

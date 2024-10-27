@@ -1,13 +1,16 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
+import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.CollectionUtils;
+import org.easymock.EasyMock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,33 +23,51 @@ import static org.easymock.EasyMock.anyObject;
  */
 public interface GameTestHelper {
 
-    static SyncBaseItem createMockSyncBaseItem(int id, double radius, TerrainType terrainType, DecimalPosition position) {
-//        SyncBaseItem syncBaseItem = new SyncBaseItem();
-//        SyncPhysicalMovable syncPhysicalMovable = createSyncPhysicalMovable(radius, terrainType, position, null);
-//        syncBaseItem.init(id, null, syncPhysicalMovable);
-//        SimpleTestEnvironment.injectService("syncItem", syncPhysicalMovable, SyncPhysicalArea.class, syncBaseItem);
-//        return syncBaseItem;
-        throw new UnsupportedOperationException();
+    static SyncBaseItem createMockSyncBaseItem(int id,
+                                               double radius,
+                                               TerrainType terrainType,
+                                               DecimalPosition position,
+                                               SyncItemContainerServiceImpl syncItemContainerService) {
+        SyncBaseItem syncBaseItem = new SyncBaseItem(null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        SyncPhysicalMovable syncPhysicalMovable = createSyncPhysicalMovable(radius, terrainType, position, null, syncItemContainerService);
+        syncBaseItem.init(id, null, syncPhysicalMovable);
+        SimpleTestEnvironment.injectService("syncItem", syncPhysicalMovable, AbstractSyncPhysical.class, syncBaseItem);
+        return syncBaseItem;
     }
 
-    static SyncBaseItem createMockSyncBaseItem(double radius, TerrainType terrainType, DecimalPosition position) {
-        return createMockSyncBaseItem(-99, radius, terrainType, position);
+    static SyncBaseItem createMockSyncBaseItem(double radius,
+                                               TerrainType terrainType,
+                                               DecimalPosition position,
+                                               SyncItemContainerServiceImpl syncItemContainerService) {
+        return createMockSyncBaseItem(-99, radius, terrainType, position, syncItemContainerService);
     }
 
-    static SyncPhysicalMovable createSyncPhysicalMovable(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition preferredVelocity) {
-//        SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
-//        SimpleTestEnvironment.injectService("position", syncPhysicalMovable, SyncPhysicalArea.class, position);
-//        SimpleTestEnvironment.injectService("preferredVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, preferredVelocity);
-//        SimpleTestEnvironment.injectService("radius", syncPhysicalMovable, SyncPhysicalArea.class, radius);
-//        SimpleTestEnvironment.injectService("terrainType", syncPhysicalMovable, SyncPhysicalArea.class, terrainType);
-//        SimpleTestEnvironment.injectService("maxSpeed", syncPhysicalMovable, SyncPhysicalMovable.class, 17);
-//        SimpleTestEnvironment.injectService("acceleration", syncPhysicalMovable, SyncPhysicalMovable.class, 5.0);
-//        SimpleTestEnvironment.injectService("angularVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, Math.toRadians(180));
-//        SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerServiceImpl.class);
-//        EasyMock.replay(syncItemContainerService);
-//        SimpleTestEnvironment.injectService("syncItemContainerService", syncPhysicalMovable, SyncPhysicalArea.class, syncItemContainerService);
-//        return syncPhysicalMovable;
-        throw new UnsupportedOperationException();
+    static SyncPhysicalMovable createSyncPhysicalMovable(double radius,
+                                                         TerrainType terrainType,
+                                                         DecimalPosition position,
+                                                         DecimalPosition preferredVelocity,
+                                                         SyncItemContainerServiceImpl syncItemContainerService) {
+        SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable(syncItemContainerService, null);
+        SimpleTestEnvironment.injectService("position", syncPhysicalMovable, AbstractSyncPhysical.class, position);
+        SimpleTestEnvironment.injectService("preferredVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, preferredVelocity);
+        SimpleTestEnvironment.injectService("radius", syncPhysicalMovable, AbstractSyncPhysical.class, radius);
+        SimpleTestEnvironment.injectService("terrainType", syncPhysicalMovable, AbstractSyncPhysical.class, terrainType);
+        SimpleTestEnvironment.injectService("maxSpeed", syncPhysicalMovable, SyncPhysicalMovable.class, 17);
+        SimpleTestEnvironment.injectService("acceleration", syncPhysicalMovable, SyncPhysicalMovable.class, 5.0);
+        SimpleTestEnvironment.injectService("angularVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, Math.toRadians(180));
+        return syncPhysicalMovable;
     }
 
     static SyncPhysicalMovable createSyncPhysicalMovable(double radius, int syncItemId, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity, List<DecimalPosition> wayPositions) {

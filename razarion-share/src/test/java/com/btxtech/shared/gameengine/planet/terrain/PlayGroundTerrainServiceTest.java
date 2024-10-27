@@ -25,7 +25,7 @@ import java.util.List;
  * on 15.11.2017.
  */
 @Deprecated // TODO Still needed? PlayGround is removed.
-public class PlayGroundTerrainServiceTest extends WeldTerrainServiceTestBase {
+public class PlayGroundTerrainServiceTest extends DaggerTerrainServiceTestBase {
 
     @Test
     public void testPlayGround4Corners() {

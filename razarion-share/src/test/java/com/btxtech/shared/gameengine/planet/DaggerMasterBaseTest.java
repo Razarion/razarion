@@ -23,7 +23,7 @@ import java.util.List;
  * Created by Beat
  * on 21.08.2017.
  */
-public class WeldMasterBaseTest extends AbstractIntegrationTest {
+public class DaggerMasterBaseTest extends AbstractDaggerIntegrationTest {
 
     protected void setupMasterEnvironment() {
         setupMasterEnvironment(FallbackConfig.setupStaticGameConfig(), null);
@@ -43,7 +43,7 @@ public class WeldMasterBaseTest extends AbstractIntegrationTest {
     }
 
     protected PathingService getPathingService() {
-        return getWeldBean(PathingService.class);
+        return getTestShareDagger().pathingService();
     }
 
     @Deprecated // Use getBotBase(int botId)

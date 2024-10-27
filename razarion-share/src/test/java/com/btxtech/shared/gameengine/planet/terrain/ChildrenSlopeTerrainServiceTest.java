@@ -22,7 +22,7 @@ import static com.btxtech.shared.dto.FallbackConfig.DRIVEWAY_ID_ID;
  * Created by Beat
  * 03.04.2017.
  */
-public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
+public class ChildrenSlopeTerrainServiceTest extends DaggerTerrainServiceTestBase {
     private static final int SLOPE_CONFIG_ID_1 = 1;
     private static final int SLOPE_WATER_CONFIG_ID_1 = 2;
     private static final int WATER_CONFIG_ID_1 = 9;

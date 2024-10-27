@@ -17,7 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
+import com.btxtech.shared.gameengine.planet.DaggerMasterBaseTest;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 25.09.2017.
  */
-public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
+public class DaggerTerrainServiceTestBase extends DaggerMasterBaseTest {
     protected void setupTerrainTypeService(StaticGameConfig staticGameConfig,
                                            List<SlopeConfig> slopeConfigs,
                                            List<DrivewayConfig> drivewayConfigs,

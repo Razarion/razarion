@@ -1,4 +1,4 @@
-package com.btxtech.shared.cdimock;
+package com.btxtech.shared.mock;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Uint16ArrayEmu;
@@ -8,12 +8,14 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManage
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import com.btxtech.shared.mocks.TestUint16Array;
+import com.btxtech.shared.system.alarm.AlarmService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
 
@@ -25,26 +27,28 @@ import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray
  */
 @Singleton
 public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
-
-    private TerrainTypeService terrainTypeService;
+    private final TerrainTypeService terrainTypeService;
+    private final AlarmService alarmService;
     private PlanetConfig planetConfig;
-    private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private int[] groundHeightMap;
 
     @Inject
-    public TestNativeTerrainShapeAccess(TerrainTypeService terrainTypeService) {
+    public TestNativeTerrainShapeAccess(TerrainTypeService terrainTypeService,
+                                        AlarmService alarmService) {
         this.terrainTypeService = terrainTypeService;
+        this.alarmService = alarmService;
     }
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
-        TerrainShapeManager terrainShape;
-        if (nativeTerrainShapeAccess != null) {
-            terrainShape = new TerrainShapeManager(terrainTypeService, nativeTerrainShapeAccess);
-            terrainShape.lazyInit(planetConfig, () -> loadedCallback.accept(terrainShape.toNativeTerrainShape()), failCallback);
-        } else {
-            throw new RuntimeException("++++++++++ Unexpected ++++++++++");
-        }
+        TerrainShapeManager terrainShapeManager = new TerrainShapeManager(
+                planetConfig,
+                terrainTypeService,
+                alarmService,
+                Collections.emptyList(),
+                Collections.emptyList()
+        );
+        loadedCallback.accept(terrainShapeManager.toNativeTerrainShape());
     }
 
     @Override

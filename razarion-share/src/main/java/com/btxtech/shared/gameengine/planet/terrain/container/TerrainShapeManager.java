@@ -89,8 +89,8 @@ public class TerrainShapeManager {
 
     private void setupDimension(PlanetConfig planetConfig) {
         DecimalPosition planetSize = planetConfig.getSize();
-        tileXCount = TerrainUtil.toTileCeil(planetSize).getX();
-        tileYCount = TerrainUtil.toTileCeil(planetSize).getY();
+        tileXCount = TerrainUtil.terrainPositionToTileIndexCeil(planetSize).getX();
+        tileYCount = TerrainUtil.terrainPositionToTileIndexCeil(planetSize).getY();
     }
 
     public NativeTerrainShape toNativeTerrainShape() {

@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.planet.gui.scenarioplayback;
 
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.gui.WeldTestRenderer;
+import com.btxtech.shared.gameengine.planet.gui.DaggerTestRenderer;
 import com.btxtech.shared.gameengine.planet.gui.userobject.InstanceStringGenerator;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import javafx.application.Platform;
@@ -217,7 +217,7 @@ public class ScenarioPlaybackController implements Initializable {
         testMethodLabel.setText(scenarioPlayback.getScenario().getFileName());
     }
 
-    public void render(WeldTestRenderer weldTestRenderer) {
+    public void render(DaggerTestRenderer weldTestRenderer) {
         if (showMasterActualCheck.isSelected()) {
             currentMasterActual.forEach(syncBaseItemInfo -> weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId));
         }

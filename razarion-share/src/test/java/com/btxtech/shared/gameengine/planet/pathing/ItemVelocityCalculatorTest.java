@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
-import com.btxtech.shared.cdimock.TestExceptionHandler;
+import com.btxtech.shared.mock.TestExceptionHandler;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
@@ -10,7 +10,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gui.AbstractTestGuiRenderer;
-import com.btxtech.shared.gui.TestGuiDisplay;
+import com.btxtech.shared.gui.ShareTestGuiDisplay;
 import javafx.scene.paint.Color;
 import org.easymock.EasyMock;
 import org.junit.Test;
@@ -91,7 +91,7 @@ public class ItemVelocityCalculatorTest {
 
     @SuppressWarnings("unused")
     private void display(List<SyncPhysicalMovable> syncPhysicalMovables) {
-        TestGuiDisplay.show(new AbstractTestGuiRenderer() {
+        ShareTestGuiDisplay.show(new AbstractTestGuiRenderer() {
             @Override
             protected void doRender() {
                 syncPhysicalMovables.forEach(syncPhysicalMovable -> {

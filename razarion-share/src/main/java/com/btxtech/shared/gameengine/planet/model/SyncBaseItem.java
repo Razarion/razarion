@@ -56,32 +56,20 @@ import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNat
  */
 
 public class SyncBaseItem extends SyncItem {
+    private final Provider<SyncWeapon> syncWeaponProvider;
+    private final Provider<SyncFactory> syncFactoryProvider;
+    private final Provider<SyncBuilder> syncBuilderProvider;
+    private final Provider<SyncHarvester> syncHarvesterProvider;
+    private final Provider<SyncGenerator> syncGeneratorProvider;
+    private final Provider<SyncConsumer> syncConsumerProvider;
+    private final Provider<SyncItemContainer> syncItemContainerProvider;
+    private final Provider<SyncHouse> syncHouseProvider;
+    private final BaseItemService baseItemService;
+    private final CommandService commandService;
+    private final GameLogicService gameLogicService;
+    private final BoxService boxService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private Provider<SyncWeapon> syncWeaponProvider;
-
-    private Provider<SyncFactory> syncFactoryProvider;
-
-    private Provider<SyncBuilder> syncBuilderProvider;
-
-    private Provider<SyncHarvester> syncHarvesterProvider;
-
-    private Provider<SyncGenerator> syncGeneratorProvider;
-
-    private Provider<SyncConsumer> syncConsumerProvider;
-
-    private Provider<SyncItemContainer> syncItemContainerProvider;
-
-    private Provider<SyncHouse> syncHouseProvider;
-
-    private BaseItemService baseItemService;
-
-    private CommandService commandService;
-
-    private GameLogicService gameLogicService;
-
-    private BoxService boxService;
-
-    private SyncItemContainerServiceImpl syncItemContainerService;
     private PlayerBase base;
     private double buildup;
     private double health;
@@ -100,7 +88,19 @@ public class SyncBaseItem extends SyncItem {
     private SyncBaseItem containedIn;
 
     @Inject
-    public SyncBaseItem(SyncItemContainerServiceImpl syncItemContainerService, BoxService boxService, GameLogicService gameLogicService, CommandService commandService, BaseItemService baseItemService, Provider<com.btxtech.shared.gameengine.planet.model.SyncHouse> syncHouseProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncItemContainer> syncItemContainerProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncConsumer> syncConsumerProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncGenerator> syncGeneratorProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncHarvester> syncHarvesterProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncBuilder> syncBuilderProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncFactory> syncFactoryProvider, Provider<com.btxtech.shared.gameengine.planet.model.SyncWeapon> syncWeaponProvider) {
+    public SyncBaseItem(SyncItemContainerServiceImpl syncItemContainerService,
+                        BoxService boxService,
+                        GameLogicService gameLogicService,
+                        CommandService commandService,
+                        BaseItemService baseItemService,
+                        Provider<SyncHouse> syncHouseProvider,
+                        Provider<SyncItemContainer> syncItemContainerProvider,
+                        Provider<SyncConsumer> syncConsumerProvider,
+                        Provider<SyncGenerator> syncGeneratorProvider,
+                        Provider<SyncHarvester> syncHarvesterProvider,
+                        Provider<SyncBuilder> syncBuilderProvider,
+                        Provider<SyncFactory> syncFactoryProvider,
+                        Provider<SyncWeapon> syncWeaponProvider) {
         this.syncItemContainerService = syncItemContainerService;
         this.boxService = boxService;
         this.gameLogicService = gameLogicService;

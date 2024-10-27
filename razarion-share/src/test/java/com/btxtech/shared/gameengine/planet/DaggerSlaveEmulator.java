@@ -18,11 +18,11 @@ import java.util.PriorityQueue;
  * Created by Beat
  * on 23.08.2017.
  */
-public class WeldSlaveEmulator extends AbstractIntegrationTest {
+public class DaggerSlaveEmulator extends AbstractDaggerIntegrationTest {
     private TestClientWebSocket testClientWebSocket;
-    private WeldMasterBaseTest weldMasterBaseTest;
+    private DaggerMasterBaseTest weldMasterBaseTest;
 
-    public void connectToMaster(UserContext userContext, WeldMasterBaseTest weldMasterBaseTest) {
+    public void connectToMaster(UserContext userContext, DaggerMasterBaseTest weldMasterBaseTest) {
         this.weldMasterBaseTest = weldMasterBaseTest;
         setupEnvironment(weldMasterBaseTest.getStaticGameConfig(), weldMasterBaseTest.getPlanetConfig());
         getWeldBean(PlanetService.class).initialise(getPlanetConfig(), GameEngineMode.SLAVE, null, () -> {

@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gui.AbstractTestGuiRenderer;
-import com.btxtech.shared.gui.TestGuiDisplay;
+import com.btxtech.shared.gui.ShareTestGuiDisplay;
 import javafx.scene.paint.Color;
 import org.junit.Test;
 
@@ -369,7 +369,7 @@ public class SlopeGroundConnectionFactoryTest {
     }
 
     private void showDisplay(Rectangle2D absoluteRect, List<List<DecimalPosition>> piercingLines, List<List<Vertex>> slopeGroundConnections) {
-        TestGuiDisplay.show(new AbstractTestGuiRenderer() {
+        ShareTestGuiDisplay.show(new AbstractTestGuiRenderer() {
             @Override
             protected void doRender() {
                 strokePolygon(absoluteRect.toCorners(), 0.1, Color.BLUE, false);

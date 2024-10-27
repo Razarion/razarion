@@ -1,4 +1,4 @@
-package com.btxtech.shared.cdimock;
+package com.btxtech.shared.mock;
 
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.alarm.AlarmService;

@@ -19,9 +19,9 @@ import java.util.function.Consumer;
 @Singleton
 public class TerrainService {
     // private Logger logger = Logger.getLogger(TerrainService.class.getName());
-    private TerrainTypeService terrainTypeService;
-    private TerrainTileFactory terrainTileFactory;
-    private Provider<NativeTerrainShapeAccess> nativeTerrainShapeAccess;
+    private final TerrainTypeService terrainTypeService;
+    private final TerrainTileFactory terrainTileFactory;
+    private final Provider<NativeTerrainShapeAccess> nativeTerrainShapeAccess;
     private TerrainShapeManager terrainShape;
     private PlanetConfig planetConfig;
 

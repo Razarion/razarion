@@ -8,8 +8,6 @@ import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
-import org.junit.Assert;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +18,7 @@ import java.util.List;
  * Created by Beat
  * on 11.11.2017.
  */
-public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
+public class BigTerrainServiceTest extends DaggerTerrainServiceTestBase {
     private void setup(int slopeConfigId) {
         List<SlopeConfig> slopeConfigs = new ArrayList<>();
 

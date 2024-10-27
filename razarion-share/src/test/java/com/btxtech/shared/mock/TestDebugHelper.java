@@ -1,7 +1,8 @@
-package com.btxtech.shared.cdimock;
+package com.btxtech.shared.mock;
 
 import com.btxtech.shared.system.debugtool.DebugHelper;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -10,6 +11,11 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class TestDebugHelper implements DebugHelper {
+
+    @Inject
+    public TestDebugHelper() {
+    }
+
     @Override
     public void debugToDb(String debugMessage) {
         System.out.println("TestDebugHelper.debugToDb(): " + debugMessage);

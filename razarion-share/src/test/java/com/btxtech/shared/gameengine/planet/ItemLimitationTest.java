@@ -14,7 +14,7 @@ import java.util.Map;
  * Created by Beat
  * on 20.09.2017.
  */
-public class ItemLimitationTest extends WeldMasterBaseTest {
+public class ItemLimitationTest extends DaggerMasterBaseTest {
 
     @Test
     public void testBuilder() {

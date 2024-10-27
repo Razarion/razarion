@@ -15,7 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
-import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
+import com.btxtech.shared.gameengine.planet.DaggerMasterBaseTest;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.List;
  * Created by Beat
  * on 21.10.2017.
  */
-public class BaseBasicTest extends WeldMasterBaseTest {
+public class BaseBasicTest extends DaggerMasterBaseTest {
     private int lastBotId = 0;
 
     protected void setup() {

@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
-import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
+import com.btxtech.shared.mock.TestSimpleScheduledFuture;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.basic.BaseBasicTest;

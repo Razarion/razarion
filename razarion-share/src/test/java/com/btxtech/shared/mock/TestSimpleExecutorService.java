@@ -1,8 +1,9 @@
-package com.btxtech.shared.cdimock;
+package com.btxtech.shared.mock;
 
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,8 +14,12 @@ import java.util.Collection;
  */
 @Singleton
 public class TestSimpleExecutorService implements SimpleExecutorService {
-    private Collection<TestSimpleScheduledFuture> schedules = new ArrayList<>();
-    private Collection<TestSimpleScheduledFuture> scheduleAtFixedRates = new ArrayList<>();
+    private final Collection<TestSimpleScheduledFuture> schedules = new ArrayList<>();
+    private final Collection<TestSimpleScheduledFuture> scheduleAtFixedRates = new ArrayList<>();
+
+    @Inject
+    public TestSimpleExecutorService() {
+    }
 
     @Override
     public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {

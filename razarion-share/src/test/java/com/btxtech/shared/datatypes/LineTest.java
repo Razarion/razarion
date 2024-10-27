@@ -2,7 +2,7 @@ package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.gui.AbstractTestGuiRenderer;
-import com.btxtech.shared.gui.TestGuiDisplay;
+import com.btxtech.shared.gui.ShareTestGuiDisplay;
 import com.btxtech.shared.utils.CollectionUtils;
 import javafx.scene.paint.Color;
 import org.junit.Assert;
@@ -67,7 +67,7 @@ public class LineTest {
 
     // @Test
     public void gui() {
-        TestGuiDisplay.show(new AbstractTestGuiRenderer() {
+        ShareTestGuiDisplay.show(new AbstractTestGuiRenderer() {
             private DecimalPosition position = DecimalPosition.NULL;
 
             @Override

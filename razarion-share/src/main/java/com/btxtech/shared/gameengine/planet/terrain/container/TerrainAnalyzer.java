@@ -26,12 +26,12 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
  */
 public class TerrainAnalyzer {
     private final HeightMapAccess heightMapAccess;
-    private final TerrainShapeManager terrainShape;
+    private final TerrainShapeManager terrainShapeManager;
     private final Map<Index, TerrainType> terrainTypeCache = new HashMap<>();
 
     public TerrainAnalyzer(HeightMapAccess heightMapAccess, TerrainShapeManager terrainShape) {
         this.heightMapAccess = heightMapAccess;
-        this.terrainShape = terrainShape;
+        this.terrainShapeManager = terrainShape;
     }
 
     public TerrainType getTerrainType(Index terrainNodeIndex) {
@@ -47,7 +47,7 @@ public class TerrainAnalyzer {
     }
 
     private TerrainType analyze(Index terrainNodeIndex) {
-        if(terrainShape != null) {
+        if(terrainShapeManager != null) {
             if (isBlockedByTerrainObject(terrainNodeIndex)) {
                 return TerrainType.BLOCKED;
             }
@@ -75,7 +75,7 @@ public class TerrainAnalyzer {
     private boolean isBlockedByTerrainObject(Index terrainNodeIndex) {
         DecimalPosition scanPosition = nodeIndexToMiddleTerrainPosition(terrainNodeIndex);
         Index terrainTileIndex = nodeIndexToTileIndex(terrainNodeIndex);
-        TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
+        TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(terrainTileIndex);
         if (terrainShapeTile == null) {
             return false;
         }
@@ -83,7 +83,7 @@ public class TerrainAnalyzer {
             return false;
         }
         for (NativeTerrainShapeObjectList nativeTerrainShapeObjectList : terrainShapeTile.getNativeTerrainShapeObjectLists()) {
-            double radius = terrainShape.getTerrainTypeService().getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
+            double radius = terrainShapeManager.getTerrainTypeService().getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
             if (radius > 0.0) {
                 for (NativeTerrainShapeObjectPosition nativeTerrainShapeObjectPosition : nativeTerrainShapeObjectList.terrainShapeObjectPositions) {
                     double distance = scanPosition.getDistance(nativeTerrainShapeObjectPosition.x, nativeTerrainShapeObjectPosition.y);
@@ -107,9 +107,9 @@ public class TerrainAnalyzer {
 
         int startTileNodeIndex = 0;
         int yAddition = 1;
-        if (terrainShape != null) {
+        if (terrainShapeManager != null) {
             yAddition = 0;
-            startTileNodeIndex = TILE_NODE_SIZE * (terrainTileIndex.getY() * terrainShape.getTileXCount() + terrainTileIndex.getX());
+            startTileNodeIndex = TILE_NODE_SIZE * (terrainTileIndex.getY() * terrainShapeManager.getTileXCount() + terrainTileIndex.getX());
         }
 
         Index offset = terrainNodeIndex.sub(terrainTileIndex.scale(NODE_X_COUNT, NODE_Y_COUNT));
@@ -156,7 +156,7 @@ public class TerrainAnalyzer {
         Line line1 = new Line(start.getPointWithDistance(angel1, radius), target.getPointWithDistance(angel1, radius));
         Line line2 = new Line(start.getPointWithDistance(angel2, radius), target.getPointWithDistance(angel2, radius));
 
-        return !terrainShape.isSightBlocked(line) && !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2);
+        return !terrainShapeManager.isSightBlocked(line) && !terrainShapeManager.isSightBlocked(line1) && !terrainShapeManager.isSightBlocked(line2);
     }
 
     public PathingNodeWrapper getPathingNodeWrapper(Index nodeIndex) {
@@ -172,12 +172,12 @@ public class TerrainAnalyzer {
         if (nodeIndex.getX() < 0 || nodeIndex.getY() < 0) {
             return false;
         }
-        int xBoundary = terrainShape.getTileXCount() * NODE_X_COUNT;
-        int yBoundary = terrainShape.getTileYCount() * NODE_Y_COUNT;
+        int xBoundary = terrainShapeManager.getTileXCount() * NODE_X_COUNT;
+        int yBoundary = terrainShapeManager.getTileYCount() * NODE_Y_COUNT;
         return nodeIndex.getX() < xBoundary && nodeIndex.getY() < yBoundary;
     }
 
-    public TerrainShapeManager getTerrainShape() {
-        return terrainShape;
+    public TerrainShapeManager getTerrainShapeManager() {
+        return terrainShapeManager;
     }
 }

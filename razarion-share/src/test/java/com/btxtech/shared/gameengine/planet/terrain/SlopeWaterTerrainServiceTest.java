@@ -24,7 +24,7 @@ import java.util.List;
  * Created by Beat
  * 10.04.2017.
  */
-public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
+public class SlopeWaterTerrainServiceTest extends DaggerTerrainServiceTestBase {
     @Test
     public void testWater1() {
         // WaterConfig

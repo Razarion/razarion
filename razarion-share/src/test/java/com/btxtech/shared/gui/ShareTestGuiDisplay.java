@@ -10,12 +10,12 @@ import javafx.stage.Stage;
  * Created by Beat
  * 24.01.2016.
  */
-public class TestGuiDisplay extends Application {
+public class ShareTestGuiDisplay extends Application {
     private static AbstractTestGuiRenderer abstractTestGuiRenderer;
 
     public static void show(AbstractTestGuiRenderer abstractTestGuiRenderer) {
-        TestGuiDisplay.abstractTestGuiRenderer = abstractTestGuiRenderer;
-        Application.launch(TestGuiDisplay.class);
+        ShareTestGuiDisplay.abstractTestGuiRenderer = abstractTestGuiRenderer;
+        Application.launch(ShareTestGuiDisplay.class);
     }
 
     @Override

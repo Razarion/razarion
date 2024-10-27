@@ -1,39 +1,31 @@
 package com.btxtech.shared.gameengine.planet.gui;
 
+import com.btxtech.shared.TestShareDagger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /**
  * Created by Beat
  * 24.01.2016.
  */
-@Singleton
 public class WeldDisplay extends Application {
 
-    private WeldTestController gameEngineMonitorController;
-    private static WeldDisplay uglyFxHackThis;
+    private static TestShareDagger testShareDagger;
+    private static Object[] userObject;
 
-    @Inject
-    public WeldDisplay(WeldTestController gameEngineMonitorController) {
-        this.gameEngineMonitorController = gameEngineMonitorController;
-    }
-
-    public void show(Object[] userObject) {
-        uglyFxHackThis = this;
-        gameEngineMonitorController.setUserObjects(userObject);
+    public static void show(Object[] userObject, TestShareDagger testShareDagger) {
+        WeldDisplay.testShareDagger = testShareDagger;
+        WeldDisplay.userObject = userObject;
         Application.launch(WeldDisplay.class);
     }
 
     @Override
     public void start(final Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/WeldDisplay.fxml"));
-        loader.setControllerFactory(param -> uglyFxHackThis.gameEngineMonitorController);
+        loader.setControllerFactory(param -> new WeldTestController(WeldDisplay.userObject, WeldDisplay.testShareDagger));
         Parent root = loader.load();
         stage.setTitle("Test Weld Display");
         stage.setScene(new Scene(root));

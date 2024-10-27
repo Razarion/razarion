@@ -50,23 +50,15 @@ import java.util.logging.Logger;
 public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     private static final int CELL_LENGTH_EXPONENT = 4; // 2 ^ exponent
     private static final int CELL_LENGTH = (int) Math.pow(2, CELL_LENGTH_EXPONENT);
-    private Logger logger = Logger.getLogger(SyncItemContainerServiceImpl.class.getName());
-
-    private Provider<SyncBaseItem> syncBaseItemProvider;
-
-    private Provider<SyncResourceItem> syncResourceItemProvider;
-
-    private Provider<SyncBoxItem> syncBoxItemProvider;
-
-    private Provider<SyncPhysicalArea> syncPhysicalAreaInstance;
-
-    private Provider<SyncPhysicalMovable> syncPhysicalMovableInstance;
-
-    private TerrainService terrainService;
-
-    private Provider<GuardingItemService> guardingItemServiceInstanceInstance;
-
-    private Provider<BotService> botServices;
+    private final Logger logger = Logger.getLogger(SyncItemContainerServiceImpl.class.getName());
+    private final Provider<SyncBaseItem> syncBaseItemProvider;
+    private final Provider<SyncResourceItem> syncResourceItemProvider;
+    private final Provider<SyncBoxItem> syncBoxItemProvider;
+    private final Provider<SyncPhysicalArea> syncPhysicalAreaInstance;
+    private final Provider<SyncPhysicalMovable> syncPhysicalMovableInstance;
+    private final TerrainService terrainService;
+    private final Provider<GuardingItemService> guardingItemServiceInstanceInstance;
+    private final Provider<BotService> botServices;
     private int lastItemId = 1;
     private final HashMap<Integer, SyncItem> items = new HashMap<>();
     private final HashMap<Index, SyncItemContainerCell> cells = new HashMap<>();

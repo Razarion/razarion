@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.TestHelper;
-import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
+import com.btxtech.shared.mock.TestSimpleScheduledFuture;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
@@ -28,12 +28,12 @@ import java.util.List;
  * Created by Beat
  * on 15.09.2017.
  */
-public class BoxServiceTest extends WeldMasterBaseTest {
+public class BoxServiceTest extends DaggerMasterBaseTest {
 
     @Test
     public void testBoxRegions() {
         setupMasterEnvironment();
-        WeldSlaveEmulator permanentSalve = new WeldSlaveEmulator();
+        DaggerSlaveEmulator permanentSalve = new DaggerSlaveEmulator();
         UserContext userContext = createLevel1UserContext();
         permanentSalve.connectToMaster(userContext, this);
         assertSyncItemCount(permanentSalve, 0);
@@ -96,7 +96,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         assertSyncItemCount(0, 0, 1);
         // Start base
         UserContext userContext = createLevel1UserContext(1);
-        WeldSlaveEmulator permanentSalve = new WeldSlaveEmulator();
+        DaggerSlaveEmulator permanentSalve = new DaggerSlaveEmulator();
         permanentSalve.connectToMaster(userContext, this);
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(10, 20), userContext);
         tickPlanetServiceBaseServiceActive();
@@ -164,17 +164,17 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         }
     }
 
-    private void assertSyncItemCount(WeldSlaveEmulator permanentSalve, int boxCount) {
+    private void assertSyncItemCount(DaggerSlaveEmulator permanentSalve, int boxCount) {
         assertSyncItemCount(0, 0, boxCount);
         permanentSalve.assertSyncItemCount(0, 0, boxCount);
-        WeldSlaveEmulator tmpSalve = new WeldSlaveEmulator();
+        DaggerSlaveEmulator tmpSalve = new DaggerSlaveEmulator();
         UserContext tmpUserContext = createLevel1UserContext();
         tmpSalve.connectToMaster(tmpUserContext, this);
         tmpSalve.assertSyncItemCount(0, 0, boxCount);
         tmpSalve.disconnectFromMaster();
     }
 
-    private void verifySlavePick(WeldSlaveEmulator permanentSalve, int pickerId, int boxId) {
+    private void verifySlavePick(DaggerSlaveEmulator permanentSalve, int pickerId, int boxId) {
         SyncBaseItem syncBaseItem = permanentSalve.getSyncItemContainerService().getSyncBaseItem(pickerId);
         Assert.assertFalse(syncBaseItem.isIdle());
         permanentSalve.tickPlanetServiceBaseServiceActive();

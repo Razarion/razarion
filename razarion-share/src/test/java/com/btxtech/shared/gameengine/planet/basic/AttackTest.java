@@ -6,7 +6,7 @@ import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
+import com.btxtech.shared.gameengine.planet.DaggerSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Test;
 
@@ -26,7 +26,7 @@ public class AttackTest extends BaseBasicTest {
 
         // Human base
         UserContext userContext = createLevel1UserContext();
-        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        DaggerSlaveEmulator permSlave = new DaggerSlaveEmulator();
         permSlave.connectToMaster(userContext, this);
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(167, 136), userContext);
         tickPlanetServiceBaseServiceActive();
@@ -100,7 +100,7 @@ public class AttackTest extends BaseBasicTest {
 
         // Human land base
         UserContext userContext = createLevel1UserContext();
-        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        DaggerSlaveEmulator permSlave = new DaggerSlaveEmulator();
         permSlave.connectToMaster(userContext, this);
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(167, 136), userContext);
         tickPlanetServiceBaseServiceActive();
