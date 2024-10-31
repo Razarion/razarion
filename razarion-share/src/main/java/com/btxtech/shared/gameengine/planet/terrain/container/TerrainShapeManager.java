@@ -152,11 +152,11 @@ public class TerrainShapeManager {
         return terrainAnalyzer;
     }
 
-    public boolean isSightBlocked(Line line) {
+    public boolean isSightBlocked(Line line, TerrainType terrainType) {
         return GeometricUtil.rasterizeLine(line, (int) TerrainUtil.NODE_SIZE)
                 .stream()
                 .map(nodeIndex -> terrainAnalyzer.getTerrainType(nodeIndex))
-                .anyMatch(terrainType -> terrainType != TerrainType.LAND);
+                .anyMatch(nodeTerrainType -> nodeTerrainType != terrainType);
     }
 
     public TerrainTypeService getTerrainTypeService() {

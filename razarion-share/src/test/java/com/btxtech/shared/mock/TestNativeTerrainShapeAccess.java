@@ -62,7 +62,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             throw new IllegalStateException("groundHeightMap == null");
         }
         if (index < 0 || index >= groundHeightMap.length) {
-            throw new IllegalArgumentException("index out of bounds");
+            throw new IllegalArgumentException("index out of bounds: " + index + ", length: " + groundHeightMap.length);
         }
         return groundHeightMap[index];
     }

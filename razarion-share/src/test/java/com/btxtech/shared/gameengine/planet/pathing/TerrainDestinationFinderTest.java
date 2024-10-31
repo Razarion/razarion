@@ -177,16 +177,19 @@ public class TerrainDestinationFinderTest extends AStarBaseTest {
         Assert.assertEquals(new DecimalPosition(76.000, 204.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
-    // @Test
+    @Test
     public void testCaseGenerator() {
-        DecimalPosition start = new DecimalPosition(140, 230);
-        double startRadius = 3;
-        TerrainType startTerrainType = TerrainType.WATER;
-        double destinationRadius = 4;
-        double distance = 15;
+        DecimalPosition start = new DecimalPosition(150, 150);
+        double startRadius = 2;
+        TerrainType startTerrainType = TerrainType.LAND;
+        double destinationRadius = 3;
+        double distance = 2;
         showDisplay(new MouseMoveCallback().setCallback(position -> {
             DecimalPosition correctedDest = testBody(start, startRadius, startTerrainType, position, destinationRadius, distance);
-            return new Object[]{new PositionMarker().addCircleColor(new Circle2D(start, startRadius), Color.PINK).addCircleColor(new Circle2D(correctedDest, startRadius), Color.RED).addCircleColor(new Circle2D(position, destinationRadius), Color.GREEN)};
+            return new Object[]{new PositionMarker()
+                    .addCircleColor(new Circle2D(start, startRadius), Color.PINK)
+                    .addCircleColor(new Circle2D(correctedDest, startRadius), Color.RED)
+                    .addCircleColor(new Circle2D(position, destinationRadius), Color.GREEN)};
         }), new TestCaseGenerator().setTestCaseName("waterLand").setTestGeneratorCallback((position, body) -> {
             DecimalPosition correctedDest = testBody(start, startRadius, startTerrainType, position, destinationRadius, distance);
             body.appendLine("TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(" + InstanceStringGenerator.generate(start) + ", " + InstanceStringGenerator.generate(correctedDest) + ", " + (startRadius + distance + destinationRadius) + ", " + startRadius + ", " + InstanceStringGenerator.generate(startTerrainType) + ", getTerrainService().getPathingAccess());");
@@ -196,8 +199,14 @@ public class TerrainDestinationFinderTest extends AStarBaseTest {
         // printSimplePath(simplePath);
     }
 
-    private DecimalPosition testBody(DecimalPosition start, double startRadius, TerrainType startTerrainType, DecimalPosition destination, double radius, double destinationRadius) {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(start, destination, destinationRadius + startRadius + destinationRadius, startRadius, startTerrainType, getTerrainService().getPathingAccess());
+    private DecimalPosition testBody(DecimalPosition start, double startRadius, TerrainType startTerrainType, DecimalPosition destination, double destinationRadius, double distance) {
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(
+                start,
+                destination,
+                startRadius + distance + destinationRadius,
+                startRadius,
+                startTerrainType,
+                getTerrainService().getPathingAccess());
         terrainDestinationFinder.find();
         return terrainDestinationFinder.getReachableNode().getCenter();
     }

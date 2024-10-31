@@ -129,7 +129,7 @@ public class AbstractDaggerIntegrationTest {
     }
 
     public TerrainService getTerrainService() {
-        return getWeldBean(TerrainService.class);
+        return testShareDagger.terrainService();
     }
 
     public TestNativeTerrainShapeAccess getTestNativeTerrainShapeAccess() {
@@ -281,7 +281,7 @@ public class AbstractDaggerIntegrationTest {
     }
 
     public BaseItemType getBaseItemType(int baseItemTypeId) {
-        return getWeldBean(ItemTypeService.class).getBaseItemType(baseItemTypeId);
+        return getTestShareDagger().itemTypeService().getBaseItemType(baseItemTypeId);
     }
 
     public PlanetConfig getPlanetConfig() {

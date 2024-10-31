@@ -144,7 +144,7 @@ public class TerrainAnalyzer {
         return Collections.emptySet(); // TODO
     }
 
-    public boolean isInSight(DecimalPosition start, double radius, DecimalPosition target) {
+    public boolean isInSight(DecimalPosition start, double radius, DecimalPosition target, TerrainType terrainType) {
         if (start.equals(target)) {
             return true;
         }
@@ -156,7 +156,7 @@ public class TerrainAnalyzer {
         Line line1 = new Line(start.getPointWithDistance(angel1, radius), target.getPointWithDistance(angel1, radius));
         Line line2 = new Line(start.getPointWithDistance(angel2, radius), target.getPointWithDistance(angel2, radius));
 
-        return !terrainShapeManager.isSightBlocked(line) && !terrainShapeManager.isSightBlocked(line1) && !terrainShapeManager.isSightBlocked(line2);
+        return !terrainShapeManager.isSightBlocked(line, terrainType) && !terrainShapeManager.isSightBlocked(line1, terrainType) && !terrainShapeManager.isSightBlocked(line2, terrainType);
     }
 
     public PathingNodeWrapper getPathingNodeWrapper(Index nodeIndex) {

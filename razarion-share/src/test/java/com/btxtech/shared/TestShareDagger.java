@@ -1,12 +1,16 @@
 package com.btxtech.shared;
 
 import com.btxtech.shared.gameengine.InitializeService;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
+import com.btxtech.shared.gameengine.planet.TestSyncService;
 import com.btxtech.shared.gameengine.planet.gui.DaggerTestRenderer;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.mock.TestNativeTerrainShapeAccess;
 import com.btxtech.shared.mock.TestSimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -36,4 +40,12 @@ public interface TestShareDagger {
     PathingService pathingService();
 
     DaggerTestRenderer daggerTestRenderer();
+
+    TerrainService terrainService();
+
+    TestSyncService testSyncService();
+
+    CommandService commandService();
+
+    ItemTypeService itemTypeService();
 }

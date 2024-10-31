@@ -81,7 +81,7 @@ public class PathingService {
         AStarContext aStarContext;
         DecimalPosition additionPathElement = null;
         if (TerrainDestinationFinder.differentTerrain(terrainType, targetTerrainType)) {
-            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(position, destination, totalRange, radius, terrainType, terrainService.getPathingAccess());
+            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(position, destination, totalRange, radius + 2, terrainType, terrainService.getPathingAccess());
             terrainDestinationFinder.find();
             // destination = terrainDestinationFinder.getReachableDestination();
             correctedDestinationNode = terrainDestinationFinder.getReachableNode();

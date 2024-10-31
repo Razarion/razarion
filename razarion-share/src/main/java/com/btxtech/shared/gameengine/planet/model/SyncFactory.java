@@ -187,7 +187,7 @@ public class SyncFactory extends SyncBaseAbility {
                 DecimalPosition decimalPosition = start.getPointWithDistance(correctedAngle, distance);
                 if (terrainService.getPathingAccess().isTerrainTypeAllowed(terrainType, decimalPosition, radius)) {
                     if (checkInsight) {
-                        if (terrainService.getPathingAccess().isInSight(start, radius, decimalPosition)) {
+                        if (terrainService.getPathingAccess().isInSight(start, radius, decimalPosition, terrainType)) {
                             return decimalPosition;
                         }
                     } else {

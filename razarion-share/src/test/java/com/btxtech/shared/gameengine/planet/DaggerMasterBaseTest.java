@@ -35,7 +35,7 @@ public class DaggerMasterBaseTest extends AbstractDaggerIntegrationTest {
     }
 
     protected CommandService getCommandService() {
-        return getWeldBean(CommandService.class);
+        return getTestShareDagger().commandService();
     }
 
     protected BotService getBotService() {

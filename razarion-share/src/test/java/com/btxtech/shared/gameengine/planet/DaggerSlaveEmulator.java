@@ -25,14 +25,14 @@ public class DaggerSlaveEmulator extends AbstractDaggerIntegrationTest {
     public void connectToMaster(UserContext userContext, DaggerMasterBaseTest weldMasterBaseTest) {
         this.weldMasterBaseTest = weldMasterBaseTest;
         setupEnvironment(weldMasterBaseTest.getStaticGameConfig(), weldMasterBaseTest.getPlanetConfig());
-        getWeldBean(PlanetService.class).initialise(getPlanetConfig(), GameEngineMode.SLAVE, null, () -> {
-            getWeldBean(PlanetService.class).start();
+        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.SLAVE, null, () -> {
+            getPlanetService().start();
         }, null);
 
         testClientWebSocket = new TestClientWebSocket();
         weldMasterBaseTest.getTestGameLogicListener().getTestWebSocket().add(testClientWebSocket);
-        weldMasterBaseTest.getWeldBean(TestSyncService.class).getTestWebSocket().add(testClientWebSocket);
-        getWeldBean(PlanetService.class).initialSlaveSyncItemInfo(weldMasterBaseTest.getPlanetService().generateSlaveSyncItemInfo(userContext.getUserId()));
+        weldMasterBaseTest.getTestShareDagger().testSyncService().getTestWebSocket().add(testClientWebSocket);
+        getPlanetService().initialSlaveSyncItemInfo(weldMasterBaseTest.getPlanetService().generateSlaveSyncItemInfo(userContext.getUserId()));
     }
 
     public void disconnectFromMaster() {

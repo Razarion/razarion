@@ -18,12 +18,11 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import javax.inject.Inject;
 import java.util.List;
-
 
 
 public class Path {
@@ -52,7 +51,7 @@ public class Path {
         for (int i = wayPositions.size() - 1; i >= 0; i--) {
             DecimalPosition wayPosition = wayPositions.get(i);
             // Attention due to performance!! isInSight() surface data (Obstacle-Model) is not based on the AStar surface data -> AStar model must overlap Obstacle-Model
-            if (terrainService.getPathingAccess().isInSight(itemPosition, abstractSyncPhysical.getRadius(), wayPosition)) {
+            if (terrainService.getPathingAccess().isInSight(itemPosition, abstractSyncPhysical.getRadius(), wayPosition, abstractSyncPhysical.getTerrainType())) {
                 currentWayPoint = wayPosition;
                 return;
             }

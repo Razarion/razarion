@@ -48,17 +48,11 @@ public class DaggerTerrainServiceTestBase extends DaggerMasterBaseTest {
         if (groundConfigs != null) {
             staticGameConfig.setGroundConfigs(groundConfigs);
         }
-        if (slopeConfigs != null) {
-            staticGameConfig.setSlopeConfigs(slopeConfigs);
-        }
         if (waterConfigs != null) {
             staticGameConfig.setWaterConfigs(waterConfigs);
         }
         if (terrainObjectConfigs != null) {
             staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
-        }
-        if (drivewayConfigs != null) {
-            staticGameConfig.setDrivewayConfigs(drivewayConfigs);
         }
         if (planetConfig == null) {
             planetConfig = FallbackConfig.setupPlanetConfig();
