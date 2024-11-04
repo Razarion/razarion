@@ -1,6 +1,5 @@
 package com.btxtech.shared.datatypes;
 
-import com.btxtech.shared.system.debugtool.DebugHelper;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;

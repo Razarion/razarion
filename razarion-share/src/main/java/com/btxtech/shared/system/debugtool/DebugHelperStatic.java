@@ -112,16 +112,16 @@ public class DebugHelperStatic {
         add2printOnTick("physicalAreas.add(" + stringBuilder + ");");
     }
 
-    public static void printAfterTick(DebugHelper debugHelper) {
+    public static void printAfterTick() {
         if (omitTick()) {
             return;
         }
         if (printOnTickMessage != null) {
-            if (debugHelper != null) {
-                debugHelper.debugToConsole(printOnTickMessage);
-            } else {
+            // TODO if (debugHelper != null) {
+            // TODO    debugHelper.debugToConsole(printOnTickMessage);
+            // TODO} else {
                 System.out.println("\n--------- Tick " + currentTick + ": " + printOnTickMessage);
-            }
+            // TODO}
             printOnTickMessage = null;
         }
     }

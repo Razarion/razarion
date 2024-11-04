@@ -154,7 +154,7 @@ public class ScenarioBaseTest extends DaggerTerrainServiceTestBase {
             System.out.println("----------------- Master ticks done: " + getPlanetService().getTickCount());
             slave.tickPlanetService();
             System.out.println("----------------- Slave ticks done: " + slave.getPlanetService().getTickCount());
-            DebugHelperStatic.printAfterTick(null);
+            DebugHelperStatic.printAfterTick();
             actualTicks.addMasterTick(getBaseItemService().getSyncBaseItemInfos());
             actualTicks.addSlaveTick(slave.getBaseItemService().getSyncBaseItemInfos());
             actualTicks.compareMasterSlave();

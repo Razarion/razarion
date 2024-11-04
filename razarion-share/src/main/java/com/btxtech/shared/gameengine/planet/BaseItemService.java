@@ -35,7 +35,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainTypeNotAllowedException;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.shared.system.debugtool.DebugHelper;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.inject.Inject;
@@ -86,7 +85,6 @@ public class BaseItemService {
 
     private SyncService syncService;
 
-    private DebugHelper debugHelper;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId = 1;
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
@@ -97,8 +95,7 @@ public class BaseItemService {
     private final PriorityQueue<TickInfo> pendingReceivedTickInfos = new PriorityQueue<>(Comparator.comparingDouble(TickInfo::getTickCount));
 
     @Inject
-    public BaseItemService(DebugHelper debugHelper,
-                           SyncService syncService,
+    public BaseItemService(SyncService syncService,
                            GuardingItemService guardingItemService,
                            TerrainService terrainService,
                            BoxService boxService,
@@ -110,7 +107,6 @@ public class BaseItemService {
                            GameLogicService gameLogicService,
                            ExceptionHandler exceptionHandler,
                            InitializeService initializeService) {
-        this.debugHelper = debugHelper;
         this.syncService = syncService;
         this.guardingItemService = guardingItemService;
         this.terrainService = terrainService;
@@ -387,7 +383,6 @@ public class BaseItemService {
 
     public void onSlaveSyncBaseItemDeleted(SyncBaseItem syncBaseItem, SyncItemDeletedInfo syncItemDeletedInfo) {
         syncBaseItem.clearHealth();
-        debugHelper.debugToDb("onSlaveSyncBaseItemDeleted: " + syncBaseItem); // TODO remove, just for debugging
         syncItemContainerService.destroySyncItem(syncBaseItem);
         energyService.onBaseItemRemoved(syncBaseItem);
         if (syncItemDeletedInfo.isExplode()) {

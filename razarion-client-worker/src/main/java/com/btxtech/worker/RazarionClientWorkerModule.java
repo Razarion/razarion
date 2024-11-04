@@ -11,28 +11,12 @@ import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnect
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
-import com.btxtech.shared.system.debugtool.DebugHelper;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 
 @Module
 public abstract class RazarionClientWorkerModule {
-
-    @Provides
-    public static DebugHelper debugHelper() {
-        return new DebugHelper() {
-            @Override
-            public void debugToDb(String debugMessage) {
-
-            }
-
-            @Override
-            public void debugToConsole(String debugMessage) {
-
-            }
-        };
-    }
 
     @Binds
     public abstract WorkerTrackerHandler bindWorkerTrackerHandler(ClientWorkerTrackerHandler workerTrackerHandler);

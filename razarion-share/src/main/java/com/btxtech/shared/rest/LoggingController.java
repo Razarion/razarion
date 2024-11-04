@@ -26,9 +26,4 @@ public interface LoggingController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path(CommonUrl.LOGGING_JSON)
     void jsonLogger(LogRecordInfo logRecordInfo);
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path(CommonUrl.LOGGING_JSON_DEBUG_DB)
-    void jsonDebugDbLogger(String debugMessage);
 }

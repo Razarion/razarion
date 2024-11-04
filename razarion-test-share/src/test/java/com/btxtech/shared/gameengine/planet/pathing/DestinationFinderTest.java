@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class DestinationFinderTest extends AStarBaseTest {
 
-    // @Test
+    @Test
     public void testCaseGenerator() {
         double radius = 3;
         TerrainType terrainType = TerrainType.WATER;
