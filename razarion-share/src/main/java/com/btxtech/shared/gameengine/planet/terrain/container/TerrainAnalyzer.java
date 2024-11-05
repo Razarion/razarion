@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
 
@@ -25,6 +26,7 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
  * on 19.06.2017.
  */
 public class TerrainAnalyzer {
+    private final Logger log = Logger.getLogger(TerrainAnalyzer.class.getName());
     private final HeightMapAccess heightMapAccess;
     private final TerrainShapeManager terrainShapeManager;
     private final Map<Index, TerrainType> terrainTypeCache = new HashMap<>();

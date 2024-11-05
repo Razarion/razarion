@@ -46,8 +46,8 @@ public class DestinationFinderTest extends AStarBaseTest {
 
     private DecimalPosition testBody(DecimalPosition destination, double radius, TerrainType terrainType) {
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-        PathingNodeWrapper destinationNode = getTerrainService().getPathingAccess().getPathingNodeWrapper(destination);
-        DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainType, subNodeIndexScope, getTerrainService().getPathingAccess());
+        PathingNodeWrapper destinationNode = getTerrainService().getTerrainAnalyzer().getPathingNodeWrapper(destination);
+        DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainType, subNodeIndexScope, getTerrainService().getTerrainAnalyzer());
         return destinationFinder.find().getCenter();
     }
 

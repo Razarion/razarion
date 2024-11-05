@@ -65,7 +65,7 @@ public class ProvideSouthSuccessors extends DaggerTerrainServiceTestBase {
     public void testProvideSouthSuccessors() {
         setup();
 
-        PathingNodeWrapper pathingNodeWrapper = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(41, 71));
+        PathingNodeWrapper pathingNodeWrapper = getTerrainService().getTerrainAnalyzer().getPathingNodeWrapper(new DecimalPosition(41, 71));
         NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
         nodeHandlerHelper.addExpectedSubNode2(new DecimalPosition(40, 69));
         nodeHandlerHelper.addExpectedSubNode2(new DecimalPosition(41, 69));
@@ -80,7 +80,7 @@ public class ProvideSouthSuccessors extends DaggerTerrainServiceTestBase {
 
         showDisplay(new MouseMoveCallback().setCallback(position -> {
             // System.out.println("-----------------------------------------------");
-            PathingNodeWrapper movePathingNodeWrapper = getTerrainService().getPathingAccess().getPathingNodeWrapper(position);
+            PathingNodeWrapper movePathingNodeWrapper = getTerrainService().getTerrainAnalyzer().getPathingNodeWrapper(position);
             PositionMarker positionMarker = new PositionMarker();
             displayPathingNodeWrapper(movePathingNodeWrapper, positionMarker, Color.GRAY);
             calculateSubSuccessors(movePathingNodeWrapper, positionMarker);

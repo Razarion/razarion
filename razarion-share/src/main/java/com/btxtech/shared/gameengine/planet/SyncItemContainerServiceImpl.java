@@ -416,7 +416,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     private boolean isFree(TerrainType terrainType, DecimalPosition position, double radius) {
-        return terrainService.getPathingAccess().isTerrainTypeAllowed(terrainType, position, radius) && !hasItemsInRange(position, radius);
+        return terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, position, radius) && !hasItemsInRange(position, radius);
     }
 
     public boolean isFree(DecimalPosition position, BaseItemType baseItemType) {

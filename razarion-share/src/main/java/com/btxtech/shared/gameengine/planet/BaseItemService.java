@@ -286,7 +286,7 @@ public class BaseItemService {
     }
 
     public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, double angle, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
-        if (!terrainService.getPathingAccess().isTerrainTypeAllowed(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), position, toBeBuilt.getPhysicalAreaConfig().getRadius())) {
+        if (!terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), position, toBeBuilt.getPhysicalAreaConfig().getRadius())) {
             throw new TerrainTypeNotAllowedException("BaseItemService.createSyncBaseItem4Factory() " + toBeBuilt + " " + position);
         }
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, angle, base);
@@ -297,7 +297,7 @@ public class BaseItemService {
     }
 
     public SyncBaseItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
-        if (!terrainService.getPathingAccess().isTerrainTypeAllowed(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), position, toBeBuilt.getPhysicalAreaConfig().getRadius())) {
+        if (!terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), position, toBeBuilt.getPhysicalAreaConfig().getRadius())) {
             throw new TerrainTypeNotAllowedException("BaseItemService.createSyncBaseItem4Builder() " + toBeBuilt + " " + position);
         }
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, 0, base);
@@ -325,7 +325,7 @@ public class BaseItemService {
     }
 
     public SyncBaseItem spawnSyncBaseItem(BaseItemType baseItemType, DecimalPosition position, double zRotation, PlayerBaseFull base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
-        if (!terrainService.getPathingAccess().isTerrainTypeAllowed(baseItemType.getPhysicalAreaConfig().getTerrainType(), position, baseItemType.getPhysicalAreaConfig().getRadius())) {
+        if (!terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(baseItemType.getPhysicalAreaConfig().getTerrainType(), position, baseItemType.getPhysicalAreaConfig().getRadius())) {
             throw new TerrainTypeNotAllowedException("BaseItemService.spawnSyncBaseItem() " + baseItemType + " " + position);
         }
         SyncBaseItem syncBaseItem = createSyncBaseItem(baseItemType, position, zRotation, base);

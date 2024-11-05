@@ -42,17 +42,12 @@ import javax.inject.Inject;
 public class SyncFactory extends SyncBaseAbility {
     private static final double GIVE_UP_RELAY_MIN = Math.toRadians(5);
     private static final double RELAY_POINT_DISTANCE = 2;
-
     // private Logger log = Logger.getLogger(SyncFactory.class.getName());
-    private GameLogicService gameLogicService;
-
-    private BaseItemService baseItemService;
-
-    private ItemTypeService itemTypeService;
-
-    private TerrainService terrainService;
-
-    private CommandService commandService;
+    private final GameLogicService gameLogicService;
+    private final BaseItemService baseItemService;
+    private final ItemTypeService itemTypeService;
+    private final TerrainService terrainService;
+    private final CommandService commandService;
     private FactoryType factoryType;
     private BaseItemType toBeBuiltType;
     private double buildup;
@@ -60,7 +55,11 @@ public class SyncFactory extends SyncBaseAbility {
     private DecimalPosition rallyPoint;
 
     @Inject
-    public SyncFactory(CommandService commandService, TerrainService terrainService, ItemTypeService itemTypeService, BaseItemService baseItemService, GameLogicService gameLogicService) {
+    public SyncFactory(CommandService commandService,
+                       TerrainService terrainService,
+                       ItemTypeService itemTypeService,
+                       BaseItemService baseItemService,
+                       GameLogicService gameLogicService) {
         this.commandService = commandService;
         this.terrainService = terrainService;
         this.itemTypeService = itemTypeService;
@@ -185,9 +184,9 @@ public class SyncFactory extends SyncBaseAbility {
             for (double angle = 0; angle <= MathHelper.ONE_RADIANT; angle += delta) {
                 double correctedAngle = MathHelper.normaliseAngle(angle + MathHelper.THREE_QUARTER_RADIANT);
                 DecimalPosition decimalPosition = start.getPointWithDistance(correctedAngle, distance);
-                if (terrainService.getPathingAccess().isTerrainTypeAllowed(terrainType, decimalPosition, radius)) {
+                if (terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, decimalPosition, radius)) {
                     if (checkInsight) {
-                        if (terrainService.getPathingAccess().isInSight(start, radius, decimalPosition, terrainType)) {
+                        if (terrainService.getTerrainAnalyzer().isInSight(start, radius, decimalPosition, terrainType)) {
                             return decimalPosition;
                         }
                     } else {

@@ -72,7 +72,7 @@ public class PathingAccessTest extends AStarBaseTest {
 
     @Test
     public void getObstacles() {
-        Collection<Obstacle> obstacles = getTerrainService().getPathingAccess().getObstacles(new DecimalPosition(180, 60), 8);
+        Collection<Obstacle> obstacles = getTerrainService().getTerrainAnalyzer().getObstacles(new DecimalPosition(180, 60), 8);
         List<Obstacle> obstacleList = new ArrayList<>(obstacles);
         assertThat(obstacleList, hasSize(3));
         assertThat(obstacleList, containsInAnyOrder(
@@ -113,7 +113,7 @@ public class PathingAccessTest extends AStarBaseTest {
     @Test
     public void generateTestCase() {
         double radius = 5;
-        TerrainType terrainType = TerrainType.LAND;
+        TerrainType terrainType = TerrainType.WATER;
         showDisplay(new MouseMoveCallback().setCallback(position -> {
             if (testCase(position, radius, terrainType)) {
                 return new Object[]{new PositionMarker().addCircleColor(new Circle2D(position, radius), Color.GREENYELLOW)};
@@ -130,7 +130,7 @@ public class PathingAccessTest extends AStarBaseTest {
     }
 
     private boolean testCase(DecimalPosition position, double radius, TerrainType terrainType) {
-        return getTerrainService().getPathingAccess().isTerrainTypeAllowed(terrainType, position, radius);
+        return getTerrainService().getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, position, radius);
     }
 
 }

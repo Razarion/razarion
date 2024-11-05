@@ -40,23 +40,22 @@ import java.util.stream.Collectors;
 
 public class SyncItemContainer extends SyncBaseAbility {
     public static final TerrainType DEFAULT_UNLOAD_TERRAIN_TYPE = TerrainType.LAND;
-
-    private SyncItemContainerServiceImpl syncItemContainerService;
-
-    private TerrainService terrainService;
-
-    private GameLogicService gameLogicService;
-
-    private BaseItemService baseItemService;
-
-    private SyncService syncService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
+    private final TerrainService terrainService;
+    private final GameLogicService gameLogicService;
+    private final BaseItemService baseItemService;
+    private final SyncService syncService;
     private ItemContainerType itemContainerType;
     private List<SyncBaseItem> containedItems = new ArrayList<>();
     private DecimalPosition unloadPos;
     private double maxContainingRadius;
 
     @Inject
-    public SyncItemContainer(SyncService syncService, BaseItemService baseItemService, GameLogicService gameLogicService, TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService) {
+    public SyncItemContainer(SyncService syncService,
+                             BaseItemService baseItemService,
+                             GameLogicService gameLogicService,
+                             TerrainService terrainService,
+                             SyncItemContainerServiceImpl syncItemContainerService) {
         this.syncService = syncService;
         this.baseItemService = baseItemService;
         this.gameLogicService = gameLogicService;
@@ -170,7 +169,7 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     private boolean allowedUnload() throws ItemDoesNotExistException {
-        return getAbstractSyncPhysical().isInRange(getRange(), unloadPos) && terrainService.getPathingAccess().isTerrainTypeAllowed(DEFAULT_UNLOAD_TERRAIN_TYPE, unloadPos, maxContainingRadius);
+        return getAbstractSyncPhysical().isInRange(getRange(), unloadPos) && terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(DEFAULT_UNLOAD_TERRAIN_TYPE, unloadPos, maxContainingRadius);
     }
 
     private void setupMaxContainingRadius() {

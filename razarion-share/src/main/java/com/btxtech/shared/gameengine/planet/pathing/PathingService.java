@@ -65,8 +65,8 @@ public class PathingService {
         double correctedRadius = radius + RADIUS_GROW;
         SimplePath path = new SimplePath();
         List<DecimalPosition> positions = new ArrayList<>();
-        PathingNodeWrapper startNode = terrainService.getPathingAccess().getPathingNodeWrapper(position);
-        PathingNodeWrapper destinationNode = terrainService.getPathingAccess().getPathingNodeWrapper(destination);
+        PathingNodeWrapper startNode = terrainService.getTerrainAnalyzer().getPathingNodeWrapper(position);
+        PathingNodeWrapper destinationNode = terrainService.getTerrainAnalyzer().getPathingNodeWrapper(destination);
         if (startNode.equals(destinationNode)) {
             positions.add(destination);
             path.setWayPositions(positions);
@@ -81,9 +81,8 @@ public class PathingService {
         AStarContext aStarContext;
         DecimalPosition additionPathElement = null;
         if (TerrainDestinationFinder.differentTerrain(terrainType, targetTerrainType)) {
-            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(position, destination, totalRange, radius + 2, terrainType, terrainService.getPathingAccess());
+            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(position, destination, totalRange, radius + 2, terrainType, terrainService.getTerrainAnalyzer());
             terrainDestinationFinder.find();
-            // destination = terrainDestinationFinder.getReachableDestination();
             correctedDestinationNode = terrainDestinationFinder.getReachableNode();
             additionPathElement = correctedDestinationNode.getCenter();
             aStarContext = new AStarContext(terrainType, scopeNodeIndices);
@@ -92,7 +91,7 @@ public class PathingService {
 //            destinationFinder.find();
 //            correctedDestinationNode = terrainService.getPathingAccess().getPathingNodeWrapper(destinationFinder.getCorrectedDestination());;
 //            destination = destinationFinder.getCorrectedDestination();
-            DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainType, scopeNodeIndices, terrainService.getPathingAccess());
+            DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainType, scopeNodeIndices, terrainService.getTerrainAnalyzer());
             correctedDestinationNode = destinationFinder.find();
             aStarContext = new AStarContext(terrainType, scopeNodeIndices);
         }
@@ -139,7 +138,7 @@ public class PathingService {
     }
 
     private void calculateItemVelocity() {
-        ItemVelocityCalculator itemVelocityCalculator = new ItemVelocityCalculator(syncItemContainerService, terrainService.getPathingAccess(), exceptionHandler);
+        ItemVelocityCalculator itemVelocityCalculator = new ItemVelocityCalculator(syncItemContainerService, terrainService.getTerrainAnalyzer(), exceptionHandler);
         syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> itemVelocityCalculator.analyse(syncBaseItem.getAbstractSyncPhysical()));
         itemVelocityCalculator.calculateVelocity();
     }

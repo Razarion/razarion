@@ -44,18 +44,12 @@ import javax.inject.Inject;
  */
 
 public class SyncBuilder extends SyncBaseAbility {
-
-    private ItemTypeService itemTypeService;
-
-    private GameLogicService gameLogicService;
-
-    private BaseItemService baseItemService;
-
-    private TerrainService terrainService;
-
-    private SyncItemContainerServiceImpl syncItemContainerService;
-
-    private SyncService syncService;
+    private final ItemTypeService itemTypeService;
+    private final GameLogicService gameLogicService;
+    private final BaseItemService baseItemService;
+    private final TerrainService terrainService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncService syncService;
     private BuilderType builderType;
     private SyncBaseItem currentBuildup;
     private DecimalPosition toBeBuildPosition;
@@ -63,7 +57,12 @@ public class SyncBuilder extends SyncBaseAbility {
     private boolean building;
 
     @Inject
-    public SyncBuilder(SyncService syncService, SyncItemContainerServiceImpl syncItemContainerService, TerrainService terrainService, BaseItemService baseItemService, GameLogicService gameLogicService, ItemTypeService itemTypeService) {
+    public SyncBuilder(SyncService syncService,
+                       SyncItemContainerServiceImpl syncItemContainerService,
+                       TerrainService terrainService,
+                       BaseItemService baseItemService,
+                       GameLogicService gameLogicService,
+                       ItemTypeService itemTypeService) {
         this.syncService = syncService;
         this.syncItemContainerService = syncItemContainerService;
         this.terrainService = terrainService;
@@ -220,7 +219,7 @@ public class SyncBuilder extends SyncBaseAbility {
             throw new IllegalArgumentException(this + " can not build: " + builderCommand.getToBeBuiltId());
         }
         BaseItemType tmpToBeBuiltType = itemTypeService.getBaseItemType(builderCommand.getToBeBuiltId());
-        if (!terrainService.getPathingAccess().isTerrainTypeAllowed(tmpToBeBuiltType.getPhysicalAreaConfig().getTerrainType(), builderCommand.getPositionToBeBuilt(), tmpToBeBuiltType.getPhysicalAreaConfig().getRadius())) {
+        if (!terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(tmpToBeBuiltType.getPhysicalAreaConfig().getTerrainType(), builderCommand.getPositionToBeBuilt(), tmpToBeBuiltType.getPhysicalAreaConfig().getRadius())) {
             throw new PositionTakenException(builderCommand.getPositionToBeBuilt(), builderCommand.getToBeBuiltId());
         }
 

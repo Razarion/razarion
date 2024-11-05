@@ -89,7 +89,7 @@ public class BotSyncBaseItem {
 
     public boolean isAbleToAttack(SyncBaseItem target) {
         return syncBaseItem.getSyncWeapon() != null && syncBaseItem.getAbstractSyncPhysical().canMove() && !syncBaseItem.getSyncWeapon().isItemTypeDisallowed(target)
-                && TerrainDestinationFinder.isAllowed(terrainService.getPathingAccess(),
+                && TerrainDestinationFinder.isAllowed(terrainService.getTerrainAnalyzer(),
                 syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius() + syncBaseItem.getSyncWeapon().getWeaponType().getRange() + target.getBaseItemType().getPhysicalAreaConfig().getRadius(),
                 target.getAbstractSyncPhysical().getPosition(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getTerrainType(),
                 target.getBaseItemType().getPhysicalAreaConfig().getTerrainType());

@@ -54,7 +54,7 @@ public class TerrainService {
         return terrainTileFactory.generateTerrainTile(terrainTileIndex, terrainShape, planetConfig);
     }
 
-    public TerrainAnalyzer getPathingAccess() {
+    public TerrainAnalyzer getTerrainAnalyzer() {
         return terrainShape.getTerrainAnalyzer();
     }
 

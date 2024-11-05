@@ -760,7 +760,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         try {
             sendToClient(GameEngineControlPackage.Command.GET_TERRAIN_TYPE_ANSWER,
                     nodeIndex,
-                    terrainService.getPathingAccess().getTerrainType(nodeIndex));
+                    terrainService.getTerrainAnalyzer().getTerrainType(nodeIndex));
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "GameEngineWorker.getTerrainType() failed", t);
             sendToClient(GameEngineControlPackage.Command.GET_TERRAIN_TYPE_ANSWER, nodeIndex, TerrainType.BLOCKED);

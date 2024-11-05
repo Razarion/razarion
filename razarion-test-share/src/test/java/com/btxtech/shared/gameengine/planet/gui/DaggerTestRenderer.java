@@ -369,7 +369,7 @@ public class DaggerTestRenderer {
             for (double y = from.getY(); y < from.getY() + length; y++) {
                 DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
                 try {
-                    TerrainType terrainType = terrainService.getPathingAccess().getTerrainType(terrainPositionToNodeIndex(samplePosition));
+                    TerrainType terrainType = terrainService.getTerrainAnalyzer().getTerrainType(terrainPositionToNodeIndex(samplePosition));
                     gc.setFill(color4TerrainType(terrainType));
                 } catch (Exception e) {
                     gc.setFill(Color.RED);
