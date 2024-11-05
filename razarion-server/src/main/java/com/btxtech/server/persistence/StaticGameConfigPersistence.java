@@ -6,8 +6,8 @@ import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Created by Beat
@@ -19,10 +19,6 @@ public class StaticGameConfigPersistence {
     private TerrainObjectCrudPersistence terrainObjectCrudPersistence;
     @Inject
     private GroundCrudPersistence groundCrudPersistence;
-    @Inject
-    private SlopeCrudPersistence slopeCrudPersistence;
-    @Inject
-    private DrivewayCrudPersistence drivewayCrudPersistence;
     @Inject
     private WaterCrudPersistence waterCrudPersistence;
     @Inject
@@ -44,8 +40,6 @@ public class StaticGameConfigPersistence {
 
     public StaticGameConfig loadStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setSlopeConfigs(slopeCrudPersistence.read());
-        staticGameConfig.setDrivewayConfigs(drivewayCrudPersistence.read());
         staticGameConfig.setGroundConfigs(groundCrudPersistence.read());
         staticGameConfig.setTerrainObjectConfigs(terrainObjectCrudPersistence.read());
         staticGameConfig.setWaterConfigs(waterCrudPersistence.read());

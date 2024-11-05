@@ -3,12 +3,9 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
-import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
-import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.inject.Inject;
@@ -17,7 +14,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +33,6 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
     private GroundCrudPersistence groundCrudPersistence;
     @Inject
     private WaterCrudPersistence waterCrudPersistence;
-    @Inject
-    private SlopeCrudPersistence slopeCrudPersistence;
-    @Inject
-    private DrivewayCrudPersistence drivewayCrudPersistence;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -126,81 +118,6 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
         }
     }
 
-    @Transactional
-    @SecurityCheck
-    public void updateTerrainSlopePositions(int planetId, List<TerrainSlopePosition> updatedSlopes) {
-        PlanetEntity planetEntity = getEntity(planetId);
-        for (TerrainSlopePosition terrainSlopePosition : updatedSlopes) {
-            TerrainSlopePositionEntityChain chain = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePosition.getId());
-            chain.getChild().setSlopeConfigEntity(slopeCrudPersistence.getEntity(terrainSlopePosition.getSlopeConfigId()));
-            chain.getChild().getPolygon().clear();
-            chain.getChild().setInverted(terrainSlopePosition.isInverted());
-            chain.getChild().getPolygon().addAll(terrainSlopePosition.getPolygon().stream()
-                    .map(terrainSlopeCorner -> new TerrainSlopeCornerEntity()
-                            .position(terrainSlopeCorner.getPosition())
-                            .drivewayConfigEntity(drivewayCrudPersistence.getEntity(terrainSlopeCorner.getSlopeDrivewayId()))).collect(Collectors.toList()));
-            if (chain.getParent() != null) {
-                entityManager.persist(chain.getParent());
-            }
-        }
-        entityManager.merge(planetEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void createTerrainSlopePositions(int planetId, Collection<TerrainSlopePosition> terrainSlopePositions) {
-        List<TerrainSlopePositionEntity> terrainSlopePositionEntities = new ArrayList<>();
-        for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
-            TerrainSlopePositionEntity terrainSlopePositionEntity = new TerrainSlopePositionEntity();
-            terrainSlopePositionEntity.setSlopeConfigEntity(slopeCrudPersistence.getEntity(terrainSlopePosition.getSlopeConfigId()));
-            terrainSlopePositionEntity.setInverted(terrainSlopePosition.isInverted());
-            terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon().stream()
-                    .map(terrainSlopeCorner -> new TerrainSlopeCornerEntity()
-                            .position(terrainSlopeCorner.getPosition())
-                            .drivewayConfigEntity(drivewayCrudPersistence.getEntity(terrainSlopeCorner.getSlopeDrivewayId())))
-                    .collect(Collectors.toList()));
-            if (terrainSlopePosition.getEditorParentIdIfCreated() != null) {
-                TerrainSlopePositionEntity parent = entityManager.find(TerrainSlopePositionEntity.class, terrainSlopePosition.getEditorParentIdIfCreated());
-                parent.addChild(terrainSlopePositionEntity);
-                entityManager.persist(parent);
-            } else {
-                terrainSlopePositionEntities.add(terrainSlopePositionEntity);
-            }
-        }
-        PlanetEntity planetEntity = getEntity(planetId);
-        planetEntity.getTerrainSlopePositionEntities().addAll(terrainSlopePositionEntities);
-        entityManager.persist(planetEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void deleteTerrainSlopePositions(int planetId, Collection<Integer> terrainSlopePositionIds) {
-        PlanetEntity planetEntity = getEntity(planetId);
-        for (int terrainSlopePositionId : terrainSlopePositionIds) {
-            TerrainSlopePositionEntityChain chain = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePositionId);
-            if (chain.getParent() != null) {
-                chain.getParent().removeChild(chain.getChild());
-                entityManager.persist(chain.getParent());
-            } else {
-                planetEntity.getTerrainSlopePositionEntities().remove(chain.getChild());
-            }
-        }
-        entityManager.persist(planetEntity);
-    }
-
-    private TerrainSlopePositionEntityChain getSlopePositionEntityFromPlanet(PlanetEntity planetEntity, int id) {
-        for (TerrainSlopePositionEntity terrainSlopePositionEntity : planetEntity.getTerrainSlopePositionEntities()) {
-            if (terrainSlopePositionEntity.getId() == id) {
-                return new TerrainSlopePositionEntityChain(null, terrainSlopePositionEntity);
-            }
-            TerrainSlopePositionEntityChain child = terrainSlopePositionEntity.deepFirstSearchSlope(id);
-            if (child != null) {
-                return child;
-            }
-        }
-        throw new IllegalArgumentException("No TerrainSlopePositionEntity on planet for id: " + id);
-    }
-
     private TerrainObjectPositionEntity getTerrainObjectPositionEntity(PlanetEntity planetEntity, int id) {
         for (TerrainObjectPositionEntity terrainObjectPositionEntity : planetEntity.getTerrainObjectPositionEntities()) {
             if (terrainObjectPositionEntity.getId() == id) {
@@ -246,23 +163,5 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
             throw new IllegalArgumentException("No planet for id: " + planetId);
         }
         return planetEntity.getCompressedHeightMap();
-    }
-
-    public static class TerrainSlopePositionEntityChain {
-        private TerrainSlopePositionEntity parent;
-        private TerrainSlopePositionEntity child;
-
-        public TerrainSlopePositionEntityChain(TerrainSlopePositionEntity parent, TerrainSlopePositionEntity child) {
-            this.parent = parent;
-            this.child = child;
-        }
-
-        public TerrainSlopePositionEntity getParent() {
-            return parent;
-        }
-
-        public TerrainSlopePositionEntity getChild() {
-            return child;
-        }
     }
 }

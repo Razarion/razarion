@@ -31,7 +31,6 @@ public class DbPropertiesServiceTestRest extends IgnoreOldArquillianTest {
         Assert.assertEquals(0.0, dbPropertiesService.getDoubleProperty(DbPropertyKey.TIP_CORNER_MOVE_DISTANCE), 0.0001);
         Assert.assertNull(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_BASE_LOST));
         Assert.assertNull(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE));
-        Assert.assertNull(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D));
         Assert.assertNull(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR));
         // Test int value
         dbPropertiesService.setIntProperty(11, DbPropertyKey.TIP_CORNER_MOVE_DURATION);
@@ -65,15 +64,6 @@ public class DbPropertiesServiceTestRest extends IgnoreOldArquillianTest {
         Assert.assertEquals(image2.getId(), dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE));
         dbPropertiesService.setImageIdProperty(null, DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE);
         Assert.assertNull(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE));
-        // Test shape3DId value
-        ColladaEntity shape3D1 = persistInTransaction(new ColladaEntity());
-        ColladaEntity shape3D2 = persistInTransaction(new ColladaEntity());
-        dbPropertiesService.setshape3DIdProperty(shape3D1.getId(), DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D);
-        Assert.assertEquals(shape3D1.getId(), dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D));
-        dbPropertiesService.setshape3DIdProperty(shape3D2.getId(), DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D);
-        Assert.assertEquals(shape3D2.getId(), dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D));
-        dbPropertiesService.setshape3DIdProperty(null, DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D);
-        Assert.assertNull(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D));
         // Test color value
         dbPropertiesService.setColorProperty(new Color(0.1, 0.3, 0.5, 0.7), DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR);
         RazAssertTestHelper.assertColor(new Color(0.1, 0.3, 0.5, 0.7), dbPropertiesService.getColorProperty(DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR));

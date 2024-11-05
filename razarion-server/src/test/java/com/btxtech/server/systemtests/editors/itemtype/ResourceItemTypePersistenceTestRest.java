@@ -22,7 +22,6 @@ public class ResourceItemTypePersistenceTestRest extends AbstractCrudTest<Resour
     @Before
     public void fillTables() {
         setupImages();
-        setupShape3dConfig();
     }
 
     @After

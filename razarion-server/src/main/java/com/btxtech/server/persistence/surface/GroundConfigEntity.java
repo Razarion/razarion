@@ -44,8 +44,6 @@ public class GroundConfigEntity {
             @AttributeOverride(name = "blur", column = @Column(name = "splattingBlur")),
             @AttributeOverride(name = "offset", column = @Column(name = "splattingOffset")),
     })
-    @Embedded
-    private GroundSplattingConfigEmbeddable splatting;
     private String color;
 
     public Integer getId() {
@@ -58,7 +56,6 @@ public class GroundConfigEntity {
                 .internalName(internalName)
                 .topThreeJsMaterial(PersistenceUtil.extractId(topMaterial, ThreeJsModelConfigEntity::getId))
                 .bottomThreeJsMaterial(PersistenceUtil.extractId(bottomMaterial, ThreeJsModelConfigEntity::getId))
-                .splatting(PersistenceUtil.toConfig(splatting, GroundSplattingConfigEmbeddable::to))
                 .color(this.color);
     }
 
@@ -66,12 +63,6 @@ public class GroundConfigEntity {
         internalName = config.getInternalName();
         topMaterial = threeJsModelCrudPersistence.getEntity(config.getTopThreeJsMaterial());
         bottomMaterial = threeJsModelCrudPersistence.getEntity(config.getBottomThreeJsMaterial());
-        if (config.getSplatting() != null) {
-            splatting = new GroundSplattingConfigEmbeddable();
-            splatting.from(config.getSplatting(), imagePersistence);
-        } else {
-            splatting = null;
-        }
         color = config.getColor();
     }
 

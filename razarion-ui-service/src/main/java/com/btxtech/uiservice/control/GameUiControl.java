@@ -319,54 +319,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         return sceneConfigs;
     }
 
-    public Set<Integer> getAllTextureIds() {
-        logger.severe("GameUiControl.getAllTextureIds(): Fix TODO");
-        return new HashSet<>();
-        // TODO  Set<Integer> textureIds = Shape3DUtils.getAllTextures(coldGameUiContext.getShape3Ds());
-        // TODO  for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
-        // TODO     if (baseItemType.getBuildupTextureId() != null) {
-        // TODO         textureIds.add(baseItemType.getBuildupTextureId());
-        // TODO     }
-        // TODO     if (baseItemType.getDemolitionImageId() != null) {
-        // TODO         textureIds.add(baseItemType.getDemolitionImageId());
-        // TODO     }
-        // TODO }
-
-        // TODO for (SlopeConfig slopeConfig : coldGameUiContext.getStaticGameConfig().getSlopeConfigs()) {
-        // TODO if (slopeConfig.getSlopeTextureId() != null) {
-        // TODO     textureIds.add(slopeConfig.getSlopeTextureId());
-        // TODO }
-        // TODO }
-
-        // TODO GroundSkeletonConfig groundSkeletonConfig = coldGameUiContext.getStaticGameConfig().getGroundSkeletonConfig();
-        //  if (groundSkeletonConfig.getTopTextureId() != null) {
-        //      textureIds.add(groundSkeletonConfig.getTopTextureId());
-        //  }
-        //  if (groundSkeletonConfig.getBottomTextureId() != null) {
-        //      textureIds.add(groundSkeletonConfig.getBottomTextureId());
-        //  }
-        // return textureIds;
-    }
-
-    public Set<Integer> getAllBumpTextureIds() {
-        Set<Integer> bumpIds = new HashSet<>();
-        for (SlopeConfig slopeConfig : coldGameUiContext.getStaticGameConfig().getSlopeConfigs()) {
-            // TODO if (slopeConfig.getSlopeBumpMapId() != null) {
-            // TODO    bumpIds.add(slopeConfig.getSlopeBumpMapId());
-            // TODO }
-        }
-
-        logger.severe("GameUiControl.getAllBumpTextureIds(): Fix TODO");
-//  TODO      GroundSkeletonConfig groundSkeletonConfig = coldGameUiContext.getStaticGameConfig().getGroundSkeletonConfig();
-//        if (groundSkeletonConfig.getBottomBmId() != null) {
-//            bumpIds.add(groundSkeletonConfig.getBottomBmId());
-//        }
-//        if (coldGameUiContext.getStaticGameConfig().getWaterConfig().getNormMapId() != null) {
-//            bumpIds.add(coldGameUiContext.getStaticGameConfig().getWaterConfig().getNormMapId());
-//        }
-        return bumpIds;
-    }
-
     public void onLevelUpdate(LevelConfig newLevelConfig) {
         abstractServerSystemConnection.onLevelChanged(newLevelConfig);
     }

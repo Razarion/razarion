@@ -33,8 +33,6 @@ public class DbPropertiesService {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
-    private Shape3DCrudPersistence shape3DPersistence;
-    @Inject
     private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
     @Inject
     private BabylonMaterialCrudPersistence babylonMaterialCrudPersistence;
@@ -48,16 +46,6 @@ public class DbPropertiesService {
             return dbPropertiesEntity.getAudio().getId();
         }
         alarmService.riseAlarm(INVALID_PROPERTY, "Audio: " + dbPropertyKey);
-        return null;
-    }
-
-    @Transactional
-    public Integer getShape3DIdProperty(DbPropertyKey dbPropertyKey) {
-        DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
-        if (dbPropertiesEntity != null && dbPropertiesEntity.getShape3DId() != null) {
-            return dbPropertiesEntity.getShape3DId().getId();
-        }
-        alarmService.riseAlarm(INVALID_PROPERTY, "Shape3D: " + dbPropertyKey);
         return null;
     }
 
@@ -169,21 +157,6 @@ public class DbPropertiesService {
             dbPropertiesEntity.setImage(imagePersistence.getImageLibraryEntity(imageId));
         } else {
             dbPropertiesEntity.setImage(null);
-        }
-        entityManager.merge(dbPropertiesEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void setshape3DIdProperty(Integer shape3DId, DbPropertyKey dbPropertyKey) {
-        DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
-        if (dbPropertiesEntity == null) {
-            dbPropertiesEntity = new DbPropertiesEntity(dbPropertyKey.getKey());
-        }
-        if (shape3DId != null) {
-            dbPropertiesEntity.setShape3DId(shape3DPersistence.getEntity(shape3DId));
-        } else {
-            dbPropertiesEntity.setShape3DId(null);
         }
         entityManager.merge(dbPropertiesEntity);
     }

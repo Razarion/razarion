@@ -1,9 +1,7 @@
 package com.btxtech.server.persistence.object;
 
-import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
-import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 
 import javax.persistence.Entity;

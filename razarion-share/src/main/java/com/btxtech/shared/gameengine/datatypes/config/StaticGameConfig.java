@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
-import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
@@ -23,14 +22,12 @@ import java.util.List;
 public class StaticGameConfig {
     private List<GroundConfig> groundConfigs;
     private List<WaterConfig> waterConfigs;
-    private List<SlopeConfig> slopeConfigs;
     private List<TerrainObjectConfig> terrainObjectConfigs;
     private List<BaseItemType> baseItemTypes;
     private List<ResourceItemType> resourceItemTypes;
     private List<BoxItemType> boxItemTypes;
     private List<LevelConfig> levelConfigs;
     private List<InventoryItem> inventoryItems;
-    private List<DrivewayConfig> drivewayConfigs;
     private List<ThreeJsModelConfig> threeJsModelConfigs;
     private List<ThreeJsModelPackConfig> threeJsModelPackConfigs;
     private List<ParticleSystemConfig> particleSystemConfigs;
@@ -49,14 +46,6 @@ public class StaticGameConfig {
 
     public void setWaterConfigs(List<WaterConfig> waterConfigs) {
         this.waterConfigs = waterConfigs;
-    }
-
-    public List<SlopeConfig> getSlopeConfigs() {
-        return slopeConfigs;
-    }
-
-    public void setSlopeConfigs(List<SlopeConfig> slopeConfigs) {
-        this.slopeConfigs = slopeConfigs;
     }
 
     public List<TerrainObjectConfig> getTerrainObjectConfigs() {
@@ -107,14 +96,6 @@ public class StaticGameConfig {
         this.inventoryItems = inventoryItems;
     }
 
-    public List<DrivewayConfig> getDrivewayConfigs() {
-        return drivewayConfigs;
-    }
-
-    public void setDrivewayConfigs(List<DrivewayConfig> drivewayConfigs) {
-        this.drivewayConfigs = drivewayConfigs;
-    }
-
     public List<ThreeJsModelConfig> getThreeJsModelConfigs() {
         return threeJsModelConfigs;
     }
@@ -149,11 +130,6 @@ public class StaticGameConfig {
         return this;
     }
 
-    public StaticGameConfig slopeConfigs(List<SlopeConfig> slopeConfigs) {
-        setSlopeConfigs(slopeConfigs);
-        return this;
-    }
-
     public StaticGameConfig terrainObjectConfigs(List<TerrainObjectConfig> terrainObjectConfigs) {
         setTerrainObjectConfigs(terrainObjectConfigs);
         return this;
@@ -181,11 +157,6 @@ public class StaticGameConfig {
 
     public StaticGameConfig inventoryItems(List<InventoryItem> inventoryItems) {
         setInventoryItems(inventoryItems);
-        return this;
-    }
-
-    public StaticGameConfig drivewayConfigs(List<DrivewayConfig> drivewayConfigs) {
-        setDrivewayConfigs(drivewayConfigs);
         return this;
     }
 

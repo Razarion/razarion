@@ -3,11 +3,8 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
-import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
-import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.persistence.AttributeOverride;
@@ -29,11 +26,9 @@ import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Created by Beat
@@ -113,11 +108,6 @@ public class PlanetEntity {
         }
         this.itemTypeLimitation.clear();
         this.itemTypeLimitation.putAll(itemTypeLimitation);
-    }
-
-    @Deprecated
-    public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {
-        return Collections.emptyList();
     }
 
     public List<TerrainObjectPositionEntity> getTerrainObjectPositionEntities() {

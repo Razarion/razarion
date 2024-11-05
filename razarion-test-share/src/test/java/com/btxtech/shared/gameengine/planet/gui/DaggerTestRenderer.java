@@ -24,7 +24,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.DiffTriangleElement;
-import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -528,14 +527,6 @@ public class DaggerTestRenderer {
         value = MathHelper.clamp(value, 0, 1);
         return Color.color(value, 0, value);
     }
-
-    private void drawSlopeGeometry(SlopeGeometry slopeGeometry) {
-        if (slopeGeometry == null) {
-            return;
-        }
-        drawTriangles(slopeGeometry.getPositions());
-    }
-
 
     private void doRenderShape() {
         for (int x = 0; x < actual.getTileXCount(); x++) {

@@ -3,14 +3,11 @@ package com.btxtech.server;
 import com.btxtech.server.persistence.AudioLibraryEntity;
 import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
-import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.TerrainObjectCrudPersistence;
-import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
@@ -38,12 +35,7 @@ import com.btxtech.server.persistence.scene.SceneEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntryEntity;
-import com.btxtech.server.persistence.surface.DrivewayConfigEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
-import com.btxtech.server.persistence.surface.SlopeConfigEntity;
-import com.btxtech.server.persistence.surface.SlopeShapeEntity;
-import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
-import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.server.systemtests.framework.CleanupAfterTest;
 import com.btxtech.server.user.ForgotPasswordEntity;
@@ -57,10 +49,8 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.RegisterResult;
-import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
@@ -73,7 +63,6 @@ import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
@@ -295,38 +284,6 @@ public class ServerTestHelper {
         cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(GroundConfigEntity.class)));
     }
 
-    protected void setupSlopeConfig() {
-        SLOPE_LAND_CONFIG_ENTITY_1 = persistInTransaction(createLandSlopeConfig()).getId();
-        cleanupAfterTests.add(Arrays.asList(
-                new CleanupAfterTest().entity(SlopeShapeEntity.class),
-                new CleanupAfterTest().entity(SlopeConfigEntity.class)));
-    }
-
-    protected void setupDrivewayConfig() {
-        DrivewayConfigEntity drivewayConfigEntity = new DrivewayConfigEntity();
-        drivewayConfigEntity.fromDrivewayConfig(new DrivewayConfig().angle(Math.toRadians(20)));
-        DRIVEWAY_CONFIG_ENTITY_1 = persistInTransaction(drivewayConfigEntity).getId();
-        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(DrivewayConfigEntity.class)));
-    }
-
-    protected SlopeConfigEntity createLandSlopeConfig() {
-        ThreeJsModelCrudPersistence threeJsModelCrudPersistence = EasyMock.createNiceMock(ThreeJsModelCrudPersistence.class);
-        EasyMock.replay(threeJsModelCrudPersistence);
-        SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
-        slopeConfigEntity.fromSlopeConfig(new SlopeConfig()
-                        .horizontalSpace(5)
-                        .outerLineGameEngine(1).innerLineGameEngine(6)
-                        .slopeShapes(Arrays.asList(new SlopeShape().slopeFactor(1),
-                                new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(1),
-                                new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
-                                new SlopeShape().position(new DecimalPosition(7, 20)).slopeFactor(0.7))),
-                EasyMock.createNiceMock(ImagePersistence.class),
-                null,
-                null,
-                threeJsModelCrudPersistence);
-        return slopeConfigEntity;
-    }
-
     protected void setupWaterConfig() {
         WATER_1_ID = persistInTransaction(new WaterConfigEntity()).getId();
         WATER_2_ID = persistInTransaction(new WaterConfigEntity()).getId();
@@ -344,13 +301,6 @@ public class ServerTestHelper {
         TerrainObjectEntity terrainObjectEntity = new TerrainObjectEntity();
         terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, EasyMock.createNiceMock(ThreeJsModelPackCrudPersistence.class));
         return terrainObjectEntity;
-    }
-
-    protected void setupShape3dConfig() {
-        SHAPE_3D_1_ID = persistInTransaction(new ColladaEntity()).getId();
-        SHAPE_3D_2_ID = persistInTransaction(new ColladaEntity()).getId();
-        SHAPE_3D_3_ID = persistInTransaction(new ColladaEntity()).getId();
-        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(ColladaEntity.class)));
     }
 
     protected void setupItemTypes() {
@@ -534,15 +484,12 @@ public class ServerTestHelper {
 
     public void setupPlanetDb() {
         setupGroundConfig();
-        setupSlopeConfig();
-        setupDrivewayConfig();
         setupTerrainObjectConfig();
 
         runInTransaction(entityManager -> {
             PlanetEntity planetEntity = new PlanetEntity();
             planetEntity.fromPlanetConfig(new PlanetConfig().size(new DecimalPosition(960, 960))
                     , entityManager.find(GroundConfigEntity.class, GROUND_1_ID), entityManager.find(WaterConfigEntity.class, WATER_1_ID), null, Collections.emptyMap());
-            planetEntity.getTerrainSlopePositionEntities().add(createLandSlope());
             planetEntity.getTerrainObjectPositionEntities().addAll(createTerrainObjectPositions());
             entityManager.persist(planetEntity);
             PLANET_1_ID = planetEntity.getId();
@@ -554,8 +501,6 @@ public class ServerTestHelper {
         });
 
         cleanupAfterTests.add(Arrays.asList(
-                new CleanupAfterTest().entity(TerrainSlopeCornerEntity.class),
-                new CleanupAfterTest().entity(TerrainSlopePositionEntity.class),
                 new CleanupAfterTest().entity(TerrainObjectPositionEntity.class),
                 new CleanupAfterTest().tableName("PLANET_LIMITATION"),
                 new CleanupAfterTest().entity(PlanetEntity.class)));
@@ -607,17 +552,6 @@ public class ServerTestHelper {
             SERVER_QUEST_ID_L5_2 = serverGameEngineConfigEntity1.getServerLevelQuestEntities().get(1).getServerLevelQuestEntryEntities().get(1).getQuest().getId();
             SERVER_QUEST_ID_L5_3 = serverGameEngineConfigEntity1.getServerLevelQuestEntities().get(1).getServerLevelQuestEntryEntities().get(2).getQuest().getId();
         });
-    }
-
-    private TerrainSlopePositionEntity createLandSlope() {
-        TerrainSlopePositionEntity terrainSlopePositionLand = new TerrainSlopePositionEntity();
-        terrainSlopePositionLand.setSlopeConfigEntity(entityManager.find(SlopeConfigEntity.class, SLOPE_LAND_CONFIG_ENTITY_1));
-        terrainSlopePositionLand.setPolygon(Arrays.asList(
-                new TerrainSlopeCornerEntity().position(new DecimalPosition(50, 50)),
-                new TerrainSlopeCornerEntity().position(new DecimalPosition(400, 50)).drivewayConfigEntity(entityManager.find(DrivewayConfigEntity.class, DRIVEWAY_CONFIG_ENTITY_1)),
-                new TerrainSlopeCornerEntity().position(new DecimalPosition(400, 200)).drivewayConfigEntity(entityManager.find(DrivewayConfigEntity.class, DRIVEWAY_CONFIG_ENTITY_1)),
-                new TerrainSlopeCornerEntity().position(new DecimalPosition(50, 200))));
-        return terrainSlopePositionLand;
     }
 
     private List<TerrainObjectPositionEntity> createTerrainObjectPositions() {
@@ -733,7 +667,6 @@ public class ServerTestHelper {
     }
 
     protected void setupPlanetWithSlopes() throws Exception {
-        setupSlopeConfig();
         setupPlanetDb();
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
@@ -777,18 +710,7 @@ public class ServerTestHelper {
     }
 
     protected void cleanPlanetWithSlopes() {
-        cleanSlopeEntities();
-
         cleanPlanets();
-    }
-
-    protected void cleanSlopeEntities() {
-        cleanTable(TerrainSlopeCornerEntity.class);
-        cleanTable(TerrainSlopePositionEntity.class);
-
-        // TODO cleanTable(SlopeNodeEntity.class);
-        cleanTable(SlopeShapeEntity.class);
-        cleanTable(SlopeConfigEntity.class);
     }
 
     protected void assertCount(int countExpected, Class entityClass) {

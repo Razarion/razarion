@@ -5,16 +5,10 @@ import com.btxtech.server.systemtests.framework.AbstractCrudTest;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.rest.TerrainObjectEditorController;
 import org.junit.After;
-import org.junit.Before;
 
 public class TerrainObjectEditorControllerTest extends AbstractCrudTest<TerrainObjectEditorController, TerrainObjectConfig> {
     public TerrainObjectEditorControllerTest() {
         super(TerrainObjectEditorController.class, TerrainObjectConfig.class);
-    }
-
-    @Before
-    public void fillTables() {
-        setupShape3dConfig();
     }
 
     @After

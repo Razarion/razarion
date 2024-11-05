@@ -21,7 +21,8 @@ import javax.persistence.Table;
 @Table(name = "PROPERTY")
 public class DbPropertiesEntity {
     @Id
-    @Column(length = 190) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    @Column(length = 190)
+    // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String propertyKey;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
@@ -29,9 +30,6 @@ public class DbPropertiesEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity image;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ColladaEntity shape3DId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ThreeJsModelConfigEntity babylonModel;
@@ -92,14 +90,6 @@ public class DbPropertiesEntity {
 
     public void setDoubleValue(Double doubleValue) {
         this.doubleValue = doubleValue;
-    }
-
-    public ColladaEntity getShape3DId() {
-        return shape3DId;
-    }
-
-    public void setShape3DId(ColladaEntity shape3DId) {
-        this.shape3DId = shape3DId;
     }
 
     public ThreeJsModelConfigEntity getBabylonModel() {

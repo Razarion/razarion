@@ -5,7 +5,6 @@ import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
-import com.btxtech.server.persistence.Shape3DCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.server.persistence.asset.MeshContainerCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -19,8 +18,6 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class BaseItemTypeCrudPersistence extends AbstractConfigCrudPersistence<BaseItemType, BaseItemTypeEntity> {
-    @Inject
-    private Shape3DCrudPersistence shape3DPersistence;
     @Inject
     private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
     @Inject
@@ -48,10 +45,10 @@ public class BaseItemTypeCrudPersistence extends AbstractConfigCrudPersistence<B
         baseItemTypeEntity.fromBaseItemType(baseItemType, this, boxItemTypeCrudPersistence, audioPersistence, particleSystemCrudPersistence);
         baseItemTypeEntity.setThreeJsModelPackConfigEntity(threeJsModelPackCrudPersistence.getEntity(baseItemType.getThreeJsModelPackConfigId()));
         baseItemTypeEntity.setMeshContainer(meshContainerCrudPersistence.getEntity(baseItemType.getMeshContainerId()));
-        baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getEntity(baseItemType.getSpawnShape3DId()));
+        // TODO baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getEntity(baseItemType.getSpawnShape3DId()));
         baseItemTypeEntity.setBuildupTexture(imagePersistence.getImageLibraryEntity(baseItemType.getBuildupTextureId()));
         baseItemTypeEntity.setDemolitionImage(imagePersistence.getImageLibraryEntity(baseItemType.getDemolitionImageId()));
-        baseItemTypeEntity.setWreckageShape3D(shape3DPersistence.getEntity(baseItemType.getWreckageShape3DId()));
+        // TODO baseItemTypeEntity.setWreckageShape3D(shape3DPersistence.getEntity(baseItemType.getWreckageShape3DId()));
         baseItemTypeEntity.setSpawnAudio(audioPersistence.getAudioLibraryEntity(baseItemType.getSpawnAudioId()));
         baseItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(baseItemType.getThumbnail()));
     }

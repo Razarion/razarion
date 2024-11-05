@@ -3,7 +3,6 @@ package com.btxtech.server.persistence.itemtype;
 import com.btxtech.server.persistence.AudioLibraryEntity;
 import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
-import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
@@ -74,9 +73,6 @@ public class BaseItemTypeEntity {
     private MeshContainerEntity meshContainer;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ColladaEntity spawnShape3DId;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
     private AudioLibraryEntity spawnAudio;
     private int spawnDurationMillis;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -91,9 +87,6 @@ public class BaseItemTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity demolitionImage;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ColladaEntity wreckageShape3D;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private WeaponTypeEntity weaponType;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -161,9 +154,9 @@ public class BaseItemTypeEntity {
         if (meshContainer != null) {
             baseItemType.setMeshContainerId(meshContainer.getId());
         }
-        if (spawnShape3DId != null) {
-            baseItemType.setSpawnShape3DId(spawnShape3DId.getId());
-        }
+        // TODO if (spawnShape3DId != null) {
+        // TODO     baseItemType.setSpawnShape3DId(spawnShape3DId.getId());
+        // TODO }
         if (spawnAudio != null) {
             baseItemType.setSpawnAudioId(spawnAudio.getId());
         }
@@ -177,9 +170,9 @@ public class BaseItemTypeEntity {
         if (buildupTexture != null) {
             baseItemType.setBuildupTextureId(buildupTexture.getId());
         }
-        if (wreckageShape3D != null) {
-            baseItemType.setWreckageShape3DId(wreckageShape3D.getId());
-        }
+        // TODO if (wreckageShape3D != null) {
+        // TODO     baseItemType.setWreckageShape3DId(wreckageShape3D.getId());
+        // TODO }
         if (weaponType != null) {
             baseItemType.setWeaponType(weaponType.toWeaponType());
         }
@@ -335,9 +328,9 @@ public class BaseItemTypeEntity {
         this.meshContainer = meshContainer;
     }
 
-    public void setSpawnShape3DId(ColladaEntity spawnShape3DId) {
-        this.spawnShape3DId = spawnShape3DId;
-    }
+    // TODO public void setSpawnShape3DId(ColladaEntity spawnShape3DId) {
+    // TODO     this.spawnShape3DId = spawnShape3DId;
+    // TODO }
 
     public void setBuildupTexture(ImageLibraryEntity buildupTexture) {
         this.buildupTexture = buildupTexture;
@@ -347,9 +340,9 @@ public class BaseItemTypeEntity {
         this.demolitionImage = demolitionImage;
     }
 
-    public void setWreckageShape3D(ColladaEntity wreckageShape3D) {
-        this.wreckageShape3D = wreckageShape3D;
-    }
+    // TODO public void setWreckageShape3D(ColladaEntity wreckageShape3D) {
+    // TODO     this.wreckageShape3D = wreckageShape3D;
+    // TODO }
 
     public void setSpawnAudio(AudioLibraryEntity spawnAudio) {
         this.spawnAudio = spawnAudio;

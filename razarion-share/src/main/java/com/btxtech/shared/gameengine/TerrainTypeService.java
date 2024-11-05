@@ -21,10 +21,8 @@ import java.util.Map;
 @JsType
 @Singleton
 public class TerrainTypeService {
-    private final Map<Integer, SlopeConfig> slopeConfigs = new HashMap<>();
     private final Map<Integer, GroundConfig> groundConfigs = new HashMap<>();
     private final Map<Integer, WaterConfig> waterConfigs = new HashMap<>();
-    private final Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
     private final Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
 
     @Inject
@@ -34,19 +32,8 @@ public class TerrainTypeService {
 
     public void init(StaticGameConfig staticGameConfig) {
         setGroundConfigs(staticGameConfig.getGroundConfigs());
-        setSlopeConfigs(staticGameConfig.getSlopeConfigs());
         setWaterConfigs(staticGameConfig.getWaterConfigs());
         setTerrainObjectConfigs(staticGameConfig.getTerrainObjectConfigs());
-        setDrivewayConfigs(staticGameConfig.getDrivewayConfigs());
-    }
-
-    @SuppressWarnings("unused") // Called by Angular
-    public double calculateGroundHeight(int slopeConfigId) {
-        SlopeConfig slopeConfig = getSlopeConfig(slopeConfigId);
-        if (slopeConfig.hasWaterConfigId()) {
-            return getWaterConfig(slopeConfig.getWaterConfigId()).getGroundLevel();
-        }
-        return slopeConfig.getSlopeShapes().get(slopeConfig.getSlopeShapes().size() - 1).getPosition().getY();
     }
 
     private void setGroundConfigs(Collection<GroundConfig> groundConfigs) {
@@ -67,42 +54,12 @@ public class TerrainTypeService {
         }
     }
 
-    public void setDrivewayConfigs(Collection<DrivewayConfig> drivewayConfigs) {
-        this.drivewayConfigs.clear();
-        if (drivewayConfigs != null) {
-            for (DrivewayConfig drivewayConfig : drivewayConfigs) {
-                this.drivewayConfigs.put(drivewayConfig.getId(), drivewayConfig);
-            }
-        }
-    }
-
     public TerrainObjectConfig getTerrainObjectConfig(int id) {
         TerrainObjectConfig terrainObjectConfig = terrainObjectConfigs.get(id);
         if (terrainObjectConfig == null) {
             throw new IllegalArgumentException("No TerrainObjectConfig for id: " + id);
         }
         return terrainObjectConfig;
-    }
-
-    public SlopeConfig getSlopeConfig(int id) {
-        SlopeConfig slopeConfig = slopeConfigs.get(id);
-        if (slopeConfig == null) {
-            throw new IllegalArgumentException("No entry in SlopeConfigs for id: " + id);
-        }
-        return slopeConfig;
-    }
-
-    public Collection<SlopeConfig> getSlopeConfigs() {
-        return slopeConfigs.values();
-    }
-
-    private void setSlopeConfigs(Collection<SlopeConfig> slopeConfigs) {
-        this.slopeConfigs.clear();
-        if (slopeConfigs != null) {
-            for (SlopeConfig slopeConfig : slopeConfigs) {
-                this.slopeConfigs.put(slopeConfig.getId(), slopeConfig);
-            }
-        }
     }
 
     public Collection<TerrainObjectConfig> getTerrainObjectConfigs() {
@@ -124,14 +81,6 @@ public class TerrainTypeService {
             throw new IllegalArgumentException("No entry in WaterConfigs for id: " + id);
         }
         return waterConfig;
-    }
-
-    public DrivewayConfig getDrivewayConfig(Integer drivewayConfigId) {
-        DrivewayConfig drivewayConfig = drivewayConfigs.get(drivewayConfigId);
-        if (drivewayConfig == null) {
-            throw new IllegalArgumentException("No DrivewayConfig for drivewayConfigId: " + drivewayConfigId);
-        }
-        return drivewayConfig;
     }
 
     @SuppressWarnings("unused") // Used by Angular

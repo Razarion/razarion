@@ -60,7 +60,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.NO_GAME_UI_CONTROL_CONFIG_ENTITY_FOR_LEVEL_ID;
 
@@ -332,19 +331,14 @@ public class GameUiContextCrudPersistence extends AbstractConfigCrudPersistence<
         gameTipVisualConfig.setCornerMoveDuration(dbPropertiesService.getIntProperty(DbPropertyKey.TIP_CORNER_MOVE_DURATION));
         gameTipVisualConfig.setCornerMoveDistance(dbPropertiesService.getDoubleProperty(DbPropertyKey.TIP_CORNER_MOVE_DISTANCE));
         gameTipVisualConfig.setCornerLength(dbPropertiesService.getDoubleProperty(DbPropertyKey.TIP_CORNER_LENGTH));
-        gameTipVisualConfig.setDefaultCommandShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_DEFAULT_COMMAND_SHAPE3D));
         gameTipVisualConfig.setSelectCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_SELECT_CORNER_COLOR));
-        gameTipVisualConfig.setSelectShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_SELECT_SHAPE3D));
-        gameTipVisualConfig.setOutOfViewShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_OUT_OF_VIEW_SHAPE3D));
         gameTipVisualConfig.setAttackCommandCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR));
         gameTipVisualConfig.setBaseItemPlacerCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_CORNER_COLOR));
-        gameTipVisualConfig.setBaseItemPlacerShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D));
         gameTipVisualConfig.setGrabCommandCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_GRAB_COMMAND_CORNER_COLOR));
         gameTipVisualConfig.setMoveCommandCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_MOVE_COMMAND_CORNER_COLOR));
         gameTipVisualConfig.setToBeFinalizedCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_TO_BE_FINALIZED_CORNER_COLOR));
         gameTipVisualConfig.setWestLeftMouseGuiImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_WEST_LEFT_MOUSE_IMAGE));
         gameTipVisualConfig.setSouthLeftMouseGuiImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SOUTH_LEFT_MOUSE_IMAGE));
-        gameTipVisualConfig.setDirectionShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_DIRECTION_SHAPE3D));
         gameTipVisualConfig.setScrollDialogKeyboardImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE));
         return gameTipVisualConfig;
     }

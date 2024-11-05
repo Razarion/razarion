@@ -35,7 +35,6 @@ public class BaseItemTypePersistenceTestRest extends AbstractSystemTest {
     public void fillTables() {
         setupAudios();
         setupImages();
-        setupShape3dConfig();
         setupParticleEmitterSequences();
     }
 
