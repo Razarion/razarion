@@ -157,35 +157,27 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   setPosition(position: DecimalPosition): void {
-    this.position = position;
-    if (this.position) {
-      let position3D = new Vector3(position.getX(), 0, position.getY());
-      let rotation3D: Vector3;
-
-      let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(this.position);
-
+    if (position) {
+      let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(position);
       if (pickingInfo && pickingInfo.hit) {
-        // Position
-        position3D.y = pickingInfo.pickedPoint!.y;
+        this.position = position;
 
+        // Position
+        let position3D = new Vector3(position.getX(), pickingInfo.pickedPoint!.y, position.getY());
         // Rotation
         let normal = pickingInfo.getNormal(true)!;
         this.lastNormal = normal;
-        rotation3D = this.calculateRotation(normal);
-      } else {
-        // Position
-        position3D.y = 0;
+        let rotation3D = this.calculateRotation(normal);
 
-        // Rotation
-        rotation3D = new Vector3(0, Tools.ToRadians(90) - this.angle, 0)
+        if (this.onPosition3D(position3D)) {
+          this.container.position = position3D;
+        }
+        if (this.onRotation3D(rotation3D)) {
+          this.container.rotation = rotation3D;
+        }
       }
-
-      if (this.onPosition3D(position3D)) {
-        this.container.position = position3D;
-      }
-      if (this.onRotation3D(rotation3D)) {
-        this.container.rotation = rotation3D;
-      }
+    } else {
+      this.position = position;
     }
   }
 
