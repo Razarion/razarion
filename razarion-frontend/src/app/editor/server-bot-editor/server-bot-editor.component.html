@@ -28,20 +28,20 @@
   <div class="grid grid-razarion-editor">
     <span class="col-3">Id</span>
     <div class="col-9">
-      <p-inputNumber [disabled]="true" inputId="integeronly" [(ngModel)]="selectedBot&&selectedBot.id"></p-inputNumber>
+      <p-inputNumber [disabled]="true" inputId="integeronly" [ngModel]="selectedBot&&selectedBot.id" (ngModelChange)="selectedBot && (selectedBot.id = $event)"></p-inputNumber>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
     <span class="col-3">Internal name</span>
     <div class="col-9">
-      <input [(ngModel)]="selectedBot&&selectedBot.internalName" type="text"
+      <input [ngModel]="selectedBot&&selectedBot.internalName" (ngModelChange)="selectedBot && (selectedBot.internalName = $event)" type="text"
         class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
   </div>
   <div class="grid grid-razarion-editor">
     <span class="col-3">Name</span>
     <div class="col-9">
-      <input [(ngModel)]="selectedBot&&selectedBot.name" type="text"
+      <input [ngModel]="selectedBot&&selectedBot.name" (ngModelChange)="selectedBot && (selectedBot.name = $event)" type="text"
         class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
   </div>
@@ -66,7 +66,7 @@
   <div class="grid grid-razarion-editor">
     <span class="col-3">Action delay [ms]</span>
     <div class="col-9">
-      <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.actionDelay"></p-inputNumber>
+      <p-inputNumber [ngModel]="selectedBot&&selectedBot.actionDelay" (ngModelChange)="selectedBot && (selectedBot.actionDelay = $event)"></p-inputNumber>
     </div>
   </div>
 
@@ -79,25 +79,25 @@
   <div class="grid grid-razarion-editor">
     <span class="col-4">Min inactive [ms]</span>
     <div class="col-8">
-      <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.minInactiveMs"></p-inputNumber>
+      <p-inputNumber [ngModel]="selectedBot&&selectedBot.minInactiveMs" (ngModelChange)="selectedBot && (selectedBot.minInactiveMs = $event)"></p-inputNumber>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
     <span class="col-4">Max inactive [ms]</span>
     <div class="col-8">
-      <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.maxInactiveMs"></p-inputNumber>
+      <p-inputNumber [ngModel]="selectedBot&&selectedBot.maxInactiveMs" (ngModelChange)="selectedBot && (selectedBot.maxInactiveMs = $event)"></p-inputNumber>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
     <span class="col-4">Min active [ms]</span>
     <div class="col-8">
-      <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.minActiveMs"></p-inputNumber>
+      <p-inputNumber [ngModel]="selectedBot&&selectedBot.minActiveMs" (ngModelChange)="selectedBot && (selectedBot.minActiveMs = $event)"></p-inputNumber>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
     <span class="col-4">Max active [ms]</span>
     <div class="col-8">
-      <p-inputNumber [(ngModel)]="selectedBot&&selectedBot.maxActiveMs"></p-inputNumber>
+      <p-inputNumber [ngModel]="selectedBot&&selectedBot.maxActiveMs" (ngModelChange)="selectedBot && (selectedBot.maxActiveMs = $event)"></p-inputNumber>
     </div>
   </div>
 

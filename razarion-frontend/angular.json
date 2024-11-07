@@ -89,22 +89,22 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "frontend:build",
-            "proxyConfig": "src/proxy.conf.js"
+            "proxyConfig": "src/proxy.conf.js",
+            "buildTarget": "frontend:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "frontend:build:production"
+              "buildTarget": "frontend:build:production"
             },
             "gwtMock": {
-              "browserTarget": "frontend:build:gwtMock"
+              "buildTarget": "frontend:build:gwtMock"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "frontend:build"
+            "buildTarget": "frontend:build"
           }
         },
         "test": {

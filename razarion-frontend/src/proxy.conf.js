@@ -9,7 +9,7 @@ const PROXY_CONFIG = [
       "/systemconnection",
       "/gameconnection"
     ],
-    target: "http://localhost:8080",
+    target: "http://127.0.0.1:8080",
     secure: false,
     ws: true
   },
@@ -17,7 +17,7 @@ const PROXY_CONFIG = [
     context: [
       "/gwt-mock",
     ],
-    target: "http://localhost:9090",
+    target: "http://127.0.0.1:9090",
     secure: false,
     ws: true
   }

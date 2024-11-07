@@ -29,7 +29,7 @@
     <span class="col-3">Id</span>
     <div class="col-9">
       <p-inputNumber [disabled]="true" inputId="integeronly"
-        [(ngModel)]="selectedLevelQuest&&selectedLevelQuest.id"></p-inputNumber>
+        [ngModel]="selectedLevelQuest&&selectedLevelQuest.id" (ngModelChange)="selectedLevelQuest && (selectedLevelQuest.id = $event)"></p-inputNumber>
     </div>
   </div>
   <div class="field grid align-items-center">

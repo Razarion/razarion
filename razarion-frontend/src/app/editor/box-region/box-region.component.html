@@ -30,13 +30,13 @@
         <span class="col-3">Id</span>
         <div class="col-9">
             <p-inputNumber [disabled]="true" inputId="integeronly"
-                [(ngModel)]="selectedBoxRegionConfig&&selectedBoxRegionConfig.id"></p-inputNumber>
+                [ngModel]="selectedBoxRegionConfig&&selectedBoxRegionConfig.id" (ngModelChange)="selectedBoxRegionConfig && (selectedBoxRegionConfig.id = $event)"></p-inputNumber>
         </div>
     </div>
     <div class="grid grid-razarion-editor">
         <span class="col-3">Internal name</span>
         <div class="col-9">
-            <input [(ngModel)]="selectedBoxRegionConfig&&selectedBoxRegionConfig.internalName" type="text"
+            <input [ngModel]="selectedBoxRegionConfig&&selectedBoxRegionConfig.internalName" (ngModelChange)="selectedBoxRegionConfig && (selectedBoxRegionConfig.internalName = $event)" type="text"
                 class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
         </div>
     </div>
@@ -44,13 +44,13 @@
         <span class="col-3">Count</span>
         <div class="col-9">
             <p-inputNumber inputId="integeronly"
-                [(ngModel)]="selectedBoxRegionConfig&&selectedBoxRegionConfig.count"></p-inputNumber>
+                [ngModel]="selectedBoxRegionConfig&&selectedBoxRegionConfig.count" (ngModelChange)="selectedBoxRegionConfig && (selectedBoxRegionConfig.count = $event)"></p-inputNumber>
         </div>
     </div>
     <div class="grid grid-razarion-editor">
         <span class="col-3">Min distance to items [m]</span>
         <div class="col-9">
-            <p-inputNumber [(ngModel)]="selectedBoxRegionConfig&&selectedBoxRegionConfig.minDistanceToItems"
+            <p-inputNumber [ngModel]="selectedBoxRegionConfig&&selectedBoxRegionConfig.minDistanceToItems" (ngModelChange)="selectedBoxRegionConfig && (selectedBoxRegionConfig.minDistanceToItems = $event)"
                 [maxFractionDigits]="3"></p-inputNumber>
         </div>
     </div>
@@ -72,14 +72,14 @@
         <span class="col-3">Min interval [s]</span>
         <div class="col-9">
             <p-inputNumber inputId="integeronly"
-                [(ngModel)]="selectedBoxRegionConfig&&selectedBoxRegionConfig.minInterval"></p-inputNumber>
+                [ngModel]="selectedBoxRegionConfig&&selectedBoxRegionConfig.minInterval" (ngModelChange)="selectedBoxRegionConfig && (selectedBoxRegionConfig.minInterval = $event)"></p-inputNumber>
         </div>
     </div>
     <div class="grid grid-razarion-editor">
         <span class="col-3">Max interval [s]</span>
         <div class="col-9">
             <p-inputNumber inputId="integeronly"
-                [(ngModel)]="selectedBoxRegionConfig&&selectedBoxRegionConfig.maxInterval"></p-inputNumber>
+                [ngModel]="selectedBoxRegionConfig&&selectedBoxRegionConfig.maxInterval" (ngModelChange)="selectedBoxRegionConfig && (selectedBoxRegionConfig.maxInterval = $event)"></p-inputNumber>
         </div>
     </div>
 </div>

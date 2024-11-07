@@ -36,13 +36,13 @@
     <span class="col-3">Id</span>
     <div class="col-9">
       <p-inputNumber [disabled]="true" inputId="integeronly"
-                     [(ngModel)]="selectedResourceRegion&&selectedResourceRegion.id"></p-inputNumber>
+                     [ngModel]="selectedResourceRegion&&selectedResourceRegion.id" (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.id = $event)"></p-inputNumber>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
     <span class="col-3">Internal name</span>
     <div class="col-9">
-      <input [(ngModel)]="selectedResourceRegion&&selectedResourceRegion.internalName"
+      <input [ngModel]="selectedResourceRegion&&selectedResourceRegion.internalName" (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.internalName = $event)"
              type="text"
              class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
@@ -51,13 +51,13 @@
     <span class="col-3">Count</span>
     <div class="col-9">
       <p-inputNumber inputId="integeronly"
-                     [(ngModel)]="selectedResourceRegion&&selectedResourceRegion.count"></p-inputNumber>
+                     [ngModel]="selectedResourceRegion&&selectedResourceRegion.count" (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.count = $event)"></p-inputNumber>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
     <span class="col-3">Min distance to items</span>
     <div class="col-9">
-      <p-inputNumber [(ngModel)]="selectedResourceRegion&&selectedResourceRegion.minDistanceToItems" [maxFractionDigits]="3"></p-inputNumber>
+      <p-inputNumber [ngModel]="selectedResourceRegion&&selectedResourceRegion.minDistanceToItems" (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.minDistanceToItems = $event)" [maxFractionDigits]="3"></p-inputNumber>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
