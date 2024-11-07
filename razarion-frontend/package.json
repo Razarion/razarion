@@ -11,16 +11,16 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^17.3.12",
+    "@angular/animations": "^18.2.11",
     "@angular/cdk": "^13.2.2",
-    "@angular/common": "^17.3.12",
-    "@angular/compiler": "^17.3.12",
-    "@angular/core": "^17.3.12",
-    "@angular/elements": "^17.3.12",
-    "@angular/forms": "^17.3.12",
-    "@angular/platform-browser": "^17.3.12",
-    "@angular/platform-browser-dynamic": "^17.3.12",
-    "@angular/router": "^17.3.12",
+    "@angular/common": "^18.2.11",
+    "@angular/compiler": "^18.2.11",
+    "@angular/core": "^18.2.11",
+    "@angular/elements": "^18.2.11",
+    "@angular/forms": "^18.2.11",
+    "@angular/platform-browser": "^18.2.11",
+    "@angular/platform-browser-dynamic": "^18.2.11",
+    "@angular/router": "^18.2.11",
     "@babylonjs/core": "^7.33.0",
     "@babylonjs/gui-editor": "^7.33.0",
     "@babylonjs/inspector": "^7.33.0",
@@ -33,7 +33,6 @@
     "chart.js": "^3.7.0",
     "chartjs-plugin-dragdata": "^2.2.5",
     "chartjs-plugin-zoom": "^2.0.1",
-    "earcut": "^2.2.4",
     "geometric": "^2.5.4",
     "jszip": "^3.10.1",
     "lil-gui": "^0.16.1",
@@ -50,9 +49,10 @@
     "zone.js": "^0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^17.3.11",
-    "@angular/cli": "^17.3.11",
-    "@angular/compiler-cli": "^17.3.12",
+    "@angular-devkit/build-angular": "^18.2.11",
+    "@angular/cli": "^18.2.11",
+    "@angular/compiler-cli": "^18.2.11",
+    "@types/earcut": "^2.1.4",
     "@types/geometric": "^2.5.0",
     "@types/jasmine": "^3.10.3",
     "@types/node": "^18.11.9",
@@ -69,6 +69,6 @@
     "protractor": "~7.0.0",
     "ts-node": "~10.5.0",
     "tslint": "~6.1.0",
-    "typescript": "5.2"
+    "typescript": "5.4"
   }
 }

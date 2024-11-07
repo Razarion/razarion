@@ -6,7 +6,7 @@ import {FileUpload} from "primeng/fileupload/fileupload";
 import {environment} from 'src/environments/environment';
 import {GameMockService} from "../../game/renderer/game-mock.service";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR, URL_THREE_JS_MODEL_PACK_EDITOR} from "../../common";
 import {
   AbstractMesh,

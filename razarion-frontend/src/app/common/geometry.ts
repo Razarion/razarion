@@ -1,10 +1,9 @@
 import { Vector2 } from "@babylonjs/core";
 import { Helpers } from "./helpers";
 import { MathUtils } from "./math-utils";
-
+import EAR_CUT from 'earcut';
 export class Geometry {
 
-  public static readonly EAR_CUT = require('earcut');// Import not working
 
   static pythagoras(x: number, y: number): number {
     return Math.sqrt(x * x + y * y);
@@ -41,7 +40,7 @@ export class Geometry {
   private static getArrayCorrectedIndex(index: number, array: any[]): any {
     return array[Helpers.getCorrectedIndex(index, array.length)];
   }
-  
+
   private static projectPointOnLine(point: Vector2, lineStart: Vector2, lineEnd: Vector2): Vector2 {
     const line = [lineEnd.x - lineStart.x, lineEnd.y - lineStart.y];
     const lineLengthSquared = line[0] * line[0] + line[1] * line[1];

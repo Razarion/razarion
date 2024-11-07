@@ -151,7 +151,7 @@ export class PolygonVisualization {
     if (this.polygonMarker) {
       this.polygonMarker.dispose();
     }
-    const polygonMeshBuilder = new PolygonMeshBuilder(`Polygon marker`, polygon, this.renderService.getScene(), Geometry.EAR_CUT);
+    const polygonMeshBuilder = new PolygonMeshBuilder(`Polygon marker`, polygon, this.renderService.getScene());
     this.polygonMarker = polygonMeshBuilder.build();
     this.polygonMarker.position.y = height;
     this.polygonMarker.material = PolygonVisualization.polygonMarkerMaterial;

@@ -22,7 +22,7 @@ import {EditorService} from "../editor-service";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {Color3} from "@babylonjs/core/Maths/math.color";
 import {UPDATE_RADIUS_REST_CALL} from "../../common";
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {EditorPanel} from '../editor-model';
 import {TerrainObjectGeneratorComponent} from "./terrain-object-generator/terrain-object-generator.component";
 import {

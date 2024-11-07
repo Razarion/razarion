@@ -457,7 +457,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   private createPlacePolygonMarker(placeConfig: PlaceConfig): Mesh {
     let polygonData = PlaceConfigComponent.toVertex2ArrayAngular(placeConfig.getPolygon2D()?.toCornersAngular()!)
-    let polygonTriangulation = new PolygonMeshBuilder("Place marker", polygonData, this.scene, Geometry.EAR_CUT);
+    let polygonTriangulation = new PolygonMeshBuilder("Place marker", polygonData, this.scene);
     const polygonMesh = polygonTriangulation.build();
     polygonMesh.position.y = 0.1 + LocationVisualization.getHeightFromTerrain(polygonData[0].x, polygonData[0].y, this);
     polygonMesh.isPickable = false;
