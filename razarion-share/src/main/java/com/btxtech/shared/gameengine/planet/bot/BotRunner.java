@@ -20,7 +20,6 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
@@ -42,17 +41,11 @@ public class BotRunner {
         ACTIVE
     }
 
-    private Logger log = Logger.getLogger(BotRunner.class.getName());
-
-    private BaseItemService baseItemService;
-
-    private Provider<BotEnragementState> enragementStateInstance;
-
-    private Provider<IntruderHandler> intruderHandlerInstance;
-
-    private SimpleExecutorService simpleExecutorService;
-
-    private ExceptionHandler exceptionHandler;
+    private final Logger log = Logger.getLogger(BotRunner.class.getName());
+    private final BaseItemService baseItemService;
+    private final Provider<BotEnragementState> enragementStateInstance;
+    private final Provider<IntruderHandler> intruderHandlerInstance;
+    private final SimpleExecutorService simpleExecutorService;
     private BotConfig botConfig;
     private PlayerBaseFull base;
     private BotEnragementState botEnragementState;
@@ -63,8 +56,10 @@ public class BotRunner {
     private SimpleScheduledFuture botTickerFuture;
 
     @Inject
-    public BotRunner(ExceptionHandler exceptionHandler, SimpleExecutorService simpleExecutorService, Provider<com.btxtech.shared.gameengine.planet.bot.IntruderHandler> intruderHandlerInstance, Provider<com.btxtech.shared.gameengine.planet.bot.BotEnragementState> enragementStateInstance, BaseItemService baseItemService) {
-        this.exceptionHandler = exceptionHandler;
+    public BotRunner(SimpleExecutorService simpleExecutorService,
+                     Provider<IntruderHandler> intruderHandlerInstance,
+                     Provider<BotEnragementState> enragementStateInstance,
+                     BaseItemService baseItemService) {
         this.simpleExecutorService = simpleExecutorService;
         this.intruderHandlerInstance = intruderHandlerInstance;
         this.enragementStateInstance = enragementStateInstance;
@@ -74,7 +69,6 @@ public class BotRunner {
     private class BotTicker implements Runnable {
         @Override
         public void run() {
-            // System.out.println("--------BotTicker.run()--------");
             try {
                 synchronized (syncObject) {
                     if (botEnragementState == null) {
@@ -147,7 +141,7 @@ public class BotRunner {
             killTimer();
             killBot();
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            log.log(Level.SEVERE, "Exception in BotRunner.kill(): " + botConfig.getName(), t);
         }
     }
 
@@ -184,7 +178,7 @@ public class BotRunner {
         return false;
     }
 
-    public void executeCommand(AbstractBotCommandConfig botCommandConfig) {
+    public void executeCommand(AbstractBotCommandConfig<?> botCommandConfig) {
         botEnragementState.executeCommand(botCommandConfig, base);
     }
 

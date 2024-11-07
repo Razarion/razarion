@@ -52,6 +52,12 @@
     </div>
   </div>
   <div class="grid grid-razarion-editor">
+    <span class="col-3">Auto attack</span>
+    <div class="col-9">
+      <p-checkbox *ngIf="selectedBot" [(ngModel)]="selectedBot!.autoAttack" [binary]="true"></p-checkbox>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
     <span class="col-3">Bot ground</span>
     <div class="col-9">
       <babylon-material *ngIf="selectedBot" [(babylonMaterialId)]="selectedBot!.groundBabylonMaterialId"></babylon-material>
