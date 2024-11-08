@@ -217,7 +217,7 @@
                                 <argument>build</argument>
                                 <argument>--configuration=production</argument>
                                 <!--<argument>&#45;&#45;env=dev</argument>-->
-                                <argument>--output-path=${project.build.directory}/ROOT</argument>
+                                <argument>--output-path=${project.build.directory}/__TMP__</argument>
                                 <argument>--base-href=/</argument>
                             </arguments>
                         </configuration>
@@ -282,6 +282,28 @@
                     <nullableAnnotations>com.btxtech.shared.system.Nullable</nullableAnnotations>
                     <restNamespacing>perResource</restNamespacing>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/ROOT</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/__TMP__/browser</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
