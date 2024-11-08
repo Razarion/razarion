@@ -91,7 +91,7 @@ export class PlaceConfigComponent implements OnInit {
     }
   }
 
-  onEditButton(active: boolean) {
+  onEditButton(active: any) {
     if (this.locationVisualization) {
       this.locationVisualization.editMode(active);
     }
@@ -134,7 +134,7 @@ export class PlaceConfigComponent implements OnInit {
     }
   }
 
-  set locationPositionX(value: number | undefined) {
+  set locationPositionX(value: any) {
     if (!this.placeConfig) {
       return;
     }
@@ -169,7 +169,7 @@ export class PlaceConfigComponent implements OnInit {
     }
   }
 
-  set locationPositionY(value: number | undefined) {
+  set locationPositionY(value: any) {
     if (!this.placeConfig) {
       return;
     }
@@ -200,7 +200,7 @@ export class PlaceConfigComponent implements OnInit {
     return this.placeConfig?.radius || undefined;
   }
 
-  set locationRadius(value: number | undefined) {
+  set locationRadius(value: any) {
     if (this.locationVisualization) {
       this.locationVisualization.setRadius(value);
     }

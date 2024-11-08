@@ -17,14 +17,14 @@ export class AngleComponent implements OnInit {
     this.degreeAngle = (this.angle || this.angle === 0) ? this.angle * 180 / Math.PI : undefined;
   }
 
-  onChange(degreeAngle: number) {
+  onChange(degreeAngle: any) {
     this.angle = (degreeAngle || degreeAngle === 0) ? degreeAngle! * Math.PI / 180 : null;
     this.angleChange.emit(this.angle);
   }
 
   onTextChange(event: any) {
-    if ((event.srcElement.value == null 
-      || event.srcElement.value == undefined 
+    if ((event.srcElement.value == null
+      || event.srcElement.value == undefined
       || (typeof event.srcElement.value === "string" && event.srcElement.value.trim().length === 0))) {
       this.degreeAngle = undefined;
       this.angle = null;

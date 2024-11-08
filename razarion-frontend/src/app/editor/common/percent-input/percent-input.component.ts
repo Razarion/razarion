@@ -15,7 +15,7 @@ export class PercentInputComponent {
     return this.modelValue * 100;
   }
 
-  onInput(value: number): void {
+  onInput(value: any): void {
     this.modelValue = value / 100;
     this.modelValue = MathUtils.clamp(this.modelValue, 0, 1);
     this.modelValueChange.emit(this.modelValue);

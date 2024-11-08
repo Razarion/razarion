@@ -25,8 +25,8 @@ import { LocationVisualization } from "./location-visualization";
 export class PolygonVisualization {
   static polygonMarkerMaterial: SimpleMaterial;
   polygonMarker?: Mesh;
-  vertexAddMode: boolean = false;
-  vertexDeleteMode: boolean = false;
+  vertexAddMode: any = false;
+  vertexDeleteMode: any = false;
   private mouseObservable: Nullable<Observer<PointerInfo>> = null;
   private draggableCorners: DraggableCorner[] = [];
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;

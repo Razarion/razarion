@@ -19,7 +19,7 @@ export class VelocityComponent implements OnInit {
     }
   }
 
-  onChange(kmh: number) {
+  onChange(kmh: any) {
     this.velocity = (kmh || kmh === 0) ? kmh! / 3.6 : null;
     this.velocityChange.emit(this.velocity);
   }

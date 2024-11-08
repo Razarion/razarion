@@ -290,7 +290,7 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
     }
   }
 
-  onSelectedRadiusChange(value: number) {
+  onSelectedRadiusChange(value: any) {
     if (this.selectedRadiusDisc) {
       this.selectedRadiusDisc.scaling.x = value;
       this.selectedRadiusDisc.scaling.y = value;

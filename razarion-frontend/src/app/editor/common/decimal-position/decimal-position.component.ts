@@ -32,12 +32,12 @@ export class DecimalPositionComponent implements OnInit {
     }
   }
 
-  onX(value?: number) {
+  onX(value?: any) {
     this.x = value;
     this.fireDecimalPosition();
   }
 
-  onY(value?: number) {
+  onY(value?: any) {
     this.y = value;
     this.fireDecimalPosition();
   }

@@ -20,7 +20,7 @@ export class AccelerationComponent implements OnInit {
     }
   }
 
-  onChange(seconds0To100: number) {
+  onChange(seconds0To100: any) {
     this.acceleration = seconds0To100 ? (this.FINAL_SPEED_M_PER_S / seconds0To100) : null;
     this.accelerationChange.emit(this.acceleration);
   }
