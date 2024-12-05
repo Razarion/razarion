@@ -13,7 +13,9 @@ public class TerrainObjectConfig implements Config {
     private int id;
     private String internalName;
     private double radius;
+    private Integer model3DId;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL_PACK)
+    @Deprecated
     private Integer threeJsModelPackConfigId;
 
     @Override
@@ -43,10 +45,20 @@ public class TerrainObjectConfig implements Config {
         this.radius = radius;
     }
 
+    public Integer getModel3DId() {
+        return model3DId;
+    }
+
+    public void setModel3DId(Integer model3DId) {
+        this.model3DId = model3DId;
+    }
+
+    @Deprecated
     public Integer getThreeJsModelPackConfigId() {
         return threeJsModelPackConfigId;
     }
 
+    @Deprecated
     public void setThreeJsModelPackConfigId(Integer threeJsModelPackConfigId) {
         this.threeJsModelPackConfigId = threeJsModelPackConfigId;
     }
@@ -84,8 +96,14 @@ public class TerrainObjectConfig implements Config {
         return this;
     }
 
+    @Deprecated
     public TerrainObjectConfig threeJsModelPackConfigId(Integer threeJsModelPackConfigId) {
         setThreeJsModelPackConfigId(threeJsModelPackConfigId);
+        return this;
+    }
+
+    public TerrainObjectConfig model3DId(Integer model3DId) {
+        setModel3DId(model3DId);
         return this;
     }
 

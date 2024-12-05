@@ -2,6 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.BabylonMaterialCrudPersistence;
 import com.btxtech.server.persistence.DbPropertiesService;
+import com.btxtech.server.persistence.GltfCrudPersistence;
 import com.btxtech.shared.CommonUrl;
 
 import javax.inject.Inject;
@@ -18,6 +19,8 @@ public class UiConfigCollectionController {
     @Inject
     private BabylonMaterialCrudPersistence babylonMaterialCrudPersistence;
     @Inject
+    private GltfCrudPersistence gltfCrudPersistence;
+    @Inject
     private DbPropertiesService dbPropertiesService;
 
     @GET
@@ -28,6 +31,10 @@ public class UiConfigCollectionController {
                 .babylonMaterials(babylonMaterialCrudPersistence.readAllBaseEntities()
                         .stream()
                         .map(babylonMaterialEntity -> babylonMaterialEntity.data(null))
+                        .collect(Collectors.toList()))
+                .gltfs(gltfCrudPersistence.readAllBaseEntities()
+                        .stream()
+                        .map(babylonMaterialEntity -> babylonMaterialEntity.glb(null))
                         .collect(Collectors.toList()))
                 .selectionItemMaterialId(dbPropertiesService.getBabylonModelProperty(ITEM_SELECTION_MATERIAL))
                 .healthBarNodeMaterialId(dbPropertiesService.getBabylonModelProperty(ITEM_HEALTH_BAR_NODE_MATERIAL))

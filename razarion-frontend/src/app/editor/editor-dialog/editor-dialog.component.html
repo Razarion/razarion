@@ -51,12 +51,16 @@
           (onClick)="openImageEditor()"></p-button>
       </div>
       <div class="mb-2">
+        <p-button type="button" label="glTF" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openGltfEditor()"></p-button>
+      </div>
+      <div class="mb-2">
         <p-button type="button" label="Particle systems" icon="pi pi-cog" [style]="{'width':'13em'}"
           styleClass="p-button-sm" (onClick)="openParticleSystemEditor()"></p-button>
       </div>
       <div class="mb-2">
         <p-button type="button" label="Babylon materials" icon="pi pi-cog" [style]="{'width':'13em'}"
-          styleClass="p-button-sm" (onClick)="openBabylonMaterialEditor()"></p-button>
+                  styleClass="p-button-sm" (onClick)="openBabylonMaterialEditor()"></p-button>
       </div>
     </p-panel>
   </div>

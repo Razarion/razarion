@@ -34,6 +34,7 @@ import { GeneratedCrudContainerComponent } from '../editor/crud-editors/crud-con
 import { ParticleSystemEditorComponent } from '../editor/crud-editors/particle-system-editor/particle-system-editor.component';
 import { BaseItemTypeEditorComponent } from '../editor/crud-editors/base-item-type-editor/base-item-type-editor.component';
 import { PropertyEditorComponent } from '../editor/property-editor/property-editor.component';
+import {GltfEditorComponent} from "../editor/crud-editors/gltf-editor/gltf-editor.component";
 
 
 @Component({
@@ -78,7 +79,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = false;
+      let runGwtMock = true;
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
@@ -364,8 +365,8 @@ export class GameComponent implements OnInit, ScreenCover {
               //   });
 
               setTimeout(() => {
-                //  this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
-                this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+                this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, GltfEditorComponent));
+                // this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
               }, 2000);
             });
           });
@@ -378,7 +379,7 @@ export class GameComponent implements OnInit, ScreenCover {
         this.mainCockpitComponent.displayEnergy(0, 1);
         // this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
         // this.addEditorModel(new EditorModel("???", PropertyEditorComponent));
-        // this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
+        this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, GltfEditorComponent));
         // this.showInventory = true;
         this.fadeOutLoadingCover();
         this.removeLoadingCover();

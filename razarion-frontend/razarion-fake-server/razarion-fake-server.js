@@ -32,6 +32,16 @@ app.use(bodyParser.text({ limit: '500mb' }));
 let server = new ServerMock({ host: "localhost", port: PORT });
 
 server.on({
+  method: 'GET',
+  path: '/rest/frontend/isloggedin',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: '{"loggedIn": "true", "language": "en"}'
+  }
+});
+
+server.on({
   method: 'POST',
   path: '/rest/frontend/login',
   reply: {
@@ -396,6 +406,75 @@ server.on({
         "brushJson": "{\"height\":4,\"diameter\":10,\"maxSlopeWidth\":10,\"slope\":50.61,\"random\":1.16,\"internalName\":\"Mountain 4m\",\"id\":2}"
       }
     ])
+  }
+});
+
+const gltf = require("./gltf.json");
+
+
+server.on({
+  method: 'GET',
+  path: '/rest/gltf/objectNameIds',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(gltf.objectNameIds)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/gltf/read/1',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(gltf._1)
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/gltf/update',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: function loadAssetConfig(req) {
+      console.log("/rest/gltf/update: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
+    }
+  }
+});
+
+server.on({
+  method: 'PUT',
+  path: '/rest/gltf/upload-glb/1',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: function loadAssetConfig(req) {
+      console.log("/rest/gltf/upload-glb/1: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
+    }
+  }
+});
+
+const model3D = require("./model3D.json");
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/model-3d/getModel3DsByGltf/1',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(model3D.model3DsByGltf_1)
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/editor/model-3d/create',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(model3D._1)
   }
 });
 

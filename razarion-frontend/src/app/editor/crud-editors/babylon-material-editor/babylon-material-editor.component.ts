@@ -1,12 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { CrudContainerChild } from '../crud-container/crud-container.component';
-import { BabylonMaterialControllerClient, BabylonMaterialEntity } from 'src/app/generated/razarion-share';
-import { FileUpload } from 'primeng/fileupload';
-import { MessageService } from 'primeng/api';
-import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
-import { HttpClient } from '@angular/common/http';
-import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
-import { Material } from '@babylonjs/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {CrudContainerChild} from '../crud-container/crud-container.component';
+import {BabylonMaterialControllerClient, BabylonMaterialEntity} from 'src/app/generated/razarion-share';
+import {FileUpload} from 'primeng/fileupload';
+import {MessageService} from 'primeng/api';
+import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
+import {HttpClient} from '@angular/common/http';
+import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
+import {Material} from '@babylonjs/core';
 
 @Component({
   selector: 'babylon-material-editor',
@@ -22,8 +22,8 @@ export class BabylonMaterialEditorComponent implements CrudContainerChild<Babylo
   private babylonMaterialControllerClient: BabylonMaterialControllerClient;
 
   constructor(private messageService: MessageService,
-    private httpClient: HttpClient,
-    private renderEngine: BabylonRenderServiceAccessImpl) {
+              private httpClient: HttpClient,
+              private renderEngine: BabylonRenderServiceAccessImpl) {
     this.babylonMaterialControllerClient = new BabylonMaterialControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
 
     void Promise.all([
@@ -60,7 +60,7 @@ export class BabylonMaterialEditorComponent implements CrudContainerChild<Babylo
 
   private upload(data: any) {
     try {
-      const blob = new Blob([data], { type: 'application/octet-stream' });
+      const blob = new Blob([data], {type: 'application/octet-stream'});
       this.babylonMaterialControllerClient.uploadData(this.babylonMaterialEntity!.id, blob)
         .then(() => {
           this.messageService.add({

@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
-import { CrudContainerChild } from '../crud-container/crud-container.component';
-import { DecimalPosition, ParticleSystemConfig, ParticleSystemEditorControllerClient } from 'src/app/generated/razarion-share';
-import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
-import { LocationVisualization } from '../../common/place-config/location-visualization';
-import { ParticleSystem, Vector3 } from '@babylonjs/core';
-import { BabylonModelService } from 'src/app/game/renderer/babylon-model.service';
+import {Component} from '@angular/core';
+import {CrudContainerChild} from '../crud-container/crud-container.component';
+import {
+  DecimalPosition,
+  ParticleSystemConfig,
+  ParticleSystemEditorControllerClient
+} from 'src/app/generated/razarion-share';
+import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
+import {LocationVisualization} from '../../common/place-config/location-visualization';
+import {ParticleSystem, Vector3} from '@babylonjs/core';
+import {BabylonModelService} from 'src/app/game/renderer/babylon-model.service';
 
 @Component({
   selector: 'particle-system-editor',
@@ -16,10 +20,10 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
   terrainPosition: DecimalPosition | null = null;
   particleSystem?: ParticleSystem;
   private babylonModelId?: number;
-  currecntInfo?: string;
+  currentInfo?: string;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
-    private babylonModelService: BabylonModelService
+              private babylonModelService: BabylonModelService
   ) {
 
   }
@@ -49,8 +53,8 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
           null,
           false);
         this.babylonModelId = this.particleSystemConfig.threeJsModelId;
-        this.currecntInfo = `${this.particleSystemConfig.internalName} '${this.particleSystemConfig.id}' BablyonModel Id '${this.particleSystemConfig.threeJsModelId}'`;
-        this.particleSystem.name = `Editor ${this.currecntInfo}`;
+        this.currentInfo = `${this.particleSystemConfig.internalName} '${this.particleSystemConfig.id}' BablyonModel Id '${this.particleSystemConfig.threeJsModelId}'`;
+        this.particleSystem.name = `Editor ${this.currentInfo}`;
         this.particleSystem.start();
       }
     }

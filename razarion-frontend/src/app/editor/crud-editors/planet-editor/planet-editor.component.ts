@@ -13,7 +13,7 @@ export class PlanetEditorComponent implements CrudContainerChild<PlanetConfig> {
   init(planetConfig: PlanetConfig): void {
     this.planetConfig = planetConfig;
   }
-  
+
   exportConfig(): PlanetConfig {
     return this.planetConfig!;
   }

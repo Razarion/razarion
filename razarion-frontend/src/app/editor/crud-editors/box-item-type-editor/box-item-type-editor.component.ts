@@ -10,8 +10,6 @@ export class BoxItemTypeEditorComponent implements CrudContainerChild<BoxItemTyp
   static editorControllerClient = BoxItemTypeEditorControllerClient;
   boxItemType!: BoxItemType
 
-  constructor() { }
-
   init(boxItemType: BoxItemType): void {
     this.boxItemType = boxItemType;
   }

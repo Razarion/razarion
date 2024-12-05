@@ -20,6 +20,8 @@ import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
+import javax.ws.rs.DELETE;
+
 /**
  * User: beat
  * Date: 17.11.2009
@@ -31,9 +33,12 @@ public abstract class ItemType implements Config {
     private String internalName;
     private I18nString i18nName;
     private I18nString i18nDescription;
+    private Integer model3DId;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL_PACK)
+    @Deprecated
     private Integer threeJsModelPackConfigId;
     @CollectionReference(CollectionReferenceType.MESH_CONTAINER)
+    @Deprecated
     private Integer meshContainerId;
     private Integer thumbnail;
 
@@ -72,18 +77,30 @@ public abstract class ItemType implements Config {
         this.i18nDescription = i18nDescription;
     }
 
+    public  @Nullable Integer getModel3DId() {
+        return model3DId;
+    }
+
+    public void setModel3DId( @Nullable Integer model3DId) {
+        this.model3DId = model3DId;
+    }
+
+    @Deprecated
     public @Nullable Integer getThreeJsModelPackConfigId() {
         return threeJsModelPackConfigId;
     }
 
+    @Deprecated
     public void setThreeJsModelPackConfigId(@Nullable Integer threeJsModelPackConfigId) {
         this.threeJsModelPackConfigId = threeJsModelPackConfigId;
     }
 
+    @Deprecated
     public @Nullable Integer getMeshContainerId() {
         return meshContainerId;
     }
 
+    @Deprecated
     public void setMeshContainerId(@Nullable Integer meshContainerId) {
         this.meshContainerId = meshContainerId;
     }
@@ -116,11 +133,18 @@ public abstract class ItemType implements Config {
         return this;
     }
 
+    public ItemType model3DId(Integer model3DId) {
+        setModel3DId(model3DId);
+        return this;
+    }
+
+    @Deprecated
     public ItemType threeJsModelPackConfigId(Integer threeJsModelPackConfigId) {
         setThreeJsModelPackConfigId(threeJsModelPackConfigId);
         return this;
     }
 
+    @Deprecated
     public ItemType meshContainerId(Integer meshContainerId) {
         setMeshContainerId(meshContainerId);
         return this;

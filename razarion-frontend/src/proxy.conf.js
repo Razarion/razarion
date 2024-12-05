@@ -17,7 +17,7 @@ const PROXY_CONFIG = [
     context: [
       "/gwt-mock",
     ],
-    target: "http://127.0.0.1:9090",
+    target: "http://localhost:9090",
     secure: false,
     ws: true
   }

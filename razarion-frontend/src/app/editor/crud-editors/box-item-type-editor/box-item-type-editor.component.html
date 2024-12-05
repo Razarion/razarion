@@ -19,7 +19,13 @@
             <b>&nbsp;Visibility</b>
         </div>
     </p-divider>
-    <div class="grid grid-razarion-editor">
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Model 3D</span>
+    <div class="col-8">
+      <model3d [(model3DId)]="boxItemType.model3DId"></model3d>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
         <span class="col-4">Babylon model pack</span>
         <div class="col-8">
             <babylon-model-pack [(babylonModelPackId)]="boxItemType.threeJsModelPackConfigId"></babylon-model-pack>

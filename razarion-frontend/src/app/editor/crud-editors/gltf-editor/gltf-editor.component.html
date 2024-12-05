@@ -1,0 +1,61 @@
+<div style="width: 40em">
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Id</span>
+    <div class="col-8">
+      <p-inputNumber [disabled]="true" [(ngModel)]="gltfEntity.id"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Internal name</span>
+    <div class="col-8">
+      <input [(ngModel)]="gltfEntity.internalName" type="text"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Import GLB</span>
+    <div class="col-8">
+      <p-fileUpload #fileUploadElement chooseLabel="Import GLB" chooseIcon="pi pi-folder-open" mode="basic"
+                    styleClass="p-button-sm" [auto]=true [customUpload]=true (uploadHandler)="onImportGlb($event)">
+      </p-fileUpload>
+    </div>
+  </div>
+
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-box mr-2"></i>
+      <b>&nbsp;3D Models</b>
+    </div>
+  </p-divider>
+  <p-table [value]="model3DRows"
+           [autoLayout]="true"
+           [scrollable]="true"
+           scrollHeight="400px">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Gltf name</th>
+        <th>3D models</th>
+        <th>State</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-model3DRow>
+      <tr>
+        <td style="white-space: nowrap">
+          {{ model3DRow.model3DEntity.gltfName }}
+        </td>
+        <td *ngIf="model3DRow.model3DEntity.id || model3DRow.model3DEntity.id === 0; else noModel3DEntity">
+          {{ model3DRow.model3DEntity.internalName }} '{{ model3DRow.model3DEntity.id }}'
+        </td>
+        <ng-template #noModel3DEntity>
+          <td style="white-space: nowrap">
+            {{ model3DRow.model3DEntity.internalName }}
+          </td>
+        </ng-template>
+        <td>
+          <p-badge *ngIf="model3DRow.model3DState" [value]="model3DRow.model3DState"
+                   [severity]="severityByModel3DState(model3DRow.model3DState)"></p-badge>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

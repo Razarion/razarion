@@ -2,9 +2,11 @@ package com.btxtech.server.rest.crud;
 
 import com.btxtech.server.persistence.AbstractEntityCrudPersistence;
 import com.btxtech.server.persistence.BaseEntity;
+import com.btxtech.server.persistence.ui.Model3DEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.ObjectNameId;
 
+import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -30,12 +32,14 @@ public abstract class BaseEntityController<E extends BaseEntity> {
     @POST
     @Path("create")
     @Produces(MediaType.APPLICATION_JSON)
+    @SecurityCheck
     public E create() {
         return getEntityCrudPersistence().createBaseEntity();
     }
 
     @DELETE
     @Path("delete/{id}")
+    @SecurityCheck
     public void delete(@PathParam("id") int id) {
         getEntityCrudPersistence().delete(id);
     }
@@ -43,20 +47,38 @@ public abstract class BaseEntityController<E extends BaseEntity> {
     @POST
     @Path("update")
     @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityCheck
+    @Transactional
     public void update(E entity) {
-        getEntityCrudPersistence().updateBaseEntity(entity);
+        getEntityCrudPersistence().updateBaseEntity(jsonToJpa(entity));
     }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("read/{id}")
+    @SecurityCheck
+    @Transactional
     public E read(@PathParam("id") int id) {
-        return getEntityCrudPersistence().getBaseEntity(id);
+        return jpa2Json(getEntityCrudPersistence().getEntity(id));
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("read")
+    @SecurityCheck
+    @Transactional
     public List<E> readAll() {
-        return getEntityCrudPersistence().readAllBaseEntities();
+        return getEntityCrudPersistence().getEntities()
+                .stream()
+                .map(this::jpa2Json)
+                .toList();
+    }
+
+    protected E jsonToJpa(E entity) {
+        return entity;
+    }
+
+    protected E jpa2Json(E entity) {
+        return entity;
     }
 }

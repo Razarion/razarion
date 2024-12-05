@@ -1,7 +1,7 @@
-import { Component, ComponentFactoryResolver, ViewChild, ViewContainerRef } from '@angular/core';
-import { EditorPanel } from "../../editor-model";
-import { MenuItem, MessageService } from "primeng/api";
-import { Config, ObjectNameId } from "../../../generated/razarion-share";
+import {Component, ComponentFactoryResolver, ViewChild, ViewContainerRef} from '@angular/core';
+import {EditorPanel} from "../../editor-model";
+import {MenuItem, MessageService} from "primeng/api";
+import {Config, ObjectNameId} from "../../../generated/razarion-share";
 
 export interface CrudContainerChild<T extends Config> {
   init(config: T): void;
@@ -11,12 +11,19 @@ export interface CrudContainerChild<T extends Config> {
   getId(): number;
 }
 
+export interface CrudContainerChildPreUpdate<T extends Config> extends CrudContainerChild<T> {
+  postUpdate(): Promise<void>;
+
+  onUpdateSuccess(): void;
+}
+
+
 @Component({
   selector: 'crud-container',
   templateUrl: './crud-container.component.html'
 })
 export class AbstractCrudContainerComponent extends EditorPanel {
-  @ViewChild("configContainer", { read: ViewContainerRef })
+  @ViewChild("configContainer", {read: ViewContainerRef})
   configContainer!: ViewContainerRef;
   private crudContainerChild: CrudContainerChild<any> | null = null;
 
@@ -56,7 +63,7 @@ export class AbstractCrudContainerComponent extends EditorPanel {
   }
 
   constructor(protected messageService: MessageService,
-    private resolver: ComponentFactoryResolver) {
+              private resolver: ComponentFactoryResolver) {
     super();
   }
 
@@ -128,13 +135,35 @@ export class AbstractCrudContainerComponent extends EditorPanel {
         label: "Save",
         disabled: !this.crudContainerChild,
         command: () => {
-          this.update(this.crudContainerChild!.exportConfig()).then(() => {
-            this.messageService.add({
-              severity: 'success',
-              life: 300,
-              summary: 'Saved'
-            });
-            this.internalRequestObjectNameIds();
+          let config = this.crudContainerChild!.exportConfig();
+          this.update(config).then(() => {
+            if ((<CrudContainerChildPreUpdate<any>>this.crudContainerChild).postUpdate) {
+              (<CrudContainerChildPreUpdate<any>>this.crudContainerChild).postUpdate().then(() => {
+                this.messageService.add({
+                  severity: 'success',
+                  life: 300,
+                  summary: 'Saved'
+                });
+                this.internalRequestObjectNameIds();
+                (<CrudContainerChildPreUpdate<any>>this.crudContainerChild).onUpdateSuccess();
+              })
+                .catch(error => {
+                  this.messageService.add({
+                    severity: 'error',
+                    summary: `postUpdate failed: ${this.getEditorName}`,
+                    detail: error.message,
+                    sticky: true
+                  });
+                  console.error(error);
+                })
+            } else {
+              this.messageService.add({
+                severity: 'success',
+                life: 300,
+                summary: 'Saved'
+              });
+              this.internalRequestObjectNameIds();
+            }
           }).catch(error => {
             this.messageService.add({
               severity: 'error',

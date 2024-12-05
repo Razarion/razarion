@@ -1,13 +1,13 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
-import { ThreeJsModelPackEditorControllerClient } from 'src/app/generated/razarion-share';
+import {HttpClient} from '@angular/common/http';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
+import {ThreeJsModelPackEditorControllerClient} from 'src/app/generated/razarion-share';
 
 @Component({
   selector: 'babylon-model-pack',
   templateUrl: './babylon-model-pack.component.html'
 })
-export class BabylonModelPackComponent  implements OnInit {
+export class BabylonModelPackComponent implements OnInit {
   @Input("babylonModelPackId")
   babylonModelPackId: number | null = null;
   @Output()
@@ -23,7 +23,10 @@ export class BabylonModelPackComponent  implements OnInit {
     this.babylonModelEditorPackControllerClient.getObjectNameIds().then(objectNameIds => {
       this.babylonModelPackOptions = [];
       objectNameIds.forEach(objectNameId => {
-        this.babylonModelPackOptions.push({ label: `${objectNameId.internalName} '${objectNameId.id}'`, babylonModelPackId: objectNameId.id });
+        this.babylonModelPackOptions.push({
+          label: `${objectNameId.internalName} '${objectNameId.id}'`,
+          babylonModelPackId: objectNameId.id
+        });
       });
     });
   }

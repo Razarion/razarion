@@ -272,6 +272,8 @@
                         <class>com.btxtech.shared.rest.BrushEditorController</class>
                         <class>com.btxtech.shared.rest.FrontendController</class>
                         <class>com.btxtech.server.rest.crud.BabylonMaterialController</class>
+                        <class>com.btxtech.server.rest.crud.GltfController</class>
+                        <class>com.btxtech.server.rest.crud.Model3DController</class>
                         <class>com.btxtech.server.rest.UiConfigCollectionController</class>
                         <class>com.btxtech.server.rest.DbPropertiesEditorController</class>
                     </classes>

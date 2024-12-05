@@ -10,7 +10,6 @@ export class InventoryItemEditorComponent implements CrudContainerChild<Inventor
   static editorControllerClient = InventoryItemEditorControllerClient;
   inventoryItem!: InventoryItem;
 
-  constructor() { }
   init(itemType: InventoryItem): void {
     this.inventoryItem = itemType;
   }

@@ -1,0 +1,37 @@
+{
+  "objectNameIds": [
+    {
+      "id": 1,
+      "internalName": "Builder"
+    },
+    {
+      "id": 2,
+      "internalName": "Factory"
+    },
+    {
+      "id": 3,
+      "name": "Should be deleted"
+    }
+  ],
+  "_1": {
+    "id": 1,
+    "internalName": "Builder"
+  },
+  "model3DsByGltf_1": [
+    {
+      "id": 1,
+      "internalName": "Builder",
+      "gltfName": "Builder"
+    },
+    {
+      "id": 2,
+      "internalName": "Factory",
+      "gltfName": "Factory"
+    },
+    {
+      "id": 3,
+      "internalName": "Should be deleted",
+      "gltfName": "Should be deleted"
+    }
+  ]
+}

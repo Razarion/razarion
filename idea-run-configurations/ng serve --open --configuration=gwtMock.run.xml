@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ng serve --open --configuration=gwtMock" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/razarion-frontend/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="ng" />
+    </scripts>
+    <arguments value="serve --open  --configuration=gwtMock" />
+    <node-interpreter value="project" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

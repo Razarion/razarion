@@ -1,12 +1,14 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.ui.BabylonMaterialEntity;
+import com.btxtech.server.persistence.ui.GltfEntity;
 import com.btxtech.shared.system.Nullable;
 
 import java.util.List;
 
 public class UiConfigCollection {
     private List<BabylonMaterialEntity> babylonMaterials;
+    private List<GltfEntity> gltfs;
     private Integer selectionItemMaterialId;
     private Integer progressBarNodeMaterialId;
     private Integer healthBarNodeMaterialId;
@@ -17,6 +19,14 @@ public class UiConfigCollection {
 
     public void setBabylonMaterials(List<BabylonMaterialEntity> babylonMaterials) {
         this.babylonMaterials = babylonMaterials;
+    }
+
+    public List<GltfEntity> getGltfs() {
+        return gltfs;
+    }
+
+    public void setGltfs(List<GltfEntity> gltfs) {
+        this.gltfs = gltfs;
     }
 
     public @Nullable Integer getSelectionItemMaterialId() {
@@ -45,6 +55,11 @@ public class UiConfigCollection {
 
     public UiConfigCollection babylonMaterials(List<BabylonMaterialEntity> babylonMaterials) {
         setBabylonMaterials(babylonMaterials);
+        return this;
+    }
+
+    public UiConfigCollection gltfs(List<GltfEntity> gltfs) {
+        setGltfs(gltfs);
         return this;
     }
 

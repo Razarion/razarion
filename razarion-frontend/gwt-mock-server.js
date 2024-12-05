@@ -13,7 +13,7 @@ server.on({
     status: 200,
     headers: {"content-type": "application/json"},
     body: function loadTerrainTiles() {
-      return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain", "terrain-tiles.json"));
+      return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-test-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain", "terrain-tiles.json"));
     }
   }
 });
@@ -25,7 +25,7 @@ server.on({
     status: 200,
     headers: {"content-type": "application/json"},
     body: function loadStaticGameConfig() {
-      return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain", "static-game-config.json"));
+      return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-test-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain", "static-game-config.json"));
     }
   }
 });

@@ -1,10 +1,10 @@
-import { Injectable } from "@angular/core";
-import { URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR } from "src/app/common";
-import { ParticleSystemConfig, ThreeJsModelConfig } from "src/app/gwtangular/GwtAngularFacade";
-import { GwtAngularService } from "../../gwtangular/GwtAngularService";
-import { GwtHelper } from "../../gwtangular/GwtHelper";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { MessageService } from "primeng/api";
+import {Injectable} from "@angular/core";
+import {URL_GLTF, URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "src/app/common";
+import {ParticleSystemConfig, ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
+import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+import {GwtHelper} from "../../gwtangular/GwtHelper";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {MessageService} from "primeng/api";
 import {
   AssetContainer,
   Color3,
@@ -19,20 +19,26 @@ import {
   SceneLoader,
   TransformNode
 } from "@babylonjs/core";
-import { GLTFFileLoader } from "@babylonjs/loaders";
+import {GLTFFileLoader} from "@babylonjs/loaders";
 import JSZip from "jszip";
-import { BabylonJsUtils } from "./babylon-js.utils";
+import {BabylonJsUtils} from "./babylon-js.utils";
+import {
+  BabylonMaterialControllerClient,
+  BabylonMaterialEntity,
+  GltfControllerClient,
+  GltfEntity
+} from "src/app/generated/razarion-share";
+import {TypescriptGenerator} from "src/app/backend/typescript-generator";
+import {SimpleMaterial} from "@babylonjs/materials";
+import {UiConfigCollectionService} from "../ui-config-collection.service";
 import Type = ThreeJsModelConfig.Type;
-import { BabylonMaterialControllerClient } from "src/app/generated/razarion-share";
-import { TypescriptGenerator } from "src/app/backend/typescript-generator";
-import { SimpleMaterial } from "@babylonjs/materials";
-import { UiConfigCollectionService } from "../ui-config-collection.service";
 
 @Injectable()
 export class BabylonModelService {
   private assetContainers: Map<number, AssetContainer> = new Map();
   private nodeMaterials: Map<number, NodeMaterial> = new Map();
   private babylonMaterials: Map<number, Material> = new Map();
+  private glbAssetContainers: Map<number, AssetContainer> = new Map();
   private gwtAngularService!: GwtAngularService;
   private scene!: Scene;
   private threeJsModelConfigs!: ThreeJsModelConfig[];
@@ -40,15 +46,16 @@ export class BabylonModelService {
   private particleSystemConfigs: Map<number, ParticleSystemConfig> = new Map();
   private particleSystemJson: Map<number, any> = new Map();
   private babylonMaterialsLoaded = false;
+  private gltfsLoaded = false;
   private gwtResolver?: () => void;
   private babylonMaterialControllerClient: BabylonMaterialControllerClient;
 
   constructor(private uiConfigCollectionService: UiConfigCollectionService,
-    private httpClient: HttpClient,
-    private messageService: MessageService) {
+              private httpClient: HttpClient,
+              private messageService: MessageService) {
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
     this.babylonMaterialControllerClient = new BabylonMaterialControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
-    this.loadBabylonMaterials();
+    this.loadUiConfigCollection();
   }
 
   init(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[], gwtAngularService: GwtAngularService): Promise<void> {
@@ -95,34 +102,41 @@ export class BabylonModelService {
         });
       } catch (error) {
         console.error(error);
-        this.handleResolve(() => { reject(error) })
+        this.handleResolve(() => {
+          reject(error)
+        })
       }
     });
   }
 
   private handleResolve(handler: () => void) {
-    if (this.babylonMaterialsLoaded) {
+    if (this.babylonMaterialsLoaded && this.gltfsLoaded) {
       handler();
     } else {
       this.gwtResolver = handler;
     }
   }
 
-  private loadBabylonMaterials() {
+  private loadUiConfigCollection() {
     this.uiConfigCollectionService.getUiConfigCollection().then(uiConfigCollection => {
-      const materials = uiConfigCollection.babylonMaterials;
-      if (materials.length === 0) {
-        this.handleLoaded();
-        return;
-      }
+      this.loadBabylonMaterials(uiConfigCollection.babylonMaterials);
+      this.loadGltfs(uiConfigCollection.gltfs);
+    });
+  }
 
-      const materialLoadingControl = {
-        loadingCount: materials.length
-      }
+  private loadBabylonMaterials(materials: BabylonMaterialEntity[]) {
+    if (materials.length === 0) {
+      this.babylonMaterialsLoaded = true;
+      this.handleLoaded();
+      return;
+    }
 
-      materials.forEach(material => {
-        this.loadMaterial(material.id, materialLoadingControl);
-      });
+    const materialLoadingControl = {
+      loadingCount: materials.length
+    }
+
+    materials.forEach(material => {
+      this.loadMaterial(material.id!, materialLoadingControl);
     });
   }
 
@@ -149,7 +163,6 @@ export class BabylonModelService {
   }
 
   private handleLoaded() {
-    this.babylonMaterialsLoaded = true;
     if (this.gwtResolver) {
       this.gwtResolver();
     }
@@ -158,9 +171,63 @@ export class BabylonModelService {
   private handleMaterialLoaded(materialLoadingControl: { loadingCount: number }) {
     materialLoadingControl.loadingCount--;
     if (materialLoadingControl.loadingCount <= 0) {
+      this.babylonMaterialsLoaded = true;
       this.handleLoaded();
     }
   }
+
+  private handleGltfGlbLoaded(gltfLoadingControl: { loadingCount: number }) {
+    gltfLoadingControl.loadingCount--;
+    if (gltfLoadingControl.loadingCount <= 0) {
+      this.gltfsLoaded = true;
+      this.handleLoaded();
+    }
+  }
+
+  private loadGltfs(gltfs: GltfEntity[] ) {
+    if (!gltfs || gltfs.length === 0) {
+      this.gltfsLoaded = true;
+      this.handleLoaded();
+      return;
+    }
+
+    const gltfLoadingControl = {
+      loadingCount: gltfs.length
+    }
+
+    gltfs.forEach(gltf => {
+      this.loadGltfGlb(gltf, gltfLoadingControl);
+    });
+  }
+
+  private loadGltfGlb(gltf: GltfEntity, gltfLoadingControl: { loadingCount: number }) {
+    const url = `${URL_GLTF}/glb/${gltf.id}`;
+    try {
+      let hasError = false;
+      const result = SceneLoader.LoadAssetContainer(url, '', this.scene, glb => {
+          if (!hasError) {
+            this.glbAssetContainers.set(gltf.id!, glb);
+            this.handleGltfGlbLoaded(gltfLoadingControl);
+          }
+        },
+        () => {
+        },
+        (scene: Scene, message: string, exception?: any) => {
+          hasError = true;
+          console.error(`Error loading glTF/glb '${url}'. exception: '${exception}'`);
+          this.handleGltfGlbLoaded(gltfLoadingControl);
+        }, ".glb")
+      if (result === null) {
+        console.error(`Error loading glTF/glb '${url}'`);
+        this.handleGltfGlbLoaded(gltfLoadingControl);
+      }
+    } catch (e) {
+      console.error(`Error loading glTF/glb '${url}'`);
+      console.error(e);
+      this.handleGltfGlbLoaded(gltfLoadingControl);
+    }
+  }
+
 
   cloneMesh(threeJsModelPackConfigId: number, parent: Node | null): TransformNode {
     const threeJsModelPackConf = this.gwtAngularService.gwtAngularFacade.threeJsModelPackService.getThreeJsModelPackConfig(threeJsModelPackConfigId);
@@ -239,11 +306,11 @@ export class BabylonModelService {
     try {
       let hasError = false;
       const result = SceneLoader.LoadAssetContainer(url, '', this.scene, assetContainer => {
-        if (!hasError) {
-          this.assetContainers.set(threeJsModelConfig.getId(), assetContainer);
-          handleResolve();
-        }
-      },
+          if (!hasError) {
+            this.assetContainers.set(threeJsModelConfig.getId(), assetContainer);
+            handleResolve();
+          }
+        },
         () => {
         },
         (scene: Scene, message: string, exception?: any) => {
@@ -373,7 +440,7 @@ export class BabylonModelService {
         propertyName: "dummy",
         callback: () => {
           const json = this.serializeNodeMaterial(nodeMaterial);
-          this.babylonModelUpload(threeJsModelConfig.getId(), new Blob([json], { type: 'application/json' }));
+          this.babylonModelUpload(threeJsModelConfig.getId(), new Blob([json], {type: 'application/json'}));
         },
         type: InspectableType.Button
       }
@@ -449,7 +516,7 @@ export class BabylonModelService {
       let pending = this.threeJsModelConfigs.length;
       this.threeJsModelConfigs.forEach(babylonModelConfig => {
         this.httpClient.get(`${URL_THREE_JS_MODEL}/${babylonModelConfig.getId()}`,
-          { responseType: 'blob' })
+          {responseType: 'blob'})
           .subscribe({
             next(blob) {
               zip.file(`id_${babylonModelConfig.getId()}`, blob);
@@ -511,6 +578,6 @@ export class BabylonModelService {
 
   updateParticleSystemJson(babylonModelId: number, particleSystem: ParticleSystem) {
     const json = JSON.stringify(particleSystem!.serialize());
-    this.babylonModelUpload(babylonModelId, new Blob([json], { type: 'application/json' }));
+    this.babylonModelUpload(babylonModelId, new Blob([json], {type: 'application/json'}));
   }
 }

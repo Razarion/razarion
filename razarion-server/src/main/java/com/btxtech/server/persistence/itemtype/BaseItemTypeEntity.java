@@ -9,6 +9,7 @@ import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.ParticleSystemEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.asset.MeshContainerEntity;
+import com.btxtech.server.persistence.ui.Model3DEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
@@ -67,9 +68,14 @@ public class BaseItemTypeEntity {
     private ImageLibraryEntity thumbnail;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    private Model3DEntity model3DEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    @Deprecated
     private ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    @Deprecated
     private MeshContainerEntity meshContainer;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
@@ -148,6 +154,9 @@ public class BaseItemTypeEntity {
                 .angularVelocity(angularVelocity)
                 .startAngleSlowDown(startAngleSlowDown)
                 .endAngleSlowDown(endAngleSlowDown));
+        if (model3DEntity != null) {
+            baseItemType.setModel3DId(model3DEntity.getId());
+        }
         if (threeJsModelPackConfigEntity != null) {
             baseItemType.setThreeJsModelPackConfigId(threeJsModelPackConfigEntity.getId());
         }
@@ -318,6 +327,10 @@ public class BaseItemTypeEntity {
         }
         demolitionStepEffectEntities.clear();
         explosionParticleSystem = particleSystemCrudPersistence.getEntity(baseItemType.getExplosionParticleId());
+    }
+
+    public void setModel3DEntity(Model3DEntity model3DEntity) {
+        this.model3DEntity = model3DEntity;
     }
 
     public void setThreeJsModelPackConfigEntity(ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity) {

@@ -24,6 +24,7 @@ import { TerrainEditorComponent } from "../terrain-editor/terrain-editor.compone
 import { ParticleSystemEditorComponent } from "../crud-editors/particle-system-editor/particle-system-editor.component";
 import { BabylonMaterialEditorComponent } from "../crud-editors/babylon-material-editor/babylon-material-editor.component";
 import { PropertyEditorComponent } from "../property-editor/property-editor.component";
+import {GltfEditorComponent} from "../crud-editors/gltf-editor/gltf-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -107,6 +108,11 @@ export class EditorDialogComponent {
   openBabylonMaterialEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Babylon material editor", GeneratedCrudContainerComponent, BabylonMaterialEditorComponent));
+  }
+
+  openGltfEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("glTF editor", GeneratedCrudContainerComponent, GltfEditorComponent));
   }
 
   openBabylonInspector() {
