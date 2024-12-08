@@ -31,7 +31,6 @@ public class BabylonMaterialController extends BaseEntityController<BabylonMater
     }
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("data/{id}")
     public Response getData(@PathParam("id") int id) {
         try {

@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.ui;
 
 import com.btxtech.server.persistence.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 public class BabylonMaterialEntity extends BaseEntity {
     @Lob
     @Basic(fetch = FetchType.LAZY)
+    @JsonIgnore
     private byte[] data;
 
     public byte[] getData() {

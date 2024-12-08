@@ -27,5 +27,4 @@ public class GltfCrudPersistence extends AbstractEntityCrudPersistence<GltfEntit
         entity.setGlb(glb);
         entityManager.merge(entity);
     }
-
 }

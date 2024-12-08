@@ -1,4 +1,4 @@
-import { GwtHelper } from "../../gwtangular/GwtHelper";
+import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {
   AbstractMesh,
   ActionManager,
@@ -21,11 +21,11 @@ import {
   MarkerConfig,
   ResourceItemType
 } from "../../gwtangular/GwtAngularFacade";
-import { SimpleMaterial } from "@babylonjs/materials";
-import { BabylonModelService } from "./babylon-model.service";
-import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
-import { ActionService, SelectionInfo } from "../action.service";
-import { UiConfigCollectionService } from "../ui-config-collection.service";
+import {SimpleMaterial} from "@babylonjs/materials";
+import {BabylonModelService} from "./babylon-model.service";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import {ActionService, SelectionInfo} from "../action.service";
+import {UiConfigCollectionService} from "../ui-config-collection.service";
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
@@ -41,14 +41,16 @@ export class BabylonItemImpl implements BabylonItem {
   private lastNormal: Vector3 | null = null;
 
   constructor(private id: number,
-    private itemType: ItemType,
-    protected diplomacy: Diplomacy,
-    protected rendererService: BabylonRenderServiceAccessImpl,
-    protected babylonModelService: BabylonModelService,
-    protected uiConfigCollectionService: UiConfigCollectionService,
-    protected actionService: ActionService,
-    parent: TransformNode) {
-    if (itemType.getThreeJsModelPackConfigId()) {
+              private itemType: ItemType,
+              protected diplomacy: Diplomacy,
+              protected rendererService: BabylonRenderServiceAccessImpl,
+              protected babylonModelService: BabylonModelService,
+              protected uiConfigCollectionService: UiConfigCollectionService,
+              protected actionService: ActionService,
+              parent: TransformNode) {
+    if (itemType.getModel3DId()) {
+      this.container = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, null);
+    } else if (itemType.getThreeJsModelPackConfigId()) {
       this.container = this.babylonModelService.cloneMesh(itemType.getThreeJsModelPackConfigId()!, null);
     } else if (itemType.getMeshContainerId()) {
       if (diplomacy) {
@@ -59,7 +61,7 @@ export class BabylonItemImpl implements BabylonItem {
         throw new Error("Diplomacy can not be null");
       }
     } else {
-      this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, { diameter: this.getRadius() * 2 });
+      this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, {diameter: this.getRadius() * 2});
       console.warn(`No MeshContainerId or ThreeJsModelPackConfigId for ${itemType.getInternalName()} '${itemType.getId()}'`)
     }
     this.container.parent = parent;
@@ -228,7 +230,7 @@ export class BabylonItemImpl implements BabylonItem {
         this.visualizationMarkerDisc.dispose();
         console.warn("this.visualizationMarkerDisc != null")
       }
-      this.visualizationMarkerDisc = MeshBuilder.CreateDisc("Visualization item marker", { radius: markerConfig.radius });
+      this.visualizationMarkerDisc = MeshBuilder.CreateDisc("Visualization item marker", {radius: markerConfig.radius});
       let nodeMaterial = this.babylonModelService.getNodeMaterial(markerConfig.nodesMaterialId);
       this.visualizationMarkerDisc.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
       this.visualizationMarkerDisc.position.y = 0.01;

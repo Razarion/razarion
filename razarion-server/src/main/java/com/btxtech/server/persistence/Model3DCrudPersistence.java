@@ -2,6 +2,7 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.ui.Model3DEntity;
 import com.btxtech.server.persistence.ui.Model3DEntity_;
+import com.btxtech.server.rest.crud.Model3DController;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -9,7 +10,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Singleton
 public class Model3DCrudPersistence extends AbstractEntityCrudPersistence<Model3DEntity> {
@@ -28,4 +31,13 @@ public class Model3DCrudPersistence extends AbstractEntityCrudPersistence<Model3
         CriteriaQuery<Model3DEntity> userSelect = userQuery.select(from);
         return entityManager.createQuery(userSelect).getResultList();
     }
+
+    @Transactional
+    public List<Model3DEntity> readAllBaseEntitiesJson() {
+        return getEntities()
+                .stream()
+                .map(Model3DController::jpa2JsonStatic)
+                .collect(Collectors.toList());
+    }
+
 }

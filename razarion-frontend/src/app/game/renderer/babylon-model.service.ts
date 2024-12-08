@@ -25,8 +25,8 @@ import {BabylonJsUtils} from "./babylon-js.utils";
 import {
   BabylonMaterialControllerClient,
   BabylonMaterialEntity,
-  GltfControllerClient,
-  GltfEntity
+  GltfEntity,
+  Model3DEntity
 } from "src/app/generated/razarion-share";
 import {TypescriptGenerator} from "src/app/backend/typescript-generator";
 import {SimpleMaterial} from "@babylonjs/materials";
@@ -39,6 +39,7 @@ export class BabylonModelService {
   private nodeMaterials: Map<number, NodeMaterial> = new Map();
   private babylonMaterials: Map<number, Material> = new Map();
   private glbAssetContainers: Map<number, AssetContainer> = new Map();
+  private model3DEntities: Map<number, Model3DEntity> = new Map();
   private gwtAngularService!: GwtAngularService;
   private scene!: Scene;
   private threeJsModelConfigs!: ThreeJsModelConfig[];
@@ -120,6 +121,7 @@ export class BabylonModelService {
   private loadUiConfigCollection() {
     this.uiConfigCollectionService.getUiConfigCollection().then(uiConfigCollection => {
       this.loadBabylonMaterials(uiConfigCollection.babylonMaterials);
+      this.setupModel3DEntities(uiConfigCollection.model3DEntities);
       this.loadGltfs(uiConfigCollection.gltfs);
     });
   }
@@ -184,7 +186,7 @@ export class BabylonModelService {
     }
   }
 
-  private loadGltfs(gltfs: GltfEntity[] ) {
+  private loadGltfs(gltfs: GltfEntity[]) {
     if (!gltfs || gltfs.length === 0) {
       this.gltfsLoaded = true;
       this.handleLoaded();
@@ -228,6 +230,40 @@ export class BabylonModelService {
     }
   }
 
+  cloneModel3D(model3DId: number, parent: Node | null): TransformNode {
+    model3DId = GwtHelper.gwtIssueNumber(model3DId);
+
+    let model3DEntity = this.model3DEntities.get(model3DId);
+    if (!model3DEntity) {
+      throw new Error(`No Model3DEntity for ${model3DId}`);
+    }
+    let assetContainer = this.glbAssetContainers.get(model3DEntity.gltfEntityId);
+    if (!assetContainer) {
+      throw new Error(`No AssetContainer for gltfEntityId ${model3DEntity.gltfEntityId} for model3DId ${model3DId}`);
+    }
+
+    let node = assetContainer
+      .getNodes()
+      .find(childNode => childNode.name === model3DEntity.gltfName);
+
+    if (typeof (<any>node).clone !== 'function') {
+      throw new Error(`Node can not be cloned "${node}" typeof childNode = "${typeof node}". model3DId '${model3DId}' model3DEntity.gltfName ${model3DEntity.gltfName} model3DEntity.gltfEntityId '${model3DEntity.gltfEntityId}'`);
+    }
+
+    const mesh = (<any>node).clone();
+    mesh.parent = parent;
+
+    if (mesh instanceof Mesh) {
+      (<Mesh>mesh).receiveShadows = true;
+    }
+    mesh.getChildren().forEach((m: any) => {
+      if (m instanceof Mesh) {
+        (<Mesh>m).receiveShadows = true
+      }
+    });
+
+    return mesh;
+  }
 
   cloneMesh(threeJsModelPackConfigId: number, parent: Node | null): TransformNode {
     const threeJsModelPackConf = this.gwtAngularService.gwtAngularFacade.threeJsModelPackService.getThreeJsModelPackConfig(threeJsModelPackConfigId);
@@ -579,5 +615,12 @@ export class BabylonModelService {
   updateParticleSystemJson(babylonModelId: number, particleSystem: ParticleSystem) {
     const json = JSON.stringify(particleSystem!.serialize());
     this.babylonModelUpload(babylonModelId, new Blob([json], {type: 'application/json'}));
+  }
+
+  private setupModel3DEntities(model3DEntities: Model3DEntity[]) {
+    this.model3DEntities.clear();
+    model3DEntities.forEach(model3DEntity => {
+      this.model3DEntities.set(model3DEntity.id, model3DEntity);
+    });
   }
 }

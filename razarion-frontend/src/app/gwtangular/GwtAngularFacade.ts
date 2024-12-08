@@ -367,6 +367,10 @@ export interface ItemType {
 
   getI18nName(): I18nString;
 
+  getModel3DId(): number | null;
+
+  getThreeJsModelPackConfigId(): number | null;
+
   getThreeJsModelPackConfigId(): number | null;
 
   getMeshContainerId(): number | null;
@@ -760,7 +764,7 @@ export interface InventoryUiService {
 
 export interface TerrainUiService {
 
-   getTerrainType(terrainPosition: DecimalPosition): TerrainType
+  getTerrainType(terrainPosition: DecimalPosition): TerrainType
 }
 
 // ---------- Dialog ----------

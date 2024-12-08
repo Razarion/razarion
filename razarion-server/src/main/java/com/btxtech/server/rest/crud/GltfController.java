@@ -31,7 +31,6 @@ public class GltfController extends BaseEntityController<GltfEntity> {
     }
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("glb/{id}")
     public Response getGlb(@PathParam("id") int id) {
         try {

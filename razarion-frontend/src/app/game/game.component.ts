@@ -186,6 +186,10 @@ export class GameComponent implements OnInit, ScreenCover {
                   return "Builder";
                 }
 
+                getModel3DId(): number | null {
+                  return 22743;
+                }
+
                 getMeshContainerId(): number | null {
                   return 22743;
                 }

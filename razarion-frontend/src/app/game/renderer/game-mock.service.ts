@@ -339,6 +339,10 @@ export class GameMockService {
             return "InternalName";
           }
 
+          getModel3DId(): number | null {
+            return null;
+          }
+
           getMeshContainerId(): number | null {
             return null;
           }
@@ -384,6 +388,10 @@ export class GameMockService {
 
           getInternalName(): string {
             return "";
+          }
+
+          getModel3DId(): number | null {
+            return null;
           }
 
           getMeshContainerId(): number | null {
