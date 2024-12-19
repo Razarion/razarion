@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.ui.Model3DEntity;
 import com.btxtech.server.persistence.ui.Model3DEntity_;
 import com.btxtech.server.rest.crud.Model3DController;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,6 +19,9 @@ import java.util.stream.Collectors;
 public class Model3DCrudPersistence extends AbstractEntityCrudPersistence<Model3DEntity> {
     @PersistenceContext
     private EntityManager entityManager;
+    @Inject
+    private GltfCrudPersistence gltfCrudPersistence;
+
 
     public Model3DCrudPersistence() {
         super(Model3DEntity.class);
@@ -38,6 +42,14 @@ public class Model3DCrudPersistence extends AbstractEntityCrudPersistence<Model3
                 .stream()
                 .map(Model3DController::jpa2JsonStatic)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    protected Model3DEntity jsonToJpa(Model3DEntity model3DEntity) {
+        if (model3DEntity.getGltfEntityId() != null) {
+            model3DEntity.setGltfEntity(gltfCrudPersistence.getEntity(model3DEntity.getGltfEntityId()));
+        }
+        return model3DEntity;
     }
 
 }

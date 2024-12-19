@@ -10,6 +10,7 @@ import {
   Color3,
   IInspectable,
   InspectableType,
+  InstancedMesh,
   Material,
   Mesh,
   Node,
@@ -31,6 +32,7 @@ import {
 import {TypescriptGenerator} from "src/app/backend/typescript-generator";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
 import Type = ThreeJsModelConfig.Type;
 
 @Injectable()
@@ -38,6 +40,7 @@ export class BabylonModelService {
   private assetContainers: Map<number, AssetContainer> = new Map();
   private nodeMaterials: Map<number, NodeMaterial> = new Map();
   private babylonMaterials: Map<number, Material> = new Map();
+  private gltfHelpers: Map<number, GltfHelper> = new Map();
   private glbAssetContainers: Map<number, AssetContainer> = new Map();
   private model3DEntities: Map<number, Model3DEntity> = new Map();
   private gwtAngularService!: GwtAngularService;
@@ -122,7 +125,7 @@ export class BabylonModelService {
     this.uiConfigCollectionService.getUiConfigCollection().then(uiConfigCollection => {
       this.loadBabylonMaterials(uiConfigCollection.babylonMaterials);
       this.setupModel3DEntities(uiConfigCollection.model3DEntities);
-      this.loadGltfs(uiConfigCollection.gltfs);
+      this.handleAndLoadGltfs(uiConfigCollection.gltfs);
     });
   }
 
@@ -186,7 +189,8 @@ export class BabylonModelService {
     }
   }
 
-  private loadGltfs(gltfs: GltfEntity[]) {
+  private handleAndLoadGltfs(gltfs: GltfEntity[]) {
+    this.gltfHelpers.clear();
     if (!gltfs || gltfs.length === 0) {
       this.gltfsLoaded = true;
       this.handleLoaded();
@@ -198,6 +202,7 @@ export class BabylonModelService {
     }
 
     gltfs.forEach(gltf => {
+      this.gltfHelpers.set(gltf.id, new GltfHelper(gltf, this));
       this.loadGltfGlb(gltf, gltfLoadingControl);
     });
   }
@@ -237,6 +242,11 @@ export class BabylonModelService {
     if (!model3DEntity) {
       throw new Error(`No Model3DEntity for ${model3DId}`);
     }
+    let gltfHelper = this.gltfHelpers.get(model3DEntity.gltfEntityId);
+    if (!gltfHelper) {
+      throw new Error(`No GltfHelper for gltfEntityId ${model3DEntity.gltfEntityId} for model3DId ${model3DId}`);
+    }
+
     let assetContainer = this.glbAssetContainers.get(model3DEntity.gltfEntityId);
     if (!assetContainer) {
       throw new Error(`No AssetContainer for gltfEntityId ${model3DEntity.gltfEntityId} for model3DId ${model3DId}`);
@@ -253,14 +263,24 @@ export class BabylonModelService {
     const mesh = (<any>node).clone();
     mesh.parent = parent;
 
-    if (mesh instanceof Mesh) {
-      (<Mesh>mesh).receiveShadows = true;
-    }
-    mesh.getChildren().forEach((m: any) => {
-      if (m instanceof Mesh) {
-        (<Mesh>m).receiveShadows = true
+    const handleMesh = function (abstractMesh: AbstractMesh) {
+      if (abstractMesh instanceof Mesh) {
+        const mesh = abstractMesh;
+        mesh.receiveShadows = true;
+        mesh.hasVertexAlpha = false;
+        gltfHelper.handleMaterial(mesh);
+      } else if (abstractMesh instanceof InstancedMesh) {
+        let instancedMesh = abstractMesh;
+        instancedMesh.sourceMesh.receiveShadows = true;
+        instancedMesh.sourceMesh.hasVertexAlpha = false;
+        gltfHelper.handleMaterial(instancedMesh.sourceMesh);
       }
-    });
+      abstractMesh.getChildren().forEach((child: any) => {
+        handleMesh(child);
+      });
+    };
+
+    handleMesh(mesh);
 
     return mesh;
   }
@@ -619,8 +639,39 @@ export class BabylonModelService {
 
   private setupModel3DEntities(model3DEntities: Model3DEntity[]) {
     this.model3DEntities.clear();
-    model3DEntities.forEach(model3DEntity => {
-      this.model3DEntities.set(model3DEntity.id, model3DEntity);
-    });
+    if (model3DEntities) {
+      model3DEntities.forEach(model3DEntity => {
+        this.model3DEntities.set(model3DEntity.id, model3DEntity);
+      });
+    }
+  }
+
+}
+
+class GltfHelper {
+  private materialIds: Map<string, number> = new Map();
+
+  constructor(gltf: GltfEntity,
+              private babylonModelService: BabylonModelService) {
+    Object.keys(gltf.materialGltfNames).forEach((gltfName: string) => {
+      let materialId = gltf.materialGltfNames[gltfName];
+      this.materialIds.set(gltfName, materialId)
+    })
+  }
+
+  handleMaterial(mesh: Mesh) {
+    const materialId = this.materialIds.get(mesh.material!.name);
+    if (materialId) {
+      let material = this.babylonModelService.getBabylonMaterial(materialId).clone(mesh.material!.name);
+      // const diplomacyColorNode = (<NodeMaterial>material).getBlockByPredicate(block => {
+      //   return "DiplomacyColor" === block.name;
+      // });
+      //if (diplomacyColorNode) {
+      //  (<InputBlock>diplomacyColorNode).value = BabylonRenderServiceAccessImpl.color4Diplomacy(diplomacy);
+      // }
+
+
+      mesh.material = material;
+    }
   }
 }

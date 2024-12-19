@@ -2,7 +2,6 @@ package com.btxtech.server.rest.crud;
 
 import com.btxtech.server.persistence.AbstractEntityCrudPersistence;
 import com.btxtech.server.persistence.BaseEntity;
-import com.btxtech.server.persistence.ui.Model3DEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.ObjectNameId;
 
@@ -50,7 +49,7 @@ public abstract class BaseEntityController<E extends BaseEntity> {
     @SecurityCheck
     @Transactional
     public void update(E entity) {
-        getEntityCrudPersistence().updateBaseEntity(jsonToJpa(entity));
+        getEntityCrudPersistence().updateBaseEntity(entity);
     }
 
     @GET
@@ -72,10 +71,6 @@ public abstract class BaseEntityController<E extends BaseEntity> {
                 .stream()
                 .map(this::jpa2Json)
                 .toList();
-    }
-
-    protected E jsonToJpa(E entity) {
-        return entity;
     }
 
     protected E jpa2Json(E entity) {

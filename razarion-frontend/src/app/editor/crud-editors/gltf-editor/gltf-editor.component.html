@@ -23,6 +23,39 @@
 
   <p-divider align="left">
     <div class="inline-flex align-items-center">
+      <i class="pi pi-image mr-2"></i>
+      <b>&nbsp;Materials</b>
+    </div>
+  </p-divider>
+  <p-table [value]="materialRows"
+           [autoLayout]="true"
+           [scrollable]="true"
+           scrollHeight="400px">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Gltf name</th>
+        <th>Babylon material</th>
+        <th>State</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-materialRow>
+      <tr>
+        <td style="white-space: nowrap">
+          {{ materialRow.materialGltfName }}
+        </td>
+        <td>
+          <babylon-material [(babylonMaterialId)]="materialRow.babylonMaterialId"></babylon-material>
+        </td>
+        <td>
+          <p-badge *ngIf="materialRow.changeState" [value]="materialRow.changeState"
+                   [severity]="severityByChangeState(materialRow.changeState)"></p-badge>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
       <i class="pi pi-box mr-2"></i>
       <b>&nbsp;3D Models</b>
     </div>
@@ -52,8 +85,8 @@
           </td>
         </ng-template>
         <td>
-          <p-badge *ngIf="model3DRow.model3DState" [value]="model3DRow.model3DState"
-                   [severity]="severityByModel3DState(model3DRow.model3DState)"></p-badge>
+          <p-badge *ngIf="model3DRow.changeState" [value]="model3DRow.changeState"
+                   [severity]="severityByChangeState(model3DRow.changeState)"></p-badge>
         </td>
       </tr>
     </ng-template>

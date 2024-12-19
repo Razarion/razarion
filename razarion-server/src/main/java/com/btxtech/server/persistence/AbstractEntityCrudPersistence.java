@@ -92,11 +92,16 @@ public class AbstractEntityCrudPersistence<E> {
 
     @Transactional
     public void updateBaseEntity(E entity) {
-        entityManager.merge(entity);
+        entityManager.merge(jsonToJpa(entity));
     }
 
     @Transactional
     public List<E> readAllBaseEntities() {
         return getEntities();
     }
+
+    protected E jsonToJpa(E entity) {
+        return entity;
+    }
+
 }

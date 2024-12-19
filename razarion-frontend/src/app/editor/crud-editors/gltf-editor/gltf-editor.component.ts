@@ -23,6 +23,7 @@ export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEnti
   fileUploadElement!: FileUpload;
   gltfEntity!: GltfEntity;
   model3DRows: Model3DRow[] = [];
+  materialRows: MaterialRow[] = [];
   private gltfControllerClient: GltfControllerClient;
   private model3DControllerClient: Model3DControllerClient;
   private glbFile?: File;
@@ -36,6 +37,13 @@ export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEnti
 
   init(gltfEntity: GltfEntity): void {
     this.gltfEntity = gltfEntity;
+
+    this.materialRows = [];
+    if (gltfEntity.materialGltfNames) {
+      for (const [gltfName, babylonMaterialId] of Object.entries(gltfEntity.materialGltfNames)) {
+        this.materialRows.push(new MaterialRow(gltfName, babylonMaterialId))
+      }
+    }
     this.model3DRows = [];
     this.model3DControllerClient.getModel3DsByGltf(gltfEntity.id).then(gltfEntries => {
       gltfEntries.forEach(model3DEntity => this.model3DRows.push(new Model3DRow(model3DEntity)));
@@ -47,8 +55,8 @@ export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEnti
     const blob = new Blob([this.glbFile!], {type: 'application/octet-stream'});
     promises.push(this.gltfControllerClient.uploadGlb(this.gltfEntity.id, blob));
     this.model3DRows.forEach(model3DRow => {
-      switch (model3DRow.model3DState) {
-        case Model3DState.NEW: {
+      switch (model3DRow.changeState) {
+        case ChangeState.NEW: {
           promises.push(this.model3DControllerClient.create().then(newModel3D => {
             newModel3D.gltfEntityId = model3DRow.model3DEntity.gltfEntityId;
             newModel3D.gltfName = model3DRow.model3DEntity.gltfName;
@@ -57,7 +65,7 @@ export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEnti
           }));
           break;
         }
-        case Model3DState.DELETE: {
+        case ChangeState.DELETE: {
           promises.push(this.model3DControllerClient.delete(model3DRow.model3DEntity.id));
           break;
         }
@@ -67,12 +75,18 @@ export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEnti
   }
 
   onUpdateSuccess(): void {
-    this.model3DControllerClient
+    this.gltfControllerClient
       .read(this.gltfEntity.id)
       .then(gltfEntity => this.init(gltfEntity))
   }
 
   exportConfig(): GltfEntity {
+    const materialGltfNames: { [index: string]: number } = {};
+    this.materialRows
+      .filter(materialRow => materialRow.changeState !== ChangeState.DELETE)
+      .filter(materialRow => (materialRow.babylonMaterialId || materialRow.babylonMaterialId === 0))
+      .forEach(materialRow => materialGltfNames[materialRow.materialGltfName] = materialRow.babylonMaterialId);
+    this.gltfEntity.materialGltfNames = materialGltfNames;
     return this.gltfEntity;
   }
 
@@ -95,14 +109,16 @@ export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEnti
     }
   }
 
-  severityByModel3DState(model3DState:Model3DState):any {
-    switch (model3DState) {
-      case Model3DState.UPDATE:
-        return "info"
-      case Model3DState.DELETE:
+  severityByChangeState(changeState: ChangeState): any {
+    switch (changeState) {
+      case ChangeState.EXIST:
+        return "success"
+      case ChangeState.DELETE:
         return "danger"
-      case Model3DState.NEW:
+      case ChangeState.NEW:
         return "warning"
+      case ChangeState.UNUSED:
+        return "info"
     }
   }
 
@@ -114,11 +130,12 @@ export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEnti
     });
 
     const result = SceneLoader.Append('', gltfFile, this.renderEngine.getScene(), (scene: Scene) => {
-        this.model3DRows.forEach(model3DRow => model3DRow.model3DState = Model3DState.DELETE);
+        this.model3DRows.forEach(model3DRow => model3DRow.changeState = ChangeState.DELETE);
+        this.updateMaterials(addedMesh.getChildren());
         addedMesh.getChildren().forEach(childNode => {
           let model3DRow = this.findModel3DRowByGltfName(childNode.name);
           if (model3DRow) {
-            model3DRow.model3DState = Model3DState.UPDATE;
+            model3DRow.changeState = ChangeState.EXIST;
           } else {
             const gltfEntityId = this.gltfEntity.id;
             let model3DEntity = new class implements Model3DEntity {
@@ -128,7 +145,7 @@ export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEnti
               gltfEntityId = gltfEntityId;
             };
             model3DRow = new Model3DRow(model3DEntity);
-            model3DRow.model3DState = Model3DState.NEW;
+            model3DRow.changeState = ChangeState.NEW;
             this.model3DRows.push(model3DRow);
           }
         })
@@ -158,18 +175,60 @@ export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEnti
   private findModel3DRowByGltfName(gltfName: string): Model3DRow | undefined {
     return this.model3DRows.find(model3DRow => model3DRow.model3DEntity.gltfName == gltfName);
   }
+
+  private updateMaterials(abstractMeshes: AbstractMesh[]) {
+    const materialRowMap: Map<string, MaterialRow> = new Map();
+
+    this.materialRows.forEach(row => {
+      row.changeState = ChangeState.DELETE;
+      materialRowMap.set(row.materialGltfName, row);
+    });
+
+    const updateMaterialsRecursively = (abstractMeshes: AbstractMesh[]) => {
+      abstractMeshes.forEach(abstractMesh => {
+        if (abstractMesh.material && abstractMesh.material.name) {
+          const row = materialRowMap.get(abstractMesh.material.name);
+          if (row) {
+            if (row.changeState !== ChangeState.UNUSED) {
+              row.changeState = ChangeState.EXIST;
+            }
+          } else {
+            let row = new class implements MaterialRow {
+              babylonMaterialId = <any>null;
+              changeState = ChangeState.UNUSED;
+              materialGltfName = abstractMesh.material!.name;
+            };
+            this.materialRows.push(row);
+            materialRowMap.set(abstractMesh.material!.name, row);
+          }
+        }
+        if (abstractMesh.getChildren()) {
+          updateMaterialsRecursively(abstractMesh.getChildren());
+        }
+      });
+    }
+    updateMaterialsRecursively(abstractMeshes);
+  }
 }
 
-enum Model3DState {
-  UPDATE = "Update",
+enum ChangeState {
+  EXIST = "Exist",
   DELETE = "Delete",
-  NEW = "New"
+  NEW = "New",
+  UNUSED = "Unused"
 }
 
 class Model3DRow {
-  model3DState?: Model3DState;
+  changeState?: ChangeState;
 
   constructor(public model3DEntity: Model3DEntity) {
+  }
+}
+
+class MaterialRow {
+  changeState?: ChangeState;
+
+  constructor(public materialGltfName: string, public babylonMaterialId: number) {
   }
 
 }

@@ -31,7 +31,7 @@ public class UiConfigCollectionController {
     public UiConfigCollection getUiConfigCollection() {
         return new UiConfigCollection()
                 .babylonMaterials(babylonMaterialCrudPersistence.readAllBaseEntities())
-                .gltfs(gltfCrudPersistence.readAllBaseEntities())
+                .gltfs(gltfCrudPersistence.readAllBaseEntitiesJson())
                 .model3DEntities(model3DCrudPersistence.readAllBaseEntitiesJson())
                 .selectionItemMaterialId(dbPropertiesService.getBabylonModelProperty(ITEM_SELECTION_MATERIAL))
                 .healthBarNodeMaterialId(dbPropertiesService.getBabylonModelProperty(ITEM_HEALTH_BAR_NODE_MATERIAL))
