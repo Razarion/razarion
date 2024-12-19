@@ -129,34 +129,40 @@ export class BabylonModelService {
     });
   }
 
-  private loadBabylonMaterials(materials: BabylonMaterialEntity[]) {
-    if (materials.length === 0) {
+  private loadBabylonMaterials(babylonMaterialEntities: BabylonMaterialEntity[]) {
+    if (babylonMaterialEntities.length === 0) {
       this.babylonMaterialsLoaded = true;
       this.handleLoaded();
       return;
     }
 
     const materialLoadingControl = {
-      loadingCount: materials.length
+      loadingCount: babylonMaterialEntities.length
     }
 
-    materials.forEach(material => {
-      this.loadMaterial(material.id!, materialLoadingControl);
+    babylonMaterialEntities.forEach(babylonMaterialEntity => {
+      this.loadMaterial(babylonMaterialEntity, materialLoadingControl);
     });
   }
 
-  private loadMaterial(materialId: number, materialLoadingControl: { loadingCount: number }) {
-    this.babylonMaterialControllerClient.getData(materialId)
+  private loadMaterial(babylonMaterialEntity: BabylonMaterialEntity, materialLoadingControl: { loadingCount: number }) {
+    this.babylonMaterialControllerClient.getData(babylonMaterialEntity.id)
       .then(data => {
         try {
-          let material = Material.Parse(data, this.scene, "/rest/images/");
+          let material;
+          if(babylonMaterialEntity.nodeMaterial) {
+            material = NodeMaterial.Parse(data, this.scene, "/rest/images/");
+          } else {
+            material = Material.Parse(data, this.scene, "/rest/images/");
+          }
           if (material) {
-            this.babylonMaterials.set(materialId, material);
+            this.babylonMaterials.set(babylonMaterialEntity.id, material);
           } else {
             console.error(`Error parsing material`);
           }
           this.handleMaterialLoaded(materialLoadingControl);
         } catch (e) {
+          console.error(e);
           console.error(`Error parsing material '${e}'`);
           this.handleMaterialLoaded(materialLoadingControl);
         }

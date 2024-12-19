@@ -5,13 +5,19 @@
             <p-inputNumber [disabled]="true" [(ngModel)]="babylonMaterialEntity.id"></p-inputNumber>
         </div>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Internal name</span>
-        <div class="col-8">
-            <input [(ngModel)]="babylonMaterialEntity.internalName" type="text"
-                class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-        </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Internal name</span>
+    <div class="col-8">
+      <input [(ngModel)]="babylonMaterialEntity.internalName" type="text"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Node material</span>
+    <div class="col-8">
+      <p-checkbox [(ngModel)]="babylonMaterialEntity.nodeMaterial" [binary]="true"></p-checkbox>
+    </div>
+  </div>
     <div class="grid grid-razarion-editor">
         <span class="col-4">Import material</span>
         <div class="col-8">

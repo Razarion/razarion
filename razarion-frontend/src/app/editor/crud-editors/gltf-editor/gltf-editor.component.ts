@@ -52,29 +52,32 @@ export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEnti
 
   postUpdate(): Promise<void> {
     let promises: Promise<void>[] = [];
-    const blob = new Blob([this.glbFile!], {type: 'application/octet-stream'});
-    promises.push(this.gltfControllerClient.uploadGlb(this.gltfEntity.id, blob));
-    this.model3DRows.forEach(model3DRow => {
-      switch (model3DRow.changeState) {
-        case ChangeState.NEW: {
-          promises.push(this.model3DControllerClient.create().then(newModel3D => {
-            newModel3D.gltfEntityId = model3DRow.model3DEntity.gltfEntityId;
-            newModel3D.gltfName = model3DRow.model3DEntity.gltfName;
-            newModel3D.internalName = model3DRow.model3DEntity.gltfName;
-            return this.model3DControllerClient.update(newModel3D);
-          }));
-          break;
+    if (this.glbFile) {
+      const blob = new Blob([this.glbFile], {type: 'application/octet-stream'});
+      promises.push(this.gltfControllerClient.uploadGlb(this.gltfEntity.id, blob));
+      this.model3DRows.forEach(model3DRow => {
+        switch (model3DRow.changeState) {
+          case ChangeState.NEW: {
+            promises.push(this.model3DControllerClient.create().then(newModel3D => {
+              newModel3D.gltfEntityId = model3DRow.model3DEntity.gltfEntityId;
+              newModel3D.gltfName = model3DRow.model3DEntity.gltfName;
+              newModel3D.internalName = model3DRow.model3DEntity.gltfName;
+              return this.model3DControllerClient.update(newModel3D);
+            }));
+            break;
+          }
+          case ChangeState.DELETE: {
+            promises.push(this.model3DControllerClient.delete(model3DRow.model3DEntity.id));
+            break;
+          }
         }
-        case ChangeState.DELETE: {
-          promises.push(this.model3DControllerClient.delete(model3DRow.model3DEntity.id));
-          break;
-        }
-      }
-    });
+      });
+    }
     return Promise.all(promises).then();
   }
 
   onUpdateSuccess(): void {
+    this.glbFile = undefined;
     this.gltfControllerClient
       .read(this.gltfEntity.id)
       .then(gltfEntity => this.init(gltfEntity))

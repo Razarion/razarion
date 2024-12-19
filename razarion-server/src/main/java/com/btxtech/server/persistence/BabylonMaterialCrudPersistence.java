@@ -1,6 +1,8 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.ui.BabylonMaterialEntity;
+import com.btxtech.server.persistence.ui.GltfBabylonMaterial;
+import com.btxtech.server.persistence.ui.GltfEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,6 +26,15 @@ public class BabylonMaterialCrudPersistence extends AbstractEntityCrudPersistenc
         BabylonMaterialEntity entity = getEntity(id);
         entity.setData(data);
         entityManager.merge(entity);
+    }
+
+
+    @Override
+    protected BabylonMaterialEntity jsonToJpa(BabylonMaterialEntity babylonMaterialEntity) {
+        BabylonMaterialEntity dbBabylonMaterialEntity = getEntity(babylonMaterialEntity.getId());
+        dbBabylonMaterialEntity.setInternalName(babylonMaterialEntity.getInternalName());
+        dbBabylonMaterialEntity.setNodeMaterial(babylonMaterialEntity.isNodeMaterial());
+        return dbBabylonMaterialEntity;
     }
 
 }

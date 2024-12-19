@@ -17,12 +17,22 @@ public class BabylonMaterialEntity extends BaseEntity {
     @JsonIgnore
     private byte[] data;
 
+    private boolean nodeMaterial;
+
     public byte[] getData() {
         return data;
     }
 
     public void setData(byte[] data) {
         this.data = data;
+    }
+
+    public boolean isNodeMaterial() {
+        return nodeMaterial;
+    }
+
+    public void setNodeMaterial(boolean nodeMaterial) {
+        this.nodeMaterial = nodeMaterial;
     }
 
     public BabylonMaterialEntity data(byte[] data) {
