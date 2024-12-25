@@ -19,6 +19,8 @@ public class BabylonMaterialEntity extends BaseEntity {
 
     private boolean nodeMaterial;
 
+    private String diplomacyColorNode;
+
     public byte[] getData() {
         return data;
     }
@@ -33,6 +35,14 @@ public class BabylonMaterialEntity extends BaseEntity {
 
     public void setNodeMaterial(boolean nodeMaterial) {
         this.nodeMaterial = nodeMaterial;
+    }
+
+    public String getDiplomacyColorNode() {
+        return diplomacyColorNode;
+    }
+
+    public void setDiplomacyColorNode(String diplomacyColor) {
+        this.diplomacyColorNode = diplomacyColor;
     }
 
     public BabylonMaterialEntity data(byte[] data) {

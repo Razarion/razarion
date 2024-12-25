@@ -49,7 +49,7 @@ export class BabylonItemImpl implements BabylonItem {
               protected actionService: ActionService,
               parent: TransformNode) {
     if (itemType.getModel3DId()) {
-      this.container = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, null);
+      this.container = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, parent, diplomacy);
     } else if (itemType.getThreeJsModelPackConfigId()) {
       this.container = this.babylonModelService.cloneMesh(itemType.getThreeJsModelPackConfigId()!, null);
     } else if (itemType.getMeshContainerId()) {

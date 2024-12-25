@@ -34,6 +34,7 @@ public class BabylonMaterialCrudPersistence extends AbstractEntityCrudPersistenc
         BabylonMaterialEntity dbBabylonMaterialEntity = getEntity(babylonMaterialEntity.getId());
         dbBabylonMaterialEntity.setInternalName(babylonMaterialEntity.getInternalName());
         dbBabylonMaterialEntity.setNodeMaterial(babylonMaterialEntity.isNodeMaterial());
+        dbBabylonMaterialEntity.setDiplomacyColorNode(babylonMaterialEntity.getDiplomacyColorNode());
         return dbBabylonMaterialEntity;
     }
 
