@@ -57,7 +57,6 @@ import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 import {SelectionFrame} from "./selection-frame";
 import {GwtInstance} from "src/app/gwtangular/GwtInstance";
 import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
-import {Geometry} from "src/app/common/geometry";
 import {PlaceConfigComponent} from "src/app/editor/common/place-config/place-config.component";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
 import {ActionService} from "../action.service";
@@ -234,12 +233,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.camera.setTarget(new Vector3(0, 0, 0));
 
     // ----- Light -----
-    this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0, -50, 0), this.scene);
+    this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0.5, -2, 0.5), this.scene);
+    this.directionalLight.parent = this.camera;
     this.directionalLight.intensity = 2;
-    this.directionalLight.autoUpdateExtends = false;
-    this.shadowGenerator = new ShadowGenerator(1024, this.directionalLight);
-    this.shadowGenerator.bias = 0.0002;
+    this.directionalLight.autoCalcShadowZBounds = true;
+    this.shadowGenerator = new ShadowGenerator(2048, this.directionalLight);
+    this.shadowGenerator.bias = 0.006;
     this.shadowGenerator.normalBias = 0;
+    this.shadowGenerator.filter = ShadowGenerator.FILTER_PCF;
+    this.shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_LOW;
 
     // ----- Resize listener -----
     new ResizeObserver(entries => {
@@ -319,7 +321,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.engine = new Engine(this.canvas)
     this.scene = new Scene(this.engine);
     this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
-    this.scene.environmentTexture = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
+
+    const envLighting = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
+    envLighting.name = "countrySpecularHDR";
+    envLighting.gammaSpace = false;
+    envLighting.rotationY = 1.9;
+    this.scene.environmentTexture = envLighting;
+
     this.babylonModelService.setScene(this.scene);
     this.baseItemContainer = new TransformNode("Base items");
     this.resourceItemContainer = new TransformNode("Resource items");
@@ -500,11 +508,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     try {
 
       this.viewField = this.setupViewField()
-
-      this.directionalLight.orthoLeft = this.viewField.getBottomLeft().getX();
-      this.directionalLight.orthoBottom = this.viewField.getBottomLeft().getY();
-      this.directionalLight.orthoTop = this.viewField.getTopRight().getY();
-      this.directionalLight.orthoRight = this.viewField.getBottomRight().getX();
 
       this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
         this.viewField.getBottomLeft().getX(), this.viewField.getBottomLeft().getY(),
