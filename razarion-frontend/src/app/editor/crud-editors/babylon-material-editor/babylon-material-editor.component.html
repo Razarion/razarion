@@ -12,6 +12,12 @@
              class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
   </div>
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-sitemap mr-2"></i>
+      <b>Node material</b>
+    </div>
+  </p-divider>
   <div class="grid grid-razarion-editor">
     <span class="col-4">Node material</span>
     <div class="col-8">
@@ -26,6 +32,36 @@
              class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
   </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Override albedo texture node</span>
+    <div class="col-8">
+      <input [(ngModel)]="babylonMaterialEntity.overrideAlbedoTextureNode" type="text"
+             [disabled]="!babylonMaterialEntity.nodeMaterial"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Override bump texture node</span>
+    <div class="col-8">
+      <input [(ngModel)]="babylonMaterialEntity.overrideBumpTextureNode" type="text"
+             [disabled]="!babylonMaterialEntity.nodeMaterial"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Override metallic texture node</span>
+    <div class="col-8">
+      <input [(ngModel)]="babylonMaterialEntity.overrideMetallicTextureNode" type="text"
+             [disabled]="!babylonMaterialEntity.nodeMaterial"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+  </div>
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-file-import mr-2"></i>
+      <b>Import</b>
+    </div>
+  </p-divider>
   <div class="grid grid-razarion-editor">
     <span class="col-4">Import material</span>
     <div class="col-8">

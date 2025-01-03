@@ -7,6 +7,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {
   AssetContainer,
+  BaseTexture,
   Color3,
   IInspectable,
   InputBlock,
@@ -16,7 +17,9 @@ import {
   Mesh,
   Node,
   NodeMaterial,
+  Nullable,
   ParticleSystem,
+  PBRMaterial,
   Scene,
   SceneLoader,
   TransformNode
@@ -55,7 +58,7 @@ export class BabylonModelService {
   private gltfsLoaded = false;
   private gwtResolver?: () => void;
   private babylonMaterialControllerClient: BabylonMaterialControllerClient;
-  diplomacyMaterialCache: Map<number, Map<Diplomacy, Material>> = new Map<number, Map<Diplomacy, Material>>();
+  diplomacyMaterialCache: Map<number, Map<Diplomacy, Map<string, NodeMaterial>>> = new Map<number, Map<Diplomacy,  Map<string, NodeMaterial>>>();
 
   constructor(private uiConfigCollectionService: UiConfigCollectionService,
               private httpClient: HttpClient,
@@ -213,18 +216,20 @@ export class BabylonModelService {
     }
 
     gltfs.forEach(gltf => {
-      this.gltfHelpers.set(gltf.id, new GltfHelper(gltf, this));
-      this.loadGltfGlb(gltf, gltfLoadingControl);
+      const gltfHelper = new GltfHelper(gltf, this);
+      this.gltfHelpers.set(gltf.id, gltfHelper);
+      this.loadGltfGlb(gltf, gltfHelper, gltfLoadingControl);
     });
   }
 
-  private loadGltfGlb(gltf: GltfEntity, gltfLoadingControl: { loadingCount: number }) {
+  private loadGltfGlb(gltf: GltfEntity, gltfHelper: GltfHelper, gltfLoadingControl: { loadingCount: number }) {
     const url = `${URL_GLTF}/glb/${gltf.id}`;
     try {
       let hasError = false;
-      const result = SceneLoader.LoadAssetContainer(url, '', this.scene, glb => {
+      const result = SceneLoader.LoadAssetContainer(url, '', this.scene, assetContainer => {
           if (!hasError) {
-            this.glbAssetContainers.set(gltf.id!, glb);
+            this.glbAssetContainers.set(gltf.id!, assetContainer);
+            this.assignGlbTextures(gltf, assetContainer, gltfHelper);
             this.handleGltfGlbLoaded(gltfLoadingControl);
           }
         },
@@ -673,10 +678,48 @@ export class BabylonModelService {
       });
     }
   }
+
+  private assignGlbTextures(gltf: GltfEntity, assetContainer: AssetContainer, gltfHelper: GltfHelper) {
+    Object.keys(gltf.materialGltfNames).forEach((gltfMaterialName: string) => {
+      let materialId = gltf.materialGltfNames[gltfMaterialName];
+      let babylonMaterialEntity = this.babylonMaterialEntities.get(materialId)!;
+      if (babylonMaterialEntity.overrideAlbedoTextureNode
+        || babylonMaterialEntity.overrideMetallicTextureNode
+        || babylonMaterialEntity.overrideBumpTextureNode) {
+        let glbMaterial = <PBRMaterial>assetContainer.materials.find(material => material.name === gltfMaterialName);
+        if (glbMaterial) {
+          gltfHelper.assignTextures(babylonMaterialEntity, glbMaterial);
+        } else {
+          console.warn(`No material in AssetContainer ${gltfMaterialName}`)
+        }
+      }
+    });
+  }
+}
+
+class GltfTextures {
+  constructor(public albedoTexture: Nullable<BaseTexture>,
+              private metallicTexture: Nullable<BaseTexture>,
+              private bumpTexture: Nullable<BaseTexture>,
+              private babylonMaterialEntity: BabylonMaterialEntity) {
+  }
+
+  overrideTexture(nodeMaterial: NodeMaterial) {
+    if (this.albedoTexture) {
+      (<any>nodeMaterial.getBlockByName(this.babylonMaterialEntity.overrideAlbedoTextureNode)).texture = this.albedoTexture;
+    }
+    if (this.metallicTexture) {
+      (<any>nodeMaterial.getBlockByName(this.babylonMaterialEntity.overrideMetallicTextureNode)).texture = this.metallicTexture;
+    }
+    if (this.bumpTexture) {
+      (<any>nodeMaterial.getBlockByName(this.babylonMaterialEntity.overrideBumpTextureNode)).texture = this.bumpTexture;
+    }
+  }
 }
 
 class GltfHelper {
   private materialIds: Map<string, number> = new Map();
+  private gltfTexturesMap: Map<string, GltfTextures> = new Map();
 
   constructor(gltf: GltfEntity,
               private babylonModelService: BabylonModelService) {
@@ -687,10 +730,11 @@ class GltfHelper {
   }
 
   handleMaterial(mesh: Mesh, diplomacy?: Diplomacy) {
-    const materialId = this.materialIds.get(mesh.material!.name);
+    const originalMaterialName = mesh.material!.name;
+    const materialId = this.materialIds.get(originalMaterialName);
     if (materialId) {
+      let babylonMaterialEntity = this.babylonModelService.babylonMaterialEntities.get(materialId);
       if (diplomacy) {
-        let babylonMaterialEntity = this.babylonModelService.babylonMaterialEntities.get(materialId);
         if (!babylonMaterialEntity?.diplomacyColorNode) {
           mesh.material = this.babylonModelService.getBabylonMaterial(materialId, diplomacy).clone(mesh.material!.name);
           return
@@ -698,24 +742,59 @@ class GltfHelper {
 
         let diplomacyCache = this.babylonModelService.diplomacyMaterialCache.get(materialId);
         if (!diplomacyCache) {
-          diplomacyCache = new Map<Diplomacy, NodeMaterial>();
+          diplomacyCache = new Map<Diplomacy, Map<string, NodeMaterial>>();
           this.babylonModelService.diplomacyMaterialCache.set(materialId, diplomacyCache)
         }
-        let cachedMaterial = diplomacyCache.get(diplomacy);
+        let cachedMaterialNames = diplomacyCache.get(diplomacy);
+        if(!cachedMaterialNames) {
+          cachedMaterialNames = new Map<string, NodeMaterial>();
+          diplomacyCache.set(diplomacy, cachedMaterialNames)
+        }
+        let cachedMaterial = cachedMaterialNames.get(mesh.material!.name);
         if (!cachedMaterial) {
-          cachedMaterial = this.babylonModelService.getBabylonMaterial(materialId).clone(`${materialId} '${diplomacy}'`)!;
+          cachedMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(materialId).clone(`${mesh.material!.name} ${materialId} '${diplomacy}'`)!;
+          cachedMaterial = cachedMaterial.clone(cachedMaterial.name)!
           const diplomacyColorNode = (<NodeMaterial>cachedMaterial).getBlockByPredicate(block => {
             return babylonMaterialEntity.diplomacyColorNode === block.name;
           });
           if (diplomacyColorNode) {
             (<InputBlock>diplomacyColorNode).value = BabylonRenderServiceAccessImpl.color4Diplomacy(diplomacy);
           }
-          diplomacyCache.set(diplomacy, cachedMaterial);
+          if (babylonMaterialEntity!.overrideAlbedoTextureNode
+            || babylonMaterialEntity!.overrideMetallicTextureNode
+            || babylonMaterialEntity!.overrideBumpTextureNode) {
+            let gltfTextures = this.gltfTexturesMap.get(originalMaterialName);
+            gltfTextures && gltfTextures.overrideTexture(<NodeMaterial>cachedMaterial);
+          }
+          (<NodeMaterial>cachedMaterial).build()
+          cachedMaterialNames.set(mesh.material!.name, cachedMaterial);
         }
         mesh.material = cachedMaterial;
       } else {
         mesh.material = this.babylonModelService.getBabylonMaterial(materialId, diplomacy).clone(mesh.material!.name);
       }
+    }
+  }
+
+  assignTextures(babylonMaterialEntity: BabylonMaterialEntity, glbMaterial: PBRMaterial) {
+    let albedoTexture: Nullable<BaseTexture> = null;
+    let metallicTexture: Nullable<BaseTexture> = null;
+    let bumpTexture: Nullable<BaseTexture> = null;
+
+    if (babylonMaterialEntity.overrideAlbedoTextureNode) {
+      albedoTexture = glbMaterial._albedoTexture;
+    }
+    if (babylonMaterialEntity.overrideMetallicTextureNode) {
+      metallicTexture = glbMaterial._metallicTexture;
+    }
+    if (babylonMaterialEntity.overrideBumpTextureNode) {
+      bumpTexture = glbMaterial._bumpTexture;
+    }
+    if (albedoTexture || metallicTexture || bumpTexture) {
+      this.gltfTexturesMap.set(glbMaterial.name, new GltfTextures(albedoTexture,
+        metallicTexture,
+        bumpTexture,
+        babylonMaterialEntity));
     }
   }
 }
