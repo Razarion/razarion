@@ -277,7 +277,10 @@ export class BabylonModelService {
     }
 
     const sourceMap = new Map<string, Mesh>();
-    return this.deepCloneNode(node, parent, sourceMap, gltfHelper, diplomacy);
+    let transformNode = this.deepCloneNode(node, parent, sourceMap, gltfHelper, diplomacy);
+    transformNode.position.x = 0.0;
+    transformNode.position.z = 0.0;
+    return transformNode;
   }
 
   private deepCloneNode(root: Node, parent: Node | null, sourceMap: Map<string, Mesh>, gltfHelper: GltfHelper, diplomacy?: Diplomacy): TransformNode {
@@ -308,7 +311,17 @@ export class BabylonModelService {
           clonedMesh.hasVertexAlpha = false;
           gltfHelper.handleMaterial(clonedMesh, diplomacy);
         } else {
-          console.warn(`No source for ${instancedMesh.sourceMesh.id}`)
+          const clonedMesh = instancedMesh.sourceMesh.clone(instancedMesh.name); // Instance does not work
+          clonedMesh.setParent(clonedRoot);
+          clonedMesh.position.copyFrom(instancedMesh.position);
+          clonedMesh.rotation.copyFrom(instancedMesh.rotation);
+          if (instancedMesh.rotationQuaternion) {
+            clonedMesh.rotationQuaternion = instancedMesh.rotationQuaternion.clone();
+          }
+          clonedMesh.scaling.copyFrom(instancedMesh.scaling);
+          clonedMesh.setPivotMatrix(instancedMesh.getPivotMatrix())
+          clonedMesh.receiveShadows = true;
+          clonedMesh.hasVertexAlpha = false;
         }
       } else {
         this.deepCloneNode(child, clonedRoot, sourceMap, gltfHelper, diplomacy);

@@ -5,6 +5,7 @@ import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.BoxItemTypeCrudPersistence;
 import com.btxtech.server.persistence.GameUiContextEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
+import com.btxtech.server.persistence.Model3DCrudPersistence;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.TerrainObjectCrudPersistence;
@@ -199,11 +200,10 @@ public class ServerTestHelper {
     public static int SLOPE_WATER_CONFIG_ENTITY_2;
     // SlopeConfigEntity
     public static int DRIVEWAY_CONFIG_ENTITY_1;
+    private final List<List<CleanupAfterTest>> cleanupAfterTests = new ArrayList<>();
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
     private EntityTransaction entityTransaction;
-    private final List<List<CleanupAfterTest>> cleanupAfterTests = new ArrayList<>();
-
     private UserService userService;
 
     private BaseItemService baseItemService;
@@ -299,7 +299,9 @@ public class ServerTestHelper {
 
     private TerrainObjectEntity createTerrainObjectEntity(TerrainObjectConfig terrainObjectConfig) {
         TerrainObjectEntity terrainObjectEntity = new TerrainObjectEntity();
-        terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, EasyMock.createNiceMock(ThreeJsModelPackCrudPersistence.class));
+        terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig,
+                EasyMock.createNiceMock(ThreeJsModelPackCrudPersistence.class),
+                EasyMock.createNiceMock(Model3DCrudPersistence.class));
         return terrainObjectEntity;
     }
 

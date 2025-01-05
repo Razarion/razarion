@@ -78,8 +78,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
         try {
           let terrainObjectConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
-          if (!terrainObjectConfig.getThreeJsModelPackConfigId()) {
-            throw new Error(`TerrainObjectConfig has no threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
+          if (!terrainObjectConfig.getThreeJsModelPackConfigId() && !terrainObjectConfig.getModel3DId()) {
+            throw new Error(`TerrainObjectConfig has no model3DId nor threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
           }
           terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
             try {
@@ -156,7 +156,12 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         terrainObjectModel.rotation.getZ(),
         terrainObjectModel.rotation.getY());
     }
-    let terrainObjectMesh: Mesh = <Mesh>babylonModelService.cloneMesh(terrainObjectConfig.getThreeJsModelPackConfigId(), terrainObjectModelTransform);
+    let terrainObjectMesh;
+    if(terrainObjectConfig.getModel3DId() || terrainObjectConfig.getModel3DId() === 0) {
+      terrainObjectMesh = babylonModelService.cloneModel3D(terrainObjectConfig.getModel3DId(), terrainObjectModelTransform)
+    } else {
+      terrainObjectMesh = <Mesh>babylonModelService.cloneMesh(terrainObjectConfig.getThreeJsModelPackConfigId(), terrainObjectModelTransform);
+    }
     terrainObjectMesh.name = `TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`;
     terrainObjectMesh.parent = terrainObjectModelTransform;
 

@@ -129,8 +129,8 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
                 return;
               }
               let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.newTerrainObjectConfig.objectNameId.id);
-              if (!terrainObjectConfig.getThreeJsModelPackConfigId()) {
-                throw new Error(`TerrainObjectConfig has no threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
+              if (!terrainObjectConfig.getThreeJsModelPackConfigId() && !terrainObjectConfig.getModel3DId()) {
+                throw new Error(`TerrainObjectConfig has no model3DId nor threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
               }
 
               let terrainObjectModel = new class implements TerrainObjectModel {
@@ -249,8 +249,8 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
 
   private updateTerrainObjectPosition(node: TransformNode, terrainObjectPosition: TerrainObjectPosition) {
     terrainObjectPosition.position = GeneratedRestHelper.newDecimalPosition(node.position.x, node.position.z);
-    terrainObjectPosition.rotation = GeneratedRestHelper.newVertex(node.rotation.x, node.rotation.z, node.rotation.z);
-    terrainObjectPosition.scale = GeneratedRestHelper.newVertex(node.scaling.x, node.scaling.z, node.scaling.z);
+    terrainObjectPosition.rotation = GeneratedRestHelper.newVertex(node.rotation.x, node.rotation.z, node.rotation.y);
+    terrainObjectPosition.scale = GeneratedRestHelper.newVertex(node.scaling.x, node.scaling.z, node.scaling.y);
   }
 
   public clearSelection() {

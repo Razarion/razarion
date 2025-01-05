@@ -25,6 +25,7 @@ import { ParticleSystemEditorComponent } from "../crud-editors/particle-system-e
 import { BabylonMaterialEditorComponent } from "../crud-editors/babylon-material-editor/babylon-material-editor.component";
 import { PropertyEditorComponent } from "../property-editor/property-editor.component";
 import {GltfEditorComponent} from "../crud-editors/gltf-editor/gltf-editor.component";
+import {TerrainObjectEditorComponent} from "../crud-editors/terrain-object-editor/terrain-object-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -131,14 +132,19 @@ export class EditorDialogComponent {
     this.gameComponent.addEditorModel(new EditorModel("Box item type ditor", GeneratedCrudContainerComponent, BoxItemTypeEditorComponent));
   }
 
+  openTerrainObjectsEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Terrain object editor", GeneratedCrudContainerComponent, TerrainObjectEditorComponent));
+  }
+
   openInventoryItemEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Inventory item ditor", GeneratedCrudContainerComponent, InventoryItemEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Inventory item editor", GeneratedCrudContainerComponent, InventoryItemEditorComponent));
   }
 
   openPlanetEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Planet ditor", GeneratedCrudContainerComponent, PlanetEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Planet editor", GeneratedCrudContainerComponent, PlanetEditorComponent));
   }
 
   openBaseMgmt() {

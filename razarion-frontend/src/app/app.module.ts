@@ -142,6 +142,9 @@ import {UiConfigCollectionService} from "./game/ui-config-collection.service";
 import {PropertyEditorComponent} from './editor/property-editor/property-editor.component';
 import {GltfEditorComponent} from "./editor/crud-editors/gltf-editor/gltf-editor.component";
 import {Model3dComponent} from "./editor/common/model3d/model3d.component";
+import {
+  TerrainObjectEditorComponent
+} from "./editor/crud-editors/terrain-object-editor/terrain-object-editor.component";
 
 @NgModule({
   declarations: [
@@ -227,7 +230,8 @@ import {Model3dComponent} from "./editor/common/model3d/model3d.component";
     I18nComponent,
     PropertyEditorComponent,
     GltfEditorComponent,
-    Model3dComponent
+    Model3dComponent,
+    TerrainObjectEditorComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     FormsModule,

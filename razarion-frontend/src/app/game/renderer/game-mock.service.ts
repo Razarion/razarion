@@ -168,6 +168,12 @@ export class GameMockService {
             return;
           }
           terrainObjectConfig = new class implements TerrainObjectConfig {
+            getModel3DId(): number {
+                throw new Error("Method not implemented.");
+            }
+            toString(): string {
+                throw new Error("Method not implemented.");
+            }
             getThreeJsModelPackConfigId(): number {
               return terrainObjectConfigJson.threeJsModelPackConfigId;
             }
