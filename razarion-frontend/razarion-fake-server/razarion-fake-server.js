@@ -337,18 +337,6 @@ server.on({
   }
 });
 
-
-const uint16Array = new Uint16Array(161 * 161 * 2 * 2);
-uint16Array.fill(2005);
-let zipTerrainShapeBuffer;
-zlib.gzip(new Uint8Array(uint16Array.buffer), (err, result) => {
-  if (err) {
-    console.error(err);
-  } else {
-    zipTerrainShapeBuffer = result;
-  }
-});
-
 server.on({
   method: 'get',
   path: '*',
@@ -362,7 +350,7 @@ server.on({
       "content-encoding": "gzip"
     },
     body: function loadAssetConfig(req) {
-      return zipTerrainShapeBuffer;
+      return fs.readFileSync("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-frontend\\razarion-fake-server\\CompressedHeightMap.bin");
     }
   }
 });
@@ -477,6 +465,30 @@ server.on({
     body: JSON.stringify(model3D._1)
   }
 });
+
+const terrainObject = require("./terrainObject.json");
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/terrain-object/objectNameIds',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(terrainObject.objectNameIds)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/terrain-object/read/1',
+  reply: {
+    status: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(terrainObject._1)
+  }
+});
+
+
 
 server.start(function () {
   console.info("Razarion fake server is running on port: " + PORT);

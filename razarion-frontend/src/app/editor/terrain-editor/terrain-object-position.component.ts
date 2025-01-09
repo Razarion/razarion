@@ -36,10 +36,23 @@ export class TerrainObjectPositionComponent {
 
   setSelected(transformNode: TransformNode, terrainObjectPosition: TerrainObjectPosition) {
     this.position = transformNode.position
-    this.rotation = transformNode.rotation;
     this.scale = transformNode.scaling;
     this.transformNode = transformNode;
     this.terrainObjectPosition = terrainObjectPosition;
+    this.rotation = transformNode.rotation;
+    const terrainObjectPositionComponent = this;
+    Object.defineProperty(transformNode, "rotation", {
+      get: function () {
+        return this._rotation;
+      },
+      set: function (newRotation: Vector3) {
+        this._rotation = newRotation;
+        this._rotationQuaternion = null;
+        this._markAsDirtyInternal();
+        terrainObjectPositionComponent.rotation = newRotation;
+      },
+    });
+
   }
 
   getTerrainObjectPosition(): TerrainObjectPosition | null {

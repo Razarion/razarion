@@ -20,6 +20,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly NODE_X_COUNT = 160;
   static readonly NODE_Y_COUNT = 160;
   static readonly NODE_SIZE = 1;
+  static readonly TILE_NODE_SIZE = this.NODE_X_COUNT * this.NODE_Y_COUNT;
   static readonly HEIGHT_PRECISION = 0.1;
   static readonly HEIGHT_MIN = -200;
   static readonly WATER_LEVEL = 0;

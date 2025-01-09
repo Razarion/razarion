@@ -30,18 +30,6 @@ server.on({
   }
 });
 
-server.on({
-  method: 'get',
-  path: '/gwt-mock/unity-asset-converter-test-asset-config',
-  reply: {
-    status: 200,
-    headers: {"content-type": "application/json"},
-    body: function loadAssetConfig() {
-      return fs.readFileSync(path.join("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\mesh_container", "unityAssetConverterTestAssetConfig.json"));
-    }
-  }
-});
-
 server.start(function () {
   console.info("GWT Mock server is running on port: " + PORT);
 });

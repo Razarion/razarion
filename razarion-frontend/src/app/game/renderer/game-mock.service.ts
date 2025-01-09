@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import {Injectable} from "@angular/core";
 import {
   Alarm,
   BabylonDecal,
@@ -48,12 +48,12 @@ import {
   WaterConfig,
   WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
-import { HttpClient } from "@angular/common/http";
-import { GwtInstance } from "../../gwtangular/GwtInstance";
-import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
-import { QuestCockpitComponent } from "../cockpit/quest/quest-cockpit.component";
-import { ConditionTrigger } from "src/app/generated/razarion-share";
-import { BabylonTerrainTileImpl } from "./babylon-terrain-tile.impl";
+import {HttpClient} from "@angular/common/http";
+import {GwtInstance} from "../../gwtangular/GwtInstance";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import {QuestCockpitComponent} from "../cockpit/quest/quest-cockpit.component";
+import {ConditionTrigger} from "src/app/generated/razarion-share";
+import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -64,7 +64,6 @@ let displayMockTerrainTile: BabylonTerrainTile[] = [];
 @Injectable()
 export class GameMockService {
 
-  public unityAssetConverterTestAssetConfig: any = {};
   gameUiControl: GameUiControl = new class implements GameUiControl {
     getPlanetConfig(): PlanetConfig {
       return new class implements PlanetConfig {
@@ -84,21 +83,27 @@ export class GameMockService {
     getTerrainTypeOnTerrain(nodeIndex: Index): Promise<any> {
       throw new Error("Method not implemented.");
     }
+
     resourceItemClicked(id: number): void {
       console.info("resourceItemClicked");
     }
+
     enemyItemClicked(id: number): void {
       console.info("enemyItemClicked");
     }
+
     terrainClicked(arg0: DecimalPosition): void {
       console.info("terrainClicked");
     }
+
     friendItemClicked(id: number): void {
       console.info("friendItemClickedvoi");
     }
+
     ownItemClicked(id: number): void {
       console.info("ownItemClicked");
     }
+
     boxItemClicked(id: number): void {
       console.info("boxItemClicked");
     }
@@ -146,15 +151,6 @@ export class GameMockService {
     });
   }
 
-  loadMockAssetConfig(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.http.get<TerrainTile[]>("/gwt-mock/unity-asset-converter-test-asset-config").subscribe((value: any) => {
-        this.unityAssetConverterTestAssetConfig = value;
-        resolve(value);
-      });
-    });
-  }
-
   mockTerrainTypeService(): TerrainTypeService {
     return new class implements TerrainTypeService {
       calculateGroundHeight(slopeConfigId: number): number {
@@ -169,11 +165,13 @@ export class GameMockService {
           }
           terrainObjectConfig = new class implements TerrainObjectConfig {
             getModel3DId(): number {
-                throw new Error("Method not implemented.");
+              throw new Error("Method not implemented.");
             }
+
             toString(): string {
-                throw new Error("Method not implemented.");
+              throw new Error("Method not implemented.");
             }
+
             getThreeJsModelPackConfigId(): number {
               return terrainObjectConfigJson.threeJsModelPackConfigId;
             }
@@ -362,6 +360,7 @@ export class GameMockService {
               getRadius(): number {
                 return 3;
               }
+
               fulfilledMovable(): boolean {
                 return true;
               }
@@ -522,6 +521,9 @@ export class GameMockService {
     }
   }
 
+  readonly TILE_X_COUNT = 2;
+  readonly TILE_Y_COUNT = 2;
+
   mockTerrainTile(threeJsRendererService: BabylonRenderServiceAccessImpl) {
     fetch('rest/terrainHeightMap/117', {
       headers: {
@@ -530,12 +532,10 @@ export class GameMockService {
     }).then(response => response.arrayBuffer())
       .then(buffer => {
         const uint16Array = new Uint16Array(buffer);
-        let xCount = 2;
-        let yCount = 2;
-        for (let x = 0; x < xCount; x++) {
-          for (let y = 0; y < yCount; y++) {
-            let start = x * BabylonTerrainTileImpl.NODE_X_COUNT + y * BabylonTerrainTileImpl.NODE_Y_COUNT;
-            let heightMap = uint16Array.slice(start, start + BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT);
+        for (let x = 0; x < this.TILE_X_COUNT; x++) {
+          for (let y = 0; y < this.TILE_Y_COUNT; y++) {
+            let terrainTileIndex: Index = GwtInstance.newIndex(x, y)
+            let heightMap = this.setupHeightMap(terrainTileIndex, uint16Array);
 
             const terrainTile = new class implements TerrainTile {
               getGroundHeightMap(): Uint16Array {
@@ -563,6 +563,7 @@ export class GameMockService {
                   add(deltaX: number, deltaY: number): Index {
                     throw GwtInstance.newIndex(this.getX() + deltaX, this.getY() + deltaY);
                   }
+
                   getX(): number {
                     return x;
                   }
@@ -584,6 +585,74 @@ export class GameMockService {
         }
       })
       .catch(error => console.error('Error:', error));
+  }
+
+  private setupHeightMap(terrainTileIndex: Index, terrainHeightMap: Uint16Array): Uint16Array {
+    let tileHeightMapStart = this.getTileHeightMapStart(terrainTileIndex);
+    let nextXTileHeightMapStart = this.getTileHeightMapStart(terrainTileIndex.add(1, 0));
+    let nextYTileHeightMapStart = this.getTileHeightMapStart(terrainTileIndex.add(0, 1));
+    let nextXYTileHeightMapStart = this.getTileHeightMapStart(terrainTileIndex.add(1, 1));
+
+    let resultArray = new Uint16Array((BabylonTerrainTileImpl.NODE_X_COUNT + 1) * (BabylonTerrainTileImpl.NODE_Y_COUNT + 1));
+
+    for (let i = 0; i < BabylonTerrainTileImpl.NODE_Y_COUNT; i++) {
+      let sourceYOffset = i * BabylonTerrainTileImpl.NODE_X_COUNT;
+      let sourceHeightMapStart = tileHeightMapStart + sourceYOffset;
+      let sourceHeightMapEnd = sourceHeightMapStart + BabylonTerrainTileImpl.NODE_X_COUNT;
+      let destHeightMapStart = i * (BabylonTerrainTileImpl.NODE_X_COUNT + 1);
+      try {
+        let arrayBufferView = terrainHeightMap.slice(sourceHeightMapStart, sourceHeightMapEnd);
+        resultArray.set(arrayBufferView, destHeightMapStart);
+        // Add from next X tile
+        let sourceNextTileHeightMapStart;
+        if (terrainTileIndex.getX() + 1 < this.TILE_X_COUNT) {
+          // Inside
+          sourceNextTileHeightMapStart = nextXTileHeightMapStart + sourceYOffset;
+        } else {
+          // Outside
+          sourceNextTileHeightMapStart = sourceHeightMapEnd + 1;
+        }
+        let arrayBufferViewEast = terrainHeightMap.slice(sourceNextTileHeightMapStart, sourceNextTileHeightMapStart + 1);
+        resultArray.set(arrayBufferViewEast, destHeightMapStart + BabylonTerrainTileImpl.NODE_X_COUNT);
+
+        // Add last north row with next values
+        if (i == BabylonTerrainTileImpl.NODE_Y_COUNT - 1) {
+          if (terrainTileIndex.getY() + 1 < this.TILE_Y_COUNT) {
+            let arrayBufferViewEastNorth = terrainHeightMap.slice(nextYTileHeightMapStart, nextYTileHeightMapStart + BabylonTerrainTileImpl.NODE_X_COUNT);
+            resultArray.set(arrayBufferViewEastNorth, destHeightMapStart + BabylonTerrainTileImpl.NODE_X_COUNT + 1);
+            // Add from next X tile
+            if (terrainTileIndex.getX() + 1 < this.TILE_X_COUNT) {
+              // Inside
+              sourceNextTileHeightMapStart = nextXYTileHeightMapStart;
+            } else {
+              // Outside
+              sourceNextTileHeightMapStart = nextYTileHeightMapStart + BabylonTerrainTileImpl.NODE_X_COUNT + 1;
+            }
+            let arrayBufferViewNorthEast = terrainHeightMap.slice(sourceNextTileHeightMapStart, sourceNextTileHeightMapStart + 1);
+            resultArray.set(arrayBufferViewNorthEast, destHeightMapStart + BabylonTerrainTileImpl.NODE_X_COUNT + 1 + BabylonTerrainTileImpl.NODE_X_COUNT);
+          } else {
+            resultArray.set(arrayBufferView, destHeightMapStart + BabylonTerrainTileImpl.NODE_X_COUNT + 1);
+            // Add from next X tile
+            if (terrainTileIndex.getX() + 1 < this.TILE_X_COUNT) {
+              // Inside
+              sourceNextTileHeightMapStart = nextXTileHeightMapStart + sourceYOffset;
+            } else {
+              // Outside
+              sourceNextTileHeightMapStart = sourceHeightMapEnd;
+            }
+            let arrayBufferViewNorthEast = terrainHeightMap.slice(sourceNextTileHeightMapStart, sourceNextTileHeightMapStart + 1);
+            resultArray.set(arrayBufferViewNorthEast, destHeightMapStart + BabylonTerrainTileImpl.NODE_X_COUNT + 1 + BabylonTerrainTileImpl.NODE_X_COUNT);
+          }
+        }
+      } catch (error) {
+        console.warn(error)
+      }
+    }
+    return resultArray;
+  }
+
+  private getTileHeightMapStart(terrainTileIndex: Index): number {
+    return terrainTileIndex.getY() * (this.TILE_X_COUNT * BabylonTerrainTileImpl.TILE_NODE_SIZE) + terrainTileIndex.getX() * BabylonTerrainTileImpl.TILE_NODE_SIZE;
   }
 
   mockThreeJsModelConfigs(): ThreeJsModelConfig[] {
@@ -647,13 +716,8 @@ export class GameMockService {
     return particleSystemConfig;
   }
 
-
   createMeshContainers(): MeshContainer[] {
-    let meshContainers: MeshContainer[] = [];
-    for (let meshContainerJson of this.unityAssetConverterTestAssetConfig.meshContainers) {
-      meshContainers.push(this.createMeshContainer(meshContainerJson));
-    }
-    return meshContainers;
+    return [];
   }
 
   private createMeshContainer(meshContainerJson: any): MeshContainer {
@@ -751,48 +815,48 @@ export class GameMockService {
 
   showQuestSideBar(questCockpitContainer: QuestCockpitComponent) {
     questCockpitContainer.showQuestSideBar(new class implements QuestConfig {
-      getConditionConfig(): ConditionConfig | null {
-        return new class implements ConditionConfig {
-          getConditionTrigger(): ConditionTrigger {
-            return ConditionTrigger.SYNC_ITEM_CREATED;
-          }
+        getConditionConfig(): ConditionConfig | null {
+          return new class implements ConditionConfig {
+            getConditionTrigger(): ConditionTrigger {
+              return ConditionTrigger.SYNC_ITEM_CREATED;
+            }
 
-          getComparisonConfig(): ComparisonConfig {
-            return new class implements ComparisonConfig {
-              getCount(): number | null {
-                return null;
-              }
+            getComparisonConfig(): ComparisonConfig {
+              return new class implements ComparisonConfig {
+                getCount(): number | null {
+                  return null;
+                }
 
-              getTimeSeconds(): number | null {
-                return null;
-              }
+                getTimeSeconds(): number | null {
+                  return null;
+                }
 
-              toTypeCountAngular(): number[][] {
-                return [[1, 2], [2, 3]];
-              }
+                toTypeCountAngular(): number[][] {
+                  return [[1, 2], [2, 3]];
+                }
 
-            };
-          }
-        };
-      }
+              };
+            }
+          };
+        }
 
-      getId(): number {
-        return 0;
-      }
+        getId(): number {
+          return 0;
+        }
 
-      getInternalName(): string {
-        return "";
-      }
+        getInternalName(): string {
+          return "";
+        }
 
-      getTitle(): string {
-        return "Place";
-      }
+        getTitle(): string {
+          return "Place";
+        }
 
-      getDescription(): string | null {
-        return null;
-      }
+        getDescription(): string | null {
+          return null;
+        }
 
-    },
+      },
       true)
   }
 

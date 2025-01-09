@@ -81,9 +81,9 @@ export class AngleVector3EditorComponent implements OnInit {
   }
 
   private update(): void {
-    this.x = Tools.ToRadians(this._euler!.x);
-    this.y = Tools.ToRadians(this._euler!.y);
-    this.z = Tools.ToRadians(this._euler!.z);
+    this.x = Tools.ToDegrees(this._euler!.x);
+    this.y = Tools.ToDegrees(this._euler!.y);
+    this.z = Tools.ToDegrees(this._euler!.z);
   }
 
   private updateModel() {
