@@ -10,9 +10,7 @@ import javax.inject.Singleton;
 @Singleton
 public class GroundCrudPersistence extends AbstractConfigCrudPersistence<GroundConfig, GroundConfigEntity> {
     @Inject
-    private ImagePersistence imagePersistence;
-    @Inject
-    private  ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
+    private BabylonMaterialCrudPersistence babylonMaterialCrudPersistence;
 
     public GroundCrudPersistence() {
         super(GroundConfigEntity.class, GroundConfigEntity_.id, GroundConfigEntity_.internalName);
@@ -25,6 +23,6 @@ public class GroundCrudPersistence extends AbstractConfigCrudPersistence<GroundC
 
     @Override
     protected void fromConfig(GroundConfig config, GroundConfigEntity entity) {
-        entity.fromGroundConfig(config, imagePersistence, threeJsModelCrudPersistence);
+        entity.fromGroundConfig(config, babylonMaterialCrudPersistence);
     }
 }

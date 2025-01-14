@@ -263,16 +263,12 @@ export class GameMockService {
               return this._groundConfigJson.internalName
             };
 
-            getTopThreeJsMaterial(): number {
-              return this._groundConfigJson.topThreeJsMaterial;
+            getGroundBabylonMaterialId(): number {
+              return this._groundConfigJson.topThreeJsMaterial; // TODO
             };
 
-            getBottomThreeJsMaterial(): number {
-              return this._groundConfigJson.bottomThreeJsMaterial;
-            };
-
-            getSplatting(): GroundSplattingConfig {
-              return this._groundConfigJson.splatting
+            getWaterBabylonMaterialId(): number {
+              return this._groundConfigJson.bottomThreeJsMaterial; // TODO
             };
           }
           return

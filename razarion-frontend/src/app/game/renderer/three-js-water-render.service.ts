@@ -1,22 +1,22 @@
-import { Injectable } from "@angular/core";
-import { Index, WaterConfig } from "../../gwtangular/GwtAngularFacade";
-import { GwtAngularService } from "../../gwtangular/GwtAngularService";
-import { MeshBuilder, NodeMaterial, Tools, TransformNode, VertexBuffer } from "@babylonjs/core";
-import { BabylonModelService } from "./babylon-model.service";
-import { BabylonTerrainTileImpl } from "./babylon-terrain-tile.impl";
+import {Injectable} from "@angular/core";
+import {GroundConfig, Index} from "../../gwtangular/GwtAngularFacade";
+import {MeshBuilder, NodeMaterial, TransformNode} from "@babylonjs/core";
+import {BabylonModelService} from "./babylon-model.service";
+import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 
 @Injectable()
 export class ThreeJsWaterRenderService {
-  constructor(private gwtAngularService: GwtAngularService,
-    private babylonModelService: BabylonModelService) {
+  constructor(private babylonModelService: BabylonModelService) {
   }
 
-  public setup(index: Index, waterConfig: WaterConfig, container: TransformNode): void {
-    const water = MeshBuilder.CreateGround("Water", {width: BabylonTerrainTileImpl.NODE_X_COUNT,
-      height: BabylonTerrainTileImpl.NODE_X_COUNT,
-      subdivisions:160});
+  public setup(index: Index, groundConfig: GroundConfig, container: TransformNode): void {
+    const water = MeshBuilder.CreateGround("Water", {
+      width: BabylonTerrainTileImpl.NODE_X_COUNT,
+      height: BabylonTerrainTileImpl.NODE_Y_COUNT,
+      subdivisions: 160
+    });
 
-    water.material = this.babylonModelService.getNodeMaterialNull(waterConfig.getMaterial(), `No material in WaterConfig ${waterConfig.getInternalName()} (${waterConfig.getId()})`);
+    water.material = this.babylonModelService.getBabylonMaterial(groundConfig.getWaterBabylonMaterialId());
     (<NodeMaterial>water.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
 
     water.receiveShadows = true;

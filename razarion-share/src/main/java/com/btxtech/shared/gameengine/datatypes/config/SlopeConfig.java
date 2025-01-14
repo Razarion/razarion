@@ -15,6 +15,7 @@ import java.util.List;
  * 08.05.2016.
  */
 @JsType
+@Deprecated
 public class SlopeConfig implements Config {
     private int id;
     private String internalName;

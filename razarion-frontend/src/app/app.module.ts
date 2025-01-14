@@ -145,6 +145,7 @@ import {Model3dComponent} from "./editor/common/model3d/model3d.component";
 import {
   TerrainObjectEditorComponent
 } from "./editor/crud-editors/terrain-object-editor/terrain-object-editor.component";
+import {GroundEditorComponent} from "./editor/crud-editors/ground-editor/ground-editor.component";
 
 @NgModule({
   declarations: [
@@ -231,7 +232,8 @@ import {
     PropertyEditorComponent,
     GltfEditorComponent,
     Model3dComponent,
-    TerrainObjectEditorComponent
+    TerrainObjectEditorComponent,
+    GroundEditorComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     FormsModule,

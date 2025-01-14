@@ -1,29 +1,30 @@
-import { Injectable } from "@angular/core";
+import {Injectable} from "@angular/core";
 import {
   BASE_ITEM_TYPE_EDITOR_PATH,
   GROUND_EDITOR_PATH,
-  LEVEL_EDITOR_PATH, PLANET_EDITOR_PATH,
+  PLANET_EDITOR_PATH,
   RESOURCE_ITEM_TYPE_EDITOR_PATH,
-  SERVER_GAME_ENGINE_EDITOR,
-  SERVER_GAME_ENGINE_PATH, SLOPE_EDITOR_PATH,
   URL_THREE_JS_MODEL_EDITOR,
   WATER_EDITOR_PATH
 } from "../common";
-import { GwtAngularService } from "../gwtangular/GwtAngularService";
-import { HttpClient } from "@angular/common/http";
-import { MessageService } from "primeng/api";
+import {GwtAngularService} from "../gwtangular/GwtAngularService";
+import {HttpClient} from "@angular/common/http";
+import {MessageService} from "primeng/api";
 import {
-  BotConfig, BoxRegionConfig, GroundConfig,
+  BotConfig,
+  BoxRegionConfig,
+  GroundConfig,
   LevelEditorControllerClient,
-  ObjectNameId, PlanetConfig,
+  ObjectNameId,
+  PlanetConfig,
   ResourceRegionConfig,
   ServerGameEngineConfig,
   ServerGameEngineControllerClient,
   ServerGameEngineEditorControllerClient,
-  ServerLevelQuestConfig, SlopeConfig,
-  StartRegionConfig, WaterConfig
+  ServerLevelQuestConfig,
+  StartRegionConfig
 } from "../generated/razarion-share";
-import { TypescriptGenerator } from "../backend/typescript-generator";
+import {TypescriptGenerator} from "../backend/typescript-generator";
 
 export class ServerCommand {
   constructor(public name: string, public restcall: (client: ServerGameEngineControllerClient) => (Promise<void>)) {
@@ -55,8 +56,8 @@ export class EditorService {
   ]
 
   constructor(private gwtAngularService: GwtAngularService,
-    private httpClient: HttpClient,
-    private messageService: MessageService) {
+              private httpClient: HttpClient,
+              private messageService: MessageService) {
     this.serverGameEngineEditorControllerClient = new ServerGameEngineEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
     this.levelEditorControllerClient = new LevelEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
     this.serverGameEngineControllerClient = new ServerGameEngineControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
@@ -200,10 +201,6 @@ export class EditorService {
     return this.readObjectNameIds(WATER_EDITOR_PATH);
   }
 
-  readWater(id: number): Promise<WaterConfig> {
-    return this.readConfig(WATER_EDITOR_PATH, id);
-  }
-
   readPlanetConfig(id: number): Promise<PlanetConfig> {
     return this.readConfig(PLANET_EDITOR_PATH, id);
   }
@@ -214,14 +211,6 @@ export class EditorService {
 
   readGroundConfig(id: number): Promise<GroundConfig> {
     return this.readConfig(GROUND_EDITOR_PATH, id);
-  }
-
-  readSlopeConfig(id: number): Promise<SlopeConfig> {
-    return this.readConfig(SLOPE_EDITOR_PATH, id);
-  }
-
-  readWaterConfig(id: number): Promise<WaterConfig> {
-    return this.readConfig(WATER_EDITOR_PATH, id);
   }
 
   readObjectNameIds(editorUrl: string): Promise<ObjectNameId[]> {

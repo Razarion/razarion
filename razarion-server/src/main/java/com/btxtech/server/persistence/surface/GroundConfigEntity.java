@@ -1,9 +1,11 @@
 package com.btxtech.server.persistence.surface;
 
+import com.btxtech.server.persistence.BabylonMaterialCrudPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PersistenceUtil;
 import com.btxtech.server.persistence.ThreeJsModelConfigEntity;
 import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
+import com.btxtech.server.persistence.ui.BabylonMaterialEntity;
 import com.btxtech.shared.dto.GroundConfig;
 
 import javax.persistence.AssociationOverride;
@@ -33,18 +35,11 @@ public class GroundConfigEntity {
     private String internalName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ThreeJsModelConfigEntity topMaterial;
+    private BabylonMaterialEntity groundBabylonMaterial;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ThreeJsModelConfigEntity bottomMaterial;
-    @AssociationOverride(name = "texture", joinColumns = @JoinColumn(name = "splattingTextureId"))
-    @AttributeOverrides({
-            @AttributeOverride(name = "scale1", column = @Column(name = "splattingScale1")),
-            @AttributeOverride(name = "scale2", column = @Column(name = "splattingScale2")),
-            @AttributeOverride(name = "blur", column = @Column(name = "splattingBlur")),
-            @AttributeOverride(name = "offset", column = @Column(name = "splattingOffset")),
-    })
-    private String color;
+    private BabylonMaterialEntity waterBabylonMaterial;
+
 
     public Integer getId() {
         return id;
@@ -54,16 +49,14 @@ public class GroundConfigEntity {
         return new GroundConfig()
                 .id(id)
                 .internalName(internalName)
-                .topThreeJsMaterial(PersistenceUtil.extractId(topMaterial, ThreeJsModelConfigEntity::getId))
-                .bottomThreeJsMaterial(PersistenceUtil.extractId(bottomMaterial, ThreeJsModelConfigEntity::getId))
-                .color(this.color);
+                .groundBabylonMaterialId(PersistenceUtil.extractId(groundBabylonMaterial, BabylonMaterialEntity::getId))
+                .waterBabylonMaterialId(PersistenceUtil.extractId(waterBabylonMaterial, BabylonMaterialEntity::getId));
     }
 
-    public void fromGroundConfig(GroundConfig config, ImagePersistence imagePersistence, ThreeJsModelCrudPersistence threeJsModelCrudPersistence) {
+    public void fromGroundConfig(GroundConfig config, BabylonMaterialCrudPersistence babylonMaterialCrudPersistence) {
         internalName = config.getInternalName();
-        topMaterial = threeJsModelCrudPersistence.getEntity(config.getTopThreeJsMaterial());
-        bottomMaterial = threeJsModelCrudPersistence.getEntity(config.getBottomThreeJsMaterial());
-        color = config.getColor();
+        groundBabylonMaterial = babylonMaterialCrudPersistence.getEntity(config.getGroundBabylonMaterialId());
+        waterBabylonMaterial = babylonMaterialCrudPersistence.getEntity(config.getWaterBabylonMaterialId());
     }
 
     @Override

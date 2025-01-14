@@ -9,6 +9,7 @@ import jsinterop.annotations.JsType;
  * 15.03.2017.
  */
 @JsType
+@Deprecated
 public class WaterConfig implements Config {
     private int id;
     private String internalName;

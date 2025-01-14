@@ -257,11 +257,9 @@ export interface GroundConfig {
 
   getInternalName(): string;
 
-  getTopThreeJsMaterial(): number;
+  getGroundBabylonMaterialId(): number;
 
-  getBottomThreeJsMaterial(): number;
-
-  getSplatting(): GroundSplattingConfig | null;
+  getWaterBabylonMaterialId(): number;
 }
 
 export interface WaterConfig {

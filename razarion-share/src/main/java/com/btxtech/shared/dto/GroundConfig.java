@@ -2,6 +2,8 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
+import com.btxtech.shared.system.Nullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jsinterop.annotations.JsType;
 
 import java.util.Objects;
@@ -15,10 +17,19 @@ public class GroundConfig implements Config {
     private int id;
     private String internalName;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
+    @JsonIgnore
+    @Deprecated
     private Integer topThreeJsMaterial;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
+    @JsonIgnore
+    @Deprecated
     private Integer bottomThreeJsMaterial;
+    @JsonIgnore
+    @Deprecated
     private String color;
+    private Integer groundBabylonMaterialId;
+    private Integer waterBabylonMaterialId;
+
 
     public int getId() {
         return id;
@@ -36,6 +47,22 @@ public class GroundConfig implements Config {
         this.internalName = internalName;
     }
 
+    public @Nullable Integer getGroundBabylonMaterialId() {
+        return groundBabylonMaterialId;
+    }
+
+    public void setGroundBabylonMaterialId(@Nullable Integer groundBabylonMaterialId) {
+        this.groundBabylonMaterialId = groundBabylonMaterialId;
+    }
+
+    public @Nullable Integer getWaterBabylonMaterialId() {
+        return waterBabylonMaterialId;
+    }
+
+    public void setWaterBabylonMaterialId(@Nullable Integer waterBabylonMaterialId) {
+        this.waterBabylonMaterialId = waterBabylonMaterialId;
+    }
+
     public Integer getTopThreeJsMaterial() {
         return topThreeJsMaterial;
     }
@@ -44,18 +71,22 @@ public class GroundConfig implements Config {
         this.topThreeJsMaterial = topThreeJsMaterial;
     }
 
+    @JsonIgnore
     public Integer getBottomThreeJsMaterial() {
         return bottomThreeJsMaterial;
     }
 
+    @JsonIgnore
     public void setBottomThreeJsMaterial(Integer bottomThreeJsMaterial) {
         this.bottomThreeJsMaterial = bottomThreeJsMaterial;
     }
 
+    @JsonIgnore
     public String getColor() {
         return color;
     }
 
+    @JsonIgnore
     public void setColor(String color) {
         this.color = color;
     }
@@ -67,6 +98,16 @@ public class GroundConfig implements Config {
 
     public GroundConfig internalName(String internalName) {
         setInternalName(internalName);
+        return this;
+    }
+
+    public GroundConfig groundBabylonMaterialId(Integer groundBabylonMaterialId) {
+        setGroundBabylonMaterialId(groundBabylonMaterialId);
+        return this;
+    }
+
+    public GroundConfig waterBabylonMaterialId(Integer waterBabylonMaterialId) {
+        setWaterBabylonMaterialId(waterBabylonMaterialId);
         return this;
     }
 

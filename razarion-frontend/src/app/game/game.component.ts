@@ -95,7 +95,7 @@ export class GameComponent implements OnInit, ScreenCover {
             this.babylonRenderServiceAccessImpl.runRenderer(this.gameMockService.createMeshContainers());
             setTimeout(() => {
               // Some very strange babylon behavior, _projectionMatrix is zero matrix
-              this.babylonRenderServiceAccessImpl.setViewFieldCenter(0, 0);
+              this.babylonRenderServiceAccessImpl.setViewFieldCenter(40, 100);
               this.fadeOutLoadingCover();
               setTimeout(() => {
                 // Some very strange babylon behavior, _projectionMatrix is zero matrix
@@ -366,7 +366,7 @@ export class GameComponent implements OnInit, ScreenCover {
 
             setTimeout(() => {
               // this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, GltfEditorComponent));
-              this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+              // this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
             }, 2000);
           });
         });
