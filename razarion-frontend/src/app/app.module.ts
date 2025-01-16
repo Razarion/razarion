@@ -102,7 +102,6 @@ import {AngleComponent} from './editor/common/angle/angle.component';
 import {BaseItemTypesComponent} from './editor/common/base-item-types/base-item-types.component';
 import {ParticleSystemComponent} from './editor/common/particle-system/particle-system.component';
 import {BabylonModelPackComponent} from './editor/common/babylon-model-pack/babylon-model-pack.component';
-import {MeshContainerComponent} from './editor/common/mesh-container/mesh-container.component';
 import {ImageItemComponent} from './editor/common/image-item/image-item.component';
 import {ImageGalleryComponent} from './editor/common/image-item/image-gallery.component';
 import {KnobModule} from 'primeng/knob';
@@ -202,7 +201,6 @@ import {GroundEditorComponent} from "./editor/crud-editors/ground-editor/ground-
     BaseItemTypesComponent,
     ParticleSystemComponent,
     BabylonModelPackComponent,
-    MeshContainerComponent,
     ImageItemComponent,
     ImageGalleryComponent,
     PlanetEditorComponent,

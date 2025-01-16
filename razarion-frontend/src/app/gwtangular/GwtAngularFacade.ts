@@ -318,24 +318,6 @@ export interface ThreeJsModelPackConfig {
   getRotation(): Vertex;
 }
 
-export interface MeshContainer {
-  getId(): number;
-
-  getInternalName(): string;
-
-  toChildrenArray(): MeshContainer[] | null;
-
-  getMesh(): Mesh | null;
-}
-
-export interface Mesh {
-  getThreeJsModelId(): number | null;
-
-  getElement3DId(): string;
-
-  toShapeTransformsArray(): ShapeTransform[] | null;
-}
-
 export interface ShapeTransform {
   getTranslateX(): number;
 
@@ -372,8 +354,6 @@ export interface ItemType {
   getThreeJsModelPackConfigId(): number | null;
 
   getThreeJsModelPackConfigId(): number | null;
-
-  getMeshContainerId(): number | null;
 }
 
 export interface BaseItemType extends ItemType {
@@ -471,7 +451,7 @@ export interface BabylonRenderServiceAccess {
 
   setViewFieldCenter(x: number, y: number): void;
 
-  runRenderer(meshContainers: MeshContainer[]): void;
+  runRenderer(): void;
 
   showOutOfViewMarker(markerConfig: MarkerConfig | null, angle: number): void;
 

@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -58,7 +57,7 @@ public class BabylonRendererService {
         babylonRenderServiceAccess.showPlaceMarker(placeConfig, markerConfig);
     }
 
-    public void runRenderer(MeshContainer[] meshContainers) {
-        babylonRenderServiceAccess.runRenderer(meshContainers);
+    public void runRenderer() {
+        babylonRenderServiceAccess.runRenderer();
     }
 }

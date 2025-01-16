@@ -1,11 +1,7 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.asset.MeshContainer;
-import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-
-import java.util.List;
 
 /**
  * Created by Beat
@@ -16,7 +12,6 @@ public class ColdGameUiContext {
     // User
     private UserContext userContext;
     private StaticGameConfig staticGameConfig;
-    private List<MeshContainer> meshContainers;
     private AudioConfig audioConfig;
     private GameTipVisualConfig gameTipVisualConfig;
     private InGameQuestVisualConfig inGameQuestVisualConfig;
@@ -36,14 +31,6 @@ public class ColdGameUiContext {
 
     public void setStaticGameConfig(StaticGameConfig staticGameConfig) {
         this.staticGameConfig = staticGameConfig;
-    }
-
-    public List<MeshContainer> getMeshContainers() {
-        return meshContainers;
-    }
-
-    public void setMeshContainers(List<MeshContainer> meshContainers) {
-        this.meshContainers = meshContainers;
     }
 
     public AudioConfig getAudioConfig() {
@@ -85,11 +72,6 @@ public class ColdGameUiContext {
 
     public ColdGameUiContext staticGameConfig(StaticGameConfig staticGameConfig) {
         setStaticGameConfig(staticGameConfig);
-        return this;
-    }
-
-    public ColdGameUiContext meshContainers(List<MeshContainer> meshContainers) {
-        setMeshContainers(meshContainers);
         return this;
     }
 

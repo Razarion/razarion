@@ -7,7 +7,6 @@ import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.Model3DCrudPersistence;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
-import com.btxtech.server.persistence.asset.MeshContainerCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
 import javax.inject.Inject;
@@ -23,8 +22,6 @@ public class BaseItemTypeCrudPersistence extends AbstractConfigCrudPersistence<B
     private Model3DCrudPersistence model3DCrudPersistence;
     @Inject
     private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
-    @Inject
-    private MeshContainerCrudPersistence meshContainerCrudPersistence;
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
@@ -48,7 +45,6 @@ public class BaseItemTypeCrudPersistence extends AbstractConfigCrudPersistence<B
         baseItemTypeEntity.fromBaseItemType(baseItemType, this, boxItemTypeCrudPersistence, audioPersistence, particleSystemCrudPersistence);
         baseItemTypeEntity.setModel3DEntity(model3DCrudPersistence.getEntity(baseItemType.getModel3DId()));
         baseItemTypeEntity.setThreeJsModelPackConfigEntity(threeJsModelPackCrudPersistence.getEntity(baseItemType.getThreeJsModelPackConfigId()));
-        baseItemTypeEntity.setMeshContainer(meshContainerCrudPersistence.getEntity(baseItemType.getMeshContainerId()));
         // TODO baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getEntity(baseItemType.getSpawnShape3DId()));
         baseItemTypeEntity.setBuildupTexture(imagePersistence.getImageLibraryEntity(baseItemType.getBuildupTextureId()));
         baseItemTypeEntity.setDemolitionImage(imagePersistence.getImageLibraryEntity(baseItemType.getDemolitionImageId()));

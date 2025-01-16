@@ -14,7 +14,6 @@ import {
   DrivewayConfig,
   GameUiControl,
   GroundConfig,
-  GroundSplattingConfig,
   HarvesterType,
   I18nString,
   Index,
@@ -22,8 +21,6 @@ import {
   InventoryItem,
   InventoryTypeService,
   ItemTypeService,
-  Mesh,
-  MeshContainer,
   NativeSyncBaseItemTickInfo,
   ObjectNameId,
   ParticleSystemConfig,
@@ -710,103 +707,6 @@ export class GameMockService {
       });
     });
     return particleSystemConfig;
-  }
-
-  createMeshContainers(): MeshContainer[] {
-    return [];
-  }
-
-  private createMeshContainer(meshContainerJson: any): MeshContainer {
-    const _this = this;
-    return new class implements MeshContainer {
-      toChildrenArray(): MeshContainer[] | null {
-        if (meshContainerJson.children) {
-          let meshContainers: MeshContainer[] = [];
-          for (let childMeshContainerJson of meshContainerJson.children) {
-            meshContainers.push(_this.createMeshContainer(childMeshContainerJson));
-          }
-          return meshContainers;
-        } else {
-          return null;
-        }
-      }
-
-      getId(): number {
-        return meshContainerJson.id;
-      }
-
-      getInternalName(): string {
-        return meshContainerJson.internalName;
-      }
-
-      getMesh(): Mesh | null {
-        if (meshContainerJson.mesh) {
-          return new class implements Mesh {
-            getElement3DId(): string {
-              return meshContainerJson.mesh.element3DId;
-            }
-
-            toShapeTransformsArray(): ShapeTransform[] | null {
-              if (meshContainerJson.mesh.shapeTransforms) {
-                let shapeTransforms: ShapeTransform[] = [];
-                for (let shapeTransformJson of meshContainerJson.mesh.shapeTransforms) {
-                  shapeTransforms.push(new class implements ShapeTransform {
-                    getRotateW(): number {
-                      return shapeTransformJson.rotateW;
-                    }
-
-                    getRotateX(): number {
-                      return shapeTransformJson.rotateX;
-                    }
-
-                    getRotateY(): number {
-                      return shapeTransformJson.rotateY;
-                    }
-
-                    getRotateZ(): number {
-                      return shapeTransformJson.rotateZ;
-                    }
-
-                    getScaleX(): number {
-                      return shapeTransformJson.scaleZ;
-                    }
-
-                    getScaleY(): number {
-                      return shapeTransformJson.scaleY;
-                    }
-
-                    getScaleZ(): number {
-                      return shapeTransformJson.scaleZ;
-                    }
-
-                    getTranslateX(): number {
-                      return shapeTransformJson.translateX;
-                    }
-
-                    getTranslateY(): number {
-                      return shapeTransformJson.translateY;
-                    }
-
-                    getTranslateZ(): number {
-                      return shapeTransformJson.translateZ;
-                    }
-                  });
-                }
-                return shapeTransforms;
-              } else {
-                return null;
-              }
-            }
-
-            getThreeJsModelId(): number | null {
-              return meshContainerJson.mesh.threeJsModelId;
-            }
-          }
-        } else {
-          return null;
-        }
-      }
-    }
   }
 
   showQuestSideBar(questCockpitContainer: QuestCockpitComponent) {

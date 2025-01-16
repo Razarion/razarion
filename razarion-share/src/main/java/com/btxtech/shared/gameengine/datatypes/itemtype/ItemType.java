@@ -20,8 +20,6 @@ import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
-import javax.ws.rs.DELETE;
-
 /**
  * User: beat
  * Date: 17.11.2009
@@ -37,9 +35,6 @@ public abstract class ItemType implements Config {
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL_PACK)
     @Deprecated
     private Integer threeJsModelPackConfigId;
-    @CollectionReference(CollectionReferenceType.MESH_CONTAINER)
-    @Deprecated
-    private Integer meshContainerId;
     private Integer thumbnail;
 
     @Override
@@ -77,11 +72,11 @@ public abstract class ItemType implements Config {
         this.i18nDescription = i18nDescription;
     }
 
-    public  @Nullable Integer getModel3DId() {
+    public @Nullable Integer getModel3DId() {
         return model3DId;
     }
 
-    public void setModel3DId( @Nullable Integer model3DId) {
+    public void setModel3DId(@Nullable Integer model3DId) {
         this.model3DId = model3DId;
     }
 
@@ -93,16 +88,6 @@ public abstract class ItemType implements Config {
     @Deprecated
     public void setThreeJsModelPackConfigId(@Nullable Integer threeJsModelPackConfigId) {
         this.threeJsModelPackConfigId = threeJsModelPackConfigId;
-    }
-
-    @Deprecated
-    public @Nullable Integer getMeshContainerId() {
-        return meshContainerId;
-    }
-
-    @Deprecated
-    public void setMeshContainerId(@Nullable Integer meshContainerId) {
-        this.meshContainerId = meshContainerId;
     }
 
     public @Nullable Integer getThumbnail() {
@@ -141,12 +126,6 @@ public abstract class ItemType implements Config {
     @Deprecated
     public ItemType threeJsModelPackConfigId(Integer threeJsModelPackConfigId) {
         setThreeJsModelPackConfigId(threeJsModelPackConfigId);
-        return this;
-    }
-
-    @Deprecated
-    public ItemType meshContainerId(Integer meshContainerId) {
-        setMeshContainerId(meshContainerId);
         return this;
     }
 

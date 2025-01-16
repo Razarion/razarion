@@ -160,7 +160,6 @@
         <module>razarion-ui-service</module>
         <!--        <module>razarion-nnl-pathing</module>-->
         <module>razarion-server</module>
-        <module>razarion-unity-converter</module>
         <module>razarion-share</module>
         <module>razarion-test</module>
         <module>razarion-test-share</module>

@@ -8,7 +8,6 @@ import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.ParticleSystemEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
-import com.btxtech.server.persistence.asset.MeshContainerEntity;
 import com.btxtech.server.persistence.ui.Model3DEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
@@ -73,10 +72,6 @@ public class BaseItemTypeEntity {
     @JoinColumn
     @Deprecated
     private ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    @Deprecated
-    private MeshContainerEntity meshContainer;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private AudioLibraryEntity spawnAudio;
@@ -159,9 +154,6 @@ public class BaseItemTypeEntity {
         }
         if (threeJsModelPackConfigEntity != null) {
             baseItemType.setThreeJsModelPackConfigId(threeJsModelPackConfigEntity.getId());
-        }
-        if (meshContainer != null) {
-            baseItemType.setMeshContainerId(meshContainer.getId());
         }
         // TODO if (spawnShape3DId != null) {
         // TODO     baseItemType.setSpawnShape3DId(spawnShape3DId.getId());
@@ -335,10 +327,6 @@ public class BaseItemTypeEntity {
 
     public void setThreeJsModelPackConfigEntity(ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity) {
         this.threeJsModelPackConfigEntity = threeJsModelPackConfigEntity;
-    }
-
-    public void setMeshContainer(MeshContainerEntity meshContainer) {
-        this.meshContainer = meshContainer;
     }
 
     // TODO public void setSpawnShape3DId(ColladaEntity spawnShape3DId) {

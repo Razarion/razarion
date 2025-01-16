@@ -11,7 +11,6 @@ import {
   DecimalPosition,
   Diplomacy,
   MarkerConfig,
-  MeshContainer,
   PlaceConfig,
   ResourceItemType,
   ShapeTransform,
@@ -134,7 +133,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
   private directionalLight!: DirectionalLight
-  public meshContainers!: MeshContainer[];
   private diplomacyMaterialCache: Map<number, Map<Diplomacy, NodeMaterial>> = new Map<number, Map<Diplomacy, NodeMaterial>>();
   public readonly itemMarkerMaterialCache: Map<Diplomacy, NodeMaterial> = new Map<Diplomacy, NodeMaterial>();
   public baseItemContainer!: TransformNode;
@@ -190,8 +188,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.viewField;
   }
 
-  runRenderer(meshContainers: MeshContainer[]): void {
-    this.meshContainers = meshContainers;
+  runRenderer(): void {
     this.internalSetup();
   }
 
@@ -661,38 +658,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     } catch (error) {
       console.error(error);
       return BabylonBoxItemImpl.createDummy(id);
-    }
-  }
-
-  public showMeshContainer(meshContainers: MeshContainer[], id: number, diplomacy: Diplomacy): TransformNode {
-    let foundMeshContainer = null;
-    for (let meshContainer of meshContainers) {
-      if (meshContainer.getId() === id) {
-        foundMeshContainer = meshContainer;
-        break;
-      }
-    }
-    if (!foundMeshContainer) {
-      throw new Error(`No MeshContainer for '${id}'`);
-    }
-    let baseItemContainer = new TransformNode(`'`);
-    this.scene.addTransformNode(baseItemContainer);
-    this.recursivelyFillMeshes(foundMeshContainer!, baseItemContainer, diplomacy);
-    return baseItemContainer;
-  }
-
-  private recursivelyFillMeshes(meshContainer: MeshContainer, parent: Node, diplomacy: Diplomacy) {
-    if (meshContainer.getMesh() && meshContainer.getMesh()!.getThreeJsModelId()) {
-      this.createMesh(meshContainer.getMesh()!.getThreeJsModelId()!,
-        meshContainer.getMesh()!.getElement3DId(),
-        parent,
-        diplomacy,
-        meshContainer.getMesh()!.toShapeTransformsArray());
-    }
-    if (meshContainer.toChildrenArray()) {
-      meshContainer!.toChildrenArray()?.forEach(childMeshContainer => {
-        this.recursivelyFillMeshes(childMeshContainer, parent, diplomacy);
-      })
     }
   }
 

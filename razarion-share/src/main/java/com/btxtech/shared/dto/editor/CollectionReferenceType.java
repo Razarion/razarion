@@ -2,14 +2,12 @@ package com.btxtech.shared.dto.editor;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.Config;
-import com.btxtech.shared.rest.AssetEditorController;
 import com.btxtech.shared.rest.BaseItemTypeEditorController;
 import com.btxtech.shared.rest.CrudController;
 import com.btxtech.shared.rest.DrivewayEditorController;
 import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
-import com.btxtech.shared.rest.MeshContainerEditorController;
 import com.btxtech.shared.rest.ParticleSystemEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
 import com.btxtech.shared.rest.ResourceItemTypeEditorController;
@@ -34,8 +32,6 @@ public enum CollectionReferenceType {
     WATER(WaterEditorController.class, "Water", CommonUrl.WATER_EDITOR_PATH),
     GAME_UI_CONTEXT(GameUiContextEditorController.class, "Game Ui Context", CommonUrl.GAME_UI_CONTEXT_EDITOR_PATH),
     SHAPE_3D(Shape3DEditorController.class, "Shape 3D", CommonUrl.SHAPE_3D_EDITOR_PATH),
-    MESH_CONTAINER(MeshContainerEditorController.class, "Mesh Container", CommonUrl.MESH_CONTAINER_EDITOR_PATH),
-    ASSET(AssetEditorController.class, "Asset", CommonUrl.ASSET_EDITOR_PATH),
     TERRAIN_OBJECT(TerrainObjectEditorController.class, "Terrain Object", CommonUrl.TERRAIN_OBJECT_EDITOR_PATH),
     BASE_ITEM(BaseItemTypeEditorController.class, "Base Item", CommonUrl.BASE_ITEM_TYPE_EDITOR_PATH),
     RESOURCE_ITEM(ResourceItemTypeEditorController.class, "Resource Item", CommonUrl.RESOURCE_ITEM_TYPE_EDITOR_PATH),

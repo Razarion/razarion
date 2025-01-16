@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.mock;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -71,7 +70,7 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
     }
 
     @Override
-    public void runRenderer(MeshContainer[] meshContainers) {
+    public void runRenderer() {
         logger.warning("initMeshContainers()");
     }
 

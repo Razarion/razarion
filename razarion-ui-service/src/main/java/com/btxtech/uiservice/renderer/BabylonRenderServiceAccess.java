@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -21,7 +20,7 @@ public interface BabylonRenderServiceAccess {
 
     void setViewFieldCenter(double x, double y);
 
-    void runRenderer(MeshContainer[] meshContainers);
+    void runRenderer();
 
     void showOutOfViewMarker(MarkerConfig markerConfig, double angle);
 

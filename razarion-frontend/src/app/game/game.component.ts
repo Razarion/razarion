@@ -92,7 +92,7 @@ export class GameComponent implements OnInit, ScreenCover {
             this.gameMockService.mockTerrainTile(this.babylonRenderServiceAccessImpl);
             this.mainCockpitComponent.show(true);
             this.mainCockpitComponent.showRadar(RadarState.WORKING);
-            this.babylonRenderServiceAccessImpl.runRenderer(this.gameMockService.createMeshContainers());
+            this.babylonRenderServiceAccessImpl.runRenderer();
             setTimeout(() => {
               // Some very strange babylon behavior, _projectionMatrix is zero matrix
               this.babylonRenderServiceAccessImpl.setViewFieldCenter(40, 100);

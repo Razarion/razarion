@@ -1,4 +1,3 @@
-import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {
   AbstractMesh,
   ActionManager,
@@ -52,14 +51,6 @@ export class BabylonItemImpl implements BabylonItem {
       this.container = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, parent, diplomacy);
     } else if (itemType.getThreeJsModelPackConfigId()) {
       this.container = this.babylonModelService.cloneMesh(itemType.getThreeJsModelPackConfigId()!, null);
-    } else if (itemType.getMeshContainerId()) {
-      if (diplomacy) {
-        this.container = this.rendererService.showMeshContainer(this.rendererService.meshContainers,
-          GwtHelper.gwtIssueNumber(itemType.getMeshContainerId()),
-          diplomacy);
-      } else {
-        throw new Error("Diplomacy can not be null");
-      }
     } else {
       this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, {diameter: this.getRadius() * 2});
       console.warn(`No MeshContainerId or ThreeJsModelPackConfigId for ${itemType.getInternalName()} '${itemType.getId()}'`)

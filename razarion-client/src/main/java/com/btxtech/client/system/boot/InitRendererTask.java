@@ -1,7 +1,5 @@
 package com.btxtech.client.system.boot;
 
-import com.btxtech.uiservice.AssetService;
-import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -20,6 +18,6 @@ public class InitRendererTask extends AbstractStartupTask {
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        bootContext.runRenderer(bootContext.getAssetService().getMeshContainers());
+        bootContext.runRenderer();
     }
 }

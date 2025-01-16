@@ -3,13 +3,11 @@ package com.btxtech.client.system.boot;
 import com.btxtech.client.ClientGameEngineControl;
 import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.user.FacebookService;
-import com.btxtech.shared.datatypes.asset.MeshContainer;
 import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
-import com.btxtech.uiservice.AssetService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
@@ -37,7 +35,6 @@ public class BootImpl extends Boot {
     private final GameUiControl gameUiControl;
     private final BabylonRendererService threeJsRendererService;
     private final SimpleExecutorService simpleExecutorService;
-    private final AssetService assetService;
     private final UserUiService userUiService;
 
     @Inject
@@ -49,7 +46,6 @@ public class BootImpl extends Boot {
                     GameUiControl gameUiControl,
                     BabylonRendererService threeJsRendererService,
                     SimpleExecutorService simpleExecutorService,
-                    AssetService assetService,
                     UserUiService userUiService) {
         super(alarmService);
         this.clientGameEngineControl = clientGameEngineControl;
@@ -59,7 +55,6 @@ public class BootImpl extends Boot {
         this.gameUiControl = gameUiControl;
         this.threeJsRendererService = threeJsRendererService;
         this.simpleExecutorService = simpleExecutorService;
-        this.assetService = assetService;
         this.userUiService = userUiService;
     }
 
@@ -70,7 +65,7 @@ public class BootImpl extends Boot {
 
     @Override
     protected BootContext createBootContext() {
-        return new BootContext(simpleExecutorService, gameEngineControl, gameUiControl, assetService, userUiService) {
+        return new BootContext(simpleExecutorService, gameEngineControl, gameUiControl, userUiService) {
             @Override
             public void loadWorker(DeferredStartup deferredStartup) {
                 clientGameEngineControl.get().loadWorker(deferredStartup);
@@ -92,8 +87,8 @@ public class BootImpl extends Boot {
             }
 
             @Override
-            public void runRenderer(MeshContainer[] meshContainers) {
-                threeJsRendererService.runRenderer(meshContainers);
+            public void runRenderer() {
+                threeJsRendererService.runRenderer();
             }
         };
     }
