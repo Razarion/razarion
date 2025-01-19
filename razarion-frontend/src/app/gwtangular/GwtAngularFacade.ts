@@ -167,15 +167,7 @@ export interface ItemTypeService {
 export interface TerrainTypeService {
   getTerrainObjectConfig(id: number): TerrainObjectConfig;
 
-  getSlopeConfig(id: number): SlopeConfig;
-
-  getDrivewayConfig(drivewayConfigId: number): DrivewayConfig;
-
   getGroundConfig(groundConfigId: number): GroundConfig;
-
-  getWaterConfig(waterConfigId: number): WaterConfig;
-
-  calculateGroundHeight(slopeConfigId: number): number;
 }
 
 export interface ThreeJsModelPackService {
@@ -233,23 +225,6 @@ export interface TerrainObjectConfig {
   toString(): string;
 }
 
-export interface SlopeConfig {
-  getId(): number;
-
-  getInternalName(): string;
-
-  getThreeJsMaterial(): number;
-
-  getShallowWaterThreeJsMaterial(): number;
-
-  getGroundConfigId(): number;
-
-  getWaterConfigId(): number;
-}
-
-export interface DrivewayConfig {
-}
-
 export interface GroundConfig {
   getId(): number;
 
@@ -258,26 +233,6 @@ export interface GroundConfig {
   getGroundBabylonMaterialId(): number;
 
   getWaterBabylonMaterialId(): number;
-}
-
-export interface WaterConfig {
-  getId(): number;
-
-  getInternalName(): string;
-
-  getMaterial(): number;
-}
-
-export interface GroundSplattingConfig {
-  getTextureId(): number;
-
-  getScale1(): number;
-
-  getScale2(): number;
-
-  getBlur(): number;
-
-  getOffset(): number;
 }
 
 export interface ThreeJsModelConfig {
@@ -460,8 +415,6 @@ export interface TerrainTile {
   getGroundHeightMap(): Uint16Array;
 
   getGroundConfigId(): number;
-
-  getWaterConfigId(): number;
 
   getTerrainTileObjectLists(): TerrainTileObjectList[];
 
@@ -770,20 +723,6 @@ export interface ObjectNameId {
   internalName: string;
 
   toString(): string;
-}
-
-export interface TerrainSlopePosition {
-  id: number | null;
-  slopeConfigId: number;
-  inverted: boolean;
-  polygon: TerrainSlopeCorner[];
-  children: TerrainSlopePosition[];
-  editorParentIdIfCreated: number | null; // Only on Angular side
-}
-
-export interface TerrainSlopeCorner {
-  position: JsonDecimalPosition;
-  slopeDrivewayId: number | null;
 }
 
 export interface TerrainObjectPosition {

@@ -462,7 +462,6 @@ public class WorkerMarshaller {
         indexArray.push(terrainTile.getIndex().getY());
         array.push(indexArray);
         array.push(terrainTile.getGroundConfigId());
-        array.push(terrainTile.getWaterConfigId());
         array.push(marshallBabylonDecals(terrainTile.getBabylonDecals()));
         array.push(terrainTile.getGroundHeightMap());
         array.push(marshallTerrainTileObjectList(terrainTile.getTerrainTileObjectLists()));
@@ -518,10 +517,9 @@ public class WorkerMarshaller {
         TerrainTile terrainTile = new TerrainTile();
         terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
         terrainTile.setGroundConfigId(getIssueNumber(array[1]));
-        terrainTile.setWaterConfigId(getIssueNumber(array[2]));
-        terrainTile.setBabylonDecals(demarshallBabylonDecals(array[3]));
-        terrainTile.setGroundHeightMap(Js.uncheckedCast(array[4].asArrayLike()));
-        terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[5]));
+        terrainTile.setBabylonDecals(demarshallBabylonDecals(array[2]));
+        terrainTile.setGroundHeightMap(Js.uncheckedCast(array[3].asArrayLike()));
+        terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[4]));
         return terrainTile;
     }
 

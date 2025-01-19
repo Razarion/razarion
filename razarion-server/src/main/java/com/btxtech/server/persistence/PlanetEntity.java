@@ -3,7 +3,6 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
-import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
@@ -44,9 +43,6 @@ public class PlanetEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private GroundConfigEntity groundConfig;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private WaterConfigEntity waterConfig;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "planet")
     private List<TerrainObjectPositionEntity> terrainObjectPositionEntities;
@@ -85,9 +81,6 @@ public class PlanetEntity {
         if (groundConfig != null) {
             planetConfig.setGroundConfigId(groundConfig.getId());
         }
-        if (waterConfig != null) {
-            planetConfig.setWaterConfigId(waterConfig.getId());
-        }
         planetConfig.setItemTypeLimitation(PersistenceUtil.extractItemTypeLimitation(itemTypeLimitation));
         if (startBaseItemType != null) {
             planetConfig.setStartBaseItemTypeId(startBaseItemType.getId());
@@ -95,10 +88,9 @@ public class PlanetEntity {
         return planetConfig;
     }
 
-    public void fromPlanetConfig(PlanetConfig planetConfig, GroundConfigEntity groundConfig, WaterConfigEntity waterConfig, BaseItemTypeEntity startBaseItemType, Map<BaseItemTypeEntity, Integer> itemTypeLimitation) {
+    public void fromPlanetConfig(PlanetConfig planetConfig, GroundConfigEntity groundConfig, BaseItemTypeEntity startBaseItemType, Map<BaseItemTypeEntity, Integer> itemTypeLimitation) {
         internalName = planetConfig.getInternalName();
         this.groundConfig = groundConfig;
-        this.waterConfig = waterConfig;
         houseSpace = planetConfig.getHouseSpace();
         startRazarion = planetConfig.getStartRazarion();
         size = planetConfig.getSize();

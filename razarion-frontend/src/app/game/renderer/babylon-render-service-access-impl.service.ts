@@ -13,7 +13,6 @@ import {
   MarkerConfig,
   PlaceConfig,
   ResourceItemType,
-  TerrainSlopePosition,
   TerrainTile,
 } from "src/app/gwtangular/GwtAngularFacade";
 import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
@@ -68,8 +67,6 @@ export interface RazarionMetadata {
   id: number | undefined;
   configId: number | undefined;
   editorHintTerrainObjectPosition: TerrainObjectPosition | undefined;
-  editorHintSlopePolygon: Vector2[] | undefined;
-  editorHintSlopePosition: TerrainSlopePosition | undefined;
 }
 
 export enum RazarionMetadataType {
@@ -680,8 +677,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       id = GwtHelper.gwtIssueNumber(id);
       configId = GwtHelper.gwtIssueNumber(configId);
       editorHintTerrainObjectPosition = undefined;
-      editorHintSlopePolygon = undefined;
-      editorHintSlopePosition = undefined;
     });
   }
 

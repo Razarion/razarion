@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.ColdGameUiContext;
-import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
@@ -33,7 +32,6 @@ public class RealGameTerrainServiceTest extends DaggerTerrainServiceTestBase {
         ColdGameUiContext coldGameUiContext = readColdGameUiContext(117);
         System.out.println("Loaded ColdGameUiContext");
         System.out.println("Start Read TerrainEditorLoad");
-        TerrainEditorLoad terrainEditorLoad = RestClientHelper.readTerrainEditorLoad(117);
         System.out.println("Loaded TerrainEditorLoad");
 
 //        System.out.println("Write static-game-config.json");
@@ -46,7 +44,7 @@ public class RealGameTerrainServiceTest extends DaggerTerrainServiceTestBase {
 //        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(directory, "static-game-config.json"), coldGameUiContext.getStaticGameConfig());
 
 
-        setupTerrainTypeService(coldGameUiContext.getStaticGameConfig(), null, null, null, null, coldGameUiContext.getWarmGameUiContext().getPlanetConfig(), terrainEditorLoad.getSlopes(), terrainEditorLoad.getTerrainObjects(), null, null, null, null);
+        setupTerrainTypeService(coldGameUiContext.getStaticGameConfig(), null, coldGameUiContext.getWarmGameUiContext().getPlanetConfig(), null, null, null, null, null);
         double radius = 1;
         final SingleHolder<DecimalPosition> actorPosition = new SingleHolder<>();
         DecimalPosition target = new DecimalPosition(104, 125.5);

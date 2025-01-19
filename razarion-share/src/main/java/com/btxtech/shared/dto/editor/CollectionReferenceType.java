@@ -13,11 +13,9 @@ import com.btxtech.shared.rest.PlanetEditorController;
 import com.btxtech.shared.rest.ResourceItemTypeEditorController;
 import com.btxtech.shared.rest.ServerGameEngineEditorController;
 import com.btxtech.shared.rest.Shape3DEditorController;
-import com.btxtech.shared.rest.SlopeEditorController;
 import com.btxtech.shared.rest.TerrainObjectEditorController;
 import com.btxtech.shared.rest.ThreeJsModelEditorController;
 import com.btxtech.shared.rest.ThreeJsModelPackEditorController;
-import com.btxtech.shared.rest.WaterEditorController;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,9 +25,7 @@ public enum CollectionReferenceType {
     LEVEL(LevelEditorController.class, "Level", CommonUrl.LEVEL_EDITOR_PATH),
     PLANET(PlanetEditorController.class, "Planet", CommonUrl.PLANET_EDITOR_PATH),
     GROUND(GroundEditorController.class, "Ground", CommonUrl.GROUND_EDITOR_PATH),
-    SLOPE(SlopeEditorController.class, "Slope", CommonUrl.SLOPE_EDITOR_PATH),
     DRIVEWAY(DrivewayEditorController.class, "Driveway", CommonUrl.DRIVEWAY_EDITOR_PATH),
-    WATER(WaterEditorController.class, "Water", CommonUrl.WATER_EDITOR_PATH),
     GAME_UI_CONTEXT(GameUiContextEditorController.class, "Game Ui Context", CommonUrl.GAME_UI_CONTEXT_EDITOR_PATH),
     SHAPE_3D(Shape3DEditorController.class, "Shape 3D", CommonUrl.SHAPE_3D_EDITOR_PATH),
     TERRAIN_OBJECT(TerrainObjectEditorController.class, "Terrain Object", CommonUrl.TERRAIN_OBJECT_EDITOR_PATH),

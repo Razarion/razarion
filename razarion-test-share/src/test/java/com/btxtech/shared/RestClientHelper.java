@@ -1,13 +1,6 @@
 package com.btxtech.shared;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.ColdGameUiContext;
-import com.btxtech.shared.dto.TerrainEditorLoad;
-import com.btxtech.shared.dto.TerrainSlopeCorner;
-import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.planet.gui.userobject.InstanceStringGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Singleton;
@@ -16,7 +9,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -34,10 +26,6 @@ public class RestClientHelper {
     private static final String GAME_UI_CONTROL_INPUT = "{\"playbackGameSessionUuid\": null, \"playbackSessionUuid\": null}";
     private static final String FB_USER_ID_TEST = "100003634094139";
 
-    public static TerrainEditorLoad readTerrainEditorLoad(int planetId)  {
-        Client client = ClientBuilder.newClient();
-        return client.target(PLANET_EDITOR_READ_SLOPS + "/" + planetId).request(MediaType.APPLICATION_JSON).get(TerrainEditorLoad.class);
-    }
     public static ColdGameUiContext readColdGameUiContext(int planetId)  {
         try {
             Client client = ClientBuilder.newClient();

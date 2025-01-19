@@ -15,9 +15,9 @@ import java.util.List;
 
 public class TerrainTileBuilder {
 
+    private final List<TerrainTileObjectList> terrainTileObjectLists = new ArrayList<>();
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private TerrainTile terrainTile;
-    private final List<TerrainTileObjectList> terrainTileObjectLists = new ArrayList<>();
     private BabylonDecal[] babylonDecals;
 
     @Inject
@@ -36,7 +36,6 @@ public class TerrainTileBuilder {
             terrainTile.setTerrainTileObjectLists(terrainTileObjectLists.toArray(new TerrainTileObjectList[0]));
         }
         terrainTile.setGroundConfigId(planetConfig.getGroundConfigId());
-        terrainTile.setWaterConfigId(planetConfig.getWaterConfigId());
         terrainTile.setBabylonDecals(babylonDecals);
         return terrainTile;
     }

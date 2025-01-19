@@ -5,17 +5,13 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
-import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.DaggerMasterBaseTest;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
@@ -31,12 +27,8 @@ import java.util.stream.Collectors;
  */
 public class DaggerTerrainServiceTestBase extends DaggerMasterBaseTest {
     protected void setupTerrainTypeService(StaticGameConfig staticGameConfig,
-                                           List<SlopeConfig> slopeConfigs,
-                                           List<DrivewayConfig> drivewayConfigs,
-                                           List<WaterConfig> waterConfigs,
                                            List<TerrainObjectConfig> terrainObjectConfigs,
                                            PlanetConfig planetConfig,
-                                           List<TerrainSlopePosition> terrainSlopePositions,
                                            List<TerrainObjectPosition> terrainObjectPositions,
                                            List<GroundConfig> groundConfigs,
                                            List<ThreeJsModelConfig> threeJsModelConfigs,
@@ -47,9 +39,6 @@ public class DaggerTerrainServiceTestBase extends DaggerMasterBaseTest {
         }
         if (groundConfigs != null) {
             staticGameConfig.setGroundConfigs(groundConfigs);
-        }
-        if (waterConfigs != null) {
-            staticGameConfig.setWaterConfigs(waterConfigs);
         }
         if (terrainObjectConfigs != null) {
             staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);

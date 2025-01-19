@@ -68,8 +68,7 @@ public class TerrainShapeControllerTest extends AbstractSystemTest {
         terrainShapeController.createTerrainShape(PLANET_1_ID);
         NativeTerrainShape nativeTerrainShape = terrainShapeController.getTerrainShape(PLANET_1_ID);
         JsonAssert.assertViaJson("/systemtests/testnormal/TerrainShapeControllerTest_getTerrainShape.json",
-                s -> s.replace("\"$SLOPE_ID$\"", Integer.toString(SLOPE_LAND_CONFIG_ENTITY_1))
-                        .replace("\"$TERRAIN_OBJECT_1_ID$\"", Integer.toString(TERRAIN_OBJECT_1_ID))
+                s -> s.replace("\"$TERRAIN_OBJECT_1_ID$\"", Integer.toString(TERRAIN_OBJECT_1_ID))
                         .replace("\"$TERRAIN_OBJECT_2_ID$\"", Integer.toString(TERRAIN_OBJECT_2_ID))
                         .replace("\"$TERRAIN_OBJECT_3_ID$\"", Integer.toString(TERRAIN_OBJECT_3_ID)),
                 null,

@@ -7,7 +7,6 @@ import com.btxtech.shared.datatypes.Line2I;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import java.util.Iterator;
@@ -61,19 +60,6 @@ public class InstanceStringGenerator {
         return builder.toString();
     }
 
-    public static String generateSlope(List<DecimalPosition> positions) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Arrays.asList(");
-        for (int i = 0; i < positions.size(); i++) {
-            builder.append(generate(new TerrainSlopeCorner().position(positions.get(i))));
-            if (i < positions.size() - 1) {
-                builder.append(", ");
-            }
-        }
-        builder.append(")");
-        return builder.toString();
-    }
-
     public static String generateDecimalPositionList(List<DecimalPosition> positions) {
         return ("List<DecimalPosition> positions = " + generateSimpleDecimalPositionList(positions)) + ");";
     }
@@ -113,14 +99,6 @@ public class InstanceStringGenerator {
     public static String generate(TerrainType startTerrainType) {
         if (startTerrainType != null) {
             return "TerrainType." + startTerrainType.name();
-        } else {
-            return NULL_STRING;
-        }
-    }
-
-    public static String generate(TerrainSlopeCorner terrainSlopeCorner) {
-        if (terrainSlopeCorner != null) {
-            return String.format(Locale.US,"GameTestHelper.createTerrainSlopeCorner(%.4f, %.4f, null)", terrainSlopeCorner.getPosition().getX(), terrainSlopeCorner.getPosition().getY());
         } else {
             return NULL_STRING;
         }

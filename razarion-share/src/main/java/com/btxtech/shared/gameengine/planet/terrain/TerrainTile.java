@@ -14,7 +14,6 @@ public class TerrainTile {
     private Index index;
     private TerrainTileObjectList[] terrainTileObjectLists;
     private int groundConfigId;
-    private int waterConfigId;
     private Uint16ArrayEmu groundHeightMap;
     private BabylonDecal[] babylonDecals;
 
@@ -47,20 +46,6 @@ public class TerrainTile {
 
     public TerrainTile groundConfigId(int groundConfigId) {
         setGroundConfigId(groundConfigId);
-        return this;
-    }
-
-    @SuppressWarnings("unused") // Used ba angular
-    public int getWaterConfigId() {
-        return waterConfigId;
-    }
-
-    public void setWaterConfigId(int waterConfigId) {
-        this.waterConfigId = waterConfigId;
-    }
-
-    public TerrainTile waterConfigId(int waterConfigId) {
-        setWaterConfigId(waterConfigId);
         return this;
     }
 

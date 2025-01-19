@@ -4,22 +4,17 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
-import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.DaggerMasterBaseTest;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,11 +25,9 @@ public class BaseBasicTest extends DaggerMasterBaseTest {
     private int lastBotId = 0;
 
     protected void setup() {
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-
         StaticGameConfig staticGameConfig = FallbackConfig.setupStaticGameConfig();
 
-        setupMasterEnvironment(staticGameConfig, terrainSlopePositions);
+        setupMasterEnvironment(staticGameConfig);
     }
 
     protected SyncBaseItem setupBot(String botName, int itemTypeId, DecimalPosition position, int auxiliaryId) {

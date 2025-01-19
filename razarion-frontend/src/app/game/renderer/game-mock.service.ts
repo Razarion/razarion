@@ -11,7 +11,6 @@ import {
   ConditionConfig,
   DecimalPosition,
   Diplomacy,
-  DrivewayConfig,
   GameUiControl,
   GroundConfig,
   HarvesterType,
@@ -31,8 +30,6 @@ import {
   QuestProgressInfo,
   ResourceItemType,
   SelectionService,
-  ShapeTransform,
-  SlopeConfig,
   StatusProvider,
   TerrainObjectConfig,
   TerrainTile,
@@ -42,7 +39,6 @@ import {
   ThreeJsModelPackConfig,
   ThreeJsModelPackService,
   Vertex,
-  WaterConfig,
   WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
 import {HttpClient} from "@angular/common/http";
@@ -194,51 +190,6 @@ export class GameMockService {
         }
       }
 
-      getSlopeConfig(slopeConfigId: number): SlopeConfig {
-        let slopeConfig: SlopeConfig | null = null;
-        staticGameConfigJson.slopeConfigs.forEach((slopeConfigJson: any) => {
-          if (slopeConfigJson.id != slopeConfigId) {
-            return;
-          }
-          slopeConfig = new class implements SlopeConfig {
-            getId(): number {
-              return slopeConfigJson.id;
-            }
-
-            getInternalName(): string {
-              return slopeConfigJson.internalName;
-            }
-
-            getThreeJsMaterial(): number {
-              return slopeConfigJson.threeJsMaterial;
-            }
-
-            getGroundConfigId(): number {
-              return slopeConfigJson.groundConfigId;
-            }
-
-            getWaterConfigId(): number {
-              return slopeConfigJson.waterConfigId;
-            }
-
-            getShallowWaterThreeJsMaterial(): number {
-              return slopeConfigJson.shallowWaterThreeJsMaterial;
-            }
-          }
-          return
-        });
-        if (slopeConfig !== null) {
-          return slopeConfig;
-        } else {
-          throw new Error(`No SlopeConfig for id ${slopeConfigId}`);
-        }
-
-      }
-
-      getDrivewayConfig(drivewayConfigId: number): DrivewayConfig {
-        throw new Error("Method not implemented.");
-      }
-
       getGroundConfig(groundConfigId: number): GroundConfig {
         let groundConfig: GroundConfig | null = null;
         staticGameConfigJson.groundConfigs.forEach((groundConfigJson: any) => {
@@ -270,35 +221,6 @@ export class GameMockService {
           return groundConfig;
         } else {
           throw new Error(`No GroundConfig for id ${groundConfigId}`);
-        }
-      }
-
-      getWaterConfig(waterConfigId: number): WaterConfig {
-        let waterConfig: WaterConfig | null = null;
-        staticGameConfigJson.waterConfigs.forEach((waterConfigJson: any) => {
-          if (waterConfigJson.id != waterConfigId) {
-            return;
-          }
-          waterConfig = new class implements WaterConfig {
-            _waterConfigJson: any = waterConfigJson;
-
-            getInternalName(): string {
-              return waterConfigJson.internalName;
-            }
-
-            getMaterial(): number {
-              return waterConfigJson.material;
-            }
-
-            getId(): number {
-              return this._waterConfigJson.id
-            };
-          }
-        });
-        if (waterConfig !== null) {
-          return waterConfig;
-        } else {
-          throw new Error(`No WaterConfig for id ${waterConfig}`);
         }
       }
     }

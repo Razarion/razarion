@@ -26,7 +26,6 @@ import {
 } from "@babylonjs/core";
 import {GLTFFileLoader} from "@babylonjs/loaders";
 import JSZip from "jszip";
-import {BabylonJsUtils} from "./babylon-js.utils";
 import {
   BabylonMaterialControllerClient,
   BabylonMaterialEntity,
@@ -58,7 +57,7 @@ export class BabylonModelService {
   private gltfsLoaded = false;
   private gwtResolver?: () => void;
   private babylonMaterialControllerClient: BabylonMaterialControllerClient;
-  diplomacyMaterialCache: Map<number, Map<Diplomacy, Map<string, NodeMaterial>>> = new Map<number, Map<Diplomacy,  Map<string, NodeMaterial>>>();
+  diplomacyMaterialCache: Map<number, Map<Diplomacy, Map<string, NodeMaterial>>> = new Map<number, Map<Diplomacy, Map<string, NodeMaterial>>>();
 
   constructor(private uiConfigCollectionService: UiConfigCollectionService,
               private httpClient: HttpClient,
@@ -483,14 +482,6 @@ export class BabylonModelService {
     this.scene = scene;
   }
 
-  getNodeMaterialNull(babylonModelId: number | null, errorText: string): NodeMaterial {
-    if (babylonModelId) {
-      return this.getNodeMaterial(babylonModelId);
-    } else {
-      return <any>BabylonJsUtils.createErrorMaterial(errorText);
-    }
-  }
-
   getNodeMaterial(babylonModelId: number | null): NodeMaterial {
     if (babylonModelId === null) {
       throw new Error(`getNodeMaterial(): babylonModelId undefined`);
@@ -759,7 +750,7 @@ class GltfHelper {
           this.babylonModelService.diplomacyMaterialCache.set(materialId, diplomacyCache)
         }
         let cachedMaterialNames = diplomacyCache.get(diplomacy);
-        if(!cachedMaterialNames) {
+        if (!cachedMaterialNames) {
           cachedMaterialNames = new Map<string, NodeMaterial>();
           diplomacyCache.set(diplomacy, cachedMaterialNames)
         }

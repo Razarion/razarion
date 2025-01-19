@@ -129,7 +129,7 @@ public class BoxServiceTest extends DaggerMasterBaseTest {
         BaseItemType factoryType = GameTestContent.findBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID, staticGameConfig.getBaseItemTypes());
         factoryType.setDropBoxPossibility(1.0);
         factoryType.setDropBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID);
-        setupMasterEnvironment(staticGameConfig, null);
+        setupMasterEnvironment(staticGameConfig);
         // Setup target to drop boxes
         UserContext userContext = createLevel1UserContext();
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(10, 20), userContext);

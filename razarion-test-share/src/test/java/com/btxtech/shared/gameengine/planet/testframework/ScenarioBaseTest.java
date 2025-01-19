@@ -5,14 +5,10 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.DaggerSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.terrain.DaggerTerrainServiceTestBase;
@@ -25,8 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.btxtech.shared.dto.FallbackConfig.DRIVEWAY_ID_ID;
-
 /**
  * Created by Beat
  * on 12.04.2018.
@@ -38,52 +32,6 @@ public class ScenarioBaseTest extends DaggerTerrainServiceTestBase {
 
     @Before
     public void before() {
-        // Land slope config
-        SlopeConfig slopeConfigLand = new SlopeConfig();
-        slopeConfigLand.id(1).internalName("Mountain");
-        slopeConfigLand.horizontalSpace(5);
-        slopeConfigLand.setSlopeShapes(Arrays.asList(
-                new SlopeShape().position(new DecimalPosition(2, 5)).slopeFactor(0),
-                new SlopeShape().position(new DecimalPosition(4, 10)).slopeFactor(0.7),
-                new SlopeShape().position(new DecimalPosition(7, 15)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(9, 20)).slopeFactor(0.7),
-                new SlopeShape().position(new DecimalPosition(11, 25)).slopeFactor(0)
-        ));
-        slopeConfigLand.outerLineGameEngine(2).innerLineGameEngine(9);
-        // Water slope config
-        SlopeConfig slopeConfigWater = new SlopeConfig();
-        slopeConfigWater.id(2).waterConfigId(FallbackConfig.WATER_CONFIG_ID).setInternalName("Water");
-        slopeConfigWater.horizontalSpace(5);
-        slopeConfigWater.setSlopeShapes(Arrays.asList(
-                new SlopeShape().position(new DecimalPosition(2, 0)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(4, -1)).slopeFactor(0.7),
-                new SlopeShape().position(new DecimalPosition(8, -1.5)).slopeFactor(0.7),
-                new SlopeShape().position(new DecimalPosition(12, -2)).slopeFactor(0.7)
-        ));
-        slopeConfigWater.outerLineGameEngine(3).coastDelimiterLineGameEngine(6).innerLineGameEngine(10);
-
-        List<SlopeConfig> slopeConfigs = new ArrayList<>();
-        slopeConfigs.add(slopeConfigLand);
-        slopeConfigs.add(slopeConfigWater);
-
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-        // Land slope
-        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.id(1);
-        terrainSlopePositionLand.slopeConfigId(1);
-        terrainSlopePositionLand.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(100, 60, DRIVEWAY_ID_ID), GameTestHelper.createTerrainSlopeCorner(100, 90, DRIVEWAY_ID_ID), // driveway
-                GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
-        terrainSlopePositions.add(terrainSlopePositionLand);
-        // Water slope
-        TerrainSlopePosition terrainSlopePositionWater = new TerrainSlopePosition();
-        terrainSlopePositionWater.id(2);
-        terrainSlopePositionWater.slopeConfigId(2);
-        terrainSlopePositionWater.polygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(64, 200, null), GameTestHelper.createTerrainSlopeCorner(231, 200, null),
-                GameTestHelper.createTerrainSlopeCorner(231, 256, null), GameTestHelper.createTerrainSlopeCorner(151, 257, null), // driveway
-                GameTestHelper.createTerrainSlopeCorner(239, 359, null), GameTestHelper.createTerrainSlopeCorner(49, 360, null)));
-        terrainSlopePositions.add(terrainSlopePositionWater);
-
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
         terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1));
         terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5));
@@ -101,7 +49,7 @@ public class ScenarioBaseTest extends DaggerTerrainServiceTestBase {
                 new TerrainObjectPosition().terrainObjectConfigId(3).scale(new Vertex(0.5, 0.5, 0.5)).position(new DecimalPosition(450, 75))
         );
 
-        setupTerrainTypeService(null, slopeConfigs, null, null, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions, null, null, null, null);
+        setupTerrainTypeService(null, terrainObjectConfigs, planetConfig, terrainObjectPositions, null, null, null, null);
     }
 
     protected void testScenario(Scenario scenario) {

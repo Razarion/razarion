@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -21,7 +20,6 @@ import java.util.List;
 @JSONMapper
 public class StaticGameConfig {
     private List<GroundConfig> groundConfigs;
-    private List<WaterConfig> waterConfigs;
     private List<TerrainObjectConfig> terrainObjectConfigs;
     private List<BaseItemType> baseItemTypes;
     private List<ResourceItemType> resourceItemTypes;
@@ -38,14 +36,6 @@ public class StaticGameConfig {
 
     public void setGroundConfigs(List<GroundConfig> groundConfigs) {
         this.groundConfigs = groundConfigs;
-    }
-
-    public List<WaterConfig> getWaterConfigs() {
-        return waterConfigs;
-    }
-
-    public void setWaterConfigs(List<WaterConfig> waterConfigs) {
-        this.waterConfigs = waterConfigs;
     }
 
     public List<TerrainObjectConfig> getTerrainObjectConfigs() {
@@ -122,11 +112,6 @@ public class StaticGameConfig {
 
     public StaticGameConfig groundConfigs(List<GroundConfig> groundConfigs) {
         setGroundConfigs(groundConfigs);
-        return this;
-    }
-
-    public StaticGameConfig waterConfigs(List<WaterConfig> waterConfigs) {
-        setWaterConfigs(waterConfigs);
         return this;
     }
 

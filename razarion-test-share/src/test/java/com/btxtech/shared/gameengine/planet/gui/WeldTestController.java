@@ -363,7 +363,7 @@ public class WeldTestController implements Initializable {
     public void onPolygonDumpButton() {
         if (polygon != null) {
             System.out.println("-------------------- Slope --------------------------------");
-            System.out.println(InstanceStringGenerator.generateSlope(polygon));
+            throw new UnsupportedOperationException("...TODO...");
         }
 
     }

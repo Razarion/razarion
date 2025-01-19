@@ -18,7 +18,7 @@ import java.util.Collections;
 public class GroundTerrainServiceTest extends DaggerTerrainServiceTestBase {
     @Test
     public void testGroundTileGeneration1() {
-        setupTerrainTypeService(null, null, null, null, null, null, null, null, null, null, null, null);
+        setupTerrainTypeService(null, null, null, null, null, null, null, null);
 
         // showDisplay();
 
@@ -33,7 +33,7 @@ public class GroundTerrainServiceTest extends DaggerTerrainServiceTestBase {
         PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setSize(new DecimalPosition(3200, 3200));
 
-        setupTerrainTypeService(null, null, null, null, null, planetConfig, null, null, null, null, null, null);
+        setupTerrainTypeService(null, null, planetConfig, null, null, null, null, null);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(8, 16));
         // showDisplay();

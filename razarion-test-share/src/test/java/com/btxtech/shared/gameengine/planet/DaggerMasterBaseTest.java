@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.MasterPlanetConfig;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -17,7 +16,6 @@ import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -26,10 +24,10 @@ import java.util.List;
 public class DaggerMasterBaseTest extends AbstractDaggerIntegrationTest {
 
     protected void setupMasterEnvironment() {
-        setupMasterEnvironment(FallbackConfig.setupStaticGameConfig(), null);
+        setupMasterEnvironment(FallbackConfig.setupStaticGameConfig());
     }
 
-    protected void setupMasterEnvironment(StaticGameConfig staticGameConfig, List<TerrainSlopePosition> terrainSlopePositions) {
+    protected void setupMasterEnvironment(StaticGameConfig staticGameConfig) {
         setupEnvironment(staticGameConfig, FallbackConfig.setupPlanetConfig());
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
     }

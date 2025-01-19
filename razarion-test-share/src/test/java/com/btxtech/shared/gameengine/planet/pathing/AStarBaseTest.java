@@ -2,14 +2,10 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.FallbackConfig;
-import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.DaggerTerrainServiceTestBase;
@@ -17,11 +13,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import org.junit.Before;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-
-import static com.btxtech.shared.dto.FallbackConfig.DRIVEWAY_ID_ID;
 
 /**
  * Created by Beat
@@ -30,8 +22,6 @@ import static com.btxtech.shared.dto.FallbackConfig.DRIVEWAY_ID_ID;
 public abstract class AStarBaseTest extends DaggerTerrainServiceTestBase {
     @Before
     public void before() {
-        List<WaterConfig> waterConfigs = Collections.singletonList(new WaterConfig().id(1).waterLevel(-0.2).groundLevel(-2));
-
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
         terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1));
         terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5));
@@ -52,7 +42,7 @@ public abstract class AStarBaseTest extends DaggerTerrainServiceTestBase {
         terrainObjectPositions.add((new TerrainObjectPosition().terrainObjectConfigId(3).position(new DecimalPosition(212, 325))));
         terrainObjectPositions.add((new TerrainObjectPosition().terrainObjectConfigId(3).position(new DecimalPosition(223, 290))));
 
-        setupTerrainTypeService(null, null, null, waterConfigs, terrainObjectConfigs, planetConfig, null, terrainObjectPositions, null, null, null, null);
+        setupTerrainTypeService(null, terrainObjectConfigs, planetConfig, terrainObjectPositions, null, null, null, null);
     }
 
     protected SimplePath setupPath(double actorRadius, TerrainType actorTerrainType, DecimalPosition actorPosition, double range, double targetRadius, TerrainType targetTerrainType, DecimalPosition targetPosition) {

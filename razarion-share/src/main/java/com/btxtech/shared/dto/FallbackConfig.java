@@ -7,7 +7,6 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -50,9 +49,6 @@ public final class FallbackConfig {
     public static final int LEVEL_ID_1 = 1;
     public static final int INVENTORY_ITEM_ATTACKER_ID = 1;
     public static final int INVENTORY_ITEM_GOLD_ID = 1;
-    public static final int SLOPE_CONFIG_LAND_ID = 1001;
-    public static final int SLOPE_CONFIG_WATER_ID = 2001;
-    public static final int WATER_CONFIG_ID = 1;
     public static final int DRIVEWAY_ID_ID = 1001;
     public static final int PLANET_ID = 100;
 
@@ -91,7 +87,6 @@ public final class FallbackConfig {
         staticGameConfig.setResourceItemTypes(setupResourceItemType());
         staticGameConfig.setBoxItemTypes(setupBoxItemType());
         staticGameConfig.setInventoryItems(setupInventoryItems());
-        staticGameConfig.setWaterConfigs(setupWaterConfigs());
         return staticGameConfig;
     }
 
@@ -265,12 +260,6 @@ public final class FallbackConfig {
         return levelConfigs;
     }
 
-    public static List<WaterConfig> setupWaterConfigs() {
-        List<WaterConfig> waterConfigs = new ArrayList<>();
-        waterConfigs.add(new WaterConfig().id(WATER_CONFIG_ID).waterLevel(-0.7).groundLevel(-2));
-        return waterConfigs;
-    }
-
     public static PlanetConfig setupPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.id(PLANET_ID);
@@ -278,7 +267,6 @@ public final class FallbackConfig {
         planetConfig.setSize(new DecimalPosition(320, 320));
         planetConfig.setStartBaseItemTypeId(BUILDER_ITEM_TYPE_ID);
         planetConfig.setGroundConfigId(GROUND_CONFIG_ID);
-        planetConfig.setWaterConfigId(WATER_CONFIG_ID);
         return planetConfig;
     }
 

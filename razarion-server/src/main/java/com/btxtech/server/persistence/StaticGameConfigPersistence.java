@@ -20,8 +20,6 @@ public class StaticGameConfigPersistence {
     @Inject
     private GroundCrudPersistence groundCrudPersistence;
     @Inject
-    private WaterCrudPersistence waterCrudPersistence;
-    @Inject
     private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
     @Inject
     private ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence;
@@ -42,7 +40,6 @@ public class StaticGameConfigPersistence {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
         staticGameConfig.setGroundConfigs(groundCrudPersistence.read());
         staticGameConfig.setTerrainObjectConfigs(terrainObjectCrudPersistence.read());
-        staticGameConfig.setWaterConfigs(waterCrudPersistence.read());
         staticGameConfig.setBaseItemTypes(baseItemTypeCrudPersistence.read());
         staticGameConfig.setResourceItemTypes(resourceItemTypeCrudPersistence.read());
         staticGameConfig.setBoxItemTypes(boxItemTypeCrudPersistence.read());

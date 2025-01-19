@@ -31,8 +31,6 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
     private BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
     @Inject
     private GroundCrudPersistence groundCrudPersistence;
-    @Inject
-    private WaterCrudPersistence waterCrudPersistence;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -49,7 +47,6 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
     protected void fromConfig(PlanetConfig planetConfig, PlanetEntity planetEntity) {
         planetEntity.fromPlanetConfig(planetConfig,
                 groundCrudPersistence.getEntity(planetConfig.getGroundConfigId()),
-                waterCrudPersistence.getEntity(planetConfig.getWaterConfigId()),
                 baseItemTypeCrudPersistence.getEntity(planetConfig.getStartBaseItemTypeId()),
                 baseItemTypeLimitation(planetConfig.getItemTypeLimitation()));
     }

@@ -1,11 +1,8 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
@@ -25,29 +22,6 @@ import java.util.List;
 public class ProvideSouthSuccessors extends DaggerTerrainServiceTestBase {
 
     private void setup() {
-        List<SlopeConfig> slopeConfigs = new ArrayList<>();
-        SlopeConfig slopeConfigLand = new SlopeConfig();
-        slopeConfigLand.id(1);
-        slopeConfigLand.horizontalSpace(5);
-        slopeConfigLand.setSlopeShapes(Arrays.asList(
-                new SlopeShape().position(new DecimalPosition(2, 1)).slopeFactor(0.3),
-                new SlopeShape().position(new DecimalPosition(4, 5)).slopeFactor(1),
-                new SlopeShape().position(new DecimalPosition(8, 10)).slopeFactor(0.7),
-                new SlopeShape().position(new DecimalPosition(10, 20)).slopeFactor(0.7)
-        ));
-        slopeConfigLand.outerLineGameEngine(1).innerLineGameEngine(8);
-        slopeConfigs.add(slopeConfigLand);
-
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-//        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-//        terrainSlopePositionLand.setId(1);
-//        terrainSlopePositionLand.setSlopeConfigId(1);
-//        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
-//                GameTestHelper.createTerrainSlopeCorner(100, 60, 1), GameTestHelper.createTerrainSlopeCorner(100, 90, 1), // driveway
-//                GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
-//        terrainSlopePositions.add(terrainSlopePositionLand);
-
-
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
         terrainObjectConfigs.add(new TerrainObjectConfig().id(1).radius(1));
         terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(10));
@@ -58,7 +32,7 @@ public class ProvideSouthSuccessors extends DaggerTerrainServiceTestBase {
                 new TerrainObjectPosition().terrainObjectConfigId(3).position(new DecimalPosition(70, 82))
         );
 
-        setupTerrainTypeService(null, slopeConfigs, null, null, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null, null, null, null);
+        setupTerrainTypeService(null, terrainObjectConfigs, null, terrainObjectPositions, null, null, null, null);
     }
 
     @Test

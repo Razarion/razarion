@@ -37,7 +37,6 @@ import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntryEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
-import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.server.systemtests.framework.CleanupAfterTest;
 import com.btxtech.server.user.ForgotPasswordEntity;
 import com.btxtech.server.user.LoginCookieEntity;
@@ -54,8 +53,6 @@ import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopeCorner;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -154,9 +151,6 @@ public class ServerTestHelper {
     public static int GROUND_2_ID;
     public static int GROUND_3_ID;
     public static int GROUND_4_ID;
-    // Water
-    public static int WATER_1_ID;
-    public static int WATER_2_ID;
     // Terrain Object
     public static int TERRAIN_OBJECT_1_ID;
     public static int TERRAIN_OBJECT_2_ID;
@@ -195,11 +189,6 @@ public class ServerTestHelper {
     public static int LEVEL_UNLOCK_ID_L4_1;
     public static int LEVEL_UNLOCK_ID_L5_1;
     public static int LEVEL_UNLOCK_ID_L5_2;
-    // SlopeConfigEntity
-    public static int SLOPE_LAND_CONFIG_ENTITY_1;
-    public static int SLOPE_WATER_CONFIG_ENTITY_2;
-    // SlopeConfigEntity
-    public static int DRIVEWAY_CONFIG_ENTITY_1;
     private final List<List<CleanupAfterTest>> cleanupAfterTests = new ArrayList<>();
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
@@ -282,12 +271,6 @@ public class ServerTestHelper {
         GROUND_3_ID = persistInTransaction(new GroundConfigEntity()).getId();
         GROUND_4_ID = persistInTransaction(new GroundConfigEntity()).getId();
         cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(GroundConfigEntity.class)));
-    }
-
-    protected void setupWaterConfig() {
-        WATER_1_ID = persistInTransaction(new WaterConfigEntity()).getId();
-        WATER_2_ID = persistInTransaction(new WaterConfigEntity()).getId();
-        cleanupAfterTests.add(Collections.singletonList(new CleanupAfterTest().entity(WaterConfigEntity.class)));
     }
 
     protected void setupTerrainObjectConfig() {
@@ -491,13 +474,13 @@ public class ServerTestHelper {
         runInTransaction(entityManager -> {
             PlanetEntity planetEntity = new PlanetEntity();
             planetEntity.fromPlanetConfig(new PlanetConfig().size(new DecimalPosition(960, 960))
-                    , entityManager.find(GroundConfigEntity.class, GROUND_1_ID), entityManager.find(WaterConfigEntity.class, WATER_1_ID), null, Collections.emptyMap());
+                    , entityManager.find(GroundConfigEntity.class, GROUND_1_ID), null, Collections.emptyMap());
             planetEntity.getTerrainObjectPositionEntities().addAll(createTerrainObjectPositions());
             entityManager.persist(planetEntity);
             PLANET_1_ID = planetEntity.getId();
 
             planetEntity = new PlanetEntity();
-            planetEntity.fromPlanetConfig(new PlanetConfig(), entityManager.find(GroundConfigEntity.class, GROUND_1_ID), entityManager.find(WaterConfigEntity.class, WATER_1_ID), null, Collections.emptyMap());
+            planetEntity.fromPlanetConfig(new PlanetConfig(), entityManager.find(GroundConfigEntity.class, GROUND_1_ID), null, Collections.emptyMap());
             entityManager.persist(planetEntity);
             PLANET_2_ID = planetEntity.getId();
         });
@@ -670,28 +653,6 @@ public class ServerTestHelper {
 
     protected void setupPlanetWithSlopes() throws Exception {
         setupPlanetDb();
-
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-
-        // Land slope
-        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.slopeConfigId(SLOPE_LAND_CONFIG_ENTITY_1);
-        terrainSlopePositionLand.polygon(Arrays.asList(new TerrainSlopeCorner().position(new DecimalPosition(50, 40)), new TerrainSlopeCorner().position(new DecimalPosition(100, 40)),
-                new TerrainSlopeCorner().position(new DecimalPosition(100, 60)), new TerrainSlopeCorner().position(new DecimalPosition(100, 90)),
-                new TerrainSlopeCorner().position(new DecimalPosition(100, 110)), new TerrainSlopeCorner().position(new DecimalPosition(50, 110))));
-        terrainSlopePositions.add(terrainSlopePositionLand);
-        // Water slope
-        TerrainSlopePosition terrainSlopePositionWater = new TerrainSlopePosition();
-        terrainSlopePositionWater.slopeConfigId(SLOPE_WATER_CONFIG_ENTITY_2);
-        terrainSlopePositionWater.polygon(Arrays.asList(new TerrainSlopeCorner().position(new DecimalPosition(64, 200)), new TerrainSlopeCorner().position(new DecimalPosition(231, 200)),
-                new TerrainSlopeCorner().position(new DecimalPosition(231, 256)), new TerrainSlopeCorner().position(new DecimalPosition(151, 257)),
-                new TerrainSlopeCorner().position(new DecimalPosition(239, 359)), new TerrainSlopeCorner().position(new DecimalPosition(49, 360))));
-        terrainSlopePositions.add(terrainSlopePositionWater);
-
-        // TODO planetCrudPersistence.createTerrainSlopePositions(PLANET_2_ID, terrainSlopePositions);
-
-        // Start from ServletContextMonitor.contextInitialized() not working
-        // TODO serverGameEngineControl.start(null, true);
     }
 
     protected void cleanPlanets() {
@@ -702,11 +663,6 @@ public class ServerTestHelper {
         cleanTableNative("QUEST_COMPARISON_BOT");
         cleanTable(ComparisonConfigEntity.class);
         cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
-
-        // cleanSlopeEntities();
-        // cleanTable(TerrainObjectPositionEntity.class);
-        // cleanTable(PlanetEntity.class);
-        cleanTable(WaterConfigEntity.class);
         cleanTable(GroundConfigEntity.class);
         cleanTable(ServerGameEngineConfigEntity.class);
     }

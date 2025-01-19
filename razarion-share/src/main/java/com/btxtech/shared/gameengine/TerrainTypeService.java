@@ -1,10 +1,7 @@
 package com.btxtech.shared.gameengine;
 
-import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import jsinterop.annotations.JsType;
 
@@ -22,7 +19,6 @@ import java.util.Map;
 @Singleton
 public class TerrainTypeService {
     private final Map<Integer, GroundConfig> groundConfigs = new HashMap<>();
-    private final Map<Integer, WaterConfig> waterConfigs = new HashMap<>();
     private final Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
 
     @Inject
@@ -32,7 +28,6 @@ public class TerrainTypeService {
 
     public void init(StaticGameConfig staticGameConfig) {
         setGroundConfigs(staticGameConfig.getGroundConfigs());
-        setWaterConfigs(staticGameConfig.getWaterConfigs());
         setTerrainObjectConfigs(staticGameConfig.getTerrainObjectConfigs());
     }
 
@@ -41,15 +36,6 @@ public class TerrainTypeService {
         if (groundConfigs != null) {
             for (GroundConfig groundConfig : groundConfigs) {
                 this.groundConfigs.put(groundConfig.getId(), groundConfig);
-            }
-        }
-    }
-
-    private void setWaterConfigs(Collection<WaterConfig> waterConfigs) {
-        this.waterConfigs.clear();
-        if (waterConfigs != null) {
-            for (WaterConfig waterConfig : waterConfigs) {
-                this.waterConfigs.put(waterConfig.getId(), waterConfig);
             }
         }
     }
@@ -73,14 +59,6 @@ public class TerrainTypeService {
                 this.terrainObjectConfigs.put(terrainObjectConfig.getId(), terrainObjectConfig);
             }
         }
-    }
-
-    public WaterConfig getWaterConfig(int id) {
-        WaterConfig waterConfig = waterConfigs.get(id);
-        if (waterConfig == null) {
-            throw new IllegalArgumentException("No entry in WaterConfigs for id: " + id);
-        }
-        return waterConfig;
     }
 
     @SuppressWarnings("unused") // Used by Angular

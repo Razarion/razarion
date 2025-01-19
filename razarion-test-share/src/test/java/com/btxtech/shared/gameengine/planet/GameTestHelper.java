@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
@@ -10,12 +9,9 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.CollectionUtils;
-import org.easymock.EasyMock;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.easymock.EasyMock.anyObject;
 
 /**
  * Created by Beat
@@ -123,9 +119,5 @@ public interface GameTestHelper {
             obstacleSlopes.add(new ObstacleSlope(point1, point2, previous, next));
         }
         return obstacleSlopes;
-    }
-
-    static TerrainSlopeCorner createTerrainSlopeCorner(double x, double y, Integer slopeDrivewayId) {
-        return new TerrainSlopeCorner().position(new DecimalPosition(x, y)).slopeDrivewayId(slopeDrivewayId);
     }
 }
