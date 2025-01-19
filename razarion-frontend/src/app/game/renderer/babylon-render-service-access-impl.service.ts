@@ -13,7 +13,6 @@ import {
   MarkerConfig,
   PlaceConfig,
   ResourceItemType,
-  ShapeTransform,
   TerrainSlopePosition,
   TerrainTile,
 } from "src/app/gwtangular/GwtAngularFacade";
@@ -133,7 +132,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
   private directionalLight!: DirectionalLight
-  private diplomacyMaterialCache: Map<number, Map<Diplomacy, NodeMaterial>> = new Map<number, Map<Diplomacy, NodeMaterial>>();
   public readonly itemMarkerMaterialCache: Map<Diplomacy, NodeMaterial> = new Map<Diplomacy, NodeMaterial>();
   public baseItemContainer!: TransformNode;
   public resourceItemContainer!: TransformNode;
@@ -661,93 +659,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
   }
 
-  private findChildNode(node: Node, name: string): Node | null {
-    if (node.name === name) {
-      return node;
-    }
-    for (let childNode of node.getChildren()) {
-      let childMesh = this.findChildNode(childNode, name);
-      if (childMesh) {
-        return childMesh;
-      }
-    }
-    return null;
-  }
-
   createBaseItemPlacerPresenter(): BaseItemPlacerPresenter {
     return new BaseItemPlacerPresenterImpl(this);
-  }
-
-  private createMesh(threeJsModelId: number, element3DId: string, parent: Node, diplomacy: Diplomacy, shapeTransforms: ShapeTransform[] | null) {
-    let assetContainer = this.babylonModelService.getAssetContainer(threeJsModelId);
-    let threeJsModelConfig = this.babylonModelService.getThreeJsModelConfig(threeJsModelId);
-
-    let childMesh = null;
-    for (let childNod of assetContainer.getNodes()) {
-      childMesh = this.findChildNode(childNod, element3DId);
-      if (childMesh) {
-        break;
-      }
-    }
-    if (childMesh) {
-      let childParent: Node = parent;
-      let mesh = (<Mesh>childMesh!).clone(`${element3DId} '${threeJsModelId}'`);
-      if (shapeTransforms) {
-        for (let shapeTransform of shapeTransforms) {
-          const transform: TransformNode = new TransformNode(`${element3DId} '${threeJsModelId}'`);
-          transform.ignoreNonUniformScaling = true;
-          transform.position.x = shapeTransform.getTranslateX();
-          transform.position.y = shapeTransform.getTranslateY();
-          transform.position.z = shapeTransform.getTranslateZ();
-          transform.rotationQuaternion = new Quaternion(shapeTransform.getRotateX(),
-            shapeTransform.getRotateY(),
-            shapeTransform.getRotateZ(),
-            shapeTransform.getRotateW());
-          // Strange unity behavior
-          transform.scaling.x = (mesh.position.x < 0 ? -1 : 1) * shapeTransform.getScaleX();
-          transform.scaling.y = shapeTransform.getScaleY();
-          transform.scaling.z = shapeTransform.getScaleZ();
-          transform.parent = childParent;
-          childParent = transform;
-        }
-      }
-      if (threeJsModelConfig.getNodeMaterialId()) {
-        let diplomacyCache = this.diplomacyMaterialCache.get(threeJsModelConfig.getNodeMaterialId()!);
-        if (!diplomacyCache) {
-          diplomacyCache = new Map<Diplomacy, NodeMaterial>();
-          this.diplomacyMaterialCache.set(threeJsModelConfig.getNodeMaterialId()!, diplomacyCache)
-        }
-        let cachedMaterial = diplomacyCache.get(diplomacy);
-        if (!cachedMaterial) {
-          cachedMaterial = this.babylonModelService.getNodeMaterial(threeJsModelConfig.getNodeMaterialId()!).clone(`${threeJsModelConfig.getNodeMaterialId()} '${diplomacy}'`);
-          const diplomacyColorNode = (<NodeMaterial>cachedMaterial).getBlockByPredicate(block => {
-            return "DiplomacyColor" === block.name;
-          });
-          if (diplomacyColorNode) {
-            (<InputBlock>diplomacyColorNode).value = BabylonRenderServiceAccessImpl.color4Diplomacy(diplomacy);
-          }
-          diplomacyCache.set(diplomacy, cachedMaterial);
-        }
-        mesh.material = cachedMaterial;
-        mesh.hasVertexAlpha = false;
-      }
-      mesh.parent = childParent;
-      // console.log(`${element3DId} '${threeJsModelId}' ${mesh.position}`)
-
-      mesh.position.x = 0;
-      mesh.position.y = 0;
-      mesh.position.z = 0;
-      // this.shadowGenerator.addShadowCaster(mesh, true);
-      // mesh.rotationQuaternion = null;
-      // mesh.rotation.x = 0;
-      // mesh.rotation.y = 0;
-      // mesh.rotation.z = 0;
-      // mesh.scaling.x = 1;
-      // mesh.scaling.y = 1;
-      // mesh.scaling.z = 1;
-    } else {
-      console.warn(`Can not find element3DId '${element3DId}' in threeJsModelId '${threeJsModelId}'.`)
-    }
   }
 
   setEditorTerrainTileCreationCallback(callback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined) {

@@ -220,8 +220,6 @@ export interface PlanetConfig {
 }
 
 export interface TerrainObjectConfig {
-  getThreeJsModelPackConfigId(): number;
-
   getModel3DId(): number;
 
   getId(): number;

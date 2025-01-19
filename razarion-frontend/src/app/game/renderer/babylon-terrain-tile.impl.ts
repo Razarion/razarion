@@ -39,11 +39,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private groundMesh: Mesh;
 
   constructor(public readonly terrainTile: TerrainTile,
-    private gwtAngularService: GwtAngularService,
-    private rendererService: BabylonRenderServiceAccessImpl,
-    actionService: ActionService,
-    private babylonModelService: BabylonModelService,
-    private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+              private gwtAngularService: GwtAngularService,
+              private rendererService: BabylonRenderServiceAccessImpl,
+              actionService: ActionService,
+              private babylonModelService: BabylonModelService,
+              private threeJsWaterRenderService: ThreeJsWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
 
     let actionManager = new ActionManager(rendererService.getScene());
@@ -86,8 +86,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
         try {
           let terrainObjectConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
-          if (!terrainObjectConfig.getThreeJsModelPackConfigId() && !terrainObjectConfig.getModel3DId()) {
-            throw new Error(`TerrainObjectConfig has no model3DId nor threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
+          if (!terrainObjectConfig.getModel3DId()) {
+            throw new Error(`TerrainObjectConfig has no model3DId: ${terrainObjectConfig.toString()}`);
           }
           terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
             try {
@@ -126,7 +126,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           const decal = MeshBuilder.CreateDecal("Bot ground", this.groundMesh, {
             position: pickingInfo!.pickedPoint!,
             size: new Vector3(babylonDecal.ySize, babylonDecal.xSize, 10),
-            normal: new Vector3(0,1,0)
+            normal: new Vector3(0, 1, 0)
           });
           decal.material = material;
           decal.material.zOffset = -2
@@ -165,11 +165,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         terrainObjectModel.rotation.getY());
     }
     let terrainObjectMesh;
-    if(terrainObjectConfig.getModel3DId() || terrainObjectConfig.getModel3DId() === 0) {
-      terrainObjectMesh = babylonModelService.cloneModel3D(terrainObjectConfig.getModel3DId(), terrainObjectModelTransform)
-    } else {
-      terrainObjectMesh = <Mesh>babylonModelService.cloneMesh(terrainObjectConfig.getThreeJsModelPackConfigId(), terrainObjectModelTransform);
-    }
+    terrainObjectMesh = babylonModelService.cloneModel3D(terrainObjectConfig.getModel3DId(), terrainObjectModelTransform)
     terrainObjectMesh.name = `TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`;
     terrainObjectMesh.parent = terrainObjectModelTransform;
 

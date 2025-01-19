@@ -129,8 +129,8 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
                 return;
               }
               let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(this.newTerrainObjectConfig.objectNameId.id);
-              if (!terrainObjectConfig.getThreeJsModelPackConfigId() && !terrainObjectConfig.getModel3DId()) {
-                throw new Error(`TerrainObjectConfig has no model3DId nor threeJsModelPackConfigId: ${terrainObjectConfig.toString()}`);
+              if (!terrainObjectConfig.getModel3DId()) {
+                throw new Error(`TerrainObjectConfig has no model3DId: ${terrainObjectConfig.toString()}`);
               }
 
               let terrainObjectModel = new class implements TerrainObjectModel {
