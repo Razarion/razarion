@@ -12,7 +12,6 @@ import com.btxtech.shared.rest.ParticleSystemEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
 import com.btxtech.shared.rest.ResourceItemTypeEditorController;
 import com.btxtech.shared.rest.ServerGameEngineEditorController;
-import com.btxtech.shared.rest.Shape3DEditorController;
 import com.btxtech.shared.rest.TerrainObjectEditorController;
 import com.btxtech.shared.rest.ThreeJsModelEditorController;
 import com.btxtech.shared.rest.ThreeJsModelPackEditorController;
@@ -27,7 +26,6 @@ public enum CollectionReferenceType {
     GROUND(GroundEditorController.class, "Ground", CommonUrl.GROUND_EDITOR_PATH),
     DRIVEWAY(DrivewayEditorController.class, "Driveway", CommonUrl.DRIVEWAY_EDITOR_PATH),
     GAME_UI_CONTEXT(GameUiContextEditorController.class, "Game Ui Context", CommonUrl.GAME_UI_CONTEXT_EDITOR_PATH),
-    SHAPE_3D(Shape3DEditorController.class, "Shape 3D", CommonUrl.SHAPE_3D_EDITOR_PATH),
     TERRAIN_OBJECT(TerrainObjectEditorController.class, "Terrain Object", CommonUrl.TERRAIN_OBJECT_EDITOR_PATH),
     BASE_ITEM(BaseItemTypeEditorController.class, "Base Item", CommonUrl.BASE_ITEM_TYPE_EDITOR_PATH),
     RESOURCE_ITEM(ResourceItemTypeEditorController.class, "Resource Item", CommonUrl.RESOURCE_ITEM_TYPE_EDITOR_PATH),

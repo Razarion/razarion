@@ -50,7 +50,6 @@ public class CommonUrl {
     public static final String DRIVEWAY_EDITOR_PATH = "editor/driveway";
     public static final String PLANET_EDITOR_PATH = "editor/planet";
     public static final String LEVEL_EDITOR_PATH = "editor/level";
-    public static final String SHAPE_3D_EDITOR_PATH = "editor/shape-3d";
     public static final String BASE_ITEM_TYPE_EDITOR_PATH = "editor/base_item_type";
     public static final String BOX_ITEM_TYPE_EDITOR_PATH = "editor/box_item_type";
     public static final String RESOURCE_ITEM_TYPE_EDITOR_PATH = "editor/resource_item_type";
@@ -61,11 +60,8 @@ public class CommonUrl {
     public static final String BRUSH_EDITOR_PATH = "editor/brush";
     public static final String THREE_JS_MODEL_PACK_EDITOR_PATH = "editor/three-js-model-pack-editor";
     public static final String INVENTORY_ITEM_EDITOR_PATH = "editor/inventory-item";
-    public static final String SHAPE_3D_CONTROLLER = G_ZIPPED + "/" + "shape3d-controller";
     public static final String TERRAIN_SHAPE_CONTROLLER = G_ZIPPED + "/" + "terrainshape";
     public static final String TERRAIN_HEIGHT_MAP_CONTROLLER = "terrainHeightMap";
-    public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
-    public static final String COLLADA_CONVERTER = "collada-convert";
     public static final String TRACKER_PATH = "tracker";
     public static final String BACKEND_PATH = "backend";
     public static final String SERVER_MGMT = "servermgmt";
@@ -101,14 +97,6 @@ public class CommonUrl {
     public static String getWorkerApplicationRoot() {
         // DOMAIN is needed in the worker. Worker adds always worker JS dir to the path
         return APPLICATION_PATH;
-    }
-
-    public static String loadShape3dBufferUrl() {
-        return APPLICATION_PATH + "/" + SHAPE_3D_CONTROLLER + "/" + SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
-    }
-
-    public static String colladaConverterUrl() {
-        return APPLICATION_PATH + "/" + SHAPE_3D_CONTROLLER + "/" + COLLADA_CONVERTER;
     }
 
     public static String terrainShapeController(int planetId) {

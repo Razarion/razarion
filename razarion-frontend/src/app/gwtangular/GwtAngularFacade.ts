@@ -271,28 +271,6 @@ export interface ThreeJsModelPackConfig {
   getRotation(): Vertex;
 }
 
-export interface ShapeTransform {
-  getTranslateX(): number;
-
-  getTranslateY(): number;
-
-  getTranslateZ(): number;
-
-  getRotateX(): number;
-
-  getRotateY(): number;
-
-  getRotateZ(): number;
-
-  getRotateW(): number;
-
-  getScaleX(): number;
-
-  getScaleY(): number;
-
-  getScaleZ(): number;
-}
-
 // ---------- ItemType ----------
 
 export interface ItemType {

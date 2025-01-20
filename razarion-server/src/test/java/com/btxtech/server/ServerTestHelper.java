@@ -142,10 +142,6 @@ public class ServerTestHelper {
     public static int AUDIO_1_ID;
     public static int AUDIO_2_ID;
     public static int AUDIO_3_ID;
-    // Shape3D ColladaEntity
-    public static int SHAPE_3D_1_ID;
-    public static int SHAPE_3D_2_ID;
-    public static int SHAPE_3D_3_ID;
     // Ground
     public static int GROUND_1_ID;
     public static int GROUND_2_ID;

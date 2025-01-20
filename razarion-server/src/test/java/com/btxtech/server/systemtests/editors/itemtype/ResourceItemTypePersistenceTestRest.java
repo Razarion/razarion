@@ -40,7 +40,6 @@ public class ResourceItemTypePersistenceTestRest extends AbstractCrudTest<Resour
                 .i18nName(i18nHelper("asdf"))
                 .i18nDescription(i18nHelper("Codsfe gfrgg ms"))
                 .thumbnail(IMAGE_1_ID)
-                .threeJsModelPackConfigId(SHAPE_3D_1_ID)
         );
         registerUpdate(resourceItemType -> resourceItemType
                 .setAmount(100000)
@@ -49,7 +48,6 @@ public class ResourceItemTypePersistenceTestRest extends AbstractCrudTest<Resour
                 .i18nName(i18nHelper("Razarion"))
                 .i18nDescription(i18nHelper("Harvest Razarion from here"))
                 .thumbnail(IMAGE_2_ID)
-                .threeJsModelPackConfigId(SHAPE_3D_2_ID)
         );
     }
 }

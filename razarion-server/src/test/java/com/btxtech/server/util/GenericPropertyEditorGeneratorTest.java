@@ -1,7 +1,5 @@
 package com.btxtech.server.util;
 
-import com.btxtech.shared.datatypes.shape.config.Shape3DConfig;
-import com.btxtech.shared.datatypes.shape.config.Shape3DElementConfig;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceInfo;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
@@ -12,28 +10,12 @@ import com.btxtech.shared.dto.editor.GenericPropertyInfo;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class GenericPropertyEditorGeneratorTest {
-    public static class CollectionReferenceTestClass {
-        @CollectionReference(CollectionReferenceType.IMAGE)
-        @SuppressWarnings("unused")
-        private int imageId;
-    }
-
-    public static class CustomEditorTestClass {
-        @CustomEditor(CustomEditorType.COLLADA)
-        @SuppressWarnings("unused")
-        private int colladaString;
-    }
-
     @Test
     public void generate() {
         GenericPropertyInfo genericPropertyInfo = GenericPropertyEditorGenerator.generate();
-        // Verify listElementTypes
-        Map<String, Map<String, String>> listElementTypes = genericPropertyInfo.getListElementTypes();
-        Assert.assertEquals(Shape3DElementConfig.class.getName(), listElementTypes.get(Shape3DConfig.class.getName()).get("shape3DElementConfigs"));
         // Verify CollectionReference
         CollectionReferenceInfo collectionReferenceInfo = genericPropertyInfo.getCollectionReferenceInfos().stream()
                 .filter(cri -> cri.getJavaParentPropertyClass().equals(CollectionReferenceTestClass.class.getName()))
@@ -50,6 +32,18 @@ public class GenericPropertyEditorGeneratorTest {
         Assert.assertEquals(CustomEditorTestClass.class.getName(), customEditorInfo.getJavaParentPropertyClass());
         Assert.assertEquals("colladaString", customEditorInfo.getJavaPropertyName());
         Assert.assertEquals(CustomEditorType.COLLADA, customEditorInfo.getType());
+    }
+
+    public static class CollectionReferenceTestClass {
+        @CollectionReference(CollectionReferenceType.IMAGE)
+        @SuppressWarnings("unused")
+        private int imageId;
+    }
+
+    public static class CustomEditorTestClass {
+        @CustomEditor(CustomEditorType.COLLADA)
+        @SuppressWarnings("unused")
+        private int colladaString;
     }
 
 }

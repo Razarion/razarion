@@ -47,12 +47,8 @@ public class BaseItemType extends ItemType {
     private double boxPickupRange;
     private Integer unlockCrystals;
     private int spawnDurationMillis;
-    @CollectionReference(CollectionReferenceType.SHAPE_3D)
-    private Integer spawnShape3DId;
     private Integer spawnAudioId;
     private List<DemolitionStepEffect> demolitionStepEffects;
-    @CollectionReference(CollectionReferenceType.SHAPE_3D)
-    private Integer wreckageShape3DId;
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer demolitionImageId;
     @CollectionReference(CollectionReferenceType.IMAGE)
@@ -221,14 +217,6 @@ public class BaseItemType extends ItemType {
         this.spawnDurationMillis = spawnDurationMillis;
     }
 
-    public Integer getSpawnShape3DId() {
-        return spawnShape3DId;
-    }
-
-    public void setSpawnShape3DId(Integer spawnShape3DId) {
-        this.spawnShape3DId = spawnShape3DId;
-    }
-
     public Integer getSpawnAudioId() {
         return spawnAudioId;
     }
@@ -243,14 +231,6 @@ public class BaseItemType extends ItemType {
 
     public void setDemolitionStepEffects(List<DemolitionStepEffect> demolitionStepEffects) {
         this.demolitionStepEffects = demolitionStepEffects;
-    }
-
-    public Integer getWreckageShape3DId() {
-        return wreckageShape3DId;
-    }
-
-    public void setWreckageShape3DId(Integer wreckageShape3DId) {
-        this.wreckageShape3DId = wreckageShape3DId;
     }
 
     public Integer getDemolitionImageId() {
@@ -398,11 +378,6 @@ public class BaseItemType extends ItemType {
         return this;
     }
 
-    public BaseItemType spawnShape3DId(Integer spawnShape3DId) {
-        setSpawnShape3DId(spawnShape3DId);
-        return this;
-    }
-
     public BaseItemType spawnAudioId(Integer spawnAudioId) {
         setSpawnAudioId(spawnAudioId);
         return this;
@@ -410,11 +385,6 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType demolitionStepEffects(List<DemolitionStepEffect> demolitionStepEffects) {
         setDemolitionStepEffects(demolitionStepEffects);
-        return this;
-    }
-
-    public BaseItemType wreckageShape3DId(Integer wreckageShape3DId) {
-        setWreckageShape3DId(wreckageShape3DId);
         return this;
     }
 
