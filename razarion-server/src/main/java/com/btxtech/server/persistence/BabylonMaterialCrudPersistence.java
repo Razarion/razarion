@@ -1,8 +1,6 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.ui.BabylonMaterialEntity;
-import com.btxtech.server.persistence.ui.GltfBabylonMaterial;
-import com.btxtech.server.persistence.ui.GltfEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -38,6 +36,7 @@ public class BabylonMaterialCrudPersistence extends AbstractEntityCrudPersistenc
         dbBabylonMaterialEntity.setOverrideAlbedoTextureNode(babylonMaterialEntity.getOverrideAlbedoTextureNode());
         dbBabylonMaterialEntity.setOverrideMetallicTextureNode(babylonMaterialEntity.getOverrideMetallicTextureNode());
         dbBabylonMaterialEntity.setOverrideBumpTextureNode(babylonMaterialEntity.getOverrideBumpTextureNode());
+        dbBabylonMaterialEntity.setOverrideAmbientOcclusionTextureNode(babylonMaterialEntity.getOverrideAmbientOcclusionTextureNode());
         return dbBabylonMaterialEntity;
     }
 

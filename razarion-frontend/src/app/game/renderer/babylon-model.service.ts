@@ -689,7 +689,8 @@ export class BabylonModelService {
       let babylonMaterialEntity = this.babylonMaterialEntities.get(materialId)!;
       if (babylonMaterialEntity.overrideAlbedoTextureNode
         || babylonMaterialEntity.overrideMetallicTextureNode
-        || babylonMaterialEntity.overrideBumpTextureNode) {
+        || babylonMaterialEntity.overrideBumpTextureNode
+        || babylonMaterialEntity.overrideAmbientOcclusionTextureNode) {
         let glbMaterial = <PBRMaterial>assetContainer.materials.find(material => material.name === gltfMaterialName);
         if (glbMaterial) {
           gltfHelper.assignTextures(babylonMaterialEntity, glbMaterial);
@@ -705,6 +706,7 @@ class GltfTextures {
   constructor(public albedoTexture: Nullable<BaseTexture>,
               private metallicTexture: Nullable<BaseTexture>,
               private bumpTexture: Nullable<BaseTexture>,
+              private ambientOcclusionTexture: Nullable<BaseTexture>,
               private babylonMaterialEntity: BabylonMaterialEntity) {
   }
 
@@ -717,6 +719,10 @@ class GltfTextures {
     }
     if (this.bumpTexture) {
       (<any>nodeMaterial.getBlockByName(this.babylonMaterialEntity.overrideBumpTextureNode)).texture = this.bumpTexture;
+    }
+    if (this.ambientOcclusionTexture) {
+      (<any>nodeMaterial.getBlockByName(this.babylonMaterialEntity.overrideAmbientOcclusionTextureNode)).texture = this.ambientOcclusionTexture;
+      (<any>nodeMaterial.getBlockByName("ambientOcclusionEnable")).value = 1;
     }
   }
 }
@@ -766,7 +772,8 @@ class GltfHelper {
           }
           if (babylonMaterialEntity!.overrideAlbedoTextureNode
             || babylonMaterialEntity!.overrideMetallicTextureNode
-            || babylonMaterialEntity!.overrideBumpTextureNode) {
+            || babylonMaterialEntity!.overrideBumpTextureNode
+            || babylonMaterialEntity!.overrideAmbientOcclusionTextureNode) {
             let gltfTextures = this.gltfTexturesMap.get(originalMaterialName);
             gltfTextures && gltfTextures.overrideTexture(<NodeMaterial>cachedMaterial);
           }
@@ -784,6 +791,7 @@ class GltfHelper {
     let albedoTexture: Nullable<BaseTexture> = null;
     let metallicTexture: Nullable<BaseTexture> = null;
     let bumpTexture: Nullable<BaseTexture> = null;
+    let ambientOcclusionTexture: Nullable<BaseTexture> = null;
 
     if (babylonMaterialEntity.overrideAlbedoTextureNode) {
       albedoTexture = glbMaterial._albedoTexture;
@@ -794,10 +802,14 @@ class GltfHelper {
     if (babylonMaterialEntity.overrideBumpTextureNode) {
       bumpTexture = glbMaterial._bumpTexture;
     }
+    if (babylonMaterialEntity.overrideAmbientOcclusionTextureNode) {
+      ambientOcclusionTexture = glbMaterial._ambientTexture;
+    }
     if (albedoTexture || metallicTexture || bumpTexture) {
       this.gltfTexturesMap.set(glbMaterial.name, new GltfTextures(albedoTexture,
         metallicTexture,
         bumpTexture,
+        ambientOcclusionTexture,
         babylonMaterialEntity));
     }
   }

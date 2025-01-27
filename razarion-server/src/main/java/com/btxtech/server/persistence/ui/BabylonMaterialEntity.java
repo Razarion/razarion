@@ -21,6 +21,7 @@ public class BabylonMaterialEntity extends BaseEntity {
     private String overrideAlbedoTextureNode;
     private String overrideMetallicTextureNode;
     private String overrideBumpTextureNode;
+    private String overrideAmbientOcclusionTextureNode;
 
     public byte[] getData() {
         return data;
@@ -68,6 +69,14 @@ public class BabylonMaterialEntity extends BaseEntity {
 
     public void setOverrideBumpTextureNode(String overrideBumpTextureNode) {
         this.overrideBumpTextureNode = overrideBumpTextureNode;
+    }
+
+    public String getOverrideAmbientOcclusionTextureNode() {
+        return overrideAmbientOcclusionTextureNode;
+    }
+
+    public void setOverrideAmbientOcclusionTextureNode(String ambientOcclusionTextureNode) {
+        this.overrideAmbientOcclusionTextureNode = ambientOcclusionTextureNode;
     }
 
     public BabylonMaterialEntity data(byte[] data) {

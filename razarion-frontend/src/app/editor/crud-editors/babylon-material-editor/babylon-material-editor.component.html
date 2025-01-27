@@ -49,6 +49,14 @@
     </div>
   </div>
   <div class="grid grid-razarion-editor">
+    <span class="col-4">Override ambient occlusion texture node</span>
+    <div class="col-8">
+      <input [(ngModel)]="babylonMaterialEntity.overrideAmbientOcclusionTextureNode" type="text"
+             [disabled]="!babylonMaterialEntity.nodeMaterial"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
     <span class="col-4">Override metallic texture node</span>
     <div class="col-8">
       <input [(ngModel)]="babylonMaterialEntity.overrideMetallicTextureNode" type="text"

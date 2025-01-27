@@ -22,10 +22,10 @@ import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
 import {
   AbstractMesh,
   Color3,
-  CubeTexture,
   DirectionalLight,
   Engine,
   FreeCamera,
+  HemisphericLight,
   InputBlock,
   Matrix,
   Mesh,
@@ -225,13 +225,20 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.camera.setTarget(new Vector3(0, 0, 0));
 
     // ----- Light -----
-    this.directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0.5, -2, 0.5), this.scene);
-    this.directionalLight.parent = this.camera;
-    this.directionalLight.intensity = 2;
+    const lightDirection = new Vector3(-1, -2, 1);
+    this.directionalLight = new DirectionalLight("DirectionalLight", lightDirection, this.scene);
+    this.directionalLight.intensity = 1.5;
     this.directionalLight.autoCalcShadowZBounds = true;
+
+    const hemisphericLight = new HemisphericLight("HemiLight", lightDirection, this.scene);
+    hemisphericLight.diffuse = new Color3(0.945, 0.969, 0.894);
+    hemisphericLight.groundColor = new Color3(0.325, 0.278, 0.055);
+    hemisphericLight.intensity = 0.2;
+
     this.shadowGenerator = new ShadowGenerator(2048, this.directionalLight);
     this.shadowGenerator.bias = 0.006;
     this.shadowGenerator.normalBias = 0;
+    this.shadowGenerator.darkness = 0.2;
     this.shadowGenerator.filter = ShadowGenerator.FILTER_PCF;
     this.shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_LOW;
 
@@ -313,12 +320,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.engine = new Engine(this.canvas)
     this.scene = new Scene(this.engine);
     this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
-
-    const envLighting = CubeTexture.CreateFromPrefilteredData("https://playground.babylonjs.com/textures/countrySpecularHDR.dds", this.scene);
-    envLighting.name = "countrySpecularHDR";
-    envLighting.gammaSpace = false;
-    envLighting.rotationY = 1.9;
-    this.scene.environmentTexture = envLighting;
 
     this.babylonModelService.setScene(this.scene);
     this.baseItemContainer = new TransformNode("Base items");

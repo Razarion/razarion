@@ -13,7 +13,7 @@ export class GwtAngularService {
   gwtAngularFacade!: GwtAngularFacade;
   crashListener!: () => void;
 
-  constructor(zone: NgZone, threeJsModelService: BabylonModelService) {
+  constructor(zone: NgZone, babylonModelService: BabylonModelService) {
     const self = this;
     this.gwtAngularFacade = new class extends GwtAngularFacade {
       onCrash(): void {
@@ -24,7 +24,7 @@ export class GwtAngularService {
     };
     this.gwtAngularFacade.gwtAngularBoot = new class implements GwtAngularBoot {
       loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[]) {
-        return threeJsModelService.init(threeJsModelConfigs, particleSystemConfigs, self);
+        return babylonModelService.init(threeJsModelConfigs, particleSystemConfigs, self);
       };
     }
     window.gwtAngularFacade = this.gwtAngularFacade;
