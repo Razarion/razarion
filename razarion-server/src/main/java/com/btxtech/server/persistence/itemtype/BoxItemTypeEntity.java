@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.server.persistence.I18nBundleEntity;
+import com.btxtech.server.persistence.ui.Model3DEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -44,6 +45,9 @@ public class BoxItemTypeEntity {
     private boolean fixVerticalNorm;
     @Enumerated(EnumType.STRING)
     private TerrainType terrainType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Model3DEntity model3DEntity;
     private Integer ttl; // seconds
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private I18nBundleEntity i18nName;
@@ -69,7 +73,7 @@ public class BoxItemTypeEntity {
                 .id(id)
                 .internalName(internalName)
                 .thumbnail(extractId(thumbnail, ImageLibraryEntity::getId))
-                .threeJsModelPackConfigId(extractId(threeJsModelPackConfigEntity, ThreeJsModelPackConfigEntity::getId));
+                .model3DId(extractId(model3DEntity, Model3DEntity::getId));
         if (i18nName != null) {
             boxItemType.setI18nName(i18nName.toI18nString());
         }
@@ -105,6 +109,10 @@ public class BoxItemTypeEntity {
                 boxItemTypePossibilities.add(boxItemTypePossibilityEntity);
             }
         }
+    }
+
+    public void setModel3DEntity(Model3DEntity model3DEntity) {
+        this.model3DEntity = model3DEntity;
     }
 
     public void setThreeJsModelPackConfigEntity(ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity) {

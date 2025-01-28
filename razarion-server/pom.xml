@@ -244,15 +244,14 @@
                         <class>com.btxtech.shared.dto.ServerGameEngineConfig</class>
                         <class>com.btxtech.shared.dto.ObjectNameId</class>
                         <class>com.btxtech.shared.dto.DrivewayConfig</class>
-                        <class>com.btxtech.shared.dto.SlopeTerrainEditorUpdate</class>
                         <class>com.btxtech.shared.rest.RestApplication</class>
                         <class>com.btxtech.server.rest.BackendController</class>
                         <class>com.btxtech.shared.rest.LevelEditorController</class>
                         <class>com.btxtech.shared.rest.BaseItemTypeEditorController</class>
                         <class>com.btxtech.shared.rest.BoxItemTypeEditorController</class>
+                        <class>com.btxtech.shared.rest.ResourceItemTypeEditorController</class>
                         <class>com.btxtech.shared.rest.ParticleSystemEditorController</class>
                         <class>com.btxtech.shared.rest.ThreeJsModelPackEditorController</class>
-                        <class>com.btxtech.shared.rest.MeshContainerEditorController</class>
                         <class>com.btxtech.shared.rest.ImageProvider</class>
                         <class>com.btxtech.shared.rest.PlanetEditorController</class>
                         <class>com.btxtech.shared.rest.TerrainEditorController</class>

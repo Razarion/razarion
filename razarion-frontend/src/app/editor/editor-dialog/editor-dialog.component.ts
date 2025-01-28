@@ -27,6 +27,9 @@ import { PropertyEditorComponent } from "../property-editor/property-editor.comp
 import {GltfEditorComponent} from "../crud-editors/gltf-editor/gltf-editor.component";
 import {TerrainObjectEditorComponent} from "../crud-editors/terrain-object-editor/terrain-object-editor.component";
 import {GroundEditorComponent} from "../crud-editors/ground-editor/ground-editor.component";
+import {
+  ResourceItemTypeEditorComponent
+} from "../crud-editors/resource-item-type-editor/resource-item-type-editor.component";
 
 @Component({
   selector: 'editor-dialog',
@@ -125,12 +128,17 @@ export class EditorDialogComponent {
 
   openBaseItemTypeEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Base item type ditor", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Base item type editor", GeneratedCrudContainerComponent, BaseItemTypeEditorComponent));
   }
 
   openBoxItemTypeEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Box item type ditor", GeneratedCrudContainerComponent, BoxItemTypeEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Box item type editor", GeneratedCrudContainerComponent, BoxItemTypeEditorComponent));
+  }
+
+  openResourceItemTypeEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Resource item type editor", GeneratedCrudContainerComponent, ResourceItemTypeEditorComponent));
   }
 
   openTerrainObjectsEditor() {

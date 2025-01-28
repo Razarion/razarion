@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
+import com.btxtech.server.persistence.ui.Model3DEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
@@ -47,6 +48,9 @@ public class ResourceItemTypeEntity {
     private ImageLibraryEntity thumbnail;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    private Model3DEntity model3DEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
     private ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity;
 
     public Integer getId() {
@@ -61,7 +65,7 @@ public class ResourceItemTypeEntity {
                 .setTerrainType(terrainType)
                 .id(id)
                 .internalName(internalName)
-                .threeJsModelPackConfigId(extractId(threeJsModelPackConfigEntity, ThreeJsModelPackConfigEntity::getId));
+                .model3DId(extractId(model3DEntity, Model3DEntity::getId));
         if (i18nName != null) {
             resourceItemType.setI18nName(i18nName.toI18nString());
         }
@@ -87,6 +91,10 @@ public class ResourceItemTypeEntity {
 
     public void setThumbnail(ImageLibraryEntity thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public void setModel3DEntity(Model3DEntity model3DEntity) {
+        this.model3DEntity = model3DEntity;
     }
 
     @Override
