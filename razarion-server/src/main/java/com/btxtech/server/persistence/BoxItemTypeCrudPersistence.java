@@ -21,8 +21,6 @@ public class BoxItemTypeCrudPersistence extends AbstractConfigCrudPersistence<Bo
     private Provider<InventoryItemCrudPersistence> inventoryPersistence;
     @Inject
     private Model3DCrudPersistence model3DCrudPersistence;
-    @Inject
-    private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
 
     public BoxItemTypeCrudPersistence() {
         super(BoxItemTypeEntity.class, BoxItemTypeEntity_.id, BoxItemTypeEntity_.internalName);
@@ -37,7 +35,6 @@ public class BoxItemTypeCrudPersistence extends AbstractConfigCrudPersistence<Bo
     protected void fromConfig(BoxItemType boxItemType, BoxItemTypeEntity boxItemTypeEntity) {
         boxItemTypeEntity.fromBoxItemType(boxItemType, inventoryPersistence.get());
         boxItemTypeEntity.setModel3DEntity(model3DCrudPersistence.getEntity(boxItemType.getModel3DId()));
-        boxItemTypeEntity.setThreeJsModelPackConfigEntity(threeJsModelPackCrudPersistence.getEntity(boxItemType.getThreeJsModelPackConfigId()));
         boxItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(boxItemType.getThumbnail()));
     }
 }

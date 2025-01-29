@@ -16,7 +16,6 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerPresenter;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
-import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
 import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -45,7 +44,6 @@ public abstract class GwtAngularFacade {
     public SelectionService selectionService; // Initialized by GWT
     public TerrainTypeService terrainTypeService; // Initialized by GWT
     public ItemTypeService itemTypeService; // Initialized by GWT
-    public ThreeJsModelPackService threeJsModelPackService; // Initialized by GWT
     public BaseItemUiService baseItemUiService; // Initialized by GWT
     public InventoryTypeService inventoryTypeService; // Initialized by GWT
     public InventoryUiService inventoryUiService; // Initialized by GWT

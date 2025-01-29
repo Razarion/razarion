@@ -54,7 +54,6 @@ public class BoxItemTypePersistenceTestRest extends AbstractSystemTest {
 
         // Verify leftovers
         Assert.assertEquals(2, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM InventoryItemEntity r").getSingleResult()).intValue());
-        Assert.assertEquals(2, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM ColladaEntity r").getSingleResult()).intValue());
         Assert.assertEquals(2, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM ImageLibraryEntity r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM BoxItemTypeEntity r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM I18N_BUNDLE r").getSingleResult()).intValue());
@@ -64,7 +63,6 @@ public class BoxItemTypePersistenceTestRest extends AbstractSystemTest {
     @After
     public void clean() throws Exception {
         runInTransaction(em -> {
-            em.createQuery("DELETE FROM ColladaEntity").executeUpdate();
             em.createQuery("DELETE FROM AudioLibraryEntity").executeUpdate();
             em.createQuery("DELETE FROM ImageLibraryEntity").executeUpdate();
             em.createQuery("DELETE FROM InventoryItemEntity ").executeUpdate();
@@ -72,7 +70,7 @@ public class BoxItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeSimpleBox1(BoxItemType boxItemType) {
-        boxItemType.i18nName(i18nHelper("Box")).i18nDescription(i18nHelper("Contains useful items")).thumbnail(64).threeJsModelPackConfigId(17);
+        boxItemType.i18nName(i18nHelper("Box")).i18nDescription(i18nHelper("Contains useful items")).thumbnail(64).model3DId(17);
         boxItemType.ttl(1500).radius(1.2).fixVerticalNorm(true);
         List<BoxItemTypePossibility> boxItemTypePossibilities = new ArrayList<>();
         boxItemTypePossibilities.add(new BoxItemTypePossibility().setPossibility(0.75).setInventoryItemId(inventoryItemId1));
@@ -80,7 +78,7 @@ public class BoxItemTypePersistenceTestRest extends AbstractSystemTest {
     }
 
     private void finalizeSimpleBox2(BoxItemType boxItemType) {
-        boxItemType.i18nName(i18nHelper("asdf")).i18nDescription(i18nHelper("Codsfe gfrgg ms")).thumbnail(65).threeJsModelPackConfigId(18);
+        boxItemType.i18nName(i18nHelper("asdf")).i18nDescription(i18nHelper("Codsfe gfrgg ms")).thumbnail(65).model3DId(18);
         boxItemType.ttl(222).radius(331).fixVerticalNorm(false);
         List<BoxItemTypePossibility> boxItemTypePossibilities = new ArrayList<>();
         boxItemTypePossibilities.add(new BoxItemTypePossibility().setPossibility(0.4).setInventoryItemId(inventoryItemId2));

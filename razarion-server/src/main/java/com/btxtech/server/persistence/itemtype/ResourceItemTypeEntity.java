@@ -2,8 +2,6 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
-import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.server.persistence.ui.Model3DEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -49,9 +47,6 @@ public class ResourceItemTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Model3DEntity model3DEntity;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity;
 
     public Integer getId() {
         return id;
@@ -78,7 +73,7 @@ public class ResourceItemTypeEntity {
         return resourceItemType;
     }
 
-    public void fromResourceItemType(ResourceItemType resourceItemType, ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence) {
+    public void fromResourceItemType(ResourceItemType resourceItemType) {
         internalName = resourceItemType.getInternalName();
         radius = resourceItemType.getRadius();
         fixVerticalNorm = resourceItemType.isFixVerticalNorm();
@@ -86,7 +81,6 @@ public class ResourceItemTypeEntity {
         amount = resourceItemType.getAmount();
         i18nName = I18nBundleEntity.fromI18nStringSafe(resourceItemType.getI18nName(), i18nName);
         i18nDescription = I18nBundleEntity.fromI18nStringSafe(resourceItemType.getI18nDescription(), i18nDescription);
-        threeJsModelPackConfigEntity = threeJsModelPackCrudPersistence.getEntity(resourceItemType.getThreeJsModelPackConfigId());
     }
 
     public void setThumbnail(ImageLibraryEntity thumbnail) {

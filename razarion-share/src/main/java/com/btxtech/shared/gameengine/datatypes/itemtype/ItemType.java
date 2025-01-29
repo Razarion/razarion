@@ -15,8 +15,6 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.dto.Config;
-import com.btxtech.shared.dto.editor.CollectionReference;
-import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
@@ -32,9 +30,6 @@ public abstract class ItemType implements Config {
     private I18nString i18nName;
     private I18nString i18nDescription;
     private Integer model3DId;
-    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL_PACK)
-    @Deprecated
-    private Integer threeJsModelPackConfigId;
     private Integer thumbnail;
 
     @Override
@@ -80,16 +75,6 @@ public abstract class ItemType implements Config {
         this.model3DId = model3DId;
     }
 
-    @Deprecated
-    public @Nullable Integer getThreeJsModelPackConfigId() {
-        return threeJsModelPackConfigId;
-    }
-
-    @Deprecated
-    public void setThreeJsModelPackConfigId(@Nullable Integer threeJsModelPackConfigId) {
-        this.threeJsModelPackConfigId = threeJsModelPackConfigId;
-    }
-
     public @Nullable Integer getThumbnail() {
         return thumbnail;
     }
@@ -120,12 +105,6 @@ public abstract class ItemType implements Config {
 
     public ItemType model3DId(Integer model3DId) {
         setModel3DId(model3DId);
-        return this;
-    }
-
-    @Deprecated
-    public ItemType threeJsModelPackConfigId(Integer threeJsModelPackConfigId) {
-        setThreeJsModelPackConfigId(threeJsModelPackConfigId);
         return this;
     }
 

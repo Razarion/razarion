@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
-import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -48,28 +47,9 @@ public class TerrainObjectServiceTest extends DaggerTerrainServiceTestBase {
                 new ThreeJsModelConfig().id(60).internalName("Height Map").type(ThreeJsModelConfig.Type.NODES_MATERIAL)
         );
 
-        List<ThreeJsModelPackConfig> threeJsModelPackConfigs = Arrays.asList(
-                new ThreeJsModelPackConfig()
-                        .id(105)
-                        .threeJsModelId(49)
-                        .internalName("banana_plant")
-                        .position(new Vertex(0, 0, 0))
-                        .scale(new Vertex(1, 1, 1))
-                        .rotation(new Vertex(0, 0, 0))
-                        .namePath(Arrays.asList("__root__", "banana_plant")),
-                new ThreeJsModelPackConfig()
-                        .id(86)
-                        .threeJsModelId(48)
-                        .internalName("Rock1C")
-                        .position(new Vertex(0, 0, 0))
-                        .scale(new Vertex(1, 1, 1))
-                        .rotation(new Vertex(0, 0, 0))
-                        .namePath(Arrays.asList("__root__", "Rock1C"))
-        );
-
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
-        terrainObjectConfigs.add(new TerrainObjectConfig().id(1).internalName("banana_plant").radius(1).threeJsModelPackConfigId(105));
-        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).internalName("Rock1C").radius(1).threeJsModelPackConfigId(86));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(1).internalName("banana_plant").radius(1).model3DId(105));
+        terrainObjectConfigs.add(new TerrainObjectConfig().id(2).internalName("Rock1C").radius(1).model3DId(86));
         // terrainObjectConfigs.add(new TerrainObjectConfig().id(2).radius(5).threeJsModelPackConfigId(2));
         // terrainObjectConfigs.add(new TerrainObjectConfig().id(3).radius(10).threeJsModelPackConfigId(3));
 
@@ -85,7 +65,7 @@ public class TerrainObjectServiceTest extends DaggerTerrainServiceTestBase {
         );
 
         List<ParticleSystemConfig> particleSystemConfigs = Collections.singletonList(new ParticleSystemConfig().id(1).emitterMeshPath(new String[]{"Cannon00 '41'", "Cannon00 '41'.Cannon00"}).threeJsModelId(50));
-        setupTerrainTypeService(null, terrainObjectConfigs, null, terrainObjectPositions, groundConfig, threeJsModelConfigs, threeJsModelPackConfigs, particleSystemConfigs);
+        setupTerrainTypeService(null, terrainObjectConfigs, null, terrainObjectPositions, groundConfig, threeJsModelConfigs, particleSystemConfigs);
         // showDisplay();
 
         exportTriangles("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain",

@@ -49,8 +49,6 @@ export class BabylonItemImpl implements BabylonItem {
               parent: TransformNode) {
     if (itemType.getModel3DId()) {
       this.container = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, parent, diplomacy);
-    } else if (itemType.getThreeJsModelPackConfigId()) {
-      this.container = this.babylonModelService.cloneMesh(itemType.getThreeJsModelPackConfigId()!, null);
     } else {
       this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, {diameter: this.getRadius() * 2});
       console.warn(`No MeshContainerId or ThreeJsModelPackConfigId for ${itemType.getInternalName()} '${itemType.getId()}'`)

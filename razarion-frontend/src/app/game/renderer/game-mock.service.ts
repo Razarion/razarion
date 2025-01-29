@@ -36,8 +36,6 @@ import {
   TerrainTileObjectList,
   TerrainTypeService,
   ThreeJsModelConfig,
-  ThreeJsModelPackConfig,
-  ThreeJsModelPackService,
   Vertex,
   WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
@@ -359,44 +357,6 @@ export class GameMockService {
 
     }
   };
-
-  mockThreeJsModelPackService: ThreeJsModelPackService = new class implements ThreeJsModelPackService {
-    getThreeJsModelPackConfig(id: number): ThreeJsModelPackConfig {
-      let packJson = staticGameConfigJson.threeJsModelPackConfigs.find((packJson: any) => packJson.id === id);
-      if (!packJson) {
-        throw new Error(`ThreeJsModelPackConfig not found: ${id}`);
-      }
-      return new class implements ThreeJsModelPackConfig {
-        getId(): number {
-          return packJson.id;
-        }
-
-        getInternalName(): string {
-          return packJson.internalName;
-        }
-
-        toNamePathAsArray(): string[] {
-          return packJson.namePath;
-        }
-
-        getPosition(): Vertex {
-          return GwtInstance.newVertex(packJson.position.x, packJson.position.y, packJson.position.z);
-        }
-
-        getRotation(): Vertex {
-          return GwtInstance.newVertex(packJson.rotation.x, packJson.rotation.y, packJson.rotation.z);
-        }
-
-        getScale(): Vertex {
-          return GwtInstance.newVertex(packJson.scale.x, packJson.scale.y, packJson.scale.z);
-        }
-
-        getThreeJsModelId(): number {
-          return packJson.threeJsModelId;
-        }
-      }
-    }
-  }
 
   mockBaseItemUiService: BaseItemUiService = new class implements BaseItemUiService {
     getVisibleNativeSyncBaseItemTickInfos(bottomLeft: DecimalPosition, topRight: DecimalPosition): NativeSyncBaseItemTickInfo[] {

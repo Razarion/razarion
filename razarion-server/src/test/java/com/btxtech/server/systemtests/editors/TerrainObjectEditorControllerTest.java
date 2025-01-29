@@ -18,7 +18,7 @@ public class TerrainObjectEditorControllerTest extends AbstractCrudTest<TerrainO
 
     @Override
     protected void setupUpdate() {
-        registerUpdate(slopeConfig -> slopeConfig.threeJsModelPackConfigId(-9999987).radius(10)); // TODO remove
-        registerUpdate(slopeConfig -> slopeConfig.threeJsModelPackConfigId(-1199987).radius(2.2)); // TODO remove
+        registerUpdate(slopeConfig -> slopeConfig.model3DId(-9999987).radius(10)); // TODO remove
+        registerUpdate(slopeConfig -> slopeConfig.model3DId(-1199987).radius(2.2)); // TODO remove
     }
 }

@@ -3,7 +3,6 @@ package com.btxtech.server.persistence.itemtype;
 import com.btxtech.server.persistence.AbstractConfigCrudPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.Model3DCrudPersistence;
-import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 
 import javax.inject.Inject;
@@ -11,8 +10,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public class ResourceItemTypeCrudPersistence extends AbstractConfigCrudPersistence<ResourceItemType, ResourceItemTypeEntity> {
-    @Inject
-    private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
@@ -30,7 +27,7 @@ public class ResourceItemTypeCrudPersistence extends AbstractConfigCrudPersisten
     @Override
     protected void fromConfig(ResourceItemType resourceItemType, ResourceItemTypeEntity resourceItemTypeEntity) {
         resourceItemTypeEntity.setModel3DEntity(model3DCrudPersistence.getEntity(resourceItemType.getModel3DId()));
-        resourceItemTypeEntity.fromResourceItemType(resourceItemType, threeJsModelPackCrudPersistence);
+        resourceItemTypeEntity.fromResourceItemType(resourceItemType);
         resourceItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(resourceItemType.getThumbnail()));
     }
 }

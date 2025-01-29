@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.server.persistence.ThreeJsModelPackConfigEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemCrudPersistence;
 import com.btxtech.server.persistence.I18nBundleEntity;
 import com.btxtech.server.persistence.ui.Model3DEntity;
@@ -55,10 +54,7 @@ public class BoxItemTypeEntity {
     private I18nBundleEntity i18nDescription;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
-    List<BoxItemTypePossibilityEntity> boxItemTypePossibilities;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity;
+    private List<BoxItemTypePossibilityEntity> boxItemTypePossibilities;
 
     public Integer getId() {
         return id;
@@ -113,10 +109,6 @@ public class BoxItemTypeEntity {
 
     public void setModel3DEntity(Model3DEntity model3DEntity) {
         this.model3DEntity = model3DEntity;
-    }
-
-    public void setThreeJsModelPackConfigEntity(ThreeJsModelPackConfigEntity threeJsModelPackConfigEntity) {
-        this.threeJsModelPackConfigEntity = threeJsModelPackConfigEntity;
     }
 
     public void setThumbnail(ImageLibraryEntity thumbnail) {

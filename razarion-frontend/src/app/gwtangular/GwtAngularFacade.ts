@@ -18,7 +18,6 @@ export abstract class GwtAngularFacade {
   selectionService!: SelectionService;
   terrainTypeService!: TerrainTypeService;
   itemTypeService!: ItemTypeService;
-  threeJsModelPackService!: ThreeJsModelPackService;
   baseItemUiService!: BaseItemUiService
   modelDialogPresenter!: ModelDialogPresenter;
   inventoryTypeService!: InventoryTypeService;
@@ -170,10 +169,6 @@ export interface TerrainTypeService {
   getGroundConfig(groundConfigId: number): GroundConfig;
 }
 
-export interface ThreeJsModelPackService {
-  getThreeJsModelPackConfig(id: number): ThreeJsModelPackConfig;
-}
-
 // ---------- SyncBaseItems ----------
 
 export interface BaseItemUiService {
@@ -255,22 +250,6 @@ export namespace ThreeJsModelConfig {
   }
 }
 
-export interface ThreeJsModelPackConfig {
-  getId(): number;
-
-  getInternalName(): string;
-
-  getThreeJsModelId(): number;
-
-  toNamePathAsArray(): string[];
-
-  getPosition(): Vertex;
-
-  getScale(): Vertex;
-
-  getRotation(): Vertex;
-}
-
 // ---------- ItemType ----------
 
 export interface ItemType {
@@ -281,10 +260,6 @@ export interface ItemType {
   getI18nName(): I18nString;
 
   getModel3DId(): number | null;
-
-  getThreeJsModelPackConfigId(): number | null;
-
-  getThreeJsModelPackConfigId(): number | null;
 }
 
 export interface BaseItemType extends ItemType {

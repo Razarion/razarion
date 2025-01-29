@@ -17,8 +17,6 @@ import javax.transaction.Transactional;
 @Singleton
 public class TerrainObjectCrudPersistence extends AbstractConfigCrudPersistence<TerrainObjectConfig, TerrainObjectEntity> {
     @Inject
-    private ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence;
-    @Inject
     private Model3DCrudPersistence model3DCrudPersistence;
     @PersistenceContext
     private EntityManager entityManager;
@@ -34,7 +32,7 @@ public class TerrainObjectCrudPersistence extends AbstractConfigCrudPersistence<
 
     @Override
     protected void fromConfig(TerrainObjectConfig config, TerrainObjectEntity entity) {
-        entity.fromTerrainObjectConfig(config, threeJsModelPackCrudPersistence, model3DCrudPersistence);
+        entity.fromTerrainObjectConfig(config, model3DCrudPersistence);
     }
 
     @Transactional

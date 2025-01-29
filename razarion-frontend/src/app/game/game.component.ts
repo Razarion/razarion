@@ -13,7 +13,6 @@ import {BabylonModelService} from './renderer/babylon-model.service';
 import {
   BaseItemType,
   BuilderType,
-  Diplomacy,
   HarvesterType,
   I18nString,
   OwnItemCockpit,
@@ -24,14 +23,11 @@ import {
 } from "../gwtangular/GwtAngularFacade";
 import {QuestCockpitComponent} from "./cockpit/quest/quest-cockpit.component";
 import {ModelDialogPresenterImpl} from './model-dialog-presenter.impl';
-import {GwtInstance} from '../gwtangular/GwtInstance';
 import {ActionService} from './action.service';
-import {Tools} from '@babylonjs/core';
 import {
   GeneratedCrudContainerComponent
 } from '../editor/crud-editors/crud-container/generated-crud-container.component';
 import {GltfEditorComponent} from "../editor/crud-editors/gltf-editor/gltf-editor.component";
-import {TerrainEditorComponent} from "../editor/terrain-editor/terrain-editor.component";
 
 
 @Component({
@@ -85,7 +81,6 @@ export class GameComponent implements OnInit, ScreenCover {
       if (runGwtMock) {
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
         this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
-        this.gwtAngularService.gwtAngularFacade.threeJsModelPackService = this.gameMockService.mockThreeJsModelPackService;
         this.gameMockService.loadMockStaticGameConfig().then(() => {
           this.babylonModelService.init(this.gameMockService.mockThreeJsModelConfigs(), this.gameMockService.mockParticleSystemConfigs(), this.gwtAngularService).then(() => {
             this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();

@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.RestClientHelper;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.SingleHolder;
@@ -44,7 +43,7 @@ public class RealGameTerrainServiceTest extends DaggerTerrainServiceTestBase {
 //        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(directory, "static-game-config.json"), coldGameUiContext.getStaticGameConfig());
 
 
-        setupTerrainTypeService(coldGameUiContext.getStaticGameConfig(), null, coldGameUiContext.getWarmGameUiContext().getPlanetConfig(), null, null, null, null, null);
+        setupTerrainTypeService(coldGameUiContext.getStaticGameConfig(), null, coldGameUiContext.getWarmGameUiContext().getPlanetConfig(), null, null, null, null);
         double radius = 1;
         final SingleHolder<DecimalPosition> actorPosition = new SingleHolder<>();
         DecimalPosition target = new DecimalPosition(104, 125.5);

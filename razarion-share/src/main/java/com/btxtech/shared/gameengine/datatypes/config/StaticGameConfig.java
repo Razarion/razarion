@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
-import com.btxtech.shared.datatypes.shape.ThreeJsModelPackConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
@@ -27,7 +26,6 @@ public class StaticGameConfig {
     private List<LevelConfig> levelConfigs;
     private List<InventoryItem> inventoryItems;
     private List<ThreeJsModelConfig> threeJsModelConfigs;
-    private List<ThreeJsModelPackConfig> threeJsModelPackConfigs;
     private List<ParticleSystemConfig> particleSystemConfigs;
 
     public List<GroundConfig> getGroundConfigs() {
@@ -102,14 +100,6 @@ public class StaticGameConfig {
         this.particleSystemConfigs = particleSystemConfigs;
     }
 
-    public List<ThreeJsModelPackConfig> getThreeJsModelPackConfigs() {
-        return threeJsModelPackConfigs;
-    }
-
-    public void setThreeJsModelPackConfigs(List<ThreeJsModelPackConfig> threeJsModelPackConfigs) {
-        this.threeJsModelPackConfigs = threeJsModelPackConfigs;
-    }
-
     public StaticGameConfig groundConfigs(List<GroundConfig> groundConfigs) {
         setGroundConfigs(groundConfigs);
         return this;
@@ -147,11 +137,6 @@ public class StaticGameConfig {
 
     public StaticGameConfig threeJsModelConfigs(List<ThreeJsModelConfig> threeJsModelConfigs) {
         setThreeJsModelConfigs(threeJsModelConfigs);
-        return this;
-    }
-
-    public StaticGameConfig threeJsModelPackConfigs(List<ThreeJsModelPackConfig> threeJsModelPackConfigs) {
-        setThreeJsModelPackConfigs(threeJsModelPackConfigs);
         return this;
     }
 

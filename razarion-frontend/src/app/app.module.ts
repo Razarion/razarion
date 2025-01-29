@@ -101,7 +101,6 @@ import {AccelerationComponent} from './editor/common/acceleration/acceleration.c
 import {AngleComponent} from './editor/common/angle/angle.component';
 import {BaseItemTypesComponent} from './editor/common/base-item-types/base-item-types.component';
 import {ParticleSystemComponent} from './editor/common/particle-system/particle-system.component';
-import {BabylonModelPackComponent} from './editor/common/babylon-model-pack/babylon-model-pack.component';
 import {ImageItemComponent} from './editor/common/image-item/image-item.component';
 import {ImageGalleryComponent} from './editor/common/image-item/image-gallery.component';
 import {KnobModule} from 'primeng/knob';
@@ -203,7 +202,6 @@ import {
     AngleComponent,
     BaseItemTypesComponent,
     ParticleSystemComponent,
-    BabylonModelPackComponent,
     ImageItemComponent,
     ImageGalleryComponent,
     PlanetEditorComponent,

@@ -1,24 +1,24 @@
 <div style="width: 40em">
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Id</span>
-        <div class="col-8">
-            <p-inputNumber [disabled]="true" [(ngModel)]="boxItemType.id"></p-inputNumber>
-        </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Id</span>
+    <div class="col-8">
+      <p-inputNumber [disabled]="true" [(ngModel)]="boxItemType.id"></p-inputNumber>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Internal name</span>
-        <div class="col-8">
-            <input [(ngModel)]="boxItemType.internalName" type="text"
-                class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-        </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Internal name</span>
+    <div class="col-8">
+      <input [(ngModel)]="boxItemType.internalName" type="text"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
+  </div>
 
-    <p-divider align="left">
-        <div class="inline-flex align-items-center">
-            <i class="pi pi-video"></i>
-            <b>&nbsp;Visibility</b>
-        </div>
-    </p-divider>
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-video"></i>
+      <b>&nbsp;Visibility</b>
+    </div>
+  </p-divider>
   <div class="grid grid-razarion-editor">
     <span class="col-4">Model 3D</span>
     <div class="col-8">
@@ -26,72 +26,72 @@
     </div>
   </div>
   <div class="grid grid-razarion-editor">
-        <span class="col-4">Babylon model pack</span>
-        <div class="col-8">
-            <babylon-model-pack [(babylonModelPackId)]="boxItemType.threeJsModelPackConfigId"></babylon-model-pack>
-        </div>
+    <span class="col-4">Thumbnail</span>
+    <div class="col-8">
+      <image-item [(imageId)]="boxItemType.thumbnail"></image-item>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Thumbnail</span>
-        <div class="col-8">
-            <image-item [(imageId)]="boxItemType.thumbnail"></image-item>
-        </div>
-    </div>
+  </div>
 
-    <p-divider align="left">
-        <div class="inline-flex align-items-center">
-            <i class="pi pi-car"></i>
-            <b>&nbsp;Physical area</b>
-        </div>
-    </p-divider>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Radius [m]</span>
-        <div class="col-8">
-            <p-inputNumber [(ngModel)]="boxItemType.radius" [minFractionDigits]="3"
-                [maxFractionDigits]="3"></p-inputNumber>
-        </div>
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-car"></i>
+      <b>&nbsp;Physical area</b>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Fix vertical norm</span>
-        <div class="col-8">
-            <p-checkbox [(ngModel)]="boxItemType.fixVerticalNorm" [binary]="true"></p-checkbox>
+  </p-divider>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Radius [m]</span>
+    <div class="col-8">
+      <p-inputNumber [(ngModel)]="boxItemType.radius" [minFractionDigits]="3"
+                     [maxFractionDigits]="3"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Fix vertical norm</span>
+    <div class="col-8">
+      <p-checkbox [(ngModel)]="boxItemType.fixVerticalNorm" [binary]="true"></p-checkbox>
 
-        </div>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Terrain type</span>
-        <div class="col-8">
-            <terrain-type [(terrainType)]="boxItemType.terrainType"></terrain-type>
-        </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Terrain type</span>
+    <div class="col-8">
+      <terrain-type [(terrainType)]="boxItemType.terrainType"></terrain-type>
     </div>
+  </div>
 
-    <p-divider align="left">
-        <div class="inline-flex align-items-center">
-            <i class="pi pi-cog"></i>
-            <b>&nbsp;Game engine</b>
-        </div>
-    </p-divider>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Time to live [s]</span>
-        <div class="col-8">
-            <p-inputNumber [(ngModel)]="boxItemType.ttl"></p-inputNumber>
-        </div>
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-cog"></i>
+      <b>&nbsp;Game engine</b>
     </div>
+  </p-divider>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Time to live [s]</span>
+    <div class="col-8">
+      <p-inputNumber [(ngModel)]="boxItemType.ttl"></p-inputNumber>
+    </div>
+  </div>
 
-    <p-table [value]="boxItemType.boxItemTypePossibilities">
-        <ng-template pTemplate="header">
-            <tr>
-                <th>Possibility </th>
-                <th>Inventory item</th>
-                <th>Crystals</th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-possibility>
-            <tr>
-                <td><percent-input [(modelValue)]="possibility.possibility"></percent-input></td>
-                <td><inventory-item [(inventoryItemId)]="possibility.inventoryItemId"></inventory-item></td>
-                <td><p-inputNumber [(ngModel)]="possibility.crystals" [size]="5"></p-inputNumber></td>
-            </tr>
-        </ng-template>
-    </p-table>
+  <p-table [value]="boxItemType.boxItemTypePossibilities">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Possibility</th>
+        <th>Inventory item</th>
+        <th>Crystals</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-possibility>
+      <tr>
+        <td>
+          <percent-input [(modelValue)]="possibility.possibility"></percent-input>
+        </td>
+        <td>
+          <inventory-item [(inventoryItemId)]="possibility.inventoryItemId"></inventory-item>
+        </td>
+        <td>
+          <p-inputNumber [(ngModel)]="possibility.crystals" [size]="5"></p-inputNumber>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>

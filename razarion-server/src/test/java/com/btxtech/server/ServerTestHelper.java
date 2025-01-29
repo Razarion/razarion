@@ -9,7 +9,6 @@ import com.btxtech.server.persistence.Model3DCrudPersistence;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.TerrainObjectCrudPersistence;
-import com.btxtech.server.persistence.ThreeJsModelPackCrudPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeCrudPersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
@@ -279,7 +278,6 @@ public class ServerTestHelper {
     private TerrainObjectEntity createTerrainObjectEntity(TerrainObjectConfig terrainObjectConfig) {
         TerrainObjectEntity terrainObjectEntity = new TerrainObjectEntity();
         terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig,
-                EasyMock.createNiceMock(ThreeJsModelPackCrudPersistence.class),
                 EasyMock.createNiceMock(Model3DCrudPersistence.class));
         return terrainObjectEntity;
     }
@@ -360,10 +358,8 @@ public class ServerTestHelper {
     }
 
     private int createResourceItemTypeEntity(ResourceItemType resourceItemType) {
-        ThreeJsModelPackCrudPersistence threeJsModelPackCrudPersistence = EasyMock.createNiceMock(ThreeJsModelPackCrudPersistence.class);
-        EasyMock.replay(threeJsModelPackCrudPersistence);
         ResourceItemTypeEntity resourceItemTypeEntity = new ResourceItemTypeEntity();
-        resourceItemTypeEntity.fromResourceItemType(resourceItemType, threeJsModelPackCrudPersistence);
+        resourceItemTypeEntity.fromResourceItemType(resourceItemType);
         persistInTransaction(resourceItemTypeEntity);
         return resourceItemTypeEntity.getId();
     }

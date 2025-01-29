@@ -13,7 +13,6 @@ import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
-import com.btxtech.uiservice.renderer.ThreeJsModelPackService;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
 import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -36,7 +35,6 @@ public class GwtAngularService {
     private final SelectionService selectionService;
     private final TerrainTypeService terrainTypeService;
     private final ItemTypeService itemTypeService;
-    private final ThreeJsModelPackService threeJsModelPackService;
     private final BaseItemUiService baseItemUiService;
     private final ModalDialogManager modalDialogManager;
     private final InventoryTypeService inventoryTypeService;
@@ -51,7 +49,6 @@ public class GwtAngularService {
                              InventoryTypeService inventoryTypeService,
                              ModalDialogManager modalDialogManager,
                              BaseItemUiService baseItemUiService,
-                             ThreeJsModelPackService threeJsModelPackService,
                              ItemTypeService itemTypeService,
                              TerrainTypeService terrainTypeService,
                              SelectionService selectionService,
@@ -68,7 +65,6 @@ public class GwtAngularService {
         this.inventoryTypeService = inventoryTypeService;
         this.modalDialogManager = modalDialogManager;
         this.baseItemUiService = baseItemUiService;
-        this.threeJsModelPackService = threeJsModelPackService;
         this.itemTypeService = itemTypeService;
         this.terrainTypeService = terrainTypeService;
         this.selectionService = selectionService;
@@ -95,7 +91,6 @@ public class GwtAngularService {
         gwtAngularFacade.selectionService = selectionService;
         gwtAngularFacade.terrainTypeService = terrainTypeService;
         gwtAngularFacade.itemTypeService = itemTypeService;
-        gwtAngularFacade.threeJsModelPackService = threeJsModelPackService;
         gwtAngularFacade.baseItemUiService = baseItemUiService;
         gwtAngularFacade.inventoryTypeService = inventoryTypeService;
         gwtAngularFacade.inventoryUiService = inventoryUiService;

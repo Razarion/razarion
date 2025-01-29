@@ -330,59 +330,6 @@ export class BabylonModelService {
     return <TransformNode>clonedRoot;
   }
 
-  cloneMesh(threeJsModelPackConfigId: number, parent: Node | null): TransformNode {
-    const threeJsModelPackConf = this.gwtAngularService.gwtAngularFacade.threeJsModelPackService.getThreeJsModelPackConfig(threeJsModelPackConfigId);
-
-    const assetContainer: AssetContainer = this.getAssetContainer(threeJsModelPackConf.getThreeJsModelId());
-
-    let childNode = null;
-
-    for (let childNod of assetContainer.getNodes()) {
-      childNode = BabylonModelService.findChildNode(childNod, threeJsModelPackConf.toNamePathAsArray());
-      if (childNode) {
-        break;
-      }
-    }
-
-    if (childNode == null) {
-      throw new Error(`No Mesh for threeJsModelPackConfigId '${threeJsModelPackConfigId}'. Three.js Path  '${threeJsModelPackConf.toNamePathAsArray()}'`);
-    }
-
-    if (typeof (<any>childNode).clone !== 'function') {
-      throw new Error(`childNode can not be cloned "${childNode}" typeof childNode = "${typeof childNode}". threeJsModelPackConfigId '${threeJsModelPackConfigId}'. Three.js Path  '${threeJsModelPackConf.toNamePathAsArray()}'`);
-    }
-
-    const mesh = (<any>childNode).clone("", parent);
-
-    if (mesh instanceof Mesh) {
-      (<Mesh>mesh).receiveShadows = true
-    }
-    mesh.getChildren().forEach((m: any) => {
-      if (m instanceof Mesh) {
-        (<Mesh>m).receiveShadows = true
-      }
-    });
-
-
-    if (threeJsModelPackConf.getPosition()) {
-      mesh.position.set(threeJsModelPackConf.getPosition().getX(),
-        threeJsModelPackConf.getPosition().getZ(),
-        threeJsModelPackConf.getPosition().getY());
-    }
-    if (threeJsModelPackConf.getScale()) {
-      mesh.scaling.set(threeJsModelPackConf.getScale().getX(),
-        threeJsModelPackConf.getScale().getZ(),
-        threeJsModelPackConf.getScale().getY());
-    }
-    if (threeJsModelPackConf.getRotation()) {
-      mesh.rotationQuaternion = null;
-      mesh.rotation.set(threeJsModelPackConf.getRotation().getX(),
-        threeJsModelPackConf.getRotation().getZ(),
-        threeJsModelPackConf.getRotation().getY());
-    }
-    return mesh;
-  }
-
   public static findChildNode(node: Node, namePath: string[]): Node | null {
     if (namePath.length == 0) {
       throw new Error("Empty namePath array is not allowed")

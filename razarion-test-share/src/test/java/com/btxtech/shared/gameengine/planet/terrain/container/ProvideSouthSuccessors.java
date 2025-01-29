@@ -32,7 +32,7 @@ public class ProvideSouthSuccessors extends DaggerTerrainServiceTestBase {
                 new TerrainObjectPosition().terrainObjectConfigId(3).position(new DecimalPosition(70, 82))
         );
 
-        setupTerrainTypeService(null, terrainObjectConfigs, null, terrainObjectPositions, null, null, null, null);
+        setupTerrainTypeService(null, terrainObjectConfigs, null, terrainObjectPositions, null, null, null);
     }
 
     @Test

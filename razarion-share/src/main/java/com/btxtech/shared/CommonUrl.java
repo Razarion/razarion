@@ -47,7 +47,6 @@ public class CommonUrl {
     public static final String GROUND_EDITOR_PATH = "editor/ground";
     public static final String THREE_JS_MODEL_EDITOR_PATH = "editor/three-js-model";
     public static final String PARTICLE_SYSTEM_EDITOR_PATH = "editor/particle-system";
-    public static final String DRIVEWAY_EDITOR_PATH = "editor/driveway";
     public static final String PLANET_EDITOR_PATH = "editor/planet";
     public static final String LEVEL_EDITOR_PATH = "editor/level";
     public static final String BASE_ITEM_TYPE_EDITOR_PATH = "editor/base_item_type";
@@ -58,7 +57,6 @@ public class CommonUrl {
     public static final String SERVER_GAME_ENGINE_EDITOR_PATH = "editor/server-game-engine";
     public static final String MODEL_3D_CONTROLLER = "editor/model-3d";
     public static final String BRUSH_EDITOR_PATH = "editor/brush";
-    public static final String THREE_JS_MODEL_PACK_EDITOR_PATH = "editor/three-js-model-pack-editor";
     public static final String INVENTORY_ITEM_EDITOR_PATH = "editor/inventory-item";
     public static final String TERRAIN_SHAPE_CONTROLLER = G_ZIPPED + "/" + "terrainshape";
     public static final String TERRAIN_HEIGHT_MAP_CONTROLLER = "terrainHeightMap";
