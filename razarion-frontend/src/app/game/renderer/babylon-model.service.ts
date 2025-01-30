@@ -181,8 +181,10 @@ export class BabylonModelService {
   }
 
   private handleLoaded() {
-    if (this.gwtResolver) {
-      this.gwtResolver();
+    if (this.babylonMaterialsLoaded && this.gltfsLoaded) {
+      if (this.gwtResolver) {
+        this.gwtResolver();
+      }
     }
   }
 
