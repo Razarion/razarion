@@ -21,6 +21,7 @@ import { PlaceConfigComponent } from "./place-config.component";
 import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Geometry } from "src/app/common/geometry";
 import { LocationVisualization } from "./location-visualization";
+import earcut from 'earcut';
 
 export class PolygonVisualization {
   static polygonMarkerMaterial: SimpleMaterial;
@@ -151,7 +152,7 @@ export class PolygonVisualization {
     if (this.polygonMarker) {
       this.polygonMarker.dispose();
     }
-    const polygonMeshBuilder = new PolygonMeshBuilder(`Polygon marker`, polygon, this.renderService.getScene());
+    const polygonMeshBuilder = new PolygonMeshBuilder(`Polygon marker`, polygon, this.renderService.getScene(), earcut);
     this.polygonMarker = polygonMeshBuilder.build();
     this.polygonMarker.position.y = height;
     this.polygonMarker.material = PolygonVisualization.polygonMarkerMaterial;
