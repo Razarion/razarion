@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { EditorPanel } from "../editor-model";
-import { EditorService } from "../editor-service";
+import {Component, OnInit} from '@angular/core';
+import {EditorPanel} from "../editor-model";
+import {EditorService} from "../editor-service";
 import {
   ConditionTrigger,
   QuestConfig,
   ServerGameEngineConfig,
   ServerLevelQuestConfig
 } from "../../generated/razarion-share";
-import { QuestCockpitComponent } from 'src/app/game/cockpit/quest/quest-cockpit.component';
+import {QuestCockpitComponent} from 'src/app/game/cockpit/quest/quest-cockpit.component';
 
 @Component({
   selector: 'server-quest-editor',
@@ -21,13 +21,13 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   protected readonly EditorService = EditorService;
   protected readonly CONDITION_TRIGGERS =
     [ConditionTrigger.SYNC_ITEM_KILLED,
-    ConditionTrigger.HARVEST,
-    ConditionTrigger.SYNC_ITEM_CREATED,
-    ConditionTrigger.BASE_KILLED,
-    ConditionTrigger.SYNC_ITEM_POSITION,
-    ConditionTrigger.BOX_PICKED,
-    ConditionTrigger.INVENTORY_ITEM_PLACED,
-    ConditionTrigger.UNLOCKED,
+      ConditionTrigger.HARVEST,
+      ConditionTrigger.SYNC_ITEM_CREATED,
+      ConditionTrigger.BASE_KILLED,
+      ConditionTrigger.SYNC_ITEM_POSITION,
+      ConditionTrigger.BOX_PICKED,
+      ConditionTrigger.INVENTORY_ITEM_PLACED,
+      ConditionTrigger.UNLOCKED,
     ];
 
   constructor(public editorService: EditorService) {
@@ -42,7 +42,7 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   }
 
   private loadOptions(): void {
-    this.options = [];
+    this.options.length = 0;
     let tmpSelectedLevelQuest = this.selectedLevelQuest;
     let levelIdMap = new Map<number, string>();
     this.editorService.readLevelObjectNameIds().then(objectNameIds => {
@@ -51,25 +51,25 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
       });
       this.serverGameEngineConfig.serverLevelQuestConfigs.forEach(levelQuest => {
         if ((levelQuest.minimalLevelId || levelQuest.minimalLevelId === 0) && levelIdMap.has(levelQuest.minimalLevelId)) {
-          this.options.push({ label: levelIdMap.get(levelQuest.minimalLevelId)!, value: levelQuest });
+          this.options.push({label: levelIdMap.get(levelQuest.minimalLevelId)!, value: levelQuest});
         } else {
-          this.options.push({ label: "?", value: levelQuest });
+          this.options.push({label: "?", value: levelQuest});
         }
       });
 
       this.options.sort((a, b) => {
         const numA = parseInt(a.label);
         const numB = parseInt(b.label);
-    
+
         if (numA < numB) {
-            return -1;
+          return -1;
         } else if (numA > numB) {
-            return 1;
+          return 1;
         } else {
-            return 0;
+          return 0;
         }
-    });
-    
+      });
+
       this.selectedLevelQuest = tmpSelectedLevelQuest;
     });
   }
@@ -143,15 +143,18 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
     }
   }
 
-  conditionTriggerToTitle(questConfig: QuestConfig): string {
-    return (questConfig.title ? `'${questConfig.title}'` : "") 
-    + " " 
-    + QuestCockpitComponent.conditionTriggerToTitle(questConfig.conditionConfig.conditionTrigger!)!
-    + " ( "
-    + (questConfig.razarion ? `R:${questConfig.razarion} ` : '')
-    + (questConfig.xp ? `X:${questConfig.xp} ` : '')
-    + (questConfig.crystal ? `C:${questConfig.crystal} ` : '')
-    + ")";
+  conditionTriggerToTitleWrapper(questConfig: QuestConfig): string {
+    return ServerQuestEditorComponent.conditionTriggerToTitle(questConfig);
+  }
 
+  static conditionTriggerToTitle(questConfig: QuestConfig): string {
+    return (questConfig.title ? `'${questConfig.title}'` : "")
+      + " "
+      + QuestCockpitComponent.conditionTriggerToTitle(questConfig.conditionConfig.conditionTrigger!)!
+      + " ( "
+      + (questConfig.razarion ? `R:${questConfig.razarion} ` : '')
+      + (questConfig.xp ? `X:${questConfig.xp} ` : '')
+      + (questConfig.crystal ? `C:${questConfig.crystal} ` : '')
+      + ")";
   }
 }

@@ -7,6 +7,7 @@ import com.btxtech.server.persistence.history.QuestHistoryEntity;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
+import com.btxtech.server.rest.dto.QuestBackendInfo;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
@@ -18,12 +19,11 @@ import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
@@ -165,17 +165,21 @@ public class ServerLevelQuestService implements QuestListener {
         return userService.findActivePassedQuestId(userContext.getUserId());
     }
 
+
+    @Transactional
+    public void activateQuestBackend(int userId, int questId) {
+        activateQuest(userService.getUserContext(userId), questId);
+    }
+
+    @Transactional
+    public void deactivateQuestBackend(int userId) {
+        deactivateQuest(userId);
+    }
+
     @Transactional // Needs to be @Transactional if a quest if fulfilled during activation and a new quest is activated
     public void activateQuest(UserContext userContext, int questId) {
         int userId = userContext.getUserId();
-        if (questService.hasActiveQuest(userId)) {
-            questService.deactivateActorCondition(userId);
-            clientSystemConnectionService.onQuestActivated(userId, null);
-            QuestConfig oldQuest;
-            oldQuest = userService.getActiveQuest(userId);
-            userService.clearActiveQuest(userId);
-            historyPersistence.get().onQuest(userId, oldQuest, QuestHistoryEntity.Type.QUEST_DEACTIVATED);
-        }
+        deactivateQuest(userId);
         QuestConfig newQuest = serverGameEngineCrudPersistence.getAndVerifyQuest(userContext.getLevelId(), questId);
         if (readActiveOrPassedQuestIds(userContext).contains(newQuest.getId())) {
             throw new IllegalArgumentException("Given quest is passed");
@@ -186,5 +190,19 @@ public class ServerLevelQuestService implements QuestListener {
         clientSystemConnectionService.onQuestActivated(userId, newQuest);
         questService.activateCondition(userId, newQuest);
         clientSystemConnectionService.onQuestProgressInfo(userId, questService.getQuestProgressInfo(userId));
+    }
+
+    private void deactivateQuest(int userId) {
+        if (questService.hasActiveQuest(userId)) {
+            questService.deactivateActorCondition(userId);
+            clientSystemConnectionService.onQuestActivated(userId, null);
+            QuestConfig oldQuest = userService.getActiveQuest(userId);
+            userService.clearActiveQuest(userId);
+            historyPersistence.get().onQuest(userId, oldQuest, QuestHistoryEntity.Type.QUEST_DEACTIVATED);
+        }
+    }
+
+    public List<QuestBackendInfo> getQuestBackendInfos() {
+        return gameUiControlConfigPersistence.get().readQuestBackendInfos();
     }
 }

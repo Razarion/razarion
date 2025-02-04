@@ -1,6 +1,7 @@
 package com.btxtech.server.systemtests.testnormal;
 
 import com.btxtech.server.ServerTestHelper;
+import com.btxtech.server.rest.UserMgmtController;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
@@ -8,16 +9,12 @@ import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.rest.GameUiContextController;
-import com.btxtech.shared.rest.UserMgmtController;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 public class GameUiContextControllerTest extends AbstractSystemTest {
     private GameUiContextController gameUiContextController;

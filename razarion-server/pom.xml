@@ -243,7 +243,6 @@
                     <classes>
                         <class>com.btxtech.shared.dto.ServerGameEngineConfig</class>
                         <class>com.btxtech.shared.dto.ObjectNameId</class>
-                        <class>com.btxtech.shared.dto.DrivewayConfig</class>
                         <class>com.btxtech.shared.rest.RestApplication</class>
                         <class>com.btxtech.server.rest.BackendController</class>
                         <class>com.btxtech.shared.rest.LevelEditorController</class>
@@ -251,7 +250,6 @@
                         <class>com.btxtech.shared.rest.BoxItemTypeEditorController</class>
                         <class>com.btxtech.shared.rest.ResourceItemTypeEditorController</class>
                         <class>com.btxtech.shared.rest.ParticleSystemEditorController</class>
-                        <class>com.btxtech.shared.rest.ThreeJsModelPackEditorController</class>
                         <class>com.btxtech.shared.rest.ImageProvider</class>
                         <class>com.btxtech.shared.rest.PlanetEditorController</class>
                         <class>com.btxtech.shared.rest.TerrainEditorController</class>
@@ -264,7 +262,6 @@
                         <class>com.btxtech.shared.rest.InventoryController</class>
                         <class>com.btxtech.shared.rest.QuestController</class>
                         <class>com.btxtech.shared.rest.UnlockController</class>
-                        <class>com.btxtech.shared.rest.UserMgmtController</class>
                         <class>com.btxtech.shared.rest.BrushEditorController</class>
                         <class>com.btxtech.shared.rest.FrontendController</class>
                         <class>com.btxtech.server.rest.crud.BabylonMaterialController</class>
@@ -272,6 +269,7 @@
                         <class>com.btxtech.server.rest.crud.Model3DController</class>
                         <class>com.btxtech.server.rest.UiConfigCollectionController</class>
                         <class>com.btxtech.server.rest.DbPropertiesEditorController</class>
+                        <class>com.btxtech.server.rest.UserMgmtController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

@@ -24,19 +24,19 @@ fs.readFile("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-frontend\\thr
   }
 );
 
-app.use(bodyParser.json({ limit: '500mb' }));
-app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
-app.use(bodyParser.raw({ limit: '500mb', type: 'application/octet-stream' }));
-app.use(bodyParser.text({ limit: '500mb' }));
+app.use(bodyParser.json({limit: '500mb'}));
+app.use(bodyParser.urlencoded({limit: '500mb', extended: true}));
+app.use(bodyParser.raw({limit: '500mb', type: 'application/octet-stream'}));
+app.use(bodyParser.text({limit: '500mb'}));
 
-let server = new ServerMock({ host: "localhost", port: PORT });
+let server = new ServerMock({host: "localhost", port: PORT});
 
 server.on({
   method: 'GET',
   path: '/rest/frontend/isloggedin',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: '{"loggedIn": "true", "language": "en"}'
   }
 });
@@ -46,7 +46,7 @@ server.on({
   path: '/rest/frontend/login',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: '"OK"'
   }
 });
@@ -83,11 +83,10 @@ server.on({
   },
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: loadThreeJsModel
   }
 });
-
 
 
 function loadImage(req) {
@@ -129,7 +128,7 @@ server.on({
   },
   reply: {
     status: 200,
-    headers: { "content-type": "image/png" },
+    headers: {"content-type": "image/png"},
     body: loadImage
   }
 });
@@ -139,7 +138,7 @@ server.on({
   path: '/rest/editor/three-js-model/upload/1',
   reply: {
     status: 200,
-    headers: { "content-type": "image/png" },
+    headers: {"content-type": "image/png"},
     body: '"OK"'
   }
 });
@@ -149,7 +148,7 @@ server.on({
   path: '/rest/editor/Svelte-jsoneditor/read/-99999',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: '{"value" : -99999}'
   }
 });
@@ -159,7 +158,7 @@ server.on({
   path: '/rest/editor/Svelte-jsoneditor/update',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: '{"value" : -99999}'
   }
 });
@@ -169,7 +168,7 @@ server.on({
   path: '/rest/editor/three-js-model-pack-editor/findByThreeJsModelId/12',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: '[{"id":12,"internalName":"Fern 1 [Tropical Vegetation 1]","threeJsModelId":12,"namePath":["__root__","Sketchfab_model","Vegetation.FBX","RootNode","fern","fern_fern_0"],"position":{"x":0.0,"y":-1.2,"z":0.0},"scale":{"x":0.025,"y":0.025,"z":-0.025},"rotation":{"x":1.5708,"y":0.0,"z":0.0}}]'
   }
 });
@@ -179,7 +178,7 @@ server.on({
   path: '/rest/editor/three-js-model-pack-editor/create',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: '[{"id":13,"internalName":"Fern 1 [Tropical Vegetation 1]","threeJsModelId":12,"namePath":[]}]'
   }
 });
@@ -189,7 +188,7 @@ server.on({
   path: '/rest/editor/driveway/objectNameIds',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: '[{"id":1,"internalName":"Driveway 1"},{"id":2,"internalName":"Driveway 2"}]'
   }
 });
@@ -200,7 +199,7 @@ server.on({
   path: '/rest/editor/server-game-engine/read/3',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(serverGameEngineJson)
   }
 });
@@ -211,7 +210,7 @@ server.on({
   path: '/rest/editor/base_item_type/objectNameIds',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(baseItemTypeJson)
   }
 
@@ -222,7 +221,7 @@ server.on({
   path: '/rest/editor/level/objectNameIds',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(levelJson)
   }
 });
@@ -233,7 +232,7 @@ server.on({
   path: '/rest/editor/resource_item_type/objectNameIds',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(resourceJson)
   }
 });
@@ -244,7 +243,7 @@ server.on({
   path: '/rest/editor/ground/objectNameIds',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(groundsJson.objectNameIds)
   }
 });
@@ -256,7 +255,7 @@ server.on({
   path: '/rest/editor/water/read/10',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(waterJson._10)
   }
 });
@@ -266,7 +265,7 @@ server.on({
   path: '/rest/editor/water/objectNameIds',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(waterJson.objectNameIds)
   }
 });
@@ -278,7 +277,7 @@ server.on({
   path: '/rest/editor/particle-system/read/1',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(particleSystem._1)
   }
 });
@@ -288,7 +287,7 @@ server.on({
   path: '/rest/editor/particle-system/objectNameIds',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(particleSystem.objectNameIds)
   }
 });
@@ -299,7 +298,7 @@ server.on({
   path: '/rest/editor/three-js-model/objectNameIds',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: "[]"
   }
 });
@@ -311,7 +310,7 @@ server.on({
   path: '/rest/editor/save-terrain-shape',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: function loadAssetConfig(req) {
       console.log("Save terrain shape content length: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
       for (let i = 0; i < req.body.length; i++) {
@@ -363,7 +362,7 @@ server.on({
   },
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify({
       "babylonMaterials": [],
       "selectionItemMaterialId": null,
@@ -381,7 +380,7 @@ server.on({
   },
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify([
       {
         "id": 1,
@@ -405,7 +404,7 @@ server.on({
   path: '/rest/gltf/objectNameIds',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(gltf.objectNameIds)
   }
 });
@@ -415,7 +414,7 @@ server.on({
   path: '/rest/gltf/read/1',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(gltf._1)
   }
 });
@@ -425,7 +424,7 @@ server.on({
   path: '/rest/gltf/update',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: function loadAssetConfig(req) {
       console.log("/rest/gltf/update: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
     }
@@ -437,7 +436,7 @@ server.on({
   path: '/rest/gltf/upload-glb/1',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: function loadAssetConfig(req) {
       console.log("/rest/gltf/upload-glb/1: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
     }
@@ -451,7 +450,7 @@ server.on({
   path: '/rest/editor/model-3d/getModel3DsByGltf/1',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(model3D.model3DsByGltf_1)
   }
 });
@@ -461,7 +460,7 @@ server.on({
   path: '/rest/editor/model-3d/create',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(model3D._1)
   }
 });
@@ -473,7 +472,7 @@ server.on({
   path: '/rest/editor/terrain-object/objectNameIds',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(terrainObject.objectNameIds)
   }
 });
@@ -483,12 +482,20 @@ server.on({
   path: '/rest/editor/terrain-object/read/1',
   reply: {
     status: 200,
-    headers: { "content-type": "application/json" },
+    headers: {"content-type": "application/json"},
     body: JSON.stringify(terrainObject._1)
   }
 });
 
-
+server.on({
+  method: 'GET',
+  path: '/rest/inventory-controller/loadInventory',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify({"crystals": 0, "inventoryItemIds": [2, 2, 2], "inventoryArtifactIds": []})
+  }
+});
 
 server.start(function () {
   console.info("Razarion fake server is running on port: " + PORT);

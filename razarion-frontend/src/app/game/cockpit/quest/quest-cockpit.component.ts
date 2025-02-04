@@ -211,7 +211,10 @@ export class QuestCockpitComponent implements QuestCockpit {
     }
   }
 
-  static conditionTriggerToTitle(conditionTrigger: ConditionTrigger): string | undefined {
+  static conditionTriggerToTitle(conditionTrigger: ConditionTrigger | null): string | undefined {
+    if(!conditionTrigger) {
+      return "???Undefined???"
+    }
     switch (conditionTrigger) {
       case ConditionTrigger.SYNC_ITEM_KILLED: {
         return "Destroy";

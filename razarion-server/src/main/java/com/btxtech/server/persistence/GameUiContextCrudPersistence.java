@@ -9,6 +9,7 @@ import com.btxtech.server.persistence.itemtype.BotConfigEntityPersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeCrudPersistence;
 import com.btxtech.server.persistence.level.LevelCrudPersistence;
 import com.btxtech.server.persistence.level.LevelEntity_;
+import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.scene.BotAttackCommandEntity;
 import com.btxtech.server.persistence.scene.BotHarvestCommandEntity;
 import com.btxtech.server.persistence.scene.BotKillBotCommandEntity;
@@ -21,7 +22,10 @@ import com.btxtech.server.persistence.scene.GameTipConfigEntity;
 import com.btxtech.server.persistence.scene.ResourceItemPositionEntity;
 import com.btxtech.server.persistence.scene.SceneEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
+import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
+import com.btxtech.server.persistence.server.ServerLevelQuestEntryEntity;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
+import com.btxtech.server.rest.dto.QuestBackendInfo;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.AudioConfig;
@@ -369,5 +373,36 @@ public class GameUiContextCrudPersistence extends AbstractConfigCrudPersistence<
         audioConfig.setTerrainLoopLand(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_TERRAIN_LAND));
         audioConfig.setTerrainLoopWater(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_TERRAIN_WATER));
         return audioConfig;
+    }
+
+    @Transactional
+    public List<QuestBackendInfo> readQuestBackendInfos() {
+        List<QuestConfigEntity> questConfigEntities = entityManager.createQuery(
+                "FROM QuestConfigEntity",
+                QuestConfigEntity.class).getResultList();
+
+        return questConfigEntities.stream().map(questConfigEntity ->
+                new QuestBackendInfo()
+                        .id(questConfigEntity.getId())
+                        .conditionConfig(questConfigEntity.toQuestConfig().getConditionConfig())
+                        .levelId(findBackendLevelId(questConfigEntity))
+        ).toList();
+    }
+
+    private int findBackendLevelId(QuestConfigEntity questConfigEntity) {
+        List<ServerLevelQuestEntity> serverLevelQuestEntities = entityManager.createQuery(
+                "FROM ServerLevelQuestEntity",
+                ServerLevelQuestEntity.class).getResultList();
+
+
+        for (ServerLevelQuestEntity serverLevelQuestEntity : serverLevelQuestEntities) {
+            for (ServerLevelQuestEntryEntity serverLevelQuestEntryEntity : serverLevelQuestEntity.getServerLevelQuestEntryEntities()) {
+                if (serverLevelQuestEntryEntity.getQuest().getId().equals(questConfigEntity.getId())) {
+                    return serverLevelQuestEntity.getMinimalLevel().getNumber();
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("No ServerLevelQuestEntity for QuestConfigEntity findBackendLevelId() ");
     }
 }

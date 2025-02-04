@@ -1,15 +1,14 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { MessageService } from 'primeng/api';
-import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
-import { ConditionTrigger, QuestConfig, QuestControllerClient } from 'src/app/generated/razarion-share';
-import { QuestCockpitComponent } from '../quest-cockpit.component';
-import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
+import {HttpClient} from '@angular/common/http';
+import {Component, OnInit} from '@angular/core';
+import {MessageService} from 'primeng/api';
+import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
+import {ConditionTrigger, QuestConfig, QuestControllerClient} from 'src/app/generated/razarion-share';
+import {GwtAngularService} from 'src/app/gwtangular/GwtAngularService';
+import {QuestCockpitComponent} from "../quest-cockpit.component";
 
 @Component({
   selector: 'quest-dialog',
-  templateUrl: './quest-dialog.component.html',
-  styleUrls: ['./quest-dialog.component.scss']
+  templateUrl: './quest-dialog.component.html'
 })
 export class QuestDialogComponent implements OnInit {
   quests: { title: string, description: string, rewards: string[], questId: number }[] = [];

@@ -1,11 +1,11 @@
 package com.btxtech.server.systemtests.testnormal;
 
 import com.btxtech.server.ServerTestHelper;
+import com.btxtech.server.rest.UserMgmtController;
 import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.UnlockResultInfo;
 import com.btxtech.shared.rest.UnlockController;
-import com.btxtech.shared.rest.UserMgmtController;
 import org.junit.Before;
 import org.junit.Test;
 

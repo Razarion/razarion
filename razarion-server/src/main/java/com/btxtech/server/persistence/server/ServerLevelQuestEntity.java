@@ -55,6 +55,10 @@ public class ServerLevelQuestEntity implements ObjectNameIdProvider {
         this.minimalLevel = minimalLevel;
     }
 
+    public LevelEntity getMinimalLevel() {
+        return minimalLevel;
+    }
+
     public List<ServerLevelQuestEntryEntity> getServerLevelQuestEntryEntities() {
         return serverLevelQuestEntryEntities;
     }
