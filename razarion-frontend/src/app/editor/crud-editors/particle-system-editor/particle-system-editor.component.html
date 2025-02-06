@@ -1,66 +1,74 @@
 <div style="width: 40em">
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Id</span>
-        <div class="col-8">
-            <p-inputNumber [disabled]="true" [(ngModel)]="particleSystemConfig.id"></p-inputNumber>
-        </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Id</span>
+    <div class="col-8">
+      <p-inputNumber [disabled]="true" [(ngModel)]="particleSystemConfig.id"></p-inputNumber>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Internal name</span>
-        <div class="col-8">
-            <input [(ngModel)]="particleSystemConfig.internalName" type="text"
-                class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-        </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Internal name</span>
+    <div class="col-8">
+      <input [(ngModel)]="particleSystemConfig.internalName" type="text"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Babylon model</span>
-        <div class="col-8">
-            <babylon-model [(babylonModelId)]="particleSystemConfig.threeJsModelId"></babylon-model>
-        </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Babylon model</span>
+    <div class="col-8">
+      <babylon-model [(babylonModelId)]="particleSystemConfig.threeJsModelId"></babylon-model>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Position offset</span>
-        <div class="col-8">
-            <vertex-editor [(vertex)]="particleSystemConfig.positionOffset"></vertex-editor>
-        </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Position offset</span>
+    <div class="col-8">
+      <vertex-editor [(vertex)]="particleSystemConfig.positionOffset"></vertex-editor>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Texture</span>
-        <div class="col-8">
-            <image-item [(imageId)]="particleSystemConfig.imageId"></image-item>
-        </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Texture</span>
+    <div class="col-8">
+      <image-item [(imageId)]="particleSystemConfig.imageId"></image-item>
     </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Emitter node id</span>
+    <div class="col-8">
+      <input [(ngModel)]="particleSystemConfig.emitterNodeId" type="text"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+  </div>
 
-    <p-divider align="left">
-        <div class="inline-flex align-items-center">
-            <i class="pi pi-bolt mr-2"></i>
-            <b>&nbsp;Action</b>
-        </div>
-    </p-divider>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Pick terrain position</span>
-        <div class="col-8">
-            <decimal-position [(decimalPosition)]="terrainPosition"></decimal-position>
-        </div>
+
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-bolt mr-2"></i>
+      <b>&nbsp;Action</b>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Start</span>
-        <div class="col-8">
-            <p-button icon="pi pi-power-off" (onClick)="startParticleSystem()"></p-button>
-        </div>
+  </p-divider>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Pick terrain position</span>
+    <div class="col-8">
+      <decimal-position [(decimalPosition)]="terrainPosition"></decimal-position>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Info</span>
-        <div class="col-8">
-            <input [(ngModel)]="currentInfo" type="text"
-                   class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-        </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Start</span>
+    <div class="col-8">
+      <p-button icon="pi pi-power-off" (onClick)="startParticleSystem()"></p-button>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Save</span>
-        <div class="col-8">
-            <p-button icon="pi pi-save" (onClick)="saveParticleSystem()"></p-button>
-        </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Info</span>
+    <div class="col-8">
+      <input [(ngModel)]="currentInfo" type="text"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
     </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Save</span>
+    <div class="col-8">
+      <p-button icon="pi pi-save" (onClick)="saveParticleSystem()"></p-button>
+    </div>
+  </div>
 
 </div>

@@ -563,8 +563,8 @@ export class GameMockService {
           return particleSystemConfigJson.threeJsModelId;
         }
 
-        getEmitterMeshPath(): string[] {
-          return particleSystemConfigJson.emitterMeshPath;
+        getEmitterNodeId(): string {
+          return particleSystemConfigJson.emitterNodeId;
         }
 
         getId(): number {

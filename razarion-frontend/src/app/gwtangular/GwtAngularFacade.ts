@@ -494,7 +494,7 @@ export interface ParticleSystemConfig {
 
   getThreeJsModelId(): number | null;
 
-  getEmitterMeshPath(): string[];
+  getEmitterNodeId(): string | null;
 
   getPositionOffset(): Vertex | null;
 

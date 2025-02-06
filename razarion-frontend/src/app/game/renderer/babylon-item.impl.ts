@@ -239,14 +239,15 @@ export class BabylonItemImpl implements BabylonItem {
     return this.container;
   }
 
-  findChildMesh(meshPath: string[]): Mesh {
-    for (let childNod of this.getContainer().getChildren()) {
-      let found = BabylonModelService.findChildNode(childNod, meshPath);
-      if (found) {
-        return <Mesh>found;
+  findChildMesh(nodeId: string): Mesh {
+    let nodesFound =  this.getContainer().getDescendants(false, node => node.id === nodeId);
+    if(nodesFound.length > 0) {
+      if(nodesFound.length > 1) {
+        console.warn(`more then 1 node found in nodeId:${nodeId} babylon-item id ${this.id}`)
       }
+      return <Mesh>nodesFound[0];
     }
-    throw new Error(`Can not find mesh path '${meshPath}' in '${this.getContainer()}'`);
+    throw new Error(`Can not find mesh path '${nodeId}' in '${this.getContainer()}'`);
   }
 
   isSelectOrHove(): boolean {

@@ -64,7 +64,7 @@ public class TerrainObjectServiceTest extends DaggerTerrainServiceTestBase {
 //                new TerrainObjectPosition().id(8).terrainObjectConfigId(2).position(new DecimalPosition(200, 160)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0))
         );
 
-        List<ParticleSystemConfig> particleSystemConfigs = Collections.singletonList(new ParticleSystemConfig().id(1).emitterMeshPath(new String[]{"Cannon00 '41'", "Cannon00 '41'.Cannon00"}).threeJsModelId(50));
+        List<ParticleSystemConfig> particleSystemConfigs = Collections.singletonList(new ParticleSystemConfig().id(1).emitterNodeId("Cannon00.Cannon00").threeJsModelId(50));
         setupTerrainTypeService(null, terrainObjectConfigs, null, terrainObjectPositions, groundConfig, threeJsModelConfigs, particleSystemConfigs);
         // showDisplay();
 

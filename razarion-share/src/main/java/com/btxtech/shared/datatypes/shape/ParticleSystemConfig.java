@@ -13,7 +13,7 @@ public class ParticleSystemConfig implements Config {
     private String internalName;
     @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
     private Integer threeJsModelId;
-    private String[] emitterMeshPath;
+    private String emitterNodeId;
     private Vertex positionOffset;
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer imageId;
@@ -45,12 +45,12 @@ public class ParticleSystemConfig implements Config {
         this.threeJsModelId = threeJsModelId;
     }
 
-    public String[] getEmitterMeshPath() {
-        return emitterMeshPath;
+    public String getEmitterNodeId() {
+        return emitterNodeId;
     }
 
-    public void setEmitterMeshPath(String[] emitterMeshPath) {
-        this.emitterMeshPath = emitterMeshPath;
+    public void setEmitterNodeId(String emitterNodeId) {
+        this.emitterNodeId = emitterNodeId;
     }
 
     public @Nullable Vertex getPositionOffset() {
@@ -84,8 +84,8 @@ public class ParticleSystemConfig implements Config {
         return this;
     }
 
-    public ParticleSystemConfig emitterMeshPath(String[] emitterMeshPath) {
-        setEmitterMeshPath(emitterMeshPath);
+    public ParticleSystemConfig emitterNodeId(String emitterNodeId) {
+        setEmitterNodeId(emitterNodeId);
         return this;
     }
 
