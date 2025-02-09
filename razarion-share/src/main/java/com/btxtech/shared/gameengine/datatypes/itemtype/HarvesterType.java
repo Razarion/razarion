@@ -27,7 +27,6 @@ import jsinterop.annotations.JsType;
 public class HarvesterType {
     private int range;
     private double progress;
-    @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
     private Integer particleSystemConfigId;
 
     public int getRange() {

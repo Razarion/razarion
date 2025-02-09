@@ -2,8 +2,8 @@ import {Component} from '@angular/core';
 import {CrudContainerChild} from '../crud-container/crud-container.component';
 import {
   DecimalPosition,
-  ParticleSystemConfig,
-  ParticleSystemEditorControllerClient
+  ParticleSystemEntity,
+  UiConfigCollectionControllerClient
 } from 'src/app/generated/razarion-share';
 import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
 import {LocationVisualization} from '../../common/place-config/location-visualization';
@@ -14,9 +14,9 @@ import {BabylonModelService} from 'src/app/game/renderer/babylon-model.service';
   selector: 'particle-system-editor',
   templateUrl: './particle-system-editor.component.html'
 })
-export class ParticleSystemEditorComponent implements CrudContainerChild<ParticleSystemConfig> {
-  static editorControllerClient = ParticleSystemEditorControllerClient;
-  particleSystemConfig!: ParticleSystemConfig;
+export class ParticleSystemEditorComponent implements CrudContainerChild<ParticleSystemEntity> {
+  static editorControllerClient = UiConfigCollectionControllerClient;
+  particleSystemEntity!: ParticleSystemEntity;
   terrainPosition: DecimalPosition | null = null;
   particleSystem?: ParticleSystem;
   private babylonModelId?: number;
@@ -28,36 +28,36 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
 
   }
 
-  init(particleSystemConfig: ParticleSystemConfig): void {
-    this.particleSystemConfig = particleSystemConfig;
+  init(particleSystemEntity: ParticleSystemEntity): void {
+    this.particleSystemEntity = particleSystemEntity;
   }
 
-  exportConfig(): ParticleSystemConfig {
-    return this.particleSystemConfig;
+  exportConfig(): ParticleSystemEntity {
+    return this.particleSystemEntity;
   }
 
   getId(): number {
-    return this.particleSystemConfig.id;
+    return this.particleSystemEntity.id;
   }
 
   startParticleSystem() {
-    if (this.terrainPosition) {
-      const hight = LocationVisualization.getHeightFromTerrain(this.terrainPosition.x, this.terrainPosition.y, this.rendererService)
-      if (this.particleSystemConfig.threeJsModelId || this.particleSystemConfig.threeJsModelId === 0) {
-        const emittingPosition = new Vector3(this.terrainPosition.x,
-          hight,
-          this.terrainPosition.y);
-        this.particleSystem = this.rendererService.createParticleSystem(this.particleSystemConfig.threeJsModelId,
-          this.particleSystemConfig.imageId,
-          emittingPosition,
-          null,
-          false);
-        this.babylonModelId = this.particleSystemConfig.threeJsModelId;
-        this.currentInfo = `${this.particleSystemConfig.internalName} '${this.particleSystemConfig.id}' BablyonModel Id '${this.particleSystemConfig.threeJsModelId}'`;
-        this.particleSystem.name = `Editor ${this.currentInfo}`;
-        this.particleSystem.start();
-      }
-    }
+    // if (this.terrainPosition) {
+    //   const hight = LocationVisualization.getHeightFromTerrain(this.terrainPosition.x, this.terrainPosition.y, this.rendererService)
+    //   if (this.particleSystemEntity.threeJsModelId || this.particleSystemEntity.threeJsModelId === 0) {
+    //     const emittingPosition = new Vector3(this.terrainPosition.x,
+    //       hight,
+    //       this.terrainPosition.y);
+    //     this.particleSystem = this.rendererService.createParticleSystem(this.particleSystemEntity.threeJsModelId,
+    //       this.particleSystemEntity.imageId,
+    //       emittingPosition,
+    //       null,
+    //       false);
+    //     this.babylonModelId = this.particleSystemEntity.threeJsModelId;
+    //     this.currentInfo = `${this.particleSystemEntity.internalName} '${this.particleSystemEntity.id}' BablyonModel Id '${this.particleSystemEntity.threeJsModelId}'`;
+    //     this.particleSystem.name = `Editor ${this.currentInfo}`;
+    //     this.particleSystem.start();
+    //   }
+    // }
   }
 
   saveParticleSystem() {

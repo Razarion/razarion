@@ -7,7 +7,6 @@ import com.btxtech.shared.rest.CrudController;
 import com.btxtech.shared.rest.GameUiContextEditorController;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.rest.LevelEditorController;
-import com.btxtech.shared.rest.ParticleSystemEditorController;
 import com.btxtech.shared.rest.PlanetEditorController;
 import com.btxtech.shared.rest.ResourceItemTypeEditorController;
 import com.btxtech.shared.rest.ServerGameEngineEditorController;
@@ -28,7 +27,6 @@ public enum CollectionReferenceType {
     RESOURCE_ITEM(ResourceItemTypeEditorController.class, "Resource Item", CommonUrl.RESOURCE_ITEM_TYPE_EDITOR_PATH),
     SERVER_GAME_ENGINE(ServerGameEngineEditorController.class, "Server Game Engine", CommonUrl.SERVER_GAME_ENGINE_EDITOR_PATH),
     THREE_JS_MODEL(ThreeJsModelEditorController.class, "Three.js Model", CommonUrl.THREE_JS_MODEL_EDITOR_PATH),
-    PARTICLE_SYSTEM(ParticleSystemEditorController.class, "Particle System", CommonUrl.PARTICLE_SYSTEM_EDITOR_PATH),
     IMAGE(null, "Image", null);
 
     private static Map<String, CollectionReferenceType> collectionName2Type;

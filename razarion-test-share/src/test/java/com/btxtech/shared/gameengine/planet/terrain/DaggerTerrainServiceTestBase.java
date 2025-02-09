@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.GroundConfig;
@@ -30,8 +29,7 @@ public class DaggerTerrainServiceTestBase extends DaggerMasterBaseTest {
                                            PlanetConfig planetConfig,
                                            List<TerrainObjectPosition> terrainObjectPositions,
                                            List<GroundConfig> groundConfigs,
-                                           List<ThreeJsModelConfig> threeJsModelConfigs,
-                                           List<ParticleSystemConfig> particleSystemConfigs) {
+                                           List<ThreeJsModelConfig> threeJsModelConfigs) {
         if (staticGameConfig == null) {
             staticGameConfig = FallbackConfig.setupStaticGameConfig();
         }
@@ -45,7 +43,6 @@ public class DaggerTerrainServiceTestBase extends DaggerMasterBaseTest {
             planetConfig = FallbackConfig.setupPlanetConfig();
         }
         staticGameConfig.setThreeJsModelConfigs(threeJsModelConfigs);
-        staticGameConfig.setParticleSystemConfigs(particleSystemConfigs);
         setupEnvironment(staticGameConfig, planetConfig);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);

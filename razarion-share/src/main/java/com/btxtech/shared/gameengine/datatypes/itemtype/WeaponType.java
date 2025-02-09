@@ -34,11 +34,9 @@ public class WeaponType {
     private double reloadTime;
     private List<Integer> disallowedItemTypes;
     private Double projectileSpeed; // Meter per second
-    @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
     private Integer muzzleFlashParticleSystemConfigId;
     private TurretType turretType;
     private Integer muzzleFlashAudioItemConfigId;
-    @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
     private Integer trailParticleSystemConfigId;
 
     public double getRange() {

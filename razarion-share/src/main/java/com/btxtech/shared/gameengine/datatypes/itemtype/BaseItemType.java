@@ -54,7 +54,6 @@ public class BaseItemType extends ItemType {
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer buildupTextureId;
     private Integer explosionAudioItemConfigId;
-    @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
     private Integer explosionParticleId;
 
     public PhysicalAreaConfig getPhysicalAreaConfig() {

@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
-import com.btxtech.server.persistence.ParticleSystemEntity;
+import com.btxtech.server.persistence.ui.ParticleSystemEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 
 import javax.persistence.Entity;

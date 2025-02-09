@@ -1,28 +1,48 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
+import com.btxtech.server.persistence.ui.ParticleSystemEntity;
+import com.btxtech.server.rest.crud.ParticleSystemController;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.persistence.Basic;
+import javax.persistence.FetchType;
+import javax.persistence.Lob;
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Singleton
-public class ParticleSystemCrudPersistence extends AbstractConfigCrudPersistence<ParticleSystemConfig, ParticleSystemEntity> {
-    @Inject
-    private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
+public class ParticleSystemCrudPersistence extends AbstractEntityCrudPersistence<ParticleSystemEntity> {
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private byte[] data;
     @Inject
     private ImagePersistence imagePersistence;
 
     public ParticleSystemCrudPersistence() {
-        super(ParticleSystemEntity.class, ParticleSystemEntity_.id, ParticleSystemEntity_.internalName);
+        super(ParticleSystemEntity.class);
+    }
+
+    @Transactional
+    public List<ParticleSystemEntity> readAllBaseEntitiesJson() {
+        return getEntities()
+                .stream()
+                .map(ParticleSystemController::jpa2JsonStatic)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public byte[] getData(int id) {
+        return getEntity(id).getData();
     }
 
     @Override
-    protected ParticleSystemConfig toConfig(ParticleSystemEntity entity) {
-        return entity.toConfig();
+    protected ParticleSystemEntity jsonToJpa(ParticleSystemEntity particleSystemEntity) {
+        particleSystemEntity.setImageLibraryEntity(imagePersistence.getImageLibraryEntity(particleSystemEntity.getImageId()));
+        return particleSystemEntity;
     }
 
-    @Override
-    protected void fromConfig(ParticleSystemConfig config, ParticleSystemEntity entity) {
-        entity.fromConfig(config, threeJsModelCrudPersistence, imagePersistence);
-    }
 }

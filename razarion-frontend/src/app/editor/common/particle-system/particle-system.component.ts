@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
-import { ParticleSystemEditorControllerClient } from 'src/app/generated/razarion-share';
+import { ParticleSystemControllerClient } from 'src/app/generated/razarion-share';
 
 @Component({
   selector: 'particle-system',
@@ -12,15 +12,15 @@ export class ParticleSystemComponent implements OnInit {
   particleSystemId: number | null = null;
   @Output()
   particleSystemIdChange = new EventEmitter<number | null>();
-  private particleSystemEditorControllerClient: ParticleSystemEditorControllerClient;
+  private particleSystemControllerClient: ParticleSystemControllerClient;
   particleSystemOptions: { label: string, particleSystemId: number }[] = [];
 
   constructor(httpClient: HttpClient) {
-    this.particleSystemEditorControllerClient = new ParticleSystemEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
+    this.particleSystemControllerClient = new ParticleSystemControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
   ngOnInit(): void {
-    this.particleSystemEditorControllerClient.getObjectNameIds().then(objectNameIds => {
+    this.particleSystemControllerClient.getObjectNameIds().then(objectNameIds => {
       this.particleSystemOptions = [];
       objectNameIds.forEach(objectNameId => {
         this.particleSystemOptions.push({ label: `${objectNameId.internalName} '${objectNameId.id}'`, particleSystemId: objectNameId.id });

@@ -22,7 +22,6 @@ import {BabylonModelService} from "./babylon-model.service";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {ActionService} from "../action.service";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
-import {GwtInstance} from "../../gwtangular/GwtInstance";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
@@ -237,13 +236,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
     let projectileStartPosition = this.position3D!;
     if (this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()) {
-      let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()!);
-      if (particleSystemConfig.getEmitterNodeId()) {
-        const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterNodeId()!);
+      let particleSystemEntity = this.babylonModelService.getParticleSystemEntity(this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()!);
+      if (particleSystemEntity.emitterNodeId) {
+        const emitterMesh = this.findChildMesh(particleSystemEntity.emitterNodeId!);
         emitterMesh.computeWorldMatrix(true);
         projectileStartPosition = emitterMesh.absolutePosition;
       }
-      const particleSystem = this.rendererService.createParticleSystem(particleSystemConfig.getThreeJsModelId(), particleSystemConfig.getImageId(), projectileStartPosition, correctDestination, false);
+      const particleSystem = this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId, projectileStartPosition, correctDestination, false);
       particleSystem.disposeOnStop = true;
       particleSystem.start();
     }
@@ -256,16 +255,16 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       return;
     }
 
-    let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getExplosionParticleId()!);
+    let particleSystemConfig = this.babylonModelService.getParticleSystemEntity(this.baseItemType.getExplosionParticleId()!);
 
-    let positionOffset = particleSystemConfig.getPositionOffset() || GwtInstance.newVertex(0, 0, 0);
+    let positionOffset = particleSystemConfig.positionOffset || {x: 0, y: 0, z: 0};
 
-    let emittingPosition = new Vector3(this.getContainer().position.x + positionOffset.getX(),
-      this.getContainer().position.y + positionOffset.getZ(),
-      this.getContainer().position.z + positionOffset.getY());
+    let emittingPosition = new Vector3(this.getContainer().position.x + positionOffset.x,
+      this.getContainer().position.y + positionOffset.z,
+      this.getContainer().position.z + positionOffset.y);
 
-    const particleSystem = this.rendererService.createParticleSystem(particleSystemConfig.getThreeJsModelId(),
-      particleSystemConfig.getImageId(),
+    const particleSystem = this.rendererService.createParticleSystem(particleSystemConfig.id,
+      particleSystemConfig.imageId,
       emittingPosition,
       null,
       false);
@@ -294,16 +293,16 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (razarionBuildingPosition && !this.buildingParticleSystem) {
       try {
         if (this.baseItemType.getBuilderType()?.getParticleSystemConfigId()) {
-          let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getBuilderType()?.getParticleSystemConfigId()!);
+          let particleSystemEntity = this.babylonModelService.getParticleSystemEntity(this.baseItemType.getBuilderType()?.getParticleSystemConfigId()!);
           const height = LocationVisualization.getHeightFromTerrain(razarionBuildingPosition.getX(), razarionBuildingPosition.getY(), this.rendererService);
           const buildingPosition = new Vector3(razarionBuildingPosition.getX(), height, razarionBuildingPosition.getY());
           let emitterPosition = this.position3D!
-          if (particleSystemConfig.getEmitterNodeId()) {
-            const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterNodeId()!)
+          if (particleSystemEntity.emitterNodeId) {
+            const emitterMesh = this.findChildMesh(particleSystemEntity.emitterNodeId)
             emitterMesh.computeWorldMatrix(true);
             emitterPosition = emitterMesh.absolutePosition;
           }
-          this.buildingParticleSystem = this.rendererService.createParticleSystem(particleSystemConfig.getThreeJsModelId(), particleSystemConfig.getImageId(), emitterPosition, buildingPosition, true);
+          this.buildingParticleSystem = this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId, emitterPosition, buildingPosition, true);
           this.buildingParticleSystem.start();
         }
       } catch (e) {
@@ -333,15 +332,15 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (razarionHarvestingPosition && !this.harvestingParticleSystem) {
       try {
         if (this.baseItemType.getHarvesterType()?.getParticleSystemConfigId()) {
-          let particleSystemConfig = this.babylonModelService.getParticleSystemConfig(this.baseItemType.getHarvesterType()?.getParticleSystemConfigId()!);
+          let particleSystemEntity = this.babylonModelService.getParticleSystemEntity(this.baseItemType.getHarvesterType()?.getParticleSystemConfigId()!);
           const harvestingPosition = new Vector3(razarionHarvestingPosition.getX(), this.getContainer().position.y, razarionHarvestingPosition.getY());
           let emitterPosition = this.position3D!
-          if(particleSystemConfig.getEmitterNodeId()) {
-            const emitterMesh = this.findChildMesh(particleSystemConfig.getEmitterNodeId()!)
+          if (particleSystemEntity.emitterNodeId) {
+            const emitterMesh = this.findChildMesh(particleSystemEntity.emitterNodeId)
             emitterMesh.computeWorldMatrix(true);
             emitterPosition = emitterMesh.absolutePosition;
           }
-          this.harvestingParticleSystem = this.rendererService.createParticleSystem(particleSystemConfig.getThreeJsModelId(), particleSystemConfig.getImageId(), emitterPosition, harvestingPosition, true);
+          this.harvestingParticleSystem = this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId, emitterPosition, harvestingPosition, true);
           this.harvestingParticleSystem.start();
         }
       } catch (e) {
@@ -418,11 +417,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }, this.rendererService.getScene());
     mesh.material = this.rendererService.projectileMaterial;
 
-    const trailParticleSystemConfigId = GwtHelper.gwtIssueNumber(this.baseItemType.getWeaponType()!.getTrailParticleSystemConfigId());
-    if (trailParticleSystemConfigId || trailParticleSystemConfigId === 0) {
-      let trailParticleSystemConfig = this.babylonModelService.getParticleSystemConfig(trailParticleSystemConfigId);
-      let particleSystem = this.rendererService.createParticleSystem(trailParticleSystemConfig.getThreeJsModelId(),
-        trailParticleSystemConfig.getImageId(),
+    const trailParticleSystemEntityId = GwtHelper.gwtIssueNumber(this.baseItemType.getWeaponType()!.getTrailParticleSystemConfigId());
+    if (trailParticleSystemEntityId || trailParticleSystemEntityId === 0) {
+      let particleSystemEntity = this.babylonModelService.getParticleSystemEntity(trailParticleSystemEntityId);
+      let particleSystem = this.rendererService.createParticleSystem(particleSystemEntity.id,
+        particleSystemEntity.imageId,
         mesh,
         null,
         false);

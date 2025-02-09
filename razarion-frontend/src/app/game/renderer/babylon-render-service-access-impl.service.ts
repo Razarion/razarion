@@ -711,13 +711,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.interpolationListeners.forEach(interpolationListener => interpolationListener.interpolate(date));
   }
 
-  public createParticleSystem(babylonModelId: number | null, imageId: number | null, emitterPosition: AbstractMesh | Vector3, destination: Vector3 | null, stretchToDestination: boolean): ParticleSystem {
-    if (!babylonModelId && babylonModelId !== 0) {
+  public createParticleSystem(particleSystemEntityId: number | null, imageId: number | null, emitterPosition: AbstractMesh | Vector3, destination: Vector3 | null, stretchToDestination: boolean): ParticleSystem {
+    if (!particleSystemEntityId && particleSystemEntityId !== 0) {
       throw new Error("babylonModelId not set");
     }
-    const particleJsonConfig = this.babylonModelService.getParticleSystemJson(babylonModelId);
+    const particleJson = this.babylonModelService.getParticleSystemJson(particleSystemEntityId);
 
-    const particleSystem = ParticleSystem.Parse(particleJsonConfig, this.scene, "");
+    const particleSystem = ParticleSystem.Parse(particleJson, this.scene, "");
     particleSystem.emitter = emitterPosition;
 
     let correctedImageId = GwtHelper.gwtIssueNumber(imageId);

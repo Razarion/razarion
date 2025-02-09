@@ -30,7 +30,7 @@ export abstract class GwtAngularFacade {
 // ---------- Boot ----------
 
 export interface GwtAngularBoot {
-  loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[], babylonMaterialIds: number[]): Promise<void>;
+  loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[]): Promise<void>;
 }
 
 // ---------- Common ----------
@@ -485,20 +485,6 @@ export interface BabylonResourceItem extends BabylonItem {
 
 export interface BabylonBoxItem extends BabylonItem {
 
-}
-
-export interface ParticleSystemConfig {
-  getId(): number;
-
-  getInternalName(): string;
-
-  getThreeJsModelId(): number | null;
-
-  getEmitterNodeId(): string | null;
-
-  getPositionOffset(): Vertex | null;
-
-  getImageId(): number | null;
 }
 
 // ---------- Item Cockpit ----------

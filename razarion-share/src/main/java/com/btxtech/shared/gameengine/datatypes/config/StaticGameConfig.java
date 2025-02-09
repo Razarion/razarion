@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
-import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -26,7 +25,6 @@ public class StaticGameConfig {
     private List<LevelConfig> levelConfigs;
     private List<InventoryItem> inventoryItems;
     private List<ThreeJsModelConfig> threeJsModelConfigs;
-    private List<ParticleSystemConfig> particleSystemConfigs;
 
     public List<GroundConfig> getGroundConfigs() {
         return groundConfigs;
@@ -92,14 +90,6 @@ public class StaticGameConfig {
         this.threeJsModelConfigs = threeJsModelConfigs;
     }
 
-    public List<ParticleSystemConfig> getParticleSystemConfigs() {
-        return particleSystemConfigs;
-    }
-
-    public void setParticleSystemConfigs(List<ParticleSystemConfig> particleSystemConfigs) {
-        this.particleSystemConfigs = particleSystemConfigs;
-    }
-
     public StaticGameConfig groundConfigs(List<GroundConfig> groundConfigs) {
         setGroundConfigs(groundConfigs);
         return this;
@@ -137,11 +127,6 @@ public class StaticGameConfig {
 
     public StaticGameConfig threeJsModelConfigs(List<ThreeJsModelConfig> threeJsModelConfigs) {
         setThreeJsModelConfigs(threeJsModelConfigs);
-        return this;
-    }
-
-    public StaticGameConfig particleSystemConfigs(List<ParticleSystemConfig> particleSystemConfigs) {
-        setParticleSystemConfigs(particleSystemConfigs);
         return this;
     }
 }

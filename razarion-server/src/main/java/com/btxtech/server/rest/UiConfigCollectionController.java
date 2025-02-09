@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.BabylonMaterialCrudPersistence;
 import com.btxtech.server.persistence.DbPropertiesService;
 import com.btxtech.server.persistence.GltfCrudPersistence;
 import com.btxtech.server.persistence.Model3DCrudPersistence;
+import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.shared.CommonUrl;
 
 import javax.inject.Inject;
@@ -24,7 +25,8 @@ public class UiConfigCollectionController {
     private Model3DCrudPersistence model3DCrudPersistence;
     @Inject
     private DbPropertiesService dbPropertiesService;
-
+    @Inject
+    private ParticleSystemCrudPersistence particleSystemCrudPersistence;
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("get")
@@ -33,6 +35,7 @@ public class UiConfigCollectionController {
                 .babylonMaterials(babylonMaterialCrudPersistence.readAllBaseEntities())
                 .gltfs(gltfCrudPersistence.readAllBaseEntitiesJson())
                 .model3DEntities(model3DCrudPersistence.readAllBaseEntitiesJson())
+                .particleSystemEntities(particleSystemCrudPersistence.readAllBaseEntitiesJson())
                 .selectionItemMaterialId(dbPropertiesService.getBabylonModelProperty(ITEM_SELECTION_MATERIAL))
                 .healthBarNodeMaterialId(dbPropertiesService.getBabylonModelProperty(ITEM_HEALTH_BAR_NODE_MATERIAL))
                 .progressBarNodeMaterialId(dbPropertiesService.getBabylonModelProperty(ITEM_PROGRESS_BAR_NODE_MATERIAL));

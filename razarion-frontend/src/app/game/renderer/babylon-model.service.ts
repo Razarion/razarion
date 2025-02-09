@@ -1,76 +1,60 @@
 import {Injectable} from "@angular/core";
-import {URL_GLTF, URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "src/app/common";
-import {Diplomacy, ParticleSystemConfig, ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
-import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+import {URL_THREE_JS_MODEL, URL_THREE_JS_MODEL_EDITOR} from "src/app/common";
+import {Diplomacy, ThreeJsModelConfig} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {
   AssetContainer,
-  BaseTexture,
   Color3,
   IInspectable,
-  InputBlock,
   InspectableType,
   InstancedMesh,
   Material,
   Mesh,
   Node,
   NodeMaterial,
-  Nullable,
   ParticleSystem,
-  PBRMaterial,
   Scene,
   SceneLoader,
   TransformNode
 } from "@babylonjs/core";
 import {GLTFFileLoader} from "@babylonjs/loaders";
-import JSZip from "jszip";
-import {
-  BabylonMaterialControllerClient,
-  BabylonMaterialEntity,
-  GltfEntity,
-  Model3DEntity
-} from "src/app/generated/razarion-share";
-import {TypescriptGenerator} from "src/app/backend/typescript-generator";
+import {Model3DEntity, ParticleSystemEntity} from "src/app/generated/razarion-share";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
-import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import {BabylonMaterialContainer, GlbContainer, ParticleSystemContainer} from "./babylon-model-container";
+import {GltfHelper} from "./gltf-helper";
 import Type = ThreeJsModelConfig.Type;
 
 @Injectable()
 export class BabylonModelService {
   private assetContainers: Map<number, AssetContainer> = new Map();
   private nodeMaterials: Map<number, NodeMaterial> = new Map();
-  private babylonMaterials: Map<number, Material> = new Map();
-  babylonMaterialEntities: Map<number, BabylonMaterialEntity> = new Map();
-  private gltfHelpers: Map<number, GltfHelper> = new Map();
-  private glbAssetContainers: Map<number, AssetContainer> = new Map();
+  private babylonMaterialContainer = new BabylonMaterialContainer();
+  private glbContainer = new GlbContainer(this.babylonMaterialContainer);
+  private particleSystemContainer = new ParticleSystemContainer();
   private model3DEntities: Map<number, Model3DEntity> = new Map();
-  private gwtAngularService!: GwtAngularService;
   private scene!: Scene;
   private threeJsModelConfigs!: ThreeJsModelConfig[];
   private threeJsModelConfigMap: Map<number, ThreeJsModelConfig> = new Map();
-  private particleSystemConfigs: Map<number, ParticleSystemConfig> = new Map();
-  private particleSystemJson: Map<number, any> = new Map();
-  private babylonMaterialsLoaded = false;
-  private gltfsLoaded = false;
   private gwtResolver?: () => void;
-  private babylonMaterialControllerClient: BabylonMaterialControllerClient;
-  diplomacyMaterialCache: Map<number, Map<Diplomacy, Map<string, NodeMaterial>>> = new Map<number, Map<Diplomacy, Map<string, NodeMaterial>>>();
 
   constructor(private uiConfigCollectionService: UiConfigCollectionService,
               private httpClient: HttpClient,
               private messageService: MessageService) {
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
-    this.babylonMaterialControllerClient = new BabylonMaterialControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
     this.loadUiConfigCollection();
+    this.babylonMaterialContainer.setHttpClient(httpClient);
+    this.particleSystemContainer.setHttpClient(httpClient);
   }
 
-  init(threeJsModelConfigs: ThreeJsModelConfig[], particleSystemConfigs: ParticleSystemConfig[], gwtAngularService: GwtAngularService): Promise<void> {
+  setScene(scene: Scene) {
+    this.scene = scene;
+  }
+
+  init(threeJsModelConfigs: ThreeJsModelConfig[]): Promise<void> {
     this.threeJsModelConfigs = threeJsModelConfigs.filter(threeJsModelConfig => !threeJsModelConfig.isDisabled());
-    this.particleSystemConfigs = new Map(particleSystemConfigs.map(p => [p.getId(), p]));
-    this.gwtAngularService = gwtAngularService;
 
     this.threeJsModelConfigs.forEach(threeJsModelConfig => this.threeJsModelConfigMap.set(threeJsModelConfig.getId(), threeJsModelConfig))
 
@@ -96,9 +80,8 @@ export class BabylonModelService {
                 this.loadNodeMaterial(url, threeJsModelConfig, handleResolve);
                 break;
               case ThreeJsModelConfig.Type.PARTICLE_SYSTEM_JSON:
-                this.loadParticleSystem(url, threeJsModelConfig, handleResolve);
+                handleResolve();
                 break;
-
               default:
                 console.warn(`Unknown type '${threeJsModelConfig.getType()}' in ThreeJsModelConfig (${threeJsModelConfig.getInternalName()}[${threeJsModelConfig.getId()}])`);
                 handleResolve();
@@ -119,136 +102,31 @@ export class BabylonModelService {
   }
 
   private handleResolve(handler: () => void) {
-    if (this.babylonMaterialsLoaded && this.gltfsLoaded) {
+    if (this.babylonMaterialContainer.isLoaded() && this.glbContainer.isLoaded() && this.particleSystemContainer.isLoaded()) {
+      console.info(`Gwt handleResolve now`)
       handler();
     } else {
+      console.info(`Gwt handleResolve later`)
       this.gwtResolver = handler;
     }
   }
 
   private loadUiConfigCollection() {
     this.uiConfigCollectionService.getUiConfigCollection().then(uiConfigCollection => {
-      this.handleBabylonMaterials(uiConfigCollection.babylonMaterials);
+      this.babylonMaterialContainer.load(uiConfigCollection.babylonMaterials, this, this.scene);
       this.setupModel3DEntities(uiConfigCollection.model3DEntities);
-      this.handleAndLoadGltfs(uiConfigCollection.gltfs);
+      this.particleSystemContainer.load(uiConfigCollection.particleSystemEntities, this, this.scene)
+      this.glbContainer.load(uiConfigCollection.gltfs, this, this.scene);
     });
   }
 
-  private handleBabylonMaterials(babylonMaterialEntities: BabylonMaterialEntity[]) {
-    this.babylonMaterialEntities.clear();
-    if (babylonMaterialEntities.length === 0) {
-      this.babylonMaterialsLoaded = true;
-      this.handleLoaded();
-      return;
-    }
-
-    const materialLoadingControl = {
-      loadingCount: babylonMaterialEntities.length
-    }
-
-    babylonMaterialEntities.forEach(babylonMaterialEntity => {
-      this.babylonMaterialEntities.set(babylonMaterialEntity.id, babylonMaterialEntity);
-      this.loadMaterial(babylonMaterialEntity, materialLoadingControl);
-    });
-  }
-
-  private loadMaterial(babylonMaterialEntity: BabylonMaterialEntity, materialLoadingControl: { loadingCount: number }) {
-    this.babylonMaterialControllerClient.getData(babylonMaterialEntity.id)
-      .then(data => {
-        try {
-          let material;
-          if (babylonMaterialEntity.nodeMaterial) {
-            material = NodeMaterial.Parse(data, this.scene, "/rest/images/");
-          } else {
-            material = Material.Parse(data, this.scene, "/rest/images/");
-          }
-          if (material) {
-            this.babylonMaterials.set(babylonMaterialEntity.id, material);
-          } else {
-            console.error(`Error parsing material`);
-          }
-          this.handleMaterialLoaded(materialLoadingControl);
-        } catch (e) {
-          console.error(e);
-          console.error(`Error parsing material '${e}'`);
-          this.handleMaterialLoaded(materialLoadingControl);
-        }
-      })
-      .catch(err => {
-        console.error(`Error loading Babylon file '${err}'`);
-        this.handleMaterialLoaded(materialLoadingControl);
-      })
-  }
-
-  private handleLoaded() {
-    if (this.babylonMaterialsLoaded && this.gltfsLoaded) {
+  public handleLoaded(): void {
+    if (this.babylonMaterialContainer.isLoaded() && this.glbContainer.isLoaded() && this.particleSystemContainer.isLoaded()) {
+      console.info(`UiConfigCollection loaded`)
       if (this.gwtResolver) {
+        console.info(`UiConfigCollection calls this.gwtResolver()`)
         this.gwtResolver();
       }
-    }
-  }
-
-  private handleMaterialLoaded(materialLoadingControl: { loadingCount: number }) {
-    materialLoadingControl.loadingCount--;
-    if (materialLoadingControl.loadingCount <= 0) {
-      this.babylonMaterialsLoaded = true;
-      this.handleLoaded();
-    }
-  }
-
-  private handleGltfGlbLoaded(gltfLoadingControl: { loadingCount: number }) {
-    gltfLoadingControl.loadingCount--;
-    if (gltfLoadingControl.loadingCount <= 0) {
-      this.gltfsLoaded = true;
-      this.handleLoaded();
-    }
-  }
-
-  private handleAndLoadGltfs(gltfs: GltfEntity[]) {
-    this.gltfHelpers.clear();
-    if (!gltfs || gltfs.length === 0) {
-      this.gltfsLoaded = true;
-      this.handleLoaded();
-      return;
-    }
-
-    const gltfLoadingControl = {
-      loadingCount: gltfs.length
-    }
-
-    gltfs.forEach(gltf => {
-      const gltfHelper = new GltfHelper(gltf, this);
-      this.gltfHelpers.set(gltf.id, gltfHelper);
-      this.loadGltfGlb(gltf, gltfHelper, gltfLoadingControl);
-    });
-  }
-
-  private loadGltfGlb(gltf: GltfEntity, gltfHelper: GltfHelper, gltfLoadingControl: { loadingCount: number }) {
-    const url = `${URL_GLTF}/glb/${gltf.id}`;
-    try {
-      let hasError = false;
-      const result = SceneLoader.LoadAssetContainer(url, '', this.scene, assetContainer => {
-          if (!hasError) {
-            this.glbAssetContainers.set(gltf.id!, assetContainer);
-            this.assignGlbTextures(gltf, assetContainer, gltfHelper);
-            this.handleGltfGlbLoaded(gltfLoadingControl);
-          }
-        },
-        () => {
-        },
-        (scene: Scene, message: string, exception?: any) => {
-          hasError = true;
-          console.error(`Error loading glTF/glb '${url}'. exception: '${exception}'`);
-          this.handleGltfGlbLoaded(gltfLoadingControl);
-        }, ".glb")
-      if (result === null) {
-        console.error(`Error loading glTF/glb '${url}'`);
-        this.handleGltfGlbLoaded(gltfLoadingControl);
-      }
-    } catch (e) {
-      console.error(`Error loading glTF/glb '${url}'`);
-      console.error(e);
-      this.handleGltfGlbLoaded(gltfLoadingControl);
     }
   }
 
@@ -259,12 +137,12 @@ export class BabylonModelService {
     if (!model3DEntity) {
       throw new Error(`No Model3DEntity for ${model3DId}`);
     }
-    let gltfHelper = this.gltfHelpers.get(model3DEntity.gltfEntityId);
+    let gltfHelper = this.glbContainer.getGltfHelper(model3DEntity.gltfEntityId);
     if (!gltfHelper) {
       throw new Error(`No GltfHelper for gltfEntityId ${model3DEntity.gltfEntityId} for model3DId ${model3DId}`);
     }
 
-    let assetContainer = this.glbAssetContainers.get(model3DEntity.gltfEntityId);
+    let assetContainer = this.glbContainer.getBabylonModel(model3DEntity.gltfEntityId);
     if (!assetContainer) {
       throw new Error(`No AssetContainer for gltfEntityId ${model3DEntity.gltfEntityId} for model3DId ${model3DId}`);
     }
@@ -398,39 +276,6 @@ export class BabylonModelService {
     })
   }
 
-  private loadParticleSystem(url: string, threeJsModelConfig: ThreeJsModelConfig, handleResolve: () => void) {
-    this.httpClient.get(url).subscribe({
-      next: (json) => {
-        this.particleSystemJson.set(threeJsModelConfig.getId(), json);
-        handleResolve();
-      },
-      error: (error: any) => {
-        console.error(`Load Particle System failed. '${threeJsModelConfig.getInternalName()} (${threeJsModelConfig.getId()})' Reason: ${error}`);
-        handleResolve();
-      }
-    })
-  }
-
-  getAssetContainer(threeJsModelId: number): AssetContainer {
-    if (threeJsModelId === undefined) {
-      throw new Error(`ThreeJsModel id undefined`);
-    }
-
-    threeJsModelId = GwtHelper.gwtIssueNumber(threeJsModelId);
-
-    let assetContainer = this.assetContainers.get(threeJsModelId);
-
-    if (!assetContainer) {
-      throw new Error(`No AssetContainers for threeJsModelId '${threeJsModelId}'`);
-    }
-
-    return assetContainer;
-  }
-
-  setScene(scene: Scene) {
-    this.scene = scene;
-  }
-
   getNodeMaterial(babylonModelId: number | null): NodeMaterial {
     if (babylonModelId === null) {
       throw new Error(`getNodeMaterial(): babylonModelId undefined`);
@@ -537,7 +382,7 @@ export class BabylonModelService {
     }
     babylonMaterialId = GwtHelper.gwtIssueNumber(babylonMaterialId);
 
-    let material: Material = <NodeMaterial>this.babylonMaterials.get(babylonMaterialId);
+    let material: Material = <NodeMaterial>this.babylonMaterialContainer.getBabylonModel(babylonMaterialId);
     if (!material) {
       console.error(`No material for babylonMaterialId '${babylonMaterialId}'`);
       material = this.createMissingBabylonMaterial(babylonMaterialId);
@@ -552,70 +397,25 @@ export class BabylonModelService {
     return material;
   }
 
-  dumpAll(): Promise<JSZip> {
-    return new Promise<JSZip>((resolve) => {
-      const zip = new JSZip();
-      let pending = this.threeJsModelConfigs.length;
-      this.threeJsModelConfigs.forEach(babylonModelConfig => {
-        this.httpClient.get(`${URL_THREE_JS_MODEL}/${babylonModelConfig.getId()}`,
-          {responseType: 'blob'})
-          .subscribe({
-            next(blob) {
-              zip.file(`id_${babylonModelConfig.getId()}`, blob);
-              pending--;
-              if (pending == 0) {
-                resolve(zip);
-              }
-            },
-            error: (error: any) => {
-              console.error(error);
-              this.messageService.add({
-                severity: 'error',
-                summary: `${error.name}: ${error.status}`,
-                detail: `Error download ${babylonModelConfig.getId()} (${error.statusText})`,
-                sticky: true
-              });
-              pending--;
-              if (pending == 0) {
-                resolve(zip);
-              }
-            }
-          })
-      });
-    });
-
-  }
-
-  getThreeJsModelConfig(id: number): ThreeJsModelConfig {
+  getParticleSystemEntity(id: number): ParticleSystemEntity {
     id = GwtHelper.gwtIssueNumber(id);
 
-    let threeJsModelConfig = this.threeJsModelConfigMap.get(id);
-    if (threeJsModelConfig) {
-      return threeJsModelConfig;
+    let particleSystemEntity = this.particleSystemContainer.getEntity(id);
+    if (particleSystemEntity) {
+      return particleSystemEntity;
     }
 
-    throw new Error(`No ThreeJsModelConfig for '${id}'`);
+    throw new Error(`No ParticleSystemEntity for '${id}'`);
   }
 
-  getParticleSystemConfig(id: number): ParticleSystemConfig {
-    id = GwtHelper.gwtIssueNumber(id);
-
-    let particleSystemConfig = this.particleSystemConfigs.get(id);
-    if (particleSystemConfig) {
-      return particleSystemConfig;
-    }
-
-    throw new Error(`No ParticleSystemConfig for '${id}'`);
-  }
-
-  getParticleSystemJson(id: number): any {
-    id = GwtHelper.gwtIssueNumber(id);
-    let json = this.particleSystemJson.get(id);
+  getParticleSystemJson(particleSystemEntityId: number): any {
+    particleSystemEntityId = GwtHelper.gwtIssueNumber(particleSystemEntityId);
+    let json = this.particleSystemContainer.getBabylonModel(particleSystemEntityId);
     if (json) {
       return json;
     }
 
-    throw new Error(`No ParticleSystemJson.threeJsModelConfig('${id}') JSON found`);
+    throw new Error(`No ParticleSystem json for ParticleSystemEntity ('${particleSystemEntityId}') JSON found`);
   }
 
   updateParticleSystemJson(babylonModelId: number, particleSystem: ParticleSystem) {
@@ -631,135 +431,6 @@ export class BabylonModelService {
       });
     }
   }
-
-  private assignGlbTextures(gltf: GltfEntity, assetContainer: AssetContainer, gltfHelper: GltfHelper) {
-    Object.keys(gltf.materialGltfNames).forEach((gltfMaterialName: string) => {
-      let materialId = gltf.materialGltfNames[gltfMaterialName];
-      let babylonMaterialEntity = this.babylonMaterialEntities.get(materialId)!;
-      if (babylonMaterialEntity.overrideAlbedoTextureNode
-        || babylonMaterialEntity.overrideMetallicTextureNode
-        || babylonMaterialEntity.overrideBumpTextureNode
-        || babylonMaterialEntity.overrideAmbientOcclusionTextureNode) {
-        let glbMaterial = <PBRMaterial>assetContainer.materials.find(material => material.name === gltfMaterialName);
-        if (glbMaterial) {
-          gltfHelper.assignTextures(babylonMaterialEntity, glbMaterial);
-        } else {
-          console.warn(`No material in AssetContainer ${gltfMaterialName}`)
-        }
-      }
-    });
-  }
 }
 
-class GltfTextures {
-  constructor(public albedoTexture: Nullable<BaseTexture>,
-              private metallicTexture: Nullable<BaseTexture>,
-              private bumpTexture: Nullable<BaseTexture>,
-              private ambientOcclusionTexture: Nullable<BaseTexture>,
-              private babylonMaterialEntity: BabylonMaterialEntity) {
-  }
 
-  overrideTexture(nodeMaterial: NodeMaterial) {
-    if (this.albedoTexture) {
-      (<any>nodeMaterial.getBlockByName(this.babylonMaterialEntity.overrideAlbedoTextureNode)).texture = this.albedoTexture;
-    }
-    if (this.metallicTexture) {
-      (<any>nodeMaterial.getBlockByName(this.babylonMaterialEntity.overrideMetallicTextureNode)).texture = this.metallicTexture;
-    }
-    if (this.bumpTexture) {
-      (<any>nodeMaterial.getBlockByName(this.babylonMaterialEntity.overrideBumpTextureNode)).texture = this.bumpTexture;
-    }
-    if (this.ambientOcclusionTexture) {
-      (<any>nodeMaterial.getBlockByName(this.babylonMaterialEntity.overrideAmbientOcclusionTextureNode)).texture = this.ambientOcclusionTexture;
-      (<any>nodeMaterial.getBlockByName("ambientOcclusionEnable")).value = 1;
-    }
-  }
-}
-
-class GltfHelper {
-  private materialIds: Map<string, number> = new Map();
-  private gltfTexturesMap: Map<string, GltfTextures> = new Map();
-
-  constructor(gltf: GltfEntity,
-              private babylonModelService: BabylonModelService) {
-    Object.keys(gltf.materialGltfNames).forEach((gltfName: string) => {
-      let materialId = gltf.materialGltfNames[gltfName];
-      this.materialIds.set(gltfName, materialId)
-    })
-  }
-
-  handleMaterial(mesh: Mesh, diplomacy?: Diplomacy) {
-    const originalMaterialName = mesh.material!.name;
-    const materialId = this.materialIds.get(originalMaterialName);
-    if (materialId) {
-      let babylonMaterialEntity = this.babylonModelService.babylonMaterialEntities.get(materialId);
-      if (diplomacy) {
-        if (!babylonMaterialEntity?.diplomacyColorNode) {
-          mesh.material = this.babylonModelService.getBabylonMaterial(materialId, diplomacy).clone(mesh.material!.name);
-          return
-        }
-
-        let diplomacyCache = this.babylonModelService.diplomacyMaterialCache.get(materialId);
-        if (!diplomacyCache) {
-          diplomacyCache = new Map<Diplomacy, Map<string, NodeMaterial>>();
-          this.babylonModelService.diplomacyMaterialCache.set(materialId, diplomacyCache)
-        }
-        let cachedMaterialNames = diplomacyCache.get(diplomacy);
-        if (!cachedMaterialNames) {
-          cachedMaterialNames = new Map<string, NodeMaterial>();
-          diplomacyCache.set(diplomacy, cachedMaterialNames)
-        }
-        let cachedMaterial = cachedMaterialNames.get(mesh.material!.name);
-        if (!cachedMaterial) {
-          cachedMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(materialId).clone(`${mesh.material!.name} ${materialId} '${diplomacy}'`)!;
-          cachedMaterial = cachedMaterial.clone(cachedMaterial.name)!
-          const diplomacyColorNode = (<NodeMaterial>cachedMaterial).getBlockByPredicate(block => {
-            return babylonMaterialEntity.diplomacyColorNode === block.name;
-          });
-          if (diplomacyColorNode) {
-            (<InputBlock>diplomacyColorNode).value = BabylonRenderServiceAccessImpl.color4Diplomacy(diplomacy);
-          }
-          if (babylonMaterialEntity!.overrideAlbedoTextureNode
-            || babylonMaterialEntity!.overrideMetallicTextureNode
-            || babylonMaterialEntity!.overrideBumpTextureNode
-            || babylonMaterialEntity!.overrideAmbientOcclusionTextureNode) {
-            let gltfTextures = this.gltfTexturesMap.get(originalMaterialName);
-            gltfTextures && gltfTextures.overrideTexture(<NodeMaterial>cachedMaterial);
-          }
-          (<NodeMaterial>cachedMaterial).build()
-          cachedMaterialNames.set(mesh.material!.name, cachedMaterial);
-        }
-        mesh.material = cachedMaterial;
-      } else {
-        mesh.material = this.babylonModelService.getBabylonMaterial(materialId, diplomacy).clone(mesh.material!.name);
-      }
-    }
-  }
-
-  assignTextures(babylonMaterialEntity: BabylonMaterialEntity, glbMaterial: PBRMaterial) {
-    let albedoTexture: Nullable<BaseTexture> = null;
-    let metallicTexture: Nullable<BaseTexture> = null;
-    let bumpTexture: Nullable<BaseTexture> = null;
-    let ambientOcclusionTexture: Nullable<BaseTexture> = null;
-
-    if (babylonMaterialEntity.overrideAlbedoTextureNode) {
-      albedoTexture = glbMaterial._albedoTexture;
-    }
-    if (babylonMaterialEntity.overrideMetallicTextureNode) {
-      metallicTexture = glbMaterial._metallicTexture;
-    }
-    if (babylonMaterialEntity.overrideBumpTextureNode) {
-      bumpTexture = glbMaterial._bumpTexture;
-    }
-    if (babylonMaterialEntity.overrideAmbientOcclusionTextureNode) {
-      ambientOcclusionTexture = glbMaterial._ambientTexture;
-    }
-    if (albedoTexture || metallicTexture || bumpTexture) {
-      this.gltfTexturesMap.set(glbMaterial.name, new GltfTextures(albedoTexture,
-        metallicTexture,
-        bumpTexture,
-        ambientOcclusionTexture,
-        babylonMaterialEntity));
-    }
-  }
-}

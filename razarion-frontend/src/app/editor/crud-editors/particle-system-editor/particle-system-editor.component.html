@@ -2,39 +2,33 @@
   <div class="grid grid-razarion-editor">
     <span class="col-4">Id</span>
     <div class="col-8">
-      <p-inputNumber [disabled]="true" [(ngModel)]="particleSystemConfig.id"></p-inputNumber>
+      <p-inputNumber [disabled]="true" [(ngModel)]="particleSystemEntity.id"></p-inputNumber>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
     <span class="col-4">Internal name</span>
     <div class="col-8">
-      <input [(ngModel)]="particleSystemConfig.internalName" type="text"
+      <input [(ngModel)]="particleSystemEntity.internalName" type="text"
              class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-    </div>
-  </div>
-  <div class="grid grid-razarion-editor">
-    <span class="col-4">Babylon model</span>
-    <div class="col-8">
-      <babylon-model [(babylonModelId)]="particleSystemConfig.threeJsModelId"></babylon-model>
-    </div>
-  </div>
-  <div class="grid grid-razarion-editor">
-    <span class="col-4">Position offset</span>
-    <div class="col-8">
-      <vertex-editor [(vertex)]="particleSystemConfig.positionOffset"></vertex-editor>
-    </div>
-  </div>
-  <div class="grid grid-razarion-editor">
-    <span class="col-4">Texture</span>
-    <div class="col-8">
-      <image-item [(imageId)]="particleSystemConfig.imageId"></image-item>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
     <span class="col-4">Emitter node id</span>
     <div class="col-8">
-      <input [(ngModel)]="particleSystemConfig.emitterNodeId" type="text"
+      <input [(ngModel)]="particleSystemEntity.emitterNodeId" type="text"
              class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Position offset</span>
+    <div class="col-8">
+      <vertex-editor [(vertex)]="particleSystemEntity.positionOffset"></vertex-editor>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Texture</span>
+    <div class="col-8">
+      <image-item [(imageId)]="particleSystemEntity.imageId"></image-item>
     </div>
   </div>
 

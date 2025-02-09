@@ -22,7 +22,6 @@ import {
   ItemTypeService,
   NativeSyncBaseItemTickInfo,
   ObjectNameId,
-  ParticleSystemConfig,
   PhysicalAreaConfig,
   PlanetConfig,
   PlayerBaseDto,
@@ -553,38 +552,6 @@ export class GameMockService {
       });
     })
     return threeJsModelConfigs;
-  }
-
-  mockParticleSystemConfigs(): ParticleSystemConfig[] {
-    let particleSystemConfig: ParticleSystemConfig[] = [];
-    staticGameConfigJson.particleSystemConfigs.forEach((particleSystemConfigJson: any) => {
-      particleSystemConfig.push(new class implements ParticleSystemConfig {
-        getThreeJsModelId(): number {
-          return particleSystemConfigJson.threeJsModelId;
-        }
-
-        getEmitterNodeId(): string {
-          return particleSystemConfigJson.emitterNodeId;
-        }
-
-        getId(): number {
-          return particleSystemConfigJson.id;
-        }
-
-        getInternalName(): string {
-          return particleSystemConfigJson.internalName;
-        }
-
-        getPositionOffset(): Vertex | null {
-          return GwtInstance.newVertex(0, 0, 0);
-        }
-
-        getImageId(): number | null {
-          return 0;
-        }
-      });
-    });
-    return particleSystemConfig;
   }
 
   showQuestSideBar(questCockpitContainer: QuestCockpitComponent) {

@@ -30,7 +30,6 @@ public class BuilderType {
     private double range;
     private double progress;
     private List<Integer> ableToBuildIds;
-    @CollectionReference(CollectionReferenceType.PARTICLE_SYSTEM)
     private Integer particleSystemConfigId;
 
     public double getRange() {

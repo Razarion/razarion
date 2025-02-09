@@ -50,11 +50,6 @@ public class Model3DEntity extends BaseEntity {
         return this;
     }
 
-    public Model3DEntity name(GltfEntity gltfEntity) {
-        setGltfEntity(gltfEntity);
-        return this;
-    }
-
     public Model3DEntity gltfName(String gltfName) {
         setGltfName(gltfName);
         return this;

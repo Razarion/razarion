@@ -1,5 +1,6 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.persistence.ui.ParticleSystemEntity;
 import com.btxtech.server.persistence.ui.BabylonMaterialEntity;
 import com.btxtech.server.persistence.ui.GltfEntity;
 import com.btxtech.server.persistence.ui.Model3DEntity;
@@ -11,6 +12,7 @@ public class UiConfigCollection {
     private List<BabylonMaterialEntity> babylonMaterials;
     private List<GltfEntity> gltfs;
     private List<Model3DEntity> model3DEntities;
+    private List<ParticleSystemEntity> particleSystemEntities;
     private Integer selectionItemMaterialId;
     private Integer progressBarNodeMaterialId;
     private Integer healthBarNodeMaterialId;
@@ -37,6 +39,14 @@ public class UiConfigCollection {
 
     public void setModel3DEntities(List<Model3DEntity> model3DEntities) {
         this.model3DEntities = model3DEntities;
+    }
+
+    public List<ParticleSystemEntity> getParticleSystemEntities() {
+        return particleSystemEntities;
+    }
+
+    public void setParticleSystemEntities(List<ParticleSystemEntity> particleSystemEntities) {
+        this.particleSystemEntities = particleSystemEntities;
     }
 
     public @Nullable Integer getSelectionItemMaterialId() {
@@ -75,6 +85,11 @@ public class UiConfigCollection {
 
     public UiConfigCollection model3DEntities(List<Model3DEntity> model3DEntities) {
         setModel3DEntities(model3DEntities);
+        return this;
+    }
+
+    public UiConfigCollection particleSystemEntities(List<ParticleSystemEntity> particleSystemEntities) {
+        setParticleSystemEntities(particleSystemEntities);
         return this;
     }
 

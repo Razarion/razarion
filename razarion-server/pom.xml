@@ -249,7 +249,6 @@
                         <class>com.btxtech.shared.rest.BaseItemTypeEditorController</class>
                         <class>com.btxtech.shared.rest.BoxItemTypeEditorController</class>
                         <class>com.btxtech.shared.rest.ResourceItemTypeEditorController</class>
-                        <class>com.btxtech.shared.rest.ParticleSystemEditorController</class>
                         <class>com.btxtech.shared.rest.ImageProvider</class>
                         <class>com.btxtech.shared.rest.PlanetEditorController</class>
                         <class>com.btxtech.shared.rest.TerrainEditorController</class>
@@ -267,6 +266,7 @@
                         <class>com.btxtech.server.rest.crud.BabylonMaterialController</class>
                         <class>com.btxtech.server.rest.crud.GltfController</class>
                         <class>com.btxtech.server.rest.crud.Model3DController</class>
+                        <class>com.btxtech.server.rest.crud.ParticleSystemController</class>
                         <class>com.btxtech.server.rest.UiConfigCollectionController</class>
                         <class>com.btxtech.server.rest.DbPropertiesEditorController</class>
                         <class>com.btxtech.server.rest.UserMgmtController</class>

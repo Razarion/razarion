@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -64,8 +63,7 @@ public class TerrainObjectServiceTest extends DaggerTerrainServiceTestBase {
 //                new TerrainObjectPosition().id(8).terrainObjectConfigId(2).position(new DecimalPosition(200, 160)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0))
         );
 
-        List<ParticleSystemConfig> particleSystemConfigs = Collections.singletonList(new ParticleSystemConfig().id(1).emitterNodeId("Cannon00.Cannon00").threeJsModelId(50));
-        setupTerrainTypeService(null, terrainObjectConfigs, null, terrainObjectPositions, groundConfig, threeJsModelConfigs, particleSystemConfigs);
+        setupTerrainTypeService(null, terrainObjectConfigs, null, terrainObjectPositions, groundConfig, threeJsModelConfigs);
         // showDisplay();
 
         exportTriangles("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain",

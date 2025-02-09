@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.system.boot;
 
-import com.btxtech.shared.datatypes.shape.ParticleSystemConfig;
 import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -46,7 +45,7 @@ public class BootContext {
 
     }
 
-    public Promise<Void> loadThreeJsModels(ThreeJsModelConfig[] threeJsModelConfigs, ParticleSystemConfig[] particleSystemConfigs) {
+    public Promise<Void> loadThreeJsModels(ThreeJsModelConfig[] threeJsModelConfigs) {
         return null;
     }
 
