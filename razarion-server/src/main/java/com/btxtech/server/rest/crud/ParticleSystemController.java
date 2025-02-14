@@ -4,10 +4,13 @@ import com.btxtech.server.persistence.AbstractEntityCrudPersistence;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ParticleSystemCrudPersistence;
 import com.btxtech.server.persistence.ui.ParticleSystemEntity;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.CommonUrl;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
@@ -50,5 +53,13 @@ public class ParticleSystemController extends BaseEntityController<ParticleSyste
             logger.log(Level.WARNING, "Can not load BabylonMaterialEntity for id: " + id, e);
             throw e;
         }
+    }
+
+    @PUT
+    @Path("upload/{id}")
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    @SecurityCheck
+    public void uploadData(@PathParam("id") int id, byte[] data) {
+        particleSystemCrudPersistence.setData(id, data);
     }
 }

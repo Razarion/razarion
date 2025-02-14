@@ -1,31 +1,31 @@
 import {Component} from '@angular/core';
 import {CrudContainerChild} from '../crud-container/crud-container.component';
-import {
-  DecimalPosition,
-  ParticleSystemEntity,
-  UiConfigCollectionControllerClient
-} from 'src/app/generated/razarion-share';
+import {DecimalPosition, ParticleSystemControllerClient, ParticleSystemEntity} from 'src/app/generated/razarion-share';
 import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
 import {LocationVisualization} from '../../common/place-config/location-visualization';
 import {ParticleSystem, Vector3} from '@babylonjs/core';
-import {BabylonModelService} from 'src/app/game/renderer/babylon-model.service';
+import {TypescriptGenerator} from "../../../backend/typescript-generator";
+import {HttpClient} from "@angular/common/http";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'particle-system-editor',
   templateUrl: './particle-system-editor.component.html'
 })
 export class ParticleSystemEditorComponent implements CrudContainerChild<ParticleSystemEntity> {
-  static editorControllerClient = UiConfigCollectionControllerClient;
+  static editorControllerClient = ParticleSystemControllerClient;
   particleSystemEntity!: ParticleSystemEntity;
   terrainPosition: DecimalPosition | null = null;
+  terrainHeight: number | null = null;
+  length?: number;
+  stretchToDestination = false;
   particleSystem?: ParticleSystem;
-  private babylonModelId?: number;
-  currentInfo?: string;
+  particleSystemControllerClient: ParticleSystemControllerClient;
 
-  constructor(private rendererService: BabylonRenderServiceAccessImpl,
-              private babylonModelService: BabylonModelService
-  ) {
-
+  constructor(private messageService: MessageService,
+              private rendererService: BabylonRenderServiceAccessImpl,
+              httpClient: HttpClient) {
+    this.particleSystemControllerClient = new ParticleSystemControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
   init(particleSystemEntity: ParticleSystemEntity): void {
@@ -41,27 +41,71 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
   }
 
   startParticleSystem() {
-    // if (this.terrainPosition) {
-    //   const hight = LocationVisualization.getHeightFromTerrain(this.terrainPosition.x, this.terrainPosition.y, this.rendererService)
-    //   if (this.particleSystemEntity.threeJsModelId || this.particleSystemEntity.threeJsModelId === 0) {
-    //     const emittingPosition = new Vector3(this.terrainPosition.x,
-    //       hight,
-    //       this.terrainPosition.y);
-    //     this.particleSystem = this.rendererService.createParticleSystem(this.particleSystemEntity.threeJsModelId,
-    //       this.particleSystemEntity.imageId,
-    //       emittingPosition,
-    //       null,
-    //       false);
-    //     this.babylonModelId = this.particleSystemEntity.threeJsModelId;
-    //     this.currentInfo = `${this.particleSystemEntity.internalName} '${this.particleSystemEntity.id}' BablyonModel Id '${this.particleSystemEntity.threeJsModelId}'`;
-    //     this.particleSystem.name = `Editor ${this.currentInfo}`;
-    //     this.particleSystem.start();
-    //   }
-    // }
+    if (this.particleSystem) {
+      return;
+    }
+    if (this.terrainPosition) {
+      let destination: Vector3 | null = null;
+      if (this.length) {
+        destination = new Vector3(this.terrainPosition.x + this.length, this.terrainHeight!, this.terrainPosition.y);
+      }
+      this.particleSystem = this.rendererService.createParticleSystem(this.particleSystemEntity.id,
+        this.particleSystemEntity.imageId,
+        new Vector3(this.terrainPosition.x, this.terrainHeight!, this.terrainPosition.y),
+        destination,
+        this.stretchToDestination);
+      this.particleSystem.name = `Editor: ${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})`;
+      this.particleSystem.start();
+    }
   }
 
-  saveParticleSystem() {
-    this.babylonModelService.updateParticleSystemJson(this.babylonModelId!, this.particleSystem!);
+  disposeParticleSystem() {
+    if (this.particleSystem) {
+      this.particleSystem.dispose();
+      this.particleSystem = undefined;
+    }
+  }
+
+  uploadParticleSystem() {
+    if (this.particleSystem) {
+      const json = JSON.stringify(this.particleSystem.serialize());
+      this.upload(json);
+    }
+  }
+
+  onTerrainPosition() {
+    if (this.terrainPosition) {
+      this.terrainHeight = LocationVisualization.getHeightFromTerrain(this.terrainPosition.x, this.terrainPosition.y, this.rendererService);
+    }
+  }
+
+  private upload(data: any) {
+    try {
+      const blob = new Blob([data], {type: 'application/octet-stream'});
+      this.particleSystemControllerClient.uploadData(this.particleSystemEntity!.id, blob)
+        .then(() => {
+          this.messageService.add({
+            severity: 'success',
+            life: 300,
+            summary: "Particle system uploaded"
+          });
+        })
+        .catch(err => {
+          this.messageService.add({
+            severity: 'error',
+            summary: `Exception during particle system upload ${err}`,
+            sticky: true
+          });
+          console.error(err);
+        });
+    } catch (e) {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Exception during particle system upload ${e}`,
+        sticky: true
+      });
+      console.error(e);
+    }
   }
 
 }

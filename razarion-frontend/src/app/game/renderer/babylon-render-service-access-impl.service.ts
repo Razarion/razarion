@@ -713,7 +713,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   public createParticleSystem(particleSystemEntityId: number | null, imageId: number | null, emitterPosition: AbstractMesh | Vector3, destination: Vector3 | null, stretchToDestination: boolean): ParticleSystem {
     if (!particleSystemEntityId && particleSystemEntityId !== 0) {
-      throw new Error("babylonModelId not set");
+      throw new Error("particleSystemEntityId not set");
     }
     const particleJson = this.babylonModelService.getParticleSystemJson(particleSystemEntityId);
 

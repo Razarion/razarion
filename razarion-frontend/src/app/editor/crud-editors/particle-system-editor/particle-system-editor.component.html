@@ -32,36 +32,57 @@
     </div>
   </div>
 
-
   <p-divider align="left">
     <div class="inline-flex align-items-center">
-      <i class="pi pi-bolt mr-2"></i>
-      <b>&nbsp;Action</b>
+      <i class="pi pi-cloud-upload mr-2"></i>
+      <b>&nbsp;Edit</b>
     </div>
   </p-divider>
   <div class="grid grid-razarion-editor">
+    Edit in Babylon Inspector
+  </div>
+  <div class="grid grid-razarion-editor">
     <span class="col-4">Pick terrain position</span>
     <div class="col-8">
-      <decimal-position [(decimalPosition)]="terrainPosition"></decimal-position>
+      <decimal-position [(decimalPosition)]="terrainPosition" (decimalPositionChange)="onTerrainPosition()"></decimal-position>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
+    <span class="col-4">Pick terrain height</span>
+    <div class="col-8">
+      <p-inputNumber [(ngModel)]="terrainHeight" [size]="3"
+                     [minFractionDigits]="1" [maxFractionDigits]="6" [allowEmpty]="true"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Length</span>
+    <div class="col-8">
+      <p-inputNumber [(ngModel)]="length" [size]="3"
+                     [minFractionDigits]="1" [maxFractionDigits]="6"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Stretch to destination</span>
+    <div class="col-8">
+      <p-checkbox [(ngModel)]="stretchToDestination" [binary]="true"></p-checkbox>
+    </div>
+  </div>
+  <div *ngIf="!particleSystem" class="grid grid-razarion-editor">
     <span class="col-4">Start</span>
     <div class="col-8">
-      <p-button icon="pi pi-power-off" (onClick)="startParticleSystem()"></p-button>
+      <p-button icon="pi pi-power-off" (onClick)="startParticleSystem()" [disabled]="!terrainPosition"></p-button>
+    </div>
+  </div>
+  <div *ngIf="particleSystem" class="grid grid-razarion-editor">
+    <span class="col-4">Dispose</span>
+    <div class="col-8">
+      <p-button icon="pi pi-trash" (onClick)="disposeParticleSystem()"></p-button>
     </div>
   </div>
   <div class="grid grid-razarion-editor">
-    <span class="col-4">Info</span>
+    <span class="col-4">Upload particle system</span>
     <div class="col-8">
-      <input [(ngModel)]="currentInfo" type="text"
-             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
-    </div>
-  </div>
-  <div class="grid grid-razarion-editor">
-    <span class="col-4">Save</span>
-    <div class="col-8">
-      <p-button icon="pi pi-save" (onClick)="saveParticleSystem()"></p-button>
+      <p-button icon="pi pi-upload" (onClick)="uploadParticleSystem()"></p-button>
     </div>
   </div>
 

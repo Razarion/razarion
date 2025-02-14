@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {CrudContainerChild} from '../crud-container/crud-container.component';
 import {BabylonMaterialControllerClient, BabylonMaterialEntity} from 'src/app/generated/razarion-share';
 import {FileUpload} from 'primeng/fileupload';
@@ -23,7 +23,7 @@ export class BabylonMaterialEditorComponent implements CrudContainerChild<Babylo
 
   constructor(private messageService: MessageService,
               private httpClient: HttpClient,
-              private renderEngine: BabylonRenderServiceAccessImpl) {
+              renderEngine: BabylonRenderServiceAccessImpl) {
     this.babylonMaterialControllerClient = new BabylonMaterialControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
 
     void Promise.all([

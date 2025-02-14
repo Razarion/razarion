@@ -14,7 +14,6 @@ import {
   Mesh,
   Node,
   NodeMaterial,
-  ParticleSystem,
   Scene,
   SceneLoader,
   TransformNode
@@ -416,11 +415,6 @@ export class BabylonModelService {
     }
 
     throw new Error(`No ParticleSystem json for ParticleSystemEntity ('${particleSystemEntityId}') JSON found`);
-  }
-
-  updateParticleSystemJson(babylonModelId: number, particleSystem: ParticleSystem) {
-    const json = JSON.stringify(particleSystem!.serialize());
-    this.babylonModelUpload(babylonModelId, new Blob([json], {type: 'application/json'}));
   }
 
   private setupModel3DEntities(model3DEntities: Model3DEntity[]) {
