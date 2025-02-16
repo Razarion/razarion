@@ -83,7 +83,6 @@ import {ServerResourceRegionComponent} from "./editor/server-resource-region/ser
 import {ResourceItemTypeComponent} from './editor/common/resource-item-type/resource-item-type.component';
 import {GroundComponent} from './editor/common/ground/ground.component';
 import {WaterComponent} from './editor/common/water/water.component';
-import {BabylonModelComponent} from './editor/common/babylon-model/babylon-model.component';
 import {ProgressSpinnerModule} from "primeng/progressspinner";
 import {MenuModule} from 'primeng/menu';
 import {
@@ -191,7 +190,6 @@ import {
     GeneratedCrudContainerComponent,
     GroundComponent,
     WaterComponent,
-    BabylonModelComponent,
     TerrainObjectGeneratorComponent,
     BackendComponent,
     LevelEditorComponent,

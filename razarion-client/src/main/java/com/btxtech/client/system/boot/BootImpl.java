@@ -76,8 +76,8 @@ public class BootImpl extends Boot {
             }
 
             @Override
-            public Promise<Void> loadThreeJsModels(ThreeJsModelConfig[] threeJsModelConfigs) {
-                return gwtAngularService.get().getGwtAngularBoot().loadThreeJsModels(threeJsModelConfigs);
+            public Promise<Void> loadThreeJsModels() {
+                return gwtAngularService.get().getGwtAngularBoot().loadThreeJsModels();
             }
 
             @Override

@@ -16,17 +16,6 @@ import java.util.Objects;
 public class GroundConfig implements Config {
     private int id;
     private String internalName;
-    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
-    @JsonIgnore
-    @Deprecated
-    private Integer topThreeJsMaterial;
-    @CollectionReference(CollectionReferenceType.THREE_JS_MODEL)
-    @JsonIgnore
-    @Deprecated
-    private Integer bottomThreeJsMaterial;
-    @JsonIgnore
-    @Deprecated
-    private String color;
     private Integer groundBabylonMaterialId;
     private Integer waterBabylonMaterialId;
 
@@ -63,34 +52,6 @@ public class GroundConfig implements Config {
         this.waterBabylonMaterialId = waterBabylonMaterialId;
     }
 
-    public Integer getTopThreeJsMaterial() {
-        return topThreeJsMaterial;
-    }
-
-    public void setTopThreeJsMaterial(Integer topThreeJsMaterial) {
-        this.topThreeJsMaterial = topThreeJsMaterial;
-    }
-
-    @JsonIgnore
-    public Integer getBottomThreeJsMaterial() {
-        return bottomThreeJsMaterial;
-    }
-
-    @JsonIgnore
-    public void setBottomThreeJsMaterial(Integer bottomThreeJsMaterial) {
-        this.bottomThreeJsMaterial = bottomThreeJsMaterial;
-    }
-
-    @JsonIgnore
-    public String getColor() {
-        return color;
-    }
-
-    @JsonIgnore
-    public void setColor(String color) {
-        this.color = color;
-    }
-
     public GroundConfig id(int id) {
         setId(id);
         return this;
@@ -108,21 +69,6 @@ public class GroundConfig implements Config {
 
     public GroundConfig waterBabylonMaterialId(Integer waterBabylonMaterialId) {
         setWaterBabylonMaterialId(waterBabylonMaterialId);
-        return this;
-    }
-
-    public GroundConfig topThreeJsMaterial(Integer topThreeJsMaterial) {
-        setTopThreeJsMaterial(topThreeJsMaterial);
-        return this;
-    }
-
-    public GroundConfig bottomThreeJsMaterial(Integer bottomThreeJsMaterial) {
-        setBottomThreeJsMaterial(bottomThreeJsMaterial);
-        return this;
-    }
-
-    public GroundConfig color(String color) {
-        setColor(color);
         return this;
     }
 

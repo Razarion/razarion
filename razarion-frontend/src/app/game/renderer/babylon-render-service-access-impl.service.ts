@@ -407,7 +407,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.outOfViewPlane.position.z = markerConfig.outOfViewDistanceFromCamera;
         this.outOfViewPlane.rotation.x = this.camera.rotation.x;
         this.outOfViewPlane.isPickable = false;
-        let nodeMaterial = this.babylonModelService.getNodeMaterial(markerConfig.outOfViewNodesMaterialId!);
+        let nodeMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(markerConfig.outOfViewNodesMaterialId!);
         // nodeMaterial = nodeMaterial.clone(`Out of view plane outOfViewNodesMaterialId: ${markerConfig.outOfViewNodesMaterialId}`);
         nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
         this.outOfViewPlane.material = nodeMaterial;
@@ -449,7 +449,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         console.warn("Place marker has invalid place config");
         return;
       }
-      let nodeMaterial = this.babylonModelService.getNodeMaterial(markerConfig.placeNodesMaterialId!);
+      let nodeMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(markerConfig.placeNodesMaterialId!);
       nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
       // nodeMaterial.material.depthFunction = Constants.ALWAYS;
       this.placeMarkerMesh.material = nodeMaterial;

@@ -4,7 +4,6 @@ import {
   GROUND_EDITOR_PATH,
   PLANET_EDITOR_PATH,
   RESOURCE_ITEM_TYPE_EDITOR_PATH,
-  URL_THREE_JS_MODEL_EDITOR,
   WATER_EDITOR_PATH
 } from "../common";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
@@ -203,10 +202,6 @@ export class EditorService {
 
   readPlanetConfig(id: number): Promise<PlanetConfig> {
     return this.readConfig(PLANET_EDITOR_PATH, id);
-  }
-
-  readBabylonMaterialObjectNameIds(): Promise<ObjectNameId[]> {
-    return this.readObjectNameIds(URL_THREE_JS_MODEL_EDITOR);
   }
 
   readGroundConfig(id: number): Promise<GroundConfig> {

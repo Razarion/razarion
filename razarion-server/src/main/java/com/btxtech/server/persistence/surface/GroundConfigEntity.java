@@ -1,18 +1,10 @@
 package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.BabylonMaterialCrudPersistence;
-import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PersistenceUtil;
-import com.btxtech.server.persistence.ThreeJsModelConfigEntity;
-import com.btxtech.server.persistence.ThreeJsModelCrudPersistence;
 import com.btxtech.server.persistence.ui.BabylonMaterialEntity;
 import com.btxtech.shared.dto.GroundConfig;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;

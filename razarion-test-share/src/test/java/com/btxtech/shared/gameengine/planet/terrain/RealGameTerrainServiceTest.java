@@ -43,7 +43,7 @@ public class RealGameTerrainServiceTest extends DaggerTerrainServiceTestBase {
 //        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(directory, "static-game-config.json"), coldGameUiContext.getStaticGameConfig());
 
 
-        setupTerrainTypeService(coldGameUiContext.getStaticGameConfig(), null, coldGameUiContext.getWarmGameUiContext().getPlanetConfig(), null, null, null);
+        setupTerrainTypeService(coldGameUiContext.getStaticGameConfig(), null, coldGameUiContext.getWarmGameUiContext().getPlanetConfig(), null, null);
         double radius = 1;
         final SingleHolder<DecimalPosition> actorPosition = new SingleHolder<>();
         DecimalPosition target = new DecimalPosition(104, 125.5);

@@ -49,7 +49,7 @@ public class ScenarioBaseTest extends DaggerTerrainServiceTestBase {
                 new TerrainObjectPosition().terrainObjectConfigId(3).scale(new Vertex(0.5, 0.5, 0.5)).position(new DecimalPosition(450, 75))
         );
 
-        setupTerrainTypeService(null, terrainObjectConfigs, planetConfig, terrainObjectPositions, null, null);
+        setupTerrainTypeService(null, terrainObjectConfigs, planetConfig, terrainObjectPositions, null);
     }
 
     protected void testScenario(Scenario scenario) {

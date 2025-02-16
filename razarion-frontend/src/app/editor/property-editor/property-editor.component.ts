@@ -13,7 +13,6 @@ export class PropertyEditorComponent extends EditorPanel implements OnInit {
   protected readonly AUDIO = DbPropertyType.AUDIO;
   protected readonly BABYLON_MATERIAL = DbPropertyType.BABYLON_MATERIAL;
   protected readonly COLOR = DbPropertyType.COLOR;
-  protected readonly NODE_MATERIAL = DbPropertyType.NODE_MATERIAL;
   protected readonly INTEGER = DbPropertyType.INTEGER;
   protected readonly DOUBLE = DbPropertyType.DOUBLE;
   protected readonly IMAGE = DbPropertyType.IMAGE;

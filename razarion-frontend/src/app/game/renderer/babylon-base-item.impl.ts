@@ -163,7 +163,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.healthBar.position.y = 0.5 + this.baseItemType.getPhysicalAreaConfig().getRadius() - this.baseItemType.getPhysicalAreaConfig().getRadius() * 0.08;
       this.healthBar.parent = this.getContainer();
       this.healthBar.billboardMode = TransformNode.BILLBOARDMODE_ALL;
-      let nodeMaterial = this.babylonModelService.getNodeMaterial(this.uiConfigCollectionService.getHealthBarNodeMaterialId());
+      let nodeMaterial = this.babylonModelService.getBabylonMaterial(this.uiConfigCollectionService.getHealthBarNodeMaterialId());
       this.healthBar.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
       this.healthInputBlock = <InputBlock>(<NodeMaterial>this.healthBar.material).getBlockByName("health");
       if (this.healthInputBlock) {
@@ -205,7 +205,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         this.progressBar.position.y = 0.5 + this.baseItemType.getPhysicalAreaConfig().getRadius();
         this.progressBar.parent = this.getContainer();
         this.progressBar.billboardMode = TransformNode.BILLBOARDMODE_ALL;
-        let nodeMaterial = this.babylonModelService.getNodeMaterial(this.uiConfigCollectionService.getProgressBarNodeMaterialId());
+        let nodeMaterial = this.babylonModelService.getBabylonMaterial(this.uiConfigCollectionService.getProgressBarNodeMaterialId());
         this.progressBar.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
         this.progressInputBlock = <InputBlock>(<NodeMaterial>this.progressBar.material).getBlockByName("progress");
         if (!this.progressInputBlock) {

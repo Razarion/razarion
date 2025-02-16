@@ -24,7 +24,6 @@ public class StaticGameConfig {
     private List<BoxItemType> boxItemTypes;
     private List<LevelConfig> levelConfigs;
     private List<InventoryItem> inventoryItems;
-    private List<ThreeJsModelConfig> threeJsModelConfigs;
 
     public List<GroundConfig> getGroundConfigs() {
         return groundConfigs;
@@ -82,14 +81,6 @@ public class StaticGameConfig {
         this.inventoryItems = inventoryItems;
     }
 
-    public List<ThreeJsModelConfig> getThreeJsModelConfigs() {
-        return threeJsModelConfigs;
-    }
-
-    public void setThreeJsModelConfigs(List<ThreeJsModelConfig> threeJsModelConfigs) {
-        this.threeJsModelConfigs = threeJsModelConfigs;
-    }
-
     public StaticGameConfig groundConfigs(List<GroundConfig> groundConfigs) {
         setGroundConfigs(groundConfigs);
         return this;
@@ -122,11 +113,6 @@ public class StaticGameConfig {
 
     public StaticGameConfig inventoryItems(List<InventoryItem> inventoryItems) {
         setInventoryItems(inventoryItems);
-        return this;
-    }
-
-    public StaticGameConfig threeJsModelConfigs(List<ThreeJsModelConfig> threeJsModelConfigs) {
-        setThreeJsModelConfigs(threeJsModelConfigs);
         return this;
     }
 }

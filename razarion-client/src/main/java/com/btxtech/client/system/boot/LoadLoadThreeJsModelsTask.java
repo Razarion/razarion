@@ -22,18 +22,9 @@ public class LoadLoadThreeJsModelsTask extends AbstractStartupTask {
         deferredStartup.setDeferred();
         deferredStartup.setBackground();
 
-        ThreeJsModelConfig[] threeJsModelConfigs = bootContext.getGameUiControl().getColdGameUiContext()
-                .getStaticGameConfig()
-                .getThreeJsModelConfigs()
-                .toArray(new ThreeJsModelConfig[0]);
-
-        if (threeJsModelConfigs.length == 0) {
-            deferredStartup.finished();
-            return;
-        }
 
         // Injection does not work here
-        bootContext.loadThreeJsModels(threeJsModelConfigs)
+        bootContext.loadThreeJsModels()
                 .then(ignore -> {
                     deferredStartup.finished();
                     return null;

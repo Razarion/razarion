@@ -82,7 +82,7 @@ export class GameComponent implements OnInit, ScreenCover {
         this.gwtAngularService.gwtAngularFacade.inputService = this.gameMockService.inputService;
         this.gwtAngularService.gwtAngularFacade.statusProvider = this.gameMockService.statusProvider;
         this.gameMockService.loadMockStaticGameConfig().then(() => {
-          this.babylonModelService.init(this.gameMockService.mockThreeJsModelConfigs()).then(() => {
+          this.babylonModelService.init().then(() => {
             this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.gameMockService.mockTerrainTypeService();
             this.gameMockService.mockTerrainTile(this.babylonRenderServiceAccessImpl);
             this.mainCockpitComponent.show(true);

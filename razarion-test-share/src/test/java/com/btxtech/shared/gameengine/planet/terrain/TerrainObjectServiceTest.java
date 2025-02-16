@@ -27,7 +27,7 @@ public class TerrainObjectServiceTest extends DaggerTerrainServiceTestBase {
     @Ignore
     public void testTerrainObjectTileGeneration4Tiles() {
         List<GroundConfig> groundConfig = Collections.singletonList(
-                new GroundConfig().id(GROUND_CONFIG_ID).topThreeJsMaterial(60));
+                new GroundConfig().id(GROUND_CONFIG_ID));
 
 
         List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
@@ -63,7 +63,7 @@ public class TerrainObjectServiceTest extends DaggerTerrainServiceTestBase {
 //                new TerrainObjectPosition().id(8).terrainObjectConfigId(2).position(new DecimalPosition(200, 160)).scale(new Vertex(1, 1, 1)).rotation(new Vertex(0, 0, 0))
         );
 
-        setupTerrainTypeService(null, terrainObjectConfigs, null, terrainObjectPositions, groundConfig, threeJsModelConfigs);
+        setupTerrainTypeService(null, terrainObjectConfigs, null, terrainObjectPositions, groundConfig);
         // showDisplay();
 
         exportTriangles("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain",

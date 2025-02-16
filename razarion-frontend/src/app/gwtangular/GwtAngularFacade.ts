@@ -30,7 +30,7 @@ export abstract class GwtAngularFacade {
 // ---------- Boot ----------
 
 export interface GwtAngularBoot {
-  loadThreeJsModels(threeJsModelConfigs: ThreeJsModelConfig[]): Promise<void>;
+  loadThreeJsModels(): Promise<void>;
 }
 
 // ---------- Common ----------
@@ -228,26 +228,6 @@ export interface GroundConfig {
   getGroundBabylonMaterialId(): number;
 
   getWaterBabylonMaterialId(): number;
-}
-
-export interface ThreeJsModelConfig {
-  getId(): number;
-
-  getInternalName(): string;
-
-  getType(): ThreeJsModelConfig.Type
-
-  getNodeMaterialId(): number | null;
-
-  isDisabled(): boolean;
-}
-
-export namespace ThreeJsModelConfig {
-  export enum Type {
-    GLTF = "GLTF",
-    NODES_MATERIAL = "NODES_MATERIAL",
-    PARTICLE_SYSTEM_JSON = "PARTICLE_SYSTEM_JSON"
-  }
 }
 
 // ---------- ItemType ----------

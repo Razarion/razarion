@@ -32,10 +32,7 @@ public class DbPropertiesEntity {
     private ImageLibraryEntity image;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ThreeJsModelConfigEntity babylonModel;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private BabylonMaterialEntity babylonMaterial;
+    private BabylonMaterialEntity babylonMaterialEntity;
     private Integer intValue;
     private Double doubleValue;
     @AttributeOverrides({
@@ -92,20 +89,12 @@ public class DbPropertiesEntity {
         this.doubleValue = doubleValue;
     }
 
-    public ThreeJsModelConfigEntity getBabylonModel() {
-        return babylonModel;
+    public BabylonMaterialEntity getBabylonMaterialEntity() {
+        return babylonMaterialEntity;
     }
 
-    public void setBabylonModel(ThreeJsModelConfigEntity babylonModel) {
-        this.babylonModel = babylonModel;
-    }
-
-    public BabylonMaterialEntity getBabylonMaterial() {
-        return babylonMaterial;
-    }
-
-    public void setBabylonMaterial(BabylonMaterialEntity babylonMaterial) {
-        this.babylonMaterial = babylonMaterial;
+    public void setBabylonMaterialEntity(BabylonMaterialEntity babylonMaterial) {
+        this.babylonMaterialEntity = babylonMaterial;
     }
 
     public Color getColor() {

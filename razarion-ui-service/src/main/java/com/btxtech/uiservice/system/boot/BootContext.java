@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.system.boot;
 
-import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -45,7 +44,7 @@ public class BootContext {
 
     }
 
-    public Promise<Void> loadThreeJsModels(ThreeJsModelConfig[] threeJsModelConfigs) {
+    public Promise<Void> loadThreeJsModels() {
         return null;
     }
 

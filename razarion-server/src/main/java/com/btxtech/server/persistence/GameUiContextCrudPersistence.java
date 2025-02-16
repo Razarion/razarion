@@ -345,10 +345,10 @@ public class GameUiContextCrudPersistence extends AbstractConfigCrudPersistence<
 
     private InGameQuestVisualConfig setupInGameQuestVisualConfig() {
         return new InGameQuestVisualConfig()
-                .nodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_NODES_MATERIAL))
-                .placeNodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_PLACE_NODES_MATERIAL))
+                .nodesMaterialId(dbPropertiesService.getBabylonMaterialProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_NODES_MATERIAL))
+                .placeNodesMaterialId(dbPropertiesService.getBabylonMaterialProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_PLACE_NODES_MATERIAL))
                 .radius(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_RADIUS))
-                .outOfViewNodesMaterialId(dbPropertiesService.getBabylonModelProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_NODES_MATERIAL))
+                .outOfViewNodesMaterialId(dbPropertiesService.getBabylonMaterialProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_NODES_MATERIAL))
                 .outOfViewSize(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SIZE))
                 .outOfViewDistanceFromCamera(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_DISTANCE_FROM_CAMERA))
                 .harvestColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_HARVEST_COLOR))

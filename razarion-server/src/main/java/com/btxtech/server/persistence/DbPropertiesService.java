@@ -33,8 +33,6 @@ public class DbPropertiesService {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
-    private ThreeJsModelCrudPersistence threeJsModelCrudPersistence;
-    @Inject
     private BabylonMaterialCrudPersistence babylonMaterialCrudPersistence;
     @Inject
     private AlarmService alarmService;
@@ -50,22 +48,12 @@ public class DbPropertiesService {
     }
 
     @Transactional
-    public Integer getBabylonModelProperty(DbPropertyKey dbPropertyKey) {
-        DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
-        if (dbPropertiesEntity != null && dbPropertiesEntity.getBabylonModel() != null) {
-            return dbPropertiesEntity.getBabylonModel().getId();
-        }
-        alarmService.riseAlarm(INVALID_PROPERTY, "Babylon model: " + dbPropertyKey);
-        return null;
-    }
-
-    @Transactional
     public Integer getBabylonMaterialProperty(DbPropertyKey dbPropertyKey) {
         DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
-        if (dbPropertiesEntity != null && dbPropertiesEntity.getBabylonMaterial() != null) {
-            return dbPropertiesEntity.getBabylonMaterial().getId();
+        if (dbPropertiesEntity != null && dbPropertiesEntity.getBabylonMaterialEntity() != null) {
+            return dbPropertiesEntity.getBabylonMaterialEntity().getId();
         }
-        alarmService.riseAlarm(INVALID_PROPERTY, "Babylon materail: " + dbPropertyKey);
+        alarmService.riseAlarm(INVALID_PROPERTY, "Babylon material: " + dbPropertyKey);
         return null;
     }
 
@@ -163,30 +151,15 @@ public class DbPropertiesService {
 
     @Transactional
     @SecurityCheck
-    public void setBabylonModelProperty(Integer babylonModelId, DbPropertyKey dbPropertyKey) {
-        DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
-        if (dbPropertiesEntity == null) {
-            dbPropertiesEntity = new DbPropertiesEntity(dbPropertyKey.getKey());
-        }
-        if (babylonModelId != null) {
-            dbPropertiesEntity.setBabylonModel(threeJsModelCrudPersistence.getEntity(babylonModelId));
-        } else {
-            dbPropertiesEntity.setBabylonModel(null);
-        }
-        entityManager.merge(dbPropertiesEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
     public void setBabylonMaterialProperty(Integer babylonModelId, DbPropertyKey dbPropertyKey) {
         DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
         if (dbPropertiesEntity == null) {
             dbPropertiesEntity = new DbPropertiesEntity(dbPropertyKey.getKey());
         }
         if (babylonModelId != null) {
-            dbPropertiesEntity.setBabylonMaterial(babylonMaterialCrudPersistence.getBaseEntity(babylonModelId));
+            dbPropertiesEntity.setBabylonMaterialEntity(babylonMaterialCrudPersistence.getBaseEntity(babylonModelId));
         } else {
-            dbPropertiesEntity.setBabylonMaterial(null);
+            dbPropertiesEntity.setBabylonMaterialEntity(null);
         }
         entityManager.merge(dbPropertiesEntity);
     }
@@ -234,10 +207,7 @@ public class DbPropertiesService {
                 dbPropertyConfig.setIntValue(dbPropertiesEntity.getAudio() != null ? dbPropertiesEntity.getAudio().getId() : null);
                 break;
             case BABYLON_MATERIAL:
-                dbPropertyConfig.setIntValue(dbPropertiesEntity.getBabylonMaterial() != null ? dbPropertiesEntity.getBabylonMaterial().getId() : null);
-                break;
-            case NODE_MATERIAL:
-                dbPropertyConfig.setIntValue(dbPropertiesEntity.getBabylonModel() != null ? dbPropertiesEntity.getBabylonModel().getId() : null);
+                dbPropertyConfig.setIntValue(dbPropertiesEntity.getBabylonMaterialEntity() != null ? dbPropertiesEntity.getBabylonMaterialEntity().getId() : null);
                 break;
             case INTEGER:
                 dbPropertyConfig.setIntValue(dbPropertiesEntity.getIntValue());
@@ -269,9 +239,6 @@ public class DbPropertiesService {
                 break;
             case BABYLON_MATERIAL:
                 setBabylonMaterialProperty(dbPropertyConfig.getIntValue(), dbPropertyKey);
-                break;
-            case NODE_MATERIAL:
-                setBabylonModelProperty(dbPropertyConfig.getIntValue(), dbPropertyKey);
                 break;
             case INTEGER:
                 setIntProperty(dbPropertyConfig.getIntValue(), dbPropertyKey);

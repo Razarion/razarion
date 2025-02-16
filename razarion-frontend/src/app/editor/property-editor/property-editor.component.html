@@ -10,9 +10,6 @@
             <td *ngIf="dbPropertyConfig.dbPropertyType === BABYLON_MATERIAL" style="width: 300px;">
                 <babylon-material [(babylonMaterialId)]="dbPropertyConfig.intValue"></babylon-material>
             </td>
-            <td *ngIf="dbPropertyConfig.dbPropertyType === NODE_MATERIAL" style="width: 300px;">
-                <babylon-model [(babylonModelId)]="dbPropertyConfig.intValue"></babylon-model>
-            </td>
             <td *ngIf="dbPropertyConfig.dbPropertyType === INTEGER" style="width: 300px;">
                 <p-inputNumber inputId="integeronly" [(ngModel)]="dbPropertyConfig.intValue"></p-inputNumber>
             </td>

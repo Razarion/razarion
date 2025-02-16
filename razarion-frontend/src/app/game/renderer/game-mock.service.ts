@@ -21,7 +21,6 @@ import {
   InventoryTypeService,
   ItemTypeService,
   NativeSyncBaseItemTickInfo,
-  ObjectNameId,
   PhysicalAreaConfig,
   PlanetConfig,
   PlayerBaseDto,
@@ -34,8 +33,6 @@ import {
   TerrainTile,
   TerrainTileObjectList,
   TerrainTypeService,
-  ThreeJsModelConfig,
-  Vertex,
   WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
 import {HttpClient} from "@angular/common/http";
@@ -113,21 +110,6 @@ export class GameMockService {
       throw new Error("Method not implemented.");
     }
   };
-
-  getThreeJsModels(): ObjectNameId[] {
-    let objectNameIds: ObjectNameId[] = [];
-    staticGameConfigJson.threeJsModelConfigs.forEach((threeJsModelJson: any) => {
-      objectNameIds.push(new class implements ObjectNameId {
-        id: number = threeJsModelJson.id;
-        internalName: string = threeJsModelJson.internalName;
-
-        toString(): string {
-          return `${this.internalName} (${this.id})`;
-        }
-      })
-    });
-    return objectNameIds;
-  }
 
   constructor(private http: HttpClient) {
   }
@@ -523,35 +505,6 @@ export class GameMockService {
 
   private getTileHeightMapStart(terrainTileIndex: Index): number {
     return terrainTileIndex.getY() * (this.TILE_X_COUNT * BabylonTerrainTileImpl.TILE_NODE_SIZE) + terrainTileIndex.getX() * BabylonTerrainTileImpl.TILE_NODE_SIZE;
-  }
-
-  mockThreeJsModelConfigs(): ThreeJsModelConfig[] {
-    let threeJsModelConfigs: ThreeJsModelConfig[] = [];
-    staticGameConfigJson.threeJsModelConfigs.forEach((threeJsModelConfigJson: any) => {
-      threeJsModelConfigs.push(new class implements ThreeJsModelConfig {
-        getId(): number {
-          return threeJsModelConfigJson.id;
-        }
-
-        getInternalName(): string {
-          return threeJsModelConfigJson.internalName;
-        }
-
-        getType(): ThreeJsModelConfig.Type {
-          return ThreeJsModelConfig.Type[<ThreeJsModelConfig.Type>threeJsModelConfigJson.type];
-        }
-
-        getNodeMaterialId(): number | null {
-          return threeJsModelConfigJson.nodeMaterialId;
-        }
-
-        isDisabled(): boolean {
-          return threeJsModelConfigJson.disabled;
-        }
-
-      });
-    })
-    return threeJsModelConfigs;
   }
 
   showQuestSideBar(questCockpitContainer: QuestCockpitComponent) {

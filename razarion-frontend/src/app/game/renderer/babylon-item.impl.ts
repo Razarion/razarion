@@ -220,7 +220,7 @@ export class BabylonItemImpl implements BabylonItem {
         console.warn("this.visualizationMarkerDisc != null")
       }
       this.visualizationMarkerDisc = MeshBuilder.CreateDisc("Visualization item marker", {radius: markerConfig.radius});
-      let nodeMaterial = this.babylonModelService.getNodeMaterial(markerConfig.nodesMaterialId);
+      let nodeMaterial = this.babylonModelService.getBabylonMaterial(markerConfig.nodesMaterialId);
       this.visualizationMarkerDisc.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
       this.visualizationMarkerDisc.position.y = 0.01;
       this.visualizationMarkerDisc.rotation.x = Tools.ToRadians(90);
@@ -262,7 +262,7 @@ export class BabylonItemImpl implements BabylonItem {
         });
         let nodeMaterial = this.rendererService.itemMarkerMaterialCache.get(this.diplomacy);
         if (!nodeMaterial) {
-          nodeMaterial = this.babylonModelService.getNodeMaterial(this.uiConfigCollectionService.getSelectionItemMaterialId());
+          nodeMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(this.uiConfigCollectionService.getSelectionItemMaterialId());
           nodeMaterial = nodeMaterial.clone(`${nodeMaterial.name}  ${this.diplomacy}`);
           nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
           let diplomacyColor = <InputBlock>nodeMaterial.getBlockByName("diplomacyColor");
