@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -28,23 +27,6 @@ public class TerrainObjectServiceTest extends DaggerTerrainServiceTestBase {
     public void testTerrainObjectTileGeneration4Tiles() {
         List<GroundConfig> groundConfig = Collections.singletonList(
                 new GroundConfig().id(GROUND_CONFIG_ID));
-
-
-        List<ThreeJsModelConfig> threeJsModelConfigs = Arrays.asList(
-                new ThreeJsModelConfig().id(49).internalName("Tropical Vegetation Pack 2").type(ThreeJsModelConfig.Type.GLTF),
-                new ThreeJsModelConfig().id(48).internalName("Rocks and Boulders").type(ThreeJsModelConfig.Type.GLTF),
-                new ThreeJsModelConfig().id(22).internalName("Water").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(44).internalName("[VC] Wheels").type(ThreeJsModelConfig.Type.GLTF),
-                new ThreeJsModelConfig().id(42).internalName("[VC] WheelsW").type(ThreeJsModelConfig.Type.GLTF),
-                new ThreeJsModelConfig().id(41).internalName("[VC] Vehicles main part").type(ThreeJsModelConfig.Type.GLTF).nodeMaterialId(46),
-                new ThreeJsModelConfig().id(45).internalName("[VC] Tracks").type(ThreeJsModelConfig.Type.GLTF),
-                new ThreeJsModelConfig().id(43).internalName("[VC] Bumpers1").type(ThreeJsModelConfig.Type.GLTF),
-                new ThreeJsModelConfig().id(46).internalName("[VC] Node Material Vehicles main part").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(50).internalName("Buildup Beam").type(ThreeJsModelConfig.Type.PARTICLE_SYSTEM_JSON),
-                new ThreeJsModelConfig().id(54).internalName("Progress Bar Material").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(55).internalName("Health Bar Material").type(ThreeJsModelConfig.Type.NODES_MATERIAL),
-                new ThreeJsModelConfig().id(60).internalName("Height Map").type(ThreeJsModelConfig.Type.NODES_MATERIAL)
-        );
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
         terrainObjectConfigs.add(new TerrainObjectConfig().id(1).internalName("banana_plant").radius(1).model3DId(105));

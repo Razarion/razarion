@@ -1,6 +1,5 @@
 package com.btxtech.client.system.boot;
 
-import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.DeferredStartup;

@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
-import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;

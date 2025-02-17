@@ -3,7 +3,6 @@ package com.btxtech.client.system.boot;
 import com.btxtech.client.ClientGameEngineControl;
 import com.btxtech.client.gwtangular.GwtAngularService;
 import com.btxtech.client.user.FacebookService;
-import com.btxtech.shared.datatypes.shape.ThreeJsModelConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
