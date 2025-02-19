@@ -8,7 +8,7 @@
   <div class="field grid align-items-center">
     <span class="col">Terrain Object</span>
     <div class="col">
-      <p-dropdown [options]="terrainObjectConfigs" [(ngModel)]="newTerrainObjectConfig" optionLabel="name"></p-dropdown>
+      <p-dropdown [appendTo]="'body'" [options]="terrainObjectConfigs" [(ngModel)]="newTerrainObjectConfig" optionLabel="name"></p-dropdown>
     </div>
   </div>
   <div class="field grid align-items-center">
