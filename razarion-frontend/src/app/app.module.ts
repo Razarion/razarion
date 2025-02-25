@@ -146,6 +146,9 @@ import {GroundEditorComponent} from "./editor/crud-editors/ground-editor/ground-
 import {
   ResourceItemTypeEditorComponent
 } from "./editor/crud-editors/resource-item-type-editor/resource-item-type-editor.component";
+import {
+  TerrainObjectGeneratorEntityComponent
+} from "./editor/terrain-editor/terrain-object-generator/terrain-object-generator-entity/terrain-object-generator-entity.component";
 
 @NgModule({
   declarations: [
@@ -231,7 +234,8 @@ import {
     Model3dComponent,
     TerrainObjectEditorComponent,
     GroundEditorComponent,
-    ResourceItemTypeEditorComponent
+    ResourceItemTypeEditorComponent,
+    TerrainObjectGeneratorEntityComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     FormsModule,

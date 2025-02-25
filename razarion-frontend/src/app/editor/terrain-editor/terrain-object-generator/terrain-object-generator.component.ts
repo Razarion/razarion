@@ -1,50 +1,166 @@
-import { Component } from '@angular/core';
-import { BabylonRenderServiceAccessImpl, RazarionMetadataType } from "../../../game/renderer/babylon-render-service-access-impl.service";
-import { ObjectNameId, TerrainObjectModel } from "../../../gwtangular/GwtAngularFacade";
-import { GeneratorItem } from "./generator-item";
-import { BabylonTerrainTileImpl } from 'src/app/game/renderer/babylon-terrain-tile.impl';
-import { GwtInstance } from 'src/app/gwtangular/GwtInstance';
-import { BabylonModelService } from 'src/app/game/renderer/babylon-model.service';
-import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
-import { PickingInfo } from '@babylonjs/core/Collisions/pickingInfo';
-import { EditorService } from '../../editor-service';
-import { GeneratedTerrainObjects } from './generated-terrain-objects';
-import { TransformNode } from '@babylonjs/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {TerrainObjectGeneratorControllerClient, TerrainObjectGeneratorEntity} from "../../../generated/razarion-share";
+import {HttpClient} from "@angular/common/http";
+import {MessageService} from "primeng/api";
+import {TypescriptGenerator} from "../../../backend/typescript-generator";
+import {DropdownChangeEvent} from "primeng/dropdown";
+import {TerrainObjectModel} from "../../../gwtangular/GwtAngularFacade";
+import {TransformNode} from "@babylonjs/core";
+import {GeneratedTerrainObjects} from "./generated-terrain-objects";
+import {GwtInstance} from "../../../gwtangular/GwtInstance";
+import {BabylonTerrainTileImpl} from "../../../game/renderer/babylon-terrain-tile.impl";
+import {BabylonRenderServiceAccessImpl} from "../../../game/renderer/babylon-render-service-access-impl.service";
+import {BabylonModelService} from "../../../game/renderer/babylon-model.service";
+import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
+import {EditorService} from "../../editor-service";
+import {
+  TerrainObjectGeneratorEntityComponent
+} from "./terrain-object-generator-entity/terrain-object-generator-entity.component";
 
 @Component({
   selector: 'terrain-object-generator',
   templateUrl: './terrain-object-generator.component.html'
 })
-export class TerrainObjectGeneratorComponent {
-  terrainObjectConfigs: { objectNameId: ObjectNameId, name: string }[] = [];
-  generatorItems: GeneratorItem[] = [];
-  groundConfigs: { id: number, name: string }[] = [];
-  excludedGroundConfigs: { entry?: { id: number, name: string } }[] = [];
+export class TerrainObjectGeneratorComponent implements OnInit {
+  activeTerrainObjectGenerator: TerrainObjectGeneratorEntity | null = null;
+  terrainObjectGeneratorOptions: { id: number, name: string }[] = [{id: -999999, name: "Dummy"}];
+  terrainObjectGeneratorId? = this.terrainObjectGeneratorOptions[0];
   generatedTerrainObjectsEntries: GeneratedTerrainObjects[] = [];
+  @ViewChild('terrainObjectGeneratorEntityComponent')
+  terrainObjectGeneratorEntityComponent!: TerrainObjectGeneratorEntityComponent;
+  groundConfigs: { id: number, name: string }[] = [];
+
   private terrainObjectCallback!: (terrainObjectModel: TerrainObjectModel, node: TransformNode) => void;
 
+  private terrainObjectGeneratorControllerClient: TerrainObjectGeneratorControllerClient;
+
   constructor(private renderEngine: BabylonRenderServiceAccessImpl,
-    private babylonModelService: BabylonModelService,
-    private gwtAngularService: GwtAngularService,
-    editorService: EditorService) {
+              private babylonModelService: BabylonModelService,
+              private gwtAngularService: GwtAngularService,
+              editorService: EditorService,
+              httpClient: HttpClient,
+              private messageService: MessageService) {
+    this.terrainObjectGeneratorControllerClient = new TerrainObjectGeneratorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
     editorService.readGroundObjectNameIds().then(objectNameIds => {
       this.groundConfigs = [];
       objectNameIds.forEach(objectNameId => {
-        this.groundConfigs.push({ name: `${objectNameId.internalName} '${objectNameId.id}'`, id: objectNameId.id });
+        this.groundConfigs.push({name: `${objectNameId.internalName} '${objectNameId.id}'`, id: objectNameId.id});
       });
     })
   }
 
-  init(terrainObjectConfigs: { objectNameId: ObjectNameId, name: string }[], terrainObjectCallback: (terrainObjectModel: TerrainObjectModel, node: TransformNode) => void) {
-    this.terrainObjectConfigs = terrainObjectConfigs;
+  ngOnInit(): void {
+    this.loadTerrainObjectGeneratorObjectNameIds();
+  }
+
+  init(terrainObjectCallback: (terrainObjectModel: TerrainObjectModel, node: TransformNode) => void) {
     this.terrainObjectCallback = terrainObjectCallback;
+  }
+
+  private loadTerrainObjectGeneratorObjectNameIds(): void {
+    this.terrainObjectGeneratorControllerClient
+      .getObjectNameIds()
+      .then(objectNameIds => {
+        this.terrainObjectGeneratorOptions = [];
+        objectNameIds.forEach(objectNameId => {
+          this.terrainObjectGeneratorOptions.push({
+            id: objectNameId.id,
+            name: `${objectNameId.internalName} '${objectNameId.id}'`
+          });
+          this.terrainObjectGeneratorId = this.terrainObjectGeneratorOptions[0];
+        })
+      }).catch(err => {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Failed loading terrain object generators`,
+        detail: err.message,
+        sticky: true
+      });
+    });
+  }
+
+  onTerrainObjectGeneratorChange(event: DropdownChangeEvent) {
+    this.terrainObjectGeneratorControllerClient
+      .read(event.value)
+      .then(value => this.activeTerrainObjectGenerator = value)
+      .catch(err => {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Failed to read  a TerrainObjectGeneratorEntity`,
+          detail: err.message,
+          sticky: true
+        })
+      });
+  }
+
+  onCreateTerrainObjectGenerator() {
+    this.terrainObjectGeneratorControllerClient
+      .create()
+      .then(terrainObjectGeneratorEntity => {
+        this.activeTerrainObjectGenerator = terrainObjectGeneratorEntity;
+        this.terrainObjectGeneratorId = {
+          id: terrainObjectGeneratorEntity.id,
+          name: `${terrainObjectGeneratorEntity.internalName} '${terrainObjectGeneratorEntity.id}'`
+        };
+        this.loadTerrainObjectGeneratorObjectNameIds();
+      }).catch(err => {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Failed creating a brush`,
+        detail: err.message,
+        sticky: true
+      });
+    });
+
+  }
+
+  onSaveTerrainObjectGenerator() {
+    this.terrainObjectGeneratorEntityComponent.updateGeneratorJson();
+    this.terrainObjectGeneratorControllerClient
+      .update(this.activeTerrainObjectGenerator!)
+      .then(() => {
+        this.messageService.add({
+          severity: 'success',
+          summary: `TerrainObjectGeneratorEntity saved`,
+        });
+      })
+      .catch(err => {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Failed to save a terrainObjectGeneratorEntity`,
+          detail: err.message,
+          sticky: true
+        });
+      });
+  }
+
+  onDeleteTerrainObjectGenerator() {
+    this.terrainObjectGeneratorControllerClient
+      .delete(this.activeTerrainObjectGenerator!.id)
+      .then(() => {
+        this.loadTerrainObjectGeneratorObjectNameIds();
+        this.activeTerrainObjectGenerator = null;
+        this.terrainObjectGeneratorId = undefined;
+        this.messageService.add({
+          severity: 'success',
+          summary: `TerrainObjectGeneratorEntity deleted`,
+        });
+      })
+      .catch(err => {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Failed to delete a terrainObjectGeneratorEntity`,
+          detail: err.message,
+          sticky: true
+        });
+      });
   }
 
   generate(): void {
     let generatedTerrainObjects = new GeneratedTerrainObjects();
     this.generatedTerrainObjectsEntries.push(generatedTerrainObjects);
 
-    for (let generatorItem of this.generatorItems) {
+    for (let generatorItem of this.terrainObjectGeneratorEntityComponent.generatorItems) {
       let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(generatorItem!.terrainObjectConfig!.objectNameId.id);
       generatedTerrainObjects.terrainObjectConfigs += `${terrainObjectConfig.getInternalName()} '${terrainObjectConfig.getId()}'`;
 
@@ -55,10 +171,6 @@ export class TerrainObjectGeneratorComponent {
 
         let pickingInfo = this.renderEngine.setupPickInfoFromNDC(randomX, randomY);
         if (pickingInfo.hit) {
-          if (this.isGroundRestricted(pickingInfo)) {
-            continue;
-          }
-
           let rotation = GwtInstance.newVertex(
             this.generateRandomRadian(generatorItem.xRot),
             this.generateRandomRadian(generatorItem.yRot),
@@ -74,26 +186,25 @@ export class TerrainObjectGeneratorComponent {
           }
           let newTerrainObjectMesh = BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, null);
           this.renderEngine.addShadowCaster(newTerrainObjectMesh);
-          generatedTerrainObjects.generatedObjects.push({ mesh: newTerrainObjectMesh, model: terrainObjectModel });
+          generatedTerrainObjects.generatedObjects.push({mesh: newTerrainObjectMesh, model: terrainObjectModel});
           generatedTerrainObjects.count++;
         }
       }
     }
   }
 
-  private isGroundRestricted(pickingInfo: PickingInfo): boolean {
-    let node = BabylonRenderServiceAccessImpl.findRazarionMetadataNode(pickingInfo.pickedMesh!);
-    if (!node) {
-      return true;
-    }
-    let metadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(node);
-    if (!metadata) {
-      return true
-    }
-    if (metadata.type !== RazarionMetadataType.GROUND) {
-      return true;
-    }
-    return !!this.excludedGroundConfigs.find(excludedGroundConfig => excludedGroundConfig.entry?.id === metadata!.configId);
+  deleteGeneratedTerrainObjectsEntry(generatedTerrainObjects: GeneratedTerrainObjects) {
+    generatedTerrainObjects.generatedObjects.forEach(terrainObjectMesh => {
+      terrainObjectMesh.mesh.dispose();
+    });
+    this.generatedTerrainObjectsEntries.splice(this.generatedTerrainObjectsEntries.indexOf(generatedTerrainObjects), 1);
+  }
+
+  moveGeneratedTerrainObjectsEntry(generatedTerrainObjects: GeneratedTerrainObjects) {
+    generatedTerrainObjects.generatedObjects.forEach(generatedObjects => {
+      this.terrainObjectCallback(generatedObjects.model, generatedObjects.mesh);
+    });
+    this.generatedTerrainObjectsEntries.splice(this.generatedTerrainObjectsEntries.indexOf(generatedTerrainObjects), 1);
   }
 
   private generateRandomRadian(maxDegree: number): number {
@@ -122,33 +233,4 @@ export class TerrainObjectGeneratorComponent {
     return Math.random() * (maxScale - minScale) + minScale;
   }
 
-  deleteGeneratedTerrainObjectsEtry(generatedTerrainObjects: GeneratedTerrainObjects) {
-    generatedTerrainObjects.generatedObjects.forEach(terrainObjectMesh => {
-      terrainObjectMesh.mesh.dispose();
-    });
-    this.generatedTerrainObjectsEntries.splice(this.generatedTerrainObjectsEntries.indexOf(generatedTerrainObjects), 1);
-  }
-
-  moveGeneratedTerrainObjectsEtry(generatedTerrainObjects: GeneratedTerrainObjects) {
-    generatedTerrainObjects.generatedObjects.forEach(generatedObjects => {
-      this.terrainObjectCallback(generatedObjects.model, generatedObjects.mesh);
-    });
-    this.generatedTerrainObjectsEntries.splice(this.generatedTerrainObjectsEntries.indexOf(generatedTerrainObjects), 1);
-  }
-
-  addGeneratorItem(): void {
-    this.generatorItems.push(new GeneratorItem);
-  }
-
-  deleteGeneratorItem(generatorItem: GeneratorItem): void {
-    this.generatorItems.splice(this.generatorItems.indexOf(generatorItem), 1);
-  }
-
-  addExcludedGround(): void {
-    this.excludedGroundConfigs.push({ entry: undefined });
-  }
-
-  deleteExcludedGround(excludedGroundConfig: { entry?: { id: number, name: string } }): void {
-    this.excludedGroundConfigs.splice(this.excludedGroundConfigs.indexOf(excludedGroundConfig), 1);
-  }
 }

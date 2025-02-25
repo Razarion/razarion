@@ -55,6 +55,7 @@ public class CommonUrl {
     public static final String MODEL_3D_CONTROLLER = "editor/model-3d";
     public static final String PARTICLE_SYSTEM_CONTROLLER = "editor/particle-system";
     public static final String BRUSH_EDITOR_PATH = "editor/brush";
+    public static final String TERRAIN_OBJECT_GENERATOR_EDITOR_PATH = "editor/terrain-object-generator";
     public static final String INVENTORY_ITEM_EDITOR_PATH = "editor/inventory-item";
     public static final String TERRAIN_SHAPE_CONTROLLER = G_ZIPPED + "/" + "terrainshape";
     public static final String TERRAIN_HEIGHT_MAP_CONTROLLER = "terrainHeightMap";

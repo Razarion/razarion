@@ -4,87 +4,52 @@
     <b>Generator</b>
   </div>
 </p-divider>
-<p-table [value]="generatorItems">
-  <ng-template pTemplate="header">
-    <tr>
-      <th>Terrain Object</th>
-      <th>Count</th>
-      <th style="width:8em">Rand x rot</th>
-      <th style="width:8em">Rand y rot</th>
-      <th style="width:8em">Rand z rot</th>
-      <th style="width:8em">Rand scale</th>
-      <th>
-        <p-button icon="pi pi-plus-circle" (onClick)="addGeneratorItem()"></p-button>
-      </th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-generatorItem>
-    <tr>
-      <td>
-        <p-dropdown [options]="terrainObjectConfigs" [(ngModel)]="generatorItem.terrainObjectConfig"
-                    [appendTo]="'body'"
-                    optionLabel="name"></p-dropdown>
-      </td>
-      <td>
-        <p-inputNumber [(ngModel)]="generatorItem.count" [min]="0" [size]="5"></p-inputNumber>
-      </td>
-      <td>
-        <input type="text" pInputText [(ngModel)]="generatorItem.xRot" class="w-full"/>
-        <p-slider [(ngModel)]="generatorItem.xRot" [min]="0" [max]="180"></p-slider>
-      </td>
-      <td>
-        <input type="text" pInputText [(ngModel)]="generatorItem.yRot" class="w-full"/>
-        <p-slider [(ngModel)]="generatorItem.yRot" [min]="0" [max]="180"></p-slider>
-      </td>
-      <td>
-        <input type="text" pInputText [(ngModel)]="generatorItem.zRot" class="w-full"/>
-        <p-slider [(ngModel)]="generatorItem.zRot" [min]="0" [max]="180"></p-slider>
-      </td>
-      <td>
-        <p-inputNumber [(ngModel)]="generatorItem.minScale" [min]="0.001" [size]="5" mode="decimal"
-                       [minFractionDigits]="2" [maxFractionDigits]="5"></p-inputNumber>
-        <p-inputNumber [(ngModel)]="generatorItem.maxScale" [min]="0.001" [size]="5" mode="decimal"
-                       [minFractionDigits]="2" [maxFractionDigits]="5"></p-inputNumber>
-      </td>
-      <td>
-        <p-button icon="pi pi-trash" (onClick)="deleteGeneratorItem(generatorItem)"></p-button>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+
 <div class="field grid align-items-center">
-  <span class="col">Excluded grounds</span>
-  <div class="col">
-    <p-table [value]="excludedGroundConfigs">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Ground</th>
-          <th>
-            <p-button icon="pi pi-plus-circle" (onClick)="addExcludedGround()"></p-button>
-          </th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-excludedGroundConfig>
-        <tr>
-          <td>
-            <p-dropdown [options]="groundConfigs" [(ngModel)]="excludedGroundConfig.entry"
-                        optionLabel="name"></p-dropdown>
-          </td>
-          <td>
-            <p-button icon="pi pi-trash" (onClick)="deleteExcludedGround(excludedGroundConfig)"></p-button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+  <div class="col-9">
+    <p-dropdown [options]="terrainObjectGeneratorOptions"
+                [(ngModel)]="terrainObjectGeneratorId"
+                optionLabel="name"
+                optionValue="id"
+                (onChange)="onTerrainObjectGeneratorChange($event)"
+                [style]="{ width: '100%' }"></p-dropdown>
+  </div>
+
+  <div class="col-1">
+    <p-button type="button" icon="pi pi-plus"
+              styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+              (onClick)="onCreateTerrainObjectGenerator()">
+    </p-button>
+  </div>
+  <div class="col-1">
+    <p-button type="button" icon="pi pi-save"
+              styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+              (onClick)="onSaveTerrainObjectGenerator()">
+    </p-button>
+  </div>
+  <div class="col-1">
+    <p-button type="button" icon="pi pi-trash"
+              styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+              (onClick)="onDeleteTerrainObjectGenerator()">
+    </p-button>
   </div>
 </div>
+
+<terrain-object-generator-entity #terrainObjectGeneratorEntityComponent *ngIf="activeTerrainObjectGenerator"
+                                 [terrainObjectGeneratorEntity]="activeTerrainObjectGenerator"></terrain-object-generator-entity>
+
+<div class="field grid align-items-center">
+</div>
+
 <div class="field grid align-items-center">
   <span class="col">Generate</span>
   <div class="col">
-    <p-button icon="pi pi-bolt" (onClick)="generate()"></p-button>
+    <p-button icon="pi pi-bolt" (onClick)="generate()" [disabled]="!activeTerrainObjectGenerator"></p-button>
   </div>
 </div>
-<p-table [value]="generatedTerrainObjectsEntries">
+
+<p-table [value]="generatedTerrainObjectsEntries"
+         scrollHeight="100px">
   <ng-template pTemplate="header">
     <tr>
       <th>Generation date</th>
@@ -106,13 +71,14 @@
         {{ generatedTerrainObjects.count }}
       </td>
       <td>
-        <p-button icon="pi pi-angle-double-right"
-                  (onClick)="moveGeneratedTerrainObjectsEtry(generatedTerrainObjects)"></p-button>
+        <p-button icon="pi pi-check"
+                  (onClick)="moveGeneratedTerrainObjectsEntry(generatedTerrainObjects)"></p-button>
       </td>
       <td>
         <p-button icon="pi pi-trash"
-                  (onClick)="deleteGeneratedTerrainObjectsEtry(generatedTerrainObjects)"></p-button>
+                  (onClick)="deleteGeneratedTerrainObjectsEntry(generatedTerrainObjects)"></p-button>
       </td>
     </tr>
   </ng-template>
 </p-table>
+

@@ -251,7 +251,6 @@
                         <class>com.btxtech.shared.rest.ResourceItemTypeEditorController</class>
                         <class>com.btxtech.shared.rest.ImageProvider</class>
                         <class>com.btxtech.shared.rest.PlanetEditorController</class>
-                        <class>com.btxtech.shared.rest.TerrainEditorController</class>
                         <class>com.btxtech.shared.rest.GroundEditorController</class>
                         <class>com.btxtech.shared.rest.TerrainObjectEditorController</class>
                         <class>com.btxtech.shared.rest.TerrainHeightMapController</class>
@@ -261,15 +260,17 @@
                         <class>com.btxtech.shared.rest.InventoryController</class>
                         <class>com.btxtech.shared.rest.QuestController</class>
                         <class>com.btxtech.shared.rest.UnlockController</class>
-                        <class>com.btxtech.shared.rest.BrushEditorController</class>
                         <class>com.btxtech.shared.rest.FrontendController</class>
                         <class>com.btxtech.server.rest.crud.BabylonMaterialController</class>
                         <class>com.btxtech.server.rest.crud.GltfController</class>
                         <class>com.btxtech.server.rest.crud.Model3DController</class>
                         <class>com.btxtech.server.rest.crud.ParticleSystemController</class>
+                        <class>com.btxtech.server.rest.crud.BrushEditorController</class>
+                        <class>com.btxtech.server.rest.crud.TerrainObjectGeneratorController</class>
                         <class>com.btxtech.server.rest.UiConfigCollectionController</class>
                         <class>com.btxtech.server.rest.DbPropertiesEditorController</class>
                         <class>com.btxtech.server.rest.UserMgmtController</class>
+                        <class>com.btxtech.server.rest.TerrainEditorController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

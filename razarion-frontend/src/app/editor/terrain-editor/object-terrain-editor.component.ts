@@ -1,9 +1,5 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {
-  ObjectNameId,
-  TerrainObjectConfig,
-  TerrainObjectModel
-} from "../../gwtangular/GwtAngularFacade";
+import {ObjectNameId, TerrainObjectConfig, TerrainObjectModel} from "../../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {MessageService} from "primeng/api";
 import {
@@ -22,12 +18,13 @@ import {EditorService} from "../editor-service";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {Color3} from "@babylonjs/core/Maths/math.color";
 import {UPDATE_RADIUS_REST_CALL} from "../../common";
-import { HttpClient } from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {EditorPanel} from '../editor-model';
 import {TerrainObjectGeneratorComponent} from "./terrain-object-generator/terrain-object-generator.component";
 import {
   TerrainEditorControllerClient,
-  TerrainEditorUpdate, TerrainObjectEditorControllerClient,
+  TerrainEditorUpdate,
+  TerrainObjectEditorControllerClient,
   TerrainObjectPosition
 } from "../../generated/razarion-share";
 import {TypescriptGenerator} from "../../backend/typescript-generator";
@@ -88,16 +85,18 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
       .then(objectNameIds => {
         this.terrainObjectConfigs = [];
         objectNameIds.forEach(objectNameId => {
-          this.terrainObjectConfigs.push({name: `${objectNameId.internalName} '${objectNameId.id}'`, objectNameId: objectNameId})
+          this.terrainObjectConfigs.push({
+            name: `${objectNameId.internalName} '${objectNameId.id}'`,
+            objectNameId: objectNameId
+          })
         });
         this.newTerrainObjectConfig = this.terrainObjectConfigs[0];
-        this.terrainObjectGenerator.init(this.terrainObjectConfigs, (terrainObjectModel: TerrainObjectModel, node: TransformNode) => {
+        this.terrainObjectGenerator.init((terrainObjectModel: TerrainObjectModel, node: TransformNode) => {
           let terrainObjectPosition = GeneratedRestHelper.newTerrainObjectPosition();
           terrainObjectPosition.terrainObjectConfigId = terrainObjectModel.terrainObjectId;
           this.updateTerrainObjectPosition(node, terrainObjectPosition);
           this.newTerrainObjects.push(terrainObjectPosition);
         });
-
       })
   }
 
@@ -165,30 +164,30 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
   }
 
   save() {
-    let terrainEditorUpdate:TerrainEditorUpdate =  {
+    let terrainEditorUpdate: TerrainEditorUpdate = {
       createdTerrainObjects: this.newTerrainObjects,
       updatedTerrainObjects: this.updatedTerrainObjects,
       deletedTerrainObjectsIds: []
     }
     this.terrainEditorControllerClient
       .updateTerrain(this.editorService.getPlanetId(), terrainEditorUpdate)
-      .then(()=>{
-            this.newTerrainObjects = [];
-            this.updatedTerrainObjects = [];
-            this.clearSelection();
-            this.messageService.add({
-              severity: 'success',
-              life: 300,
-              summary: 'Terrain objects saved'
-            })
+      .then(() => {
+        this.newTerrainObjects = [];
+        this.updatedTerrainObjects = [];
+        this.clearSelection();
+        this.messageService.add({
+          severity: 'success',
+          life: 300,
+          summary: 'Terrain objects saved'
+        })
       }).catch(reason => {
-          console.error(reason);
-          this.messageService.add({
-            severity: 'error',
-            summary: `Save terrain objects failed`,
-            detail: reason.message || `${JSON.stringify(reason)}`,
-            sticky: true
-          });
+      console.error(reason);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Save terrain objects failed`,
+        detail: reason.message || `${JSON.stringify(reason)}`,
+        sticky: true
+      });
     })
   }
 
@@ -214,7 +213,7 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
         let to = this.findUpdatedTerrainObjectPosition(razarionMetadata!.id);
         if (!to) {
           terrainObjectPosition = GeneratedRestHelper.newTerrainObjectPosition();
-          terrainObjectPosition.id=razarionMetadata?.id!;
+          terrainObjectPosition.id = razarionMetadata?.id!;
           terrainObjectPosition.terrainObjectConfigId = razarionMetadata?.configId!;
           this.updatedTerrainObjects.push(terrainObjectPosition);
         } else {
