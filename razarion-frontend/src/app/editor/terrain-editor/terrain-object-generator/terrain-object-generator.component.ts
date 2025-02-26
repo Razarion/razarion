@@ -161,7 +161,7 @@ export class TerrainObjectGeneratorComponent implements OnInit {
     this.generatedTerrainObjectsEntries.push(generatedTerrainObjects);
 
     for (let generatorItem of this.terrainObjectGeneratorEntityComponent.generatorItems) {
-      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(generatorItem!.terrainObjectConfig!.objectNameId.id);
+      let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(generatorItem!.terrainObjectConfig!);
       generatedTerrainObjects.terrainObjectConfigs += `${terrainObjectConfig.getInternalName()} '${terrainObjectConfig.getId()}'`;
 
 

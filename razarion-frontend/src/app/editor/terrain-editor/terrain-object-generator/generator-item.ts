@@ -1,7 +1,7 @@
 import { ObjectNameId } from "../../../gwtangular/GwtAngularFacade";
 
 export class GeneratorItem {
-  terrainObjectConfig?: { objectNameId: ObjectNameId };
+  terrainObjectConfig?: number;
   count: number = 10;
   xRot: number = 0;
   yRot: number = 0;
