@@ -1,17 +1,23 @@
-import { BabylonItemImpl } from "./babylon-item.impl";
-import { BabylonResourceItem, DecimalPosition, Diplomacy, MarkerConfig, ResourceItemType, Vertex } from "../../gwtangular/GwtAngularFacade";
-import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
-import { BabylonModelService } from "./babylon-model.service";
-import { ActionService } from "../action.service";
-import { UiConfigCollectionService } from "../ui-config-collection.service";
+import {BabylonItemImpl} from "./babylon-item.impl";
+import {
+  BabylonResourceItem,
+  DecimalPosition,
+  Diplomacy,
+  MarkerConfig,
+  ResourceItemType
+} from "../../gwtangular/GwtAngularFacade";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import {BabylonModelService} from "./babylon-model.service";
+import {ActionService} from "../action.service";
+import {UiConfigCollectionService} from "../ui-config-collection.service";
 
 export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonResourceItem {
   constructor(id: number,
-    private resourceItemType: ResourceItemType,
-    rendererService: BabylonRenderServiceAccessImpl,
-    actionService: ActionService,
-    babylonModelService: BabylonModelService,
-    uiConfigCollectionService: UiConfigCollectionService) {
+              resourceItemType: ResourceItemType,
+              rendererService: BabylonRenderServiceAccessImpl,
+              actionService: ActionService,
+              babylonModelService: BabylonModelService,
+              uiConfigCollectionService: UiConfigCollectionService) {
     super(id,
       resourceItemType,
       Diplomacy.RESOURCE,

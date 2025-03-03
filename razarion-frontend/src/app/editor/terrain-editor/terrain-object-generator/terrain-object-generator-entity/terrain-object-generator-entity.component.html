@@ -35,7 +35,8 @@
       <td>
         <p-dropdown [options]="terrainObjectConfigs" [(ngModel)]="generatorItem.terrainObjectConfig"
                     [appendTo]="'body'"
-                    optionLabel="name"></p-dropdown>
+                    optionLabel="name"
+                    optionValue ="terrainObjectId" ></p-dropdown>
       </td>
       <td>
         <p-inputNumber [(ngModel)]="generatorItem.count" [min]="0" [size]="5"></p-inputNumber>

@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TerrainObjectEditorControllerClient, TerrainObjectGeneratorEntity} from "../../../../generated/razarion-share";
-import {ObjectNameId} from "../../../../gwtangular/GwtAngularFacade";
 import {GeneratorItem} from "../generator-item";
 import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../../backend/typescript-generator";
@@ -12,7 +11,7 @@ import {TypescriptGenerator} from "../../../../backend/typescript-generator";
 export class TerrainObjectGeneratorEntityComponent implements OnInit {
   _terrainObjectGeneratorEntity: TerrainObjectGeneratorEntity | null = null;
   generatorItems: GeneratorItem[] = [];
-  terrainObjectConfigs: { objectNameId: ObjectNameId, name: string }[] = [];
+  terrainObjectConfigs: { terrainObjectId: number, name: string }[] = [];
   private terrainObjectEditorControllerClient: TerrainObjectEditorControllerClient;
 
   constructor(httpClient: HttpClient) {
@@ -40,7 +39,7 @@ export class TerrainObjectGeneratorEntityComponent implements OnInit {
         objectNameIds.forEach(objectNameId => {
           this.terrainObjectConfigs.push({
             name: `${objectNameId.internalName} '${objectNameId.id}'`,
-            objectNameId: objectNameId
+            terrainObjectId: objectNameId.id
           })
         });
       })
