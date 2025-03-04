@@ -17,7 +17,7 @@ import {
   I18nString,
   OwnItemCockpit,
   PhysicalAreaConfig,
-  RadarState,
+  RadarState, ResourceItemType,
   ScreenCover,
   WeaponType,
 } from "../gwtangular/GwtAngularFacade";
@@ -28,6 +28,7 @@ import {
   GeneratedCrudContainerComponent
 } from '../editor/crud-editors/crud-container/generated-crud-container.component';
 import {GltfEditorComponent} from "../editor/crud-editors/gltf-editor/gltf-editor.component";
+import {GwtInstance} from "../gwtangular/GwtInstance";
 
 
 @Component({
@@ -72,7 +73,7 @@ export class GameComponent implements OnInit, ScreenCover {
     this.babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
 
     if (environment.gwtMock) {
-      let runGwtMock = false;
+      let runGwtMock = true;
       this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.gameMockService.mockBaseItemUiService;
       this.gwtAngularService.gwtAngularFacade.itemTypeService = this.gameMockService.mockItemTypeService();
       this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.gameMockService.mockInventoryTypeService();
@@ -90,7 +91,7 @@ export class GameComponent implements OnInit, ScreenCover {
             this.babylonRenderServiceAccessImpl.runRenderer();
             setTimeout(() => {
               // Some very strange babylon behavior, _projectionMatrix is zero matrix
-              this.babylonRenderServiceAccessImpl.setViewFieldCenter(40, 100);
+              this.babylonRenderServiceAccessImpl.setViewFieldCenter(8, 8);
               this.fadeOutLoadingCover();
               setTimeout(() => {
                 // Some very strange babylon behavior, _projectionMatrix is zero matrix
@@ -303,7 +304,41 @@ export class GameComponent implements OnInit, ScreenCover {
             // }
             // setTimeout(move, 100)
 
-            this.itemCockpitContainer.displayOwnSingleType(1, new class implements OwnItemCockpit {
+            let resourceItemType = new class implements ResourceItemType {
+              getRadius(): number {
+                return 2;
+              }
+
+              getInternalName(): string {
+                return "ResourceItemType";
+              }
+
+              getId(): number {
+                return 999999;
+              }
+
+              getModel3DId(): number | null {
+                return 42;
+              }
+
+              getI18nName(): I18nString {
+                return new class implements I18nString {
+                  getString(): string {
+                    return "I18nString";
+                  }
+                };
+              }
+            }
+
+            let babylonResourceItem1 = this.babylonRenderServiceAccessImpl.createBabylonResourceItem(999999, resourceItemType);
+            // babylonResourceItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
+            //babylonResourceItem1.setAngle(Tools.ToRadians(45));
+            babylonResourceItem1.select(false);
+            setTimeout(() => {
+              babylonResourceItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
+            }, 1000);
+
+              this.itemCockpitContainer.displayOwnSingleType(1, new class implements OwnItemCockpit {
               buildupItemInfos = null;
               imageUrl = "/xxxxx";
               itemTypeDescr = "Builds Units";

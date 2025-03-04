@@ -354,6 +354,8 @@ server.on({
   }
 });
 
+const uiConfigCollection = require("./ui-config-collection.json");
+
 server.on({
   method: 'get',
   path: '*',
@@ -363,12 +365,7 @@ server.on({
   reply: {
     status: 200,
     headers: {"content-type": "application/json"},
-    body: JSON.stringify({
-      "babylonMaterials": [],
-      "selectionItemMaterialId": null,
-      "progressBarNodeMaterialId": null,
-      "healthBarNodeMaterialId": null
-    })
+    body: JSON.stringify(uiConfigCollection)
   }
 });
 
@@ -427,6 +424,20 @@ server.on({
     headers: {"content-type": "application/json"},
     body: function loadAssetConfig(req) {
       console.log("/rest/gltf/update: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
+    }
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/gltf/glb/1',
+  reply: {
+    status: 200,
+    headers: {
+      "content-type": "application/octet-stream"
+    },
+    body: function loadAssetConfig(req) {
+      return fs.readFileSync("C:\\dev\\projects\\razarion\\code\\razarion\\razarion-frontend\\razarion-fake-server\\razarion.glb");
     }
   }
 });

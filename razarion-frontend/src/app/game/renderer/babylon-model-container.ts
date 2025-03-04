@@ -24,7 +24,7 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
   load(entities: E[], babylonModelService: BabylonModelService, scene: Scene) {
     this.babylonModelService = babylonModelService;
     this.entities.clear();
-    if (entities.length === 0) {
+    if (!entities || entities.length === 0) {
       this.loaded = true;
       this.babylonModelService.handleLoaded();
       console.info(`${this.constructor.name}: nothing to load`)
@@ -126,10 +126,14 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
     try {
       let hasError = false;
       const result = SceneLoader.LoadAssetContainer(url, '', scene, assetContainer => {
-          if (!hasError) {
-            this.setBabylonModel(gltfEntity, assetContainer);
-            this.assignGlbTextures(gltfEntity, assetContainer, gltfHelper);
-            this.handleBabylonModelLaded();
+          try {
+            if (!hasError) {
+              this.setBabylonModel(gltfEntity, assetContainer);
+              this.assignGlbTextures(gltfEntity, assetContainer, gltfHelper);
+              this.handleBabylonModelLaded();
+            }
+          } catch (error) {
+            console.error(error);
           }
         },
         () => {
@@ -155,16 +159,20 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
     Object.keys(gltf.materialGltfNames).forEach((gltfMaterialName: string) => {
       let materialId = gltf.materialGltfNames[gltfMaterialName];
       let babylonMaterialEntity = this.babylonMaterialContainer.getEntity(materialId);
-      if (babylonMaterialEntity.overrideAlbedoTextureNode
-        || babylonMaterialEntity.overrideMetallicTextureNode
-        || babylonMaterialEntity.overrideBumpTextureNode
-        || babylonMaterialEntity.overrideAmbientOcclusionTextureNode) {
-        let glbMaterial = <PBRMaterial>assetContainer.materials.find(material => material.name === gltfMaterialName);
-        if (glbMaterial) {
-          gltfHelper.assignTextures(babylonMaterialEntity, glbMaterial);
-        } else {
-          console.warn(`No material in AssetContainer ${gltfMaterialName}`)
+      if(babylonMaterialEntity) {
+        if (babylonMaterialEntity.overrideAlbedoTextureNode
+          || babylonMaterialEntity.overrideMetallicTextureNode
+          || babylonMaterialEntity.overrideBumpTextureNode
+          || babylonMaterialEntity.overrideAmbientOcclusionTextureNode) {
+          let glbMaterial = <PBRMaterial>assetContainer.materials.find(material => material.name === gltfMaterialName);
+          if (glbMaterial) {
+            gltfHelper.assignTextures(babylonMaterialEntity, glbMaterial);
+          } else {
+            console.warn(`No material in AssetContainer ${gltfMaterialName}`)
+          }
         }
+      } else {
+        console.warn(`BabylonMaterialEntity not found. materialId: ${materialId}`)
       }
     });
   }
