@@ -658,7 +658,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   createBaseItemPlacerPresenter(): BaseItemPlacerPresenter {
-    return new BaseItemPlacerPresenterImpl(this);
+    return new BaseItemPlacerPresenterImpl(this, this.babylonModelService);
   }
 
   setEditorTerrainTileCreationCallback(callback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined) {

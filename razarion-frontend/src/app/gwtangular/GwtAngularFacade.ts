@@ -366,6 +366,7 @@ export interface BabylonDecal {
 
 export enum Diplomacy {
   OWN = "OWN",
+  OWN_PLACER = "OWN_PLACER",
   FRIEND = "FRIEND",
   ENEMY = "ENEMY",
   RESOURCE = "RESOURCE",
@@ -555,6 +556,8 @@ export interface BaseItemPlacerPresenter {
 }
 
 export interface BaseItemPlacer {
+  getModel3DId(): number;
+
   isPositionValid(): boolean;
 
   getEnemyFreeRadius(): number;

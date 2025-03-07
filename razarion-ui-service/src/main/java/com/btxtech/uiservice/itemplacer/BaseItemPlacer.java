@@ -82,12 +82,13 @@ public class BaseItemPlacer {
         return errorText;
     }
 
-    public BaseItemType getBaseItemType() {
-        return baseItemType;
-    }
-
     Collection<DecimalPosition> setupAbsolutePositions(DecimalPosition terrainPosition) {
         return baseItemPlacerChecker.setupAbsolutePositions(terrainPosition);
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public Integer getModel3DId() {
+        return baseItemType.getModel3DId();
     }
 
     private void setupErrorText() {

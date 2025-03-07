@@ -11,13 +11,14 @@ import {environment} from 'src/environments/environment';
 import {GameMockService} from './renderer/game-mock.service';
 import {BabylonModelService} from './renderer/babylon-model.service';
 import {
+  BaseItemPlacer,
   BaseItemType,
   BuilderType,
   HarvesterType,
   I18nString,
-  OwnItemCockpit,
   PhysicalAreaConfig,
-  RadarState, ResourceItemType,
+  RadarState,
+  ResourceItemType,
   ScreenCover,
   WeaponType,
 } from "../gwtangular/GwtAngularFacade";
@@ -28,7 +29,6 @@ import {
   GeneratedCrudContainerComponent
 } from '../editor/crud-editors/crud-container/generated-crud-container.component';
 import {GltfEditorComponent} from "../editor/crud-editors/gltf-editor/gltf-editor.component";
-import {GwtInstance} from "../gwtangular/GwtInstance";
 
 
 @Component({
@@ -330,24 +330,24 @@ export class GameComponent implements OnInit, ScreenCover {
               }
             }
 
-            let babylonResourceItem1 = this.babylonRenderServiceAccessImpl.createBabylonResourceItem(999999, resourceItemType);
-            // babylonResourceItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
-            //babylonResourceItem1.setAngle(Tools.ToRadians(45));
-            babylonResourceItem1.select(false);
-            setTimeout(() => {
-              babylonResourceItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
-            }, 1000);
-
-              this.itemCockpitContainer.displayOwnSingleType(1, new class implements OwnItemCockpit {
-              buildupItemInfos = null;
-              imageUrl = "/xxxxx";
-              itemTypeDescr = "Builds Units";
-              itemTypeName = "Factory";
-
-              sellHandler(): void {
-              }
-
-            });
+            // let babylonResourceItem1 = this.babylonRenderServiceAccessImpl.createBabylonResourceItem(999999, resourceItemType);
+            // // babylonResourceItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
+            // //babylonResourceItem1.setAngle(Tools.ToRadians(45));
+            // babylonResourceItem1.select(false);
+            // setTimeout(() => {
+            //   babylonResourceItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
+            // }, 1000);
+            //
+            //   this.itemCockpitContainer.displayOwnSingleType(1, new class implements OwnItemCockpit {
+            //   buildupItemInfos = null;
+            //   imageUrl = "/xxxxx";
+            //   itemTypeDescr = "Builds Units";
+            //   itemTypeName = "Factory";
+            //
+            //   sellHandler(): void {
+            //   }
+            //
+            // });
 
             // this.babylonRenderServiceAccessImpl.showOutOfViewMarker(new class implements MarkerConfig {
             //   radius = 1;
@@ -471,24 +471,28 @@ export class GameComponent implements OnInit, ScreenCover {
       //   };
       //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showBoxPicked(boxContent);
       // }, 100);
-      // setTimeout(() => {
-      //   this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter.activate(new class implements BaseItemPlacer {
-      //     isPositionValid(): boolean {
-      //       return true;
-      //     }
+      setTimeout(() => {
+        this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter.activate(new class implements BaseItemPlacer {
+          isPositionValid(): boolean {
+            return true;
+          }
 
-      //     getEnemyFreeRadius(): number {
-      //       return 5;
-      //     }
+          getEnemyFreeRadius(): number {
+            return 5;
+          }
 
-      //     onMove(xTerrainPosition: number, yTerrainPosition: number): void {
-      //     }
+          getModel3DId(): number {
+            return 2;
+          }
 
-      //     onPlace(xTerrainPosition: number, yTerrainPosition: number): void {
-      //     }
+          onMove(xTerrainPosition: number, yTerrainPosition: number): void {
+          }
 
-      //   });
-      // }, 1000);
+          onPlace(xTerrainPosition: number, yTerrainPosition: number): void {
+          }
+
+        });
+      }, 3000);
 
     }
     this.gwtAngularService.gwtAngularFacade.screenCover = this;

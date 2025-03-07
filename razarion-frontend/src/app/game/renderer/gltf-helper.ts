@@ -1,9 +1,10 @@
 import {BabylonMaterialEntity, GltfEntity} from "../../generated/razarion-share";
 import {BabylonMaterialContainer, GlbContainer} from "./babylon-model-container";
-import {BaseTexture, InputBlock, Mesh, NodeMaterial, Nullable, PBRMaterial} from "@babylonjs/core";
+import {BaseTexture, InputBlock, Material, Mesh, NodeMaterial, Nullable, PBRMaterial} from "@babylonjs/core";
 import {Diplomacy} from "../../gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonModelService} from "./babylon-model.service";
+import {FragmentOutputBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment/fragmentOutputBlock";
 
 export class GltfHelper {
   private materialIds: Map<string, number> = new Map();
@@ -27,6 +28,7 @@ export class GltfHelper {
       if (diplomacy) {
         if (!babylonMaterialEntity?.diplomacyColorNode) {
           mesh.material = this.babylonModelService.getBabylonMaterial(materialId, diplomacy).clone(mesh.material!.name);
+          mesh.material = this.checkAndSetAlpha(diplomacy, mesh.material!);
           return
         }
 
@@ -44,6 +46,7 @@ export class GltfHelper {
         if (!cachedMaterial) {
           cachedMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(materialId).clone(`${mesh.material!.name} ${materialId} '${diplomacy}'`)!;
           cachedMaterial = cachedMaterial.clone(cachedMaterial.name)!
+          this.checkAndSetAlpha(diplomacy, cachedMaterial);
           const diplomacyColorNode = (<NodeMaterial>cachedMaterial).getBlockByPredicate(block => {
             return babylonMaterialEntity.diplomacyColorNode === block.name;
           });
@@ -60,11 +63,35 @@ export class GltfHelper {
           (<NodeMaterial>cachedMaterial).build()
           cachedMaterialNames.set(mesh.material!.name, cachedMaterial);
         }
-        mesh.material = cachedMaterial;
+        mesh.material = cachedMaterial!;
       } else {
         mesh.material = this.babylonModelService.getBabylonMaterial(materialId, diplomacy).clone(mesh.material!.name);
+        mesh.material = this.checkAndSetAlpha(diplomacy, mesh.material!);
+      }
+    } else {
+      mesh.material = this.checkAndSetAlpha(diplomacy, mesh.material!);
+    }
+  }
+
+  private checkAndSetAlpha(diplomacy: Diplomacy | undefined, material: Material): Material {
+    if (diplomacy == Diplomacy.OWN_PLACER) {
+      if (material instanceof NodeMaterial) {
+        material.ignoreAlpha = false;
+        const fragmentOutput = (<NodeMaterial>material).getBlockByName("FragmentOutput");
+        if (fragmentOutput) {
+          const alphaBlock = new InputBlock("Alpha");
+          alphaBlock.value = 0.4;
+          alphaBlock.output.connectTo((<FragmentOutputBlock>fragmentOutput).a);
+        }
+        return material;
+      } else {
+        let alphaMaterial = material.clone(`clone of ${material.name} ${diplomacy}`)!;
+        alphaMaterial.alpha = 0.4;
+        alphaMaterial.transparencyMode = 2; // ALPHABLEND
+        return alphaMaterial;
       }
     }
+    return material;
   }
 
   assignTextures(babylonMaterialEntity: BabylonMaterialEntity, glbMaterial: PBRMaterial) {

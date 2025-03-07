@@ -21,6 +21,12 @@
   ],
   "model3DEntities": [
     {
+      "id": 2,
+      "internalName": "Builder",
+      "gltfName": "Builder",
+      "gltfEntityId": 1
+    },
+    {
       "id": 42,
       "internalName": "Resource 1",
       "gltfName": "Resource 1",

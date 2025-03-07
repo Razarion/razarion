@@ -303,7 +303,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         // Fade out
         sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet fade out").removeLoadingCover(true));
         // User Spawn
-        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().enemyFreeRadius(10.0).suggestedPosition(position);
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().suggestedPosition(position);
         baseItemPlacerConfig.allowedArea(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion());
         sceneConfigs.add(new SceneConfig().internalName("Multiplayer wait for base created").waitForBaseCreated(true).startPointPlacerConfig(baseItemPlacerConfig));
         sceneConfigs.add(new SceneConfig().internalName("script: Process Server Quests").processServerQuests(true));

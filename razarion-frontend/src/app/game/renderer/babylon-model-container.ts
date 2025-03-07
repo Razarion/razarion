@@ -27,13 +27,10 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
     if (!entities || entities.length === 0) {
       this.loaded = true;
       this.babylonModelService.handleLoaded();
-      console.info(`${this.constructor.name}: nothing to load`)
       return;
     }
 
     this.loadingCount = entities.length
-
-    console.info(`${this.constructor.name}: load ${this.loadingCount} `)
 
     entities.forEach(entity => {
       this.entities.set(entity.id, entity);
@@ -61,10 +58,8 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
   }
 
   protected handleBabylonModelLaded() {
-    console.info(`${this.constructor.name}: loaded ${this.loadingCount} `)
     this.loadingCount--;
     if (this.loadingCount <= 0) {
-      console.info(`${this.constructor.name}: finish ${this.loadingCount} `)
       this.loaded = true;
       this.babylonModelService.handleLoaded();
     }
@@ -85,6 +80,7 @@ export class BabylonMaterialContainer extends BabylonModelContainer<BabylonMater
           let material;
           if (babylonMaterialEntity.nodeMaterial) {
             material = NodeMaterial.Parse(data, scene, "/rest/images/");
+            material.ignoreAlpha = false; // Can not be saved in the NodeEditor
           } else {
             material = Material.Parse(data, scene, "/rest/images/");
           }

@@ -49,10 +49,8 @@ export class BabylonModelService {
 
   private handleResolve(handler: () => void) {
     if (this.babylonMaterialContainer.isLoaded() && this.glbContainer.isLoaded() && this.particleSystemContainer.isLoaded()) {
-      console.info(`Gwt handleResolve now`)
       handler();
     } else {
-      console.info(`Gwt handleResolve later`)
       this.gwtResolver = handler;
     }
   }
@@ -68,9 +66,7 @@ export class BabylonModelService {
 
   public handleLoaded(): void {
     if (this.babylonMaterialContainer.isLoaded() && this.glbContainer.isLoaded() && this.particleSystemContainer.isLoaded()) {
-      console.info(`UiConfigCollection loaded`)
       if (this.gwtResolver) {
-        console.info(`UiConfigCollection calls this.gwtResolver()`)
         this.gwtResolver();
       }
     }

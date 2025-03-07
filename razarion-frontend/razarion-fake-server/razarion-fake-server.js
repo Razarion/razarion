@@ -29,7 +29,7 @@ app.use(bodyParser.urlencoded({limit: '500mb', extended: true}));
 app.use(bodyParser.raw({limit: '500mb', type: 'application/octet-stream'}));
 app.use(bodyParser.text({limit: '500mb'}));
 
-let server = new ServerMock({host: "localhost", port: PORT});
+let server = new ServerMock({host: "127.0.0.1", port: PORT});
 
 server.on({
   method: 'GET',
