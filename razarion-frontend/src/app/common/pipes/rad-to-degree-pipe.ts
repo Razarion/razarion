@@ -2,7 +2,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 
 
 @Pipe({
-  name: 'radToDegree'
+    name: 'radToDegree',
+    standalone: false
 })
 export class RadToDegreePipe implements PipeTransform {
   transform(rad: number): number {

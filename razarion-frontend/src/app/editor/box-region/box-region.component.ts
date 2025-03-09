@@ -4,8 +4,9 @@ import { BoxRegionConfig, ServerGameEngineConfig } from 'src/app/generated/razar
 import { EditorService } from '../editor-service';
 
 @Component({
-  selector: 'box-region',
-  templateUrl: './box-region.component.html'
+    selector: 'box-region',
+    templateUrl: './box-region.component.html',
+    standalone: false
 })
 export class BoxRegionComponent extends EditorPanel implements OnInit {
   protected readonly EditorService = EditorService;

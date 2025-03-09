@@ -9,9 +9,10 @@ import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 import { GameComponent } from '../game.component';
 
 @Component({
-  selector: 'inventory',
-  templateUrl: './inventory.component.html',
-  styleUrls: ['./inventory.component.scss']
+    selector: 'inventory',
+    templateUrl: './inventory.component.html',
+    styleUrls: ['./inventory.component.scss'],
+    standalone: false
 })
 export class InventoryComponent implements OnInit {
   getImageUrl = getImageUrl;

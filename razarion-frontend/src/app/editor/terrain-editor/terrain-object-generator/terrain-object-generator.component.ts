@@ -18,8 +18,9 @@ import {
 } from "./terrain-object-generator-entity/terrain-object-generator-entity.component";
 
 @Component({
-  selector: 'terrain-object-generator',
-  templateUrl: './terrain-object-generator.component.html'
+    selector: 'terrain-object-generator',
+    templateUrl: './terrain-object-generator.component.html',
+    standalone: false
 })
 export class TerrainObjectGeneratorComponent implements OnInit {
   activeTerrainObjectGenerator: TerrainObjectGeneratorEntity | null = null;

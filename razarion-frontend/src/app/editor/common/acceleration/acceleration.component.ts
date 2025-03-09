@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-  selector: 'acceleration',
-  templateUrl: './acceleration.component.html'
+    selector: 'acceleration',
+    templateUrl: './acceleration.component.html',
+    standalone: false
 })
 export class AccelerationComponent implements OnInit {
   private readonly FINAL_SPEED_M_PER_S = 100 * 1000 / 3600; // Convert 100 km/h to m/s

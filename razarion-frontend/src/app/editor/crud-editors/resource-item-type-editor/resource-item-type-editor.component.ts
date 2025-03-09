@@ -3,8 +3,9 @@ import {CrudContainerChild} from "../crud-container/crud-container.component";
 import {ResourceItemType, ResourceItemTypeEditorControllerClient} from "../../../generated/razarion-share";
 
 @Component({
-  selector: 'resource-item-type-editor',
-  templateUrl: './resource-item-type-editor.component.html'
+    selector: 'resource-item-type-editor',
+    templateUrl: './resource-item-type-editor.component.html',
+    standalone: false
 })
 export class ResourceItemTypeEditorComponent implements CrudContainerChild<ResourceItemType> {
   static editorControllerClient = ResourceItemTypeEditorControllerClient;

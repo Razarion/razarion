@@ -4,8 +4,9 @@ import { FrontendService } from "../service/frontend.service";
 import { RegisterResult } from "../common";
 
 @Component({
-  templateUrl: 'register.component.html',
-  styleUrls: ['./register.component.css']
+    templateUrl: 'register.component.html',
+    styleUrls: ['./register.component.css'],
+    standalone: false
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   email: string = "";

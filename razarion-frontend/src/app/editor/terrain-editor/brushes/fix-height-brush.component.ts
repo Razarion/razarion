@@ -20,8 +20,8 @@ class BrushValues {
 }
 
 @Component({
-  selector: 'fix-height-brush',
-  template: `
+    selector: 'fix-height-brush',
+    template: `
 
     <div class="field grid align-items-center">
       <div class="col-9">
@@ -106,7 +106,8 @@ class BrushValues {
         <p-slider [(ngModel)]="activeBrush.value.brushValues.random" [step]="0.01" [min]="0" [max]="5"></p-slider>
       </div>
     </div>
-  `
+  `,
+    standalone: false
 })
 export class FixHeightBrushComponent extends AbstractBrush implements OnInit {
   brushes: { name: string, value: Brush }[] = [{ name: "Dummy", value: new Brush(-9999, "Dummy", new BrushValues()) }];

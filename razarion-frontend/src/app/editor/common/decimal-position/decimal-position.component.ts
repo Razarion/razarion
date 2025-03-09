@@ -4,8 +4,9 @@ import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-re
 import { Nullable, Observer, PointerEventTypes, PointerInfo } from '@babylonjs/core';
 
 @Component({
-  selector: 'decimal-position',
-  templateUrl: './decimal-position.component.html'
+    selector: 'decimal-position',
+    templateUrl: './decimal-position.component.html',
+    standalone: false
 })
 export class DecimalPositionComponent implements OnInit {
   @Input("decimalPosition")

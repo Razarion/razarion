@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { I18nString } from 'src/app/generated/razarion-share';
 
 @Component({
-  selector: 'i18n',
-  templateUrl: './i18n.component.html'
+    selector: 'i18n',
+    templateUrl: './i18n.component.html',
+    standalone: false
 })
 export class I18nComponent implements OnInit {
   @Input("i18n")

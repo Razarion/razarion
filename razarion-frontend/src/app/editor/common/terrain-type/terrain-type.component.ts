@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TerrainType } from 'src/app/generated/razarion-share';
 
 @Component({
-  selector: 'terrain-type',
-  templateUrl: './terrain-type.component.html'
+    selector: 'terrain-type',
+    templateUrl: './terrain-type.component.html',
+    standalone: false
 })
 export class TerrainTypeComponent {
   @Input("terrainType")

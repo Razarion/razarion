@@ -2,8 +2,9 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
 
 @Component({
-  selector: 'base-item-type',
-  templateUrl: './base-item-type.component.html'
+    selector: 'base-item-type',
+    templateUrl: './base-item-type.component.html',
+    standalone: false
 })
 export class BaseItemTypeComponent {
   @Input("baseItemTypeId")

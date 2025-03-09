@@ -9,8 +9,9 @@ import {
 } from "../../generated/razarion-share";
 
 @Component({
-  selector: 'server-bot-editor',
-  templateUrl: './server-bot-editor.component.html'
+    selector: 'server-bot-editor',
+    templateUrl: './server-bot-editor.component.html',
+    standalone: false
 })
 export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig!: ServerGameEngineConfig;

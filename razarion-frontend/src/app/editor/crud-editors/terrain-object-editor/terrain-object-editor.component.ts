@@ -3,8 +3,9 @@ import {CrudContainerChild} from "../crud-container/crud-container.component";
 import {TerrainObjectConfig, TerrainObjectEditorControllerClient} from "../../../generated/razarion-share";
 
 @Component({
-  selector: 'terrain-object-editor',
-  templateUrl: './terrain-object-editor.component.html'
+    selector: 'terrain-object-editor',
+    templateUrl: './terrain-object-editor.component.html',
+    standalone: false
 })
 export class TerrainObjectEditorComponent implements CrudContainerChild<TerrainObjectConfig> {
   static editorControllerClient = TerrainObjectEditorControllerClient;

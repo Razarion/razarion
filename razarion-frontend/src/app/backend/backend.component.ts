@@ -5,9 +5,10 @@ import { OverlayPanel } from 'primeng/overlaypanel';
 import { TypescriptGenerator } from './typescript-generator';
 
 @Component({
-  selector: 'app-backend',
-  templateUrl: './backend.component.html',
-  styleUrls: ['./backend.component.scss']
+    selector: 'app-backend',
+    templateUrl: './backend.component.html',
+    styleUrls: ['./backend.component.scss'],
+    standalone: false
 })
 export class BackendComponent {
   startupTerminatedJsons: StartupTerminatedJson[] = [];

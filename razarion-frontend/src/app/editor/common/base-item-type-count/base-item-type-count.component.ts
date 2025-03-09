@@ -2,9 +2,10 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MessageService} from "primeng/api";
 
 @Component({
-  selector: 'base-item-type-count',
-  templateUrl: './base-item-type-count.component.html',
-  styleUrls: ['./base-item-type-count.component.scss']
+    selector: 'base-item-type-count',
+    templateUrl: './base-item-type-count.component.html',
+    styleUrls: ['./base-item-type-count.component.scss'],
+    standalone: false
 })
 export class BaseItemTypeCountComponent implements OnInit {
   @Input("baseItemTypeCount")

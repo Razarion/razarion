@@ -12,9 +12,10 @@ import { ConditionTrigger } from "src/app/generated/razarion-share";
 import { QuestDialogComponent } from "./quest-dialog/quest-dialog.component";
 
 @Component({
-  selector: 'quest-cockpit',
-  templateUrl: 'quest-cockpit.component.html',
-  styleUrls: ['quest-cockpit.component.scss']
+    selector: 'quest-cockpit',
+    templateUrl: 'quest-cockpit.component.html',
+    styleUrls: ['quest-cockpit.component.scss'],
+    standalone: false
 })
 export class QuestCockpitComponent implements QuestCockpit {
   title?: string

@@ -10,8 +10,9 @@ import {
 import {QuestCockpitComponent} from 'src/app/game/cockpit/quest/quest-cockpit.component';
 
 @Component({
-  selector: 'server-quest-editor',
-  templateUrl: './server-quest-editor.component.html'
+    selector: 'server-quest-editor',
+    templateUrl: './server-quest-editor.component.html',
+    standalone: false
 })
 export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig!: ServerGameEngineConfig;

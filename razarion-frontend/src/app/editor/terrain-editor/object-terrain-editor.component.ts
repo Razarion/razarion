@@ -31,8 +31,9 @@ import {TypescriptGenerator} from "../../backend/typescript-generator";
 import {GeneratedRestHelper} from "../../common/generated-rest-helper";
 
 @Component({
-  selector: 'object-terrain-editor',
-  templateUrl: './object-terrain-editor.component.html'
+    selector: 'object-terrain-editor',
+    templateUrl: './object-terrain-editor.component.html',
+    standalone: false
 })
 export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy {
   private readonly discRadiusMaterial: SimpleMaterial;

@@ -7,8 +7,9 @@ import {GwtAngularService} from 'src/app/gwtangular/GwtAngularService';
 import {QuestCockpitComponent} from "../quest-cockpit.component";
 
 @Component({
-  selector: 'quest-dialog',
-  templateUrl: './quest-dialog.component.html'
+    selector: 'quest-dialog',
+    templateUrl: './quest-dialog.component.html',
+    standalone: false
 })
 export class QuestDialogComponent implements OnInit {
   quests: { title: string, description: string, rewards: string[], questId: number }[] = [];

@@ -3,8 +3,9 @@ import { InventoryItem, InventoryItemEditorControllerClient, ItemType } from 'sr
 import { CrudContainerChild } from '../crud-container/crud-container.component';
 
 @Component({
-  selector: 'inventory-item-editor',
-  templateUrl: './inventory-item-editor.component.html'
+    selector: 'inventory-item-editor',
+    templateUrl: './inventory-item-editor.component.html',
+    standalone: false
 })
 export class InventoryItemEditorComponent implements CrudContainerChild<InventoryItem> {
   static editorControllerClient = InventoryItemEditorControllerClient;

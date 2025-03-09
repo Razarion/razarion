@@ -12,9 +12,10 @@ enum Type {
 }
 
 @Component({
-  selector: 'place-config',
-  templateUrl: './place-config.component.html',
-  styleUrls: ['./place-config.component.scss']
+    selector: 'place-config',
+    templateUrl: './place-config.component.html',
+    styleUrls: ['./place-config.component.scss'],
+    standalone: false
 })
 export class PlaceConfigComponent implements OnInit {
   static readonly NEW_POLYGON_HALF_LENGTH = 4;

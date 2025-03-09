@@ -4,8 +4,9 @@ import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { ParticleSystemControllerClient } from 'src/app/generated/razarion-share';
 
 @Component({
-  selector: 'particle-system',
-  templateUrl: './particle-system.component.html'
+    selector: 'particle-system',
+    templateUrl: './particle-system.component.html',
+    standalone: false
 })
 export class ParticleSystemComponent implements OnInit {
   @Input("particleSystemId")

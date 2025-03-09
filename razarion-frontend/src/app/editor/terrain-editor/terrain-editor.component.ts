@@ -8,8 +8,9 @@ import { MessageService } from "primeng/api";
 import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 
 @Component({
-  selector: 'terrain-editor',
-  templateUrl: './terrain-editor.component.html'
+    selector: 'terrain-editor',
+    templateUrl: './terrain-editor.component.html',
+    standalone: false
 })
 export class TerrainEditorComponent extends EditorPanel implements AfterViewInit {
   @ViewChild("objectEditor")

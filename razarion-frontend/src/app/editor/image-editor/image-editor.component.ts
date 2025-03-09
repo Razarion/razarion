@@ -6,8 +6,9 @@ import { URL_IMAGE, getUpdateUrl as common_getUpdateUrl} from "../../common";
 import { ImageGalleryItem } from "../../gwtangular/GwtAngularFacade";
 
 @Component({
-  selector: 'image-editor',
-  templateUrl: './image-editor.component.html'
+    selector: 'image-editor',
+    templateUrl: './image-editor.component.html',
+    standalone: false
 })
 export class ImageEditorComponent extends EditorPanel implements OnInit {
   imageGalleryItems: ImageGalleryItem[] = [];

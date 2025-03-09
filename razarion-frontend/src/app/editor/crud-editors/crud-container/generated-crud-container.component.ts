@@ -6,8 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 
 @Component({
-  selector: 'generated-crud-container',
-  templateUrl: './crud-container.component.html'
+    selector: 'generated-crud-container',
+    templateUrl: './crud-container.component.html',
+    standalone: false
 })
 export class GeneratedCrudContainerComponent extends AbstractCrudContainerComponent {
   private editorControllerClient!: any;

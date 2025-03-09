@@ -13,8 +13,9 @@ import {GameComponent} from "../../game/game.component";
 import {MainCockpitComponent} from "../../game/cockpit/main/main-cockpit.component";
 
 @Component({
-  selector: 'app-editor-panel',
-  templateUrl: './editor-panel.component.html'
+    selector: 'app-editor-panel',
+    templateUrl: './editor-panel.component.html',
+    standalone: false
 })
 export class EditorPanelComponent implements AfterViewInit {
   @Input("mainCockpitComponent")

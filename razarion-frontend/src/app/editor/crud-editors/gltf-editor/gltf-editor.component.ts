@@ -14,8 +14,9 @@ import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 
 @Component({
-  selector: 'gltf-editor',
-  templateUrl: './gltf-editor.component.html'
+    selector: 'gltf-editor',
+    templateUrl: './gltf-editor.component.html',
+    standalone: false
 })
 export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEntity> {
   static editorControllerClient = GltfControllerClient;

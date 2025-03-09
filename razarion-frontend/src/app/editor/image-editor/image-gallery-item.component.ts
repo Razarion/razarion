@@ -3,10 +3,10 @@ import {ImageGalleryItem} from "../../gwtangular/GwtAngularFacade";
 import {getImageUrl} from "../../common";
 
 @Component({
-  selector: 'image-gallery-item',
-  styles: ['.image-gallery-descr { width: 50px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis }',
-    '.image-gallery-img { width: 100px;height: 100px; background: url(\'/assets/TransparentBg.png\')}'],
-  template: `
+    selector: 'image-gallery-item',
+    styles: ['.image-gallery-descr { width: 50px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis }',
+        '.image-gallery-img { width: 100px;height: 100px; background: url(\'/assets/TransparentBg.png\')}'],
+    template: `
     <table style="width: auto;height: auto">
       <tr>
         <td colspan="2">
@@ -33,7 +33,8 @@ import {getImageUrl} from "../../common";
         </td>
       </tr>
     </table>
-  `
+  `,
+    standalone: false
 })
 export class ImageGalleryItemComponent {
   @Input('image-gallery-item')
@@ -44,7 +45,10 @@ export class ImageGalleryItemComponent {
   }
 }
 
-@Pipe({name: 'typeTransform'})
+@Pipe({
+    name: 'typeTransform',
+    standalone: false
+})
 export class ImageTypePipe implements PipeTransform {
   transform(value: any): any {
     return value?.replace("image/", '');

@@ -4,8 +4,9 @@ import {EditorPanel} from "../editor-model";
 import {Alarm} from "../../gwtangular/GwtAngularFacade";
 
 @Component({
-  selector: 'crash-panel',
-  templateUrl: 'crash-panel.component.html'
+    selector: 'crash-panel',
+    templateUrl: 'crash-panel.component.html',
+    standalone: false
 })
 export class CrashPanelComponent extends EditorPanel {
   clientAlarms!: Alarm[];

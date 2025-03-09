@@ -32,8 +32,9 @@ import {GltfEditorComponent} from "../editor/crud-editors/gltf-editor/gltf-edito
 
 
 @Component({
-  templateUrl: 'game.component.html',
-  styleUrls: ['game.component.scss']
+    templateUrl: 'game.component.html',
+    styleUrls: ['game.component.scss'],
+    standalone: false
 })
 export class GameComponent implements OnInit, ScreenCover {
   @ViewChild('canvas', {static: true})

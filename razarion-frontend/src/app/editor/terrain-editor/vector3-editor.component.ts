@@ -2,8 +2,8 @@ import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {Vector3} from "@babylonjs/core";
 
 @Component({
-  selector: 'vector3-editor',
-  template: `
+    selector: 'vector3-editor',
+    template: `
     <div class="inline-flex">
       <div class="mr-2">
         <p-inputNumber [ngModel]="vector3?.x" (onInput)="onChangeX($event)"
@@ -27,7 +27,8 @@ import {Vector3} from "@babylonjs/core";
                        [showButtons]="true"></p-inputNumber>
       </div>
     </div>
-  `
+  `,
+    standalone: false
 })
 export class Vector3EditorComponent {
   @Input()

@@ -4,8 +4,9 @@ import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { InventoryItemEditorControllerClient } from 'src/app/generated/razarion-share';
 
 @Component({
-  selector: 'inventory-item',
-  templateUrl: './inventory-item.component.html'
+    selector: 'inventory-item',
+    templateUrl: './inventory-item.component.html',
+    standalone: false
 })
 export class InventoryItemComponent implements OnInit {
   @Input("inventoryItemId")

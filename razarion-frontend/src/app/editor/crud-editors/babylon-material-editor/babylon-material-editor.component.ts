@@ -9,8 +9,9 @@ import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-rend
 import {Material} from '@babylonjs/core';
 
 @Component({
-  selector: 'babylon-material-editor',
-  templateUrl: './babylon-material-editor.component.html'
+    selector: 'babylon-material-editor',
+    templateUrl: './babylon-material-editor.component.html',
+    standalone: false
 })
 export class BabylonMaterialEditorComponent implements CrudContainerChild<BabylonMaterialEntity> {
   static editorControllerClient = BabylonMaterialControllerClient;

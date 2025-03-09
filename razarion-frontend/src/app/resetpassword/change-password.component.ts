@@ -4,8 +4,9 @@ import {ActivatedRoute, Router} from "@angular/router";
 
 
 @Component({
-  templateUrl: 'cahnge-password.component.html',
-  styleUrls: ['./change-password.component.css']
+    templateUrl: 'cahnge-password.component.html',
+    styleUrls: ['./change-password.component.css'],
+    standalone: false
 })
 export class ChangePasswordComponent {
   password: string = "";

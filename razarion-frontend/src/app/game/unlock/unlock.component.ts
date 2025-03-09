@@ -8,9 +8,10 @@ import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 import { GameComponent } from '../game.component';
 
 @Component({
-  selector: 'unlock',
-  templateUrl: './unlock.component.html',
-  styleUrls: ['./unlock.component.scss']
+    selector: 'unlock',
+    templateUrl: './unlock.component.html',
+    styleUrls: ['./unlock.component.scss'],
+    standalone: false
 })
 export class UnlockComponent implements OnInit {
   getImageUrl = getImageUrl;

@@ -3,8 +3,9 @@ import {FrontendService} from "../service/frontend.service";
 
 
 @Component({
-  templateUrl: 'reset-password.component.html',
-  styleUrls: ['./reset-password.component.css']
+    templateUrl: 'reset-password.component.html',
+    styleUrls: ['./reset-password.component.css'],
+    standalone: false
 })
 export class ResetPasswordComponent {
   passwordResetInitiated: boolean = false;

@@ -7,7 +7,8 @@ import { ImageGalleryItem, ImageProviderClient } from "src/app/generated/razario
 @Component({
     selector: 'image-gallery',
     templateUrl: './image-gallery.component.html',
-    styleUrls: ['./image-gallery.component.scss']
+    styleUrls: ['./image-gallery.component.scss'],
+    standalone: false
 })
 export class ImageGalleryComponent implements OnInit {
     @Input("selectedImageId")

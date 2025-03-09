@@ -5,8 +5,9 @@ import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'level-editor',
-  templateUrl: './level-editor.component.html'
+    selector: 'level-editor',
+    templateUrl: './level-editor.component.html',
+    standalone: false
 })
 export class LevelEditorComponent extends EditorPanel {
   private levelEditorControllerClient!: LevelEditorControllerClient;

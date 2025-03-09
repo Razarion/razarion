@@ -3,8 +3,9 @@ import { BoxItemType, BoxItemTypeEditorControllerClient } from 'src/app/generate
 import { CrudContainerChild } from '../crud-container/crud-container.component';
 
 @Component({
-  selector: 'box-item-type-editor',
-  templateUrl: './box-item-type-editor.component.html'
+    selector: 'box-item-type-editor',
+    templateUrl: './box-item-type-editor.component.html',
+    standalone: false
 })
 export class BoxItemTypeEditorComponent implements CrudContainerChild<BoxItemType> {
   static editorControllerClient = BoxItemTypeEditorControllerClient;

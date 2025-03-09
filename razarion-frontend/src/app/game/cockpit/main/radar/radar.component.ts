@@ -7,9 +7,10 @@ import { MiniTerrain } from './mini-terrain';
 import { MiniItemView } from './mini-item-view';
 
 @Component({
-  selector: 'radar',
-  templateUrl: './radar.component.html',
-  styleUrls: ['./radar.component.scss']
+    selector: 'radar',
+    templateUrl: './radar.component.html',
+    styleUrls: ['./radar.component.scss'],
+    standalone: false
 })
 export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
   public static readonly WIDTH = 200;

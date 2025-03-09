@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MathUtils } from 'src/app/common/math-utils';
 
 @Component({
-  selector: 'percent-input',
-  templateUrl: './percent-input.component.html'
+    selector: 'percent-input',
+    templateUrl: './percent-input.component.html',
+    standalone: false
 })
 export class PercentInputComponent {
   @Input()

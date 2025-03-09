@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-  selector: 'angle',
-  templateUrl: './angle.component.html'
+    selector: 'angle',
+    templateUrl: './angle.component.html',
+    standalone: false
 })
 export class AngleComponent implements OnInit {
   @Input("angle")

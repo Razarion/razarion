@@ -4,10 +4,11 @@ import { getImageUrl as common_getImageUrl, getUpdateUrl as common_getUpdateUrl 
 
 
 @Component({
-  selector: 'image-item',
-  styles: ['.image-gallery-img { width: 100px;height: 100px; background: url(\'/assets/TransparentBg.png\')}'],
-  templateUrl: './image-item.component.html',
-  inputs: ['imageId']
+    selector: 'image-item',
+    styles: ['.image-gallery-img { width: 100px;height: 100px; background: url(\'/assets/TransparentBg.png\')}'],
+    templateUrl: './image-item.component.html',
+    inputs: ['imageId'],
+    standalone: false
 })
 export class ImageItemComponent {
   @Input("imageId")

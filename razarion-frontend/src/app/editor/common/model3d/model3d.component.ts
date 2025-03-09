@@ -5,8 +5,9 @@ import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 
 @Component({
-  selector: 'model3d',
-  templateUrl: './model3d.component.html'
+    selector: 'model3d',
+    templateUrl: './model3d.component.html',
+    standalone: false
 })
 export class Model3dComponent implements OnInit {
   @Input("model3DId")

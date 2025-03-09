@@ -3,8 +3,9 @@ import { BaseItemType, BaseItemTypeEditorControllerClient, BuilderType, Consumer
 import { CrudContainerChild } from '../crud-container/crud-container.component';
 
 @Component({
-  selector: 'base-item-type-editor',
-  templateUrl: './base-item-type-editor.component.html'
+    selector: 'base-item-type-editor',
+    templateUrl: './base-item-type-editor.component.html',
+    standalone: false
 })
 export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemType> {
   static editorControllerClient = BaseItemTypeEditorControllerClient;

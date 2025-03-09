@@ -4,8 +4,9 @@ import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { BabylonMaterialControllerClient } from 'src/app/generated/razarion-share';
 
 @Component({
-  selector: 'babylon-material',
-  templateUrl: './babylon-material.component.html'
+    selector: 'babylon-material',
+    templateUrl: './babylon-material.component.html',
+    standalone: false
 })
 export class BabylonMaterialComponent implements OnInit {
   @Input("babylonMaterialId")

@@ -19,8 +19,9 @@ export interface CrudContainerChildPreUpdate<T extends Config> extends CrudConta
 
 
 @Component({
-  selector: 'crud-container',
-  templateUrl: './crud-container.component.html'
+    selector: 'crud-container',
+    templateUrl: './crud-container.component.html',
+    standalone: false
 })
 export class AbstractCrudContainerComponent extends EditorPanel {
   @ViewChild("configContainer", {read: ViewContainerRef})

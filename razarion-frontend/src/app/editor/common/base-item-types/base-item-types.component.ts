@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-  selector: 'base-item-types',
-  templateUrl: './base-item-types.component.html'
+    selector: 'base-item-types',
+    templateUrl: './base-item-types.component.html',
+    standalone: false
 })
 export class BaseItemTypesComponent implements OnInit {
   @Input("baseItemTypeIds")

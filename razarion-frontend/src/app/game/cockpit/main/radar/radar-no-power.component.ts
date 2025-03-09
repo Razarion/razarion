@@ -4,8 +4,8 @@ import { RadarComponent } from "./radar.component";
 @Component({
     selector: 'radar-no-power',
     template: `<div class="radarNoPower" #divElement>No Power</div>`,
-    styleUrls: ['./radar-no-power.component.css']
-
+    styleUrls: ['./radar-no-power.component.css'],
+    standalone: false
 })
 export class RadarNoPowerComponent implements OnInit {
     @ViewChild('divElement', { static: true })

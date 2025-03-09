@@ -32,9 +32,10 @@ import {
 } from "../crud-editors/resource-item-type-editor/resource-item-type-editor.component";
 
 @Component({
-  selector: 'editor-dialog',
-  templateUrl: 'editor-dialog.component.html',
-  styleUrls: ['editor-dialog.component.scss']
+    selector: 'editor-dialog',
+    templateUrl: 'editor-dialog.component.html',
+    styleUrls: ['editor-dialog.component.scss'],
+    standalone: false
 })
 export class EditorDialogComponent {
   editors: Map<string, Type<EditorPanel>> = new Map<string, Type<EditorPanel>>();

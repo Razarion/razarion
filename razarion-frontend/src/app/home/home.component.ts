@@ -5,8 +5,9 @@ import { LoginResult } from '../generated/razarion-share';
 
 
 @Component({
-  templateUrl: 'home.component.html',
-  styleUrls: ['./home.component.css']
+    templateUrl: 'home.component.html',
+    styleUrls: ['./home.component.css'],
+    standalone: false
 })
 
 export class HomeComponent implements OnInit {

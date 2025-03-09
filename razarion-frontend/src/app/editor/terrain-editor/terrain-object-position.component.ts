@@ -3,8 +3,8 @@ import {TransformNode, Vector3} from "@babylonjs/core";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
 
 @Component({
-  selector: 'terrain-object-position',
-  template: `
+    selector: 'terrain-object-position',
+    template: `
     <table style="border-spacing: 0; border-collapse: separate; margin: 5px">
       <tr>
         <td>Position</td>
@@ -25,7 +25,8 @@ import {TerrainObjectPosition} from "../../generated/razarion-share";
         </td>
       </tr>
     </table>
-  `
+  `,
+    standalone: false
 })
 export class TerrainObjectPositionComponent {
   position: Vector3 | null = null;

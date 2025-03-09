@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Vertex } from 'src/app/generated/razarion-share';
 
 @Component({
-  selector: 'vertex-editor',
-  templateUrl: './vertex-editor.component.html'
+    selector: 'vertex-editor',
+    templateUrl: './vertex-editor.component.html',
+    standalone: false
 })
 export class VertexEditorComponent implements OnInit {
   @Input("vertex")

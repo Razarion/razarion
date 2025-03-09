@@ -3,8 +3,8 @@ import { AbstractBrush } from './abstract-brush';
 import { Vector2, Vector3 } from '@babylonjs/core';
 
 @Component({
-  selector: 'fix-height-brush',
-  template: `
+    selector: 'fix-height-brush',
+    template: `
     <div class="field grid align-items-center">
       <span class="col">Diameter</span>
       <div class="col">
@@ -12,7 +12,8 @@ import { Vector2, Vector3 } from '@babylonjs/core';
         <p-slider [(ngModel)]="diameter" [step]="0.01" [min]="1" [max]="100"></p-slider>
       </div>
     </div>
-  `
+  `,
+    standalone: false
 })
 export class FlattenBrushComponent extends AbstractBrush {
   diameter: number = 10;

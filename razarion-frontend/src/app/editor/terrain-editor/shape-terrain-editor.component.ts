@@ -27,8 +27,9 @@ import { FlattenBrushComponent } from "./brushes/flattem-brush.component";
 import { RadarComponent } from 'src/app/game/cockpit/main/radar/radar.component';
 
 @Component({
-  selector: 'shape-terrain-editor',
-  templateUrl: './shape-terrain-editor.component.html'
+    selector: 'shape-terrain-editor',
+    templateUrl: './shape-terrain-editor.component.html',
+    standalone: false
 })
 export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   wireframe: boolean = false;

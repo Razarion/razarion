@@ -2,8 +2,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {Tools, Vector3} from "@babylonjs/core";
 
 @Component({
-  selector: 'angle-vertex3-editor',
-  template: `
+    selector: 'angle-vertex3-editor',
+    template: `
     <div class="inline-flex">
       <div class="mr-2">
         <p-inputNumber [ngModel]="x" (onInput)="onChangeX($event)"
@@ -27,7 +27,8 @@ import {Tools, Vector3} from "@babylonjs/core";
                        [showButtons]="true"></p-inputNumber>
       </div>
     </div>
-  `
+  `,
+    standalone: false
 })
 export class AngleVector3EditorComponent implements OnInit {
   @Output()

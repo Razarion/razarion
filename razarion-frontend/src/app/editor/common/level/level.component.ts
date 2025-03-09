@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { EditorService } from '../../editor-service';
 
 @Component({
-  selector: 'level',
-  templateUrl: './level.component.html'
+    selector: 'level',
+    templateUrl: './level.component.html',
+    standalone: false
 })
 export class LevelComponent {
   @Input("levelId")

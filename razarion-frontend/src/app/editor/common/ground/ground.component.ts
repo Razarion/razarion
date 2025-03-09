@@ -2,8 +2,9 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
 
 @Component({
-  selector: 'ground',
-  templateUrl: './ground.component.html'
+    selector: 'ground',
+    templateUrl: './ground.component.html',
+    standalone: false
 })
 export class GroundComponent {
   @Input("groundId")

@@ -9,8 +9,9 @@ import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 
 @Component({
-  selector: 'particle-system-editor',
-  templateUrl: './particle-system-editor.component.html'
+    selector: 'particle-system-editor',
+    templateUrl: './particle-system-editor.component.html',
+    standalone: false
 })
 export class ParticleSystemEditorComponent implements CrudContainerChild<ParticleSystemEntity> {
   static editorControllerClient = ParticleSystemControllerClient;

@@ -4,8 +4,9 @@ import { FrontendService } from "../service/frontend.service";
 
 
 @Component({
-  templateUrl: 'logout.component.html',
-  styleUrls: ['./logout.component.css']
+    templateUrl: 'logout.component.html',
+    styleUrls: ['./logout.component.css'],
+    standalone: false
 })
 export class LogoutComponent implements OnInit {
   constructor(private frontendService: FrontendService, private router: Router) {

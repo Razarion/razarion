@@ -5,8 +5,9 @@ import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../../backend/typescript-generator";
 
 @Component({
-  selector: 'terrain-object-generator-entity',
-  templateUrl: './terrain-object-generator-entity.component.html'
+    selector: 'terrain-object-generator-entity',
+    templateUrl: './terrain-object-generator-entity.component.html',
+    standalone: false
 })
 export class TerrainObjectGeneratorEntityComponent implements OnInit {
   _terrainObjectGeneratorEntity: TerrainObjectGeneratorEntity | null = null;

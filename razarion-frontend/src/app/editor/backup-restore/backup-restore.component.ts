@@ -7,8 +7,9 @@ import {URL_PLANET_MGMT} from "../../common";
 import { HttpClient } from "@angular/common/http";
 
 @Component({
-  selector: 'backup-restore',
-  templateUrl: './backup-restore.component.html'
+    selector: 'backup-restore',
+    templateUrl: './backup-restore.component.html',
+    standalone: false
 })
 
 export class BackupRestoreComponent extends EditorPanel implements OnInit {

@@ -3,8 +3,9 @@ import { CrudContainerChild } from '../crud-container/crud-container.component';
 import { PlanetConfig, PlanetEditorControllerClient } from 'src/app/generated/razarion-share';
 
 @Component({
-  selector: 'app-planet-editor',
-  templateUrl: './planet-editor.component.html'
+    selector: 'app-planet-editor',
+    templateUrl: './planet-editor.component.html',
+    standalone: false
 })
 export class PlanetEditorComponent implements CrudContainerChild<PlanetConfig> {
   static editorControllerClient = PlanetEditorControllerClient;

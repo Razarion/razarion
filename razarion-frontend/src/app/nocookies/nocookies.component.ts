@@ -4,8 +4,9 @@ import {FrontendService} from "../service/frontend.service";
 
 
 @Component({
-  templateUrl: 'nocookies.component.html',
-  styleUrls: ['./nocookies.component.css']
+    templateUrl: 'nocookies.component.html',
+    styleUrls: ['./nocookies.component.css'],
+    standalone: false
 })
 
 export class NoCookies {

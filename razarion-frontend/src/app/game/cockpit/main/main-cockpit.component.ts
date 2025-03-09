@@ -8,9 +8,10 @@ import { FrontendService } from 'src/app/service/frontend.service';
 
 
 @Component({
-  selector: 'main-cockpit',
-  templateUrl: 'main-cockpit.component.html',
-  styleUrls: ['main-cockpit.component.scss']
+    selector: 'main-cockpit',
+    templateUrl: 'main-cockpit.component.html',
+    styleUrls: ['main-cockpit.component.scss'],
+    standalone: false
 })
 export class MainCockpitComponent implements MainCockpit {
   showCockpit: boolean = false;

@@ -9,8 +9,9 @@ import { HttpClient } from '@angular/common/http';
 import { MessageService } from "primeng/api";
 
 @Component({
-  selector: 'app-base-mgmt',
-  templateUrl: './base-mgmt.component.html'
+    selector: 'app-base-mgmt',
+    templateUrl: './base-mgmt.component.html',
+    standalone: false
 })
 export class BaseMgmtComponent extends EditorPanel implements OnInit {
   bases: PlayerBaseDto[] = [];

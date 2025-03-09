@@ -5,8 +5,9 @@ import { Config, ObjectNameId } from "../../../generated/razarion-share";
 import { AbstractCrudContainerComponent } from './crud-container.component';
 
 @Component({
-  selector: 'manually-crud-container',
-  templateUrl: './crud-container.component.html'
+    selector: 'manually-crud-container',
+    templateUrl: './crud-container.component.html',
+    standalone: false
 })
 export class ManuallyCrudContainerComponent extends AbstractCrudContainerComponent {
   private editorUrl?: string;

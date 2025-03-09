@@ -9,9 +9,10 @@ import {
 
 
 @Component({
-  selector: 'item-cockpit',
-  templateUrl: 'item-cockpit.component.html',
-  styleUrls: ['item-cockpit.component.scss']
+    selector: 'item-cockpit',
+    templateUrl: 'item-cockpit.component.html',
+    styleUrls: ['item-cockpit.component.scss'],
+    standalone: false
 })
 export class ItemCockpitComponent implements ItemCockpitFrontend {
   showCockpit: boolean = false;

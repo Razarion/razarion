@@ -4,8 +4,9 @@ import {ResourceRegionConfig, ServerGameEngineConfig} from "../../generated/raza
 import {EditorService} from "../editor-service";
 
 @Component({
-  selector: 'server-resource-region',
-  templateUrl: './server-resource-region.component.html'
+    selector: 'server-resource-region',
+    templateUrl: './server-resource-region.component.html',
+    standalone: false
 })
 export class ServerResourceRegionComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig!: ServerGameEngineConfig;

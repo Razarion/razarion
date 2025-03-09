@@ -3,8 +3,9 @@ import {EditorPanel} from "../editor-model";
 import {EditorService, ServerCommand} from "../editor-service";
 
 @Component({
-  selector: 'server-panel',
-  templateUrl: 'server-panel.component.html'
+    selector: 'server-panel',
+    templateUrl: 'server-panel.component.html',
+    standalone: false
 })
 export class ServerPanelComponent extends EditorPanel {
 

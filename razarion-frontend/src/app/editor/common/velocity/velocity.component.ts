@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-  selector: 'velocity',
-  templateUrl: './velocity.component.html'
+    selector: 'velocity',
+    templateUrl: './velocity.component.html',
+    standalone: false
 })
 export class VelocityComponent implements OnInit {
   @Input("velocity")

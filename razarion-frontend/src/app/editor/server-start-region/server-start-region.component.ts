@@ -4,8 +4,9 @@ import {EditorService} from "../editor-service";
 import {EditorPanel} from "../editor-model";
 
 @Component({
-  selector: 'server-start-region',
-  templateUrl: './server-start-region.component.html'
+    selector: 'server-start-region',
+    templateUrl: './server-start-region.component.html',
+    standalone: false
 })
 export class ServerStartRegionComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig!: ServerGameEngineConfig;

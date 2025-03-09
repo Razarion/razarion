@@ -11,15 +11,15 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^18.2.11",
-    "@angular/common": "^18.2.11",
-    "@angular/compiler": "^18.2.11",
-    "@angular/core": "^18.2.11",
-    "@angular/elements": "^18.2.11",
-    "@angular/forms": "^18.2.11",
-    "@angular/platform-browser": "^18.2.11",
-    "@angular/platform-browser-dynamic": "^18.2.11",
-    "@angular/router": "^18.2.11",
+    "@angular/animations": "^19.2.1",
+    "@angular/common": "^19.2.1",
+    "@angular/compiler": "^19.2.1",
+    "@angular/core": "^19.2.1",
+    "@angular/elements": "^19.2.1",
+    "@angular/forms": "^19.2.1",
+    "@angular/platform-browser": "^19.2.1",
+    "@angular/platform-browser-dynamic": "^19.2.1",
+    "@angular/router": "^19.2.1",
     "@babylonjs/core": "^7.33.0",
     "@babylonjs/gui-editor": "^7.33.0",
     "@babylonjs/inspector": "^7.33.0",
@@ -47,12 +47,12 @@
     "stats.js": "^0.17.0",
     "tslib": "^2.3.1",
     "vanilla-jsoneditor": "^0.11.5",
-    "zone.js": "^0.14.10"
+    "zone.js": "^0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.2.11",
-    "@angular/cli": "^18.2.11",
-    "@angular/compiler-cli": "^18.2.11",
+    "@angular-devkit/build-angular": "^19.2.1",
+    "@angular/cli": "^19.2.1",
+    "@angular/compiler-cli": "^19.2.1",
     "@types/earcut": "^2.1.4",
     "@types/geometric": "^2.5.0",
     "@types/jasmine": "^3.10.3",
@@ -70,6 +70,6 @@
     "protractor": "~7.0.0",
     "ts-node": "~10.5.0",
     "tslint": "~6.1.0",
-    "typescript": "5.4"
+    "typescript": "5.8.2"
   }
 }

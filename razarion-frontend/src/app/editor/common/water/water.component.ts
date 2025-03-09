@@ -2,8 +2,9 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
 
 @Component({
-  selector: 'water',
-  templateUrl: './water.component.html'
+    selector: 'water',
+    templateUrl: './water.component.html',
+    standalone: false
 })
 export class WaterComponent {
   @Input("waterId")

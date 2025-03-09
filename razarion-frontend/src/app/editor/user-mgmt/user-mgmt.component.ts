@@ -7,8 +7,9 @@ import {HttpClient} from '@angular/common/http';
 import {QuestCockpitComponent} from "../../game/cockpit/quest/quest-cockpit.component";
 
 @Component({
-  selector: 'user-mgmt',
-  templateUrl: './user-mgmt.component.html'
+    selector: 'user-mgmt',
+    templateUrl: './user-mgmt.component.html',
+    standalone: false
 })
 export class UserMgmtComponent extends EditorPanel implements OnInit {
   userBackendInfos: UserBackendInfo[] = [];

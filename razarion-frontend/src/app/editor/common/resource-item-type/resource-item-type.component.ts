@@ -2,8 +2,9 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
 
 @Component({
-  selector: 'resource-item-type',
-  templateUrl: './resource-item-type.component.html'
+    selector: 'resource-item-type',
+    templateUrl: './resource-item-type.component.html',
+    standalone: false
 })
 export class ResourceItemTypeComponent {
   @Input("resourceItemTypeId")

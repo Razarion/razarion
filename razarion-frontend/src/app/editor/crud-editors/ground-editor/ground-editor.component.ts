@@ -7,8 +7,9 @@ import {
 import {CrudContainerChild} from "../crud-container/crud-container.component";
 
 @Component({
-  selector: 'app-ground-editor',
-  templateUrl: './ground-editor.component.html'
+    selector: 'app-ground-editor',
+    templateUrl: './ground-editor.component.html',
+    standalone: false
 })
 export class GroundEditorComponent implements CrudContainerChild<GroundConfig> {
   static editorControllerClient = GroundEditorControllerClient;

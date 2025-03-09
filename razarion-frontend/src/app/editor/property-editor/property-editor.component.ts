@@ -6,8 +6,9 @@ import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'property-editor',
-  templateUrl: './property-editor.component.html'
+    selector: 'property-editor',
+    templateUrl: './property-editor.component.html',
+    standalone: false
 })
 export class PropertyEditorComponent extends EditorPanel implements OnInit {
   protected readonly AUDIO = DbPropertyType.AUDIO;

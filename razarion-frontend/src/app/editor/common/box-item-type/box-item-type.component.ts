@@ -4,8 +4,9 @@ import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { BoxItemTypeEditorControllerClient } from 'src/app/generated/razarion-share';
 
 @Component({
-  selector: 'box-item-type',
-  templateUrl: './box-item-type.component.html'
+    selector: 'box-item-type',
+    templateUrl: './box-item-type.component.html',
+    standalone: false
 })
 export class BoxItemTypeComponent implements OnInit {
   @Input("boxItemTypeId")
