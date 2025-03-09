@@ -201,6 +201,7 @@
                             <workingDirectory>${project.basedir}/../razarion-frontend</workingDirectory>
                             <arguments>
                                 <argument>install</argument>
+                                <argument>--force</argument>
                             </arguments>
                         </configuration>
                     </execution>

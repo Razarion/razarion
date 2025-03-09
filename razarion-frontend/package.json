@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "^19.2.1",
     "@angular/router": "^19.2.1",
     "@babylonjs/core": "^7.33.0",
+    "@babylonjs/gui": "^7.52.2",
     "@babylonjs/gui-editor": "^7.33.0",
     "@babylonjs/inspector": "^7.33.0",
     "@babylonjs/loaders": "^7.33.0",

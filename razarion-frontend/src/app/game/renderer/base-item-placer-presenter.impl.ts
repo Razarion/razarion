@@ -13,10 +13,14 @@ import {SimpleMaterial} from "@babylonjs/materials";
 import {BaseItemPlacer, BaseItemPlacerPresenter, Diplomacy} from "src/app/gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonModelService} from "./babylon-model.service";
+import {AdvancedDynamicTexture, Control, Rectangle, StackPanel, TextBlock} from "@babylonjs/gui";
+import {Image} from "@babylonjs/gui/2D/controls/image";
+import {Animation} from "@babylonjs/core/Animations/animation";
 
 export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private disc: Mesh | null = null;
   private model3D: TransformNode | null = null;
+  private tip: Tip | null = null;
   private material;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
 
@@ -33,26 +37,31 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.disc.rotation.x = Tools.ToRadians(90);
     this.disc.isPickable = false;
     this.disc.position.y = 0.1;
-    this.material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
+
+    const positionValid = baseItemPlacer.isPositionValid();
+    this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
 
     this.model3D = this.babylonModelService.cloneModel3D(baseItemPlacer.getModel3DId()!, null, Diplomacy.OWN_PLACER);
     this.model3D.rotationQuaternion = null;
     this.model3D.rotation.y = Tools.ToRadians(90);
 
+    this.tip = new Tip(positionValid, this.rendererService, this.disc!)
+
     this.rendererService.baseItemPlacerActive = true;
+
     this.pointerObservable = this.rendererService.getScene().onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERUP: {
           let pickingInfo = this.rendererService.setupTerrainPickPoint();
-          if (pickingInfo.hit) {
-            if (pickingInfo.hit) {
-              this.disc!.position = pickingInfo.pickedPoint!
-              this.disc!.position.y += +0.01;
-              this.material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
-              this.model3D!.position = pickingInfo.pickedPoint!
-              this.model3D!.position.y += +0.01;
-              baseItemPlacer.onPlace(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
-            }
+          if (pickingInfo.hit && pickingInfo.hit) {
+            this.disc!.position = pickingInfo.pickedPoint!
+            this.disc!.position.y += +0.01;
+            const positionValid = baseItemPlacer.isPositionValid();
+            this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
+            this.tip!.setPositionValid(positionValid);
+            this.model3D!.position = pickingInfo.pickedPoint!
+            this.model3D!.position.y += +0.01;
+            baseItemPlacer.onPlace(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
           }
           break;
         }
@@ -62,7 +71,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
             baseItemPlacer.onMove(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
             this.disc!.position = pickingInfo.pickedPoint!
             this.disc!.position.y += +0.01;
-            this.material.diffuseColor = baseItemPlacer.isPositionValid() ? Color3.Green() : Color3.Red();
+            const positionValid = baseItemPlacer.isPositionValid();
+            this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
+            this.tip!.setPositionValid(positionValid);
             this.model3D!.position = pickingInfo.pickedPoint!
             this.model3D!.position.y += +0.01;
           }
@@ -80,5 +91,134 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.model3D?.dispose();
     this.model3D = null;
     this.rendererService.baseItemPlacerActive = false;
+    this.tip?.dispose();
+    this.tip = null;
+  }
+}
+
+class Tip {
+  static readonly POSITION_VALID_TEXT = "Click left mouse button to deploy";
+  static readonly POSITION_IN_VALID_TEXT = "Move mouse to find free position";
+  private readonly advancedDynamicTexture: AdvancedDynamicTexture;
+  private readonly rect1: Rectangle;
+  private readonly label: TextBlock;
+  private readonly mouse: Image;
+  private readonly mouseLeftButton: Image;
+
+  constructor(positionValid: boolean,
+              private rendererService: BabylonRenderServiceAccessImpl,
+              transformNode: TransformNode) {
+    this.advancedDynamicTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    this.rect1 = new Rectangle();
+    this.rect1.width = "350px";
+    this.rect1.height = "60px";
+    this.rect1.cornerRadius = 20;
+    this.rect1.color = "Orange";
+    this.rect1.thickness = 4;
+    this.rect1.background = "green";
+    this.advancedDynamicTexture.addControl(this.rect1);
+
+    let image = new Rectangle();
+    image.width = "40px";
+    image.height = "40px";
+    image.cornerRadius = 0;
+    image.color = "Orange";
+    image.thickness = 0;
+
+    this.mouse = new Image();
+    this.mouse.source = "/assets/babylon-gui/mouse.svg";
+    this.mouse.width = "40px";
+    this.mouse.height = "40px";
+    this.mouse.stretch = Image.STRETCH_UNIFORM;
+    this.mouse.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT
+    image.addControl(this.mouse);
+
+    this.mouseLeftButton = new Image();
+    this.mouseLeftButton.source = "/assets/babylon-gui/mouse-left-button.svg";
+    this.mouseLeftButton.width = "40px";
+    this.mouseLeftButton.height = "40px";
+    this.mouseLeftButton.stretch = Image.STRETCH_UNIFORM;
+    this.mouseLeftButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT
+    image.addControl(this.mouseLeftButton);
+
+    let stackPanel = new StackPanel();
+    stackPanel.isVertical = false;
+    stackPanel.addControl(image);
+
+    this.label = new TextBlock();
+    this.label.color = "white";
+    this.label.width = "300px";
+    this.label.height = "40px";
+    this.label.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+    this.label.paddingLeft = "10px";
+    stackPanel.addControl(this.label);
+
+    this.rect1.addControl(stackPanel);
+
+    this.setPositionValid(positionValid);
+
+    this.rect1.linkWithMesh(transformNode);
+    this.rect1.linkOffsetY = -100;
+  }
+
+  setPositionValid(positionValid: boolean) {
+    if (positionValid) {
+      this.rect1.background = "green";
+      this.label.text = Tip.POSITION_VALID_TEXT;
+      this.setupMouseButtonAnimation();
+      this.mouse.animations = [];
+      this.mouse.left = 0;
+      this.rendererService.getScene().stopAnimation(this.mouse);
+    } else {
+      this.rect1.background = "red";
+      this.label.text = Tip.POSITION_IN_VALID_TEXT;
+      this.setupMouseMoveAnimation();
+      this.mouseLeftButton.animations = [];
+      this.mouseLeftButton.alpha = 0;
+      this.rendererService.getScene().stopAnimation(this.mouseLeftButton);
+    }
+  }
+
+  dispose() {
+    this.advancedDynamicTexture.dispose();
+  }
+
+  private setupMouseButtonAnimation() {
+    let blinkAnimation = new Animation(
+      "blink",
+      "alpha",
+      30,
+      Animation.ANIMATIONTYPE_FLOAT,
+      Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+
+    let keys = [];
+    keys.push({frame: 0, value: 1});
+    keys.push({frame: 15, value: 0});
+    keys.push({frame: 30, value: 1});
+    blinkAnimation.setKeys(keys);
+    this.mouseLeftButton.animations = [blinkAnimation];
+
+    this.rendererService.getScene().beginAnimation(this.mouseLeftButton, 0, 30, true);
+  }
+
+
+  private setupMouseMoveAnimation() {
+    let moveAnimation = new Animation(
+      "move",
+      "left",
+      30,
+      Animation.ANIMATIONTYPE_FLOAT,
+      Animation.ANIMATIONLOOPMODE_CYCLE
+    );
+
+    let keys = [];
+    keys.push({frame: 0, value: 5});
+    keys.push({frame: 15, value: -5});
+    keys.push({frame: 30, value: 5});
+    moveAnimation.setKeys(keys);
+    this.mouse.animations = [moveAnimation];
+
+    this.rendererService.getScene().beginAnimation(this.mouse, 0, 30, true);
   }
 }
