@@ -1,307 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
-        <groupId>com.btxtech</groupId>
-        <artifactId>razarion</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.3</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
-
+    <groupId>com.btxtech</groupId>
     <artifactId>razarion-server</artifactId>
-    <packaging>war</packaging>
-    <name>Razarion Server</name>
-
+    <version>0.0.1-SNAPSHOT</version>
+    <name>razarion-server</name>
+    <description>Razarion server</description>
+    <url/>
+    <properties>
+        <java.version>17</java.version>
+    </properties>
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-share</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-unity-converter</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- Used in GWT logging to deobfuscate the stack trace-->
-        <dependency>
-            <groupId>org.gwtproject</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
-        </dependency>
-        <!-- Used in GWT logging to deobfuscate the stack trace-->
-        <dependency>
-            <groupId>org.gwtproject</groupId>
-            <artifactId>gwt-servlet</artifactId>
-            <version>${gwt.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <!-- JPA meta model generator -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-jpamodelgen</artifactId>
-            <version>5.0.9.Final</version>
-            <scope>provided</scope>
-        </dependency>
-        <!--   Facebook marketing API   -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.8.7</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-json-jackson</artifactId>
-            <version>2.22.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Freemarker -->
-        <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-            <version>2.3.23</version>
-        </dependency>
-        <!-- Commons -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
-        </dependency>
-        <!-- No SQL -->
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.6.1</version>
-        </dependency>
-        <!-- Disruptor -->
-        <dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>3.3.7</version>
-        </dependency>
-        <!-- Reflections -->
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.12</version>
-        </dependency>
-        <!-- Test -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-test</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-test-share</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.enterprise</groupId>
-            <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            <version>2.0.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client</artifactId>
-            <version>${org.jboss.resteasy.version}</version> <!-- Must match version from (unity) asset converter-->
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>${org.jboss.resteasy.version}</version> <!-- Must match version from (unity) asset converter-->
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-multipart-provider</artifactId>
-            <version>${org.jboss.resteasy.version}</version> <!-- Must match version from (unity) asset converter-->
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.subethamail</groupId>
-            <artifactId>subethasmtp</artifactId>
-            <version>3.1.7</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-client</artifactId>
-            <version>9.4.4.v20170414</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>5.4.10.Final</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <version>2.5.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>ROOT</finalName>
         <plugins>
             <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
-                <version>1.0.2.Final</version>
-                <extensions>false</extensions>
-            </plugin>
-            <plugin>
-                <!-- Build angular-->
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <executions>
-                    <!--                    <execution>-->
-                    <!--                        <id>Install angular cli for all</id>-->
-                    <!--                        <phase>generate-resources</phase>-->
-                    <!--                        <goals>-->
-                    <!--                            <goal>exec</goal>-->
-                    <!--                        </goals>-->
-                    <!--                        <configuration>-->
-                    <!--                            <executable>npm</executable>-->
-                    <!--                            <arguments>-->
-                    <!--                                <argument>install</argument>-->
-                    <!--                                <argument>-g</argument>-->
-                    <!--                                <argument>@angular/cli@^1.6.7</argument>-->
-                    <!--                            </arguments>-->
-                    <!--                        </configuration>-->
-                    <!--                    </execution>-->
-                    <execution>
-                        <id>NPM install frontend</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>npm</executable>
-                            <workingDirectory>${project.basedir}/../razarion-frontend</workingDirectory>
-                            <arguments>
-                                <argument>install</argument>
-                                <argument>--force</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Build angular frontend</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>ng</executable>
-                            <workingDirectory>${project.basedir}/../razarion-frontend</workingDirectory>
-                            <arguments>
-                                <argument>build</argument>
-                                <argument>--configuration=production</argument>
-                                <!--<argument>&#45;&#45;env=dev</argument>-->
-                                <argument>--output-path=${project.build.directory}/__TMP__</argument>
-                                <argument>--base-href=/</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>cz.habarta.typescript-generator</groupId>
-                <artifactId>typescript-generator-maven-plugin</artifactId>
-                <version>2.37.1128</version>
-                <executions>
-                    <execution>
-                        <id>generate</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <phase>process-classes</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jsonLibrary>jackson2</jsonLibrary>
-                    <generateJaxrsApplicationClient>true</generateJaxrsApplicationClient>
-                    <classes>
-                        <class>com.btxtech.shared.dto.ServerGameEngineConfig</class>
-                        <class>com.btxtech.shared.dto.ObjectNameId</class>
-                        <class>com.btxtech.shared.rest.RestApplication</class>
-                        <class>com.btxtech.server.rest.BackendController</class>
-                        <class>com.btxtech.shared.rest.LevelEditorController</class>
-                        <class>com.btxtech.shared.rest.BaseItemTypeEditorController</class>
-                        <class>com.btxtech.shared.rest.BoxItemTypeEditorController</class>
-                        <class>com.btxtech.shared.rest.ResourceItemTypeEditorController</class>
-                        <class>com.btxtech.shared.rest.ImageProvider</class>
-                        <class>com.btxtech.shared.rest.PlanetEditorController</class>
-                        <class>com.btxtech.shared.rest.GroundEditorController</class>
-                        <class>com.btxtech.shared.rest.TerrainObjectEditorController</class>
-                        <class>com.btxtech.shared.rest.TerrainHeightMapController</class>
-                        <class>com.btxtech.shared.rest.ServerGameEngineEditorController</class>
-                        <class>com.btxtech.shared.rest.ServerGameEngineController</class>
-                        <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
-                        <class>com.btxtech.shared.rest.InventoryController</class>
-                        <class>com.btxtech.shared.rest.QuestController</class>
-                        <class>com.btxtech.shared.rest.UnlockController</class>
-                        <class>com.btxtech.shared.rest.FrontendController</class>
-                        <class>com.btxtech.server.rest.crud.BabylonMaterialController</class>
-                        <class>com.btxtech.server.rest.crud.GltfController</class>
-                        <class>com.btxtech.server.rest.crud.Model3DController</class>
-                        <class>com.btxtech.server.rest.crud.ParticleSystemController</class>
-                        <class>com.btxtech.server.rest.crud.BrushEditorController</class>
-                        <class>com.btxtech.server.rest.crud.TerrainObjectGeneratorController</class>
-                        <class>com.btxtech.server.rest.UiConfigCollectionController</class>
-                        <class>com.btxtech.server.rest.DbPropertiesEditorController</class>
-                        <class>com.btxtech.server.rest.UserMgmtController</class>
-                        <class>com.btxtech.server.rest.TerrainEditorController</class>
-                    </classes>
-                    <outputKind>module</outputKind>
-                    <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>
-                    <outputFileType>implementationFile</outputFileType>
-                    <mapEnum>asEnum</mapEnum>
-                    <nullableAnnotations>com.btxtech.shared.system.Nullable</nullableAnnotations>
-                    <restNamespacing>perResource</restNamespacing>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/ROOT</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.directory}/__TMP__/browser</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

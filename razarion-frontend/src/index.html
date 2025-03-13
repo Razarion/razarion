@@ -1,31 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="razarion-frontend-dark">
 <head>
-  <script>
-    function logError(message, source, lineNumber, columnNumber, error) {
-      var errorMessage = "Frontend-window.onerror\nMessage: " + message + "\nSource: " + source + "\nLinenumber: " + lineNumber + "\nColumnNumber: " + columnNumber + "\nError: " + error;
-      if (error && error.stack) {
-        errorMessage += "\nstack: '" + error.stack + "'."
-      }
-      var img = document.createElement('img');
-      img.src = '/rest/frontend/simplelog/' + encodeURIComponent(errorMessage) + '/' + new Date().getTime() + '/' + encodeURIComponent(window.location.pathname);
-      document.body.appendChild(img);
-      return true;
-    }
-
-    window.onerror = function (message, source, lineNumber, columnNumber, error) {
-      logError(message, source, lineNumber, columnNumber, error);
-    };
-
-  </script>
   <meta charset="utf-8">
-  <title>Razarion</title>
+  <title>RazarionFrontend</title>
   <base href="/">
-
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-<app-root></app-root>
+  <app-root></app-root>
 </body>
 </html>

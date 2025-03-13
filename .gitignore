@@ -5,6 +5,7 @@ target/
 razarion-ui-service/razarion-ui-service.iml
 razarion-dev-tools/razarion-dev-tools.iml
 razarion-server/razarion-server.iml
+razarion-server/src/main/resources/static/
 razarion-server/src/test/resources/docker/stage/wildfly/ROOT.war
 razarion-server/src/main/webapp/com.btxtech.client.RazarionClient
 razarion-server/src/main/webapp/com.btxtech.worker.RazarionClientWorker
@@ -52,6 +53,7 @@ razarion-unity-converter/razarion-unity-converter.iml
 /razarion-server/src/test/resources/sql/db/razarion/USER_UNLOCKED.sql
 
 /razarion-frontend/node_modules/
+/razarion-frontend/node/
 /razarion-frontend/.angular/cache/
 /razarion-frontend/src/app/generated/
 

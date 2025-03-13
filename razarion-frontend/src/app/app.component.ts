@@ -1,29 +1,24 @@
-import {Component, Injector} from '@angular/core';
-import {NavigationStart, Router} from "@angular/router";
-import {FrontendService} from "./service/frontend.service";
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {InputTextModule} from 'primeng/inputtext';
+import {ButtonModule} from 'primeng/button';
+import {MessageModule} from 'primeng/message';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    standalone: false
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, InputTextModule, ButtonModule, MessageModule, FormsModule],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
+  text = '';
 
-  constructor(injector: Injector, private router: Router, private frontendService: FrontendService) {
-    // TODO window.addEventListener("beforeunload", event => {
-    //   frontendService.logWindowClosed(event);
-    // });
+  msg = '';
 
-    // TODO router.events.subscribe(event => {
-    //   if (event instanceof NavigationStart) {
-    //     frontendService.trackNavigation(event.url);
-    //   }
-    //   // NavigationEnd
-    //   // NavigationCancel
-    //   // NavigationError
-    //   // RoutesRecognized
-    // });
+  onClick() {
+    this.msg = 'Welcome ' + this.text;
   }
-
 }

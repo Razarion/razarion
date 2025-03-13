@@ -1,15 +1,46 @@
-<p-toast position="top-right" [baseZIndex]="5000">
-    <ng-template let-message pTemplate="message">
-        <div class="flex flex-column" style="flex: 1" style="width: 22em;">
-            <div class="text-center">
-                <i class="pi pi-exclamation-triangle" style="font-size: 3rem"></i>
-                <h4>{{message.summary}}</h4>
-                <p>{{message.detail}}</p>
-            </div>
-        </div>
-    </ng-template>
+<style>
+  .main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
 
-</p-toast>
-<router-outlet></router-outlet>
+  .content {
+    background: light-dark(var(--p-surface-50), var(--p-surface-900));
+    border-radius: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem;
+  }
 
+  .content-input {
+    display: flex;
+    gap: 1rem;
+  }
 
+  .content-output {
+    min-height: 2rem;
+  }
+
+  .title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    text-align: center;
+    width: 100%;
+  }
+</style>
+
+<main class="main">
+  <div class="content">
+    <span class="title">PrimeNG Playground</span>
+    <div class="content-input">
+      <input type="text" pInputText [(ngModel)]="text">
+      <p-button label="Submit" (onClick)="onClick()" [disabled]="!text"></p-button>
+    </div>
+    <p-message severity="success" *ngIf="msg">{{msg}}</p-message>
+  </div>
+</main>
+
+<router-outlet />
