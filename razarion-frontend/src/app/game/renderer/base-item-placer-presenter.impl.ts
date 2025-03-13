@@ -7,7 +7,8 @@ import {
   PointerEventTypes,
   PointerInfo,
   Tools,
-  TransformNode
+  TransformNode,
+  Vector3
 } from "@babylonjs/core";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {BaseItemPlacer, BaseItemPlacerPresenter, Diplomacy} from "src/app/gwtangular/GwtAngularFacade";
@@ -47,35 +48,27 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
     this.tip = new Tip(positionValid, this.rendererService, this.disc!)
 
+    let centerPickingInfo = this.rendererService.setupPickInfoFromNDC(0, 0);
+    if (centerPickingInfo.hit && centerPickingInfo.pickedPoint) {
+      this.setPosition(baseItemPlacer, centerPickingInfo.pickedPoint);
+    }
+
     this.rendererService.baseItemPlacerActive = true;
 
     this.pointerObservable = this.rendererService.getScene().onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERUP: {
           let pickingInfo = this.rendererService.setupTerrainPickPoint();
-          if (pickingInfo.hit && pickingInfo.hit) {
-            this.disc!.position = pickingInfo.pickedPoint!
-            this.disc!.position.y += +0.01;
-            const positionValid = baseItemPlacer.isPositionValid();
-            this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
-            this.tip!.setPositionValid(positionValid);
-            this.model3D!.position = pickingInfo.pickedPoint!
-            this.model3D!.position.y += +0.01;
+          if (pickingInfo.hit && centerPickingInfo.pickedPoint) {
+            this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
             baseItemPlacer.onPlace(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
           }
           break;
         }
         case PointerEventTypes.POINTERMOVE: {
           let pickingInfo = this.rendererService.setupTerrainPickPoint();
-          if (pickingInfo.hit) {
-            baseItemPlacer.onMove(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
-            this.disc!.position = pickingInfo.pickedPoint!
-            this.disc!.position.y += +0.01;
-            const positionValid = baseItemPlacer.isPositionValid();
-            this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
-            this.tip!.setPositionValid(positionValid);
-            this.model3D!.position = pickingInfo.pickedPoint!
-            this.model3D!.position.y += +0.01;
+          if (pickingInfo.hit && centerPickingInfo.pickedPoint) {
+            this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
           }
           break;
         }
@@ -93,6 +86,17 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.rendererService.baseItemPlacerActive = false;
     this.tip?.dispose();
     this.tip = null;
+  }
+
+  private setPosition(baseItemPlacer: BaseItemPlacer, pickedPoint: Vector3) {
+    baseItemPlacer.onMove(pickedPoint.x, pickedPoint.z);
+    this.disc!.position = pickedPoint
+    this.disc!.position.y += +0.01;
+    const positionValid = baseItemPlacer.isPositionValid();
+    this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
+    this.tip!.setPositionValid(positionValid);
+    this.model3D!.position = pickedPoint
+    this.model3D!.position.y += +0.01;
   }
 }
 
