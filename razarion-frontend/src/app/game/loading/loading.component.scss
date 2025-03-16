@@ -1,0 +1,42 @@
+.cover-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("/Loading.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  z-index: 9999;
+}
+
+.cover-panel-center {
+  position: absolute;
+  width: 40em;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  align-items: center;
+}
+
+.cover-panel-fadeout {
+  background-color: transparent;
+  transition: background 2s ease;
+}
+
+.cover-panel-hide {
+  display: none;
+}
+
+.progress-bar-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-font {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #CCC;
+}
