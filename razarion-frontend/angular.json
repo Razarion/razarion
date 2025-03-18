@@ -56,6 +56,14 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "gwtMock": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.gwtmock.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -68,6 +76,9 @@
             },
             "development": {
               "buildTarget": "razarion-frontend:build:development"
+            },
+            "gwtMock": {
+              "buildTarget": "razarion-frontend:build:gwtMock"
             }
           },
           "defaultConfiguration": "development"

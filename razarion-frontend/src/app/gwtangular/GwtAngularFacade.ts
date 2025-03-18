@@ -114,9 +114,7 @@ export interface ScreenCover {
 
   removeLoadingCover(): void;
 
-  fadeOutLoadingCover(): void;
-
-  fadeInLoadingCover(): void;
+  onStartupProgress(percent: number): void
 }
 
 export interface InputService {

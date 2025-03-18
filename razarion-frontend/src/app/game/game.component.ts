@@ -1,19 +1,21 @@
-﻿import {Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild} from '@angular/core';
+﻿import {Component, ElementRef, HostBinding, OnInit, ViewChild} from '@angular/core';
 import {environment} from 'src/environments/environment';
-import {ScreenCover,} from "../gwtangular/GwtAngularFacade";
 import {CommonModule} from "@angular/common";
-import {LoadingComponent} from "./loading/loading.component";
+import {ScreenCoverComponent} from "./screen-cover/screen-cover.component";
+import {GwtAngularService} from "../gwtangular/GwtAngularService";
 
 
 @Component({
     templateUrl: 'game.component.html',
     imports: [
         CommonModule,
-        LoadingComponent
+        ScreenCoverComponent
     ],
     styleUrls: ['game.component.scss']
 })
-export class GameComponent implements OnInit, ScreenCover {
+export class GameComponent implements OnInit {
+    @ViewChild('loadingComponent', {static: true})
+    loadingComponent!: ScreenCoverComponent;
     @ViewChild('canvas', {static: true})
     canvas!: ElementRef<HTMLCanvasElement>;
     @HostBinding("style.--cursor")
@@ -21,41 +23,34 @@ export class GameComponent implements OnInit, ScreenCover {
     showInventory = false;
     showUnkock = false;
 
-    constructor(private zone: NgZone) {
+
+    constructor(private gwtAngularService: GwtAngularService) {
     }
 
     ngOnInit(): void {
-        // this.loadingCover!.render = true;
-
-
+        // TODO this.gwtAngularService.crashListener = () => this.addEditorModel(new EditorModel("Crash Information Panel", CrashPanelComponent));
+        // TODO this.gwtAngularService.gwtAngularFacade.modelDialogPresenter = this.modelDialogPresenter;
+        // TODO .babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
         if (environment.gwtMock) {
-            let runGwtMock = true;
-        } else {
+            setTimeout(() => {
+                this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(25);
+            }, 0.25);
+            setTimeout(() => {
+                this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(50);
+            }, 0.5);
+            setTimeout(() => {
+                this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(100);
+            }, 0.75);
+            setTimeout(() => {
+                this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
+            }, 1000);
         }
-    }
 
-    fadeInLoadingCover(): void {
-        throw new Error("Not Implemented fadeInLoadingCover()");
-    }
+        this.gwtAngularService.gwtAngularFacade.screenCover = this.loadingComponent;
 
-    fadeOutLoadingCover(): void {
-        this.zone.run(() => {
-            // TODO this.fadeOutCover = true;
-        });
-    }
-
-    hideStoryCover(): void {
-        throw new Error("Not Implemented hideStoryCover()");
-    }
-
-    removeLoadingCover(): void {
-        this.zone.run(() => {
-            // TODO this.removeCover = true;
-        });
-    }
-
-    showStoryCover(html: string): void {
-        throw new Error("Not Implemented showStoryCover()");
+        if (!environment.gwtMock) {
+            this.startGame();
+        }
     }
 
     private startGame(): void {
