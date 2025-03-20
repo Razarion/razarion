@@ -1,0 +1,67 @@
+<div class="field grid align-items-center">
+  <span class="col">Id</span>
+  <div class="col">
+    <p-inputNumber [disabled]="true"
+                   [ngModel]="terrainObjectGeneratorEntity?.id"></p-inputNumber>
+  </div>
+</div>
+
+<div class="field grid align-items-center">
+  <span class="col">Name</span>
+  <div class="col">
+    <input [(ngModel)]="terrainObjectGeneratorEntity!.internalName"
+           type="text"
+           class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+  </div>
+</div>
+
+<p-table [value]="generatorItems"
+         scrollHeight="200px">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Terrain Object</th>
+      <th>Count</th>
+      <th style="width:8em">Rand x rot</th>
+      <th style="width:8em">Rand y rot</th>
+      <th style="width:8em">Rand z rot</th>
+      <th style="width:8em">Rand scale</th>
+      <th>
+        <p-button icon="pi pi-plus-circle" (onClick)="addGeneratorItem()"></p-button>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-generatorItem>
+    <tr>
+      <td>
+        <p-dropdown [options]="terrainObjectConfigs" [(ngModel)]="generatorItem.terrainObjectConfig"
+                    [appendTo]="'body'"
+                    optionLabel="name"
+                    optionValue ="terrainObjectId" ></p-dropdown>
+      </td>
+      <td>
+        <p-inputNumber [(ngModel)]="generatorItem.count" [min]="0" [size]="5"></p-inputNumber>
+      </td>
+      <td>
+        <input type="text" pInputText [(ngModel)]="generatorItem.xRot" class="w-full"/>
+        <p-slider [(ngModel)]="generatorItem.xRot" [min]="0" [max]="180"></p-slider>
+      </td>
+      <td>
+        <input type="text" pInputText [(ngModel)]="generatorItem.yRot" class="w-full"/>
+        <p-slider [(ngModel)]="generatorItem.yRot" [min]="0" [max]="180"></p-slider>
+      </td>
+      <td>
+        <input type="text" pInputText [(ngModel)]="generatorItem.zRot" class="w-full"/>
+        <p-slider [(ngModel)]="generatorItem.zRot" [min]="0" [max]="180"></p-slider>
+      </td>
+      <td>
+        <p-inputNumber [(ngModel)]="generatorItem.minScale" [min]="0.001" [size]="5" mode="decimal"
+                       [minFractionDigits]="2" [maxFractionDigits]="5"></p-inputNumber>
+        <p-inputNumber [(ngModel)]="generatorItem.maxScale" [min]="0.001" [size]="5" mode="decimal"
+                       [minFractionDigits]="2" [maxFractionDigits]="5"></p-inputNumber>
+      </td>
+      <td>
+        <p-button icon="pi pi-trash" (onClick)="deleteGeneratorItem(generatorItem)"></p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

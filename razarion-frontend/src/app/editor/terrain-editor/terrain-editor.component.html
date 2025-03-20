@@ -1,0 +1,19 @@
+<div class="field grid align-items-center">
+  <span class="col">Mini map</span>
+  <div class="col">
+    <p-button icon="pi pi-map" (onClick)="onShowMiniMapDialog()"></p-button>
+  </div>
+</div>
+<p-dialog header="Title" [(visible)]="displayMiniMap" [style]="{width:'1300px', height:'1500px'}">
+  <canvas #miniMapCanvas></canvas>
+  <p-button icon="pi pi-save" (onClick)="saveMiniMap()"></p-button>
+</p-dialog>
+
+<p-tabView styleClass="tabview-custom" (onChange)="onTabViewChangeEvent($event.index)" [style]="{width:'600px'}">
+  <p-tabPanel header="Terrain shape">
+    <shape-terrain-editor #shapeEditor></shape-terrain-editor>
+  </p-tabPanel>
+  <p-tabPanel header="Terrain objects">
+    <object-terrain-editor #objectEditor></object-terrain-editor>
+  </p-tabPanel>
+</p-tabView>

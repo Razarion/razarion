@@ -1,0 +1,30 @@
+<p-dataView [value]="quests"  [emptyMessage]="'No quests'">
+  <ng-template pTemplate="list" let-quests>
+    <div class="grid grid-nogutter">
+      <div class="col-12" *ngFor="let quest of quests">
+        <div class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3">
+          <div class="col-6">
+            <div class="flex flex-column">
+              <div class="flex font-semibold text-3xl">
+                {{quest.title}}
+              </div>
+              <div class="flex">
+                {{quest.description}}
+              </div>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="flex flex-column">
+              <div *ngFor="let reward of quest.rewards" class="flex justify-content-end">
+                {{reward}}
+              </div>
+            </div>
+          </div>
+          <div class="col-3 m-auto">
+            <p-button icon="pi pi-play" label="Activate" (click)="onActivate(quest.questId)"></p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-dataView>

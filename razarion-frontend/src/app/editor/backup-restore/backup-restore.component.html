@@ -1,0 +1,51 @@
+<h4>Backup</h4>
+<p-button type="button" label="Backup" icon="pi pi-cog" styleClass="p-button-sm"
+          (onClick)="onBackup()"></p-button>
+
+
+<h4>Restore</h4>
+<p-table [value]="backupPlanetOverviews" [autoLayout]="true">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Date</th>
+      <th style="white-space: nowrap">Planet Id</th>
+      <th>Bases</th>
+      <th>Items</th>
+      <th>Quests</th>
+      <th>Restore</th>
+      <th>Delete</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-backupPlanetOverview>
+    <tr>
+      <td style="white-space: nowrap">
+        {{ backupPlanetOverview.date | date:'dd.MM.yyyy HH:mm:ss'}}
+      </td>
+      <td>
+        {{ backupPlanetOverview.planetId }}
+      </td>
+      <td>
+        {{ backupPlanetOverview.bases }}
+      </td>
+      <td>
+        {{ backupPlanetOverview.items }}
+      </td>
+      <td>
+        {{ backupPlanetOverview.quests }}
+      </td>
+      <td>
+        <p-button icon="pi pi-replay" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                  title="Restore"
+                  (onClick)="onRestore(backupPlanetOverview)">
+        </p-button>
+      </td>
+      <td>
+        <p-button icon="pi pi-times" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                  title="Delete"
+                  (onClick)="onDelete(backupPlanetOverview)">
+        </p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+

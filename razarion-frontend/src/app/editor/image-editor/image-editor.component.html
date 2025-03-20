@@ -1,0 +1,29 @@
+<p-fileUpload chooseLabel="Upload"
+              accept="image/*"
+              name="ignore"
+              [auto]="true"
+              url="{{getUploadUrl()}}"
+              (onError)="onUploadError($event)"
+              (onUpload)="requestAllImages()"></p-fileUpload>
+<div class="grid grid-razarion-editor" style="width:620px;overflow-y:scroll;height:90em">
+  <div class="col-fixed"  style="border: 1px solid #64b5f6" *ngFor="let imageGalleryItem of imageGalleryItems">
+    <image-gallery-item [image-gallery-item]="imageGalleryItem"></image-gallery-item>
+    <div class="inline-flex">
+      <p-button class="mr-2" icon="pi pi-times"
+                styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                (onClick)="onDeleteImage(imageGalleryItem)">
+      </p-button>
+      <p-fileUpload class="mr-2"
+                    chooseIcon="pi pi-upload"
+                    mode="basic"
+                    accept="image/*"
+                    name="ignore"
+                    [auto]="true"
+                    method="put"
+                    url="{{getUpdateUrl(imageGalleryItem)}}"
+                    (onError)="onUpdateError($event)"
+                    (onUpload)="requestAllImages()">
+      </p-fileUpload>
+    </div>
+  </div>
+</div>

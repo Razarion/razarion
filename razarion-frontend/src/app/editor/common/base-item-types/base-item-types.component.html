@@ -1,0 +1,24 @@
+<p-table [value]="tableData">
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="white-space: nowrap">Base item Type</th>
+            <th>
+                <p-button icon="pi pi-plus" styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+                    title="Create" (onClick)="onCreate()">
+                </p-button>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-tableEntry>
+        <tr>
+            <td>
+                <base-item-type [(baseItemTypeId)]="tableEntry.baseItemTypeId" (onChangeEmitter)="onChange()"></base-item-type>
+            </td>
+            <td>
+                <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                    title="Delete" (onClick)="onDelete(tableEntry)">
+                </p-button>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

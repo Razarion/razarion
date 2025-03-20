@@ -1,0 +1,34 @@
+<p-table [value]="bases">
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="white-space: nowrap"> 
+                <p-button icon="pi pi-refresh"
+                    styleClass="p-button-rounded p-button-text p-button-sm p-button-danger" title="Delete"
+                    (onClick)="loadBases()">
+                </p-button>
+                Base
+            </th>
+            <th style="white-space: nowrap">Character</th>
+            <th>Id</th>
+            <th> </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-base>
+        <tr>
+            <td>
+                {{base.getName()}}
+            </td>
+            <td>
+                {{base.getCharacter()}}
+            </td>
+            <td>
+                {{base.getBaseId()}}
+            </td>
+            <td>
+                <p-button icon="pi pi-times" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                    title="Delete" (onClick)="onBaseDelete(base)">
+                </p-button>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

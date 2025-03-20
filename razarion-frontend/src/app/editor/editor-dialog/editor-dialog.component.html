@@ -1,0 +1,166 @@
+﻿<div class="flex">
+  <div class="mr-2 editor-category">
+
+    <p-panel header="Configuration">
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-sliders-h"></i>
+          <b>&nbsp;Global</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Levels" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openLevelEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Planets" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openPlanetEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Properties" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openPropertyEditor()"></p-button>
+      </div>
+
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-home"></i>
+          <b>&nbsp;Items</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Base items" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openBaseItemTypeEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Box items" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openBoxItemTypeEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Resource items" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openResourceItemTypeEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Inventory items" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openInventoryItemEditor()"></p-button>
+      </div>
+
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-image"></i>
+          <b>&nbsp;Terrain</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Terrain objects" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm"
+                  (onClick)="openTerrainObjectsEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Ground" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openGroundEditor()"></p-button>
+      </div>
+
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-sliders-h"></i>
+          <b>&nbsp;Library</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Images" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openImageEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="GLTF" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openGltfEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Particle systems" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openParticleSystemEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Babylon materials" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openBabylonMaterialEditor()"></p-button>
+      </div>
+    </p-panel>
+  </div>
+
+  <div class="mr-2 editor-category">
+    <p-panel header="Planet">
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-image"></i>
+          <b>&nbsp;Terrain</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Terrain Editor" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openTerrainEditor()"></p-button>
+      </div>
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-sliders-h"></i>
+          <b>&nbsp;Misc</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Quests" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openQuestEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Bots" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openBotEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Start Regions" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openStartRegionEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Resource Regions" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openResourceRegionEditor()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Box Regions" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openBoxRegionEditor()"></p-button>
+      </div>
+    </p-panel>
+  </div>
+
+  <div class="mr-2 editor-category">
+    <p-panel header="Administration">
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-video"></i>
+          <b>&nbsp;Renderer</b>
+        </div>
+      </p-divider>
+      <div class="mb-2">
+        <p-button type="button" label="Babylon inspector" icon="pi pi-video" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openBabylonInspector()"></p-button>
+      </div>
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <i class="pi pi-sliders-h"></i>
+          <b>&nbsp;Misc</b>
+        </div>
+      </p-divider>
+      <div class="mb-2" *ngFor="let editor of editors | keyvalue">
+        <p-button type="button" label="{{editor.key}}" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openAdministrationEditor(editor.key, editor.value)"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Backend" icon="pi pi-cog" [style]="{'width':'13em'}" styleClass="p-button-sm"
+                  (onClick)="openBackend()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="Base management" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openBaseMgmt()"></p-button>
+      </div>
+      <div class="mb-2">
+        <p-button type="button" label="User management" icon="pi pi-cog" [style]="{'width':'13em'}"
+                  styleClass="p-button-sm" (onClick)="openUserMgmt()"></p-button>
+      </div>
+    </p-panel>
+  </div>
+
+</div>

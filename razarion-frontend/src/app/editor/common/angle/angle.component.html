@@ -1,0 +1,5 @@
+<div style="width:13em">
+    <input type="text" pInputText [(ngModel)]="degreeAngle" class="w-full" (input)="onTextChange($event)"/>
+    <p-slider [(ngModel)]="degreeAngle" class="w-full" [min]="0" [max]="maxDegreeAngle"
+        (onChange)="onChange($event.value)"></p-slider>
+</div>

@@ -1,0 +1,74 @@
+<div style="width: 40em">
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Id</span>
+    <div class="col-8">
+      <p-inputNumber [disabled]="true" [(ngModel)]="resourceItemType.id"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Internal name</span>
+    <div class="col-8">
+      <input [(ngModel)]="resourceItemType.internalName" type="text"
+             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+    </div>
+  </div>
+
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-video"></i>
+      <b>&nbsp;Visibility</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Model 3D</span>
+    <div class="col-8">
+      <model3d [(model3DId)]="resourceItemType.model3DId"></model3d>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Thumbnail</span>
+    <div class="col-8">
+      <image-item [(imageId)]="resourceItemType.thumbnail"></image-item>
+    </div>
+  </div>
+
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-car"></i>
+      <b>&nbsp;Physical area</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Radius [m]</span>
+    <div class="col-8">
+      <p-inputNumber [(ngModel)]="resourceItemType.radius" [minFractionDigits]="3"
+                     [maxFractionDigits]="3"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Fix vertical norm</span>
+    <div class="col-8">
+      <p-checkbox [(ngModel)]="resourceItemType.fixVerticalNorm" [binary]="true"></p-checkbox>
+    </div>
+  </div>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Terrain type</span>
+    <div class="col-8">
+      <terrain-type [(terrainType)]="resourceItemType.terrainType"></terrain-type>
+    </div>
+  </div>
+
+  <p-divider align="left">
+    <div class="inline-flex align-items-center">
+      <i class="pi pi-cog"></i>
+      <b>&nbsp;Game engine</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-razarion-editor">
+    <span class="col-4">Amount</span>
+    <div class="col-8">
+      <p-inputNumber [(ngModel)]="resourceItemType.amount"></p-inputNumber>
+    </div>
+  </div>
+</div>
+

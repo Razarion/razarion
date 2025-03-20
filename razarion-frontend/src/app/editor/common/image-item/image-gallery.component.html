@@ -1,0 +1,8 @@
+<div class="grid grid-razarion-editor" style="width:620px">
+    <div class="col-fixed"
+        [ngClass]="{'image-border-selected': isSelected(imageGalleryItem), 'image-border': !isSelected(imageGalleryItem)}"
+        *ngFor="let imageGalleryItem of imageGalleryItems"
+        (click)="onSelect(imageGalleryItem)">
+        <img alt="Image item" src="{{getImgUrl(imageGalleryItem)}}" class="image-gallery-img">
+    </div>
+</div>

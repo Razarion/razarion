@@ -1,0 +1,107 @@
+<p-table [value]="userBackendInfos" dataKey="userId" [style]="{'height':'80em','overflow-y':'scroll'}">
+  <ng-template pTemplate="header">
+    <tr>
+      <th></th>
+      <th>Creation</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Id</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-userBackendInfo let-expanded="expanded">
+    <tr>
+      <td>
+        <button type="button" pButton pRipple [pRowToggler]="userBackendInfo"
+                class="p-button-text p-button-rounded p-button-plain"
+                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+      </td>
+      <td>
+        {{ userBackendInfo.creationDate | date:'dd.MM.yyyy HH:mm:ss' }}
+      </td>
+      <td>
+        {{ userBackendInfo.name }}
+      </td>
+      <td>
+        {{ userBackendInfo.email }}
+      </td>
+      <td>
+        {{ userBackendInfo.userId }}
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="rowexpansion" let-userBackendInfo>
+    <tr>
+      <td colspan="5">
+        <div class="flex flex-column surface-50">
+          <div class="grid grid-razarion-editor">
+            <span class="col-4">Registered</span>
+            {{ userBackendInfo.registerDate | date:'dd.MM.yyyy HH:mm:ss' }}
+          </div>
+          <div class="grid grid-razarion-editor">
+            <span class="col-4">Verified</span>
+            {{ userBackendInfo.verificationDoneDate | date:'dd.MM.yyyy HH:mm:ss' }}
+          </div>
+        </div>
+        <div class="grid grid-razarion-editor">
+          <span class="col-4">Level</span>
+          <div class="col-8">
+            <level [(levelId)]="userBackendInfo.levelId"></level>
+            <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
+                      (onClick)="onSaveLevel(userBackendInfo)">
+            </p-button>
+          </div>
+        </div>
+        <div class="grid grid-razarion-editor">
+          <span class="col-4">Active quest</span>
+          <div>
+            <p-dropdown [placeholder]="'...'"
+                        [options]="questOptions"
+                        [(ngModel)]="userBackendInfo.activeQuest"
+                        [showClear]="true"
+                        optionLabel="label"
+                        optionValue="questId">
+            </p-dropdown>
+            <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
+                      (onClick)="onSaveActiveQuest(userBackendInfo)">
+            </p-button>
+          </div>
+        </div>
+        <div class="grid grid-razarion-editor">
+          <span class="col-4">Active quest id</span>
+          <div>
+            {{userBackendInfo.activeQuest}}
+          </div>
+        </div>
+        <div class="grid grid-razarion-editor">
+          <span class="col-4">Crystals</span>
+          <div class="col-8">
+            <p-inputNumber inputId="integeronly" [(ngModel)]="userBackendInfo.crystals"
+                           [size]="6"></p-inputNumber>
+            <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
+                      (onClick)="onSaveCrystals(userBackendInfo)">
+            </p-button>
+          </div>
+        </div>
+        <div class="grid grid-razarion-editor">
+          <span class="col-4">Completed quest ids</span>
+          <div class="col-8" [style]="{'width':'20em'}">
+            <p-chips [(ngModel)]="userBackendInfo.completedQuestIds"></p-chips>
+            <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
+                      (onClick)="onSaveCompletedQuestIds(userBackendInfo)">
+            </p-button>
+          </div>
+        </div>
+        <div class="grid grid-razarion-editor">
+          <span class="col-4">Unlocked</span>
+          <div class="col-8" [style]="{'width':'20em'}">
+            <p-chips [(ngModel)]="userBackendInfo.unlockedIds"></p-chips>
+            <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
+                      (onClick)="onSaveUnlockedIds(userBackendInfo)">
+            </p-button>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+</p-table>
