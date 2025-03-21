@@ -31,12 +31,12 @@ export class BabylonModelService {
   private scene!: Scene;
   private gwtResolver?: () => void;
 
-  constructor(private uiConfigCollectionService: UiConfigCollectionService/*,
-              TODO httpClient: HttpClient */) {
+  constructor(private uiConfigCollectionService: UiConfigCollectionService,
+              httpClient: HttpClient) {
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
     this.loadUiConfigCollection();
-    // TODO this.babylonMaterialContainer.setHttpClient(httpClient);
-    // TODO this.particleSystemContainer.setHttpClient(httpClient);
+    this.babylonMaterialContainer.setHttpClient(httpClient);
+    this.particleSystemContainer.setHttpClient(httpClient);
   }
 
   setScene(scene: Scene) {

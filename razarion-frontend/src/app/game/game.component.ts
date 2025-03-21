@@ -23,7 +23,8 @@ import {ItemCockpitComponent} from './cockpit/item/item-cockpit.component';
     ScreenCoverComponent,
     EditorPanelComponent,
     Sidebar,
-    MainCockpitComponent
+    MainCockpitComponent,
+    QuestCockpitComponent
   ],
   styleUrls: ['game.component.scss']
 })
@@ -71,7 +72,7 @@ export class GameComponent implements OnInit {
     if (environment.gwtMock) {
       this.startGame();
     } else {
-      this.gameMockService.startGame();
+      this.gameMockService.startGame(false);
     }
   }
 

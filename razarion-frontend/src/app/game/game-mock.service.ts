@@ -26,6 +26,7 @@ import {
   PlayerBaseDto,
   QuestConfig,
   QuestProgressInfo,
+  RadarState,
   ResourceItemType,
   SelectionService,
   StatusProvider,
@@ -53,11 +54,72 @@ let displayMockTerrainTile: BabylonTerrainTile[] = [];
   providedIn: 'root',
 })
 export class GameMockService {
-  constructor(/* TODO private http: HttpClient,*/
+
+  readonly QUEST_CONFIG = new class implements QuestConfig {
+    getConditionConfig(): ConditionConfig | null {
+      return new class implements ConditionConfig {
+        getConditionTrigger(): ConditionTrigger {
+          return ConditionTrigger.SYNC_ITEM_CREATED;
+        }
+
+        getComparisonConfig(): ComparisonConfig {
+          return new class implements ComparisonConfig {
+            getCount(): number | null {
+              return null;
+            }
+
+            getTimeSeconds(): number | null {
+              return null;
+            }
+
+            toTypeCountAngular(): number[][] {
+              return [[1, 2], [2, 3]];
+            }
+
+          };
+        }
+      };
+    }
+
+    getId(): number {
+      return 0;
+    }
+
+    getInternalName(): string {
+      return "";
+    }
+
+    getTitle(): string {
+      return "Place";
+    }
+
+    getDescription(): string | null {
+      return null;
+    }
+
+  };
+
+  constructor(private http: HttpClient,
               private gwtAngularService: GwtAngularService) {
   }
 
-  startGame() {
+  startGame(runGwtMock: boolean) {
+    this.initMocks();
+
+    if (!runGwtMock) {
+      this.simulateStartup();
+    }
+  }
+
+  private initMocks() {
+    this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.mockBaseItemUiService;
+    this.gwtAngularService.gwtAngularFacade.itemTypeService = this.mockItemTypeService();
+    this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.mockInventoryTypeService();
+    this.gwtAngularService.gwtAngularFacade.selectionService = this.mockSelectionService();
+    this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameUiControl;
+  }
+
+  private simulateStartup() {
     setTimeout(() => {
       this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(25);
     }, 0.25);
@@ -69,8 +131,55 @@ export class GameMockService {
     }, 0.75);
     setTimeout(() => {
       this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
-      this.gwtAngularService.gwtAngularFacade.mainCockpit.show(true)
+      this.showMainCockpit();
+
+      this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar(this.QUEST_CONFIG, true)
+
+      // this.showQuestSideBar(this.questCockpitContainer);
+      // this.onQuestProgress(this.questCockpitContainer);
+      // let questDialogVisible = false;
+      // setInterval(() => {
+      //   if (questDialogVisible) {
+      //     this.showQuestSideBar(this.questCockpitContainer);
+      //     this.onQuestProgress(this.questCockpitContainer);
+      //   } else {
+      //     this.hideQuestSideBar(this.questCockpitContainer);
+      //   }
+      //   questDialogVisible = !questDialogVisible;
+      // }, 5000);
+
+
     }, 1000);
+  }
+
+  private showMainCockpit() {
+    this.gwtAngularService.gwtAngularFacade.mainCockpit.showRadar(RadarState.NO_POWER);
+    this.gwtAngularService.gwtAngularFacade.mainCockpit.displayXps(5, 20);
+    this.gwtAngularService.gwtAngularFacade.mainCockpit.displayLevel(1)
+    this.gwtAngularService.gwtAngularFacade.mainCockpit.displayEnergy(0, 1);
+    this.gwtAngularService.gwtAngularFacade.mainCockpit.show(true)
+  }
+
+
+  onQuestProgress(questCockpitContainer: QuestCockpitComponent) {
+    questCockpitContainer.onQuestProgress(new class implements QuestProgressInfo {
+      getBotBasesInformation(): string | null {
+        return null;
+      }
+
+      getCount(): number | null {
+        return 7;
+      }
+
+      getSecondsRemaining(): number | null {
+        return 25;
+      }
+
+      toTypeCountAngular(): number[][] {
+        return [[1, 2], [2, 2]];
+      }
+
+    });
   }
 
   // --------------------------------------- old ---------------------------------------
@@ -137,10 +246,10 @@ export class GameMockService {
 
   loadMockStaticGameConfig(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      // TODO this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((value: any) => {
-      //   staticGameConfigJson = value;
-      //   resolve(value);
-      // });
+      this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((value: any) => {
+        staticGameConfigJson = value;
+        resolve(value);
+      });
     });
   }
 
@@ -526,78 +635,6 @@ export class GameMockService {
 
   private getTileHeightMapStart(terrainTileIndex: Index): number {
     return terrainTileIndex.getY() * (this.TILE_X_COUNT * BabylonTerrainTileImpl.TILE_NODE_SIZE) + terrainTileIndex.getX() * BabylonTerrainTileImpl.TILE_NODE_SIZE;
-  }
-
-  showQuestSideBar(questCockpitContainer: QuestCockpitComponent) {
-    questCockpitContainer.showQuestSideBar(new class implements QuestConfig {
-        getConditionConfig(): ConditionConfig | null {
-          return new class implements ConditionConfig {
-            getConditionTrigger(): ConditionTrigger {
-              return ConditionTrigger.SYNC_ITEM_CREATED;
-            }
-
-            getComparisonConfig(): ComparisonConfig {
-              return new class implements ComparisonConfig {
-                getCount(): number | null {
-                  return null;
-                }
-
-                getTimeSeconds(): number | null {
-                  return null;
-                }
-
-                toTypeCountAngular(): number[][] {
-                  return [[1, 2], [2, 3]];
-                }
-
-              };
-            }
-          };
-        }
-
-        getId(): number {
-          return 0;
-        }
-
-        getInternalName(): string {
-          return "";
-        }
-
-        getTitle(): string {
-          return "Place";
-        }
-
-        getDescription(): string | null {
-          return null;
-        }
-
-      },
-      true)
-  }
-
-  hideQuestSideBar(questCockpitContainer: QuestCockpitComponent) {
-    questCockpitContainer.showQuestSideBar(null, false);
-  }
-
-  onQuestProgress(questCockpitContainer: QuestCockpitComponent) {
-    questCockpitContainer.onQuestProgress(new class implements QuestProgressInfo {
-      getBotBasesInformation(): string | null {
-        return null;
-      }
-
-      getCount(): number | null {
-        return 7;
-      }
-
-      getSecondsRemaining(): number | null {
-        return 25;
-      }
-
-      toTypeCountAngular(): number[][] {
-        return [[1, 2], [2, 2]];
-      }
-
-    });
   }
 
   mockSelectionService(): SelectionService {
