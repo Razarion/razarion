@@ -1,0 +1,470 @@
+{
+  "id": 3,
+  "internalName": "Server",
+  "planetConfigId": 117,
+  "resourceRegionConfigs": [
+    {
+      "id": 142,
+      "internalName": "Noob",
+      "count": 10,
+      "minDistanceToItems": 0.5,
+      "resourceItemTypeId": 2,
+      "region": {
+        "polygon2D": {
+          "corners": [
+            {
+              "x": 90,
+              "y": 70
+            },
+            {
+              "x": 250,
+              "y": 70
+            },
+            {
+              "x": 250,
+              "y": 170
+            },
+            {
+              "x": 90,
+              "y": 170
+            }
+          ],
+          "lines": [
+            {
+              "point1": {
+                "x": 90,
+                "y": 70
+              },
+              "point2": {
+                "x": 250,
+                "y": 70
+              },
+              "norm": {
+                "x": 0.7071067811865476,
+                "y": -0.7071067811865475
+              },
+              "m": 0,
+              "c": 70
+            },
+            {
+              "point1": {
+                "x": 250,
+                "y": 70
+              },
+              "point2": {
+                "x": 250,
+                "y": 170
+              },
+              "norm": {
+                "x": 0.9805806756909202,
+                "y": 0.19611613513818404
+              },
+              "m": "Infinity",
+              "c": "-Infinity"
+            },
+            {
+              "point1": {
+                "x": 250,
+                "y": 170
+              },
+              "point2": {
+                "x": 90,
+                "y": 170
+              },
+              "norm": {
+                "x": 0.6038576879954625,
+                "y": 0.7970921481540104
+              },
+              "m": 0,
+              "c": 170
+            },
+            {
+              "point1": {
+                "x": 90,
+                "y": 170
+              },
+              "point2": {
+                "x": 90,
+                "y": 70
+              },
+              "norm": {
+                "x": -0.058722021951470346,
+                "y": 0.9982743731749959
+              },
+              "m": "-Infinity",
+              "c": "Infinity"
+            }
+          ]
+        },
+        "position": null,
+        "radius": null
+      }
+    }
+  ],
+  "startRegionConfigs": [
+    {
+      "id": 122,
+      "internalName": "Start",
+      "minimalLevelId": 265,
+      "region": {
+        "polygon2D": {
+          "corners": [
+            {
+              "x": 130,
+              "y": 70
+            },
+            {
+              "x": 190,
+              "y": 70
+            },
+            {
+              "x": 190,
+              "y": 130
+            },
+            {
+              "x": 130,
+              "y": 130
+            }
+          ],
+          "lines": [
+            {
+              "point1": {
+                "x": 130,
+                "y": 70
+              },
+              "point2": {
+                "x": 190,
+                "y": 70
+              },
+              "norm": {
+                "x": 0.9970544855015816,
+                "y": 0.07669649888473705
+              },
+              "m": 0,
+              "c": 70
+            },
+            {
+              "point1": {
+                "x": 190,
+                "y": 70
+              },
+              "point2": {
+                "x": 190,
+                "y": 130
+              },
+              "norm": {
+                "x": 0.9629640197141818,
+                "y": 0.2696299255199709
+              },
+              "m": "Infinity",
+              "c": "-Infinity"
+            },
+            {
+              "point1": {
+                "x": 190,
+                "y": 130
+              },
+              "point2": {
+                "x": 130,
+                "y": 130
+              },
+              "norm": {
+                "x": 0.7071067811865475,
+                "y": 0.7071067811865475
+              },
+              "m": 0,
+              "c": 130
+            },
+            {
+              "point1": {
+                "x": 130,
+                "y": 130
+              },
+              "point2": {
+                "x": 130,
+                "y": 70
+              },
+              "norm": {
+                "x": 0.4740998230350175,
+                "y": 0.8804710999221753
+              },
+              "m": "-Infinity",
+              "c": "Infinity"
+            }
+          ]
+        }
+      },
+      "noBaseViewPosition": {
+        "x": 140,
+        "y": 85
+      }
+    }
+  ],
+  "botConfigs": [
+    {
+      "id": 252,
+      "internalName": "Outpost Mini 1",
+      "auxiliaryId": null,
+      "npc": false,
+      "actionDelay": 3000,
+      "realm": {
+        "polygon2D": {
+          "corners": [
+            {
+              "x": 103,
+              "y": 123
+            },
+            {
+              "x": 150,
+              "y": 123
+            },
+            {
+              "x": 150,
+              "y": 168
+            },
+            {
+              "x": 103,
+              "y": 168
+            }
+          ],
+          "lines": [
+            {
+              "point1": {
+                "x": 103,
+                "y": 123
+              },
+              "point2": {
+                "x": 150,
+                "y": 123
+              },
+              "norm": {
+                "x": 0.8046629440104308,
+                "y": 0.5937318810174053
+              },
+              "m": 0,
+              "c": 123
+            },
+            {
+              "point1": {
+                "x": 150,
+                "y": 123
+              },
+              "point2": {
+                "x": 150,
+                "y": 168
+              },
+              "norm": {
+                "x": 0.8457979638974976,
+                "y": 0.5335033310738062
+              },
+              "m": "Infinity",
+              "c": "-Infinity"
+            },
+            {
+              "point1": {
+                "x": 150,
+                "y": 168
+              },
+              "point2": {
+                "x": 103,
+                "y": 168
+              },
+              "norm": {
+                "x": 0.5721815960240814,
+                "y": 0.8201269543011832
+              },
+              "m": 0,
+              "c": 168
+            },
+            {
+              "point1": {
+                "x": 103,
+                "y": 168
+              },
+              "point2": {
+                "x": 103,
+                "y": 123
+              },
+              "norm": {
+                "x": 0.32633745996106267,
+                "y": 0.9452533323010092
+              },
+              "m": "-Infinity",
+              "c": "Infinity"
+            }
+          ]
+        },
+        "position": null,
+        "radius": null
+      },
+      "name": "Raza Outpost Mini",
+      "autoAttack": true,
+      "minInactiveMs": null,
+      "maxInactiveMs": null,
+      "minActiveMs": null,
+      "maxActiveMs": null,
+      "botEnragementStateConfigs": [
+        {
+          "name": "Normal",
+          "botItems": [
+            {
+              "baseItemTypeId": 13,
+              "count": 1,
+              "createDirectly": true,
+              "noSpawn": false,
+              "place": {
+                "polygon2D": null,
+                "position": {
+                  "x": 127,
+                  "y": 157
+                },
+                "radius": 1
+              },
+              "angle": 0,
+              "moveRealmIfIdle": false,
+              "idleTtl": null,
+              "noRebuild": false,
+              "rePopTime": 60000
+            },
+            {
+              "baseItemTypeId": 15,
+              "count": 1,
+              "createDirectly": false,
+              "noSpawn": false,
+              "place": {
+                "polygon2D": null,
+                "position": {
+                  "x": 110,
+                  "y": 140
+                },
+                "radius": 1
+              },
+              "angle": 0,
+              "moveRealmIfIdle": false,
+              "idleTtl": null,
+              "noRebuild": false,
+              "rePopTime": 20000
+            },
+            {
+              "baseItemTypeId": 22,
+              "count": 1,
+              "createDirectly": false,
+              "noSpawn": false,
+              "place": {
+                "polygon2D": null,
+                "position": {
+                  "x": 140,
+                  "y": 140
+                },
+                "radius": 1
+              },
+              "angle": 0,
+              "moveRealmIfIdle": false,
+              "idleTtl": null,
+              "noRebuild": false,
+              "rePopTime": 20000
+            },
+            {
+              "baseItemTypeId": 16,
+              "count": 1,
+              "createDirectly": false,
+              "noSpawn": false,
+              "place": null,
+              "angle": 0,
+              "moveRealmIfIdle": false,
+              "idleTtl": null,
+              "noRebuild": false,
+              "rePopTime": 10000
+            }
+          ],
+          "enrageUpKills": null
+        }
+      ]
+    }
+  ],
+  "serverLevelQuestConfigs": [
+    {
+      "id": 14,
+      "internalName": "Noob",
+      "minimalLevelId": 4,
+      "questConfigs": [
+        {
+          "id": 17,
+          "internalName": null,
+          "title": "Fabrik",
+          "description": "Baue eine Fabrik",
+          "xp": 0,
+          "razarion": 0,
+          "crystal": 0,
+          "passedMessage": null,
+          "hidePassedDialog": false,
+          "conditionConfig": {
+            "conditionTrigger": "SYNC_ITEM_CREATED",
+            "comparisonConfig": {
+              "count": null,
+              "typeCount": {
+                "4": 1
+              },
+              "timeSeconds": null,
+              "placeConfig": {
+                "polygon2D": null,
+                "position": {
+                  "x": 10,
+                  "y": 8
+                },
+                "radius": 2
+              },
+              "botIds": null
+            }
+          }
+        },
+        {
+          "id": 18,
+          "internalName": null,
+          "title": "Viper",
+          "description": "Baue drei Vipers",
+          "xp": 0,
+          "razarion": 0,
+          "crystal": 0,
+          "passedMessage": null,
+          "hidePassedDialog": false,
+          "conditionConfig": {
+            "conditionTrigger": "SYNC_ITEM_CREATED",
+            "comparisonConfig": {
+              "count": null,
+              "typeCount": {
+                "3": 3
+              },
+              "timeSeconds": null,
+              "placeConfig": {
+                "polygon2D": {
+                  "corners": [
+                    {
+                      "x": 2,
+                      "y": 2
+                    },
+                    {
+                      "x": 10,
+                      "y": 2
+                    },
+                    {
+                      "x": 10,
+                      "y": 8
+                    },
+                    {
+                      "x": 3,
+                      "y": 8
+                    }
+                  ]
+                },
+                "position": null,
+                "radius": null
+              },
+              "botIds": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,469 @@
+const bodyParser = require('body-parser');
+
+const express = require('express');
+
+const app = express();
+
+var ServerMock = require("mock-http-server");
+var fs = require('fs');
+const path = require("path");
+const JSZip = require("jszip");
+const zlib = require('zlib');
+
+const PORT = 8080;
+let zip = null;
+
+app.use(bodyParser.json({limit: '500mb'}));
+app.use(bodyParser.urlencoded({limit: '500mb', extended: true}));
+app.use(bodyParser.raw({limit: '500mb', type: 'application/octet-stream'}));
+app.use(bodyParser.text({limit: '500mb'}));
+
+let server = new ServerMock({host: "127.0.0.1", port: PORT});
+
+server.on({
+  method: 'GET',
+  path: '/rest/frontend/isloggedin',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '{"loggedIn": "true", "language": "en"}'
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/frontend/login',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '"OK"'
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/frontend/log',
+  filter: function (req) {
+    console.warn("---- LOG to /rest/frontend/log ---");
+    console.warn(req.body);
+    return true;
+  },
+  reply: {
+    status: 200
+  }
+});
+
+function loadThreeJsModel(req) {
+  let threeJsModelToLoad = req.url.substring("/rest/gz/three-js-model/".length, req.url.length);
+
+  let zipObject = zip.file(`id_${threeJsModelToLoad}`)
+  if (!zipObject || !zipObject._data || !zipObject._data.compressedContent) {
+    throw Error(`loadThreeJsModel not found ${req.url}`);
+  }
+
+  return zipObject._data.compressedContent;
+}
+
+server.on({
+  method: 'GET',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/gz/three-js-model/")
+  },
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: loadThreeJsModel
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/image/minimap/117',
+  reply: {
+    status: 200,
+    headers: {"content-type": "image/png"},
+    body: () => {
+      return fs.readFileSync("./resources/minimap-117.png");
+    }
+  }
+});
+
+server.on({
+  method: 'PUT',
+  path: '/rest/editor/three-js-model/upload/1',
+  reply: {
+    status: 200,
+    headers: {"content-type": "image/png"},
+    body: '"OK"'
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/Svelte-jsoneditor/read/-99999',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '{"value" : -99999}'
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/editor/Svelte-jsoneditor/update',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '{"value" : -99999}'
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/editor/three-js-model-pack-editor/findByThreeJsModelId/12',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '[{"id":12,"internalName":"Fern 1 [Tropical Vegetation 1]","threeJsModelId":12,"namePath":["__root__","Sketchfab_model","Vegetation.FBX","RootNode","fern","fern_fern_0"],"position":{"x":0.0,"y":-1.2,"z":0.0},"scale":{"x":0.025,"y":0.025,"z":-0.025},"rotation":{"x":1.5708,"y":0.0,"z":0.0}}]'
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/editor/three-js-model-pack-editor/create',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '[{"id":13,"internalName":"Fern 1 [Tropical Vegetation 1]","threeJsModelId":12,"namePath":[]}]'
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/driveway/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: '[{"id":1,"internalName":"Driveway 1"},{"id":2,"internalName":"Driveway 2"}]'
+  }
+});
+
+const serverGameEngineJson = require("./resources/server-game-engine.json");
+server.on({
+  method: 'GET',
+  path: '/rest/editor/server-game-engine/read/3',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(serverGameEngineJson)
+  }
+});
+
+const baseItemTypeJson = require("./resources/base_item_type.json");
+server.on({
+  method: 'GET',
+  path: '/rest/editor/base_item_type/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(baseItemTypeJson)
+  }
+
+});
+const levelJson = require("./resources/level.json");
+server.on({
+  method: 'GET',
+  path: '/rest/editor/level/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(levelJson)
+  }
+});
+
+const resourceJson = require("./resources/resource_item_type.json");
+server.on({
+  method: 'GET',
+  path: '/rest/editor/resource_item_type/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(resourceJson)
+  }
+});
+
+const groundsJson = require("./resources/grounds.json");
+server.on({
+  method: 'GET',
+  path: '/rest/editor/ground/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(groundsJson.objectNameIds)
+  }
+});
+
+const waterJson = require("./resources/waters.json");
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/water/read/10',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(waterJson._10)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/water/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(waterJson.objectNameIds)
+  }
+});
+
+const particleSystem = require("./resources/particle-system.json");
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/particle-system/read/1',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(particleSystem._1)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/particle-system/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(particleSystem.objectNameIds)
+  }
+});
+
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/three-js-model/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: "[]"
+  }
+});
+
+let saveTerrainShapeBuffer;
+
+server.on({
+  method: 'post',
+  path: '/rest/editor/save-terrain-shape',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: function loadAssetConfig(req) {
+      console.log("Save terrain shape content length: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
+      for (let i = 0; i < req.body.length; i++) {
+        console.log(req.body.charCodeAt(i));
+      }
+
+
+      console.log(req.body);
+      let decoded = decodeURIComponent(req.body);
+      let encoder = new TextEncoder();
+      let uint8Array = encoder.encode(decoded);
+      console.log(uint8Array);
+      zlib.gunzip(req.body, (err, result) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log(result);
+          saveTerrainShapeBuffer = result;
+        }
+      });
+      return "OK";
+    }
+  }
+});
+
+server.on({
+  method: 'get',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/terrainHeightMap/")
+  },
+  reply: {
+    status: 200,
+    headers: {
+      "content-type": "application/octet-stream",
+      "content-encoding": "gzip"
+    },
+    body: function loadAssetConfig(req) {
+      return fs.readFileSync("./resources/CompressedHeightMap.bin");
+    }
+  }
+});
+
+const uiConfigCollection = require("./resources/ui-config-collection.json");
+
+server.on({
+  method: 'get',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/ui-config-collection/get")
+  },
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(uiConfigCollection)
+  }
+});
+
+server.on({
+  method: 'get',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/editor/brush/read")
+  },
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify([
+      {
+        "id": 1,
+        "internalName": "Water",
+        "brushJson": "{\"height\":-0.5,\"diameter\":10,\"maxSlopeWidth\":10,\"slope\":6.97,\"random\":0.53,\"internalName\":\"Water\",\"id\":1}"
+      },
+      {
+        "id": 2,
+        "internalName": "Mountain 4m",
+        "brushJson": "{\"height\":4,\"diameter\":10,\"maxSlopeWidth\":10,\"slope\":50.61,\"random\":1.16,\"internalName\":\"Mountain 4m\",\"id\":2}"
+      }
+    ])
+  }
+});
+
+const gltf = require("./resources/gltf.json");
+
+
+server.on({
+  method: 'GET',
+  path: '/rest/gltf/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(gltf.objectNameIds)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/gltf/read/1',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(gltf._1)
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/gltf/update',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: function loadAssetConfig(req) {
+      console.log("/rest/gltf/update: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
+    }
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/gltf/glb/1',
+  reply: {
+    status: 200,
+    headers: {
+      "content-type": "application/octet-stream"
+    },
+    body: function loadAssetConfig(req) {
+      return fs.readFileSync("./resources/razarion.glb");
+    }
+  }
+});
+
+server.on({
+  method: 'PUT',
+  path: '/rest/gltf/upload-glb/1',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: function loadAssetConfig(req) {
+      console.log("/rest/gltf/upload-glb/1: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
+    }
+  }
+});
+
+const model3D = require("./resources/model3D.json");
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/model-3d/getModel3DsByGltf/1',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(model3D.model3DsByGltf_1)
+  }
+});
+
+server.on({
+  method: 'POST',
+  path: '/rest/editor/model-3d/create',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(model3D._1)
+  }
+});
+
+const terrainObject = require("./resources/terrainObject.json");
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/terrain-object/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(terrainObject.objectNameIds)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/terrain-object/read/1',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(terrainObject._1)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/inventory-controller/loadInventory',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify({"crystals": 0, "inventoryItemIds": [2, 2, 2], "inventoryArtifactIds": []})
+  }
+});
+
+server.start(function () {
+  console.info("Razarion fake server is running on port: " + PORT);
+});

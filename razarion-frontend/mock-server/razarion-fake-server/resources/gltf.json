@@ -1,0 +1,17 @@
+{
+  "objectNameIds": [
+    {
+      "id": 1,
+      "internalName": "Razarion scene"
+    }
+  ],
+  "_1": {
+    "id": 1,
+    "internalName": "Razarion scene",
+    "materialGltfNames": {
+      "Vehicles_main": 99901,
+      "Addons": 99902,
+      "To be deleted": 99903
+    }
+  }
+}

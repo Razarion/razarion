@@ -1,0 +1,40 @@
+{
+  "babylonMaterials": [],
+  "gltfs": [
+    {
+      "id": 1,
+      "internalName": "Unity Razarion scene",
+      "materialGltfNames": {
+        "Mat1": 3,
+        "Pads": 3,
+        "Mat3": 3,
+        "Addons": 3,
+        "Cubes": 3,
+        "Vehicles_main": 2,
+        "Columns": 3,
+        "Fence_point_01": 3,
+        "Pylons_blue": 3,
+        "Extras": 3,
+        "Main": 3
+      }
+    }
+  ],
+  "model3DEntities": [
+    {
+      "id": 2,
+      "internalName": "Builder",
+      "gltfName": "Builder",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 42,
+      "internalName": "Resource 1",
+      "gltfName": "Resource 1",
+      "gltfEntityId": 1
+    }
+  ],
+  "particleSystemEntities": [],
+  "selectionItemMaterialId": 14,
+  "progressBarNodeMaterialId": 9,
+  "healthBarNodeMaterialId": 10
+}

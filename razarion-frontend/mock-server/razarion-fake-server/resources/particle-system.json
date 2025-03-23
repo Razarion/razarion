@@ -1,0 +1,17 @@
+{
+    "objectNameIds": [
+        {
+            "id": 1,
+            "internalName": "Explosion"
+        }
+    ],
+    "_1": {
+        "id": 1,
+        "internalName": "Explosion",
+        "positionOffset": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+        }
+    }
+}
