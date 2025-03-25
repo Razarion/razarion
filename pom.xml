@@ -12,6 +12,7 @@
     <name>Razarion Parent</name>
 
     <modules>
+        <module>razarion-share</module>
         <module>razarion-frontend</module>
         <module>razarion-server</module>
     </modules>

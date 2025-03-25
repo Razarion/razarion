@@ -1,0 +1,188 @@
+package com.btxtech.shared.gameengine.planet.pathing;
+
+import com.btxtech.shared.datatypes.Circle2D;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
+import com.btxtech.shared.gameengine.planet.SynchronizationSendingContext;
+import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.utils.GeometricUtil;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
+
+@Singleton
+public class PathingService {
+    // private static final Logger LOGGER = Logger.getLogger(PathingService.class.getName());
+    public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
+    public static final double RADIUS_GROW = 1;
+
+    private final SyncItemContainerServiceImpl syncItemContainerService;
+
+    private final TerrainService terrainService;
+
+    private final ExceptionHandler exceptionHandler;
+    private final PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
+
+    @Inject
+    public PathingService(ExceptionHandler exceptionHandler, TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService) {
+        this.exceptionHandler = exceptionHandler;
+        this.terrainService = terrainService;
+        this.syncItemContainerService = syncItemContainerService;
+    }
+
+    public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
+        return setupPathToDestination(syncItem, syncItem.getAbstractSyncPhysical().getTerrainType(), destination, 0);
+    }
+
+    public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, SyncItem target) {
+        return setupPathToDestination(syncBaseItem, range, target.getAbstractSyncPhysical().getTerrainType(), target.getAbstractSyncPhysical().getPosition(), target.getAbstractSyncPhysical().getRadius());
+    }
+
+    public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, TerrainType targetTerrainType, DecimalPosition targetPosition, double targetRadius) {
+        double totalRange = syncBaseItem.getAbstractSyncPhysical().getRadius() + targetRadius + range;
+        return setupPathToDestination(syncBaseItem, targetTerrainType, targetPosition, totalRange);
+    }
+
+    private SimplePath setupPathToDestination(SyncBaseItem syncItem, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
+        return setupPathToDestination(syncItem.getAbstractSyncPhysical().getPosition(), syncItem.getAbstractSyncPhysical().getRadius(), syncItem.getAbstractSyncPhysical().getTerrainType(), targetTerrainType, destination, totalRange);
+    }
+
+    public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType terrainType, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
+        // long time = System.currentTimeMillis();
+        // Attention due to performance!! isInSight() surface data (Obstacle-Model) is not based on the AStar surface data -> AStar model must overlap Obstacle-Model
+        double correctedRadius = radius + RADIUS_GROW;
+        SimplePath path = new SimplePath();
+        List<DecimalPosition> positions = new ArrayList<>();
+        PathingNodeWrapper startNode = terrainService.getTerrainAnalyzer().getPathingNodeWrapper(position);
+        PathingNodeWrapper destinationNode = terrainService.getTerrainAnalyzer().getPathingNodeWrapper(destination);
+        if (startNode.equals(destinationNode)) {
+            positions.add(destination);
+            path.setWayPositions(positions);
+            // LOGGER.severe("Time for Pathing in same node: " + (System.currentTimeMillis() - time));
+            return path;
+        }
+        if (!destinationNode.isFree(targetTerrainType)) {
+            throw new PathFindingNotFreeException("Destination tile is not free: " + destination);
+        }
+        List<Index> scopeNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+        PathingNodeWrapper correctedDestinationNode;
+        AStarContext aStarContext;
+        DecimalPosition additionPathElement = null;
+        if (TerrainDestinationFinder.differentTerrain(terrainType, targetTerrainType)) {
+            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(position, destination, totalRange, radius + 2, terrainType, terrainService.getTerrainAnalyzer());
+            terrainDestinationFinder.find();
+            correctedDestinationNode = terrainDestinationFinder.getReachableNode();
+            additionPathElement = correctedDestinationNode.getCenter();
+            aStarContext = new AStarContext(terrainType, scopeNodeIndices);
+        } else {
+//            DestinationFinder destinationFinder = new DestinationFinder(position, destination, destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), scopeNodeIndices, terrainService.getPathingAccess());
+//            destinationFinder.find();
+//            correctedDestinationNode = terrainService.getPathingAccess().getPathingNodeWrapper(destinationFinder.getCorrectedDestination());;
+//            destination = destinationFinder.getCorrectedDestination();
+            DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainType, scopeNodeIndices, terrainService.getTerrainAnalyzer());
+            correctedDestinationNode = destinationFinder.find();
+            aStarContext = new AStarContext(terrainType, scopeNodeIndices);
+        }
+        aStarContext.setStartStuck(startNode.isStuck(aStarContext));
+        aStarContext.setStartPosition(position);
+        aStarContext.setMaxStuckDistance(correctedRadius);
+        aStarContext.setDestination(destination);
+
+        AStar aStar = new AStar(startNode, correctedDestinationNode, aStarContext);
+        aStar.expandAllNodes();
+        for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
+            positions.add(pathingNodeWrapper.getCenter());
+        }
+        // LOGGER.severe("Time for Pathing: " + (System.currentTimeMillis() - time) + " CloseListSize: " + aStar.getCloseListSize());
+        if (additionPathElement != null) {
+            positions.add(additionPathElement);
+        }
+        positions.add(destination);
+        path.setWayPositions(positions);
+        return path;
+    }
+
+    public void tick(SynchronizationSendingContext synchronizationSendingContext) {
+        try {
+            // DebugHelperStatic.setCurrentTick(-1);
+            pathingServiceTracker.startTick();
+            setupPreferredVelocity();
+            pathingServiceTracker.afterPreparation();
+            calculateItemVelocity();
+            pathingServiceTracker.afterSolveVelocity();
+            implementPosition();
+            pathingServiceTracker.afterImplementPosition();
+            checkDestination();
+            pathingServiceTracker.afterCheckDestination();
+            syncItemContainerService.afterPathingServiceTick();
+            pathingServiceTracker.afterSyncItemContainerService();
+            finalization();
+            pathingServiceTracker.afterFinalization();
+            pathingServiceTracker.endTick();
+            // DebugHelperStatic.printAfterTick(debugHelper);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
+    }
+
+    private void calculateItemVelocity() {
+        ItemVelocityCalculator itemVelocityCalculator = new ItemVelocityCalculator(syncItemContainerService, terrainService.getTerrainAnalyzer(), exceptionHandler);
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> itemVelocityCalculator.analyse(syncBaseItem.getAbstractSyncPhysical()));
+        itemVelocityCalculator.calculateVelocity();
+    }
+
+    private void setupPreferredVelocity() {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
+            if (!syncBaseItem.getAbstractSyncPhysical().canMove()) {
+                return;
+            }
+            syncBaseItem.getSyncPhysicalMovable().setupPreferredVelocity();
+        });
+    }
+
+    private void implementPosition() {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
+            AbstractSyncPhysical abstractSyncPhysical = syncBaseItem.getAbstractSyncPhysical();
+            if (!abstractSyncPhysical.canMove()) {
+                return;
+            }
+            ((SyncPhysicalMovable) abstractSyncPhysical).implementPosition();
+        });
+    }
+
+
+    private void checkDestination() {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
+            if (!syncBaseItem.getAbstractSyncPhysical().canMove()) {
+                return;
+            }
+            ((SyncPhysicalMovable) syncBaseItem.getAbstractSyncPhysical()).stopIfDestinationReached();
+        });
+    }
+
+    private void finalization() {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
+            if (!syncBaseItem.getAbstractSyncPhysical().canMove()) {
+                return;
+            }
+
+            syncBaseItem.getSyncPhysicalMovable().finalization();
+        });
+    }
+}
+
+
+
+
