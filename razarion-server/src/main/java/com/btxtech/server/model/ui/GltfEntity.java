@@ -19,7 +19,7 @@ public class GltfEntity extends BaseEntity {
     @JsonIgnore
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "gltfEntity", nullable = false)
-    private List<GltfBabylonMaterial> gltfBabylonMaterials;
+    private List<GltfBabylonMaterialEntity> gltfBabylonMaterials;
 
     public byte[] getGlb() {
         return glb;
@@ -37,11 +37,11 @@ public class GltfEntity extends BaseEntity {
         this.materialGltfNames = materialGltfNames;
     }
 
-    public List<GltfBabylonMaterial> getGltfBabylonMaterials() {
+    public List<GltfBabylonMaterialEntity> getGltfBabylonMaterials() {
         return gltfBabylonMaterials;
     }
 
-    public void setGltfBabylonMaterials(List<GltfBabylonMaterial> gltfBabylonMaterials) {
+    public void setGltfBabylonMaterials(List<GltfBabylonMaterialEntity> gltfBabylonMaterials) {
         this.gltfBabylonMaterials = gltfBabylonMaterials;
     }
 }

@@ -1,4 +1,4 @@
-package com.btxtech.server.repository;
+package com.btxtech.server.repository.ui;
 
 import com.btxtech.server.model.ui.GltfEntity;
 import com.btxtech.server.model.ui.Model3DEntity;

@@ -2,7 +2,7 @@ package com.btxtech.server.service.ui;
 
 import com.btxtech.server.model.ui.GltfEntity;
 import com.btxtech.server.model.ui.Model3DEntity;
-import com.btxtech.server.repository.Model3DRepository;
+import com.btxtech.server.repository.ui.Model3DRepository;
 import com.btxtech.server.rest.ui.Model3DController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import jakarta.transaction.Transactional;

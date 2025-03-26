@@ -89,4 +89,17 @@ public class StartupTaskJson {
     public void setServerTime(Date serverTime) {
         this.serverTime = serverTime;
     }
+
+    @Override
+    public String toString() {
+        return "StartupTaskJson{" +
+                "gameSessionUuid='" + gameSessionUuid + '\'' +
+                ", taskEnum='" + taskEnum + '\'' +
+                ", startTime=" + startTime +
+                ", serverTime=" + serverTime +
+                ", duration=" + duration +
+                ", error='" + error + '\'' +
+                ", httpSessionId='" + httpSessionId + '\'' +
+                '}';
+    }
 }

@@ -1,7 +1,7 @@
 package com.btxtech.server.service.ui;
 
 import com.btxtech.server.model.ui.ImageLibraryEntity;
-import com.btxtech.server.repository.ImageRepository;
+import com.btxtech.server.repository.ui.ImageRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

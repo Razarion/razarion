@@ -1,7 +1,7 @@
 package com.btxtech.server.service.ui;
 
 import com.btxtech.server.model.ui.ParticleSystemEntity;
-import com.btxtech.server.repository.ParticleSystemRepository;
+import com.btxtech.server.repository.ui.ParticleSystemRepository;
 import com.btxtech.server.rest.ui.ParticleSystemController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import jakarta.transaction.Transactional;

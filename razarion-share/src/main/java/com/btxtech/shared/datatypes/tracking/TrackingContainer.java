@@ -214,4 +214,22 @@ public class TrackingContainer {
                 && (syncResourceItemTrackings == null || syncResourceItemTrackings.isEmpty())
                 && (syncBoxItemTrackings == null || syncBoxItemTrackings.isEmpty());
     }
+
+    @Override
+    public String toString() {
+        return "TrackingContainer{" +
+                "gameSessionUuid='" + gameSessionUuid + '\'' +
+                ", cameraTrackings=" + cameraTrackings +
+                ", browserWindowTrackings=" + browserWindowTrackings +
+                ", mouseMoveTrackings=" + mouseMoveTrackings +
+                ", mouseButtonTrackings=" + mouseButtonTrackings +
+                ", selectionTrackings=" + selectionTrackings +
+                ", dialogTrackings=" + dialogTrackings +
+                ", playerBaseTrackings=" + playerBaseTrackings +
+                ", syncItemDeletedTrackings=" + syncItemDeletedTrackings +
+                ", syncBaseItemTrackings=" + syncBaseItemTrackings +
+                ", syncResourceItemTrackings=" + syncResourceItemTrackings +
+                ", syncBoxItemTrackings=" + syncBoxItemTrackings +
+                '}';
+    }
 }

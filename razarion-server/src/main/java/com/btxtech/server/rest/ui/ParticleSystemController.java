@@ -5,15 +5,19 @@ import com.btxtech.server.model.ui.ParticleSystemEntity;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.shared.CommonUrl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +25,7 @@ import static com.btxtech.server.service.PersistenceUtil.extractId;
 
 
 @RestController
-@RequestMapping(CommonUrl.PARTICLE_SYSTEM_CONTROLLER)
+@RequestMapping("/rest/editor/particle-system/")
 public class ParticleSystemController extends AbstractBaseController<ParticleSystemEntity> {
     private final Logger logger = Logger.getLogger(ParticleSystemController.class.getName());
     @Inject
@@ -42,12 +46,13 @@ public class ParticleSystemController extends AbstractBaseController<ParticleSys
         return jpa2JsonStatic(particleSystemEntity);
     }
 
-    @GET
-    @Path("data/{id}")
-    public Response getData(@PathParam("id") int id) {
+    @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_OCTET_STREAM)
+    public ResponseEntity<byte[]> getData(@PathVariable("id") int id) {
         try {
-            return Response.ok(particleSystemCrudPersistence.getData(id),
-                    MediaType.APPLICATION_OCTET_STREAM).lastModified(new Date()).build();
+            return ResponseEntity
+                    .ok()
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM)
+                    .body(particleSystemCrudPersistence.getData(id));
         } catch (Throwable e) {
             logger.log(Level.WARNING, "Can not load BabylonMaterialEntity for id: " + id, e);
             throw e;

@@ -6,7 +6,10 @@ import com.btxtech.server.service.ui.BabylonMaterialService;
 import com.btxtech.server.user.SecurityCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,13 +19,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Date;
-
-import static com.btxtech.shared.CommonUrl.BABYLON_MATERIAL_CONTROLLER;
 
 @RestController
-@RequestMapping(BABYLON_MATERIAL_CONTROLLER)
+@RequestMapping("/rest/babylon-material")
 public class BabylonMaterialController extends AbstractBaseController<BabylonMaterialEntity> {
     private final Logger logger = LoggerFactory.getLogger(BabylonMaterialController.class);
 
@@ -34,11 +33,13 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
         return babylonMaterialPersistence;
     }
 
-    @GetMapping(value = "/data/{id}", produces = "application/json")
-    public Response getData(@PathParam("id") int id) {
+    @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_OCTET_STREAM)
+    public ResponseEntity<byte[]> getData(@PathVariable("id") int id) {
         try {
-            return Response.ok(babylonMaterialPersistence.getData(id),
-                    MediaType.APPLICATION_OCTET_STREAM).lastModified(new Date()).build();
+            return ResponseEntity
+                    .ok()
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM)
+                    .body(babylonMaterialPersistence.getData(id));
         } catch (Throwable e) {
             logger.warn("Can not load BabylonMaterialEntity for id: " + id, e);
             throw e;

@@ -4,22 +4,26 @@ import com.btxtech.server.model.ui.GltfEntity;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.GltfService;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.shared.CommonUrl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping(CommonUrl.GLTF_CONTROLLER)
+@RequestMapping("/rest/gltf/")
 public class GltfController extends AbstractBaseController<GltfEntity> {
     private final Logger logger = Logger.getLogger(GltfController.class.getName());
     @Inject
@@ -40,12 +44,13 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
         return gltfCrudPersistence;
     }
 
-    @GET
-    @Path("glb/{id}")
-    public Response getGlb(@PathParam("id") int id) {
+    @GetMapping(value = "/glb/{id}", produces = MediaType.APPLICATION_OCTET_STREAM)
+    public ResponseEntity<byte[]> getGlb(@PathVariable("id") int id) {
         try {
-            return Response.ok(gltfCrudPersistence.getGlb(id),
-                    MediaType.APPLICATION_OCTET_STREAM).lastModified(new Date()).build();
+            return ResponseEntity
+                    .ok()
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM)
+                    .body(gltfCrudPersistence.getGlb(id));
         } catch (Throwable e) {
             logger.log(Level.SEVERE, "Can not load GltfEntity for id: " + id, e);
             throw e;

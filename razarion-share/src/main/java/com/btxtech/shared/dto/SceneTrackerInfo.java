@@ -47,4 +47,14 @@ public class SceneTrackerInfo {
         this.duration = duration;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "SceneTrackerInfo{" +
+                "internalName='" + internalName + '\'' +
+                ", gameSessionUuid='" + gameSessionUuid + '\'' +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
+                '}';
+    }
 }

@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.btxtech.shared.CommonUrl.UI_CONFIG_COLLECTION_CONTROLLER;
-
 @RestController
-@RequestMapping(UI_CONFIG_COLLECTION_CONTROLLER)
+@RequestMapping("/rest/ui-config-collection")
 public class UiConfigCollectionController {
     @Autowired
     private BabylonMaterialService babylonMaterialPersistence;

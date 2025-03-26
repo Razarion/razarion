@@ -1,4 +1,4 @@
-package com.btxtech.server.repository;
+package com.btxtech.server.repository.ui;
 
 import com.btxtech.server.model.ui.TerrainObjectGeneratorEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,7 +1,7 @@
 package com.btxtech.server.service.ui;
 
 import com.btxtech.server.model.ui.BabylonMaterialEntity;
-import com.btxtech.server.repository.BabylonMaterialRepository;
+import com.btxtech.server.repository.ui.BabylonMaterialRepository;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

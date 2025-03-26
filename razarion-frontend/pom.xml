@@ -72,7 +72,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.basedir}/../razarion-server/src/main/resources/static</outputDirectory>
+              <outputDirectory>${project.basedir}/../razarion-server/src/main/resources/generated</outputDirectory>
               <resources>
                 <resource>
                   <directory>${project.basedir}/dist/razarion-frontend/browser</directory>

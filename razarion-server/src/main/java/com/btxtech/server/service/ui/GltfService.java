@@ -1,8 +1,8 @@
 package com.btxtech.server.service.ui;
 
-import com.btxtech.server.model.ui.GltfBabylonMaterial;
+import com.btxtech.server.model.ui.GltfBabylonMaterialEntity;
 import com.btxtech.server.model.ui.GltfEntity;
-import com.btxtech.server.repository.GltfRepository;
+import com.btxtech.server.repository.ui.GltfRepository;
 import com.btxtech.server.rest.ui.GltfController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import jakarta.transaction.Transactional;
@@ -57,7 +57,7 @@ public class GltfService extends AbstractBaseEntityCrudService<GltfEntity> {
         dbGltfEntity.setInternalName(gltfEntity.getInternalName());
         if (gltfEntity.getMaterialGltfNames() != null) {
             gltfEntity.getMaterialGltfNames().forEach((gltfMaterialName, babylonMaterialId) ->
-                    dbGltfEntity.getGltfBabylonMaterials().add(new GltfBabylonMaterial()
+                    dbGltfEntity.getGltfBabylonMaterials().add(new GltfBabylonMaterialEntity()
                             .babylonMaterialEntity(babylonMaterialPersistence.getEntity(babylonMaterialId))
                             .gltfMaterialName(gltfMaterialName)
                     ));

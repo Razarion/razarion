@@ -51,4 +51,13 @@ public class TrackingStart extends DetailedTracking {
         this.browserWindowDimension = browserWindowDimension;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "TrackingStart{" +
+                "gameSessionUuid='" + gameSessionUuid + '\'' +
+                ", planetId=" + planetId +
+                ", browserWindowDimension=" + browserWindowDimension +
+                '}';
+    }
 }

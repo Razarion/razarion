@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "GLTF_BABYLON_MATERIAL")
-public class GltfBabylonMaterial {
+public class GltfBabylonMaterialEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,12 +39,12 @@ public class GltfBabylonMaterial {
         this.gltfMaterialName = materialKey;
     }
 
-    public GltfBabylonMaterial babylonMaterialEntity(BabylonMaterialEntity babylonMaterialEntity) {
+    public GltfBabylonMaterialEntity babylonMaterialEntity(BabylonMaterialEntity babylonMaterialEntity) {
         setBabylonMaterialEntity(babylonMaterialEntity);
         return this;
     }
 
-    public GltfBabylonMaterial gltfMaterialName(String gltfMaterialName) {
+    public GltfBabylonMaterialEntity gltfMaterialName(String gltfMaterialName) {
         setGltfMaterialName(gltfMaterialName);
         return this;
     }
