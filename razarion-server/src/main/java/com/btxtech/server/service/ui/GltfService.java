@@ -6,23 +6,21 @@ import com.btxtech.server.repository.ui.GltfRepository;
 import com.btxtech.server.rest.ui.GltfController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class GltfService extends AbstractBaseEntityCrudService<GltfEntity> {
-    @Autowired
-    private GltfRepository gltfRepository;
-    @Inject
-    private BabylonMaterialService babylonMaterialPersistence;
+    private final GltfRepository gltfRepository;
+    private final BabylonMaterialService babylonMaterialPersistence;
 
-    public GltfService() {
+    public GltfService(GltfRepository gltfRepository, BabylonMaterialService babylonMaterialPersistence) {
         super(GltfEntity.class);
+        this.gltfRepository = gltfRepository;
+        this.babylonMaterialPersistence = babylonMaterialPersistence;
     }
 
     @Override

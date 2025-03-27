@@ -8,19 +8,18 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class ParticleSystemService extends AbstractBaseEntityCrudService<ParticleSystemEntity> {
-    @Inject
-    private ImagePersistence imagePersistence;
-    @Inject
-    private ParticleSystemRepository particleSystemRepository;
+    private final ImagePersistence imagePersistence;
+    private final ParticleSystemRepository particleSystemRepository;
 
-    public ParticleSystemService() {
+    public ParticleSystemService(ImagePersistence imagePersistence, ParticleSystemRepository particleSystemRepository) {
         super(ParticleSystemEntity.class);
+        this.imagePersistence = imagePersistence;
+        this.particleSystemRepository = particleSystemRepository;
     }
 
     @Override

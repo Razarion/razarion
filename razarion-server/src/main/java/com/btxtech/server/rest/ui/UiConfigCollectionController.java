@@ -5,7 +5,6 @@ import com.btxtech.server.service.ui.BabylonMaterialService;
 import com.btxtech.server.service.ui.GltfService;
 import com.btxtech.server.service.ui.Model3DService;
 import com.btxtech.server.service.ui.ParticleSystemService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,14 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/rest/ui-config-collection")
 public class UiConfigCollectionController {
-    @Autowired
-    private BabylonMaterialService babylonMaterialPersistence;
-    @Autowired
-    private GltfService gltfPersistence;
-    @Autowired
-    private Model3DService model3DPersistence;
-    @Autowired
-    private ParticleSystemService particleSystemPersistence;
+    private final BabylonMaterialService babylonMaterialPersistence;
+    private final GltfService gltfPersistence;
+    private final Model3DService model3DPersistence;
+    private final ParticleSystemService particleSystemPersistence;
+
+    public UiConfigCollectionController(BabylonMaterialService babylonMaterialPersistence, GltfService gltfPersistence, Model3DService model3DPersistence, ParticleSystemService particleSystemPersistence) {
+        this.babylonMaterialPersistence = babylonMaterialPersistence;
+        this.gltfPersistence = gltfPersistence;
+        this.model3DPersistence = model3DPersistence;
+        this.particleSystemPersistence = particleSystemPersistence;
+    }
 
     @GetMapping(value = "/get", produces = "application/json")
     public UiConfigCollection getUiConfigCollection() {

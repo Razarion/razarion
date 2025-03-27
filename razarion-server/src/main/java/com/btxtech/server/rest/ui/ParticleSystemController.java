@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -28,8 +27,11 @@ import static com.btxtech.server.service.PersistenceUtil.extractId;
 @RequestMapping("/rest/editor/particle-system/")
 public class ParticleSystemController extends AbstractBaseController<ParticleSystemEntity> {
     private final Logger logger = Logger.getLogger(ParticleSystemController.class.getName());
-    @Inject
-    private ParticleSystemService particleSystemCrudPersistence;
+    private final ParticleSystemService particleSystemCrudPersistence;
+
+    public ParticleSystemController(ParticleSystemService particleSystemCrudPersistence) {
+        this.particleSystemCrudPersistence = particleSystemCrudPersistence;
+    }
 
     public static ParticleSystemEntity jpa2JsonStatic(ParticleSystemEntity particleSystemEntity) {
         particleSystemEntity.setImageId(extractId(particleSystemEntity.getImageLibraryEntity(), ImageLibraryEntity::getId));

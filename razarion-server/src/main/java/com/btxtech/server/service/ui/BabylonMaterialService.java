@@ -4,18 +4,17 @@ import com.btxtech.server.model.ui.BabylonMaterialEntity;
 import com.btxtech.server.repository.ui.BabylonMaterialRepository;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class BabylonMaterialService extends AbstractBaseEntityCrudService<BabylonMaterialEntity> {
-    @Autowired
-    private BabylonMaterialRepository babylonMaterialRepository;
+    private final BabylonMaterialRepository babylonMaterialRepository;
 
-    public BabylonMaterialService() {
+    public BabylonMaterialService(BabylonMaterialRepository babylonMaterialRepository) {
         super(BabylonMaterialEntity.class);
+        this.babylonMaterialRepository = babylonMaterialRepository;
     }
 
     @Transactional

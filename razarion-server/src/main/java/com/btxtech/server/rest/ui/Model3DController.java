@@ -9,7 +9,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,8 +22,11 @@ import java.util.logging.Logger;
 @RequestMapping(CommonUrl.MODEL_3D_CONTROLLER)
 public class Model3DController extends AbstractBaseController<Model3DEntity> {
     private final Logger logger = Logger.getLogger(Model3DController.class.getName());
-    @Inject
-    private Model3DService model3DCrudPersistence;
+    private final Model3DService model3DCrudPersistence;
+
+    public Model3DController(Model3DService model3DCrudPersistence) {
+        this.model3DCrudPersistence = model3DCrudPersistence;
+    }
 
     public static Model3DEntity jpa2JsonStatic(Model3DEntity model3DEntity) {
         if (model3DEntity.getGltfEntity() != null) {

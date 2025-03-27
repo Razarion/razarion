@@ -9,19 +9,18 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class Model3DService extends AbstractBaseEntityCrudService<Model3DEntity> {
-    @Inject
-    private Model3DRepository model3DRepository;
-    @Inject
-    private GltfService gltfPersistence;
+    private final Model3DRepository model3DRepository;
+    private final GltfService gltfPersistence;
 
-    public Model3DService() {
+    public Model3DService(Model3DRepository model3DRepository, GltfService gltfPersistence) {
         super(Model3DEntity.class);
+        this.model3DRepository = model3DRepository;
+        this.gltfPersistence = gltfPersistence;
     }
 
     @Override

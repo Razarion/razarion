@@ -7,13 +7,14 @@ import com.btxtech.shared.CommonUrl;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-
 @RestController
 @RequestMapping(CommonUrl.BRUSH_EDITOR_PATH)
 public class BrushConfigController extends AbstractBaseController<BrushConfigEntity> {
-    @Inject
-    private BrushConfigService persistenceService;
+    private final BrushConfigService persistenceService;
+
+    public BrushConfigController(BrushConfigService persistenceService) {
+        this.persistenceService = persistenceService;
+    }
 
     @Override
     protected AbstractBaseEntityCrudService<BrushConfigEntity> getEntityCrudPersistence() {

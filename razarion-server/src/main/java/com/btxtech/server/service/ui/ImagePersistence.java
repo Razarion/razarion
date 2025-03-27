@@ -5,8 +5,6 @@ import com.btxtech.server.repository.ui.ImageRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-
 /**
  * Created by Beat
  * 21.10.2016.
@@ -14,8 +12,11 @@ import javax.inject.Inject;
 @Service
 public class ImagePersistence {
 
-    @Inject
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
+
+    public ImagePersistence(ImageRepository imageRepository) {
+        this.imageRepository = imageRepository;
+    }
 
 //    @Transactional
 //    public Image getImage(int id) {

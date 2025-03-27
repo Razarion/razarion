@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -24,9 +23,11 @@ import javax.ws.rs.core.MediaType;
 @RequestMapping("/rest/babylon-material")
 public class BabylonMaterialController extends AbstractBaseController<BabylonMaterialEntity> {
     private final Logger logger = LoggerFactory.getLogger(BabylonMaterialController.class);
+    private final BabylonMaterialService babylonMaterialPersistence;
 
-    @Inject
-    private BabylonMaterialService babylonMaterialPersistence;
+    public BabylonMaterialController(BabylonMaterialService babylonMaterialPersistence) {
+        this.babylonMaterialPersistence = babylonMaterialPersistence;
+    }
 
     @Override
     protected AbstractBaseEntityCrudService<BabylonMaterialEntity> getEntityCrudPersistence() {

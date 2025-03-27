@@ -7,13 +7,14 @@ import com.btxtech.shared.CommonUrl;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-
 @RestController
 @RequestMapping(CommonUrl.TERRAIN_OBJECT_GENERATOR_EDITOR_PATH)
 public class TerrainObjectGeneratorController extends AbstractBaseController<TerrainObjectGeneratorEntity> {
-    @Inject
-    private TerrainObjectGeneratorService terrainObjectGeneratorPersistence;
+    private final TerrainObjectGeneratorService terrainObjectGeneratorPersistence;
+
+    public TerrainObjectGeneratorController(TerrainObjectGeneratorService terrainObjectGeneratorPersistence) {
+        this.terrainObjectGeneratorPersistence = terrainObjectGeneratorPersistence;
+    }
 
     @Override
     protected AbstractBaseEntityCrudService<TerrainObjectGeneratorEntity> getEntityCrudPersistence() {
