@@ -5,7 +5,6 @@ import com.btxtech.server.repository.ui.ParticleSystemRepository;
 import com.btxtech.server.rest.ui.ParticleSystemController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,17 +13,10 @@ import java.util.stream.Collectors;
 @Service
 public class ParticleSystemService extends AbstractBaseEntityCrudService<ParticleSystemEntity> {
     private final ImagePersistence imagePersistence;
-    private final ParticleSystemRepository particleSystemRepository;
 
     public ParticleSystemService(ImagePersistence imagePersistence, ParticleSystemRepository particleSystemRepository) {
-        super(ParticleSystemEntity.class);
+        super(ParticleSystemEntity.class, particleSystemRepository);
         this.imagePersistence = imagePersistence;
-        this.particleSystemRepository = particleSystemRepository;
-    }
-
-    @Override
-    protected JpaRepository<ParticleSystemEntity, Integer> getJpaRepository() {
-        return particleSystemRepository;
     }
 
     @Transactional
@@ -44,7 +36,7 @@ public class ParticleSystemService extends AbstractBaseEntityCrudService<Particl
     public void setData(int id, byte[] data) {
         ParticleSystemEntity entity = getEntity(id);
         entity.setData(data);
-        particleSystemRepository.save(entity);
+        getJpaRepository().save(entity);
     }
 
     @Override

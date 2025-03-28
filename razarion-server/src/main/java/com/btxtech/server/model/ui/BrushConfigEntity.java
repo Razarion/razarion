@@ -1,6 +1,6 @@
 package com.btxtech.server.model.ui;
 
-import com.btxtech.server.service.BaseEntity;
+import com.btxtech.server.model.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;

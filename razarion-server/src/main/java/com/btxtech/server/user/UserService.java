@@ -1,5 +1,6 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.service.engine.LevelCrudPersistence;
 import com.btxtech.shared.datatypes.UserContext;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserService {
-    public UserContext getUserContextFromSession() {
-        return new UserContext().registerState(UserContext.RegisterState.UNREGISTERED);
+    private final LevelCrudPersistence levelCrudPersistence;
+
+    public UserService(LevelCrudPersistence levelCrudPersistence) {
+        this.levelCrudPersistence = levelCrudPersistence;
+    }
+
+    public UserContext createUserContext() {
+        return new UserContext()
+                .levelId(levelCrudPersistence.getStarterLevelId())
+                .registerState(UserContext.RegisterState.UNREGISTERED);
     }
 }

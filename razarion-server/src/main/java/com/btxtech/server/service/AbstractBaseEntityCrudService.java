@@ -1,5 +1,6 @@
 package com.btxtech.server.service;
 
+import com.btxtech.server.model.BaseEntity;
 import com.btxtech.shared.dto.ObjectNameId;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,21 +11,20 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractBaseEntityCrudService<E extends BaseEntity> {
     private final Class<E> entityClass;
+    private final JpaRepository<E, Integer> jpaRepository;
 
-    @Deprecated
-    public AbstractBaseEntityCrudService(Class<E> entityClass, Object id, Object internalName) {
+    public AbstractBaseEntityCrudService(Class<E> entityClass, JpaRepository<E, Integer> jpaRepository) {
         this.entityClass = entityClass;
+        this.jpaRepository = jpaRepository;
     }
 
-    public AbstractBaseEntityCrudService(Class<E> entityClass) {
-        this.entityClass = entityClass;
+    public final JpaRepository<E, Integer> getJpaRepository() {
+        return jpaRepository;
     }
-
-    protected abstract JpaRepository<E, Integer> getJpaRepository();
 
     @Transactional
     public List<ObjectNameId> getObjectNameIds() {
-        return getJpaRepository()
+        return jpaRepository
                 .findAll()
                 .stream()
                 .map(baseEntity -> new ObjectNameId(baseEntity.getId(), baseEntity.getInternalName()))
@@ -33,8 +33,8 @@ public abstract class AbstractBaseEntityCrudService<E extends BaseEntity> {
 
     @Transactional
     public void delete(int id) {
-        getJpaRepository().findById(id).orElseThrow();
-        getJpaRepository().deleteById(id);
+        jpaRepository.findById(id).orElseThrow();
+        jpaRepository.deleteById(id);
     }
 
     protected E newEntity() {
@@ -49,19 +49,19 @@ public abstract class AbstractBaseEntityCrudService<E extends BaseEntity> {
         if (id == null) {
             return null;
         }
-        return getJpaRepository()
+        return jpaRepository
                 .findById(id)
                 .orElseThrow();
     }
 
     public List<E> getEntities() {
-        return new ArrayList<>(getJpaRepository().findAll());
+        return new ArrayList<>(jpaRepository.findAll());
     }
 
     @Transactional
     public E createBaseEntity() {
         E e = newEntity();
-        getJpaRepository().save(e);
+        jpaRepository.save(e);
         return e;
     }
 
@@ -72,7 +72,7 @@ public abstract class AbstractBaseEntityCrudService<E extends BaseEntity> {
 
     @Transactional
     public void updateBaseEntity(E entity) {
-        getJpaRepository().save(entity);
+        jpaRepository.save(entity);
     }
 
     @Transactional

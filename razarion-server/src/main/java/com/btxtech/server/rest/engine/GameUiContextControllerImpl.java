@@ -1,6 +1,6 @@
-package com.btxtech.server.rest;
+package com.btxtech.server.rest.engine;
 
-import com.btxtech.server.service.GameUiContextService;
+import com.btxtech.server.service.ui.GameUiContextService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.UserContext;
@@ -36,7 +36,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
     @Override
     @PostMapping(value = CommonUrl.COLD, produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
     public ColdGameUiContext loadColdGameUiContext(GameUiControlInput gameUiControlInput) {
-        UserContext userContext = userService.getUserContextFromSession();
+        UserContext userContext = userService.createUserContext();
         try {
             return gameUiContextService.loadCold(gameUiControlInput, userContext);
         } catch (Throwable e) {
@@ -49,7 +49,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
     @GetMapping(value = CommonUrl.WARM, produces = MediaType.APPLICATION_JSON)
     public WarmGameUiContext loadWarmGameUiContext() {
         try {
-            UserContext userContext = userService.getUserContextFromSession();
+            UserContext userContext = userService.createUserContext();
             return gameUiContextService.loadWarm(userContext);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);

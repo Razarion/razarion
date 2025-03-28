@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum CollectionReferenceType {
-    LEVEL(LevelEditorController.class, "Level", CommonUrl.LEVEL_EDITOR_PATH),
     PLANET(PlanetEditorController.class, "Planet", CommonUrl.PLANET_EDITOR_PATH),
     GROUND(GroundEditorController.class, "Ground", CommonUrl.GROUND_EDITOR_PATH),
     GAME_UI_CONTEXT(GameUiContextEditorController.class, "Game Ui Context", CommonUrl.GAME_UI_CONTEXT_EDITOR_PATH),

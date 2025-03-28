@@ -1,5 +1,6 @@
 import {Injectable, NgZone} from "@angular/core";
-import {GwtAngularFacade} from "./GwtAngularFacade";
+import {GwtAngularBoot, GwtAngularFacade} from "./GwtAngularFacade";
+import {BabylonModelService} from '../game/renderer/babylon-model.service';
 
 declare global {
   interface Window {
@@ -14,7 +15,7 @@ export class GwtAngularService {
   gwtAngularFacade!: GwtAngularFacade;
   crashListener!: () => void;
 
-  constructor(zone: NgZone/* TODO , babylonModelService: BabylonModelService*/) {
+  constructor(zone: NgZone, babylonModelService: BabylonModelService) {
     const self = this;
     this.gwtAngularFacade = new class extends GwtAngularFacade {
       onCrash(): void {
@@ -23,11 +24,11 @@ export class GwtAngularService {
         });
       }
     };
-    // TODO this.gwtAngularFacade.gwtAngularBoot = new class implements GwtAngularBoot {
-    //   loadThreeJsModels() {
-    //     return babylonModelService.init();
-    //   };
-    // }
+    this.gwtAngularFacade.gwtAngularBoot = new class implements GwtAngularBoot {
+      loadThreeJsModels() {
+        return babylonModelService.init();
+      };
+    }
     window.gwtAngularFacade = this.gwtAngularFacade;
   }
 }

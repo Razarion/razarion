@@ -1,4 +1,4 @@
-package com.btxtech.server.service;
+package com.btxtech.server.model;
 
 
 import jakarta.persistence.GeneratedValue;

@@ -6,7 +6,6 @@ import com.btxtech.server.repository.ui.Model3DRepository;
 import com.btxtech.server.rest.ui.Model3DController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,22 +13,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class Model3DService extends AbstractBaseEntityCrudService<Model3DEntity> {
-    private final Model3DRepository model3DRepository;
-    private final GltfService gltfPersistence;
+    private final GltfService gltfService;
 
-    public Model3DService(Model3DRepository model3DRepository, GltfService gltfPersistence) {
-        super(Model3DEntity.class);
-        this.model3DRepository = model3DRepository;
-        this.gltfPersistence = gltfPersistence;
-    }
-
-    @Override
-    protected JpaRepository<Model3DEntity, Integer> getJpaRepository() {
-        return model3DRepository;
+    public Model3DService(Model3DRepository model3DRepository, GltfService gltfService) {
+        super(Model3DEntity.class, model3DRepository);
+        this.gltfService = gltfService;
     }
 
     public List<Model3DEntity> getModel3DsByGltf(int gltfId) {
-        return model3DRepository.getModel3DsByGltfEntity((GltfEntity) new GltfEntity().id(gltfId));
+        return ((Model3DRepository) getJpaRepository()).getModel3DsByGltfEntity((GltfEntity) new GltfEntity().id(gltfId));
     }
 
     @Transactional
@@ -43,7 +35,7 @@ public class Model3DService extends AbstractBaseEntityCrudService<Model3DEntity>
     @Override
     protected Model3DEntity jsonToJpa(Model3DEntity model3DEntity) {
         if (model3DEntity.getGltfEntityId() != null) {
-            model3DEntity.setGltfEntity(gltfPersistence.getEntity(model3DEntity.getGltfEntityId()));
+            model3DEntity.setGltfEntity(gltfService.getEntity(model3DEntity.getGltfEntityId()));
         }
         return model3DEntity;
     }

@@ -4,17 +4,14 @@ import com.btxtech.server.model.ui.BabylonMaterialEntity;
 import com.btxtech.server.repository.ui.BabylonMaterialRepository;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class BabylonMaterialService extends AbstractBaseEntityCrudService<BabylonMaterialEntity> {
-    private final BabylonMaterialRepository babylonMaterialRepository;
 
     public BabylonMaterialService(BabylonMaterialRepository babylonMaterialRepository) {
-        super(BabylonMaterialEntity.class);
-        this.babylonMaterialRepository = babylonMaterialRepository;
+        super(BabylonMaterialEntity.class, babylonMaterialRepository);
     }
 
     @Transactional
@@ -27,12 +24,6 @@ public class BabylonMaterialService extends AbstractBaseEntityCrudService<Babylo
         BabylonMaterialEntity entity = getEntity(id);
         entity.setData(data);
         throw new UnsupportedOperationException("...TODO... entityManager.merge(entity)");
-    }
-
-
-    @Override
-    protected JpaRepository<BabylonMaterialEntity, Integer> getJpaRepository() {
-        return babylonMaterialRepository;
     }
 
     @Override

@@ -4,18 +4,23 @@ package com.btxtech.shared.dto;
  * Created by Beat
  * 25.12.2016.
  */
-public class AudioItemConfig {
+public class AudioItemConfig implements Config {
     private int id;
     private String type;
     private int size;
     private String internalName;
     private String dataUrl;
 
+    @Override
     public int getId() {
         return id;
     }
 
-    public AudioItemConfig setId(int id) {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public AudioItemConfig id(int id) {
         this.id = id;
         return this;
     }
@@ -24,7 +29,11 @@ public class AudioItemConfig {
         return type;
     }
 
-    public AudioItemConfig setType(String type) {
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public AudioItemConfig type(String type) {
         this.type = type;
         return this;
     }
@@ -33,18 +42,33 @@ public class AudioItemConfig {
         return size;
     }
 
-    public AudioItemConfig setSize(int size) {
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public AudioItemConfig size(int size) {
         this.size = size;
         return this;
     }
 
+    public AudioItemConfig internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
+    }
+
+    @Override
     public String getInternalName() {
         return internalName;
     }
 
-    public AudioItemConfig setInternalName(String internalName) {
+    @Override
+    public void setInternalName(String internalName) {
         this.internalName = internalName;
-        return this;
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return Config.super.createObjectNameId();
     }
 
     public String getDataUrl() {

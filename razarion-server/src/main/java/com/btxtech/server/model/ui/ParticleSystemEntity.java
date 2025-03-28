@@ -1,6 +1,6 @@
 package com.btxtech.server.model.ui;
 
-import com.btxtech.server.service.BaseEntity;
+import com.btxtech.server.model.BaseEntity;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.system.Nullable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
