@@ -1,4 +1,4 @@
-package com.btxtech.server.rest.engine;
+package com.btxtech.server.rest.ui;
 
 import com.btxtech.server.service.ui.GameUiContextService;
 import com.btxtech.server.user.UserService;

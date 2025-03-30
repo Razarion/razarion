@@ -1,6 +1,7 @@
 package com.btxtech.server.rest.ui;
 
 import com.btxtech.server.model.ui.Model3DEntity;
+import com.btxtech.server.rest.AbstractBaseController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.Model3DService;
 import com.btxtech.server.user.SecurityCheck;

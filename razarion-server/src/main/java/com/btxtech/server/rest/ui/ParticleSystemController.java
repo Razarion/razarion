@@ -2,6 +2,7 @@ package com.btxtech.server.rest.ui;
 
 import com.btxtech.server.model.ui.ImageLibraryEntity;
 import com.btxtech.server.model.ui.ParticleSystemEntity;
+import com.btxtech.server.rest.AbstractBaseController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.server.user.SecurityCheck;

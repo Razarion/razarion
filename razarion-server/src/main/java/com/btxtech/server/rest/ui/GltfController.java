@@ -1,6 +1,7 @@
 package com.btxtech.server.rest.ui;
 
 import com.btxtech.server.model.ui.GltfEntity;
+import com.btxtech.server.rest.AbstractBaseController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.GltfService;
 import com.btxtech.server.user.SecurityCheck;

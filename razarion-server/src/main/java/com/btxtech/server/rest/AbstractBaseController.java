@@ -1,7 +1,7 @@
-package com.btxtech.server.rest.ui;
+package com.btxtech.server.rest;
 
-import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.model.BaseEntity;
+import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.ObjectNameId;
 import jakarta.transaction.Transactional;

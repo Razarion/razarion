@@ -24,7 +24,7 @@ public class UiConfigCollectionController {
         this.particleSystemPersistence = particleSystemPersistence;
     }
 
-    @GetMapping(value = "/get", produces = "application/json")
+    @GetMapping(value = "get", produces = "application/json")
     public UiConfigCollection getUiConfigCollection() {
         return new UiConfigCollection()
                 .babylonMaterials(babylonMaterialPersistence.readAllBaseEntities())

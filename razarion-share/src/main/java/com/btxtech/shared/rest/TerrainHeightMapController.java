@@ -18,5 +18,5 @@ public interface TerrainHeightMapController {
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("{id}")
-    Response getCompressedHeightMap(@PathParam("id") int planetId);
+    Object getCompressedHeightMap(@PathParam("id") int planetId);
 }
