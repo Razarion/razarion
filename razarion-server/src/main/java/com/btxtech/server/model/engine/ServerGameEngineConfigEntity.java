@@ -27,11 +27,11 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
     @JoinColumn(name = "serverGameEngineId", nullable = false)
     private List<StartRegionConfigEntity> startRegionConfigs;
     // TODO BotConfigEntity in "BOT_CONFIG" table not getting removed if an entity from this list is removed. Same in SceneEntity
-//    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinTable(name = "SERVER_GAME_ENGINE_BOT_CONFIG",
-//            joinColumns = @JoinColumn(name = "serverGameEngineId"),
-//            inverseJoinColumns = @JoinColumn(name = "botConfigId"))
-//    private List<BotConfigEntity> botConfigs;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "SERVER_GAME_ENGINE_BOT_CONFIG",
+            joinColumns = @JoinColumn(name = "serverGameEngineId"),
+            inverseJoinColumns = @JoinColumn(name = "botConfigId"))
+    private List<BotConfigEntity> botConfigs;
 //    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    @JoinColumn(nullable = false, name = "serverGameEngineConfig")
 //    private List<ServerLevelQuestEntity> serverLevelQuestEntities;
@@ -42,8 +42,8 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
                 .internalName(getInternalName())
                 .planetConfigId(extractId(planetEntity, PlanetEntity::getId))
         //.resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
-        .startRegionConfigs(toConfigList(startRegionConfigs, StartRegionConfigEntity::toStartRegionConfig));
-        //.botConfigs(toConfigList(botConfigs, BotConfigEntity::toBotConfig))
+        .startRegionConfigs(toConfigList(startRegionConfigs, StartRegionConfigEntity::toStartRegionConfig))
+        .botConfigs(toConfigList(botConfigs, BotConfigEntity::toBotConfig));
         //.serverLevelQuestConfig(toConfigList(serverLevelQuestEntities, ServerLevelQuestEntity::toServerLevelQuestConfig))
         //.boxRegionConfigs(toConfigList(boxRegionConfigs, ServerBoxRegionConfigEntity::toBoxRegionConfig));
     }

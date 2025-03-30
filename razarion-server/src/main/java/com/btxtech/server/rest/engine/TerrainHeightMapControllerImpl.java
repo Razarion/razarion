@@ -33,6 +33,7 @@ public class TerrainHeightMapControllerImpl implements TerrainHeightMapControlle
                 return ResponseEntity
                         .ok()
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                        .header(HttpHeaders.CONTENT_ENCODING, "gzip")
                         .body(compressedHeightMap);
             } else {
                 logger.error("Planet {} has no compressed heightmap", planetId);

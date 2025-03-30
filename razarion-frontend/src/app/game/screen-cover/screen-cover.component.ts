@@ -31,7 +31,7 @@ export class ScreenCoverComponent implements ScreenCover {
 
   onStartupProgress(percent: number): void {
     this.zone.run(() => {
-      this.loadingProgress = percent;
+      this.loadingProgress = Math.floor(percent);
     });
   }
 
