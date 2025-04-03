@@ -1,12 +1,15 @@
 package com.btxtech.server.service.engine;
 
+import com.btxtech.server.RazarionServerEventListener;
 import com.btxtech.server.model.engine.ServerGameEngineConfigEntity;
 import com.btxtech.server.repository.engine.ServerGameEngineConfigRepository;
-import com.btxtech.shared.dto.ServerGameEngineConfig;
-import com.btxtech.shared.dto.SlavePlanetConfig;
+import com.btxtech.shared.dto.*;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.function.Supplier;
 
 /**
@@ -15,6 +18,7 @@ import java.util.function.Supplier;
  */
 @Service
 public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersistence<ServerGameEngineConfig, ServerGameEngineConfigEntity> {
+    private final Logger logger = LoggerFactory.getLogger(ServerGameEngineCrudPersistence.class);
     private final LevelCrudPersistence levelCrudPersistence;
 
     public ServerGameEngineCrudPersistence(ServerGameEngineConfigRepository serverGameEngineConfigRepository, LevelCrudPersistence levelCrudPersistence) {
@@ -50,5 +54,20 @@ public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersisten
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         }
+    }
+
+    @Transactional
+    public MasterPlanetConfig readMasterPlanetConfig() {
+        try {
+            return serverGameEngineConfigEntity().getMasterPlanetConfig();
+        } catch (Throwable t) {
+            logger.warn("Using fallback. Error reading MasterPlanetConfig: " + t.getMessage(), t);
+            return FallbackConfig.setupMasterPlanetConfig();
+        }
+    }
+
+    @Transactional
+    public Collection<BoxRegionConfig> readBoxRegionConfigs() {
+        return serverGameEngineConfigEntity().getBoxRegionConfigs();
     }
 }

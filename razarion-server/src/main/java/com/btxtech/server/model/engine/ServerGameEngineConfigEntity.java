@@ -1,11 +1,12 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.shared.dto.ServerGameEngineConfig;
-import com.btxtech.shared.dto.SlavePlanetConfig;
+import com.btxtech.shared.dto.*;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.btxtech.server.service.PersistenceUtil.extractId;
@@ -16,13 +17,12 @@ import static com.btxtech.server.service.PersistenceUtil.toConfigList;
 public class ServerGameEngineConfigEntity extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private PlanetEntity planetEntity;
-
-//    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "serverGameEngineId", nullable = false)
-//    private List<ServerResourceRegionConfigEntity> resourceRegionConfigs;
-//    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "serverGameEngineId", nullable = false)
-//    private List<ServerBoxRegionConfigEntity> boxRegionConfigs;
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "serverGameEngineId", nullable = false)
+    private List<ServerResourceRegionConfigEntity> resourceRegionConfigs;
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "serverGameEngineId", nullable = false)
+    private List<ServerBoxRegionConfigEntity> boxRegionConfigs;
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "serverGameEngineId", nullable = false)
     private List<StartRegionConfigEntity> startRegionConfigs;
@@ -41,7 +41,7 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
                 .id(getId())
                 .internalName(getInternalName())
                 .planetConfigId(extractId(planetEntity, PlanetEntity::getId))
-        //.resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
+        .resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
         .startRegionConfigs(toConfigList(startRegionConfigs, StartRegionConfigEntity::toStartRegionConfig))
         .botConfigs(toConfigList(botConfigs, BotConfigEntity::toBotConfig));
         //.serverLevelQuestConfig(toConfigList(serverLevelQuestEntities, ServerLevelQuestEntity::toServerLevelQuestConfig))
@@ -56,6 +56,26 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
         }
     }
 
+    public MasterPlanetConfig getMasterPlanetConfig() {
+        List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
+        if (this.resourceRegionConfigs != null) {
+            for (ServerResourceRegionConfigEntity resourceRegionConfig : this.resourceRegionConfigs) {
+                resourceRegionConfigs.add(resourceRegionConfig.toResourceRegionConfig());
+            }
+        }
+        return new MasterPlanetConfig().setResourceRegionConfigs(resourceRegionConfigs);
+    }
+
+    public Collection<BoxRegionConfig> getBoxRegionConfigs() {
+        Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
+        if (this.boxRegionConfigs == null) {
+            return boxRegionConfigs;
+        }
+        for (ServerBoxRegionConfigEntity serverBoxRegionConfigEntity : this.boxRegionConfigs) {
+            boxRegionConfigs.add(serverBoxRegionConfigEntity.toBoxRegionConfig());
+        }
+        return boxRegionConfigs;
+    }
 
     public SlavePlanetConfig findSlavePlanetConfig4Level(int levelNumber) {
         if (startRegionConfigs == null) {

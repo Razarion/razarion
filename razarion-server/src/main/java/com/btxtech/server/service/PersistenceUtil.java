@@ -19,6 +19,18 @@ public class PersistenceUtil {
         return null;
     }
 
+    public static <E, C> E fromConfig(E outputEntity, C inputConfig, Supplier<E> entityCreator, BiConsumer<E, C> entityFiller) {
+        if (inputConfig == null) {
+            return null;
+        }
+        if (outputEntity == null) {
+            outputEntity = entityCreator.get();
+        }
+        entityFiller.accept(outputEntity, inputConfig);
+
+        return outputEntity;
+    }
+
     public static Map<Integer, Integer> extractItemTypeLimitation(Map<BaseItemTypeEntity, Integer> itemTypeLimitation) {
         if (itemTypeLimitation != null) {
             return itemTypeLimitation.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().getId(), Map.Entry::getValue, (a, b) -> b));

@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,27 +10,42 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.util.ArrayList;
+import java.io.IOException;
 
 public class ClientGameConnection {
+    public static final ObjectMapper MAPPER = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(ClientGameConnection.class);
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final WebSocketSession session;
+    private final PlanetService planetService;
     private String gameSessionUuid;
 
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
+    public ClientGameConnection(WebSocketSession session, PlanetService planetService) {
+        this.session = session;
+        this.planetService = planetService;
+    }
+
+    public void handleMessage(WebSocketMessage<?> message) {
         try {
             var text = message.getPayload().toString();
             GameConnectionPacket packet = ConnectionMarshaller.deMarshallPackage(text, GameConnectionPacket.class);
             String payload = ConnectionMarshaller.deMarshallPayload(text);
-            Object param = mapper.readValue(payload, packet.getTheClass());
+            Object param = MAPPER.readValue(payload, packet.getTheClass());
             onPackageReceived(packet, param);
         } catch (Throwable t) {
             logger.warn("message: {} session: {}", message, session, t);
         }
     }
 
-    public void onOpen(WebSocketSession session) {
-        sendInitialSlaveSyncInfo(session);
+    public void sendToClient(String text) throws IOException {
+        session.sendMessage(new TextMessage(text));
+    }
+
+    public void sendInitialSlaveSyncInfo(int userId) {
+        try {
+            sendToClient(GameConnectionPacket.INITIAL_SLAVE_SYNC_INFO, planetService.generateSlaveSyncItemInfo(userId));
+        } catch (Throwable throwable) {
+            logger.warn("throwable", throwable);
+        }
     }
 
     private void onPackageReceived(GameConnectionPacket packet, Object param) {
@@ -68,22 +83,9 @@ public class ClientGameConnection {
         }
     }
 
-    private void sendInitialSlaveSyncInfo(WebSocketSession session) {
+    private void sendToClient(GameConnectionPacket packet, Object object) {
         try {
-            // TODO ----------------------
-            InitialSlaveSyncItemInfo initialSlaveSyncItemInfo = new InitialSlaveSyncItemInfo();
-            initialSlaveSyncItemInfo.setPlayerBaseInfos(new ArrayList<>());
-            initialSlaveSyncItemInfo.setSyncBaseItemInfos(new ArrayList<>());
-            // ----------------------
-            sendToClient(session, GameConnectionPacket.INITIAL_SLAVE_SYNC_INFO, initialSlaveSyncItemInfo/*TODOplanetServiceInstance.get().generateSlaveSyncItemInfo(userId)*/);
-        } catch (Throwable throwable) {
-            logger.warn("throwable", throwable);
-        }
-    }
-
-    private void sendToClient(WebSocketSession session, GameConnectionPacket packet, Object object) {
-        try {
-            String text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
+            String text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
             session.sendMessage(new TextMessage(text));
         } catch (Throwable throwable) {
             logger.warn("throwable", throwable);

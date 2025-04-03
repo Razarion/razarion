@@ -1,5 +1,6 @@
 package com.btxtech.server;
 
+import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
@@ -19,7 +20,7 @@ public class RazarionServerEventListener {
     private final Logger logger = LoggerFactory.getLogger(RazarionServerEventListener.class);
     private final ServerTerrainShapeService serverTerrainShapeService;
     private final StaticGameConfigService staticGameConfigPersistence;
-    // TODO private final ServerGameEngineControl gameEngineService;
+    private final ServerGameEngineControl gameEngineService;
     // TODO private final ChatPersistence chatPersistence;
     // TODO private ServerMgmt serverMgmt;
     private final AlarmService alarmService;
@@ -31,7 +32,7 @@ public class RazarionServerEventListener {
                                        AlarmService alarmService,
                                        // TODO ServerMgmt serverMgmt,
                                        // TODO ChatPersistence chatPersistence,
-                                       // TODO ServerGameEngineControl gameEngineService,
+                                       ServerGameEngineControl gameEngineService,
                                        StaticGameConfigService staticGameConfigPersistence,
                                        ServerTerrainShapeService serverTerrainShapeService) {
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
@@ -39,13 +40,13 @@ public class RazarionServerEventListener {
         this.alarmService = alarmService;
         // TODO this.serverMgmt = serverMgmt;
         // TODO this.chatPersistence = chatPersistence;
-        // TODO this.gameEngineService = gameEngineService;
+        this.gameEngineService = gameEngineService;
         this.staticGameConfigPersistence = staticGameConfigPersistence;
         this.serverTerrainShapeService = serverTerrainShapeService;
     }
 
     @EventListener
-    public void handleCustomEvent(ApplicationStartedEvent event) {
+    public void handleApplicationStartedEvent(ApplicationStartedEvent event) {
         // TODO serverMgmt.setServerState(ServerState.STARTING);
         alarmService.addListener(alarm -> {
             // Temporarily suppress INVALID_PROPERTY
@@ -64,12 +65,12 @@ public class RazarionServerEventListener {
         } catch (Exception e) {
             logger.error("start failed ", e);
         }
-//    TODO    try {
-//            gameEngineService.start(null, true);
-//        } catch (Exception e) {
-//            exceptionHandler.handleException(e);
-//        }
-//        try {
+        try {
+            gameEngineService.start(null, true);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+//   TODO     try {
 //            chatPersistence.fillCacheFromDb();
 //        } catch (Exception e) {
 //            exceptionHandler.handleException(e);
