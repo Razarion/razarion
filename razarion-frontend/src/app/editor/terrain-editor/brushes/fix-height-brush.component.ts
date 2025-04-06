@@ -35,26 +35,26 @@ class BrushValues {
   ],
   template: `
 
-    <div class="field grid align-items-center">
-      <div class="col-9">
+    <div class="field grid grid-cols-12 gap-4 items-center">
+      <div class="col-span-9">
         <p-dropdown [options]="brushes" [(ngModel)]="activeBrush"
                     optionLabel="name"
                     [style]="{ width: '100%' }"></p-dropdown>
       </div>
 
-      <div class="col-1">
+      <div class="col-span-1">
         <p-button type="button" icon="pi pi-plus"
                   styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
                   (onClick)="onCreateBrush()">
         </p-button>
       </div>
-      <div class="col-1">
+      <div class="col-span-1">
         <p-button type="button" icon="pi pi-save"
                   styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
                   (onClick)="onSaveBrush()">
         </p-button>
       </div>
-      <div class="col-1">
+      <div class="col-span-1">
         <p-button type="button" icon="pi pi-trash"
                   styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
                   (onClick)="onDeleteBrush()">
@@ -62,7 +62,7 @@ class BrushValues {
       </div>
     </div>
 
-    <div class="field grid align-items-center">
+    <div class="field grid grid-cols-12 gap-4 items-center">
       <span class="col">Id</span>
       <div class="col">
         <p-inputNumber [disabled]="true"
@@ -70,16 +70,16 @@ class BrushValues {
       </div>
     </div>
 
-    <div class="field grid align-items-center">
+    <div class="field grid grid-cols-12 gap-4 items-center">
       <span class="col">Name <span [style]="{'color':'red','font-weight':'bolder'}">(Bug: jump on save)</span></span>
       <div class="col">
         <input [(ngModel)]="activeBrush.value.internalName"
                type="text"
-               class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+               class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
       </div>
     </div>
 
-    <div class="field grid align-items-center">
+    <div class="field grid grid-cols-12 gap-4 items-center">
       <span class="col">Size [m]</span>
       <div class="col">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.diameter" class="w-full"/>
@@ -87,7 +87,7 @@ class BrushValues {
       </div>
     </div>
 
-    <div class="field grid align-items-center">
+    <div class="field grid grid-cols-12 gap-4 items-center">
       <span class="col">Height [m]</span>
       <div class="col">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.height" class="w-full"/>
@@ -95,7 +95,7 @@ class BrushValues {
       </div>
     </div>
 
-    <div class="field grid align-items-center">
+    <div class="field grid grid-cols-12 gap-4 items-center">
       <span class="col">Max slope width [m]</span>
       <div class="col">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.maxSlopeWidth" class="w-full"/>
@@ -104,7 +104,7 @@ class BrushValues {
       </div>
     </div>
 
-    <div class="field grid align-items-center">
+    <div class="field grid grid-cols-12 gap-4 items-center">
       <span class="col">Slope [&deg;]</span>
       <div class="col">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.slope" class="w-full"/>
@@ -112,7 +112,7 @@ class BrushValues {
       </div>
     </div>
 
-    <div class="field grid align-items-center">
+    <div class="field grid grid-cols-12 gap-4 items-center">
       <span class="col">Random (Slope) [m]</span>
       <div class="col">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.random" class="w-full"/>

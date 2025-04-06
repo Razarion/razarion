@@ -260,6 +260,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     let renderTime = Date.now();
     this.engine.runRenderLoop(() => {
       try {
+        if(!this.scene.activeCamera) {
+          return;
+        }
         const date = Date.now();
         this.scrollCamera((date - renderTime) / 1000);
         this.interpolateItemPositions(date);

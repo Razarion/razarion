@@ -1,4 +1,4 @@
-<div class="field grid align-items-center">
+<div class="field grid grid-cols-12 gap-4 items-center">
   <span class="col">Id</span>
   <div class="col">
     <p-inputNumber [disabled]="true"
@@ -6,12 +6,12 @@
   </div>
 </div>
 
-<div class="field grid align-items-center">
+<div class="field grid grid-cols-12 gap-4 items-center">
   <span class="col">Name</span>
   <div class="col">
     <input [(ngModel)]="terrainObjectGeneratorEntity!.internalName"
            type="text"
-           class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+           class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
   </div>
 </div>
 

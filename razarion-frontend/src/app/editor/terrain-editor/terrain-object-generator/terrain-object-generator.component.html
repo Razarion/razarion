@@ -1,12 +1,12 @@
 <p-divider align="left">
-  <div class="inline-flex align-items-center">
+  <div class="inline-flex items-center">
     <i class="pi pi-plus-circle mr-2"></i>
     <b>Generator</b>
   </div>
 </p-divider>
 
-<div class="field grid align-items-center">
-  <div class="col-9">
+<div class="field grid grid-cols-12 gap-4 items-center">
+  <div class="col-span-9">
     <p-dropdown [options]="terrainObjectGeneratorOptions"
                 [(ngModel)]="terrainObjectGeneratorId"
                 optionLabel="name"
@@ -15,19 +15,19 @@
                 [style]="{ width: '100%' }"></p-dropdown>
   </div>
 
-  <div class="col-1">
+  <div class="col-span-1">
     <p-button type="button" icon="pi pi-plus"
               styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
               (onClick)="onCreateTerrainObjectGenerator()">
     </p-button>
   </div>
-  <div class="col-1">
+  <div class="col-span-1">
     <p-button type="button" icon="pi pi-save"
               styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
               (onClick)="onSaveTerrainObjectGenerator()">
     </p-button>
   </div>
-  <div class="col-1">
+  <div class="col-span-1">
     <p-button type="button" icon="pi pi-trash"
               styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
               (onClick)="onDeleteTerrainObjectGenerator()">
@@ -38,10 +38,10 @@
 <terrain-object-generator-entity #terrainObjectGeneratorEntityComponent *ngIf="activeTerrainObjectGenerator"
                                  [terrainObjectGeneratorEntity]="activeTerrainObjectGenerator!"></terrain-object-generator-entity>
 
-<div class="field grid align-items-center">
+<div class="field grid grid-cols-12 gap-4 items-center">
 </div>
 
-<div class="field grid align-items-center">
+<div class="field grid grid-cols-12 gap-4 items-center">
   <span class="col">Generate</span>
   <div class="col">
     <p-button icon="pi pi-bolt" (onClick)="generate()" [disabled]="!activeTerrainObjectGenerator"></p-button>

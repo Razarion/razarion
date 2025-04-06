@@ -8,7 +8,6 @@ import {BabylonRenderServiceAccessImpl} from './renderer/babylon-render-service-
 import {EditorModel} from '../editor/editor-model';
 import {QuestCockpitComponent} from './cockpit/quest/quest-cockpit.component';
 import {EditorPanelComponent} from '../editor/editor-panel/editor-panel.component';
-import {Sidebar} from 'primeng/sidebar';
 import {MainCockpitComponent} from './cockpit/main/main-cockpit.component';
 import {CrashPanelComponent} from '../editor/crash-panel/crash-panel.component';
 import {ModelDialogPresenterImpl} from './model-dialog-presenter.impl';
@@ -16,6 +15,7 @@ import {ActionService} from './action.service';
 import {ItemCockpitComponent} from './cockpit/item/item-cockpit.component';
 import {Dialog} from 'primeng/dialog';
 import {EditorDialogComponent} from '../editor/editor-dialog/editor-dialog.component';
+import {DrawerModule} from 'primeng/drawer';
 
 
 @Component({
@@ -24,11 +24,12 @@ import {EditorDialogComponent} from '../editor/editor-dialog/editor-dialog.compo
     CommonModule,
     ScreenCoverComponent,
     EditorPanelComponent,
-    Sidebar,
+    DrawerModule,
     MainCockpitComponent,
     QuestCockpitComponent,
     Dialog,
-    EditorDialogComponent
+    EditorDialogComponent,
+    ItemCockpitComponent
   ],
   styleUrls: ['game.component.scss']
 })
@@ -74,7 +75,7 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.babylonRenderServiceAccessImpl.createBaseItemPlacerPresenter();
 
     if (environment.gwtMock) {
-      this.gameMockService.startGame(true);
+      this.gameMockService.startGame(false);
     } else {
       this.startGame();
     }

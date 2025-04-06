@@ -11,7 +11,7 @@ import {FormsModule} from '@angular/forms';
     FormsModule
   ],
   template: `
-    <div class="field grid align-items-center">
+    <div class="field grid grid-cols-12 gap-4 items-center">
       <span class="col">Diameter</span>
       <div class="col">
         <input type="text" pInputText [(ngModel)]="diameter" class="w-full"/>

@@ -1,5 +1,5 @@
-<div class="border-1 border-solid border-gray-400">
-  <div class="grid grid-nogutter">
+<div class="border border-solid border-gray-400">
+  <div class="grid grid-cols-12 gap-4 grid-nogutter">
     <div class="col-fixed" style="width:17em">
       <p-dropdown [options]="types"
                   [(ngModel)]="selectedType"
@@ -7,15 +7,15 @@
                   optionLabel="name"
                   [showClear]="true"
                   placeholder="Select"
-                  class="bg-primary-reverse">
+                  class="text-primary bg-primary-contrast">
         <ng-template pTemplate="selectedItem">
-          <div class="flex align-items-center gap-2" *ngIf="selectedType">
+          <div class="flex items-center gap-2" *ngIf="selectedType">
 <!--            <span [ngClass]="[selectedType.icon]" class="pi"></span>-->
 <!--            <div>{{ selectedType.name }}</div>-->
           </div>
         </ng-template>
         <ng-template let-type pTemplate="item">
-          <div class="flex align-items-center gap-2">
+          <div class="flex items-center gap-2">
             <span [ngClass]="[type.icon]" class="pi"></span>
             <div>{{ type.name }}</div>
           </div>

@@ -33,40 +33,40 @@
     <ng-template pTemplate="rowexpansion" let-levelEditConfig>
         <tr>
             <td colspan="7">
-                <div class="p-3">
-                    <div class="flex flex-column surface-50">
-                        <div class="grid grid-razarion-editor">
-                            <span class="col-4">Id</span>
-                            <div class="col-8">
+                <div class="p-4">
+                    <div class="flex flex-col bg-surface-50 dark:bg-surface-800">
+                        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                            <span class="col-span-4">Id</span>
+                            <div class="col-span-8">
                                 <p-inputNumber [disabled]="true" inputId="integeronly"
                                     [(ngModel)]="levelEditConfig.id"></p-inputNumber>
                             </div>
                         </div>
-                        <div class="grid grid-razarion-editor">
-                            <span class="col-4">Number</span>
-                            <div class="col-8">
+                        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                            <span class="col-span-4">Number</span>
+                            <div class="col-span-8">
                                 <p-inputNumber [(ngModel)]="levelEditConfig.number" [size]="'small'"
                                     [incrementButtonClass]="'p-button-text'" [decrementButtonClass]="'p-button-text'"
                                     [showButtons]="true" (onInput)="sort()"></p-inputNumber>
                             </div>
                         </div>
-                        <div class="grid grid-razarion-editor">
-                            <span class="col-4">XP to level up</span>
-                            <div class="col-8">
+                        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                            <span class="col-span-4">XP to level up</span>
+                            <div class="col-span-8">
                                 <p-inputNumber [(ngModel)]="levelEditConfig.xp2LevelUp" [size]="'small'"></p-inputNumber>
                             </div>
                         </div>
-                        <div class="grid grid-razarion-editor">
-                            <span class="col-4">Item type limitation</span>
-                            <div class="col-8">
+                        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                            <span class="col-span-4">Item type limitation</span>
+                            <div class="col-span-8">
                                 <base-item-type-count
                                     [(baseItemTypeCount)]="levelEditConfig.itemTypeLimitation"></base-item-type-count>
                             </div>
                         </div>
 
 
-                        <div class="grid grid-razarion-editor">
-                            <div class="col-12">
+                        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                            <div class="col-span-12">
                                 <p-table [value]="levelEditConfig.levelUnlockConfigs">
                                     <ng-template pTemplate="header">
                                         <tr>

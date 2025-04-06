@@ -31,27 +31,27 @@
   <ng-template pTemplate="rowexpansion" let-userBackendInfo>
     <tr>
       <td colspan="5">
-        <div class="flex flex-column surface-50">
-          <div class="grid grid-razarion-editor">
-            <span class="col-4">Registered</span>
+        <div class="flex flex-col bg-surface-50 dark:bg-surface-800">
+          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+            <span class="col-span-4">Registered</span>
             {{ userBackendInfo.registerDate | date:'dd.MM.yyyy HH:mm:ss' }}
           </div>
-          <div class="grid grid-razarion-editor">
-            <span class="col-4">Verified</span>
+          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+            <span class="col-span-4">Verified</span>
             {{ userBackendInfo.verificationDoneDate | date:'dd.MM.yyyy HH:mm:ss' }}
           </div>
         </div>
-        <div class="grid grid-razarion-editor">
-          <span class="col-4">Level</span>
-          <div class="col-8">
+        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+          <span class="col-span-4">Level</span>
+          <div class="col-span-8">
             <level [(levelId)]="userBackendInfo.levelId"></level>
             <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
                       (onClick)="onSaveLevel(userBackendInfo)">
             </p-button>
           </div>
         </div>
-        <div class="grid grid-razarion-editor">
-          <span class="col-4">Active quest</span>
+        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+          <span class="col-span-4">Active quest</span>
           <div>
             <p-dropdown [placeholder]="'...'"
                         [options]="questOptions"
@@ -65,15 +65,15 @@
             </p-button>
           </div>
         </div>
-        <div class="grid grid-razarion-editor">
-          <span class="col-4">Active quest id</span>
+        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+          <span class="col-span-4">Active quest id</span>
           <div>
             {{ userBackendInfo.activeQuest }}
           </div>
         </div>
-        <div class="grid grid-razarion-editor">
-          <span class="col-4">Crystals</span>
-          <div class="col-8">
+        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+          <span class="col-span-4">Crystals</span>
+          <div class="col-span-8">
             <p-inputNumber inputId="integeronly" [(ngModel)]="userBackendInfo.crystals"
                            [size]="'small'"></p-inputNumber>
             <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
@@ -81,18 +81,18 @@
             </p-button>
           </div>
         </div>
-        <div class="grid grid-razarion-editor">
-          <span class="col-4">Completed quest ids</span>
-          <div class="col-8" [style]="{'width':'20em'}">
+        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+          <span class="col-span-4">Completed quest ids</span>
+          <div class="col-span-8" [style]="{'width':'20em'}">
             <p-chip *ngFor="let quest of userBackendInfo.completedQuestIds" [label]="quest">"></p-chip>
             <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
                       (onClick)="onSaveCompletedQuestIds(userBackendInfo)">
             </p-button>
           </div>
         </div>
-        <div class="grid grid-razarion-editor">
-          <span class="col-4">Unlocked</span>
-          <div class="col-8" [style]="{'width':'20em'}">
+        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+          <span class="col-span-4">Unlocked</span>
+          <div class="col-span-8" [style]="{'width':'20em'}">
             <p-chip *ngFor="let unlockedId of userBackendInfo.unlockedIds" [label]="unlockedId">"></p-chip>
             <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
                       (onClick)="onSaveUnlockedIds(userBackendInfo)">

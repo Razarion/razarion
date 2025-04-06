@@ -1,51 +1,51 @@
 <div style="width: 40em">
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Id</span>
-        <div class="col-8">
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Id</span>
+        <div class="col-span-8">
             <p-inputNumber [disabled]="true" [(ngModel)]="inventoryItem.id"></p-inputNumber>
         </div>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Internal name</span>
-        <div class="col-8">
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Internal name</span>
+        <div class="col-span-8">
             <input [(ngModel)]="inventoryItem.internalName" type="text"
-                class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+                class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
         </div>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Thumbnail</span>
-        <div class="col-8">
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Thumbnail</span>
+        <div class="col-span-8">
             <image-item [(imageId)]="inventoryItem.imageId"></image-item>
         </div>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Base item</span>
-        <div class="col-8">
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Base item</span>
+        <div class="col-span-8">
             <base-item-type [(baseItemTypeId)]="inventoryItem.baseItemTypeId"></base-item-type>
         </div>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Base item count</span>
-        <div class="col-8">
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Base item count</span>
+        <div class="col-span-8">
             <p-inputNumber [(ngModel)]="inventoryItem.baseItemTypeCount"></p-inputNumber>
         </div>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Base item free range [m]</span>
-        <div class="col-8">
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Base item free range [m]</span>
+        <div class="col-span-8">
             <p-inputNumber [(ngModel)]="inventoryItem.baseItemTypeFreeRange" [minFractionDigits]="3"
                 [maxFractionDigits]="3"></p-inputNumber>
         </div>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Razarion</span>
-        <div class="col-8">
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Razarion</span>
+        <div class="col-span-8">
             <p-inputNumber [(ngModel)]="inventoryItem.razarion"></p-inputNumber>
         </div>
     </div>
-    <div class="grid grid-razarion-editor">
-        <span class="col-4">Crystal cost</span>
-        <div class="col-8">
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Crystal cost</span>
+        <div class="col-span-8">
             <p-inputNumber [(ngModel)]="inventoryItem.crystalCost"></p-inputNumber>
         </div>
     </div>

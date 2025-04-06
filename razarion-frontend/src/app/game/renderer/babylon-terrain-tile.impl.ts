@@ -44,7 +44,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
               actionService: ActionService,
               private babylonModelService: BabylonModelService,
               private threeJsWaterRenderService: ThreeJsWaterRenderService) {
-    console.log("--- BabylonTerrainTileImpl constructor ")
+    console.log("--- BabylonTerrainTileImpl function Object() { [native code] } ")
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
 
     let actionManager = new ActionManager(rendererService.getScene());
