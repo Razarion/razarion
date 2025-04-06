@@ -2,10 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { ParticleSystemControllerClient } from 'src/app/generated/razarion-share';
+import {DropdownModule} from 'primeng/dropdown';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'particle-system',
-    templateUrl: './particle-system.component.html'
+  selector: 'particle-system',
+  imports: [
+    DropdownModule,
+    FormsModule
+  ],
+  templateUrl: './particle-system.component.html'
 })
 export class ParticleSystemComponent implements OnInit {
   @Input("particleSystemId")

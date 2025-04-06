@@ -5,10 +5,28 @@ import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
 import {MessageService} from 'primeng/api';
 import {HttpClient} from '@angular/common/http';
 import {QuestCockpitComponent} from "../../game/cockpit/quest/quest-cockpit.component";
+import {Button} from 'primeng/button';
+import {InputNumber} from 'primeng/inputnumber';
+import {LevelComponent} from '../common/level/level.component';
+import {TableModule} from 'primeng/table';
+import {DatePipe} from '@angular/common';
+import {DropdownModule} from 'primeng/dropdown';
+import {ChipModule} from 'primeng/chip';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'user-mgmt',
-    templateUrl: './user-mgmt.component.html'
+  selector: 'user-mgmt',
+  imports: [
+    Button,
+    InputNumber,
+    LevelComponent,
+    TableModule,
+    DatePipe,
+    DropdownModule,
+    ChipModule,
+    FormsModule
+  ],
+  templateUrl: './user-mgmt.component.html'
 })
 export class UserMgmtComponent extends EditorPanel implements OnInit {
   userBackendInfos: UserBackendInfo[] = [];

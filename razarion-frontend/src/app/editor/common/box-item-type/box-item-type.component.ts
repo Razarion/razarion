@@ -2,10 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { BoxItemTypeEditorControllerClient } from 'src/app/generated/razarion-share';
+import {DropdownModule} from 'primeng/dropdown';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'box-item-type',
-    templateUrl: './box-item-type.component.html'
+  selector: 'box-item-type',
+  imports: [
+    DropdownModule,
+    FormsModule
+  ],
+  templateUrl: './box-item-type.component.html'
 })
 export class BoxItemTypeComponent implements OnInit {
   @Input("boxItemTypeId")

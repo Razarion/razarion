@@ -3,11 +3,16 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { TypescriptGenerator } from "src/app/backend/typescript-generator";
 import { getImageUrl } from "src/app/common";
 import { ImageGalleryItem, ImageProviderClient } from "src/app/generated/razarion-share";
+import {NgClass, NgForOf} from '@angular/common';
 
 @Component({
-    selector: 'image-gallery',
-    templateUrl: './image-gallery.component.html',
-    styleUrls: ['./image-gallery.component.scss']
+  selector: 'image-gallery',
+  templateUrl: './image-gallery.component.html',
+  imports: [
+    NgClass,
+    NgForOf
+  ],
+  styleUrls: ['./image-gallery.component.scss']
 })
 export class ImageGalleryComponent implements OnInit {
     @Input("selectedImageId")

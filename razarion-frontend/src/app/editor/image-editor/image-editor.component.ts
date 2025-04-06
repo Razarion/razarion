@@ -4,10 +4,20 @@ import { HttpClient } from "@angular/common/http";
 import { MessageService } from "primeng/api";
 import { URL_IMAGE, getUpdateUrl as common_getUpdateUrl} from "../../common";
 import { ImageGalleryItem } from "../../gwtangular/GwtAngularFacade";
+import {ImageGalleryItemComponent} from './image-gallery-item.component';
+import {Button} from 'primeng/button';
+import {FileUpload} from 'primeng/fileupload';
+import {NgForOf} from '@angular/common';
 
 @Component({
-    selector: 'image-editor',
-    templateUrl: './image-editor.component.html'
+  selector: 'image-editor',
+  imports: [
+    ImageGalleryItemComponent,
+    Button,
+    FileUpload,
+    NgForOf
+  ],
+  templateUrl: './image-editor.component.html'
 })
 export class ImageEditorComponent extends EditorPanel implements OnInit {
   imageGalleryItems: ImageGalleryItem[] = [];

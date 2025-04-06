@@ -3,10 +3,26 @@ import { EditorPanel } from '../../editor-model';
 import { I18nString, LevelConfig, LevelEditConfig, LevelEditorControllerClient, LevelUnlockConfig } from 'src/app/generated/razarion-share';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { HttpClient } from '@angular/common/http';
+import {Button} from 'primeng/button';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
+import {ImageItemComponent} from '../../common/image-item/image-item.component';
+import {BaseItemTypeComponent} from '../../common/base-item-type/base-item-type.component';
+import {BaseItemTypeCountComponent} from '../../common/base-item-type-count/base-item-type-count.component';
+import {TableModule} from 'primeng/table';
 
 @Component({
-    selector: 'level-editor',
-    templateUrl: './level-editor.component.html'
+  selector: 'level-editor',
+  imports: [
+    Button,
+    InputNumber,
+    FormsModule,
+    ImageItemComponent,
+    BaseItemTypeComponent,
+    BaseItemTypeCountComponent,
+    TableModule
+  ],
+  templateUrl: './level-editor.component.html'
 })
 export class LevelEditorComponent extends EditorPanel {
   private levelEditorControllerClient!: LevelEditorControllerClient;

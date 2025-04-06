@@ -20,6 +20,7 @@ public class UserService {
     public UserContext createUserContext() {
         return new UserContext()
                 .levelId(levelCrudPersistence.getStarterLevelId())
+                .admin(true)
                 .registerState(UserContext.RegisterState.UNREGISTERED);
     }
 

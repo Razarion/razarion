@@ -30,11 +30,22 @@ import {GroundEditorComponent} from "../crud-editors/ground-editor/ground-editor
 import {
   ResourceItemTypeEditorComponent
 } from "../crud-editors/resource-item-type-editor/resource-item-type-editor.component";
+import {Button} from 'primeng/button';
+import {KeyValuePipe, NgForOf} from '@angular/common';
+import {Divider} from 'primeng/divider';
+import {Panel} from 'primeng/panel';
 
 @Component({
-    selector: 'editor-dialog',
-    templateUrl: 'editor-dialog.component.html',
-    styleUrls: ['editor-dialog.component.scss']
+  selector: 'editor-dialog',
+  templateUrl: 'editor-dialog.component.html',
+  imports: [
+    Button,
+    KeyValuePipe,
+    Divider,
+    Panel,
+    NgForOf
+  ],
+  styleUrls: ['editor-dialog.component.scss']
 })
 export class EditorDialogComponent {
   editors: Map<string, Type<EditorPanel>> = new Map<string, Type<EditorPanel>>();

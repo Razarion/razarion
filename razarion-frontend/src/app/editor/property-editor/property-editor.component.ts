@@ -4,10 +4,26 @@ import { DbPropertiesEditorControllerClient, DbPropertyConfig, DbPropertyType } 
 import { HttpClient } from '@angular/common/http';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { MessageService } from 'primeng/api';
+import {Button} from 'primeng/button';
+import {ImageItemComponent} from '../common/image-item/image-item.component';
+import {InputNumber} from 'primeng/inputnumber';
+import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
+import {TableModule} from 'primeng/table';
+import {FormsModule} from '@angular/forms';
+import {NgIf} from '@angular/common';
 
 @Component({
-    selector: 'property-editor',
-    templateUrl: './property-editor.component.html'
+  selector: 'property-editor',
+  imports: [
+    Button,
+    ImageItemComponent,
+    InputNumber,
+    BabylonMaterialComponent,
+    TableModule,
+    FormsModule,
+    NgIf
+  ],
+  templateUrl: './property-editor.component.html'
 })
 export class PropertyEditorComponent extends EditorPanel implements OnInit {
   protected readonly AUDIO = DbPropertyType.AUDIO;

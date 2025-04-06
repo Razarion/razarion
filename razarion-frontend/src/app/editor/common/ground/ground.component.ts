@@ -1,9 +1,17 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
+import {DropdownModule} from 'primeng/dropdown';
+import {FormsModule} from '@angular/forms';
+import {NgIf} from '@angular/common';
 
 @Component({
-    selector: 'ground',
-    templateUrl: './ground.component.html'
+  selector: 'ground',
+  imports: [
+    DropdownModule,
+    FormsModule,
+    NgIf
+  ],
+  templateUrl: './ground.component.html'
 })
 export class GroundComponent {
   @Input("groundId")

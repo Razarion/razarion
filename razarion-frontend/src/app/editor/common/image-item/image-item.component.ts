@@ -1,13 +1,23 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { getImageUrl as common_getImageUrl, getUpdateUrl as common_getUpdateUrl } from 'src/app/common';
+import {Button} from 'primeng/button';
+import {OverlayPanelModule} from 'primeng/overlaypanel';
+import {ImageGalleryComponent} from './image-gallery.component';
+import {FileUpload} from 'primeng/fileupload';
 
 
 @Component({
-    selector: 'image-item',
-    styles: ['.image-gallery-img { width: 100px;height: 100px; background: url(\'/assets/TransparentBg.png\')}'],
-    templateUrl: './image-item.component.html',
-    inputs: ['imageId']
+  selector: 'image-item',
+  styles: ['.image-gallery-img { width: 100px;height: 100px; background: url(\'/assets/TransparentBg.png\')}'],
+  templateUrl: './image-item.component.html',
+  imports: [
+    Button,
+    OverlayPanelModule,
+    ImageGalleryComponent,
+    FileUpload
+  ],
+  inputs: ['imageId']
 })
 export class ImageItemComponent {
   @Input("imageId")

@@ -3,10 +3,15 @@ import {DropdownModule} from "primeng/dropdown";
 import {Model3DControllerClient} from "../../../generated/razarion-share";
 import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'model3d',
-    templateUrl: './model3d.component.html'
+  selector: 'model3d',
+  imports: [
+    DropdownModule,
+    FormsModule
+  ],
+  templateUrl: './model3d.component.html'
 })
 export class Model3dComponent implements OnInit {
   @Input("model3DId")

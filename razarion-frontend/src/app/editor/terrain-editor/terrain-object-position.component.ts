@@ -1,10 +1,16 @@
 import {Component} from "@angular/core";
 import {TransformNode, Vector3} from "@babylonjs/core";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
+import {Vector3EditorComponent} from './vector3-editor.component';
+import {AngleVector3EditorComponent} from './angle-vector3-editor.component';
 
 @Component({
-    selector: 'terrain-object-position',
-    template: `
+  selector: 'terrain-object-position',
+  imports: [
+    Vector3EditorComponent,
+    AngleVector3EditorComponent
+  ],
+  template: `
     <table style="border-spacing: 0; border-collapse: separate; margin: 5px">
       <tr>
         <td>Position</td>

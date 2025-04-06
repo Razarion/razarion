@@ -44,6 +44,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
               actionService: ActionService,
               private babylonModelService: BabylonModelService,
               private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+    console.log("--- BabylonTerrainTileImpl constructor ")
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
 
     let actionManager = new ActionManager(rendererService.getScene());
@@ -67,6 +68,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
     actionService.addCursorHandler(this.cursorTypeHandler);
 
+    console.log("--- BabylonTerrainTileImpl groundMesh ")
     this.groundMesh = new Mesh("Ground", rendererService.getScene());
     let vertexData = this.createVertexData(terrainTile.getGroundHeightMap());
     vertexData.applyToMesh(this.groundMesh, true);
@@ -77,11 +79,13 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
     this.groundMesh!.material = babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
+    console.log("--- BabylonTerrainTileImpl groundMesh - done")
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
     this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container);
 
+    console.log("--- BabylonTerrainTileImpl getTerrainTileObjectLists")
     if (terrainTile.getTerrainTileObjectLists()) {
       terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
         try {
@@ -113,6 +117,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           console.error(error);
         }
       });
+      console.log("--- BabylonTerrainTileImpl getTerrainTileObjectLists - done")
     }
 
     this.cursorTypeHandler(actionService.setupSelectionInfo());

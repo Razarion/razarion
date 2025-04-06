@@ -29,10 +29,28 @@ import {
 } from "../../generated/razarion-share";
 import {TypescriptGenerator} from "../../backend/typescript-generator";
 import {GeneratedRestHelper} from "../../common/generated-rest-helper";
+import {Button} from 'primeng/button';
+import {Divider} from 'primeng/divider';
+import {SelectButton} from 'primeng/selectbutton';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
+import {DropdownModule} from 'primeng/dropdown';
+import {NgIf} from '@angular/common';
 
 @Component({
-    selector: 'object-terrain-editor',
-    templateUrl: './object-terrain-editor.component.html'
+  selector: 'object-terrain-editor',
+  imports: [
+    Button,
+    Divider,
+    TerrainObjectGeneratorComponent,
+    SelectButton,
+    TerrainObjectPositionComponent,
+    InputNumber,
+    FormsModule,
+    DropdownModule,
+    NgIf
+  ],
+  templateUrl: './object-terrain-editor.component.html'
 })
 export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy {
   private readonly discRadiusMaterial: SimpleMaterial;

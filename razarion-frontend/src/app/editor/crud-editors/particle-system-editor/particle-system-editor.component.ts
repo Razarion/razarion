@@ -7,10 +7,30 @@ import {ParticleSystem, Vector3} from '@babylonjs/core';
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
+import {Button} from 'primeng/button';
+import {Checkbox} from 'primeng/checkbox';
+import {FormsModule} from '@angular/forms';
+import {InputNumber} from 'primeng/inputnumber';
+import {DecimalPositionComponent} from '../../common/decimal-position/decimal-position.component';
+import {Divider} from 'primeng/divider';
+import {ImageItemComponent} from '../../common/image-item/image-item.component';
+import {VertexEditorComponent} from '../../common/vertex-editor/vertex-editor.component';
+import {NgIf} from '@angular/common';
 
 @Component({
-    selector: 'particle-system-editor',
-    templateUrl: './particle-system-editor.component.html'
+  selector: 'particle-system-editor',
+  imports: [
+    Button,
+    Checkbox,
+    FormsModule,
+    InputNumber,
+    DecimalPositionComponent,
+    Divider,
+    ImageItemComponent,
+    VertexEditorComponent,
+    NgIf
+  ],
+  templateUrl: './particle-system-editor.component.html'
 })
 export class ParticleSystemEditorComponent implements CrudContainerChild<ParticleSystemEntity> {
   static editorControllerClient = ParticleSystemControllerClient;

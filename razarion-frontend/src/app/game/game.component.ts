@@ -14,6 +14,8 @@ import {CrashPanelComponent} from '../editor/crash-panel/crash-panel.component';
 import {ModelDialogPresenterImpl} from './model-dialog-presenter.impl';
 import {ActionService} from './action.service';
 import {ItemCockpitComponent} from './cockpit/item/item-cockpit.component';
+import {Dialog} from 'primeng/dialog';
+import {EditorDialogComponent} from '../editor/editor-dialog/editor-dialog.component';
 
 
 @Component({
@@ -24,7 +26,9 @@ import {ItemCockpitComponent} from './cockpit/item/item-cockpit.component';
     EditorPanelComponent,
     Sidebar,
     MainCockpitComponent,
-    QuestCockpitComponent
+    QuestCockpitComponent,
+    Dialog,
+    EditorDialogComponent
   ],
   styleUrls: ['game.component.scss']
 })

@@ -5,6 +5,11 @@ import {BrushConfigEntity, BrushEditorControllerClient} from 'src/app/generated/
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
+import {Slider} from 'primeng/slider';
+import {FormsModule} from '@angular/forms';
+import {Button} from 'primeng/button';
+import {DropdownModule} from 'primeng/dropdown';
+import {InputNumber} from 'primeng/inputnumber';
 
 class Brush {
   constructor(public readonly id: number, public internalName: string, public brushValues: BrushValues) {
@@ -20,8 +25,15 @@ class BrushValues {
 }
 
 @Component({
-    selector: 'fix-height-brush',
-    template: `
+  selector: 'fix-height-brush',
+  imports: [
+    Slider,
+    FormsModule,
+    Button,
+    DropdownModule,
+    InputNumber
+  ],
+  template: `
 
     <div class="field grid align-items-center">
       <div class="col-9">
@@ -87,7 +99,8 @@ class BrushValues {
       <span class="col">Max slope width [m]</span>
       <div class="col">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.maxSlopeWidth" class="w-full"/>
-        <p-slider [(ngModel)]="activeBrush.value.brushValues.maxSlopeWidth" [step]="0.01" [min]="0" [max]="100"></p-slider>
+        <p-slider [(ngModel)]="activeBrush.value.brushValues.maxSlopeWidth" [step]="0.01" [min]="0"
+                  [max]="100"></p-slider>
       </div>
     </div>
 

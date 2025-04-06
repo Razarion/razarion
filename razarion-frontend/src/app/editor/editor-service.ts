@@ -31,7 +31,7 @@ export class ServerCommand {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EditorService {
   static readonly SERVER_GAME_ENGINE_ID = 3; // TODO read from game engine

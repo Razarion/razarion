@@ -7,10 +7,16 @@ import { ServerGameEngineControllerClient } from 'src/app/generated/razarion-sha
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from "primeng/api";
+import {Button} from 'primeng/button';
+import {TableModule} from 'primeng/table';
 
 @Component({
-    selector: 'app-base-mgmt',
-    templateUrl: './base-mgmt.component.html'
+  selector: 'app-base-mgmt',
+  imports: [
+    Button,
+    TableModule
+  ],
+  templateUrl: './base-mgmt.component.html'
 })
 export class BaseMgmtComponent extends EditorPanel implements OnInit {
   bases: PlayerBaseDto[] = [];

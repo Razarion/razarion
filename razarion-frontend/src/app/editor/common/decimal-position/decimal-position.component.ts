@@ -2,10 +2,18 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DecimalPosition } from "../../../generated/razarion-share";
 import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
 import { Nullable, Observer, PointerEventTypes, PointerInfo } from '@babylonjs/core';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
+import {ToggleButton} from 'primeng/togglebutton';
 
 @Component({
-    selector: 'decimal-position',
-    templateUrl: './decimal-position.component.html'
+  selector: 'decimal-position',
+  imports: [
+    InputNumber,
+    FormsModule,
+    ToggleButton
+  ],
+  templateUrl: './decimal-position.component.html'
 })
 export class DecimalPositionComponent implements OnInit {
   @Input("decimalPosition")

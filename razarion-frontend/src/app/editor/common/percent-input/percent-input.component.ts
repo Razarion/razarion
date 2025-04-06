@@ -1,9 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MathUtils } from 'src/app/common/math-utils';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'percent-input',
-    templateUrl: './percent-input.component.html'
+  selector: 'percent-input',
+  imports: [
+    InputNumber,
+    FormsModule
+  ],
+  templateUrl: './percent-input.component.html'
 })
 export class PercentInputComponent {
   @Input()

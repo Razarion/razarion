@@ -20,4 +20,9 @@
   <quest-cockpit #questCockpitContainer></quest-cockpit>
 </p-sidebar>
 
+<p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog">
+  <editor-dialog [mainCockpitComponent]="mainCockpit"
+                 [gameComponent]="getGameComponent()"></editor-dialog>
+</p-dialog>
+
 

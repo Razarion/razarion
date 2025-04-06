@@ -1,10 +1,16 @@
 import { Component } from '@angular/core';
 import { AbstractBrush } from './abstract-brush';
 import { Vector2, Vector3 } from '@babylonjs/core';
+import {Slider} from 'primeng/slider';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'fix-height-brush',
-    template: `
+  selector: 'fix-height-brush',
+  imports: [
+    Slider,
+    FormsModule
+  ],
+  template: `
     <div class="field grid align-items-center">
       <span class="col">Diameter</span>
       <div class="col">
@@ -21,7 +27,7 @@ export class FlattenBrushComponent extends AbstractBrush {
     super();
   }
 
-  isInRadius(mousePosition: Vector3, oldPosition: Vector3): boolean {
+  override isInRadius(mousePosition: Vector3, oldPosition: Vector3): boolean {
     return Vector2.Distance(new Vector2(oldPosition.x, oldPosition.z), new Vector2(mousePosition.x, mousePosition.z)) < (this.diameter / 2.0);
   }
 
@@ -36,7 +42,7 @@ export class FlattenBrushComponent extends AbstractBrush {
     }
   }
 
-  isContextDependent(): boolean {
+  override isContextDependent(): boolean {
     return true;
   }
 }

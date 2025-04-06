@@ -1,9 +1,17 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { EditorService } from '../../editor-service';
+import {DropdownModule} from 'primeng/dropdown';
+import {FormsModule} from '@angular/forms';
+import {NgIf} from '@angular/common';
 
 @Component({
-    selector: 'level',
-    templateUrl: './level.component.html'
+  selector: 'level',
+  imports: [
+    DropdownModule,
+    FormsModule,
+    NgIf
+  ],
+  templateUrl: './level.component.html'
 })
 export class LevelComponent {
   @Input("levelId")
