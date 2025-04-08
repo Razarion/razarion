@@ -22,7 +22,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private disc: Mesh | null = null;
   private model3D: TransformNode | null = null;
   private tip: Tip | null = null;
-  private material;
+  private readonly material;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
@@ -59,7 +59,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERUP: {
           let pickingInfo = this.rendererService.setupTerrainPickPoint();
-          if (pickingInfo.hit && centerPickingInfo.pickedPoint) {
+          if (pickingInfo.hit) {
             this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
             baseItemPlacer.onPlace(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
           }
@@ -67,7 +67,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
         }
         case PointerEventTypes.POINTERMOVE: {
           let pickingInfo = this.rendererService.setupTerrainPickPoint();
-          if (pickingInfo.hit && centerPickingInfo.pickedPoint) {
+          if (pickingInfo.hit) {
             this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
           }
           break;
@@ -130,7 +130,7 @@ class Tip {
     image.thickness = 0;
 
     this.mouse = new Image();
-    this.mouse.source = "/assets/babylon-gui/mouse.svg";
+    this.mouse.source = "/babylon-gui/mouse.svg";
     this.mouse.width = "40px";
     this.mouse.height = "40px";
     this.mouse.stretch = Image.STRETCH_UNIFORM;
@@ -138,7 +138,7 @@ class Tip {
     image.addControl(this.mouse);
 
     this.mouseLeftButton = new Image();
-    this.mouseLeftButton.source = "/assets/babylon-gui/mouse-left-button.svg";
+    this.mouseLeftButton.source = "/babylon-gui/mouse-left-button.svg";
     this.mouseLeftButton.width = "40px";
     this.mouseLeftButton.height = "40px";
     this.mouseLeftButton.stretch = Image.STRETCH_UNIFORM;
