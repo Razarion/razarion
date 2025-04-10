@@ -5,17 +5,20 @@ import com.btxtech.shared.datatypes.UserContext;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 @Service
 public class SessionService {
     private final Map<String, PlayerSession> sessions = new HashMap<>();
 
-    public PlayerSession sessionCreated(String httpSessionId, Locale locale) {
-        PlayerSession playerSession = new PlayerSession(httpSessionId, locale);
+
+    public PlayerSession getSession(String sessionId) {
+        PlayerSession playerSession;
         synchronized (sessions) {
-            sessions.put(httpSessionId, playerSession);
+            playerSession = sessions.get(sessionId);
+        }
+        if (playerSession == null) {
+            playerSession = createSession(sessionId);
         }
         return playerSession;
     }
@@ -26,13 +29,11 @@ public class SessionService {
         }
     }
 
-    public PlayerSession getSession(String sessionId) {
-        PlayerSession playerSession;
+
+    private PlayerSession createSession(String httpSessionId) {
+        PlayerSession playerSession = new PlayerSession(httpSessionId);
         synchronized (sessions) {
-            playerSession = sessions.get(sessionId);
-        }
-        if (playerSession == null) {
-            throw new IllegalArgumentException("No playerSession for id: " + sessionId);
+            sessions.put(httpSessionId, playerSession);
         }
         return playerSession;
     }

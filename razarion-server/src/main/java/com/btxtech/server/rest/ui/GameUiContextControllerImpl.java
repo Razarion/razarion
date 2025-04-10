@@ -8,12 +8,16 @@ import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.rest.GameUiContextController;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.ws.rs.core.MediaType;
 
@@ -36,7 +40,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
     @Override
     @PostMapping(value = CommonUrl.COLD, produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
     public ColdGameUiContext loadColdGameUiContext(GameUiControlInput gameUiControlInput) {
-        UserContext userContext = userService.createUserContext();
+        UserContext userContext = userService.getUserContext(getCurrentHttpSessionId());
         try {
             return gameUiContextService.loadCold(gameUiControlInput, userContext);
         } catch (Throwable e) {
@@ -45,11 +49,22 @@ public class GameUiContextControllerImpl implements GameUiContextController {
         }
     }
 
+    public String getCurrentHttpSessionId() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attr == null) {
+            return "no ServletRequestAttributes";
+        }
+
+        HttpServletRequest request = attr.getRequest();
+        HttpSession session = request.getSession(true);
+        return (session != null) ? session.getId() : "no HttpSession";
+    }
+
     @Override
     @GetMapping(value = CommonUrl.WARM, produces = MediaType.APPLICATION_JSON)
     public WarmGameUiContext loadWarmGameUiContext() {
         try {
-            UserContext userContext = userService.createUserContext();
+            UserContext userContext = userService.getUserContext(getCurrentHttpSessionId());
             return gameUiContextService.loadWarm(userContext);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);

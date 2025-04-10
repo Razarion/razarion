@@ -1,27 +1,47 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.server.user.PlayerSession;
+import com.btxtech.server.web.SessionService;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 
+@Component
+@Scope("prototype")
 public class ClientGameConnection {
     public static final ObjectMapper MAPPER = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(ClientGameConnection.class);
-    private final WebSocketSession session;
+    private final BaseItemService baseItemService;
     private final PlanetService planetService;
-    private String gameSessionUuid;
+    private final SessionService sessionService;
+    private WebSocketSession session;
+    private String httpSessionId;
+    private String gameSessionUuid; // TODO
 
-    public ClientGameConnection(WebSocketSession session, PlanetService planetService) {
-        this.session = session;
+    public ClientGameConnection(BaseItemService baseItemService,
+                                PlanetService planetService,
+                                SessionService sessionService) {
+        this.baseItemService = baseItemService;
         this.planetService = planetService;
+        this.sessionService = sessionService;
+    }
+
+    public void init(WebSocketSession session, String httpSessionId) {
+        this.session = session;
+        this.httpSessionId = httpSessionId;
     }
 
     public void handleMessage(WebSocketMessage<?> message) {
@@ -51,8 +71,13 @@ public class ClientGameConnection {
     private void onPackageReceived(GameConnectionPacket packet, Object param) {
         switch (packet) {
             case CREATE_BASE:
-                // UserContext userContext = getUserContext();
-                // TODO baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getUserId(), userContext.getName(), (DecimalPosition) param);
+                UserContext userContext = getUserContext();
+                baseItemService.createHumanBaseWithBaseItem(
+                        userContext.getLevelId(),
+                        userContext.getUnlockedItemLimit(),
+                        userContext.getUserId(),
+                        userContext.getName(),
+                        (DecimalPosition) param);
                 break;
             case FACTORY_COMMAND:
             case UNLOAD_CONTAINER_COMMAND:
@@ -91,4 +116,13 @@ public class ClientGameConnection {
             logger.warn("throwable", throwable);
         }
     }
+
+    private UserContext getUserContext() {
+        return getPlayerSession().getUserContext();
+    }
+
+    private PlayerSession getPlayerSession() {
+        return sessionService.getSession(httpSessionId);
+    }
+
 }

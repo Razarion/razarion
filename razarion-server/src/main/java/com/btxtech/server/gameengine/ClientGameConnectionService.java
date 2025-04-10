@@ -1,8 +1,8 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.user.PlayerSession;
+import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
-import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ConnectionMarshaller;
+import jakarta.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,10 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.btxtech.server.gameengine.ClientGameConnection.MAPPER;
 
@@ -32,20 +35,32 @@ import static com.btxtech.server.gameengine.ClientGameConnection.MAPPER;
 public class ClientGameConnectionService extends TextWebSocketHandler {
     private static final String CLIENT_GAME_CONNECTION = "ClientGameConnection";
     private final Logger logger = LoggerFactory.getLogger(ClientGameConnectionService.class);
-    private final MapCollection<Integer, ClientGameConnection> gameConnections = new MapCollection<>();
+    private final Map<String, ClientGameConnection> gameConnections = new HashMap<>();
     private final SessionService sessionService;
+    private final Provider<ClientGameConnection> provider;
+    private final UserService userService;
     @Autowired
     @Lazy
     private PlanetService planetService;
 
-    public ClientGameConnectionService(SessionService sessionService) {
+    public ClientGameConnectionService(SessionService sessionService,
+                                       Provider<ClientGameConnection> provider,
+                                       UserService userService) {
         this.sessionService = sessionService;
+        this.provider = provider;
+        this.userService = userService;
     }
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
-        var clientGameConnection = new ClientGameConnection(session, planetService);
-        session.getAttributes().put(CLIENT_GAME_CONNECTION, clientGameConnection);
+    public void afterConnectionEstablished(WebSocketSession wsSession) {
+        var clientGameConnection = provider.get();
+
+        var httpSessionId = (String) wsSession.getAttributes().get(HttpSessionHandshakeInterceptor.HTTP_SESSION_ID_ATTR_NAME);
+        clientGameConnection.init(wsSession, httpSessionId);
+        wsSession.getAttributes().put(CLIENT_GAME_CONNECTION, clientGameConnection);
+        synchronized (gameConnections) {
+            gameConnections.put(httpSessionId, clientGameConnection);
+        }
         clientGameConnection.sendInitialSlaveSyncInfo(1); // TODO get correct user id
     }
 
@@ -62,16 +77,13 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
-        // TODO clientGameConnectionService.onClose(this);
-        // TODO async = null;
+    public void afterConnectionClosed(WebSocketSession wsSession, CloseStatus closeStatus) {
+        var httpSessionId = (String) wsSession.getAttributes().get(HttpSessionHandshakeInterceptor.HTTP_SESSION_ID_ATTR_NAME);
+        synchronized (gameConnections) {
+            var clientGameConnection = gameConnections.remove(httpSessionId);
+            logger.info("Websocket clientGameConnection closed {}", clientGameConnection);
+        }
     }
-
-    @Override
-    public boolean supportsPartialMessages() {
-        return false;
-    }
-
 
     public void onBaseCreated(PlayerBaseFull playerBase) {
         sendToClients(GameConnectionPacket.BASE_CREATED, playerBase.getPlayerBaseInfo());
@@ -96,7 +108,7 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
     public void sendResourcesBalanceChanged(PlayerBase playerBase, int resources) {
         PlayerSession playerSession = getPlayerSessionBase(playerBase);
         if (playerSession != null) {
-            sendToClient(playerBase.getUserId(), GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
+            sendToClient(playerSession.getHttpSessionId(), GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
         }
     }
 
@@ -114,12 +126,6 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         sendToClients(GameConnectionPacket.SYNC_BOX_ITEM_CHANGED, syncBoxItem.getSyncInfo());
     }
 
-    public Collection<ClientGameConnection> getClientGameConnections() {
-        synchronized (gameConnections) {
-            return gameConnections.getAll();
-        }
-    }
-
     private void sendToClients(GameConnectionPacket packet, Object object) {
         String text;
         try {
@@ -130,9 +136,9 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         }
 
         synchronized (gameConnections) {
-            gameConnections.getAll().forEach(clientGameConnection -> {
+            gameConnections.values().forEach(gameConnection -> {
                 try {
-                    clientGameConnection.sendToClient(text);
+                    gameConnection.sendToClient(text);
                 } catch (Throwable throwable) {
                     logger.warn(throwable.getMessage(), throwable);
                 }
@@ -140,23 +146,21 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         }
     }
 
-    private void sendToClient(int userId, GameConnectionPacket packet, Object object) {
-        Collection<ClientGameConnection> clientGameConnections;
+    private void sendToClient(String httpSessionId, GameConnectionPacket packet, Object object) {
+        ClientGameConnection clientGameConnection;
         synchronized (gameConnections) {
-            clientGameConnections = gameConnections.get(userId);
-            if (clientGameConnections == null) {
+            clientGameConnection = gameConnections.get(httpSessionId);
+            if (clientGameConnection == null) {
                 return;
             }
         }
         try {
             String text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
-            clientGameConnections.forEach(clientGameConnection -> {
-                try {
-                    clientGameConnection.sendToClient(text);
-                } catch (Throwable throwable) {
-                    logger.warn(throwable.getMessage(), throwable);
-                }
-            });
+            try {
+                clientGameConnection.sendToClient(text);
+            } catch (Throwable throwable) {
+                logger.warn(throwable.getMessage(), throwable);
+            }
         } catch (Throwable throwable) {
             logger.warn(throwable.getMessage(), throwable);
         }
@@ -164,14 +168,5 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
 
     private PlayerSession getPlayerSessionBase(PlayerBase playerBase) {
         return sessionService.findPlayerSession(playerBase.getUserId());
-    }
-
-
-    private void sendInitialSlaveSyncInfo(int userId) {
-        try {
-            sendToClient(userId, GameConnectionPacket.INITIAL_SLAVE_SYNC_INFO, planetService.generateSlaveSyncItemInfo(userId));
-        } catch (Throwable throwable) {
-            logger.warn(throwable.getMessage(), throwable);
-        }
     }
 }
