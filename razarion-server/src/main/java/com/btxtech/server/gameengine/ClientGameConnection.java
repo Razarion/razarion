@@ -4,7 +4,11 @@ import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.system.ConnectionMarshaller;
@@ -27,16 +31,19 @@ public class ClientGameConnection {
     private final BaseItemService baseItemService;
     private final PlanetService planetService;
     private final SessionService sessionService;
+    private final CommandService commandService;
     private WebSocketSession session;
     private String httpSessionId;
     private String gameSessionUuid; // TODO
 
     public ClientGameConnection(BaseItemService baseItemService,
                                 PlanetService planetService,
-                                SessionService sessionService) {
+                                SessionService sessionService,
+                                CommandService commandService) {
         this.baseItemService = baseItemService;
         this.planetService = planetService;
         this.sessionService = sessionService;
+        this.commandService = commandService;
     }
 
     public void init(WebSocketSession session, String httpSessionId) {
@@ -88,10 +95,10 @@ public class ClientGameConnection {
             case LOAD_CONTAINER_COMMAND:
             case MOVE_COMMAND:
             case PICK_BOX_COMMAND:
-                // TODO commandService.executeCommand((BaseCommand) param);
+                commandService.executeCommand((BaseCommand) param);
                 break;
             case SELL_ITEMS:
-                // TODO baseItemService.sellItems(((IdsDto) param).getIds(), getPlayerBase());
+                baseItemService.sellItems(((IdsDto) param).getIds(), getPlayerBase());
                 break;
             case USE_INVENTORY_ITEM:
                 // TODO serverInventoryService.useInventoryItem((UseInventoryItem) param, getPlayerSession(), getPlayerBaseFull());
@@ -101,7 +108,7 @@ public class ClientGameConnection {
                 break;
             case TICK_COUNT_REQUEST:
                 System.out.println("TICK COUNT REQUEST");
-                // TODO sendTickSync();
+                sendTickSync();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);
@@ -113,11 +120,11 @@ public class ClientGameConnection {
             String text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
             session.sendMessage(new TextMessage(text));
         } catch (Throwable throwable) {
-            logger.warn("throwable", throwable);
+            logger.warn(throwable.getMessage(), throwable);
         }
     }
 
-    private UserContext getUserContext() {
+    public UserContext getUserContext() {
         return getPlayerSession().getUserContext();
     }
 
@@ -125,4 +132,15 @@ public class ClientGameConnection {
         return sessionService.getSession(httpSessionId);
     }
 
+    private PlayerBase getPlayerBase() {
+        return baseItemService.getPlayerBase4UserId(getPlayerSession().getUserContext().getUserId());
+    }
+
+    private void sendTickSync() {
+        try {
+            sendToClient(ConnectionMarshaller.marshall(GameConnectionPacket.TICK_COUNT_RESPONSE, MAPPER.writeValueAsString((double) planetService.getTickCount())));
+        } catch (Throwable throwable) {
+            logger.warn(throwable.getMessage(), throwable);
+        }
+    }
 }

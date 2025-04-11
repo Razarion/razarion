@@ -1,24 +1,29 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.model.UserEntity;
+import com.btxtech.server.repository.UserRepository;
 import com.btxtech.server.service.engine.LevelCrudPersistence;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.UserContext;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 
 @Service
 public class UserService {
     private final LevelCrudPersistence levelCrudPersistence;
     private final SessionService sessionService;
+    private final UserRepository userRepository;
 
-    public UserService(LevelCrudPersistence levelCrudPersistence, SessionService sessionService) {
+    public UserService(LevelCrudPersistence levelCrudPersistence,
+                       SessionService sessionService,
+                       UserRepository userRepository) {
         this.levelCrudPersistence = levelCrudPersistence;
         this.sessionService = sessionService;
+        this.userRepository = userRepository;
     }
 
+    @Transactional
     public UserContext getUserContext(String httpSessionId) {
         var session = sessionService.getSession(httpSessionId);
         if (session.getUserContext() == null) {
@@ -29,11 +34,9 @@ public class UserService {
 
 
     private UserContext createUserContext() {
-        return new UserContext()
-                .levelId(levelCrudPersistence.getStarterLevelId())
-                .admin(true)
-                .registerState(UserContext.RegisterState.UNREGISTERED)
-                .unlockedItemLimit(Map.of());
+        var userEntity = new UserEntity();
+        userEntity.setLevel(levelCrudPersistence.getStarterLevel());
+        return userRepository.save(userEntity).toUserContext();
     }
 
     public UserContext getUserContext(int userId) {

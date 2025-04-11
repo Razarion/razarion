@@ -61,7 +61,7 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         synchronized (gameConnections) {
             gameConnections.put(httpSessionId, clientGameConnection);
         }
-        clientGameConnection.sendInitialSlaveSyncInfo(1); // TODO get correct user id
+        clientGameConnection.sendInitialSlaveSyncInfo(clientGameConnection.getUserContext().getUserId());
     }
 
     @Override

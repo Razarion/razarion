@@ -76,7 +76,7 @@ export class BabylonItemImpl implements BabylonItem {
 
       if (diplomacy === Diplomacy.BOX) {
         if (selectionInfo.hasOwnMovable) {
-          actionManager.hoverCursor = "url(\"/assets/cursors/pick.png\") 15 15, auto"
+          actionManager.hoverCursor = "url(\"/cursors/pick.png\") 15 15, auto"
         } else {
           actionManager.hoverCursor = "pointer"
         }
@@ -85,7 +85,7 @@ export class BabylonItemImpl implements BabylonItem {
 
       if (diplomacy === Diplomacy.ENEMY) {
         if (selectionInfo.hasAttackers) {
-          actionManager.hoverCursor = "url(\"/assets/cursors/attack.png\") 15 15, auto"
+          actionManager.hoverCursor = "url(\"/cursors/attack.png\") 15 15, auto"
         } else {
           actionManager.hoverCursor = "pointer"
         }
@@ -94,7 +94,7 @@ export class BabylonItemImpl implements BabylonItem {
 
       if (diplomacy === Diplomacy.RESOURCE) {
         if (selectionInfo.hasHarvesters) {
-          actionManager.hoverCursor = "url(\"/assets/cursors/collect.png\") 15 15, auto"
+          actionManager.hoverCursor = "url(\"/cursors/collect.png\") 15 15, auto"
         } else {
           actionManager.hoverCursor = "pointer"
         }
