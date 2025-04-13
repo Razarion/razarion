@@ -32,7 +32,6 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   }
 
   activate(baseItemPlacer: BaseItemPlacer): void {
-    console.error("activate(baseItemPlacer: BaseItemPlacer)")
     this.disc = MeshBuilder.CreateDisc("Base Item Placer", {radius: baseItemPlacer.getEnemyFreeRadius()}, this.rendererService.getScene());
     this.disc.visibility = 0.5;
     this.disc.material = this.material;

@@ -4,6 +4,7 @@ import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.engine.InventoryItemEntity;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.LevelUnlockEntity;
+import com.btxtech.server.model.engine.quest.QuestConfigEntity;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 import jakarta.persistence.*;
@@ -38,13 +39,13 @@ public class UserEntity {
     private boolean admin;
     @ManyToOne(fetch = FetchType.LAZY)
     private LevelEntity level;
-//  TODO  @ManyToOne(fetch = FetchType.LAZY)
-//  TODO  private QuestConfigEntity activeQuest;
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(name = "USER_COMPLETED_QUEST",
-//            joinColumns = @JoinColumn(name = "user"),
-//            inverseJoinColumns = @JoinColumn(name = "quest"))
-//  TODO  private List<QuestConfigEntity> completedQuest;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private QuestConfigEntity activeQuest;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "USER_COMPLETED_QUEST",
+            joinColumns = @JoinColumn(name = "user"),
+            inverseJoinColumns = @JoinColumn(name = "quest"))
+    private List<QuestConfigEntity> completedQuest;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "USER_INVENTORY",
             joinColumns = @JoinColumn(name = "user"),
@@ -145,41 +146,41 @@ public class UserEntity {
         return xp;
     }
 
-//    public QuestConfigEntity getActiveQuest() {
-//        return activeQuest;
-//    }
-//
-//    public void setActiveQuest(QuestConfigEntity activeQuest) {
-//        this.activeQuest = activeQuest;
-//    }
-//
-//    public void addCompletedQuest(QuestConfigEntity quest) {
-//        if (completedQuest == null) {
-//            completedQuest = new ArrayList<>();
-//        }
-//        completedQuest.add(quest);
-//    }
-//
-//    public void setCompletedQuest(List<QuestConfigEntity> completedQuest) {
-//        if (this.completedQuest != null) {
-//            this.completedQuest.clear();
-//            this.completedQuest.addAll(completedQuest);
-//        } else {
-//            this.completedQuest = completedQuest;
-//        }
-//    }
+    public QuestConfigEntity getActiveQuest() {
+        return activeQuest;
+    }
 
-//    public List<QuestConfigEntity> getCompletedQuest() {
-//        return completedQuest;
-//    }
-//
-//    public List<Integer> getCompletedQuestIds() {
-//        if (completedQuest != null) {
-//            return completedQuest.stream().map(QuestConfigEntity::getId).collect(Collectors.toList());
-//        } else {
-//            return null;
-//        }
-//    }
+    public void setActiveQuest(QuestConfigEntity activeQuest) {
+        this.activeQuest = activeQuest;
+    }
+
+    public void addCompletedQuest(QuestConfigEntity quest) {
+        if (completedQuest == null) {
+            completedQuest = new ArrayList<>();
+        }
+        completedQuest.add(quest);
+    }
+
+    public void setCompletedQuest(List<QuestConfigEntity> completedQuest) {
+        if (this.completedQuest != null) {
+            this.completedQuest.clear();
+            this.completedQuest.addAll(completedQuest);
+        } else {
+            this.completedQuest = completedQuest;
+        }
+    }
+
+    public List<QuestConfigEntity> getCompletedQuest() {
+        return completedQuest;
+    }
+
+    public List<Integer> getCompletedQuestIds() {
+        if (completedQuest != null) {
+            return completedQuest.stream().map(QuestConfigEntity::getId).collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
 
     public void addInventoryItem(InventoryItemEntity inventoryItemEntity) {
         if (inventory == null) {

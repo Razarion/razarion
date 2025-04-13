@@ -1,17 +1,13 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
 
+import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.system.Nullable;
 
 import java.util.List;
 
-/**
- * User: beat
- * Date: 10.10.2011
- * Time: 13:36:14
- */
-public class BotConfig {
+public class BotConfig implements Config {
     private Integer id;
     private String internalName;
     private Integer auxiliaryId;
@@ -27,11 +23,11 @@ public class BotConfig {
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
     private Integer groundBabylonMaterialId;
 
-    public @Nullable Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(@Nullable Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

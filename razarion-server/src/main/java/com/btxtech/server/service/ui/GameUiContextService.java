@@ -96,7 +96,7 @@ public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiCo
 //                .pickColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_PICK_COLOR));
     }
 
-    private GameUiContextEntity load4Level(int levelId) {
+    public GameUiContextEntity load4Level(int levelId) {
         return ((GameUiContextRepository) getJpaRepository())
                 .findTopByMinimalLevelNumber(levelId)
                 .orElseThrow();

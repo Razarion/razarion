@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/rest/terrainHeightMap")
 public class TerrainHeightMapControllerImpl implements TerrainHeightMapController {
-    private final Logger logger = LoggerFactory.getLogger(RazarionServerEventListener.class);
+    private final Logger logger = LoggerFactory.getLogger(TerrainHeightMapControllerImpl.class);
     private final PlanetCrudPersistence planetCrudPersistence;
 
     public TerrainHeightMapControllerImpl(PlanetCrudPersistence planetCrudPersistence) {

@@ -4,16 +4,17 @@ import com.btxtech.server.model.engine.LevelUnlockEntity;
 import com.btxtech.server.service.engine.LevelCrudPersistence;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Singleton
+@Service
 public class ServerUnlockService {
     @Inject
     private UserService userService;
@@ -53,9 +54,9 @@ public class ServerUnlockService {
         return unlockedItemLimit;
     }
 
-// TODO   public boolean hasAvailableUnlocks(UserContext userContext) {
-//        return levelCrudPersistence.hasAvailableUnlocks(userContext.getLevelId(), userService.unlockedEntityIds(userContext.getUserId()));
-//    }
+   public boolean hasAvailableUnlocks(UserContext userContext) {
+        return levelCrudPersistence.hasAvailableUnlocks(userContext.getLevelId(), userService.unlockedEntityIds(userContext.getUserId()));
+    }
 
 // TODO   public List<LevelUnlockConfig> getAvailableLevelUnlockConfigs(UserContext userContext, int levelId) {
 //        return levelCrudPersistence.readAvailableLevelUnlockConfigs(levelId, userService.unlockedEntityIds(userContext.getUserId()));

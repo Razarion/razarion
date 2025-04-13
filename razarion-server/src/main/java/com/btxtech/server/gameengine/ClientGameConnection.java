@@ -32,7 +32,7 @@ public class ClientGameConnection {
     private final PlanetService planetService;
     private final SessionService sessionService;
     private final CommandService commandService;
-    private WebSocketSession session;
+    private WebSocketSession wsSession;
     private String httpSessionId;
     private String gameSessionUuid; // TODO
 
@@ -46,8 +46,8 @@ public class ClientGameConnection {
         this.commandService = commandService;
     }
 
-    public void init(WebSocketSession session, String httpSessionId) {
-        this.session = session;
+    public void init(WebSocketSession wsSession, String httpSessionId) {
+        this.wsSession = wsSession;
         this.httpSessionId = httpSessionId;
     }
 
@@ -59,12 +59,12 @@ public class ClientGameConnection {
             Object param = MAPPER.readValue(payload, packet.getTheClass());
             onPackageReceived(packet, param);
         } catch (Throwable t) {
-            logger.warn("message: {} session: {}", message, session, t);
+            logger.warn("message: {} session: {}", message, wsSession, t);
         }
     }
 
     public void sendToClient(String text) throws IOException {
-        session.sendMessage(new TextMessage(text));
+        wsSession.sendMessage(new TextMessage(text));
     }
 
     public void sendInitialSlaveSyncInfo(int userId) {
@@ -118,7 +118,7 @@ public class ClientGameConnection {
     private void sendToClient(GameConnectionPacket packet, Object object) {
         try {
             String text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
-            session.sendMessage(new TextMessage(text));
+            wsSession.sendMessage(new TextMessage(text));
         } catch (Throwable throwable) {
             logger.warn(throwable.getMessage(), throwable);
         }

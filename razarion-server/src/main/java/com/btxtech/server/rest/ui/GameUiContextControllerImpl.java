@@ -49,7 +49,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
         }
     }
 
-    public String getCurrentHttpSessionId() {
+    public static String getCurrentHttpSessionId() {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attr == null) {
             return "no ServletRequestAttributes";

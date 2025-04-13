@@ -1,7 +1,9 @@
 package com.btxtech.server.service.ui;
 
+import com.btxtech.server.model.ui.Image;
 import com.btxtech.server.model.ui.ImageLibraryEntity;
 import com.btxtech.server.repository.ui.ImageRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -18,17 +20,14 @@ public class ImagePersistence {
         this.imageRepository = imageRepository;
     }
 
-//    @Transactional
-//    public Image getImage(int id) {
-//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
-//        Root<ImageLibraryEntity> root = cq.from(ImageLibraryEntity.class);
-//        cq.where(criteriaBuilder.equal(root.get(ImageLibraryEntity_.id), id));
-//        cq.multiselect(root.get(ImageLibraryEntity_.data), root.get(ImageLibraryEntity_.type));
-//        Tuple tupleResult = entityManager.createQuery(cq).getSingleResult();
-//        return new Image((byte[]) tupleResult.get(0), (String) tupleResult.get(1));
-//    }
-//
+    public static Integer idOrNull(ImageLibraryEntity libraryEntity) {
+        if (libraryEntity != null) {
+            return libraryEntity.getId();
+        } else {
+            return null;
+        }
+    }
+
 //    @Transactional
 //    public List<ImageGalleryItem> getImageGalleryItems() {
 //        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -88,12 +87,12 @@ public class ImagePersistence {
 //        entityManager.remove(imageLibraryEntity);
 //    }
 
-    public static Integer idOrNull(ImageLibraryEntity libraryEntity) {
-        if (libraryEntity != null) {
-            return libraryEntity.getId();
-        } else {
-            return null;
-        }
+    @Transactional
+    public Image getImage(int id) {
+        return imageRepository.findImageRaw(id).stream()
+                .map(result -> new Image((byte[]) result[0], (String) result[1]))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Image not found with id " + id));
     }
 
     @Transactional
@@ -120,21 +119,4 @@ public class ImagePersistence {
 //        }
 //    }
 
-    public static class Image {
-        private final byte[] data;
-        private final String type;
-
-        public Image(byte[] data, String type) {
-            this.data = data;
-            this.type = type;
-        }
-
-        public byte[] getData() {
-            return data;
-        }
-
-        public String getType() {
-            return type;
-        }
-    }
 }

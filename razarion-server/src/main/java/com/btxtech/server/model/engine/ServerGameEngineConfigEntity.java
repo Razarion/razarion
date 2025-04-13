@@ -32,20 +32,20 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
             joinColumns = @JoinColumn(name = "serverGameEngineId"),
             inverseJoinColumns = @JoinColumn(name = "botConfigId"))
     private List<BotConfigEntity> botConfigs;
-//    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinColumn(nullable = false, name = "serverGameEngineConfig")
-//    private List<ServerLevelQuestEntity> serverLevelQuestEntities;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "serverGameEngineConfig")
+    private List<ServerLevelQuestEntity> serverLevelQuestEntities;
 
     public ServerGameEngineConfig toServerGameEngineConfig() {
         return new ServerGameEngineConfig()
                 .id(getId())
                 .internalName(getInternalName())
                 .planetConfigId(extractId(planetEntity, PlanetEntity::getId))
-        .resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
-        .startRegionConfigs(toConfigList(startRegionConfigs, StartRegionConfigEntity::toStartRegionConfig))
-        .botConfigs(toConfigList(botConfigs, BotConfigEntity::toBotConfig));
-        //.serverLevelQuestConfig(toConfigList(serverLevelQuestEntities, ServerLevelQuestEntity::toServerLevelQuestConfig))
-        //.boxRegionConfigs(toConfigList(boxRegionConfigs, ServerBoxRegionConfigEntity::toBoxRegionConfig));
+                .resourceRegionConfigs(toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig))
+                .startRegionConfigs(toConfigList(startRegionConfigs, StartRegionConfigEntity::toStartRegionConfig))
+                .botConfigs(toConfigList(botConfigs, BotConfigEntity::toBotConfig))
+                .serverLevelQuestConfig(toConfigList(serverLevelQuestEntities, ServerLevelQuestEntity::toServerLevelQuestConfig))
+                .boxRegionConfigs(toConfigList(boxRegionConfigs, ServerBoxRegionConfigEntity::toBoxRegionConfig));
     }
 
     public PlanetConfig getPlanetConfig() {
