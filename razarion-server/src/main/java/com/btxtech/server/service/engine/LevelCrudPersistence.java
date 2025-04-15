@@ -2,6 +2,7 @@ package com.btxtech.server.service.engine;
 
 import com.btxtech.server.model.engine.BaseItemTypeEntity;
 import com.btxtech.server.model.engine.LevelEntity;
+import com.btxtech.server.model.engine.LevelUnlockEntity;
 import com.btxtech.server.repository.engine.LevelRepository;
 import com.btxtech.server.service.ui.ImagePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
@@ -84,25 +85,11 @@ public class LevelCrudPersistence extends AbstractConfigCrudPersistence<LevelCon
 
     @Transactional
     public List<LevelUnlockConfig> readAvailableLevelUnlockConfigs(int levelId, Collection<Integer> unlockedEntityIds) {
-//        LevelEntity levelEntity = getEntity(levelId);
-//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<LevelUnlockEntity> criteriaQuery = criteriaBuilder.createQuery(LevelUnlockEntity.class);
-//        Root<LevelEntity> root = criteriaQuery.from(LevelEntity.class);
-//        ListJoin<LevelEntity, LevelUnlockEntity> listJoin = root.join(LevelEntity_.levelUnlockEntities);
-//        CriteriaQuery<LevelUnlockEntity> userSelect = criteriaQuery.select(listJoin);
-//        Predicate levelNumber = criteriaBuilder.lessThanOrEqualTo(root.get(LevelEntity_.number), levelEntity.getNumber());
-//        if (unlockedEntityIds != null && !unlockedEntityIds.isEmpty()) {
-//            Predicate notIn = criteriaBuilder.not(listJoin.get(LevelUnlockEntity_.id).in(unlockedEntityIds));
-//            userSelect.where(criteriaBuilder.and(levelNumber, notIn));
-//        } else {
-//            userSelect.where(levelNumber);
-//        }
-//        return entityManager.createQuery(userSelect)
-//                .getResultList()
-//                .stream()
-//                .map(LevelUnlockEntity::toLevelUnlockConfig)
-//                .collect(Collectors.toList());
-        throw new UnsupportedOperationException("... TODO ...");
+        LevelEntity levelEntity = getEntity(levelId);
+        return ((LevelRepository) getJpaRepository()).findLockedUnlocks(levelEntity.getNumber(), unlockedEntityIds)
+                .stream()
+                .map(LevelUnlockEntity::toLevelUnlockConfig)
+                .collect(Collectors.toList());
     }
 
 }

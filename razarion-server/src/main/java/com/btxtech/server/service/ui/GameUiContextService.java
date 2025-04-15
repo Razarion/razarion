@@ -1,11 +1,9 @@
 package com.btxtech.server.service.ui;
 
+import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.ui.GameUiContextEntity;
 import com.btxtech.server.repository.ui.GameUiContextRepository;
-import com.btxtech.server.service.engine.AbstractConfigCrudPersistence;
-import com.btxtech.server.service.engine.LevelCrudPersistence;
-import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
-import com.btxtech.server.service.engine.StaticGameConfigService;
+import com.btxtech.server.service.engine.*;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.*;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -18,17 +16,21 @@ public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiCo
     private final StaticGameConfigService staticGameConfigService;
     private final LevelCrudPersistence levelCrudPersistence;
     private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    private final ServerLevelQuestService serverLevelQuestService;
+    private final ServerUnlockService serverUnlockService;
     private final AlarmService alarmService;
 
     public GameUiContextService(GameUiContextRepository gameUiContextRepository,
                                 StaticGameConfigService staticGameConfigService,
                                 LevelCrudPersistence levelCrudPersistence,
-                                ServerGameEngineCrudPersistence serverGameEngineCrudPersistence,
+                                ServerGameEngineCrudPersistence serverGameEngineCrudPersistence, ServerLevelQuestService serverLevelQuestService, ServerUnlockService serverUnlockService,
                                 AlarmService alarmService) {
         super(GameUiContextEntity.class, gameUiContextRepository);
         this.staticGameConfigService = staticGameConfigService;
         this.levelCrudPersistence = levelCrudPersistence;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
+        this.serverLevelQuestService = serverLevelQuestService;
+        this.serverUnlockService = serverUnlockService;
         this.alarmService = alarmService;
     }
 
@@ -58,8 +60,8 @@ public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiCo
         WarmGameUiContext warmGameUiContext = gameUiContextEntity.toGameWarmGameUiControlConfig();
         if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
             warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
-            warmGameUiContext.setSlaveQuestInfo(null); // TODO
-            warmGameUiContext.setAvailableUnlocks(false); // TODO
+            warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(userContext.getUserId()));
+            warmGameUiContext.setAvailableUnlocks(serverUnlockService.hasAvailableUnlocks(userContext));
         }
         return warmGameUiContext;
     }

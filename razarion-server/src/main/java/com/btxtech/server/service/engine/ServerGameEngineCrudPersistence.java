@@ -81,39 +81,10 @@ public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersisten
     }
 
     private List<QuestConfigEntity> getQuests4Level(LevelEntity level, Collection<Integer> ignoreQuests) {
-//        // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
-//        // ServerGameEngineConfigEntity is not considered in this query
-//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<QuestConfigEntity> criteriaQuery = criteriaBuilder.createQuery(QuestConfigEntity.class);
-//        Root<ServerLevelQuestEntity> root = criteriaQuery.from(ServerLevelQuestEntity.class);
-//
-//        Join<ServerLevelQuestEntity, ServerLevelQuestEntryEntity> serverLevelQuestEntryEntityJoin = root.join(ServerLevelQuestEntity_.serverLevelQuestEntryEntities);
-//        Join<ServerLevelQuestEntryEntity, QuestConfigEntity> questConfigEntityJoin = serverLevelQuestEntryEntityJoin.join(ServerLevelQuestEntryEntity_.quest);
-//        Path<Integer> levelNumberPath = root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number);
-//
-//        criteriaQuery.select(questConfigEntityJoin);
-//
-//        if (ignoreQuests != null && !ignoreQuests.isEmpty()) {
-//            criteriaQuery.where(
-//                    criteriaBuilder.and(
-//                            criteriaBuilder.lessThanOrEqualTo(levelNumberPath, level.getNumber()),
-//                            criteriaBuilder.not(questConfigEntityJoin.get(QuestConfigEntity_.id).in(ignoreQuests)))
-//            );
-//        } else {
-//            criteriaQuery.where(
-//                    criteriaBuilder.lessThanOrEqualTo(levelNumberPath, level.getNumber())
-//            );
-//        }
-//        criteriaQuery.orderBy(
-//                criteriaBuilder.asc(levelNumberPath),
-//                criteriaBuilder.asc(serverLevelQuestEntryEntityJoin.get(ServerLevelQuestEntryEntity_.orderColumn))
-//        );
-//        criteriaQuery.distinct(true);
-//
-//        TypedQuery<QuestConfigEntity> typedQuery = entityManager.createQuery(criteriaQuery);
-//
-//        return typedQuery.getResultList();
-        throw new UnsupportedOperationException("... TODO ...");
+        var serverGameEngineConfigEntityId = serverGameEngineConfigEntity().getId();
+        return ((ServerGameEngineConfigRepository) getJpaRepository()).getQuests4Level(level.getNumber(),
+                serverGameEngineConfigEntityId,
+                ignoreQuests);
     }
 
     @Transactional

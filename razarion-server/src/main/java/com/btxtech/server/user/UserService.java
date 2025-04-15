@@ -150,12 +150,14 @@ public class UserService {
 
     @Transactional
     public Collection<Integer> unlockedEntityIds(int userId) {
-        return userRepository
-                .getReferenceById(userId)
-                .getLevelUnlockEntities()
-                .stream()
-                .map(LevelUnlockEntity::getId)
-                .collect(Collectors.toList());
+        var unlocks = userRepository.getReferenceById(userId).getLevelUnlockEntities();
+        if (unlocks != null) {
+            return unlocks.stream()
+                    .map(LevelUnlockEntity::getId)
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
     }
 
 }

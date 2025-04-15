@@ -107,7 +107,6 @@ public class ClientGameConnection {
                 gameSessionUuid = (String) param;
                 break;
             case TICK_COUNT_REQUEST:
-                System.out.println("TICK COUNT REQUEST");
                 sendTickSync();
                 break;
             default:
