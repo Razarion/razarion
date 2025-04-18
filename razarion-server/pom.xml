@@ -65,6 +65,70 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>cz.habarta.typescript-generator</groupId>
+                <artifactId>typescript-generator-maven-plugin</artifactId>
+                <version>2.37.1128</version>
+                <executions>
+                    <execution>
+                        <id>generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jsonLibrary>jackson2</jsonLibrary>
+                    <generateJaxrsApplicationClient>true</generateJaxrsApplicationClient>
+                    <generateSpringApplicationClient>true</generateSpringApplicationClient>
+                    <classes>
+                        <class>com.btxtech.shared.dto.ServerGameEngineConfig</class>
+                        <class>com.btxtech.shared.dto.ObjectNameId</class>
+                        <class>com.btxtech.shared.rest.RestApplication</class>
+                        <class>com.btxtech.server.rest.BackendController</class>
+                        <class>com.btxtech.shared.rest.BaseItemTypeEditorController</class>
+                        <class>com.btxtech.shared.rest.BoxItemTypeEditorController</class>
+                        <class>com.btxtech.shared.rest.ResourceItemTypeEditorController</class>
+                        <class>com.btxtech.shared.rest.ImageProvider</class>
+                        <class>com.btxtech.shared.rest.PlanetEditorController</class>
+                        <class>com.btxtech.shared.rest.GroundEditorController</class>
+                        <class>com.btxtech.shared.rest.TerrainObjectEditorController</class>
+                        <class>com.btxtech.shared.rest.TerrainHeightMapController</class>
+                        <class>com.btxtech.shared.rest.ServerGameEngineEditorController</class>
+                        <class>com.btxtech.shared.rest.ServerGameEngineController</class>
+                        <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
+                        <class>com.btxtech.shared.rest.InventoryController</class>
+                        <class>com.btxtech.shared.rest.QuestController</class>
+                        <class>com.btxtech.shared.rest.UnlockController</class>
+                        <class>com.btxtech.shared.rest.FrontendController</class>
+                        <class>com.btxtech.server.rest.ui.BabylonMaterialController</class>
+                        <class>com.btxtech.server.rest.ui.GltfController</class>
+                        <class>com.btxtech.server.rest.ui.Model3DController</class>
+                        <class>com.btxtech.server.rest.ui.ParticleSystemController</class>
+                        <class>com.btxtech.server.rest.ui.BrushConfigController</class>
+                        <class>com.btxtech.server.rest.ui.TerrainObjectGeneratorController</class>
+                        <class>com.btxtech.server.rest.ui.UiConfigCollectionController</class>
+                        <class>com.btxtech.server.rest.editor.DbPropertiesEditorController</class>
+                        <class>com.btxtech.server.rest.editor.UserMgmtController</class>
+                        <class>com.btxtech.server.rest.editor.TerrainEditorController</class>
+                        <class>com.btxtech.server.rest.editor.LevelEditorController</class>
+                    </classes>
+                    <outputKind>module</outputKind>
+                    <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>
+                    <outputFileType>implementationFile</outputFileType>
+                    <mapEnum>asEnum</mapEnum>
+                    <nullableAnnotations>com.btxtech.shared.system.Nullable</nullableAnnotations>
+                    <restNamespacing>perResource</restNamespacing>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>cz.habarta.typescript-generator</groupId>
+                        <artifactId>typescript-generator-spring</artifactId>
+                        <version>2.37.1128</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 

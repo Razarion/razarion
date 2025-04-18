@@ -4,6 +4,7 @@ import com.btxtech.server.gameengine.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.engine.LevelEntity;
+import com.btxtech.server.model.engine.quest.QuestBackendInfo;
 import com.btxtech.server.service.ui.GameUiContextService;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.UserService;
@@ -186,6 +187,10 @@ public class ServerLevelQuestService implements QuestListener {
         clientSystemConnectionService.onQuestActivated(userId, newQuest);
         questService.activateCondition(userId, newQuest);
         clientSystemConnectionService.onQuestProgressInfo(userId, questService.getQuestProgressInfo(userId));
+    }
+
+    public List<QuestBackendInfo> getQuestBackendInfos() {
+        throw new UnsupportedOperationException("... TODO ...");
     }
 
     private void deactivateQuest(int userId) {

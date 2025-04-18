@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractBrush } from './abstract-brush';
 import { Vector2, Vector3 } from '@babylonjs/core';
-import {BrushConfigEntity, BrushEditorControllerClient} from 'src/app/generated/razarion-share';
+import {BrushConfigEntity, BrushConfigControllerClient} from 'src/app/generated/razarion-share';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
@@ -126,11 +126,11 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit {
   activeBrush = this.brushes[0];
   private pendingBrushConfigEntityId: Number | null = null;
 
-  private brushEditorControllerClient: BrushEditorControllerClient;
+  private brushConfigControllerClient: BrushConfigControllerClient;
 
   constructor(httpClient: HttpClient, private messageService: MessageService) {
     super();
-    this.brushEditorControllerClient = new BrushEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
+    this.brushConfigControllerClient = new BrushConfigControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
   ngOnInit(): void {
@@ -138,7 +138,7 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit {
   }
 
   private loadBrushes(): void {
-    this.brushEditorControllerClient
+    this.brushConfigControllerClient
       .readAll()
       .then(brushConfigEntity => {
         this.brushes = [];
@@ -203,7 +203,7 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit {
   }
 
   onCreateBrush() {
-    this.brushEditorControllerClient
+    this.brushConfigControllerClient
       .create()
       .then(brushConfig => {
         this.pendingBrushConfigEntityId = brushConfig.id
@@ -225,7 +225,7 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit {
       id: this.activeBrush.value.id,
       internalName: this.activeBrush.value.internalName
     }
-    this.brushEditorControllerClient
+    this.brushConfigControllerClient
       .update(brushConfigEntity)
       .then(() => {
         this.pendingBrushConfigEntityId = this.activeBrush.value.id;
@@ -241,7 +241,7 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit {
   }
 
   onDeleteBrush() {
-    this.brushEditorControllerClient
+    this.brushConfigControllerClient
       .delete(this.activeBrush.value.id)
       .then(() => {
         this.activeBrush = this.brushes.filter(brush => brush.value.id !== this.activeBrush.value.id)[0];

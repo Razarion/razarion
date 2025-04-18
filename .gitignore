@@ -12,7 +12,7 @@ razarion-server/src/main/webapp/com.btxtech.worker.RazarionClientWorker
 razarion-server/src/main/webapp/debug
 razarion-server/src/main/webapp/WEB-INF/deploy
 razarion-server/src/main/webapp/marketinghist/node_modules/
-razarion-server/src/main/gwt-unitCache
+razarion-server/src/main/resources/gwt-unitCache
 razarion-share/razarion-share.iml
 razarion-test-share/razarion-test-share.iml
 razarion-test/razarion-test.iml

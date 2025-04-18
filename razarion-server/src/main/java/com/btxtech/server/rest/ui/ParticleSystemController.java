@@ -7,17 +7,15 @@ import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.server.user.SecurityCheck;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.MediaType;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,12 +47,12 @@ public class ParticleSystemController extends AbstractBaseController<ParticleSys
         return jpa2JsonStatic(particleSystemEntity);
     }
 
-    @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_OCTET_STREAM)
+    @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<byte[]> getData(@PathVariable("id") int id) {
         try {
             return ResponseEntity
                     .ok()
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
                     .body(particleSystemCrudPersistence.getData(id));
         } catch (Throwable e) {
             logger.log(Level.WARNING, "Can not load BabylonMaterialEntity for id: " + id, e);
@@ -62,11 +60,9 @@ public class ParticleSystemController extends AbstractBaseController<ParticleSys
         }
     }
 
-    @PUT
-    @Path("upload/{id}")
-    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     @SecurityCheck
-    public void uploadData(@PathParam("id") int id, byte[] data) {
+    @PutMapping(value = "upload/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void uploadData(@PathVariable("id") int id, @RequestBody byte[] data) {
         particleSystemCrudPersistence.setData(id, data);
     }
 }

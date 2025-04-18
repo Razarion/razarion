@@ -13,7 +13,6 @@ import com.btxtech.shared.system.alarm.AlarmService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;

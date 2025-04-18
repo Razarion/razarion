@@ -1,15 +1,51 @@
 package com.btxtech.server;
 
-import com.btxtech.shared.gameengine.*;
+import com.btxtech.shared.gameengine.InitializeService;
+import com.btxtech.shared.gameengine.InventoryTypeService;
+import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.LevelService;
+import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.Path;
-import com.btxtech.shared.gameengine.planet.*;
-import com.btxtech.shared.gameengine.planet.bot.*;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.BoxService;
+import com.btxtech.shared.gameengine.planet.CommandService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
+import com.btxtech.shared.gameengine.planet.GuardingItemService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.ResourceRegion;
+import com.btxtech.shared.gameengine.planet.ResourceService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
+import com.btxtech.shared.gameengine.planet.SyncService;
+import com.btxtech.shared.gameengine.planet.bot.BotEnragementState;
+import com.btxtech.shared.gameengine.planet.bot.BotItemContainer;
+import com.btxtech.shared.gameengine.planet.bot.BotRunner;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.gameengine.planet.bot.BotSyncBaseItem;
+import com.btxtech.shared.gameengine.planet.bot.IntruderHandler;
 import com.btxtech.shared.gameengine.planet.energy.BaseEnergy;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
-import com.btxtech.shared.gameengine.planet.model.*;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBuilder;
+import com.btxtech.shared.gameengine.planet.model.SyncConsumer;
+import com.btxtech.shared.gameengine.planet.model.SyncFactory;
+import com.btxtech.shared.gameengine.planet.model.SyncGenerator;
+import com.btxtech.shared.gameengine.planet.model.SyncHarvester;
+import com.btxtech.shared.gameengine.planet.model.SyncHouse;
+import com.btxtech.shared.gameengine.planet.model.SyncItemContainer;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.model.SyncTurret;
+import com.btxtech.shared.gameengine.planet.model.SyncWeapon;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
-import com.btxtech.shared.gameengine.planet.quest.*;
+import com.btxtech.shared.gameengine.planet.quest.BaseItemCountComparison;
+import com.btxtech.shared.gameengine.planet.quest.BaseItemPositionComparison;
+import com.btxtech.shared.gameengine.planet.quest.BaseItemTypeComparison;
+import com.btxtech.shared.gameengine.planet.quest.CountComparison;
+import com.btxtech.shared.gameengine.planet.quest.InventoryItemCountComparison;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileBuilder;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileFactory;
@@ -22,8 +58,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-
-import javax.inject.Provider;
 
 @Configuration
 public class RazarionServerShareConfiguration {

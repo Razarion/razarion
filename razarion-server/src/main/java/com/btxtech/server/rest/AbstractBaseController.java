@@ -5,61 +5,53 @@ import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.ObjectNameId;
 import jakarta.transaction.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 public abstract class AbstractBaseController<E extends BaseEntity> {
 
     protected abstract AbstractBaseEntityCrudService<E> getEntityCrudPersistence();
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("objectNameIds")
     @SecurityCheck
+    @GetMapping(value = "objectNameIds", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public List<ObjectNameId> getObjectNameIds() {
         return getEntityCrudPersistence().getObjectNameIds();
     }
 
-    @POST
-    @Path("create")
-    @Produces(MediaType.APPLICATION_JSON)
     @SecurityCheck
+    @PostMapping(value = "create", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public E create() {
         return getEntityCrudPersistence().createBaseEntity();
     }
 
-    @DELETE
-    @Path("delete/{id}")
     @SecurityCheck
-    public void delete(@PathParam("id") int id) {
+    @DeleteMapping(value = "delete/{id}")
+    public void delete(@PathVariable("id") int id) {
         getEntityCrudPersistence().delete(id);
     }
 
-    @POST
-    @Path("update")
-    @Consumes(MediaType.APPLICATION_JSON)
     @SecurityCheck
     @Transactional
-    public void update(E entity) {
+    @PostMapping(value = "update", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+    public void update(@RequestBody E entity) {
         getEntityCrudPersistence().updateBaseEntity(entity);
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("read/{id}")
     @SecurityCheck
     @Transactional
-    public E read(@PathParam("id") int id) {
+    @GetMapping(value = "read/{id}", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+    public E read(@PathVariable("id") int id) {
         return jpa2Json(getEntityCrudPersistence().getEntity(id));
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("read")
     @SecurityCheck
     @Transactional
+    @GetMapping(value = "read", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public List<E> readAll() {
         return getEntityCrudPersistence().getEntities()
                 .stream()

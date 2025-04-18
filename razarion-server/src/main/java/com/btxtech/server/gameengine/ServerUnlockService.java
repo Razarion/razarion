@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -54,7 +55,7 @@ public class ServerUnlockService {
         return unlockedItemLimit;
     }
 
-   public boolean hasAvailableUnlocks(UserContext userContext) {
+    public boolean hasAvailableUnlocks(UserContext userContext) {
         return levelCrudPersistence.hasAvailableUnlocks(userContext.getLevelId(), userService.unlockedEntityIds(userContext.getUserId()));
     }
 
@@ -62,11 +63,12 @@ public class ServerUnlockService {
 //        return levelCrudPersistence.readAvailableLevelUnlockConfigs(levelId, userService.unlockedEntityIds(userContext.getUserId()));
 //    }
 
-//  TODO  public void updateUnlocked(int userId, List<Integer> unlockedIds) {
-//        userService.setUnlocked(userId, unlockedIds);
+    public void updateUnlocked(int userId, List<Integer> unlockedIds) {
+        throw new UnsupportedOperationException("... TODO ...");
+//   TODO     userService.setUnlocked(userId, unlockedIds);
 //        UserContext userContext = userService.readUserContext(userId);
 //        sessionService.updateUserContext(userId, userContext);
 //        baseItemService.updateUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
 //        systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit(), hasAvailableUnlocks(userContext));
-//    }
+    }
 }

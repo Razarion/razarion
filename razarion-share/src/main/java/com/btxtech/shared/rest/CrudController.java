@@ -7,6 +7,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+@Deprecated // Use from AbstractBaseController
 public interface CrudController<C extends Config> {
     @GET
     @Produces(MediaType.APPLICATION_JSON)

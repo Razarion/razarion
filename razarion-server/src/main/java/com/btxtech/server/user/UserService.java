@@ -10,6 +10,7 @@ import com.btxtech.server.service.engine.QuestConfigService;
 import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,7 @@ public class UserService {
     private UserContext createUserContext() {
         var userEntity = new UserEntity();
         userEntity.setLevel(levelCrudPersistence.getStarterLevel());
+        // userEntity.admin(true);
         return userRepository.save(userEntity).toUserContext();
     }
 
@@ -160,4 +162,28 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public void persistCrystals(int userId, int crystals) {
+        UserEntity userEntity = userRepository.getReferenceById(userId);
+        userEntity.setCrystals(crystals);
+        userRepository.save(userEntity);
+    }
+
+    @Transactional
+    public void setCompletedQuest(int userId, List<Integer> completedQuestIds) {
+        UserEntity userEntity = userRepository.getReferenceById(userId);
+        userEntity.setCompletedQuest(completedQuestIds.stream().map(questId -> {
+            QuestConfigEntity questConfigEntity = questConfigService.getEntity(questId);
+            if (questConfigEntity == null) {
+                throw new IllegalArgumentException("No QuestConfigEntity for id: " + questId);
+            }
+            return questConfigEntity;
+        }).collect(Collectors.toList()));
+        userRepository.save(userEntity);
+    }
+
+    @Transactional
+    public List<UserBackendInfo> getUserBackendInfos() {
+        throw new UnsupportedOperationException("... TODO ...");
+    }
 }

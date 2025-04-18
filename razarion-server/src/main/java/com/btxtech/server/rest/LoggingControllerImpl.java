@@ -6,12 +6,12 @@ import com.btxtech.shared.dto.ThrownLogInfo;
 import com.btxtech.shared.rest.LoggingController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.core.MediaType;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
@@ -24,13 +24,13 @@ public class LoggingControllerImpl implements LoggingController {
     private final Logger logger = LoggerFactory.getLogger(LoggingControllerImpl.class);
 
     @Override
-    @PostMapping(value = LOGGING_SIMPLE, consumes = MediaType.TEXT_PLAIN)
+    @PostMapping(value = LOGGING_SIMPLE, consumes = MediaType.TEXT_PLAIN_VALUE)
     public void simpleLogger(String logString) {
         logger.warn("GWT simpleLogger: " + logString);
     }
 
     @Override
-    @PostMapping(value = LOGGING_JSON, consumes = MediaType.APPLICATION_JSON)
+    @PostMapping(value = LOGGING_JSON, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void jsonLogger(@RequestBody LogRecordInfo logRecordInfo) {
         String s = "Gwt Message: " + logRecordInfo.getMessage();
         s += "\n - Logger name: " + logRecordInfo.getLoggerName();

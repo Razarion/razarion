@@ -12,13 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 
 @RestController
 @RequestMapping("/rest/babylon-material")
@@ -48,11 +45,9 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
         }
     }
 
-    @PUT
-    @Path("upload/{id}")
-    @Consumes(MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @SecurityCheck
-    public void uploadData(@PathParam("id") int id, byte[] data) {
+    @PostMapping(value = "upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void uploadData(@PathVariable("id") int id, @RequestBody byte[] data) {
         babylonMaterialPersistence.setData(id, data);
     }
 }

@@ -60,7 +60,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
 
   onCreate() {
     this.selectedBot = {
-      id: null,
+      id: <any>null,
       actionDelay: 3000,
       autoAttack: false,
       auxiliaryId: 0,

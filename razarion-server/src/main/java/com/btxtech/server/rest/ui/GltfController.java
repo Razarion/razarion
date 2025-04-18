@@ -6,17 +6,15 @@ import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.GltfService;
 import com.btxtech.server.user.SecurityCheck;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -47,12 +45,12 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
         return gltfCrudPersistence;
     }
 
-    @GetMapping(value = "/glb/{id}", produces = MediaType.APPLICATION_OCTET_STREAM)
+    @GetMapping(value = "/glb/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<byte[]> getGlb(@PathVariable("id") int id) {
         try {
             return ResponseEntity
                     .ok()
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
                     .body(gltfCrudPersistence.getGlb(id));
         } catch (Throwable e) {
             logger.log(Level.SEVERE, "Can not load GltfEntity for id: " + id, e);
@@ -60,11 +58,9 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
         }
     }
 
-    @PUT
-    @Path("upload-glb/{id}")
-    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     @SecurityCheck
-    public void uploadGlb(@PathParam("id") int id, byte[] data) {
+    @PutMapping(value = "upload-glb/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void uploadGlb(@PathVariable("id") int id, @RequestBody byte[] data) {
         gltfCrudPersistence.setGlb(id, data);
     }
 

@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { EditorPanel } from '../../editor-model';
-import { I18nString, LevelConfig, LevelEditConfig, LevelEditorControllerClient, LevelUnlockConfig } from 'src/app/generated/razarion-share';
-import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
-import { HttpClient } from '@angular/common/http';
+import {Component} from '@angular/core';
+import {EditorPanel} from '../../editor-model';
+import {LevelEditorControllerClient, LevelEntity, LevelUnlockConfig} from 'src/app/generated/razarion-share';
+import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
+import {HttpClient} from '@angular/common/http';
 import {Button} from 'primeng/button';
 import {InputNumber} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
@@ -26,7 +26,7 @@ import {TableModule} from 'primeng/table';
 })
 export class LevelEditorComponent extends EditorPanel {
   private levelEditorControllerClient!: LevelEditorControllerClient;
-  levelEditConfigs: LevelEditConfig[] = [];
+  levelEditConfigs: LevelEntity[] = [];
 
   constructor(httpClient: HttpClient) {
     super();
@@ -44,28 +44,29 @@ export class LevelEditorComponent extends EditorPanel {
     });
   }
 
-  onRemove(levelEditConfig: LevelEditConfig) {
+  onRemove(levelEditConfig: LevelEntity) {
     this.levelEditorControllerClient.delete(levelEditConfig.id).then(() => {
       this.levelEditConfigs.splice(this.levelEditConfigs.indexOf(levelEditConfig), 1);
     });
   }
 
-  onCreateUnlock(levelEditConfig: LevelEditConfig) {
-    levelEditConfig.levelUnlockConfigs.push(new class implements LevelUnlockConfig {
-      id = <any>null;
-      internalName = <any>null
-      thumbnail = null;
-      i18nName = <any>null
-      i18nDescription = <any>null
-      baseItemType = null;
-      baseItemTypeCount = 1;
-      crystalCost = 1;
-
-    });
+  onCreateUnlock(levelEditConfig: LevelEntity) {
+    // TODO levelEditConfig.levelUnlockConfigs.push(new class implements LevelUnlockConfig {
+    //   id = <any>null;
+    //   internalName = <any>null
+    //   thumbnail = null;
+    //   i18nName = <any>null
+    //   i18nDescription = <any>null
+    //   baseItemType = null;
+    //   baseItemTypeCount = 1;
+    //   crystalCost = 1;
+    // });
+    throw new Error("... TODO ...");
   }
 
-  onRemoveUnlock(levelEditConfig: LevelEditConfig, levelUnlockConfig: LevelUnlockConfig) {
-    levelEditConfig.levelUnlockConfigs.splice(levelEditConfig.levelUnlockConfigs.indexOf(levelUnlockConfig), 1);
+  onRemoveUnlock(levelEditConfig: LevelEntity, levelUnlockConfig: LevelUnlockConfig) {
+    // TODO levelEditConfig.levelUnlockConfigs.splice(levelEditConfig.levelUnlockConfigs.indexOf(levelUnlockConfig), 1);
+    throw new Error("... TODO ...");
   }
 
   onSave() {
