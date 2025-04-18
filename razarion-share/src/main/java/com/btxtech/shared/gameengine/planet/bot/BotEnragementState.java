@@ -9,12 +9,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * User: beat
@@ -30,14 +25,14 @@ public class BotEnragementState {
     }
 
 
-    private Provider<BotItemContainer> containerInstance;
+    private final Provider<BotItemContainer> containerInstance;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
     private BotEnragementStateConfig currentBotEnragementStateConfig;
     private boolean isEnragementActive;
     private BotItemContainer botItemContainer;
     private PlaceConfig realm;
     private String botName;
-    private Map<PlayerBase, Integer> killsPerBase = new HashMap<>();
+    private final Map<PlayerBase, Integer> killsPerBase = new HashMap<>();
     private Listener listener;
 
     @Inject

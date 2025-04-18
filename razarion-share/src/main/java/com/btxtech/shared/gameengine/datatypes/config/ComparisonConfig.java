@@ -36,7 +36,6 @@ public class ComparisonConfig {
     private List<Integer> botIds;
 
     /**
-     *
      * @return Key Item Type, Value count
      */
     public Integer[][] toTypeCountAngular() {

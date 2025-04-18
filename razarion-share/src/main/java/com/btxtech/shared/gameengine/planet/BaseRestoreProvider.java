@@ -11,7 +11,7 @@ import java.util.Map;
 public interface BaseRestoreProvider {
     Integer getLevel(PlayerBaseInfo playerBaseInfo);
 
-    Map<Integer,Integer> getUnlockedItemLimit(PlayerBaseInfo playerBaseInfo);
+    Map<Integer, Integer> getUnlockedItemLimit(PlayerBaseInfo playerBaseInfo);
 
     String getName(PlayerBaseInfo playerBaseInfo);
 }

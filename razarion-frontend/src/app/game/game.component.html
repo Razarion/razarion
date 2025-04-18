@@ -1,57 +1,33 @@
-﻿<div class="cover-panel" [ngClass]="{'cover-panel-fadeout': fadeOutCover, 'cover-panel-hide':removeCover}">
-  <div class="cover-panel-center" [ngClass]="{'cover-panel-hide': fadeOutCover}">
-    <p-progressSpinner styleClass="w-4rem h-4rem" strokeWidth="6"></p-progressSpinner>
-    <h1>&nbsp;Loading Razarion</h1>
-  </div>
-</div>
+﻿<screen-cover #loadingComponent [style]="{height:'100%'}"></screen-cover>
 
-<div class="flex card-container overflow-hidden align-items-stretch" [style]="{height:'100%'}">
+<div [style]="{height:'100%'}" class="flex card-container overflow-hidden align-items-stretch">
   <div #canvasDiv [style]="{width: '100%', height:'100%'}">
-    <canvas #canvas class="canvas"></canvas>
+    <canvas #canvas class="canvas" [style]="{width: '100%', height:'100%'}"></canvas>
   </div>
-  <div class="flex-none flex align-items-center justify-content-center" *ngFor="let editorModel of editorModels">
+  <div class="flex-none flex items-center justify-center" *ngFor="let editorModel of editorModels">
     <app-editor-panel [editorModel]="editorModel" [gameComponent]="getGameComponent()"
-      [mainCockpitComponent]="mainCockpit" [style]="{height:'100%'}"></app-editor-panel>
+                      [mainCockpitComponent]="mainCockpit" [style]="{height:'100%'}"></app-editor-panel>
   </div>
 </div>
 
-<p-sidebar [appendTo]="canvasDiv" [visible]="mainCockpit.showCockpit" [modal]="false" [showCloseIcon]="false"
-  [style]="{height:'auto', width:'auto', position: 'absolute'}">
+<p-drawer [visible]="mainCockpit.showCockpit" [appendTo]="canvasDiv" [modal]="false" [showCloseIcon]="false"
+          [style]="{height:'auto', width:'auto', position: 'absolute'}">
   <main-cockpit #mainCockpit></main-cockpit>
-</p-sidebar>
+</p-drawer>
 
-<p-sidebar [appendTo]="canvasDiv" [visible]="itemCockpitContainer.showCockpit" [modal]="false" [showCloseIcon]="false"
-  position="bottom" [style]="{height:'auto', width:'auto', position: 'absolute'}">
+<p-drawer [appendTo]="canvasDiv" [visible]="itemCockpitContainer.showCockpit" [modal]="false" [showCloseIcon]="false"
+           position="bottom" [style]="{height:'auto', width:'auto', position: 'absolute'}">
   <item-cockpit #itemCockpitContainer></item-cockpit>
-</p-sidebar>
+</p-drawer>
 
-<p-sidebar [appendTo]="canvasDiv" [visible]="questCockpitContainer.showCockpit" [modal]="false" [showCloseIcon]="false"
-  position="right" [style]="{height:'auto', width:'auto', position: 'absolute'}">
+<p-drawer [appendTo]="canvasDiv" [visible]="questCockpitContainer.showCockpit" [modal]="false" [showCloseIcon]="false"
+           position="right" [style]="{height:'auto', width:'auto', position: 'absolute'}">
   <quest-cockpit #questCockpitContainer></quest-cockpit>
-</p-sidebar>
-
-<p-dialog header="Inventory" [(visible)]="showInventory"  [style]="{width: '50vw'}">
-  <inventory *ngIf="showInventory" style="width: 100em;"></inventory>
-</p-dialog>
-
-<p-dialog header="Unlock" [(visible)]="showUnkock"  [style]="{width: '50vw'}">
-  <unlock *ngIf="showUnkock" style="width: 100em;"></unlock>
-</p-dialog>
-
-<p-dialog [visible]="!!modelDialogPresenter.title" [showHeader]="false"
-  [style]="{'box-shadow': 'none', 'border': 'none', 'pointer-events': 'none'}" [contentStyle]="{'background-color': 'transparent'}"
-  [resizable]="false">
-  <div [style]="{'font-size': '17em', 'font-weight': 'bold'}">
-    {{modelDialogPresenter.title}}
-  </div>
-  <div *ngIf="modelDialogPresenter.messageLines" [style]="{'font-size': '3em', 'font-weight': 'bold'}">
-    <div *ngFor="let messageLine of modelDialogPresenter.messageLines">
-      {{messageLine}} <br>
-    </div>
-  </div>
-</p-dialog>
+</p-drawer>
 
 <p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog">
   <editor-dialog [mainCockpitComponent]="mainCockpit"
-    [gameComponent]="getGameComponent()"></editor-dialog>
+                 [gameComponent]="getGameComponent()"></editor-dialog>
 </p-dialog>
+
+

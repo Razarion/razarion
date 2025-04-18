@@ -1,12 +1,6 @@
 package com.btxtech.shared.gameengine;
 
-import com.btxtech.shared.datatypes.tracking.DetailedTracking;
-import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
-import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
-import com.btxtech.shared.datatypes.tracking.SyncBoxItemTracking;
-import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
-import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
-import com.btxtech.shared.datatypes.tracking.TrackingContainer;
+import com.btxtech.shared.datatypes.tracking.*;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
@@ -17,7 +11,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
-import javax.inject.Inject;
 import java.util.Date;
 
 /**
@@ -27,7 +20,7 @@ import java.util.Date;
 public abstract class WorkerTrackerHandler {
     private static final int DETAILED_TRACKING_DELAY = 1000 * 5;
 
-    private SimpleExecutorService simpleExecutorService;
+    private final SimpleExecutorService simpleExecutorService;
     private TrackingContainer trackingContainer;
     private String gameSessionUuid;
     private SimpleScheduledFuture simpleScheduledFuture;

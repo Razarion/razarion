@@ -1,12 +1,6 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
-import com.btxtech.shared.datatypes.Line3d;
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.TextureCoordinate;
-import com.btxtech.shared.datatypes.Triangle;
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.*;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.ArrayList;
@@ -20,12 +14,12 @@ public class VertexList {
     private String name;
     private List<Vertex> vertices = new ArrayList<>();
     private List<Vertex> storedVertices;
-    private List<Vertex> normVertices = new ArrayList<>();
-    private List<Vertex> tangentVertices = new ArrayList<>();
-    private List<Vertex> barycentric = new ArrayList<>();
+    private final List<Vertex> normVertices = new ArrayList<>();
+    private final List<Vertex> tangentVertices = new ArrayList<>();
+    private final List<Vertex> barycentric = new ArrayList<>();
     @Deprecated
-    private List<TextureCoordinate> textureCoordinates = new ArrayList<>();
-    private List<Double> splattings = new ArrayList<>();
+    private final List<TextureCoordinate> textureCoordinates = new ArrayList<>();
+    private final List<Double> splattings = new ArrayList<>();
     // private static final Logger LOGGER = Logger.getLogger(VertexList.class.getName());
 
     public VertexList() {

@@ -7,14 +7,10 @@ import com.btxtech.shared.gameengine.planet.model.SyncConsumer;
 import com.btxtech.shared.gameengine.planet.model.SyncGenerator;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Beat
@@ -23,9 +19,9 @@ import java.util.Set;
 @Singleton
 public class EnergyService {
 
-    private Provider<BaseEnergy> baseEnergyInstance;
+    private final Provider<BaseEnergy> baseEnergyInstance;
 
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
     private final MapCollection<PlayerBase, SyncConsumer> changedSyncConsumers = new MapCollection<>();
     private final MapCollection<PlayerBase, SyncGenerator> changedSyncGenerators = new MapCollection<>();
     private final Set<PlayerBase> removedBases = new HashSet<>();

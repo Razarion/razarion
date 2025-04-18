@@ -1,9 +1,8 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.persistence.tracker.ConnectionTrackingPersistence;
 import com.btxtech.server.user.PlayerSession;
+import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
-import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
@@ -15,44 +14,76 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ConnectionMarshaller;
-import com.btxtech.shared.system.ExceptionHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.inject.Provider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
-import javax.inject.Provider;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Created by Beat
- * 21.04.2017.
- */
-@Singleton
-public class ClientGameConnectionService {
-    @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
-    private SessionService sessionService;
-    @Inject
-    private ConnectionTrackingPersistence connectionTrackingPersistence;
-    @Inject
-    private Provider<PlanetService> planetServiceInstance;
-    private final MapCollection<Integer, ClientGameConnection> gameConnections = new MapCollection<>();
-    private ObjectMapper mapper = new ObjectMapper();
+import static com.btxtech.server.gameengine.ClientGameConnection.MAPPER;
 
-    public void onOpen(ClientGameConnection clientGameConnection, int userId) {
-        synchronized (gameConnections) {
-            gameConnections.put(userId, clientGameConnection);
-        }
-        connectionTrackingPersistence.onGameConnectionOpened(clientGameConnection.getHttpSessionId(), userId);
-        sendInitialSlaveSyncInfo(userId);
+@Service
+public class ClientGameConnectionService extends TextWebSocketHandler {
+    private static final String CLIENT_GAME_CONNECTION = "ClientGameConnection";
+    private final Logger logger = LoggerFactory.getLogger(ClientGameConnectionService.class);
+    private final Map<String, ClientGameConnection> gameConnections = new HashMap<>();
+    private final SessionService sessionService;
+    private final Provider<ClientGameConnection> provider;
+    private final UserService userService;
+    @Autowired
+    @Lazy
+    private PlanetService planetService;
+
+    public ClientGameConnectionService(SessionService sessionService,
+                                       Provider<ClientGameConnection> provider,
+                                       UserService userService) {
+        this.sessionService = sessionService;
+        this.provider = provider;
+        this.userService = userService;
     }
 
-    public void onClose(ClientGameConnection clientGameConnection) {
+    @Override
+    public void afterConnectionEstablished(WebSocketSession wsSession) {
+        var clientGameConnection = provider.get();
+
+        var httpSessionId = (String) wsSession.getAttributes().get(HttpSessionHandshakeInterceptor.HTTP_SESSION_ID_ATTR_NAME);
+        clientGameConnection.init(wsSession, httpSessionId);
+        wsSession.getAttributes().put(CLIENT_GAME_CONNECTION, clientGameConnection);
         synchronized (gameConnections) {
-            gameConnections.remove(clientGameConnection.getUserId(), clientGameConnection);
+            gameConnections.put(httpSessionId, clientGameConnection);
         }
-        connectionTrackingPersistence.onGameConnectionClosed(clientGameConnection.getHttpSessionId(), clientGameConnection.getUserId());
+        clientGameConnection.sendInitialSlaveSyncInfo(clientGameConnection.getUserContext().getUserId());
+        // TODO connectionTrackingPersistence.onGameConnectionOpened(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
+    }
+
+    @Override
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
+        var clientGameConnection = (ClientGameConnection) session.getAttributes().get(CLIENT_GAME_CONNECTION);
+        clientGameConnection.handleMessage(message);
+    }
+
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception) {
+        logger.warn("handleTransportError. Session: {}", session, exception);
+
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession wsSession, CloseStatus closeStatus) {
+        var httpSessionId = (String) wsSession.getAttributes().get(HttpSessionHandshakeInterceptor.HTTP_SESSION_ID_ATTR_NAME);
+        synchronized (gameConnections) {
+            var clientGameConnection = gameConnections.remove(httpSessionId);
+            logger.info("Websocket clientGameConnection closed {}", clientGameConnection);
+        }
     }
 
     public void onBaseCreated(PlayerBaseFull playerBase) {
@@ -78,7 +109,7 @@ public class ClientGameConnectionService {
     public void sendResourcesBalanceChanged(PlayerBase playerBase, int resources) {
         PlayerSession playerSession = getPlayerSessionBase(playerBase);
         if (playerSession != null) {
-            sendToClient(playerBase.getUserId(), GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
+            sendToClient(playerSession.getHttpSessionId(), GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
         }
     }
 
@@ -96,64 +127,47 @@ public class ClientGameConnectionService {
         sendToClients(GameConnectionPacket.SYNC_BOX_ITEM_CHANGED, syncBoxItem.getSyncInfo());
     }
 
-    public Collection<ClientGameConnection> getClientGameConnections() {
-        synchronized (gameConnections) {
-            return gameConnections.getAll();
-        }
-    }
-
     private void sendToClients(GameConnectionPacket packet, Object object) {
         String text;
         try {
-            text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
+            text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
         } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
+            logger.warn(throwable.getMessage(), throwable);
             return;
         }
 
         synchronized (gameConnections) {
-            gameConnections.getAll().forEach(clientGameConnection -> {
+            gameConnections.values().forEach(gameConnection -> {
                 try {
-                    clientGameConnection.sendToClient(text);
+                    gameConnection.sendToClient(text);
                 } catch (Throwable throwable) {
-                    exceptionHandler.handleException(throwable);
+                    logger.warn(throwable.getMessage(), throwable);
                 }
             });
         }
     }
 
-    private void sendToClient(int userId, GameConnectionPacket packet, Object object) {
-        Collection<ClientGameConnection> clientGameConnections;
+    private void sendToClient(String httpSessionId, GameConnectionPacket packet, Object object) {
+        ClientGameConnection clientGameConnection;
         synchronized (gameConnections) {
-            clientGameConnections = gameConnections.get(userId);
-            if (clientGameConnections == null) {
+            clientGameConnection = gameConnections.get(httpSessionId);
+            if (clientGameConnection == null) {
                 return;
             }
         }
         try {
-            String text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
-            clientGameConnections.forEach(clientGameConnection -> {
-                try {
-                    clientGameConnection.sendToClient(text);
-                } catch (Throwable throwable) {
-                    exceptionHandler.handleException(throwable);
-                }
-            });
+            String text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
+            try {
+                clientGameConnection.sendToClient(text);
+            } catch (Throwable throwable) {
+                logger.warn(throwable.getMessage(), throwable);
+            }
         } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
+            logger.warn(throwable.getMessage(), throwable);
         }
     }
 
     private PlayerSession getPlayerSessionBase(PlayerBase playerBase) {
         return sessionService.findPlayerSession(playerBase.getUserId());
-    }
-
-
-    private void sendInitialSlaveSyncInfo(int userId) {
-        try {
-            sendToClient(userId, GameConnectionPacket.INITIAL_SLAVE_SYNC_INFO, planetServiceInstance.get().generateSlaveSyncItemInfo(userId));
-        } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
-        }
     }
 }

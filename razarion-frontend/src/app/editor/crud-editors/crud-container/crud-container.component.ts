@@ -2,6 +2,7 @@ import {Component, ComponentFactoryResolver, ViewChild, ViewContainerRef} from '
 import {EditorPanel} from "../../editor-model";
 import {MenuItem, MessageService} from "primeng/api";
 import {Config, ObjectNameId} from "../../../generated/razarion-share";
+import {MenubarModule } from 'primeng/menubar';
 
 export interface CrudContainerChild<T extends Config> {
   init(config: T): void;
@@ -19,9 +20,11 @@ export interface CrudContainerChildPreUpdate<T extends Config> extends CrudConta
 
 
 @Component({
-    selector: 'crud-container',
-    templateUrl: './crud-container.component.html',
-    standalone: false
+  selector: 'crud-container',
+  imports: [
+    MenubarModule
+  ],
+  templateUrl: './crud-container.component.html'
 })
 export class AbstractCrudContainerComponent extends EditorPanel {
   @ViewChild("configContainer", {read: ViewContainerRef})
@@ -69,7 +72,7 @@ export class AbstractCrudContainerComponent extends EditorPanel {
   }
 
 
-  onEditorModel(): void {
+  override onEditorModel(): void {
     if (!this.editorModel.childComponent) {
       console.error(`No config component : ${this.editorModel.editorComponent}`);
       this.messageService.add({

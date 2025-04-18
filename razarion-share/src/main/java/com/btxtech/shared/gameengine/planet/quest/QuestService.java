@@ -29,11 +29,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger.SYNC_ITEM_CREATED;
@@ -48,19 +44,19 @@ public class QuestService {
     private static final int TICKS_TO_SEND_DEFERRED = PlanetService.TICKS_PER_SECONDS * 2;
     private final Logger logger = Logger.getLogger(QuestService.class.getName());
 
-    private ItemTypeService itemTypeService;
+    private final ItemTypeService itemTypeService;
 
-    private Provider<CountComparison> countComparisonProvider;
+    private final Provider<CountComparison> countComparisonProvider;
 
-    private Provider<InventoryItemCountComparison> inventoryItemCountComparisonnProvider;
+    private final Provider<InventoryItemCountComparison> inventoryItemCountComparisonnProvider;
 
-    private Provider<BaseItemTypeComparison> baseItemTypeComparisonProvider;
+    private final Provider<BaseItemTypeComparison> baseItemTypeComparisonProvider;
 
-    private Provider<BaseItemCountComparison> baseItemCountComparisonProvider;
+    private final Provider<BaseItemCountComparison> baseItemCountComparisonProvider;
 
-    private Provider<BaseItemPositionComparison> baseItemPositionComparisonProvider;
+    private final Provider<BaseItemPositionComparison> baseItemPositionComparisonProvider;
 
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
     private final Collection<QuestListener> questListeners = new ArrayList<>();
     private final Map<Integer, AbstractConditionProgress> progressMap = new HashMap<>();
     private int tickCount;

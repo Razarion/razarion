@@ -1,26 +1,16 @@
 package com.btxtech.server.user;
 
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 
 import java.util.Date;
-import java.util.Locale;
 
-/**
- * Created by Beat
- * 23.04.2017.
- */
 public class PlayerSession {
-    private String httpSessionId;
+    private final String httpSessionId;
+    private final Date time = new Date();
     private UserContext userContext;
-    private Locale locale;
-    @Deprecated
-    private UnregisteredUser unregisteredUser;
-    private Date time = new Date();
 
-    public PlayerSession(String httpSessionId, Locale locale) {
+    public PlayerSession(String httpSessionId) {
         this.httpSessionId = httpSessionId;
-        this.locale = locale;
     }
 
     public String getHttpSessionId() {
@@ -33,20 +23,6 @@ public class PlayerSession {
 
     public void setUserContext(UserContext userContext) {
         this.userContext = userContext;
-    }
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-    @Deprecated
-    public UnregisteredUser getUnregisteredUser() {
-        return unregisteredUser;
-    }
-
-    @Deprecated
-    public void setUnregisteredUser(UnregisteredUser unregisteredUser) {
-        this.unregisteredUser = unregisteredUser;
     }
 
     public Date getTime() {

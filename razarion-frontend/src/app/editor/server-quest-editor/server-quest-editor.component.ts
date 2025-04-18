@@ -8,11 +8,36 @@ import {
   ServerLevelQuestConfig
 } from "../../generated/razarion-share";
 import {QuestCockpitComponent} from 'src/app/game/cockpit/quest/quest-cockpit.component';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
+import {Divider} from 'primeng/divider';
+import {PlaceConfigComponent} from '../common/place-config/place-config.component';
+import {Checkbox} from 'primeng/checkbox';
+import {BaseItemTypeCountComponent} from '../common/base-item-type-count/base-item-type-count.component';
+import {DropdownModule} from 'primeng/dropdown';
+import {Button} from 'primeng/button';
+import {Accordion, AccordionTab} from 'primeng/accordion';
+import {LevelComponent} from '../common/level/level.component';
+import {NgForOf, NgIf} from '@angular/common';
 
 @Component({
-    selector: 'server-quest-editor',
-    templateUrl: './server-quest-editor.component.html',
-    standalone: false
+  selector: 'server-quest-editor',
+  imports: [
+    InputNumber,
+    FormsModule,
+    Divider,
+    PlaceConfigComponent,
+    Checkbox,
+    BaseItemTypeCountComponent,
+    DropdownModule,
+    Button,
+    Accordion,
+    AccordionTab,
+    LevelComponent,
+    NgIf,
+    NgForOf
+  ],
+  templateUrl: './server-quest-editor.component.html'
 })
 export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig!: ServerGameEngineConfig;

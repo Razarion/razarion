@@ -2,23 +2,20 @@ package com.btxtech.server.system;
 
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
+import jakarta.inject.Provider;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Provider;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-/**
- * Created by Beat
- * 28.06.2016.
- */
-@Singleton
+@Service
 public class ServerSimpleExecutorServiceImpl implements SimpleExecutorService {
-    @Inject
-    private Provider<ServerSimpleScheduledFuture> instance;
+    private final Provider<ServerSimpleScheduledFuture> provider;
+
+    public ServerSimpleExecutorServiceImpl(Provider<ServerSimpleScheduledFuture> provider) {
+        this.provider = provider;
+    }
 
     @Override
     public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {
-        ServerSimpleScheduledFuture serverSimpleScheduledFuture = instance.get();
+        ServerSimpleScheduledFuture serverSimpleScheduledFuture = provider.get();
         serverSimpleScheduledFuture.init(delayMilliS, false, type.getPerfmonEnum(), runnable);
         serverSimpleScheduledFuture.start();
         return serverSimpleScheduledFuture;
@@ -26,7 +23,7 @@ public class ServerSimpleExecutorServiceImpl implements SimpleExecutorService {
 
     @Override
     public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable, Type type) {
-        ServerSimpleScheduledFuture serverSimpleScheduledFuture = instance.get();
+        ServerSimpleScheduledFuture serverSimpleScheduledFuture = provider.get();
         serverSimpleScheduledFuture.init(delayMilliS, true, type.getPerfmonEnum(), runnable);
         if (start) {
             serverSimpleScheduledFuture.start();

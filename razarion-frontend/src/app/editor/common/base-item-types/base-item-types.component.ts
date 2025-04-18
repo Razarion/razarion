@@ -1,9 +1,16 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {Button} from 'primeng/button';
+import {BaseItemTypeComponent} from '../base-item-type/base-item-type.component';
+import {TableModule} from 'primeng/table';
 
 @Component({
-    selector: 'base-item-types',
-    templateUrl: './base-item-types.component.html',
-    standalone: false
+  selector: 'base-item-types',
+  imports: [
+    Button,
+    BaseItemTypeComponent,
+    TableModule
+  ],
+  templateUrl: './base-item-types.component.html'
 })
 export class BaseItemTypesComponent implements OnInit {
   @Input("baseItemTypeIds")

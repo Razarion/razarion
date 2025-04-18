@@ -2,11 +2,28 @@ import {Component, OnInit} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {ResourceRegionConfig, ServerGameEngineConfig} from "../../generated/razarion-share";
 import {EditorService} from "../editor-service";
+import {PlaceConfigComponent} from '../common/place-config/place-config.component';
+import {NgIf} from '@angular/common';
+import {ResourceItemTypeComponent} from '../common/resource-item-type/resource-item-type.component';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
+import {Divider} from 'primeng/divider';
+import {Button} from 'primeng/button';
+import {DropdownModule} from 'primeng/dropdown';
 
 @Component({
-    selector: 'server-resource-region',
-    templateUrl: './server-resource-region.component.html',
-    standalone: false
+  selector: 'server-resource-region',
+  imports: [
+    PlaceConfigComponent,
+    NgIf,
+    ResourceItemTypeComponent,
+    InputNumber,
+    FormsModule,
+    Divider,
+    Button,
+    DropdownModule
+  ],
+  templateUrl: './server-resource-region.component.html'
 })
 export class ServerResourceRegionComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig!: ServerGameEngineConfig;

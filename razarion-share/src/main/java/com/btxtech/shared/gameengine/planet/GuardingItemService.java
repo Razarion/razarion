@@ -5,8 +5,8 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,11 +19,11 @@ import java.util.List;
 @Singleton
 public class GuardingItemService {
 
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
 
-    private Provider<CommandService> commandService;
+    private final Provider<CommandService> commandService;
     private final Collection<SyncBaseItem> guardingItems = new ArrayList<>();
     private GameEngineMode gameEngineMode;
 

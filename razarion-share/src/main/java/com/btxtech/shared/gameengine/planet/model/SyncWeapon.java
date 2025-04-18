@@ -39,17 +39,17 @@ import javax.inject.Provider;
 public class SyncWeapon extends SyncBaseAbility {
     private static final long CHECK_DELTA = 1000;
 
-    private BaseItemService baseItemService;
+    private final BaseItemService baseItemService;
 
-    private ProjectileService projectileService;
+    private final ProjectileService projectileService;
 
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private PathingService pathingService;
+    private final PathingService pathingService;
 
-    private Provider<SyncTurret> syncTurretInstance;
+    private final Provider<SyncTurret> syncTurretInstance;
 
-    private SyncService syncService;
+    private final SyncService syncService;
     private WeaponType weaponType;
     private SyncBaseItem target;
     private boolean followTarget;

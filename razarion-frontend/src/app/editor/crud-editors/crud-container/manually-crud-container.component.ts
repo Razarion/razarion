@@ -6,8 +6,7 @@ import { AbstractCrudContainerComponent } from './crud-container.component';
 
 @Component({
     selector: 'manually-crud-container',
-    templateUrl: './crud-container.component.html',
-    standalone: false
+    templateUrl: './crud-container.component.html'
 })
 export class ManuallyCrudContainerComponent extends AbstractCrudContainerComponent {
   private editorUrl?: string;

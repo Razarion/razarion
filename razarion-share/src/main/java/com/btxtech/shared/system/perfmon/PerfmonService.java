@@ -6,14 +6,9 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.inject.Singleton;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -25,15 +20,15 @@ import java.util.logging.Logger;
 public class PerfmonService {
     public static final int COUNT = 100;
     public static final long DUMP_DELAY = 2000;
-    private Logger logger = Logger.getLogger(PerfmonService.class.getName());
+    private final Logger logger = Logger.getLogger(PerfmonService.class.getName());
 
-    private SimpleExecutorService simpleExecutorService;
+    private final SimpleExecutorService simpleExecutorService;
 
-    private ExceptionHandler exceptionHandler;
-    private Map<PerfmonEnum, Long> enterTimes = new HashMap<>();
+    private final ExceptionHandler exceptionHandler;
+    private final Map<PerfmonEnum, Long> enterTimes = new HashMap<>();
     private Collection<SampleEntry> sampleEntries = new ArrayList<>();
-    private StatisticConsumer clientStatisticConsumer = new StatisticConsumer();
-    private StatisticConsumer serverStatisticConsumer = new StatisticConsumer();
+    private final StatisticConsumer clientStatisticConsumer = new StatisticConsumer();
+    private final StatisticConsumer serverStatisticConsumer = new StatisticConsumer();
     private SimpleScheduledFuture simpleScheduledFuture;
     private List<TerrainTileStatistic> terrainTileStatistics = new ArrayList<>();
     private String gameSessionUuid;

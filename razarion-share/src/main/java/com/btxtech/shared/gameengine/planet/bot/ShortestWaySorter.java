@@ -3,14 +3,7 @@ package com.btxtech.shared.gameengine.planet.bot;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 /**
@@ -52,9 +45,9 @@ public class ShortestWaySorter {
     }
 
     static class AttackerTargets<T extends SyncItem> {
-        private BotSyncBaseItem attacker;
-        private TargetDistanceCmp targetDistanceCmp = new TargetDistanceCmp();
-        private List<TargetDistance<T>> targetDistance = new ArrayList<>();
+        private final BotSyncBaseItem attacker;
+        private final TargetDistanceCmp targetDistanceCmp = new TargetDistanceCmp();
+        private final List<TargetDistance<T>> targetDistance = new ArrayList<>();
 
         private AttackerTargets(BotSyncBaseItem attacker, Collection<T> targets, BiPredicate<BotSyncBaseItem, T> checker) {
             this.attacker = attacker;
@@ -97,8 +90,8 @@ public class ShortestWaySorter {
     }
 
     static private class TargetDistance<T extends SyncItem> {
-        private double distance;
-        private T target;
+        private final double distance;
+        private final T target;
 
         public TargetDistance(BotSyncBaseItem attacker, T target) throws TargetHasNoPositionException {
             this.target = target;

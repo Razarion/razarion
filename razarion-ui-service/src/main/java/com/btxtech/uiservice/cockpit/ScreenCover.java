@@ -15,7 +15,7 @@ public interface ScreenCover {
 
     void removeLoadingCover();
 
-    void fadeOutLoadingCover();
-
     void fadeInLoadingCover();
+
+    void onStartupProgress(double percent);
 }

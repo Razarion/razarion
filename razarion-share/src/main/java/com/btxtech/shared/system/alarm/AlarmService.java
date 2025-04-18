@@ -2,15 +2,14 @@ package com.btxtech.shared.system.alarm;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Singleton
 public class AlarmService {
-    private List<Alarm> alarms = new ArrayList<>();
-    private List<AlarmServiceListener> listeners = new ArrayList<>();
+    private final List<Alarm> alarms = new ArrayList<>();
+    private final List<AlarmServiceListener> listeners = new ArrayList<>();
 
     @Inject
     public AlarmService() {

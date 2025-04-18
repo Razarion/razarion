@@ -1,9 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'acceleration',
-    templateUrl: './acceleration.component.html',
-    standalone: false
+  selector: 'acceleration',
+  imports: [
+    InputNumber,
+    FormsModule
+  ],
+  templateUrl: './acceleration.component.html'
 })
 export class AccelerationComponent implements OnInit {
   private readonly FINAL_SPEED_M_PER_S = 100 * 1000 / 3600; // Convert 100 km/h to m/s

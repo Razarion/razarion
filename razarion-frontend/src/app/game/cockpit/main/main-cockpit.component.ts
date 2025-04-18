@@ -4,14 +4,31 @@ import { GameComponent } from '../../game.component';
 import { Nullable, Observer, PointerEventTypes, PointerInfo } from '@babylonjs/core';
 import { BabylonRenderServiceAccessImpl } from '../../renderer/babylon-render-service-access-impl.service';
 import { Router } from '@angular/router';
-import { FrontendService } from 'src/app/service/frontend.service';
+import {Button} from 'primeng/button';
+import {RadarComponent} from './radar/radar.component';
+import {RadarNoPowerComponent} from './radar/radar-no-power.component';
+import {Checkbox} from 'primeng/checkbox';
+import {NgClass, NgIf} from '@angular/common';
+import {Badge} from 'primeng/badge';
+import {Knob} from 'primeng/knob';
+import {FormsModule} from '@angular/forms';
 
 
 @Component({
-    selector: 'main-cockpit',
-    templateUrl: 'main-cockpit.component.html',
-    styleUrls: ['main-cockpit.component.scss'],
-    standalone: false
+  selector: 'main-cockpit',
+  templateUrl: 'main-cockpit.component.html',
+  imports: [
+    Button,
+    RadarComponent,
+    RadarNoPowerComponent,
+    Checkbox,
+    NgClass,
+    Badge,
+    Knob,
+    FormsModule,
+    NgIf
+  ],
+  styleUrls: ['main-cockpit.component.scss']
 })
 export class MainCockpitComponent implements MainCockpit {
   showCockpit: boolean = false;
@@ -37,8 +54,7 @@ export class MainCockpitComponent implements MainCockpit {
   constructor(private zone: NgZone,
     private gameComponent: GameComponent,
     private renderService: BabylonRenderServiceAccessImpl,
-    private router: Router,
-    public frontendService: FrontendService) {
+    private router: Router) {
   }
 
   show(admin: boolean): void {

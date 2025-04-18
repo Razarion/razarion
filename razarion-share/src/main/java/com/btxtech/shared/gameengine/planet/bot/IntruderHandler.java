@@ -34,9 +34,9 @@ import java.util.Map;
 public class IntruderHandler {
 
     // private Logger logger = Logger.getLogger(IntruderHandler.class.getName());
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
     private Map<SyncBaseItem, BotSyncBaseItem> intruders = new HashMap<>();
     private BotEnragementState botEnragementState;
     private PlaceConfig region;

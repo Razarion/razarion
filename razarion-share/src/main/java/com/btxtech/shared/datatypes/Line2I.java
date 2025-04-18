@@ -213,10 +213,7 @@ public class Line2I {
         if (!MathHelper.compareWithPrecision(point.getX(), xMax, 0.000001) && point.getX() > xMax) {
             return false;
         }
-        if (!MathHelper.compareWithPrecision(point.getY(), yMax, 0.000001) && point.getY() > yMax) {
-            return false;
-        }
-        return true;
+        return MathHelper.compareWithPrecision(point.getY(), yMax, 0.000001) || !(point.getY() > yMax);
     }
 
     public double calculateX(double y) {

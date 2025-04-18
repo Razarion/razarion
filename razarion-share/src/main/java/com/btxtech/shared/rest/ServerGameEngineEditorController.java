@@ -1,11 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.dto.BoxRegionConfig;
-import com.btxtech.shared.dto.ResourceRegionConfig;
-import com.btxtech.shared.dto.ServerGameEngineConfig;
-import com.btxtech.shared.dto.ServerLevelQuestConfig;
-import com.btxtech.shared.dto.StartRegionConfig;
+import com.btxtech.shared.dto.*;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 
 import javax.ws.rs.Consumes;

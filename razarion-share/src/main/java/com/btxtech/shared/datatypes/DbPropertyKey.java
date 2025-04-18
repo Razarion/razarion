@@ -60,6 +60,7 @@ public enum DbPropertyKey {
 
     private final String key;
     private final DbPropertyType dbPropertyType;
+
     DbPropertyKey(DbPropertyType dbPropertyType, String key) {
         this.dbPropertyType = dbPropertyType;
         this.key = key;

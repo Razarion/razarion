@@ -8,8 +8,8 @@ import java.util.logging.Logger;
  */
 public class DebugTimeProbe {
     private long timeStamp;
-    private Logger logger = Logger.getLogger(DebugTimeProbe.class.getName());
-    private String name;
+    private final Logger logger = Logger.getLogger(DebugTimeProbe.class.getName());
+    private final String name;
 
     public DebugTimeProbe(String name) {
         this.name = name;

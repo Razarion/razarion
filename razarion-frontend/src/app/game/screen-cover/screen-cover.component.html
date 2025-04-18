@@ -1,0 +1,20 @@
+<div class="cover-panel" [ngClass]="{'cover-panel-fadeout': fadeOutCover, 'cover-panel-hide':removeCover}">
+  <div class="cover-panel-center">
+    <p-card>
+      <ng-template #title><span class="info-font">Razarion – The Open-Source Online RTS</span></ng-template>
+      <ng-template pTemplate="content">
+        <div class="progress-bar-container" [style]="{marginTop: '1.5em'}">
+          <div class="info-font">Loading...</div>
+          <div>
+            <p-progressbar [value]="loadingProgress" [style]="{ width: '28em', height: '0.9em' }"></p-progressbar>
+          </div>
+        </div>
+        <p class="info-font">
+          Xperience epic real-time battles right in your browser! Razarion is a free, open-source RTS powered by WebGL,
+          requiring no installation. Command a massive arsenal of units and buildings, engage in intense combat, and
+          conquer vast open-world multiplayer maps.
+        </p>
+      </ng-template>
+    </p-card>
+  </div>
+</div>

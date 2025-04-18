@@ -37,7 +37,7 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     // User
     EMAIL_VERIFIED(Void.class);
 
-    private Class theClass;
+    private final Class theClass;
 
     SystemConnectionPacket(Class theClass) {
         this.theClass = theClass;

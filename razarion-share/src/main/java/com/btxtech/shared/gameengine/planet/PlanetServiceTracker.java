@@ -9,7 +9,7 @@ import java.util.logging.Logger;
  */
 public class PlanetServiceTracker {
     public static final int TICKS_FOR_DUMP = 100;
-    private Logger logger = Logger.getLogger(PlanetServiceTracker.class.getName());
+    private final Logger logger = Logger.getLogger(PlanetServiceTracker.class.getName());
     private long startPeriodTimeStamp;
     private long startTimeStamp;
     private long startTickTimeStamp;

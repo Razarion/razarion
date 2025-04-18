@@ -7,11 +7,23 @@ import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
 import {HttpClient} from '@angular/common/http';
 import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
 import {Material} from '@babylonjs/core';
+import {Button} from 'primeng/button';
+import {Divider} from 'primeng/divider';
+import {FormsModule} from '@angular/forms';
+import {Checkbox} from 'primeng/checkbox';
+import {InputNumber} from 'primeng/inputnumber';
 
 @Component({
-    selector: 'babylon-material-editor',
-    templateUrl: './babylon-material-editor.component.html',
-    standalone: false
+  selector: 'babylon-material-editor',
+  imports: [
+    Button,
+    Divider,
+    FileUpload,
+    FormsModule,
+    Checkbox,
+    InputNumber
+  ],
+  templateUrl: './babylon-material-editor.component.html'
 })
 export class BabylonMaterialEditorComponent implements CrudContainerChild<BabylonMaterialEntity> {
   static editorControllerClient = BabylonMaterialControllerClient;

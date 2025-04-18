@@ -2,20 +2,9 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
-import com.btxtech.shared.dto.ClientLogRecord;
-import com.btxtech.shared.dto.FrontendLoginState;
-import com.btxtech.shared.dto.LoginResult;
-import com.btxtech.shared.dto.RegisterResult;
-import com.btxtech.shared.dto.UserRequest;
+import com.btxtech.shared.dto.*;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 

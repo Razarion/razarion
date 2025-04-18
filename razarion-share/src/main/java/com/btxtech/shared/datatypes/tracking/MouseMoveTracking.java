@@ -20,7 +20,7 @@ import com.btxtech.shared.datatypes.Index;
  * Date: 03.08.2010
  * Time: 22:12:06
  */
-public class MouseMoveTracking extends DetailedTracking{
+public class MouseMoveTracking extends DetailedTracking {
     private Index position;
 
     public Index getPosition() {

@@ -1,9 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'velocity',
-    templateUrl: './velocity.component.html',
-    standalone: false
+  selector: 'velocity',
+  imports: [
+    InputNumber,
+    FormsModule
+  ],
+  templateUrl: './velocity.component.html'
 })
 export class VelocityComponent implements OnInit {
   @Input("velocity")

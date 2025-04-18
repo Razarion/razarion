@@ -37,4 +37,13 @@ public class GameUiControlTrackerInfo {
         this.duration = duration;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "GameUiControlTrackerInfo{" +
+                "gameSessionUuid='" + gameSessionUuid + '\'' +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
+                '}';
+    }
 }

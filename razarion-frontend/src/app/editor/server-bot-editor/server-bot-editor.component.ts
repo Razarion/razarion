@@ -7,11 +7,36 @@ import {
   BotItemConfig,
   ServerGameEngineConfig
 } from "../../generated/razarion-share";
+import {PlaceConfigComponent} from '../common/place-config/place-config.component';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
+import {Checkbox} from 'primeng/checkbox';
+import {BaseItemTypeComponent} from '../common/base-item-type/base-item-type.component';
+import {Button} from 'primeng/button';
+import {Accordion, AccordionTab} from 'primeng/accordion';
+import {NgForOf, NgIf} from '@angular/common';
+import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
+import {Divider} from 'primeng/divider';
+import {DropdownModule} from 'primeng/dropdown';
 
 @Component({
-    selector: 'server-bot-editor',
-    templateUrl: './server-bot-editor.component.html',
-    standalone: false
+  selector: 'server-bot-editor',
+  imports: [
+    PlaceConfigComponent,
+    InputNumber,
+    FormsModule,
+    Checkbox,
+    BaseItemTypeComponent,
+    Button,
+    Accordion,
+    NgForOf,
+    NgIf,
+    AccordionTab,
+    BabylonMaterialComponent,
+    Divider,
+    DropdownModule
+  ],
+  templateUrl: './server-bot-editor.component.html'
 })
 export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   serverGameEngineConfig!: ServerGameEngineConfig;

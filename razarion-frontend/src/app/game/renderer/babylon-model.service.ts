@@ -20,7 +20,9 @@ import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {BabylonMaterialContainer, GlbContainer, ParticleSystemContainer} from "./babylon-model-container";
 import {GltfHelper} from "./gltf-helper";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class BabylonModelService {
   private babylonMaterialContainer = new BabylonMaterialContainer();
   private glbContainer = new GlbContainer(this.babylonMaterialContainer);

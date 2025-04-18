@@ -10,13 +10,13 @@ import com.btxtech.shared.dto.FractalFieldConfig;
  */
 public class FractalFieldGenerator {
     // private final static Logger logger = Logger.getLogger(FractalFieldGenerator.class.getName());
-    private int verticesPerEdge;
+    private final int verticesPerEdge;
     private final double minValue;
     private final double maxValue;
-    private int divisions;
-    private int log2;
-    private double[][] values;
-    private double roughness;
+    private final int divisions;
+    private final int log2;
+    private final double[][] values;
+    private final double roughness;
 
     private FractalFieldGenerator(int verticesPerEdge, double roughness, double minValue, double maxValue) {
         this.verticesPerEdge = verticesPerEdge;

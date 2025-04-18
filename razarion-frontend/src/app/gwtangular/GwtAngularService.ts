@@ -1,6 +1,6 @@
 import {Injectable, NgZone} from "@angular/core";
-import {BabylonModelService} from "../game/renderer/babylon-model.service";
 import {GwtAngularBoot, GwtAngularFacade} from "./GwtAngularFacade";
+import {BabylonModelService} from '../game/renderer/babylon-model.service';
 
 declare global {
   interface Window {
@@ -8,7 +8,9 @@ declare global {
   }
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root' // This ensures it is available application-wide
+})
 export class GwtAngularService {
   gwtAngularFacade!: GwtAngularFacade;
   crashListener!: () => void;

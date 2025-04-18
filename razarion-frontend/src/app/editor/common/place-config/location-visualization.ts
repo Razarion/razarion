@@ -1,9 +1,22 @@
-import { AbstractMesh, Mesh, MeshBuilder, Nullable, Observer, PointerEventTypes, PointerInfo, Ray, Vector3 } from "@babylonjs/core";
-import { SimpleMaterial } from "@babylonjs/materials";
-import { BabylonRenderServiceAccessImpl, RazarionMetadataType } from "../../../game/renderer/babylon-render-service-access-impl.service";
-import { EventEmitter } from "@angular/core";
-import { PlaceConfig } from "../../../generated/razarion-share";
-import { PlaceConfigComponent } from "./place-config.component";
+import {
+  AbstractMesh,
+  Mesh,
+  MeshBuilder,
+  Nullable,
+  Observer,
+  PointerEventTypes,
+  PointerInfo,
+  Ray,
+  Vector3
+} from "@babylonjs/core";
+import {SimpleMaterial} from "@babylonjs/materials";
+import {
+  BabylonRenderServiceAccessImpl,
+  RazarionMetadataType
+} from "../../../game/renderer/babylon-render-service-access-impl.service";
+import {EventEmitter} from "@angular/core";
+import {PlaceConfig} from "../../../generated/razarion-share";
+import {PlaceConfigComponent} from "./place-config.component";
 
 export class LocationVisualization {
   private mouseObservable: Nullable<Observer<PointerInfo>> = null;
@@ -97,11 +110,11 @@ export class LocationVisualization {
         new Vector3(0, 1, 0),
         1000),
       renderService);
-      if(position) {
-        return position.y;
-      } else {
-        return 0;
-      }
+    if (position) {
+      return position.y;
+    } else {
+      return 0;
+    }
   }
 
   public static getTerrainPositionFromRay(ray: Ray, renderService: BabylonRenderServiceAccessImpl): Vector3 | undefined {
@@ -152,9 +165,9 @@ export class LocationVisualization {
     }
   }
 
-  setRadius(value: number | undefined) {
+  setRadius(value: number | string | null) {
     if (value) {
-      this.placeConfigComponent.placeConfig!.radius = value;
+      this.placeConfigComponent.placeConfig!.radius = <number>value;
       if (this.radiusMarker) {
         this.radiusMarker.dispose()
       }

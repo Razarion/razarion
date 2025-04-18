@@ -7,7 +7,7 @@ export class EditorModel {
 }
 
 export class GenericPropertyEditorModel extends EditorModel {
-  constructor(public editorComponent: Type<any>, public collectionName: string, childComponent?: Type<any>) {
+  constructor(public override editorComponent: Type<any>, public collectionName: string, childComponent?: Type<any>) {
     super(collectionName, editorComponent, childComponent);
   }
 }

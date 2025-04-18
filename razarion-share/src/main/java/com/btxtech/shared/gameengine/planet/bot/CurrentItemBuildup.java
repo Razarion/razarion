@@ -10,7 +10,7 @@ import java.util.Map;
  * 25.07.2016.
  */
 class CurrentItemBuildup {
-    private Map<BotSyncBaseItem, BotItemConfig> buildupItems = new HashMap<>();
+    private final Map<BotSyncBaseItem, BotItemConfig> buildupItems = new HashMap<>();
 
     public int getBuildupCount(BotItemConfig botItemConfig) {
         int count = 0;

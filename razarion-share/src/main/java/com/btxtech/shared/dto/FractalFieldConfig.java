@@ -1,8 +1,5 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.utils.InterpolationUtils;
-import com.btxtech.shared.utils.MathHelper;
-
 /**
  * Created by Beat
  * 20.05.2016.

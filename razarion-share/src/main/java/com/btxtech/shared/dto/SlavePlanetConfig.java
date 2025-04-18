@@ -1,7 +1,6 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 /**

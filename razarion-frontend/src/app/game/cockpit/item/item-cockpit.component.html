@@ -1,10 +1,10 @@
-﻿<div class="flex flex-column" *ngIf="ownItemCockpit">
+﻿<div class="flex flex-col" *ngIf="ownItemCockpit">
   <div class="flex">
     <div class="mr-2">
       <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
     </div>
     <div class="mr-2">
-      <div class="flex flex-column" *ngIf="ownItemCockpit">
+      <div class="flex flex-col" *ngIf="ownItemCockpit">
         <div class="mb-2" [style]="{fontSize: 'larger', color: '#64B5F6'}">
           {{ownItemCockpit.itemTypeName}}
         </div>
@@ -27,7 +27,7 @@
     <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="3" [numScroll]="1"
                 styleClass="buildup-carousel">
       <ng-template let-buildupItemCockpit pTemplate="item">
-        <div class="flex flex-column" [style]="{padding: '0 1px 0 1px'}">
+        <div class="flex flex-col" [style]="{padding: '0 1px 0 1px'}">
           <div class="flex">
             <button class='item-cockpit-buildup-button'
                     (click)="buildupItemCockpit.onBuild()"
@@ -55,7 +55,7 @@
 <p-carousel *ngIf="ownMultipleIteCockpits" [value]="ownMultipleIteCockpits" [numVisible]="3" [numScroll]="1"
             styleClass="multiple-item-carousel">
   <ng-template let-ownMultipleIteCockpit pTemplate="item">
-    <div class="flex flex-column" [style]="{padding: '0 1px 0 1px'}">
+    <div class="flex flex-col" [style]="{padding: '0 1px 0 1px'}">
       <div class="flex">
         <button class="item-cockpit-multiple-button"
                   (click)="ownMultipleIteCockpit.onSelect()"
@@ -72,7 +72,7 @@
   </ng-template>
 </p-carousel>
 
-<div class="flex flex-column" *ngIf="otherItemCockpit">
+<div class="flex flex-col" *ngIf="otherItemCockpit">
   <div class="mb-2">
     <img src="{{otherItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{otherItemCockpit.itemTypeName}}">
   </div>

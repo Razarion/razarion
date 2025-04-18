@@ -133,7 +133,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
   }
 
-  dispose() {
+  override dispose() {
     if (this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
       this.rendererService.removeInterpolationListener(this);
     }
@@ -349,7 +349,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
   }
 
-  onPosition3D(position3D: Vector3): boolean {
+  override onPosition3D(position3D: Vector3): boolean {
     let updateImmediately = !this.position3D || !this.lastPositionUpdateTime;
     this.oldPosition3D = this.position3D;
     this.position3D = position3D.clone();
@@ -357,7 +357,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     return updateImmediately;
   }
 
-  onRotation3D(rotation3D: Vector3): boolean {
+  override onRotation3D(rotation3D: Vector3): boolean {
     let updateImmediately = !this.rotation3D || !this.lastRotationUpdateTime;
     this.oldRotation3D = this.rotation3D;
     this.rotation3D = rotation3D.clone();

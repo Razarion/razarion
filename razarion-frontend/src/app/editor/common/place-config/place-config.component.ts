@@ -1,10 +1,16 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { DecimalPosition, PlaceConfig } from "../../../generated/razarion-share";
-import { DecimalPosition as DecimalPositionGwt } from "../../../gwtangular/GwtAngularFacade";
-import { BabylonRenderServiceAccessImpl } from "../../../game/renderer/babylon-render-service-access-impl.service";
-import { Vector2 } from "@babylonjs/core";
-import { PolygonVisualization } from "./polygon-visualization";
-import { LocationVisualization } from "./location-visualization";
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {DecimalPosition, PlaceConfig} from "../../../generated/razarion-share";
+import {DecimalPosition as DecimalPositionGwt} from "../../../gwtangular/GwtAngularFacade";
+import {BabylonRenderServiceAccessImpl} from "../../../game/renderer/babylon-render-service-access-impl.service";
+import {Vector2} from "@babylonjs/core";
+import {PolygonVisualization} from "./polygon-visualization";
+import {LocationVisualization} from "./location-visualization";
+import {ToggleButton} from 'primeng/togglebutton';
+import {FormsModule} from '@angular/forms';
+import {InputNumber} from 'primeng/inputnumber';
+import {Button} from 'primeng/button';
+import {DropdownModule} from 'primeng/dropdown';
+import {CommonModule, NgClass} from '@angular/common';
 
 enum Type {
   LOCATION,
@@ -12,10 +18,18 @@ enum Type {
 }
 
 @Component({
-    selector: 'place-config',
-    templateUrl: './place-config.component.html',
-    styleUrls: ['./place-config.component.scss'],
-    standalone: false
+  selector: 'place-config',
+  templateUrl: './place-config.component.html',
+  imports: [
+    ToggleButton,
+    FormsModule,
+    InputNumber,
+    Button,
+    DropdownModule,
+    NgClass,
+    CommonModule
+  ],
+  styleUrls: ['./place-config.component.scss']
 })
 export class PlaceConfigComponent implements OnInit {
   static readonly NEW_POLYGON_HALF_LENGTH = 4;
@@ -35,8 +49,8 @@ export class PlaceConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.types = [
-      { name: 'Location', type: Type.LOCATION, icon: "pi-map-marker" },
-      { name: 'Region', type: Type.POLYGON, icon: "pi-map" },
+      {name: 'Location', type: Type.LOCATION, icon: "pi-map-marker"},
+      {name: 'Region', type: Type.POLYGON, icon: "pi-map"},
     ];
 
     if (this.placeConfig) {
@@ -127,23 +141,23 @@ export class PlaceConfigComponent implements OnInit {
     }
   }
 
-  get locationPositionX(): number | undefined {
+  get locationPositionX(): number | string | null {
     if (this.placeConfig?.position) {
       return this.placeConfig.position.x;
     } else {
-      return undefined;
+      return null;
     }
   }
 
-  set locationPositionX(value: any) {
+  set locationPositionX(value: number | string | null) {
     if (!this.placeConfig) {
       return;
     }
     if (value) {
       if (this.placeConfig.position) {
-        this.placeConfig!.position!.x = value;
+        this.placeConfig!.position!.x = <number>value;
       } else {
-        this.placeConfig.position = { x: value, y: NaN }
+        this.placeConfig.position = {x: <number>value, y: NaN}
       }
       if (this.visible) {
         this.locationVisualization!.setPositionXY()
@@ -162,23 +176,23 @@ export class PlaceConfigComponent implements OnInit {
     }
   }
 
-  get locationPositionY(): number | undefined {
+  get locationPositionY(): number | string | null {
     if (this.placeConfig?.position) {
       return this.placeConfig.position.y;
     } else {
-      return undefined;
+      return null;
     }
   }
 
-  set locationPositionY(value: any) {
+  set locationPositionY(value: number | string | null) {
     if (!this.placeConfig) {
       return;
     }
     if (value) {
       if (this.placeConfig.position) {
-        this.placeConfig!.position!.y = value;
+        this.placeConfig!.position!.y = <number>value;
       } else {
-        this.placeConfig.position = { x: NaN, y: value }
+        this.placeConfig.position = {x: NaN, y: <number>value}
       }
       if (this.visible) {
         this.locationVisualization!.setPositionXY()
@@ -197,11 +211,11 @@ export class PlaceConfigComponent implements OnInit {
     }
   }
 
-  get locationRadius(): number | undefined {
-    return this.placeConfig?.radius || undefined;
+  get locationRadius(): number | string | null {
+    return this.placeConfig?.radius || null;
   }
 
-  set locationRadius(value: any) {
+  set locationRadius(value: number | string | null) {
     if (this.locationVisualization) {
       this.locationVisualization.setRadius(value);
     }
@@ -223,7 +237,7 @@ export class PlaceConfigComponent implements OnInit {
 
   static toArray2Vertex(vector2s: Vector2[]): DecimalPosition[] {
     const vertices: DecimalPosition[] = [];
-    vector2s.forEach(vector => vertices.push({ x: vector.x, y: vector.y }))
+    vector2s.forEach(vector => vertices.push({x: vector.x, y: vector.y}))
     return vertices;
   }
 

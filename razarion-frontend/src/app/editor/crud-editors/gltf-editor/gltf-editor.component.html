@@ -1,20 +1,20 @@
 <div style="width: 40em">
-  <div class="grid grid-razarion-editor">
-    <span class="col-4">Id</span>
-    <div class="col-8">
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Id</span>
+    <div class="col-span-8">
       <p-inputNumber [disabled]="true" [(ngModel)]="gltfEntity.id"></p-inputNumber>
     </div>
   </div>
-  <div class="grid grid-razarion-editor">
-    <span class="col-4">Internal name</span>
-    <div class="col-8">
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Internal name</span>
+    <div class="col-span-8">
       <input [(ngModel)]="gltfEntity.internalName" type="text"
-             class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+             class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
     </div>
   </div>
-  <div class="grid grid-razarion-editor">
-    <span class="col-4">Import GLB</span>
-    <div class="col-8">
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Import GLB</span>
+    <div class="col-span-8">
       <p-fileUpload #fileUploadElement chooseLabel="Import GLB" chooseIcon="pi pi-folder-open" mode="basic"
                     styleClass="p-button-sm" [auto]=true [customUpload]=true (uploadHandler)="onImportGlb($event)">
       </p-fileUpload>
@@ -22,7 +22,7 @@
   </div>
 
   <p-divider align="left">
-    <div class="inline-flex align-items-center">
+    <div class="inline-flex items-center">
       <i class="pi pi-image mr-2"></i>
       <b>&nbsp;Materials</b>
     </div>
@@ -55,7 +55,7 @@
   </p-table>
 
   <p-divider align="left">
-    <div class="inline-flex align-items-center">
+    <div class="inline-flex items-center">
       <i class="pi pi-box mr-2"></i>
       <b>&nbsp;3D Models</b>
     </div>

@@ -19,7 +19,7 @@ package com.btxtech.shared.gameengine.planet.model;
  * Time: 22:21:39
  */
 public interface SyncItemListener {
-    public enum Change {
+    enum Change {
         ANGEL,
         POSITION,
         PROJECTILE_LAUNCHED,

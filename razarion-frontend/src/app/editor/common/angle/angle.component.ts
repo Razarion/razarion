@@ -1,9 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {Slider} from 'primeng/slider';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'angle',
-    templateUrl: './angle.component.html',
-    standalone: false
+  selector: 'angle',
+  imports: [
+    Slider,
+    FormsModule
+  ],
+  templateUrl: './angle.component.html'
 })
 export class AngleComponent implements OnInit {
   @Input("angle")

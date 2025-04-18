@@ -21,6 +21,7 @@ public class Alarm {
         INVALID_RESOURCE_ITEM,
         TERRAIN_SHAPE_FAILED_TERRAIN_OBJECT_POSITION
     }
+
     private Type type;
     private Date date;
     private String text;
@@ -44,6 +45,7 @@ public class Alarm {
 
     /**
      * Also called angular
+     *
      * @return detailed alarm message
      */
     public String getText() {

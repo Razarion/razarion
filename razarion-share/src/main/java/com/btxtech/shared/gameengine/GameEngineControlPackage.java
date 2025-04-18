@@ -78,11 +78,11 @@ public class GameEngineControlPackage {
         PLAYBACK_SYNC_RESOURCE_ITEM,
         PLAYBACK_SYNC_BOX_ITEM,
         // Cockpit
-        SELL_ITEMS;
+        SELL_ITEMS
     }
 
-    private Command command;
-    private Object[] data;
+    private final Command command;
+    private final Object[] data;
 
     public GameEngineControlPackage(Command command, Object... data) {
         this.command = command;

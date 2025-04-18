@@ -26,7 +26,7 @@ import java.util.List;
 
 public class Path {
 
-    private TerrainService terrainService;
+    private final TerrainService terrainService;
     private List<DecimalPosition> wayPositions;
     private DecimalPosition currentWayPoint;
 

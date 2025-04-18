@@ -1,9 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * User: beat

@@ -33,9 +33,9 @@ import java.util.Set;
 
 public class BaseItemTypeComparison extends AbstractBaseItemComparison {
 
-    private ItemTypeService itemTypeService;
+    private final ItemTypeService itemTypeService;
 
-    private BaseItemService baseItemService;
+    private final BaseItemService baseItemService;
     private Map<BaseItemType, Integer> remaining;
     private Map<BaseItemType, Integer> total;
     private Set<Integer> botIds;

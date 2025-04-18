@@ -1,10 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Vertex } from 'src/app/generated/razarion-share';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'vertex-editor',
-    templateUrl: './vertex-editor.component.html',
-    standalone: false
+  selector: 'vertex-editor',
+  imports: [
+    InputNumber,
+    FormsModule
+  ],
+  templateUrl: './vertex-editor.component.html'
 })
 export class VertexEditorComponent implements OnInit {
   @Input("vertex")

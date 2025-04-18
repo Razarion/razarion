@@ -2,8 +2,8 @@ package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.InterpolationUtils;
 import com.btxtech.shared.utils.MathHelper;
+import jakarta.persistence.Embeddable;
 
-import javax.persistence.Embeddable;
 import java.util.List;
 
 /**
@@ -89,7 +89,7 @@ public class Color {
      * @return return (1-value)*this + value*other
      */
     public Color mix(Color other, double value) {
-        double clamped = MathHelper.clamp(value,0, 1);
+        double clamped = MathHelper.clamp(value, 0, 1);
         return new Color(InterpolationUtils.mix(r, other.r, clamped), InterpolationUtils.mix(g, other.g, clamped), InterpolationUtils.mix(b, other.b, clamped));
     }
 

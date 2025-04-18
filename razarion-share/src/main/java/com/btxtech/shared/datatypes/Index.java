@@ -14,16 +14,12 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
+import jakarta.persistence.Embeddable;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 import org.dominokit.jackson.annotation.JSONMapper;
 
-import javax.persistence.Embeddable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * User: beat

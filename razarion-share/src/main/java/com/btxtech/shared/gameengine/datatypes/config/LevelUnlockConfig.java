@@ -1,8 +1,8 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
-import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.system.Nullable;
 
 /**

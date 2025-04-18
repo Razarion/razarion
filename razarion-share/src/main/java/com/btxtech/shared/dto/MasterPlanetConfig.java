@@ -1,10 +1,5 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
-
 import java.util.List;
 
 /**

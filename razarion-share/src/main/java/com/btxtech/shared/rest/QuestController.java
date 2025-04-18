@@ -4,11 +4,7 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import org.dominokit.rest.shared.request.service.annotations.RequestFactory;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 

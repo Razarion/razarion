@@ -22,13 +22,13 @@ import java.util.Iterator;
 @Singleton
 public class ProjectileService {
 
-    private BaseItemService baseItemService;
+    private final BaseItemService baseItemService;
 
-    private GameLogicService gameLogicService;
+    private final GameLogicService gameLogicService;
 
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
     private final Collection<Projectile> projectiles = new ArrayList<>();
 
     @Inject

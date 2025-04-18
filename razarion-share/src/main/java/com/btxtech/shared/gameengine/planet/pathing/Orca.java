@@ -3,15 +3,9 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,13 +24,13 @@ public class Orca {
     private static final Logger LOGGER = Logger.getLogger(Orca.class.getName());
     private final SyncPhysicalMovable syncPhysicalMovable;
     private final DecimalPosition position;
-    private double radius;
-    private DecimalPosition preferredVelocity;
+    private final double radius;
+    private final DecimalPosition preferredVelocity;
     private DecimalPosition newVelocity;
-    private double speed;
-    private List<OrcaLine> itemOrcaLines = new ArrayList<>();
-    private List<OrcaLine> obstacleOrcaLines = new ArrayList<>();
-    private List<ObstacleSlope> debugObstacles_WRONG = new ArrayList<>();
+    private final double speed;
+    private final List<OrcaLine> itemOrcaLines = new ArrayList<>();
+    private final List<OrcaLine> obstacleOrcaLines = new ArrayList<>();
+    private final List<ObstacleSlope> debugObstacles_WRONG = new ArrayList<>();
     private List<OrcaLine> orcaLines;
 
 
@@ -133,7 +127,7 @@ public class Orca {
             orcaLine.setCombinedRadius(combinedRadius);
             itemOrcaLines.add(orcaLine);
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Add addOrcaLine failed" , e);
+            LOGGER.log(Level.WARNING, "Add addOrcaLine failed", e);
         }
     }
 

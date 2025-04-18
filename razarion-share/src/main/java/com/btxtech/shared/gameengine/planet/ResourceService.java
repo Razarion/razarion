@@ -29,11 +29,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: beat
@@ -42,11 +38,11 @@ import java.util.Map;
  */
 @Singleton
 public class ResourceService {
-    private SyncItemContainerServiceImpl syncItemContainerService;
-    private ItemTypeService itemTypeService;
-    private GameLogicService gameLogicService;
-    private Provider<ResourceRegion> instance;
-    private ExceptionHandler exceptionHandler;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
+    private final ItemTypeService itemTypeService;
+    private final GameLogicService gameLogicService;
+    private final Provider<ResourceRegion> instance;
+    private final ExceptionHandler exceptionHandler;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
     private final Collection<ResourceRegion> resourceRegions = new ArrayList<>();
     private GameEngineMode gameEngineMode;

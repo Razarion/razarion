@@ -5,12 +5,15 @@ import { BabylonRenderServiceAccessImpl, ViewField, ViewFieldListener } from 'sr
 import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 import { MiniTerrain } from './mini-terrain';
 import { MiniItemView } from './mini-item-view';
+import {Button} from 'primeng/button';
 
 @Component({
-    selector: 'radar',
-    templateUrl: './radar.component.html',
-    styleUrls: ['./radar.component.scss'],
-    standalone: false
+  selector: 'radar',
+  templateUrl: './radar.component.html',
+  imports: [
+    Button
+  ],
+  styleUrls: ['./radar.component.scss']
 })
 export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
   public static readonly WIDTH = 200;

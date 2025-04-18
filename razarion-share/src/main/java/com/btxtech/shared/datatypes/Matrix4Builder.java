@@ -5,7 +5,7 @@ package com.btxtech.shared.datatypes;
  * 05.04.2015.
  */
 public class Matrix4Builder {
-    private double[][] numbers;
+    private final double[][] numbers;
 
     public Matrix4Builder(double[][] numbers) {
         this.numbers = Matrix4.copyFiled(numbers);

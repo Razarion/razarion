@@ -21,11 +21,7 @@ import com.btxtech.shared.utils.MathHelper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -36,15 +32,15 @@ import java.util.stream.Collectors;
 public class BoxService {
     private static final long TICK_TO_SLEEP_MS = 10 * PlanetService.TICKS_PER_SECONDS;
 
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private ItemTypeService itemTypeService;
+    private final ItemTypeService itemTypeService;
 
-    private GameLogicService gameLogicService;
+    private final GameLogicService gameLogicService;
 
-    private InventoryTypeService inventoryTypeService;
+    private final InventoryTypeService inventoryTypeService;
 
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
     private GameEngineMode gameEngineMode;
     private final Map<Integer, SyncBoxItem> boxes = new HashMap<>();
     private Collection<BoxRegion> boxRegion;

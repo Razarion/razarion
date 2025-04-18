@@ -1,8 +1,6 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.Circle2D;
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Line;
 
 import java.util.Objects;
 
@@ -11,7 +9,7 @@ import java.util.Objects;
  * 20.09.2016.
  */
 public class ObstacleTerrainObject extends Obstacle {
-    private Circle2D circle;
+    private final Circle2D circle;
 
     public ObstacleTerrainObject(Circle2D circle) {
         this.circle = circle;

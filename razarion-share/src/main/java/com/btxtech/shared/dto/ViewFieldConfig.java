@@ -1,8 +1,7 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 /**
  * Created by Beat

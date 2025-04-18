@@ -13,7 +13,6 @@
 
 package com.btxtech.shared.datatypes.tracking;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 
 /**
@@ -51,5 +50,14 @@ public class TrackingStart extends DetailedTracking {
     public TrackingStart setBrowserWindowDimension(Index browserWindowDimension) {
         this.browserWindowDimension = browserWindowDimension;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "TrackingStart{" +
+                "gameSessionUuid='" + gameSessionUuid + '\'' +
+                ", planetId=" + planetId +
+                ", browserWindowDimension=" + browserWindowDimension +
+                '}';
     }
 }

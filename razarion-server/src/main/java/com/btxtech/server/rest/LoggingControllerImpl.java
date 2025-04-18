@@ -1,71 +1,42 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.util.DateUtil;
-import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.dto.StackTraceElementLogInfo;
 import com.btxtech.shared.dto.ThrownLogInfo;
 import com.btxtech.shared.rest.LoggingController;
-import com.btxtech.shared.system.ExceptionHandler;
-import com.google.gwt.core.server.StackTraceDeobfuscator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**
- * Created by Beat
- * 18.02.2017.
- */
+import static com.btxtech.shared.CommonUrl.*;
+
+@RestController
+@RequestMapping(APPLICATION_PATH + "/" + REMOTE_LOGGING)
 public class LoggingControllerImpl implements LoggingController {
-    //    private final static String TEMP_DIR = "C:\\Users\\Beat\\AppData\\Local\\Temp";/
-//    private final static String MODULE_NAME = "com.btxtech.Razarion-Client";
-//    private final static String SIMPLE_MODULE_NAME = "razarion_client";
-    private Logger logger = Logger.getLogger(LoggingControllerImpl.class.getName());
-    @Inject
-    private SessionHolder sessionHolder;
-    @Inject
-    private ExceptionHandler exceptionHandler;
-    @Context
-    private ServletContext context;
-    // @Inject
-    // private FilePropertiesService filePropertiesService;
-    private Map<String, StackTraceDeobfuscator> stackTraceDeobfuscators = new HashMap<>();
-
-    public static String setupUserWebString(SessionHolder sessionHolder) {
-        return " SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " " + sessionHolder.getPlayerSession().getUserContext();
-    }
+    private final Logger logger = LoggerFactory.getLogger(LoggingControllerImpl.class);
 
     @Override
+    @PostMapping(value = LOGGING_SIMPLE, consumes = MediaType.TEXT_PLAIN)
     public void simpleLogger(String logString) {
-        logger.severe("GWT simpleLogger: " + setupUserWebString(sessionHolder) + "\n" + logString);
+        logger.warn("GWT simpleLogger: " + logString);
     }
 
     @Override
-    public void jsonLogger(LogRecordInfo logRecordInfo) {
-        try {
-            String s = "Gwt Message: " + logRecordInfo.getMessage();
-            s += "\n - Logger name: " + logRecordInfo.getLoggerName();
-            if (logRecordInfo.getThrown() != null) {
-                s += "\n - Thrown: " + thrownToString(convertToThrown(logRecordInfo.getThrown(), logRecordInfo.getGwtModuleName(), logRecordInfo.getGwtStrongName()));
-            }
-            s += "\n - GWT module name: " + logRecordInfo.getGwtModuleName();
-            s += "\n - GWT jsonLogger: " + setupUserWebString(sessionHolder);
-            s += "\n - Gwt Client time: " + DateUtil.getDateStringMillis(logRecordInfo.getMillis());
-            s += "\n - GWT strong name: " + logRecordInfo.getGwtStrongName();
-            logger.log(Level.parse(logRecordInfo.getLevel()), s);
-        } catch (Throwable throwable) {
-            logger.log(Level.SEVERE, "Logging from client failed. LogRecordInfo: " + logRecordInfo, throwable);
-        }
+    @PostMapping(value = LOGGING_JSON, consumes = MediaType.APPLICATION_JSON)
+    public void jsonLogger(@RequestBody LogRecordInfo logRecordInfo) {
+        String s = "Gwt Message: " + logRecordInfo.getMessage();
+        s += "\n - Logger name: " + logRecordInfo.getLoggerName();
+        s += "\n - GWT module name: " + logRecordInfo.getGwtModuleName();
+        s += "\n - GWT strong name: " + logRecordInfo.getGwtStrongName();
+        logger.warn(s);
     }
 
     private String thrownToString(Throwable throwable) {
@@ -73,15 +44,6 @@ public class LoggingControllerImpl implements LoggingController {
         PrintWriter pw = new PrintWriter(sw);
         throwable.printStackTrace(pw);
         return sw.toString();
-    }
-
-    private Throwable convertToThrown(ThrownLogInfo thrownLogInfo, String gwtModuleName, String strongName) {
-        Throwable throwable = setupThrown(thrownLogInfo);
-        StackTraceDeobfuscator stackTraceDeobfuscator = getStackTraceDeobfuscator(gwtModuleName);
-        if (stackTraceDeobfuscator != null) {
-            stackTraceDeobfuscator.deobfuscateStackTrace(throwable, strongName);
-        }
-        return throwable;
     }
 
     private Throwable setupThrown(ThrownLogInfo thrownLogInfo) {
@@ -106,63 +68,4 @@ public class LoggingControllerImpl implements LoggingController {
         }
         return stackTraceElements;
     }
-
-    private StackTraceDeobfuscator getStackTraceDeobfuscator(String gwtModuleName) {
-        StackTraceDeobfuscator stackTraceDeobfuscator = stackTraceDeobfuscators.get(gwtModuleName);
-        if (stackTraceDeobfuscator != null) {
-            return stackTraceDeobfuscator;
-        }
-        try {
-            URL url = context.getResource("/debug/" + gwtModuleName + "/symbolMaps/");
-            stackTraceDeobfuscator = StackTraceDeobfuscator.fromUrl(url);
-            stackTraceDeobfuscators.put(gwtModuleName, stackTraceDeobfuscator);
-            return stackTraceDeobfuscator;
-        } catch (MalformedURLException e) {
-            exceptionHandler.handleException(e);
-        }
-        return null;
-    }
-
-
-//    private String getFilePath() {
-//        try {
-//            File[] tmpFiles = new File(TEMP_DIR).listFiles();
-//            if (tmpFiles == null) {
-//                System.out.println("Invalid temp file: " + TEMP_DIR);
-//                return null;
-//            }
-//
-//            File last = null;
-//            for (File f : tmpFiles) {
-//                if (f.getName().startsWith("gwt-codeserver-") && (last == null || f.lastModified() > last.lastModified())) {
-//                    last = f;
-//                }
-//            }
-//
-//            File lastCompile = null;
-//            if (last != null) {
-//                File[] moduleFiles = new File(last.getPath(), MODULE_NAME).listFiles();
-//                if (moduleFiles == null) {
-//                    System.out.println("Invalid module file: " + new File(last.getPath(), MODULE_NAME));
-//                    return null;
-//                }
-//                for (File f : moduleFiles) {
-//                    if (f.getName().startsWith("compile-") && (lastCompile == null || f.lastModified() > lastCompile.lastModified())) {
-//                        File file = new File(f.getPath() + "\\extras\\" + SIMPLE_MODULE_NAME + "\\symbolMaps\\");
-//                        if (file.exists()) {
-//                            lastCompile = f;
-//                        }
-//                    }
-//                }
-//            }
-//
-//            if (lastCompile != null) {
-//                return lastCompile.getPath() + "\\extras\\" + SIMPLE_MODULE_NAME + "\\symbolMaps\\";
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-
 }

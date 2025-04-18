@@ -34,7 +34,7 @@ public interface SimpleExecutorService {
         WAIT_RESTART(PerfmonEnum.WAIT_RESTART),
         QUEST_PROGRESS_PANEL_TEXT_REFRESHER(PerfmonEnum.WAIT_RESTART);
 
-        private PerfmonEnum perfmonEnum;
+        private final PerfmonEnum perfmonEnum;
 
         Type(PerfmonEnum perfmonEnum) {
             this.perfmonEnum = perfmonEnum;

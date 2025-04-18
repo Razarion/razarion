@@ -5,9 +5,9 @@ package com.btxtech.shared.system.perfmon;
  * 05.11.2016.
  */
 public class StatisticEntry {
-    private PerfmonEnum perfmonEnum;
-    private long samplingPeriodStart;
-    private long samplingDuration;
+    private final PerfmonEnum perfmonEnum;
+    private final long samplingPeriodStart;
+    private final long samplingDuration;
     private int samples;
     private double frequency;
     private int totalDuration;

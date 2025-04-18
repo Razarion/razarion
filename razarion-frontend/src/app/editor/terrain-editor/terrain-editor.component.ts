@@ -6,11 +6,21 @@ import { getUpdateMiniMapPlanetUrl } from "../../common";
 import { HttpClient } from "@angular/common/http";
 import { MessageService } from "primeng/api";
 import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
+import {TabPanel, TabView} from 'primeng/tabview';
+import {Dialog} from 'primeng/dialog';
+import {Button} from 'primeng/button';
 
 @Component({
-    selector: 'terrain-editor',
-    templateUrl: './terrain-editor.component.html',
-    standalone: false
+  selector: 'terrain-editor',
+  imports: [
+    ObjectTerrainEditorComponent,
+    TabPanel,
+    ShapeTerrainEditorComponent,
+    TabView,
+    Dialog,
+    Button
+  ],
+  templateUrl: './terrain-editor.component.html'
 })
 export class TerrainEditorComponent extends EditorPanel implements AfterViewInit {
   @ViewChild("objectEditor")

@@ -123,6 +123,7 @@ public class LifecycleService {
 
     public void startCold() {
         try {
+            boot.addStartupProgressListener(new AngularStartupListener(GameStartupSeq.COLD));
             boot.start(GameStartupSeq.COLD);
         } catch (Throwable throwable) {
             exceptionHandler.handleException("Start failed", throwable);
@@ -132,6 +133,7 @@ public class LifecycleService {
     public void startWarm() {
         // GameUiControl does not use LifecycleService. It uses the Boot for startWarm() directly. This is wrong.
         try {
+            boot.addStartupProgressListener(new AngularStartupListener(GameStartupSeq.WARM));
             boot.start(GameStartupSeq.WARM);
         } catch (Throwable throwable) {
             exceptionHandler.handleException("Start failed", throwable);

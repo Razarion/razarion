@@ -4,8 +4,7 @@ import { RadarComponent } from "./radar.component";
 @Component({
     selector: 'radar-no-power',
     template: `<div class="radarNoPower" #divElement>No Power</div>`,
-    styleUrls: ['./radar-no-power.component.css'],
-    standalone: false
+    styleUrls: ['./radar-no-power.component.css']
 })
 export class RadarNoPowerComponent implements OnInit {
     @ViewChild('divElement', { static: true })
@@ -15,4 +14,4 @@ export class RadarNoPowerComponent implements OnInit {
         this.divElement.nativeElement.style.setProperty("width", RadarComponent.WIDTH + "px");
         this.divElement.nativeElement.style.setProperty("height", RadarComponent.HEIGHT + "px");
     }
-}  
+}

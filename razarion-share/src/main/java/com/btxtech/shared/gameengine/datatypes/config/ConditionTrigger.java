@@ -14,12 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
 
-import com.btxtech.shared.gameengine.planet.quest.AbstractComparison;
-import com.btxtech.shared.gameengine.planet.quest.AbstractConditionProgress;
-import com.btxtech.shared.gameengine.planet.quest.BaseItemConditionProgress;
-import com.btxtech.shared.gameengine.planet.quest.InventoryItemConditionProgress;
-import com.btxtech.shared.gameengine.planet.quest.TickConditionProgress;
-import com.btxtech.shared.gameengine.planet.quest.ValueConditionProgress;
+import com.btxtech.shared.gameengine.planet.quest.*;
 
 /**
  * User: beat
@@ -57,7 +52,7 @@ public enum ConditionTrigger {
             return new ValueConditionProgress(this, abstractComparison);
         }
     },
-//    TUTORIAL(false) {
+    //    TUTORIAL(false) {
 //        @Override
 //        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
 //            return new SimpleConditionTrigger(this);
@@ -100,7 +95,7 @@ public enum ConditionTrigger {
         }
     };
 
-    private boolean comparisonNeeded;
+    private final boolean comparisonNeeded;
 
     ConditionTrigger(boolean comparisonNeeded) {
         this.comparisonNeeded = comparisonNeeded;

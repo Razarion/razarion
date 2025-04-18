@@ -34,13 +34,13 @@ import java.util.Set;
 public class ResourceRegion {
 
     // private Logger logger = Logger.getLogger(ResourceRegion.class.getName());
-    private ItemTypeService itemTypeService;
+    private final ItemTypeService itemTypeService;
 
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
 
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private ResourceService resourceService;
+    private final ResourceService resourceService;
     private final Set<Integer> syncResourceItems = new HashSet<>();
     private ResourceRegionConfig resourceRegionConfig;
     private ResourceItemType resourceItemType;

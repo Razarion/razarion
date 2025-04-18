@@ -5,9 +5,9 @@ package com.btxtech.shared.datatypes;
  * 16.07.2015.
  */
 public class Triangle2d {
-    private DecimalPosition pointA;
-    private DecimalPosition pointB;
-    private DecimalPosition pointC;
+    private final DecimalPosition pointA;
+    private final DecimalPosition pointB;
+    private final DecimalPosition pointC;
 
     public Triangle2d(DecimalPosition pointA, DecimalPosition pointB, DecimalPosition pointC) {
         this.pointA = pointA;

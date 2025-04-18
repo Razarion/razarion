@@ -1,20 +1,11 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.datatypes.AdditionUserInfo;
-import com.btxtech.shared.datatypes.FbAuthResponse;
-import com.btxtech.shared.datatypes.RegisterInfo;
-import com.btxtech.shared.datatypes.SetNameResult;
-import com.btxtech.shared.datatypes.UserAccountInfo;
+import com.btxtech.shared.datatypes.*;
 import com.btxtech.shared.dto.EmailPasswordInfo;
 import com.btxtech.shared.dto.RegisterResult;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 

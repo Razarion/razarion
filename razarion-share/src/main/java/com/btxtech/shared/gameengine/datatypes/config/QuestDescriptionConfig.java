@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import jsinterop.annotations.JsType;
@@ -9,7 +10,7 @@ import jsinterop.annotations.JsType;
  * 24.10.2016.
  */
 @JsType
-public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> implements ObjectNameIdProvider {
+public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> implements ObjectNameIdProvider, Config {
     private Integer id;
     private String internalName;
     private String title;
@@ -20,7 +21,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
     private String passedMessage;
     private boolean hidePassedDialog;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -37,6 +38,10 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
         return internalName;
     }
 
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
+    }
+
     public T internalName(String internalName) {
         this.internalName = internalName;
         return (T) this;
@@ -44,6 +49,10 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
 
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public T title(String title) {
@@ -55,6 +64,10 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public T description(String description) {
         setDescription(description);
         return (T) this;
@@ -62,6 +75,10 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
 
     public int getXp() {
         return xp;
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
     }
 
     public T xp(int xp) {
@@ -73,6 +90,10 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
         return razarion;
     }
 
+    public void setRazarion(int razarion) {
+        this.razarion = razarion;
+    }
+
     public T razarion(int razarion) {
         this.razarion = razarion;
         return (T) this;
@@ -80,6 +101,10 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
 
     public int getCrystal() {
         return crystal;
+    }
+
+    public void setCrystal(int crystal) {
+        this.crystal = crystal;
     }
 
     public T crystal(int crystal) {
@@ -91,6 +116,10 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
         return passedMessage;
     }
 
+    public void setPassedMessage(String passedMessage) {
+        this.passedMessage = passedMessage;
+    }
+
     public T passedMessage(String passedMessage) {
         this.passedMessage = passedMessage;
         return (T) this;
@@ -98,6 +127,10 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
 
     public boolean isHidePassedDialog() {
         return hidePassedDialog;
+    }
+
+    public void setHidePassedDialog(boolean hidePassedDialog) {
+        this.hidePassedDialog = hidePassedDialog;
     }
 
     public T hidePassedDialog(boolean hidePassedDialog) {
@@ -108,37 +141,5 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
     @Override
     public ObjectNameId createObjectNameId() {
         return new ObjectNameId(id, internalName);
-    }
-
-    public void setInternalName(String internalName) {
-        this.internalName = internalName;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setXp(int xp) {
-        this.xp = xp;
-    }
-
-    public void setRazarion(int razarion) {
-        this.razarion = razarion;
-    }
-
-    public void setCrystal(int crystal) {
-        this.crystal = crystal;
-    }
-
-    public void setPassedMessage(String passedMessage) {
-        this.passedMessage = passedMessage;
-    }
-
-    public void setHidePassedDialog(boolean hidePassedDialog) {
-        this.hidePassedDialog = hidePassedDialog;
     }
 }

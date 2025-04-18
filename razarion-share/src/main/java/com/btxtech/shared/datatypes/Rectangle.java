@@ -13,10 +13,12 @@
 
 package com.btxtech.shared.datatypes;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * User: beat
@@ -102,15 +104,10 @@ public class Rectangle {
         }
 
         if (height() > 0) {
-            if (position.getY() >= end.getY()) {
-                return false;
-            }
+            return !(position.getY() >= end.getY());
         } else {
-            if (position.getY() > end.getY()) {
-                return false;
-            }
+            return !(position.getY() > end.getY());
         }
-        return true;
     }
 
     /**
@@ -315,7 +312,6 @@ public class Rectangle {
 
         return Math.min(Math.min(Math.min(d1, d2), Math.min(d3, d4)), Math.min(d5, d6));
     }*/
-
     public Rectangle moveTo(int absX, int absY) {
         return new Rectangle(absX, absY, width(), height());
     }
@@ -330,8 +326,8 @@ public class Rectangle {
         }
 
         Rectangle rectangle = (Rectangle) o;
-        return !(end != null ? !end.equals(rectangle.end) : rectangle.end != null)
-                && !(start != null ? !start.equals(rectangle.start) : rectangle.start != null);
+        return Objects.equals(end, rectangle.end)
+                && Objects.equals(start, rectangle.start);
 
     }
 

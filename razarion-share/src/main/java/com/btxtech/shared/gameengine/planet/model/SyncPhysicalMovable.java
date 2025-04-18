@@ -150,7 +150,7 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
                     double otherTargetDistance = otherSyncBaseItem.getAbstractSyncPhysical().getDistance(path.getCurrentWayPoint(), 0);
                     if (otherTargetDistance < 2) {
                         stop();
-                        return; // TODO Ugly performance: can not stop iteration of syncItemContainerService.iterateCellQuadBaseItem()
+                        // TODO Ugly performance: can not stop iteration of syncItemContainerService.iterateCellQuadBaseItem()
                     }
                 }
             });

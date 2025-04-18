@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { UiConfigCollection, UiConfigCollectionControllerClient } from '../generated/razarion-share';
-import { TypescriptGenerator } from '../backend/typescript-generator';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {UiConfigCollection, UiConfigCollectionControllerClient} from '../generated/razarion-share';
+import {TypescriptGenerator} from '../backend/typescript-generator';
 
 @Injectable({
   providedIn: 'root'

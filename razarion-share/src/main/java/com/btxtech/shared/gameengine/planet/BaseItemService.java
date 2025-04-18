@@ -7,22 +7,12 @@ import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
-import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.Character;
-import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.*;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistException;
-import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
-import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
-import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
-import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
-import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
-import com.btxtech.shared.gameengine.datatypes.exception.NotYourBaseException;
+import com.btxtech.shared.gameengine.datatypes.exception.*;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
@@ -39,18 +29,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -60,30 +39,30 @@ import java.util.stream.Collectors;
  */
 @Singleton // Rename to BaseService
 public class BaseItemService {
-    private Logger logger = Logger.getLogger(BaseItemService.class.getName());
+    private final Logger logger = Logger.getLogger(BaseItemService.class.getName());
     private static final double ITEM_SELL_FACTOR = 0.5;
 
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
 
-    private GameLogicService gameLogicService;
+    private final GameLogicService gameLogicService;
 
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private LevelService levelService;
+    private final LevelService levelService;
 
-    private ItemTypeService itemTypeService;
+    private final ItemTypeService itemTypeService;
 
-    private EnergyService energyService;
+    private final EnergyService energyService;
 
-    private InventoryTypeService inventoryTypeService;
+    private final InventoryTypeService inventoryTypeService;
 
-    private BoxService boxService;
+    private final BoxService boxService;
 
-    private TerrainService terrainService;
+    private final TerrainService terrainService;
 
-    private GuardingItemService guardingItemService;
+    private final GuardingItemService guardingItemService;
 
-    private SyncService syncService;
+    private final SyncService syncService;
 
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId = 1;

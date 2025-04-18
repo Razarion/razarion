@@ -1,9 +1,9 @@
 package com.btxtech.shared.system.alarm;
 
 public class AlarmRaisedException extends RuntimeException {
-    private Alarm.Type type;
-    private String text;
-    private Integer id;
+    private final Alarm.Type type;
+    private final String text;
+    private final Integer id;
 
     public AlarmRaisedException(Alarm.Type type, String text) {
         this(type, text, null);

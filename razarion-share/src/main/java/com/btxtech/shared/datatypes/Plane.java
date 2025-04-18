@@ -7,7 +7,7 @@ import com.btxtech.shared.dto.VertexList;
  * 20.09.2015.
  */
 public class Plane {
-    private double size;
+    private final double size;
 
     public Plane(double size) {
         this.size = size;

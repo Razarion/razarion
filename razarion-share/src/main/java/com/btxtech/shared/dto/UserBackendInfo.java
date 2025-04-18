@@ -149,6 +149,7 @@ public class UserBackendInfo {
         setRegisterDate(registerDate);
         return this;
     }
+
     public UserBackendInfo verificationDoneDate(Date verificationDoneDate) {
         setVerificationDoneDate(verificationDoneDate);
         return this;

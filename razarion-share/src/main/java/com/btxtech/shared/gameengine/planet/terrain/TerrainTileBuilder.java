@@ -16,7 +16,7 @@ import java.util.List;
 public class TerrainTileBuilder {
 
     private final List<TerrainTileObjectList> terrainTileObjectLists = new ArrayList<>();
-    private NativeTerrainShapeAccess nativeTerrainShapeAccess;
+    private final NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private TerrainTile terrainTile;
     private BabylonDecal[] babylonDecals;
 

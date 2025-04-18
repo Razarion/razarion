@@ -12,11 +12,27 @@ import {BabylonRenderServiceAccessImpl} from "../../../game/renderer/babylon-ren
 import {AbstractMesh, Scene, SceneLoader} from "@babylonjs/core";
 import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
+import {Badge} from 'primeng/badge';
+import {NgIf} from '@angular/common';
+import {TableModule} from 'primeng/table';
+import {Divider} from 'primeng/divider';
+import {BabylonMaterialComponent} from '../../common/babylon-material/babylon-material.component';
+import {InputNumber} from 'primeng/inputnumber';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'gltf-editor',
-    templateUrl: './gltf-editor.component.html',
-    standalone: false
+  selector: 'gltf-editor',
+  imports: [
+    Badge,
+    NgIf,
+    TableModule,
+    Divider,
+    BabylonMaterialComponent,
+    FileUpload,
+    InputNumber,
+    FormsModule
+  ],
+  templateUrl: './gltf-editor.component.html'
 })
 export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEntity> {
   static editorControllerClient = GltfControllerClient;

@@ -1,13 +1,9 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
-import com.btxtech.shared.datatypes.Circle2D;
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.DoubleHolder;
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.SingleHolder;
+import com.btxtech.shared.datatypes.*;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 

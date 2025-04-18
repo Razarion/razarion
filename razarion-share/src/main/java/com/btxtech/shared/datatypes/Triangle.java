@@ -8,20 +8,20 @@ import java.util.logging.Logger;
  * 11.04.2015.
  */
 public class Triangle {
-    private Logger logger = Logger.getLogger(Triangle.class.getName());
-    private Vertex vertexA;
+    private final Logger logger = Logger.getLogger(Triangle.class.getName());
+    private final Vertex vertexA;
     private Vertex vertexNormA;
     private Vertex vertexTangentA;
     private TextureCoordinate textureCoordinateA;
     private double edgeA;
     private double slopeFactorA;
-    private Vertex vertexB;
+    private final Vertex vertexB;
     private Vertex vertexNormB;
     private Vertex vertexTangentB;
     private TextureCoordinate textureCoordinateB;
     private double edgeB;
     private double slopeFactorB;
-    private Vertex vertexC;
+    private final Vertex vertexC;
     private Vertex vertexNormC;
     private Vertex vertexTangentC;
     private TextureCoordinate textureCoordinateC;

@@ -16,6 +16,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +30,7 @@ public class LevelConfig implements Config {
     private int number;
     private Map<Integer, Integer> itemTypeLimitation;
     private int xp2LevelUp;
+    private List<LevelUnlockConfig> levelUnlockConfigs;
 
     @Override
     public int getId() {
@@ -73,6 +75,14 @@ public class LevelConfig implements Config {
         this.xp2LevelUp = xp2LevelUp;
     }
 
+    public List<LevelUnlockConfig> getLevelUnlockConfigs() {
+        return levelUnlockConfigs;
+    }
+
+    public void setLevelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
+        this.levelUnlockConfigs = levelUnlockConfigs;
+    }
+
     public LevelConfig id(int id) {
         setId(id);
         return this;
@@ -95,6 +105,11 @@ public class LevelConfig implements Config {
 
     public LevelConfig xp2LevelUp(int xp2LevelUp) {
         setXp2LevelUp(xp2LevelUp);
+        return this;
+    }
+
+    public LevelConfig levelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
+        setLevelUnlockConfigs(levelUnlockConfigs);
         return this;
     }
 

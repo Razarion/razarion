@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * on 04.01.2018.
  */
 public class StatisticConsumer {
-    private MapList<PerfmonEnum, StatisticEntry> statisticEntries = new MapList<>();
+    private final MapList<PerfmonEnum, StatisticEntry> statisticEntries = new MapList<>();
 
     public void push(StatisticEntry statisticEntry) {
         this.statisticEntries.put(statisticEntry.getPerfmonEnum(), statisticEntry);

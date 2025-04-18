@@ -256,11 +256,7 @@ public class MathHelper {
             return Math.min(l1, l2);
         } else if (l1 != null) {
             return l1;
-        } else if (l2 != null) {
-            return l2;
-        } else {
-            return null;
-        }
+        } else return l2;
     }
 
     public static Long getSafeMax(Long l1, Long l2) {
@@ -268,11 +264,7 @@ public class MathHelper {
             return Math.max(l1, l2);
         } else if (l1 != null) {
             return l1;
-        } else if (l2 != null) {
-            return l2;
-        } else {
-            return null;
-        }
+        } else return l2;
     }
 
     public static double random(Double base, Double variable) {

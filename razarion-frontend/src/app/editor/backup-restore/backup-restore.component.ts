@@ -5,11 +5,17 @@ import {EditorPanel} from "../editor-model";
 import {MessageService} from "primeng/api";
 import {URL_PLANET_MGMT} from "../../common";
 import { HttpClient } from "@angular/common/http";
+import {Button} from 'primeng/button';
+import {TableModule} from 'primeng/table';
 
 @Component({
-    selector: 'backup-restore',
-    templateUrl: './backup-restore.component.html',
-    standalone: false
+  selector: 'backup-restore',
+  imports: [
+    Button,
+    TableModule,
+    DatePipe
+  ],
+  templateUrl: './backup-restore.component.html'
 })
 
 export class BackupRestoreComponent extends EditorPanel implements OnInit {

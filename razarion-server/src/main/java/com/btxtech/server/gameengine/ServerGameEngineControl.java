@@ -1,35 +1,19 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.connection.ClientSystemConnectionService;
-import com.btxtech.server.persistence.PlanetCrudPersistence;
-import com.btxtech.server.persistence.StaticGameConfigPersistence;
-import com.btxtech.server.persistence.backup.BackupPlanetOverview;
-import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
-import com.btxtech.server.persistence.item.ItemTrackerPersistence;
-import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
+import com.btxtech.server.model.engine.BackupPlanetOverview;
+import com.btxtech.server.service.engine.PlanetCrudPersistence;
+import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.StaticGameConfigService;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.InitializeService;
-import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
-import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.*;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.BaseRestoreProvider;
-import com.btxtech.shared.gameengine.planet.BoxService;
-import com.btxtech.shared.gameengine.planet.GameLogicListener;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
-import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.PlanetTickListener;
-import com.btxtech.shared.gameengine.planet.ResourceService;
-import com.btxtech.shared.gameengine.planet.SynchronizationSendingContext;
+import com.btxtech.shared.gameengine.planet.*;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -37,33 +21,30 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.stereotype.Service;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-/**
- * Created by Beat
- * 18.04.2017.
- */
-@ApplicationScoped
+@Service
 public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PlanetTickListener {
     private final Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
+    private final Object reloadLook = new Object();
     @Inject
     private InitializeService initializeService;
     @Inject
     private PlanetService planetService;
     @Inject
-    private StaticGameConfigPersistence staticGameConfigPersistence;
+    private StaticGameConfigService staticGameConfigPersistence;
     @Inject
     private GameLogicService gameLogicService;
     @Inject
     private ClientGameConnectionService clientGameConnectionService;
-    @Inject
-    private ClientSystemConnectionService systemConnectionService;
+    // @Inject
+    // TODO private ClientSystemConnectionService systemConnectionService;
     @Inject
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     @Inject
@@ -80,21 +61,15 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private ResourceService resourceService;
     @Inject
     private BoxService boxService;
-    @Inject
-    private PlanetBackupMongoDb planetBackupMongoDb;
-    @Inject
-    private ServerInventoryService serverInventoryService;
+    // @Inject
+    // TODO private PlanetBackupMongoDb planetBackupMongoDb;
+    // @Inject
+    // TODOprivate ServerInventoryService serverInventoryService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
-    private ItemTrackerPersistence itemTrackerPersistence;
     private boolean running;
-    //    @Inject
-//    private DebugGui debugGui;
-    private final Object reloadLook = new Object();
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
-        //debugGui.display();
         List<ServerGameEngineConfig> serverGameEngineConfigs = serverGameEngineCrudPersistence.read();
         if (serverGameEngineConfigs.isEmpty()) {
             return;
@@ -124,7 +99,12 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         if (backupPlanetInfo != null) {
             return backupPlanetInfo;
         } else {
-            return planetBackupMongoDb.loadLastBackup(planetConfig.getId());
+            // TODO return planetBackupMongoDb.loadLastBackup(planetConfig.getId());
+            BackupPlanetInfo empty = new BackupPlanetInfo();
+            empty.setBackupComparisionInfos(new ArrayList<>());
+            empty.setPlayerBaseInfos(new ArrayList<>());
+            empty.setSyncBaseItemInfos(new ArrayList<>());
+            return empty;
         }
     }
 
@@ -137,13 +117,13 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         }
     }
 
-    @SecurityCheck
-    public void restartBots() {
-        synchronized (reloadLook) {
-            botService.killAllBots();
-            botService.startBots(serverGameEngineCrudPersistence.readBotConfigs());
-        }
-    }
+//  TODO  @SecurityCheck
+//    public void restartBots() {
+//        synchronized (reloadLook) {
+//            botService.killAllBots();
+//            botService.startBots(serverGameEngineCrudPersistence.readBotConfigs());
+//        }
+//    }
 
     @SecurityCheck
     public void restartResourceRegions() {
@@ -179,29 +159,29 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         }
         long time = System.currentTimeMillis();
         BackupPlanetInfo backupPlanetInfo = planetService.backup();
-        planetBackupMongoDb.saveBackup(backupPlanetInfo);
+        // TODO planetBackupMongoDb.saveBackup(backupPlanetInfo);
         logger.info("ServerGameEngineControl.backupPlanet() in: " + (System.currentTimeMillis() - time));
     }
 
     @SecurityCheck
     public void restorePlanet(BackupPlanetOverview backupPlanetOverview) {
-        long time = System.currentTimeMillis();
-        BackupPlanetInfo backupPlanetInfo = planetBackupMongoDb.loadBackup(backupPlanetOverview);
-        stop();
-        start(backupPlanetInfo, true);
-        logger.info("ServerGameEngineControl.restorePlanet() in: " + (System.currentTimeMillis() - time));
+//  TODO      long time = System.currentTimeMillis();
+//        BackupPlanetInfo backupPlanetInfo = planetBackupMongoDb.loadBackup(backupPlanetOverview);
+//        stop();
+//        start(backupPlanetInfo, true);
+//        logger.info("ServerGameEngineControl.restorePlanet() in: " + (System.currentTimeMillis() - time));
     }
 
     private void activateQuests(BackupPlanetInfo backupPlanetInfo) {
-        questService.clean();
-        Collection<Integer> planetQuestId = serverGameEngineCrudPersistence.readAllQuestIds();
-        if (planetQuestId == null || planetQuestId.isEmpty()) {
-            return;
-        }
-        for (Map.Entry<Integer, QuestConfig> entry : userService.findActiveQuests4Users(planetQuestId).entrySet()) {
-            questService.activateCondition(entry.getKey(), entry.getValue());
-        }
-        questService.restore(backupPlanetInfo);
+//  TODO      questService.clean();
+//        Collection<Integer> planetQuestId = serverGameEngineCrudPersistence.readAllQuestIds();
+//        if (planetQuestId == null || planetQuestId.isEmpty()) {
+//            return;
+//        }
+//        for (Map.Entry<Integer, QuestConfig> entry : userService.findActiveQuests4Users(planetQuestId).entrySet()) {
+//            questService.activateCondition(entry.getKey(), entry.getValue());
+//        }
+//        questService.restore(backupPlanetInfo);
     }
 
     public void stop() {
@@ -215,7 +195,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void shutdown() {
         try {
             if (running) {
-                planetBackupMongoDb.saveBackup(planetService.backup());
+                // TODO planetBackupMongoDb.saveBackup(planetService.backup());
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -234,80 +214,80 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Override
     public void onBaseCreated(PlayerBaseFull playerBase) {
         clientGameConnectionService.onBaseCreated(playerBase);
-        itemTrackerPersistence.onBaseCreated(playerBase);
+        // TODO itemTrackerPersistence.onBaseCreated(playerBase);
     }
 
     @Override
     public void onBaseDeleted(PlayerBase playerBase, PlayerBase actor) {
         clientGameConnectionService.onBaseDeleted(playerBase);
-        itemTrackerPersistence.onBaseDeleted(playerBase, actor);
+        // TODO itemTrackerPersistence.onBaseDeleted(playerBase, actor);
     }
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        itemTrackerPersistence.onSpawnSyncItemStart(syncBaseItem);
+        // TODO itemTrackerPersistence.onSpawnSyncItemStart(syncBaseItem);
     }
 
     @Override
     public void onSpawnSyncItemNoSpan(SyncBaseItem syncBaseItem) {
-        itemTrackerPersistence.onSpawnSyncItemNoSpan(syncBaseItem);
+        // TODO itemTrackerPersistence.onSpawnSyncItemNoSpan(syncBaseItem);
     }
 
     @Override
     public void onBuildingSyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
-        itemTrackerPersistence.onBuildingSyncItem(syncBaseItem, createdBy);
+        // TODO itemTrackerPersistence.onBuildingSyncItem(syncBaseItem, createdBy);
     }
 
     @Override
     public void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
-        itemTrackerPersistence.onFactorySyncItem(syncBaseItem, createdBy);
+        // TODO itemTrackerPersistence.onFactorySyncItem(syncBaseItem, createdBy);
     }
 
     @Override
     public void onSyncBaseItemKilledMaster(SyncBaseItem syncBaseItem, SyncBaseItem actor) {
         clientGameConnectionService.onSyncItemRemoved(syncBaseItem, true);
-        itemTrackerPersistence.onSyncBaseItemKilled(syncBaseItem, actor);
+        // TODO itemTrackerPersistence.onSyncBaseItemKilled(syncBaseItem, actor);
     }
 
     @Override
     public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
         clientGameConnectionService.onSyncItemRemoved(syncBaseItem, false);
-        itemTrackerPersistence.onSyncBaseItemRemoved(syncBaseItem);
+        // TODO itemTrackerPersistence.onSyncBaseItemRemoved(syncBaseItem);
     }
 
     @Override
     public void onResourceCreated(SyncResourceItem syncResourceItem) {
         clientGameConnectionService.onSyncResourceItemCreated(syncResourceItem);
-        itemTrackerPersistence.onResourceCreated(syncResourceItem);
+        // TODO itemTrackerPersistence.onResourceCreated(syncResourceItem);
     }
 
     @Override
     public void onResourceDeleted(SyncResourceItem syncResourceItem) {
         clientGameConnectionService.onSyncItemRemoved(syncResourceItem, false);
-        itemTrackerPersistence.onResourceDeleted(syncResourceItem);
+        // TODO itemTrackerPersistence.onResourceDeleted(syncResourceItem);
     }
 
     @Override
     public void onBoxCreated(SyncBoxItem syncBoxItem) {
         clientGameConnectionService.onSyncBoxCreated(syncBoxItem);
-        itemTrackerPersistence.onSyncBoxCreated(syncBoxItem);
+        // TODO itemTrackerPersistence.onSyncBoxCreated(syncBoxItem);
     }
 
     @Override
     public void onSyncBoxDeleted(SyncBoxItem box) {
         clientGameConnectionService.onSyncItemRemoved(box, false);
-        itemTrackerPersistence.onSyncBoxDeleted(box);
+        // TODO itemTrackerPersistence.onSyncBoxDeleted(box);
     }
 
     @Override
     public void onBoxPicked(int userId, BoxContent boxContent) {
-        serverInventoryService.onBoxPicked(userId, boxContent);
-        systemConnectionService.onBoxPicked(userId, boxContent);
+        // TODO serverInventoryService.onBoxPicked(userId, boxContent);
+        // TODO systemConnectionService.onBoxPicked(userId, boxContent);
     }
 
     @Override
     public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
-        systemConnectionService.onQuestProgressInfo(userId, questProgressInfo);
+        // TODO systemConnectionService.onQuestProgressInfo(userId, questProgressInfo);
     }
 
     @Override

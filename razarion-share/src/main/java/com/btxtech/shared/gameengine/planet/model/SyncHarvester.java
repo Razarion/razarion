@@ -32,11 +32,11 @@ import javax.inject.Inject;
 
 public class SyncHarvester extends SyncBaseAbility {
 
-    private GameLogicService gameLogicService;
+    private final GameLogicService gameLogicService;
 
-    private ResourceService resourceService;
+    private final ResourceService resourceService;
 
-    private BaseItemService baseItemService;
+    private final BaseItemService baseItemService;
     private HarvesterType harvesterType;
     private SyncResourceItem resource;
     private boolean harvesting;

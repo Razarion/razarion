@@ -30,7 +30,9 @@ export class ServerCommand {
   }
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class EditorService {
   static readonly SERVER_GAME_ENGINE_ID = 3; // TODO read from game engine
   static RESTART_BOTS: ServerCommand = new ServerCommand("Restart Bots", (client) => client.restartBots());

@@ -11,8 +11,8 @@ import java.util.Objects;
  * 05.09.2016.
  */
 public class Circle2D {
-    private DecimalPosition center;
-    private double radius;
+    private final DecimalPosition center;
+    private final double radius;
 
     public Circle2D(DecimalPosition center, double radius) {
         this.center = center;

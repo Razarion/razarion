@@ -1,27 +1,11 @@
 package com.btxtech.shared.utils;
 
-import com.btxtech.shared.datatypes.Circle2D;
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
-import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.datatypes.Line3d;
-import com.btxtech.shared.datatypes.Polygon2D;
-import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.TerrainTriangleCorner;
-import com.btxtech.shared.datatypes.Triangle2d;
-import com.btxtech.shared.datatypes.Triangle3D;
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.*;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionCanNotBeFoundException;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntToDoubleFunction;
 

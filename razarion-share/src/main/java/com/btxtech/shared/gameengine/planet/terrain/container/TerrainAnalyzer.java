@@ -12,11 +12,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
@@ -49,7 +45,7 @@ public class TerrainAnalyzer {
     }
 
     private TerrainType analyze(Index terrainNodeIndex) {
-        if(terrainShapeManager != null) {
+        if (terrainShapeManager != null) {
             if (isBlockedByTerrainObject(terrainNodeIndex)) {
                 return TerrainType.BLOCKED;
             }
@@ -81,7 +77,7 @@ public class TerrainAnalyzer {
         if (terrainShapeTile == null) {
             return false;
         }
-        if(terrainShapeTile.getNativeTerrainShapeObjectLists() == null) {
+        if (terrainShapeTile.getNativeTerrainShapeObjectLists() == null) {
             return false;
         }
         for (NativeTerrainShapeObjectList nativeTerrainShapeObjectList : terrainShapeTile.getNativeTerrainShapeObjectLists()) {

@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  * on 29.09.2017.
  */
 public class PathingServiceTracker {
-    private Logger logger = Logger.getLogger(PathingServiceTracker.class.getName());
+    private final Logger logger = Logger.getLogger(PathingServiceTracker.class.getName());
     private long startPeriodTimeStamp;
     private long startTimeStamp;
     private long startTickTimeStamp;
@@ -25,7 +25,7 @@ public class PathingServiceTracker {
     private int finalizationTime;
     private int updateListenerTime;
     private int syncItemContainerServiceTime;
-    private boolean running;
+    private final boolean running;
 
     public PathingServiceTracker(boolean running) {
         this.running = running;

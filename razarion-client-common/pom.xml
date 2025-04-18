@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>razarion-client-common</artifactId>
-    <name>Razarion Client Common</name>
+    <name>Razarion client common</name>
 
     <dependencies>
         <!-- Razarion -->

@@ -3,8 +3,6 @@ package com.btxtech.shared.system;
 import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.alarm.AlarmService;
 
-import javax.inject.Inject;
-
 /**
  * Created by Beat
  * 24.06.2016.
@@ -12,7 +10,7 @@ import javax.inject.Inject;
 @Deprecated
 public abstract class ExceptionHandler {
 
-    private AlarmService alarmService;
+    private final AlarmService alarmService;
 
     public ExceptionHandler(AlarmService alarmService) {
         this.alarmService = alarmService;

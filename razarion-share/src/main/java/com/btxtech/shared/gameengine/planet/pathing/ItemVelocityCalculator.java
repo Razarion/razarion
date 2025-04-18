@@ -23,8 +23,8 @@ public class ItemVelocityCalculator {
     private final SyncItemContainerService syncItemContainerService;
     private final TerrainAnalyzer pathingAccess;
     private final ExceptionHandler exceptionHandler;
-    private Collection<Orca> orcas = new ArrayList<>();
-    private Collection<SyncPhysicalMovable> pushAways = new LinkedList<>();
+    private final Collection<Orca> orcas = new ArrayList<>();
+    private final Collection<SyncPhysicalMovable> pushAways = new LinkedList<>();
 
     public ItemVelocityCalculator(SyncItemContainerService syncItemContainerService, TerrainAnalyzer pathingAccess, ExceptionHandler exceptionHandler) {
         this.syncItemContainerService = syncItemContainerService;

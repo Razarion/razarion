@@ -34,7 +34,7 @@ public enum PerfmonEnum {
     WAIT_RESTART(true),
     QUEST_PROGRESS_PANEL_TEXT_REFRESHER(true);
 
-    private boolean fps;
+    private final boolean fps;
 
     PerfmonEnum(boolean fps) {
         this.fps = fps;

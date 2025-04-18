@@ -5,9 +5,9 @@ package com.btxtech.shared.datatypes;
  * 16.07.2015.
  */
 public class Triangle3D {
-    private Vertex pointA;
-    private Vertex pointB;
-    private Vertex pointC;
+    private final Vertex pointA;
+    private final Vertex pointB;
+    private final Vertex pointC;
 
     public Triangle3D(Vertex pointA, Vertex pointB, Vertex pointC) {
         this.pointA = pointA;

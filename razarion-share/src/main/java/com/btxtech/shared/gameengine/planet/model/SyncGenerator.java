@@ -29,9 +29,9 @@ import javax.inject.Inject;
 
 public class SyncGenerator extends SyncBaseAbility {
 
-    private EnergyService energyService;
+    private final EnergyService energyService;
 
-    private BaseItemService baseItemService;
+    private final BaseItemService baseItemService;
     private GeneratorType generatorType;
 
     @Inject
@@ -47,7 +47,7 @@ public class SyncGenerator extends SyncBaseAbility {
 
     @Override
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
-        if(getSyncBaseItem().isBuildup() && !getSyncBaseItem().isSpawning()) {
+        if (getSyncBaseItem().isBuildup() && !getSyncBaseItem().isSpawning()) {
             energyService.generatorActivated(this);
         }
     }

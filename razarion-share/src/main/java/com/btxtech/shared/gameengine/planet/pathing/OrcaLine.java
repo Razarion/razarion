@@ -8,14 +8,14 @@ import com.btxtech.shared.datatypes.Line;
  * on 29.05.2018.
  */
 public class OrcaLine {
-    private DecimalPosition point;
-    private DecimalPosition direction;
+    private final DecimalPosition point;
+    private final DecimalPosition direction;
     private DecimalPosition relativeVelocity;
     private DecimalPosition relativePosition;
     private double combinedRadius;
 
     public OrcaLine(DecimalPosition point, DecimalPosition direction) {
-        if(direction.magnitude() < 0.9 || direction.magnitude() > 1.1) {
+        if (direction.magnitude() < 0.9 || direction.magnitude() > 1.1) {
             throw new IllegalStateException("direction: " + direction);
         }
         this.point = point;

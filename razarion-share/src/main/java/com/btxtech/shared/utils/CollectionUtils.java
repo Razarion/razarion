@@ -190,11 +190,11 @@ public class CollectionUtils {
 
         for (int i = 0; i < unsignedIntArray.length; i++) {
             int lower = byteArray[i * 2];
-            if(lower < 0) {
+            if (lower < 0) {
                 lower = 256 + lower;
             }
             int upper = byteArray[i * 2 + 1];
-            if(upper < 0) {
+            if (upper < 0) {
                 upper = 256 + upper;
             }
 

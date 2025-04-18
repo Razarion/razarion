@@ -3,11 +3,24 @@ import {TerrainObjectEditorControllerClient, TerrainObjectGeneratorEntity} from 
 import {GeneratorItem} from "../generator-item";
 import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../../backend/typescript-generator";
+import {InputNumber} from 'primeng/inputnumber';
+import {Button} from 'primeng/button';
+import {Slider} from 'primeng/slider';
+import {FormsModule} from '@angular/forms';
+import {DropdownModule} from 'primeng/dropdown';
+import {TableModule} from 'primeng/table';
 
 @Component({
-    selector: 'terrain-object-generator-entity',
-    templateUrl: './terrain-object-generator-entity.component.html',
-    standalone: false
+  selector: 'terrain-object-generator-entity',
+  imports: [
+    InputNumber,
+    Button,
+    Slider,
+    FormsModule,
+    DropdownModule,
+    TableModule
+  ],
+  templateUrl: './terrain-object-generator-entity.component.html'
 })
 export class TerrainObjectGeneratorEntityComponent implements OnInit {
   _terrainObjectGeneratorEntity: TerrainObjectGeneratorEntity | null = null;

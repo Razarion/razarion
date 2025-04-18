@@ -8,27 +8,10 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.GeneratorType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.*;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class FallbackConfig {
     public static final int GROUND_CONFIG_ID = 1;

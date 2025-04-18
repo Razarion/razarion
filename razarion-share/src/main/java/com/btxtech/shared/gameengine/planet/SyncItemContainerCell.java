@@ -10,7 +10,7 @@ import java.util.Collection;
  * on 17.03.2018.
  */
 public class SyncItemContainerCell {
-    private Collection<SyncItem> items = new ArrayList<>();
+    private final Collection<SyncItem> items = new ArrayList<>();
 
     public void add(SyncItem syncItem) {
         items.add(syncItem);

@@ -4,7 +4,9 @@ import {MeshBuilder, NodeMaterial, TransformNode} from "@babylonjs/core";
 import {BabylonModelService} from "./babylon-model.service";
 import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ThreeJsWaterRenderService {
   constructor(private babylonModelService: BabylonModelService) {
   }

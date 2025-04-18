@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper
  * on 10.11.2014.
  */
 public class AStarNode implements Comparable<AStarNode> {
-    private PathingNodeWrapper pathingNodeWrapper;
+    private final PathingNodeWrapper pathingNodeWrapper;
     private double f = 0;
     private double g; // Cost to this node
     private AStarNode predecessor;

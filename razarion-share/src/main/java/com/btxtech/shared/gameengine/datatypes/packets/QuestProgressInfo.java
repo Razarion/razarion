@@ -31,7 +31,6 @@ public class QuestProgressInfo {
     }
 
     /**
-     *
      * @return Key Item Type, Value count
      */
     public Integer[][] toTypeCountAngular() {

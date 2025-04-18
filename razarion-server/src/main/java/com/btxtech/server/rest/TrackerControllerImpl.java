@@ -1,7 +1,5 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.tracker.TrackerPersistence;
-import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
@@ -9,101 +7,71 @@ import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.rest.TrackerController;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import java.util.List;
 
-/**
- * Created by Beat
- * 03.03.2017.
- */
+import static com.btxtech.shared.CommonUrl.APPLICATION_PATH;
+import static com.btxtech.shared.CommonUrl.TRACKER_PATH;
+
+@RestController
+@RequestMapping(APPLICATION_PATH + "/" + TRACKER_PATH)
 public class TrackerControllerImpl implements TrackerController {
-    // private Logger logger = Logger.getLogger(TrackerControllerImpl.class.getName());
-    @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
-    private TrackerPersistence trackerPersistence;
-    @Inject
-    private SessionHolder sessionHolder;
+    private final Logger logger = LoggerFactory.getLogger(TrackerControllerImpl.class);
 
     @Override
-    public void startupTask(StartupTaskJson startupTaskJson) {
-        try {
-            trackerPersistence.onStartupTask(startupTaskJson);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
+    @PostMapping(value = "startupTask", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void startupTask(@RequestBody StartupTaskJson startupTaskJson) {
+        logger.info(startupTaskJson.toString());
     }
 
     @Override
-    public void startupTerminated(StartupTerminatedJson startupTerminatedJson) {
-        try {
-            trackerPersistence.onStartupTerminated(startupTerminatedJson);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
+    @PostMapping(value = "startupTerminated", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void startupTerminated(@RequestBody StartupTerminatedJson startupTerminatedJson) {
+        logger.info(startupTerminatedJson.toString());
     }
 
     @Override
-    public void gameUiControlTrackerInfo(GameUiControlTrackerInfo gameUiControlTrackerInfo) {
-        try {
-            trackerPersistence.onGameUiControlTrackerInfo(gameUiControlTrackerInfo);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
+    @PostMapping(value = "gameUiControlTrackerInfo", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void gameUiControlTrackerInfo(@RequestBody GameUiControlTrackerInfo gameUiControlTrackerInfo) {
+        logger.info(gameUiControlTrackerInfo.toString());
     }
 
     @Override
-    public void sceneTrackerInfo(SceneTrackerInfo sceneTrackerInfo) {
-        try {
-            trackerPersistence.onSceneTrackerInfo(sceneTrackerInfo);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
+    @PostMapping(value = "sceneTrackerInfo", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void sceneTrackerInfo(@RequestBody SceneTrackerInfo sceneTrackerInfo) {
+        logger.info(sceneTrackerInfo.toString());
     }
 
     @Override
-    public void performanceTracker(List<PerfmonStatistic> perfmonStatistics) {
-        try {
-            trackerPersistence.onPerformanceTracker(perfmonStatistics);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
+    @PostMapping(value = "performanceTracker", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void performanceTracker(@RequestBody List<PerfmonStatistic> perfmonStatistics) {
+        logger.info("PerfmonStatistic ... not implemented");
     }
 
     @Override
-    public void terrainTileStatisticsTracker(List<TerrainTileStatistic> terrainTileStatistics) {
-        try {
-            trackerPersistence.onTerrainTileStatisticsTracker(terrainTileStatistics);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
+    @PostMapping(value = "terrainTileStatisticsTracker", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void terrainTileStatisticsTracker(@RequestBody List<TerrainTileStatistic> terrainTileStatistics) {
+        logger.info("TerrainTileStatistic ... not implemented");
     }
 
     @Override
-    public void trackingStart(TrackingStart trackingStart) {
-        try {
-            trackerPersistence.onTrackingStart(sessionHolder.getPlayerSession().getHttpSessionId(), trackingStart);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
+    @PostMapping(value = "trackingstart", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void trackingStart(@RequestBody TrackingStart trackingStart) {
+        logger.info(trackingStart.toString());
     }
 
     @Override
-    public void detailedTracking(TrackingContainer trackingContainer) {
-        try {
-            trackerPersistence.onDetailedTracking(sessionHolder.getPlayerSession().getHttpSessionId(), trackingContainer);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
+    @PostMapping(value = "detailedTracking", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void detailedTracking(@RequestBody TrackingContainer trackingContainer) {
+        logger.info(trackingContainer.toString());
     }
 }

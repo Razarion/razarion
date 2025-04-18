@@ -1,8 +1,8 @@
 package com.btxtech.shared.gameengine.planet.terrain.asserthelper;
 
+import com.btxtech.shared.JsonAssert;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.test.JsonAssert;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -14,7 +14,7 @@ import java.util.Set;
  * on 07.09.2018.
  */
 public class SynchronizationSendingContext {
-    private Collection<Set<SyncBaseItem>> collisions = new LinkedList<>();
+    private final Collection<Set<SyncBaseItem>> collisions = new LinkedList<>();
 
     public void addCollision(SyncPhysicalMovable syncPhysicalMovable1, SyncPhysicalMovable syncPhysicalMovable2) {
         Set<SyncBaseItem> colliding1 = null;

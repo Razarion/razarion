@@ -7,8 +7,7 @@ import { TypescriptGenerator } from './typescript-generator';
 @Component({
     selector: 'app-backend',
     templateUrl: './backend.component.html',
-    styleUrls: ['./backend.component.scss'],
-    standalone: false
+    styleUrls: ['./backend.component.scss']
 })
 export class BackendComponent {
   startupTerminatedJsons: StartupTerminatedJson[] = [];

@@ -11,8 +11,8 @@ import java.util.PriorityQueue;
  * on 10.11.2014.
  */
 class AStarOpenList {
-    private PriorityQueue<AStarNode> sortedList = new PriorityQueue<>();
-    private Map<PathingNodeWrapper, AStarNode> map = new HashMap<>();
+    private final PriorityQueue<AStarNode> sortedList = new PriorityQueue<>();
+    private final Map<PathingNodeWrapper, AStarNode> map = new HashMap<>();
 
     public void add(AStarNode node) {
         sortedList.add(node);

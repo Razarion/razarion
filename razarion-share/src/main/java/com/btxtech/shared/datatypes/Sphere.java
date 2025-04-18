@@ -7,9 +7,9 @@ import com.btxtech.shared.dto.VertexList;
  * 25.06.2015.
  */
 public class Sphere {
-    private double radius;
-    private int latitudeBands;
-    private int longitudeBands;
+    private final double radius;
+    private final int latitudeBands;
+    private final int longitudeBands;
 
     public Sphere(double radius, int latitudeBands, int longitudeBands) {
         this.radius = radius;

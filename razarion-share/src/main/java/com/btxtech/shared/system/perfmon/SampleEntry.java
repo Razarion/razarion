@@ -5,9 +5,9 @@ package com.btxtech.shared.system.perfmon;
  * 05.11.2016.
  */
 public class SampleEntry {
-    private PerfmonEnum perfmonEnum;
-    private long startTime;
-    private int duration;
+    private final PerfmonEnum perfmonEnum;
+    private final long startTime;
+    private final int duration;
 
     public SampleEntry(PerfmonEnum perfmonEnum, long startTime) {
         this.perfmonEnum = perfmonEnum;

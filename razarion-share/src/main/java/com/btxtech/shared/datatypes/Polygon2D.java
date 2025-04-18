@@ -5,11 +5,7 @@ import com.btxtech.shared.utils.MathHelper;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Beat

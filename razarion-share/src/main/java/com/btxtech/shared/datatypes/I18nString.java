@@ -1,11 +1,7 @@
 package com.btxtech.shared.datatypes;
 
 
-import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * User: beat

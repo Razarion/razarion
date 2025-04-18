@@ -3,17 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
-import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
-import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
-import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
-import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
-import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
-import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
-import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
-import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
-import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
+import com.btxtech.shared.gameengine.datatypes.command.*;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
@@ -25,7 +15,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Collection;
 
 /**
  * Created by Beat
@@ -35,25 +24,25 @@ import java.util.Collection;
 public class CommandService {
     // Is part of the Base service
     // private Logger logger = Logger.getLogger(CommandService.class.getName());
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
 
-    private PathingService pathingService;
+    private final PathingService pathingService;
 
-    private GameLogicService gameLogicService;
+    private final GameLogicService gameLogicService;
 
-    private BaseItemService baseItemService;
+    private final BaseItemService baseItemService;
 
-    private ResourceService resourceService;
+    private final ResourceService resourceService;
 
-    private BoxService boxService;
+    private final BoxService boxService;
 
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private ItemTypeService itemTypeService;
+    private final ItemTypeService itemTypeService;
 
-    private PlanetService planetService;
+    private final PlanetService planetService;
 
-    private GuardingItemService guardingItemService;
+    private final GuardingItemService guardingItemService;
 
     @Inject
     public CommandService(GuardingItemService guardingItemService, PlanetService planetService, ItemTypeService itemTypeService, SyncItemContainerServiceImpl syncItemContainerService, BoxService boxService, ResourceService resourceService, BaseItemService baseItemService, GameLogicService gameLogicService, PathingService pathingService, ExceptionHandler exceptionHandler) {
@@ -269,9 +258,9 @@ public class CommandService {
 
     public void executeCommand(BaseCommand baseCommand) {
         try {
-            if(planetService.getGameEngineMode() == GameEngineMode.MASTER) {
+            if (planetService.getGameEngineMode() == GameEngineMode.MASTER) {
                 baseItemService.queueCommand(baseCommand);
-            } else if(planetService.getGameEngineMode() == GameEngineMode.SLAVE) {
+            } else if (planetService.getGameEngineMode() == GameEngineMode.SLAVE) {
                 gameLogicService.onSlaveCommandSent(syncItemContainerService.getSyncBaseItemSave(baseCommand.getId()), baseCommand);
             }
         } catch (ItemDoesNotExistException e) {

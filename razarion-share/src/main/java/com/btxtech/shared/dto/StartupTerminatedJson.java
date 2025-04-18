@@ -78,4 +78,15 @@ public class StartupTerminatedJson {
         setServerTime(serverTime);
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "StartupTerminatedJson{" +
+                "successful=" + successful +
+                ", totalTime=" + totalTime +
+                ", gameSessionUuid='" + gameSessionUuid + '\'' +
+                ", httpSessionId='" + httpSessionId + '\'' +
+                ", serverTime=" + serverTime +
+                '}';
+    }
 }

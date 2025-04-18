@@ -1,10 +1,17 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
+import {DropdownModule} from 'primeng/dropdown';
+import {FormsModule} from '@angular/forms';
+import {NgIf} from '@angular/common';
 
 @Component({
-    selector: 'resource-item-type',
-    templateUrl: './resource-item-type.component.html',
-    standalone: false
+  selector: 'resource-item-type',
+  imports: [
+    DropdownModule,
+    FormsModule,
+    NgIf
+  ],
+  templateUrl: './resource-item-type.component.html'
 })
 export class ResourceItemTypeComponent {
   @Input("resourceItemTypeId")

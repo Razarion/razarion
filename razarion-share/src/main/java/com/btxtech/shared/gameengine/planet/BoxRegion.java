@@ -7,7 +7,7 @@ import com.btxtech.shared.dto.BoxRegionConfig;
  * on 15.09.2017.
  */
 public class BoxRegion {
-    private BoxRegionConfig boxRegionConfig;
+    private final BoxRegionConfig boxRegionConfig;
     private long tickCount;
 
     public BoxRegion(BoxRegionConfig boxRegionConfig) {

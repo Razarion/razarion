@@ -3,8 +3,7 @@ import {EditorService} from "../../editor-service";
 
 @Component({
     selector: 'water',
-    templateUrl: './water.component.html',
-    standalone: false
+    templateUrl: './water.component.html'
 })
 export class WaterComponent {
   @Input("waterId")

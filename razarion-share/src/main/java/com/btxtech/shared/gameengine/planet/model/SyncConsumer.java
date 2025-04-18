@@ -30,9 +30,9 @@ import javax.inject.Inject;
 
 public class SyncConsumer extends SyncBaseAbility {
 
-    private EnergyService energyService;
+    private final EnergyService energyService;
 
-    private BaseItemService baseItemService;
+    private final BaseItemService baseItemService;
     private ConsumerType consumerType;
 
     @Inject

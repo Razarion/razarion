@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
-import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.utils.MathHelper;
@@ -14,13 +13,13 @@ import java.util.Objects;
  * 20.09.2016.
  */
 public class ObstacleSlope extends Obstacle {
-    private DecimalPosition point1;
-    private DecimalPosition point2;
-    private DecimalPosition previousDirection;
-    private boolean point1Convex;
-    private DecimalPosition point1Direction;
-    private boolean point2Convex;
-    private DecimalPosition point2Direction;
+    private final DecimalPosition point1;
+    private final DecimalPosition point2;
+    private final DecimalPosition previousDirection;
+    private final boolean point1Convex;
+    private final DecimalPosition point1Direction;
+    private final boolean point2Convex;
+    private final DecimalPosition point2Direction;
     private Line cachedLine;
 
     public ObstacleSlope(DecimalPosition point1, DecimalPosition point2, DecimalPosition previous, DecimalPosition next) {

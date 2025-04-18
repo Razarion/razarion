@@ -3,22 +3,16 @@ package com.btxtech.server.gameengine;
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.SyncService;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-/**
- * Created by Beat
- * on 05.10.2018.
- */
-@Singleton
+@Service
 public class ServerSyncService extends SyncService {
-    @Inject
-    private ClientGameConnectionService clientGameConnectionService;
+    private final ClientGameConnectionService clientGameConnectionService;
 
-    @Inject
-    public ServerSyncService(InitializeService initializeService) {
+    public ServerSyncService(InitializeService initializeService,
+                             ClientGameConnectionService clientGameConnectionService) {
         super(initializeService);
+        this.clientGameConnectionService = clientGameConnectionService;
     }
 
     @Override

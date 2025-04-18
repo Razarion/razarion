@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.utils.CollectionUtils;
-import org.dominokit.jackson.annotation.JSONMapper;
 
 import java.util.Set;
 
@@ -16,7 +15,7 @@ public enum TerrainType {
     WATER_COAST(false),
     BLOCKED(false);
 
-    private boolean areaCheck;
+    private final boolean areaCheck;
 
     TerrainType(boolean areaCheck) {
         this.areaCheck = areaCheck;

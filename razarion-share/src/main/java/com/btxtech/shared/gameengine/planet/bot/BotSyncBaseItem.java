@@ -37,15 +37,15 @@ import javax.inject.Inject;
 public class BotSyncBaseItem {
 
     // private Logger logger = Logger.getLogger(BotSyncBaseItem.class.getName());
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
 
-    private BaseItemService baseItemService;
+    private final BaseItemService baseItemService;
 
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private CommandService commandService;
+    private final CommandService commandService;
 
-    private TerrainService terrainService;
+    private final TerrainService terrainService;
     private SyncBaseItem syncBaseItem;
     private BotItemConfig botItemConfig;
     private boolean idle;

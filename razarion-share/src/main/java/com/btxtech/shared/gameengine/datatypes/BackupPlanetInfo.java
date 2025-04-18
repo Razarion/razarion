@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes;
 
-import com.btxtech.shared.gameengine.datatypes.packets.BackupPlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.quest.BackupComparisionInfo;

@@ -28,12 +28,12 @@ public class PathingService {
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
     public static final double RADIUS_GROW = 1;
 
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private TerrainService terrainService;
+    private final TerrainService terrainService;
 
-    private ExceptionHandler exceptionHandler;
-    private PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
+    private final ExceptionHandler exceptionHandler;
+    private final PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
 
     @Inject
     public PathingService(ExceptionHandler exceptionHandler, TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService) {

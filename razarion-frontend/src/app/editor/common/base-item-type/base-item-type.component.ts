@@ -1,10 +1,17 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
+import {DropdownModule} from 'primeng/dropdown';
+import {NgIf} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'base-item-type',
-    templateUrl: './base-item-type.component.html',
-    standalone: false
+  selector: 'base-item-type',
+  imports: [
+    DropdownModule,
+    NgIf,
+    FormsModule
+  ],
+  templateUrl: './base-item-type.component.html'
 })
 export class BaseItemTypeComponent {
   @Input("baseItemTypeId")

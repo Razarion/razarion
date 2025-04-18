@@ -3,7 +3,7 @@ import {TerrainObjectGeneratorControllerClient, TerrainObjectGeneratorEntity} fr
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
-import {DropdownChangeEvent} from "primeng/dropdown";
+import {DropdownChangeEvent, DropdownModule} from "primeng/dropdown";
 import {TerrainObjectModel} from "../../../gwtangular/GwtAngularFacade";
 import {TransformNode} from "@babylonjs/core";
 import {GeneratedTerrainObjects} from "./generated-terrain-objects";
@@ -16,11 +16,24 @@ import {EditorService} from "../../editor-service";
 import {
   TerrainObjectGeneratorEntityComponent
 } from "./terrain-object-generator-entity/terrain-object-generator-entity.component";
+import {Button} from 'primeng/button';
+import {DatePipe} from '@angular/common';
+import {TableModule} from 'primeng/table';
+import {FormsModule} from '@angular/forms';
+import {Divider} from 'primeng/divider';
 
 @Component({
-    selector: 'terrain-object-generator',
-    templateUrl: './terrain-object-generator.component.html',
-    standalone: false
+  selector: 'terrain-object-generator',
+  imports: [
+    Button,
+    DatePipe,
+    TableModule,
+    TerrainObjectGeneratorEntityComponent,
+    DropdownModule,
+    FormsModule,
+    Divider
+  ],
+  templateUrl: './terrain-object-generator.component.html'
 })
 export class TerrainObjectGeneratorComponent implements OnInit {
   activeTerrainObjectGenerator: TerrainObjectGeneratorEntity | null = null;

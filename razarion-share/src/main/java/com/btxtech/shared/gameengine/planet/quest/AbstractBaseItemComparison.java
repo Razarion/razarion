@@ -18,7 +18,6 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
-import javax.inject.Inject;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -27,7 +26,7 @@ import java.util.Set;
  */
 public abstract class AbstractBaseItemComparison extends AbstractUpdatingComparison {
 
-    private BotService botService;
+    private final BotService botService;
     private AbstractConditionProgress abstractConditionTrigger;
 
     public AbstractBaseItemComparison(GameLogicService gameLogicService, BotService botService) {
@@ -57,9 +56,7 @@ public abstract class AbstractBaseItemComparison extends AbstractUpdatingCompari
             if (botId == null) {
                 return false;
             }
-            if (!botIds.contains(botId)) {
-                return false;
-            }
+            return botIds.contains(botId);
         }
         return true;
     }

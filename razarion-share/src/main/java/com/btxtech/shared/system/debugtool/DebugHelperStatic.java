@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -120,7 +119,7 @@ public class DebugHelperStatic {
             // TODO if (debugHelper != null) {
             // TODO    debugHelper.debugToConsole(printOnTickMessage);
             // TODO} else {
-                System.out.println("\n--------- Tick " + currentTick + ": " + printOnTickMessage);
+            System.out.println("\n--------- Tick " + currentTick + ": " + printOnTickMessage);
             // TODO}
             printOnTickMessage = null;
         }

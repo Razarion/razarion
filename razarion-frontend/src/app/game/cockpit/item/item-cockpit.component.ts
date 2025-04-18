@@ -6,13 +6,20 @@ import {
   OwnItemCockpit,
   OwnMultipleIteCockpit
 } from "../../../gwtangular/GwtAngularFacade";
+import {NgIf} from '@angular/common';
+import {Carousel} from 'primeng/carousel';
+import {Button} from 'primeng/button';
 
 
 @Component({
-    selector: 'item-cockpit',
-    templateUrl: 'item-cockpit.component.html',
-    styleUrls: ['item-cockpit.component.scss'],
-    standalone: false
+  selector: 'item-cockpit',
+  templateUrl: 'item-cockpit.component.html',
+  styleUrls: ['item-cockpit.component.scss'],
+  imports: [
+    NgIf,
+    Carousel,
+    Button
+  ]
 })
 export class ItemCockpitComponent implements ItemCockpitFrontend {
   showCockpit: boolean = false;

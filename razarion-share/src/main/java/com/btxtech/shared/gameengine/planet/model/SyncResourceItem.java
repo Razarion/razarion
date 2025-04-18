@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 public class SyncResourceItem extends SyncItem {
 
-    private ResourceService resourceService;
+    private final ResourceService resourceService;
     private double amount;
 
     @Inject

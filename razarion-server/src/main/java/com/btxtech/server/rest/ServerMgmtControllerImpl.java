@@ -1,35 +1,26 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.shared.Constants;
-import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.rest.ServerMgmtController;
-import com.btxtech.shared.system.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 
-/**
- * Created by Beat
- * on 16.02.2018.
- */
+@RestController
+@RequestMapping("/rest/servermgmt")
 public class ServerMgmtControllerImpl implements ServerMgmtController {
-    @Inject
-    private ServerMgmt serverMgmt;
-    @Inject
-    private ExceptionHandler exceptionHandler;
 
     @Override
+    @GetMapping(value = "serverstatus", produces = MediaType.TEXT_PLAIN)
     // Enum as return value not working. Not proper JSON. Too many quotation marks.
     public String getServerStatus() {
-        try {
-            return serverMgmt.getServerState().toString();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            return ServerState.UNKNOWN.toString();
-        }
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
+    @GetMapping(value = "interfaceVersion", produces = MediaType.APPLICATION_JSON)
     public int getInterfaceVersion() {
         return Constants.INTERFACE_VERSION;
     }

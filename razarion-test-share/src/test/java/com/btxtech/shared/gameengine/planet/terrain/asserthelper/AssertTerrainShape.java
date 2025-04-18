@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain.asserthelper;
 
+import com.btxtech.shared.JsonAssert;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
-import com.btxtech.test.JsonAssert;
 
 /**
  * Created by Beat

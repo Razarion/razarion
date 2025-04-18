@@ -10,12 +10,25 @@ import { GwtHelper } from "../../../gwtangular/GwtHelper";
 import { GwtAngularService } from "../../../gwtangular/GwtAngularService";
 import { ConditionTrigger } from "src/app/generated/razarion-share";
 import { QuestDialogComponent } from "./quest-dialog/quest-dialog.component";
+import {InputSwitch} from 'primeng/inputswitch';
+import {Dialog} from 'primeng/dialog';
+import {CommonModule} from '@angular/common';
+import {Button} from 'primeng/button';
+import {ToggleSwitchModule} from 'primeng/toggleswitch';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'quest-cockpit',
-    templateUrl: 'quest-cockpit.component.html',
-    styleUrls: ['quest-cockpit.component.scss'],
-    standalone: false
+  selector: 'quest-cockpit',
+  templateUrl: 'quest-cockpit.component.html',
+  imports: [
+    ToggleSwitchModule,
+    Dialog,
+    CommonModule,
+    Button,
+    QuestDialogComponent,
+    FormsModule,
+  ],
+  styleUrls: ['quest-cockpit.component.scss']
 })
 export class QuestCockpitComponent implements QuestCockpit {
   title?: string

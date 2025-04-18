@@ -31,7 +31,7 @@ import java.util.Set;
 
 public class BaseItemCountComparison extends AbstractBaseItemComparison {
 
-    private BaseItemService baseItemService;
+    private final BaseItemService baseItemService;
     private int count;
     private double countTotal;
     private Set<Integer> botIds;

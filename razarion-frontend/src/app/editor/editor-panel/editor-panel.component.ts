@@ -11,11 +11,14 @@ import {EditorModel, EditorPanel} from "../editor-model";
 import {MessageService} from "primeng/api";
 import {GameComponent} from "../../game/game.component";
 import {MainCockpitComponent} from "../../game/cockpit/main/main-cockpit.component";
+import {Button} from 'primeng/button';
 
 @Component({
-    selector: 'app-editor-panel',
-    templateUrl: './editor-panel.component.html',
-    standalone: false
+  selector: 'app-editor-panel',
+  imports: [
+    Button
+  ],
+  templateUrl: './editor-panel.component.html'
 })
 export class EditorPanelComponent implements AfterViewInit {
   @Input("mainCockpitComponent")

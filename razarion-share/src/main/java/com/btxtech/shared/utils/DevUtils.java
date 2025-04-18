@@ -21,7 +21,7 @@ public interface DevUtils {
             }
         }
         builder.append(");");
-        System.out.println(builder.toString());
+        System.out.println(builder);
         System.out.println("-----------------------------------------------------------");
     }
 

@@ -1,4 +1,4 @@
-<div class="field grid align-items-center">
+<div class="field grid grid-cols-12 gap-4 items-center">
   <span class="col">Id</span>
   <div class="col">
     <p-inputNumber [disabled]="true"
@@ -6,12 +6,12 @@
   </div>
 </div>
 
-<div class="field grid align-items-center">
+<div class="field grid grid-cols-12 gap-4 items-center">
   <span class="col">Name</span>
   <div class="col">
     <input [(ngModel)]="terrainObjectGeneratorEntity!.internalName"
            type="text"
-           class="text-base text-color bg-primary-reverse p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+           class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
   </div>
 </div>
 
@@ -39,7 +39,7 @@
                     optionValue ="terrainObjectId" ></p-dropdown>
       </td>
       <td>
-        <p-inputNumber [(ngModel)]="generatorItem.count" [min]="0" [size]="5"></p-inputNumber>
+        <p-inputNumber [(ngModel)]="generatorItem.count" [min]="0" [size]="'small'"></p-inputNumber>
       </td>
       <td>
         <input type="text" pInputText [(ngModel)]="generatorItem.xRot" class="w-full"/>
@@ -54,9 +54,9 @@
         <p-slider [(ngModel)]="generatorItem.zRot" [min]="0" [max]="180"></p-slider>
       </td>
       <td>
-        <p-inputNumber [(ngModel)]="generatorItem.minScale" [min]="0.001" [size]="5" mode="decimal"
+        <p-inputNumber [(ngModel)]="generatorItem.minScale" [min]="0.001" [size]="'small'" mode="decimal"
                        [minFractionDigits]="2" [maxFractionDigits]="5"></p-inputNumber>
-        <p-inputNumber [(ngModel)]="generatorItem.maxScale" [min]="0.001" [size]="5" mode="decimal"
+        <p-inputNumber [(ngModel)]="generatorItem.maxScale" [min]="0.001" [size]="'small'" mode="decimal"
                        [minFractionDigits]="2" [maxFractionDigits]="5"></p-inputNumber>
       </td>
       <td>

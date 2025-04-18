@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;

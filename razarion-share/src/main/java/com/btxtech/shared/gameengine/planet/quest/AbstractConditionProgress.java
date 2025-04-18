@@ -23,8 +23,8 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
  * Time: 23:33:37
  */
 public class AbstractConditionProgress {
-    private ConditionTrigger conditionTrigger;
-    private AbstractComparison abstractComparison;
+    private final ConditionTrigger conditionTrigger;
+    private final AbstractComparison abstractComparison;
     private boolean fulfilled = false;
     private int userId;
     private QuestConfig questConfig;

@@ -9,7 +9,7 @@ public enum Character {
     BOT(true),
     BOT_NCP(true);
 
-    private boolean bot;
+    private final boolean bot;
 
     Character(boolean bot) {
         this.bot = bot;

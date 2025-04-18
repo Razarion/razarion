@@ -32,7 +32,6 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_GAME_UI_CONTEXT
 
 // Better name: something with game-control
 public class Scene {
-    public static final long FADE_DURATION = 2000; // Edit in razarion.css
     private Logger logger = Logger.getLogger(Scene.class.getName());
 
     private ScreenCover screenCover;
@@ -87,13 +86,8 @@ public class Scene {
     public void run() {
         setupViewFieldConfig(sceneConfig.getViewFieldConfig());
         if (sceneConfig.isRemoveLoadingCover()) {
-            hasCompletionCallback = true;
             completionCallbackCount++;
-            screenCover.fadeOutLoadingCover();
-            simpleExecutorService.schedule(FADE_DURATION, () -> {
-                screenCover.removeLoadingCover();
-                onComplete();
-            }, SimpleExecutorService.Type.SCENE_RUNNER);
+            screenCover.removeLoadingCover();
         }
         if (sceneConfig.getIntroText() != null && !sceneConfig.getIntroText().trim().isEmpty()) {
             screenCover.showStoryCover(sceneConfig.getIntroText());

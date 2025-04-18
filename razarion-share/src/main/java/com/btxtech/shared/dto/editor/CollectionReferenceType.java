@@ -2,22 +2,13 @@ package com.btxtech.shared.dto.editor;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.Config;
-import com.btxtech.shared.rest.BaseItemTypeEditorController;
-import com.btxtech.shared.rest.CrudController;
-import com.btxtech.shared.rest.GameUiContextEditorController;
-import com.btxtech.shared.rest.GroundEditorController;
-import com.btxtech.shared.rest.LevelEditorController;
-import com.btxtech.shared.rest.PlanetEditorController;
-import com.btxtech.shared.rest.ResourceItemTypeEditorController;
-import com.btxtech.shared.rest.ServerGameEngineEditorController;
-import com.btxtech.shared.rest.TerrainObjectEditorController;
+import com.btxtech.shared.rest.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public enum CollectionReferenceType {
-    LEVEL(LevelEditorController.class, "Level", CommonUrl.LEVEL_EDITOR_PATH),
     PLANET(PlanetEditorController.class, "Planet", CommonUrl.PLANET_EDITOR_PATH),
     GROUND(GroundEditorController.class, "Ground", CommonUrl.GROUND_EDITOR_PATH),
     GAME_UI_CONTEXT(GameUiContextEditorController.class, "Game Ui Context", CommonUrl.GAME_UI_CONTEXT_EDITOR_PATH),
@@ -28,9 +19,9 @@ public enum CollectionReferenceType {
     IMAGE(null, "Image", null);
 
     private static Map<String, CollectionReferenceType> collectionName2Type;
-    private Class<? extends CrudController<? extends Config>> crudControllerClass;
-    private String collectionName;
-    private String path;
+    private final Class<? extends CrudController<? extends Config>> crudControllerClass;
+    private final String collectionName;
+    private final String path;
 
     CollectionReferenceType(Class<? extends CrudController<? extends Config>> crudControllerClass, String collectionName, String path) {
         this.crudControllerClass = crudControllerClass;

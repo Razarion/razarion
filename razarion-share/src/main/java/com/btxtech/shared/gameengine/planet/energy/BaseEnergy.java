@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class BaseEnergy {
 
-    private GameLogicService gameLogicService;
+    private final GameLogicService gameLogicService;
     private int consuming;
     private int generating;
     private final Set<SyncGenerator> syncGenerators = new HashSet<>();
@@ -59,7 +59,7 @@ public class BaseEnergy {
             newGenerating = syncGenerators.stream().mapToInt(SyncGenerator::getWattage).sum();
         }
 
-        if(newConsuming == consuming && newGenerating == generating) {
+        if (newConsuming == consuming && newGenerating == generating) {
             return;
         }
         consuming = newConsuming;

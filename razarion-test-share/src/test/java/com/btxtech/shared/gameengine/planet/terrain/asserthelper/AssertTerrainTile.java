@@ -1,11 +1,11 @@
 package com.btxtech.shared.gameengine.planet.terrain.asserthelper;
 
+import com.btxtech.shared.JsonAssert;
 import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.mocks.TestFloat32Array;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.test.JsonAssert;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

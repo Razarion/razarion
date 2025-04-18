@@ -39,7 +39,7 @@ public class CommonUrl {
     public static final String WARM = "warm";
     public static final String BABYLON_MATERIAL_CONTROLLER = "babylon-material";
     public static final String GLTF_CONTROLLER = "gltf";
-    public static final String UI_CONFIG_COLLECTION_CONTROLLER = "ui-config-collection";
+    public static final String UI_CONFIG_COLLECTION_CONTROLLER = APPLICATION_PATH + "/ui-config-collection";
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";
     public static final String TERRAIN_OBJECT_EDITOR_PATH = "editor/terrain-object";
     public static final String UPDATE_RADIUS = "update-radius";

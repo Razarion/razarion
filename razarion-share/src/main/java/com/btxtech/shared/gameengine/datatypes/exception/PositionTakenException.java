@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.datatypes.exception;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 
 /**

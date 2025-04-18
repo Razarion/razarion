@@ -29,10 +29,10 @@ public class TestScreenCover implements ScreenCover {
     }
 
     @Override
-    public void fadeOutLoadingCover() {
+    public void fadeInLoadingCover() {
     }
 
     @Override
-    public void fadeInLoadingCover() {
+    public void onStartupProgress(double percent) {
     }
 }

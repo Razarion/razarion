@@ -9,11 +9,11 @@ import com.btxtech.shared.utils.MathHelper;
  * http://www.songho.ca/math/plane/plane.html
  */
 public class Plane3d {
-    private double a;
-    private double b;
-    private double c;
-    private double d;
-    private Vertex origin;
+    private final double a;
+    private final double b;
+    private final double c;
+    private final double d;
+    private final Vertex origin;
     private Vertex planeXAxis;
     private Vertex planeYAxis;
 

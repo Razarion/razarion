@@ -13,12 +13,9 @@
 
 package com.btxtech.shared.datatypes;
 
-import javax.persistence.Embeddable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import jakarta.persistence.Embeddable;
+
+import java.util.*;
 
 /**
  * User: beat

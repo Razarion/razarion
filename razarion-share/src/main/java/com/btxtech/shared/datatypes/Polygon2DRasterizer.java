@@ -4,15 +4,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.PolygonUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Beat
@@ -21,10 +13,10 @@ import java.util.Set;
 public class Polygon2DRasterizer {
     private final Polygon2D polygon;
     private final int rasterSize;
-    private Map<Index, Integer> piercedTiles = new HashMap<>();
-    private List<Index> piercedTileOrder = new ArrayList<>();
+    private final Map<Index, Integer> piercedTiles = new HashMap<>();
+    private final List<Index> piercedTileOrder = new ArrayList<>();
     private Set<Index> openInside = new HashSet<>();
-    private Set<Index> closedInside = new HashSet<>();
+    private final Set<Index> closedInside = new HashSet<>();
 
     private Polygon2DRasterizer(Polygon2D polygon, int rasterSize) {
         this.polygon = polygon;

@@ -5,10 +5,10 @@ package com.btxtech.shared.datatypes;
  * 02.07.2016.
  */
 public class TerrainTriangleCorner {
-    private Vertex vertex;
-    private Vertex norm;
-    private Vertex tangent;
-    private double splatting;
+    private final Vertex vertex;
+    private final Vertex norm;
+    private final Vertex tangent;
+    private final double splatting;
 
     public TerrainTriangleCorner(Vertex vertex, Vertex norm, Vertex tangent, double splatting) {
         this.vertex = vertex;

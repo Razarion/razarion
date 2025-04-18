@@ -1,12 +1,26 @@
 import {Component, Input, Pipe, PipeTransform} from "@angular/core";
 import {ImageGalleryItem} from "../../gwtangular/GwtAngularFacade";
 import {getImageUrl} from "../../common";
+import {FormatFileSizePipe} from '../../common/pipes/format-file-size-pipe';
+
+@Pipe({
+  name: 'typeTransform'
+})
+export class ImageTypePipe implements PipeTransform {
+  transform(value: any): any {
+    return value?.replace("image/", '');
+  }
+}
 
 @Component({
-    selector: 'image-gallery-item',
-    styles: ['.image-gallery-descr { width: 50px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis }',
-        '.image-gallery-img { width: 100px;height: 100px; background: url(\'/assets/TransparentBg.png\')}'],
-    template: `
+  selector: 'image-gallery-item',
+  styles: ['.image-gallery-descr { width: 50px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis }',
+    '.image-gallery-img { width: 100px;height: 100px; background: url(\'/TransparentBg.png\')}'],
+  imports: [
+    ImageTypePipe,
+    FormatFileSizePipe
+  ],
+  template: `
     <table style="width: auto;height: auto">
       <tr>
         <td colspan="2">
@@ -16,25 +30,26 @@ import {getImageUrl} from "../../common";
       </tr>
       <tr>
         <td>
-          <div class="image-gallery-descr">{{imageGalleryItem.id}}</div>
+          <div class="image-gallery-descr">{{ imageGalleryItem.id }}</div>
         </td>
         <td>
           <div class="image-gallery-descr"
-               style="text-align: right;">{{imageGalleryItem.internalName}}</div>
+               style="text-align: right;">{{ imageGalleryItem.internalName }}
+          </div>
         </td>
       </tr>
       <tr>
         <td>
-          <div class="image-gallery-descr">{{imageGalleryItem.size | formatFileSize:false}}</div>
+          <div class="image-gallery-descr">{{ imageGalleryItem.size | formatFileSize:false }}</div>
         </td>
         <td>
           <div class="image-gallery-descr"
-               style="text-align: right;">{{imageGalleryItem.type | typeTransform}}</div>
+               style="text-align: right;">{{ imageGalleryItem.type | typeTransform }}
+          </div>
         </td>
       </tr>
     </table>
-  `,
-    standalone: false
+  `
 })
 export class ImageGalleryItemComponent {
   @Input('image-gallery-item')
@@ -42,16 +57,6 @@ export class ImageGalleryItemComponent {
 
   getImgUrl(): string {
     return getImageUrl(this.imageGalleryItem.id);
-  }
-}
-
-@Pipe({
-    name: 'typeTransform',
-    standalone: false
-})
-export class ImageTypePipe implements PipeTransform {
-  transform(value: any): any {
-    return value?.replace("image/", '');
   }
 }
 

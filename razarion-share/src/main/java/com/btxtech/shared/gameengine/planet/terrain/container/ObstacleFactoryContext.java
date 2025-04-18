@@ -17,7 +17,7 @@ public class ObstacleFactoryContext {
     private List<DecimalPosition> tmpOuterPolygon = new ArrayList<>();
     private List<DecimalPosition> tmpBeginningInnerPolygon;
     private List<DecimalPosition> tmpBeginningOuterPolygon;
-    private List<List<DecimalPosition>> polygons = new ArrayList<>();
+    private final List<List<DecimalPosition>> polygons = new ArrayList<>();
     private boolean flatDriveway;
 
     public void addPositions(DecimalPosition innerSlopeGameEngine, DecimalPosition outerSlopeGameEngine, boolean flatDriveway, boolean first) {

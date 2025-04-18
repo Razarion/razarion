@@ -10,7 +10,7 @@ import {
 import { HttpClient } from "@angular/common/http";
 import { GwtAngularService } from "../../gwtangular/GwtAngularService";
 import { MessageService } from "primeng/api";
-import pako from 'pako';
+// TODO import * as pako from "pako";
 import { HttpClient as HttpClientAdapter, RestResponse, TerrainType } from '../../generated/razarion-share';
 import { PlanetConfig } from "../../gwtangular/GwtAngularFacade";
 import { BabylonRenderServiceAccessImpl } from "../../game/renderer/babylon-render-service-access-impl.service";
@@ -25,11 +25,22 @@ import { AbstractBrush, BrushContext } from "./brushes/abstract-brush";
 import { FixHeightBrushComponent } from './brushes/fix-height-brush.component';
 import { FlattenBrushComponent } from "./brushes/flattem-brush.component";
 import { RadarComponent } from 'src/app/game/cockpit/main/radar/radar.component';
+import {Button} from 'primeng/button';
+import {Divider} from 'primeng/divider';
+import {Checkbox} from 'primeng/checkbox';
+import {FormsModule} from '@angular/forms';
+import {SelectButton} from 'primeng/selectbutton';
 
 @Component({
-    selector: 'shape-terrain-editor',
-    templateUrl: './shape-terrain-editor.component.html',
-    standalone: false
+  selector: 'shape-terrain-editor',
+  imports: [
+    Button,
+    Divider,
+    Checkbox,
+    FormsModule,
+    SelectButton
+  ],
+  templateUrl: './shape-terrain-editor.component.html'
 })
 export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   wireframe: boolean = false;
@@ -275,18 +286,19 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
       }
     }
 
-    let compressed = pako.gzip(new Uint8Array(uint16Array.buffer));
-    const blob = new Blob([compressed.buffer], { type: 'application/octet-stream' });
-
-    this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
-      .then(() => {
-        this.lastSavedTimeStamp = new Date().toLocaleString();
-        this.lastSavedSize = `${compressed.length} bytes`;
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Terrain saved' })
-      })
-      .catch(error => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message })
-      });
+    throw new Error("...TODO...")
+    // TODO let compressed = pako.gzip(new Uint8Array(uint16Array.buffer));
+    // const blob = new Blob([compressed.buffer], { type: 'application/octet-stream' });
+    //
+    // this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
+    //   .then(() => {
+    //     this.lastSavedTimeStamp = new Date().toLocaleString();
+    //     this.lastSavedSize = `${compressed.length} bytes`;
+    //     this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Terrain saved' })
+    //   })
+    //   .catch(error => {
+    //     this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message })
+    //   });
   }
 
   generateMiniMap(canvas: HTMLCanvasElement) {

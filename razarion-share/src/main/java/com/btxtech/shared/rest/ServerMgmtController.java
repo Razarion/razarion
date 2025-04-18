@@ -18,7 +18,7 @@ public interface ServerMgmtController {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("serverstatus")
-    // Enum as return value not working. Not proper JSON. Too many quotation marks.
+        // Enum as return value not working. Not proper JSON. Too many quotation marks.
     String getServerStatus();
 
     @GET

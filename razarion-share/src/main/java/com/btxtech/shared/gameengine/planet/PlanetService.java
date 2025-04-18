@@ -36,33 +36,33 @@ public class PlanetService implements Runnable { // Only available in worker. On
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
     private final Logger logger = Logger.getLogger(PlanetService.class.getName());
 
-    private ExceptionHandler exceptionHandler;
+    private final ExceptionHandler exceptionHandler;
 
-    private InitializeService initializeService;
+    private final InitializeService initializeService;
 
-    private SimpleExecutorService simpleExecutorService;
+    private final SimpleExecutorService simpleExecutorService;
 
-    private PathingService pathingService;
+    private final PathingService pathingService;
 
-    private BaseItemService baseItemService;
+    private final BaseItemService baseItemService;
 
-    private QuestService questService;
+    private final QuestService questService;
 
-    private BoxService boxService;
+    private final BoxService boxService;
 
-    private ProjectileService projectileService;
+    private final ProjectileService projectileService;
 
-    private SyncItemContainerServiceImpl syncItemContainerService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private TerrainService terrainService;
+    private final TerrainService terrainService;
 
-    private ResourceService resourceService;
+    private final ResourceService resourceService;
 
-    private EnergyService energyService;
+    private final EnergyService energyService;
 
-    private SyncService syncService;
+    private final SyncService syncService;
     private boolean pause;
-    private SimpleScheduledFuture scheduledFuture;
+    private final SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
     private final Collection<PlanetTickListener> tickListeners = new ArrayList<>();
     private final PlanetServiceTracker planetServiceTracker = new PlanetServiceTracker();

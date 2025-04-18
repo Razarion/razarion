@@ -1,9 +1,6 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.dto.editor.CollectionReference;
-import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.system.Nullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jsinterop.annotations.JsType;
 
 import java.util.Objects;

@@ -14,8 +14,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -27,13 +27,13 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class GameLogicService {
-    private Logger logger = Logger.getLogger(GameLogicService.class.getName());
+    private final Logger logger = Logger.getLogger(GameLogicService.class.getName());
 
-    private Provider<QuestService> questServiceInstance;
+    private final Provider<QuestService> questServiceInstance;
 
-    private Provider<BotService> botServiceInstance;
+    private final Provider<BotService> botServiceInstance;
 
-    private Provider<GuardingItemService> guardingItemServiceInstance;
+    private final Provider<GuardingItemService> guardingItemServiceInstance;
     private Optional<GameLogicListener> gameLogicListener = Optional.empty();
 
     @Inject
@@ -173,7 +173,7 @@ public class GameLogicService {
 
     public void onBoxPicked(SyncBoxItem box, SyncBaseItem picker, BoxContent boxContent) {
         Integer userId = picker.getBase().getUserId();
-        if(userId == null) {
+        if (userId == null) {
             return;
         }
 
