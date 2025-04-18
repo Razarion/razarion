@@ -9,11 +9,25 @@
     <artifactId>razarion</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>Razarion Parent</name>
+    <name>Razarion parent</name>
+
+    <properties>
+        <gwt.version>2.11.0</gwt.version>
+        <gwt.elemental2.version>1.2.1</gwt.elemental2.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <org.jboss.resteasy.version>6.2.10.Final</org.jboss.resteasy.version>
+        <com.google.dagger.version>2.45</com.google.dagger.version>
+        <org.dominokit.version>1.0.2</org.dominokit.version>
+    </properties>
 
     <modules>
         <module>razarion-share</module>
+        <module>razarion-test-share</module>
         <module>razarion-frontend</module>
+        <module>razarion-client-common</module>
+        <module>razarion-client-worker</module>
+        <module>razarion-ui-service</module>
+        <module>razarion-client</module>
         <module>razarion-server</module>
     </modules>
 

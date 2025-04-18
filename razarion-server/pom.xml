@@ -11,8 +11,7 @@
     <groupId>com.btxtech</groupId>
     <artifactId>razarion-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>razarion-server</name>
-    <description>Razarion server</description>
+    <name>Razarion springboot server</name>
     <url/>
 
     <properties>

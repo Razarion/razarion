@@ -14,8 +14,7 @@
   <artifactId>razarion-frontend</artifactId>
   <packaging>pom</packaging> <!-- Keine Java-Klasse, nur Angular-Code -->
 
-  <name>razarion-frontend</name>
-  <description>Razarion Angular Frontend</description>
+  <name>Razarion angular frontend</name>
 
   <build>
     <plugins>

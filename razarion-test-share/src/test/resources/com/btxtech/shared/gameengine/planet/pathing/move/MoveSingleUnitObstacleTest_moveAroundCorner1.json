@@ -1,0 +1,1426 @@
+{
+  "actualMasterTicks" : [ [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.0,
+        "y" : 102.0
+      },
+      "angle" : 0.0,
+      "velocity" : null,
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.03841106397988,
+        "y" : 101.96799078001678
+      },
+      "angle" : -0.3141592653589793,
+      "velocity" : {
+        "x" : 0.3841106397986879,
+        "y" : -0.32009219983223997
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.1152331919396,
+        "y" : 101.90397234005033
+      },
+      "angle" : -0.6283185307179586,
+      "velocity" : {
+        "x" : 0.7682212795973752,
+        "y" : -0.6401843996644806
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.23046638387922,
+        "y" : 101.80794468010066
+      },
+      "angle" : -0.6947382761967037,
+      "velocity" : {
+        "x" : 1.1523319193960633,
+        "y" : -0.9602765994967204
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.3841106397987,
+        "y" : 101.67990780016777
+      },
+      "angle" : -0.6947382761967043,
+      "velocity" : {
+        "x" : 1.5364425591947504,
+        "y" : -1.2803687993289612
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.5938938977838,
+        "y" : 101.54392624013421
+      },
+      "angle" : -0.5751089770244296,
+      "velocity" : {
+        "x" : 2.0978325798509525,
+        "y" : -1.359815600335537
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.8734753167153,
+        "y" : 101.43514099210736
+      },
+      "angle" : -0.3710750200659837,
+      "velocity" : {
+        "x" : 2.7958141893147763,
+        "y" : -1.087852480268424
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 177.21248282795878,
+        "y" : 101.34811279368589
+      },
+      "angle" : -0.251288291759217,
+      "velocity" : {
+        "x" : 3.390075112435014,
+        "y" : -0.8702819842147277
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 177.60637710224427,
+        "y" : 101.2784902349487
+      },
+      "angle" : -0.1749474569758236,
+      "velocity" : {
+        "x" : 3.938942742854843,
+        "y" : -0.6962255873717709
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 178.0529168289893,
+        "y" : 101.22279218795896
+      },
+      "angle" : -0.1240916685742084,
+      "velocity" : {
+        "x" : 4.465397267450328,
+        "y" : -0.556980469897411
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 178.54895872971366,
+        "y" : 101.1600033933713
+      },
+      "angle" : -0.12591000772021785,
+      "velocity" : {
+        "x" : 4.960419007243525,
+        "y" : -0.6278879458766222
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 179.09460482051045,
+        "y" : 101.09093571932488
+      },
+      "angle" : -0.12591000772021924,
+      "velocity" : {
+        "x" : 5.456460907967876,
+        "y" : -0.6906767404642918
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 179.68985510137966,
+        "y" : 101.01558916581968
+      },
+      "angle" : -0.1259100077202274,
+      "velocity" : {
+        "x" : 5.9525028086922225,
+        "y" : -0.7534655350520034
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 180.33470957232132,
+        "y" : 100.93396373285572
+      },
+      "angle" : -0.12591000772022687,
+      "velocity" : {
+        "x" : 6.448544709416575,
+        "y" : -0.8162543296396672
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 180.9420114099173,
+        "y" : 100.58584812267351
+      },
+      "angle" : -0.4400692730792066,
+      "velocity" : {
+        "x" : 6.0730183759599585,
+        "y" : -3.48115610182202
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 181.45450772507206,
+        "y" : 100.0382647710705
+      },
+      "angle" : -0.7542285384381859,
+      "velocity" : {
+        "x" : 5.124963151547632,
+        "y" : -5.475833516030137
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 181.69846989300837,
+        "y" : 99.27637077541506
+      },
+      "angle" : -1.0683878037971652,
+      "velocity" : {
+        "x" : 2.4396216793630345,
+        "y" : -7.618939956554447
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 181.81008670249437,
+        "y" : 98.4337310612785
+      },
+      "angle" : -1.3825470691561446,
+      "velocity" : {
+        "x" : 1.116168094860002,
+        "y" : -8.426397141365733
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 181.928269206656,
+        "y" : 97.54152430513389
+      },
+      "angle" : -1.4391020929197362,
+      "velocity" : {
+        "x" : 1.181825041616417,
+        "y" : -8.922067561446077
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 182.0,
+        "y" : 97.0
+      },
+      "angle" : -1.4391020929197362,
+      "velocity" : null,
+      "wayPositions" : null
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ] ],
+  "actualSlaveTicks" : [ [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.0,
+        "y" : 102.0
+      },
+      "angle" : 0.0,
+      "velocity" : null,
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.03841106397988,
+        "y" : 101.96799078001678
+      },
+      "angle" : -0.3141592653589793,
+      "velocity" : {
+        "x" : 0.3841106397986879,
+        "y" : -0.32009219983223997
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.1152331919396,
+        "y" : 101.90397234005033
+      },
+      "angle" : -0.6283185307179586,
+      "velocity" : {
+        "x" : 0.7682212795973752,
+        "y" : -0.6401843996644806
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.23046638387922,
+        "y" : 101.80794468010066
+      },
+      "angle" : -0.6947382761967037,
+      "velocity" : {
+        "x" : 1.1523319193960633,
+        "y" : -0.9602765994967204
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.3841106397987,
+        "y" : 101.67990780016777
+      },
+      "angle" : -0.6947382761967043,
+      "velocity" : {
+        "x" : 1.5364425591947504,
+        "y" : -1.2803687993289612
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.5938938977838,
+        "y" : 101.54392624013421
+      },
+      "angle" : -0.5751089770244296,
+      "velocity" : {
+        "x" : 2.0978325798509525,
+        "y" : -1.359815600335537
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 176.8734753167153,
+        "y" : 101.43514099210736
+      },
+      "angle" : -0.3710750200659837,
+      "velocity" : {
+        "x" : 2.7958141893147763,
+        "y" : -1.087852480268424
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 177.21248282795878,
+        "y" : 101.34811279368589
+      },
+      "angle" : -0.251288291759217,
+      "velocity" : {
+        "x" : 3.390075112435014,
+        "y" : -0.8702819842147277
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 177.60637710224427,
+        "y" : 101.2784902349487
+      },
+      "angle" : -0.1749474569758236,
+      "velocity" : {
+        "x" : 3.938942742854843,
+        "y" : -0.6962255873717709
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 178.0529168289893,
+        "y" : 101.22279218795896
+      },
+      "angle" : -0.1240916685742084,
+      "velocity" : {
+        "x" : 4.465397267450328,
+        "y" : -0.556980469897411
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 178.54895872971366,
+        "y" : 101.1600033933713
+      },
+      "angle" : -0.12591000772021785,
+      "velocity" : {
+        "x" : 4.960419007243525,
+        "y" : -0.6278879458766222
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 179.09460482051045,
+        "y" : 101.09093571932488
+      },
+      "angle" : -0.12591000772021924,
+      "velocity" : {
+        "x" : 5.456460907967876,
+        "y" : -0.6906767404642918
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 179.68985510137966,
+        "y" : 101.01558916581968
+      },
+      "angle" : -0.1259100077202274,
+      "velocity" : {
+        "x" : 5.9525028086922225,
+        "y" : -0.7534655350520034
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 180.33470957232132,
+        "y" : 100.93396373285572
+      },
+      "angle" : -0.12591000772022687,
+      "velocity" : {
+        "x" : 6.448544709416575,
+        "y" : -0.8162543296396672
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 180.9420114099173,
+        "y" : 100.58584812267351
+      },
+      "angle" : -0.4400692730792066,
+      "velocity" : {
+        "x" : 6.0730183759599585,
+        "y" : -3.48115610182202
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 181.45450772507206,
+        "y" : 100.0382647710705
+      },
+      "angle" : -0.7542285384381859,
+      "velocity" : {
+        "x" : 5.124963151547632,
+        "y" : -5.475833516030137
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 181.69846989300837,
+        "y" : 99.27637077541506
+      },
+      "angle" : -1.0683878037971652,
+      "velocity" : {
+        "x" : 2.4396216793630345,
+        "y" : -7.618939956554447
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 181.81008670249437,
+        "y" : 98.4337310612785
+      },
+      "angle" : -1.3825470691561446,
+      "velocity" : {
+        "x" : 1.116168094860002,
+        "y" : -8.426397141365733
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 181.928269206656,
+        "y" : 97.54152430513389
+      },
+      "angle" : -1.4391020929197362,
+      "velocity" : {
+        "x" : 1.181825041616417,
+        "y" : -8.922067561446077
+      },
+      "wayPositions" : [ {
+        "x" : 182.0,
+        "y" : 97.0
+      } ]
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ], [ {
+    "id" : 1,
+    "itemTypeId" : 11,
+    "syncPhysicalAreaInfo" : {
+      "position" : {
+        "x" : 182.0,
+        "y" : 97.0
+      },
+      "angle" : -1.4391020929197362,
+      "velocity" : null,
+      "wayPositions" : null
+    },
+    "baseId" : 2,
+    "toBeBuildPosition" : null,
+    "toBeBuiltTypeId" : null,
+    "currentBuildup" : null,
+    "factoryBuildupProgress" : null,
+    "target" : null,
+    "health" : 1.0,
+    "buildup" : 1.0,
+    "followTarget" : null,
+    "reloadProgress" : 0.0,
+    "spawnPoint" : null,
+    "rallyPoint" : null,
+    "containedItems" : null,
+    "targetContainer" : null,
+    "containedIn" : null,
+    "unloadPos" : null,
+    "spawnProgress" : 1.0,
+    "syncBoxItemId" : null
+  } ] ]
+}

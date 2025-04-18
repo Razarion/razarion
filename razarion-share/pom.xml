@@ -9,7 +9,7 @@
     <artifactId>razarion-share</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Razarion shared Code</name>
+    <name>Razarion shared code</name>
 
     <properties>
         <gwt.version>2.11.0</gwt.version>
