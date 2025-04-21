@@ -1,29 +1,31 @@
-import { Component, Input, Type } from "@angular/core";
-import { EditorModel, EditorPanel, GenericPropertyEditorModel } from "../editor-model";
-import { MainCockpitComponent } from "../../game/cockpit/main/main-cockpit.component";
-import { GameComponent } from "../../game/game.component";
-import { ServerPanelComponent } from "../server-panel/server-panel.component";
-import { BackupRestoreComponent } from "../backup-restore/backup-restore.component";
-import { ImageEditorComponent } from "../image-editor/image-editor.component";
-import { BabylonRenderServiceAccessImpl } from "../../game/renderer/babylon-render-service-access-impl.service";
-import { ServerQuestEditorComponent } from "../server-quest-editor/server-quest-editor.component";
-import { ServerBotEditorComponent } from "../server-bot-editor/server-bot-editor.component";
-import { ServerStartRegionComponent } from "../server-start-region/server-start-region.component";
-import { ServerResourceRegionComponent } from "../server-resource-region/server-resource-region.component";
-import { EditorService } from "../editor-service";
-import { LevelEditorComponent } from "../crud-editors/level-editor/level-editor.component";
-import { GeneratedCrudContainerComponent } from "../crud-editors/crud-container/generated-crud-container.component";
-import { BaseItemTypeEditorComponent } from "../crud-editors/base-item-type-editor/base-item-type-editor.component";
-import { PlanetEditorComponent } from "../crud-editors/planet-editor/planet-editor.component";
-import { BaseMgmtComponent } from "../base-mgmt/base-mgmt.component";
-import { BoxItemTypeEditorComponent } from "../crud-editors/box-item-type-editor/box-item-type-editor.component";
-import { InventoryItemEditorComponent } from "../crud-editors/inventory-item-editor/inventory-item-editor.component";
-import { BoxRegionComponent } from "../box-region/box-region.component";
-import { UserMgmtComponent } from "../user-mgmt/user-mgmt.component";
-import { TerrainEditorComponent } from "../terrain-editor/terrain-editor.component";
-import { ParticleSystemEditorComponent } from "../crud-editors/particle-system-editor/particle-system-editor.component";
-import { BabylonMaterialEditorComponent } from "../crud-editors/babylon-material-editor/babylon-material-editor.component";
-import { PropertyEditorComponent } from "../property-editor/property-editor.component";
+import {Component, Input, Type} from "@angular/core";
+import {EditorModel, EditorPanel} from "../editor-model";
+import {MainCockpitComponent} from "../../game/cockpit/main/main-cockpit.component";
+import {GameComponent} from "../../game/game.component";
+import {ServerPanelComponent} from "../server-panel/server-panel.component";
+import {BackupRestoreComponent} from "../backup-restore/backup-restore.component";
+import {ImageEditorComponent} from "../image-editor/image-editor.component";
+import {BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
+import {ServerQuestEditorComponent} from "../server-quest-editor/server-quest-editor.component";
+import {ServerBotEditorComponent} from "../server-bot-editor/server-bot-editor.component";
+import {ServerStartRegionComponent} from "../server-start-region/server-start-region.component";
+import {ServerResourceRegionComponent} from "../server-resource-region/server-resource-region.component";
+import {EditorService} from "../editor-service";
+import {LevelEditorComponent} from "../crud-editors/level-editor/level-editor.component";
+import {GeneratedCrudContainerComponent} from "../crud-editors/crud-container/generated-crud-container.component";
+import {BaseItemTypeEditorComponent} from "../crud-editors/base-item-type-editor/base-item-type-editor.component";
+import {PlanetEditorComponent} from "../crud-editors/planet-editor/planet-editor.component";
+import {BaseMgmtComponent} from "../base-mgmt/base-mgmt.component";
+import {BoxItemTypeEditorComponent} from "../crud-editors/box-item-type-editor/box-item-type-editor.component";
+import {InventoryItemEditorComponent} from "../crud-editors/inventory-item-editor/inventory-item-editor.component";
+import {BoxRegionComponent} from "../box-region/box-region.component";
+import {UserMgmtComponent} from "../user-mgmt/user-mgmt.component";
+import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component";
+import {ParticleSystemEditorComponent} from "../crud-editors/particle-system-editor/particle-system-editor.component";
+import {
+  BabylonMaterialEditorComponent
+} from "../crud-editors/babylon-material-editor/babylon-material-editor.component";
+import {PropertyEditorComponent} from "../property-editor/property-editor.component";
 import {GltfEditorComponent} from "../crud-editors/gltf-editor/gltf-editor.component";
 import {TerrainObjectEditorComponent} from "../crud-editors/terrain-object-editor/terrain-object-editor.component";
 import {GroundEditorComponent} from "../crud-editors/ground-editor/ground-editor.component";
@@ -34,6 +36,7 @@ import {Button} from 'primeng/button';
 import {KeyValuePipe, NgForOf} from '@angular/common';
 import {Divider} from 'primeng/divider';
 import {Panel} from 'primeng/panel';
+import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
 
 @Component({
   selector: 'editor-dialog',
@@ -55,7 +58,8 @@ export class EditorDialogComponent {
   mainCockpitComponent!: MainCockpitComponent;
 
   constructor(private renderService: BabylonRenderServiceAccessImpl,
-    private editorService: EditorService) {
+              private cockpitDisplayService: CockpitDisplayService,
+              private editorService: EditorService) {
     this.editors.set("Server Control", ServerPanelComponent)
     this.editors.set("Backup Restore", BackupRestoreComponent)
   }
@@ -133,7 +137,7 @@ export class EditorDialogComponent {
 
   openBabylonInspector() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.questCockpitContainer.showCockpit = false;
+    this.cockpitDisplayService.showQuestCockpit = false;
     this.renderService.showInspector();
   }
 

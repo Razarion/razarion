@@ -21,6 +21,7 @@ import {
   InventoryTypeService,
   ItemTypeService,
   NativeSyncBaseItemTickInfo,
+  OwnItemCockpit,
   PhysicalAreaConfig,
   PlanetConfig,
   PlayerBaseDto,
@@ -457,22 +458,25 @@ export class GameMockService {
       this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
       this.showMainCockpit();
 
-      this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar(this.QUEST_CONFIG, true)
+      let visible = false;
+      setInterval(() => {
+        if (visible) {
+          this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOwnSingleType(1, new class implements OwnItemCockpit {
+            buildupItemInfos = null;
+            imageUrl = "/xxxxx";
+            itemTypeDescr = "Builds Units";
+            itemTypeName = "Factory";
 
-      // this.showQuestSideBar(this.questCockpitContainer);
-      // this.onQuestProgress(this.questCockpitContainer);
-      // let questDialogVisible = false;
-      // setInterval(() => {
-      //   if (questDialogVisible) {
-      //     this.showQuestSideBar(this.questCockpitContainer);
-      //     this.onQuestProgress(this.questCockpitContainer);
-      //   } else {
-      //     this.hideQuestSideBar(this.questCockpitContainer);
-      //   }
-      //   questDialogVisible = !questDialogVisible;
-      // }, 5000);
-
-
+            sellHandler(): void {
+            }
+          });
+          this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar(this.QUEST_CONFIG, true)
+        } else {
+          this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.dispose();
+          this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar(null, true)
+        }
+        visible = !visible;
+      }, 1000);
     }, 1000);
   }
 

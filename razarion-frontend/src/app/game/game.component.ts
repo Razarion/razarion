@@ -16,6 +16,7 @@ import {ItemCockpitComponent} from './cockpit/item/item-cockpit.component';
 import {Dialog} from 'primeng/dialog';
 import {EditorDialogComponent} from '../editor/editor-dialog/editor-dialog.component';
 import {DrawerModule} from 'primeng/drawer';
+import {CockpitDisplayService} from './cockpit/cockpit-display.service';
 
 
 @Component({
@@ -50,10 +51,10 @@ export class GameComponent implements OnInit {
   editorModels: EditorModel[] = [];
   modelDialogPresenter: ModelDialogPresenterImpl;
   showInventory = false;
-  showUnkock = false;
-
+  showUnlock = false;
 
   constructor(private gwtAngularService: GwtAngularService,
+              public cockpitDisplayService: CockpitDisplayService,
               private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
               private gameMockService: GameMockService,
               private actionService: ActionService,
@@ -129,12 +130,12 @@ export class GameComponent implements OnInit {
   }
 
   openUnlock() {
-    this.showUnkock = true;
+    this.showUnlock = true;
   }
 
   addEditorModel(editorModel: EditorModel) {
     this.editorModels.push(editorModel);
-    this.questCockpitContainer.showCockpit = false;
+    this.cockpitDisplayService.showQuestCockpit = false;
   }
 
   removeEditorModel(editorModel: EditorModel) {

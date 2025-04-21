@@ -1,9 +1,9 @@
-﻿import { Component, NgZone } from '@angular/core';
-import { MainCockpit, RadarState, Rectangle } from "../../../gwtangular/GwtAngularFacade";
-import { GameComponent } from '../../game.component';
-import { Nullable, Observer, PointerEventTypes, PointerInfo } from '@babylonjs/core';
-import { BabylonRenderServiceAccessImpl } from '../../renderer/babylon-render-service-access-impl.service';
-import { Router } from '@angular/router';
+﻿import {Component, NgZone} from '@angular/core';
+import {MainCockpit, RadarState, Rectangle} from "../../../gwtangular/GwtAngularFacade";
+import {GameComponent} from '../../game.component';
+import {Nullable, Observer, PointerEventTypes, PointerInfo} from '@babylonjs/core';
+import {BabylonRenderServiceAccessImpl} from '../../renderer/babylon-render-service-access-impl.service';
+import {Router} from '@angular/router';
 import {Button} from 'primeng/button';
 import {RadarComponent} from './radar/radar.component';
 import {RadarNoPowerComponent} from './radar/radar-no-power.component';
@@ -12,6 +12,7 @@ import {NgClass, NgIf} from '@angular/common';
 import {Badge} from 'primeng/badge';
 import {Knob} from 'primeng/knob';
 import {FormsModule} from '@angular/forms';
+import {CockpitDisplayService} from '../cockpit-display.service';
 
 
 @Component({
@@ -31,7 +32,6 @@ import {FormsModule} from '@angular/forms';
   styleUrls: ['main-cockpit.component.scss']
 })
 export class MainCockpitComponent implements MainCockpit {
-  showCockpit: boolean = false;
   admin: boolean = false;
   editorDialog: boolean = false;
   showCursorPosition: boolean = false;
@@ -52,21 +52,22 @@ export class MainCockpitComponent implements MainCockpit {
   blinkUnlockEnabled = false;
 
   constructor(private zone: NgZone,
-    private gameComponent: GameComponent,
-    private renderService: BabylonRenderServiceAccessImpl,
-    private router: Router) {
+              private cockpitDisplayService: CockpitDisplayService,
+              private gameComponent: GameComponent,
+              private renderService: BabylonRenderServiceAccessImpl,
+              private router: Router) {
   }
 
   show(admin: boolean): void {
     this.zone.run(() => {
       this.admin = admin;
-      this.showCockpit = true;
+      this.cockpitDisplayService.showMainCockpit = true;
     });
   }
 
   hide(): void {
     this.zone.run(() => {
-      this.showCockpit = false;
+      this.cockpitDisplayService.showMainCockpit = false;
     });
   }
 
@@ -141,13 +142,13 @@ export class MainCockpitComponent implements MainCockpit {
     if (this.showCursorPosition) {
       this.cursorPosition = " x:---.-- y:---.-- height:---.--";
       this.mouseObservable = this.renderService.getScene().onPointerObservable.add((pointerInfo) => {
-        if (pointerInfo.type === PointerEventTypes.POINTERMOVE) {
-          let terrainPisckInfo = this.renderService.setupTerrainPickPoint();
-          if (terrainPisckInfo.pickedPoint) {
-            this.cursorPosition = ` x: ${terrainPisckInfo.pickedPoint.x.toFixed(2)}, y: ${terrainPisckInfo.pickedPoint.z.toFixed(2)}, height: ${terrainPisckInfo.pickedPoint.y.toFixed(2)}`;
+          if (pointerInfo.type === PointerEventTypes.POINTERMOVE) {
+            let terrainPisckInfo = this.renderService.setupTerrainPickPoint();
+            if (terrainPisckInfo.pickedPoint) {
+              this.cursorPosition = ` x: ${terrainPisckInfo.pickedPoint.x.toFixed(2)}, y: ${terrainPisckInfo.pickedPoint.z.toFixed(2)}, height: ${terrainPisckInfo.pickedPoint.y.toFixed(2)}`;
+            }
           }
         }
-      }
       );
     } else {
       if (this.mouseObservable) {

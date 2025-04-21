@@ -1,4 +1,4 @@
-import { Component, NgZone } from "@angular/core";
+import {Component, NgZone} from "@angular/core";
 import {
   ConditionConfig,
   QuestCockpit,
@@ -6,16 +6,16 @@ import {
   QuestDescriptionConfig,
   QuestProgressInfo
 } from "../../../gwtangular/GwtAngularFacade";
-import { GwtHelper } from "../../../gwtangular/GwtHelper";
-import { GwtAngularService } from "../../../gwtangular/GwtAngularService";
-import { ConditionTrigger } from "src/app/generated/razarion-share";
-import { QuestDialogComponent } from "./quest-dialog/quest-dialog.component";
-import {InputSwitch} from 'primeng/inputswitch';
+import {GwtHelper} from "../../../gwtangular/GwtHelper";
+import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
+import {ConditionTrigger} from "src/app/generated/razarion-share";
+import {QuestDialogComponent} from "./quest-dialog/quest-dialog.component";
 import {Dialog} from 'primeng/dialog';
 import {CommonModule} from '@angular/common';
 import {Button} from 'primeng/button';
 import {ToggleSwitchModule} from 'primeng/toggleswitch';
 import {FormsModule} from '@angular/forms';
+import {CockpitDisplayService} from '../cockpit-display.service';
 
 @Component({
   selector: 'quest-cockpit',
@@ -33,7 +33,6 @@ import {FormsModule} from '@angular/forms';
 export class QuestCockpitComponent implements QuestCockpit {
   title?: string
   customRow?: string
-  showCockpit: boolean = false;
   progressRows: { text: string, done: boolean }[] = [];
   timeRow?: string = "";
   showQuestSelectionButton: boolean = false;
@@ -43,7 +42,9 @@ export class QuestCockpitComponent implements QuestCockpit {
   private conditionConfig?: ConditionConfig;
   private questProgressInfo?: QuestProgressInfo;
 
-  constructor(private gwtAngularService: GwtAngularService, private zone: NgZone) {
+  constructor(private gwtAngularService: GwtAngularService,
+              private cockpitDisplayService: CockpitDisplayService,
+              private zone: NgZone) {
   }
 
   showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, showQuestSelectionButton: boolean): void {
@@ -57,8 +58,8 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.setupCusstomDescription();
         this.setupProgress();
         this.showQuestSelectionButton = showQuestSelectionButton;
-        this.showCockpit = !!questDescriptionConfig;
-        if (!this.showCockpit) {
+        this.cockpitDisplayService.showQuestCockpit = !!questDescriptionConfig;
+        if (!questDescriptionConfig) {
           this.showQuestDialog = false;
         }
 
@@ -167,7 +168,7 @@ export class QuestCockpitComponent implements QuestCockpit {
       }
       default: {
         console.warn(`Unknown ConditionTrigger ${this.conditionConfig.getConditionTrigger()}`)
-        this.progressRows.push({ text: `???`, done: false })
+        this.progressRows.push({text: `???`, done: false})
       }
     }
     if (this.conditionConfig.getComparisonConfig().getTimeSeconds()) {
@@ -196,9 +197,9 @@ export class QuestCockpitComponent implements QuestCockpit {
     } else if (this.conditionConfig?.getComparisonConfig().toTypeCountAngular()?.length) {
       this.conditionConfig.getComparisonConfig().toTypeCountAngular().forEach((itemTypeIdCount) => {
         let actualCount = this.findCurrentItemTypeCount(itemTypeIdCount[0]);
-        let itemTypeI18nName =this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(GwtHelper.gwtIssueNumber(itemTypeIdCount[0])).getI18nName();
+        let itemTypeI18nName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(GwtHelper.gwtIssueNumber(itemTypeIdCount[0])).getI18nName();
         let itemTypeName = "???";
-        if(itemTypeI18nName) {
+        if (itemTypeI18nName) {
           itemTypeName = itemTypeI18nName.getString();
         }
         this.progressRows.push({
@@ -226,7 +227,7 @@ export class QuestCockpitComponent implements QuestCockpit {
   }
 
   static conditionTriggerToTitle(conditionTrigger: ConditionTrigger | null): string | undefined {
-    if(!conditionTrigger) {
+    if (!conditionTrigger) {
       return "???Undefined???"
     }
     switch (conditionTrigger) {

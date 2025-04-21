@@ -9,6 +9,7 @@ import {
 import {NgIf} from '@angular/common';
 import {Carousel} from 'primeng/carousel';
 import {Button} from 'primeng/button';
+import {CockpitDisplayService} from '../cockpit-display.service';
 
 
 @Component({
@@ -22,18 +23,18 @@ import {Button} from 'primeng/button';
   ]
 })
 export class ItemCockpitComponent implements ItemCockpitFrontend {
-  showCockpit: boolean = false;
   ownItemCockpit?: OwnItemCockpit;
   ownMultipleIteCockpits?: OwnMultipleIteCockpit[];
   otherItemCockpit?: OtherItemCockpit;
   count?: number;
 
-  constructor(private zone: NgZone) {
+  constructor(private zone: NgZone,
+              private cockpitDisplayService: CockpitDisplayService) {
   }
 
   displayOwnSingleType(count: number, ownItemCockpit: OwnItemCockpit): void {
-    setTimeout(()=> { // p-carousel strange behavior with this.zone.run()
-      this.showCockpit = true;
+    setTimeout(() => { // p-carousel strange behavior with this.zone.run()
+      this.cockpitDisplayService.showItemCockpit = true;
       this.ownItemCockpit = ownItemCockpit;
       this.ownMultipleIteCockpits = undefined;
       this.otherItemCockpit = undefined;
@@ -55,7 +56,7 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
 
   displayOwnMultipleItemTypes(ownMultipleIteCockpits: OwnMultipleIteCockpit[]): void {
     this.zone.run(() => {
-      this.showCockpit = true;
+      this.cockpitDisplayService.showItemCockpit = true;
       this.ownItemCockpit = undefined;
       this.ownMultipleIteCockpits = ownMultipleIteCockpits;
       this.otherItemCockpit = undefined;
@@ -64,7 +65,7 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
 
   displayOtherItemType(otherItemCockpit: OtherItemCockpit): void {
     this.zone.run(() => {
-      this.showCockpit = true;
+      this.cockpitDisplayService.showItemCockpit = true;
       this.ownItemCockpit = undefined;
       this.ownMultipleIteCockpits = undefined;
       this.otherItemCockpit = otherItemCockpit;
@@ -73,7 +74,7 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
 
   dispose(): void {
     this.zone.run(() => {
-      this.showCockpit = false;
+      this.cockpitDisplayService.showItemCockpit = false;
       this.ownItemCockpit = undefined;
       this.ownMultipleIteCockpits = undefined;
       this.otherItemCockpit = undefined;
