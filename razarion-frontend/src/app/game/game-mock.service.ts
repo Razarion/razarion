@@ -1,11 +1,13 @@
 import {Injectable} from "@angular/core";
 import {
   Alarm,
+  AngularZoneRunner,
   BabylonDecal,
   BabylonTerrainTile,
   BaseItemType,
   BaseItemUiService,
   BuilderType,
+  BuildupItemCockpit,
   Character,
   ComparisonConfig,
   ConditionConfig,
@@ -445,39 +447,54 @@ export class GameMockService {
   }
 
   private simulateStartup() {
-    setTimeout(() => {
-      this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(25);
-    }, 0.25);
-    setTimeout(() => {
-      this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(50);
-    }, 0.5);
-    setTimeout(() => {
-      this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(100);
-    }, 0.75);
+    // setTimeout(() => {
+    //   this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(25);
+    // }, 0.25);
+    // setTimeout(() => {
+    //   this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(50);
+    // }, 0.5);
+    // setTimeout(() => {
+    //   this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(100);
+    // }, 0.75);
     setTimeout(() => {
       this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
       this.showMainCockpit();
 
-      let visible = false;
-      setInterval(() => {
-        if (visible) {
-          this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOwnSingleType(1, new class implements OwnItemCockpit {
-            buildupItemInfos = null;
-            imageUrl = "/xxxxx";
-            itemTypeDescr = "Builds Units";
-            itemTypeName = "Factory";
+      // Set background
+      const element = document.querySelector('.game-main') as HTMLElement;
+      if (element) {
+        element.style.backgroundImage = `url(${"/cockpit/MockGameBackground.jpg"})`;
+        element.style.backgroundSize = 'cover';
+        element.style.backgroundPosition = 'center';
+      }
 
-            sellHandler(): void {
-            }
-          });
-          this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar(this.QUEST_CONFIG, true)
-        } else {
-          this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.dispose();
-          this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar(null, true)
+      this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOwnSingleType(1, new class implements OwnItemCockpit {
+        imageUrl = "/xxxxx";
+        itemTypeDescr = "Builds Units";
+        itemTypeName = "Factory";
+        buildupItemInfos = [new class implements BuildupItemCockpit {
+          imageUrl = "/xxxxx";
+          itemTypeName = "Builder";
+          price = 12;
+          itemCount = 13;
+          itemLimit = 14;
+          enabled = true;
+          buildLimitReached = false;
+          buildHouseSpaceReached = false;
+          buildNoMoney = false;
+          progress = 1;
+
+          setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void {
+          }
+
+          onBuild(): void {
+          }
+        }];
+
+        sellHandler(): void {
         }
-        visible = !visible;
-      }, 1000);
-    }, 1000);
+      });
+    }, 10);
   }
 
   private showMainCockpit() {

@@ -27,8 +27,8 @@ import jsinterop.annotations.JsType;
 public abstract class ItemType implements Config {
     private int id;
     private String internalName;
-    private I18nString i18nName;
-    private I18nString i18nDescription;
+    private String name;
+    private String description;
     private Integer model3DId;
     private Integer thumbnail;
 
@@ -51,20 +51,20 @@ public abstract class ItemType implements Config {
         this.internalName = internalName;
     }
 
-    public I18nString getI18nName() {
-        return i18nName;
+    public String getName() {
+        return name;
     }
 
-    public void setI18nName(I18nString i18nName) {
-        this.i18nName = i18nName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public I18nString getI18nDescription() {
-        return i18nDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setI18nDescription(I18nString i18nDescription) {
-        this.i18nDescription = i18nDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public @Nullable Integer getModel3DId() {
@@ -93,13 +93,13 @@ public abstract class ItemType implements Config {
         return this;
     }
 
-    public ItemType i18nName(I18nString i18nName) {
-        setI18nName(i18nName);
+    public ItemType i18nName(String i18nName) {
+        setName(i18nName);
         return this;
     }
 
-    public ItemType i18nDescription(I18nString i18nDescription) {
-        setI18nDescription(i18nDescription);
+    public ItemType i18nDescription(String i18nDescription) {
+        setDescription(i18nDescription);
         return this;
     }
 

@@ -6,14 +6,14 @@
     <div class="mr-2">
       <div class="flex flex-col" *ngIf="ownItemCockpit">
         <div class="mb-2" [style]="{fontSize: 'larger', color: '#64B5F6'}">
-          {{ownItemCockpit.itemTypeName}}
+          {{ ownItemCockpit.itemTypeName }}
         </div>
         <div class="mb-2">
-          {{ownItemCockpit.itemTypeDescr}}
+          {{ ownItemCockpit.itemTypeDescr }}
         </div>
         <div class="mb-2">
           <div *ngIf="count && count > 1">
-            {{count}}
+            {{ count }}
           </div>
         </div>
       </div>
@@ -26,12 +26,12 @@
     <hr>
     <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="3" [numScroll]="1"
                 styleClass="buildup-carousel">
-      <ng-template let-buildupItemCockpit pTemplate="item">
+      <ng-template let-buildupItemCockpit #item>
         <div class="flex flex-col" [style]="{padding: '0 1px 0 1px'}">
           <div class="flex">
             <button class='item-cockpit-buildup-button'
                     (click)="buildupItemCockpit.onBuild()"
-                    title="{{buildupItemCockpit.tooltip}}"
+                    [title]="buildTooltip(buildupItemCockpit)"
                     [disabled]="!buildupItemCockpit.enabled">
               <div *ngIf="!buildupItemCockpit.enabled" class='item-cockpit-buildup-disabled'>
               </div>
@@ -39,12 +39,12 @@
                    style="position: absolute;top: 0; left: 0; width: 40px; height: 40px"
                    alt="buildupItemCockpit.imageUrl">
               <span class="item-cockpit-buildup-limit-label">
-                {{buildupItemCockpit.itemCount}}/{{buildupItemCockpit.itemLimit}}
+                {{ buildupItemCockpit.itemCount }}/{{ buildupItemCockpit.itemLimit }}
               </span>
             </button>
           </div>
           <div class="flex">
-            {{buildupItemCockpit.price}}
+            {{ buildupItemCockpit.price }}
           </div>
         </div>
       </ng-template>
@@ -58,15 +58,15 @@
     <div class="flex flex-col" [style]="{padding: '0 1px 0 1px'}">
       <div class="flex">
         <button class="item-cockpit-multiple-button"
-                  (click)="ownMultipleIteCockpit.onSelect()"
-                  title="{{ownMultipleIteCockpit.tooltip}}">
+                (click)="ownMultipleIteCockpit.onSelect()"
+                title="{{ownMultipleIteCockpit.tooltip}}">
           <img src="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}"
                style="width: 40px; height: 40px"
                alt="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}">
         </button>
       </div>
       <div class="flex">
-        {{ownMultipleIteCockpit.count}}
+        {{ ownMultipleIteCockpit.count }}
       </div>
     </div>
   </ng-template>
@@ -77,18 +77,18 @@
     <img src="{{otherItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{otherItemCockpit.itemTypeName}}">
   </div>
   <div class="mb-2">
-    Name: {{otherItemCockpit.itemTypeName}}
+    Name: {{ otherItemCockpit.itemTypeName }}
   </div>
   <div class="mb-2">
-    Descr: {{otherItemCockpit.itemTypeDescr}}
+    Descr: {{ otherItemCockpit.itemTypeDescr }}
   </div>
   <div class="mb-2" *ngIf="otherItemCockpit.baseName">
-    Base: {{otherItemCockpit.baseName}}
+    Base: {{ otherItemCockpit.baseName }}
   </div>
   <div class="mb-2" *ngIf="otherItemCockpit.baseName">
-    Type: {{otherItemCockpit.type}}
+    Type: {{ otherItemCockpit.type }}
   </div>
   <div class="mb-2" *ngIf="otherItemCockpit.baseName">
-    Friend: {{otherItemCockpit.friend}}
+    Friend: {{ otherItemCockpit.friend }}
   </div>
 </div>

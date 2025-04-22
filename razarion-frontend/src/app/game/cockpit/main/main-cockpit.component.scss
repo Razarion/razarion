@@ -1,4 +1,9 @@
-﻿.cockpit-element {
+﻿:host {
+  display: block;
+  background-color: black;
+}
+
+.cockpit-element {
     border: 1px solid #150d18;
     padding: 3px;
     margin-bottom: 1px;

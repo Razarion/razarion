@@ -523,12 +523,15 @@ export interface OwnItemCockpit {
 
 export interface BuildupItemCockpit {
   imageUrl: string;
+  itemTypeName: string;
   price: number;
   itemCount: number;
   itemLimit: number;
   enabled: boolean;
-  tooltip: string;
   progress: any;
+  buildLimitReached: boolean;
+  buildHouseSpaceReached: boolean;
+  buildNoMoney: boolean;
 
   onBuild(): void;
 
@@ -572,7 +575,6 @@ export interface AngularZoneRunner {
 export interface OwnMultipleIteCockpit {
   ownItemCockpit: OwnItemCockpit;
   count: number;
-  tooltip: string;
 
   onSelect(): void;
 }

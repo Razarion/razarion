@@ -12,8 +12,18 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderColumn;
+import jakarta.persistence.Table;
 
-import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +32,8 @@ import static com.btxtech.server.service.PersistenceUtil.extractId;
 @Entity
 @Table(name = "BASE_ITEM_TYPE")
 public class BaseItemTypeEntity extends BaseEntity {
+    private String name;
+    private String description;
     private double radius;
     private boolean fixVerticalNorm;
     @Enumerated(EnumType.STRING)
@@ -87,10 +99,11 @@ public class BaseItemTypeEntity extends BaseEntity {
     @JoinColumn
     private ParticleSystemEntity explosionParticleSystem;
 
-    
 
     public BaseItemType toBaseItemType() {
         BaseItemType baseItemType = new BaseItemType()
+                .name(name)
+                .description(description)
                 .price(price)
                 .xpOnKilling(xpOnKilling)
                 .consumingHouseSpace(consumingHouseSpace)
@@ -164,11 +177,13 @@ public class BaseItemTypeEntity extends BaseEntity {
         return baseItemType;
     }
 
-    public void fromBaseItemType(BaseItemType baseItemType, 
-                                 BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, 
-                                 BoxItemTypeCrudPersistence boxItemTypeCrudPersistence, 
+    public void fromBaseItemType(BaseItemType baseItemType,
+                                 BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
+                                 BoxItemTypeCrudPersistence boxItemTypeCrudPersistence,
                                  AudioPersistence audioPersistence,
                                  ParticleSystemService particleSystemCrudPersistence) {
+        name = baseItemType.getName();
+        description = baseItemType.getDescription();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
         fixVerticalNorm = baseItemType.getPhysicalAreaConfig().isFixVerticalNorm();
         terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();

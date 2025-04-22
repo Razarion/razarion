@@ -7,11 +7,15 @@ import jsinterop.annotations.JsType;
 @JsType
 public abstract class BuildupItemCockpit {
     public String imageUrl;
+    public String itemTypeName;
     public int price;
     public int itemCount;
     public int itemLimit;
     public boolean enabled;
-    public String tooltip;
+    public boolean buildLimitReached;
+    public boolean buildHouseSpaceReached;
+    public boolean buildNoMoney;
+
     @JsIgnore
     public AngularZoneRunner angularZoneRunner;
     public Object progress;

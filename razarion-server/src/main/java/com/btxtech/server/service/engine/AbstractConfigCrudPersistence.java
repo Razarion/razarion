@@ -3,6 +3,7 @@ package com.btxtech.server.service.engine;
 import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.shared.dto.Config;
+import com.btxtech.shared.dto.ObjectNameId;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -58,6 +59,11 @@ public abstract class AbstractConfigCrudPersistence<C extends Config, E extends 
                 .stream()
                 .map(this::toConfig)
                 .collect(Collectors.toList());
+    }
+
+    public ObjectNameId getObjectNameId(int id) {
+        E e = getEntity(id);
+        return new ObjectNameId(e.getId(), e.getInternalName());
     }
 
     protected ServiceProviderService getServiceProviderService() {

@@ -1,6 +1,7 @@
 ﻿import {Component, NgZone} from '@angular/core';
 import {
   AngularZoneRunner,
+  BuildupItemCockpit,
   ItemCockpitFrontend,
   OtherItemCockpit,
   OwnItemCockpit,
@@ -79,5 +80,17 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
       this.ownMultipleIteCockpits = undefined;
       this.otherItemCockpit = undefined;
     });
+  }
+
+  buildTooltip(buildupItemCockpit: BuildupItemCockpit): string {
+    if (buildupItemCockpit.buildHouseSpaceReached) {
+      return `Build of ${buildupItemCockpit.itemTypeName} not possible. House space exceeded. Build more houses!`;
+    } else if (buildupItemCockpit.buildLimitReached) {
+      return `Build of ${buildupItemCockpit.itemTypeName} not possible. Item limit exceeded. Go to the next level!`;
+    } else if (buildupItemCockpit.buildNoMoney) {
+      return `Build off ${buildupItemCockpit.itemTypeName} not possible. Not enough Razarion. Earn more Razarion!`;
+    } else {
+      return `Build ${buildupItemCockpit.itemTypeName}`;
+    }
   }
 }

@@ -6,7 +6,6 @@ import jsinterop.annotations.JsType;
 public abstract class OwnMultipleIteCockpit {
     public OwnItemCockpit ownItemCockpit;
     public int count;
-    public String tooltip;
 
     @SuppressWarnings("unused") // Called by Angular
     public abstract void onSelect();

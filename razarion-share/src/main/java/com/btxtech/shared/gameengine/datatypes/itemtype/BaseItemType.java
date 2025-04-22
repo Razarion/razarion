@@ -56,6 +56,19 @@ public class BaseItemType extends ItemType {
     private Integer explosionAudioItemConfigId;
     private Integer explosionParticleId;
 
+    public static int nameComparator(BaseItemType b1, BaseItemType b2) {
+        if (b1.getInternalName() == null && b2.getInternalName() == null) {
+            return 0;
+        }
+        if (b1.getInternalName() == null && b2.getInternalName() != null) {
+            return 1;
+        }
+        if (b1.getInternalName() != null && b2.getInternalName() == null) {
+            return -1;
+        }
+        return b1.getInternalName().compareTo(b2.getInternalName());
+    }
+
     public PhysicalAreaConfig getPhysicalAreaConfig() {
         return physicalAreaConfig;
     }
@@ -264,17 +277,14 @@ public class BaseItemType extends ItemType {
         this.explosionParticleId = explosionParticleId;
     }
 
-    public static int nameComparator(BaseItemType b1, BaseItemType b2) {
-        if (b1.getInternalName() == null && b2.getInternalName() == null) {
-            return 0;
-        }
-        if (b1.getInternalName() == null && b2.getInternalName() != null) {
-            return 1;
-        }
-        if (b1.getInternalName() != null && b2.getInternalName() == null) {
-            return -1;
-        }
-        return b1.getInternalName().compareTo(b2.getInternalName());
+    public BaseItemType name(String name) {
+        setName(name);
+        return this;
+    }
+
+    public BaseItemType description(String description) {
+        setDescription(description);
+        return this;
     }
 
     public BaseItemType physicalAreaConfig(PhysicalAreaConfig physicalAreaConfig) {
