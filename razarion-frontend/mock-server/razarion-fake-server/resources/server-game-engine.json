@@ -396,8 +396,6 @@
           "xp": 0,
           "razarion": 0,
           "crystal": 0,
-          "passedMessage": null,
-          "hidePassedDialog": false,
           "conditionConfig": {
             "conditionTrigger": "SYNC_ITEM_CREATED",
             "comparisonConfig": {
@@ -426,8 +424,6 @@
           "xp": 0,
           "razarion": 0,
           "crystal": 0,
-          "passedMessage": null,
-          "hidePassedDialog": false,
           "conditionConfig": {
             "conditionTrigger": "SYNC_ITEM_CREATED",
             "comparisonConfig": {

@@ -8,6 +8,7 @@ import com.btxtech.server.service.ui.ImagePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -64,18 +65,11 @@ public class LevelCrudPersistence extends AbstractConfigCrudPersistence<LevelCon
     }
 
     public LevelEntity getNextLevel(LevelEntity level) {
-//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<LevelEntity> userQuery = criteriaBuilder.createQuery(LevelEntity.class);
-//        Root<LevelEntity> from = userQuery.from(LevelEntity.class);
-//        CriteriaQuery<LevelEntity> userSelect = userQuery.select(from);
-//        userSelect.where(criteriaBuilder.greaterThan(from.get(LevelEntity_.number), level.getNumber()));
-//        userSelect.orderBy(criteriaBuilder.asc(from.get(LevelEntity_.number)));
-//        try {
-//            return entityManager.createQuery(userSelect).setMaxResults(1).getSingleResult();
-//        } catch (NoResultException e) {
-//            return null;
-//        }
-        throw new UnsupportedOperationException("... TODO ...");
+        return ((LevelRepository) getJpaRepository())
+                .getNextLevel(level.getId(), PageRequest.of(0, 1))
+                .stream()
+                .findFirst()
+                .orElse(null);
     }
 
     @Transactional

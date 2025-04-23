@@ -17,21 +17,12 @@ import com.btxtech.uiservice.user.UserUiService;
 
 import javax.inject.Inject;
 
-/**
- * Created by Beat
- * 25.04.2017.
- */
 public abstract class AbstractServerSystemConnection {
-
-    private GameUiControl gameUiControl;
-
-    private UserUiService userUiService;
-
-    private InventoryUiService inventoryUiService;
-
-    private ChatUiService chatUiService;
-
-    private Boot boot;
+    private final GameUiControl gameUiControl;
+    private final UserUiService userUiService;
+    private final InventoryUiService inventoryUiService;
+    private final ChatUiService chatUiService;
+    private final Boot boot;
 
     public AbstractServerSystemConnection(Boot boot, ChatUiService chatUiService, InventoryUiService inventoryUiService, UserUiService userUiService, GameUiControl gameUiControl) {
         this.boot = boot;

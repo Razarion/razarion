@@ -2,9 +2,6 @@
   <div class="flex flex-col m-2 items-center font-semibold text-3xl" [ngStyle]="{color:'var(--surface-300)'}">
     {{ title }}
   </div>
-  <div *ngIf="customRow" class="flex flex-col m-1">
-    {{ customRow }}
-  </div>
   <div *ngFor="let progressRow of progressRows" class="flex flex-row m-1">
     <div class="flex items-center justify-center p-1">
       <i *ngIf="!progressRow.done" class="pi pi-exclamation-triangle" style="color: yellow"></i>

@@ -6,14 +6,14 @@ import {ConditionTrigger, QuestConfig, QuestControllerClient} from 'src/app/gene
 import {GwtAngularService} from 'src/app/gwtangular/GwtAngularService';
 import {QuestCockpitComponent} from "../quest-cockpit.component";
 import {Button} from 'primeng/button';
-import {DataView} from 'primeng/dataview';
 import {CommonModule} from '@angular/common';
+import {DataViewModule} from 'primeng/dataview';
 
 @Component({
   selector: 'quest-dialog',
   imports: [
     Button,
-    DataView,
+    DataViewModule,
     CommonModule
   ],
   templateUrl: './quest-dialog.component.html'
@@ -39,14 +39,14 @@ export class QuestDialogComponent implements OnInit {
           });
         });
       }).catch(reason => {
-        console.error(reason);
-        this.messageService.add({
-          severity: 'error',
-          summary: "Loading quests failed",
-          detail: reason.message,
-          sticky: true
-        });
+      console.error(reason);
+      this.messageService.add({
+        severity: 'error',
+        summary: "Loading quests failed",
+        detail: reason.message,
+        sticky: true
       });
+    });
   }
 
   onActivate(questId: number): void {
@@ -115,13 +115,8 @@ export class QuestDialogComponent implements OnInit {
       let result: string[] = []
       for (const key in questConfig.conditionConfig.comparisonConfig.typeCount) {
         const count = questConfig.conditionConfig.comparisonConfig.typeCount[key];
-        let itemTypeI8nName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(parseInt(key)).getI18nName();
-        if (itemTypeI8nName) {
-          let itemTypeName = itemTypeI8nName.getString();
-          result.push(`${count} ${itemTypeName} ${textSpecific}`);
-        } else {
-          result.push(`${count} ??? ${textSpecific}`);
-        }
+        let itemTypeName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(parseInt(key)).getName();
+        result.push(`${count} ${itemTypeName} ${textSpecific}`);
       }
       return result.join(", ");
     } else {

@@ -137,10 +137,8 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
       },
       crystal: 0,
       description: "",
-      hidePassedDialog: false,
       id: 0,
       internalName: "",
-      passedMessage: "",
       razarion: 0,
       title: "",
       xp: 0

@@ -28,8 +28,6 @@ public class QuestConfig extends QuestDescriptionConfig<QuestConfig> {
     @Override
     public String toString() {
         return "QuestConfig{" +
-                "title='" + getTitle() + '\'' +
-                ", description='" + getDescription() + '\'' +
                 ", conditionConfig=" + conditionConfig +
                 '}';
     }

@@ -32,7 +32,6 @@ import {CockpitDisplayService} from '../cockpit-display.service';
 })
 export class QuestCockpitComponent implements QuestCockpit {
   title?: string
-  customRow?: string
   progressRows: { text: string, done: boolean }[] = [];
   timeRow?: string = "";
   showQuestSelectionButton: boolean = false;
@@ -55,7 +54,6 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.conditionConfig = this.setupConditionConfig();
         this.questProgressInfo = undefined;
         this.setupTitle();
-        this.setupCusstomDescription();
         this.setupProgress();
         this.showQuestSelectionButton = showQuestSelectionButton;
         this.cockpitDisplayService.showQuestCockpit = !!questDescriptionConfig;
@@ -115,15 +113,7 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.title = `Unknown ConditionTrigger ${conditionTrigger}`;
       }
     } else {
-      this.title = this.questDescriptionConfig.getTitle();
-    }
-  }
-
-  private setupCusstomDescription() {
-    if (this.questDescriptionConfig?.getDescription()) {
-      this.customRow = this.questDescriptionConfig.getDescription()!;
-    } else {
-      this.customRow = undefined;
+      this.title = "Deploy unit";
     }
   }
 
@@ -197,11 +187,7 @@ export class QuestCockpitComponent implements QuestCockpit {
     } else if (this.conditionConfig?.getComparisonConfig().toTypeCountAngular()?.length) {
       this.conditionConfig.getComparisonConfig().toTypeCountAngular().forEach((itemTypeIdCount) => {
         let actualCount = this.findCurrentItemTypeCount(itemTypeIdCount[0]);
-        let itemTypeI18nName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(GwtHelper.gwtIssueNumber(itemTypeIdCount[0])).getI18nName();
-        let itemTypeName = "???";
-        if (itemTypeI18nName) {
-          itemTypeName = itemTypeI18nName.getString();
-        }
+        let itemTypeName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(GwtHelper.gwtIssueNumber(itemTypeIdCount[0])).getName();
         this.progressRows.push({
           text: `${itemTypeName} ${textSpecific} ${actualCount} of ${itemTypeIdCount[1]}`,
           done: actualCount >= itemTypeIdCount[1]

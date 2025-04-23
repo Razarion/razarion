@@ -25,6 +25,17 @@
        [style]="{position: 'absolute', right: 0, top: 0}">
     <quest-cockpit #questCockpitContainer></quest-cockpit>
   </div>
+
+  <div *ngIf="!!modelDialogPresenter.title" class="splash">
+    <div class="splash-title">
+      {{ modelDialogPresenter.title }}
+    </div>
+    <div *ngIf="modelDialogPresenter.messageLines" class="splash-subtitle">
+      <div *ngFor="let messageLine of modelDialogPresenter.messageLines">
+        {{ messageLine }} <br>
+      </div>
+    </div>
+  </div>
 </div>
 
 <p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog">

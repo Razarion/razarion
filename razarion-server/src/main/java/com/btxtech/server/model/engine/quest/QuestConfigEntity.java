@@ -21,7 +21,7 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
     public QuestConfig toQuestConfig() {
         QuestConfig questConfig = new QuestConfig().id(getId()).internalName(getInternalName()).xp(xp).razarion(razarion).crystal(crystal);
         if (conditionConfigEntity != null) {
-            questConfig.conditionConfig(conditionConfigEntity.toQuestConfig()).hidePassedDialog(false);
+            questConfig.conditionConfig(conditionConfigEntity.toQuestConfig());
         }
         return questConfig;
     }

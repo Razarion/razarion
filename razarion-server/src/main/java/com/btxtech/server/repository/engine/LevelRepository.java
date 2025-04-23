@@ -2,6 +2,7 @@ package com.btxtech.server.repository.engine;
 
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.LevelUnlockEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,4 +27,11 @@ public interface LevelRepository extends JpaRepository<LevelEntity, Integer> {
             """)
     List<LevelUnlockEntity> findLockedUnlocks(@Param("levelNumber") int levelNumber,
                                               @Param("unlockedEntityIds") Collection<Integer> unlockedEntityIds);
+
+    @Query("""
+            SELECT l FROM LevelEntity l WHERE l.number >
+                        (SELECT le.number FROM LevelEntity le WHERE le.id = :levelId) ORDER BY l.number ASC
+            """)
+    List<LevelEntity> getNextLevel(@Param("levelId") int levelId, Pageable pageable);
+
 }

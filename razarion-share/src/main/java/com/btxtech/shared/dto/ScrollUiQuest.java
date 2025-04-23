@@ -22,8 +22,6 @@ public class ScrollUiQuest extends QuestDescriptionConfig<ScrollUiQuest> {
     @Override
     public String toString() {
         return "ScrollUiQuest{" +
-                "title='" + getTitle() + '\'' +
-                ", description='" + getDescription() + '\'' +
                 ", scrollTargetRectangle=" + scrollTargetRectangle +
                 '}';
     }

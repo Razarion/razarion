@@ -13,13 +13,9 @@ import jsinterop.annotations.JsType;
 public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> implements ObjectNameIdProvider, Config {
     private Integer id;
     private String internalName;
-    private String title;
-    private String description;
     private int xp;
     private int razarion;
     private int crystal;
-    private String passedMessage;
-    private boolean hidePassedDialog;
 
     public int getId() {
         return id;
@@ -44,32 +40,6 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
 
     public T internalName(String internalName) {
         this.internalName = internalName;
-        return (T) this;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public T title(String title) {
-        setTitle(title);
-        return (T) this;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public T description(String description) {
-        setDescription(description);
         return (T) this;
     }
 
@@ -109,32 +79,6 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
 
     public T crystal(int crystal) {
         this.crystal = crystal;
-        return (T) this;
-    }
-
-    public String getPassedMessage() {
-        return passedMessage;
-    }
-
-    public void setPassedMessage(String passedMessage) {
-        this.passedMessage = passedMessage;
-    }
-
-    public T passedMessage(String passedMessage) {
-        this.passedMessage = passedMessage;
-        return (T) this;
-    }
-
-    public boolean isHidePassedDialog() {
-        return hidePassedDialog;
-    }
-
-    public void setHidePassedDialog(boolean hidePassedDialog) {
-        this.hidePassedDialog = hidePassedDialog;
-    }
-
-    public T hidePassedDialog(boolean hidePassedDialog) {
-        this.hidePassedDialog = hidePassedDialog;
         return (T) this;
     }
 

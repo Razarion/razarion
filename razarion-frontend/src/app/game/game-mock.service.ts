@@ -1,13 +1,11 @@
 import {Injectable} from "@angular/core";
 import {
   Alarm,
-  AngularZoneRunner,
   BabylonDecal,
   BabylonTerrainTile,
   BaseItemType,
   BaseItemUiService,
   BuilderType,
-  BuildupItemCockpit,
   Character,
   ComparisonConfig,
   ConditionConfig,
@@ -23,7 +21,6 @@ import {
   InventoryTypeService,
   ItemTypeService,
   NativeSyncBaseItemTickInfo,
-  OwnItemCockpit,
   PhysicalAreaConfig,
   PlanetConfig,
   PlayerBaseDto,
@@ -93,10 +90,6 @@ export class GameMockService {
       return "";
     }
 
-    getTitle(): string {
-      return "Place";
-    }
-
     getDescription(): string | null {
       return null;
     }
@@ -162,12 +155,12 @@ export class GameMockService {
         // }, 2);
 
         let baseItemType = new class implements BaseItemType {
-          getI18nName(): I18nString {
-            return new class implements I18nString {
-              getString(): string {
-                return "I18nString";
-              }
-            };
+          getName(): string {
+            return "BaseItemType";
+          }
+
+          getDescription(): string {
+            return "BaseItemType description";
           }
 
           getBuilderType(): BuilderType {
@@ -218,10 +211,6 @@ export class GameMockService {
             return 22743;
           }
 
-          getMeshContainerId(): number | null {
-            return 22743;
-          }
-
           getPhysicalAreaConfig(): PhysicalAreaConfig {
             return new class implements PhysicalAreaConfig {
               getRadius(): number {
@@ -233,11 +222,6 @@ export class GameMockService {
               }
             };
           }
-
-          getThreeJsModelPackConfigId(): number | null {
-            return null;
-          }
-
         };
 
         {
@@ -341,6 +325,14 @@ export class GameMockService {
         // setTimeout(move, 100)
 
         let resourceItemType = new class implements ResourceItemType {
+          getName(): string {
+            return "";
+          }
+
+          getDescription(): string {
+            return "";
+          }
+
           getRadius(): number {
             return 2;
           }
@@ -355,14 +347,6 @@ export class GameMockService {
 
           getModel3DId(): number | null {
             return 42;
-          }
-
-          getI18nName(): I18nString {
-            return new class implements I18nString {
-              getString(): string {
-                return "I18nString";
-              }
-            };
           }
         }
 
@@ -457,9 +441,6 @@ export class GameMockService {
     //   this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(100);
     // }, 0.75);
     setTimeout(() => {
-      this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
-      this.showMainCockpit();
-
       // Set background
       const element = document.querySelector('.game-main') as HTMLElement;
       if (element) {
@@ -467,34 +448,53 @@ export class GameMockService {
         element.style.backgroundSize = 'cover';
         element.style.backgroundPosition = 'center';
       }
-
-      this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOwnSingleType(1, new class implements OwnItemCockpit {
-        imageUrl = "/xxxxx";
-        itemTypeDescr = "Builds Units";
-        itemTypeName = "Factory";
-        buildupItemInfos = [new class implements BuildupItemCockpit {
-          imageUrl = "/xxxxx";
-          itemTypeName = "Builder";
-          price = 12;
-          itemCount = 13;
-          itemLimit = 14;
-          enabled = true;
-          buildLimitReached = false;
-          buildHouseSpaceReached = false;
-          buildNoMoney = false;
-          progress = 1;
-
-          setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void {
-          }
-
-          onBuild(): void {
-          }
-        }];
-
-        sellHandler(): void {
-        }
-      });
+      this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
     }, 10);
+
+    setInterval(() => {
+      // this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
+      this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
+    }, 3000)
+
+    // setTimeout(() => {
+    //
+    //   this.showMainCockpit();
+    //
+    //   // Set background
+    //   const element = document.querySelector('.game-main') as HTMLElement;
+    //   if (element) {
+    //     element.style.backgroundImage = `url(${"/cockpit/MockGameBackground.jpg"})`;
+    //     element.style.backgroundSize = 'cover';
+    //     element.style.backgroundPosition = 'center';
+    //   }
+    //
+    //   this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOwnSingleType(1, new class implements OwnItemCockpit {
+    //     imageUrl = "/xxxxx";
+    //     itemTypeDescr = "Builds Units";
+    //     itemTypeName = "Factory";
+    //     buildupItemInfos = [new class implements BuildupItemCockpit {
+    //       imageUrl = "/xxxxx";
+    //       itemTypeName = "Builder";
+    //       price = 12;
+    //       itemCount = 13;
+    //       itemLimit = 14;
+    //       enabled = true;
+    //       buildLimitReached = false;
+    //       buildHouseSpaceReached = false;
+    //       buildNoMoney = false;
+    //       progress = 1;
+    //
+    //       setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void {
+    //       }
+    //
+    //       onBuild(): void {
+    //       }
+    //     }];
+    //
+    //     sellHandler(): void {
+    //     }
+    //   });
+    // }, 10);
   }
 
   private showMainCockpit() {
@@ -684,20 +684,20 @@ export class GameMockService {
     return new class implements ItemTypeService {
       getBaseItemTypeAngular(baseItemTypeId: number): BaseItemType {
         return new class implements BaseItemType {
+          getName(): string {
+            return "";
+          }
+
+          getDescription(): string {
+            return "";
+          }
+
           getBuilderType(): BuilderType | null {
             return null;
           }
 
           getHarvesterType(): HarvesterType | null {
             return null;
-          }
-
-          getI18nName(): I18nString {
-            return new class implements I18nString {
-              getString(): string {
-                return "Viper";
-              }
-            };
           }
 
           getId(): number {
@@ -709,10 +709,6 @@ export class GameMockService {
           }
 
           getModel3DId(): number | null {
-            return null;
-          }
-
-          getMeshContainerId(): number | null {
             return null;
           }
 
@@ -732,10 +728,6 @@ export class GameMockService {
             };
           }
 
-          getThreeJsModelPackConfigId(): number | null {
-            return null;
-          }
-
           getWeaponType(): WeaponType | null {
             return null;
           }
@@ -744,14 +736,6 @@ export class GameMockService {
 
       getResourceItemTypeAngular(resourceItemTypeId: number): ResourceItemType {
         return new class implements ResourceItemType {
-          getI18nName(): I18nString {
-            return new class implements I18nString {
-              getString(): string {
-                return "I18nString";
-              }
-            };
-          }
-
           getId(): number {
             return 0;
           }
@@ -760,20 +744,20 @@ export class GameMockService {
             return "";
           }
 
-          getModel3DId(): number | null {
-            return null;
+          getName(): string {
+            return "";
           }
 
-          getMeshContainerId(): number | null {
+          getDescription(): string {
+            return "";
+          }
+
+          getModel3DId(): number | null {
             return null;
           }
 
           getRadius(): number {
             return 0;
-          }
-
-          getThreeJsModelPackConfigId(): number | null {
-            return null;
           }
         }
       }

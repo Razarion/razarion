@@ -13,7 +13,6 @@ import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.QuestCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
-import com.btxtech.uiservice.i18n.I18nConstants;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
@@ -154,14 +153,14 @@ public class Scene {
             completionCallbackCount++;
             modalDialogManager.setBaseLostCallback(this::onComplete);
         }
-        if (sceneConfig.getQuestConfig() != null && sceneConfig.getQuestConfig().isHidePassedDialog()) {
+        if (sceneConfig.getQuestConfig() != null) {
             hasCompletionCallback = true;
             completionCallbackCount++;
         }
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            questCockpitService.showQuestSideBar(new QuestDescriptionConfig().title(I18nConstants.placeStartItemTitle()).description(I18nConstants.placeStartItemDescription()).hidePassedDialog(true), false);
+            questCockpitService.showQuestSideBar(new QuestDescriptionConfig(), false);
         }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
@@ -263,28 +262,12 @@ public class Scene {
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
             questCockpitService.showQuestSideBar(null, false);
-            if (sceneConfig.getQuestConfig().isHidePassedDialog()) {
-                onComplete();
-            } else {
-                modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig());
-                if (sceneConfig.getGameTipConfig() != null) {
-                    inGameQuestVisualizationService.setSuppressed(false);
-                    // TODO gameTipService.stop();
-                }
-            }
+            onComplete();
             userUiService.increaseXp(sceneConfig.getQuestConfig().getXp());
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             questCockpitService.showQuestSideBar(null, false);
-            if (sceneConfig.getScrollUiQuest().isHidePassedDialog()) {
-                onComplete();
-            } else {
-                modalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
-                if (sceneConfig.getGameTipConfig() != null) {
-                    inGameQuestVisualizationService.setSuppressed(false);
-                    // TODO gameTipService.stop();
-                }
-            }
+            onComplete();
             userUiService.increaseXp(sceneConfig.getScrollUiQuest().getXp());
         }
         inGameQuestVisualizationService.stop();

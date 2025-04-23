@@ -235,7 +235,9 @@ export interface ItemType {
 
   getInternalName(): string;
 
-  getI18nName(): I18nString;
+  getName(): string;
+
+  getDescription(): string;
 
   getModel3DId(): number | null;
 }
@@ -288,10 +290,6 @@ export interface QuestDescriptionConfig {
   getId(): number;
 
   getInternalName(): string;
-
-  getTitle(): string;
-
-  getDescription(): string | null;
 }
 
 export interface QuestConfig extends QuestDescriptionConfig {

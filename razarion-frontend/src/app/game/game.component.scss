@@ -3,3 +3,29 @@
   height: 100%;
   cursor: var(--cursor);
 }
+
+.splash {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  background: transparent;
+}
+
+.splash-title {
+  font-size: 10vw;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 6px black;
+  pointer-events: none;
+}
+
+.splash-subtitle {
+  font-size: 3vw;
+  color: white;
+  pointer-events: none;
+}

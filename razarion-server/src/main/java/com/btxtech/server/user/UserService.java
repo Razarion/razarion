@@ -83,7 +83,7 @@ public class UserService {
     public QuestConfig getAndSaveNewQuest(Integer userId) {
         UserEntity userEntity = userRepository.getReferenceById(userId);
         if (userEntity.getActiveQuest() == null) {
-            QuestConfigEntity newQuest = serverGameEngineCrudPersistence.getQuest4LevelAndCompleted(userEntity.getLevel(), userEntity.getCompletedQuestIds());
+            QuestConfigEntity newQuest = serverGameEngineCrudPersistence.getQuest4LevelAndIgnoreCompleted(userEntity.getLevel(), userEntity.getCompletedQuestIds());
             userEntity.setActiveQuest(newQuest);
             userRepository.save(userEntity);
             if (newQuest != null) {
