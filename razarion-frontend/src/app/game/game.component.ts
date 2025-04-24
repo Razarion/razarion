@@ -17,6 +17,8 @@ import {Dialog} from 'primeng/dialog';
 import {EditorDialogComponent} from '../editor/editor-dialog/editor-dialog.component';
 import {DrawerModule} from 'primeng/drawer';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
+import {InventoryComponent} from './inventory/inventory.component';
+import {UnlockComponent} from './unlock/unlock.component';
 
 
 @Component({
@@ -30,7 +32,9 @@ import {CockpitDisplayService} from './cockpit/cockpit-display.service';
     QuestCockpitComponent,
     Dialog,
     EditorDialogComponent,
-    ItemCockpitComponent
+    ItemCockpitComponent,
+    InventoryComponent,
+    UnlockComponent
   ],
   styleUrls: ['game.component.scss']
 })

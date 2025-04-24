@@ -10,6 +10,7 @@ import com.btxtech.server.service.engine.QuestConfigService;
 import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import jakarta.transaction.Transactional;
@@ -180,6 +181,27 @@ public class UserService {
             return questConfigEntity;
         }).collect(Collectors.toList()));
         userRepository.save(userEntity);
+    }
+
+    @Transactional
+    public InventoryInfo readInventoryInfo(int userId) {
+        return userRepository.getReferenceById(userId).toInventoryInfo();
+    }
+
+    @Transactional
+    public int readCrystals(int userId) {
+        return userRepository.getReferenceById(userId).getCrystals();
+    }
+
+    @Transactional
+    public void persistUnlockViaCrystals(int userId, int levelUnlockEntityId) {
+        UserEntity userEntity = userRepository.getReferenceById(userId);
+        LevelUnlockEntity levelUnlockEntity = levelCrudPersistence.readLevelUnlockEntity(levelUnlockEntityId);
+        if (levelUnlockEntity.getCrystalCost() > userEntity.getCrystals()) {
+            throw new IllegalArgumentException("User does not have enough crystals to unlock LevelUnlockEntity. User id: " + userEntity.getId() + " LevelUnlockEntity id: " + levelUnlockEntity.getId());
+        }
+        userEntity.addLevelUnlockEntity(levelUnlockEntity);
+        userEntity.removeCrystals(levelUnlockEntity.getCrystalCost());
     }
 
     @Transactional

@@ -97,10 +97,10 @@
                         <class>com.btxtech.shared.rest.ServerGameEngineEditorController</class>
                         <class>com.btxtech.shared.rest.ServerGameEngineController</class>
                         <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
-                        <class>com.btxtech.shared.rest.InventoryController</class>
-                        <class>com.btxtech.shared.rest.QuestController</class>
-                        <class>com.btxtech.shared.rest.UnlockController</class>
                         <class>com.btxtech.shared.rest.FrontendController</class>
+                        <class>com.btxtech.server.rest.engine.InventoryController</class>
+                        <class>com.btxtech.server.rest.engine.UnlockController</class>
+                        <class>com.btxtech.server.rest.engine.QuestController</class>
                         <class>com.btxtech.server.rest.ui.BabylonMaterialController</class>
                         <class>com.btxtech.server.rest.ui.GltfController</class>
                         <class>com.btxtech.server.rest.ui.Model3DController</class>

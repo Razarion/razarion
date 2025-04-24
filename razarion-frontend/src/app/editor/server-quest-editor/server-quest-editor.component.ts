@@ -136,11 +136,9 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
         conditionTrigger: null
       },
       crystal: 0,
-      description: "",
       id: 0,
       internalName: "",
       razarion: 0,
-      title: "",
       xp: 0
     })
   }
@@ -172,9 +170,7 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   }
 
   static conditionTriggerToTitle(questConfig: QuestConfig): string {
-    return (questConfig.title ? `'${questConfig.title}'` : "")
-      + " "
-      + QuestCockpitComponent.conditionTriggerToTitle(questConfig.conditionConfig.conditionTrigger!)!
+    return QuestCockpitComponent.conditionTriggerToTitle(questConfig.conditionConfig.conditionTrigger!)!
       + " ( "
       + (questConfig.razarion ? `R:${questConfig.razarion} ` : '')
       + (questConfig.xp ? `X:${questConfig.xp} ` : '')

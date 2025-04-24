@@ -43,8 +43,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private GameLogicService gameLogicService;
     @Inject
     private ClientGameConnectionService clientGameConnectionService;
-    // @Inject
-    // TODO private ClientSystemConnectionService systemConnectionService;
+    @Inject
+    private ClientSystemConnectionService systemConnectionService;
     @Inject
     private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     @Inject
@@ -287,7 +287,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     @Override
     public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
-        // TODO systemConnectionService.onQuestProgressInfo(userId, questProgressInfo);
+        systemConnectionService.onQuestProgressInfo(userId, questProgressInfo);
     }
 
     @Override

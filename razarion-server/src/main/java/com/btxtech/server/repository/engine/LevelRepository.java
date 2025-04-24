@@ -34,4 +34,6 @@ public interface LevelRepository extends JpaRepository<LevelEntity, Integer> {
             """)
     List<LevelEntity> getNextLevel(@Param("levelId") int levelId, Pageable pageable);
 
+    @Query("SELECT u FROM LevelUnlockEntity u WHERE u.id = :levelUnlockEntityId")
+    LevelUnlockEntity findLevelUnlockEntity(@Param("levelUnlockEntityId") int levelUnlockEntityId);
 }

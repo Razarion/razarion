@@ -86,4 +86,12 @@ public class LevelCrudPersistence extends AbstractConfigCrudPersistence<LevelCon
                 .collect(Collectors.toList());
     }
 
+    public LevelUnlockEntity readLevelUnlockEntity(int levelUnlockEntityId) {
+        return ((LevelRepository) getJpaRepository()).findLevelUnlockEntity(levelUnlockEntityId);
+    }
+
+    @Transactional
+    public int readLevelUnlockEntityCrystals(int levelUnlockEntityId) {
+        return readLevelUnlockEntity(levelUnlockEntityId).getCrystalCost();
+    }
 }

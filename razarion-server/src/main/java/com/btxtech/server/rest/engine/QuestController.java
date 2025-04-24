@@ -4,7 +4,7 @@ import com.btxtech.server.rest.ui.GameUiContextControllerImpl;
 import com.btxtech.server.service.engine.ServerLevelQuestService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.rest.QuestController;
+import com.btxtech.shared.rest.QuestAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -16,19 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.btxtech.shared.rest.QuestAccess.PATH;
+
 @RestController
-@RequestMapping("/rest/quest-controller")
-public class QuestControllerImpl implements QuestController {
-    private final Logger logger = LoggerFactory.getLogger(QuestControllerImpl.class);
+@RequestMapping("/rest" + PATH)
+public class QuestController implements QuestAccess {
+    private final Logger logger = LoggerFactory.getLogger(QuestController.class);
     private final ServerLevelQuestService serverLevelQuestService;
     private final SessionService sessionService;
 
-    public QuestControllerImpl(ServerLevelQuestService serverLevelQuestService, SessionService sessionService) {
+    public QuestController(ServerLevelQuestService serverLevelQuestService, SessionService sessionService) {
         this.serverLevelQuestService = serverLevelQuestService;
         this.sessionService = sessionService;
     }
 
-    @Override
     @GetMapping(value = "readMyOpenQuests", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<QuestConfig> readMyOpenQuests() {
         try {
@@ -41,7 +42,6 @@ public class QuestControllerImpl implements QuestController {
         }
     }
 
-    @Override
     @PostMapping(value = "activateQuest/{id}")
     public void activateQuest(@PathVariable("id") int questId) {
         try {
@@ -53,7 +53,6 @@ public class QuestControllerImpl implements QuestController {
         }
     }
 
-    @Override
     @PostMapping(value = "activateNextPossibleQuest")
     public void activateNextPossibleQuest() {
         try {
