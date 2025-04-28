@@ -140,17 +140,17 @@ public class ItemCockpitService {
                     } else {
                         otherInfoPanel.baseName = base.getName();
                     }
-                    otherInfoPanel.type = I18nConstants.playerFriend();
                     otherInfoPanel.friend = true;
+                    otherInfoPanel.bot = false;
                     break;
                 case BOT:
                     otherInfoPanel.baseName = base.getName();
-                    otherInfoPanel.type = I18nConstants.botEnemy();
+                    otherInfoPanel.bot = true;
                     break;
                 case BOT_NCP:
                     otherInfoPanel.baseName = base.getName();
-                    otherInfoPanel.type = I18nConstants.botNpc();
                     otherInfoPanel.friend = true;
+                    otherInfoPanel.bot = true;
                     break;
                 default:
                     throw new UnsupportedOperationException("Unknown character: " + base.getCharacter());

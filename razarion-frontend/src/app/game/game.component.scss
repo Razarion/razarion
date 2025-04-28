@@ -4,6 +4,13 @@
   cursor: var(--cursor);
 }
 
+.cockpit-border {
+  border: solid 1px var(--p-emerald-900);
+  padding: 10px;
+  background-color: black;
+  box-shadow: 0 0 10px 0 black;
+}
+
 .splash {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;

@@ -11,17 +11,20 @@
     </div>
   </div>
 
-  <div [style.visibility]="cockpitDisplayService.showMainCockpit ? 'visible' : 'hidden'"
+  <div class="cockpit-border"
+       [style.visibility]="cockpitDisplayService.showMainCockpit ? 'visible' : 'hidden'"
        [style]="{position: 'absolute', left: 0, top: 0}">
     <main-cockpit #mainCockpit></main-cockpit>
   </div>
 
-  <div [style.visibility]="cockpitDisplayService.showItemCockpit ? 'visible' : 'hidden'"
+  <div class="cockpit-border"
+       [style.visibility]="cockpitDisplayService.showItemCockpit ? 'visible' : 'hidden'"
        [style]="{position: 'absolute', bottom: 0, left: 0}">
     <item-cockpit #itemCockpitContainer></item-cockpit>
   </div>
 
-  <div [style.visibility]="cockpitDisplayService.showQuestCockpit ? 'visible' : 'hidden'"
+  <div class="cockpit-border"
+       [style.visibility]="cockpitDisplayService.showQuestCockpit ? 'visible' : 'hidden'"
        [style]="{position: 'absolute', right: 0, top: 0}">
     <quest-cockpit #questCockpitContainer></quest-cockpit>
   </div>
@@ -38,11 +41,11 @@
   </div>
 </div>
 
-<p-dialog header="Inventory" [(visible)]="showInventory"  [style]="{width: '50vw'}">
+<p-dialog header="Inventory" [(visible)]="showInventory" [style]="{width: '50vw'}">
   <inventory *ngIf="showInventory" style="width: 100em;"></inventory>
 </p-dialog>
 
-<p-dialog header="Unlock" [(visible)]="showUnlock"  [style]="{width: '50vw'}">
+<p-dialog header="Unlock" [(visible)]="showUnlock" [style]="{width: '50vw'}">
   <unlock *ngIf="showUnlock" style="width: 100em;"></unlock>
 </p-dialog>
 

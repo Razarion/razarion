@@ -1,11 +1,13 @@
 import {Injectable} from "@angular/core";
 import {
   Alarm,
+  AngularZoneRunner,
   BabylonDecal,
   BabylonTerrainTile,
   BaseItemType,
   BaseItemUiService,
   BuilderType,
+  BuildupItemCockpit,
   Character,
   ComparisonConfig,
   ConditionConfig,
@@ -21,6 +23,9 @@ import {
   InventoryTypeService,
   ItemTypeService,
   NativeSyncBaseItemTickInfo,
+  OtherItemCockpit,
+  OwnItemCockpit,
+  OwnMultipleIteCockpit,
   PhysicalAreaConfig,
   PlanetConfig,
   PlayerBaseDto,
@@ -451,50 +456,109 @@ export class GameMockService {
       this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
     }, 10);
 
-    setInterval(() => {
-      // this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
-      this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
-    }, 3000)
+    // setInterval(() => {
+    //   // this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
+    //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
+    // }, 3000)
 
-    // setTimeout(() => {
-    //
-    //   this.showMainCockpit();
-    //
-    //   // Set background
-    //   const element = document.querySelector('.game-main') as HTMLElement;
-    //   if (element) {
-    //     element.style.backgroundImage = `url(${"/cockpit/MockGameBackground.jpg"})`;
-    //     element.style.backgroundSize = 'cover';
-    //     element.style.backgroundPosition = 'center';
-    //   }
-    //
-    //   this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOwnSingleType(1, new class implements OwnItemCockpit {
-    //     imageUrl = "/xxxxx";
-    //     itemTypeDescr = "Builds Units";
-    //     itemTypeName = "Factory";
-    //     buildupItemInfos = [new class implements BuildupItemCockpit {
-    //       imageUrl = "/xxxxx";
-    //       itemTypeName = "Builder";
-    //       price = 12;
-    //       itemCount = 13;
-    //       itemLimit = 14;
-    //       enabled = true;
-    //       buildLimitReached = false;
-    //       buildHouseSpaceReached = false;
-    //       buildNoMoney = false;
-    //       progress = 1;
-    //
-    //       setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void {
-    //       }
-    //
-    //       onBuild(): void {
-    //       }
-    //     }];
-    //
-    //     sellHandler(): void {
-    //     }
-    //   });
-    // }, 10);
+    setTimeout(() => {
+
+      this.showMainCockpit();
+
+      this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar({
+        getId(): number {
+          return 0;
+        }, getInternalName(): string {
+          return '';
+        }
+      }, true)
+
+      // Set background
+      const element = document.querySelector('.game-main') as HTMLElement;
+      if (element) {
+        element.style.backgroundImage = `url(${"/cockpit/MockGameBackground.jpg"})`;
+        element.style.backgroundSize = 'cover';
+        element.style.backgroundPosition = 'center';
+      }
+      this.displayOwnMultipleItemTypesCockpit();
+      // this.displayOwnSingleTypeCockpit();
+      // this.displayOtherItemTypeCockpit();
+    }, 10);
+  }
+
+  private displayOwnSingleTypeCockpit() {
+    let buildupItemInfos: BuildupItemCockpit[] = [];
+    for (let i = 0; i < 7; i++) {
+      buildupItemInfos.push(this.buildBuildupItemCockpit(i));
+    }
+
+    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOwnSingleType(1, new class implements OwnItemCockpit {
+      imageUrl = "/xxxxx";
+      itemTypeDescr = "Builds Units";
+      itemTypeName = "Factory";
+      buildupItemInfos = buildupItemInfos;
+
+      sellHandler(): void {
+      }
+    });
+  }
+
+  private buildBuildupItemCockpit(price: number): BuildupItemCockpit {
+    return new class implements BuildupItemCockpit {
+      imageUrl = "/xxxxx";
+      itemTypeName = "Builder";
+      price = price;
+      itemCount = 13;
+      itemLimit = 14;
+      enabled = true;
+      buildLimitReached = false;
+      buildHouseSpaceReached = false;
+      buildNoMoney = false;
+      progress = 1;
+
+      setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void {
+      }
+
+      onBuild(): void {
+      }
+    };
+  }
+
+  private displayOtherItemTypeCockpit() {
+    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOtherItemType(new class implements OtherItemCockpit {
+      imageUrl = "/xxxxx";
+      itemTypeName = "Builder";
+      itemTypeDescr = "Builds Units";
+      baseName = "Bot base";
+      type = "Bot enemy";
+      friend = false;
+      bot = true;
+    });
+  }
+
+  private displayOwnMultipleItemTypesCockpit() {
+    let ownMultipleIteCockpits: OwnMultipleIteCockpit[] = [];
+    for (let i = 0; i < 3; i++) {
+      ownMultipleIteCockpits.push(new class implements OwnMultipleIteCockpit {
+        ownItemCockpit = new class implements OwnItemCockpit {
+          imageUrl = "/xxxxx";
+          itemTypeName = "Builder";
+          itemTypeDescr = "Builds Units";
+          buildupItemInfos = null;
+
+          sellHandler(): void {
+            throw new Error("Method not implemented.");
+          };
+        };
+        count = 12;
+
+        onSelect(): void {
+          throw new Error("Method not implemented.");
+        }
+      });
+    }
+
+    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOwnMultipleItemTypes(ownMultipleIteCockpits);
   }
 
   private showMainCockpit() {

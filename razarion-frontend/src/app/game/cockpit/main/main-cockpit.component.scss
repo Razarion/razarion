@@ -4,24 +4,34 @@
 }
 
 .cockpit-element {
-    border: 1px solid #150d18;
-    padding: 3px;
-    margin-bottom: 1px;
-    background-color: black;
+  border: 1px solid #150d18;
+  padding: 3px;
+  margin-bottom: 1px;
+  background-color: black;
 }
 
 @keyframes blink {
-    0% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
+  0% {
+    opacity: 1;
   }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
-  .blinking-button {
-    animation: blink 1s infinite;
-  }
+.blinking-button {
+  animation: blink 1s infinite;
+}
+
+::ng-deep .p-inputgroup input.p-inputtext {
+  padding: 0.1rem;
+  font-size: 0.90rem;
+}
+
+::ng-deep .p-inputgroupaddon {
+  padding: 0.1rem 0.3rem;
+  font-size: 0.75rem;
+}

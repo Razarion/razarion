@@ -2,35 +2,45 @@
   <div class="flex cockpit-element">
     <p-badge [value]="'Level: ' + levelNumber" severity="warn" size="large"></p-badge>
   </div>
-  <div class="flex">
-    <div class="flex flex-row">
-      <div class="flex cockpit-element"><p-knob [ngModel]="100 * xp / xp2LevelUp" [size]="75"
-          [valueTemplate]="xp + '/' + xp2LevelUp">
-        </p-knob></div>
-      <div class="flex cockpit-element"><p-knob [ngModel]="generating >= consuming ? 100 * consuming / generating : 100"
-          [size]="75" [valueTemplate]="consuming + '/' + generating"
-          [valueColor]="generating >= consuming ? 'var(--green-500)':'var(--red-500)'"
-          [rangeColor]="generating > 0 ? 'var(--green-900)':'var(--surface-border)'">
-        </p-knob></div>
-    </div>
+  <div class="flex cockpit-element">
+    <p-inputgroup pTooltip="Experience points">
+      <p-inputgroup-addon>
+        <i class="pi pi-crown"></i>
+      </p-inputgroup-addon>
+      <input pInputText [ngModel]="displayXp2LevelUp" readonly="readonly"/>
+    </p-inputgroup>
   </div>
   <div class="flex cockpit-element">
-    <div class="p-inputgroup" style="width: 10em;">
-      <span class="p-inputgroup-addon w-7/12">Razarion</span>
-      <input type="text" class="w-5/12" pInputText value="{{resources}}" readonly="true">
-    </div>
+    <p-inputgroup pTooltip="Energy (consuming / producing)">
+      <p-inputgroup-addon>
+        <i class="pi pi-bolt"></i>
+      </p-inputgroup-addon>
+      <input pInputText [ngModel]="displayEnergyString" readonly="readonly"/>
+    </p-inputgroup>
   </div>
   <div class="flex cockpit-element">
-    <div class="p-inputgroup" style="width: 10em;">
-      <span class="p-inputgroup-addon w-7/12">Items</span>
-      <input type="text" class="w-5/12" pInputText value="{{itemCount}}" readonly="true">
-    </div>
+    <p-inputgroup pTooltip="Razarion">
+      <p-inputgroup-addon>
+        <i class="pi pi-sparkles"></i>
+      </p-inputgroup-addon>
+      <input pInputText [ngModel]="resources" readonly="readonly"/>
+    </p-inputgroup>
   </div>
   <div class="flex cockpit-element">
-    <div class="p-inputgroup" style="width: 10em;">
-      <span class="p-inputgroup-addon w-7/12">House</span>
-      <input type="text" class="w-5/12" pInputText value="{{usedHouseSpace}} / {{houseSpace}}" readonly="true">
-    </div>
+    <p-inputgroup pTooltip="Items">
+      <p-inputgroup-addon>
+        <i class="pi pi-android"></i>
+      </p-inputgroup-addon>
+      <input pInputText [ngModel]="itemCount" readonly="readonly"/>
+    </p-inputgroup>
+  </div>
+  <div class="flex cockpit-element">
+    <p-inputgroup pTooltip="House space (used / available)">
+      <p-inputgroup-addon>
+        <i class="pi pi-home"></i>
+      </p-inputgroup-addon>
+      <input pInputText [ngModel]="displayHouseSpace" readonly="readonly"/>
+    </p-inputgroup>
   </div>
   <div class="flex flex-row">
     <div class="flex cockpit-element">
@@ -39,7 +49,7 @@
     </div>
     <div class="flex cockpit-element">
       <p-button icon="pi pi-angle-double-up" title="Unlock" (onClick)="onUnlock()"
-        [ngClass]="{'blinking-button': blinkUnlockEnabled}">
+                [ngClass]="{'blinking-button': blinkUnlockEnabled}">
       </p-button>
     </div>
   </div>
@@ -51,16 +61,16 @@
       <radar-no-power></radar-no-power>
     </div>
   </div>
-<!-- TODO <div class="flex cockpit-element">-->
-<!--  TODO  <p-button type="button" icon="pi pi-sign-out" styleClass="p-button-sm" title="Sign out"-->
-<!--  TODO    [disabled]="!frontendService.loggedIn" (onClick)="onSignOut()"></p-button>-->
-<!-- TODO </div>-->
+  <!-- TODO <div class="flex cockpit-element">-->
+  <!--  TODO  <p-button type="button" icon="pi pi-sign-out" styleClass="p-button-sm" title="Sign out"-->
+  <!--  TODO    [disabled]="!frontendService.loggedIn" (onClick)="onSignOut()"></p-button>-->
+  <!-- TODO </div>-->
   <div *ngIf="admin" class="flex cockpit-element">
     <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
-      (onClick)="this.editorDialog = true"></p-button>
+              (onClick)="this.editorDialog = true"></p-button>
   </div>
   <div *ngIf="admin" class="flex cockpit-element">
     <p-checkbox [(ngModel)]="showCursorPosition" (onChange)="onShowCursorPosition()" [binary]="true"></p-checkbox>
-    &nbsp;{{ cursorPosition ? cursorPosition : 'Show cursor'}}
+    &nbsp;{{ cursorPosition ? cursorPosition : 'Show cursor' }}
   </div>
 </div>

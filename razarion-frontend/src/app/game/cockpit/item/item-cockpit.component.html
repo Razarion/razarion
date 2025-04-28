@@ -1,34 +1,33 @@
-﻿<div class="flex flex-col" *ngIf="ownItemCockpit">
-  <div class="flex">
-    <div class="mr-2">
+﻿<div class="flex flex-col gap-1" *ngIf="ownItemCockpit">
+  <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
+    <div class="w-14 flex-none">
       <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
     </div>
-    <div class="mr-2">
+    <div class="grow">
       <div class="flex flex-col" *ngIf="ownItemCockpit">
-        <div class="mb-2" [style]="{fontSize: 'larger', color: '#64B5F6'}">
+        <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
           {{ ownItemCockpit.itemTypeName }}
         </div>
-        <div class="mb-2">
+        <div>
           {{ ownItemCockpit.itemTypeDescr }}
         </div>
-        <div class="mb-2">
+        <div>
           <div *ngIf="count && count > 1">
             {{ count }}
           </div>
         </div>
       </div>
     </div>
-    <div class="mr-2" *ngIf="ownItemCockpit.sellHandler">
+    <div class="w-8 flex-none" *ngIf="ownItemCockpit.sellHandler">
       <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (onClick)="ownItemCockpit.sellHandler()"></p-button>
     </div>
   </div>
-  <div class="mb-2" *ngIf="ownItemCockpit.buildupItemInfos">
-    <hr>
-    <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="3" [numScroll]="1"
+  <div *ngIf="ownItemCockpit.buildupItemInfos" class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
+    <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="5" [numScroll]="5"
                 styleClass="buildup-carousel">
       <ng-template let-buildupItemCockpit #item>
-        <div class="flex flex-col" [style]="{padding: '0 1px 0 1px'}">
-          <div class="flex">
+        <div class="flex flex-col bg-surface-600" [style]="{margin: '0 2px 0 2px'}">
+          <div>
             <button class='item-cockpit-buildup-button'
                     (click)="buildupItemCockpit.onBuild()"
                     [title]="buildTooltip(buildupItemCockpit)"
@@ -43,7 +42,7 @@
               </span>
             </button>
           </div>
-          <div class="flex">
+          <div>
             {{ buildupItemCockpit.price }}
           </div>
         </div>
@@ -52,43 +51,60 @@
   </div>
 </div>
 
-<p-carousel *ngIf="ownMultipleIteCockpits" [value]="ownMultipleIteCockpits" [numVisible]="3" [numScroll]="1"
-            styleClass="multiple-item-carousel">
-  <ng-template let-ownMultipleIteCockpit pTemplate="item">
-    <div class="flex flex-col" [style]="{padding: '0 1px 0 1px'}">
-      <div class="flex">
-        <button class="item-cockpit-multiple-button"
-                (click)="ownMultipleIteCockpit.onSelect()"
-                title="{{ownMultipleIteCockpit.tooltip}}">
-          <img src="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}"
-               style="width: 40px; height: 40px"
-               alt="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}">
-        </button>
+<div *ngIf="ownMultipleIteCockpits" class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
+  <p class="text-surface-300">Click to select units by type</p>
+  <p-carousel [value]="ownMultipleIteCockpits" [numVisible]="5" [numScroll]="5"
+              styleClass="multiple-item-carousel">
+    <ng-template let-ownMultipleIteCockpit #item>
+      <div class="flex flex-col" [style]="{margin: '0 2px 0 2px'}">
+        <div class="flex">
+          <button class="item-cockpit-multiple-button"
+                  (click)="ownMultipleIteCockpit.onSelect()"
+                  title="{{ownMultipleIteCockpit.tooltip}}">
+            <img src="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}"
+                 style="width: 40px; height: 40px"
+                 alt="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}">
+          </button>
+        </div>
+        <div class="flex">
+          {{ ownMultipleIteCockpit.count }}
+        </div>
       </div>
-      <div class="flex">
-        {{ ownMultipleIteCockpit.count }}
-      </div>
-    </div>
-  </ng-template>
-</p-carousel>
+    </ng-template>
+  </p-carousel>
+</div>
 
 <div class="flex flex-col" *ngIf="otherItemCockpit">
-  <div class="mb-2">
-    <img src="{{otherItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{otherItemCockpit.itemTypeName}}">
-  </div>
-  <div class="mb-2">
-    Name: {{ otherItemCockpit.itemTypeName }}
-  </div>
-  <div class="mb-2">
-    Descr: {{ otherItemCockpit.itemTypeDescr }}
-  </div>
-  <div class="mb-2" *ngIf="otherItemCockpit.baseName">
-    Base: {{ otherItemCockpit.baseName }}
-  </div>
-  <div class="mb-2" *ngIf="otherItemCockpit.baseName">
-    Type: {{ otherItemCockpit.type }}
-  </div>
-  <div class="mb-2" *ngIf="otherItemCockpit.baseName">
-    Friend: {{ otherItemCockpit.friend }}
+  <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
+    <div style="font-size: 1.2rem" class="text-surface-300">
+      {{ otherItemCockpit.baseName }}
+    </div>
+    <div class="flex">
+      <div class="w-14 flex-none">
+        <img src="{{otherItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{otherItemCockpit.itemTypeName}}">
+      </div>
+      <div class="grow">
+        <div class="flex flex-col">
+          <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
+            {{ otherItemCockpit.itemTypeName }}
+          </div>
+          <div class="text-surface-300">
+            {{ otherItemCockpit.itemTypeDescr }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="otherItemCockpit.friend && !otherItemCockpit.bot" class="text-green-500">
+      <p><i class="pi pi-verified" style="font-size: 0.8rem"></i>&nbsp;This is a friendly human player</p>
+    </div>
+    <div *ngIf="!otherItemCockpit.friend && otherItemCockpit.bot" class="text-red-500">
+      <p><i class="pi pi-exclamation-triangle" style="font-size: 0.8rem"></i>&nbsp;This is an enemy bot</p>
+    </div>
+    <div *ngIf="otherItemCockpit.friend && otherItemCockpit.bot" class="text-green-500">
+      <p><i class="pi pi-verified" style="font-size: 0.8rem"></i>&nbsp;This is an NPC</p>
+    </div>
+    <div *ngIf="!otherItemCockpit.friend && !otherItemCockpit.bot" class="text-red-500">
+      <p><i class="pi pi-exclamation-triangle" style="font-size: 0.8rem"></i>&nbsp;This is an enemy human player</p>
+    </div>
   </div>
 </div>

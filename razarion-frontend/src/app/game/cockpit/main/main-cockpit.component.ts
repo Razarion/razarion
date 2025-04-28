@@ -10,9 +10,12 @@ import {RadarNoPowerComponent} from './radar/radar-no-power.component';
 import {Checkbox} from 'primeng/checkbox';
 import {NgClass, NgIf} from '@angular/common';
 import {Badge} from 'primeng/badge';
-import {Knob} from 'primeng/knob';
-import {FormsModule} from '@angular/forms';
 import {CockpitDisplayService} from '../cockpit-display.service';
+import {InputText} from 'primeng/inputtext';
+import {InputGroupAddonModule} from 'primeng/inputgroupaddon';
+import {InputGroupModule} from 'primeng/inputgroup';
+import {TooltipModule} from 'primeng/tooltip';
+import {FormsModule} from '@angular/forms';
 
 
 @Component({
@@ -25,9 +28,12 @@ import {CockpitDisplayService} from '../cockpit-display.service';
     Checkbox,
     NgClass,
     Badge,
-    Knob,
-    FormsModule,
-    NgIf
+    NgIf,
+    InputText,
+    InputGroupAddonModule,
+    InputGroupModule,
+    TooltipModule,
+    FormsModule
   ],
   styleUrls: ['main-cockpit.component.scss']
 })
@@ -38,14 +44,11 @@ export class MainCockpitComponent implements MainCockpit {
   cursorPosition?: string;
   private mouseObservable: Nullable<Observer<PointerInfo>> = null;
   levelNumber!: number;
-  xp: number = 0;
-  xp2LevelUp: number = 0.001; // Prevent strange error in browser console
   resources: number = 0;
   itemCount: number = 0;
-  usedHouseSpace: number = 0;
-  houseSpace: number = 0;
-  consuming: number = 0;
-  generating: number = 0.001; // Prevent strange error in browser console
+  displayHouseSpace = "";
+  displayEnergyString = "";
+  displayXp2LevelUp = "";
   radarState!: RadarState;
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
@@ -83,16 +86,14 @@ export class MainCockpitComponent implements MainCockpit {
 
   displayEnergy(consuming: number, generating: number): void {
     this.zone.run(() => {
-      this.consuming = consuming;
-      this.generating = generating;
+      this.displayEnergyString = `${consuming} / ${generating}`;
     });
   }
 
   displayItemCount(itemCount: number, usedHouseSpace: number, houseSpace: number): void {
     this.zone.run(() => {
       this.itemCount = itemCount;
-      this.usedHouseSpace = usedHouseSpace;
-      this.houseSpace = houseSpace;
+      this.displayHouseSpace = `${usedHouseSpace} / ${usedHouseSpace}`;
     });
   }
 
@@ -110,8 +111,7 @@ export class MainCockpitComponent implements MainCockpit {
 
   displayXps(xp: number, xp2LevelUp: number): void {
     this.zone.run(() => {
-      this.xp = xp;
-      this.xp2LevelUp = xp2LevelUp;
+      this.displayXp2LevelUp = `${xp} / ${xp2LevelUp}`;
     });
   }
 

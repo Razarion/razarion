@@ -12,6 +12,6 @@ public class OtherItemCockpit {
     public String itemTypeName;
     public String itemTypeDescr;
     public String baseName;
-    public String type;
     public boolean friend;
+    public boolean bot;
 }

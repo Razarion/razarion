@@ -582,8 +582,8 @@ export interface OtherItemCockpit {
   itemTypeName: string;
   itemTypeDescr: string;
   baseName: string;
-  type: string;
   friend: boolean;
+  bot: boolean;
 }
 
 // ---------- Inventory ----------
