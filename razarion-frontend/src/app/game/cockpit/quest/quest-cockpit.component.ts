@@ -163,9 +163,9 @@ export class QuestCockpitComponent implements QuestCockpit {
     }
     if (this.conditionConfig.getComparisonConfig().getTimeSeconds()) {
       if (this.questProgressInfo?.getSecondsRemaining()) {
-        this.timeRow = `Time remaingin: ${this.questProgressInfo?.getSecondsRemaining()} seconds`;
+        this.timeRow = `Time remaining: ${this.questProgressInfo?.getSecondsRemaining()} seconds`;
       } else {
-        this.timeRow = `Time remaingin: ${this.conditionConfig.getComparisonConfig().getTimeSeconds()} seconds`;
+        this.timeRow = `Time remaining: ${this.conditionConfig.getComparisonConfig().getTimeSeconds()} seconds`;
       }
     } else {
       this.timeRow = undefined
@@ -173,11 +173,11 @@ export class QuestCockpitComponent implements QuestCockpit {
   }
 
   private setupSingleCount(text: string) {
-    let actualCount = this.questProgressInfo ? this.questProgressInfo.getCount() : 0;
-    let expectedCount = (<QuestConfig>this.questDescriptionConfig).getConditionConfig()?.getComparisonConfig().getCount();
+    let actualCount = GwtHelper.gwtIssueNumberNull(this.questProgressInfo?.getCount()) || 0;
+    let expectedCount = GwtHelper.gwtIssueNumberNull((<QuestConfig>this.questDescriptionConfig).getConditionConfig()?.getComparisonConfig().getCount()) || 0;
     this.progressRows.push({
       text: `${text} ${actualCount} of ${expectedCount}`,
-      done: !!(expectedCount && actualCount && actualCount >= expectedCount)
+      done: actualCount >= expectedCount
     });
   }
 

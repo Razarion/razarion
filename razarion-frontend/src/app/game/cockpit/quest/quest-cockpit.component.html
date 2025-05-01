@@ -1,23 +1,28 @@
-<div class="flex flex-col bg-surface-0 dark:bg-surface-900" style="width: 20em">
-  <div class="flex flex-col m-2 items-center font-semibold text-3xl" [ngStyle]="{color:'var(--surface-300)'}">
-    {{ title }}
-  </div>
-  <div *ngFor="let progressRow of progressRows" class="flex flex-row m-1">
-    <div class="flex items-center justify-center p-1">
-      <i *ngIf="!progressRow.done" class="pi pi-exclamation-triangle" style="color: yellow"></i>
-      <i *ngIf="progressRow.done" class="pi pi-check-circle" style="color: green"></i>
+<div class="flex flex-col gap-1" style="width: 20em">
+  <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500"
+       [ngStyle]="{color:'surface-300'}">
+    <div class="font-semibold text-3xl items-center font-semibold">
+      {{ title }}
     </div>
-    <div class="flex">{{ progressRow.text }}</div>
+    <div *ngFor="let progressRow of progressRows" class="flex flex-row">
+      <div class="flex items-center justify-center p-1">
+        <i *ngIf="!progressRow.done" class="pi pi-exclamation-triangle" style="color: yellow"></i>
+        <i *ngIf="progressRow.done" class="pi pi-check-circle" style="color: green"></i>
+      </div>
+      <div class="flex">{{ progressRow.text }}</div>
+    </div>
+    <div *ngIf="timeRow" class="flex flex-col">
+      {{ timeRow }}
+    </div>
   </div>
-  <div *ngIf="timeRow" class="flex flex-col m-1">
-    {{ timeRow }}
-  </div>
-  <div class="flex flex-row items-center justify-center bg-surface-100 dark:bg-surface-700">
-    <p-toggleSwitch (onChange)="onShowQuestInGameVisualisation($event.checked)"
-                    class="flex items-center justify-center p-1"
-                    [(ngModel)]="showQuestInGameVisualisation">
-    </p-toggleSwitch>
-    <div *ngIf="showQuestSelectionButton" class="flex flex-col items-center m-1">
+  <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 items-center bg-surface-100">
+    <div class="grow">
+      <p-toggleSwitch (onChange)="onShowQuestInGameVisualisation($event.checked)"
+                      class="flex items-center justify-center"
+                      [(ngModel)]="showQuestInGameVisualisation">
+      </p-toggleSwitch>
+    </div>
+    <div *ngIf="showQuestSelectionButton" class="grow">
       <p-button type="button" label="Quests" icon="pi pi-list" styleClass="p-button-sm"
                 (onClick)="showQuestDialog = true">
       </p-button>

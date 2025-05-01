@@ -9,10 +9,14 @@ export class GwtHelper {
   }
 
   static gwtIssueNumber(integer: any): number {
+    return <number>GwtHelper.gwtIssueNumberNull(integer); // GWT rubbish
+  }
+
+  static gwtIssueNumberNull(integer: any): number | null | undefined {
     if (integer === null || integer === undefined) {
       return integer;
     }
-    if (typeof<any>integer === 'number') {
+    if (typeof <any>integer === 'number') {
       return integer;
     }
     return <number>Object.values(integer)[0]; // GWT rubbish

@@ -45,7 +45,6 @@ import {GwtInstance} from "../gwtangular/GwtInstance";
 import {ConditionTrigger} from "src/app/generated/razarion-share";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {BabylonRenderServiceAccessImpl} from './renderer/babylon-render-service-access-impl.service';
-import {QuestCockpitComponent} from './cockpit/quest/quest-cockpit.component';
 import {BabylonTerrainTileImpl} from './renderer/babylon-terrain-tile.impl';
 import {HttpClient} from '@angular/common/http';
 import {BabylonModelService} from './renderer/babylon-model.service';
@@ -60,47 +59,6 @@ let displayMockTerrainTile: BabylonTerrainTile[] = [];
   providedIn: 'root',
 })
 export class GameMockService {
-
-  readonly QUEST_CONFIG = new class implements QuestConfig {
-    getConditionConfig(): ConditionConfig | null {
-      return new class implements ConditionConfig {
-        getConditionTrigger(): ConditionTrigger {
-          return ConditionTrigger.SYNC_ITEM_CREATED;
-        }
-
-        getComparisonConfig(): ComparisonConfig {
-          return new class implements ComparisonConfig {
-            getCount(): number | null {
-              return null;
-            }
-
-            getTimeSeconds(): number | null {
-              return null;
-            }
-
-            toTypeCountAngular(): number[][] {
-              return [[1, 2], [2, 3]];
-            }
-
-          };
-        }
-      };
-    }
-
-    getId(): number {
-      return 0;
-    }
-
-    getInternalName(): string {
-      return "";
-    }
-
-    getDescription(): string | null {
-      return null;
-    }
-
-  };
-
   constructor(private http: HttpClient,
               private gwtAngularService: GwtAngularService,
               private babylonModelService: BabylonModelService,
@@ -462,17 +420,6 @@ export class GameMockService {
     // }, 3000)
 
     setTimeout(() => {
-
-      this.showMainCockpit();
-
-      this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar({
-        getId(): number {
-          return 0;
-        }, getInternalName(): string {
-          return '';
-        }
-      }, true)
-
       // Set background
       const element = document.querySelector('.game-main') as HTMLElement;
       if (element) {
@@ -480,8 +427,13 @@ export class GameMockService {
         element.style.backgroundSize = 'cover';
         element.style.backgroundPosition = 'center';
       }
-      this.displayOwnMultipleItemTypesCockpit();
-      // this.displayOwnSingleTypeCockpit();
+
+      this.showMainCockpit();
+
+      this.showQuestionCockpit();
+
+      // this.displayOwnMultipleItemTypesCockpit();
+      this.displayOwnSingleTypeCockpit();
       // this.displayOtherItemTypeCockpit();
     }, 10);
   }
@@ -569,15 +521,48 @@ export class GameMockService {
     this.gwtAngularService.gwtAngularFacade.mainCockpit.show(true)
   }
 
+  private showQuestionCockpit() {
+    this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar(new class implements QuestConfig {
+      getId(): number {
+        return 0;
+      }
 
-  onQuestProgress(questCockpitContainer: QuestCockpitComponent) {
-    questCockpitContainer.onQuestProgress(new class implements QuestProgressInfo {
+      getInternalName(): string {
+        return '';
+      }
+
+      getConditionConfig(): ConditionConfig {
+        return new class implements ConditionConfig {
+          getComparisonConfig(): ComparisonConfig {
+            return new class implements ComparisonConfig {
+              getCount(): number | null {
+                return 10;
+              }
+
+              toTypeCountAngular(): number[][] {
+                return [[1, 2]]
+              }
+
+              getTimeSeconds(): number | null {
+                return null;
+              }
+            };
+          }
+
+          getConditionTrigger(): ConditionTrigger {
+            return ConditionTrigger.HARVEST;
+          }
+        }
+      }
+    }, true)
+
+    this.gwtAngularService.gwtAngularFacade.questCockpit.onQuestProgress(new class implements QuestProgressInfo {
       getBotBasesInformation(): string | null {
         return null;
       }
 
       getCount(): number | null {
-        return 7;
+        return 2;
       }
 
       getSecondsRemaining(): number | null {
@@ -587,7 +572,6 @@ export class GameMockService {
       toTypeCountAngular(): number[][] {
         return [[1, 2], [2, 2]];
       }
-
     });
   }
 
@@ -749,7 +733,7 @@ export class GameMockService {
       getBaseItemTypeAngular(baseItemTypeId: number): BaseItemType {
         return new class implements BaseItemType {
           getName(): string {
-            return "";
+            return `BaseItemType '${baseItemTypeId}'`;
           }
 
           getDescription(): string {
@@ -765,11 +749,11 @@ export class GameMockService {
           }
 
           getId(): number {
-            return 1;
+            return baseItemTypeId;
           }
 
           getInternalName(): string {
-            return "InternalName";
+            return this.getName();
           }
 
           getModel3DId(): number | null {

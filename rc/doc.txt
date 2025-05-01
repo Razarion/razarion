@@ -1,0 +1,1 @@
+nohup ~/jdk-19.0.2+7-jre/bin/java -jar ./razarion-server-0.0.1-SNAPSHOT.jar  --spring.profiles.active=prod > razarion-server.log 2>&1 &
