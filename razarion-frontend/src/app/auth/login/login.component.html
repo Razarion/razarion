@@ -1,0 +1,13 @@
+<form (ngSubmit)="login()" class="form-horizontal" #loginForm="ngForm">
+  <p>
+    <input id="username" type="text" name="username" class="form-control" [(ngModel)]="username" required>
+  </p>
+  <p>
+    <input id="password" type="password" name="password" class="form-control" [(ngModel)]="password" required>
+  </p>
+  <p>
+    <button type="submit" [disabled]="!loginForm.form.valid">Login</button>
+  </p>
+</form>
+
+<p>{{ message }}</p>

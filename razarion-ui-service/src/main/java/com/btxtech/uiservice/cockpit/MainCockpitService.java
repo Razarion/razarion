@@ -30,7 +30,7 @@ public class MainCockpitService {
     }
 
     public void show(UserContext userContext) {
-        mainCockpit.show(userContext.isAdmin());
+        mainCockpit.show();
         updateLevelAndXp(userContext);
     }
 

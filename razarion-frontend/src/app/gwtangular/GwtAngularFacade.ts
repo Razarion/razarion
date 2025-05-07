@@ -476,7 +476,7 @@ export interface ActionServiceListener {
 }
 
 export interface MainCockpit {
-  show(admin: boolean): void;
+  show(): void;
 
   hide(): void;
 

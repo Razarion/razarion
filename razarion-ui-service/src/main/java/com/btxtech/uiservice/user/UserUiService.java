@@ -97,10 +97,6 @@ public class UserUiService {
         return userContext;
     }
 
-    public boolean isAdmin() {
-        return userContext.isAdmin();
-    }
-
     public void increaseXp(int deltaXp) {
         int xp = userContext.getXp() + deltaXp;
         LevelConfig levelConfig = levelService.getLevel(userContext.getLevelId());

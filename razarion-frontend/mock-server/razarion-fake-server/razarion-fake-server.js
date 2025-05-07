@@ -32,11 +32,11 @@ server.on({
 
 server.on({
   method: 'POST',
-  path: '/rest/frontend/login',
+  path: '/rest/auth',
   reply: {
     status: 200,
     headers: {"content-type": "application/json"},
-    body: '"OK"'
+    body: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1heCBNdXNlciIsImlhdCI6MTUxNjIzOTAyMn0.DJvLjHkAT44YpiGLAFV1YFxU4kxNOw7M0bN0BMHcQ2s'
   }
 });
 

@@ -51,7 +51,6 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user"),
             inverseJoinColumns = @JoinColumn(name = "inventory"))
     private List<InventoryItemEntity> inventory;
-    private Locale locale;
     private int xp;
     private int crystals;
     @ManyToMany(fetch = FetchType.LAZY)
@@ -91,29 +90,8 @@ public class UserEntity {
         return name;
     }
 
-    public void fromAnonymus(Locale locale) {
-        this.locale = locale;
-    }
-
-    /**
-     * Should not be used for facebook email
-     *
-     * @param email         Should not be used for facebook email
-     * @param passwordHash  passwordHash
-     * @param locale        locale
-     */
-    public void fromEmailPasswordHash(String email, String passwordHash, Locale locale) {
-        registerDate = new Date();
-        this.email = email;
-        this.passwordHash = passwordHash;
-        this.locale = locale;
-    }
-
-    public void fromFacebookUserLoginInfo(String facebookUserId, Locale locale) {
-        // this.email should not be used for facebook email
-        registerDate = new Date();
-        this.facebookUserId = facebookUserId;
-        this.locale = locale;
+    public boolean isAdmin() {
+        return admin;
     }
 
     public UserContext toUserContext() {
@@ -122,7 +100,6 @@ public class UserEntity {
                 .registerState(createRegisterState())
                 .name(name)
                 .unlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities))
-                .admin(admin)
                 .xp(xp);
         if (level != null) {
             userContext.levelId(level.getId());
@@ -194,10 +171,6 @@ public class UserEntity {
             return;
         }
         inventory.remove(inventoryItemEntity);
-    }
-
-    public Locale getLocale() {
-        return locale;
     }
 
     public String getFacebookUserId() {
@@ -313,11 +286,6 @@ public class UserEntity {
         } else {
             return UserContext.RegisterState.UNREGISTERED;
         }
-    }
-
-    public UserEntity admin(boolean admin) {
-        this.admin = admin;
-        return this;
     }
 
     @Override

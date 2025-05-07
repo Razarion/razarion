@@ -6,7 +6,7 @@ import com.btxtech.uiservice.control.GameUiControl;
 
 public class TestMainCockpit implements MainCockpit {
     @Override
-    public void show(boolean admin) {
+    public void show() {
 
     }
 

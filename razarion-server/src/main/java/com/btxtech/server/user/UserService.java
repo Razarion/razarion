@@ -14,6 +14,11 @@ import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,7 +28,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final LevelCrudPersistence levelCrudPersistence;
     private final SessionService sessionService;
     private final UserRepository userRepository;
@@ -33,12 +38,41 @@ public class UserService {
     public UserService(LevelCrudPersistence levelCrudPersistence,
                        SessionService sessionService,
                        UserRepository userRepository,
-                       ServerGameEngineCrudPersistence serverGameEngineCrudPersistence, QuestConfigService questConfigService) {
+                       ServerGameEngineCrudPersistence serverGameEngineCrudPersistence,
+                       QuestConfigService questConfigService) {
         this.levelCrudPersistence = levelCrudPersistence;
         this.sessionService = sessionService;
         this.userRepository = userRepository;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
         this.questConfigService = questConfigService;
+    }
+
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        var userEntity = userRepository.findByEmail(username).orElseThrow();
+
+        return new UserDetails() {
+
+            @Override
+            public Collection<? extends GrantedAuthority> getAuthorities() {
+                if (userEntity.isAdmin()) {
+                    return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                } else {
+                    return List.of();
+                }
+            }
+
+            @Override
+            public String getPassword() {
+                return userEntity.getPasswordHash();
+            }
+
+            @Override
+            public String getUsername() {
+                return userEntity.getEmail();
+            }
+        };
     }
 
     @Transactional

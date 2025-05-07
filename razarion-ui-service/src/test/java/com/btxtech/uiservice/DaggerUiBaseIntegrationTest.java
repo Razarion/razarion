@@ -128,7 +128,7 @@ public class DaggerUiBaseIntegrationTest {
         getWeldBean(ItemCockpitService.class).init(getWeldBean(TestItemCockpitFrontend.class));
         getWeldBean(MainCockpitService.class).init(new MainCockpit() {
             @Override
-            public void show(boolean admin) {
+            public void show() {
 
             }
 

@@ -112,10 +112,8 @@ public class LifecycleService {
         boot.addStartupProgressListener(new StartupProgressListener() {
             @Override
             public void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
-                if (userUiService.isAdmin()) {
-                    gwtAngularService.onCrash();
-                    screenCover.get().removeLoadingCover();
-                }
+                gwtAngularService.onCrash();
+                screenCover.get().removeLoadingCover();
             }
         });
         DomGlobal.document.addEventListener("beforeunload", evt -> beforeUnload = true);

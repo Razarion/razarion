@@ -16,6 +16,10 @@ import {InputGroupAddonModule} from 'primeng/inputgroupaddon';
 import {InputGroupModule} from 'primeng/inputgroup';
 import {TooltipModule} from 'primeng/tooltip';
 import {FormsModule} from '@angular/forms';
+import {Dialog} from 'primeng/dialog';
+import {LoginComponent} from '../../../auth/login/login.component';
+import {AuthService} from '../../../auth/auth.service';
+import {UserComponent} from '../../../auth/user/user.component';
 
 
 @Component({
@@ -33,12 +37,14 @@ import {FormsModule} from '@angular/forms';
     InputGroupAddonModule,
     InputGroupModule,
     TooltipModule,
-    FormsModule
+    FormsModule,
+    Dialog,
+    LoginComponent,
+    UserComponent
   ],
   styleUrls: ['main-cockpit.component.scss']
 })
 export class MainCockpitComponent implements MainCockpit {
-  admin: boolean = false;
   editorDialog: boolean = false;
   showCursorPosition: boolean = false;
   cursorPosition?: string;
@@ -53,17 +59,18 @@ export class MainCockpitComponent implements MainCockpit {
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
   blinkUnlockEnabled = false;
+  showLoginDialog = false;
+  showUserDialog = false;
 
   constructor(private zone: NgZone,
               private cockpitDisplayService: CockpitDisplayService,
               private gameComponent: GameComponent,
               private renderService: BabylonRenderServiceAccessImpl,
-              private router: Router) {
+              private authService: AuthService) {
   }
 
-  show(admin: boolean): void {
+  show(): void {
     this.zone.run(() => {
-      this.admin = admin;
       this.cockpitDisplayService.showMainCockpit = true;
     });
   }
@@ -137,6 +144,13 @@ export class MainCockpitComponent implements MainCockpit {
     });
   }
 
+  isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
 
   onShowCursorPosition(): void {
     if (this.showCursorPosition) {
@@ -158,9 +172,4 @@ export class MainCockpitComponent implements MainCockpit {
       this.cursorPosition = undefined;
     }
   }
-
-  onSignOut() {
-    this.router.navigate(['/logout']);
-  }
-
 }

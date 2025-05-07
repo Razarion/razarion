@@ -82,7 +82,7 @@ export class GameMockService {
       this.babylonModelService.init().then(() => {
         this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.mockTerrainTypeService();
         this.mockTerrainTile(this.babylonRenderServiceAccessImpl);
-        this.gwtAngularService.gwtAngularFacade.mainCockpit.show(true)
+        this.gwtAngularService.gwtAngularFacade.mainCockpit.show()
         this.gwtAngularService.gwtAngularFacade.mainCockpit.showRadar(RadarState.WORKING)
         this.babylonRenderServiceAccessImpl.runRenderer();
         setTimeout(() => {
@@ -518,7 +518,7 @@ export class GameMockService {
     this.gwtAngularService.gwtAngularFacade.mainCockpit.displayXps(5, 20);
     this.gwtAngularService.gwtAngularFacade.mainCockpit.displayLevel(1)
     this.gwtAngularService.gwtAngularFacade.mainCockpit.displayEnergy(0, 1);
-    this.gwtAngularService.gwtAngularFacade.mainCockpit.show(true)
+    this.gwtAngularService.gwtAngularFacade.mainCockpit.show()
   }
 
   private showQuestionCockpit() {

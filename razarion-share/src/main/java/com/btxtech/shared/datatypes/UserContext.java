@@ -11,17 +11,9 @@ import java.util.Map;
  */
 @JSONMapper
 public class UserContext {
-    public enum RegisterState {
-        UNREGISTERED,
-        EMAIL_UNVERIFIED,
-        EMAIL_VERIFIED,
-        FACEBOOK
-    }
-
     private int userId;
     private RegisterState registerState;
     private String name;
-    private boolean admin;
     private Integer levelId;
     private Map<Integer, Integer> unlockedItemLimit;
     private int xp;
@@ -57,30 +49,21 @@ public class UserContext {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public UserContext name(String name) {
         setName(name);
         return this;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public UserContext admin(boolean admin) {
-        setAdmin(admin);
-        return this;
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
-
     public Integer getLevelId() {
         return levelId;
+    }
+
+    public void setLevelId(Integer levelId) {
+        this.levelId = levelId;
     }
 
     public UserContext levelId(Integer levelId) {
@@ -88,12 +71,12 @@ public class UserContext {
         return this;
     }
 
-    public void setLevelId(Integer levelId) {
-        this.levelId = levelId;
-    }
-
     public Map<Integer, Integer> getUnlockedItemLimit() {
         return unlockedItemLimit;
+    }
+
+    public void setUnlockedItemLimit(Map<Integer, Integer> unlockedItemLimit) {
+        this.unlockedItemLimit = unlockedItemLimit;
     }
 
     public UserContext unlockedItemLimit(Map<Integer, Integer> unlockedItemLimit) {
@@ -101,21 +84,17 @@ public class UserContext {
         return this;
     }
 
-    public void setUnlockedItemLimit(Map<Integer, Integer> unlockedItemLimit) {
-        this.unlockedItemLimit = unlockedItemLimit;
-    }
-
     public int getXp() {
         return xp;
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
     }
 
     public UserContext xp(int xp) {
         setXp(xp);
         return this;
-    }
-
-    public void setXp(int xp) {
-        this.xp = xp;
     }
 
     public boolean registered() {
@@ -135,10 +114,16 @@ public class UserContext {
         return "UserContext{" +
                 "userId='" + userId + '\'' +
                 ", name='" + name + '\'' +
-                ", admin=" + admin +
                 ", levelId=" + levelId +
                 ", unlockedItemLimit=" + unlockedItemLimit +
                 ", xp=" + xp +
                 '}';
+    }
+
+    public enum RegisterState {
+        UNREGISTERED,
+        EMAIL_UNVERIFIED,
+        EMAIL_VERIFIED,
+        FACEBOOK
     }
 }
