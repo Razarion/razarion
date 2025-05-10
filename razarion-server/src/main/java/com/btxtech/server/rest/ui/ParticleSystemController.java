@@ -1,11 +1,12 @@
 package com.btxtech.server.rest.ui;
 
+import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.ui.ImageLibraryEntity;
 import com.btxtech.server.model.ui.ParticleSystemEntity;
 import com.btxtech.server.rest.AbstractBaseController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.ParticleSystemService;
-import com.btxtech.server.user.SecurityCheck;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,7 @@ public class ParticleSystemController extends AbstractBaseController<ParticleSys
         }
     }
 
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     @PutMapping(value = "upload/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void uploadData(@PathVariable("id") int id, @RequestBody byte[] data) {
         particleSystemCrudPersistence.setData(id, data);

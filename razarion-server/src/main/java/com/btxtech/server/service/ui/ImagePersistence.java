@@ -49,7 +49,7 @@ public class ImagePersistence {
 //    }
 //
 //    @Transactional
-//    @SecurityCheck
+//    @RolesAllowed(Roles.ADMIN)
 //    public ImageGalleryItem createImage(byte[] imageData, String type) {
 //        ImageLibraryEntity imageLibraryEntity = new ImageLibraryEntity();
 //        imageLibraryEntity.setType(type);
@@ -60,7 +60,7 @@ public class ImagePersistence {
 //    }
 //
 //    @Transactional
-//    @SecurityCheck
+//    @RolesAllowed(Roles.ADMIN)
 //    public void save(int id, byte[] imageData, String type) {
 //        ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, id);
 //        imageLibraryEntity.setType(type);
@@ -70,7 +70,7 @@ public class ImagePersistence {
 //    }
 //
 //    @Transactional
-//    @SecurityCheck
+//    @RolesAllowed(Roles.ADMIN)
 //    public void saveInternalName(int id, String internalName) {
 //        ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, id);
 //        imageLibraryEntity.setInternalName(internalName);
@@ -78,7 +78,7 @@ public class ImagePersistence {
 //    }
 //
 //    @Transactional
-//    @SecurityCheck
+//    @RolesAllowed(Roles.ADMIN)
 //    public void delete(int id) {
 //        ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, id);
 //        if (imageLibraryEntity == null) {

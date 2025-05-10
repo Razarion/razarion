@@ -1,11 +1,12 @@
 package com.btxtech.server.rest.ui;
 
+import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.ui.Model3DEntity;
 import com.btxtech.server.rest.AbstractBaseController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.Model3DService;
-import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.CommonUrl;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.transaction.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +39,7 @@ public class Model3DController extends AbstractBaseController<Model3DEntity> {
         return model3DCrudPersistence;
     }
 
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     @Transactional
     @GetMapping(value = "getModel3DsByGltf/{gltfId}", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public List<Model3DEntity> getModel3DsByGltf(@PathVariable("gltfId") int gltfId) {

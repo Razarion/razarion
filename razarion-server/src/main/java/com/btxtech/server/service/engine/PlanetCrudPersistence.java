@@ -1,13 +1,14 @@
 package com.btxtech.server.service.engine;
 
+import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.engine.BaseItemTypeEntity;
 import com.btxtech.server.model.engine.PlanetEntity;
 import com.btxtech.server.model.engine.TerrainObjectPositionEntity;
 import com.btxtech.server.repository.engine.PlanetRepository;
-import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -74,7 +75,7 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
     }
 
     @Transactional
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void createTerrainObjectPositions(int planetId, List<TerrainObjectPosition> createdTerrainObjects) {
         List<TerrainObjectPositionEntity> terrainObjectPositionEntities = new ArrayList<>();
         for (TerrainObjectPosition terrainObjectPosition : createdTerrainObjects) {
@@ -89,7 +90,7 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
     }
 
     @Transactional
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void updateTerrainObjectPositions(int planetId, List<TerrainObjectPosition> updatedTerrainObjects) {
         PlanetEntity planetEntity = getEntity(planetId);
         for (TerrainObjectPosition terrainObjectPosition : updatedTerrainObjects) {
@@ -100,7 +101,7 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
     }
 
     @Transactional
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void deleteTerrainObjectPositionIds(int planetId, List<Integer> deletedTerrainIds) {
         PlanetEntity planetEntity = getEntity(planetId);
         for (int terrainSlopePositionId : deletedTerrainIds) {
@@ -118,7 +119,7 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
     }
 
     @Transactional
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void updateMiniMapImage(int planetId, byte[] data) {
         PlanetEntity planetEntity = getEntity(planetId);
         planetEntity.setMiniMapImage(data);
@@ -131,7 +132,7 @@ public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetC
     }
 
     @Transactional
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void updateCompressedHeightMap(int planetId, byte[] data) {
         PlanetEntity planetEntity = getEntity(planetId);
         planetEntity.setCompressedHeightMap(data);

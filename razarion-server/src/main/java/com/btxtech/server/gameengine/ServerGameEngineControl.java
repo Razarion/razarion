@@ -1,19 +1,31 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.engine.BackupPlanetOverview;
 import com.btxtech.server.service.engine.PlanetCrudPersistence;
 import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
 import com.btxtech.server.service.engine.StaticGameConfigService;
-import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.InitializeService;
-import com.btxtech.shared.gameengine.datatypes.*;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-import com.btxtech.shared.gameengine.planet.*;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.BaseRestoreProvider;
+import com.btxtech.shared.gameengine.planet.BoxService;
+import com.btxtech.shared.gameengine.planet.GameLogicListener;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.PlanetTickListener;
+import com.btxtech.shared.gameengine.planet.ResourceService;
+import com.btxtech.shared.gameengine.planet.SynchronizationSendingContext;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -21,6 +33,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -108,7 +121,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         }
     }
 
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void reloadStatic() {
         synchronized (reloadLook) {
             long time = System.currentTimeMillis();
@@ -117,7 +130,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         }
     }
 
-//  TODO  @SecurityCheck
+//  TODO  @RolesAllowed(Roles.ADMIN)
 //    public void restartBots() {
 //        synchronized (reloadLook) {
 //            botService.killAllBots();
@@ -125,14 +138,14 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 //        }
 //    }
 
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void restartResourceRegions() {
         synchronized (reloadLook) {
             resourceService.reloadResourceRegions(serverGameEngineCrudPersistence.readMasterPlanetConfig().getResourceRegionConfigs());
         }
     }
 
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void restartBoxRegions() {
         synchronized (reloadLook) {
             boxService.stopBoxRegions();
@@ -140,7 +153,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         }
     }
 
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void restartPlanet() {
         if (!running) {
             return;
@@ -152,7 +165,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         logger.info("ServerGameEngineControl.restartPlanet() in: " + (System.currentTimeMillis() - time));
     }
 
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void backupPlanet() throws JsonProcessingException {
         if (!running) {
             return;
@@ -163,7 +176,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         logger.info("ServerGameEngineControl.backupPlanet() in: " + (System.currentTimeMillis() - time));
     }
 
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void restorePlanet(BackupPlanetOverview backupPlanetOverview) {
 //  TODO      long time = System.currentTimeMillis();
 //        BackupPlanetInfo backupPlanetInfo = planetBackupMongoDb.loadBackup(backupPlanetOverview);

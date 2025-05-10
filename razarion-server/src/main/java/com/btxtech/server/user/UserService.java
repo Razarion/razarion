@@ -1,5 +1,6 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.UserEntity;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.LevelUnlockEntity;
@@ -57,7 +58,7 @@ public class UserService implements UserDetailsService {
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {
                 if (userEntity.isAdmin()) {
-                    return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                    return List.of(new SimpleGrantedAuthority(Roles.toJwtRole(Roles.ADMIN)));
                 } else {
                     return List.of();
                 }

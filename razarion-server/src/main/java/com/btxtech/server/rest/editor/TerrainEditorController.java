@@ -1,9 +1,10 @@
 package com.btxtech.server.rest.editor;
 
 import com.btxtech.server.model.DataUrlDecoder;
+import com.btxtech.server.model.Roles;
 import com.btxtech.server.service.engine.PlanetCrudPersistence;
-import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
+import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -25,7 +26,7 @@ public class TerrainEditorController {
     }
 
     @PutMapping(value = "updateTerrain/{planetId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void updateTerrain(@PathVariable("planetId") int planetId, @RequestBody TerrainEditorUpdate terrainEditorUpdate) {
         try {
             // Check if terrain is valid
@@ -48,7 +49,7 @@ public class TerrainEditorController {
 
 
     @PutMapping(value = "updateMiniMapImage/{planetId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void updateMiniMapImage(@PathVariable("planetId") int planetId, @RequestBody String dataUrl) {
         try {
             DataUrlDecoder dataUrlDecoder = new DataUrlDecoder(dataUrl);
@@ -60,7 +61,7 @@ public class TerrainEditorController {
     }
 
     @PostMapping(value = "updateCompressedHeightMap/{planetId}", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void updateCompressedHeightMap(@PathVariable("planetId") int planetId, byte[] zippedHeightMap) {
         try {
             planetCrudPersistence.updateCompressedHeightMap(planetId, zippedHeightMap);

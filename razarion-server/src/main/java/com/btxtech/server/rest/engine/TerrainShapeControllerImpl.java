@@ -1,11 +1,12 @@
 package com.btxtech.server.rest.engine;
 
+import com.btxtech.server.model.Roles;
 import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
-import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.rest.TerrainShapeController;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,7 @@ public class TerrainShapeControllerImpl implements TerrainShapeController {
     }
 
     @Override
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     public void createTerrainShape(int planetId) {
         ServerGameEngineConfig serverGameEngineConfig = serverGameEngineCrudPersistence.read().get(0);
         serverTerrainShapeService.createTerrainShape(serverGameEngineConfig.getBotConfigs(), planetId);

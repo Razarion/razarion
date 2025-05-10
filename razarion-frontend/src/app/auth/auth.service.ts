@@ -10,8 +10,12 @@ export class AuthService {
   constructor(private httpClient: HttpClient) {
   }
 
+  getAppToken(): string | null {
+    return localStorage.getItem("app.token");
+  }
+
   isLoggedIn(): boolean {
-    return !!localStorage.getItem("app.token");
+    return !!this.getAppToken();
   }
 
   isAdmin(): boolean {

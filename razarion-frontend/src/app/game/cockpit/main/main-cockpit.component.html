@@ -44,7 +44,8 @@
     </p-button>
   </div>
 
-  <div *ngIf="radarState == WORKING || radarState == NO_POWER" class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
+  <div *ngIf="radarState == WORKING || radarState == NO_POWER"
+       class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
     <div *ngIf="radarState == WORKING">
       <radar></radar>
     </div>
@@ -65,10 +66,10 @@
 </div>
 
 <p-dialog header="Login" [(visible)]="showLoginDialog">
-  <login></login>
+  <login user *ngIf="showLoginDialog"></login>
 </p-dialog>
 
 <p-dialog header="User" [(visible)]="showUserDialog">
-  <user></user>
+  <user *ngIf="showUserDialog"></user>
 </p-dialog>
 

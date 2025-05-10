@@ -1,8 +1,9 @@
 package com.btxtech.server.rest.editor;
 
+import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.engine.DbPropertyConfig;
 import com.btxtech.server.service.engine.DbPropertiesService;
-import com.btxtech.server.user.SecurityCheck;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,13 +22,13 @@ public class DbPropertiesEditorController {
         this.dbPropertiesService = dbPropertiesService;
     }
 
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     @GetMapping(value = "get-all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DbPropertyConfig> readAllProperties() {
         return dbPropertiesService.getDbPropertyConfigs();
     }
 
-    @SecurityCheck
+    @RolesAllowed(Roles.ADMIN)
     @PutMapping(value = "update", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void updateProperty(@RequestBody DbPropertyConfig dbPropertyConfig) {
         dbPropertiesService.saveDbPropertyConfig(dbPropertyConfig);
