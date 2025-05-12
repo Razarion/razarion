@@ -9,6 +9,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,6 +29,12 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthen
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -35,15 +42,16 @@ import java.security.interfaces.RSAPublicKey;
 @EnableWebSecurity
 @EnableMethodSecurity(jsr250Enabled = true)
 public class SecurityConfiguration {
-    private final RSAPublicKey key;
-    private final RSAPrivateKey priv;
     @Value("${spring.websecurity.debug:false}")
     boolean webSecurityDebug;
-
-    public SecurityConfiguration(@Value("${jwt.public.key}") RSAPublicKey key, @Value("${jwt.private.key}") RSAPrivateKey priv) {
-        this.key = key;
-        this.priv = priv;
-    }
+    @Value("${jwt.keystore.location}")
+    private String keystoreLocation;
+    @Value("${jwt.keystore.password}")
+    private String keystorePassword;
+    @Value("${jwt.key.alias}")
+    private String keyAlias;
+    @Value("${jwt.key.password}")
+    private String keyPassword;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -72,18 +80,6 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(this.key).build();
-    }
-
-    @Bean
-    JwtEncoder jwtEncoder() {
-        JWK jwk = new RSAKey.Builder(this.key).privateKey(this.priv).build();
-        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-        return new NimbusJwtEncoder(jwks);
-    }
-
-    @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         // Remove the SCOPE_ prefix
@@ -92,6 +88,50 @@ public class SecurityConfiguration {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
+    }
+
+    @Bean
+    public KeyPair keyPair() throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+
+        try (InputStream inputStream = getInputStreamFromLocation(keystoreLocation)) {
+            keyStore.load(inputStream, keystorePassword.toCharArray());
+        }
+
+        Key key = keyStore.getKey(keyAlias, keyPassword.toCharArray());
+        if (!(key instanceof RSAPrivateKey)) {
+            throw new IllegalStateException("Not an RSA private key");
+        }
+
+        RSAPrivateKey privateKey = (RSAPrivateKey) key;
+        RSAPublicKey publicKey = (RSAPublicKey) keyStore.getCertificate(keyAlias).getPublicKey();
+        return new KeyPair(publicKey, privateKey);
+    }
+
+    private InputStream getInputStreamFromLocation(String location) throws IOException {
+        if (location.startsWith("classpath:")) {
+            String path = location.substring("classpath:".length());
+            return new ClassPathResource(path).getInputStream();
+        } else if (location.startsWith("file:")) {
+            String path = location.substring("file:".length());
+            return new FileInputStream(path);
+        } else {
+            return new FileInputStream(location);
+        }
+    }
+
+    @Bean
+    public JwtEncoder jwtEncoder(KeyPair keyPair) {
+        JWK jwk = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
+                .privateKey((RSAPrivateKey) keyPair.getPrivate())
+                .build();
+        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+        return new NimbusJwtEncoder(jwks);
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder(KeyPair keyPair) {
+        return NimbusJwtDecoder.withPublicKey((RSAPublicKey) keyPair.getPublic()).build();
     }
 
     @Bean
