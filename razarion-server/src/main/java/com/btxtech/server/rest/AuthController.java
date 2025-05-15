@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +23,7 @@ public class AuthController {
         this.encoder = encoder;
     }
 
-    @PostMapping("")
+    @PostMapping("auth")
     public String auth(Authentication authentication) {
         Instant now = Instant.now();
         long expiry = 36000L;
@@ -37,6 +38,10 @@ public class AuthController {
                 .claim("scope", scope)
                 .build();
         return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    @GetMapping("checkToken")
+    public void checkToken() {
     }
 
 }

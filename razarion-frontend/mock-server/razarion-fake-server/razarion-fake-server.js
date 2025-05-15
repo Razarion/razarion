@@ -21,22 +21,20 @@ app.use(bodyParser.text({limit: '500mb'}));
 let server = new ServerMock({host: "127.0.0.1", port: PORT});
 
 server.on({
-  method: 'GET',
-  path: '/rest/frontend/isloggedin',
-  reply: {
-    status: 200,
-    headers: {"content-type": "application/json"},
-    body: '{"loggedIn": "true", "language": "en"}'
-  }
-});
-
-server.on({
   method: 'POST',
-  path: '/rest/auth',
+  path: '/rest/auth/auth',
   reply: {
     status: 200,
     headers: {"content-type": "application/json"},
     body: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1heCBNdXNlciIsImlhdCI6MTUxNjIzOTAyMn0.DJvLjHkAT44YpiGLAFV1YFxU4kxNOw7M0bN0BMHcQ2s'
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/auth/checkToken',
+  reply: {
+    status: 200,
   }
 });
 

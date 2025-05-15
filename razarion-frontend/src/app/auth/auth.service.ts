@@ -2,12 +2,37 @@ import {Injectable} from '@angular/core';
 import {AuthControllerClient, HttpClient as HttpClientAdapter, RestResponse} from '../generated/razarion-share';
 import {HttpClient} from '@angular/common/http';
 import {jwtDecode, JwtPayload} from 'jwt-decode';
+import {TypescriptGenerator} from '../backend/typescript-generator';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private httpClient: HttpClient) {
+  private authControllerClient: AuthControllerClient;
+
+
+  constructor(private httpClient: HttpClient,
+              private router: Router) {
+    this.authControllerClient = new AuthControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
+  }
+
+  public checkToken(): Promise<void> {
+    if (this.getAppToken() === null) {
+      return Promise.resolve();
+    }
+    return this.authControllerClient.checkToken()
+      .then(() => {
+        return Promise.resolve();
+      })
+      .catch((error) => {
+        const status = error?.status ?? error?.response?.status;
+        if (status !== 401) {
+          console.error("Error checking token:", error);
+        }
+        this.router.navigate(['invalid-token']);
+        return Promise.resolve();
+      });
   }
 
   getAppToken(): string | null {
@@ -26,16 +51,20 @@ export class AuthService {
     const roleFromRoute = "ROLE_ADMIN"
     const roles = (<any>decodedToken).scope;
 
-    if (roles!.includes(",")) {
-      if (roles === roleFromRoute) {
-        return true;
-      }
-    } else {
-      const roleArray = roles!.split(",");
+    if (!roles) {
+      return false;
+    }
+
+    if (roles.includes(",")) {
+      const roleArray = roles.split(",");
       for (let role of roleArray) {
         if (role === roleFromRoute) {
           return true;
         }
+      }
+    } else {
+      if (roles === roleFromRoute) {
+        return true;
       }
     }
     return false;
@@ -46,6 +75,8 @@ export class AuthService {
   }
 
   login(username: string, password: string): Promise<string> {
+    this.logout();
+
     const httpClient = this.httpClient;
     let authController = new AuthControllerClient(new class implements HttpClientAdapter {
 

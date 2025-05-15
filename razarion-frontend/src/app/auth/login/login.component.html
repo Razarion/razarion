@@ -1,12 +1,16 @@
-<form (ngSubmit)="login()" class="form-horizontal" #loginForm="ngForm">
+<form (ngSubmit)="login()" class="flex flex-col gap-1" #loginForm="ngForm">
   <p>
-    <input id="username" type="text" name="username" class="form-control" [(ngModel)]="username" required>
+    <input id="username" type="text" name="username"
+           class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
+           [(ngModel)]="username" required>
   </p>
   <p>
-    <input id="password" type="password" name="password" class="form-control" [(ngModel)]="password" required>
+    <input id="password" type="password" name="password"
+           class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
+           [(ngModel)]="password" required>
   </p>
   <p>
-    <button type="submit" [disabled]="!loginForm.form.valid">Login</button>
+    <p-button type="submit" label="Login" styleClass="p-button-sm" [disabled]="!loginForm.form.valid"></p-button>
   </p>
 </form>
 

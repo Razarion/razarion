@@ -19,6 +19,7 @@ import {DrawerModule} from 'primeng/drawer';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
 import {InventoryComponent} from './inventory/inventory.component';
 import {UnlockComponent} from './unlock/unlock.component';
+import {AuthService} from '../auth/auth.service';
 
 
 @Component({
@@ -62,11 +63,19 @@ export class GameComponent implements OnInit {
               private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
               private gameMockService: GameMockService,
               private actionService: ActionService,
+              private authService: AuthService,
               private zone: NgZone) {
     this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, gwtAngularService);
   }
 
   ngOnInit(): void {
+    this.authService.checkToken()
+      .then(() => {
+        this.initAndStart();
+      });
+  }
+
+  private initAndStart(): void {
     this.gwtAngularService.crashListener = () => this.addEditorModel(new EditorModel("Crash Information Panel", CrashPanelComponent));
     this.gwtAngularService.gwtAngularFacade.modelDialogPresenter = this.modelDialogPresenter;
     this.babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
