@@ -44,6 +44,7 @@ public class ClientGameConnection {
         this.planetService = planetService;
         this.sessionService = sessionService;
         this.commandService = commandService;
+        logger.info("ClientGameConnection created {}", System.identityHashCode(this));
     }
 
     public void init(WebSocketSession wsSession, String httpSessionId) {
@@ -128,6 +129,7 @@ public class ClientGameConnection {
     }
 
     private PlayerSession getPlayerSession() {
+        logger.info("ClientGameConnection getPlayerSession(): {} {}", System.identityHashCode(this), httpSessionId);
         return sessionService.getSession(httpSessionId);
     }
 

@@ -18,11 +18,15 @@
   left: 50%;
   transform: translate(-50%, -50%);
   align-items: center;
+  border: solid 1px var(--p-emerald-900);
+  padding: 10px;
+  background-color: black;
+  box-shadow: 0 0 10px 0 black;
 }
 
 .cover-panel-fadeout {
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 2s ease;
 }
 
 .cover-panel-hide {
@@ -34,9 +38,14 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  margin-top: 1em;
 }
 
 .info-font {
   font-family: Arial, Helvetica, sans-serif;
   color: #CCC;
+}
+
+::ng-deep .p-progressbar .p-progressbar-value {
+  transition: none !important;
 }

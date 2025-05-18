@@ -14,7 +14,7 @@ import {ScreenCover} from '../../gwtangular/GwtAngularFacade';
 export class ScreenCoverComponent implements ScreenCover {
   fadeOutCover: boolean = false;
   removeCover: boolean = false;
-  loadingProgress = 0;
+  loadingProgress = 3;
 
   constructor(private zone: NgZone) {
   }

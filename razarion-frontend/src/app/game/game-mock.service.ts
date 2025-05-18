@@ -394,48 +394,47 @@ export class GameMockService {
   }
 
   private simulateStartup() {
-    // setTimeout(() => {
-    //   this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(25);
-    // }, 0.25);
-    // setTimeout(() => {
-    //   this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(50);
-    // }, 0.5);
-    // setTimeout(() => {
-    //   this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(100);
-    // }, 0.75);
     setTimeout(() => {
-      // Set background
-      const element = document.querySelector('.game-main') as HTMLElement;
-      if (element) {
-        element.style.backgroundImage = `url(${"/cockpit/MockGameBackground.jpg"})`;
-        element.style.backgroundSize = 'cover';
-        element.style.backgroundPosition = 'center';
-      }
-      this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
-    }, 10);
+      this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(25);
+    }, 1000);
+    setTimeout(() => {
+      this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(50);
+    }, 2000);
+    setTimeout(() => {
+      this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(75);
+    }, 3000);
+    setTimeout(() => {
+      this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(100);
+      this.fakeRenderImageRemoveLoadingCover();
+    }, 4000);
 
     // setInterval(() => {
     //   // this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
     //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
     // }, 3000)
+    // this.showUi();
+  }
 
+  private showUi() {
     setTimeout(() => {
-      // Set background
-      const element = document.querySelector('.game-main') as HTMLElement;
-      if (element) {
-        element.style.backgroundImage = `url(${"/cockpit/MockGameBackground.jpg"})`;
-        element.style.backgroundSize = 'cover';
-        element.style.backgroundPosition = 'center';
-      }
-
+      this.fakeRenderImageRemoveLoadingCover();
       this.showMainCockpit();
 
       this.showQuestionCockpit();
-
       // this.displayOwnMultipleItemTypesCockpit();
       this.displayOwnSingleTypeCockpit();
       // this.displayOtherItemTypeCockpit();
     }, 10);
+  }
+
+  private fakeRenderImageRemoveLoadingCover() {
+    const element = document.querySelector('.game-main') as HTMLElement;
+    if (element) {
+      element.style.backgroundImage = `url(${"/cockpit/MockGameBackground.jpg"})`;
+      element.style.backgroundSize = 'cover';
+      element.style.backgroundPosition = 'center';
+    }
+    this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
   }
 
   private displayOwnSingleTypeCockpit() {

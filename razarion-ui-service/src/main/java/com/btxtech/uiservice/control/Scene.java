@@ -84,10 +84,6 @@ public class Scene {
 
     public void run() {
         setupViewFieldConfig(sceneConfig.getViewFieldConfig());
-        if (sceneConfig.isRemoveLoadingCover()) {
-            completionCallbackCount++;
-            screenCover.removeLoadingCover();
-        }
         if (sceneConfig.getIntroText() != null && !sceneConfig.getIntroText().trim().isEmpty()) {
             screenCover.showStoryCover(sceneConfig.getIntroText());
         }

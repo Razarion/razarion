@@ -35,7 +35,6 @@ public class SceneConfig {
     private ScrollUiQuest scrollUiQuest;
     private List<BoxItemPosition> boxItemPositions;
     private GameTipConfig gameTipConfig;
-    private boolean removeLoadingCover;
 
     public Integer id() {
         return id;
@@ -262,15 +261,6 @@ public class SceneConfig {
         return this;
     }
 
-    public boolean isRemoveLoadingCover() {
-        return removeLoadingCover;
-    }
-
-    public SceneConfig removeLoadingCover(boolean removeLoadingCover) {
-        this.removeLoadingCover = removeLoadingCover;
-        return this;
-    }
-
     public void setInternalName(String internalName) {
         this.internalName = internalName;
     }
@@ -365,9 +355,5 @@ public class SceneConfig {
 
     public void setGameTipConfig(GameTipConfig gameTipConfig) {
         this.gameTipConfig = gameTipConfig;
-    }
-
-    public void setRemoveLoadingCover(boolean removeLoadingCover) {
-        this.removeLoadingCover = removeLoadingCover;
     }
 }

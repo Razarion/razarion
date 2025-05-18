@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -38,12 +39,12 @@ public class TerrainTileFactory {
         TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(terrainTileIndex);
         TerrainTileBuilder terrainTileBuilder = terrainTileBuilderInstance.get();
         terrainTileBuilder.init(terrainTileIndex);
-        insertTerrainObjects(terrainTileBuilder, terrainShapeTile);
+        insertTerrainObjects(terrainTileBuilder, terrainShapeTile, terrainShapeManager);
         insertBabylonDecals(terrainTileBuilder, terrainShapeTile);
         return terrainTileBuilder.generate(planetConfig);
     }
 
-    private void insertTerrainObjects(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
+    private void insertTerrainObjects(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile, TerrainShapeManager terrainShapeManager) {
         if (terrainShapeTile == null) {
             return;
         }
@@ -61,7 +62,8 @@ public class TerrainTileFactory {
             Arrays.stream(nativeTerrainShapeObjectList.terrainShapeObjectPositions).forEach(nativeTerrainObjectPosition -> {
                 try {
                     TerrainObjectModel terrainObjectModel = new TerrainObjectModel();
-                    terrainObjectModel.position = new Vertex(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y, 0);
+                    Index node = TerrainUtil.terrainPositionToNodeIndex(new DecimalPosition(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y));
+                    terrainObjectModel.position = new Vertex(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y,  terrainShapeManager.getTerrainAnalyzer().getHeightNodeAt(node));
                     if (nativeTerrainObjectPosition.offset != null) {
                         terrainObjectModel.position = terrainObjectModel.position.add(
                                 nativeTerrainObjectPosition.offset.x,

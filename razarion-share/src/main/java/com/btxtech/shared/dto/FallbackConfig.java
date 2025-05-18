@@ -58,7 +58,7 @@ public final class FallbackConfig {
         WarmGameUiContext warmGameUiContext = new WarmGameUiContext();
         warmGameUiContext.setPlanetConfig(setupPlanetConfig());
         warmGameUiContext.setGameEngineMode(GameEngineMode.MASTER);
-        warmGameUiContext.setSceneConfigs(Collections.singletonList(new SceneConfig().removeLoadingCover(true).wait4LevelUpDialog(true)));
+        warmGameUiContext.setSceneConfigs(Collections.singletonList(new SceneConfig().wait4LevelUpDialog(true)));
         return warmGameUiContext;
     }
 

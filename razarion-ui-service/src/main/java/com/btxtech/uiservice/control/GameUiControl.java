@@ -280,7 +280,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         List<SceneConfig> sceneConfigs = new ArrayList<>();
 
         sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet viewfield").viewFieldConfig(new ViewFieldConfig().toPosition(scrollToPosition)));
-        sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet fade out").removeLoadingCover(true));
         sceneConfigs.add(new SceneConfig().internalName("script: Process Server Quests").processServerQuests(true));
         return sceneConfigs;
     }
@@ -300,19 +299,11 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             logger.warning("No StartRegion defined. Scroll to 0:0 position");
             sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet viewfield default").viewFieldConfig(new ViewFieldConfig().toPosition(DecimalPosition.NULL)));
         }
-        // Fade out
-        sceneConfigs.add(new SceneConfig().internalName("script: Multiplayer Planet fade out").removeLoadingCover(true));
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().suggestedPosition(position);
         baseItemPlacerConfig.allowedArea(coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getStartRegion());
         sceneConfigs.add(new SceneConfig().internalName("Multiplayer wait for base created").waitForBaseCreated(true).startPointPlacerConfig(baseItemPlacerConfig));
         sceneConfigs.add(new SceneConfig().internalName("script: Process Server Quests").processServerQuests(true));
-        return sceneConfigs;
-    }
-
-    private List<SceneConfig> setupPlaybackScenes() {
-        List<SceneConfig> sceneConfigs = new ArrayList<>();
-        sceneConfigs.add(new SceneConfig().removeLoadingCover(true));
         return sceneConfigs;
     }
 

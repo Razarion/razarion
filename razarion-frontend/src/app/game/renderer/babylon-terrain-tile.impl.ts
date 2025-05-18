@@ -2,7 +2,8 @@ import {
   BabylonTerrainTile,
   TerrainObjectConfig,
   TerrainObjectModel,
-  TerrainTile
+  TerrainTile,
+  TerrainTileObjectList
 } from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
@@ -44,7 +45,6 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
               actionService: ActionService,
               private babylonModelService: BabylonModelService,
               private threeJsWaterRenderService: ThreeJsWaterRenderService) {
-    console.log("--- BabylonTerrainTileImpl function Object() { [native code] } ")
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
 
     let actionManager = new ActionManager(rendererService.getScene());
@@ -68,7 +68,6 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
     actionService.addCursorHandler(this.cursorTypeHandler);
 
-    console.log("--- BabylonTerrainTileImpl groundMesh ")
     this.groundMesh = new Mesh("Ground", rendererService.getScene());
     let vertexData = this.createVertexData(terrainTile.getGroundHeightMap());
     vertexData.applyToMesh(this.groundMesh, true);
@@ -79,45 +78,13 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
     this.groundMesh!.material = babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
-    console.log("--- BabylonTerrainTileImpl groundMesh - done")
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
     this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container);
 
-    console.log("--- BabylonTerrainTileImpl getTerrainTileObjectLists")
     if (terrainTile.getTerrainTileObjectLists()) {
-      terrainTile.getTerrainTileObjectLists().forEach(terrainTileObjectList => {
-        try {
-          let terrainObjectConfig = gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
-          if (!terrainObjectConfig.getModel3DId()) {
-            throw new Error(`TerrainObjectConfig has no model3DId: ${terrainObjectConfig.toString()}`);
-          }
-          terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
-            try {
-              //-----
-              let ray = new Ray(new Vector3(terrainObjectModel.position.getX(), -100, terrainObjectModel.position.getY()), new Vector3(0, 1, 0), 1000);
-              let pickingInfo = this.groundMesh.intersects(ray);
-              if (pickingInfo.hit) {
-                terrainObjectModel.position = GwtInstance.newVertex(terrainObjectModel.position.getX(),
-                  terrainObjectModel.position.getY(),
-                  terrainObjectModel.position.getZ() + pickingInfo.pickedPoint!.y,
-                );
-              } else {
-                console.warn(`TerrainObject ${terrainObjectModel.terrainObjectId} not on ground`);
-              }
-              //-----
-              BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, babylonModelService, this.container);
-            } catch (error) {
-              console.error(error);
-            }
-          });
-        } catch (error) {
-          console.error(terrainTileObjectList);
-          console.error(error);
-        }
-      });
-      console.log("--- BabylonTerrainTileImpl getTerrainTileObjectLists - done")
+      this.setupTerrainTileObjects(terrainTile.getTerrainTileObjectLists());
     }
 
     this.cursorTypeHandler(actionService.setupSelectionInfo());
@@ -144,6 +111,44 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         }
 
       });
+    }
+  }
+
+  private setupTerrainTileObjects(terrainTileObjectLists: TerrainTileObjectList[]): void {
+    terrainTileObjectLists.forEach(terrainTileObjectList => {
+      try {
+        let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
+        if (!terrainObjectConfig.getModel3DId()) {
+          throw new Error(`TerrainObjectConfig has no model3DId: ${terrainObjectConfig.toString()}`);
+        }
+        terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
+          this.createTerrainObject(terrainObjectConfig, terrainObjectModel)
+        });
+      } catch (error) {
+        console.error(terrainTileObjectList);
+        console.error(error);
+      }
+    });
+  }
+
+  private createTerrainObject(terrainObjectConfig: TerrainObjectConfig, terrainObjectModel: TerrainObjectModel): void {
+    try {
+      setTimeout(() => {
+        BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, this.container);
+      }, 1);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  private setupHeightForTerrainObject(terrainObjectModel: TerrainObjectModel): number {
+    let ray = new Ray(new Vector3(terrainObjectModel.position.getX(), -100, terrainObjectModel.position.getY()), new Vector3(0, 1, 0), 1000);
+    let pickingInfo = this.groundMesh.intersects(ray);
+    if (pickingInfo.hit) {
+      return pickingInfo.pickedPoint!.y;
+    } else {
+      console.warn(`TerrainObject ${terrainObjectModel.terrainObjectId} not on ground`);
+      return 0;
     }
   }
 
