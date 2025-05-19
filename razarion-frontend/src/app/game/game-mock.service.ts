@@ -48,6 +48,9 @@ import {BabylonRenderServiceAccessImpl} from './renderer/babylon-render-service-
 import {BabylonTerrainTileImpl} from './renderer/babylon-terrain-tile.impl';
 import {HttpClient} from '@angular/common/http';
 import {BabylonModelService} from './renderer/babylon-model.service';
+import {GameComponent} from './game.component';
+import {EditorModel} from '../editor/editor-model';
+import {LevelEditorComponent} from '../editor/crud-editors/level-editor/level-editor.component';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -59,13 +62,16 @@ let displayMockTerrainTile: BabylonTerrainTile[] = [];
   providedIn: 'root',
 })
 export class GameMockService {
+  private gameComponent!: GameComponent;
+
   constructor(private http: HttpClient,
               private gwtAngularService: GwtAngularService,
               private babylonModelService: BabylonModelService,
               private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl) {
   }
 
-  startGame(runGwtMock: boolean) {
+  startGame(runGwtMock: boolean, gameComponent: GameComponent) {
+    this.gameComponent = gameComponent;
     this.initMocks();
 
     if (runGwtMock) {
@@ -377,10 +383,6 @@ export class GameMockService {
         //     outOfViewSize = 1;
         //   });
 
-        setTimeout(() => {
-          // this.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, GltfEditorComponent));
-          // this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
-        }, 2000);
       });
     });
   }
@@ -394,6 +396,18 @@ export class GameMockService {
   }
 
   private simulateStartup() {
+    // this.showLoading();
+
+    // setInterval(() => {
+    //   // this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
+    //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
+    // }, 3000)
+    // this.showUi();
+
+    this.showEditor();
+  }
+
+  private showLoading() {
     setTimeout(() => {
       this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(25);
     }, 1000);
@@ -407,12 +421,6 @@ export class GameMockService {
       this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(100);
       this.fakeRenderImageRemoveLoadingCover();
     }, 4000);
-
-    // setInterval(() => {
-    //   // this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
-    //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
-    // }, 3000)
-    // this.showUi();
   }
 
   private showUi() {
@@ -1042,6 +1050,15 @@ export class GameMockService {
       setSelectionListener(callback: () => void): void {
       }
     }
+  }
+
+  private showEditor() {
+    setTimeout(() => {
+      this.fakeRenderImageRemoveLoadingCover();
+      this.gameComponent.addEditorModel(new EditorModel("Level editor", LevelEditorComponent));
+      // this.gameComponent.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, GltfEditorComponent));
+      // this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+    }, 100);
   }
 }
 

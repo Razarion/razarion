@@ -1,9 +1,9 @@
-<p-dropdown *ngIf="!readOnly"
-            [placeholder]="'...'"
-            [options]="baseItemTypeOptions"
-            [(ngModel)]="baseItemTypeId"
-            (onChange)="onChange()"
-            optionLabel="name"
-            optionValue="id">
-</p-dropdown>
-<span *ngIf="readOnly">{{getCurrentName()}}</span>
+<p-select *ngIf="!readOnly"
+          [placeholder]="'...'"
+          [options]="baseItemTypeOptions"
+          [(ngModel)]="baseItemTypeId"
+          (onChange)="onChange()"
+          [appendTo]="'body'"
+          optionLabel="name"
+          optionValue="id"/>
+<span *ngIf="readOnly">{{ getCurrentName() }}</span>

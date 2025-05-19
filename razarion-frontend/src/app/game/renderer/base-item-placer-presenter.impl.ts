@@ -19,11 +19,13 @@ import {Image} from "@babylonjs/gui/2D/controls/image";
 import {Animation} from "@babylonjs/core/Animations/animation";
 
 export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
+  static readonly PICKED_POINT_DELAYED_MAX_TRIES = 10;
   private disc: Mesh | null = null;
   private model3D: TransformNode | null = null;
   private tip: Tip | null = null;
   private readonly material;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
+  private pickedPointDelayedCount = 0;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService) {
@@ -48,9 +50,12 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
     this.tip = new Tip(positionValid, this.rendererService, this.disc!)
 
-    let centerPickingInfo = this.rendererService.setupPickInfoFromNDC(0, 0);
-    if (centerPickingInfo.hit && centerPickingInfo.pickedPoint) {
-      this.setPosition(baseItemPlacer, centerPickingInfo.pickedPoint);
+    this.pickedPointDelayedCount = 0;
+    let pickedPoint = this.setupPickedPoint();
+    if (pickedPoint) {
+      this.setPosition(baseItemPlacer, pickedPoint);
+    } else {
+      this.setupPickedPointDelayed(baseItemPlacer);
     }
 
     this.rendererService.baseItemPlacerActive = true;
@@ -74,6 +79,28 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
         }
       }
     });
+  }
+
+  private setupPickedPoint(): Vector3 | null {
+    let centerPickingInfo = this.rendererService.setupPickInfoFromNDC(0, 0);
+    if (centerPickingInfo.hit && centerPickingInfo.pickedPoint) {
+      return centerPickingInfo.pickedPoint;
+    } else {
+      return null;
+    }
+  }
+
+  private setupPickedPointDelayed(baseItemPlacer: BaseItemPlacer) {
+    setTimeout(() => {
+      let pickedPoint = this.setupPickedPoint();
+      if (pickedPoint) {
+        this.setPosition(baseItemPlacer, pickedPoint);
+      } else {
+        if (this.pickedPointDelayedCount++ < BaseItemPlacerPresenterImpl.PICKED_POINT_DELAYED_MAX_TRIES) {
+          this.setupPickedPointDelayed(baseItemPlacer);
+        }
+      }
+    }, 1000);
   }
 
   deactivate(): void {

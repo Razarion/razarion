@@ -176,7 +176,17 @@ server.on({
   reply: {
     status: 200,
     headers: {"content-type": "application/json"},
-    body: JSON.stringify(levelJson)
+    body: JSON.stringify(levelJson.objectNameIds)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/level/read',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(levelJson.all)
   }
 });
 

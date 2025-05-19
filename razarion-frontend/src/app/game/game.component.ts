@@ -89,7 +89,7 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.babylonRenderServiceAccessImpl.createBaseItemPlacerPresenter();
 
     if (environment.gwtMock) {
-      this.gameMockService.startGame(false);
+      this.gameMockService.startGame(false, this);
     } else {
       this.startGame();
     }

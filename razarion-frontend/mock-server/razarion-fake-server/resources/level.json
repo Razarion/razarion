@@ -1,18 +1,71 @@
-[
-  {
-    "id": 265,
-    "internalName": "1"
-  },
-  {
-    "id": 4,
-    "internalName": "2"
-  },
-  {
-    "id": 12,
-    "internalName": "3"
-  },
-  {
-    "id": 9,
-    "internalName": "4"
-  }
-]
+{
+  "objectNameIds": [
+    {
+      "id": 1,
+      "internalName": "1"
+    },
+    {
+      "id": 4,
+      "internalName": "2"
+    },
+    {
+      "id": 12,
+      "internalName": "3"
+    },
+    {
+      "id": 9,
+      "internalName": "4"
+    }
+  ],
+  "all": [
+    {
+      "id": 265,
+      "internalName": "1",
+      "number": 2,
+      "xp2LevelUp": 30
+    },
+    {
+      "id": 270,
+      "internalName": null,
+      "number": 3,
+      "xp2LevelUp": 40
+    },
+    {
+      "id": 271,
+      "internalName": null,
+      "number": 4,
+      "xp2LevelUp": 60
+    },
+    {
+      "id": 272,
+      "internalName": null,
+      "number": 1,
+      "xp2LevelUp": 10
+    },
+    {
+      "id": 273,
+      "internalName": null,
+      "number": 5,
+      "xp2LevelUp": 60
+    },
+    {
+      "id": 274,
+      "internalName": null,
+      "number": 6,
+      "xp2LevelUp": 60
+    },
+    {
+      "id": 275,
+      "internalName": null,
+      "number": 7,
+      "xp2LevelUp": 60
+    },
+    {
+      "id": 276,
+      "internalName": null,
+      "number": 8,
+      "xp2LevelUp": 20
+    }
+  ]
+}
+

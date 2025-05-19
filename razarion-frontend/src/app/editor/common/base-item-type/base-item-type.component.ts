@@ -3,11 +3,12 @@ import {EditorService} from "../../editor-service";
 import {DropdownModule} from 'primeng/dropdown';
 import {NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import {SelectModule} from 'primeng/select';
 
 @Component({
   selector: 'base-item-type',
   imports: [
-    DropdownModule,
+    SelectModule,
     NgIf,
     FormsModule
   ],
