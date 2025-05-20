@@ -28,9 +28,12 @@ public class ImageLibraryEntity {
         imageGalleryItem.setInternalName(internalName);
         return imageGalleryItem;
     }
-
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public void setData(byte[] data) {

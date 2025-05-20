@@ -1,10 +1,17 @@
-<div class="flex flex-col bg-surface-50 dark:bg-surface-800" [style]="{height:'100%'}">
-  <div class="mb-0 flex" [style]="{backgroundColor: '#304562'}">
-    <div class="p-ml-2" style="font-size: large">{{editorModel.name}}</div>
-    <p-button icon="pi pi-times" (onClick)="onClose()" class="p-ml-auto"
-              styleClass="p-button-rounded p-button-danger p-button-text p-button-plain"></p-button>
+<div class="flex flex-col h-full bg-surface-900">
+  <div class="flex items-center justify-between px-4 shadow bg-surface-600">
+    <div class="text-xl font-semibold text-secondary-color">
+      {{ editorModel.name }}
+    </div>
+    <p-button
+      icon="pi pi-times"
+      (onClick)="onClose()"
+      styleClass="p-button-rounded p-button-danger p-button-text p-button-plain"
+    ></p-button>
   </div>
-  <div class="mb-0 items-stretch">
+
+  <!-- Inhaltsbereich -->
+  <div class="flex-1 min-h-0 overflow-hidden">
     <ng-template #editorContainer></ng-template>
   </div>
 </div>

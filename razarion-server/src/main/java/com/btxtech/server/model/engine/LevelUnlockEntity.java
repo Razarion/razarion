@@ -5,6 +5,9 @@ import com.btxtech.server.model.ui.ImageLibraryEntity;
 import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
 import com.btxtech.server.service.ui.ImagePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,10 +15,12 @@ import jakarta.persistence.*;
 public class LevelUnlockEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    @JsonIgnore
     private BaseItemTypeEntity baseItemType;
     private int baseItemTypeCount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    @JsonIgnore
     private ImageLibraryEntity thumbnail;
     private int crystalCost;
 
@@ -73,6 +78,38 @@ public class LevelUnlockEntity extends BaseEntity {
         setThumbnail(imagePersistence.getImageLibraryEntity(levelUnlockConfig.getThumbnail()));
     }
 
+    @JsonGetter("baseItemType")
+    public Integer getBaseItemTypeId() {
+        return baseItemType != null ? baseItemType.getId() : null;
+    }
+
+    @JsonSetter("baseItemType")
+    public void setBaseItemTypeId(Integer id) {
+        if (id != null) {
+            BaseItemTypeEntity entity = new BaseItemTypeEntity();
+            entity.setId(id);
+            this.baseItemType = entity;
+        } else {
+            this.baseItemType = null;
+        }
+    }
+
+    @JsonGetter("thumbnail")
+    public Integer getThumbnailId() {
+        return thumbnail != null ? thumbnail.getId() : null;
+    }
+
+    @JsonSetter("thumbnail")
+    public void setThumbnailId(Integer id) {
+        if (id != null) {
+            ImageLibraryEntity entity = new ImageLibraryEntity();
+            entity.setId(id);
+            this.thumbnail = entity;
+        } else {
+            this.thumbnail = null;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -89,5 +126,9 @@ public class LevelUnlockEntity extends BaseEntity {
     @Override
     public int hashCode() {
         return getId() != null ? getId().hashCode() : System.identityHashCode(this);
+    }
+
+    public LevelUnlockEntity toJsonLevelUnlockEnty() {
+        return this;
     }
 }

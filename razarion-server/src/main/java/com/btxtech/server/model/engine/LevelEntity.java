@@ -5,11 +5,23 @@ import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
 import com.btxtech.server.service.ui.ImagePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyJoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.btxtech.server.service.PersistenceUtil.*;
 
@@ -22,9 +34,11 @@ public class LevelEntity extends BaseEntity {
     @ElementCollection
     @MapKeyJoinColumn(name = "baseItemTypeEntityId")
     @CollectionTable(name = "LEVEL_LIMITATION")
+    @JsonIgnore
     private Map<BaseItemTypeEntity, Integer> itemTypeLimitation;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "level")
+    @JsonIgnore
     private List<LevelUnlockEntity> levelUnlockEntities;
 
     public LevelConfig toLevelConfig() {
@@ -73,8 +87,50 @@ public class LevelEntity extends BaseEntity {
         return xp2LevelUp;
     }
 
-    public void setLevelUnlockEntity(List<LevelUnlockEntity> levelUnlockEntities) {
-        this.levelUnlockEntities = levelUnlockEntities;
+    @JsonGetter("levelUnlockEntities")
+    public List<LevelUnlockEntity> getJsonLevelUnlockEntities() {
+        return levelUnlockEntities.stream()
+                .map(LevelUnlockEntity::toJsonLevelUnlockEnty)
+                .collect(Collectors.toList());
+    }
+
+    @JsonSetter("levelUnlockEntities")
+    public void setJsonLevelUnlockEntities(List<LevelUnlockEntity> jsonLevelUnlockEntities) {
+        if (jsonLevelUnlockEntities == null) {
+            this.levelUnlockEntities = null;
+            return;
+        }
+        this.levelUnlockEntities = jsonLevelUnlockEntities;
+    }
+
+    @JsonGetter("itemTypeLimitation")
+    public Map<Integer, Integer> getJsonItemTypeLimitation() {
+        if (itemTypeLimitation == null) {
+            return null;
+        }
+        return itemTypeLimitation.entrySet().stream()
+                .filter(e -> e.getKey() != null && e.getKey().getId() != null)
+                .collect(Collectors.toMap(
+                        e -> e.getKey().getId(),
+                        Map.Entry::getValue
+                ));
+    }
+
+    @JsonSetter("itemTypeLimitation")
+    public void setJsonItemTypeLimitation(Map<Integer, Integer> jsonItemTypeLimitation) {
+        if (jsonItemTypeLimitation == null) {
+            return;
+        }
+        if (itemTypeLimitation == null) {
+            itemTypeLimitation = new HashMap<>();
+        } else {
+            itemTypeLimitation.clear();
+        }
+        for (Map.Entry<Integer, Integer> entry : jsonItemTypeLimitation.entrySet()) {
+            BaseItemTypeEntity entity = new BaseItemTypeEntity();
+            entity.setId(entry.getKey());
+            itemTypeLimitation.put(entity, entry.getValue());
+        }
     }
 
     @Override
