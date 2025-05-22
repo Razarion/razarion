@@ -9,7 +9,6 @@ import com.btxtech.shared.dto.editor.CollectionReferenceType;
  * 06.10.2016.
  */
 public class ResourceItemPosition {
-    @CollectionReference(CollectionReferenceType.RESOURCE_ITEM)
     private Integer resourceItemTypeId;
     private DecimalPosition position;
     private double rotationZ;

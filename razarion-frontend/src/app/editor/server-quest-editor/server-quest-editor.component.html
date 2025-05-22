@@ -1,39 +1,29 @@
 <div [style]="{width:'500px'}">
-  <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-1">
-      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm" (onClick)="onSave()"></p-button>
-    </div>
-    <div class="col-span-3">
-      <p-select [options]="options"
-                [(ngModel)]="selectedLevelQuest"
-                optionLabel="label"
-                optionValue="value">
-        <ng-template #selectedItem let-selectedOption>
-          {{ selectedOption.label }}
-        </ng-template>
-      </p-select>
-    </div>
-    <div class="col-span-1">
-      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm" (onClick)="onCreate()"></p-button>
-    </div>
-    <div class="col-span-1">
-      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm" (onClick)="onDelete()"
-                [disabled]="!selectedLevelQuest"></p-button>
-    </div>
-    <div class="col-span-6">
-      <p-button type="button" label="{{EditorService.RESTART_BOTS.name}}" icon="pi pi-cog" styleClass="p-button-sm"
-                (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
-    </div>
+  <div class="flex flex-row gap-1 items-center p-1">
+    <p-button type="button" icon="pi pi-save" styleClass="p-button-sm" (onClick)="onSave()"></p-button>
+    <p-select [options]="options"
+              [(ngModel)]="selectedLevelQuest"
+              optionLabel="label"
+              optionValue="value">
+      <ng-template #selectedItem let-selectedOption>
+        {{ selectedOption.label }}
+      </ng-template>
+    </p-select>
+    <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm" (onClick)="onCreate()"></p-button>
+    <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm" (onClick)="onDelete()"
+              [disabled]="!selectedLevelQuest"></p-button>
+    <p-button type="button" label="{{EditorService.RESTART_BOTS.name}}" icon="pi pi-cog" styleClass="p-button-sm"
+              (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
   </div>
 
-  <p-divider align="left">
-    <div class="inline-flex items-center">
-      <i class="pi pi-cog mr-2"></i>
-      <b>Configuration</b>
-    </div>
-  </p-divider>
   <div *ngIf="selectedLevelQuest"
        class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
+    <p-divider align="left">
+      <div class="inline-flex items-center">
+        <i class="pi pi-cog mr-2"></i>
+        <b>Configuration</b>
+      </div>
+    </p-divider>
     <div class="grid grid-cols-12 gap-4">
       <span class="col-span-3">Id</span>
       <div class="col-span-9">
@@ -55,7 +45,7 @@
       </div>
     </div>
     <p-accordion>
-      <p-accordion-panel *ngFor="let questConfig of selectedLevelQuest.questConfigs;  let i = index" [value]="i">
+      <p-accordion-panel *ngFor="let questConfig of selectedLevelQuest.questConfigs; let i = index" [value]="i">
         <p-accordion-header>
           {{ conditionTriggerToTitleWrapper(questConfig) }}
           <div class="col-span-1">

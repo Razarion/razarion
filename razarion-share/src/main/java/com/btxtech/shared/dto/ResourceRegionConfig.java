@@ -29,7 +29,6 @@ public class ResourceRegionConfig {
     private String internalName;
     private int count;
     private double minDistanceToItems;
-    @CollectionReference(CollectionReferenceType.RESOURCE_ITEM)
     private Integer resourceItemTypeId;
     private PlaceConfig region;
 

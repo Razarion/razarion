@@ -1,66 +1,59 @@
 <div [style]="{width:'600px'}">
-  <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-1">
-      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
-                (onClick)="onSave()"></p-button>
-    </div>
-    <div class="col-span-3">
-      <p-select [options]="serverGameEngineConfigEntity ? serverGameEngineConfigEntity!.startRegionConfigs:[]"
+    <div class="flex flex-row gap-1 items-center p-1">
+        <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
+                  (onClick)="onSave()"></p-button>
+        <p-select [options]="serverGameEngineConfigEntity ? serverGameEngineConfigEntity!.startRegionConfigs:[]"
                   [(ngModel)]="selectedStartRegion"
                   optionLabel="internalName"></p-select>
+        <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+                  (onClick)="onCreate()"></p-button>
+        <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                  (onClick)="onDelete()"
+                  [disabled]="!selectedStartRegion"></p-button>
     </div>
-    <div class="col-span-1">
-      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
-                (onClick)="onCreate()"></p-button>
+    <div *ngIf="selectedStartRegion"
+         class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
+        <p-divider align="left">
+            <div class="inline-flex items-center">
+                <i class="pi pi-cog mr-2"></i>
+                <b>Configuration</b>
+            </div>
+        </p-divider>
+        <div class="grid grid-cols-12 gap-4">
+            <span class="col-span-4">Id</span>
+            <div class="col-span-8">
+                <p-inputNumber [disabled]="true" inputId="integeronly"
+                               [ngModel]="selectedStartRegion&&selectedStartRegion.id"
+                               (ngModelChange)="selectedStartRegion && (selectedStartRegion.id = $event)"></p-inputNumber>
+            </div>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
+            <span class="col-span-4">Internal name</span>
+            <div class="col-span-8">
+                <input [ngModel]="selectedStartRegion&&selectedStartRegion.internalName"
+                       (ngModelChange)="selectedStartRegion && (selectedStartRegion.internalName = $event)"
+                       type="text"
+                       class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+            </div>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
+            <span class="col-span-4">Minimal level</span>
+            <div class="col-span-8">
+                <level *ngIf="selectedStartRegion" [(levelId)]="selectedStartRegion.minimalLevelId"></level>
+            </div>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
+            <span class="col-span-4">Region</span>
+            <div class="col-span-8">
+                <place-config *ngIf="selectedStartRegion" [(placeConfig)]="selectedStartRegion.region"></place-config>
+            </div>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
+            <span class="col-span-4">No base view position</span>
+            <div class="col-span-8">
+                <decimal-position *ngIf="selectedStartRegion"
+                                  [(decimalPosition)]="selectedStartRegion.noBaseViewPosition"></decimal-position>
+            </div>
+        </div>
     </div>
-    <div class="col-span-1">
-      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                (onClick)="onDelete()"
-                [disabled]="!selectedStartRegion"></p-button>
-    </div>
-  </div>
-  <p-divider align="left">
-    <div class="inline-flex items-center">
-      <i class="pi pi-cog mr-2"></i>
-      <b>Configuration</b>
-    </div>
-  </p-divider>
-  <div *ngIf="selectedStartRegion" class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-4">Id</span>
-      <div class="col-span-8">
-        <p-inputNumber [disabled]="true" inputId="integeronly"
-                       [ngModel]="selectedStartRegion&&selectedStartRegion.id"
-                       (ngModelChange)="selectedStartRegion && (selectedStartRegion.id = $event)"></p-inputNumber>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-4">Internal name</span>
-      <div class="col-span-8">
-        <input [ngModel]="selectedStartRegion&&selectedStartRegion.internalName"
-               (ngModelChange)="selectedStartRegion && (selectedStartRegion.internalName = $event)"
-               type="text"
-               class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-4">Minimal level</span>
-      <div class="col-span-8">
-        <level *ngIf="selectedStartRegion" [(levelId)]="selectedStartRegion.minimalLevelId"></level>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-4">Region</span>
-      <div class="col-span-8">
-        <place-config *ngIf="selectedStartRegion" [(placeConfig)]="selectedStartRegion.region"></place-config>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-4">No base view position</span>
-      <div class="col-span-8">
-        <decimal-position *ngIf="selectedStartRegion"
-                          [(decimalPosition)]="selectedStartRegion.noBaseViewPosition"></decimal-position>
-      </div>
-    </div>
-  </div>
 </div>

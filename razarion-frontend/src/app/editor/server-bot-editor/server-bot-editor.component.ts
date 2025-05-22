@@ -13,11 +13,11 @@ import {FormsModule} from '@angular/forms';
 import {Checkbox} from 'primeng/checkbox';
 import {BaseItemTypeComponent} from '../common/base-item-type/base-item-type.component';
 import {Button} from 'primeng/button';
-import {Accordion, AccordionTab} from 'primeng/accordion';
+import {Accordion, AccordionModule,} from 'primeng/accordion';
 import {NgForOf, NgIf} from '@angular/common';
 import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
 import {Divider} from 'primeng/divider';
-import {SelectModule } from 'primeng/select';
+import {SelectModule} from 'primeng/select';
 
 @Component({
   selector: 'server-bot-editor',
@@ -31,10 +31,10 @@ import {SelectModule } from 'primeng/select';
     Accordion,
     NgForOf,
     NgIf,
-    AccordionTab,
     BabylonMaterialComponent,
     Divider,
-    SelectModule
+    SelectModule,
+    AccordionModule,
   ],
   templateUrl: './server-bot-editor.component.html'
 })

@@ -30,7 +30,6 @@ public class GameTipConfig {
     private Tip tip;
     private Integer actor;
     private Integer toCreatedItemTypeId;
-    @CollectionReference(CollectionReferenceType.RESOURCE_ITEM)
     private Integer resourceItemTypeId;
     private Integer boxItemTypeId;
     private Integer inventoryItemId;

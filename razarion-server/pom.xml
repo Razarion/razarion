@@ -96,8 +96,6 @@
                         <class>com.btxtech.shared.dto.ObjectNameId</class>
                         <class>com.btxtech.shared.rest.RestApplication</class>
                         <class>com.btxtech.server.rest.BackendController</class>
-                        <class>com.btxtech.shared.rest.BoxItemTypeEditorController</class>
-                        <class>com.btxtech.shared.rest.ResourceItemTypeEditorController</class>
                         <class>com.btxtech.shared.rest.ImageProvider</class>
                         <class>com.btxtech.shared.rest.PlanetEditorController</class>
                         <class>com.btxtech.shared.rest.GroundEditorController</class>
@@ -122,6 +120,8 @@
                         <class>com.btxtech.server.rest.editor.LevelEditorController</class>
                         <class>com.btxtech.server.rest.editor.BaseItemTypeEditorController</class>
                         <class>com.btxtech.server.rest.editor.ServerGameEngineEditorController</class>
+                        <class>com.btxtech.server.rest.editor.BoxItemTypeEditorController</class>
+                        <class>com.btxtech.server.rest.editor.ResourceItemTypeEditorController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

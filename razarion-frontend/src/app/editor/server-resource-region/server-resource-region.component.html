@@ -1,75 +1,74 @@
-<div [style]="{width:'500px'}">
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-    <div class="col-span-1">
-      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
-                (onClick)="onSave()"></p-button>
-    </div>
-    <div class="col-span-3">
-      <p-select [options]="serverGameEngineConfigEntity ? serverGameEngineConfigEntity!.resourceRegionConfigs:[]"
-                  [(ngModel)]="selectedResourceRegion"
-                  optionLabel="internalName"></p-select>
-    </div>
-    <div class="col-span-1">
-      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
-                (onClick)="onCreate()"></p-button>
-    </div>
-    <div class="col-span-1">
-      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                (onClick)="onDelete()"
-                [disabled]="!selectedResourceRegion"></p-button>
-    </div>
-    <div class="col-span-6">
-      <p-button type="button"
-                label="{{EditorService.RESTART_RESOURCE_REGIONS.name}}"
-                icon="pi pi-cog"
-                styleClass="p-button-sm"
-                (onClick)="editorService.executeServerCommand(EditorService.RESTART_RESOURCE_REGIONS)"></p-button>
-    </div>
+<div [style]="{width:'600px'}">
+  <div class="flex flex-row gap-1 items-center p-1">
+    <p-button type="button" icon="pi pi-save" styleClass="p-button-sm"
+              (onClick)="onSave()"></p-button>
+    <p-select [options]="serverGameEngineConfigEntity ? serverGameEngineConfigEntity!.resourceRegionConfigs:[]"
+              [(ngModel)]="selectedResourceRegion"
+              optionLabel="internalName"></p-select>
+    <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+              (onClick)="onCreate()"></p-button>
+    <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+              (onClick)="onDelete()"
+              [disabled]="!selectedResourceRegion"></p-button>
+    <p-button type="button"
+              label="{{EditorService.RESTART_RESOURCE_REGIONS.name}}"
+              icon="pi pi-cog"
+              styleClass="p-button-sm"
+              (onClick)="editorService.executeServerCommand(EditorService.RESTART_RESOURCE_REGIONS)"></p-button>
   </div>
-  <p-divider align="left">
-    <div class="inline-flex items-center">
-      <i class="pi pi-cog mr-2"></i>
-      <b>Configuration</b>
+  <div *ngIf="selectedResourceRegion"
+       class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
+    <p-divider align="left">
+      <div class="inline-flex items-center">
+        <i class="pi pi-cog mr-2"></i>
+        <b>Configuration</b>
+      </div>
+    </p-divider>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-5">Id</span>
+      <div class="col-span-7">
+        <p-inputNumber [disabled]="true" inputId="integeronly"
+                       [ngModel]="selectedResourceRegion&&selectedResourceRegion.id"
+                       (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.id = $event)"></p-inputNumber>
+      </div>
     </div>
-  </p-divider>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-    <span class="col-span-3">Id</span>
-    <div class="col-span-9">
-      <p-inputNumber [disabled]="true" inputId="integeronly"
-                     [ngModel]="selectedResourceRegion&&selectedResourceRegion.id" (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.id = $event)"></p-inputNumber>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-5">Internal name</span>
+      <div class="col-span-7">
+        <input [ngModel]="selectedResourceRegion&&selectedResourceRegion.internalName"
+               (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.internalName = $event)"
+               type="text"
+               class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+      </div>
     </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-    <span class="col-span-3">Internal name</span>
-    <div class="col-span-9">
-      <input [ngModel]="selectedResourceRegion&&selectedResourceRegion.internalName" (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.internalName = $event)"
-             type="text"
-             class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-5">Count</span>
+      <div class="col-span-7">
+        <p-inputNumber inputId="integeronly"
+                       [ngModel]="selectedResourceRegion&&selectedResourceRegion.count"
+                       (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.count = $event)"></p-inputNumber>
+      </div>
     </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-    <span class="col-span-3">Count</span>
-    <div class="col-span-9">
-      <p-inputNumber inputId="integeronly"
-                     [ngModel]="selectedResourceRegion&&selectedResourceRegion.count" (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.count = $event)"></p-inputNumber>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-5">Min distance to items</span>
+      <div class="col-span-7">
+        <p-inputNumber [ngModel]="selectedResourceRegion&&selectedResourceRegion.minDistanceToItems"
+                       (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.minDistanceToItems = $event)"
+                       [maxFractionDigits]="3"></p-inputNumber>
+      </div>
     </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-    <span class="col-span-3">Min distance to items</span>
-    <div class="col-span-9">
-      <p-inputNumber [ngModel]="selectedResourceRegion&&selectedResourceRegion.minDistanceToItems" (ngModelChange)="selectedResourceRegion && (selectedResourceRegion.minDistanceToItems = $event)" [maxFractionDigits]="3"></p-inputNumber>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-5">Resource item type</span>
+      <div class="col-span-7">
+        <resource-item-type *ngIf="selectedResourceRegion"
+                            [(resourceItemTypeId)]="selectedResourceRegion.resourceItemTypeId"></resource-item-type>
+      </div>
     </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-    <span class="col-span-3">Resource item type</span>
-    <div class="col-span-9">
-      <resource-item-type *ngIf="selectedResourceRegion" [(resourceItemTypeId)]="selectedResourceRegion.resourceItemTypeId"></resource-item-type>
-    </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-    <span class="col-span-3">Region</span>
-    <div class="col-span-9">
-      <place-config *ngIf="selectedResourceRegion" [(placeConfig)]="selectedResourceRegion.region"></place-config>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-5">Region</span>
+      <div class="col-span-7">
+        <place-config *ngIf="selectedResourceRegion" [(placeConfig)]="selectedResourceRegion.region"></place-config>
+      </div>
     </div>
   </div>
 </div>

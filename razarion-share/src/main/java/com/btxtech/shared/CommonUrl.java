@@ -47,8 +47,6 @@ public class CommonUrl {
     public static final String PLANET_EDITOR_PATH = "editor/planet";
     public static final String LEVEL_EDITOR_PATH = "editor/level";
     public static final String BASE_ITEM_TYPE_EDITOR_PATH = "editor/base_item_type";
-    public static final String BOX_ITEM_TYPE_EDITOR_PATH = "editor/box_item_type";
-    public static final String RESOURCE_ITEM_TYPE_EDITOR_PATH = "editor/resource_item_type";
     public static final String GENERIC_PROPERTY_EDITOR_PATH = "editor/generic-property";
     public static final String GAME_UI_CONTEXT_EDITOR_PATH = "editor/game-ui-context";
     public static final String MODEL_3D_CONTROLLER = "editor/model-3d";

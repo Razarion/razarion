@@ -11,7 +11,6 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 public class BotHarvestCommandConfig extends AbstractBotCommandConfig<BotHarvestCommandConfig> {
     @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer harvesterItemTypeId;
-    @CollectionReference(CollectionReferenceType.RESOURCE_ITEM)
     private Integer resourceItemTypeId;
     private PlaceConfig resourceSelection;
 
