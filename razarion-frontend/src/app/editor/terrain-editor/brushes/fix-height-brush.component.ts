@@ -8,7 +8,7 @@ import { MessageService } from 'primeng/api';
 import {Slider} from 'primeng/slider';
 import {FormsModule} from '@angular/forms';
 import {Button} from 'primeng/button';
-import {DropdownModule} from 'primeng/dropdown';
+import {SelectModule} from 'primeng/select';
 import {InputNumber} from 'primeng/inputnumber';
 
 class Brush {
@@ -30,16 +30,16 @@ class BrushValues {
     Slider,
     FormsModule,
     Button,
-    DropdownModule,
+    SelectModule,
     InputNumber
   ],
   template: `
 
     <div class="field grid grid-cols-12 gap-4 items-center">
       <div class="col-span-9">
-        <p-dropdown [options]="brushes" [(ngModel)]="activeBrush"
+        <p-select [options]="brushes" [(ngModel)]="activeBrush"
                     optionLabel="name"
-                    [style]="{ width: '100%' }"></p-dropdown>
+                    [style]="{ width: '100%' }"></p-select>
       </div>
 
       <div class="col-span-1">

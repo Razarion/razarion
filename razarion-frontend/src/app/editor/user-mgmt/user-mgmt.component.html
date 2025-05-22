@@ -53,13 +53,13 @@
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
           <span class="col-span-4">Active quest</span>
           <div>
-            <p-dropdown [placeholder]="'...'"
+            <p-select [placeholder]="'...'"
                         [options]="questOptions"
                         [(ngModel)]="userBackendInfo.activeQuest"
                         [showClear]="true"
                         optionLabel="label"
                         optionValue="questId">
-            </p-dropdown>
+            </p-select>
             <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
                       (onClick)="onSaveActiveQuest(userBackendInfo)">
             </p-button>

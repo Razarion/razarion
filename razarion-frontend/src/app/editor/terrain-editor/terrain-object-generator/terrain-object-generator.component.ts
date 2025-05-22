@@ -3,7 +3,6 @@ import {TerrainObjectGeneratorControllerClient, TerrainObjectGeneratorEntity} fr
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
-import {DropdownChangeEvent, DropdownModule} from "primeng/dropdown";
 import {TerrainObjectModel} from "../../../gwtangular/GwtAngularFacade";
 import {TransformNode} from "@babylonjs/core";
 import {GeneratedTerrainObjects} from "./generated-terrain-objects";
@@ -21,6 +20,7 @@ import {DatePipe} from '@angular/common';
 import {TableModule} from 'primeng/table';
 import {FormsModule} from '@angular/forms';
 import {Divider} from 'primeng/divider';
+import {SelectChangeEvent, SelectModule} from 'primeng/select';
 
 @Component({
   selector: 'terrain-object-generator',
@@ -29,7 +29,7 @@ import {Divider} from 'primeng/divider';
     DatePipe,
     TableModule,
     TerrainObjectGeneratorEntityComponent,
-    DropdownModule,
+    SelectModule,
     FormsModule,
     Divider
   ],
@@ -93,7 +93,7 @@ export class TerrainObjectGeneratorComponent implements OnInit {
     });
   }
 
-  onTerrainObjectGeneratorChange(event: DropdownChangeEvent) {
+  onTerrainObjectGeneratorChange(event: SelectChangeEvent) {
     this.terrainObjectGeneratorControllerClient
       .read(event.value)
       .then(value => this.activeTerrainObjectGenerator = value)

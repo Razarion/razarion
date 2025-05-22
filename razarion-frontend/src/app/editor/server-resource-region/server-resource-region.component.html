@@ -5,9 +5,9 @@
                 (onClick)="onSave()"></p-button>
     </div>
     <div class="col-span-3">
-      <p-dropdown [options]="serverGameEngineConfig ? serverGameEngineConfig!.resourceRegionConfigs:[]"
+      <p-select [options]="serverGameEngineConfigEntity ? serverGameEngineConfigEntity!.resourceRegionConfigs:[]"
                   [(ngModel)]="selectedResourceRegion"
-                  optionLabel="internalName"></p-dropdown>
+                  optionLabel="internalName"></p-select>
     </div>
     <div class="col-span-1">
       <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"

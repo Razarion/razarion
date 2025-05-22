@@ -1,11 +1,17 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.service.engine.LevelCrudPersistence;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import jakarta.persistence.*;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import static com.btxtech.server.service.PersistenceUtil.extractId;
 
@@ -52,9 +58,9 @@ public class StartRegionConfigEntity extends BaseEntity {
                 .noBaseViewPosition(noBaseViewPosition);
     }
 
-    public void fromStartRegionConfig(StartRegionConfig startRegionConfig, LevelCrudPersistence levelCrudPersistence) {
+    public StartRegionConfigEntity fromStartRegionConfig(StartRegionConfig startRegionConfig) {
         setInternalName(startRegionConfig.getInternalName());
-        minimalLevel = levelCrudPersistence.getEntity(startRegionConfig.getMinimalLevelId());
+        minimalLevel = (LevelEntity) new LevelEntity().id(startRegionConfig.getMinimalLevelId());
         if (startRegionConfig.getRegion() != null) {
             startRegion = new PlaceConfigEntity();
             startRegion.fromPlaceConfig(startRegionConfig.getRegion());
@@ -62,6 +68,7 @@ public class StartRegionConfigEntity extends BaseEntity {
             startRegion = null;
         }
         noBaseViewPosition = startRegionConfig.getNoBaseViewPosition();
+        return this;
     }
 
     @Override

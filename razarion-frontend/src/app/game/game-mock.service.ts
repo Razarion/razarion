@@ -51,6 +51,7 @@ import {BabylonModelService} from './renderer/babylon-model.service';
 import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {LevelEditorComponent} from '../editor/crud-editors/level-editor/level-editor.component';
+import {ServerStartRegionComponent} from '../editor/server-start-region/server-start-region.component';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -1055,7 +1056,8 @@ export class GameMockService {
   private showEditor() {
     setTimeout(() => {
       this.fakeRenderImageRemoveLoadingCover();
-      this.gameComponent.addEditorModel(new EditorModel("Level editor", LevelEditorComponent));
+      // this.gameComponent.addEditorModel(new EditorModel("Level editor", LevelEditorComponent));
+      this.gameComponent.addEditorModel(new EditorModel("Start region editor", ServerStartRegionComponent));
       // this.gameComponent.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, GltfEditorComponent));
       // this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
     }, 100);

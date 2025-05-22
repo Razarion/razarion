@@ -1,9 +1,12 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.service.engine.ResourceItemTypeCrudPersistence;
 import com.btxtech.shared.dto.ResourceRegionConfig;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import static com.btxtech.server.model.engine.PlaceConfigEntity.toPlaceConfig;
 import static com.btxtech.server.service.PersistenceUtil.extractId;
@@ -29,12 +32,13 @@ public class ServerResourceRegionConfigEntity extends BaseEntity {
                 .resourceItemTypeId(extractId(resourceItemType, ResourceItemTypeEntity::getId));
     }
 
-    public void fromResourceRegionConfig(ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence, ResourceRegionConfig resourceRegionConfig) {
+    public ServerResourceRegionConfigEntity fromResourceRegionConfig(ResourceRegionConfig resourceRegionConfig) {
         setInternalName(resourceRegionConfig.getInternalName());
         count = resourceRegionConfig.getCount();
         minDistanceToItems = resourceRegionConfig.getMinDistanceToItems();
-        resourceItemType = resourceItemTypeCrudPersistence.getEntity(resourceRegionConfig.getResourceItemTypeId());
+        resourceItemType = (ResourceItemTypeEntity) new ResourceItemTypeEntity().id(resourceRegionConfig.getResourceItemTypeId());
         region = fromConfig(region, resourceRegionConfig.getRegion(), PlaceConfigEntity::new, PlaceConfigEntity::fromPlaceConfig);
+        return this;
     }
 
     @Override

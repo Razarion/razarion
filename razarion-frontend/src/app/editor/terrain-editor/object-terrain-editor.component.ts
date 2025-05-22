@@ -34,7 +34,7 @@ import {Divider} from 'primeng/divider';
 import {SelectButton} from 'primeng/selectbutton';
 import {InputNumber} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
-import {DropdownModule} from 'primeng/dropdown';
+import {SelectModule} from 'primeng/select';
 import {NgIf} from '@angular/common';
 
 @Component({
@@ -47,7 +47,7 @@ import {NgIf} from '@angular/common';
     TerrainObjectPositionComponent,
     InputNumber,
     FormsModule,
-    DropdownModule,
+    SelectModule,
     NgIf
   ],
   templateUrl: './object-terrain-editor.component.html'

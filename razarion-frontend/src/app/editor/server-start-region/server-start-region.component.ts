@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ServerGameEngineConfig, StartRegionConfig} from "../../generated/razarion-share";
+import {ServerGameEngineConfigEntity, StartRegionConfig} from "../../generated/razarion-share";
 import {EditorService} from "../editor-service";
 import {EditorPanel} from "../editor-model";
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
@@ -9,8 +9,8 @@ import {FormsModule} from '@angular/forms';
 import {InputNumber} from 'primeng/inputnumber';
 import {Divider} from 'primeng/divider';
 import {Button} from 'primeng/button';
-import {DropdownModule} from 'primeng/dropdown';
 import {NgIf} from '@angular/common';
+import {SelectModule} from 'primeng/select';
 
 @Component({
   selector: 'server-start-region',
@@ -22,13 +22,13 @@ import {NgIf} from '@angular/common';
     InputNumber,
     Divider,
     Button,
-    DropdownModule,
-    NgIf
+    NgIf,
+    SelectModule
   ],
   templateUrl: './server-start-region.component.html'
 })
 export class ServerStartRegionComponent extends EditorPanel implements OnInit {
-  serverGameEngineConfig!: ServerGameEngineConfig;
+  serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
   selectedStartRegion?: StartRegionConfig;
 
   constructor(private editorService: EditorService) {
@@ -37,12 +37,12 @@ export class ServerStartRegionComponent extends EditorPanel implements OnInit {
 
   ngOnInit(): void {
     this.editorService.readServerGameEngineConfig().then(serverGameEngineConfig => {
-      this.serverGameEngineConfig = serverGameEngineConfig;
+      this.serverGameEngineConfigEntity = serverGameEngineConfig;
     })
   }
 
   onSave() {
-    this.editorService.updateStartRegionConfig(this.serverGameEngineConfig.startRegionConfigs)
+    this.editorService.updateStartRegionConfig(this.serverGameEngineConfigEntity.startRegionConfigs)
   }
 
   onCreate() {
@@ -53,11 +53,11 @@ export class ServerStartRegionComponent extends EditorPanel implements OnInit {
       noBaseViewPosition: null,
       region: null
     };
-    this.serverGameEngineConfig!.startRegionConfigs.push(this.selectedStartRegion);
+    this.serverGameEngineConfigEntity!.startRegionConfigs.push(this.selectedStartRegion);
   }
 
   onDelete() {
-    this.serverGameEngineConfig!.startRegionConfigs.splice(this.serverGameEngineConfig!.startRegionConfigs.findIndex(b => b === this.selectedStartRegion), 1);
+    this.serverGameEngineConfigEntity!.startRegionConfigs.splice(this.serverGameEngineConfigEntity!.startRegionConfigs.findIndex(b => b === this.selectedStartRegion), 1);
     this.selectedStartRegion = undefined;
   }
 }

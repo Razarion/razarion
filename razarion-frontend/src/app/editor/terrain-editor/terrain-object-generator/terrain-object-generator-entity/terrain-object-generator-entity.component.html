@@ -33,10 +33,10 @@
   <ng-template pTemplate="body" let-generatorItem>
     <tr>
       <td>
-        <p-dropdown [options]="terrainObjectConfigs" [(ngModel)]="generatorItem.terrainObjectConfig"
+        <p-select [options]="terrainObjectConfigs" [(ngModel)]="generatorItem.terrainObjectConfig"
                     [appendTo]="'body'"
                     optionLabel="name"
-                    optionValue ="terrainObjectId" ></p-dropdown>
+                    optionValue ="terrainObjectId" ></p-select>
       </td>
       <td>
         <p-inputNumber [(ngModel)]="generatorItem.count" [min]="0" [size]="'small'"></p-inputNumber>

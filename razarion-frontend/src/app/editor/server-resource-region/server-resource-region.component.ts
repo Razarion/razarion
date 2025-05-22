@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {EditorPanel} from "../editor-model";
-import {ResourceRegionConfig, ServerGameEngineConfig} from "../../generated/razarion-share";
+import {ResourceRegionConfig, ServerGameEngineConfigEntity} from "../../generated/razarion-share";
 import {EditorService} from "../editor-service";
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
 import {NgIf} from '@angular/common';
@@ -9,7 +9,7 @@ import {InputNumber} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
 import {Divider} from 'primeng/divider';
 import {Button} from 'primeng/button';
-import {DropdownModule} from 'primeng/dropdown';
+import {SelectModule} from 'primeng/select';
 
 @Component({
   selector: 'server-resource-region',
@@ -21,12 +21,12 @@ import {DropdownModule} from 'primeng/dropdown';
     FormsModule,
     Divider,
     Button,
-    DropdownModule
+    SelectModule
   ],
   templateUrl: './server-resource-region.component.html'
 })
 export class ServerResourceRegionComponent extends EditorPanel implements OnInit {
-  serverGameEngineConfig!: ServerGameEngineConfig;
+  serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
   selectedResourceRegion?: ResourceRegionConfig;
 
   constructor(public editorService: EditorService) {
@@ -35,19 +35,19 @@ export class ServerResourceRegionComponent extends EditorPanel implements OnInit
 
   ngOnInit(): void {
     this.editorService.readServerGameEngineConfig().then(serverGameEngineConfig => {
-      this.serverGameEngineConfig = serverGameEngineConfig;
+      this.serverGameEngineConfigEntity = serverGameEngineConfig;
     })
   }
 
   onSave() {
-    this.editorService.updateResourceRegionConfig(this.serverGameEngineConfig.resourceRegionConfigs)
+    this.editorService.updateResourceRegionConfig(this.serverGameEngineConfigEntity.resourceRegionConfigs)
   }
 
 
   protected readonly EditorService = EditorService;
 
   onCreate() {
-    this.serverGameEngineConfig!.resourceRegionConfigs.push({
+    this.serverGameEngineConfigEntity!.resourceRegionConfigs.push({
       id: null,
       count: 0,
       internalName: "New",
@@ -58,7 +58,7 @@ export class ServerResourceRegionComponent extends EditorPanel implements OnInit
   }
 
   onDelete() {
-    this.serverGameEngineConfig!.resourceRegionConfigs.splice(this.serverGameEngineConfig!.resourceRegionConfigs.findIndex(b => b === this.selectedResourceRegion), 1);
+    this.serverGameEngineConfigEntity!.resourceRegionConfigs.splice(this.serverGameEngineConfigEntity!.resourceRegionConfigs.findIndex(b => b === this.selectedResourceRegion), 1);
     this.selectedResourceRegion = undefined;
   }
 }

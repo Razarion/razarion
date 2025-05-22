@@ -1,9 +1,9 @@
-<p-dropdown *ngIf="!readOnly"
+<p-select *ngIf="!readOnly"
             [placeholder]="'...'"
             [options]="groundOptions"
             [(ngModel)]="groundId"
             (onChange)="onChange()"
             optionLabel="name"
             optionValue="id">
-</p-dropdown>
+</p-select>
 <span *ngIf="readOnly">{{getCurrentName()}}</span>

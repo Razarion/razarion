@@ -1,12 +1,14 @@
 package com.btxtech.server.model.engine.quest;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
-import com.btxtech.server.service.engine.BotConfigEntityPersistence;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 
 @Entity
@@ -26,7 +28,7 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
         return questConfig;
     }
 
-    public void fromQuestConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, QuestConfig questConfig) {
+    public void fromQuestConfig(QuestConfig questConfig) {
         setInternalName(questConfig.getInternalName());
         xp = questConfig.getXp();
         razarion = questConfig.getRazarion();
@@ -35,7 +37,7 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
             if (conditionConfigEntity == null) {
                 conditionConfigEntity = new ConditionConfigEntity();
             }
-            conditionConfigEntity.fromConditionConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, questConfig.getConditionConfig());
+            conditionConfigEntity.fromConditionConfig(questConfig.getConditionConfig());
         } else {
             conditionConfigEntity = null;
         }

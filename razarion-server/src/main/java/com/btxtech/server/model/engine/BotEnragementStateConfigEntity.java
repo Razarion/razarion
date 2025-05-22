@@ -27,7 +27,7 @@ public class BotEnragementStateConfigEntity extends BaseEntity {
         return new BotEnragementStateConfig().name(getInternalName()).enrageUpKills(enrageUpKills).botItems(botItems);
     }
 
-    public void fromBotEnragementStateConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotEnragementStateConfig botEnragementStateConfig) {
+    public void fromBotEnragementStateConfig(BotEnragementStateConfig botEnragementStateConfig) {
         setInternalName(botEnragementStateConfig.getName());
         enrageUpKills = botEnragementStateConfig.getEnrageUpKills();
         if (botItems == null) {
@@ -37,7 +37,7 @@ public class BotEnragementStateConfigEntity extends BaseEntity {
         if (botEnragementStateConfig.getBotItems() != null) {
             for (BotItemConfig botItemConfig : botEnragementStateConfig.getBotItems()) {
                 BotItemConfigEntity botItemConfigEntity = new BotItemConfigEntity();
-                botItemConfigEntity.fromBotItemConfig(baseItemTypeCrudPersistence, botItemConfig);
+                botItemConfigEntity.fromBotItemConfig(botItemConfig);
                 botItems.add(botItemConfigEntity);
             }
         }

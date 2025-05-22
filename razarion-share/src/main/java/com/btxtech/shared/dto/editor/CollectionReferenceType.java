@@ -15,7 +15,6 @@ public enum CollectionReferenceType {
     TERRAIN_OBJECT(TerrainObjectEditorController.class, "Terrain Object", CommonUrl.TERRAIN_OBJECT_EDITOR_PATH),
     BASE_ITEM(BaseItemTypeEditorController.class, "Base Item", CommonUrl.BASE_ITEM_TYPE_EDITOR_PATH),
     RESOURCE_ITEM(ResourceItemTypeEditorController.class, "Resource Item", CommonUrl.RESOURCE_ITEM_TYPE_EDITOR_PATH),
-    SERVER_GAME_ENGINE(ServerGameEngineEditorController.class, "Server Game Engine", CommonUrl.SERVER_GAME_ENGINE_EDITOR_PATH),
     IMAGE(null, "Image", null);
 
     private static Map<String, CollectionReferenceType> collectionName2Type;

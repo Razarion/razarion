@@ -10,9 +10,9 @@ import {InputNumber} from 'primeng/inputnumber';
 import {LevelComponent} from '../common/level/level.component';
 import {TableModule} from 'primeng/table';
 import {DatePipe} from '@angular/common';
-import {DropdownModule} from 'primeng/dropdown';
 import {ChipModule} from 'primeng/chip';
 import {FormsModule} from '@angular/forms';
+import {SelectModule} from 'primeng/select';
 
 @Component({
   selector: 'user-mgmt',
@@ -22,7 +22,7 @@ import {FormsModule} from '@angular/forms';
     LevelComponent,
     TableModule,
     DatePipe,
-    DropdownModule,
+    SelectModule,
     ChipModule,
     FormsModule
   ],

@@ -7,12 +7,12 @@
 
 <div class="field grid grid-cols-12 gap-4 items-center">
   <div class="col-span-9">
-    <p-dropdown [options]="terrainObjectGeneratorOptions"
+    <p-select [options]="terrainObjectGeneratorOptions"
                 [(ngModel)]="terrainObjectGeneratorId"
                 optionLabel="name"
                 optionValue="id"
                 (onChange)="onTerrainObjectGeneratorChange($event)"
-                [style]="{ width: '100%' }"></p-dropdown>
+                [style]="{ width: '100%' }"></p-select>
   </div>
 
   <div class="col-span-1">

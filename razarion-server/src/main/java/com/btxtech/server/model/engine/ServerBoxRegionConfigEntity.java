@@ -1,11 +1,14 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.service.engine.BoxItemTypeCrudPersistence;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "SERVER_BOX_REGION_CONFIG")
@@ -36,9 +39,9 @@ public class ServerBoxRegionConfigEntity extends BaseEntity implements ObjectNam
         return boxRegionConfig;
     }
 
-    public void fromBoxRegionConfig(BoxItemTypeCrudPersistence boxItemTypeCrudPersistence, BoxRegionConfig boxRegionConfig) {
+    public ServerBoxRegionConfigEntity fromBoxRegionConfig(BoxRegionConfig boxRegionConfig) {
         setInternalName(boxRegionConfig.getInternalName());
-        boxItemTypeId = boxItemTypeCrudPersistence.getEntity(boxRegionConfig.getBoxItemTypeId());
+        boxItemTypeId = (BoxItemTypeEntity) new BoxItemTypeEntity().id(boxRegionConfig.getBoxItemTypeId());
         minInterval = boxRegionConfig.getMinInterval();
         maxInterval = boxRegionConfig.getMaxInterval();
         count = boxRegionConfig.getCount();
@@ -51,6 +54,7 @@ public class ServerBoxRegionConfigEntity extends BaseEntity implements ObjectNam
             region = new PlaceConfigEntity();
             region.fromPlaceConfig(boxRegionConfig.getRegion());
         }
+        return this;
     }
 
     @Override

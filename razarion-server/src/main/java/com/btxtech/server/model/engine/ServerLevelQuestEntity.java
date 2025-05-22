@@ -2,15 +2,19 @@ package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.engine.quest.QuestConfigEntity;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
-import com.btxtech.server.service.engine.BotConfigEntityPersistence;
-import com.btxtech.server.service.engine.LevelCrudPersistence;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 
 import java.util.HashMap;
 import java.util.List;
@@ -53,12 +57,9 @@ public class ServerLevelQuestEntity extends BaseEntity implements ObjectNameIdPr
                 .questConfigs(toConfigList(serverLevelQuestEntryEntities, questConfigEntity -> questConfigEntity.getQuest().toQuestConfig()));
     }
 
-    public void fromServerLevelQuestConfig(BotConfigEntityPersistence botConfigEntityPersistence,
-                                           BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
-                                           ServerLevelQuestConfig serverLevelQuestConfig,
-                                           LevelCrudPersistence levelCrudPersistence) {
+    public void fromServerLevelQuestConfig(ServerLevelQuestConfig serverLevelQuestConfig) {
         setInternalName(serverLevelQuestConfig.getInternalName());
-        minimalLevel = levelCrudPersistence.getEntity(serverLevelQuestConfig.getMinimalLevelId());
+        minimalLevel = (LevelEntity) new LevelEntity().id(serverLevelQuestConfig.getMinimalLevelId());
 
         Map<QuestConfig, Integer> savedOrder = new HashMap<>();
         List<QuestConfig> questConfigs = serverLevelQuestConfig.getQuestConfigs();
@@ -71,7 +72,7 @@ public class ServerLevelQuestEntity extends BaseEntity implements ObjectNameIdPr
                 serverLevelQuestConfig.getQuestConfigs(),
                 () -> new ServerLevelQuestEntryEntity().quest(new QuestConfigEntity()),
                 (serverLevelQuestEntryEntity, questConfig) -> {
-                    serverLevelQuestEntryEntity.getQuest().fromQuestConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, questConfig);
+                    serverLevelQuestEntryEntity.getQuest().fromQuestConfig(questConfig);
                     serverLevelQuestEntryEntity.setOrderColumn(savedOrder.get(questConfig));
                 },
                 QuestDescriptionConfig::getId,

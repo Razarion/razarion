@@ -1,9 +1,12 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 
 @Entity
@@ -33,8 +36,8 @@ public class BotItemConfigEntity extends BaseEntity {
         return botItemConfig;
     }
 
-    public void fromBotItemConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, BotItemConfig botItemConfig) {
-        baseItemTypeEntity = baseItemTypeCrudPersistence.getEntity(botItemConfig.getBaseItemTypeId());
+    public void fromBotItemConfig(BotItemConfig botItemConfig) {
+        baseItemTypeEntity = (BaseItemTypeEntity) new BaseItemTypeEntity().id(botItemConfig.getBaseItemTypeId());
         count = botItemConfig.getCount();
         createDirectly = botItemConfig.isCreateDirectly();
         noSpawn = botItemConfig.isNoSpawn();

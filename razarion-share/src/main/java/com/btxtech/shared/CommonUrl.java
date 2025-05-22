@@ -51,7 +51,6 @@ public class CommonUrl {
     public static final String RESOURCE_ITEM_TYPE_EDITOR_PATH = "editor/resource_item_type";
     public static final String GENERIC_PROPERTY_EDITOR_PATH = "editor/generic-property";
     public static final String GAME_UI_CONTEXT_EDITOR_PATH = "editor/game-ui-context";
-    public static final String SERVER_GAME_ENGINE_EDITOR_PATH = "editor/server-game-engine";
     public static final String MODEL_3D_CONTROLLER = "editor/model-3d";
     public static final String PARTICLE_SYSTEM_CONTROLLER = "editor/particle-system";
     public static final String BRUSH_EDITOR_PATH = "editor/brush";

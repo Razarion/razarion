@@ -1,9 +1,25 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.shared.dto.*;
+import com.btxtech.shared.dto.BoxRegionConfig;
+import com.btxtech.shared.dto.MasterPlanetConfig;
+import com.btxtech.shared.dto.ResourceRegionConfig;
+import com.btxtech.shared.dto.ServerGameEngineConfig;
+import com.btxtech.shared.dto.ServerLevelQuestConfig;
+import com.btxtech.shared.dto.SlavePlanetConfig;
+import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import jakarta.persistence.*;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,24 +32,30 @@ import static com.btxtech.server.service.PersistenceUtil.toConfigList;
 @Table(name = "SERVER_GAME_ENGINE_CONFIG")
 public class ServerGameEngineConfigEntity extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private PlanetEntity planetEntity;
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "serverGameEngineId", nullable = false)
+    @JsonIgnore
     private List<ServerResourceRegionConfigEntity> resourceRegionConfigs;
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "serverGameEngineId", nullable = false)
+    @JsonIgnore
     private List<ServerBoxRegionConfigEntity> boxRegionConfigs;
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "serverGameEngineId", nullable = false)
+    @JsonIgnore
     private List<StartRegionConfigEntity> startRegionConfigs;
     // TODO BotConfigEntity in "BOT_CONFIG" table not getting removed if an entity from this list is removed. Same in SceneEntity
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "SERVER_GAME_ENGINE_BOT_CONFIG",
             joinColumns = @JoinColumn(name = "serverGameEngineId"),
             inverseJoinColumns = @JoinColumn(name = "botConfigId"))
+    @JsonIgnore
     private List<BotConfigEntity> botConfigs;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "serverGameEngineConfig")
+    @JsonIgnore
     private List<ServerLevelQuestEntity> serverLevelQuestEntities;
 
     public ServerGameEngineConfig toServerGameEngineConfig() {
@@ -99,6 +121,68 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
                 .noBaseViewPosition(result.getNoBaseViewPosition());
     }
 
+    @JsonGetter("planetConfigId")
+    public Integer getJsonPlanetConfigId() {
+        return planetEntity != null ? planetEntity.getId() : null;
+    }
+
+    @JsonGetter("resourceRegionConfigs")
+    public List<ResourceRegionConfig> getJsonResourceRegionConfigs() {
+        return toConfigList(resourceRegionConfigs, ServerResourceRegionConfigEntity::toResourceRegionConfig);
+    }
+
+    @JsonGetter("boxRegionConfigs")
+    public List<BoxRegionConfig> getJsonBoxRegionConfigs() {
+        return toConfigList(boxRegionConfigs, ServerBoxRegionConfigEntity::toBoxRegionConfig);
+    }
+
+    @JsonGetter("startRegionConfigs")
+    public List<StartRegionConfig> getJsonStartRegionConfigs() {
+        if (startRegionConfigs == null) {
+            return null;
+        }
+        return startRegionConfigs.stream()
+                .map(StartRegionConfigEntity::toStartRegionConfig)
+                .toList();
+    }
+
+    @JsonGetter("botConfigs")
+    public List<BotConfig> getJsonBotConfigs() {
+        return toConfigList(botConfigs, BotConfigEntity::toBotConfig);
+    }
+
+    @JsonGetter("serverLevelQuestConfigs")
+    public List<ServerLevelQuestConfig> getJsonServerLevelQuestConfigs() {
+        return toConfigList(serverLevelQuestEntities, ServerLevelQuestEntity::toServerLevelQuestConfig);
+    }
+
+    public void setStartRegionConfigs(List<StartRegionConfigEntity> startRegionConfigs) {
+        this.startRegionConfigs.clear();
+        this.startRegionConfigs.addAll(startRegionConfigs);
+    }
+
+    public void setResourceRegionConfigs(List<ServerResourceRegionConfigEntity> resourceRegionConfigs) {
+        this.resourceRegionConfigs.clear();
+        this.resourceRegionConfigs.addAll(resourceRegionConfigs);
+    }
+
+    public void setBoxRegionConfigs(List<ServerBoxRegionConfigEntity> boxRegionConfigs) {
+        this.boxRegionConfigs.clear();
+        this.boxRegionConfigs.addAll(boxRegionConfigs);
+    }
+
+    public void setBotConfigs(List<BotConfigEntity> botConfigs) {
+        this.botConfigs.clear();
+        this.botConfigs.addAll(botConfigs);
+    }
+
+    public List<ServerLevelQuestEntity> getServerLevelQuestEntities() {
+        return serverLevelQuestEntities;
+    }
+
+    public void setPlanetEntity(PlanetEntity planetEntity) {
+        this.planetEntity = planetEntity;
+    }
 
     @Override
     public boolean equals(Object o) {

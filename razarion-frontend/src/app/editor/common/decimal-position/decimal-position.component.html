@@ -1,7 +1,28 @@
-<div class="inline-flex">
-    <p-inputNumber [(ngModel)]="x" (onInput)="onX($event.value)" [prefix]="'x: '" [size]="'small'" [disabled]="readOnly"
-        [minFractionDigits]="1" [maxFractionDigits]="6" [allowEmpty]="true"></p-inputNumber>
-    <p-inputNumber [(ngModel)]="y" (onInput)="onY($event.value)" [prefix]="'y: '" [size]="'small'" [disabled]="readOnly"
-        [minFractionDigits]="1" [maxFractionDigits]="6" [allowEmpty]="true"></p-inputNumber>
-    <p-toggleButton [(ngModel)]="checkedEditMode" onIcon="pi pi-times" offIcon="pi pi-map-marker" (onChange)="onPick()"></p-toggleButton>
+<div class="flex flex-row gap-1 items-center">
+<p-inputNumber [(ngModel)]="x"
+                 (onInput)="onX($event.value)"
+                 [prefix]="'x: '"
+                 [size]="'small'"
+                 [disabled]="readOnly"
+                 [minFractionDigits]="1"
+                 [maxFractionDigits]="6"
+                 inputStyleClass="!text-xs !h-7 !px-2 !w-25"
+                 [allowEmpty]="true"></p-inputNumber>
+  <p-inputNumber [(ngModel)]="y"
+                 (onInput)="onY($event.value)"
+                 [prefix]="'y: '"
+                 [size]="'small'"
+                 [disabled]="readOnly"
+                 [minFractionDigits]="1"
+                 [maxFractionDigits]="6"
+                 inputStyleClass="!text-xs !h-7 !px-2 !w-25"
+                 [allowEmpty]="true"></p-inputNumber>
+  <p-toggleButton [(ngModel)]="checkedEditMode"
+                  onIcon="pi pi-times"
+                  offIcon="pi pi-map-marker"
+                  size="small"
+                  onLabel=""
+                  offLabel=""
+                  styleClass="max-w-10 max-h-5"
+                  (onChange)="onPick()"></p-toggleButton>
 </div>

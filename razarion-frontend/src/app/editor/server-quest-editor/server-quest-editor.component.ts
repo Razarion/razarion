@@ -4,7 +4,7 @@ import {EditorService} from "../editor-service";
 import {
   ConditionTrigger,
   QuestConfig,
-  ServerGameEngineConfig,
+  ServerGameEngineConfigEntity,
   ServerLevelQuestConfig
 } from "../../generated/razarion-share";
 import {QuestCockpitComponent} from 'src/app/game/cockpit/quest/quest-cockpit.component';
@@ -14,9 +14,9 @@ import {Divider} from 'primeng/divider';
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
 import {Checkbox} from 'primeng/checkbox';
 import {BaseItemTypeCountComponent} from '../common/base-item-type-count/base-item-type-count.component';
-import {DropdownModule} from 'primeng/dropdown';
+import {SelectModule} from 'primeng/select';
 import {Button} from 'primeng/button';
-import {Accordion, AccordionTab} from 'primeng/accordion';
+import {Accordion, AccordionModule} from 'primeng/accordion';
 import {LevelComponent} from '../common/level/level.component';
 import {NgForOf, NgIf} from '@angular/common';
 
@@ -29,10 +29,10 @@ import {NgForOf, NgIf} from '@angular/common';
     PlaceConfigComponent,
     Checkbox,
     BaseItemTypeCountComponent,
-    DropdownModule,
+    SelectModule,
     Button,
     Accordion,
-    AccordionTab,
+    AccordionModule,
     LevelComponent,
     NgIf,
     NgForOf
@@ -40,7 +40,7 @@ import {NgForOf, NgIf} from '@angular/common';
   templateUrl: './server-quest-editor.component.html'
 })
 export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
-  serverGameEngineConfig!: ServerGameEngineConfig;
+  serverGameEngineConfig!: ServerGameEngineConfigEntity;
   options: { label: string, value: ServerLevelQuestConfig }[] = [];
   selectedLevelQuest?: ServerLevelQuestConfig;
 
@@ -68,8 +68,9 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   }
 
   private loadOptions(): void {
+    console.info("---- loadOptions")
     this.options.length = 0;
-    let tmpSelectedLevelQuest = this.selectedLevelQuest;
+    // let tmpSelectedLevelQuest = this.selectedLevelQuest;
     let levelIdMap = new Map<number, string>();
     this.editorService.readLevelObjectNameIds().then(objectNameIds => {
       objectNameIds.forEach(objectNameId => {
@@ -96,7 +97,7 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
         }
       });
 
-      this.selectedLevelQuest = tmpSelectedLevelQuest;
+      // this.selectedLevelQuest = tmpSelectedLevelQuest;
     });
   }
 

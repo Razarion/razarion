@@ -21,12 +21,12 @@ public class ConditionConfigEntity {
         return new ConditionConfig().conditionTrigger(conditionTrigger).comparisonConfig(comparisonConfig.toComparisonConfig());
     }
 
-    public void fromConditionConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ConditionConfig conditionConfig) {
+    public void fromConditionConfig(ConditionConfig conditionConfig) {
         conditionTrigger = conditionConfig.getConditionTrigger();
         if(comparisonConfig == null) {
             comparisonConfig = new ComparisonConfigEntity();
         }
-        comparisonConfig.fromComparisonConfig(botConfigEntityPersistence, baseItemTypeCrudPersistence, conditionConfig.getComparisonConfig());
+        comparisonConfig.fromComparisonConfig(conditionConfig.getComparisonConfig());
     }
 
     @Override

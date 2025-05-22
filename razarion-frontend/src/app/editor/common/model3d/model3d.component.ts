@@ -1,14 +1,14 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {DropdownModule} from "primeng/dropdown";
 import {Model3DControllerClient} from "../../../generated/razarion-share";
 import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 import {FormsModule} from '@angular/forms';
+import {SelectModule} from 'primeng/select';
 
 @Component({
   selector: 'model3d',
   imports: [
-    DropdownModule,
+    SelectModule,
     FormsModule
   ],
   templateUrl: './model3d.component.html'

@@ -5,7 +5,7 @@ import {
   BotConfig,
   BotEnragementStateConfig,
   BotItemConfig,
-  ServerGameEngineConfig
+  ServerGameEngineConfigEntity
 } from "../../generated/razarion-share";
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
 import {InputNumber} from 'primeng/inputnumber';
@@ -17,7 +17,7 @@ import {Accordion, AccordionTab} from 'primeng/accordion';
 import {NgForOf, NgIf} from '@angular/common';
 import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
 import {Divider} from 'primeng/divider';
-import {DropdownModule} from 'primeng/dropdown';
+import {SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'server-bot-editor',
@@ -34,12 +34,12 @@ import {DropdownModule} from 'primeng/dropdown';
     AccordionTab,
     BabylonMaterialComponent,
     Divider,
-    DropdownModule
+    SelectModule
   ],
   templateUrl: './server-bot-editor.component.html'
 })
 export class ServerBotEditorComponent extends EditorPanel implements OnInit {
-  serverGameEngineConfig!: ServerGameEngineConfig;
+  serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
   selectedBot?: BotConfig;
 
   constructor(public editorService: EditorService) {
@@ -48,12 +48,12 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
 
   ngOnInit(): void {
     this.editorService.readServerGameEngineConfig().then(serverGameEngineConfig => {
-      this.serverGameEngineConfig = serverGameEngineConfig;
+      this.serverGameEngineConfigEntity = serverGameEngineConfig;
     })
   }
 
   onSave() {
-    this.editorService.updateBotConfig(this.serverGameEngineConfig.botConfigs)
+    this.editorService.updateBotConfig(this.serverGameEngineConfigEntity.botConfigs)
   }
 
   protected readonly EditorService = EditorService;
@@ -75,11 +75,11 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
       realm: null,
       groundBabylonMaterialId: null
     }
-    this.serverGameEngineConfig!.botConfigs.push(this.selectedBot)
+    this.serverGameEngineConfigEntity!.botConfigs.push(this.selectedBot)
   }
 
   onDelete() {
-    this.serverGameEngineConfig!.botConfigs.splice(this.serverGameEngineConfig!.botConfigs.findIndex(b => b === this.selectedBot), 1);
+    this.serverGameEngineConfigEntity!.botConfigs.splice(this.serverGameEngineConfigEntity!.botConfigs.findIndex(b => b === this.selectedBot), 1);
     this.selectedBot = undefined;
   }
 

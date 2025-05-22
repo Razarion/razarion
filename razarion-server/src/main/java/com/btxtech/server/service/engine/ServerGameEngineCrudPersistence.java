@@ -1,15 +1,26 @@
 package com.btxtech.server.service.engine;
 
+import com.btxtech.server.model.BaseEntity;
+import com.btxtech.server.model.engine.BotConfigEntity;
 import com.btxtech.server.model.engine.LevelEntity;
+import com.btxtech.server.model.engine.ServerBoxRegionConfigEntity;
 import com.btxtech.server.model.engine.ServerGameEngineConfigEntity;
+import com.btxtech.server.model.engine.ServerLevelQuestEntity;
+import com.btxtech.server.model.engine.ServerResourceRegionConfigEntity;
+import com.btxtech.server.model.engine.StartRegionConfigEntity;
 import com.btxtech.server.model.engine.quest.QuestConfigEntity;
 import com.btxtech.server.repository.engine.ServerGameEngineConfigRepository;
+import com.btxtech.server.service.PersistenceUtil;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
+import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
+import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.SlavePlanetConfig;
+import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,4 +121,54 @@ public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersisten
         return questConfigEntities.get(0);
     }
 
+    @Transactional
+    public void updateResourceRegionConfig(int serverGameEngineConfigId, List<ResourceRegionConfig> resourceRegionConfigs) {
+        var serverGameEngineConfig = getBaseEntity(serverGameEngineConfigId);
+        serverGameEngineConfig.setResourceRegionConfigs(resourceRegionConfigs.stream()
+                .map(c -> new ServerResourceRegionConfigEntity().fromResourceRegionConfig(c))
+                .toList());
+
+        updateBaseEntity(serverGameEngineConfig);
+    }
+
+    @Transactional
+    public void updateStartRegionConfig(int serverGameEngineConfigId, List<StartRegionConfig> startRegionConfigs) {
+        var serverGameEngineConfig = getBaseEntity(serverGameEngineConfigId);
+        serverGameEngineConfig.setStartRegionConfigs(startRegionConfigs.stream()
+                .map(c -> new StartRegionConfigEntity().fromStartRegionConfig(c))
+                .toList());
+        updateBaseEntity(serverGameEngineConfig);
+    }
+
+    @Transactional
+    public void updateBotConfig(int serverGameEngineConfigId, List<BotConfig> botConfigs) {
+        var serverGameEngineConfig = getBaseEntity(serverGameEngineConfigId);
+        serverGameEngineConfig.setBotConfigs(botConfigs.stream()
+                .map(c -> new BotConfigEntity().fromBotConfig(c))
+                .toList());
+
+        updateBaseEntity(serverGameEngineConfig);
+    }
+
+    @Transactional
+    public void updateServerLevelQuestConfig(int serverGameEngineConfigId, List<ServerLevelQuestConfig> serverLevelQuestConfigs) {
+        var serverGameEngineConfig = getBaseEntity(serverGameEngineConfigId);
+        PersistenceUtil.fromConfigsNoClear(serverGameEngineConfig.getServerLevelQuestEntities(),
+                serverLevelQuestConfigs,
+                ServerLevelQuestEntity::new,
+                ServerLevelQuestEntity::fromServerLevelQuestConfig,
+                ServerLevelQuestConfig::getId,
+                BaseEntity::getId);
+        updateBaseEntity(serverGameEngineConfig);
+    }
+
+    @Transactional
+    public void updateBoxRegionConfig(int serverGameEngineConfigId, List<BoxRegionConfig> boxRegionConfigs) {
+        var serverGameEngineConfig = getBaseEntity(serverGameEngineConfigId);
+        serverGameEngineConfig.setBoxRegionConfigs(boxRegionConfigs.stream()
+                .map(c -> new ServerBoxRegionConfigEntity().fromBoxRegionConfig(c))
+                .toList());
+
+        updateBaseEntity(serverGameEngineConfig);
+    }
 }

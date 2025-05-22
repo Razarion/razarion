@@ -3,10 +3,21 @@ package com.btxtech.server.model.engine.quest;
 import com.btxtech.server.model.engine.BaseItemTypeEntity;
 import com.btxtech.server.model.engine.BotConfigEntity;
 import com.btxtech.server.model.engine.PlaceConfigEntity;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
-import com.btxtech.server.service.engine.BotConfigEntityPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.MapKeyJoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +60,7 @@ public class ComparisonConfigEntity {
         return comparisonConfig;
     }
 
-    public void fromComparisonConfig(BotConfigEntityPersistence botConfigEntityPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ComparisonConfig comparisonConfig) {
+    public void fromComparisonConfig(ComparisonConfig comparisonConfig) {
         includeExisting = comparisonConfig.isIncludeExisting();
         count = comparisonConfig.getCount();
         time = comparisonConfig.getTimeSeconds();
@@ -67,7 +78,7 @@ public class ComparisonConfigEntity {
             }
             typeCount.clear();
             for (Map.Entry<Integer, Integer> entry : comparisonConfig.getTypeCount().entrySet()) {
-                typeCount.put(baseItemTypeCrudPersistence.getEntity(entry.getKey()), entry.getValue());
+                typeCount.put((BaseItemTypeEntity) new BaseItemTypeEntity().id(entry.getKey()), entry.getValue());
             }
         } else {
             typeCount = null;
@@ -77,7 +88,7 @@ public class ComparisonConfigEntity {
                 bots = new ArrayList<>();
             }
             bots.clear();
-            comparisonConfig.getBotIds().forEach(botId -> bots.add(botConfigEntityPersistence.getEntity(botId)));
+            comparisonConfig.getBotIds().forEach(botId -> bots.add((BotConfigEntity) new BotConfigEntity().id(botId)));
         } else {
             bots = null;
         }

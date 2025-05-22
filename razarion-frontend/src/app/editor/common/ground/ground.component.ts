@@ -1,13 +1,13 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
-import {DropdownModule} from 'primeng/dropdown';
+import {SelectModule} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
 import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'ground',
   imports: [
-    DropdownModule,
+    SelectModule,
     FormsModule,
     NgIf
   ],

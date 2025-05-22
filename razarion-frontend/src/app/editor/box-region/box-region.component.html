@@ -4,8 +4,8 @@
             <p-button type="button" icon="pi pi-save" styleClass="p-button-sm" (onClick)="onSave()"></p-button>
         </div>
         <div class="col-span-3">
-            <p-dropdown [options]="serverGameEngineConfig ? serverGameEngineConfig!.boxRegionConfigs:[]"
-                [(ngModel)]="selectedBoxRegionConfig" optionLabel="internalName"></p-dropdown>
+            <p-select [options]="serverGameEngineConfigEntity ? serverGameEngineConfigEntity!.boxRegionConfigs:[]"
+                [(ngModel)]="selectedBoxRegionConfig" optionLabel="internalName"></p-select>
         </div>
         <div class="col-span-1">
             <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm" (onClick)="onCreate()"></p-button>

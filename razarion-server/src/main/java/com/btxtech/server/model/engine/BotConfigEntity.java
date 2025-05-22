@@ -2,12 +2,17 @@ package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.BabylonMaterialEntity;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
-import com.btxtech.server.service.ui.BabylonMaterialService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +68,7 @@ public class BotConfigEntity extends BaseEntity {
                 .groundBabylonMaterialId(extractId(groundBabylonMaterialEntity, BabylonMaterialEntity::getId));
     }
 
-    public void fromBotConfig(BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
-                              BabylonMaterialService babylonMaterialCrudPersistence,
-                              BotConfig botConfig) {
+    public BotConfigEntity fromBotConfig(BotConfig botConfig) {
         setInternalName(botConfig.getInternalName());
         auxiliaryId = botConfig.getAuxiliaryId();
         npc = botConfig.isNpc();
@@ -89,11 +92,12 @@ public class BotConfigEntity extends BaseEntity {
         if (botConfig.getBotEnragementStateConfigs() != null) {
             for (BotEnragementStateConfig botEnragementStateConfig : botConfig.getBotEnragementStateConfigs()) {
                 BotEnragementStateConfigEntity botEnragementStateConfigEntity = new BotEnragementStateConfigEntity();
-                botEnragementStateConfigEntity.fromBotEnragementStateConfig(baseItemTypeCrudPersistence, botEnragementStateConfig);
+                botEnragementStateConfigEntity.fromBotEnragementStateConfig(botEnragementStateConfig);
                 this.botEnragementStateConfigs.add(botEnragementStateConfigEntity);
             }
         }
-        groundBabylonMaterialEntity = babylonMaterialCrudPersistence.getEntity(botConfig.getGroundBabylonMaterialId());
+        groundBabylonMaterialEntity = botConfig.getGroundBabylonMaterialId() != null ? (BabylonMaterialEntity) new BabylonMaterialEntity().id(botConfig.getGroundBabylonMaterialId()) : null;
+        return this;
     }
 
     public BotConfigEntity setAutoAttack(boolean autoAttack) {
