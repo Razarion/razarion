@@ -60,8 +60,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
-public class RazarionServerShareConfiguration {
-    private final Logger logger = LoggerFactory.getLogger(RazarionServerShareConfiguration.class);
+public class GameEngineConfiguration {
+    private final Logger logger = LoggerFactory.getLogger(GameEngineConfiguration.class);
 
     @Bean
     public AlarmService alarmService() {

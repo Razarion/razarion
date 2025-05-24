@@ -1,0 +1,1 @@
+docker-compose exec mongo mongoexport --collection=planet_backup --db=razarion --pretty --quiet --jsonArray > ../mongo_collections/planet_backup.json

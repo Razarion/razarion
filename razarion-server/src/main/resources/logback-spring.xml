@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+    <springProperty scope="context" name="lokiUrl" source="grafana.loki.url"/>
+    <springProperty scope="context" name="lokiUser" source="grafana.loki.username"/>
+    <springProperty scope="context" name="lokiPassword" source="grafana.loki.password"/>
+
+    <springProfile name="prod">
+        <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+            <http>
+                <url>${lokiUrl}</url>
+                <auth>
+                    <username>${lokiUser}</username>
+                    <password>${lokiPassword}</password>
+                </auth>
+            </http>
+            <format>
+                <label>
+                    <pattern>app=${appName},host=${HOSTNAME},traceID=%X{traceId:-NONE},level=%level</pattern>
+                </label>
+                <message>
+                    <pattern>${FILE_LOG_PATTERN}</pattern>
+                </message>
+                <sortByTime>true</sortByTime>
+            </format>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="LOKI"/>
+        </root>
+
+    </springProfile>
+</configuration>
