@@ -492,7 +492,9 @@ export class GameMockService {
       baseName = "Bot base";
       type = "Bot enemy";
       friend = false;
-      bot = true;
+      bot = false;
+      resource = false;
+      box = true;
     });
   }
 

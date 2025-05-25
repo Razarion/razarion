@@ -97,7 +97,7 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
         SyncBaseItemSimpleDto syncBaseItemSimpleDto = new SyncBaseItemSimpleDto();
         syncBaseItemSimpleDto.setId(nativeSyncBaseItemTickInfo.id);
         syncBaseItemSimpleDto.setItemTypeId(nativeSyncBaseItemTickInfo.itemTypeId);
-        syncBaseItemSimpleDto.setPosition(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo));
+        syncBaseItemSimpleDto.setPosition(NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo));
         //  Matrix4 model is not set. Use this from NativeSyncBaseItemTickInfo
         syncBaseItemSimpleDto.setBaseId(nativeSyncBaseItemTickInfo.baseId);
         syncBaseItemSimpleDto.setBuildup(nativeSyncBaseItemTickInfo.buildup);

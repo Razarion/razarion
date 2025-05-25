@@ -94,6 +94,12 @@
         </div>
       </div>
     </div>
+    <div *ngIf="otherItemCockpit.resource" class="text-blue-600">
+      <p><i class="pi pi-sparkles" style="font-size: 0.8rem"></i>&nbsp;Collect this resource</p>
+    </div>
+    <div *ngIf="otherItemCockpit.box" class="text-blue-600">
+      <p><i class="pi pi-box" style="font-size: 0.8rem"></i>&nbsp;Pick up this box</p>
+    </div>
     <div *ngIf="otherItemCockpit.friend && !otherItemCockpit.bot" class="text-green-500">
       <p><i class="pi pi-verified" style="font-size: 0.8rem"></i>&nbsp;This is a friendly human player</p>
     </div>
@@ -103,7 +109,7 @@
     <div *ngIf="otherItemCockpit.friend && otherItemCockpit.bot" class="text-green-500">
       <p><i class="pi pi-verified" style="font-size: 0.8rem"></i>&nbsp;This is an NPC</p>
     </div>
-    <div *ngIf="!otherItemCockpit.friend && !otherItemCockpit.bot" class="text-red-500">
+    <div *ngIf="!otherItemCockpit.friend && !otherItemCockpit.bot && !otherItemCockpit.resource && !otherItemCockpit.box" class="text-red-500">
       <p><i class="pi pi-exclamation-triangle" style="font-size: 0.8rem"></i>&nbsp;This is an enemy human player</p>
     </div>
   </div>

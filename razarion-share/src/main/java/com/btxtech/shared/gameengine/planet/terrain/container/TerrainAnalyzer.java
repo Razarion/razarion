@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
@@ -30,6 +31,11 @@ public class TerrainAnalyzer {
     public TerrainAnalyzer(HeightMapAccess heightMapAccess, TerrainShapeManager terrainShape) {
         this.heightMapAccess = heightMapAccess;
         this.terrainShapeManager = terrainShape;
+    }
+
+    public Vertex toPosition3d(DecimalPosition position2d) {
+        double z = getHeightNodeAt(TerrainUtil.terrainPositionToNodeIndex(position2d));
+        return new Vertex(position2d, z);
     }
 
     public TerrainType getTerrainType(Index terrainNodeIndex) {

@@ -14,10 +14,10 @@ import java.util.function.Consumer;
  */
 public class SyncItemState {
     private final int syncItemId;
-    private DecimalPosition position2d;
     private final double radius;
     private final Consumer<SyncItemState> releaseMonitorCallback;
     private final Collection<SyncItemMonitor> monitors = new ArrayList<>();
+    private DecimalPosition position2d;
 
     public SyncItemState(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, double radius, Consumer<SyncItemState> releaseMonitorCallback) {
         syncItemId = nativeSyncBaseItemTickInfo.id;

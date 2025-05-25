@@ -99,19 +99,21 @@ public class DaggerUiBaseIntegrationTest {
     }
 
     protected SyncResourceItemSimpleDto createResource(int id, int itemTypeId, DecimalPosition position) {
-        SyncResourceItemSimpleDto syncResourceItemSimpleDto = new SyncResourceItemSimpleDto();
-        syncResourceItemSimpleDto.setId(id);
-        syncResourceItemSimpleDto.setItemTypeId(itemTypeId);
-        syncResourceItemSimpleDto.setPosition(position);
-        return syncResourceItemSimpleDto;
+        throw new UnsupportedOperationException("...TODO...");
+//        SyncResourceItemSimpleDto syncResourceItemSimpleDto = new SyncResourceItemSimpleDto();
+//        syncResourceItemSimpleDto.setId(id);
+//        syncResourceItemSimpleDto.setItemTypeId(itemTypeId);
+//        syncResourceItemSimpleDto.setPosition(position);
+//        return syncResourceItemSimpleDto;
     }
 
     protected SyncBoxItemSimpleDto createBox(int id, int itemTypeId, DecimalPosition position) {
-        SyncBoxItemSimpleDto syncBoxItemSimpleDto = new SyncBoxItemSimpleDto();
-        syncBoxItemSimpleDto.setId(id);
-        syncBoxItemSimpleDto.setItemTypeId(itemTypeId);
-        syncBoxItemSimpleDto.setPosition(position);
-        return syncBoxItemSimpleDto;
+        throw new UnsupportedOperationException("...TODO...");
+//        SyncBoxItemSimpleDto syncBoxItemSimpleDto = new SyncBoxItemSimpleDto();
+//        syncBoxItemSimpleDto.setId(id);
+//        syncBoxItemSimpleDto.setItemTypeId(itemTypeId);
+//        syncBoxItemSimpleDto.setPosition(position);
+//        return syncBoxItemSimpleDto;
     }
 
     protected BabylonRenderServiceAccessMock.BabylonBaseItemMock findBaseItem(int id) {

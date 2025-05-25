@@ -2,6 +2,7 @@ package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -135,10 +136,11 @@ public class BaseItemUiService {
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
             try {
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
-                DecimalPosition position2d = NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo);
-                if (position2d == null) {
+                Vertex position3d = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
+                if (position3d == null) {
                     continue;
                 }
+                DecimalPosition position2d = position3d.toXY();
                 boolean isSpawning = nativeSyncBaseItemTickInfo.spawning < 1.0;
                 boolean isBuildup = nativeSyncBaseItemTickInfo.buildup >= 1.0;
                 boolean isHealthy = nativeSyncBaseItemTickInfo.health >= 1.0;
@@ -179,7 +181,7 @@ public class BaseItemUiService {
                             baseItemType,
                             diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo));
                     babylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
-                    babylonBaseItem.setPosition(position2d);
+                    babylonBaseItem.setPosition(position3d);
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
                     if (syncBaseItemSetPositionMonitor != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                         syncBaseItemSetPositionMonitor.addVisible(babylonBaseItem);
@@ -194,11 +196,11 @@ public class BaseItemUiService {
                 leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
 
                 if (babylonBaseItem.getPosition() != null) {
-                    if (!babylonBaseItem.getPosition().equalsDelta(position2d, 0.000001)) {
-                        babylonBaseItem.setPosition(position2d);
+                    if (!babylonBaseItem.getPosition().toXY().equalsDelta(position2d, 0.000001)) {
+                        babylonBaseItem.setPosition(position3d);
                     }
                 } else {
-                    babylonBaseItem.setPosition(position2d);
+                    babylonBaseItem.setPosition(position3d);
                 }
 
                 if (babylonBaseItem.getAngle() != nativeSyncBaseItemTickInfo.angle) {
@@ -464,21 +466,6 @@ public class BaseItemUiService {
             }
         }
         return count;
-    }
-
-    private NativeSyncBaseItemTickInfo findMyItemOfType(int baseItemTypeId) {
-        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
-            if (nativeSyncBaseItemTickInfo.contained) {
-                continue;
-            }
-            if (!isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
-                continue;
-            }
-            if (nativeSyncBaseItemTickInfo.itemTypeId == baseItemTypeId) {
-                return nativeSyncBaseItemTickInfo;
-            }
-        }
-        return null;
     }
 
     private NativeSyncBaseItemTickInfo findMyEnemyItemWithPlace(PlaceConfig placeConfig) {

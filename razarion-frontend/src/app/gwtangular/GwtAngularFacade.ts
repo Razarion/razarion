@@ -421,9 +421,9 @@ export interface BabylonItem {
 
   dispose(): void;
 
-  getPosition(): DecimalPosition | null;
+  getPosition(): Vertex | null;
 
-  setPosition(position: DecimalPosition): void;
+  setPosition(position: Vertex): void;
 
   getAngle(): number;
 
@@ -584,6 +584,8 @@ export interface OtherItemCockpit {
   baseName: string;
   friend: boolean;
   bot: boolean;
+  resource: boolean;
+  box: boolean;
 }
 
 // ---------- Inventory ----------

@@ -93,24 +93,12 @@ public class ResourceUiService {
         throw new IllegalArgumentException("No SyncResourceItemSimpleDto for " + resourceItemId);
     }
 
-    public SyncResourceItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
-        synchronized (resources) {
-            for (SyncResourceItemSimpleDto resource : resources.values()) {
-                ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resource.getItemTypeId());
-                if (resource.getPosition().getDistance(decimalPosition) <= resourceItemType.getRadius()) {
-                    return resource;
-                }
-            }
-        }
-        return null;
-    }
-
     public Collection<SyncResourceItemSimpleDto> findItemsInRect(Rectangle2D rectangle) {
         Collection<SyncResourceItemSimpleDto> result = new ArrayList<>();
         synchronized (resources) {
             for (SyncResourceItemSimpleDto resource : resources.values()) {
                 ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resource.getItemTypeId());
-                if (rectangle.adjoinsCircleExclusive(resource.getPosition(), resourceItemType.getRadius())) {
+                if (rectangle.adjoinsCircleExclusive(resource.getPosition().toXY(), resourceItemType.getRadius())) {
                     result.add(resource);
                 }
             }
@@ -126,7 +114,7 @@ public class ResourceUiService {
                 if (resourceItemType.getId() != resourceTypeId) {
                     continue;
                 }
-                if (resourceSelection.checkInside(resource.getPosition(), resourceItemType.getRadius())) {
+                if (resourceSelection.checkInside(resource.getPosition().toXY(), resourceItemType.getRadius())) {
                     result.add(resource);
                 }
             }
@@ -146,7 +134,7 @@ public class ResourceUiService {
             Set<Integer> unused = new HashSet<>(babylonResourceItems.keySet());
             resources.forEach((id, syncResourceItemSimpleDto) -> {
                 ResourceItemType resourceItemType = itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId());
-                if (viewFieldAabb.adjoinsCircleExclusive(syncResourceItemSimpleDto.getPosition(), resourceItemType.getRadius())) {
+                if (viewFieldAabb.adjoinsCircleExclusive(syncResourceItemSimpleDto.getPosition().toXY(), resourceItemType.getRadius())) {
                     BabylonResourceItem visibleResource = babylonResourceItems.get(id);
                     if (visibleResource == null) {
                         visibleResource = babylonRendererService.createBabylonResourceItem(id, resourceItemType);
@@ -212,7 +200,7 @@ public class ResourceUiService {
 
     public SyncItemMonitor monitorSyncResourceItem(SyncResourceItemSimpleDto syncResourceItemSimpleDto) {
         // No monitoring is done, since resources do not move
-        return new SyncItemState(syncResourceItemSimpleDto.getId(), syncResourceItemSimpleDto.getPosition(), itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
+        return new SyncItemState(syncResourceItemSimpleDto.getId(), syncResourceItemSimpleDto.getPosition().toXY(), itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 
     public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor(MarkerConfig markerConfig) {

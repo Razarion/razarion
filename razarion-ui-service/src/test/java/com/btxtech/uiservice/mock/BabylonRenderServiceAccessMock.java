@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.mock;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -123,7 +124,7 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         private boolean disposed;
         private boolean select;
         private boolean hover;
-        private DecimalPosition position;
+        private Vertex position;
         private double angle;
         private MarkerConfig markerConfig;
 
@@ -190,12 +191,12 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         }
 
         @Override
-        public DecimalPosition getPosition() {
+        public Vertex getPosition() {
             return position;
         }
 
         @Override
-        public void setPosition(DecimalPosition position) {
+        public void setPosition(Vertex position) {
             this.position = position;
         }
 
@@ -249,7 +250,7 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         private final int id;
         private final ResourceItemType resourceItemType;
         private final Consumer<BabylonResourceItemMock> onDisposeCallback;
-        private DecimalPosition position;
+        private Vertex position;
         private MarkerConfig markerConfig;
 
         public BabylonResourceItemMock(int id, ResourceItemType resourceItemType, Consumer<BabylonResourceItemMock> onDisposeCallback) {
@@ -291,12 +292,12 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         }
 
         @Override
-        public DecimalPosition getPosition() {
+        public Vertex getPosition() {
             return position;
         }
 
         @Override
-        public void setPosition(DecimalPosition position) {
+        public void setPosition(Vertex position) {
             this.position = position;
         }
 
@@ -310,7 +311,7 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         private final BoxItemType boxItemType;
         private final Consumer<BabylonBoxItemMock> onDisposeCallback;
         private MarkerConfig markerConfig;
-        private DecimalPosition position;
+        private Vertex position;
 
         public BabylonBoxItemMock(int id, BoxItemType boxItemType, Consumer<BabylonBoxItemMock> onDisposeCallback) {
             this.id = id;
@@ -329,12 +330,12 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         }
 
         @Override
-        public DecimalPosition getPosition() {
+        public Vertex getPosition() {
             return position;
         }
 
         @Override
-        public void setPosition(DecimalPosition position) {
+        public void setPosition(Vertex position) {
             this.position = position;
         }
 

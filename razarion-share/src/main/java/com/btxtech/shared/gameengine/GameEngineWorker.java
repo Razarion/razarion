@@ -5,7 +5,11 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
-import com.btxtech.shared.dto.*;
+import com.btxtech.shared.dto.AbstractBotCommandConfig;
+import com.btxtech.shared.dto.BoxItemPosition;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
+import com.btxtech.shared.dto.ResourceItemPosition;
+import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -16,9 +20,30 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.packets.*;
-import com.btxtech.shared.gameengine.datatypes.workerdto.*;
-import com.btxtech.shared.gameengine.planet.*;
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IntIntMap;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.BoxService;
+import com.btxtech.shared.gameengine.planet.CommandService;
+import com.btxtech.shared.gameengine.planet.GameLogicListener;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.PlanetTickListener;
+import com.btxtech.shared.gameengine.planet.ResourceService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
+import com.btxtech.shared.gameengine.planet.SynchronizationSendingContext;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -29,6 +54,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
@@ -258,7 +284,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         planetService.initialise(planetConfig, gameEngineMode, null, finishCallback, failCallback);
     }
 
-
     public void onInitialSlaveSyncItemInfo(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
         planetService.initialSlaveSyncItemInfo(initialSlaveSyncItemInfo);
         if (initialSlaveSyncItemInfo.getActualBaseId() != null) {
@@ -363,11 +388,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         try {
             NativeTickInfo nativeTickInfo = new NativeTickInfo();
             List<NativeSyncBaseItemTickInfo> tmp = new ArrayList<>();
+            TerrainAnalyzer terrainAnalyzer = terrainService.getTerrainAnalyzer();
             syncItemContainerService.iterateOverItems(true, true, null, syncItem -> {
                 try {
                     if (syncItem instanceof SyncBaseItem) {
                         SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                        tmp.add(syncBaseItem.createNativeSyncBaseItemTickInfo());
+                        tmp.add(syncBaseItem.createNativeSyncBaseItemTickInfo(terrainAnalyzer));
                     }
                 } catch (Throwable t) {
                     logger.log(Level.SEVERE, "onPostTick failed syncItem: " + syncItem, t);
@@ -396,7 +422,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         SyncResourceItemSimpleDto syncResourceItemSimpleDto = new SyncResourceItemSimpleDto();
         syncResourceItemSimpleDto.setId(syncResourceItem.getId());
         syncResourceItemSimpleDto.setItemTypeId(syncResourceItem.getItemType().getId());
-        syncResourceItemSimpleDto.setPosition(syncResourceItem.getAbstractSyncPhysical().getPosition());
+        syncResourceItemSimpleDto.setPosition(terrainService.getTerrainAnalyzer().toPosition3d(syncResourceItem.getAbstractSyncPhysical().getPosition()));
         sendToClient(GameEngineControlPackage.Command.RESOURCE_CREATED, syncResourceItemSimpleDto);
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onResourceCreated(syncResourceItem);
@@ -416,7 +442,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         SyncBoxItemSimpleDto syncBoxItemSimpleDto = new SyncBoxItemSimpleDto();
         syncBoxItemSimpleDto.setId(syncBoxItem.getId());
         syncBoxItemSimpleDto.setItemTypeId(syncBoxItem.getItemType().getId());
-        syncBoxItemSimpleDto.setPosition(syncBoxItem.getAbstractSyncPhysical().getPosition());
+        syncBoxItemSimpleDto.setPosition(terrainService.getTerrainAnalyzer().toPosition3d(syncBoxItem.getAbstractSyncPhysical().getPosition()));
         sendToClient(GameEngineControlPackage.Command.BOX_CREATED, syncBoxItemSimpleDto);
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onBoxCreated(syncBoxItem);
@@ -440,7 +466,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, syncBaseItem.createNativeSyncBaseItemTickInfo());
+        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, syncBaseItem.createNativeSyncBaseItemTickInfo(terrainService.getTerrainAnalyzer()));
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onSyncBaseItem(syncBaseItem);
         }
@@ -466,7 +492,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, syncBaseItem.createNativeSyncBaseItemTickInfo());
+        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, syncBaseItem.createNativeSyncBaseItemTickInfo(terrainService.getTerrainAnalyzer()));
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onSyncBaseItem(syncBaseItem);
         }

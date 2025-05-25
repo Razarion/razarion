@@ -40,7 +40,6 @@ public class BoxUiService {
     private Rectangle2D viewFieldAabb;
     private BabylonBoxItem selectedBabylonBoxItem;
     private Integer selectedOutOfViewId;
-    private BabylonBoxItem hoverBabylonBoxItem;
 
     @Inject
     public BoxUiService(BabylonRendererService babylonRendererService,
@@ -92,24 +91,12 @@ public class BoxUiService {
         throw new IllegalArgumentException("No SyncBoxItemSimpleDto for " + boxItemId);
     }
 
-    public SyncBoxItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
-        synchronized (boxes) {
-            for (SyncBoxItemSimpleDto box : boxes.values()) {
-                BoxItemType boxItemType = itemTypeService.getBoxItemType(box.getItemTypeId());
-                if (box.getPosition().getDistance(decimalPosition) <= boxItemType.getRadius()) {
-                    return box;
-                }
-            }
-        }
-        return null;
-    }
-
     public Collection<SyncBoxItemSimpleDto> findItemsInRect(Rectangle2D rectangle) {
         Collection<SyncBoxItemSimpleDto> result = new ArrayList<>();
         synchronized (boxes) {
             for (SyncBoxItemSimpleDto box : boxes.values()) {
                 BoxItemType boxItemType = itemTypeService.getBoxItemType(box.getItemTypeId());
-                if (rectangle.adjoinsCircleExclusive(box.getPosition(), boxItemType.getRadius())) {
+                if (rectangle.adjoinsCircleExclusive(box.getPosition().toXY(), boxItemType.getRadius())) {
                     result.add(box);
                 }
             }
@@ -117,40 +104,9 @@ public class BoxUiService {
         return result;
     }
 
-    private SyncBoxItemSimpleDto findFirstBoxItem(int boxItemTypeId) {
-        synchronized (boxes) {
-            for (SyncBoxItemSimpleDto box : boxes.values()) {
-                BoxItemType boxItemType = itemTypeService.getBoxItemType(box.getItemTypeId());
-                if (boxItemType.getId() == boxItemTypeId) {
-                    return box;
-                }
-            }
-        }
-        return null;
-    }
-
-    public SyncBoxItemSimpleDto getSyncBoxItem(int id) {
-        synchronized (boxes) {
-            SyncBoxItemSimpleDto box = boxes.get(id);
-            if (box == null) {
-                throw new IllegalArgumentException("No box for id: " + id);
-            }
-            return box;
-        }
-    }
-
-    public SyncItemMonitor monitorFirstBoxItem(int boxItemTypeId) {
-        SyncBoxItemSimpleDto boxItemSimpleDto = findFirstBoxItem(boxItemTypeId);
-        if (boxItemSimpleDto != null) {
-            return monitorSyncBoxItem(boxItemSimpleDto);
-        } else {
-            return null;
-        }
-    }
-
     public SyncItemMonitor monitorSyncBoxItem(SyncBoxItemSimpleDto boxItemSimpleDto) {
         // No monitoring is done, since boxes do not move
-        return new SyncItemState(boxItemSimpleDto.getId(), boxItemSimpleDto.getPosition(), itemTypeService.getBoxItemType(boxItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
+        return new SyncItemState(boxItemSimpleDto.getId(), boxItemSimpleDto.getPosition().toXY(), itemTypeService.getBoxItemType(boxItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 
     public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor(MarkerConfig markerConfig) {
@@ -181,10 +137,6 @@ public class BoxUiService {
         updateBabylonBoxItems();
     }
 
-    public SyncBoxItemSimpleDto getSyncBoxItemSimpleDto4IdPlayback(int syncBoxId) {
-        return boxes.get(syncBoxId);
-    }
-
     private void updateBabylonBoxItems() {
         if (viewFieldAabb == null) {
             return;
@@ -197,7 +149,7 @@ public class BoxUiService {
             Set<Integer> unused = new HashSet<>(babylonBoxItems.keySet());
             boxes.forEach((id, syncBoxItemSimpleDto) -> {
                 BoxItemType boxItemType = itemTypeService.getBoxItemType(syncBoxItemSimpleDto.getItemTypeId());
-                if (viewFieldAabb.adjoinsCircleExclusive(syncBoxItemSimpleDto.getPosition(), boxItemType.getRadius())) {
+                if (viewFieldAabb.adjoinsCircleExclusive(syncBoxItemSimpleDto.getPosition().toXY(), boxItemType.getRadius())) {
                     BabylonBoxItem visibleBox = babylonBoxItems.get(id);
                     if (visibleBox == null) {
                         visibleBox = babylonRendererService.createBabylonBoxItem(id, boxItemType);
@@ -265,25 +217,6 @@ public class BoxUiService {
             }
         }
     }
-
-    public void onHover(SyncBoxItemSimpleDto syncItem) {
-        if (hoverBabylonBoxItem == null && syncItem != null) {
-            hoverBabylonBoxItem = babylonBoxItems.get(syncItem.getId());
-            if (hoverBabylonBoxItem != null) {
-                hoverBabylonBoxItem.hover(true);
-            }
-        } else if (hoverBabylonBoxItem != null && syncItem == null) {
-            hoverBabylonBoxItem.hover(false);
-            hoverBabylonBoxItem = null;
-        } else if (hoverBabylonBoxItem != null && hoverBabylonBoxItem.getId() != syncItem.getId()) {
-            hoverBabylonBoxItem.hover(false);
-            hoverBabylonBoxItem = babylonBoxItems.get(syncItem.getId());
-            if (hoverBabylonBoxItem != null) {
-                hoverBabylonBoxItem.hover(true);
-            }
-        }
-    }
-
 
     // Only for tests
     public Map<Integer, SyncBoxItemSimpleDto> getBoxes() {

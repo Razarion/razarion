@@ -4,7 +4,8 @@ import {
   DecimalPosition,
   Diplomacy,
   MarkerConfig,
-  ResourceItemType
+  ResourceItemType,
+  Vertex
 } from "../../gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonModelService} from "./babylon-model.service";
@@ -41,7 +42,7 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
         return id;
       }
 
-      getPosition(): DecimalPosition | null {
+      getPosition(): Vertex | null {
         return null;
       }
 
@@ -57,7 +58,7 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
       setAngle(angle: number): void {
       }
 
-      setPosition(position: DecimalPosition): void {
+      setPosition(position: Vertex): void {
       }
 
       isEnemy(): boolean {

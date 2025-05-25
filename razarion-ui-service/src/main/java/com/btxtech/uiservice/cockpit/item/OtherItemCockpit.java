@@ -14,4 +14,6 @@ public class OtherItemCockpit {
     public String baseName;
     public boolean friend;
     public boolean bot;
+    public boolean resource;
+    public boolean box;
 }

@@ -16,7 +16,7 @@ public class SyncStaticItemSetPositionMonitor extends AbstractSyncItemSetPositio
     }
 
     public void setInvisibleSyncItem(SyncItemSimpleDto syncItemSimpleDto, DecimalPosition viewFiledCenter) {
-        setInvisible(syncItemSimpleDto != null ? syncItemSimpleDto.getPosition() : null,
+        setInvisible(syncItemSimpleDto != null ? syncItemSimpleDto.getPosition().toXY() : null,
                 viewFiledCenter);
     }
 }

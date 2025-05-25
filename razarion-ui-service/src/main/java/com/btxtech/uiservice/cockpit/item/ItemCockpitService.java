@@ -157,8 +157,10 @@ public class ItemCockpitService {
             }
         } else if (otherSelection instanceof SyncResourceItemSimpleDto) {
             itemType = itemTypeService.getResourceItemType(otherSelection.getItemTypeId());
+            otherInfoPanel.resource = true;
         } else if (otherSelection instanceof SyncBoxItemSimpleDto) {
             itemType = itemTypeService.getBoxItemType(otherSelection.getItemTypeId());
+            otherInfoPanel.box = true;
         }
         if (itemType != null) {
             otherInfoPanel.imageUrl = CommonUrl.getImageServiceUrlSafe(itemType.getThumbnail());

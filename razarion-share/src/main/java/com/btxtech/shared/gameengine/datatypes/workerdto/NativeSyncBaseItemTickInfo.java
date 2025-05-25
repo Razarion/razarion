@@ -12,6 +12,7 @@ public class NativeSyncBaseItemTickInfo {
     public int itemTypeId;
     public double x;
     public double y;
+    public double z;
     public double angle;
     public int baseId;
     public double turretAngle;

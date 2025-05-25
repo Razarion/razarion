@@ -14,23 +14,24 @@ import {
   BabylonItem,
   BaseItemType,
   BoxItemType,
-  DecimalPosition,
   Diplomacy,
   ItemType,
   MarkerConfig,
-  ResourceItemType
+  ResourceItemType,
+  Vertex
 } from "../../gwtangular/GwtAngularFacade";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {BabylonModelService} from "./babylon-model.service";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {ActionService, SelectionInfo} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {GwtInstance} from '../../gwtangular/GwtInstance';
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
   static readonly HOVER_ALPHA: number = 0.6;
   private readonly container: TransformNode;
-  private position: DecimalPosition | null = null;
+  private position: Vertex | null = null;
   private angle: number = 0;
   private diplomacyMarkerDisc: Mesh | null = null;
   private visualizationMarkerDisc: Mesh | null = null;
@@ -50,7 +51,7 @@ export class BabylonItemImpl implements BabylonItem {
     if (itemType.getModel3DId()) {
       this.container = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, parent, diplomacy);
     } else {
-      this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, {diameter: this. getRadius() * 2});
+      this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, {diameter: this.getRadius() * 2});
       console.warn(`No MeshContainerId or ThreeJsModelPackConfigId for ${itemType.getInternalName()} '${itemType.getId()}'`)
     }
     this.container.parent = parent;
@@ -134,7 +135,7 @@ export class BabylonItemImpl implements BabylonItem {
     }
   }
 
-  getPosition(): DecimalPosition | null {
+  getPosition(): Vertex | null {
     return this.position;
   }
 
@@ -147,22 +148,19 @@ export class BabylonItemImpl implements BabylonItem {
     this.container.dispose();
   }
 
-  setPosition(position: DecimalPosition): void {
+  setPosition(position: Vertex): void {
     if (position) {
-      let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(position);
+      // Position
+      let position3D = new Vector3(position.getX(), position.getZ(), position.getY());
+      if (this.onPosition3D(position3D)) {
+        this.container.position = position3D;
+      }
+      // Rotation
+      let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(position.getX(), position.getY()));
       if (pickingInfo && pickingInfo.hit) {
-        this.position = position;
-
-        // Position
-        let position3D = new Vector3(position.getX(), pickingInfo.pickedPoint!.y, position.getY());
-        // Rotation
         let normal = pickingInfo.getNormal(true)!;
         this.lastNormal = normal;
         let rotation3D = this.calculateRotation(normal);
-
-        if (this.onPosition3D(position3D)) {
-          this.container.position = position3D;
-        }
         if (this.onRotation3D(rotation3D)) {
           this.container.rotation = rotation3D;
         }
@@ -240,9 +238,9 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   findChildMesh(nodeId: string): Mesh {
-    let nodesFound =  this.getContainer().getDescendants(false, node => node.id === nodeId);
-    if(nodesFound.length > 0) {
-      if(nodesFound.length > 1) {
+    let nodesFound = this.getContainer().getDescendants(false, node => node.id === nodeId);
+    if (nodesFound.length > 0) {
+      if (nodesFound.length > 1) {
         console.warn(`more then 1 node found in nodeId:${nodeId} babylon-item id ${this.id}`)
       }
       return <Mesh>nodesFound[0];

@@ -15,6 +15,7 @@ import {
   DecimalPosition,
   Diplomacy,
   MarkerConfig,
+  Vertex,
 } from "../../gwtangular/GwtAngularFacade";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {BabylonItemImpl} from "./babylon-item.impl";
@@ -81,14 +82,14 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         return 0;
       }
 
-      getPosition(): DecimalPosition | null {
+      getPosition(): Vertex | null {
         return null;
       }
 
       setHealth(health: number): void {
       }
 
-      setPosition(position: DecimalPosition): void {
+      setPosition(position: Vertex): void {
       }
 
       getId(): number {

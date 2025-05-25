@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 
 /**
  * Created by Beat
@@ -13,6 +14,14 @@ public interface NativeUtil {
             return null;
         } else {
             return new DecimalPosition(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y);
+        }
+    }
+
+    static Vertex toSyncBaseItemPosition3d(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        if (nativeSyncBaseItemTickInfo.contained) {
+            return null;
+        } else {
+            return new Vertex(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y, nativeSyncBaseItemTickInfo.z);
         }
     }
 

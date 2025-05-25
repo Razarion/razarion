@@ -15,14 +15,36 @@ package com.btxtech.shared.gameengine.planet.model;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.command.*;
-import com.btxtech.shared.gameengine.datatypes.exception.*;
+import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
+import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
+import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
+import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
+import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
+import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
+import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
+import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
+import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
+import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
+import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
+import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
+import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
+import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.shared.gameengine.planet.*;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.BoxService;
+import com.btxtech.shared.gameengine.planet.CommandService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -527,6 +549,16 @@ public class SyncBaseItem extends SyncItem {
         return buildup;
     }
 
+    public void setBuildup(double buildup) {
+        if (buildup > 1.0) {
+            this.buildup = 1.0;
+        } else if (buildup < 0.0) {
+            this.buildup = 0.0;
+        } else {
+            this.buildup = buildup;
+        }
+    }
+
     public boolean isAlive() {
         return health > 0.0;
     }
@@ -546,16 +578,6 @@ public class SyncBaseItem extends SyncItem {
             handleIfItemBecomesReady();
         } else {
             setBuildup(newBuildup);
-        }
-    }
-
-    public void setBuildup(double buildup) {
-        if (buildup > 1.0) {
-            this.buildup = 1.0;
-        } else if (buildup < 0.0) {
-            this.buildup = 0.0;
-        } else {
-            this.buildup = buildup;
         }
     }
 
@@ -688,7 +710,7 @@ public class SyncBaseItem extends SyncItem {
         return spawnProgress < 1.0;
     }
 
-    public NativeSyncBaseItemTickInfo createNativeSyncBaseItemTickInfo() {
+    public NativeSyncBaseItemTickInfo createNativeSyncBaseItemTickInfo(TerrainAnalyzer terrainAnalyzer) {
         NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo = new NativeSyncBaseItemTickInfo();
         nativeSyncBaseItemTickInfo.id = getId();
         nativeSyncBaseItemTickInfo.itemTypeId = getBaseItemType().getId();
@@ -697,8 +719,11 @@ public class SyncBaseItem extends SyncItem {
             if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
                 nativeSyncBaseItemTickInfo.turretAngle = syncWeapon.getSyncTurret().getAngle();
             }
-            nativeSyncBaseItemTickInfo.x = getAbstractSyncPhysical().getPosition().getX();
-            nativeSyncBaseItemTickInfo.y = getAbstractSyncPhysical().getPosition().getY();
+
+            Vertex terrainPosition = terrainAnalyzer.toPosition3d(getAbstractSyncPhysical().getPosition());
+            nativeSyncBaseItemTickInfo.x = terrainPosition.getX();
+            nativeSyncBaseItemTickInfo.y = terrainPosition.getY();
+            nativeSyncBaseItemTickInfo.z = terrainPosition.getZ();
             nativeSyncBaseItemTickInfo.angle = getAbstractSyncPhysical().getAngle();
             if (syncHarvester != null && syncHarvester.isHarvesting()) {
                 nativeSyncBaseItemTickInfo.harvestingResourcePosition = toNativeDecimalPosition(syncHarvester.getResource().getAbstractSyncPhysical().getPosition());
@@ -727,6 +752,7 @@ public class SyncBaseItem extends SyncItem {
         nativeSyncBaseItemTickInfo.health = getNormalizedHealth();
         return nativeSyncBaseItemTickInfo;
     }
+
 
     @Override
     public String toString() {
