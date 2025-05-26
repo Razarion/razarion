@@ -21,13 +21,23 @@ public class RequestInfoLoggingFilter implements Filter {
             throws IOException, ServletException {
         if (request instanceof HttpServletRequest httpRequest) {
             String referer = httpRequest.getHeader("Referer");
+            String host = httpRequest.getHeader("Host");
             String userAgent = httpRequest.getHeader("User-Agent");
             String method = httpRequest.getMethod();
-            String requestURL = httpRequest.getRequestURL().toString();
+            String requestURI = httpRequest.getRequestURI();
             String queryString = httpRequest.getQueryString();
-            String fullURL = requestURL + (queryString != null ? "?" + queryString : "");
+            String fullPath = requestURI + (queryString != null ? "?" + queryString : "");
 
-            logger.info("{} {} referer=\"{}\" user_agent=\"{}\"", method, fullURL, referer != null ? referer : "", userAgent != null ? userAgent : "");
+            String refererPart = "";
+            if (referer != null && (host == null || !referer.contains(host))) {
+                refererPart = String.format(" referer=\"%s\"", referer);
+            }
+
+            logger.info("{} \"{}\"{} user_agent=\"{}\"",
+                    method,
+                    fullPath,
+                    refererPart,
+                    userAgent != null ? userAgent : "");
         }
         chain.doFilter(request, response);
     }
