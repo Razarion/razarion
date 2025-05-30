@@ -12,9 +12,9 @@ import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.uiservice.DaggerUiBaseIntegrationTest;
-import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
 import com.btxtech.uiservice.terrain.InputService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -169,7 +169,7 @@ public class InGameQuestVisualizationServiceBaseItemTypeTest extends DaggerUiBas
     private ColdGameUiContext setup() {
         ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
         coldGameUiContext.setUserContext(new UserContext()
-                .userId(1)
+                .userId("00001")
                 .unlockedItemLimit(Collections.emptyMap())
                 .levelId(1));
         setupUiEnvironment(coldGameUiContext);
@@ -191,7 +191,7 @@ public class InGameQuestVisualizationServiceBaseItemTypeTest extends DaggerUiBas
         getWeldBean(BaseItemUiService.class).addBase(new PlayerBaseDto()
                 .name("Bot test base")
                 .baseId(BOT_BASE_ITEM_ID)
-                .userId(11)
+                .userId("00011")
                 .character(Character.BOT));
 
         return coldGameUiContext;

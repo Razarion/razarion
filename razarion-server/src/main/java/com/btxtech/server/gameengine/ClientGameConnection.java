@@ -1,7 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.user.PlayerSession;
-import com.btxtech.server.web.SessionService;
+import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -30,26 +29,25 @@ public class ClientGameConnection {
     private final Logger logger = LoggerFactory.getLogger(ClientGameConnection.class);
     private final BaseItemService baseItemService;
     private final PlanetService planetService;
-    private final SessionService sessionService;
+    private final UserService userService;
     private final CommandService commandService;
     private WebSocketSession wsSession;
-    private String httpSessionId;
+    private String userId;
     private String gameSessionUuid; // TODO
 
     public ClientGameConnection(BaseItemService baseItemService,
                                 PlanetService planetService,
-                                SessionService sessionService,
+                                UserService userService,
                                 CommandService commandService) {
         this.baseItemService = baseItemService;
         this.planetService = planetService;
-        this.sessionService = sessionService;
+        this.userService = userService;
         this.commandService = commandService;
-        logger.info("ClientGameConnection created {}", System.identityHashCode(this));
     }
 
-    public void init(WebSocketSession wsSession, String httpSessionId) {
+    public void init(WebSocketSession wsSession, String userId) {
         this.wsSession = wsSession;
-        this.httpSessionId = httpSessionId;
+        this.userId = userId;
     }
 
     public void handleMessage(WebSocketMessage<?> message) {
@@ -68,7 +66,7 @@ public class ClientGameConnection {
         wsSession.sendMessage(new TextMessage(text));
     }
 
-    public void sendInitialSlaveSyncInfo(int userId) {
+    public void sendInitialSlaveSyncInfo(String userId) {
         try {
             sendToClient(GameConnectionPacket.INITIAL_SLAVE_SYNC_INFO, planetService.generateSlaveSyncItemInfo(userId));
         } catch (Throwable throwable) {
@@ -79,7 +77,7 @@ public class ClientGameConnection {
     private void onPackageReceived(GameConnectionPacket packet, Object param) {
         switch (packet) {
             case CREATE_BASE:
-                UserContext userContext = getUserContext();
+                UserContext userContext = userService.getUserContextTransactional(userId);
                 baseItemService.createHumanBaseWithBaseItem(
                         userContext.getLevelId(),
                         userContext.getUnlockedItemLimit(),
@@ -124,17 +122,12 @@ public class ClientGameConnection {
         }
     }
 
-    public UserContext getUserContext() {
-        return getPlayerSession().getUserContext();
-    }
-
-    private PlayerSession getPlayerSession() {
-        logger.info("ClientGameConnection getPlayerSession(): {} {}", System.identityHashCode(this), httpSessionId);
-        return sessionService.getSession(httpSessionId);
+    public String getUserId() {
+        return userId;
     }
 
     private PlayerBase getPlayerBase() {
-        return baseItemService.getPlayerBase4UserId(getPlayerSession().getUserContext().getUserId());
+        return baseItemService.getPlayerBase4UserId(userId);
     }
 
     private void sendTickSync() {

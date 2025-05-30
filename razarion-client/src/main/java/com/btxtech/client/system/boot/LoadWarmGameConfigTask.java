@@ -1,12 +1,12 @@
 package com.btxtech.client.system.boot;
 
+import com.btxtech.shared.deprecated.Caller;
+import com.btxtech.shared.deprecated.RemoteCallback;
 import com.btxtech.shared.dto.WarmGameUiContext;
-import com.btxtech.shared.rest.GameUiContextController;
+import com.btxtech.shared.rest.GameUiContextAccess;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
-import com.btxtech.shared.deprecated.Caller;
-import com.btxtech.shared.deprecated.RemoteCallback;
 
 import javax.inject.Inject;
 
@@ -16,12 +16,12 @@ import javax.inject.Inject;
  */
 public class LoadWarmGameConfigTask extends AbstractStartupTask {
 
-    private Caller<GameUiContextController> gameUiControlControllerCaller;
+    private final Caller<GameUiContextAccess> gameUiControlControllerCaller;
 
-    private GameUiControl gameUiControl;
+    private final GameUiControl gameUiControl;
 
     @Inject
-    public LoadWarmGameConfigTask(GameUiControl gameUiControl, Caller<com.btxtech.shared.rest.GameUiContextController> gameUiControlControllerCaller) {
+    public LoadWarmGameConfigTask(GameUiControl gameUiControl, Caller<GameUiContextAccess> gameUiControlControllerCaller) {
         this.gameUiControl = gameUiControl;
         this.gameUiControlControllerCaller = gameUiControlControllerCaller;
     }

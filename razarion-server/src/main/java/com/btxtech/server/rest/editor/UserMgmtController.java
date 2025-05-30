@@ -32,25 +32,25 @@ public class UserMgmtController {
 
     @RolesAllowed(Roles.ADMIN)
     @PostMapping(value = "set-level/{userId}/{levelId}")
-    public void setLevel(@PathVariable("userId") int userId, @PathVariable("levelId") int levelId) {
+    public void setLevel(@PathVariable("userId") String userId, @PathVariable("levelId") int levelId) {
         serverLevelQuestService.setUserLevel(userId, levelId);
     }
 
     @RolesAllowed(Roles.ADMIN)
     @PostMapping(value = "set-crystals/{userId}/{crystals}")
-    public void setCrystals(@PathVariable("userId") int userId, @PathVariable("crystals") int crystals) {
+    public void setCrystals(@PathVariable("userId") String userId, @PathVariable("crystals") int crystals) {
         userService.persistCrystals(userId, crystals);
     }
 
     @RolesAllowed(Roles.ADMIN)
     @PostMapping(value = "set-completed-quests/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setCompletedQuests(@PathVariable("userId") int userId, @RequestBody List<Integer> completedQuestIds) {
+    public void setCompletedQuests(@PathVariable("userId") String userId, @RequestBody List<Integer> completedQuestIds) {
         userService.setCompletedQuest(userId, completedQuestIds);
     }
 
     @RolesAllowed(Roles.ADMIN)
     @PostMapping(value = "set-unlocked/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void setUnlocked(@PathVariable("userId") int userId, @RequestBody List<Integer> unlockedIds) {
+    public void setUnlocked(@PathVariable("userId") String userId, @RequestBody List<Integer> unlockedIds) {
         serverUnlockService.updateUnlocked(userId, unlockedIds);
     }
 
@@ -68,13 +68,13 @@ public class UserMgmtController {
 
     @RolesAllowed(Roles.ADMIN)
     @PostMapping(value = "activate-quest/{userId}/{questId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void activateQuest(@PathVariable("userId") int userId, @PathVariable("questId") Integer questId) {
+    public void activateQuest(@PathVariable("userId") String userId, @PathVariable("questId") Integer questId) {
         serverLevelQuestService.activateQuestBackend(userId, questId);
     }
 
     @RolesAllowed(Roles.ADMIN)
     @PostMapping(value = "deactivate-quest/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deactivateQuest(@PathVariable("userId") int userId) {
+    public void deactivateQuest(@PathVariable("userId") String userId) {
         serverLevelQuestService.deactivateQuestBackend(userId);
     }
 

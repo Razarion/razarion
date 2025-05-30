@@ -384,7 +384,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public boolean isSellSuppressed() {
-        return currentScene != null && currentScene.getSceneConfig().isSuppressSell() != null && currentScene.getSceneConfig().isSuppressSell();
+        return currentScene != null && currentScene.getSceneConfig().getSuppressSell() != null && currentScene.getSceneConfig().getSuppressSell();
     }
 
     public GameEngineMode getGameEngineMode() {

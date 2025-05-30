@@ -8,15 +8,15 @@ import org.dominokit.jackson.annotation.JSONMapper;
  */
 @JSONMapper
 public class ChatMessage {
-    private int userId;
+    private String userId;
     private String userName;
     private String message;
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public ChatMessage setUserId(int userId) {
+    public ChatMessage setUserId(String userId) {
         this.userId = userId;
         return this;
     }

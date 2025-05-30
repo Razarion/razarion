@@ -184,7 +184,7 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
     public void positionTimeBackupRestore() {
         setup();
         // Create user
-        UserContext userContext = createLevel1UserContext(1);
+        UserContext userContext = createLevel1UserContext("00001");
         // Create base
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext);
         tickPlanetServiceBaseServiceActive();

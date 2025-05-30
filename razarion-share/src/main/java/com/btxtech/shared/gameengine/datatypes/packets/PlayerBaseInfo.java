@@ -13,7 +13,7 @@ public class PlayerBaseInfo {
     private String name;
     private Character character;
     private double resources;
-    private Integer userId;
+    private String userId;
     private Integer botId;
 
     public int getBaseId() {
@@ -52,11 +52,11 @@ public class PlayerBaseInfo {
         return this;
     }
 
-    public Integer getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public PlayerBaseInfo setUserId(Integer userId) {
+    public PlayerBaseInfo setUserId(String userId) {
         this.userId = userId;
         return this;
     }

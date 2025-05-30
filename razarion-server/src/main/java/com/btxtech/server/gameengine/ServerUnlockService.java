@@ -3,7 +3,6 @@ package com.btxtech.server.gameengine;
 import com.btxtech.server.model.engine.LevelUnlockEntity;
 import com.btxtech.server.service.engine.LevelCrudPersistence;
 import com.btxtech.server.user.UserService;
-import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -25,21 +24,9 @@ public class ServerUnlockService {
     @Inject
     private ClientSystemConnectionService systemConnectionService;
     @Inject
-    private SessionService sessionService;
-    @Inject
     private LevelCrudPersistence levelCrudPersistence;
     @Inject
     private QuestService questService;
-
-   public void unlockViaCrystals(int userId, int levelUnlockEntityId) {
-        userService.persistUnlockViaCrystals(userId, levelUnlockEntityId);
-        UserContext userContext = userService.getUserContext(userId);
-        sessionService.updateUserContext(userId, userContext);
-        baseItemService.updateUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
-        systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit(), hasAvailableUnlocks(userContext));
-        questService.onUnlock(userId);
-        // TODO historyPersistence.onLevelUnlockEntityUsedViaCrystals(userId, levelUnlockEntityId);
-    }
 
     public static Map<Integer, Integer> convertUnlockedItemLimit(Collection<LevelUnlockEntity> levelUnlockEntities) {
         Map<Integer, Integer> unlockedItemLimit = new HashMap<>();
@@ -56,15 +43,24 @@ public class ServerUnlockService {
         return unlockedItemLimit;
     }
 
+    public void unlockViaCrystals(String userId, int levelUnlockEntityId) {
+        userService.persistUnlockViaCrystals(userId, levelUnlockEntityId);
+        UserContext userContext = userService.getUserContext(userId);
+        baseItemService.updateUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
+        systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit(), hasAvailableUnlocks(userContext));
+        questService.onUnlock(userId);
+        // TODO historyPersistence.onLevelUnlockEntityUsedViaCrystals(userId, levelUnlockEntityId);
+    }
+
     public boolean hasAvailableUnlocks(UserContext userContext) {
         return levelCrudPersistence.hasAvailableUnlocks(userContext.getLevelId(), userService.unlockedEntityIds(userContext.getUserId()));
     }
 
-   public List<LevelUnlockConfig> getAvailableLevelUnlockConfigs(UserContext userContext, int levelId) {
-        return levelCrudPersistence.readAvailableLevelUnlockConfigs(levelId, userService.unlockedEntityIds(userContext.getUserId()));
+    public List<LevelUnlockConfig> getAvailableLevelUnlockConfigs(String userId, int levelId) {
+        return levelCrudPersistence.readAvailableLevelUnlockConfigs(levelId, userService.unlockedEntityIds(userId));
     }
 
-    public void updateUnlocked(int userId, List<Integer> unlockedIds) {
+    public void updateUnlocked(String userId, List<Integer> unlockedIds) {
         throw new UnsupportedOperationException("... TODO ...");
 //   TODO     userService.setUnlocked(userId, unlockedIds);
 //        UserContext userContext = userService.readUserContext(userId);

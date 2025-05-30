@@ -172,7 +172,7 @@ public class GameLogicService {
     }
 
     public void onBoxPicked(SyncBoxItem box, SyncBaseItem picker, BoxContent boxContent) {
-        Integer userId = picker.getBase().getUserId();
+        String userId = picker.getBase().getUserId();
         if (userId == null) {
             return;
         }
@@ -223,7 +223,7 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemIdle(syncBaseItem));
     }
 
-    public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
+    public void onQuestProgressUpdate(String userId, QuestProgressInfo questProgressInfo) {
         gameLogicListener.ifPresent(listener -> listener.onQuestProgressUpdate(userId, questProgressInfo));
     }
 

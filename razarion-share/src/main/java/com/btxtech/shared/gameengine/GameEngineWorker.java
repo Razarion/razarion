@@ -142,7 +142,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 initialiseWarm((PlanetConfig) controlPackage.getData(0), (UserContext) controlPackage.getData(1), (GameEngineMode) controlPackage.getData(2), (String) controlPackage.getData(3));
                 break;
             case START:
-                start();
+                start((String) controlPackage.getData(0));
                 break;
             case STOP_REQUEST:
                 stop();
@@ -160,7 +160,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 resourceService.createResources((Collection<ResourceItemPosition>) controlPackage.getSingleData());
                 break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
-                createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (IntIntMap) controlPackage.getData(1), (Integer) controlPackage.getData(2), (String) controlPackage.getData(3), (DecimalPosition) controlPackage.getData(4));
+                createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (IntIntMap) controlPackage.getData(1), (String) controlPackage.getData(2), (String) controlPackage.getData(3), (DecimalPosition) controlPackage.getData(4));
                 break;
             case USE_INVENTORY_ITEM:
                 useInventoryItem((UseInventoryItem) controlPackage.getData(0));
@@ -331,7 +331,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         return unitPosition.getO();
     }
 
-    private void createHumanBaseWithBaseItem(int levelId, IntIntMap unlockedItemLimit, int userId, String name, DecimalPosition position) {
+    private void createHumanBaseWithBaseItem(int levelId, IntIntMap unlockedItemLimit, String userId, String name, DecimalPosition position) {
         if (serverConnection != null) {
             serverConnection.createHumanBaseWithBaseItem(position);
         } else {
@@ -342,13 +342,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    public void start() {
+    public void start(String bearerToken) {
         planetService.enableTracking(false);
         planetService.start();
         perfmonService.start(gameSessionUuid);
         if (gameEngineMode == GameEngineMode.SLAVE) {
             serverConnection = connectionInstance.get();
-            serverConnection.init();
+            serverConnection.init(bearerToken);
         }
     }
 
@@ -374,7 +374,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         sendToClient(GameEngineControlPackage.Command.STOP_RESPONSE);
     }
 
-    private void activateQuest(int userId, QuestConfig questConfig) {
+    private void activateQuest(String userId, QuestConfig questConfig) {
         questService.activateCondition(userId, questConfig);
         onQuestProgressUpdate(userId, questService.getQuestProgressInfo(userId));
     }
@@ -450,8 +450,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onBoxPicked(int userId, BoxContent boxContent) {
-        if (userContext.getUserId() == userId) {
+    public void onBoxPicked(String userId, BoxContent boxContent) {
+        if (userContext.getUserId().equals(userId)) {
             sendToClient(GameEngineControlPackage.Command.BOX_PICKED, boxContent);
         }
     }
@@ -557,8 +557,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onQuestPassed(int userId, QuestConfig questConfig) {
-        if (userContext.getUserId() == userId) {
+    public void onQuestPassed(String userId, QuestConfig questConfig) {
+        if (userContext.getUserId().equals(userId)) {
             sendToClient(GameEngineControlPackage.Command.QUEST_PASSED);
         }
     }
@@ -701,7 +701,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
+    public void onQuestProgressUpdate(String userId, QuestProgressInfo questProgressInfo) {
         if (questProgressInfo != null) {
             sendToClient(GameEngineControlPackage.Command.QUEST_PROGRESS, questProgressInfo);
         }

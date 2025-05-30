@@ -209,7 +209,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
         }
     }
 
-    public InitialSlaveSyncItemInfo generateSlaveSyncItemInfo(int userId) {
+    public InitialSlaveSyncItemInfo generateSlaveSyncItemInfo(String userId) {
         InitialSlaveSyncItemInfo initialSlaveSyncItemInfo = new InitialSlaveSyncItemInfo();
         initialSlaveSyncItemInfo.setTickCount(tickCount);
         initialSlaveSyncItemInfo.setSyncBaseItemInfos(baseItemService.getSyncBaseItemInfos());

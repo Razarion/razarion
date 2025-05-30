@@ -29,7 +29,11 @@ import com.btxtech.shared.system.ExceptionHandler;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger.SYNC_ITEM_CREATED;
@@ -58,7 +62,7 @@ public class QuestService {
 
     private final ExceptionHandler exceptionHandler;
     private final Collection<QuestListener> questListeners = new ArrayList<>();
-    private final Map<Integer, AbstractConditionProgress> progressMap = new HashMap<>();
+    private final Map<String, AbstractConditionProgress> progressMap = new HashMap<>();
     private int tickCount;
 
     @Inject
@@ -72,7 +76,7 @@ public class QuestService {
         this.itemTypeService = itemTypeService;
     }
 
-    public void activateCondition(int userId, QuestConfig questConfig) {
+    public void activateCondition(String userId, QuestConfig questConfig) {
         AbstractComparison abstractComparison = null;
         if (questConfig.getConditionConfig().getConditionTrigger().isComparisonNeeded()) {
             abstractComparison = createAbstractComparison(userId, questConfig.getConditionConfig(), questConfig.getConditionConfig().getConditionTrigger());
@@ -102,11 +106,11 @@ public class QuestService {
         progressMap.clear();
     }
 
-    public boolean hasActiveQuest(int userId) {
+    public boolean hasActiveQuest(String userId) {
         return progressMap.containsKey(userId);
     }
 
-    public void deactivateActorCondition(int userId) {
+    public void deactivateActorCondition(String userId) {
         synchronized (progressMap) {
             progressMap.remove(userId);
         }
@@ -144,7 +148,7 @@ public class QuestService {
     }
 
     public void onSyncItemBuilt(SyncBaseItem syncBaseItem) {
-        Integer userId = syncBaseItem.getBase().getUserId();
+        String userId = syncBaseItem.getBase().getUserId();
         if (userId == null) {
             return;
         }
@@ -152,18 +156,18 @@ public class QuestService {
     }
 
     public void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
-        Integer userId = actor.getBase().getUserId();
+        String userId = actor.getBase().getUserId();
         if (userId == null) {
             return;
         }
         triggerSyncItem(userId, ConditionTrigger.SYNC_ITEM_KILLED, target);
     }
 
-    public void onSyncBoxItemPicked(int userId) {
+    public void onSyncBoxItemPicked(String userId) {
         triggerValue(userId, ConditionTrigger.BOX_PICKED, 1.0);
     }
 
-    public void onInventoryItemPlaced(int userId, InventoryItem inventoryItem) {
+    public void onInventoryItemPlaced(String userId, InventoryItem inventoryItem) {
         InventoryItemConditionProgress inventoryItemConditionProgress = (InventoryItemConditionProgress) findProgress(userId, ConditionTrigger.INVENTORY_ITEM_PLACED);
         if (inventoryItemConditionProgress == null) {
             return;
@@ -175,7 +179,7 @@ public class QuestService {
     }
 
     public void onHarvested(SyncBaseItem harvester, double amount) {
-        Integer userId = harvester.getBase().getUserId();
+        String userId = harvester.getBase().getUserId();
         if (userId == null) {
             return;
         }
@@ -183,14 +187,14 @@ public class QuestService {
     }
 
     public void onBaseKilled(SyncBaseItem actor) {
-        Integer userId = actor.getBase().getUserId();
+        String userId = actor.getBase().getUserId();
         if (userId == null) {
             return;
         }
         triggerValue(userId, ConditionTrigger.BASE_KILLED, 1.0);
     }
 
-    public void onUnlock(int userId) {
+    public void onUnlock(String userId) {
         triggerValue(userId, ConditionTrigger.UNLOCKED, 1.0);
     }
 
@@ -202,7 +206,7 @@ public class QuestService {
         questListeners.remove(questListener);
     }
 
-    private AbstractComparison createAbstractComparison(int userId, ConditionConfig conditionConfig, ConditionTrigger conditionTrigger) {
+    private AbstractComparison createAbstractComparison(String userId, ConditionConfig conditionConfig, ConditionTrigger conditionTrigger) {
         ComparisonConfig comparisonConfig = conditionConfig.getComparisonConfig();
         switch (conditionTrigger) {
             case HARVEST:
@@ -227,7 +231,7 @@ public class QuestService {
                 }
             case SYNC_ITEM_KILLED:
             case SYNC_ITEM_CREATED:
-                Integer includeExistingUserId = null;
+                String includeExistingUserId = null;
                 if (conditionTrigger == SYNC_ITEM_CREATED && comparisonConfig.isIncludeExisting()) {
                     includeExistingUserId = userId;
                 }
@@ -257,7 +261,7 @@ public class QuestService {
         }
     }
 
-    private AbstractConditionProgress findProgress(int userId, ConditionTrigger conditionTrigger) {
+    private AbstractConditionProgress findProgress(String userId, ConditionTrigger conditionTrigger) {
         AbstractConditionProgress abstractConditionProgress;
         synchronized (progressMap) {
             abstractConditionProgress = progressMap.get(userId);
@@ -271,7 +275,7 @@ public class QuestService {
         return abstractConditionProgress;
     }
 
-    private void triggerValue(int userId, ConditionTrigger conditionTrigger, double value) {
+    private void triggerValue(String userId, ConditionTrigger conditionTrigger, double value) {
         ValueConditionProgress valueConditionProgress = (ValueConditionProgress) findProgress(userId, conditionTrigger);
         if (valueConditionProgress == null) {
             return;
@@ -282,7 +286,7 @@ public class QuestService {
         }
     }
 
-    private void triggerSyncItem(int userId, ConditionTrigger conditionTrigger, SyncBaseItem syncBaseItem) {
+    private void triggerSyncItem(String userId, ConditionTrigger conditionTrigger, SyncBaseItem syncBaseItem) {
         BaseItemConditionProgress baseItemConditionProgress = (BaseItemConditionProgress) findProgress(userId, conditionTrigger);
         if (baseItemConditionProgress == null) {
             return;
@@ -307,7 +311,7 @@ public class QuestService {
         return baseItemType;
     }
 
-    public QuestProgressInfo getQuestProgressInfo(int userId) {
+    public QuestProgressInfo getQuestProgressInfo(String userId) {
         AbstractConditionProgress abstractConditionProgress = progressMap.get(userId);
         if (abstractConditionProgress == null) {
             return null;
@@ -355,7 +359,7 @@ public class QuestService {
         }
     }
 
-    public void updateUserId(int userId) {
+    public void updateUserId(String userId) {
         synchronized (progressMap) {
             AbstractConditionProgress abstractConditionProgress = progressMap.remove(userId);
             if (abstractConditionProgress != null) {

@@ -1,5 +1,6 @@
 package com.btxtech.worker;
 
+import com.btxtech.common.JwtHelper;
 import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.common.system.WebSocketWrapper;
 import com.btxtech.shared.CommonUrl;
@@ -40,8 +41,8 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
     }
 
     @Override
-    public void init() {
-        webSocketWrapper.start(CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT,
+    public void init(String bearerToken) {
+        webSocketWrapper.start(CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT + JwtHelper.bearerTokenToUrl(bearerToken),
                 () -> sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SET_GAME_SESSION_UUID, toJson(gameEngineWorker.getGameSessionUuid()))),
                 this::handleMessage,
                 () -> {

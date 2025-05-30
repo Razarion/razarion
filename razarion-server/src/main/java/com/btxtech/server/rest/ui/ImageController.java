@@ -128,17 +128,21 @@ public class ImageController {
 //            throw e;
 //        }
 //    }
-//
-//    @Override
-//    public Response getMiniMapImage(int planetId) {
-//        try {
-//            return Response.ok(planetCrudPersistence.getMiniMapImage(planetId)).lastModified(new Date()).build();
-//        } catch (Throwable e) {
-//            logger.warn(e.getMessage(), e);
-//            throw e;
-//        }
-//    }
-//
+
+    @GetMapping(value = "minimap/{planetId}", produces = {"image/jpeg", "image/png", "image/gif"})
+    public ResponseEntity<byte[]> getMiniMapImage(@PathVariable("planetId") int planetId) {
+        try {
+            byte[] data = planetCrudPersistence.getMiniMapImage(planetId);
+            return ResponseEntity
+                    .ok()
+                    .lastModified(ZonedDateTime.now())
+                    .body(data);
+        } catch (Throwable e) {
+            logger.warn("Can not loadCold MiniMapImage for planetId: {}", planetId, e);
+            throw e;
+        }
+    }
+
 //    private String contentTypeFromArray(byte[] bytes) throws IOException {
 //        return URLConnection.guessContentTypeFromStream(new BufferedInputStream(new ByteArrayInputStream(bytes)));
 //    }

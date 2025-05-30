@@ -9,10 +9,10 @@ import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.uiservice.DaggerUiBaseIntegrationTest;
-import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
+import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
 import com.btxtech.uiservice.terrain.InputService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -143,7 +143,7 @@ public class InGameQuestVisualizationServiceTest extends DaggerUiBaseIntegration
     private ColdGameUiContext setup() {
         ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
         coldGameUiContext.setUserContext(new UserContext()
-                .userId(1)
+                .userId("00001")
                 .unlockedItemLimit(Collections.emptyMap())
                 .levelId(1));
         setupUiEnvironment(coldGameUiContext);

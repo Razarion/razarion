@@ -7,12 +7,22 @@ import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.Character;
-import com.btxtech.shared.gameengine.datatypes.*;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.datatypes.exception.*;
+import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistException;
+import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
+import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
+import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
+import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
+import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
+import com.btxtech.shared.gameengine.datatypes.exception.NotYourBaseException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
@@ -29,7 +39,19 @@ import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -154,11 +176,11 @@ public class BaseItemService {
         throw new IllegalStateException("No human base found");
     }
 
-    public PlayerBaseFull createHumanBase(int startRazarion, int levelId, Map<Integer, Integer> unlockedItemLimit, int userId, String name) {
+    public PlayerBaseFull createHumanBase(int startRazarion, int levelId, Map<Integer, Integer> unlockedItemLimit, String userId, String name) {
         return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, unlockedItemLimit, userId, null);
     }
 
-    private void surrenderHumanBase(int userId) {
+    private void surrenderHumanBase(String userId) {
         PlayerBaseFull playerBase = getPlayerBaseFull4UserId(userId);
         if (playerBase != null) {
             gameLogicService.onSurrenderBase(playerBase);
@@ -168,7 +190,7 @@ public class BaseItemService {
         }
     }
 
-    public PlayerBaseFull createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, int userId, String name, DecimalPosition position) {
+    public PlayerBaseFull createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, String userId, String name, DecimalPosition position) {
         surrenderHumanBase(userId);
         PlayerBaseFull playerBase = null;
         try {
@@ -186,14 +208,14 @@ public class BaseItemService {
         return playerBase;
     }
 
-    public void updateLevel(int userId, int levelId) {
+    public void updateLevel(String userId, int levelId) {
         PlayerBaseFull playerBase = getPlayerBaseFull4UserId(userId);
         if (playerBase != null) {
             playerBase.setLevelId(levelId);
         }
     }
 
-    public void updateUnlockedItemLimit(int userId, Map<Integer, Integer> unlockedItemLimit) {
+    public void updateUnlockedItemLimit(String userId, Map<Integer, Integer> unlockedItemLimit) {
         PlayerBaseFull playerBase = getPlayerBaseFull4UserId(userId);
         if (playerBase != null) {
             playerBase.setUnlockedItemLimit(unlockedItemLimit);
@@ -204,7 +226,7 @@ public class BaseItemService {
         return createBaseMaster(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, 0, null, null, null, botConfig.getId());
     }
 
-    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, Integer userId, Integer botId) {
+    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, String userId, Integer botId) {
         PlayerBaseFull playerBase;
         synchronized (bases) {
             lastBaseItId++;
@@ -253,7 +275,7 @@ public class BaseItemService {
     }
 
 
-    public PlayerBase updateHumanPlayerId(int baseId, int userId) {
+    public PlayerBase updateHumanPlayerId(int baseId, String userId) {
         synchronized (bases) {
             PlayerBase playerBase = bases.get(baseId);
             if (playerBase == null) {
@@ -519,10 +541,10 @@ public class BaseItemService {
         return playerBase.getUsedHouseSpace() + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > playerBase.getHouseSpace() + planetConfig.getHouseSpace();
     }
 
-    public PlayerBaseFull getPlayerBaseFull4UserId(int userId) {
+    public PlayerBaseFull getPlayerBaseFull4UserId(String userId) {
         synchronized (bases) {
             for (PlayerBase playerBase : bases.values()) {
-                if (playerBase.getUserId() != null && playerBase.getUserId() == userId) {
+                if (playerBase.getUserId() != null && Objects.equals(playerBase.getUserId(), userId)) {
                     return (PlayerBaseFull) playerBase;
                 }
             }
@@ -530,10 +552,10 @@ public class BaseItemService {
         return null;
     }
 
-    public PlayerBase getPlayerBase4UserId(int userId) {
+    public PlayerBase getPlayerBase4UserId(String userId) {
         synchronized (bases) {
             for (PlayerBase playerBase : bases.values()) {
-                if (playerBase.getUserId() != null && playerBase.getUserId() == userId) {
+                if (playerBase.getUserId() != null && Objects.equals(playerBase.getUserId(), userId)) {
                     return playerBase;
                 }
             }

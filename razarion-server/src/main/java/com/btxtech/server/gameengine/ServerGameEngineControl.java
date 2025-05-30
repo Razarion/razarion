@@ -220,7 +220,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         }
     }
 
-    public void onLevelChanged(int userId, int levelId) {
+    public void onLevelChanged(String userId, int levelId) {
         baseItemService.updateLevel(userId, levelId);
     }
 
@@ -293,13 +293,13 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
-    public void onBoxPicked(int userId, BoxContent boxContent) {
+    public void onBoxPicked(String userId, BoxContent boxContent) {
         // TODO serverInventoryService.onBoxPicked(userId, boxContent);
         // TODO systemConnectionService.onBoxPicked(userId, boxContent);
     }
 
     @Override
-    public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
+    public void onQuestProgressUpdate(String userId, QuestProgressInfo questProgressInfo) {
         systemConnectionService.onQuestProgressInfo(userId, questProgressInfo);
     }
 

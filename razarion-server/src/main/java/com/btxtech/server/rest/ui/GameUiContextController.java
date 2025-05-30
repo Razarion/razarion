@@ -5,11 +5,8 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
-import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiContext;
-import com.btxtech.shared.rest.GameUiContextController;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import com.btxtech.shared.rest.GameUiContextAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -17,8 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+
+import static com.btxtech.shared.rest.GameUiContextAccess.PATH;
 
 
 /**
@@ -26,34 +23,23 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * 06.07.2016.
  */
 @RestController
-@RequestMapping("/rest/gz/game-ui-context-control")
-public class GameUiContextControllerImpl implements GameUiContextController {
-    private final Logger logger = LoggerFactory.getLogger(GameUiContextControllerImpl.class);
+@RequestMapping("/rest" + PATH)
+public class GameUiContextController implements GameUiContextAccess {
+    private final Logger logger = LoggerFactory.getLogger(GameUiContextController.class);
     private final GameUiContextService gameUiContextService;
     private final UserService userService;
 
-    public GameUiContextControllerImpl(GameUiContextService gameUiContextService, UserService userService) {
+    public GameUiContextController(GameUiContextService gameUiContextService, UserService userService) {
         this.gameUiContextService = gameUiContextService;
         this.userService = userService;
     }
 
-    public static String getCurrentHttpSessionId() {
-        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attr == null) {
-            return "no ServletRequestAttributes";
-        }
-
-        HttpServletRequest request = attr.getRequest();
-        HttpSession session = request.getSession(true);
-        return (session != null) ? session.getId() : "no HttpSession";
-    }
-
     @Override
     @PostMapping(value = CommonUrl.COLD, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ColdGameUiContext loadColdGameUiContext(GameUiControlInput gameUiControlInput) {
-        UserContext userContext = userService.getUserContext(getCurrentHttpSessionId());
+    public ColdGameUiContext loadColdGameUiContext() {
+        UserContext userContext = userService.getUserContextFromContext();
         try {
-            return gameUiContextService.loadCold(gameUiControlInput, userContext);
+            return gameUiContextService.loadCold(userContext);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             return new ColdGameUiContext().userContext(userContext);
@@ -64,7 +50,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
     @GetMapping(value = CommonUrl.WARM, produces = MediaType.APPLICATION_JSON_VALUE)
     public WarmGameUiContext loadWarmGameUiContext() {
         try {
-            UserContext userContext = userService.getUserContext(getCurrentHttpSessionId());
+            UserContext userContext = userService.getUserContextFromContext();
             return gameUiContextService.loadWarm(userContext);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);

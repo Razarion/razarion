@@ -1,14 +1,11 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.UserService;
-import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
-import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -17,8 +14,10 @@ import com.btxtech.shared.system.ConnectionMarshaller;
 import jakarta.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketMessage;
@@ -36,18 +35,15 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
     private static final String CLIENT_GAME_CONNECTION = "ClientGameConnection";
     private final Logger logger = LoggerFactory.getLogger(ClientGameConnectionService.class);
     private final Map<String, ClientGameConnection> gameConnections = new HashMap<>();
-    private final SessionService sessionService;
     private final Provider<ClientGameConnection> provider;
+    private final Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter;
     private final UserService userService;
-    @Autowired
-    @Lazy
-    private PlanetService planetService;
 
-    public ClientGameConnectionService(SessionService sessionService,
-                                       Provider<ClientGameConnection> provider,
+    public ClientGameConnectionService(Provider<ClientGameConnection> provider,
+                                       Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter,
                                        UserService userService) {
-        this.sessionService = sessionService;
         this.provider = provider;
+        this.jwtAuthenticationConverter = jwtAuthenticationConverter;
         this.userService = userService;
     }
 
@@ -55,13 +51,16 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession wsSession) {
         var clientGameConnection = provider.get();
 
+        Authentication auth = WebSocketUtils.getJwtFromWsSession(wsSession, jwtAuthenticationConverter);
         var httpSessionId = (String) wsSession.getAttributes().get(HttpSessionHandshakeInterceptor.HTTP_SESSION_ID_ATTR_NAME);
-        clientGameConnection.init(wsSession, httpSessionId);
+        String userId = userService.getOrCreateUserId(auth, httpSessionId);
+
+        clientGameConnection.init(wsSession, userId);
         wsSession.getAttributes().put(CLIENT_GAME_CONNECTION, clientGameConnection);
         synchronized (gameConnections) {
-            gameConnections.put(httpSessionId, clientGameConnection);
+            gameConnections.put(userId, clientGameConnection);
         }
-        clientGameConnection.sendInitialSlaveSyncInfo(clientGameConnection.getUserContext().getUserId());
+        clientGameConnection.sendInitialSlaveSyncInfo(clientGameConnection.getUserId());
         // TODO connectionTrackingPersistence.onGameConnectionOpened(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
 
@@ -79,9 +78,9 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession wsSession, CloseStatus closeStatus) {
-        var httpSessionId = (String) wsSession.getAttributes().get(HttpSessionHandshakeInterceptor.HTTP_SESSION_ID_ATTR_NAME);
+        var clientGameConnection = (ClientGameConnection) wsSession.getAttributes().get(CLIENT_GAME_CONNECTION);
         synchronized (gameConnections) {
-            var clientGameConnection = gameConnections.remove(httpSessionId);
+            gameConnections.remove(clientGameConnection.getUserId());
             logger.info("Websocket clientGameConnection closed {}", clientGameConnection);
         }
     }
@@ -107,10 +106,7 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
     }
 
     public void sendResourcesBalanceChanged(PlayerBase playerBase, int resources) {
-        PlayerSession playerSession = getPlayerSessionBase(playerBase);
-        if (playerSession != null) {
-            sendToClient(playerSession.getHttpSessionId(), GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
-        }
+        sendToClient(playerBase.getUserId(), GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
     }
 
     public void onSyncItemRemoved(SyncItem syncItem, boolean explode) {
@@ -147,10 +143,10 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         }
     }
 
-    private void sendToClient(String httpSessionId, GameConnectionPacket packet, Object object) {
+    private void sendToClient(String userId, GameConnectionPacket packet, Object object) {
         ClientGameConnection clientGameConnection;
         synchronized (gameConnections) {
-            clientGameConnection = gameConnections.get(httpSessionId);
+            clientGameConnection = gameConnections.get(userId);
             if (clientGameConnection == null) {
                 return;
             }
@@ -165,9 +161,5 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         } catch (Throwable throwable) {
             logger.warn(throwable.getMessage(), throwable);
         }
-    }
-
-    private PlayerSession getPlayerSessionBase(PlayerBase playerBase) {
-        return sessionService.findPlayerSession(playerBase.getUserId());
     }
 }

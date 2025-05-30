@@ -1,10 +1,9 @@
 package com.btxtech.server.rest.engine;
 
 import com.btxtech.server.gameengine.ServerUnlockService;
-import com.btxtech.server.rest.ui.GameUiContextControllerImpl;
 import com.btxtech.server.service.engine.LevelCrudPersistence;
 import com.btxtech.server.service.engine.ServerInventoryService;
-import com.btxtech.server.web.SessionService;
+import com.btxtech.server.user.UserService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.UnlockResultInfo;
 import org.slf4j.Logger;
@@ -24,26 +23,29 @@ public class UnlockController {
     private final Logger logger = LoggerFactory.getLogger(UnlockController.class);
     private final LevelCrudPersistence levelCrudPersistence;
     private final ServerUnlockService serverUnlockService;
-    private final SessionService sessionService;
+    private final UserService userService;
     private final ServerInventoryService serverInventoryService;
 
-    public UnlockController(LevelCrudPersistence levelCrudPersistence, ServerUnlockService serverUnlockService, SessionService sessionService, ServerInventoryService serverInventoryService) {
+    public UnlockController(LevelCrudPersistence levelCrudPersistence,
+                            ServerUnlockService serverUnlockService,
+                            UserService userService,
+                            ServerInventoryService serverInventoryService) {
         this.levelCrudPersistence = levelCrudPersistence;
         this.serverUnlockService = serverUnlockService;
-        this.sessionService = sessionService;
+        this.userService = userService;
         this.serverInventoryService = serverInventoryService;
     }
 
     @PostMapping(value = "unlockViaCrystals/{levelUnlockConfigId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UnlockResultInfo unlockViaCrystals(@PathVariable("levelUnlockConfigId") int levelUnlockConfigId) {
         try {
-            var playerSession = sessionService.getSession(GameUiContextControllerImpl.getCurrentHttpSessionId());
-            int crystals = serverInventoryService.loadCrystals(playerSession);
+            var userContext = userService.getUserContextFromContext();
+            int crystals = serverInventoryService.loadCrystals(userContext.getUserId());
             if (crystals < levelCrudPersistence.readLevelUnlockEntityCrystals(levelUnlockConfigId)) {
                 return new UnlockResultInfo().setNotEnoughCrystals(true);
             }
-            serverUnlockService.unlockViaCrystals(playerSession.getUserContext().getUserId(), levelUnlockConfigId);
-            return new UnlockResultInfo().setAvailableUnlocks(serverUnlockService.getAvailableLevelUnlockConfigs(playerSession.getUserContext(), playerSession.getUserContext().getLevelId()));
+            serverUnlockService.unlockViaCrystals(userContext.getUserId(), levelUnlockConfigId);
+            return new UnlockResultInfo().setAvailableUnlocks(serverUnlockService.getAvailableLevelUnlockConfigs(userContext.getUserId(), userContext.getLevelId()));
         } catch (Throwable t) {
             logger.warn(t.getMessage(), t);
             throw t;
@@ -53,8 +55,8 @@ public class UnlockController {
     @GetMapping(value = "available-level-unlockConfigs", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<LevelUnlockConfig> getAvailableLevelUnlockConfigs() {
         try {
-            var playerSession = sessionService.getSession(GameUiContextControllerImpl.getCurrentHttpSessionId());
-            return serverUnlockService.getAvailableLevelUnlockConfigs(playerSession.getUserContext(), playerSession.getUserContext().getLevelId());
+            var userContext = userService.getUserContextFromContext();
+            return serverUnlockService.getAvailableLevelUnlockConfigs(userContext.getUserId(), userContext.getLevelId());
         } catch (Throwable t) {
             logger.warn(t.getMessage(), t);
             throw t;

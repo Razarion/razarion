@@ -25,11 +25,11 @@ public class PlayerBase {
     private double resources;
     private String name;
     private final Character character;
-    private Integer userId;
+    private String userId;
     private final Integer botId;
     private boolean abandoned;
 
-    public PlayerBase(int baseId, String name, Character character, double resources, Integer userId, Integer botId) {
+    public PlayerBase(int baseId, String name, Character character, double resources, String userId, Integer botId) {
         this.baseId = baseId;
         this.name = name;
         this.character = character;
@@ -46,7 +46,7 @@ public class PlayerBase {
         return name;
     }
 
-    public void updateUserId(Integer userId) {
+    public void updateUserId(String userId) {
         this.userId = userId;
     }
 
@@ -66,7 +66,7 @@ public class PlayerBase {
         return !equals(playerBase) && character.isEnemy(playerBase.character);
     }
 
-    public Integer getUserId() {
+    public String getUserId() {
         return userId;
     }
 

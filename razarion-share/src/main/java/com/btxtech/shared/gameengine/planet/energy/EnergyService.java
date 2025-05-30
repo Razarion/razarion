@@ -5,12 +5,17 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncConsumer;
 import com.btxtech.shared.gameengine.planet.model.SyncGenerator;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -18,18 +23,15 @@ import java.util.*;
  */
 @Singleton
 public class EnergyService {
-
+    private final Logger logger = Logger.getLogger(EnergyService.class.getName());
     private final Provider<BaseEnergy> baseEnergyInstance;
-
-    private final ExceptionHandler exceptionHandler;
     private final MapCollection<PlayerBase, SyncConsumer> changedSyncConsumers = new MapCollection<>();
     private final MapCollection<PlayerBase, SyncGenerator> changedSyncGenerators = new MapCollection<>();
     private final Set<PlayerBase> removedBases = new HashSet<>();
     private final HashMap<PlayerBase, BaseEnergy> baseEnergies = new HashMap<>();
 
     @Inject
-    public EnergyService(ExceptionHandler exceptionHandler, Provider<com.btxtech.shared.gameengine.planet.energy.BaseEnergy> baseEnergyInstance) {
-        this.exceptionHandler = exceptionHandler;
+    public EnergyService(Provider<BaseEnergy> baseEnergyInstance) {
         this.baseEnergyInstance = baseEnergyInstance;
     }
 
@@ -103,7 +105,7 @@ public class EnergyService {
             }
             changedBases.forEach(playerBase -> getBaseEnergy(playerBase).recalculate());
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
  * on 06.09.2017.
  */
 public class UserBackendInfo {
-    private int userId;
+    private String userId;
     private Date creationDate;
     private Date registerDate;
     private Date verificationDoneDate;
@@ -23,11 +23,11 @@ public class UserBackendInfo {
     private List<Integer> unlockedIds;
     private List<GameHistoryEntry> gameHistoryEntries;
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -135,7 +135,7 @@ public class UserBackendInfo {
         this.gameHistoryEntries = gameHistoryEntries;
     }
 
-    public UserBackendInfo userId(int userId) {
+    public UserBackendInfo userId(String userId) {
         setUserId(userId);
         return this;
     }

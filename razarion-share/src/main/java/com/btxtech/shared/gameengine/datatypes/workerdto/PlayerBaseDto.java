@@ -14,7 +14,7 @@ public class PlayerBaseDto {
     private int baseId;
     private String name;
     private Character character;
-    private Integer userId;
+    private String userId;
     private Integer botId;
 
     public int getBaseId() {
@@ -41,11 +41,11 @@ public class PlayerBaseDto {
         this.character = character;
     }
 
-    public Integer getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -73,7 +73,7 @@ public class PlayerBaseDto {
         return this;
     }
 
-    public PlayerBaseDto userId(Integer userId) {
+    public PlayerBaseDto userId(String userId) {
         setUserId(userId);
         return this;
     }

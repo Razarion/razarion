@@ -26,7 +26,7 @@ public class AbstractConditionProgress {
     private final ConditionTrigger conditionTrigger;
     private final AbstractComparison abstractComparison;
     private boolean fulfilled = false;
-    private int userId;
+    private String userId;
     private QuestConfig questConfig;
 
     public AbstractConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
@@ -38,7 +38,7 @@ public class AbstractConditionProgress {
         }
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -58,7 +58,7 @@ public class AbstractConditionProgress {
         fulfilled = true;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 

@@ -47,7 +47,7 @@ public class BaseItemTypeComparison extends AbstractBaseItemComparison {
         this.itemTypeService = itemTypeService;
     }
 
-    public void init(Map<BaseItemType, Integer> baseItemType, Integer includeExistingUserId, Set<Integer> botIds) {
+    public void init(Map<BaseItemType, Integer> baseItemType, String includeExistingUserId, Set<Integer> botIds) {
         remaining = new HashMap<>();
         if (includeExistingUserId != null) {
             PlayerBaseFull playerBaseFull = (PlayerBaseFull) baseItemService.getPlayerBase4UserId(includeExistingUserId);

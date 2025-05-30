@@ -7,9 +7,22 @@ import com.btxtech.server.model.engine.LevelUnlockEntity;
 import com.btxtech.server.model.engine.quest.QuestConfigEntity;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
@@ -28,14 +41,17 @@ public class UserEntity {
     private Date verificationDoneDate;
     @Column(columnDefinition = "DATETIME(3)")
     private Date verificationTimedOutDate;
-    @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    @Column(length = 190)
+// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String verificationId;
-    @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    @Column(length = 190)
+// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String facebookUserId;
     @Column(columnDefinition = "DATETIME(3)")
     private Date registerDate;
     @Column(columnDefinition = "DATETIME(3)")
     private Date creationDate;
+    private String userId;
     private boolean admin;
     @ManyToOne(fetch = FetchType.LAZY)
     private LevelEntity level;
@@ -63,6 +79,10 @@ public class UserEntity {
 
     public Integer getId() {
         return id;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     /**
@@ -96,7 +116,7 @@ public class UserEntity {
 
     public UserContext toUserContext() {
         UserContext userContext = new UserContext()
-                .userId(id)
+                .userId(userId)
                 .registerState(createRegisterState())
                 .name(name)
                 .unlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities))
@@ -105,6 +125,10 @@ public class UserEntity {
             userContext.levelId(level.getId());
         }
         return userContext;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public LevelEntity getLevel() {

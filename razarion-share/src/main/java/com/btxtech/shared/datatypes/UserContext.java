@@ -11,23 +11,23 @@ import java.util.Map;
  */
 @JSONMapper
 public class UserContext {
-    private int userId;
+    private String userId;
     private RegisterState registerState;
     private String name;
     private Integer levelId;
     private Map<Integer, Integer> unlockedItemLimit;
     private int xp;
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public UserContext setUserId(int userId) {
+    public UserContext setUserId(String userId) {
         this.userId = userId;
         return this;
     }
 
-    public UserContext userId(int userId) {
+    public UserContext userId(String userId) {
         setUserId(userId);
         return this;
     }

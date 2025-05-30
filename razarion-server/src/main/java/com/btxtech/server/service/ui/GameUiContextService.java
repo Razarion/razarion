@@ -3,9 +3,17 @@ package com.btxtech.server.service.ui;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.ui.GameUiContextEntity;
 import com.btxtech.server.repository.ui.GameUiContextRepository;
-import com.btxtech.server.service.engine.*;
+import com.btxtech.server.service.engine.AbstractConfigCrudPersistence;
+import com.btxtech.server.service.engine.LevelCrudPersistence;
+import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.ServerLevelQuestService;
+import com.btxtech.server.service.engine.StaticGameConfigService;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.*;
+import com.btxtech.shared.dto.AudioConfig;
+import com.btxtech.shared.dto.ColdGameUiContext;
+import com.btxtech.shared.dto.GameUiContextConfig;
+import com.btxtech.shared.dto.InGameQuestVisualConfig;
+import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -34,7 +42,7 @@ public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiCo
         this.alarmService = alarmService;
     }
 
-    public ColdGameUiContext loadCold(GameUiControlInput gameUiControlInput, UserContext userContext) {
+    public ColdGameUiContext loadCold(UserContext userContext) {
         ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
         coldGameUiContext.staticGameConfig(staticGameConfigService.loadStaticGameConfig());
         coldGameUiContext.userContext(userContext);

@@ -48,7 +48,7 @@ public interface GameLogicListener {
     default void onBoxCreated(SyncBoxItem syncBoxItem) {
     }
 
-    default void onBoxPicked(int userId, BoxContent boxContent) {
+    default void onBoxPicked(String userId, BoxContent boxContent) {
     }
 
     default void onSyncBoxDeleted(SyncBoxItem box) {
@@ -75,7 +75,7 @@ public interface GameLogicListener {
     default void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
     }
 
-    default void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
+    default void onQuestProgressUpdate(String userId, QuestProgressInfo questProgressInfo) {
     }
 
     default void onEnergyStateChanged(PlayerBase base, int consuming, int generating) {

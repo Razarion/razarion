@@ -1,5 +1,6 @@
 package com.btxtech.client.system;
 
+import com.btxtech.common.JwtHelper;
 import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.common.system.WebSocketWrapper;
 import com.btxtech.shared.CommonUrl;
@@ -17,6 +18,8 @@ import elemental2.dom.MessageEvent;
 import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.btxtech.common.JwtHelper.getBearerTokenFromLocalStorage;
 
 /**
  * Created by Beat
@@ -43,7 +46,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
 
     @Override
     public void init() {
-        webSocketWrapper.start(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT,
+        webSocketWrapper.start(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT + JwtHelper.bearerTokenToUrl(getBearerTokenFromLocalStorage()),
                 () -> {
                     openCallback();
                     sendGameSessionUuid();

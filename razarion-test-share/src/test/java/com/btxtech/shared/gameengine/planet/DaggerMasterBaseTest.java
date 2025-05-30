@@ -84,12 +84,12 @@ public class DaggerMasterBaseTest extends AbstractDaggerIntegrationTest {
         return getPlanetService().generateSlaveSyncItemInfo(userContext.getUserId());
     }
 
-    protected UserContext createLevel1UserContext(int userId) {
+    protected UserContext createLevel1UserContext(String userId) {
         return new UserContext().levelId(FallbackConfig.LEVEL_ID_1).unlockedItemLimit(Collections.emptyMap()).userId(userId).name("test user id:" + userId);
     }
 
     protected UserContext createLevel1UserContext() {
-        return createLevel1UserContext(1);
+        return createLevel1UserContext("00001");
     }
 
     public SyncBaseItem fabricateAndMove(SyncBaseItem factory, int baseItemTypeId, DecimalPosition position, PlayerBaseFull playerBaseFull) {

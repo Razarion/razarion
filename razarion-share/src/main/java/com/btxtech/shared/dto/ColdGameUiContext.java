@@ -2,12 +2,14 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import org.dominokit.jackson.annotation.JSONMapper;
 
 /**
  * Created by Beat
  * 05.07.2016.
  */
 // Better name: something with game-control, client control
+@JSONMapper
 public class ColdGameUiContext {
     // User
     private UserContext userContext;

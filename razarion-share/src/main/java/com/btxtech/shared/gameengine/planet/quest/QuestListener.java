@@ -7,5 +7,5 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
  * 26.10.2016.
  */
 public interface QuestListener {
-    void onQuestPassed(int userId, QuestConfig questConfig);
+    void onQuestPassed(String userId, QuestConfig questConfig);
 }

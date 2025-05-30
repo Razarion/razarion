@@ -1,14 +1,13 @@
 package com.btxtech.uiservice.item;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.DaggerUiBaseIntegrationTest;
-import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
+import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
 import com.btxtech.uiservice.terrain.InputService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,7 +15,6 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static com.btxtech.shared.dto.FallbackConfig.BUILDER_ITEM_TYPE_ID;
-import static com.btxtech.test.shared.SharedTestHelper.assertDecimalPosition;
 
 public class BaseItemUiServiceTest extends DaggerUiBaseIntegrationTest {
     @Test
@@ -24,7 +22,7 @@ public class BaseItemUiServiceTest extends DaggerUiBaseIntegrationTest {
         // Init
         ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
         coldGameUiContext.setUserContext(new UserContext()
-                .userId(1)
+                .userId("00001")
                 .unlockedItemLimit(Collections.emptyMap())
                 .levelId(1));
         setupUiEnvironment(coldGameUiContext);

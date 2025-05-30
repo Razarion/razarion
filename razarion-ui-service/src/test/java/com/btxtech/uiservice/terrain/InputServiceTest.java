@@ -24,7 +24,7 @@ public class InputServiceTest extends DaggerUiBaseIntegrationTest {
         // Setup
         ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
         coldGameUiContext.setUserContext(new UserContext()
-                .userId(1)
+                .userId("00001")
                 .unlockedItemLimit(Collections.emptyMap())
                 .levelId(1));
         setupUiEnvironment(coldGameUiContext);

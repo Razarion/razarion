@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
  */
 public class BackupComparisionInfo {
     private int questId;
-    private int userId;
+    private String userId;
     private Integer remainingCount;
     private Integer passedSeconds;
     private Map<String, Integer> remainingItemTypes; // MongoDb org.bson.codecs.configuration.CodecConfigurationException: Invalid Map type. Maps MUST have string keys, found class java.lang.Integer instead.
@@ -26,11 +26,11 @@ public class BackupComparisionInfo {
         this.questId = questId;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

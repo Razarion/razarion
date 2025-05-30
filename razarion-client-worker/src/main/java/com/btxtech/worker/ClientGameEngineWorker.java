@@ -19,10 +19,7 @@ import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnect
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.google.gwt.core.client.JsArrayInteger;
-import elemental2.core.JsArray;
 import elemental2.dom.DedicatedWorkerGlobalScope;
-import jsinterop.base.Js;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -72,6 +69,10 @@ public class ClientGameEngineWorker extends GameEngineWorker {
         this.clientPerformanceTrackerService = clientPerformanceTrackerService;
     }
 
+    public static native DedicatedWorkerGlobalScope getDedicatedWorkerGlobalScope() /*-{
+        return self;
+    }-*/;
+
     public void init() {
         getDedicatedWorkerGlobalScope().setOnmessage(evt -> {
             try {
@@ -85,8 +86,8 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     }
 
     @Override
-    public void start() {
-        super.start();
+    public void start(String barerToken) {
+        super.start(barerToken);
         clientPerformanceTrackerService.start();
     }
 
@@ -100,10 +101,6 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     protected void sendToClient(GameEngineControlPackage.Command command, Object... object) {
         getDedicatedWorkerGlobalScope().postMessage(WorkerMarshaller.marshall(new GameEngineControlPackage(command, object)));
     }
-
-    public static native DedicatedWorkerGlobalScope getDedicatedWorkerGlobalScope() /*-{
-        return self;
-    }-*/;
 
     @Override
     protected native int[] convertIntArray(int[] intArray) /*-{

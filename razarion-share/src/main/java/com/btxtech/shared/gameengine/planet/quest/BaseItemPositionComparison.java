@@ -23,7 +23,11 @@ import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +42,7 @@ public class BaseItemPositionComparison extends AbstractTickComparison {
     private Map<BaseItemType, Integer> itemTypes;
     private PlaceConfig placeConfig;
     private Integer timeSeconds;
-    private int userId;
+    private String userId;
     private boolean isFulfilled;
     private boolean isItemFulfilled;
     private Integer fulfilledTickCount;
@@ -50,7 +54,7 @@ public class BaseItemPositionComparison extends AbstractTickComparison {
         this.baseItemService = baseItemService;
     }
 
-    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer timeSeconds, int userId) {
+    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer timeSeconds, String userId) {
         this.itemTypes = itemTypes;
         this.placeConfig = placeConfig;
         this.timeSeconds = timeSeconds;

@@ -56,7 +56,6 @@ import org.dominokit.jackson.stream.JsonWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,7 +81,6 @@ public class WorkerMarshaller {
         switch (controlPackage.getCommand()) {
             // No data
             case LOADED:
-            case START:
             case STOP_REQUEST:
             case STOP_RESPONSE:
             case QUEST_PASSED:
@@ -176,7 +174,10 @@ public class WorkerMarshaller {
             case TICK_UPDATE_RESPONSE:
             case SYNC_ITEM_START_SPAWNED:
             case SYNC_ITEM_IDLE:
-                array.setAt(DATA_OFFSET_0, (JsObject) controlPackage.getData(0));
+                array.setAt(DATA_OFFSET_0, controlPackage.getData(0));
+                break;
+            case START:
+                array.setAt(DATA_OFFSET_0, controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -192,7 +193,6 @@ public class WorkerMarshaller {
         switch (command) {
             // No data
             case LOADED:
-            case START:
             case STOP_REQUEST:
             case STOP_RESPONSE:
             case QUEST_PASSED:
@@ -233,7 +233,7 @@ public class WorkerMarshaller {
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), IntIntMap.class));
-                data.add(fromJson(array[DATA_OFFSET_2].asString(), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_2].asString(), String.class));
                 data.add(fromJson(array[DATA_OFFSET_3].asString(), String.class));
                 data.add(fromJson(array[DATA_OFFSET_4].asString(), DecimalPosition.class));
                 break;
@@ -374,6 +374,9 @@ public class WorkerMarshaller {
                 break;
             case INITIAL_SLAVE_SYNCHRONIZED:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), DecimalPosition.class));
+                break;
+            case START:
+                data.add(array[DATA_OFFSET_0].asString());
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);

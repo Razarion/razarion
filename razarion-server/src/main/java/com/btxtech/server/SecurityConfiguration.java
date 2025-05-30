@@ -1,5 +1,6 @@
 package com.btxtech.server;
 
+import com.btxtech.server.user.UserService;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -9,7 +10,9 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,13 +20,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
@@ -42,6 +47,7 @@ import java.security.interfaces.RSAPublicKey;
 @EnableWebSecurity
 @EnableMethodSecurity(jsr250Enabled = true)
 public class SecurityConfiguration {
+    // private final Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
     @Value("${spring.websecurity.debug:false}")
     boolean webSecurityDebug;
     @Value("${jwt.keystore.location}")
@@ -54,7 +60,7 @@ public class SecurityConfiguration {
     private String keyPassword;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, UserService userService) throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
                         .anyRequest().permitAll()  // Zugriff global erlauben
@@ -62,7 +68,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable) // optional für reine REST-APIs
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer((oauth2) -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter(userService)))
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -80,14 +86,29 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+    @SuppressWarnings("Convert2Lambda")
+    public Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter(UserService userService) {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         // Remove the SCOPE_ prefix
         grantedAuthoritiesConverter.setAuthorityPrefix("");
 
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-        return jwtAuthenticationConverter;
+        // Must be anonymous class or Spring can not handle it
+        return new Converter<>() {
+
+            @Override
+            public AbstractAuthenticationToken convert(Jwt jwt) {
+                String email = (String) jwt.getClaims().get("sub");
+                if (userService.shouldCheckRegisteredUser(email)) {
+                    if (!userService.registeredUserExists(email)) {
+                        throw new UsernameNotFoundException("User no longer exists: " + email);
+                    }
+                    userService.updateLastCheckedRegisteredUser(email);
+                }
+
+                var authorities = grantedAuthoritiesConverter.convert(jwt);
+                return new JwtAuthenticationToken(jwt, authorities, email);
+            }
+        };
     }
 
     @Bean
@@ -99,11 +120,10 @@ public class SecurityConfiguration {
         }
 
         Key key = keyStore.getKey(keyAlias, keyPassword.toCharArray());
-        if (!(key instanceof RSAPrivateKey)) {
+        if (!(key instanceof RSAPrivateKey privateKey)) {
             throw new IllegalStateException("Not an RSA private key");
         }
 
-        RSAPrivateKey privateKey = (RSAPrivateKey) key;
         RSAPublicKey publicKey = (RSAPublicKey) keyStore.getCertificate(keyAlias).getPublicKey();
         return new KeyPair(publicKey, privateKey);
     }

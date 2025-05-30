@@ -1,8 +1,7 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.service.engine.ServerLevelQuestService;
-import com.btxtech.server.user.PlayerSession;
-import com.btxtech.server.web.SessionService;
+import com.btxtech.server.user.UserService;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,21 +22,21 @@ public class ClientSystemConnection {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(ClientSystemConnection.class);
     private final ServerLevelQuestService serverLevelQuestService;
-    private final SessionService sessionService;
+    private final UserService userService;
     private Date time;
     private String gameSessionUuid;
-    private String httpSessionId;
     private WebSocketSession wsSession;
+    private String userId;
 
-    public ClientSystemConnection(ServerLevelQuestService serverLevelQuestService, SessionService sessionService) {
+    public ClientSystemConnection(ServerLevelQuestService serverLevelQuestService, UserService userService) {
         this.serverLevelQuestService = serverLevelQuestService;
-        this.sessionService = sessionService;
+        this.userService = userService;
     }
 
-    public void init(WebSocketSession wsSession, String httpSessionId) {
+    public void init(WebSocketSession wsSession, String userId) {
         this.wsSession = wsSession;
-        this.httpSessionId = httpSessionId;
         time = new Date();
+        this.userId = userId;
         // TODO chatPersistence.sendLastMessages(getSession());
     }
 
@@ -56,7 +55,7 @@ public class ClientSystemConnection {
     private void onPackageReceived(SystemConnectionPacket packet, Object param) {
         switch (packet) {
             case LEVEL_UPDATE_CLIENT:
-                serverLevelQuestService.onClientLevelUpdate(httpSessionId, (int) param);
+                serverLevelQuestService.onClientLevelUpdate(userId, (int) param);
                 break;
             case SET_GAME_SESSION_UUID:
                 gameSessionUuid = (String) param;
@@ -74,18 +73,6 @@ public class ClientSystemConnection {
         wsSession.sendMessage(new TextMessage(text));
     }
 
-    public PlayerSession getSession() {
-        return sessionService.getSession(httpSessionId);
-    }
-
-    public String getHttpSessionId() {
-        return httpSessionId;
-    }
-
-    public String getGameSessionUuid() {
-        return gameSessionUuid;
-    }
-
     public Date getTime() {
         return time;
     }
@@ -94,12 +81,16 @@ public class ClientSystemConnection {
         return (int) (System.currentTimeMillis() - time.getTime());
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
     @Override
     public String toString() {
         return "ClientSystemConnection{" +
                 "time=" + time +
                 ", gameSessionUuid='" + gameSessionUuid + '\'' +
-                ", httpSessionId='" + httpSessionId + '\'' +
+                ", userId='" + userId + '\'' +
                 '}';
     }
 }

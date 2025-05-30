@@ -13,7 +13,10 @@ public class BootContext {
     private final GameUiControl gameUiControl;
     private final UserUiService userUiService;
 
-    public BootContext(SimpleExecutorService simpleExecutorService, GameEngineControl gameEngineControl, GameUiControl gameUiControl, UserUiService userUiService) {
+    public BootContext(SimpleExecutorService simpleExecutorService,
+                       GameEngineControl gameEngineControl,
+                       GameUiControl gameUiControl,
+                       UserUiService userUiService) {
         this.simpleExecutorService = simpleExecutorService;
         this.gameEngineControl = gameEngineControl;
         this.gameUiControl = gameUiControl;

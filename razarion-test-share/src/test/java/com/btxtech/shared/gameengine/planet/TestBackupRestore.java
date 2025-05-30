@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.mock.TestSimpleScheduledFuture;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
@@ -23,6 +22,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.BackupComparisionInfo;
+import com.btxtech.shared.mock.TestSimpleScheduledFuture;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
 import org.junit.Assert;
@@ -54,7 +54,7 @@ public class TestBackupRestore extends DaggerMasterBaseTest {
         // Bot
         SyncBaseItem botTarget = setupBot();
         // Create base 1
-        UserContext userContext1 = createLevel1UserContext(1);
+        UserContext userContext1 = createLevel1UserContext("00001");
         PlayerBaseFull playerBaseFull1 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext1);
         testBaseRestoreProvider.addUserContext(userContext1);
         tickPlanetServiceBaseServiceActive();
@@ -75,7 +75,7 @@ public class TestBackupRestore extends DaggerMasterBaseTest {
         SyncBaseItem harvester1 = findSyncBaseItem(playerBaseFull1, FallbackConfig.HARVESTER_ITEM_TYPE_ID);
         getCommandService().harvest(harvester1, CollectionUtils.getFirst(resources));
         // Create base 2
-        UserContext userContext2 = createLevel1UserContext(2);
+        UserContext userContext2 = createLevel1UserContext("00001");
         testBaseRestoreProvider.addUserContext(userContext2);
         PlayerBaseFull playerBaseFull2 = createHumanBaseWithBaseItem(new DecimalPosition(20, 40), userContext2);
         tickPlanetServiceBaseServiceActive(harvester1);
@@ -169,7 +169,7 @@ public class TestBackupRestore extends DaggerMasterBaseTest {
         assertEnergy(60, 80, playerBaseFull2Restore);
 
         // Create base 3
-        UserContext userContext3 = createLevel1UserContext(3);
+        UserContext userContext3 = createLevel1UserContext("00003");
         PlayerBaseFull playerBaseFull3 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext3);
         Assert.assertEquals(5, playerBaseFull3.getBaseId());
         tickPlanetServiceBaseServiceActive(attacker1Restore, boxPickerRestore);
@@ -281,7 +281,7 @@ public class TestBackupRestore extends DaggerMasterBaseTest {
 
     private BackupComparisionInfo findBackupComparisionInfo(List<BackupComparisionInfo> backupComparisionInfos, PlayerBase playerBase1) {
         for (BackupComparisionInfo backupComparisionInfo : backupComparisionInfos) {
-            if (backupComparisionInfo.getUserId() == playerBase1.getUserId()) {
+            if (backupComparisionInfo.getUserId().equals(playerBase1.getUserId())) {
                 return backupComparisionInfo;
             }
         }

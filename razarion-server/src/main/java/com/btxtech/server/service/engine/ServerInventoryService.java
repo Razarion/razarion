@@ -1,6 +1,5 @@
 package com.btxtech.server.service.engine;
 
-import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
@@ -20,7 +19,7 @@ public class ServerInventoryService {
     @Inject
     private BaseItemService baseItemService;
 
-    public void onBoxPicked(int userId, BoxContent boxContent) {
+    public void onBoxPicked(String userId, BoxContent boxContent) {
         throw new UnsupportedOperationException("... TODO ...");
 //        if (boxContent.getCrystals() > 0) {
 //            userService.persistAddCrystals(userId, boxContent.getCrystals());
@@ -29,15 +28,15 @@ public class ServerInventoryService {
         // TODO historyPersistence.onBoxPicked(userId, boxContent);
     }
 
-    public InventoryInfo loadInventory(PlayerSession playerSession) {
-        return userService.readInventoryInfo(playerSession.getUserContext().getUserId());
+    public InventoryInfo loadInventory(String userId) {
+        return userService.readInventoryInfo(userId);
     }
 
-    public int loadCrystals(PlayerSession playerSession) {
-        return userService.readCrystals(playerSession.getUserContext().getUserId());
+    public int loadCrystals(String userId) {
+        return userService.readCrystals(userId);
     }
 
-    public void useInventoryItem(UseInventoryItem useInventoryItem, PlayerSession playerSession, PlayerBaseFull playerBaseFull) {
+    public void useInventoryItem(UseInventoryItem useInventoryItem, PlayerBaseFull playerBaseFull) {
         throw new UnsupportedOperationException("... TODO ...");
 //        InventoryInfo inventoryInfo = loadInventory(playerSession);
 //        if (inventoryInfo.getInventoryItemIds() == null || !inventoryInfo.getInventoryItemIds().contains(useInventoryItem.getInventoryId())) {

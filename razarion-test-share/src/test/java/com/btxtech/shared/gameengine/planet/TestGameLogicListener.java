@@ -22,7 +22,7 @@ public class TestGameLogicListener implements GameLogicListener {
     private final List<SyncResourceItem> resourceCreated = new ArrayList<>();
     private final List<SyncResourceItem> resourceDeleted = new ArrayList<>();
     private final List<BoxPickedEntry> boxPicked = new ArrayList<>();
-    private final MapList<Integer, QuestProgressInfo> questProgresses = new MapList<>();
+    private final MapList<String, QuestProgressInfo> questProgresses = new MapList<>();
     private final TestWebSocket testWebSocket = new TestWebSocket();
 
     public void clearAll() {
@@ -52,7 +52,7 @@ public class TestGameLogicListener implements GameLogicListener {
         return boxPicked;
     }
 
-    public MapList<Integer, QuestProgressInfo> getQuestProgresses() {
+    public MapList<String, QuestProgressInfo> getQuestProgresses() {
         return questProgresses;
     }
 
@@ -109,12 +109,12 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     @Override
-    public void onBoxPicked(int userId, BoxContent boxContent) {
+    public void onBoxPicked(String userId, BoxContent boxContent) {
         boxPicked.add(new BoxPickedEntry(userId, boxContent));
     }
 
     @Override
-    public void onQuestProgressUpdate(int userId, QuestProgressInfo questProgressInfo) {
+    public void onQuestProgressUpdate(String userId, QuestProgressInfo questProgressInfo) {
         questProgresses.put(userId, questProgressInfo);
     }
 
@@ -143,15 +143,15 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     public static class BoxPickedEntry {
-        private final int userId;
+        private final String userId;
         private final BoxContent boxContent;
 
-        public BoxPickedEntry(int userId, BoxContent boxContent) {
+        public BoxPickedEntry(String userId, BoxContent boxContent) {
             this.userId = userId;
             this.boxContent = boxContent;
         }
 
-        public int getUserId() {
+        public String getUserId() {
             return userId;
         }
 

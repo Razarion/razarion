@@ -12,7 +12,7 @@ import java.util.Map;
  * on 07.03.2018.
  */
 public class TestBaseRestoreProvider implements BaseRestoreProvider {
-    private Collection<UserContext> userContexts = new ArrayList<>();
+    private final Collection<UserContext> userContexts = new ArrayList<>();
 
     public void addUserContext(UserContext userContext) {
         userContexts.add(userContext);
@@ -37,6 +37,6 @@ public class TestBaseRestoreProvider implements BaseRestoreProvider {
         if (playerBaseInfo.getUserId() == null) {
             throw new IllegalStateException("Can not restore base with id: " + playerBaseInfo.getBaseId() + " name: " + playerBaseInfo.getName() + " may be this is a bot");
         }
-        return userContexts.stream().filter(userContext -> userContext.getUserId() == playerBaseInfo.getUserId()).findFirst().orElseThrow(() -> new IllegalArgumentException("No Context for: " + playerBaseInfo.getUserId()));
+        return userContexts.stream().filter(userContext -> userContext.getUserId().equals(playerBaseInfo.getUserId())).findFirst().orElseThrow(() -> new IllegalArgumentException("No Context for: " + playerBaseInfo.getUserId()));
     }
 }

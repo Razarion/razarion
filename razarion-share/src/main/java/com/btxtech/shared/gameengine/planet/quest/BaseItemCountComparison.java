@@ -42,7 +42,7 @@ public class BaseItemCountComparison extends AbstractBaseItemComparison {
         this.baseItemService = baseItemService;
     }
 
-    public void init(int count, Integer includeExistingUserId, Set<Integer> botIds) {
+    public void init(int count, String includeExistingUserId, Set<Integer> botIds) {
         this.count = count;
         this.botIds = botIds;
         if (includeExistingUserId != null) {

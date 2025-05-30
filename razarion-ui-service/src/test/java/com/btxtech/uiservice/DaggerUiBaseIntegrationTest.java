@@ -90,7 +90,7 @@ public class DaggerUiBaseIntegrationTest {
     protected void setupI18nConstants() {
     }
 
-    protected void createBase(int userId, int baseId) {
+    protected void createBase(String userId, int baseId) {
         getWeldBean(BaseItemUiService.class).addBase(new PlayerBaseDto()
                 .name("Test Base")
                 .baseId(baseId)

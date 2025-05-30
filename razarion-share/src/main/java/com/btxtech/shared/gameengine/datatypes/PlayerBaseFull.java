@@ -20,7 +20,7 @@ public class PlayerBaseFull extends PlayerBase {
     private Integer levelId;
     private Map<Integer, Integer> unlockedItemLimit;
 
-    public PlayerBaseFull(int baseId, String name, Character character, double startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, Integer userId, Integer botId) {
+    public PlayerBaseFull(int baseId, String name, Character character, double startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, String userId, Integer botId) {
         super(baseId, name, character, startRazarion, userId, botId);
         this.levelId = levelId;
         this.unlockedItemLimit = unlockedItemLimit;

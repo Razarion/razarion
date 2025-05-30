@@ -112,8 +112,8 @@ public abstract class GameEngineControl {
     public void enableTracking() {
     }
 
-    public void start() {
-        sendToWorker(GameEngineControlPackage.Command.START);
+    public void start(String bearerToken) {
+        sendToWorker(GameEngineControlPackage.Command.START, bearerToken);
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
     }
 

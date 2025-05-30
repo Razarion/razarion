@@ -152,8 +152,8 @@ public class GameEngineConfiguration {
     }
 
     @Bean
-    public EnergyService energyService(ExceptionHandler exceptionHandler) {
-        return new EnergyService(exceptionHandler, () -> null);
+    public EnergyService energyService(jakarta.inject.Provider<BaseEnergy> baseEnergyProvider) {
+        return new EnergyService(baseEnergyProvider::get);
     }
 
     @Bean

@@ -6,9 +6,7 @@ import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.quest.QuestBackendInfo;
 import com.btxtech.server.service.ui.GameUiContextService;
-import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.UserService;
-import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -26,7 +24,6 @@ import java.util.logging.Logger;
 public class ServerLevelQuestService implements QuestListener {
     private final Logger logger = Logger.getLogger(ServerLevelQuestService.class.getName());
     private final Provider<GameUiContextService> gameUiControlConfigPersistence;
-    private final SessionService sessionService;
     private final QuestService questService;
     private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     private final LevelCrudPersistence levelCrudPersistence;
@@ -36,7 +33,6 @@ public class ServerLevelQuestService implements QuestListener {
     private final ServerUnlockService serverUnlockService;
 
     public ServerLevelQuestService(Provider<GameUiContextService> gameUiControlConfigPersistence,
-                                   SessionService sessionService,
                                    QuestService questService,
                                    ServerGameEngineCrudPersistence serverGameEngineCrudPersistence,
                                    LevelCrudPersistence levelCrudPersistence,
@@ -45,7 +41,6 @@ public class ServerLevelQuestService implements QuestListener {
                                    Provider<ServerGameEngineControl> serverGameEngineControlInstance,
                                    ServerUnlockService serverUnlockService) {
         this.gameUiControlConfigPersistence = gameUiControlConfigPersistence;
-        this.sessionService = sessionService;
         this.questService = questService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
         this.levelCrudPersistence = levelCrudPersistence;
@@ -57,10 +52,9 @@ public class ServerLevelQuestService implements QuestListener {
     }
 
     @Transactional
-    public void onClientLevelUpdate(String sessionId, int newLevelId) {
+    public void onClientLevelUpdate(String userId, int newLevelId) {
         LevelEntity newLevel = levelCrudPersistence.getEntity(newLevelId);
-        PlayerSession playerSession = sessionService.getSession(sessionId);
-        UserContext userContext = playerSession.getUserContext();
+        UserContext userContext = userService.getUserContext(userId);
         // TODO historyPersistence.get().onLevelUp(userContext.getUserId(), newLevel);
 
         // Temporary: Only save the level if on multiplayer planet. Main reason, tutorial state und units are not saved.
@@ -82,7 +76,7 @@ public class ServerLevelQuestService implements QuestListener {
         }
     }
 
-    public SlaveQuestInfo getSlaveQuestInfo(int userId) {
+    public SlaveQuestInfo getSlaveQuestInfo(String userId) {
         SlaveQuestInfo slaveQuestInfo = new SlaveQuestInfo();
         slaveQuestInfo.setActiveQuest(userService.findActiveQuestConfig4CurrentUser(userId));
         slaveQuestInfo.setQuestProgressInfo(questService.getQuestProgressInfo(userId));
@@ -91,10 +85,10 @@ public class ServerLevelQuestService implements QuestListener {
 
     @Override
     @Transactional
-    public void onQuestPassed(int userId, QuestConfig questConfig) {
+    public void onQuestPassed(String userId, QuestConfig questConfig) {
         clientSystemConnectionService.onQuestPassed(userId, questConfig);
         // TODO historyPersistence.get().onQuest(userId, questConfig, QuestHistoryEntity.Type.QUEST_PASSED);
-        UserContext userContext = userService.getUserContext(userId);
+        UserContext userContext = userService.getUserContextTransactional(userId);
         // Check for level up
         int newXp = userContext.getXp() + questConfig.getXp();
         LevelEntity currentLevel = levelCrudPersistence.getEntity(userContext.getLevelId());
@@ -124,7 +118,7 @@ public class ServerLevelQuestService implements QuestListener {
     }
 
     @Transactional
-    public void setUserLevel(int userId, int levelId) {
+    public void setUserLevel(String userId, int levelId) {
         UserContext userContext = userService.getUserContext(userId);
         LevelEntity currentLevel = levelCrudPersistence.getEntity(userContext.getLevelId());
         LevelEntity newLevel = levelCrudPersistence.getEntity(levelId);
@@ -143,7 +137,7 @@ public class ServerLevelQuestService implements QuestListener {
         }
     }
 
-    public void activateNextPossibleQuest(int userId) {
+    public void activateNextPossibleQuest(String userId) {
         QuestConfig newQuest = userService.getAndSaveNewQuest(userId);
         if (newQuest != null) {
             // TODO historyPersistence.get().onQuest(userId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
@@ -164,18 +158,18 @@ public class ServerLevelQuestService implements QuestListener {
 
 
     @Transactional
-    public void activateQuestBackend(int userId, int questId) {
+    public void activateQuestBackend(String userId, int questId) {
         activateQuest(userService.getUserContext(userId), questId);
     }
 
     @Transactional
-    public void deactivateQuestBackend(int userId) {
+    public void deactivateQuestBackend(String userId) {
         deactivateQuest(userId);
     }
 
     @Transactional // Needs to be @Transactional if a quest if fulfilled during activation and a new quest is activated
     public void activateQuest(UserContext userContext, int questId) {
-        int userId = userContext.getUserId();
+        String userId = userContext.getUserId();
         deactivateQuest(userId);
         QuestConfig newQuest = serverGameEngineCrudPersistence.getAndVerifyQuest(userContext.getLevelId(), questId);
         if (readActiveOrPassedQuestIds(userContext).contains(newQuest.getId())) {
@@ -193,7 +187,7 @@ public class ServerLevelQuestService implements QuestListener {
         throw new UnsupportedOperationException("... TODO ...");
     }
 
-    private void deactivateQuest(int userId) {
+    private void deactivateQuest(String userId) {
         if (questService.hasActiveQuest(userId)) {
             questService.deactivateActorCondition(userId);
             clientSystemConnectionService.onQuestActivated(userId, null);

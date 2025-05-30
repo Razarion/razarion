@@ -31,31 +31,19 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_GAME_UI_CONTEXT
 
 // Better name: something with game-control
 public class Scene {
-    private Logger logger = Logger.getLogger(Scene.class.getName());
-
-    private ScreenCover screenCover;
-
-    private BabylonRendererService threeJsRendererService;
-
-    private GameUiControl gameUiControl;
-
-    private QuestCockpitService questCockpitService;
-
-    private BaseItemPlacerService baseItemPlacerService;
-
-    private ModalDialogManager modalDialogManager;
-
-    private SimpleExecutorService simpleExecutorService;
-
-    private AudioService audioService;
-
-    private GameEngineControl gameEngineControl;
-
-    private UserUiService userUiService;
-
-    private InGameQuestVisualizationService inGameQuestVisualizationService;
-
-    private ServerQuestProvider serverQuestProvider;
+    private final Logger logger = Logger.getLogger(Scene.class.getName());
+    private final ScreenCover screenCover;
+    private final BabylonRendererService threeJsRendererService;
+    private final GameUiControl gameUiControl;
+    private final QuestCockpitService questCockpitService;
+    private final BaseItemPlacerService baseItemPlacerService;
+    private final ModalDialogManager modalDialogManager;
+    private final SimpleExecutorService simpleExecutorService;
+    private final AudioService audioService;
+    private final GameEngineControl gameEngineControl;
+    private final UserUiService userUiService;
+    private final InGameQuestVisualizationService inGameQuestVisualizationService;
+    private final ServerQuestProvider serverQuestProvider;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
     private boolean hasCompletionCallback;
@@ -134,17 +122,17 @@ public class Scene {
             questCockpitService.showQuestSideBar(sceneConfig.getQuestConfig(), false);
             inGameQuestVisualizationService.onQuestActivated(sceneConfig.getQuestConfig());
         }
-        if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
+        if (sceneConfig.getWait4LevelUpDialog() != null && sceneConfig.getWait4LevelUpDialog()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
             modalDialogManager.setLevelUpDialogCallback(this::onComplete);
         }
-        if (sceneConfig.isWait4QuestPassedDialog() != null && sceneConfig.isWait4QuestPassedDialog()) {
+        if (sceneConfig.getWait4QuestPassedDialog() != null && sceneConfig.getWait4QuestPassedDialog()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
             modalDialogManager.setQuestPassedCallback(this::onComplete);
         }
-        if (sceneConfig.isWaitForBaseLostDialog() != null && sceneConfig.isWaitForBaseLostDialog()) {
+        if (sceneConfig.getWaitForBaseLostDialog() != null && sceneConfig.getWaitForBaseLostDialog()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
             modalDialogManager.setBaseLostCallback(this::onComplete);
@@ -153,7 +141,7 @@ public class Scene {
             hasCompletionCallback = true;
             completionCallbackCount++;
         }
-        if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
+        if (sceneConfig.getWaitForBaseCreated() != null && sceneConfig.getWaitForBaseCreated()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
             questCockpitService.showQuestSideBar(new QuestDescriptionConfig(), false);
@@ -176,7 +164,7 @@ public class Scene {
             inGameQuestVisualizationService.setSuppressed(true);
             // TODO gameTipService.start(sceneConfig.getGameTipConfig());
         }
-        if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
+        if (sceneConfig.getProcessServerQuests() != null && sceneConfig.getProcessServerQuests()) {
             if (!gameUiControl.hasActiveServerQuest()) {
                 serverQuestProvider.activateNextPossibleQuest();
             }
@@ -220,7 +208,7 @@ public class Scene {
     }
 
     public void onOwnBaseCreated() {
-        if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
+        if (sceneConfig.getWaitForBaseCreated() != null && sceneConfig.getWaitForBaseCreated()) {
             onComplete();
         }
     }
@@ -246,10 +234,10 @@ public class Scene {
             // TODO viewService.removeViewFieldListeners(this);
             questCockpitService.showQuestSideBar(null, false);
         }
-        if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
+        if (sceneConfig.getWaitForBaseCreated() != null && sceneConfig.getWaitForBaseCreated()) {
             questCockpitService.showQuestSideBar(null, false);
         }
-        if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
+        if (sceneConfig.getProcessServerQuests() != null && sceneConfig.getProcessServerQuests()) {
             questCockpitService.showQuestSideBar(null, false);
         }
         inGameQuestVisualizationService.stop();
@@ -288,7 +276,7 @@ public class Scene {
     }
 
     public void onQuestActivatedServer(QuestConfig quest) {
-        if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
+        if (sceneConfig.getProcessServerQuests() != null && sceneConfig.getProcessServerQuests()) {
             questCockpitService.showQuestSideBar(quest, true);
             if (quest != null) {
                 inGameQuestVisualizationService.onQuestActivated(quest);
@@ -299,7 +287,7 @@ public class Scene {
     }
 
     public void onQuestPassedServer(QuestConfig quest) {
-        if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
+        if (sceneConfig.getProcessServerQuests() != null && sceneConfig.getProcessServerQuests()) {
             questCockpitService.showQuestSideBar(null, true);
             modalDialogManager.showQuestPassed(quest);
             inGameQuestVisualizationService.stop();

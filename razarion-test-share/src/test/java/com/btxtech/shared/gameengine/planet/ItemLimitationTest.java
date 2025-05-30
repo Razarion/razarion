@@ -20,7 +20,7 @@ public class ItemLimitationTest extends DaggerMasterBaseTest {
     public void testBuilder() {
         setupMasterEnvironment();
 
-        UserContext userContext1 = createLevel1UserContext(1);
+        UserContext userContext1 = createLevel1UserContext("00001");
         PlayerBaseFull playerBaseFull1 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext1);
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem builder1 = findSyncBaseItem(playerBaseFull1, FallbackConfig.BUILDER_ITEM_TYPE_ID);
@@ -49,7 +49,7 @@ public class ItemLimitationTest extends DaggerMasterBaseTest {
     public void testFactoryLimit() {
         setupMasterEnvironment();
 
-        UserContext userContext1 = createLevel1UserContext(1);
+        UserContext userContext1 = createLevel1UserContext("00001");
         PlayerBaseFull playerBaseFull1 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext1);
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem builder1 = findSyncBaseItem(playerBaseFull1, FallbackConfig.BUILDER_ITEM_TYPE_ID);

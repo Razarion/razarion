@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.TestHelper;
-import com.btxtech.shared.mock.TestSimpleScheduledFuture;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
@@ -16,6 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
+import com.btxtech.shared.mock.TestSimpleScheduledFuture;
 import com.btxtech.shared.system.SimpleExecutorService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -95,7 +95,7 @@ public class BoxServiceTest extends DaggerMasterBaseTest {
         tickBoxService(100000);
         assertSyncItemCount(0, 0, 1);
         // Start base
-        UserContext userContext = createLevel1UserContext(1);
+        UserContext userContext = createLevel1UserContext("00001");
         DaggerSlaveEmulator permanentSalve = new DaggerSlaveEmulator();
         permanentSalve.connectToMaster(userContext, this);
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(10, 20), userContext);

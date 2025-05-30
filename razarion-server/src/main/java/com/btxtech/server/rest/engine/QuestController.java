@@ -1,8 +1,7 @@
 package com.btxtech.server.rest.engine;
 
-import com.btxtech.server.rest.ui.GameUiContextControllerImpl;
 import com.btxtech.server.service.engine.ServerLevelQuestService;
-import com.btxtech.server.web.SessionService;
+import com.btxtech.server.user.UserService;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.rest.QuestAccess;
 import org.slf4j.Logger;
@@ -22,20 +21,20 @@ import static com.btxtech.shared.rest.QuestAccess.PATH;
 @RequestMapping("/rest" + PATH)
 public class QuestController implements QuestAccess {
     private final Logger logger = LoggerFactory.getLogger(QuestController.class);
+    private final UserService userService;
     private final ServerLevelQuestService serverLevelQuestService;
-    private final SessionService sessionService;
 
-    public QuestController(ServerLevelQuestService serverLevelQuestService, SessionService sessionService) {
+    public QuestController(UserService userService, ServerLevelQuestService serverLevelQuestService) {
+        this.userService = userService;
         this.serverLevelQuestService = serverLevelQuestService;
-        this.sessionService = sessionService;
     }
 
     @GetMapping(value = "readMyOpenQuests", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<QuestConfig> readMyOpenQuests() {
         try {
 
-            var playerSession = sessionService.getSession(GameUiContextControllerImpl.getCurrentHttpSessionId());
-            return serverLevelQuestService.readOpenQuestForDialog(playerSession.getUserContext());
+            var userContext = userService.getUserContextFromContext();
+            return serverLevelQuestService.readOpenQuestForDialog(userContext);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;
@@ -45,8 +44,8 @@ public class QuestController implements QuestAccess {
     @PostMapping(value = "activateQuest/{id}")
     public void activateQuest(@PathVariable("id") int questId) {
         try {
-            var playerSession = sessionService.getSession(GameUiContextControllerImpl.getCurrentHttpSessionId());
-            serverLevelQuestService.activateQuest(playerSession.getUserContext(), questId);
+            var userContext = userService.getUserContextFromContext();
+            serverLevelQuestService.activateQuest(userContext, questId);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;
@@ -56,8 +55,8 @@ public class QuestController implements QuestAccess {
     @PostMapping(value = "activateNextPossibleQuest")
     public void activateNextPossibleQuest() {
         try {
-            var playerSession = sessionService.getSession(GameUiContextControllerImpl.getCurrentHttpSessionId());
-            serverLevelQuestService.activateNextPossibleQuest(playerSession.getUserContext().getUserId());
+            var userId = userService.getOrCreateUserIdFromContext();
+            serverLevelQuestService.activateNextPossibleQuest(userId);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;
