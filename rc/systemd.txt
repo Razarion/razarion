@@ -1,0 +1,33 @@
+Run a Java Application as a Service on Linux
+https://www.shubhamdipt.com/blog/how-to-create-a-systemd-service-in-linux/
+
+/etc/systemd/system/razarion-server.service
+--------------
+[Unit]
+Description=Razarion server
+After=network.target
+
+[Service]
+User=game
+WorkingDirectory=/home/game/razarion-server
+ExecStart=/home/game/jdk-19.0.2+7-jre/bin/java -jar razarion-server-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+SuccessExitStatus=143
+Restart=always
+RestartSec=10
+StandardOutput=append:/home/game/razarion-server/razarion-server.log
+StandardError=append:/home/game/razarion-server/razarion-server.log
+
+[Install]
+WantedBy=multi-user.target
+--------------
+
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable razarion-server
+
+control
+--------------
+sudo systemctl status razarion-server
+
+sudo systemctl start razarion-server
+sudo systemctl enable razarion-server
