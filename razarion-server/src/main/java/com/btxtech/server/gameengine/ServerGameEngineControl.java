@@ -130,7 +130,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         }
     }
 
-//  TODO  @RolesAllowed(Roles.ADMIN)
 //    public void restartBots() {
 //        synchronized (reloadLook) {
 //            botService.killAllBots();

@@ -183,7 +183,7 @@ public class DbPropertiesService {
     }
 
     private DbPropertiesEntity getProperty(DbPropertyKey dbPropertyKey) {
-        return dbPropertyRepository.getReferenceById(dbPropertyKey.getKey());
+        return dbPropertyRepository.findById(dbPropertyKey.getKey()).orElse(null);
     }
 
     @Transactional

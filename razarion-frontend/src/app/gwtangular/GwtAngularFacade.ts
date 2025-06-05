@@ -578,9 +578,11 @@ export interface OwnMultipleIteCockpit {
 }
 
 export interface OtherItemCockpit {
+  id: number;
   imageUrl: string;
   itemTypeName: string;
   itemTypeDescr: string;
+  baseId: number | undefined;
   baseName: string;
   friend: boolean;
   bot: boolean;

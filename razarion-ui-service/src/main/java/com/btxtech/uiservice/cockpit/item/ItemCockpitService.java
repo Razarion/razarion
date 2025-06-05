@@ -6,11 +6,7 @@ import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
-import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.*;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.SelectionEvent;
@@ -19,7 +15,6 @@ import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.i18n.I18nConstants;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.SyncItemMonitor;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
@@ -126,17 +121,19 @@ public class ItemCockpitService {
 
     private OtherItemCockpit createOtherInfo(SyncItemSimpleDto otherSelection) {
         OtherItemCockpit otherInfoPanel = new OtherItemCockpit();
+        otherInfoPanel.id = otherSelection.getId();
         ItemType itemType = null;
         if (otherSelection instanceof SyncBaseItemSimpleDto) {
             itemType = itemTypeService.getBaseItemType(otherSelection.getItemTypeId());
             SyncBaseItemSimpleDto syncBaseItem = (SyncBaseItemSimpleDto) otherSelection;
             PlayerBaseDto base = baseItemUiService.get().getBase(syncBaseItem.getBaseId());
+            otherInfoPanel.baseId = base.getBaseId();
             switch (base.getCharacter()) {
                 case HUMAN:
                     if (base.getUserId() == null) {
-                        otherInfoPanel.baseName = I18nConstants.unregisteredUser();
+                        otherInfoPanel.baseName = "Unregistered user";
                     } else if (base.getName() == null || base.getName().trim().isEmpty()) {
-                        otherInfoPanel.baseName = I18nConstants.unnamedUser();
+                        otherInfoPanel.baseName = "Unnamed user";
                     } else {
                         otherInfoPanel.baseName = base.getName();
                     }

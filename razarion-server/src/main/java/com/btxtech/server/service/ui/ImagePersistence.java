@@ -100,7 +100,7 @@ public class ImagePersistence {
         if (id == null) {
             return null;
         }
-        return imageRepository.getReferenceById(id);
+        return imageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Image not found with id " + id));
     }
 
 //    @Transactional

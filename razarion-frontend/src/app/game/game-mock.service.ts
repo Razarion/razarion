@@ -50,7 +50,6 @@ import {HttpClient} from '@angular/common/http';
 import {BabylonModelService} from './renderer/babylon-model.service';
 import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
-import {LevelEditorComponent} from '../editor/crud-editors/level-editor/level-editor.component';
 import {ServerStartRegionComponent} from '../editor/server-start-region/server-start-region.component';
 
 let staticGameConfigJson: any = {
@@ -399,13 +398,15 @@ export class GameMockService {
   private simulateStartup() {
     // this.showLoading();
 
+    this.showUi();
+
     // setInterval(() => {
     //   // this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
     //   this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showQuestPassed();
     // }, 3000)
     // this.showUi();
 
-    this.showEditor();
+    // this.showEditor();
   }
 
   private showLoading() {
@@ -431,8 +432,8 @@ export class GameMockService {
 
       this.showQuestionCockpit();
       // this.displayOwnMultipleItemTypesCockpit();
-      this.displayOwnSingleTypeCockpit();
-      // this.displayOtherItemTypeCockpit();
+      // this.displayOwnSingleTypeCockpit();
+      this.displayOtherItemTypeCockpit();
     }, 10);
   }
 
@@ -486,9 +487,11 @@ export class GameMockService {
 
   private displayOtherItemTypeCockpit() {
     this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOtherItemType(new class implements OtherItemCockpit {
+      id = 64;
       imageUrl = "/xxxxx";
       itemTypeName = "Builder";
       itemTypeDescr = "Builds Units";
+      baseId = 15;
       baseName = "Bot base";
       type = "Bot enemy";
       friend = false;

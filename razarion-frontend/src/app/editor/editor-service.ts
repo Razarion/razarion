@@ -15,10 +15,9 @@ import {
   GroundConfig,
   LevelEditorControllerClient,
   ObjectNameId,
-  PlanetConfig,
+  PlanetConfig, PlanetMgmtControllerClient,
   ResourceRegionConfig,
   ServerGameEngineConfigEntity,
-  ServerGameEngineControllerClient,
   ServerGameEngineEditorControllerClient,
   ServerLevelQuestConfig,
   StartRegionConfig
@@ -26,7 +25,7 @@ import {
 import {TypescriptGenerator} from "../backend/typescript-generator";
 
 export class ServerCommand {
-  constructor(public name: string, public restcall: (client: ServerGameEngineControllerClient) => (Promise<void>)) {
+  constructor(public name: string, public restcall: (client: PlanetMgmtControllerClient) => (Promise<void>)) {
   }
 }
 
@@ -44,7 +43,7 @@ export class EditorService {
   static RESTART_PLANET_COLD: ServerCommand = new ServerCommand("Restart Planet cold", (client) => client.restartPlanetCold());
   private serverGameEngineEditorControllerClient: ServerGameEngineEditorControllerClient;
   private levelEditorControllerClient: LevelEditorControllerClient;
-  private serverGameEngineControllerClient: ServerGameEngineControllerClient;
+  private serverGameEngineControllerClient: PlanetMgmtControllerClient;
 
   public static ALL_SERVER_COMMANDS: ServerCommand[] = [
     EditorService.RESTART_BOTS,
@@ -61,7 +60,7 @@ export class EditorService {
               private messageService: MessageService) {
     this.serverGameEngineEditorControllerClient = new ServerGameEngineEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
     this.levelEditorControllerClient = new LevelEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
-    this.serverGameEngineControllerClient = new ServerGameEngineControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
+    this.serverGameEngineControllerClient = new PlanetMgmtControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
   executeServerCommand(serverCommand: ServerCommand) {

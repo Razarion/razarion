@@ -107,7 +107,6 @@
                         <class>com.btxtech.shared.rest.GroundEditorController</class>
                         <class>com.btxtech.shared.rest.TerrainObjectEditorController</class>
                         <class>com.btxtech.shared.rest.TerrainHeightMapController</class>
-                        <class>com.btxtech.shared.rest.ServerGameEngineController</class>
                         <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
                         <class>com.btxtech.server.rest.AuthController</class>
                         <class>com.btxtech.server.rest.engine.InventoryController</class>
@@ -128,6 +127,7 @@
                         <class>com.btxtech.server.rest.editor.ServerGameEngineEditorController</class>
                         <class>com.btxtech.server.rest.editor.BoxItemTypeEditorController</class>
                         <class>com.btxtech.server.rest.editor.ResourceItemTypeEditorController</class>
+                        <class>com.btxtech.server.rest.engine.PlanetMgmtController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>
