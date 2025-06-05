@@ -1,4 +1,4 @@
-package com.btxtech.server.repository.engine;
+package com.btxtech.server.repository.ui;
 
 import com.btxtech.server.model.engine.AudioLibraryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

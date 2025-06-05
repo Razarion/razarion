@@ -1,7 +1,8 @@
-package com.btxtech.server.service.engine;
+package com.btxtech.server.service.ui;
 
 import com.btxtech.server.model.engine.AudioLibraryEntity;
-import com.btxtech.server.repository.engine.AudioLibraryRepository;
+import com.btxtech.server.repository.ui.AudioLibraryRepository;
+import com.btxtech.server.service.engine.AbstractConfigCrudPersistence;
 import com.btxtech.shared.dto.AudioItemConfig;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Beat
- * 24.12.2016.
- */
 @Service
 public class AudioPersistence extends AbstractConfigCrudPersistence<AudioItemConfig, AudioLibraryEntity> {
     public AudioPersistence(AudioLibraryRepository audioJpaRepository) {

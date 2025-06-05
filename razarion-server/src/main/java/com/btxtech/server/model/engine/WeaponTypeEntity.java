@@ -2,7 +2,7 @@ package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.ParticleSystemEntity;
-import com.btxtech.server.service.engine.AudioPersistence;
+import com.btxtech.server.service.ui.AudioPersistence;
 import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
 import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
