@@ -27,7 +27,9 @@ sudo systemctl enable razarion-server
 
 control
 --------------
+sudo systemctl enable razarion-server
+
 sudo systemctl status razarion-server
 
+sudo systemctl restart razarion-server
 sudo systemctl start razarion-server
-sudo systemctl enable razarion-server

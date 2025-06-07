@@ -1,8 +1,8 @@
 <!-- GitAds-Verify: 9OIQBOZC2N87GYYK16MSJT88ZD9Q31GY -->
 # Razarion – Open-World RTS in the Browser
 
-**Razarion** is a browser-based, open-source real-time strategy (RTS) game where **all players interact on the same persistent planet**.  
-No registration, no installation – just play.
+**Razarion** is a browser-based, open-source real-time strategy (RTS) game where **all players share one persistent planet**.
+No registration. No installation. Just play.
 
 👉 [https://www.razarion.com](https://www.razarion.com)
 
@@ -39,7 +39,7 @@ No registration, no installation – just play.
 ### 🔗 Client
 - **Angular** and **PrimeNG** for UI
 - **Babylon.js** for WebGL 3D rendering
-- **GWT** for the game enigne
+- **GWT** for the game engine
 
 ---
 
@@ -66,5 +66,5 @@ This project is licensed under the **GNU Lesser General Public License (LGPL)**.
 ## 📢 Community
 
 Feedback? Ideas? Bugs?  
-Reach out on [Twitter](https://x.com/razariongame) or open an [Issue](https://github.com/Razarion/razarion/issues).
+Reach out on [Twitter/X](https://x.com/razariongame) or open an [Issue](https://github.com/Razarion/razarion/issues).
 
