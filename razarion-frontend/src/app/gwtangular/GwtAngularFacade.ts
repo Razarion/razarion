@@ -286,10 +286,27 @@ export interface HarvesterType {
 
 // ---------- Quest ----------
 
+export enum Tip {
+  BUILD = 'BUILD',
+  FABRICATE = 'FABRICATE',
+  GET_RESOURCE = 'GET_RESOURCE',
+  ATTACK = 'ATTACK',
+  LOAD_CONTAINER = 'LOAD_CONTAINER',
+  UNLOAD_CONTAINER = 'UNLOAD_CONTAINER',
+}
+
+export interface TipConfig {
+  getTip(): Tip;
+
+  getActorItemTypeId(): number;
+}
+
 export interface QuestDescriptionConfig {
   getId(): number;
 
   getInternalName(): string;
+
+  getTipConfig(): TipConfig | null;
 }
 
 export interface QuestConfig extends QuestDescriptionConfig {
@@ -451,6 +468,8 @@ export interface BabylonBaseItem extends BabylonItem {
 
   setConstructing(progress: number): void;
 
+  setIdle(idle: boolean): void;
+
   onProjectileFired(destination: DecimalPosition): void;
 
   onExplode(): void;
@@ -521,6 +540,7 @@ export interface OwnItemCockpit {
 
 export interface BuildupItemCockpit {
   imageUrl: string;
+  itemTypeId: number;
   itemTypeName: string;
   price: number;
   itemCount: number;

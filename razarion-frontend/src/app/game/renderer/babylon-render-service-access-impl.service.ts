@@ -57,7 +57,7 @@ import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
 import {PlaceConfigComponent} from "src/app/editor/common/place-config/place-config.component";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
 import {ActionService} from "../action.service";
-import {BaseItemPlacerPresenterImpl} from "./base-item-placer-presenter.impl";
+import {BaseItemPlacerPresenterEvent, BaseItemPlacerPresenterImpl} from "./base-item-placer-presenter.impl";
 import {getImageUrl} from "src/app/common";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
@@ -145,6 +145,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private editorTerrainTileContainer: BabylonTerrainTileImpl[] = [];
   private editorTerrainTileCreationCallback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined;
   private interpolationListeners: BabylonBaseItemImpl[] = [];
+  private babylonBaseItems: BabylonBaseItemImpl[] = [];
+  private baseItemPlacerPresenterImpl!: BaseItemPlacerPresenterImpl;
 
   constructor(private gwtAngularService: GwtAngularService,
               private babylonModelService: BabylonModelService,
@@ -260,7 +262,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     let renderTime = Date.now();
     this.engine.runRenderLoop(() => {
       try {
-        if(!this.scene.activeCamera) {
+        if (!this.scene.activeCamera) {
           return;
         }
         const date = Date.now();
@@ -298,13 +300,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   createBabylonBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem {
     try {
-      return new BabylonBaseItemImpl(id,
+      let item = new BabylonBaseItemImpl(id,
         baseItemType,
         GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy),
         this,
         this.actionService,
         this.babylonModelService,
         this.uiConfigCollectionService);
+      this.babylonBaseItems.push(item)
+      return item;
     } catch (error) {
       console.error(error);
       return BabylonBaseItemImpl.createDummy(id);
@@ -663,7 +667,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   createBaseItemPlacerPresenter(): BaseItemPlacerPresenter {
-    return new BaseItemPlacerPresenterImpl(this, this.babylonModelService);
+    this.baseItemPlacerPresenterImpl = new BaseItemPlacerPresenterImpl(this, this.babylonModelService);
+    return this.baseItemPlacerPresenterImpl;
+  }
+
+  setBaseItemPlacerCallback(callback: ((event: BaseItemPlacerPresenterEvent) => void) | null) {
+    this.baseItemPlacerPresenterImpl.setBaseItemPlacerCallback(callback);
   }
 
   setEditorTerrainTileCreationCallback(callback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined) {
@@ -748,5 +757,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.editorTerrainTileContainer;
   }
 
+  public getBabylonBaseItemImpl(diplomacy: Diplomacy, itemTypeId: number): BabylonBaseItemImpl | null {
+    return this.babylonBaseItems.find(item => {
+      return item.diplomacy === diplomacy && item.itemType.getId() === itemTypeId;
+    }) || null;
+  }
 }
 

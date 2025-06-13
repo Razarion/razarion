@@ -39,6 +39,8 @@ import {
   TerrainTile,
   TerrainTileObjectList,
   TerrainTypeService,
+  Tip,
+  TipConfig,
   WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
 import {GwtInstance} from "../gwtangular/GwtInstance";
@@ -51,6 +53,7 @@ import {BabylonModelService} from './renderer/babylon-model.service';
 import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {ServerStartRegionComponent} from '../editor/server-start-region/server-start-region.component';
+import {Tools} from '@babylonjs/core';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -169,7 +172,7 @@ export class GameMockService {
           }
 
           getId(): number {
-            return 0;
+            return 12;
           }
 
           getInternalName(): string {
@@ -177,7 +180,7 @@ export class GameMockService {
           }
 
           getModel3DId(): number | null {
-            return 22743;
+            return 2;
           }
 
           getPhysicalAreaConfig(): PhysicalAreaConfig {
@@ -194,18 +197,18 @@ export class GameMockService {
         };
 
         {
-          // let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.ENEMY);
-          // babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
-          // babylonBaseItem1.setAngle(Tools.ToRadians(45));
-          //
-          // babylonBaseItem1.select(false);
-          //
-          // babylonBaseItem1.setConstructing(0.01);
-          // babylonBaseItem1.setHealth(0.99);
-          // // babylonBaseItem1.mark(MarkerConfig);
-          // setTimeout(() => {
-          //   babylonBaseItem1.onExplode();
-          // }, 2000);
+          let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.OWN);
+          babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 1));
+          babylonBaseItem1.setAngle(Tools.ToRadians(45));
+
+          babylonBaseItem1.select(false);
+
+          babylonBaseItem1.setConstructing(0.01);
+          babylonBaseItem1.setHealth(0.99);
+          // babylonBaseItem1.mark(MarkerConfig);
+          setTimeout(() => {
+            babylonBaseItem1.onExplode();
+          }, 2000);
 
 
           /*
@@ -222,6 +225,7 @@ export class GameMockService {
           // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
           // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
         }
+        this.showQuestionCockpit();
         // {
         //   let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
         //   babylonBaseItem2.setPosition(GwtInstance.newVertex(8, 14, 0));
@@ -432,8 +436,8 @@ export class GameMockService {
 
       this.showQuestionCockpit();
       // this.displayOwnMultipleItemTypesCockpit();
-      // this.displayOwnSingleTypeCockpit();
-      this.displayOtherItemTypeCockpit();
+      this.displayOwnSingleTypeCockpit();
+      // this.displayOtherItemTypeCockpit();
     }, 10);
   }
 
@@ -467,6 +471,7 @@ export class GameMockService {
   private buildBuildupItemCockpit(price: number): BuildupItemCockpit {
     return new class implements BuildupItemCockpit {
       imageUrl = "/xxxxx";
+      itemTypeId = 12;
       itemTypeName = "Builder";
       price = price;
       itemCount = 13;
@@ -544,6 +549,19 @@ export class GameMockService {
         return '';
       }
 
+      getTipConfig(): TipConfig {
+        return new class implements TipConfig {
+          getTip(): Tip {
+            return Tip.BUILD;
+          }
+
+          getActorItemTypeId(): number {
+            return 12;
+          }
+
+        };
+      }
+
       getConditionConfig(): ConditionConfig {
         return new class implements ConditionConfig {
           getComparisonConfig(): ComparisonConfig {
@@ -563,10 +581,34 @@ export class GameMockService {
           }
 
           getConditionTrigger(): ConditionTrigger {
-            return ConditionTrigger.HARVEST;
+            return ConditionTrigger.SYNC_ITEM_CREATED;
           }
         }
       }
+
+      // getConditionConfig(): ConditionConfig {
+      //   return new class implements ConditionConfig {
+      //     getComparisonConfig(): ComparisonConfig {
+      //       return new class implements ComparisonConfig {
+      //         getCount(): number | null {
+      //           return 10;
+      //         }
+      //
+      //         toTypeCountAngular(): number[][] {
+      //           return [[1, 2]]
+      //         }
+      //
+      //         getTimeSeconds(): number | null {
+      //           return null;
+      //         }
+      //       };
+      //     }
+      //
+      //     getConditionTrigger(): ConditionTrigger {
+      //       return ConditionTrigger.HARVEST;
+      //     }
+      //   }
+      // }
     }, true)
 
     this.gwtAngularService.gwtAngularFacade.questCockpit.onQuestProgress(new class implements QuestProgressInfo {

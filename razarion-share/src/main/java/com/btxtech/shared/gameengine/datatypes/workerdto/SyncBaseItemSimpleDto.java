@@ -24,6 +24,24 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
     private int containingItemCount;
     private double maxContainingRadius;
     private boolean contained;
+    private boolean idle;
+
+    public static SyncBaseItemSimpleDto from(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        SyncBaseItemSimpleDto syncBaseItemSimpleDto = new SyncBaseItemSimpleDto();
+        syncBaseItemSimpleDto.setId(nativeSyncBaseItemTickInfo.id);
+        syncBaseItemSimpleDto.setItemTypeId(nativeSyncBaseItemTickInfo.itemTypeId);
+        syncBaseItemSimpleDto.setPosition(NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo));
+        //  Matrix4 model is not set. Use this from NativeSyncBaseItemTickInfo
+        syncBaseItemSimpleDto.setBaseId(nativeSyncBaseItemTickInfo.baseId);
+        syncBaseItemSimpleDto.setBuildup(nativeSyncBaseItemTickInfo.buildup);
+        syncBaseItemSimpleDto.setHealth(nativeSyncBaseItemTickInfo.health);
+        syncBaseItemSimpleDto.setConstructing(nativeSyncBaseItemTickInfo.constructing);
+        syncBaseItemSimpleDto.setContainingItemCount(nativeSyncBaseItemTickInfo.containingItemCount);
+        syncBaseItemSimpleDto.setMaxContainingRadius(nativeSyncBaseItemTickInfo.maxContainingRadius);
+        syncBaseItemSimpleDto.setContained(nativeSyncBaseItemTickInfo.contained);
+        syncBaseItemSimpleDto.setIdle(nativeSyncBaseItemTickInfo.idle);
+        return syncBaseItemSimpleDto;
+    }
 
     public int getBaseId() {
         return baseId;
@@ -93,19 +111,11 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
         this.contained = contained;
     }
 
-    public static SyncBaseItemSimpleDto from(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
-        SyncBaseItemSimpleDto syncBaseItemSimpleDto = new SyncBaseItemSimpleDto();
-        syncBaseItemSimpleDto.setId(nativeSyncBaseItemTickInfo.id);
-        syncBaseItemSimpleDto.setItemTypeId(nativeSyncBaseItemTickInfo.itemTypeId);
-        syncBaseItemSimpleDto.setPosition(NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo));
-        //  Matrix4 model is not set. Use this from NativeSyncBaseItemTickInfo
-        syncBaseItemSimpleDto.setBaseId(nativeSyncBaseItemTickInfo.baseId);
-        syncBaseItemSimpleDto.setBuildup(nativeSyncBaseItemTickInfo.buildup);
-        syncBaseItemSimpleDto.setHealth(nativeSyncBaseItemTickInfo.health);
-        syncBaseItemSimpleDto.setConstructing(nativeSyncBaseItemTickInfo.constructing);
-        syncBaseItemSimpleDto.setContainingItemCount(nativeSyncBaseItemTickInfo.containingItemCount);
-        syncBaseItemSimpleDto.setMaxContainingRadius(nativeSyncBaseItemTickInfo.maxContainingRadius);
-        syncBaseItemSimpleDto.setContained(nativeSyncBaseItemTickInfo.contained);
-        return syncBaseItemSimpleDto;
+    public boolean isIdle() {
+        return idle;
+    }
+
+    public void setIdle(boolean idle) {
+        this.idle = idle;
     }
 }

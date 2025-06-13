@@ -1,4 +1,13 @@
-﻿import {Component, NgZone} from '@angular/core';
+﻿import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  NgZone,
+  OnDestroy,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {
   AngularZoneRunner,
   BuildupItemCockpit,
@@ -12,7 +21,8 @@ import {Carousel} from 'primeng/carousel';
 import {Button} from 'primeng/button';
 import {CockpitDisplayService} from '../cockpit-display.service';
 import {AuthService} from '../../../auth/auth.service';
-
+import {Popover, PopoverModule} from 'primeng/popover';
+import {TipService} from '../../tip/tip.service';
 
 @Component({
   selector: 'item-cockpit',
@@ -21,18 +31,32 @@ import {AuthService} from '../../../auth/auth.service';
   imports: [
     NgIf,
     Carousel,
-    Button
+    Button,
+    PopoverModule
   ]
 })
-export class ItemCockpitComponent implements ItemCockpitFrontend {
+export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit, OnDestroy {
   ownItemCockpit?: OwnItemCockpit;
   ownMultipleIteCockpits?: OwnMultipleIteCockpit[];
   otherItemCockpit?: OtherItemCockpit;
   count?: number;
+  @ViewChild('tipPopover')
+  tipPopover!: Popover;
+  @ViewChildren('buildupItemDiv')
+  buildupItemDiv?: QueryList<ElementRef>;
 
   constructor(private zone: NgZone,
               private cockpitDisplayService: CockpitDisplayService,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private tipService: TipService) {
+  }
+
+  ngAfterViewInit(): void {
+    this.tipService.setItemCockpit(this)
+  }
+
+  ngOnDestroy(): void {
+    this.tipService.setItemCockpit(null)
   }
 
   isAdmin(): boolean {
@@ -97,6 +121,28 @@ export class ItemCockpitComponent implements ItemCockpitFrontend {
       return `Build off ${buildupItemCockpit.itemTypeName} not possible. Not enough Razarion. Earn more Razarion!`;
     } else {
       return `Build ${buildupItemCockpit.itemTypeName}`;
+    }
+  }
+
+  showBuildupTip(itemTypeId: number | null): boolean {
+    if (itemTypeId != null) {
+      if (!this.buildupItemDiv) {
+        return false;
+      }
+
+      const itemTypeDiv = this.buildupItemDiv.find(div => {
+          return (div.nativeElement as HTMLElement).getAttribute('data-item-type-id') === itemTypeId.toString()
+        }
+      );
+      if (itemTypeDiv) {
+        this.tipPopover.show(null, itemTypeDiv.nativeElement);
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      this.tipPopover.hide();
+      return true;
     }
   }
 }

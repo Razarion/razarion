@@ -715,6 +715,7 @@ public class SyncBaseItem extends SyncItem {
         nativeSyncBaseItemTickInfo.id = getId();
         nativeSyncBaseItemTickInfo.itemTypeId = getBaseItemType().getId();
         nativeSyncBaseItemTickInfo.baseId = base.getBaseId();
+        nativeSyncBaseItemTickInfo.idle = isIdle();
         if (containedIn == null) {
             if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
                 nativeSyncBaseItemTickInfo.turretAngle = syncWeapon.getSyncTurret().getAngle();

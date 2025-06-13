@@ -191,6 +191,11 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         }
 
         @Override
+        public void setIdle(boolean idle) {
+
+        }
+
+        @Override
         public Vertex getPosition() {
             return position;
         }

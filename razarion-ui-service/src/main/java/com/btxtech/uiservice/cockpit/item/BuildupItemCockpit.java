@@ -7,6 +7,7 @@ import jsinterop.annotations.JsType;
 @JsType
 public abstract class BuildupItemCockpit {
     public String imageUrl;
+    public int itemTypeId;
     public String itemTypeName;
     public int price;
     public int itemCount;
@@ -39,7 +40,8 @@ public abstract class BuildupItemCockpit {
 
     @JsFunction
     public interface AngularZoneCallback {
-        @SuppressWarnings("unused") // Called by Angular
+        @SuppressWarnings("unused")
+            // Called by Angular
         void callback();
     }
 }

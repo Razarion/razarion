@@ -34,7 +34,6 @@ export class BabylonModelService {
   constructor(private uiConfigCollectionService: UiConfigCollectionService,
               httpClient: HttpClient) {
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
-    this.loadUiConfigCollection();
     this.babylonMaterialContainer.setHttpClient(httpClient);
     this.particleSystemContainer.setHttpClient(httpClient);
   }
@@ -44,6 +43,7 @@ export class BabylonModelService {
   }
 
   init(): Promise<void> {
+    this.loadUiConfigCollection();
     return new Promise<void>((resolve, reject) => {
       this.handleResolve(resolve)
     });

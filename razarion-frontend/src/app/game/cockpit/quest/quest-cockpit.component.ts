@@ -4,7 +4,9 @@ import {
   QuestCockpit,
   QuestConfig,
   QuestDescriptionConfig,
-  QuestProgressInfo
+  QuestProgressInfo,
+  Tip,
+  TipConfig
 } from "../../../gwtangular/GwtAngularFacade";
 import {GwtHelper} from "../../../gwtangular/GwtHelper";
 import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
@@ -16,6 +18,7 @@ import {Button} from 'primeng/button';
 import {ToggleSwitchModule} from 'primeng/toggleswitch';
 import {FormsModule} from '@angular/forms';
 import {CockpitDisplayService} from '../cockpit-display.service';
+import {TipService} from '../../tip/tip.service';
 
 @Component({
   selector: 'quest-cockpit',
@@ -43,13 +46,14 @@ export class QuestCockpitComponent implements QuestCockpit {
 
   constructor(private gwtAngularService: GwtAngularService,
               private cockpitDisplayService: CockpitDisplayService,
+              private tipService: TipService,
               private zone: NgZone) {
   }
 
   showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, showQuestSelectionButton: boolean): void {
-    this.showQuestInGameVisualisation = true;
     this.zone.run(() => {
       try {
+        this.showQuestInGameVisualisation = true;
         this.questDescriptionConfig = questDescriptionConfig || undefined;
         this.conditionConfig = this.setupConditionConfig();
         this.questProgressInfo = undefined;
@@ -57,10 +61,27 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.setupProgress();
         this.showQuestSelectionButton = showQuestSelectionButton;
         this.cockpitDisplayService.showQuestCockpit = !!questDescriptionConfig;
-        if (!questDescriptionConfig) {
-          this.showQuestDialog = false;
-        }
+        // TODO remove -----------------
+        if (questDescriptionConfig) {
+          questDescriptionConfig.getTipConfig = function (): TipConfig {
+            return new class implements TipConfig {
+              getTip(): Tip {
+                return Tip.BUILD;
+              }
 
+              getActorItemTypeId(): number {
+                return 1;
+              }
+            }
+          }
+        }
+        // TODO remove ends -------------
+        if (questDescriptionConfig && questDescriptionConfig.getTipConfig()) {
+          this.tipService.activate(<QuestConfig>questDescriptionConfig)
+        } else {
+          this.showQuestDialog = false;
+          this.tipService.deactivate()
+        }
       } catch (e) {
         console.warn(e);
       }

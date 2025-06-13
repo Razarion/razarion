@@ -1,5 +1,116 @@
 {
-  "babylonMaterials": [],
+  "babylonMaterials": [
+    {
+      "id": 1,
+      "internalName": "Bot ground",
+      "nodeMaterial": false,
+      "diplomacyColorNode": null,
+      "overrideAlbedoTextureNode": null,
+      "overrideMetallicTextureNode": null,
+      "overrideBumpTextureNode": null,
+      "overrideAmbientOcclusionTextureNode": null
+    },
+    {
+      "id": 2,
+      "internalName": "Vehicle main",
+      "nodeMaterial": true,
+      "diplomacyColorNode": "DiplomacyColor",
+      "overrideAlbedoTextureNode": null,
+      "overrideMetallicTextureNode": null,
+      "overrideBumpTextureNode": null,
+      "overrideAmbientOcclusionTextureNode": null
+    },
+    {
+      "id": 3,
+      "internalName": "Building main",
+      "nodeMaterial": true,
+      "diplomacyColorNode": "DiplomacyColor",
+      "overrideAlbedoTextureNode": "texture",
+      "overrideMetallicTextureNode": "metallicRoughnessTexture",
+      "overrideBumpTextureNode": "normalTexture",
+      "overrideAmbientOcclusionTextureNode": "ambientOcclusionTexture"
+    },
+    {
+      "id": 7,
+      "internalName": "Ground",
+      "nodeMaterial": true,
+      "diplomacyColorNode": null,
+      "overrideAlbedoTextureNode": null,
+      "overrideMetallicTextureNode": null,
+      "overrideBumpTextureNode": null,
+      "overrideAmbientOcclusionTextureNode": null
+    },
+    {
+      "id": 8,
+      "internalName": "Water",
+      "nodeMaterial": true,
+      "diplomacyColorNode": null,
+      "overrideAlbedoTextureNode": null,
+      "overrideMetallicTextureNode": null,
+      "overrideBumpTextureNode": null,
+      "overrideAmbientOcclusionTextureNode": null
+    },
+    {
+      "id": 9,
+      "internalName": "Progress Bar Material",
+      "nodeMaterial": true,
+      "diplomacyColorNode": null,
+      "overrideAlbedoTextureNode": null,
+      "overrideMetallicTextureNode": null,
+      "overrideBumpTextureNode": null,
+      "overrideAmbientOcclusionTextureNode": null
+    },
+    {
+      "id": 10,
+      "internalName": "Health Bar Material",
+      "nodeMaterial": true,
+      "diplomacyColorNode": null,
+      "overrideAlbedoTextureNode": null,
+      "overrideMetallicTextureNode": null,
+      "overrideBumpTextureNode": null,
+      "overrideAmbientOcclusionTextureNode": null
+    },
+    {
+      "id": 11,
+      "internalName": "Quest visualization",
+      "nodeMaterial": true,
+      "diplomacyColorNode": null,
+      "overrideAlbedoTextureNode": null,
+      "overrideMetallicTextureNode": null,
+      "overrideBumpTextureNode": null,
+      "overrideAmbientOcclusionTextureNode": null
+    },
+    {
+      "id": 12,
+      "internalName": "Out of view quest visualization",
+      "nodeMaterial": true,
+      "diplomacyColorNode": null,
+      "overrideAlbedoTextureNode": null,
+      "overrideMetallicTextureNode": null,
+      "overrideBumpTextureNode": null,
+      "overrideAmbientOcclusionTextureNode": null
+    },
+    {
+      "id": 13,
+      "internalName": "Place marker visualization",
+      "nodeMaterial": true,
+      "diplomacyColorNode": null,
+      "overrideAlbedoTextureNode": null,
+      "overrideMetallicTextureNode": null,
+      "overrideBumpTextureNode": null,
+      "overrideAmbientOcclusionTextureNode": null
+    },
+    {
+      "id": 14,
+      "internalName": "Item Selection",
+      "nodeMaterial": true,
+      "diplomacyColorNode": null,
+      "overrideAlbedoTextureNode": null,
+      "overrideMetallicTextureNode": null,
+      "overrideBumpTextureNode": null,
+      "overrideAmbientOcclusionTextureNode": null
+    }
+  ],
   "gltfs": [
     {
       "id": 1,
@@ -7,6 +118,7 @@
       "materialGltfNames": {
         "Mat1": 3,
         "Pads": 3,
+        "Bumpers": 2,
         "Mat3": 3,
         "Addons": 3,
         "Cubes": 3,
@@ -21,9 +133,249 @@
   ],
   "model3DEntities": [
     {
+      "id": 1,
+      "internalName": "Factory",
+      "gltfName": "Factory",
+      "gltfEntityId": 1
+    },
+    {
       "id": 2,
       "internalName": "Builder",
       "gltfName": "Builder",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 3,
+      "internalName": "Rock1 grup3",
+      "gltfName": "Rock1 grup3",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 4,
+      "internalName": "Rock1 grup1",
+      "gltfName": "Rock1 grup1",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 5,
+      "internalName": "Rock1 grup2",
+      "gltfName": "Rock1 grup2",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 6,
+      "internalName": "Banana plant big",
+      "gltfName": "Banana plant big",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 7,
+      "internalName": "Rock1 grup5",
+      "gltfName": "Rock1 grup5",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 8,
+      "internalName": "Rock1 grup4",
+      "gltfName": "Rock1 grup4",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 9,
+      "internalName": "Banana plant",
+      "gltfName": "Banana plant",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 10,
+      "internalName": "Banana plant small",
+      "gltfName": "Banana plant small",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 11,
+      "internalName": "Fern",
+      "gltfName": "Fern",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 12,
+      "internalName": "Fern small",
+      "gltfName": "Fern small",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 13,
+      "internalName": "Palm bush",
+      "gltfName": "Palm bush",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 14,
+      "internalName": "Palm tree1",
+      "gltfName": "Palm tree1",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 15,
+      "internalName": "Palm tree",
+      "gltfName": "Palm tree",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 16,
+      "internalName": "Tropical Plant",
+      "gltfName": "Tropical Plant",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 17,
+      "internalName": "Rock1B",
+      "gltfName": "Rock1B",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 18,
+      "internalName": "Rock1A",
+      "gltfName": "Rock1A",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 19,
+      "internalName": "Rock3",
+      "gltfName": "Rock3",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 20,
+      "internalName": "Rock2",
+      "gltfName": "Rock2",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 21,
+      "internalName": "Palm tree2",
+      "gltfName": "Palm tree2",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 22,
+      "internalName": "Rock4B",
+      "gltfName": "Rock4B",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 23,
+      "internalName": "Rock1D",
+      "gltfName": "Rock1D",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 24,
+      "internalName": "Rock1C",
+      "gltfName": "Rock1C",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 25,
+      "internalName": "Rock1E",
+      "gltfName": "Rock1E",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 26,
+      "internalName": "Rock5B",
+      "gltfName": "Rock5B",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 27,
+      "internalName": "Rock5A",
+      "gltfName": "Rock5A",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 28,
+      "internalName": "Rock6B",
+      "gltfName": "Rock6B",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 29,
+      "internalName": "Rock6A",
+      "gltfName": "Rock6A",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 30,
+      "internalName": "Rock4A",
+      "gltfName": "Rock4A",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 31,
+      "internalName": "Rock6C",
+      "gltfName": "Rock6C",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 32,
+      "internalName": "Palm plant",
+      "gltfName": "Palm plant",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 33,
+      "internalName": "Harvester",
+      "gltfName": "Harvester",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 34,
+      "internalName": "Viper",
+      "gltfName": "Viper",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 35,
+      "internalName": "Hydra",
+      "gltfName": "Hydra",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 36,
+      "internalName": "Radar",
+      "gltfName": "Radar",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 37,
+      "internalName": "Powerplant",
+      "gltfName": "Powerplant",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 38,
+      "internalName": "House",
+      "gltfName": "House",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 39,
+      "internalName": "Mining unit",
+      "gltfName": "Mining unit",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 40,
+      "internalName": "Dockyard",
+      "gltfName": "Dockyard",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 41,
+      "internalName": "Box 1",
+      "gltfName": "Box 1",
       "gltfEntityId": 1
     },
     {
@@ -33,7 +385,63 @@
       "gltfEntityId": 1
     }
   ],
-  "particleSystemEntities": [],
+  "particleSystemEntities": [
+    {
+      "id": 1,
+      "internalName": "Buildup Beam",
+      "emitterNodeId": "Cannon00.Cannon00",
+      "positionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "imageId": null
+    },
+    {
+      "id": 2,
+      "internalName": "Viper Muzzle",
+      "emitterNodeId": "Cannon04b.Cannon04b",
+      "positionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "imageId": null
+    },
+    {
+      "id": 3,
+      "internalName": "Harvest",
+      "emitterNodeId": "Body12.Body12",
+      "positionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "imageId": null
+    },
+    {
+      "id": 4,
+      "internalName": "Projectile trail",
+      "emitterNodeId": null,
+      "positionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "imageId": 164
+    },
+    {
+      "id": 5,
+      "internalName": "Explosion 2",
+      "emitterNodeId": null,
+      "positionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "imageId": 164
+    }
+  ],
   "selectionItemMaterialId": 14,
   "progressBarNodeMaterialId": 9,
   "healthBarNodeMaterialId": 10

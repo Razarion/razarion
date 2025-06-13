@@ -18,6 +18,12 @@ import {AdvancedDynamicTexture, Control, Rectangle, StackPanel, TextBlock} from 
 import {Image} from "@babylonjs/gui/2D/controls/image";
 import {Animation} from "@babylonjs/core/Animations/animation";
 
+export enum BaseItemPlacerPresenterEvent {
+  ACTIVATED,
+  PLACED,
+  DEACTIVATED
+}
+
 export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   static readonly PICKED_POINT_DELAYED_MAX_TRIES = 10;
   private disc: Mesh | null = null;
@@ -26,6 +32,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private readonly material;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private pickedPointDelayedCount = 0;
+  private baseItemPlacerCallback: ((event: BaseItemPlacerPresenterEvent) => void) | null = null;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService) {
@@ -66,6 +73,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
           let pickingInfo = this.rendererService.setupTerrainPickPoint();
           if (pickingInfo.hit) {
             this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
+            if (this.baseItemPlacerCallback) {
+              this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.PLACED);
+            }
             baseItemPlacer.onPlace(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
           }
           break;
@@ -79,6 +89,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
         }
       }
     });
+    if (this.baseItemPlacerCallback) {
+      this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.ACTIVATED);
+    }
   }
 
   private setupPickedPoint(): Vector3 | null {
@@ -113,6 +126,13 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.rendererService.baseItemPlacerActive = false;
     this.tip?.dispose();
     this.tip = null;
+    if (this.baseItemPlacerCallback) {
+      this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.DEACTIVATED);
+    }
+  }
+
+  setBaseItemPlacerCallback(callback: ((event: BaseItemPlacerPresenterEvent) => void) | null) {
+    this.baseItemPlacerCallback = callback;
   }
 
   private setPosition(baseItemPlacer: BaseItemPlacer, pickedPoint: Vector3) {

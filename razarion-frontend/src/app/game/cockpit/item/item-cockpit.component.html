@@ -23,11 +23,16 @@
     </div>
   </div>
   <div *ngIf="ownItemCockpit.buildupItemInfos" class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
+    <p-popover #tipPopover>
+      <div class="blinking-popover">
+        <p>Click to build</p>
+      </div>
+    </p-popover>
     <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="5" [numScroll]="5"
                 styleClass="buildup-carousel">
       <ng-template let-buildupItemCockpit #item>
         <div class="flex flex-col bg-surface-600" [style]="{margin: '0 2px 0 2px'}">
-          <div>
+          <div #buildupItemDiv [attr.data-item-type-id]="buildupItemCockpit.itemTypeId">
             <button class='item-cockpit-buildup-button'
                     (click)="buildupItemCockpit.onBuild()"
                     [title]="buildTooltip(buildupItemCockpit)"

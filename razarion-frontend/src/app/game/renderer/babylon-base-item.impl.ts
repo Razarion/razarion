@@ -33,6 +33,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private progressBar: Mesh | undefined;
   private healthBar: Mesh | undefined;
   private progress: number = 0;
+  private idle = false;
   private readonly utilLayer: UtilityLayerRenderer;
   private healthInputBlock: InputBlock | undefined;
   private progressInputBlock: InputBlock | undefined;
@@ -42,6 +43,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private rotation3D: Vector3 | null = null;
   private oldRotation3D: Vector3 | null = null;
   private lastRotationUpdateTime: number | null = null;
+  private idleCallback: ((idle: boolean) => void) | null = null;
 
   constructor(id: number,
               private baseItemType: BaseItemType,
@@ -125,6 +127,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       setConstructing(progress: number): void {
       }
 
+      setIdle(idle: boolean): void {
+
+      }
+
       onProjectileFired(destination: DecimalPosition): void {
       }
 
@@ -193,6 +199,19 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (this.progressInputBlock) {
       this.progressInputBlock.value = this.progress;
     }
+  }
+
+  setIdle(idle: boolean): void {
+    if (this.idle != idle) {
+      if (this.idleCallback) {
+        this.idleCallback(idle);
+      }
+    }
+    this.idle = idle;
+  }
+
+  setIdleCallback(callback: ((idle: boolean) => void) | null) {
+    this.idleCallback = callback;
   }
 
   handleConstructing(): void {

@@ -35,6 +35,7 @@
   height: 40px;
   border-radius: 0;
 }
+
 .item-cockpit-buildup-disabled {
   position: absolute;
   top: 0;
@@ -62,4 +63,17 @@
   height: 40px;
   background: white;
   cursor: pointer;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.blinking-popover {
+  animation: blink 1s infinite;
 }

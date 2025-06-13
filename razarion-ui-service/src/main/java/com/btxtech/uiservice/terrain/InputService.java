@@ -10,7 +10,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -27,12 +26,14 @@ import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @JsType
 @Singleton
 public class InputService {
-
+    private final Logger logger = Logger.getLogger(InputService.class.getName());
     private final MapCollection<Index, Consumer<TerrainType>> terrainTypeOnTerrainConsumers = new MapCollection<>();
     private final TerrainUiService terrainUiService;
     private final BaseItemUiService baseItemUiService;
@@ -43,13 +44,11 @@ public class InputService {
     private final AudioService audioService;
     private final GameEngineControl gameEngineControl;
     private final ItemTypeService itemTypeService;
-    private final ExceptionHandler exceptionHandler;
     private boolean hasPendingMoveCommand;
     private MoveCommandEntry queuedMoveCommandEntry;
 
     @Inject
-    public InputService(ExceptionHandler exceptionHandler,
-                        ItemTypeService itemTypeService,
+    public InputService(ItemTypeService itemTypeService,
                         GameEngineControl gameEngineControl,
                         AudioService audioService,
                         SelectionService selectionService,
@@ -58,7 +57,6 @@ public class InputService {
                         ResourceUiService resourceUiService,
                         BaseItemUiService baseItemUiService,
                         TerrainUiService terrainUiService) {
-        this.exceptionHandler = exceptionHandler;
         this.itemTypeService = itemTypeService;
         this.gameEngineControl = gameEngineControl;
         this.audioService = audioService;
@@ -108,7 +106,7 @@ public class InputService {
             }
             selectionService.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -118,7 +116,7 @@ public class InputService {
             SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.getItem4Id(syncItemId);
             selectionService.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -138,7 +136,7 @@ public class InputService {
                 selectionService.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
             }
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -158,7 +156,7 @@ public class InputService {
                 selectionService.setOtherItemSelected(syncResourceItem);
             }
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -178,7 +176,7 @@ public class InputService {
                 selectionService.setOtherItemSelected(syncBoxItem);
             }
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -205,7 +203,7 @@ public class InputService {
             }
             hasPendingMoveCommand = true;
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 

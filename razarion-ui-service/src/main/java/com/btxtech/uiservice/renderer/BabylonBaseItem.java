@@ -21,6 +21,8 @@ public interface BabylonBaseItem extends BabylonItem {
 
     void setConstructing(double progress);
 
+    void setIdle(boolean idle);
+
     void onProjectileFired(DecimalPosition destination);
 
     void onExplode();

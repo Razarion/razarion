@@ -39,10 +39,12 @@ export class BabylonItemImpl implements BabylonItem {
   private hoverActive: boolean = false;
   private readonly itemCursorTypeHandler: (selectionInfo: SelectionInfo) => void;
   private lastNormal: Vector3 | null = null;
+  private selectionCallback: ((active: boolean) => void) | null = null;
+  private itemClickCallback: (() => void) | null = null;
 
   constructor(private id: number,
-              private itemType: ItemType,
-              protected diplomacy: Diplomacy,
+              public readonly itemType: ItemType,
+              public readonly diplomacy: Diplomacy,
               protected rendererService: BabylonRenderServiceAccessImpl,
               protected babylonModelService: BabylonModelService,
               protected uiConfigCollectionService: UiConfigCollectionService,
@@ -65,6 +67,9 @@ export class BabylonItemImpl implements BabylonItem {
       new ExecuteCodeAction(
         ActionManager.OnPickTrigger,
         () => {
+          if (this.itemClickCallback) {
+            this.itemClickCallback();
+          }
           actionService.onItemClicked(itemType, id, diplomacy);
         }
       )
@@ -178,6 +183,10 @@ export class BabylonItemImpl implements BabylonItem {
     return true;
   }
 
+  setItemClickCallback(callback: (() => void) | null) {
+    this.itemClickCallback = callback;
+  }
+
   private calculateRotation(normal: Vector3): Vector3 {
     let direction = new Vector3(Math.cos(this.angle), 0, Math.sin(this.angle));
     const forward = direction.normalize();
@@ -200,6 +209,9 @@ export class BabylonItemImpl implements BabylonItem {
   select(active: boolean): void {
     this.selectActive = active;
     this.updateMarkedDisk();
+    if (this.selectionCallback) {
+      this.selectionCallback(active);
+    }
   }
 
   hover(active: boolean): void {
@@ -231,6 +243,10 @@ export class BabylonItemImpl implements BabylonItem {
         this.visualizationMarkerDisc = null;
       }
     }
+  }
+
+  setSelectionCallback(selectionCallback: ((active: boolean) => void) | null) {
+    this.selectionCallback = selectionCallback;
   }
 
   getContainer(): TransformNode {

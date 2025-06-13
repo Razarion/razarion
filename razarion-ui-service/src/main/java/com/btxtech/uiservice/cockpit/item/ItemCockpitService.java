@@ -6,7 +6,11 @@ import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
-import com.btxtech.shared.gameengine.datatypes.workerdto.*;
+import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.SelectionEvent;
@@ -244,6 +248,7 @@ public class ItemCockpitService {
                         }
                     };
                     buildupItemInfo.imageUrl = CommonUrl.getImageServiceUrlSafe(itemType.getThumbnail());
+                    buildupItemInfo.itemTypeId = itemType.getId();
                     buildupItemInfo.itemTypeName = itemType.getName();
                     buildupItemInfo.price = itemType.getPrice();
                     buildupItemInfo.updateState();

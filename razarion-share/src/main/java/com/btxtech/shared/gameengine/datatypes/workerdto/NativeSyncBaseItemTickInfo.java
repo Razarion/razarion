@@ -26,4 +26,5 @@ public class NativeSyncBaseItemTickInfo {
     public int containingItemCount;
     public double maxContainingRadius;
     public boolean contained;
+    public boolean idle;
 }

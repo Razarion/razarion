@@ -14,7 +14,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionEventService;
@@ -42,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toDecimalPosition;
@@ -67,7 +67,6 @@ public class BaseItemUiService {
     private final ItemCockpitService itemCockpitService;
     private final ModalDialogManager modalDialogManager;
     private final Provider<UserUiService> userUiService;
-    private final ExceptionHandler exceptionHandler;
     private final BabylonRendererService babylonRendererService;
     private final AudioService audioService;
     private PlayerBaseDto myBase;
@@ -84,7 +83,6 @@ public class BaseItemUiService {
     @Inject
     public BaseItemUiService(AudioService audioService,
                              BabylonRendererService babylonRendererService,
-                             ExceptionHandler exceptionHandler,
                              Provider<UserUiService> userUiService,
                              ModalDialogManager modalDialogManager,
                              ItemCockpitService itemCockpitService,
@@ -95,7 +93,6 @@ public class BaseItemUiService {
                              SelectionEventService selectionEventService) {
         this.audioService = audioService;
         this.babylonRendererService = babylonRendererService;
-        this.exceptionHandler = exceptionHandler;
         this.userUiService = userUiService;
         this.modalDialogManager = modalDialogManager;
         this.itemCockpitService = itemCockpitService;
@@ -193,6 +190,7 @@ public class BaseItemUiService {
                         babylonBaseItem.select(true);
                     }
                 }
+                babylonBaseItem.setIdle(nativeSyncBaseItemTickInfo.idle);
                 leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
 
                 if (babylonBaseItem.getPosition() != null) {
@@ -227,7 +225,7 @@ public class BaseItemUiService {
                 babylonBaseItem.setBuildup(nativeSyncBaseItemTickInfo.buildup);
                 babylonBaseItem.setConstructing(nativeSyncBaseItemTickInfo.constructing);
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                logger.log(Level.WARNING, t.getMessage(), t);
             }
         }
         leftoversAliveBabylonBaseItems.forEach(id -> {
