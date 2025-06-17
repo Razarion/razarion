@@ -53,7 +53,6 @@ export class QuestCockpitComponent implements QuestCockpit {
   showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, showQuestSelectionButton: boolean): void {
     this.zone.run(() => {
       try {
-        this.showQuestInGameVisualisation = true;
         this.questDescriptionConfig = questDescriptionConfig || undefined;
         this.conditionConfig = this.setupConditionConfig();
         this.questProgressInfo = undefined;
@@ -61,24 +60,12 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.setupProgress();
         this.showQuestSelectionButton = showQuestSelectionButton;
         this.cockpitDisplayService.showQuestCockpit = !!questDescriptionConfig;
-        // TODO remove -----------------
-        if (questDescriptionConfig) {
-          questDescriptionConfig.getTipConfig = function (): TipConfig {
-            return new class implements TipConfig {
-              getTip(): Tip {
-                return Tip.BUILD;
-              }
-
-              getActorItemTypeId(): number {
-                return 1;
-              }
-            }
-          }
-        }
-        // TODO remove ends -------------
         if (questDescriptionConfig && questDescriptionConfig.getTipConfig()) {
           this.tipService.activate(<QuestConfig>questDescriptionConfig)
+          this.showQuestInGameVisualisation = false;
+          this.onShowQuestInGameVisualisation(false);
         } else {
+          this.showQuestInGameVisualisation = true;
           this.showQuestDialog = false;
           this.tipService.deactivate()
         }

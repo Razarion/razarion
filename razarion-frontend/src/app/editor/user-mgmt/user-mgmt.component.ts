@@ -9,10 +9,11 @@ import {Button} from 'primeng/button';
 import {InputNumber} from 'primeng/inputnumber';
 import {LevelComponent} from '../common/level/level.component';
 import {TableModule} from 'primeng/table';
-import {DatePipe} from '@angular/common';
+import {DatePipe, NgForOf, NgIf} from '@angular/common';
 import {ChipModule} from 'primeng/chip';
 import {FormsModule} from '@angular/forms';
 import {SelectModule} from 'primeng/select';
+import {DropdownModule} from 'primeng/dropdown';
 
 @Component({
   selector: 'user-mgmt',
@@ -24,7 +25,9 @@ import {SelectModule} from 'primeng/select';
     DatePipe,
     SelectModule,
     ChipModule,
-    FormsModule
+    FormsModule,
+    DropdownModule,
+    NgForOf,
   ],
   templateUrl: './user-mgmt.component.html'
 })
@@ -61,7 +64,7 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
   }
 
   private questBackendInfo2Option(questBackendInfo: QuestBackendInfo): string {
-    return ` lvl: ${questBackendInfo.levelId} ${QuestCockpitComponent.conditionTriggerToTitle(questBackendInfo.conditionConfig.conditionTrigger)}`
+    return ` lvl: ${questBackendInfo.levelNumber} ${QuestCockpitComponent.conditionTriggerToTitle(questBackendInfo.conditionConfig.conditionTrigger)} '${questBackendInfo.id}'`
   }
 
   private loadUsers(): void {
@@ -132,5 +135,13 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
           sticky: true
         }));
     }
+  }
+
+  removeUnlockedId(user: UserBackendInfo, unlockedId: number) {
+    user.unlockedIds = user.unlockedIds.filter(id => id !== unlockedId);
+  }
+
+  removeQuestId(user: UserBackendInfo, questId: number) {
+    user.completedQuestIds = user.completedQuestIds.filter(id => id !== questId);
   }
 }

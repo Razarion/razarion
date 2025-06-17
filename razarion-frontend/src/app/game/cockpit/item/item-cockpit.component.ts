@@ -44,6 +44,7 @@ export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit,
   tipPopover!: Popover;
   @ViewChildren('buildupItemDiv')
   buildupItemDiv?: QueryList<ElementRef>;
+  private buildClickCallback: ((cockpit: BuildupItemCockpit) => void) | null = null;
 
   constructor(private zone: NgZone,
               private cockpitDisplayService: CockpitDisplayService,
@@ -144,5 +145,16 @@ export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit,
       this.tipPopover.hide();
       return true;
     }
+  }
+
+  onBuildClick(buildupItemCockpit: BuildupItemCockpit) {
+    buildupItemCockpit.onBuild();
+    if (this.buildClickCallback) {
+      this.buildClickCallback(buildupItemCockpit);
+    }
+  }
+
+  setBuildClickCallback(buildClickCallback: ((cockpit: BuildupItemCockpit) => void) | null) {
+    this.buildClickCallback = buildClickCallback;
   }
 }

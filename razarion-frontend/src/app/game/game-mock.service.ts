@@ -551,7 +551,7 @@ export class GameMockService {
 
       getTipConfig(): TipConfig {
         return new class implements TipConfig {
-          getTip(): Tip {
+          getTipString(): Tip {
             return Tip.BUILD;
           }
 

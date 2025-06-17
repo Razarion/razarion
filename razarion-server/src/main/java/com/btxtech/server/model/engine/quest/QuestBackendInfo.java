@@ -5,8 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 public class QuestBackendInfo {
     private int id;
     private ConditionConfig conditionConfig;
-    private int levelId;
-    private int order;
+    private int levelNumber;
 
     public int getId() {
         return id;
@@ -24,20 +23,12 @@ public class QuestBackendInfo {
         this.conditionConfig = conditionConfig;
     }
 
-    public int getLevelId() {
-        return levelId;
+    public int getLevelNumber() {
+        return levelNumber;
     }
 
-    public void setLevelId(int levelId) {
-        this.levelId = levelId;
-    }
-
-    public int getOrder() {
-        return order;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
+    public void setLevelNumber(int levelNumber) {
+        this.levelNumber = levelNumber;
     }
 
     public QuestBackendInfo id(int id) {
@@ -50,15 +41,8 @@ public class QuestBackendInfo {
         return this;
     }
 
-    public QuestBackendInfo levelId(int levelId) {
-        setLevelId(levelId);
+    public QuestBackendInfo levelNumber(int levelNumber) {
+        setLevelNumber(levelNumber);
         return this;
     }
-
-    public QuestBackendInfo order(int order) {
-        setOrder(order);
-        return this;
-    }
-
-
 }

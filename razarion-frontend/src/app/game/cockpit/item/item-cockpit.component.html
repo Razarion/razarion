@@ -34,7 +34,7 @@
         <div class="flex flex-col bg-surface-600" [style]="{margin: '0 2px 0 2px'}">
           <div #buildupItemDiv [attr.data-item-type-id]="buildupItemCockpit.itemTypeId">
             <button class='item-cockpit-buildup-button'
-                    (click)="buildupItemCockpit.onBuild()"
+                    (click)="onBuildClick(buildupItemCockpit)"
                     [title]="buildTooltip(buildupItemCockpit)"
                     [disabled]="!buildupItemCockpit.enabled">
               <div *ngIf="!buildupItemCockpit.enabled" class='item-cockpit-buildup-disabled'>

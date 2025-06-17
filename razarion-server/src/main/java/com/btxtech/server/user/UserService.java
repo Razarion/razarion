@@ -41,6 +41,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static com.btxtech.server.service.PersistenceUtil.extractId;
+
 
 @Service
 public class UserService implements UserDetailsService {
@@ -302,7 +304,32 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public List<UserBackendInfo> getUserBackendInfos() {
-        throw new UnsupportedOperationException("... TODO ...");
+        return userRepository.findAll()
+                .stream()
+                .map(UserService::userEntity2UserBackendInfo)
+                .collect(Collectors.toList());
+    }
+
+    private static UserBackendInfo userEntity2UserBackendInfo(UserEntity userEntity) {
+        UserBackendInfo userBackendInfo = new UserBackendInfo()
+                .name(userEntity.getName())
+                .creationDate(userEntity.getCreationDate())
+                .registerDate(userEntity.getRegisterDate())
+                .verificationDoneDate(userEntity.getVerificationDoneDate())
+                .facebookId(userEntity.getFacebookUserId())
+                .email(userEntity.getEmail())
+                .userId(userEntity.getUserId())
+                .levelId(extractId(userEntity.getLevel(), LevelEntity::getId))
+                .xp(userEntity.getXp())
+                .crystals(userEntity.getCrystals())
+                .activeQuest(extractId(userEntity.getActiveQuest(), QuestConfigEntity::getId));
+        if (userEntity.getCompletedQuestIds() != null && !userEntity.getCompletedQuestIds().isEmpty()) {
+            userBackendInfo.completedQuestIds(userEntity.getCompletedQuest().stream().map(QuestConfigEntity::getId).collect(Collectors.toList()));
+        }
+        if (userEntity.getLevelUnlockEntities() != null && !userEntity.getLevelUnlockEntities().isEmpty()) {
+            userBackendInfo.unlockedIds(userEntity.getLevelUnlockEntities().stream().map(LevelUnlockEntity::getId).collect(Collectors.toList()));
+        }
+        return userBackendInfo;
     }
 
     public boolean shouldCheckRegisteredUser(String email) {

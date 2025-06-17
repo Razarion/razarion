@@ -118,6 +118,9 @@ public class InGameQuestVisualizationService {
         if (quest == null) {
             return;
         }
+        if(quest.getTipConfig() != null) {
+            return;
+        }
         switch (quest.getConditionConfig().getConditionTrigger()) {
             case SYNC_ITEM_KILLED: {
                 if (itemTypeFilter == null) {

@@ -11,7 +11,8 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
               rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
               babylonModelService: BabylonModelService,
-              uiConfigCollectionService: UiConfigCollectionService) {
+              uiConfigCollectionService: UiConfigCollectionService,
+              disposeCallback: (() => void) | null) {
     super(id,
       boxItemType,
       Diplomacy.BOX,
@@ -19,7 +20,8 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
       babylonModelService,
       uiConfigCollectionService,
       actionService,
-      rendererService.boxItemContainer);
+      rendererService.boxItemContainer,
+      disposeCallback);
   }
 
   static createDummy(id: number): BabylonBoxItem {

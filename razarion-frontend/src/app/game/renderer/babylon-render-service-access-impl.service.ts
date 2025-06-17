@@ -146,6 +146,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private editorTerrainTileCreationCallback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined;
   private interpolationListeners: BabylonBaseItemImpl[] = [];
   private babylonBaseItems: BabylonBaseItemImpl[] = [];
+  private babylonResourceItems: BabylonResourceItemImpl[] = [];
   private baseItemPlacerPresenterImpl!: BaseItemPlacerPresenterImpl;
 
   constructor(private gwtAngularService: GwtAngularService,
@@ -306,7 +307,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this,
         this.actionService,
         this.babylonModelService,
-        this.uiConfigCollectionService);
+        this.uiConfigCollectionService,
+        () => this.babylonBaseItems.filter(i => i !== item));
       this.babylonBaseItems.push(item)
       return item;
     } catch (error) {
@@ -640,12 +642,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   createBabylonResourceItem(id: number, resourceItemType: ResourceItemType): BabylonResourceItem {
     try {
-      return new BabylonResourceItemImpl(id,
+      const item = new BabylonResourceItemImpl(id,
         resourceItemType,
         this,
         this.actionService,
         this.babylonModelService,
-        this.uiConfigCollectionService);
+        this.uiConfigCollectionService,
+        () => this.babylonResourceItems.filter(i => i !== item));
+      this.babylonResourceItems.push(item);
+      return item;
     } catch (error) {
       console.error(error);
       return BabylonResourceItemImpl.createDummy(id);
@@ -659,7 +664,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this,
         this.actionService,
         this.babylonModelService,
-        this.uiConfigCollectionService);
+        this.uiConfigCollectionService,
+        null);
     } catch (error) {
       console.error(error);
       return BabylonBoxItemImpl.createDummy(id);
@@ -761,6 +767,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.babylonBaseItems.find(item => {
       return item.diplomacy === diplomacy && item.itemType.getId() === itemTypeId;
     }) || null;
+  }
+
+  public getBabylonResourceItemImpls(): BabylonResourceItemImpl[] {
+    return this.babylonResourceItems;
   }
 }
 

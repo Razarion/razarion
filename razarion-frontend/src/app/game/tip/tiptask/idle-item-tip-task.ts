@@ -1,6 +1,7 @@
 import {AbstractTipTask} from './abstract-tip-task';
 
 export class IdleItemTipTask extends AbstractTipTask {
+
   isFulfilled(): boolean {
     return false;
   }

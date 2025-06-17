@@ -2,6 +2,7 @@ import {AbstractTipTask, TipTaskContext} from './abstract-tip-task';
 import {Diplomacy, MarkerConfig, TipConfig} from '../../../gwtangular/GwtAngularFacade';
 import {TipService} from '../tip.service';
 import {BabylonBaseItemImpl} from '../../renderer/babylon-base-item.impl';
+import {GwtHelper} from '../../../gwtangular/GwtHelper';
 
 export class SelectTipTask extends AbstractTipTask {
   private babylonItem: BabylonBaseItemImpl | null = null;
@@ -48,7 +49,8 @@ export class SelectTipTask extends AbstractTipTask {
   }
 
   private findActor(): BabylonBaseItemImpl {
-    return <BabylonBaseItemImpl>this.tipService.renderService.getBabylonBaseItemImpl(Diplomacy.OWN, this.tipConfig.getActorItemTypeId());
+    const actorItemTypeId = GwtHelper.gwtIssueNumber(this.tipConfig.getActorItemTypeId());
+    return <BabylonBaseItemImpl>this.tipService.renderService.getBabylonBaseItemImpl(Diplomacy.OWN, actorItemTypeId);
   }
 
 }

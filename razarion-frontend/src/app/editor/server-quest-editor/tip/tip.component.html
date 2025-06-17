@@ -1,0 +1,20 @@
+<div class="grid grid-cols-12 gap-4">
+  <span class="col-span-3">Tip</span>
+  <div class="col-span-9">
+    <p-dropdown
+      [options]="tipOptions"
+      [(ngModel)]="tipString"
+      (ngModelChange)="onTipChange()"
+      placeholder="Select a tip"
+      [showClear]="true"
+      [appendTo]="'body'">
+    </p-dropdown>
+  </div>
+</div>
+<div *ngIf="tipString" class="grid grid-cols-12 gap-4">
+  <span class="col-span-3">Actor item type</span>
+  <div class="col-span-9">
+    <base-item-type [(baseItemTypeId)]="actorItemTypeId"
+                    (onChangeEmitter)="onActorItemTypeIdChange()"></base-item-type>
+  </div>
+</div>

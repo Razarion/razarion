@@ -49,7 +49,8 @@ export class BabylonItemImpl implements BabylonItem {
               protected babylonModelService: BabylonModelService,
               protected uiConfigCollectionService: UiConfigCollectionService,
               protected actionService: ActionService,
-              parent: TransformNode) {
+              parent: TransformNode,
+              protected disposeCallback: (() => void) | null) {
     if (itemType.getModel3DId()) {
       this.container = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, parent, diplomacy);
     } else {
@@ -145,6 +146,9 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   dispose(): void {
+    if (this.disposeCallback) {
+      this.disposeCallback();
+    }
     this.actionService.removeCursorHandler(this.itemCursorTypeHandler);
     this.container.getChildMeshes().forEach(childMesh => {
       this.rendererService.shadowGenerator.removeShadowCaster(childMesh, true);
@@ -170,9 +174,8 @@ export class BabylonItemImpl implements BabylonItem {
           this.container.rotation = rotation3D;
         }
       }
-    } else {
-      this.position = position;
     }
+    this.position = position;
   }
 
   onPosition3D(position3D: Vector3): boolean {

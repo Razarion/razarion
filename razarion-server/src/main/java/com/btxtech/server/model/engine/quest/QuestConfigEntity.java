@@ -1,14 +1,18 @@
 package com.btxtech.server.model.engine.quest;
 
 import com.btxtech.server.model.BaseEntity;
+import com.btxtech.server.model.engine.BaseItemTypeEntity;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.TipConfig;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
+import static com.btxtech.server.service.PersistenceUtil.extractId;
 
 
 @Entity
@@ -19,11 +23,19 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
     private int crystal;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private ConditionConfigEntity conditionConfigEntity;
+    private String tipString;
+    @OneToOne(fetch = FetchType.LAZY)
+    private BaseItemTypeEntity actorItemType;
 
     public QuestConfig toQuestConfig() {
         QuestConfig questConfig = new QuestConfig().id(getId()).internalName(getInternalName()).xp(xp).razarion(razarion).crystal(crystal);
         if (conditionConfigEntity != null) {
             questConfig.conditionConfig(conditionConfigEntity.toQuestConfig());
+        }
+        if (tipString != null) {
+            questConfig.setTipConfig(new TipConfig()
+                    .tipString(tipString)
+                    .actorItemTypeId(extractId(actorItemType, BaseEntity::getId)));
         }
         return questConfig;
     }
@@ -40,6 +52,18 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
             conditionConfigEntity.fromConditionConfig(questConfig.getConditionConfig());
         } else {
             conditionConfigEntity = null;
+        }
+        TipConfig tipConfig = questConfig.getTipConfig();
+        if (tipConfig != null) {
+            tipString = tipConfig.getTipString();
+            if (tipConfig.getActorItemTypeId() != null) {
+                actorItemType = (BaseItemTypeEntity) new BaseItemTypeEntity().id(tipConfig.getActorItemTypeId());
+            } else {
+                actorItemType = null;
+            }
+        } else {
+            tipString = null;
+            actorItemType = null;
         }
     }
 

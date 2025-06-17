@@ -1,7 +1,6 @@
 import {BabylonItemImpl} from "./babylon-item.impl";
 import {
   BabylonResourceItem,
-  DecimalPosition,
   Diplomacy,
   MarkerConfig,
   ResourceItemType,
@@ -18,7 +17,8 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
               rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
               babylonModelService: BabylonModelService,
-              uiConfigCollectionService: UiConfigCollectionService) {
+              uiConfigCollectionService: UiConfigCollectionService,
+              disposeCallback: (() => void) | null) {
     super(id,
       resourceItemType,
       Diplomacy.RESOURCE,
@@ -26,7 +26,8 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
       babylonModelService,
       uiConfigCollectionService,
       actionService,
-      rendererService.resourceItemContainer);
+      rendererService.resourceItemContainer,
+      disposeCallback);
   }
 
   public static createDummy(id: number): BabylonResourceItem {

@@ -19,6 +19,7 @@ import {Button} from 'primeng/button';
 import {Accordion, AccordionModule} from 'primeng/accordion';
 import {LevelComponent} from '../common/level/level.component';
 import {NgForOf, NgIf} from '@angular/common';
+import {TipComponent} from './tip/tip.component';
 
 @Component({
   selector: 'server-quest-editor',
@@ -35,7 +36,8 @@ import {NgForOf, NgIf} from '@angular/common';
     AccordionModule,
     LevelComponent,
     NgIf,
-    NgForOf
+    NgForOf,
+    TipComponent
   ],
   templateUrl: './server-quest-editor.component.html'
 })
@@ -140,7 +142,8 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
       id: 0,
       internalName: "",
       razarion: 0,
-      xp: 0
+      xp: 0,
+      tipConfig: null
     })
   }
 

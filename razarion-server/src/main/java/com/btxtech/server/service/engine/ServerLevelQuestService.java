@@ -17,6 +17,7 @@ import jakarta.inject.Provider;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -31,6 +32,7 @@ public class ServerLevelQuestService implements QuestListener {
     private final ClientSystemConnectionService clientSystemConnectionService;
     private final Provider<ServerGameEngineControl> serverGameEngineControlInstance;
     private final ServerUnlockService serverUnlockService;
+    private final QuestConfigService questConfigService;
 
     public ServerLevelQuestService(Provider<GameUiContextService> gameUiControlConfigPersistence,
                                    QuestService questService,
@@ -39,7 +41,8 @@ public class ServerLevelQuestService implements QuestListener {
                                    UserService userService,
                                    ClientSystemConnectionService clientSystemConnectionService,
                                    Provider<ServerGameEngineControl> serverGameEngineControlInstance,
-                                   ServerUnlockService serverUnlockService) {
+                                   ServerUnlockService serverUnlockService,
+                                   QuestConfigService questConfigService) {
         this.gameUiControlConfigPersistence = gameUiControlConfigPersistence;
         this.questService = questService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
@@ -48,6 +51,7 @@ public class ServerLevelQuestService implements QuestListener {
         this.clientSystemConnectionService = clientSystemConnectionService;
         this.serverGameEngineControlInstance = serverGameEngineControlInstance;
         this.serverUnlockService = serverUnlockService;
+        this.questConfigService = questConfigService;
         questService.addQuestListener(this);
     }
 
@@ -184,7 +188,7 @@ public class ServerLevelQuestService implements QuestListener {
     }
 
     public List<QuestBackendInfo> getQuestBackendInfos() {
-        throw new UnsupportedOperationException("... TODO ...");
+        return questConfigService.readQuestBackendInfos();
     }
 
     private void deactivateQuest(String userId) {

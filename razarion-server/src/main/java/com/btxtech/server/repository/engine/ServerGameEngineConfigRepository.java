@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ServerGameEngineConfigRepository extends JpaRepository<ServerGameEngineConfigEntity, Integer> {
@@ -29,4 +30,13 @@ public interface ServerGameEngineConfigRepository extends JpaRepository<ServerGa
     List<QuestConfigEntity> getQuests4Level(@Param("levelNumber") int levelNumber,
                                             @Param("serverGameEngineConfigEntityId") int serverGameEngineConfigEntityId,
                                             @Param("ignoreQuestIds") Collection<Integer> ignoreQuestIds);
+
+
+    @Query("""
+                SELECT slqe.minimalLevel.number
+                FROM ServerLevelQuestEntity slqe
+                JOIN slqe.serverLevelQuestEntryEntities entry
+                WHERE entry.quest.id = :questConfigId
+            """)
+    Optional<Integer> findMinimalLevelNumberByQuestConfigId(@Param("questConfigId") int questConfigId);
 }

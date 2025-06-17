@@ -69,6 +69,8 @@ export interface Vertex {
 
   getZ(): number;
 
+  distance(vertex: Vertex): number;
+
   toString(): string;
 }
 
@@ -289,14 +291,14 @@ export interface HarvesterType {
 export enum Tip {
   BUILD = 'BUILD',
   FABRICATE = 'FABRICATE',
-  GET_RESOURCE = 'GET_RESOURCE',
-  ATTACK = 'ATTACK',
-  LOAD_CONTAINER = 'LOAD_CONTAINER',
-  UNLOAD_CONTAINER = 'UNLOAD_CONTAINER',
+  HARVEST = 'HARVEST',
+  // ATTACK = 'ATTACK',
+  // LOAD_CONTAINER = 'LOAD_CONTAINER',
+  // UNLOAD_CONTAINER = 'UNLOAD_CONTAINER',
 }
 
 export interface TipConfig {
-  getTip(): Tip;
+  getTipString(): string;
 
   getActorItemTypeId(): number;
 }

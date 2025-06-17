@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
+import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 
 /**
@@ -16,6 +17,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
     private int xp;
     private int razarion;
     private int crystal;
+    private TipConfig tipConfig;
 
     public int getId() {
         return id;
@@ -39,7 +41,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
     }
 
     public T internalName(String internalName) {
-        this.internalName = internalName;
+        setInternalName(internalName);
         return (T) this;
     }
 
@@ -65,7 +67,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
     }
 
     public T razarion(int razarion) {
-        this.razarion = razarion;
+        setRazarion(razarion);
         return (T) this;
     }
 
@@ -78,7 +80,20 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig<T>> impleme
     }
 
     public T crystal(int crystal) {
-        this.crystal = crystal;
+        setCrystal(crystal);
+        return (T) this;
+    }
+
+    public @Nullable TipConfig getTipConfig() {
+        return tipConfig;
+    }
+
+    public void setTipConfig(@Nullable TipConfig tipConfig) {
+        this.tipConfig = tipConfig;
+    }
+
+    public T tipConfig(TipConfig tipConfig) {
+        setTipConfig(tipConfig);
         return (T) this;
     }
 

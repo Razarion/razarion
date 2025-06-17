@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import { DecimalPosition, TerrainObjectPosition, Vertex } from "./GwtAngularFacade";
-import { environment } from "../../environments/environment";
+import {DecimalPosition, TerrainObjectPosition, Vertex} from "./GwtAngularFacade";
+import {environment} from "../../environments/environment";
 
 export class GwtInstance {
   static newIndex(x: number, y: number): Index {
@@ -25,6 +25,7 @@ export class GwtInstance {
             this.getY() / y
           );
         }
+
         toString(): string {
           return `Index(${this.getX()}, ${this.getY()})`;
         }
@@ -76,6 +77,11 @@ export class GwtInstance {
         getZ(): number {
           return z;
         }
+
+        distance(vertex: Vertex): number {
+          return Math.sqrt(Math.pow(x - vertex.getX(), 2) + Math.pow(y - vertex.getY(), 2) + Math.pow(z - vertex.getZ(), 2));
+        }
+
       }
     } else {
       return com.btxtech.shared.datatypes.Vertex.create(x, y, z);

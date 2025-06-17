@@ -51,7 +51,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
               rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
               babylonModelService: BabylonModelService,
-              uiConfigCollectionService: UiConfigCollectionService) {
+              uiConfigCollectionService: UiConfigCollectionService,
+              disposeCallback: (() => void) | null) {
     super(id,
       baseItemType,
       diplomacy,
@@ -59,7 +60,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       babylonModelService,
       uiConfigCollectionService,
       actionService,
-      rendererService.baseItemContainer);
+      rendererService.baseItemContainer,
+      disposeCallback);
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
 
@@ -208,6 +210,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       }
     }
     this.idle = idle;
+  }
+
+  getIdle(): boolean {
+    return this.idle;
   }
 
   setIdleCallback(callback: ((idle: boolean) => void) | null) {
