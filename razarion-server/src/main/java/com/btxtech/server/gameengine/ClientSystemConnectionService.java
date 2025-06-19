@@ -64,6 +64,9 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
         synchronized (systemConnections) {
             systemConnections.put(userId, clientSystemConnection);
         }
+
+        userService.onClientSystemConnectionOpened(userId);
+
         // TODO connectionTrackingPersistence.onSystemConnectionOpened(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
 
@@ -85,6 +88,8 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
             systemConnections.remove(clientSystemConnection.getUserId());
             logger.info("Websocket clientSystemConnection closed {}", clientSystemConnection);
         }
+
+        userService.onClientSystemConnectionClosed(clientSystemConnection.getUserId());
     }
 
     public void onQuestProgressInfo(String userId, QuestProgressInfo questProgressInfo) {

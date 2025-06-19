@@ -6,8 +6,12 @@ import com.btxtech.server.model.engine.quest.QuestBackendInfo;
 import com.btxtech.server.service.engine.ServerLevelQuestService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.UserBackendInfo;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import jakarta.annotation.security.RolesAllowed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,18 +20,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/rest/editor/user-mgmt")
 public class UserMgmtController {
+    private final Logger logger = LoggerFactory.getLogger(UserMgmtController.class);
     private final ServerLevelQuestService serverLevelQuestService;
     private final ServerUnlockService serverUnlockService;
     private final UserService userService;
+    private final BaseItemService baseItemService;
 
-    public UserMgmtController(ServerLevelQuestService serverLevelQuestService, ServerUnlockService serverUnlockService, UserService userService) {
+    public UserMgmtController(ServerLevelQuestService serverLevelQuestService,
+                              ServerUnlockService serverUnlockService,
+                              UserService userService,
+                              BaseItemService baseItemService) {
         this.serverLevelQuestService = serverLevelQuestService;
         this.serverUnlockService = serverUnlockService;
         this.userService = userService;
+        this.baseItemService = baseItemService;
     }
 
     @RolesAllowed(Roles.ADMIN)
@@ -64,6 +75,22 @@ public class UserMgmtController {
     @GetMapping(value = "get-quest-backend-infos", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<QuestBackendInfo> getQuestBackendInfos() {
         return serverLevelQuestService.getQuestBackendInfos();
+    }
+
+    @RolesAllowed(Roles.ADMIN)
+    @DeleteMapping(value = "delete-users-bases", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteUsersAndBases(@RequestBody Set<String> userIds) {
+        userIds.forEach(userId -> {
+            try {
+                var playerBase = baseItemService.getPlayerBase4UserId(userId);
+                if (playerBase != null) {
+                    baseItemService.mgmtDeleteBase(playerBase.getBaseId());
+                }
+                userService.mgmtDeleteUnregisteredUser(userId);
+            } catch (Exception e) {
+                logger.warn(e.getMessage(), e);
+            }
+        });
     }
 
     @RolesAllowed(Roles.ADMIN)

@@ -1,11 +1,40 @@
-<p-table [value]="userBackendInfos" dataKey="userId" [style]="{'height':'80em','overflow-y':'scroll'}">
+<p-toolbar>
+  <ng-template #start>
+    <p-button icon="pi pi-sync"
+              class="mr-2"
+              text
+              severity="secondary"
+              (onClick)="refresh()"/>
+    <p-button icon="pi pi-trash"
+              class="mr-2"
+              text
+              severity="secondary"
+              [disabled]="selectedUserIds.size === 0"
+              (onClick)="deleteSelectedUsers()"/>
+  </ng-template>
+  <ng-template #end>
+    <span>Select unregistered offline [min]&nbsp;</span>
+    <p-inputnumber [(ngModel)]="minutes" inputId="integeronly"></p-inputnumber>
+    <p-button icon="pi pi-play"
+              class="mr-2"
+              text
+              severity="secondary"
+              (onClick)="selectUnregistered()"/>
+  </ng-template>
+</p-toolbar>
+
+<p-table [value]="userBackendInfos"
+         dataKey="userId"
+         [scrollable]="true"
+         scrollHeight="flex">
   <ng-template #header>
     <tr>
       <th></th>
+      <th>Online</th>
       <th>Creation</th>
       <th>Name</th>
       <th>Email</th>
-      <th>Id</th>
+      <th></th>
     </tr>
   </ng-template>
   <ng-template #body let-userBackendInfo let-expanded="expanded">
@@ -13,6 +42,17 @@
       <td>
         <p-button type="button" pRipple [pRowToggler]="userBackendInfo" [text]="true" [rounded]="true" [plain]="true"
                   [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"/>
+      </td>
+      <td *ngIf="userBackendInfo.systemConnectionClosed" style="background-color: #ff7f8a">
+        {{ userBackendInfo.systemConnectionClosed | date:'dd.MM.yyyy HH:mm:ss' }}
+      </td>
+      <td *ngIf="userBackendInfo.systemConnectionOpened && !userBackendInfo.systemConnectionClosed"
+          style="background-color: #63dba9">
+        {{ userBackendInfo.systemConnectionOpened | date:'dd.MM.yyyy HH:mm:ss' }}
+      </td>
+      <td *ngIf="!userBackendInfo.systemConnectionOpened && !userBackendInfo.systemConnectionClosed"
+          style="background-color: #737373">
+        -
       </td>
       <td>
         {{ userBackendInfo.creationDate | date:'dd.MM.yyyy HH:mm:ss' }}
@@ -24,13 +64,22 @@
         {{ userBackendInfo.email }}
       </td>
       <td>
-        {{ userBackendInfo.userId }}
+        <p-checkbox *ngIf="!userBackendInfo.email"
+                    [ngModel]="selectedUserIds.has(userBackendInfo.userId)"
+                    (onChange)="onSelectionChanged($event.checked, userBackendInfo)"
+                    [binary]="true"/>
       </td>
     </tr>
   </ng-template>
   <ng-template #expandedrow let-userBackendInfo>
     <tr>
       <td colspan="5">
+        <div class="grid grid-cols-12 gap-4">
+          <span class="col-span-3">User id</span>
+          <div class="col-span-9">
+            {{ userBackendInfo.userId }}
+          </div>
+        </div>
         <div class="grid grid-cols-12 gap-4">
           <span class="col-span-3">Registered</span>
           <div class="col-span-9">
@@ -113,5 +162,4 @@
       </td>
     </tr>
   </ng-template>
-
 </p-table>

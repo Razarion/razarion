@@ -19,6 +19,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -76,6 +77,8 @@ public class UserEntity {
     private List<LevelUnlockEntity> levelUnlockEntities;
     @Column(unique = true)
     private String name;
+    private LocalDateTime systemConnectionOpened;
+    private LocalDateTime systemConnectionClosed;
 
     public Integer getId() {
         return id;
@@ -310,6 +313,22 @@ public class UserEntity {
         } else {
             return UserContext.RegisterState.UNREGISTERED;
         }
+    }
+
+    public LocalDateTime getSystemConnectionOpened() {
+        return systemConnectionOpened;
+    }
+
+    public void setSystemConnectionOpened(LocalDateTime systemConnectionOpened) {
+        this.systemConnectionOpened = systemConnectionOpened;
+    }
+
+    public LocalDateTime getSystemConnectionClosed() {
+        return systemConnectionClosed;
+    }
+
+    public void setSystemConnectionClosed(LocalDateTime systemConnectionClosed) {
+        this.systemConnectionClosed = systemConnectionClosed;
     }
 
     @Override

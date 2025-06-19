@@ -32,8 +32,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +75,30 @@ public class UserService implements UserDetailsService {
             return null;
         }
         return authentication;
+    }
+
+    private static UserBackendInfo userEntity2UserBackendInfo(UserEntity userEntity) {
+        UserBackendInfo userBackendInfo = new UserBackendInfo()
+                .name(userEntity.getName())
+                .creationDate(userEntity.getCreationDate())
+                .registerDate(userEntity.getRegisterDate())
+                .verificationDoneDate(userEntity.getVerificationDoneDate())
+                .facebookId(userEntity.getFacebookUserId())
+                .email(userEntity.getEmail())
+                .userId(userEntity.getUserId())
+                .levelId(extractId(userEntity.getLevel(), LevelEntity::getId))
+                .xp(userEntity.getXp())
+                .crystals(userEntity.getCrystals())
+                .activeQuest(extractId(userEntity.getActiveQuest(), QuestConfigEntity::getId))
+                .systemConnectionOpened(userEntity.getSystemConnectionOpened() != null ? Date.from(userEntity.getSystemConnectionOpened().atZone(ZoneId.systemDefault()).toInstant()) : null)
+                .systemConnectionClosed(userEntity.getSystemConnectionClosed() != null ? Date.from(userEntity.getSystemConnectionClosed().atZone(ZoneId.systemDefault()).toInstant()) : null);
+        if (userEntity.getCompletedQuestIds() != null && !userEntity.getCompletedQuestIds().isEmpty()) {
+            userBackendInfo.completedQuestIds(userEntity.getCompletedQuest().stream().map(QuestConfigEntity::getId).collect(Collectors.toList()));
+        }
+        if (userEntity.getLevelUnlockEntities() != null && !userEntity.getLevelUnlockEntities().isEmpty()) {
+            userBackendInfo.unlockedIds(userEntity.getLevelUnlockEntities().stream().map(LevelUnlockEntity::getId).collect(Collectors.toList()));
+        }
+        return userBackendInfo;
     }
 
     @Override
@@ -153,6 +180,7 @@ public class UserService implements UserDetailsService {
         var userEntity = new UserEntity();
         userEntity.setUserId(UUID.randomUUID().toString());
         userEntity.setLevel(levelCrudPersistence.getStarterLevel());
+        userEntity.setCreationDate(new Date());
         return userRepository.save(userEntity).getUserId();
     }
 
@@ -310,28 +338,6 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
-    private static UserBackendInfo userEntity2UserBackendInfo(UserEntity userEntity) {
-        UserBackendInfo userBackendInfo = new UserBackendInfo()
-                .name(userEntity.getName())
-                .creationDate(userEntity.getCreationDate())
-                .registerDate(userEntity.getRegisterDate())
-                .verificationDoneDate(userEntity.getVerificationDoneDate())
-                .facebookId(userEntity.getFacebookUserId())
-                .email(userEntity.getEmail())
-                .userId(userEntity.getUserId())
-                .levelId(extractId(userEntity.getLevel(), LevelEntity::getId))
-                .xp(userEntity.getXp())
-                .crystals(userEntity.getCrystals())
-                .activeQuest(extractId(userEntity.getActiveQuest(), QuestConfigEntity::getId));
-        if (userEntity.getCompletedQuestIds() != null && !userEntity.getCompletedQuestIds().isEmpty()) {
-            userBackendInfo.completedQuestIds(userEntity.getCompletedQuest().stream().map(QuestConfigEntity::getId).collect(Collectors.toList()));
-        }
-        if (userEntity.getLevelUnlockEntities() != null && !userEntity.getLevelUnlockEntities().isEmpty()) {
-            userBackendInfo.unlockedIds(userEntity.getLevelUnlockEntities().stream().map(LevelUnlockEntity::getId).collect(Collectors.toList()));
-        }
-        return userBackendInfo;
-    }
-
     public boolean shouldCheckRegisteredUser(String email) {
         return Duration.between(lastCheckedRegisteredUsers.getOrDefault(email, Instant.EPOCH), Instant.now())
                 .compareTo(checkIntervalRegisteredUser) > 0;
@@ -343,5 +349,29 @@ public class UserService implements UserDetailsService {
 
     public void updateLastCheckedRegisteredUser(String email) {
         lastCheckedRegisteredUsers.put(email, Instant.now());
+    }
+
+    @Transactional
+    public void onClientSystemConnectionOpened(String userId) {
+        var userEntity = userRepository.findByUserId(userId).orElseThrow();
+        userEntity.setSystemConnectionOpened(LocalDateTime.now());
+        userEntity.setSystemConnectionClosed(null);
+        userRepository.save(userEntity);
+    }
+
+    @Transactional
+    public void onClientSystemConnectionClosed(String userId) {
+        var userEntity = userRepository.findByUserId(userId).orElseThrow();
+        userEntity.setSystemConnectionClosed(LocalDateTime.now());
+        userRepository.save(userEntity);
+    }
+
+    @Transactional
+    public void mgmtDeleteUnregisteredUser(String userId) {
+        userRepository.findByUserId(userId).ifPresent(userEntity -> {
+            if (userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED) {
+                userRepository.delete(userEntity);
+            }
+        });
     }
 }

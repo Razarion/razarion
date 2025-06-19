@@ -22,6 +22,8 @@ public class UserBackendInfo {
     private int crystals;
     private List<Integer> unlockedIds;
     private List<GameHistoryEntry> gameHistoryEntries;
+    private Date systemConnectionOpened;
+    private Date systemConnectionClosed;
 
     public String getUserId() {
         return userId;
@@ -135,6 +137,22 @@ public class UserBackendInfo {
         this.gameHistoryEntries = gameHistoryEntries;
     }
 
+    public Date getSystemConnectionOpened() {
+        return systemConnectionOpened;
+    }
+
+    public void setSystemConnectionOpened(Date systemConnectionOpened) {
+        this.systemConnectionOpened = systemConnectionOpened;
+    }
+
+    public Date getSystemConnectionClosed() {
+        return systemConnectionClosed;
+    }
+
+    public void setSystemConnectionClosed(Date systemConnectionClosed) {
+        this.systemConnectionClosed = systemConnectionClosed;
+    }
+
     public UserBackendInfo userId(String userId) {
         setUserId(userId);
         return this;
@@ -203,6 +221,16 @@ public class UserBackendInfo {
 
     public UserBackendInfo gameHistoryEntries(List<GameHistoryEntry> gameHistoryEntries) {
         setGameHistoryEntries(gameHistoryEntries);
+        return this;
+    }
+
+    public UserBackendInfo systemConnectionOpened(Date systemConnectionOpened) {
+        setSystemConnectionOpened(systemConnectionOpened);
+        return this;
+    }
+
+    public UserBackendInfo systemConnectionClosed(Date systemConnectionClosed) {
+        setSystemConnectionClosed(systemConnectionClosed);
         return this;
     }
 }

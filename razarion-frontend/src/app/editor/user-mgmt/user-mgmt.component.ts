@@ -5,8 +5,8 @@ import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
 import {MessageService} from 'primeng/api';
 import {HttpClient} from '@angular/common/http';
 import {QuestCockpitComponent} from "../../game/cockpit/quest/quest-cockpit.component";
-import {Button} from 'primeng/button';
-import {InputNumber} from 'primeng/inputnumber';
+import {ButtonModule} from 'primeng/button';
+import {InputNumberModule} from 'primeng/inputnumber';
 import {LevelComponent} from '../common/level/level.component';
 import {TableModule} from 'primeng/table';
 import {DatePipe, NgForOf, NgIf} from '@angular/common';
@@ -14,12 +14,14 @@ import {ChipModule} from 'primeng/chip';
 import {FormsModule} from '@angular/forms';
 import {SelectModule} from 'primeng/select';
 import {DropdownModule} from 'primeng/dropdown';
+import {ToolbarModule} from 'primeng/toolbar';
+import {CheckboxModule} from 'primeng/checkbox';
 
 @Component({
   selector: 'user-mgmt',
   imports: [
-    Button,
-    InputNumber,
+    ButtonModule,
+    InputNumberModule,
     LevelComponent,
     TableModule,
     DatePipe,
@@ -28,6 +30,9 @@ import {DropdownModule} from 'primeng/dropdown';
     FormsModule,
     DropdownModule,
     NgForOf,
+    NgIf,
+    ToolbarModule,
+    CheckboxModule,
   ],
   templateUrl: './user-mgmt.component.html'
 })
@@ -35,6 +40,9 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
   userBackendInfos: UserBackendInfo[] = [];
   questOptions: { label: string, questId: number }[] = [];
   private userMgmtControllerClient: UserMgmtControllerClient;
+  selectedUserIds = new Set<string>();
+  minutes: number = 60;
+
 
   constructor(private messageService: MessageService,
               httpClient: HttpClient) {
@@ -68,7 +76,11 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
   }
 
   private loadUsers(): void {
-    this.userMgmtControllerClient.getUserBackendInfos().then(userBackendInfos => this.userBackendInfos = userBackendInfos).catch(err =>
+    this.userMgmtControllerClient.getUserBackendInfos().then(userBackendInfos => {
+      this.selectedUserIds.clear();
+      this.userBackendInfos.length = 0;
+      this.userBackendInfos.push(...userBackendInfos);
+    }).catch(err =>
       this.messageService.add({
         severity: 'error',
         summary: `Can not load user infos`,
@@ -118,7 +130,7 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
   }
 
   onSaveActiveQuest(userBackendInfo: UserBackendInfo) {
-    if(userBackendInfo.activeQuest || userBackendInfo.activeQuest === 0) {
+    if (userBackendInfo.activeQuest || userBackendInfo.activeQuest === 0) {
       this.userMgmtControllerClient.activateQuest(userBackendInfo.userId, userBackendInfo.activeQuest).catch(err =>
         this.messageService.add({
           severity: 'error',
@@ -144,4 +156,42 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
   removeQuestId(user: UserBackendInfo, questId: number) {
     user.completedQuestIds = user.completedQuestIds.filter(id => id !== questId);
   }
+
+  refresh() {
+    this.loadUsers();
+  }
+
+  onSelectionChanged(checked: boolean, userBackendInfo: UserBackendInfo) {
+    if (checked) {
+      this.selectedUserIds.add(userBackendInfo.userId);
+    } else {
+      this.selectedUserIds.delete(userBackendInfo.userId);
+    }
+  }
+
+  deleteSelectedUsers() {
+    this.userMgmtControllerClient.deleteUsersAndBases(Array.from(this.selectedUserIds))
+      .then(() => this.loadUsers());
+  }
+
+  selectUnregistered() {
+    const now = new Date();
+    this.userBackendInfos.forEach((userBackendInfo) => {
+      if (!userBackendInfo.email) {
+        if (userBackendInfo.systemConnectionClosed
+          && UserMgmtComponent.isOlderThanMinutes(userBackendInfo.systemConnectionClosed, now, this.minutes)) {
+          this.selectedUserIds.add(userBackendInfo.userId);
+        }
+      }
+    })
+  }
+
+  public static isOlderThanMinutes(date: Date, now: Date, minutes: number): boolean {
+    date = new Date(date)
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInMinutes = diffInMs / (1000 * 60);
+
+    return diffInMinutes > minutes;
+  }
+
 }
