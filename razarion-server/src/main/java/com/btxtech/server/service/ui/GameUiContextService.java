@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.*;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
 import org.springframework.stereotype.Service;
@@ -21,12 +22,16 @@ public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiCo
     private final ServerUnlockService serverUnlockService;
     private final AlarmService alarmService;
     private final DbPropertiesService dbPropertiesService;
+    private final BaseItemService baseItemService;
+    private final StartPositionFinderService startPositionFinderService;
 
     public GameUiContextService(GameUiContextRepository gameUiContextRepository,
                                 StaticGameConfigService staticGameConfigService,
                                 LevelCrudPersistence levelCrudPersistence,
                                 ServerGameEngineCrudPersistence serverGameEngineCrudPersistence, ServerLevelQuestService serverLevelQuestService, ServerUnlockService serverUnlockService,
-                                AlarmService alarmService, DbPropertiesService dbPropertiesService) {
+                                AlarmService alarmService, DbPropertiesService dbPropertiesService,
+                                BaseItemService baseItemService,
+                                StartPositionFinderService startPositionFinderService) {
         super(GameUiContextEntity.class, gameUiContextRepository);
         this.staticGameConfigService = staticGameConfigService;
         this.levelCrudPersistence = levelCrudPersistence;
@@ -35,6 +40,8 @@ public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiCo
         this.serverUnlockService = serverUnlockService;
         this.alarmService = alarmService;
         this.dbPropertiesService = dbPropertiesService;
+        this.baseItemService = baseItemService;
+        this.startPositionFinderService = startPositionFinderService;
     }
 
     public ColdGameUiContext loadCold(UserContext userContext) {
@@ -62,7 +69,11 @@ public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiCo
         }
         WarmGameUiContext warmGameUiContext = gameUiContextEntity.toGameWarmGameUiControlConfig();
         if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
-            warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
+            var slavePlanetConfig = serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId());
+            if(slavePlanetConfig.isFindFreePosition() && baseItemService.getPlayerBase4UserId(userContext.getUserId()) == null) {
+                slavePlanetConfig.setNoBaseViewPosition(startPositionFinderService.findFreePosition(slavePlanetConfig));
+            }
+            warmGameUiContext.setSlavePlanetConfig(slavePlanetConfig);
             warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(userContext.getUserId()));
             warmGameUiContext.setAvailableUnlocks(serverUnlockService.hasAvailableUnlocks(userContext));
         }

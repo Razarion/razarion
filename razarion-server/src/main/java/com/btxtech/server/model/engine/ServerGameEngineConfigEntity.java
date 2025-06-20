@@ -1,6 +1,7 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ResourceRegionConfig;
@@ -99,6 +100,11 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
         return boxRegionConfigs;
     }
 
+    public void setBoxRegionConfigs(List<ServerBoxRegionConfigEntity> boxRegionConfigs) {
+        this.boxRegionConfigs.clear();
+        this.boxRegionConfigs.addAll(boxRegionConfigs);
+    }
+
     public SlavePlanetConfig findSlavePlanetConfig4Level(int levelNumber) {
         if (startRegionConfigs == null) {
             return null;
@@ -116,9 +122,20 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
         if (result == null) {
             return null;
         }
+        int spawnPointCount = 13;
+        double horizontalDistance = 10;
+        double startX = 178;
+        double startY = 16;
+        var positions = new ArrayList<DecimalPosition>();
+        for (int i = 0; i < spawnPointCount; i++) {
+            positions.add(new DecimalPosition(startX - (i * horizontalDistance), startY));
+        }
         return new SlavePlanetConfig()
                 .startRegion(result.getStartRegion())
-                .noBaseViewPosition(result.getNoBaseViewPosition());
+                .findFreePosition(true)
+                .positionRadius(result.getPositionRadius())
+                .positionMaxItems(result.getPositionMaxItems())
+                .positionPath(positions);
     }
 
     @JsonGetter("planetConfigId")
@@ -164,11 +181,6 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
     public void setResourceRegionConfigs(List<ServerResourceRegionConfigEntity> resourceRegionConfigs) {
         this.resourceRegionConfigs.clear();
         this.resourceRegionConfigs.addAll(resourceRegionConfigs);
-    }
-
-    public void setBoxRegionConfigs(List<ServerBoxRegionConfigEntity> boxRegionConfigs) {
-        this.boxRegionConfigs.clear();
-        this.boxRegionConfigs.addAll(boxRegionConfigs);
     }
 
     public void setBotConfigs(List<BotConfigEntity> botConfigs) {

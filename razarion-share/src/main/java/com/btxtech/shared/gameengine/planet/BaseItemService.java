@@ -34,7 +34,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainTypeNotAllowedException;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.inject.Inject;
@@ -52,6 +51,7 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -61,39 +61,26 @@ import java.util.stream.Collectors;
  */
 @Singleton // Rename to BaseService
 public class BaseItemService {
-    private final Logger logger = Logger.getLogger(BaseItemService.class.getName());
     private static final double ITEM_SELL_FACTOR = 0.5;
-
-    private final ExceptionHandler exceptionHandler;
-
+    private final Logger logger = Logger.getLogger(BaseItemService.class.getName());
     private final GameLogicService gameLogicService;
-
     private final SyncItemContainerServiceImpl syncItemContainerService;
-
     private final LevelService levelService;
-
     private final ItemTypeService itemTypeService;
-
     private final EnergyService energyService;
-
     private final InventoryTypeService inventoryTypeService;
-
     private final BoxService boxService;
-
     private final TerrainService terrainService;
-
     private final GuardingItemService guardingItemService;
-
     private final SyncService syncService;
-
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
-    private int lastBaseItId = 1;
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
     private final Queue<BaseCommand> commandQueue = new LinkedList<>();
+    private final PriorityQueue<TickInfo> pendingReceivedTickInfos = new PriorityQueue<>(Comparator.comparingDouble(TickInfo::getTickCount));
+    private int lastBaseItId = 1;
     private PlanetConfig planetConfig;
     private GameEngineMode gameEngineMode;
-    private final PriorityQueue<TickInfo> pendingReceivedTickInfos = new PriorityQueue<>(Comparator.comparingDouble(TickInfo::getTickCount));
 
     @Inject
     public BaseItemService(SyncService syncService,
@@ -106,7 +93,6 @@ public class BaseItemService {
                            LevelService levelService,
                            SyncItemContainerServiceImpl syncItemContainerService,
                            GameLogicService gameLogicService,
-                           ExceptionHandler exceptionHandler,
                            InitializeService initializeService) {
         this.syncService = syncService;
         this.guardingItemService = guardingItemService;
@@ -118,7 +104,6 @@ public class BaseItemService {
         this.levelService = levelService;
         this.syncItemContainerService = syncItemContainerService;
         this.gameLogicService = gameLogicService;
-        this.exceptionHandler = exceptionHandler;
 
         initializeService.receivePlanetActivationEvent(this::onPlanetActivation);
     }
@@ -142,7 +127,7 @@ public class BaseItemService {
             try {
                 createBaseSlave(playerBaseInfo);
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                logger.log(Level.WARNING, t.getMessage(), t);
             }
         }
 
@@ -152,7 +137,7 @@ public class BaseItemService {
                 SyncBaseItem syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
                 tmp.put(syncBaseItem, syncBaseItemInfo);
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                logger.log(Level.WARNING, t.getMessage(), t);
             }
         }
 
@@ -160,7 +145,7 @@ public class BaseItemService {
             try {
                 synchronizeActivateSlave(entry.getKey(), entry.getValue());
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                logger.log(Level.WARNING, t.getMessage(), t);
             }
         }
     }
@@ -202,7 +187,7 @@ public class BaseItemService {
                 // Prevent user from having a base without any units.
                 deleteBaseSlave(playerBase.getBaseId());
             }
-            exceptionHandler.handleException(e);
+            logger.log(Level.WARNING, e.getMessage(), e);
             throw e;
         }
         return playerBase;
@@ -609,12 +594,12 @@ public class BaseItemService {
                                 }
                                 syncService.notifySendSyncBaseItem(activeItem);
                             } catch (Throwable t) {
-                                exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
+                                logger.log(Level.WARNING, "Error during deactivation of active item: " + activeItem, t);
                             }
                         }
                     } catch (Throwable t) {
                         activeItem.stop(true);
-                        exceptionHandler.handleException(t);
+                        logger.log(Level.WARNING, t.getMessage(), t);
                         iterator.remove();
                         gameLogicService.onSyncBaseItemIdle(activeItem);
                         syncService.notifySendSyncBaseItem(activeItem);
@@ -623,7 +608,7 @@ public class BaseItemService {
             }
             guardingItemService.tick();
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -641,7 +626,7 @@ public class BaseItemService {
         } catch (InsufficientFundsException e) {
             gameLogicService.onInsufficientFundsException(e);
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -737,7 +722,7 @@ public class BaseItemService {
                     lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
                     bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), baseRestoreProvider.getName(playerBaseInfo), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), baseRestoreProvider.getLevel(playerBaseInfo), baseRestoreProvider.getUnlockedItemLimit(playerBaseInfo), playerBaseInfo.getUserId(), null));
                 } catch (Exception e) {
-                    exceptionHandler.handleException("BaseItemService.restore()", e);
+                    logger.log(Level.WARNING, "BaseItemService.restore()", e);
                 }
             });
             Collection<SyncBaseItemInfo> syncBaseItemInfos = backupPlanetInfo.getSyncBaseItemInfos().stream().filter(syncBaseItemInfo -> !failedItems.contains(syncBaseItemInfo.getId())).collect(Collectors.toList());
@@ -749,7 +734,7 @@ public class BaseItemService {
                 } catch (Exception e) {
                     failed = true;
                     failedItems.add(syncBaseItemInfo.getId());
-                    exceptionHandler.handleException("BaseItemService.restore()", e);
+                    logger.log(Level.WARNING, "BaseItemService.restore()", e);
                 }
             }
             for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
@@ -758,7 +743,7 @@ public class BaseItemService {
                 } catch (Exception e) {
                     failed = true;
                     failedItems.add(entry.getValue().getId());
-                    exceptionHandler.handleException("BaseItemService.restore()", e);
+                    logger.log(Level.WARNING, "BaseItemService.restore()", e);
                 }
             }
         } while (failed);

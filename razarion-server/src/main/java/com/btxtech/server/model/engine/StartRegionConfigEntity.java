@@ -1,7 +1,6 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import jakarta.persistence.AttributeOverride;
@@ -29,9 +28,13 @@ public class StartRegionConfigEntity extends BaseEntity {
             @AttributeOverride(name = "x", column = @Column(name = "noBaseViewPositionX")),
             @AttributeOverride(name = "y", column = @Column(name = "noBaseViewPositionY")),
     })
-    private DecimalPosition noBaseViewPosition;
     @OneToOne(fetch = FetchType.LAZY)
     private LevelEntity minimalLevel;
+    private boolean findFreePosition;
+    // private List<DecimalPosition> positionPath;
+    private Double positionRadius;
+    private Integer positionMaxItems;
+
 
     public LevelEntity getMinimalLevel() {
         return minimalLevel;
@@ -45,17 +48,12 @@ public class StartRegionConfigEntity extends BaseEntity {
         }
     }
 
-    public DecimalPosition getNoBaseViewPosition() {
-        return noBaseViewPosition;
-    }
-
     public StartRegionConfig toStartRegionConfig() {
         return new StartRegionConfig()
                 .id(getId())
                 .internalName(getInternalName())
                 .minimalLevelId(extractId(minimalLevel, LevelEntity::getId))
-                .region(getStartRegion())
-                .noBaseViewPosition(noBaseViewPosition);
+                .region(getStartRegion());
     }
 
     public StartRegionConfigEntity fromStartRegionConfig(StartRegionConfig startRegionConfig) {
@@ -67,8 +65,24 @@ public class StartRegionConfigEntity extends BaseEntity {
         } else {
             startRegion = null;
         }
-        noBaseViewPosition = startRegionConfig.getNoBaseViewPosition();
+        // TODO noBaseViewPosition = startRegionConfig.getNoBaseViewPosition();
         return this;
+    }
+
+    public Double getPositionRadius() {
+        return positionRadius;
+    }
+
+    public void setPositionRadius(Double positionRadius) {
+        this.positionRadius = positionRadius;
+    }
+
+    public Integer getPositionMaxItems() {
+        return positionMaxItems;
+    }
+
+    public void setPositionMaxItems(Integer positionMaxItems) {
+        this.positionMaxItems = positionMaxItems;
     }
 
     @Override

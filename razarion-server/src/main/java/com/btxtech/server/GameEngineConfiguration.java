@@ -480,7 +480,6 @@ public class GameEngineConfiguration {
                                            LevelService levelService,
                                            SyncItemContainerServiceImpl syncItemContainerService,
                                            GameLogicService gameLogicService,
-                                           ExceptionHandler exceptionHandler,
                                            InitializeService initializeService) {
         return new BaseItemService(syncService,
                 guardingItemService,
@@ -492,7 +491,6 @@ public class GameEngineConfiguration {
                 levelService,
                 syncItemContainerService,
                 gameLogicService,
-                exceptionHandler,
                 initializeService);
     }
 
