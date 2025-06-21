@@ -34,12 +34,11 @@ class BrushValues {
     InputNumber
   ],
   template: `
-
-    <div class="field grid grid-cols-12 gap-4 items-center">
+    <div class="grid grid-cols-12 gap-1 p-1">
       <div class="col-span-9">
         <p-select [options]="brushes" [(ngModel)]="activeBrush"
-                    optionLabel="name"
-                    [style]="{ width: '100%' }"></p-select>
+                  optionLabel="name"
+                  [style]="{ width: '100%' }"></p-select>
       </div>
 
       <div class="col-span-1">
@@ -62,59 +61,60 @@ class BrushValues {
       </div>
     </div>
 
-    <div class="field grid grid-cols-12 gap-4 items-center">
-      <span class="col">Id</span>
-      <div class="col">
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Id</span>
+      <div class="col-span-7">
         <p-inputNumber [disabled]="true"
                        [ngModel]="activeBrush.value.id"></p-inputNumber>
       </div>
     </div>
 
-    <div class="field grid grid-cols-12 gap-4 items-center">
-      <span class="col">Name <span [style]="{'color':'red','font-weight':'bolder'}">(Bug: jump on save)</span></span>
-      <div class="col">
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Name <span
+        [style]="{'color':'red','font-weight':'bolder'}">(Bug: jump on save)</span></span>
+      <div class="col-span-7">
         <input [(ngModel)]="activeBrush.value.internalName"
                type="text"
                class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
       </div>
     </div>
 
-    <div class="field grid grid-cols-12 gap-4 items-center">
-      <span class="col">Size [m]</span>
-      <div class="col">
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Size [m]</span>
+      <div class="col-span-7">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.diameter" class="w-full"/>
         <p-slider [(ngModel)]="activeBrush.value.brushValues.diameter" [step]="0.01" [min]="1" [max]="100"></p-slider>
       </div>
     </div>
 
-    <div class="field grid grid-cols-12 gap-4 items-center">
-      <span class="col">Height [m]</span>
-      <div class="col">
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Height [m]</span>
+      <div class="col-span-7">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.height" class="w-full"/>
         <p-slider [(ngModel)]="activeBrush.value.brushValues.height" [step]="0.1" [min]="-20" [max]="50"></p-slider>
       </div>
     </div>
 
-    <div class="field grid grid-cols-12 gap-4 items-center">
-      <span class="col">Max slope width [m]</span>
-      <div class="col">
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Max slope width [m]</span>
+      <div class="col-span-7">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.maxSlopeWidth" class="w-full"/>
         <p-slider [(ngModel)]="activeBrush.value.brushValues.maxSlopeWidth" [step]="0.01" [min]="0"
                   [max]="100"></p-slider>
       </div>
     </div>
 
-    <div class="field grid grid-cols-12 gap-4 items-center">
-      <span class="col">Slope [&deg;]</span>
-      <div class="col">
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Slope [&deg;]</span>
+      <div class="col-span-7">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.slope" class="w-full"/>
         <p-slider [(ngModel)]="activeBrush.value.brushValues.slope" [step]="0.01" [min]="0" [max]="90"></p-slider>
       </div>
     </div>
 
-    <div class="field grid grid-cols-12 gap-4 items-center">
-      <span class="col">Random (Slope) [m]</span>
-      <div class="col">
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Random (Slope) [m]</span>
+      <div class="col-span-7">
         <input type="number" pInputText [(ngModel)]="activeBrush.value.brushValues.random" class="w-full"/>
         <p-slider [(ngModel)]="activeBrush.value.brushValues.random" [step]="0.01" [min]="0" [max]="5"></p-slider>
       </div>

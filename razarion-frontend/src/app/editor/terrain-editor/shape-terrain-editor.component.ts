@@ -7,24 +7,24 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { GwtAngularService } from "../../gwtangular/GwtAngularService";
-import { MessageService } from "primeng/api";
-// TODO import * as pako from "pako";
-import { HttpClient as HttpClientAdapter, RestResponse, TerrainType } from '../../generated/razarion-share';
-import { PlanetConfig } from "../../gwtangular/GwtAngularFacade";
-import { BabylonRenderServiceAccessImpl } from "../../game/renderer/babylon-render-service-access-impl.service";
-import { Nullable, Observer, PointerEventTypes, PointerInfo, Vector3 } from "@babylonjs/core";
-import { EditorService } from "../editor-service";
-import { BabylonTerrainTileImpl } from 'src/app/game/renderer/babylon-terrain-tile.impl';
-import { EditorTerrainTile } from './editor-terrain-tile';
-import { GwtInstance } from 'src/app/gwtangular/GwtInstance';
-import { TerrainEditorControllerClient, TerrainHeightMapControllerClient } from 'src/app/generated/razarion-share';
-import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
-import { AbstractBrush, BrushContext } from "./brushes/abstract-brush";
-import { FixHeightBrushComponent } from './brushes/fix-height-brush.component';
-import { FlattenBrushComponent } from "./brushes/flattem-brush.component";
-import { RadarComponent } from 'src/app/game/cockpit/main/radar/radar.component';
+import {HttpClient} from "@angular/common/http";
+import {GwtAngularService} from "../../gwtangular/GwtAngularService";
+import {MessageService} from "primeng/api";
+import * as pako from "pako";
+import {HttpClient as HttpClientAdapter, RestResponse, TerrainType} from '../../generated/razarion-share';
+import {PlanetConfig} from "../../gwtangular/GwtAngularFacade";
+import {BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
+import {Nullable, Observer, PointerEventTypes, PointerInfo, Vector3} from "@babylonjs/core";
+import {EditorService} from "../editor-service";
+import {BabylonTerrainTileImpl} from 'src/app/game/renderer/babylon-terrain-tile.impl';
+import {EditorTerrainTile} from './editor-terrain-tile';
+import {GwtInstance} from 'src/app/gwtangular/GwtInstance';
+import {TerrainEditorControllerClient, TerrainHeightMapControllerClient} from 'src/app/generated/razarion-share';
+import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
+import {AbstractBrush, BrushContext} from "./brushes/abstract-brush";
+import {FixHeightBrushComponent} from './brushes/fix-height-brush.component';
+import {FlattenBrushComponent} from "./brushes/flattem-brush.component";
+import {RadarComponent} from 'src/app/game/cockpit/main/radar/radar.component';
 import {Button} from 'primeng/button';
 import {Divider} from 'primeng/divider';
 import {Checkbox} from 'primeng/checkbox';
@@ -56,22 +56,22 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
   lastSavedSize: string = "";
   private originalUint16HeightMap?: Uint16Array;
 
-  @ViewChild(' brushContainer', { read: ViewContainerRef })
+  @ViewChild(' brushContainer', {read: ViewContainerRef})
   brushContainer?: ViewContainerRef;
   brushOptions = [
-    { label: 'Fix height', value: FixHeightBrushComponent },
-    { label: 'Flatten', value: FlattenBrushComponent }
+    {label: 'Fix height', value: FixHeightBrushComponent},
+    {label: 'Flatten', value: FlattenBrushComponent}
   ];
   selectedBrush?: string;
 
   private currentBrush?: AbstractBrush
 
   constructor(httpClient: HttpClient,
-    public gwtAngularService: GwtAngularService,
-    private messageService: MessageService,
-    private renderService: BabylonRenderServiceAccessImpl,
-    private editorService: EditorService,
-    private resolver: ComponentFactoryResolver) {
+              public gwtAngularService: GwtAngularService,
+              private messageService: MessageService,
+              private renderService: BabylonRenderServiceAccessImpl,
+              private editorService: EditorService,
+              private resolver: ComponentFactoryResolver) {
     this.terrainEditorControllerClient = new TerrainEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
 
     this.planetConfig = gwtAngularService.gwtAngularFacade.gameUiControl.getPlanetConfig();
@@ -106,7 +106,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
     terrainHeightMapControllerClient.getCompressedHeightMap(this.planetConfig.getId())
       .then(response => response.arrayBuffer())
       .then(buffer => this.originalUint16HeightMap = new Uint16Array(buffer))
-      .catch(error => this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message }));
+      .catch(error => this.messageService.add({severity: 'error', summary: 'Error', detail: error.message}));
 
     this.renderService.setEditorTerrainTileCreationCallback((babylonTerrainTile: BabylonTerrainTileImpl) => {
       this.setupEditorTerrainTile(babylonTerrainTile);
@@ -211,7 +211,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
 
   private loadEditorTerrainTiles() {
     this.renderService.getAllBabylonTerrainTile().forEach(babylonTerrainTile => {
-       this.setupEditorTerrainTile(babylonTerrainTile);
+      this.setupEditorTerrainTile(babylonTerrainTile);
     });
   }
 
@@ -271,7 +271,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
           });
         } else {
           if (!this.originalUint16HeightMap) {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No original height map loaded' });
+            this.messageService.add({severity: 'error', summary: 'Error', detail: 'No original height map loaded'});
             return;
           }
           for (let i = 0; i < BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT; i++) {
@@ -286,19 +286,18 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
       }
     }
 
-    throw new Error("...TODO...")
-    // TODO let compressed = pako.gzip(new Uint8Array(uint16Array.buffer));
-    // const blob = new Blob([compressed.buffer], { type: 'application/octet-stream' });
-    //
-    // this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
-    //   .then(() => {
-    //     this.lastSavedTimeStamp = new Date().toLocaleString();
-    //     this.lastSavedSize = `${compressed.length} bytes`;
-    //     this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Terrain saved' })
-    //   })
-    //   .catch(error => {
-    //     this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message })
-    //   });
+    let compressed = pako.gzip(new Uint8Array(uint16Array.buffer));
+    const blob = new Blob([compressed.buffer], {type: 'application/octet-stream'});
+
+    this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
+      .then(() => {
+        this.lastSavedTimeStamp = new Date().toLocaleString();
+        this.lastSavedSize = `${compressed.length} bytes`;
+        this.messageService.add({severity: 'success', summary: 'Success', detail: 'Terrain saved'})
+      })
+      .catch(error => {
+        this.messageService.add({severity: 'error', summary: 'Error', detail: error.message})
+      });
   }
 
   generateMiniMap(canvas: HTMLCanvasElement) {
@@ -342,7 +341,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
         context.translate(-xCanvas, -yCanvas);
       } else {
         if (!this.originalUint16HeightMap) {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No original height map loaded' });
+          this.messageService.add({severity: 'error', summary: 'Error', detail: 'No original height map loaded'});
           return;
         }
 

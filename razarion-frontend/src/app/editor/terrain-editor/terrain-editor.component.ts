@@ -9,6 +9,7 @@ import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 import {TabPanel, TabView} from 'primeng/tabview';
 import {Dialog} from 'primeng/dialog';
 import {Button} from 'primeng/button';
+import {Divider} from 'primeng/divider';
 
 @Component({
   selector: 'terrain-editor',
@@ -18,7 +19,8 @@ import {Button} from 'primeng/button';
     ShapeTerrainEditorComponent,
     TabView,
     Dialog,
-    Button
+    Button,
+    Divider
   ],
   templateUrl: './terrain-editor.component.html'
 })

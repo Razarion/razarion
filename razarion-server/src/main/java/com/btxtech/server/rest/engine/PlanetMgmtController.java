@@ -1,12 +1,21 @@
 package com.btxtech.server.rest.engine;
 
+import com.btxtech.server.gameengine.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.model.Roles;
+import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.ServerTerrainShapeService;
+import com.btxtech.shared.datatypes.LifecyclePacket;
+import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/rest/planet-mgmt-controller")
@@ -14,11 +23,20 @@ public class PlanetMgmtController {
     private final Logger logger = LoggerFactory.getLogger(PlanetMgmtController.class);
     private final BaseItemService baseItemService;
     private final ServerGameEngineControl serverGameEngineControl;
+    private final ServerTerrainShapeService serverTerrainShapeService;
+    private final ClientSystemConnectionService clientSystemConnectionService;
+    private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
 
     public PlanetMgmtController(BaseItemService baseItemService,
-                                ServerGameEngineControl serverGameEngineControl) {
+                                ServerGameEngineControl serverGameEngineControl,
+                                ServerTerrainShapeService serverTerrainShapeService,
+                                ClientSystemConnectionService clientSystemConnectionService,
+                                ServerGameEngineCrudPersistence serverGameEngineCrudPersistence) {
         this.baseItemService = baseItemService;
         this.serverGameEngineControl = serverGameEngineControl;
+        this.serverTerrainShapeService = serverTerrainShapeService;
+        this.clientSystemConnectionService = clientSystemConnectionService;
+        this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
     }
 
     @PostMapping("restartBots")
@@ -69,13 +87,13 @@ public class PlanetMgmtController {
     @PostMapping("restartPlanetWarm")
     @RolesAllowed(Roles.ADMIN)
     public void restartPlanetWarm() {
-        throw new UnsupportedOperationException("...TODO...");
+        restartPlanet(LifecyclePacket.Type.PLANET_RESTART_WARM);
     }
 
     @PostMapping("restartPlanetCold")
     @RolesAllowed(Roles.ADMIN)
     public void restartPlanetCold() {
-        throw new UnsupportedOperationException("...TODO...");
+        restartPlanet(LifecyclePacket.Type.PLANET_RESTART_COLD);
     }
 
     @DeleteMapping(value = "delete/{baseId}")
@@ -83,6 +101,19 @@ public class PlanetMgmtController {
     public void deleteBase(@PathVariable("baseId") int baseId) {
         try {
             baseItemService.mgmtDeleteBase(baseId);
+        } catch (Throwable e) {
+            logger.warn(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private void restartPlanet(LifecyclePacket.Type type) {
+        try {
+            clientSystemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
+            ServerGameEngineConfig serverGameEngineConfig = serverGameEngineCrudPersistence.read().get(0);
+            serverTerrainShapeService.createTerrainShape(serverGameEngineConfig.getBotConfigs(), serverGameEngineConfig.getPlanetConfigId());
+            serverGameEngineControl.restartPlanet();
+            clientSystemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(type));
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;

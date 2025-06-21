@@ -52,8 +52,8 @@ import {HttpClient} from '@angular/common/http';
 import {BabylonModelService} from './renderer/babylon-model.service';
 import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
-import {ServerStartRegionComponent} from '../editor/server-start-region/server-start-region.component';
 import {Tools} from '@babylonjs/core';
+import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -402,7 +402,7 @@ export class GameMockService {
   private simulateStartup() {
     // this.showLoading();
 
-    this.showUi();
+    // this.showUi();
 
     // setInterval(() => {
     //   // this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
@@ -410,7 +410,7 @@ export class GameMockService {
     // }, 3000)
     // this.showUi();
 
-    // this.showEditor();
+    this.showEditor();
   }
 
   private showLoading() {
@@ -1104,9 +1104,9 @@ export class GameMockService {
     setTimeout(() => {
       this.fakeRenderImageRemoveLoadingCover();
       // this.gameComponent.addEditorModel(new EditorModel("Level editor", LevelEditorComponent));
-      this.gameComponent.addEditorModel(new EditorModel("Start region editor", ServerStartRegionComponent));
+      // this.gameComponent.addEditorModel(new EditorModel("Start region editor", ServerStartRegionComponent));
       // this.gameComponent.addEditorModel(new EditorModel("???", GeneratedCrudContainerComponent, GltfEditorComponent));
-      // this.addEditorModel(new EditorModel("???", TerrainEditorComponent));
+      this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
     }, 100);
   }
 }

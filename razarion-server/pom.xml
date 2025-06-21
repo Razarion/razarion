@@ -104,8 +104,6 @@
                         <class>com.btxtech.server.rest.BackendController</class>
                         <class>com.btxtech.shared.rest.ImageProvider</class>
                         <class>com.btxtech.shared.rest.PlanetEditorController</class>
-                        <class>com.btxtech.shared.rest.GroundEditorController</class>
-                        <class>com.btxtech.shared.rest.TerrainObjectEditorController</class>
                         <class>com.btxtech.shared.rest.TerrainHeightMapController</class>
                         <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
                         <class>com.btxtech.server.rest.AuthController</class>
@@ -116,8 +114,8 @@
                         <class>com.btxtech.server.rest.ui.GltfController</class>
                         <class>com.btxtech.server.rest.ui.Model3DController</class>
                         <class>com.btxtech.server.rest.ui.ParticleSystemController</class>
-                        <class>com.btxtech.server.rest.ui.BrushConfigController</class>
-                        <class>com.btxtech.server.rest.ui.TerrainObjectGeneratorController</class>
+                        <class>com.btxtech.server.rest.editor.BrushConfigController</class>
+                        <class>com.btxtech.server.rest.editor.TerrainObjectGeneratorController</class>
                         <class>com.btxtech.server.rest.ui.UiConfigCollectionController</class>
                         <class>com.btxtech.server.rest.editor.DbPropertiesEditorController</class>
                         <class>com.btxtech.server.rest.editor.UserMgmtController</class>
@@ -128,6 +126,8 @@
                         <class>com.btxtech.server.rest.editor.BoxItemTypeEditorController</class>
                         <class>com.btxtech.server.rest.editor.ResourceItemTypeEditorController</class>
                         <class>com.btxtech.server.rest.engine.PlanetMgmtController</class>
+                        <class>com.btxtech.server.rest.editor.GroundEditorController</class>
+                        <class>com.btxtech.server.rest.editor.TerrainObjectEditorController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

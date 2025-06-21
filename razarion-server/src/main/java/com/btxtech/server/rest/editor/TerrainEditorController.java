@@ -62,7 +62,7 @@ public class TerrainEditorController {
 
     @PostMapping(value = "updateCompressedHeightMap/{planetId}", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @RolesAllowed(Roles.ADMIN)
-    public void updateCompressedHeightMap(@PathVariable("planetId") int planetId, byte[] zippedHeightMap) {
+    public void updateCompressedHeightMap(@PathVariable("planetId") int planetId, @RequestBody byte[] zippedHeightMap) {
         try {
             planetCrudPersistence.updateCompressedHeightMap(planetId, zippedHeightMap);
         } catch (Throwable e) {

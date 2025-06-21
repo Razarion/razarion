@@ -1,15 +1,14 @@
-package com.btxtech.server.rest.ui;
+package com.btxtech.server.rest.editor;
 
 import com.btxtech.server.model.ui.TerrainObjectGeneratorEntity;
 import com.btxtech.server.rest.AbstractBaseController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.TerrainObjectGeneratorService;
-import com.btxtech.shared.CommonUrl;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(CommonUrl.TERRAIN_OBJECT_GENERATOR_EDITOR_PATH)
+@RequestMapping("/rest/editor/terrain-object-generator")
 public class TerrainObjectGeneratorController extends AbstractBaseController<TerrainObjectGeneratorEntity> {
     private final TerrainObjectGeneratorService terrainObjectGeneratorPersistence;
 

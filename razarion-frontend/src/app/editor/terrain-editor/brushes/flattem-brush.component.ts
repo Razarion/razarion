@@ -11,9 +11,9 @@ import {FormsModule} from '@angular/forms';
     FormsModule
   ],
   template: `
-    <div class="field grid grid-cols-12 gap-4 items-center">
-      <span class="col">Diameter</span>
-      <div class="col">
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Diameter</span>
+      <div class="col-span-7">
         <input type="text" pInputText [(ngModel)]="diameter" class="w-full"/>
         <p-slider [(ngModel)]="diameter" [step]="0.01" [min]="1" [max]="100"></p-slider>
       </div>
