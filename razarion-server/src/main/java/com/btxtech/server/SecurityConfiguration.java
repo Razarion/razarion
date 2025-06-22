@@ -63,9 +63,9 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http, UserService userService) throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .anyRequest().permitAll()  // Zugriff global erlauben
+                        .anyRequest().permitAll()
                 )
-                .csrf(AbstractHttpConfigurer::disable) // optional für reine REST-APIs
+                .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer((oauth2) -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter(userService)))
