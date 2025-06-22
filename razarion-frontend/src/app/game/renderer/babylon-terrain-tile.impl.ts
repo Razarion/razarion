@@ -61,7 +61,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     );
     this.cursorTypeHandler = (selectionInfo: SelectionInfo) => {
       if (selectionInfo.hasOwnMovable) {
-        actionManager.hoverCursor = "url(\"/cursors/go.png\") 15 15, auto"
+        actionManager.hoverCursor = "url(\"cursors/go.png\") 15 15, auto"
       } else {
         actionManager.hoverCursor = "default"
       }

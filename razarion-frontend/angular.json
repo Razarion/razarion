@@ -19,6 +19,7 @@
           "options": {
             "outputPath": "dist/razarion-frontend",
             "index": "src/index.html",
+            "baseHref": "/game/",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"

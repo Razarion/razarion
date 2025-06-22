@@ -95,7 +95,7 @@ export class AuthService {
               responseType: 'text' as 'text',
               body: requestConfig.data
             };
-            httpClient.request(requestConfig.method, requestConfig.url, httpOptions).subscribe({
+            httpClient.request(requestConfig.method, "/" + requestConfig.url, httpOptions).subscribe({
               next: (objectNameIds: any) => {
                 resolve(objectNameIds);
               },

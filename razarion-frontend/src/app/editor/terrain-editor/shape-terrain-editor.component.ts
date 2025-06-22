@@ -95,7 +95,7 @@ export class ShapeTerrainEditorComponent implements AfterViewInit, OnDestroy {
         data?: any;
         copyFn?: ((data: R) => R) | undefined;
       }): RestResponse<R> {
-        return <RestResponse<R>>fetch(requestConfig.url, {
+        return <RestResponse<R>>fetch("/" + requestConfig.url, {
           headers: {
             'Content-Type': 'application/octet-stream'
           }

@@ -177,7 +177,7 @@ class Tip {
     image.thickness = 0;
 
     this.mouse = new Image();
-    this.mouse.source = "/babylon-gui/mouse.svg";
+    this.mouse.source = "babylon-gui/mouse.svg";
     this.mouse.width = "40px";
     this.mouse.height = "40px";
     this.mouse.stretch = Image.STRETCH_UNIFORM;
@@ -185,7 +185,7 @@ class Tip {
     image.addControl(this.mouse);
 
     this.mouseLeftButton = new Image();
-    this.mouseLeftButton.source = "/babylon-gui/mouse-left-button.svg";
+    this.mouseLeftButton.source = "babylon-gui/mouse-left-button.svg";
     this.mouseLeftButton.width = "40px";
     this.mouseLeftButton.height = "40px";
     this.mouseLeftButton.stretch = Image.STRETCH_UNIFORM;

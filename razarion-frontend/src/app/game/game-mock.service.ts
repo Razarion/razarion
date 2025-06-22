@@ -444,7 +444,7 @@ export class GameMockService {
   private fakeRenderImageRemoveLoadingCover() {
     const element = document.querySelector('.game-main') as HTMLElement;
     if (element) {
-      element.style.backgroundImage = `url(${"/cockpit/MockGameBackground.jpg"})`;
+      element.style.backgroundImage = `url(${"cockpit/MockGameBackground.jpg"})`;
       element.style.backgroundSize = 'cover';
       element.style.backgroundPosition = 'center';
     }
