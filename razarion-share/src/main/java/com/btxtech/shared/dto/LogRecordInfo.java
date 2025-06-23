@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.system.Nullable;
+
 /**
  * Created by Beat
  * 21.02.2017.
@@ -37,35 +39,35 @@ public class LogRecordInfo {
         this.millis = millis;
     }
 
-    public ThrownLogInfo getThrown() {
+    public @Nullable ThrownLogInfo getThrown() {
         return thrown;
     }
 
-    public void setThrown(ThrownLogInfo thrown) {
+    public void setThrown(@Nullable ThrownLogInfo thrown) {
         this.thrown = thrown;
     }
 
-    public String getLoggerName() {
+    public @Nullable String getLoggerName() {
         return loggerName;
     }
 
-    public void setLoggerName(String loggerName) {
+    public void setLoggerName(@Nullable String loggerName) {
         this.loggerName = loggerName;
     }
 
-    public String getGwtStrongName() {
+    public @Nullable String getGwtStrongName() {
         return gwtStrongName;
     }
 
-    public void setGwtStrongName(String gwtStrongName) {
+    public void setGwtStrongName(@Nullable String gwtStrongName) {
         this.gwtStrongName = gwtStrongName;
     }
 
-    public String getGwtModuleName() {
+    public @Nullable String getGwtModuleName() {
         return gwtModuleName;
     }
 
-    public void setGwtModuleName(String gwtModuleName) {
+    public void setGwtModuleName(@Nullable String gwtModuleName) {
         this.gwtModuleName = gwtModuleName;
     }
 

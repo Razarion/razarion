@@ -107,6 +107,7 @@
                         <class>com.btxtech.shared.rest.TerrainHeightMapController</class>
                         <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
                         <class>com.btxtech.server.rest.AuthController</class>
+                        <class>com.btxtech.server.rest.LoggingControllerImpl</class>
                         <class>com.btxtech.server.rest.engine.InventoryController</class>
                         <class>com.btxtech.server.rest.engine.UnlockController</class>
                         <class>com.btxtech.server.rest.engine.QuestController</class>

@@ -39,6 +39,15 @@ public class LoggingControllerImpl implements LoggingController {
         logger.warn(s);
     }
 
+    @PostMapping(value = "angularJsonLogger", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void angularJsonLogger(@RequestBody LogRecordInfo logRecordInfo) {
+        String s = "Angular Message: " + logRecordInfo.getMessage();
+        s += "\n - Level: " + logRecordInfo.getLevel();
+        s += "\n - Millis: " + logRecordInfo.getMillis();
+        s += "\n - Logger name: " + logRecordInfo.getLoggerName();
+        logger.warn(s);
+    }
+
     private String thrownToString(Throwable throwable) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);

@@ -26,8 +26,6 @@ export class LoginComponent {
     this.authService.login(this.username, this.password)
       .then((token) => {
         localStorage.setItem("app.token", token);
-        // const decodedToken = jwtDecode<JwtPayload>(token);
-        // sessionStorage.setItem("app.roles", decodedToken.scope);
         window.location.reload();
       })
       .catch((error) => {
