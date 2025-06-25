@@ -35,7 +35,6 @@ import {
   Nullable,
   ParticleSystem,
   PolygonMeshBuilder,
-  Quaternion,
   Ray,
   Scene,
   ShadowGenerator,
@@ -148,6 +147,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private babylonBaseItems: BabylonBaseItemImpl[] = [];
   private babylonResourceItems: BabylonResourceItemImpl[] = [];
   private baseItemPlacerPresenterImpl!: BaseItemPlacerPresenterImpl;
+  private pendingSetViewFieldCenter: Vector2 | null = null;
 
   constructor(private gwtAngularService: GwtAngularService,
               private babylonModelService: BabylonModelService,
@@ -204,23 +204,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       self.keyPressed.delete(e.key);
     }, true);
     window.addEventListener('wheel', e => {
-      let delta = e.deltaY;
-      delta = delta / 240;
-      delta = -delta;
-      if (delta <= 0) {
-        delta += self.camera.position.y * 0.2;
-      } else {
-        delta -= self.camera.position.y * 0.2;
-      }
-      const cameraRotation = Quaternion.FromEulerAngles(self.camera.rotation.x, self.camera.rotation.y, self.camera.rotation.z);
-      let deltaVector = Vector3.Zero();
-      new Vector3(0, 0, -delta).rotateByQuaternionToRef(cameraRotation, deltaVector);
-      if (self.camera.position.y + deltaVector.y > 1 && self.camera.position.y + deltaVector.y < 200) {
-        this.camera.position.x += deltaVector.x;
-        this.camera.position.y += deltaVector.y;
-        this.camera.position.z += deltaVector.z;
-        this.onViewFieldChanged();
-      }
+      const delta = e.deltaY;
+      this.camera.position.y += delta * 0.05;
+      this.onViewFieldChanged();
     }, true);
 
     // -----  Camera -----
@@ -260,6 +246,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.selectionFrame = new SelectionFrame(this.scene, this, this.gwtAngularService);
 
     // ----- Render loop -----
+    this.scene.onBeforeRenderObservable.add(() => {
+      this.scrollCamera();
+      if (this.pendingSetViewFieldCenter) {
+        this.setViewFieldCenter(this.pendingSetViewFieldCenter.x, this.pendingSetViewFieldCenter.y)
+      }
+    });
+
     let renderTime = Date.now();
     this.engine.runRenderLoop(() => {
       try {
@@ -267,7 +260,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           return;
         }
         const date = Date.now();
-        this.scrollCamera((date - renderTime) / 1000);
         this.interpolateItemPositions(date);
         this.scene.render();
         renderTime = Date.now();
@@ -319,11 +311,29 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   setViewFieldCenter(x: number, y: number): void {
     let currentViewFieldCenter = this.setupCenterGroundPosition();
+    if (!this.isValidVector3(currentViewFieldCenter)) {
+      this.pendingSetViewFieldCenter = new Vector2(x, y);
+      return;
+    }
+    this.pendingSetViewFieldCenter = null;
     let newFieldCenter = new Vector2(x, y);
     let delta = newFieldCenter.subtract(new Vector2(currentViewFieldCenter.x, currentViewFieldCenter.z));
     this.camera.position.x += delta.x;
     this.camera.position.z += delta.y;
     this.onViewFieldChanged();
+  }
+
+  hasPendingSetViewFieldCenter(): boolean {
+    return !!this.pendingSetViewFieldCenter;
+  }
+
+  private isValidVector3(v: Vector3) {
+    return (
+      typeof v === "object" &&
+      isFinite(v.x) &&
+      isFinite(v.y) &&
+      isFinite(v.z)
+    );
   }
 
   setup(canvas: HTMLCanvasElement) {
@@ -340,41 +350,50 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.projectileMaterial.diffuseColor = new Color3(0, 0, 0);
   }
 
-  scrollCamera(delta: number) {
+  scrollCamera() {
     let hasChanged = false;
-    for (let [key, start] of this.keyPressed) {
-      const duration = new Date().getTime() - start;
+    const speed = 0.8;
 
-      let distance = Math.sqrt(duration + 200) * 0.01 + 0.05;
-
-      distance = distance * delta * 0.03;
-
-      distance = distance + this.camera.position.y * 0.03;
-
-      switch (key) {
-        case 'ArrowUp': {
-          hasChanged = true;
-          this.camera.position.z += distance;
-          break;
-        }
-        case 'ArrowDown': {
-          hasChanged = true;
-          this.camera.position.z -= distance;
-          break;
-        }
-        case 'ArrowRight': {
-          hasChanged = true;
-          this.camera.position.x += distance;
-          break;
-        }
-        case 'ArrowLeft': {
-          hasChanged = true;
-          this.camera.position.x -= distance;
-          break;
-        }
-        default:
-      }
+    let newX = null;
+    if (this.keyPressed.get("a")) {
+      newX = this.camera.position.x - speed;
+      hasChanged = true;
     }
+    if (this.keyPressed.get("d")) {
+      newX = this.camera.position.x + speed;
+      hasChanged = true;
+    }
+
+    let newZ = null;
+    if (this.keyPressed.get("s")) {
+      newZ = this.camera.position.z - speed;
+      hasChanged = true;
+    }
+    if (this.keyPressed.get("w")) {
+      newZ = this.camera.position.z + speed;
+      hasChanged = true;
+    }
+
+    if (newZ == null && newX == null) {
+      return;
+    }
+
+    if (newX! < -0) {
+      newX = 0;
+    }
+
+    if (newZ! < -15) {
+      newZ = -15;
+    }
+
+    if (newX || newX === 0) {
+      this.camera.position.x = newX;
+    }
+
+    if (newZ || newZ === 0) {
+      this.camera.position.z = newZ;
+    }
+
     if (hasChanged) {
       this.onViewFieldChanged();
     }

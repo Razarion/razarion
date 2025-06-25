@@ -25,13 +25,11 @@ export enum BaseItemPlacerPresenterEvent {
 }
 
 export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
-  static readonly PICKED_POINT_DELAYED_MAX_TRIES = 10;
   private disc: Mesh | null = null;
   private model3D: TransformNode | null = null;
   private tip: Tip | null = null;
   private readonly material;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
-  private pickedPointDelayedCount = 0;
   private baseItemPlacerCallback: ((event: BaseItemPlacerPresenterEvent) => void) | null = null;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
@@ -57,7 +55,6 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
     this.tip = new Tip(positionValid, this.rendererService, this.disc!)
 
-    this.pickedPointDelayedCount = 0;
     let pickedPoint = this.setupPickedPoint();
     if (pickedPoint) {
       this.setPosition(baseItemPlacer, pickedPoint);
@@ -95,6 +92,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   }
 
   private setupPickedPoint(): Vector3 | null {
+    if (this.rendererService.hasPendingSetViewFieldCenter()) {
+      return null;
+    }
     let centerPickingInfo = this.rendererService.setupPickInfoFromNDC(0, 0);
     if (centerPickingInfo.hit && centerPickingInfo.pickedPoint) {
       return centerPickingInfo.pickedPoint;
@@ -109,9 +109,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       if (pickedPoint) {
         this.setPosition(baseItemPlacer, pickedPoint);
       } else {
-        if (this.pickedPointDelayedCount++ < BaseItemPlacerPresenterImpl.PICKED_POINT_DELAYED_MAX_TRIES) {
-          this.setupPickedPointDelayed(baseItemPlacer);
-        }
+        this.setupPickedPointDelayed(baseItemPlacer);
       }
     }, 1000);
   }
