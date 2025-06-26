@@ -88,6 +88,10 @@ public class UserEntity {
         return userId;
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     /**
      * Should not be used for facebook email
      *
@@ -97,20 +101,20 @@ public class UserEntity {
         return email;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
     public String getPasswordHash() {
         return passwordHash;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isAdmin() {
@@ -130,10 +134,6 @@ public class UserEntity {
         return userContext;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public LevelEntity getLevel() {
         return level;
     }
@@ -142,12 +142,12 @@ public class UserEntity {
         this.level = level;
     }
 
-    public void setXp(int xp) {
-        this.xp = xp;
-    }
-
     public int getXp() {
         return xp;
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
     }
 
     public QuestConfigEntity getActiveQuest() {
@@ -165,6 +165,10 @@ public class UserEntity {
         completedQuest.add(quest);
     }
 
+    public List<QuestConfigEntity> getCompletedQuest() {
+        return completedQuest;
+    }
+
     public void setCompletedQuest(List<QuestConfigEntity> completedQuest) {
         if (this.completedQuest != null) {
             this.completedQuest.clear();
@@ -172,10 +176,6 @@ public class UserEntity {
         } else {
             this.completedQuest = completedQuest;
         }
-    }
-
-    public List<QuestConfigEntity> getCompletedQuest() {
-        return completedQuest;
     }
 
     public List<Integer> getCompletedQuestIds() {
@@ -210,6 +210,10 @@ public class UserEntity {
 
     public Date getCreationDate() {
         return creationDate;
+    }
+
+    public void setCreationDate(Date creationDateDate) {
+        this.creationDate = creationDateDate;
     }
 
     public Date getRegisterDate() {
@@ -251,16 +255,16 @@ public class UserEntity {
         levelUnlockEntities.add(levelUnlockEntity);
     }
 
+    public List<LevelUnlockEntity> getLevelUnlockEntities() {
+        return levelUnlockEntities;
+    }
+
     public void setLevelUnlockEntities(List<LevelUnlockEntity> levelUnlockEntities) {
         if (this.levelUnlockEntities == null) {
             this.levelUnlockEntities = new ArrayList<>();
         }
         this.levelUnlockEntities.clear();
         this.levelUnlockEntities.addAll(levelUnlockEntities);
-    }
-
-    public List<LevelUnlockEntity> getLevelUnlockEntities() {
-        return levelUnlockEntities;
     }
 
     public void startVerification() {
@@ -297,10 +301,6 @@ public class UserEntity {
 
     public Date getVerificationTimedOutDate() {
         return verificationTimedOutDate;
-    }
-
-    public void setCreationDate(Date creationDateDate) {
-        this.creationDate = creationDateDate;
     }
 
     public UserContext.RegisterState createRegisterState() {
@@ -353,6 +353,8 @@ public class UserEntity {
     public String toString() {
         return "UserEntity{" +
                 "id=" + id +
+                ", systemConnectionOpened=" + systemConnectionOpened +
+                ", systemConnectionClosed=" + systemConnectionClosed +
                 '}';
     }
 }

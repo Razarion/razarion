@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -373,5 +374,18 @@ public class UserService implements UserDetailsService {
                 userRepository.delete(userEntity);
             }
         });
+    }
+
+    @Transactional
+    @Scheduled(fixedRate = 60000)
+    public void cleanupDisconnectedUnregisteredUsers() {
+        var cutoff = LocalDateTime.now().minusMinutes(60);
+        userRepository.findInactiveSince(cutoff)
+                .stream()
+                .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
+                .forEach(userEntity -> {
+                    logger.info("Removing user: " + userEntity);
+                    userRepository.delete(userEntity);
+                });
     }
 }

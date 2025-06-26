@@ -15,15 +15,15 @@ import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import jakarta.inject.Provider;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 public class ServerLevelQuestService implements QuestListener {
-    private final Logger logger = Logger.getLogger(ServerLevelQuestService.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(ServerLevelQuestService.class);
     private final Provider<GameUiContextService> gameUiControlConfigPersistence;
     private final QuestService questService;
     private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
@@ -92,6 +92,7 @@ public class ServerLevelQuestService implements QuestListener {
     public void onQuestPassed(String userId, QuestConfig questConfig) {
         clientSystemConnectionService.onQuestPassed(userId, questConfig);
         // TODO historyPersistence.get().onQuest(userId, questConfig, QuestHistoryEntity.Type.QUEST_PASSED);
+        logger.info("Quest passed. User id: {} quest id: {}", userId, questConfig.getId());
         UserContext userContext = userService.getUserContextTransactional(userId);
         // Check for level up
         int newXp = userContext.getXp() + questConfig.getXp();
@@ -102,6 +103,7 @@ public class ServerLevelQuestService implements QuestListener {
                 userContext.levelId(newLevel.getId());
                 userContext.xp(0);
                 // TODO historyPersistence.get().onLevelUp(userId, newLevel);
+                logger.info("Level up. User id: {} new level: {}", userContext.getUserId(), newLevel.getNumber());
                 clientSystemConnectionService.onLevelUp(userId,
                         userContext,
                         serverUnlockService.hasAvailableUnlocks(userContext));
@@ -109,7 +111,7 @@ public class ServerLevelQuestService implements QuestListener {
                 userService.persistLevel(userId, newLevel);
                 userService.persistXp(userId, 0);
             } else {
-                logger.warning("No next level found for: " + currentLevel);
+                logger.warn("No next level found for: {}", currentLevel);
             }
         } else {
             userContext.xp(newXp);
@@ -137,7 +139,7 @@ public class ServerLevelQuestService implements QuestListener {
             userService.persistLevel(userId, newLevel);
             userService.persistXp(userId, 0);
         } else {
-            logger.warning("No next level found for: " + currentLevel);
+            logger.warn("No next level found for: {}", currentLevel);
         }
     }
 
