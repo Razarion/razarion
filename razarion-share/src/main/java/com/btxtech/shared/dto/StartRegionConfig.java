@@ -14,6 +14,9 @@ public class StartRegionConfig {
     private Integer minimalLevelId;
     private PlaceConfig region;
     private DecimalPosition noBaseViewPosition;
+    private boolean findFreePosition;
+    private Double positionRadius;
+    private Integer positionMaxItems;
 
     public @Nullable Integer getId() {
         return id;
@@ -55,6 +58,30 @@ public class StartRegionConfig {
         this.noBaseViewPosition = noBaseViewPosition;
     }
 
+    public boolean isFindFreePosition() {
+        return findFreePosition;
+    }
+
+    public void setFindFreePosition(boolean findFreePosition) {
+        this.findFreePosition = findFreePosition;
+    }
+
+    public @Nullable Double getPositionRadius() {
+        return positionRadius;
+    }
+
+    public void setPositionRadius(@Nullable Double positionRadius) {
+        this.positionRadius = positionRadius;
+    }
+
+    public @Nullable Integer getPositionMaxItems() {
+        return positionMaxItems;
+    }
+
+    public void setPositionMaxItems(@Nullable Integer positionMaxItems) {
+        this.positionMaxItems = positionMaxItems;
+    }
+
     public StartRegionConfig id(int id) {
         setId(id);
         return this;
@@ -77,6 +104,21 @@ public class StartRegionConfig {
 
     public StartRegionConfig noBaseViewPosition(DecimalPosition noBaseViewPosition) {
         setNoBaseViewPosition(noBaseViewPosition);
+        return this;
+    }
+
+    public StartRegionConfig findFreePosition(boolean findFreePosition) {
+        setFindFreePosition(findFreePosition);
+        return this;
+    }
+
+    public StartRegionConfig positionRadius(Double positionRadius) {
+        setPositionRadius(positionRadius);
+        return this;
+    }
+
+    public StartRegionConfig positionMaxItems(Integer positionMaxItems) {
+        setPositionMaxItems(positionMaxItems);
         return this;
     }
 }

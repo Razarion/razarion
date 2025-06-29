@@ -20,6 +20,7 @@ import {Accordion, AccordionModule} from 'primeng/accordion';
 import {LevelComponent} from '../common/level/level.component';
 import {NgForOf, NgIf} from '@angular/common';
 import {TipComponent} from './tip/tip.component';
+import {MessageService} from 'primeng/api';
 
 @Component({
   selector: 'server-quest-editor',
@@ -58,7 +59,7 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
       ConditionTrigger.UNLOCKED,
     ];
 
-  constructor(public editorService: EditorService) {
+  constructor(public editorService: EditorService, private messageService: MessageService) {
     super();
   }
 
@@ -70,7 +71,6 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   }
 
   private loadOptions(): void {
-    console.info("---- loadOptions")
     this.options.length = 0;
     // let tmpSelectedLevelQuest = this.selectedLevelQuest;
     let levelIdMap = new Map<number, string>();
@@ -106,6 +106,14 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
   onSave() {
     this.editorService.updateServerLevelQuestConfig(this.serverGameEngineConfig.serverLevelQuestConfigs).then(() => {
       this.loadOptions();
+    }).catch(error => {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not save`,
+        detail: error.message,
+        sticky: true
+      });
     });
   }
 

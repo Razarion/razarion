@@ -94,6 +94,7 @@ public class UserService implements UserDetailsService {
                 .email(userEntity.getEmail())
                 .userId(userEntity.getUserId())
                 .levelId(extractId(userEntity.getLevel(), LevelEntity::getId))
+                .levelNumber(extractId(userEntity.getLevel(), LevelEntity::getNumber))
                 .xp(userEntity.getXp())
                 .crystals(userEntity.getCrystals())
                 .activeQuest(extractId(userEntity.getActiveQuest(), QuestConfigEntity::getId))

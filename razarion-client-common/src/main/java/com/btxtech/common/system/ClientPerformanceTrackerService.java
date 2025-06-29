@@ -62,16 +62,16 @@ public class ClientPerformanceTrackerService {
     }
 
     private void sendToClient() {
-        List<PerfmonStatistic> perfmonStatistics = perfmonService.pullServerPerfmonStatistics();
-        if (perfmonStatistics.size() > 0) {
-            providerCaller.call(response -> {
-                    }, exceptionHandler.restErrorHandler("TrackerProvider.performanceTracker()")
-            ).performanceTracker(perfmonStatistics);
-        }
-        List<TerrainTileStatistic> terrainTileStatistics = perfmonService.flushTerrainTileStatistics();
-        if (!terrainTileStatistics.isEmpty()) {
-            providerCaller.call(response -> {
-            }, exceptionHandler.restErrorHandler("TrackerProvider.terrainTileStatisticsTracker()")).terrainTileStatisticsTracker(terrainTileStatistics);
-        }
+//    TODO    List<PerfmonStatistic> perfmonStatistics = perfmonService.pullServerPerfmonStatistics();
+//        if (perfmonStatistics.size() > 0) {
+//            providerCaller.call(response -> {
+//                    }, exceptionHandler.restErrorHandler("TrackerProvider.performanceTracker()")
+//            ).performanceTracker(perfmonStatistics);
+//        }
+//        List<TerrainTileStatistic> terrainTileStatistics = perfmonService.flushTerrainTileStatistics();
+//        if (!terrainTileStatistics.isEmpty()) {
+//            providerCaller.call(response -> {
+//            }, exceptionHandler.restErrorHandler("TrackerProvider.terrainTileStatisticsTracker()")).terrainTileStatisticsTracker(terrainTileStatistics);
+//        }
     }
 }

@@ -100,7 +100,7 @@ export class MainCockpitComponent implements MainCockpit {
   displayItemCount(itemCount: number, usedHouseSpace: number, houseSpace: number): void {
     this.zone.run(() => {
       this.itemCount = itemCount;
-      this.displayHouseSpace = `${usedHouseSpace} / ${usedHouseSpace}`;
+      this.displayHouseSpace = `${usedHouseSpace} / ${houseSpace}`;
     });
   }
 

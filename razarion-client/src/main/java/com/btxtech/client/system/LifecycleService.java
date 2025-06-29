@@ -168,7 +168,7 @@ public class LifecycleService {
         clearAndHold(null);
         gameUiControl.closeConnection();
         // TODO modalDialogManager.showSingleNoClosableServerRestartDialog();
-        startRestartWatchdog();
+        // TODO startRestartWatchdog();
     }
 
     public void clearAndHold(DeferredStartup deferredStartup) {
@@ -234,21 +234,21 @@ public class LifecycleService {
 
     public void onConnectionLost(String websocketName) {
         logger.severe("Connection lost on websocket: '" + websocketName + "'. Restarting browser");
-        serverMgmt.call((RemoteCallback<String>) serverStateString -> {
-            try {
-                ServerState serverState = ServerState.valueOf(serverStateString);
-                if (serverState == ServerState.RUNNING) {
-                    // TODO modalDialogManager.showSingleNoClosableDialog(I18nHelper.getConstants().connectionFailed(), I18nHelper.getConstants().connectionLost());
-                    simpleExecutorService.schedule(RESTART_DELAY, () -> Window.Location.replace("/"), SimpleExecutorService.Type.WAIT_RESTART);
-                } else {
-                    handleServerRestart();
-                }
-            } catch (Throwable t) {
-                exceptionHandler.handleException(t);
-            }
-        }, (message, throwable) -> {
-            handleServerRestart();
-            return false;
-        }).getServerStatus();
+//   TODO     serverMgmt.call((RemoteCallback<String>) serverStateString -> {
+//            try {
+//                ServerState serverState = ServerState.valueOf(serverStateString);
+//                if (serverState == ServerState.RUNNING) {
+//                    // TODO modalDialogManager.showSingleNoClosableDialog(I18nHelper.getConstants().connectionFailed(), I18nHelper.getConstants().connectionLost());
+//                    simpleExecutorService.schedule(RESTART_DELAY, () -> Window.Location.replace("/"), SimpleExecutorService.Type.WAIT_RESTART);
+//                } else {
+//                    handleServerRestart();
+//                }
+//            } catch (Throwable t) {
+//                exceptionHandler.handleException(t);
+//            }
+//        }, (message, throwable) -> {
+//            handleServerRestart();
+//            return false;
+//        }).getServerStatus();
     }
 }

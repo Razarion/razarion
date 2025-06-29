@@ -33,11 +33,19 @@ public class RequestInfoLoggingFilter implements Filter {
                 refererPart = String.format(" referer=\"%s\"", referer);
             }
 
-            logger.info("{} \"{}\"{} user_agent=\"{}\"",
-                    method,
-                    fullPath,
-                    refererPart,
-                    userAgent != null ? userAgent : "");
+            boolean isGameExcluded = requestURI.startsWith("/game/")
+                    && !requestURI.equals("/game/")
+                    && !requestURI.equals("/game/index.html");
+
+            boolean shouldLog = !isGameExcluded && !requestURI.startsWith("/rest/");
+
+            if (shouldLog) {
+                logger.info("{} \"{}\"{} user_agent=\"{}\"",
+                        method,
+                        fullPath,
+                        refererPart,
+                        userAgent != null ? userAgent : "/rest");
+            }
         }
         chain.doFilter(request, response);
     }

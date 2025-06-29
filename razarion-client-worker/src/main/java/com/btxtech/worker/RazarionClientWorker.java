@@ -1,6 +1,5 @@
 package com.btxtech.worker;
 
-import com.btxtech.shared.rest.LoggingControllerFactory;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import org.dominokit.rest.DominoRestConfig;
@@ -14,11 +13,6 @@ public class RazarionClientWorker implements EntryPoint {
     @Override
     public void onModuleLoad() {
         DominoRestConfig.initDefaults().setDefaultResourceRootPath("/rest");
-        LoggingControllerFactory.INSTANCE
-                .simpleLogger("RazarionClientWorker onModuleLoad")
-                .send();
-
-        logger.severe("RazarionClientWorker onModuleLoad");
 
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
             @Override

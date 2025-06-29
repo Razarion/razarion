@@ -38,9 +38,10 @@ public class StatusProvider {
 
     @SuppressWarnings("unused") // Called by Angular
     public Promise<Alarm[]> requestServerAlarms() {
-        return new Promise<>((resolve, reject) ->
-                alarmServiceControllerCaller.call((RemoteCallback<List<Alarm>>) response -> resolve.onInvoke(response.toArray(new Alarm[0])),
-                        exceptionHandler.restErrorHandler("AlarmServiceController")).getAlarms());
+        // TODO return new Promise<>((resolve, reject) ->
+        // TODO  alarmServiceControllerCaller.call((RemoteCallback<List<Alarm>>) response -> resolve.onInvoke(response.toArray(new Alarm[0])),
+        // TODO exceptionHandler.restErrorHandler("AlarmServiceController")).getAlarms());
+        return null;
     }
 
     // TODO @SuppressWarnings("unused") // Called by Angular

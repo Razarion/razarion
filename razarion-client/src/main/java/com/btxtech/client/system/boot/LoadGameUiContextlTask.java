@@ -29,7 +29,6 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
         DominoRestAccess.loadColdGameUiContext().onSuccess(coldGameUiContext -> {
                     try {
                         bootContext.getGameUiControl().setColdGameUiContext(coldGameUiContext);
-                        bootContext.activateFacebookAppStartLogin();
                         deferredStartup.finished();
                     } catch (Throwable throwable) {
                         logger.log(Level.SEVERE, "LoadGameUiContextlTask failed", throwable);

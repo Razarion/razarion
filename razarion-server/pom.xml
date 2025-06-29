@@ -102,7 +102,6 @@
                         <class>com.btxtech.shared.dto.ObjectNameId</class>
                         <class>com.btxtech.shared.rest.RestApplication</class>
                         <class>com.btxtech.server.rest.BackendController</class>
-                        <class>com.btxtech.shared.rest.PlanetEditorController</class>
                         <class>com.btxtech.shared.rest.TerrainHeightMapController</class>
                         <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
                         <class>com.btxtech.server.rest.AuthController</class>
@@ -129,6 +128,7 @@
                         <class>com.btxtech.server.rest.engine.PlanetMgmtController</class>
                         <class>com.btxtech.server.rest.editor.GroundEditorController</class>
                         <class>com.btxtech.server.rest.editor.TerrainObjectEditorController</class>
+                        <class>com.btxtech.server.rest.editor.PlanetEditorController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

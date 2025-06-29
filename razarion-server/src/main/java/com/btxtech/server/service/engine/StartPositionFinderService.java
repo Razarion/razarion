@@ -40,7 +40,7 @@ public class StartPositionFinderService {
         if (positionFound != null) {
             logger.info("Free position found at {} iterations {} duration {}", positionFound, context.getResets(), System.currentTimeMillis() - startTime);
         } else {
-            logger.info("Free position not found duration {}", System.currentTimeMillis() - startTime);
+            logger.warn("Free position not found duration {}", System.currentTimeMillis() - startTime);
         }
         return positionFound;
     }

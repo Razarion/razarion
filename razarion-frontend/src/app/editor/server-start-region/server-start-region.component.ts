@@ -6,24 +6,26 @@ import {PlaceConfigComponent} from '../common/place-config/place-config.componen
 import {DecimalPositionComponent} from '../common/decimal-position/decimal-position.component';
 import {LevelComponent} from '../common/level/level.component';
 import {FormsModule} from '@angular/forms';
-import {InputNumber} from 'primeng/inputnumber';
+import {InputNumber, InputNumberModule} from 'primeng/inputnumber';
 import {Divider} from 'primeng/divider';
 import {Button} from 'primeng/button';
 import {NgIf} from '@angular/common';
 import {SelectModule} from 'primeng/select';
+import {Checkbox, CheckboxModule} from 'primeng/checkbox';
+import {MessageService} from 'primeng/api';
 
 @Component({
   selector: 'server-start-region',
   imports: [
     PlaceConfigComponent,
-    DecimalPositionComponent,
     LevelComponent,
     FormsModule,
-    InputNumber,
+    InputNumberModule,
     Divider,
     Button,
     NgIf,
-    SelectModule
+    SelectModule,
+    CheckboxModule
   ],
   templateUrl: './server-start-region.component.html'
 })
@@ -31,7 +33,7 @@ export class ServerStartRegionComponent extends EditorPanel implements OnInit {
   serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
   selectedStartRegion?: StartRegionConfig;
 
-  constructor(private editorService: EditorService) {
+  constructor(private editorService: EditorService, private messageService: MessageService) {
     super();
   }
 
@@ -42,7 +44,15 @@ export class ServerStartRegionComponent extends EditorPanel implements OnInit {
   }
 
   onSave() {
-    this.editorService.updateStartRegionConfig(this.serverGameEngineConfigEntity.startRegionConfigs)
+    this.editorService.updateStartRegionConfig(this.serverGameEngineConfigEntity.startRegionConfigs).catch(error => {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not save`,
+        detail: error.message,
+        sticky: true
+      });
+    });
   }
 
   onCreate() {
@@ -51,7 +61,10 @@ export class ServerStartRegionComponent extends EditorPanel implements OnInit {
       internalName: "New",
       minimalLevelId: null,
       noBaseViewPosition: null,
-      region: null
+      region: null,
+      findFreePosition: false,
+      positionMaxItems: null,
+      positionRadius: null,
     };
     this.serverGameEngineConfigEntity!.startRegionConfigs.push(this.selectedStartRegion);
   }

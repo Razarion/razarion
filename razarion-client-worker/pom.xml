@@ -66,13 +66,6 @@
             <artifactId>dagger-gwt</artifactId>
             <version>${com.google.dagger.version}</version>
         </dependency>
-        <!-- Test -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <repositories>

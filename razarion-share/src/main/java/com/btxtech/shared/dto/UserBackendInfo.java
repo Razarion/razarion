@@ -18,6 +18,7 @@ public class UserBackendInfo {
     private Integer activeQuest;
     private List<Integer> completedQuestIds;
     private Integer levelId;
+    private Integer levelNumber;
     private int xp;
     private int crystals;
     private List<Integer> unlockedIds;
@@ -103,6 +104,14 @@ public class UserBackendInfo {
 
     public void setLevelId(Integer levelId) {
         this.levelId = levelId;
+    }
+
+    public Integer getLevelNumber() {
+        return levelNumber;
+    }
+
+    public void setLevelNumber(Integer levelNumber) {
+        this.levelNumber = levelNumber;
     }
 
     public int getXp() {
@@ -199,8 +208,13 @@ public class UserBackendInfo {
         return this;
     }
 
-    public UserBackendInfo levelId(Integer levelNumber) {
-        setLevelId(levelNumber);
+    public UserBackendInfo levelId(Integer levelId) {
+        setLevelId(levelId);
+        return this;
+    }
+
+    public UserBackendInfo levelNumber(Integer levelNumber) {
+        setLevelNumber(levelNumber);
         return this;
     }
 

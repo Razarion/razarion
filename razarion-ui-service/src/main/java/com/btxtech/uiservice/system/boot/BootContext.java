@@ -43,10 +43,6 @@ public class BootContext {
 
     }
 
-    public void activateFacebookAppStartLogin() {
-
-    }
-
     public Promise<Void> loadThreeJsModels() {
         return null;
     }

@@ -2,7 +2,6 @@ package com.btxtech.client.system.boot;
 
 import com.btxtech.client.ClientGameEngineControl;
 import com.btxtech.client.gwtangular.GwtAngularService;
-import com.btxtech.client.user.FacebookService;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -27,7 +26,6 @@ import javax.inject.Singleton;
 @Singleton
 public class BootImpl extends Boot {
     private final Provider<ClientGameEngineControl> clientGameEngineControl;
-    private final FacebookService facebookService;
     private final Provider<GwtAngularService> gwtAngularService;
     private final GameEngineControl gameEngineControl;
     private final GameUiControl gameUiControl;
@@ -38,7 +36,6 @@ public class BootImpl extends Boot {
     @Inject
     public BootImpl(AlarmService alarmService,
                     Provider<ClientGameEngineControl> clientGameEngineControl,
-                    FacebookService facebookService,
                     Provider<GwtAngularService> gwtAngularService,
                     GameEngineControl gameEngineControl,
                     GameUiControl gameUiControl,
@@ -47,7 +44,6 @@ public class BootImpl extends Boot {
                     UserUiService userUiService) {
         super(alarmService);
         this.clientGameEngineControl = clientGameEngineControl;
-        this.facebookService = facebookService;
         this.gwtAngularService = gwtAngularService;
         this.gameEngineControl = gameEngineControl;
         this.gameUiControl = gameUiControl;
@@ -67,11 +63,6 @@ public class BootImpl extends Boot {
             @Override
             public void loadWorker(DeferredStartup deferredStartup) {
                 clientGameEngineControl.get().loadWorker(deferredStartup);
-            }
-
-            @Override
-            public void activateFacebookAppStartLogin() {
-                facebookService.activateFacebookAppStartLogin();
             }
 
             @Override

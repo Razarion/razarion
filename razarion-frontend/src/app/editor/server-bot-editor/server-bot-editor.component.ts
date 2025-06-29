@@ -18,6 +18,7 @@ import {NgForOf, NgIf} from '@angular/common';
 import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
 import {Divider} from 'primeng/divider';
 import {SelectModule} from 'primeng/select';
+import {MessageService} from 'primeng/api';
 
 @Component({
   selector: 'server-bot-editor',
@@ -42,7 +43,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
   selectedBot?: BotConfig;
 
-  constructor(public editorService: EditorService) {
+  constructor(public editorService: EditorService, private messageService: MessageService) {
     super();
   }
 
@@ -53,7 +54,15 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   }
 
   onSave() {
-    this.editorService.updateBotConfig(this.serverGameEngineConfigEntity.botConfigs)
+    this.editorService.updateBotConfig(this.serverGameEngineConfigEntity.botConfigs).catch(error => {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not save`,
+        detail: error.message,
+        sticky: true
+      });
+    });
   }
 
   protected readonly EditorService = EditorService;

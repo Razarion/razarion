@@ -10,6 +10,7 @@ import {NgIf} from '@angular/common';
 import {BoxItemTypeComponent} from '../common/box-item-type/box-item-type.component';
 import {Divider} from 'primeng/divider';
 import {SelectModule} from 'primeng/select';
+import {MessageService} from 'primeng/api';
 
 @Component({
   selector: 'box-region',
@@ -30,7 +31,7 @@ export class BoxRegionComponent extends EditorPanel implements OnInit {
   serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
   selectedBoxRegionConfig?: BoxRegionConfig;
 
-  constructor(public editorService: EditorService) {
+  constructor(public editorService: EditorService, private messageService: MessageService) {
     super();
   }
 
@@ -41,7 +42,15 @@ export class BoxRegionComponent extends EditorPanel implements OnInit {
   }
 
   onSave() {
-    this.editorService.updateBoxRegionConfig(this.serverGameEngineConfigEntity.boxRegionConfigs)
+    this.editorService.updateBoxRegionConfig(this.serverGameEngineConfigEntity.boxRegionConfigs).catch(error => {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not save`,
+        detail: error.message,
+        sticky: true
+      });
+    });
   }
 
   onCreate() {

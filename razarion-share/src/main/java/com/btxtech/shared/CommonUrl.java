@@ -29,7 +29,6 @@ public class CommonUrl {
     public static final String COLD = "cold";
     public static final String WARM = "warm";
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";
-    public static final String PLANET_EDITOR_PATH = "editor/planet";
     public static final String BASE_ITEM_TYPE_EDITOR_PATH = "editor/base_item_type";
     public static final String GENERIC_PROPERTY_EDITOR_PATH = "editor/generic-property";
     public static final String GAME_UI_CONTEXT_EDITOR_PATH = "editor/game-ui-context";

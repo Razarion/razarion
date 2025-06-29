@@ -132,7 +132,7 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
         }
         return new SlavePlanetConfig()
                 .startRegion(result.getStartRegion())
-                .findFreePosition(true)
+                .findFreePosition(result.isFindFreePosition())
                 .positionRadius(result.getPositionRadius())
                 .positionMaxItems(result.getPositionMaxItems())
                 .positionPath(positions);

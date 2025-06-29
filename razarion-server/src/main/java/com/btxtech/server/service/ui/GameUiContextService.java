@@ -3,18 +3,31 @@ package com.btxtech.server.service.ui;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.ui.GameUiContextEntity;
 import com.btxtech.server.repository.ui.GameUiContextRepository;
-import com.btxtech.server.service.engine.*;
+import com.btxtech.server.service.engine.AbstractConfigCrudPersistence;
+import com.btxtech.server.service.engine.DbPropertiesService;
+import com.btxtech.server.service.engine.LevelCrudPersistence;
+import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.ServerLevelQuestService;
+import com.btxtech.server.service.engine.StartPositionFinderService;
+import com.btxtech.server.service.engine.StaticGameConfigService;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.*;
+import com.btxtech.shared.dto.AudioConfig;
+import com.btxtech.shared.dto.ColdGameUiContext;
+import com.btxtech.shared.dto.GameUiContextConfig;
+import com.btxtech.shared.dto.InGameQuestVisualConfig;
+import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiContextConfig, GameUiContextEntity> {
+    private final Logger logger = LoggerFactory.getLogger(GameUiContextService.class);
     private final StaticGameConfigService staticGameConfigService;
     private final LevelCrudPersistence levelCrudPersistence;
     private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
@@ -70,8 +83,12 @@ public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiCo
         WarmGameUiContext warmGameUiContext = gameUiContextEntity.toGameWarmGameUiControlConfig();
         if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
             var slavePlanetConfig = serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId());
-            if(slavePlanetConfig.isFindFreePosition() && baseItemService.getPlayerBase4UserId(userContext.getUserId()) == null) {
-                slavePlanetConfig.setNoBaseViewPosition(startPositionFinderService.findFreePosition(slavePlanetConfig));
+            if (slavePlanetConfig.isFindFreePosition() && baseItemService.getPlayerBase4UserId(userContext.getUserId()) == null) {
+                try {
+                    slavePlanetConfig.setNoBaseViewPosition(startPositionFinderService.findFreePosition(slavePlanetConfig));
+                } catch (Exception e) {
+                    logger.warn(e.getMessage(), e);
+                }
             }
             warmGameUiContext.setSlavePlanetConfig(slavePlanetConfig);
             warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(userContext.getUserId()));

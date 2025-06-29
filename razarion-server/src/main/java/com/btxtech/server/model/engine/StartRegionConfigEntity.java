@@ -31,7 +31,6 @@ public class StartRegionConfigEntity extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private LevelEntity minimalLevel;
     private boolean findFreePosition;
-    // private List<DecimalPosition> positionPath;
     private Double positionRadius;
     private Integer positionMaxItems;
 
@@ -53,7 +52,10 @@ public class StartRegionConfigEntity extends BaseEntity {
                 .id(getId())
                 .internalName(getInternalName())
                 .minimalLevelId(extractId(minimalLevel, LevelEntity::getId))
-                .region(getStartRegion());
+                .region(getStartRegion())
+                .findFreePosition(findFreePosition)
+                .positionRadius(positionRadius)
+                .positionMaxItems(positionMaxItems);
     }
 
     public StartRegionConfigEntity fromStartRegionConfig(StartRegionConfig startRegionConfig) {
@@ -65,24 +67,22 @@ public class StartRegionConfigEntity extends BaseEntity {
         } else {
             startRegion = null;
         }
-        // TODO noBaseViewPosition = startRegionConfig.getNoBaseViewPosition();
+        findFreePosition = startRegionConfig.isFindFreePosition();
+        positionRadius = startRegionConfig.getPositionRadius();
+        positionMaxItems = startRegionConfig.getPositionMaxItems();
         return this;
+    }
+
+    public boolean isFindFreePosition() {
+        return findFreePosition;
     }
 
     public Double getPositionRadius() {
         return positionRadius;
     }
 
-    public void setPositionRadius(Double positionRadius) {
-        this.positionRadius = positionRadius;
-    }
-
     public Integer getPositionMaxItems() {
         return positionMaxItems;
-    }
-
-    public void setPositionMaxItems(Integer positionMaxItems) {
-        this.positionMaxItems = positionMaxItems;
     }
 
     @Override

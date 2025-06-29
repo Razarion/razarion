@@ -10,6 +10,7 @@ import {FormsModule} from '@angular/forms';
 import {Divider} from 'primeng/divider';
 import {Button} from 'primeng/button';
 import {SelectModule} from 'primeng/select';
+import {MessageService} from 'primeng/api';
 
 @Component({
   selector: 'server-resource-region',
@@ -29,7 +30,7 @@ export class ServerResourceRegionComponent extends EditorPanel implements OnInit
   serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
   selectedResourceRegion?: ResourceRegionConfig;
 
-  constructor(public editorService: EditorService) {
+  constructor(public editorService: EditorService, private messageService: MessageService) {
     super();
   }
 
@@ -40,7 +41,15 @@ export class ServerResourceRegionComponent extends EditorPanel implements OnInit
   }
 
   onSave() {
-    this.editorService.updateResourceRegionConfig(this.serverGameEngineConfigEntity.resourceRegionConfigs)
+    this.editorService.updateResourceRegionConfig(this.serverGameEngineConfigEntity.resourceRegionConfigs).catch(error => {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not save`,
+        detail: error.message,
+        sticky: true
+      });
+    });
   }
 
 
