@@ -1,6 +1,5 @@
 package com.btxtech.server.model.ui;
 
-import com.btxtech.shared.dto.ImageGalleryItem;
 import jakarta.persistence.*;
 
 

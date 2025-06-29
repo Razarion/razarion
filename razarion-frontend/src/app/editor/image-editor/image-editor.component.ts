@@ -1,30 +1,35 @@
-import { Component, OnInit } from '@angular/core';
-import { EditorPanel } from "../editor-model";
-import { HttpClient } from "@angular/common/http";
-import { MessageService } from "primeng/api";
-import { URL_IMAGE, getUpdateUrl as common_getUpdateUrl} from "../../common";
-import { ImageGalleryItem } from "../../gwtangular/GwtAngularFacade";
+import {Component, OnInit} from '@angular/core';
+import {EditorPanel} from "../editor-model";
+import {HttpClient} from "@angular/common/http";
+import {MessageService} from "primeng/api";
+import {getUpdateUrl as common_getUpdateUrl, URL_IMAGE} from "../../common";
 import {ImageGalleryItemComponent} from './image-gallery-item.component';
 import {Button} from 'primeng/button';
-import {FileUpload} from 'primeng/fileupload';
 import {NgForOf} from '@angular/common';
+import {ImageControllerClient, ImageGalleryItem} from '../../generated/razarion-share';
+import {TypescriptGenerator} from '../../backend/typescript-generator';
+import {FileUploadModule} from 'primeng/fileupload';
+import {CardModule} from 'primeng/card';
 
 @Component({
   selector: 'image-editor',
   imports: [
     ImageGalleryItemComponent,
     Button,
-    FileUpload,
+    FileUploadModule,
+    CardModule,
     NgForOf
   ],
   templateUrl: './image-editor.component.html'
 })
 export class ImageEditorComponent extends EditorPanel implements OnInit {
   imageGalleryItems: ImageGalleryItem[] = [];
+  private imageControllerClient: ImageControllerClient;
 
-  constructor(private http: HttpClient,
-    private messageService: MessageService) {
+  constructor(http: HttpClient,
+              private messageService: MessageService) {
     super();
+    this.imageControllerClient = new ImageControllerClient(TypescriptGenerator.generateHttpClientAdapter(http))
   }
 
   ngOnInit(): void {
@@ -45,18 +50,16 @@ export class ImageEditorComponent extends EditorPanel implements OnInit {
   }
 
   onDeleteImage(imageGalleryItem: ImageGalleryItem) {
-    this.http.delete<ImageGalleryItem[]>(URL_IMAGE + `/delete/${imageGalleryItem.id}`)
-      .subscribe(
-        () => this.requestAllImages(),
-        error => {
-          this.messageService.add({
-            severity: 'error',
-            summary: `Error deleting image`,
-            detail: error.message,
-            sticky: true
-          });
-        });
-
+    this.imageControllerClient.delete(imageGalleryItem.id).then(value => {
+      this.requestAllImages();
+    }).catch((error) => {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Error delete image`,
+        detail: error.message,
+        sticky: true
+      })
+    })
   }
 
   getUpdateUrl(imageGalleryItem: ImageGalleryItem) {
@@ -73,16 +76,15 @@ export class ImageEditorComponent extends EditorPanel implements OnInit {
   }
 
   requestAllImages(): void {
-    this.http.get<ImageGalleryItem[]>(URL_IMAGE + '/image-gallery')
-      .subscribe(
-        imageGalleryItems => this.imageGalleryItems = imageGalleryItems,
-        event => {
-          this.messageService.add({
-            severity: 'error',
-            summary: `Error loading image gallery`,
-            detail: event.error.message,
-            sticky: true
-          });
-        });
+    this.imageControllerClient.getImageGalleryItems().then(imageGalleryItems => {
+      this.imageGalleryItems = imageGalleryItems;
+    }).catch(error => {
+      this.messageService.add({
+        severity: 'error',
+        summary: `Error loading image gallery`,
+        detail: error.message,
+        sticky: true
+      });
+    })
   }
 }

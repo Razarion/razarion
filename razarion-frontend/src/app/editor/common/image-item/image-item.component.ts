@@ -9,7 +9,7 @@ import {FileUpload} from 'primeng/fileupload';
 
 @Component({
   selector: 'image-item',
-  styles: ['.image-gallery-img { width: 100px;height: 100px; background: url(\'/TransparentBg.png\')}'],
+  styles: ['.image-gallery-img { width: 100px;height: 100px; background: url(\'public/transparentBg.png\')}'],
   templateUrl: './image-item.component.html',
   imports: [
     Button,

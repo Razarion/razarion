@@ -102,7 +102,6 @@
                         <class>com.btxtech.shared.dto.ObjectNameId</class>
                         <class>com.btxtech.shared.rest.RestApplication</class>
                         <class>com.btxtech.server.rest.BackendController</class>
-                        <class>com.btxtech.shared.rest.ImageProvider</class>
                         <class>com.btxtech.shared.rest.PlanetEditorController</class>
                         <class>com.btxtech.shared.rest.TerrainHeightMapController</class>
                         <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
@@ -118,6 +117,7 @@
                         <class>com.btxtech.server.rest.editor.BrushConfigController</class>
                         <class>com.btxtech.server.rest.editor.TerrainObjectGeneratorController</class>
                         <class>com.btxtech.server.rest.ui.UiConfigCollectionController</class>
+                        <class>com.btxtech.server.rest.ui.ImageController</class>
                         <class>com.btxtech.server.rest.editor.DbPropertiesEditorController</class>
                         <class>com.btxtech.server.rest.editor.UserMgmtController</class>
                         <class>com.btxtech.server.rest.editor.TerrainEditorController</class>

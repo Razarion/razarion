@@ -26,13 +26,21 @@ public abstract class SyncService {
     }
 
     public void notifySendSyncBaseItem(SyncBaseItem syncBaseItem) {
+        notifySendSyncBaseItem(syncBaseItem, false);
+    }
+
+    public void notifySendSyncBaseItem(SyncBaseItem syncBaseItem, boolean atFront) {
         if (gameEngineMode != GameEngineMode.MASTER) {
             return;
         }
         synchronized (itemsToSend) {
             if (!ids.contains(syncBaseItem.getId())) {
                 ids.add(syncBaseItem.getId());
-                itemsToSend.add(syncBaseItem);
+                if (atFront) {
+                    itemsToSend.add(0, syncBaseItem);
+                } else {
+                    itemsToSend.add(syncBaseItem);
+                }
             }
         }
     }

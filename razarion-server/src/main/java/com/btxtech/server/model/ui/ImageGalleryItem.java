@@ -1,9 +1,5 @@
-package com.btxtech.shared.dto;
+package com.btxtech.server.model.ui;
 
-/**
- * Created by Beat
- * 15.06.2016.
- */
 public class ImageGalleryItem {
     private int id;
     private int size;

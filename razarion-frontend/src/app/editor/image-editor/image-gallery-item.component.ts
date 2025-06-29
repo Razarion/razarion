@@ -15,7 +15,7 @@ export class ImageTypePipe implements PipeTransform {
 @Component({
   selector: 'image-gallery-item',
   styles: ['.image-gallery-descr { width: 50px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis }',
-    '.image-gallery-img { width: 100px;height: 100px; background: url(\'/TransparentBg.png\')}'],
+    '.image-gallery-img { width: 100px;height: 100px; background: url(\'public/transparentBg.png\')}'],
   imports: [
     ImageTypePipe,
     FormatFileSizePipe

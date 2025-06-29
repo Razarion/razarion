@@ -13,11 +13,14 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -58,6 +61,9 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     private final QuestConfigService questConfigService;
+    @Autowired
+    @Lazy
+    private BaseItemService baseItemService;
 
     public UserService(LevelCrudPersistence levelCrudPersistence,
                        UserRepository userRepository,
@@ -379,12 +385,16 @@ public class UserService implements UserDetailsService {
     @Transactional
     @Scheduled(fixedRate = 60000)
     public void cleanupDisconnectedUnregisteredUsers() {
-        var cutoff = LocalDateTime.now().minusMinutes(60);
+        var cutoff = LocalDateTime.now().minusMinutes(120);
         userRepository.findInactiveSince(cutoff)
                 .stream()
                 .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
                 .forEach(userEntity -> {
                     logger.info("Removing user: " + userEntity);
+                    var playerBase = baseItemService.getPlayerBase4UserId(userEntity.getUserId());
+                    if (playerBase != null) {
+                        baseItemService.mgmtDeleteBase(playerBase.getBaseId());
+                    }
                     userRepository.delete(userEntity);
                 });
     }

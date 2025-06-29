@@ -100,7 +100,7 @@ public class SyncBuilder extends SyncBaseAbility {
                 }
                 try {
                     currentBuildup = baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
-                    syncService.notifySendSyncBaseItem(currentBuildup);
+                    syncService.notifySendSyncBaseItem(currentBuildup, true);
                     syncService.notifySendSyncBaseItem(getSyncBaseItem());
                     gameLogicService.onStartBuildingSyncBaseItem(getSyncBaseItem(), currentBuildup);
                     toBeBuildPosition = null;
