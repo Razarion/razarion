@@ -9,7 +9,6 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -28,17 +27,52 @@ import java.util.logging.Logger;
 @Singleton
 public class BotService {
     private final Logger logger = Logger.getLogger(BotService.class.getName());
-
     private final Provider<BotRunner> botRunnerInstance;
-
-    private final ExceptionHandler exceptionHandler;
     private final Collection<BotRunner> botRunners = new ArrayList<>();
     private Collection<BotConfig> botConfigs;
 
     @Inject
-    public BotService(ExceptionHandler exceptionHandler, Provider<com.btxtech.shared.gameengine.planet.bot.BotRunner> botRunnerInstance) {
-        this.exceptionHandler = exceptionHandler;
+    public BotService(Provider<BotRunner> botRunnerInstance) {
         this.botRunnerInstance = botRunnerInstance;
+    }
+
+    static public List<BabylonDecal> generateBotDecals(List<BotConfig> botConfigs) {
+        List<BabylonDecal> babylonDecals = new ArrayList<>();
+        if (botConfigs != null) {
+            botConfigs.forEach(botConfig -> {
+                if (botConfig.getGroundBabylonMaterialId() != null && botConfig.getRealm() != null) {
+                    PlaceConfig placeConfig = botConfig.getRealm();
+                    if (placeConfig.getPolygon2D() != null) {
+                        Rectangle2D aabb = placeConfig.getPolygon2D().toAabb();
+                        babylonDecals.add(createBaseBabylonDecal(botConfig,
+                                aabb.center(),
+                                aabb.width(),
+                                aabb.height()));
+                    } else if (placeConfig.getPosition() != null) {
+                        if (placeConfig.getRadius() != null) {
+                            babylonDecals.add(createBaseBabylonDecal(botConfig,
+                                    placeConfig.getPosition(),
+                                    placeConfig.getRadius() * 2,
+                                    placeConfig.getRadius() * 2));
+                        }
+                    } else {
+                        throw new IllegalArgumentException("Illegal PlaceConfig: to find a random place, a polygon or a position must be set");
+                    }
+
+                }
+            });
+        }
+        return babylonDecals;
+    }
+
+    private static BabylonDecal createBaseBabylonDecal(BotConfig botConfig, DecimalPosition center, double width, double height) {
+        BabylonDecal babylonDecal = new BabylonDecal();
+        babylonDecal.babylonMaterialId = botConfig.getGroundBabylonMaterialId();
+        babylonDecal.xPos = center.getX();
+        babylonDecal.yPos = center.getY();
+        babylonDecal.xSize = width;
+        babylonDecal.ySize = height;
+        return babylonDecal;
     }
 
     public void startBots(Collection<BotConfig> botConfigs) {
@@ -87,7 +121,7 @@ public class BotService {
                 }
             }
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, t.getMessage(), t);
         }
     }
 
@@ -112,7 +146,7 @@ public class BotService {
                     botRunner.executeCommand(botCommandConfig);
                 }
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                logger.log(Level.SEVERE, t.getMessage(), t);
             }
         }
     }
@@ -161,44 +195,5 @@ public class BotService {
                 }
             }
         }
-    }
-
-    static public List<BabylonDecal> generateBotDecals(List<BotConfig> botConfigs) {
-        List<BabylonDecal> babylonDecals = new ArrayList<>();
-        if (botConfigs != null) {
-            botConfigs.forEach(botConfig -> {
-                if (botConfig.getGroundBabylonMaterialId() != null && botConfig.getRealm() != null) {
-                    PlaceConfig placeConfig = botConfig.getRealm();
-                    if (placeConfig.getPolygon2D() != null) {
-                        Rectangle2D aabb = placeConfig.getPolygon2D().toAabb();
-                        babylonDecals.add(createBaseBabylonDecal(botConfig,
-                                aabb.center(),
-                                aabb.width(),
-                                aabb.height()));
-                    } else if (placeConfig.getPosition() != null) {
-                        if (placeConfig.getRadius() != null) {
-                            babylonDecals.add(createBaseBabylonDecal(botConfig,
-                                    placeConfig.getPosition(),
-                                    placeConfig.getRadius() * 2,
-                                    placeConfig.getRadius() * 2));
-                        }
-                    } else {
-                        throw new IllegalArgumentException("Illegal PlaceConfig: to find a random place, a polygon or a position must be set");
-                    }
-
-                }
-            });
-        }
-        return babylonDecals;
-    }
-
-    private static BabylonDecal createBaseBabylonDecal(BotConfig botConfig, DecimalPosition center, double width, double height) {
-        BabylonDecal babylonDecal = new BabylonDecal();
-        babylonDecal.babylonMaterialId = botConfig.getGroundBabylonMaterialId();
-        babylonDecal.xPos = center.getX();
-        babylonDecal.yPos = center.getY();
-        babylonDecal.xSize = width;
-        babylonDecal.ySize = height;
-        return babylonDecal;
     }
 }

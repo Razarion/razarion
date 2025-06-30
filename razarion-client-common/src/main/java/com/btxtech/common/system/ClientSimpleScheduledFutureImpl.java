@@ -1,6 +1,5 @@
 package com.btxtech.common.system;
 
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
@@ -8,6 +7,7 @@ import elemental2.dom.DomGlobal;
 
 import javax.inject.Inject;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
     private static final int MAX_OVERRUN_COUNT = 100;
     private final Logger logger = Logger.getLogger(ClientSimpleScheduledFutureImpl.class.getName());
-    private final ExceptionHandler exceptionHandler;
     private final PerfmonService perfmonService;
     private Double timerId;
     private double milliSDelay;
@@ -30,9 +29,8 @@ public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
     private int overrunCount;
 
     @Inject
-    public ClientSimpleScheduledFutureImpl(PerfmonService perfmonService, ExceptionHandler exceptionHandler) {
+    public ClientSimpleScheduledFutureImpl(PerfmonService perfmonService) {
         this.perfmonService = perfmonService;
-        this.exceptionHandler = exceptionHandler;
     }
 
     public void init(double milliSDelay, boolean repeating, PerfmonEnum perfmonEnum, Runnable runnable) {
@@ -81,7 +79,7 @@ public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
                             + " perfmonEnum=" + perfmonEnum.orElse(null));
                 }
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                logger.log(Level.WARNING, t.getMessage(), t);
             } finally {
                 perfmonEnum.ifPresent(perfmonService::onLeft);
             }

@@ -2,13 +2,13 @@ package com.btxtech.common.system;
 
 import com.btxtech.common.GwtCommonUtils;
 import com.btxtech.common.WebSocketHelper;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import elemental2.dom.EventListener;
 import elemental2.dom.WebSocket;
 
 import javax.inject.Inject;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -21,8 +21,6 @@ public class WebSocketWrapper {
     private static final int MAX_ESTABLISH_CONNECTION_TIMEOUT = 5000;
     private final Logger logger = Logger.getLogger(WebSocketWrapper.class.getName());
 
-    private ExceptionHandler exceptionHandler;
-
     private SimpleExecutorService simpleExecutorService;
     private int retries;
     private String url;
@@ -33,9 +31,8 @@ public class WebSocketWrapper {
     private InnerWebSocket innerWebSocket;
 
     @Inject
-    public WebSocketWrapper(SimpleExecutorService simpleExecutorService, ExceptionHandler exceptionHandler) {
+    public WebSocketWrapper(SimpleExecutorService simpleExecutorService) {
         this.simpleExecutorService = simpleExecutorService;
-        this.exceptionHandler = exceptionHandler;
     }
 
     public void start(String url, Runnable openCallback, EventListener messageEventCallback, Runnable serverRestartCallback, Runnable connectionLostCallback) {
@@ -84,7 +81,7 @@ public class WebSocketWrapper {
                 try {
                     webSocket.close();
                 } catch (Throwable t) {
-                    exceptionHandler.handleException(t);
+                    logger.log(Level.WARNING, t.getMessage(), t);
                 }
                 webSocket = null;
                 createNewSocket();
@@ -97,7 +94,7 @@ public class WebSocketWrapper {
                 try {
                     logger.severe("WebSocketWrapper WebSocket OnError: " + GwtCommonUtils.jsonStringify(evt));
                 } catch (Throwable t) {
-                    exceptionHandler.handleException(t);
+                    logger.log(Level.WARNING, t.getMessage(), t);
                 }
             });
             webSocket.onclose = (closeEvent -> {
@@ -114,7 +111,7 @@ public class WebSocketWrapper {
                         createNewSocket();
                     }
                 } catch (Throwable t) {
-                    exceptionHandler.handleException(t);
+                    logger.log(Level.WARNING, t.getMessage(), t);
                 }
             });
             webSocket.onmessage = (evt -> messageEventCallback.handleEvent(evt));
@@ -146,8 +143,8 @@ public class WebSocketWrapper {
                 open = false;
                 webSocket.close();
                 webSocket = null;
-            } catch (Throwable throwable) {
-                exceptionHandler.handleException("WebSocketWrapper.close()", throwable);
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "WebSocketWrapper.close()" + t.getMessage(), t);
             }
         }
 

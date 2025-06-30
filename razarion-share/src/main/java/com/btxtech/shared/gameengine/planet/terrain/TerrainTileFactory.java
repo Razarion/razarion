@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManage
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -16,6 +15,8 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -23,15 +24,11 @@ import java.util.List;
  */
 @Singleton
 public class TerrainTileFactory {
-
-    // private Logger logger = Logger.getLogger(TerrainTileFactory.class.getName());
+    private final Logger logger = Logger.getLogger(TerrainTileFactory.class.getName());
     private final Provider<TerrainTileBuilder> terrainTileBuilderInstance;
 
-    private final ExceptionHandler exceptionHandler;
-
     @Inject
-    public TerrainTileFactory(ExceptionHandler exceptionHandler, Provider<com.btxtech.shared.gameengine.planet.terrain.TerrainTileBuilder> terrainTileBuilderInstance) {
-        this.exceptionHandler = exceptionHandler;
+    public TerrainTileFactory(Provider<TerrainTileBuilder> terrainTileBuilderInstance) {
         this.terrainTileBuilderInstance = terrainTileBuilderInstance;
     }
 
@@ -63,7 +60,7 @@ public class TerrainTileFactory {
                 try {
                     TerrainObjectModel terrainObjectModel = new TerrainObjectModel();
                     Index node = TerrainUtil.terrainPositionToNodeIndex(new DecimalPosition(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y));
-                    terrainObjectModel.position = new Vertex(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y,  terrainShapeManager.getTerrainAnalyzer().getHeightNodeAt(node));
+                    terrainObjectModel.position = new Vertex(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y, terrainShapeManager.getTerrainAnalyzer().getHeightNodeAt(node));
                     if (nativeTerrainObjectPosition.offset != null) {
                         terrainObjectModel.position = terrainObjectModel.position.add(
                                 nativeTerrainObjectPosition.offset.x,
@@ -85,7 +82,7 @@ public class TerrainTileFactory {
                     terrainObjectModel.terrainObjectId = nativeTerrainObjectPosition.terrainObjectId;
                     terrainObjectModels.add(terrainObjectModel);
                 } catch (Throwable t) {
-                    exceptionHandler.handleException(t);
+                    logger.log(Level.WARNING, t.getMessage(), t);
                 }
             });
             terrainTileObjectList.setTerrainObjectModels(terrainObjectModels.toArray(new TerrainObjectModel[0]));

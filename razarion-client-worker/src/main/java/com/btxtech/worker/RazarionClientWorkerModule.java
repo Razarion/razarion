@@ -2,18 +2,15 @@ package com.btxtech.worker;
 
 import com.btxtech.common.ClientNativeTerrainShapeAccess;
 import com.btxtech.common.DummyClientSyncServer;
-import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.common.system.ClientSimpleExecutorServiceImpl;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.WorkerTrackerHandler;
 import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 
 @Module
 public abstract class RazarionClientWorkerModule {
@@ -32,9 +29,6 @@ public abstract class RazarionClientWorkerModule {
 
     @Binds
     public abstract GameEngineWorker bindGameEngineWorker(ClientGameEngineWorker clientGameEngineWorker);
-
-    @Binds
-    public abstract ExceptionHandler bindExceptionHandler(ClientExceptionHandlerImpl exceptionHandlerImpl);
 
     @Binds
     public abstract SimpleExecutorService bindSimpleExecutorService(ClientSimpleExecutorServiceImpl clientSimpleExecutorServiceImpl);

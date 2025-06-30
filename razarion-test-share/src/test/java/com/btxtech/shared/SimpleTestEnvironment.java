@@ -1,6 +1,5 @@
 package com.btxtech.shared;
 
-import com.btxtech.shared.system.ExceptionHandler;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,17 +9,6 @@ import java.lang.reflect.Method;
  * 23.09.2016.
  */
 public class SimpleTestEnvironment {
-    private final static ExceptionHandler exceptionHandler = new ExceptionHandler(null) {
-        @Override
-        protected void handleExceptionInternal(String message, Throwable t) {
-            System.out.println("ExceptionHandler from com.btxtech.share.SimpleTestEnvironment: " + message);
-            if (t != null) {
-                t.printStackTrace();
-            }
-
-        }
-    };
-
     public static void injectService(String fieldName, Object service, Class theClazz, Object serviceToInject) {
         try {
             Field field = theClazz.getDeclaredField(fieldName);

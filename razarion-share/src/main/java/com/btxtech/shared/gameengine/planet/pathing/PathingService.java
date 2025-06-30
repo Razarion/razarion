@@ -14,30 +14,26 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Singleton
 public class PathingService {
-    // private static final Logger LOGGER = Logger.getLogger(PathingService.class.getName());
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
     public static final double RADIUS_GROW = 1;
-
+    private final Logger logger = Logger.getLogger(PathingService.class.getName());
     private final SyncItemContainerServiceImpl syncItemContainerService;
-
     private final TerrainService terrainService;
-
-    private final ExceptionHandler exceptionHandler;
     private final PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
 
     @Inject
-    public PathingService(ExceptionHandler exceptionHandler, TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService) {
-        this.exceptionHandler = exceptionHandler;
+    public PathingService(TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService) {
         this.terrainService = terrainService;
         this.syncItemContainerService = syncItemContainerService;
     }
@@ -133,12 +129,12 @@ public class PathingService {
             pathingServiceTracker.endTick();
             // DebugHelperStatic.printAfterTick(debugHelper);
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, t.getMessage(), t);
         }
     }
 
     private void calculateItemVelocity() {
-        ItemVelocityCalculator itemVelocityCalculator = new ItemVelocityCalculator(syncItemContainerService, terrainService.getTerrainAnalyzer(), exceptionHandler);
+        ItemVelocityCalculator itemVelocityCalculator = new ItemVelocityCalculator(syncItemContainerService, terrainService.getTerrainAnalyzer());
         syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> itemVelocityCalculator.analyse(syncBaseItem.getAbstractSyncPhysical()));
         itemVelocityCalculator.calculateVelocity();
     }

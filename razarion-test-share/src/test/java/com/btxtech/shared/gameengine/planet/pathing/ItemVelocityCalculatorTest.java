@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
-import com.btxtech.shared.mock.TestExceptionHandler;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
@@ -73,8 +72,7 @@ public class ItemVelocityCalculatorTest {
         TerrainShapeManager terrainServiceMock = EasyMock.createNiceMock(TerrainShapeManager.class);
         EasyMock.replay(terrainServiceMock);
         TerrainAnalyzer pathingAccess = new TerrainAnalyzer(null, terrainServiceMock);
-        TestExceptionHandler testExceptionHandler = new TestExceptionHandler(null);
-        ItemVelocityCalculator itemVelocityCalculator = new ItemVelocityCalculator(syncItemContainerService, pathingAccess, testExceptionHandler);
+        ItemVelocityCalculator itemVelocityCalculator = new ItemVelocityCalculator(syncItemContainerService, pathingAccess);
 
         syncItemHelpers.forEach(syncItemHelper -> {
             syncPhysicalMovables.add(GameTestHelper.createSyncPhysicalMovable(2.0, syncItemHelper.syncItemId, TerrainType.LAND, syncItemHelper.position, syncItemHelper.velocity, syncItemHelper.wayPositions));
@@ -83,8 +81,6 @@ public class ItemVelocityCalculatorTest {
         syncPhysicalMovables.forEach(itemVelocityCalculator::analyse);
         itemVelocityCalculator.calculateVelocity();
         // display(syncPhysicalMovables);
-
-        testExceptionHandler.failIfException();
 
         return syncPhysicalMovables;
     }

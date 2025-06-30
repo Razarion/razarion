@@ -1,11 +1,9 @@
 package com.btxtech.client.system.boot;
 
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
-import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

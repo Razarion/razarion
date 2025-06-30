@@ -14,7 +14,14 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.*;
+import com.btxtech.shared.dto.AbstractBotCommandConfig;
+import com.btxtech.shared.dto.BotAttackCommandConfig;
+import com.btxtech.shared.dto.BotHarvestCommandConfig;
+import com.btxtech.shared.dto.BotKillBaseCommandConfig;
+import com.btxtech.shared.dto.BotKillHumanCommandConfig;
+import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
+import com.btxtech.shared.dto.BotMoveCommandConfig;
+import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -29,12 +36,15 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,27 +58,23 @@ import java.util.logging.Logger;
 public class BotItemContainer {
     private static final int KILL_ITERATION_MAXIMUM = 100;
     private final Logger logger = Logger.getLogger(BotItemContainer.class.getName());
-
     private final ItemTypeService itemTypeService;
-
     private final BaseItemService baseItemService;
-
     private final SyncItemContainerServiceImpl syncItemContainerService;
-
     private final BotService botService;
-
     private final Provider<BotSyncBaseItem> baseItemInstance;
-
-    private final ExceptionHandler exceptionHandler;
     private final HashMap<SyncBaseItem, BotSyncBaseItem> botItems = new HashMap<>();
+    private final CurrentItemBuildup currentItemBuildup = new CurrentItemBuildup();
     private Need need;
     private String botName;
     private PlaceConfig realm;
-    private final CurrentItemBuildup currentItemBuildup = new CurrentItemBuildup();
 
     @Inject
-    public BotItemContainer(ExceptionHandler exceptionHandler, Provider<com.btxtech.shared.gameengine.planet.bot.BotSyncBaseItem> baseItemInstance, BotService botService, SyncItemContainerServiceImpl syncItemContainerService, BaseItemService baseItemService, ItemTypeService itemTypeService) {
-        this.exceptionHandler = exceptionHandler;
+    public BotItemContainer(Provider<BotSyncBaseItem> baseItemInstance,
+                            BotService botService,
+                            SyncItemContainerServiceImpl syncItemContainerService,
+                            BaseItemService baseItemService,
+                            ItemTypeService itemTypeService) {
         this.baseItemInstance = baseItemInstance;
         this.botService = botService;
         this.syncItemContainerService = syncItemContainerService;
@@ -212,7 +218,7 @@ public class BotItemContainer {
                 try {
                     botSyncBuilder.buildBuilding(position, toBeBuilt);
                 } catch (Exception e) {
-                    exceptionHandler.handleException(e);
+                    logger.log(Level.WARNING, e.getMessage(), e);
                 }
             }
             currentItemBuildup.startBuildup(botItemConfig, botSyncBuilder);

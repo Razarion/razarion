@@ -18,12 +18,13 @@ import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -32,24 +33,20 @@ import java.util.Set;
  */
 
 public class ResourceRegion {
-
-    // private Logger logger = Logger.getLogger(ResourceRegion.class.getName());
+    private final Logger logger = Logger.getLogger(ResourceRegion.class.getName());
     private final ItemTypeService itemTypeService;
-
-    private final ExceptionHandler exceptionHandler;
-
     private final SyncItemContainerServiceImpl syncItemContainerService;
-
     private final ResourceService resourceService;
     private final Set<Integer> syncResourceItems = new HashSet<>();
     private ResourceRegionConfig resourceRegionConfig;
     private ResourceItemType resourceItemType;
 
     @Inject
-    public ResourceRegion(ResourceService resourceService, SyncItemContainerServiceImpl syncItemContainerService, ExceptionHandler exceptionHandler, ItemTypeService itemTypeService) {
+    public ResourceRegion(ResourceService resourceService,
+                          SyncItemContainerServiceImpl syncItemContainerService,
+                          ItemTypeService itemTypeService) {
         this.resourceService = resourceService;
         this.syncItemContainerService = syncItemContainerService;
-        this.exceptionHandler = exceptionHandler;
         this.itemTypeService = itemTypeService;
     }
 
@@ -73,7 +70,7 @@ public class ResourceRegion {
                 syncResourceItems.add(syncResourceItem.getId());
             }
         } catch (Exception e) {
-            exceptionHandler.handleException(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 

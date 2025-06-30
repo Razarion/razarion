@@ -1,6 +1,5 @@
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
@@ -17,7 +16,6 @@ import com.btxtech.uiservice.control.AbstractServerSystemConnection;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.system.boot.Boot;
-import com.btxtech.uiservice.system.boot.TestExceptionHandler;
 import dagger.Binds;
 import dagger.Module;
 
@@ -37,9 +35,6 @@ public abstract class TestUiServiceDaggerModule {
 
     @Binds
     public abstract Boot bindBoot(TestBootImpl testBootImpl);
-
-    @Binds
-    public abstract ExceptionHandler bindExceptionHandler(TestExceptionHandler testExceptionHandler);
 
     @Binds
     public abstract SimpleExecutorService bindSimpleExecutorService(TestSimpleExecutorService testSimpleExecutorService);

@@ -9,7 +9,6 @@ import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.deprecated.Caller;
 import com.btxtech.shared.deprecated.RemoteCallback;
 import com.btxtech.shared.rest.ServerMgmtController;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonService;
@@ -36,6 +35,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -65,7 +65,6 @@ public class LifecycleService {
     private final Caller<ServerMgmtController> serverMgmt;
     private final UserUiService userUiService;
     private final GwtAngularService gwtAngularService;
-    private ExceptionHandler exceptionHandler;
     private Consumer<ServerState> serverRestartCallback;
     private SimpleScheduledFuture simpleScheduledFuture;
     private boolean beforeUnload;
@@ -124,7 +123,7 @@ public class LifecycleService {
             boot.addStartupProgressListener(new AngularStartupListener(GameStartupSeq.COLD));
             boot.start(GameStartupSeq.COLD);
         } catch (Throwable throwable) {
-            exceptionHandler.handleException("Start failed", throwable);
+            logger.log(Level.SEVERE, "Start cols failed", throwable);
         }
     }
 
@@ -134,7 +133,7 @@ public class LifecycleService {
             boot.addStartupProgressListener(new AngularStartupListener(GameStartupSeq.WARM));
             boot.start(GameStartupSeq.WARM);
         } catch (Throwable throwable) {
-            exceptionHandler.handleException("Start failed", throwable);
+            logger.log(Level.SEVERE, "Start warm failed", throwable);
         }
     }
 
@@ -211,7 +210,7 @@ public class LifecycleService {
                     }
                 }
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                logger.log(Level.WARNING, t.getMessage(), t);
             }
         }, (message, throwable) -> {
             if (serverRestartCallback != null) {

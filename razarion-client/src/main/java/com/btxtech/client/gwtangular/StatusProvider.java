@@ -1,17 +1,14 @@
 package com.btxtech.client.gwtangular;
 
-import com.btxtech.common.system.ClientExceptionHandlerImpl;
+import com.btxtech.shared.deprecated.Caller;
 import com.btxtech.shared.rest.AlarmServiceController;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
-import com.btxtech.shared.deprecated.Caller;
-import com.btxtech.shared.deprecated.RemoteCallback;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
-import java.util.List;
+import javax.inject.Singleton;
 
 @JsType
 @Singleton
@@ -21,11 +18,8 @@ public class StatusProvider {
 
     private Caller<AlarmServiceController> alarmServiceControllerCaller;
 
-    private ClientExceptionHandlerImpl exceptionHandler;
-
     @Inject
-    public StatusProvider(ClientExceptionHandlerImpl exceptionHandler, Caller<com.btxtech.shared.rest.AlarmServiceController> alarmServiceControllerCaller, AlarmService alarmService) {
-        this.exceptionHandler = exceptionHandler;
+    public StatusProvider(Caller<AlarmServiceController> alarmServiceControllerCaller, AlarmService alarmService) {
         this.alarmServiceControllerCaller = alarmServiceControllerCaller;
         this.alarmService = alarmService;
     }

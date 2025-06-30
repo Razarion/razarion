@@ -3,7 +3,17 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.command.*;
+import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
+import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
+import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
+import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
+import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
+import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
+import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
@@ -11,10 +21,11 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -23,29 +34,27 @@ import javax.inject.Singleton;
 @Singleton
 public class CommandService {
     // Is part of the Base service
-    // private Logger logger = Logger.getLogger(CommandService.class.getName());
-    private final ExceptionHandler exceptionHandler;
-
+    private final Logger logger = Logger.getLogger(CommandService.class.getName());
     private final PathingService pathingService;
-
     private final GameLogicService gameLogicService;
-
     private final BaseItemService baseItemService;
-
     private final ResourceService resourceService;
-
     private final BoxService boxService;
-
     private final SyncItemContainerServiceImpl syncItemContainerService;
-
     private final ItemTypeService itemTypeService;
-
     private final PlanetService planetService;
-
     private final GuardingItemService guardingItemService;
 
     @Inject
-    public CommandService(GuardingItemService guardingItemService, PlanetService planetService, ItemTypeService itemTypeService, SyncItemContainerServiceImpl syncItemContainerService, BoxService boxService, ResourceService resourceService, BaseItemService baseItemService, GameLogicService gameLogicService, PathingService pathingService, ExceptionHandler exceptionHandler) {
+    public CommandService(GuardingItemService guardingItemService,
+                          PlanetService planetService,
+                          ItemTypeService itemTypeService,
+                          SyncItemContainerServiceImpl syncItemContainerService,
+                          BoxService boxService,
+                          ResourceService resourceService,
+                          BaseItemService baseItemService,
+                          GameLogicService gameLogicService,
+                          PathingService pathingService) {
         this.guardingItemService = guardingItemService;
         this.planetService = planetService;
         this.itemTypeService = itemTypeService;
@@ -55,7 +64,6 @@ public class CommandService {
         this.baseItemService = baseItemService;
         this.gameLogicService = gameLogicService;
         this.pathingService = pathingService;
-        this.exceptionHandler = exceptionHandler;
     }
 
     public void move(IdsDto syncBaseItemIds, DecimalPosition destination) {
@@ -266,7 +274,7 @@ public class CommandService {
         } catch (ItemDoesNotExistException e) {
             gameLogicService.onItemDoesNotExistException(e);
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, t.getMessage(), t);
         }
     }
 

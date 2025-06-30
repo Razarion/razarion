@@ -16,12 +16,17 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -31,29 +36,22 @@ import java.util.stream.Collectors;
 @Singleton
 public class BoxService {
     private static final long TICK_TO_SLEEP_MS = 10 * PlanetService.TICKS_PER_SECONDS;
-
+    private final Logger logger = Logger.getLogger(BoxService.class.getName());
     private final SyncItemContainerServiceImpl syncItemContainerService;
-
     private final ItemTypeService itemTypeService;
-
     private final GameLogicService gameLogicService;
-
     private final InventoryTypeService inventoryTypeService;
-
-    private final ExceptionHandler exceptionHandler;
-    private GameEngineMode gameEngineMode;
     private final Map<Integer, SyncBoxItem> boxes = new HashMap<>();
+    private GameEngineMode gameEngineMode;
     private Collection<BoxRegion> boxRegion;
     private long ticksSinceLastCheck;
 
     @Inject
-    public BoxService(ExceptionHandler exceptionHandler,
-                      InventoryTypeService inventoryTypeService,
+    public BoxService(InventoryTypeService inventoryTypeService,
                       GameLogicService gameLogicService,
                       ItemTypeService itemTypeService,
                       SyncItemContainerServiceImpl syncItemContainerService,
                       InitializeService initializeService) {
-        this.exceptionHandler = exceptionHandler;
         this.inventoryTypeService = inventoryTypeService;
         this.gameLogicService = gameLogicService;
         this.itemTypeService = itemTypeService;
@@ -229,7 +227,7 @@ public class BoxService {
             });
             boxRegion.forEach(this::handleBoxRegion);
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -239,7 +237,7 @@ public class BoxService {
                 dropRegionBoxes(boxRegion);
                 boxRegion.setupNextDropTime();
             } catch (Exception e) {
-                exceptionHandler.handleException(e);
+                logger.log(Level.WARNING, e.getMessage(), e);
             }
         }
     }

@@ -7,13 +7,14 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -21,19 +22,16 @@ import java.util.Iterator;
  */
 @Singleton
 public class ProjectileService {
-
+    private final Logger logger = Logger.getLogger(ProjectileService.class.getName());
     private final BaseItemService baseItemService;
-
     private final GameLogicService gameLogicService;
-
     private final SyncItemContainerServiceImpl syncItemContainerService;
-
-    private final ExceptionHandler exceptionHandler;
     private final Collection<Projectile> projectiles = new ArrayList<>();
 
     @Inject
-    public ProjectileService(ExceptionHandler exceptionHandler, SyncItemContainerServiceImpl syncItemContainerService, GameLogicService gameLogicService, BaseItemService baseItemService) {
-        this.exceptionHandler = exceptionHandler;
+    public ProjectileService(SyncItemContainerServiceImpl syncItemContainerService,
+                             GameLogicService gameLogicService,
+                             BaseItemService baseItemService) {
         this.syncItemContainerService = syncItemContainerService;
         this.gameLogicService = gameLogicService;
         this.baseItemService = baseItemService;
@@ -72,7 +70,7 @@ public class ProjectileService {
                 }
             }
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 

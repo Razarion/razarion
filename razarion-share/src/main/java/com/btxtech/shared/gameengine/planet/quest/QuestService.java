@@ -24,7 +24,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -34,6 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger.SYNC_ITEM_CREATED;
@@ -47,28 +47,27 @@ import static com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger.SY
 public class QuestService {
     private static final int TICKS_TO_SEND_DEFERRED = PlanetService.TICKS_PER_SECONDS * 2;
     private final Logger logger = Logger.getLogger(QuestService.class.getName());
-
     private final ItemTypeService itemTypeService;
-
     private final Provider<CountComparison> countComparisonProvider;
-
     private final Provider<InventoryItemCountComparison> inventoryItemCountComparisonnProvider;
-
     private final Provider<BaseItemTypeComparison> baseItemTypeComparisonProvider;
-
     private final Provider<BaseItemCountComparison> baseItemCountComparisonProvider;
-
     private final Provider<BaseItemPositionComparison> baseItemPositionComparisonProvider;
-
-    private final ExceptionHandler exceptionHandler;
+    private final Provider<CountPositionComparison> countPositionComparisonProvider;
     private final Collection<QuestListener> questListeners = new ArrayList<>();
     private final Map<String, AbstractConditionProgress> progressMap = new HashMap<>();
     private int tickCount;
 
     @Inject
-    public QuestService(ExceptionHandler exceptionHandler, Provider<com.btxtech.shared.gameengine.planet.quest.BaseItemPositionComparison> baseItemPositionComparisonProvider, Provider<com.btxtech.shared.gameengine.planet.quest.BaseItemCountComparison> baseItemCountComparisonProvider, Provider<com.btxtech.shared.gameengine.planet.quest.BaseItemTypeComparison> baseItemTypeComparisonProvider, Provider<com.btxtech.shared.gameengine.planet.quest.InventoryItemCountComparison> inventoryItemCountComparisonnProvider, Provider<com.btxtech.shared.gameengine.planet.quest.CountComparison> countComparisonProvider, ItemTypeService itemTypeService) {
-        this.exceptionHandler = exceptionHandler;
+    public QuestService(Provider<BaseItemPositionComparison> baseItemPositionComparisonProvider,
+                        Provider<CountPositionComparison> countPositionComparisonProvider,
+                        Provider<BaseItemCountComparison> baseItemCountComparisonProvider,
+                        Provider<BaseItemTypeComparison> baseItemTypeComparisonProvider,
+                        Provider<InventoryItemCountComparison> inventoryItemCountComparisonnProvider,
+                        Provider<CountComparison> countComparisonProvider,
+                        ItemTypeService itemTypeService) {
         this.baseItemPositionComparisonProvider = baseItemPositionComparisonProvider;
+        this.countPositionComparisonProvider = countPositionComparisonProvider;
         this.baseItemCountComparisonProvider = baseItemCountComparisonProvider;
         this.baseItemTypeComparisonProvider = baseItemTypeComparisonProvider;
         this.inventoryItemCountComparisonnProvider = inventoryItemCountComparisonnProvider;
@@ -143,7 +142,7 @@ public class QuestService {
                 tickCount = 0;
             }
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, t.getMessage(), t);
         }
     }
 
@@ -252,7 +251,9 @@ public class QuestService {
                     baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTimeSeconds(), userId);
                     return baseItemPositionComparison;
                 } else if (comparisonConfig.getCount() != null) {
-                    throw new IllegalArgumentException("SYNC_ITEM_POSITION and count not supported. Use item types instead.");
+                    CountPositionComparison countPositionComparison = countPositionComparisonProvider.get();
+                    countPositionComparison.init(comparisonConfig.getCount(), comparisonConfig.getPlaceConfig(), comparisonConfig.getTimeSeconds(), userId);
+                    return countPositionComparison;
                 } else {
                     throw new UnsupportedOperationException();
                 }
@@ -327,7 +328,7 @@ public class QuestService {
                     try {
                         backupComparisionInfos.add(abstractConditionProgress.generateBackupComparisionInfo());
                     } catch (Throwable t) {
-                        exceptionHandler.handleException("Could not backup quest " + abstractConditionProgress, t);
+                        logger.log(Level.SEVERE, "Could not backup quest " + abstractConditionProgress, t);
                     }
                 }
             });
@@ -353,7 +354,7 @@ public class QuestService {
                     }
                     abstractConditionProgress.restore(backupComparisionInfo);
                 } catch (Throwable t) {
-                    exceptionHandler.handleException("Could not restore quest " + backupComparisionInfo, t);
+                    logger.log(Level.SEVERE, "Could not restore quest " + backupComparisionInfo, t);
                 }
             });
         }

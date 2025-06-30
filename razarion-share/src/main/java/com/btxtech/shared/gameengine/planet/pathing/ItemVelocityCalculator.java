@@ -8,28 +8,26 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ItemVelocityCalculator {
     public static final double NEIGHBOR_ITEM_RADIUS = 15;
     private static final int MAX_PUSH_AWAY_DEEP = 10;
-    private static final Logger LOGGER = Logger.getLogger(ItemVelocityCalculator.class.getName());
+    private static final Logger logger = Logger.getLogger(ItemVelocityCalculator.class.getName());
     private final SyncItemContainerService syncItemContainerService;
     private final TerrainAnalyzer pathingAccess;
-    private final ExceptionHandler exceptionHandler;
     private final Collection<Orca> orcas = new ArrayList<>();
     private final Collection<SyncPhysicalMovable> pushAways = new LinkedList<>();
 
-    public ItemVelocityCalculator(SyncItemContainerService syncItemContainerService, TerrainAnalyzer pathingAccess, ExceptionHandler exceptionHandler) {
+    public ItemVelocityCalculator(SyncItemContainerService syncItemContainerService, TerrainAnalyzer pathingAccess) {
         this.syncItemContainerService = syncItemContainerService;
         this.pathingAccess = pathingAccess;
-        this.exceptionHandler = exceptionHandler;
     }
 
     public void analyse(AbstractSyncPhysical abstractSyncPhysical) {
@@ -51,7 +49,7 @@ public class ItemVelocityCalculator {
                 }
             }
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -63,7 +61,7 @@ public class ItemVelocityCalculator {
 
     private void handlePushAways(Collection<Orca> orcas, Collection<SyncPhysicalMovable> pushAways, int deep) {
         if (deep > MAX_PUSH_AWAY_DEEP) {
-            LOGGER.warning("MAX_PUSH_AWAY_DEEP reached");
+            logger.warning("MAX_PUSH_AWAY_DEEP reached");
             return;
         }
         Collection<SyncPhysicalMovable> newPushAways = new LinkedList<>();

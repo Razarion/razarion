@@ -17,7 +17,6 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -36,14 +35,12 @@ public class IntruderHandler {
     // private Logger logger = Logger.getLogger(IntruderHandler.class.getName());
     private final SyncItemContainerServiceImpl syncItemContainerService;
 
-    private final ExceptionHandler exceptionHandler;
     private Map<SyncBaseItem, BotSyncBaseItem> intruders = new HashMap<>();
     private BotEnragementState botEnragementState;
     private PlaceConfig region;
 
     @Inject
-    public IntruderHandler(ExceptionHandler exceptionHandler, SyncItemContainerServiceImpl syncItemContainerService) {
-        this.exceptionHandler = exceptionHandler;
+    public IntruderHandler(SyncItemContainerServiceImpl syncItemContainerService) {
         this.syncItemContainerService = syncItemContainerService;
     }
 

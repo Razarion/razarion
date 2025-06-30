@@ -3,9 +3,7 @@ package com.btxtech.client;
 import com.btxtech.client.gwtangular.GwtAngularFacade;
 import com.btxtech.client.system.ClientServerSystemConnection;
 import com.btxtech.client.system.boot.BootImpl;
-import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.common.system.ClientSimpleExecutorServiceImpl;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.ServerQuestProvider;
 import com.btxtech.uiservice.TrackerService;
@@ -43,9 +41,6 @@ public abstract class RazarionClientModule {
 
     @Binds
     public abstract Boot bindBoot(BootImpl bootImpl);
-
-    @Binds
-    public abstract ExceptionHandler bindExceptionHandler(ClientExceptionHandlerImpl exceptionHandlerImpl);
 
     @Binds
     public abstract SimpleExecutorService bindSimpleExecutorService(ClientSimpleExecutorServiceImpl clientSimpleExecutorServiceImpl);

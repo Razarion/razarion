@@ -12,7 +12,6 @@ import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -35,37 +35,23 @@ public class PlanetService implements Runnable { // Only available in worker. On
     public static final int TICKS_PER_SECONDS = (int) (1000.0 / TICK_TIME_MILLI_SECONDS);
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
     private final Logger logger = Logger.getLogger(PlanetService.class.getName());
-
-    private final ExceptionHandler exceptionHandler;
-
     private final InitializeService initializeService;
-
     private final SimpleExecutorService simpleExecutorService;
-
     private final PathingService pathingService;
-
     private final BaseItemService baseItemService;
-
     private final QuestService questService;
-
     private final BoxService boxService;
-
     private final ProjectileService projectileService;
-
     private final SyncItemContainerServiceImpl syncItemContainerService;
-
     private final TerrainService terrainService;
-
     private final ResourceService resourceService;
-
     private final EnergyService energyService;
-
     private final SyncService syncService;
-    private boolean pause;
     private final SimpleScheduledFuture scheduledFuture;
-    private PlanetConfig planetConfig;
     private final Collection<PlanetTickListener> tickListeners = new ArrayList<>();
     private final PlanetServiceTracker planetServiceTracker = new PlanetServiceTracker();
+    private boolean pause;
+    private PlanetConfig planetConfig;
     private long tickCount;
     private GameEngineMode gameEngineMode;
 
@@ -81,8 +67,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
                          BaseItemService baseItemService,
                          PathingService pathingService,
                          SimpleExecutorService simpleExecutorService,
-                         InitializeService initializeService,
-                         ExceptionHandler exceptionHandler) {
+                         InitializeService initializeService) {
         this.syncService = syncService;
         this.energyService = energyService;
         this.resourceService = resourceService;
@@ -95,7 +80,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
         this.pathingService = pathingService;
         this.simpleExecutorService = simpleExecutorService;
         this.initializeService = initializeService;
-        this.exceptionHandler = exceptionHandler;
         scheduledFuture = simpleExecutorService.scheduleAtFixedRate(TICK_TIME_MILLI_SECONDS, false, this, SimpleExecutorService.Type.GAME_ENGINE);
     }
     // private List<DebugHelperStatic.TickData> tickDatas = new ArrayList<>();
@@ -175,7 +159,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
             // DebugHelperStatic.appendAfterTick(tickDatas, tickCount, syncItemContainerService);
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.SEVERE, t.getMessage(), t);
         }
     }
 
@@ -204,7 +188,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
             try {
                 tickListener.onPostTick(synchronizationSendingContext);
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                logger.log(Level.SEVERE, t.getMessage(), t);
             }
         }
     }

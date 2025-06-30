@@ -2,13 +2,18 @@ package com.btxtech.shared.system.perfmon;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapCollection;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -24,19 +29,17 @@ public class PerfmonService {
 
     private final SimpleExecutorService simpleExecutorService;
 
-    private final ExceptionHandler exceptionHandler;
     private final Map<PerfmonEnum, Long> enterTimes = new HashMap<>();
-    private Collection<SampleEntry> sampleEntries = new ArrayList<>();
     private final StatisticConsumer clientStatisticConsumer = new StatisticConsumer();
     private final StatisticConsumer serverStatisticConsumer = new StatisticConsumer();
+    private Collection<SampleEntry> sampleEntries = new ArrayList<>();
     private SimpleScheduledFuture simpleScheduledFuture;
     private List<TerrainTileStatistic> terrainTileStatistics = new ArrayList<>();
     private String gameSessionUuid;
     private long samplingPeriodStart;
 
     @Inject
-    public PerfmonService(ExceptionHandler exceptionHandler, SimpleExecutorService simpleExecutorService) {
-        this.exceptionHandler = exceptionHandler;
+    public PerfmonService(SimpleExecutorService simpleExecutorService) {
         this.simpleExecutorService = simpleExecutorService;
     }
 
@@ -56,7 +59,7 @@ public class PerfmonService {
                     serverStatisticConsumer.push(statisticEntry);
                 }
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                logger.log(Level.WARNING, t.getMessage(), t);
             }
         }, SimpleExecutorService.Type.PERFMON_ANALYSE);
     }
@@ -84,7 +87,7 @@ public class PerfmonService {
             }
             enterTimes.put(perfmonEnum, System.currentTimeMillis());
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -100,7 +103,7 @@ public class PerfmonService {
             }
             sampleEntries.add(new SampleEntry(perfmonEnum, startTime));
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 

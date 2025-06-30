@@ -31,7 +31,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.stereotype.Service;
@@ -40,6 +39,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
@@ -78,8 +78,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     // TODO private PlanetBackupMongoDb planetBackupMongoDb;
     // @Inject
     // TODOprivate ServerInventoryService serverInventoryService;
-    @Inject
-    private ExceptionHandler exceptionHandler;
     private boolean running;
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
@@ -210,12 +208,12 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                 // TODO planetBackupMongoDb.saveBackup(planetService.backup());
             }
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
         try {
             stop();
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            logger.log(Level.WARNING, t.getMessage(), t);
         }
     }
 

@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -11,6 +10,8 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -18,19 +19,16 @@ import java.util.List;
  */
 @Singleton
 public class GuardingItemService {
-
+    private final Logger logger = Logger.getLogger(GuardingItemService.class.getName());
     private final SyncItemContainerServiceImpl syncItemContainerService;
-
-    private final ExceptionHandler exceptionHandler;
-
     private final Provider<CommandService> commandService;
     private final Collection<SyncBaseItem> guardingItems = new ArrayList<>();
     private GameEngineMode gameEngineMode;
 
     @Inject
-    public GuardingItemService(Provider<com.btxtech.shared.gameengine.planet.CommandService> commandService, ExceptionHandler exceptionHandler, SyncItemContainerServiceImpl syncItemContainerService) {
+    public GuardingItemService(Provider<CommandService> commandService,
+                               SyncItemContainerServiceImpl syncItemContainerService) {
         this.commandService = commandService;
-        this.exceptionHandler = exceptionHandler;
         this.syncItemContainerService = syncItemContainerService;
     }
 
@@ -82,7 +80,7 @@ public class GuardingItemService {
                 guardingItems.add(syncBaseItem);
             }
         } catch (Exception e) {
-            exceptionHandler.handleException("GuardingItemService.add(): " + syncBaseItem, e);
+            logger.log(Level.WARNING, "GuardingItemService.add(): " + syncBaseItem, e);
         }
         return false;
     }
@@ -110,7 +108,7 @@ public class GuardingItemService {
                 return false;
             }
         } catch (Exception e) {
-            exceptionHandler.handleException("GuardingItemService.handleGuardingItemHasEnemiesInRange(): " + guardingItem, e);
+            logger.log(Level.WARNING, "GuardingItemService.handleGuardingItemHasEnemiesInRange(): " + guardingItem, e);
         }
         return false;
     }

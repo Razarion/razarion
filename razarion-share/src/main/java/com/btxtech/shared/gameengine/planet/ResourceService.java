@@ -24,12 +24,17 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -38,24 +43,22 @@ import java.util.*;
  */
 @Singleton
 public class ResourceService {
+    private final Logger logger = Logger.getLogger(ResourceService.class.getName());
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private final ItemTypeService itemTypeService;
     private final GameLogicService gameLogicService;
     private final Provider<ResourceRegion> instance;
-    private final ExceptionHandler exceptionHandler;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
     private final Collection<ResourceRegion> resourceRegions = new ArrayList<>();
     private GameEngineMode gameEngineMode;
     private List<ResourceRegionConfig> resourceRegionConfigs;
 
     @Inject
-    public ResourceService(ExceptionHandler exceptionHandler,
-                           Provider<ResourceRegion> instance,
+    public ResourceService(Provider<ResourceRegion> instance,
                            GameLogicService gameLogicService,
                            ItemTypeService itemTypeService,
                            SyncItemContainerServiceImpl syncItemContainerService,
                            InitializeService initializeService) {
-        this.exceptionHandler = exceptionHandler;
         this.instance = instance;
         this.gameLogicService = gameLogicService;
         this.itemTypeService = itemTypeService;
@@ -112,7 +115,7 @@ public class ResourceService {
                     resourceRegion.init(resourceRegionConfig);
                     resourceRegions.add(resourceRegion);
                 } catch (Exception e) {
-                    exceptionHandler.handleException("ResourceService.startResourceRegions()", e);
+                    logger.log(Level.WARNING, "ResourceService.startResourceRegions(): " + e.getMessage(), e);
                 }
             }
         }

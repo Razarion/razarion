@@ -24,9 +24,10 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.TerrainDestinationFinder;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -35,16 +36,10 @@ import javax.inject.Inject;
  */
 
 public class BotSyncBaseItem {
-
-    // private Logger logger = Logger.getLogger(BotSyncBaseItem.class.getName());
-    private final ExceptionHandler exceptionHandler;
-
+    private final Logger logger = Logger.getLogger(BotSyncBaseItem.class.getName());
     private final BaseItemService baseItemService;
-
     private final SyncItemContainerServiceImpl syncItemContainerService;
-
     private final CommandService commandService;
-
     private final TerrainService terrainService;
     private SyncBaseItem syncBaseItem;
     private BotItemConfig botItemConfig;
@@ -52,12 +47,14 @@ public class BotSyncBaseItem {
     private long idleTimeStamp;
 
     @Inject
-    public BotSyncBaseItem(TerrainService terrainService, CommandService commandService, SyncItemContainerServiceImpl syncItemContainerService, BaseItemService baseItemService, ExceptionHandler exceptionHandler) {
+    public BotSyncBaseItem(TerrainService terrainService,
+                           CommandService commandService,
+                           SyncItemContainerServiceImpl syncItemContainerService,
+                           BaseItemService baseItemService) {
         this.terrainService = terrainService;
         this.commandService = commandService;
         this.syncItemContainerService = syncItemContainerService;
         this.baseItemService = baseItemService;
-        this.exceptionHandler = exceptionHandler;
     }
 
     public void init(SyncBaseItem syncBaseItem, BotItemConfig botItemConfig) {
@@ -119,7 +116,7 @@ public class BotSyncBaseItem {
             clearIdle();
         } catch (Exception e) {
             setIdle();
-            exceptionHandler.handleException(e);
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -129,7 +126,7 @@ public class BotSyncBaseItem {
             clearIdle();
         } catch (Exception e) {
             setIdle();
-            exceptionHandler.handleException(e);
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -139,7 +136,7 @@ public class BotSyncBaseItem {
             clearIdle();
         } catch (Exception e) {
             setIdle();
-            exceptionHandler.handleException(e);
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -150,7 +147,7 @@ public class BotSyncBaseItem {
             clearIdle();
         } catch (Exception e) {
             setIdle();
-            exceptionHandler.handleException(e);
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -160,7 +157,7 @@ public class BotSyncBaseItem {
             clearIdle();
         } catch (Exception e) {
             setIdle();
-            exceptionHandler.handleException(e);
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
     }
 

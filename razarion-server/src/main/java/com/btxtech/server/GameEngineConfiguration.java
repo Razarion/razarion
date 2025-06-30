@@ -44,38 +44,26 @@ import com.btxtech.shared.gameengine.planet.quest.BaseItemCountComparison;
 import com.btxtech.shared.gameengine.planet.quest.BaseItemPositionComparison;
 import com.btxtech.shared.gameengine.planet.quest.BaseItemTypeComparison;
 import com.btxtech.shared.gameengine.planet.quest.CountComparison;
+import com.btxtech.shared.gameengine.planet.quest.CountPositionComparison;
 import com.btxtech.shared.gameengine.planet.quest.InventoryItemCountComparison;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileBuilder;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileFactory;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class GameEngineConfiguration {
-    private final Logger logger = LoggerFactory.getLogger(GameEngineConfiguration.class);
+    // private final Logger logger = LoggerFactory.getLogger(GameEngineConfiguration.class);
 
     @Bean
     public AlarmService alarmService() {
         return new AlarmService();
-    }
-
-    @Bean
-    public ExceptionHandler exceptionHandler(AlarmService alarmService) {
-        return new ExceptionHandler(alarmService) {
-            @Override
-            protected void handleExceptionInternal(String message, Throwable t) {
-                logger.warn(message, t);
-            }
-        };
     }
 
     @Bean
@@ -85,9 +73,8 @@ public class GameEngineConfiguration {
 
     @Bean
     @Scope("prototype")
-    public IntruderHandler intruderHandler(ExceptionHandler exceptionHandler,
-                                           SyncItemContainerServiceImpl syncItemContainerService) {
-        return new IntruderHandler(exceptionHandler, syncItemContainerService);
+    public IntruderHandler intruderHandler(SyncItemContainerServiceImpl syncItemContainerService) {
+        return new IntruderHandler(syncItemContainerService);
     }
 
     @Bean
@@ -104,14 +91,12 @@ public class GameEngineConfiguration {
 
     @Bean
     @Scope("prototype")
-    public BotItemContainer botItemContainer(ExceptionHandler exceptionHandler,
-                                             jakarta.inject.Provider<BotSyncBaseItem> baseItemInstance,
+    public BotItemContainer botItemContainer(jakarta.inject.Provider<BotSyncBaseItem> baseItemInstance,
                                              BotService botService,
                                              SyncItemContainerServiceImpl syncItemContainerService,
                                              BaseItemService baseItemService,
                                              ItemTypeService itemTypeService) {
-        return new BotItemContainer(exceptionHandler,
-                baseItemInstance::get,
+        return new BotItemContainer(baseItemInstance::get,
                 botService,
                 syncItemContainerService,
                 baseItemService,
@@ -123,9 +108,8 @@ public class GameEngineConfiguration {
     public BotSyncBaseItem botSyncBaseItem(TerrainService terrainService,
                                            CommandService commandService,
                                            SyncItemContainerServiceImpl syncItemContainerService,
-                                           BaseItemService baseItemService,
-                                           ExceptionHandler exceptionHandler) {
-        return new BotSyncBaseItem(terrainService, commandService, syncItemContainerService, baseItemService, exceptionHandler);
+                                           BaseItemService baseItemService) {
+        return new BotSyncBaseItem(terrainService, commandService, syncItemContainerService, baseItemService);
     }
 
     @Bean
@@ -135,9 +119,8 @@ public class GameEngineConfiguration {
     }
 
     @Bean
-    public BotService botService(ExceptionHandler exceptionHandler,
-                                 jakarta.inject.Provider<BotRunner> botRunnerInstance) {
-        return new BotService(exceptionHandler, botRunnerInstance::get);
+    public BotService botService(jakarta.inject.Provider<BotRunner> botRunnerInstance) {
+        return new BotService(botRunnerInstance::get);
     }
 
     @Bean
@@ -160,20 +143,17 @@ public class GameEngineConfiguration {
     @Scope("prototype")
     public ResourceRegion resourceRegion(ResourceService resourceService,
                                          SyncItemContainerServiceImpl syncItemContainerService,
-                                         ExceptionHandler exceptionHandler,
                                          ItemTypeService itemTypeService) {
-        return new ResourceRegion(resourceService, syncItemContainerService, exceptionHandler, itemTypeService);
+        return new ResourceRegion(resourceService, syncItemContainerService, itemTypeService);
     }
 
     @Bean
-    public ResourceService resourceService(ExceptionHandler exceptionHandler,
-                                           jakarta.inject.Provider<ResourceRegion> instance,
+    public ResourceService resourceService(jakarta.inject.Provider<ResourceRegion> instance,
                                            GameLogicService gameLogicService,
                                            ItemTypeService itemTypeService,
                                            SyncItemContainerServiceImpl syncItemContainerService,
                                            InitializeService initializeService) {
-        return new ResourceService(exceptionHandler,
-                instance::get,
+        return new ResourceService(instance::get,
                 gameLogicService,
                 itemTypeService,
                 syncItemContainerService,
@@ -194,9 +174,8 @@ public class GameEngineConfiguration {
     }
 
     @Bean
-    public TerrainTileFactory terrainTileFactory(ExceptionHandler exceptionHandler,
-                                                 jakarta.inject.Provider<TerrainTileBuilder> terrainTileBuilderInstance) {
-        return new TerrainTileFactory(exceptionHandler, terrainTileBuilderInstance::get);
+    public TerrainTileFactory terrainTileFactory(jakarta.inject.Provider<TerrainTileBuilder> terrainTileBuilderInstance) {
+        return new TerrainTileFactory(terrainTileBuilderInstance::get);
     }
 
     @Bean
@@ -373,22 +352,19 @@ public class GameEngineConfiguration {
     }
 
     @Bean
-    public ProjectileService projectileService(ExceptionHandler exceptionHandler,
-                                               SyncItemContainerServiceImpl syncItemContainerService,
+    public ProjectileService projectileService(SyncItemContainerServiceImpl syncItemContainerService,
                                                GameLogicService gameLogicService,
                                                BaseItemService baseItemService) {
-        return new ProjectileService(exceptionHandler, syncItemContainerService, gameLogicService, baseItemService);
+        return new ProjectileService(syncItemContainerService, gameLogicService, baseItemService);
     }
 
     @Bean
-    public BoxService boxService(ExceptionHandler exceptionHandler,
-                                 InventoryTypeService inventoryTypeService,
+    public BoxService boxService(InventoryTypeService inventoryTypeService,
                                  GameLogicService gameLogicService,
                                  ItemTypeService itemTypeService,
                                  SyncItemContainerServiceImpl syncItemContainerService,
                                  InitializeService initializeService) {
-        return new BoxService(exceptionHandler,
-                inventoryTypeService,
+        return new BoxService(inventoryTypeService,
                 gameLogicService,
                 itemTypeService,
                 syncItemContainerService,
@@ -421,6 +397,13 @@ public class GameEngineConfiguration {
 
     @Bean
     @Scope("prototype")
+    public CountPositionComparison countPositionComparison(GameLogicService gameLogicService,
+                                                           BaseItemService baseItemService) {
+        return new CountPositionComparison(gameLogicService, baseItemService);
+    }
+
+    @Bean
+    @Scope("prototype")
     public BaseItemCountComparison baseItemCountComparison(GameLogicService gameLogicService,
                                                            BotService botService,
                                                            BaseItemService baseItemService) {
@@ -449,15 +432,15 @@ public class GameEngineConfiguration {
     }
 
     @Bean
-    public QuestService questService(ExceptionHandler exceptionHandler,
-                                     jakarta.inject.Provider<BaseItemPositionComparison> baseItemPositionComparisonProvider,
+    public QuestService questService(jakarta.inject.Provider<BaseItemPositionComparison> baseItemPositionComparisonProvider,
+                                     jakarta.inject.Provider<CountPositionComparison> countPositionComparisonProvider,
                                      jakarta.inject.Provider<BaseItemCountComparison> baseItemCountComparisonProvider,
                                      jakarta.inject.Provider<BaseItemTypeComparison> baseItemTypeComparisonProvider,
                                      jakarta.inject.Provider<InventoryItemCountComparison> inventoryItemCountComparisonnProvider,
                                      jakarta.inject.Provider<CountComparison> countComparisonProvider,
                                      ItemTypeService itemTypeService) {
-        return new QuestService(exceptionHandler,
-                baseItemPositionComparisonProvider::get,
+        return new QuestService(baseItemPositionComparisonProvider::get,
+                countPositionComparisonProvider::get,
                 baseItemCountComparisonProvider::get,
                 baseItemTypeComparisonProvider::get,
                 inventoryItemCountComparisonnProvider::get,
@@ -503,8 +486,7 @@ public class GameEngineConfiguration {
                                          ResourceService resourceService,
                                          BaseItemService baseItemService,
                                          GameLogicService gameLogicService,
-                                         PathingService pathingService,
-                                         ExceptionHandler exceptionHandler) {
+                                         PathingService pathingService) {
         return new CommandService(guardingItemService,
                 planetService,
                 itemTypeService,
@@ -513,22 +495,19 @@ public class GameEngineConfiguration {
                 resourceService,
                 baseItemService,
                 gameLogicService,
-                pathingService,
-                exceptionHandler);
+                pathingService);
     }
 
     @Bean
     public GuardingItemService guardingItemService(jakarta.inject.Provider<CommandService> commandService,
-                                                   ExceptionHandler exceptionHandler,
                                                    SyncItemContainerServiceImpl syncItemContainerService) {
-        return new GuardingItemService(commandService::get, exceptionHandler, syncItemContainerService);
+        return new GuardingItemService(commandService::get, syncItemContainerService);
     }
 
     @Bean
-    public PathingService pathingService(ExceptionHandler exceptionHandler,
-                                         TerrainService terrainService,
+    public PathingService pathingService(TerrainService terrainService,
                                          SyncItemContainerServiceImpl syncItemContainerService) {
-        return new PathingService(exceptionHandler, terrainService, syncItemContainerService);
+        return new PathingService(terrainService, syncItemContainerService);
     }
 
     @Bean
@@ -543,8 +522,7 @@ public class GameEngineConfiguration {
                                        BaseItemService baseItemService,
                                        PathingService pathingService,
                                        SimpleExecutorService simpleExecutorService,
-                                       InitializeService initializeService,
-                                       ExceptionHandler exceptionHandler) {
+                                       InitializeService initializeService) {
         return new PlanetService(syncService,
                 energyService,
                 resourceService,
@@ -556,7 +534,6 @@ public class GameEngineConfiguration {
                 baseItemService,
                 pathingService,
                 simpleExecutorService,
-                initializeService,
-                exceptionHandler);
+                initializeService);
     }
 }
