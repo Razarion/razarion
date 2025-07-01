@@ -13,14 +13,12 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
-import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.inject.Provider;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -35,7 +33,6 @@ public class ServerLevelQuestService implements QuestListener {
     private final Provider<ServerGameEngineControl> serverGameEngineControlInstance;
     private final ServerUnlockService serverUnlockService;
     private final QuestConfigService questConfigService;
-    private final MeterRegistry meterRegistry;
 
     public ServerLevelQuestService(Provider<GameUiContextService> gameUiControlConfigPersistence,
                                    QuestService questService,
@@ -45,7 +42,7 @@ public class ServerLevelQuestService implements QuestListener {
                                    ClientSystemConnectionService clientSystemConnectionService,
                                    Provider<ServerGameEngineControl> serverGameEngineControlInstance,
                                    ServerUnlockService serverUnlockService,
-                                   QuestConfigService questConfigService, MeterRegistry meterRegistry) {
+                                   QuestConfigService questConfigService) {
         this.gameUiControlConfigPersistence = gameUiControlConfigPersistence;
         this.questService = questService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
@@ -55,7 +52,6 @@ public class ServerLevelQuestService implements QuestListener {
         this.serverGameEngineControlInstance = serverGameEngineControlInstance;
         this.serverUnlockService = serverUnlockService;
         this.questConfigService = questConfigService;
-        this.meterRegistry = meterRegistry;
         questService.addQuestListener(this);
     }
 
@@ -97,7 +93,6 @@ public class ServerLevelQuestService implements QuestListener {
         clientSystemConnectionService.onQuestPassed(userId, questConfig);
         // TODO historyPersistence.get().onQuest(userId, questConfig, QuestHistoryEntity.Type.QUEST_PASSED);
         logger.info("Quest passed. User id: {} quest id: {}", userId, questConfig.getId());
-        meterRegistry.counter("razarion.quest.passed", "questId", String.valueOf(questConfig.getId())).increment();
         UserContext userContext = userService.getUserContextTransactional(userId);
         // Check for level up
         int newXp = userContext.getXp() + questConfig.getXp();
@@ -109,7 +104,6 @@ public class ServerLevelQuestService implements QuestListener {
                 userContext.xp(0);
                 // TODO historyPersistence.get().onLevelUp(userId, newLevel);
                 logger.info("Level up. User id: {} new level: {}", userContext.getUserId(), newLevel.getNumber());
-                meterRegistry.counter("razarion.level.up", "levelNumber", Integer.toString(newLevel.getNumber())).increment();
                 clientSystemConnectionService.onLevelUp(userId,
                         userContext,
                         serverUnlockService.hasAvailableUnlocks(userContext));
