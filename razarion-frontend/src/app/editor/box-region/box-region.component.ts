@@ -11,6 +11,7 @@ import {BoxItemTypeComponent} from '../common/box-item-type/box-item-type.compon
 import {Divider} from 'primeng/divider';
 import {SelectModule} from 'primeng/select';
 import {MessageService} from 'primeng/api';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 @Component({
   selector: 'box-region',
@@ -22,7 +23,8 @@ import {MessageService} from 'primeng/api';
     NgIf,
     BoxItemTypeComponent,
     Divider,
-    SelectModule
+    SelectModule,
+    ScrollPanelModule
   ],
   templateUrl: './box-region.component.html'
 })

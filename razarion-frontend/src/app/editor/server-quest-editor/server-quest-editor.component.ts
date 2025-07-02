@@ -21,6 +21,7 @@ import {LevelComponent} from '../common/level/level.component';
 import {NgForOf, NgIf} from '@angular/common';
 import {TipComponent} from './tip/tip.component';
 import {MessageService} from 'primeng/api';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 @Component({
   selector: 'server-quest-editor',
@@ -38,7 +39,8 @@ import {MessageService} from 'primeng/api';
     LevelComponent,
     NgIf,
     NgForOf,
-    TipComponent
+    TipComponent,
+    ScrollPanelModule
   ],
   templateUrl: './server-quest-editor.component.html'
 })

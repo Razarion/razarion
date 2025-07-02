@@ -66,7 +66,7 @@ public class LifecycleService {
     private final UserUiService userUiService;
     private final GwtAngularService gwtAngularService;
     private Consumer<ServerState> serverRestartCallback;
-    private SimpleScheduledFuture simpleScheduledFuture;
+    // private SimpleScheduledFuture simpleScheduledFuture;
     private boolean beforeUnload;
 
     @Inject
@@ -192,39 +192,39 @@ public class LifecycleService {
     }
 
     private void startRestartWatchdog() {
-        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(WATCHDOG_DELAY, true, serverMgmt.call((RemoteCallback<String>) serverStateString -> {
-            try {
-                ServerState serverState = ServerState.valueOf(serverStateString);
-                if (serverState == ServerState.RUNNING) {
-                    if (simpleScheduledFuture != null) {
-                        simpleScheduledFuture.cancel();
-                        simpleScheduledFuture = null;
-                    }
-                    if (serverRestartCallback != null) {
-                        serverRestartCallback.accept(ServerState.RUNNING);
-                    }
-                    Window.Location.replace("/");
-                } else {
-                    if (serverRestartCallback != null) {
-                        serverRestartCallback.accept(serverState);
-                    }
-                }
-            } catch (Throwable t) {
-                logger.log(Level.WARNING, t.getMessage(), t);
-            }
-        }, (message, throwable) -> {
-            if (serverRestartCallback != null) {
-//                if (throwable instanceof ResponseException) {
-//                    ResponseException responseException = (ResponseException) throwable;
-//                    if (responseException.getResponse().getStatusCode() == Response.SC_NOT_FOUND) {
-//                        serverRestartCallback.accept(ServerState.STARTING);
-//                        return false;
+//        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(WATCHDOG_DELAY, true, serverMgmt.call((RemoteCallback<String>) serverStateString -> {
+//            try {
+//                ServerState serverState = ServerState.valueOf(serverStateString);
+//                if (serverState == ServerState.RUNNING) {
+//                    if (simpleScheduledFuture != null) {
+//                        simpleScheduledFuture.cancel();
+//                        simpleScheduledFuture = null;
+//                    }
+//                    if (serverRestartCallback != null) {
+//                        serverRestartCallback.accept(ServerState.RUNNING);
+//                    }
+//                    Window.Location.replace("/");
+//                } else {
+//                    if (serverRestartCallback != null) {
+//                        serverRestartCallback.accept(serverState);
 //                    }
 //                }
-                serverRestartCallback.accept(ServerState.SHUTTING_DOWN);
-            }
-            return false;
-        })::getServerStatus, SimpleExecutorService.Type.SERVER_RESTART_WATCHDOG);
+//            } catch (Throwable t) {
+//                logger.log(Level.WARNING, t.getMessage(), t);
+//            }
+//        }, (message, throwable) -> {
+//            if (serverRestartCallback != null) {
+////                if (throwable instanceof ResponseException) {
+////                    ResponseException responseException = (ResponseException) throwable;
+////                    if (responseException.getResponse().getStatusCode() == Response.SC_NOT_FOUND) {
+////                        serverRestartCallback.accept(ServerState.STARTING);
+////                        return false;
+////                    }
+////                }
+//                serverRestartCallback.accept(ServerState.SHUTTING_DOWN);
+//            }
+//            return false;
+//        })::getServerStatus, SimpleExecutorService.Type.SERVER_RESTART_WATCHDOG);
     }
 
     public void setServerRestartCallback(Consumer<ServerState> serverRestartCallback) {

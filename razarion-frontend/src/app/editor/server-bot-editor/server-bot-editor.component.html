@@ -1,203 +1,209 @@
-<div [style]="{width:'500px'}">
-  <div class="flex flex-row gap-1 items-center p-1">
-    <p-button type="button" icon="pi pi-save" styleClass="p-button-sm" (onClick)="onSave()"></p-button>
-    <p-select [options]="serverGameEngineConfigEntity ? serverGameEngineConfigEntity!.botConfigs:[]"
-              [(ngModel)]="selectedBot"
-              optionLabel="internalName"></p-select>
-    <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm" (onClick)="onCreate()"></p-button>
-    <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm" (onClick)="onDelete()"
-              [disabled]="!selectedBot"></p-button>
-    <p-button type="button" label="{{EditorService.RESTART_BOTS.name}}" icon="pi pi-cog" styleClass="p-button-sm"
-              (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
-  </div>
-  <div *ngIf="selectedBot"
-       class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-    <p-divider align="left">
-      <div class="inline-flex items-center">
-        <i class="pi pi-cog mr-2"></i>
-        <b>Configuration</b>
-      </div>
-    </p-divider>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-3">Id</span>
-      <div class="col-span-9">
-        <p-inputNumber [disabled]="true" inputId="integeronly" [ngModel]="selectedBot&&selectedBot.id"
-                       (ngModelChange)="selectedBot && (selectedBot.id = $event)"></p-inputNumber>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-3">Internal name</span>
-      <div class="col-span-9">
-        <input [ngModel]="selectedBot&&selectedBot.internalName"
-               (ngModelChange)="selectedBot && (selectedBot.internalName = $event)" type="text"
-               class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-3">Name</span>
-      <div class="col-span-9">
-        <input [ngModel]="selectedBot&&selectedBot.name" (ngModelChange)="selectedBot && (selectedBot.name = $event)"
-               type="text"
-               class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-3">Realm</span>
-      <div class="col-span-9">
-        <place-config *ngIf="selectedBot" [(placeConfig)]="selectedBot!.realm"></place-config>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-3">Auto attack</span>
-      <div class="col-span-9">
-        <p-checkbox *ngIf="selectedBot" [(ngModel)]="selectedBot!.autoAttack" [binary]="true"></p-checkbox>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-3">Bot ground</span>
-      <div class="col-span-9">
-        <babylon-material *ngIf="selectedBot"
-                          [(babylonMaterialId)]="selectedBot!.groundBabylonMaterialId"></babylon-material>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-3">Action delay [ms]</span>
-      <div class="col-span-9">
-        <p-inputNumber [ngModel]="selectedBot&&selectedBot.actionDelay"
-                       (ngModelChange)="selectedBot && (selectedBot.actionDelay = $event)"></p-inputNumber>
-      </div>
-    </div>
-
-    <p-divider align="left">
-      <div class="inline-flex items-center">
-        <i class="pi pi-clock mr-2"></i>
-        <b>Intervall</b>
-      </div>
-    </p-divider>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-5">Min inactive [ms]</span>
-      <div class="col-span-7">
-        <p-inputNumber [ngModel]="selectedBot&&selectedBot.minInactiveMs"
-                       (ngModelChange)="selectedBot && (selectedBot.minInactiveMs = $event)"></p-inputNumber>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-5">Max inactive [ms]</span>
-      <div class="col-span-7">
-        <p-inputNumber [ngModel]="selectedBot&&selectedBot.maxInactiveMs"
-                       (ngModelChange)="selectedBot && (selectedBot.maxInactiveMs = $event)"></p-inputNumber>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-5">Min active [ms]</span>
-      <div class="col-span-7">
-        <p-inputNumber [ngModel]="selectedBot&&selectedBot.minActiveMs"
-                       (ngModelChange)="selectedBot && (selectedBot.minActiveMs = $event)"></p-inputNumber>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <span class="col-span-5">Max active [ms]</span>
-      <div class="col-span-7">
-        <p-inputNumber [ngModel]="selectedBot&&selectedBot.maxActiveMs"
-                       (ngModelChange)="selectedBot && (selectedBot.maxActiveMs = $event)"></p-inputNumber>
-      </div>
+<p-scrollpanel [style]="{ width: '600px', height: '100%' }">
+  <div>
+    <div class="flex flex-row gap-1 items-center p-1">
+      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm" (onClick)="onSave()"></p-button>
+      <p-select [options]="serverGameEngineConfigEntity ? serverGameEngineConfigEntity!.botConfigs:[]"
+                [(ngModel)]="selectedBot"
+                optionLabel="internalName"></p-select>
+      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm" (onClick)="onCreate()"></p-button>
+      <p-button type="button" icon="pi pi-copy" styleClass="p-button-sm" (onClick)="onCopy()"
+                [disabled]="!selectedBot"></p-button>
+      <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm" (onClick)="onDelete()"
+                [disabled]="!selectedBot"></p-button>
+      <p-button type="button" label="{{EditorService.RESTART_BOTS.name}}" icon="pi pi-cog" styleClass="p-button-sm"
+                (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
     </div>
     <div *ngIf="selectedBot"
          class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-    <div class="grid grid-cols-12 gap-5">
-      <span class="col-span-5">Create enragement state</span>
-      <div class="col-span-7">
-        <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
-                  (onClick)="onCreateEnragementState()"></p-button>
+      <p-divider align="left">
+        <div class="inline-flex items-center">
+          <i class="pi pi-cog mr-2"></i>
+          <b>Configuration</b>
+        </div>
+      </p-divider>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-3">Id</span>
+        <div class="col-span-9">
+          <p-inputNumber [disabled]="true" inputId="integeronly" [ngModel]="selectedBot&&selectedBot.id"
+                         (ngModelChange)="selectedBot && (selectedBot.id = $event)"></p-inputNumber>
+        </div>
       </div>
-    </div>
-    <div class="grid grid-cols-12 gap-4">
-      <div class="col-span-12">
-        <p-accordion *ngIf="selectedBot?.botEnragementStateConfigs">
-          <p-accordion-panel
-            *ngFor="let botEnragementStateConfig of selectedBot!.botEnragementStateConfigs; let i = index" [value]="i">
-            <p-accordion-header>
-              {{ botEnragementStateConfig.name }}
-              <div class="col-span-1">
-                <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                          (onClick)="onDeleteEnragementState(botEnragementStateConfig)"></p-button>
-              </div>
-            </p-accordion-header>
-            <p-accordion-content>
-              <div class="grid grid-cols-12 gap-4">
-                <span class="col-span-3">Name</span>
-                <div class="col-span-9">
-                  <input [(ngModel)]="botEnragementStateConfig.name" type="text"
-                         class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
-                </div>
-              </div>
-              <div class="grid grid-cols-12 gap-4">
-                <span class="col-span-3">Kills to enrage up</span>
-                <div class="col-span-9">
-                  <p-inputNumber inputId="integeronly"
-                                 [(ngModel)]="botEnragementStateConfig.enrageUpKills"></p-inputNumber>
-                </div>
-              </div>
-              <div class="grid grid-cols-12 gap-4">
-                <span class="col-span-3">Create bot item</span>
-                <div class="col-span-9">
-                  <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
-                            (onClick)="onCreateBotItem(botEnragementStateConfig)"></p-button>
-                </div>
-              </div>
-              <div class="grid grid-cols-12 gap-4">
-                <div class="col-span-12">
-                  <p-accordion *ngIf="botEnragementStateConfig?.botItems">
-                    <p-accordion-panel *ngFor="let botItem of botEnragementStateConfig!.botItems; let i = index"
-                                       [value]="i">
-                      <p-accordion-header>
-                        <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId" [readOnly]="true"></base-item-type>
-                        <div class="col-span-1">
-                          <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                                    (onClick)="onDeleteBotItem(botItem, botEnragementStateConfig)"></p-button>
-                        </div>
-                      </p-accordion-header>
-                      <p-accordion-content>
-                        <div class="grid grid-cols-12 gap-4">
-                          <span class="col-span-3">Base Item</span>
-                          <div class="col-span-9">
-                            <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId"></base-item-type>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-12 gap-4">
-                          <span class="col-span-3">Count</span>
-                          <div class="col-span-9">
-                            <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.count"></p-inputNumber>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-12 gap-4">
-                          <span class="col-span-3">Create directly</span>
-                          <div class="col-span-9">
-                            <p-checkbox [(ngModel)]="botItem.createDirectly" [binary]="true"></p-checkbox>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-12 gap-4">
-                          <span class="col-span-3">Re pop time [ms]</span>
-                          <div class="col-span-9">
-                            <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.rePopTime"></p-inputNumber>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-12 gap-4">
-                          <span class="col-span-3">Spawn place</span>
-                          <div class="col-span-9">
-                            <place-config [(placeConfig)]="botItem.place"></place-config>
-                          </div>
-                        </div>
-                      </p-accordion-content>
-                    </p-accordion-panel>
-                  </p-accordion>
-                </div>
-              </div>
-            </p-accordion-content>
-          </p-accordion-panel>
-        </p-accordion>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-3">Internal name</span>
+        <div class="col-span-9">
+          <input [ngModel]="selectedBot&&selectedBot.internalName"
+                 (ngModelChange)="selectedBot && (selectedBot.internalName = $event)" type="text"
+                 class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-3">Name</span>
+        <div class="col-span-9">
+          <input [ngModel]="selectedBot&&selectedBot.name" (ngModelChange)="selectedBot && (selectedBot.name = $event)"
+                 type="text"
+                 class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-3">Realm</span>
+        <div class="col-span-9">
+          <place-config *ngIf="selectedBot" [(placeConfig)]="selectedBot!.realm"></place-config>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-3">Auto attack</span>
+        <div class="col-span-9">
+          <p-checkbox *ngIf="selectedBot" [(ngModel)]="selectedBot!.autoAttack" [binary]="true"></p-checkbox>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-3">Bot ground</span>
+        <div class="col-span-9">
+          <babylon-material *ngIf="selectedBot"
+                            [(babylonMaterialId)]="selectedBot!.groundBabylonMaterialId"></babylon-material>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-3">Action delay [ms]</span>
+        <div class="col-span-9">
+          <p-inputNumber [ngModel]="selectedBot&&selectedBot.actionDelay"
+                         (ngModelChange)="selectedBot && (selectedBot.actionDelay = $event)"></p-inputNumber>
+        </div>
+      </div>
+
+      <p-divider align="left">
+        <div class="inline-flex items-center">
+          <i class="pi pi-clock mr-2"></i>
+          <b>Intervall</b>
+        </div>
+      </p-divider>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-5">Min inactive [ms]</span>
+        <div class="col-span-7">
+          <p-inputNumber [ngModel]="selectedBot&&selectedBot.minInactiveMs"
+                         (ngModelChange)="selectedBot && (selectedBot.minInactiveMs = $event)"></p-inputNumber>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-5">Max inactive [ms]</span>
+        <div class="col-span-7">
+          <p-inputNumber [ngModel]="selectedBot&&selectedBot.maxInactiveMs"
+                         (ngModelChange)="selectedBot && (selectedBot.maxInactiveMs = $event)"></p-inputNumber>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-5">Min active [ms]</span>
+        <div class="col-span-7">
+          <p-inputNumber [ngModel]="selectedBot&&selectedBot.minActiveMs"
+                         (ngModelChange)="selectedBot && (selectedBot.minActiveMs = $event)"></p-inputNumber>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-5">Max active [ms]</span>
+        <div class="col-span-7">
+          <p-inputNumber [ngModel]="selectedBot&&selectedBot.maxActiveMs"
+                         (ngModelChange)="selectedBot && (selectedBot.maxActiveMs = $event)"></p-inputNumber>
+        </div>
+      </div>
+      <div *ngIf="selectedBot"
+           class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
+        <div class="grid grid-cols-12 gap-5">
+          <span class="col-span-5">Create enragement state</span>
+          <div class="col-span-7">
+            <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+                      (onClick)="onCreateEnragementState()"></p-button>
+          </div>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-12">
+            <p-accordion *ngIf="selectedBot?.botEnragementStateConfigs">
+              <p-accordion-panel
+                *ngFor="let botEnragementStateConfig of selectedBot!.botEnragementStateConfigs; let i = index"
+                [value]="i">
+                <p-accordion-header>
+                  {{ botEnragementStateConfig.name }}
+                  <div class="col-span-1">
+                    <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                              (onClick)="onDeleteEnragementState(botEnragementStateConfig)"></p-button>
+                  </div>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-3">Name</span>
+                    <div class="col-span-9">
+                      <input [(ngModel)]="botEnragementStateConfig.name" type="text"
+                             class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-3">Kills to enrage up</span>
+                    <div class="col-span-9">
+                      <p-inputNumber inputId="integeronly"
+                                     [(ngModel)]="botEnragementStateConfig.enrageUpKills"></p-inputNumber>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-3">Create bot item</span>
+                    <div class="col-span-9">
+                      <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+                                (onClick)="onCreateBotItem(botEnragementStateConfig)"></p-button>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <div class="col-span-12">
+                      <p-accordion *ngIf="botEnragementStateConfig?.botItems">
+                        <p-accordion-panel *ngFor="let botItem of botEnragementStateConfig!.botItems; let i = index"
+                                           [value]="i">
+                          <p-accordion-header>
+                            <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId"
+                                            [readOnly]="true"></base-item-type>
+                            <div class="col-span-1">
+                              <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                                        (onClick)="onDeleteBotItem(botItem, botEnragementStateConfig)"></p-button>
+                            </div>
+                          </p-accordion-header>
+                          <p-accordion-content>
+                            <div class="grid grid-cols-12 gap-4">
+                              <span class="col-span-3">Base Item</span>
+                              <div class="col-span-9">
+                                <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId"></base-item-type>
+                              </div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-4">
+                              <span class="col-span-3">Count</span>
+                              <div class="col-span-9">
+                                <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.count"></p-inputNumber>
+                              </div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-4">
+                              <span class="col-span-3">Create directly</span>
+                              <div class="col-span-9">
+                                <p-checkbox [(ngModel)]="botItem.createDirectly" [binary]="true"></p-checkbox>
+                              </div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-4">
+                              <span class="col-span-3">Re pop time [ms]</span>
+                              <div class="col-span-9">
+                                <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.rePopTime"></p-inputNumber>
+                              </div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-4">
+                              <span class="col-span-3">Spawn place</span>
+                              <div class="col-span-9">
+                                <place-config [(placeConfig)]="botItem.place"></place-config>
+                              </div>
+                            </div>
+                          </p-accordion-content>
+                        </p-accordion-panel>
+                      </p-accordion>
+                    </div>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+            </p-accordion>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  </div>
-</div>
+</p-scrollpanel>

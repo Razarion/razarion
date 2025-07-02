@@ -187,7 +187,4 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
             logger.warn(throwable.getMessage(), throwable);
         }
     }
-
-    // ------------------------------------------
-
 }

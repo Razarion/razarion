@@ -11,6 +11,7 @@ import {Divider} from 'primeng/divider';
 import {Button} from 'primeng/button';
 import {SelectModule} from 'primeng/select';
 import {MessageService} from 'primeng/api';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 @Component({
   selector: 'server-resource-region',
@@ -22,7 +23,8 @@ import {MessageService} from 'primeng/api';
     FormsModule,
     Divider,
     Button,
-    SelectModule
+    SelectModule,
+    ScrollPanelModule
   ],
   templateUrl: './server-resource-region.component.html'
 })

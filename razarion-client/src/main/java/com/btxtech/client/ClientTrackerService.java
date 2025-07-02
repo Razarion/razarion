@@ -50,7 +50,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private final SimpleExecutorService simpleExecutorService;
     private TrackingContainer trackingContainer;
     private boolean detailedTracking = false;
-    private SimpleScheduledFuture detailedTrackingFuture;
+    // TODO private SimpleScheduledFuture detailedTrackingFuture;
 
     @Inject
     public ClientTrackerService(SimpleExecutorService simpleExecutorService,
@@ -141,7 +141,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         stopDetailedTracking();
         detailedTracking = true;
         createTrackingContainer();
-        detailedTrackingFuture = simpleExecutorService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
+        // TODO detailedTrackingFuture = simpleExecutorService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
 
         // TODO viewService.addViewFieldListeners(this);
         DomGlobal.document.addEventListener("mousemove", this::onMouseMove, true);
@@ -163,11 +163,12 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         detailedTracking = false;
         // TODO viewService.removeViewFieldListeners(this);
         // TODO clientModalDialogManager.setTrackerCallback(null);
-        if (detailedTrackingFuture != null) {
-            detailedTrackingFuture.cancel();
-            detailedTrackingFuture = null;
-        }
-        sendEventTrackerItems();
+        // TODO if (detailedTrackingFuture != null) {
+        // TODO    detailedTrackingFuture.cancel();
+        // TODO    detailedTrackingFuture = null;
+        // TODO}
+        // TODOsendEventTrackerItems();
+        throw new UnsupportedOperationException("ClientTrackerService...TODO...");
     }
 
     private void onSelectionEvent(SelectionEvent selectionEvent) {

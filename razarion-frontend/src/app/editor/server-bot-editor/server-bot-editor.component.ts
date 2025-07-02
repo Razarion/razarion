@@ -19,6 +19,7 @@ import {BabylonMaterialComponent} from '../common/babylon-material/babylon-mater
 import {Divider} from 'primeng/divider';
 import {SelectModule} from 'primeng/select';
 import {MessageService} from 'primeng/api';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 @Component({
   selector: 'server-bot-editor',
@@ -36,6 +37,7 @@ import {MessageService} from 'primeng/api';
     Divider,
     SelectModule,
     AccordionModule,
+    ScrollPanelModule
   ],
   templateUrl: './server-bot-editor.component.html'
 })
@@ -48,6 +50,10 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
   }
 
   ngOnInit(): void {
+    this.load();
+  }
+
+  private load(): void {
     this.editorService.readServerGameEngineConfig().then(serverGameEngineConfig => {
       this.serverGameEngineConfigEntity = serverGameEngineConfig;
     })
@@ -85,6 +91,21 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
       groundBabylonMaterialId: null
     }
     this.serverGameEngineConfigEntity!.botConfigs.push(this.selectedBot)
+  }
+
+  onCopy() {
+    this.serverGameEngineConfigEntity.botConfigs.push(this.selectedBot!);
+    this.editorService.updateBotConfig(this.serverGameEngineConfigEntity.botConfigs).then(() => {
+      this.load();
+    }).catch(error => {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: `Can not save`,
+        detail: error.message,
+        sticky: true
+      });
+    });
   }
 
   onDelete() {

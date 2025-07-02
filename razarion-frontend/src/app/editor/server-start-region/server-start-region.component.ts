@@ -3,16 +3,16 @@ import {ServerGameEngineConfigEntity, StartRegionConfig} from "../../generated/r
 import {EditorService} from "../editor-service";
 import {EditorPanel} from "../editor-model";
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
-import {DecimalPositionComponent} from '../common/decimal-position/decimal-position.component';
 import {LevelComponent} from '../common/level/level.component';
 import {FormsModule} from '@angular/forms';
-import {InputNumber, InputNumberModule} from 'primeng/inputnumber';
+import {InputNumberModule} from 'primeng/inputnumber';
 import {Divider} from 'primeng/divider';
 import {Button} from 'primeng/button';
 import {NgIf} from '@angular/common';
 import {SelectModule} from 'primeng/select';
-import {Checkbox, CheckboxModule} from 'primeng/checkbox';
+import {CheckboxModule} from 'primeng/checkbox';
 import {MessageService} from 'primeng/api';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 @Component({
   selector: 'server-start-region',
@@ -25,7 +25,8 @@ import {MessageService} from 'primeng/api';
     Button,
     NgIf,
     SelectModule,
-    CheckboxModule
+    CheckboxModule,
+    ScrollPanelModule
   ],
   templateUrl: './server-start-region.component.html'
 })
