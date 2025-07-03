@@ -72,6 +72,7 @@ public abstract class AbstractBaseEntityCrudService<E extends BaseEntity> {
 
     @Transactional
     public void updateBaseEntity(E entity) {
+        entity = jsonToJpa(entity);
         jpaRepository.save(entity);
     }
 
