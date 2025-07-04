@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {CrudContainerChild} from '../crud-container/crud-container.component';
-import {BabylonMaterialControllerClient, BabylonMaterialEntity} from 'src/app/generated/razarion-share';
+import {BabylonMaterialControllerClient, BabylonMaterialEntity, ObjectNameId} from 'src/app/generated/razarion-share';
 import {FileUpload} from 'primeng/fileupload';
 import {MessageService} from 'primeng/api';
 import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
@@ -12,6 +12,7 @@ import {Divider} from 'primeng/divider';
 import {FormsModule} from '@angular/forms';
 import {Checkbox} from 'primeng/checkbox';
 import {InputNumber} from 'primeng/inputnumber';
+import JSZip from 'jszip';
 
 @Component({
   selector: 'babylon-material-editor',
@@ -33,6 +34,7 @@ export class BabylonMaterialEditorComponent implements CrudContainerChild<Babylo
 
   babylonMaterialEntity!: BabylonMaterialEntity;
   private babylonMaterialControllerClient: BabylonMaterialControllerClient;
+  allBabylonMaterials: Blob | null = null;
 
   constructor(private messageService: MessageService,
               private httpClient: HttpClient,
@@ -106,4 +108,66 @@ export class BabylonMaterialEditorComponent implements CrudContainerChild<Babylo
       this.upload(str);
     }
   }
+
+  onCollectAll() {
+    this.allBabylonMaterials = null;
+    this.babylonMaterialControllerClient.getObjectNameIds()
+      .then(objectNameIds => {
+        this.dumpAll(objectNameIds).then(allBabylonModelsZip => {
+          allBabylonModelsZip.generateAsync({type: "blob"}, metadata => console.log(`${metadata.percent}%`))
+            .then(blob => this.allBabylonMaterials = blob)
+            .catch(error => this.messageService.add({
+              severity: 'error',
+              summary: `Exception during babylon material load ${error}`,
+              detail: error,
+              sticky: true
+            }));
+        });
+      }).catch((e) => {
+      this.messageService.add({
+        severity: 'error',
+        summary: `getObjectNameIds failed ${e.message}`,
+        sticky: true
+      });
+      console.error(e);
+    })
+  }
+
+  onDownloadAll() {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(this.allBabylonMaterials!);
+    link.setAttribute("download", "BabylonMaterials.zip");
+    link.click();
+  }
+
+  dumpAll(objectNameIds: ObjectNameId[]): Promise<JSZip> {
+    return new Promise<JSZip>((resolve) => {
+      const zip = new JSZip();
+      let pending = objectNameIds.length;
+      objectNameIds.forEach((objectNameId) => {
+        this.babylonMaterialControllerClient.getData(objectNameId.id)
+          .then(data => {
+            zip.file(`id_${objectNameId.id}`, JSON.stringify(data));
+            pending--;
+            if (pending == 0) {
+              resolve(zip);
+            }
+          })
+          .catch(e => {
+            this.messageService.add({
+              severity: 'error',
+              summary: `download material failed ${e.message}`,
+              sticky: true
+            });
+            console.error(e);
+            pending--;
+            if (pending == 0) {
+              resolve(zip);
+            }
+          })
+      })
+    });
+
+  }
+
 }

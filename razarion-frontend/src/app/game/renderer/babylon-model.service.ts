@@ -145,6 +145,7 @@ export class BabylonModelService {
           clonedMesh.setPivotMatrix(instancedMesh.getPivotMatrix())
           clonedMesh.receiveShadows = true;
           clonedMesh.hasVertexAlpha = false;
+          gltfHelper.handleMaterial(clonedMesh, diplomacy);
         }
       } else {
         this.deepCloneNode(child, clonedRoot, sourceMap, gltfHelper, diplomacy);

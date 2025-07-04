@@ -11,6 +11,10 @@
     {
       "id": 3,
       "name": "Should be deleted"
+    },
+    {
+      "id": 35,
+      "name": "Hydra"
     }
   ],
   "_1": {
@@ -21,17 +25,26 @@
     {
       "id": 1,
       "internalName": "Builder",
-      "gltfName": "Builder"
+      "gltfName": "Builder",
+      "gltfEntityId": 1
     },
     {
       "id": 2,
       "internalName": "Factory",
-      "gltfName": "Factory"
+      "gltfName": "Factory",
+      "gltfEntityId": 1
     },
     {
       "id": 3,
       "internalName": "Should be deleted",
-      "gltfName": "Should be deleted"
+      "gltfName": "Should be deleted",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 35,
+      "internalName": "Hydra",
+      "gltfName": "Hydra",
+      "gltfEntityId": 1
     }
   ]
 }

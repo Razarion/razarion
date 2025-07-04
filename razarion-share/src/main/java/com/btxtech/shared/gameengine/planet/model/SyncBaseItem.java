@@ -45,11 +45,13 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNativeDecimalPosition;
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.WATER_LEVEL;
 
 /**
  * User: beat
@@ -721,7 +723,13 @@ public class SyncBaseItem extends SyncItem {
                 nativeSyncBaseItemTickInfo.turretAngle = syncWeapon.getSyncTurret().getAngle();
             }
 
-            Vertex terrainPosition = terrainAnalyzer.toPosition3d(getAbstractSyncPhysical().getPosition());
+            Vertex terrainPosition;
+            if (getBaseItemType().getPhysicalAreaConfig().getTerrainType() == TerrainType.WATER) {
+                terrainPosition = new Vertex(getAbstractSyncPhysical().getPosition(), WATER_LEVEL);
+            } else {
+                terrainPosition = terrainAnalyzer.toPosition3d(getAbstractSyncPhysical().getPosition());
+            }
+
             nativeSyncBaseItemTickInfo.x = terrainPosition.getX();
             nativeSyncBaseItemTickInfo.y = terrainPosition.getY();
             nativeSyncBaseItemTickInfo.z = terrainPosition.getZ();

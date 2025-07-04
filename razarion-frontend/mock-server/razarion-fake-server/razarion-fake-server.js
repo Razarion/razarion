@@ -13,6 +13,16 @@ const zlib = require('zlib');
 const PORT = 8080;
 let zip = null;
 
+fs.readFile("./resources/BabylonMaterials.zip",
+  function (err, data) {
+    if (err) throw err;
+    JSZip.loadAsync(data).then(function (z) {
+      zip = z;
+    });
+  }
+);
+
+
 app.use(bodyParser.json({limit: '500mb'}));
 app.use(bodyParser.urlencoded({limit: '500mb', extended: true}));
 app.use(bodyParser.raw({limit: '500mb', type: 'application/octet-stream'}));
@@ -471,6 +481,30 @@ server.on({
     body: JSON.stringify({"crystals": 0, "inventoryItemIds": [2, 2, 2], "inventoryArtifactIds": []})
   }
 });
+
+server.on({
+  method: 'GET',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/babylon-material/data/")
+  },
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: loadBabylonMaterial
+  }
+});
+
+function loadBabylonMaterial(req) {
+  let babylonMaterialIdToLoad = req.url.substring("/rest/babylon-material/data/".length, req.url.length);
+
+  let zipObject = zip.file(`id_${babylonMaterialIdToLoad}`)
+  if (!zipObject || !zipObject._data || !zipObject._data.compressedContent) {
+    throw Error(`loadThreeJsModel not found ${req.url}`);
+  }
+
+  return zipObject._data.compressedContent;
+}
 
 server.start(function () {
   console.info("Razarion fake server is running on port: " + PORT);

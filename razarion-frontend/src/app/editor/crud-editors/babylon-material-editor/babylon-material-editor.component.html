@@ -103,4 +103,21 @@
       <p-button icon="pi pi-upload" (onClick)="uploadSelectedMaterial()"></p-button>
     </div>
   </div>
+
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-cloud-upload mr-2"></i>
+      <b>Download all materials</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Material to zip</span>
+    <div class="col-span-8">
+      <p-button type="button" icon="pi pi-cart-arrow-down" styleClass="p-button-sm"
+                (onClick)="onCollectAll()"></p-button>
+      &nbsp;
+      <p-button type="button" icon="pi pi-save" styleClass="p-button-sm" [disabled]="!allBabylonMaterials"
+                (onClick)="onDownloadAll()"></p-button>
+    </div>
+  </div>
 </div>
