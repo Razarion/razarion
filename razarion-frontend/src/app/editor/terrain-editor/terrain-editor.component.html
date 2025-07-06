@@ -14,10 +14,10 @@
   </p-divider>
 
   <p-tabView styleClass="tabview-custom" (onChange)="onTabViewChangeEvent($event.index)" [style]="{width:'600px'}">
-    <p-tabPanel header="Terrain shape">
-      <shape-terrain-editor #shapeEditor></shape-terrain-editor>
+    <p-tabPanel header="Height map">
+      <height-map-terrain-editor #heightMapEditor></height-map-terrain-editor>
     </p-tabPanel>
-    <p-tabPanel header="Terrain objects">
+    <p-tabPanel header="Objects">
       <object-terrain-editor #objectEditor></object-terrain-editor>
     </p-tabPanel>
   </p-tabView>

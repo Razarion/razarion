@@ -60,6 +60,7 @@ import {BaseItemPlacerPresenterEvent, BaseItemPlacerPresenterImpl} from "./base-
 import {getImageUrl} from "src/app/common";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
+import earcut from 'earcut';
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -148,6 +149,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private babylonResourceItems: BabylonResourceItemImpl[] = [];
   private baseItemPlacerPresenterImpl!: BaseItemPlacerPresenterImpl;
   private pendingSetViewFieldCenter: Vector2 | null = null;
+  public static readonly SCROLL_SPEED = 0.2;
+  public static readonly SCROLL_SPEED_CAMERA_HEIGHT_FACTOR = 0.03;
 
   constructor(private gwtAngularService: GwtAngularService,
               private babylonModelService: BabylonModelService,
@@ -352,7 +355,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   scrollCamera() {
     let hasChanged = false;
-    const speed = 0.8;
+    const speed = BabylonRenderServiceAccessImpl.SCROLL_SPEED + this.camera.position.y * BabylonRenderServiceAccessImpl.SCROLL_SPEED_CAMERA_HEIGHT_FACTOR;
+    this.camera.position.y
 
     let newX = null;
     if (this.keyPressed.get("a")) {
@@ -488,7 +492,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   private createPlacePolygonMarker(placeConfig: PlaceConfig): Mesh {
     let polygonData = PlaceConfigComponent.toVertex2ArrayAngular(placeConfig.getPolygon2D()?.toCornersAngular()!)
-    let polygonTriangulation = new PolygonMeshBuilder("Place marker", polygonData, this.scene);
+    let polygonTriangulation = new PolygonMeshBuilder("Place marker", polygonData, this.scene, earcut);
     const polygonMesh = polygonTriangulation.build();
     polygonMesh.position.y = 0.1 + LocationVisualization.getHeightFromTerrain(polygonData[0].x, polygonData[0].y, this);
     polygonMesh.isPickable = false;
@@ -790,6 +794,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   public getBabylonResourceItemImpls(): BabylonResourceItemImpl[] {
     return this.babylonResourceItems;
+  }
+
+
+  disableSelectionFrame() {
+    this.selectionFrame.disable();
   }
 }
 

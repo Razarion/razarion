@@ -1,22 +1,24 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { EditorPanel } from "../editor-model";
-import { ObjectTerrainEditorComponent } from "./object-terrain-editor.component";
-import { ShapeTerrainEditorComponent } from "./shape-terrain-editor.component";
-import { getUpdateMiniMapPlanetUrl } from "../../common";
-import { HttpClient } from "@angular/common/http";
-import { MessageService } from "primeng/api";
-import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {EditorPanel} from "../editor-model";
+import {ObjectTerrainEditorComponent} from "./object-terrain-editor.component";
+import {HeightMapTerrainEditorComponent} from "./height-map-terrain-editor.component";
+import {HttpClient} from "@angular/common/http";
+import {MessageService} from "primeng/api";
+import {GwtAngularService} from 'src/app/gwtangular/GwtAngularService';
 import {TabPanel, TabView} from 'primeng/tabview';
 import {Dialog} from 'primeng/dialog';
 import {Button} from 'primeng/button';
 import {Divider} from 'primeng/divider';
+import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render-service-access-impl.service';
+import {TerrainEditorControllerClient} from '../../generated/razarion-share';
+import {TypescriptGenerator} from '../../backend/typescript-generator';
 
 @Component({
   selector: 'terrain-editor',
   imports: [
     ObjectTerrainEditorComponent,
     TabPanel,
-    ShapeTerrainEditorComponent,
+    HeightMapTerrainEditorComponent,
     TabView,
     Dialog,
     Button,
@@ -27,16 +29,20 @@ import {Divider} from 'primeng/divider';
 export class TerrainEditorComponent extends EditorPanel implements AfterViewInit {
   @ViewChild("objectEditor")
   objectTerrainEditor!: ObjectTerrainEditorComponent;
-  @ViewChild("shapeEditor")
-  shapeTerrainEditor!: ShapeTerrainEditorComponent;
-  @ViewChild('miniMapCanvas', { static: true })
+  @ViewChild("heightMapEditor")
+  shapeTerrainEditor!: HeightMapTerrainEditorComponent;
+  @ViewChild('miniMapCanvas', {static: true})
   miniMapCanvas!: ElementRef<HTMLCanvasElement>;
   displayMiniMap = false;
+  private terrainEditorControllerClient: TerrainEditorControllerClient;
 
-  constructor(private httpClient: HttpClient,
-    private messageService: MessageService,
-    private gwtAngularService: GwtAngularService) {
+  constructor(httpClient: HttpClient,
+              private messageService: MessageService,
+              private gwtAngularService: GwtAngularService,
+              private renderService: BabylonRenderServiceAccessImpl) {
     super();
+    this.terrainEditorControllerClient = new TerrainEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
+    this.stopGameUi();
   }
 
   ngAfterViewInit(): void {
@@ -61,22 +67,27 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
   saveMiniMap() {
     const planetId = this.gwtAngularService.gwtAngularFacade.gameUiControl.getPlanetConfig().getId();
     let dataUrl = this.miniMapCanvas.nativeElement.toDataURL("image/png");
-    this.httpClient.put(getUpdateMiniMapPlanetUrl(planetId), dataUrl).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'MiniMap saved',
-        });
-      },
-      error: error => {
-        console.error(error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'MiniMap saved failed',
-          detail: error.message,
-          sticky: true
-        });
-      }
-    });
+    this.terrainEditorControllerClient.updateMiniMapImage(planetId, dataUrl).then(data => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'MiniMap saved',
+      });
+    }).catch(error => {
+      console.error(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'MiniMap saved failed',
+        detail: error.message,
+        sticky: true
+      });
+    })
+  }
+
+  private stopGameUi() {
+    this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar(null, false);
+    this.gwtAngularService.gwtAngularFacade.inGameQuestVisualizationService.setVisible(false);
+    this.renderService.disableSelectionFrame();
+    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.dispose();
+    this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter.deactivate();
   }
 }

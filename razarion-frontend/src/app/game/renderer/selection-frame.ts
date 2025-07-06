@@ -1,7 +1,9 @@
-import { MeshBuilder, Nullable, PointerEventTypes, Scene, Vector2, Vector3 } from "@babylonjs/core";
-import { LinesMesh } from "@babylonjs/core/Meshes/linesMesh";
-import { BabylonRenderServiceAccessImpl } from "./babylon-render-service-access-impl.service";
-import { GwtAngularService } from "src/app/gwtangular/GwtAngularService";
+import {MeshBuilder, Nullable, PointerEventTypes, Scene, Vector2, Vector3} from "@babylonjs/core";
+import {LinesMesh} from "@babylonjs/core/Meshes/linesMesh";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
+import {Observer} from '@babylonjs/core/Misc/observable';
+import type {PointerInfo} from '@babylonjs/core/Events/pointerEvents';
 
 export class SelectionFrame {
   private readonly MIN_DISTANCE = 0.5;
@@ -9,21 +11,22 @@ export class SelectionFrame {
   private mousePos1: Vector2 | undefined;
   private lines: LinesMesh | undefined;
   private startTerrainPosition: Nullable<Vector3> = null;
+  private observer: Observer<PointerInfo> | null = null;
 
   constructor(private scene: Scene,
-    private renderService: BabylonRenderServiceAccessImpl,
-    private gwtAngularService: GwtAngularService) {
-    this.scene.onPointerObservable.add((pointerInfo) => {
+              private renderService: BabylonRenderServiceAccessImpl,
+              private gwtAngularService: GwtAngularService) {
+    this.observer = this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
-          if(renderService.baseItemPlacerActive) {
+          if (renderService.baseItemPlacerActive) {
             return;
           }
           this.onPointerDown(this.scene.pointerX, this.scene.pointerY);
           break;
         }
         case PointerEventTypes.POINTERUP: {
-          if(renderService.baseItemPlacerActive) {
+          if (renderService.baseItemPlacerActive) {
             return;
           }
           this.onPointerUp(this.scene.pointerX, this.scene.pointerY);
@@ -118,5 +121,12 @@ export class SelectionFrame {
       }, this.scene);
     lines.billboardMode = 7;
     return lines;
+  }
+
+  disable() {
+    if (this.observer) {
+      this.observer.remove();
+      this.observer = null;
+    }
   }
 }

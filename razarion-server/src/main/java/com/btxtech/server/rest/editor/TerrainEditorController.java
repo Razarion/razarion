@@ -48,7 +48,7 @@ public class TerrainEditorController {
     }
 
 
-    @PutMapping(value = "updateMiniMapImage/{planetId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "updateMiniMapImage/{planetId}", consumes = MediaType.TEXT_PLAIN_VALUE)
     @RolesAllowed(Roles.ADMIN)
     public void updateMiniMapImage(@PathVariable("planetId") int planetId, @RequestBody String dataUrl) {
         try {
