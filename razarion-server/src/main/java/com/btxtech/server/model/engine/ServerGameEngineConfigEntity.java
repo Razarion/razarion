@@ -125,7 +125,7 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
         int spawnPointCount = 13;
         double horizontalDistance = 10;
         double startX = 178;
-        double startY = 16;
+        double startY = 25;
         var positions = new ArrayList<DecimalPosition>();
         for (int i = 0; i < spawnPointCount; i++) {
             positions.add(new DecimalPosition(startX - (i * horizontalDistance), startY));

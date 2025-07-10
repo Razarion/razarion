@@ -4,20 +4,23 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
+import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.system.alarm.AlarmService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.event.EventListener;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_PROPERTY;
 
 @Component
-public class RazarionServerEventListener {
-    private final Logger logger = LoggerFactory.getLogger(RazarionServerEventListener.class);
+@Order(1)
+public class RazarionServerInitializer implements ApplicationRunner {
+    private final Logger logger = LoggerFactory.getLogger(RazarionServerInitializer.class);
     private final ServerTerrainShapeService serverTerrainShapeService;
     private final StaticGameConfigService staticGameConfigPersistence;
     private final ServerGameEngineControl gameEngineService;
@@ -26,15 +29,16 @@ public class RazarionServerEventListener {
     private final AlarmService alarmService;
     private final InitializeService initializeService;
     private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    private final UserService userService;
 
-    public RazarionServerEventListener(ServerGameEngineCrudPersistence serverGameEngineCrudPersistence,
-                                       InitializeService initializeService,
-                                       AlarmService alarmService,
-                                       // TODO ServerMgmt serverMgmt,
-                                       // TODO ChatPersistence chatPersistence,
-                                       ServerGameEngineControl gameEngineService,
-                                       StaticGameConfigService staticGameConfigPersistence,
-                                       ServerTerrainShapeService serverTerrainShapeService) {
+    public RazarionServerInitializer(ServerGameEngineCrudPersistence serverGameEngineCrudPersistence,
+                                     InitializeService initializeService,
+                                     AlarmService alarmService,
+                                     // TODO ServerMgmt serverMgmt,
+                                     // TODO ChatPersistence chatPersistence,
+                                     ServerGameEngineControl gameEngineService,
+                                     StaticGameConfigService staticGameConfigPersistence,
+                                     ServerTerrainShapeService serverTerrainShapeService, UserService userService) {
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
         this.initializeService = initializeService;
         this.alarmService = alarmService;
@@ -43,10 +47,11 @@ public class RazarionServerEventListener {
         this.gameEngineService = gameEngineService;
         this.staticGameConfigPersistence = staticGameConfigPersistence;
         this.serverTerrainShapeService = serverTerrainShapeService;
+        this.userService = userService;
     }
 
-    @EventListener
-    public void handleApplicationStartedEvent(ApplicationStartedEvent event) {
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
         // TODO serverMgmt.setServerState(ServerState.STARTING);
         alarmService.addListener(alarm -> {
             // Temporarily suppress INVALID_PROPERTY
@@ -54,6 +59,11 @@ public class RazarionServerEventListener {
                 logger.error(alarm.toString());
             }
         });
+        try {
+            userService.cleanupUnregisteredUsersStartup();
+        } catch (Exception e) {
+            logger.error("User connection cleanup failed", e);
+        }
         try {
             initializeService.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         } catch (Exception e) {

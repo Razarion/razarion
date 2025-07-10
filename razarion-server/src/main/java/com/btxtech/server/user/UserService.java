@@ -384,6 +384,17 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public void cleanupUnregisteredUsersStartup() {
+        userRepository.findAll()
+                .stream()
+                .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
+                .forEach(userEntity -> {
+                    logger.info("Removing unregistered user startup: " + userEntity);
+                    userRepository.delete(userEntity);
+                });
+    }
+
+    @Transactional
     @Scheduled(fixedRate = 60000)
     public void cleanupDisconnectedUnregisteredUsers() {
         var cutoff = LocalDateTime.now().minusMinutes(120);

@@ -1,6 +1,5 @@
 package com.btxtech.server.rest.engine;
 
-import com.btxtech.server.RazarionServerEventListener;
 import com.btxtech.server.service.engine.PlanetCrudPersistence;
 import com.btxtech.shared.rest.TerrainHeightMapController;
 import org.slf4j.Logger;

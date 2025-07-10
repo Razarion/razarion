@@ -353,6 +353,8 @@ public class UserEntity {
     public String toString() {
         return "UserEntity{" +
                 "id=" + id +
+                ", userId=" + userId +
+                ", creationDate=" + creationDate +
                 ", systemConnectionOpened=" + systemConnectionOpened +
                 ", systemConnectionClosed=" + systemConnectionClosed +
                 '}';
