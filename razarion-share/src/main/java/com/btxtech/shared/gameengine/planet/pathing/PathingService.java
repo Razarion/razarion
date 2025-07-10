@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.NODE_SIZE;
+
 @Singleton
 public class PathingService {
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
@@ -52,7 +54,12 @@ public class PathingService {
     }
 
     private SimplePath setupPathToDestination(SyncBaseItem syncItem, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
-        return setupPathToDestination(syncItem.getAbstractSyncPhysical().getPosition(), syncItem.getAbstractSyncPhysical().getRadius(), syncItem.getAbstractSyncPhysical().getTerrainType(), targetTerrainType, destination, totalRange);
+        return setupPathToDestination(syncItem.getAbstractSyncPhysical().getPosition(),
+                syncItem.getAbstractSyncPhysical().getRadius(),
+                syncItem.getAbstractSyncPhysical().getTerrainType(),
+                targetTerrainType,
+                destination,
+                totalRange);
     }
 
     public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType terrainType, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
@@ -72,16 +79,20 @@ public class PathingService {
         if (!destinationNode.isFree(targetTerrainType)) {
             throw new PathFindingNotFreeException("Destination tile is not free: " + destination);
         }
-        List<Index> scopeNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+        List<Index> scopeNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) NODE_SIZE);
         PathingNodeWrapper correctedDestinationNode;
         AStarContext aStarContext;
         DecimalPosition additionPathElement = null;
-        if (TerrainDestinationFinder.differentTerrain(terrainType, targetTerrainType)) {
-            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(position, destination, totalRange, radius + 2, terrainType, terrainService.getTerrainAnalyzer());
+        if (TerrainDestinationFinderUtil.differentTerrain(terrainType, targetTerrainType)) {
+            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(destination, totalRange, radius + 2, terrainType, terrainService.getTerrainAnalyzer());
             terrainDestinationFinder.find();
             correctedDestinationNode = terrainDestinationFinder.getReachableNode();
-            additionPathElement = correctedDestinationNode.getCenter();
-            aStarContext = new AStarContext(terrainType, scopeNodeIndices);
+            if (correctedDestinationNode != null) {
+                additionPathElement = correctedDestinationNode.getCenter();
+                aStarContext = new AStarContext(terrainType, scopeNodeIndices);
+            } else {
+                return new SimplePath().destinationUnreachable(findNearestPosition(destination, terrainType, position, radius));
+            }
         } else {
 //            DestinationFinder destinationFinder = new DestinationFinder(position, destination, destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), scopeNodeIndices, terrainService.getPathingAccess());
 //            destinationFinder.find();
@@ -108,6 +119,28 @@ public class PathingService {
         positions.add(destination);
         path.setWayPositions(positions);
         return path;
+    }
+
+    public DecimalPosition findNearestPosition(DecimalPosition start, TerrainType terrainType, DecimalPosition destination, double radius) {
+        List<Index> scopeNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) NODE_SIZE);
+
+        DecimalPosition distanceVector = destination.sub(start);
+        int count = (int) Math.ceil(distanceVector.length() / NODE_SIZE) + 2; // +2 to prevent item stuck if e.g. builder too close to water
+        DecimalPosition direction = distanceVector.normalize();
+
+        for (int i = 0; i < count; i++) {
+            DecimalPosition position = start.add(direction.multiply(i * NODE_SIZE));
+            Index index = TerrainUtil.terrainPositionToNodeIndex(position);
+            if (terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, index)) {
+                if (scopeNodeIndices.stream()
+                        .allMatch(scopeIndex -> terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, scopeIndex.add(index)))) {
+                    return position;
+                }
+
+            }
+
+        }
+        throw new IllegalArgumentException("TerrainDestinationFinder.findNearestPosition(): no reachable terrain destination found. start: " + start + " destination: " + destination + " radius: " + radius + " terrainType: " + terrainType);
     }
 
     public void tick(SynchronizationSendingContext synchronizationSendingContext) {

@@ -22,7 +22,7 @@ import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.pathing.TerrainDestinationFinder;
+import com.btxtech.shared.gameengine.planet.pathing.TerrainDestinationFinderUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.inject.Inject;
@@ -86,7 +86,7 @@ public class BotSyncBaseItem {
 
     public boolean isAbleToAttack(SyncBaseItem target) {
         return syncBaseItem.getSyncWeapon() != null && syncBaseItem.getAbstractSyncPhysical().canMove() && !syncBaseItem.getSyncWeapon().isItemTypeDisallowed(target)
-                && TerrainDestinationFinder.isAllowed(terrainService.getTerrainAnalyzer(),
+                && TerrainDestinationFinderUtil.isAllowed(terrainService.getTerrainAnalyzer(),
                 syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius() + syncBaseItem.getSyncWeapon().getWeaponType().getRange() + target.getBaseItemType().getPhysicalAreaConfig().getRadius(),
                 target.getAbstractSyncPhysical().getPosition(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getTerrainType(),
                 target.getBaseItemType().getPhysicalAreaConfig().getTerrainType());

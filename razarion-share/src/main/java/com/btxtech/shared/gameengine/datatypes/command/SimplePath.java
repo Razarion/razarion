@@ -4,12 +4,10 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 
 import java.util.List;
 
-/**
- * Created by Beat
- * 21.04.2017.
- */
 public class SimplePath {
     private List<DecimalPosition> wayPositions;
+    private boolean destinationReachable;
+    private DecimalPosition alternativeDestination;
 
     public List<DecimalPosition> getWayPositions() {
         return wayPositions;
@@ -17,10 +15,28 @@ public class SimplePath {
 
     public void setWayPositions(List<DecimalPosition> wayPositions) {
         this.wayPositions = wayPositions;
+        destinationReachable = true;
     }
 
-    public SimplePath wayPositions(List<DecimalPosition> wayPositions) {
-        setWayPositions(wayPositions);
+    public SimplePath destinationUnreachable(DecimalPosition alternativeDestination) {
+        destinationReachable = false;
+        setAlternativeDestination(alternativeDestination);
         return this;
+    }
+
+    public boolean isDestinationReachable() {
+        return destinationReachable;
+    }
+
+    public void setDestinationReachable(boolean destinationReachable) {
+        this.destinationReachable = destinationReachable;
+    }
+
+    public DecimalPosition getAlternativeDestination() {
+        return alternativeDestination;
+    }
+
+    public void setAlternativeDestination(DecimalPosition alternativeDestination) {
+        this.alternativeDestination = alternativeDestination;
     }
 }

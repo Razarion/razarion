@@ -12,6 +12,7 @@ import {Divider} from 'primeng/divider';
 import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render-service-access-impl.service';
 import {TerrainEditorControllerClient} from '../../generated/razarion-share';
 import {TypescriptGenerator} from '../../backend/typescript-generator';
+import {ScrollPanel, ScrollPanelModule} from 'primeng/scrollpanel';
 
 @Component({
   selector: 'terrain-editor',
@@ -22,7 +23,8 @@ import {TypescriptGenerator} from '../../backend/typescript-generator';
     TabView,
     Dialog,
     Button,
-    Divider
+    Divider,
+    ScrollPanelModule
   ],
   templateUrl: './terrain-editor.component.html'
 })

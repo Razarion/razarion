@@ -17,7 +17,7 @@ import {InputNumber} from 'primeng/inputnumber';
 import {AngleComponent} from '../../common/angle/angle.component';
 import {Divider} from 'primeng/divider';
 import {FormsModule} from '@angular/forms';
-import {Panel} from 'primeng/panel';
+import {Panel, PanelModule} from 'primeng/panel';
 import {BaseItemTypesComponent} from '../../common/base-item-types/base-item-types.component';
 import {ParticleSystemComponent} from '../../common/particle-system/particle-system.component';
 import {VelocityComponent} from '../../common/velocity/velocity.component';
@@ -26,7 +26,7 @@ import {TerrainTypeComponent} from '../../common/terrain-type/terrain-type.compo
 import {Model3dComponent} from '../../common/model3d/model3d.component';
 import {ImageItemComponent} from '../../common/image-item/image-item.component';
 import {AccelerationComponent} from '../../common/acceleration/acceleration.component';
-import {ScrollPanel} from 'primeng/scrollpanel';
+import {ScrollPanel, ScrollPanelModule} from 'primeng/scrollpanel';
 import {NgIf} from '@angular/common';
 
 @Component({
@@ -36,7 +36,7 @@ import {NgIf} from '@angular/common';
     AngleComponent,
     Divider,
     FormsModule,
-    Panel,
+    PanelModule,
     BaseItemTypesComponent,
     ParticleSystemComponent,
     VelocityComponent,
@@ -45,7 +45,7 @@ import {NgIf} from '@angular/common';
     Model3dComponent,
     ImageItemComponent,
     AccelerationComponent,
-    ScrollPanel,
+    ScrollPanelModule,
     NgIf
   ],
   templateUrl: './base-item-type-editor.component.html'

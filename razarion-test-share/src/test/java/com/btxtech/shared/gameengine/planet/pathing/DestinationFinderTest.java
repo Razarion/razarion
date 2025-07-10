@@ -17,6 +17,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.NODE_SIZE;
+
 /**
  * Created by Beat
  * on 28.09.2017.
@@ -45,7 +47,7 @@ public class DestinationFinderTest extends AStarBaseTest {
     }
 
     private DecimalPosition testBody(DecimalPosition destination, double radius, TerrainType terrainType) {
-        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) NODE_SIZE);
         PathingNodeWrapper destinationNode = getTerrainService().getTerrainAnalyzer().getPathingNodeWrapper(destination);
         DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainType, subNodeIndexScope, getTerrainService().getTerrainAnalyzer());
         return destinationFinder.find().getCenter();

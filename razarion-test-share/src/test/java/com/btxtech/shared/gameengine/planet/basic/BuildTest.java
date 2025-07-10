@@ -65,15 +65,15 @@ public class BuildTest extends BaseBasicTest {
         //showDisplay();
 
         // Build harbour
-        getCommandService().build(builder, new DecimalPosition(183, 173), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(171, 155), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         permSlave.tickPlanetServiceBaseServiceActive();
 
         SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.HARBOUR_ITEM_TYPE_ID);
-        //assertFactory(factory, 40, FallbackConfig.HARBOUR_ITEM_TYPE_ID, new DecimalPosition(174.5, 194.5));
+        assertFactory(factory, 40, FallbackConfig.HARBOUR_ITEM_TYPE_ID, new DecimalPosition(171, 155));
 
         SyncBaseItem slaveFactory = permSlave.getSyncItemContainerService().getSyncBaseItemSave(factory.getId());
-        //assertFactory(slaveFactory, 40, FallbackConfig.HARBOUR_ITEM_TYPE_ID, new DecimalPosition(174.5, 194.5));
+        assertFactory(slaveFactory, 40, FallbackConfig.HARBOUR_ITEM_TYPE_ID, new DecimalPosition(171, 155));
     }
 
     private void assertFactory(SyncBaseItem factory, double health, int factoryItemTypeId, DecimalPosition position) {

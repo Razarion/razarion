@@ -53,4 +53,11 @@ export abstract class AbstractBrush {
   }
 
 
+  showCursor() {
+
+  }
+
+  hideCursor() {
+
+  }
 }

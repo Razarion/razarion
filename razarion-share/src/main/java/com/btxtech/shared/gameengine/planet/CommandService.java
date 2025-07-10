@@ -95,7 +95,11 @@ public class CommandService {
         builderCommand.updateTimeStamp();
         builderCommand.setToBeBuiltId(itemTypeToBuild.getId());
         builderCommand.setPositionToBeBuilt(positionToBeBuild);
-        SimplePath path = pathingService.setupPathToDestination(builder, builder.getBaseItemType().getBuilderType().getRange(), itemTypeToBuild.getPhysicalAreaConfig().getTerrainType(), positionToBeBuild, itemTypeToBuild.getPhysicalAreaConfig().getRadius());
+        SimplePath path = pathingService.setupPathToDestination(builder,
+                builder.getBaseItemType().getBuilderType().getRange(),
+                itemTypeToBuild.getPhysicalAreaConfig().getTerrainType(),
+                positionToBeBuild,
+                itemTypeToBuild.getPhysicalAreaConfig().getRadius());
         if (moveIfPathTargetUnreachable(builder, path)) {
             return;
         }
@@ -279,12 +283,11 @@ public class CommandService {
     }
 
     protected boolean moveIfPathTargetUnreachable(SyncBaseItem syncBaseItem, SimplePath path) {
-        return false;
-// TODO       if (path.isDestinationReachable()) {
-// TODO           return false;
-// TODO       } else {
-// TODO           move(syncBaseItem, path.getAlternativeDestination());
-//  TODO          return true;
-// TODO       }
+        if (path.isDestinationReachable()) {
+            return false;
+        } else {
+            move(syncBaseItem, path.getAlternativeDestination());
+            return true;
+        }
     }
 }

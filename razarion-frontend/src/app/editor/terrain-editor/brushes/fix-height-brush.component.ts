@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AbstractBrush} from './abstract-brush';
 import {Color3, Mesh, MeshBuilder, PointerEventTypes, StandardMaterial, Vector2, Vector3} from '@babylonjs/core';
 import {BrushConfigControllerClient, BrushConfigEntity} from 'src/app/generated/razarion-share';
@@ -122,7 +122,7 @@ class BrushValues {
     </div>
   `
 })
-export class FixHeightBrushComponent extends AbstractBrush implements OnInit {
+export class FixHeightBrushComponent extends AbstractBrush implements OnInit, OnDestroy {
   brushes: { name: string, value: Brush }[] = [{name: "Dummy", value: new Brush(-9999, "Dummy", new BrushValues())}];
   activeBrush = this.brushes[0];
   private pendingBrushConfigEntityId: Number | null = null;
@@ -141,6 +141,36 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit {
   ngOnInit(): void {
     this.loadBrushes();
     this.initEditorCursor();
+  }
+
+  ngOnDestroy(): void {
+    if (this.editorCursorMeshOuter) {
+      this.editorCursorMeshOuter.dispose();
+      this.editorCursorMeshOuter = null;
+    }
+
+    if (this.editorCursorMeshInner) {
+      this.editorCursorMeshInner.dispose();
+      this.editorCursorMeshInner = null;
+    }
+  }
+
+  override showCursor() {
+    if (this.editorCursorMeshOuter) {
+      this.editorCursorMeshOuter.visibility = 1;
+    }
+    if (this.editorCursorMeshInner) {
+      this.editorCursorMeshInner.visibility = 1;
+    }
+  }
+
+  override hideCursor() {
+    if (this.editorCursorMeshOuter) {
+      this.editorCursorMeshOuter.visibility = 0;
+    }
+    if (this.editorCursorMeshInner) {
+      this.editorCursorMeshInner.visibility = 0;
+    }
   }
 
   private loadBrushes(): void {
@@ -298,7 +328,7 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit {
               this.editorCursorMeshOuter.setEnabled(true);
               this.editorCursorMeshOuter.scaling.set(diameterOuter, diameterOuter, diameterOuter);
             }
-            if(this.editorCursorMeshInner) {
+            if (this.editorCursorMeshInner) {
               this.editorCursorMeshInner.position.copyFrom(pickingInfo.pickedPoint!);
               this.editorCursorMeshInner.setEnabled(true);
               this.editorCursorMeshInner.scaling.set(

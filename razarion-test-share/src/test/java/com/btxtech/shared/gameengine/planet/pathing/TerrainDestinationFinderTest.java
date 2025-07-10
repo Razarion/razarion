@@ -18,161 +18,161 @@ import org.junit.Test;
 public class TerrainDestinationFinderTest extends AStarBaseTest {
     @Test
     public void land1() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4, 4), new DecimalPosition(4, 4), 10 + 4 + 4, 4, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4, 4), 10 + 4 + 4, 4, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(4, 4), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void land2() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4, 4), new DecimalPosition(14, 14), 10 + 4 + 4, 4, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(14, 14), 10 + 4 + 4, 4, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(12, 12), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void landWaterCoast1() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4.000, 4.000), new DecimalPosition(244.000, 252.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(244.000, 252.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(244.000, 252.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void landWaterCoast2() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4.000, 4.000), new DecimalPosition(244.000, 260.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(244.000, 260.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(244.000, 260.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void landWaterCoast3() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4.000, 4.000), new DecimalPosition(230.000, 270.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(230.000, 270.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(230.000, 270.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void landWaterCoast4() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4.000, 4.000), new DecimalPosition(206.000, 270.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(206.000, 270.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(206.000, 270.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void landWaterCoast5() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4.000, 4.000), new DecimalPosition(252.000, 364.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(252.000, 364.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(252.000, 364.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void landWaterCoast6() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4.000, 4.000), new DecimalPosition(188.000, 372.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(188.000, 372.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(188.000, 372.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void landWaterCoast7() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4.000, 4.000), new DecimalPosition(50.000, 374.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(50.000, 374.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(50.000, 374.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void landWaterCoast8() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4.000, 4.000), new DecimalPosition(50.000, 202.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(50.000, 202.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(50.000, 202.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void landWaterCoast9() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4.000, 4.000), new DecimalPosition(90.000, 186.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(90.000, 186.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(90.000, 186.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void landWaterCoast10() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(4.000, 4.000), new DecimalPosition(234.000, 186.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(234.000, 186.000), 18.0, 4.0, TerrainType.LAND, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(234.000, 186.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand1() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(228.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(228.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(228.000, 204.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand2() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(228.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(228.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(228.000, 204.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand3() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(172.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(172.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(172.000, 204.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand4() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(196.000, 356.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(196.000, 356.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(196.000, 356.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand5() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(234.000, 358.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(234.000, 358.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(234.000, 358.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand6() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(92.000, 356.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(92.000, 356.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(92.000, 356.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand7() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(52.000, 356.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(52.000, 356.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(52.000, 356.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand8() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(54.000, 318.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(54.000, 318.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(54.000, 318.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand9() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(68.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(68.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(68.000, 204.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand10() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(68.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(68.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(68.000, 204.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
 
     @Test
     public void waterLand11() {
-        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(140.000, 230.000), new DecimalPosition(76.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
+        TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(new DecimalPosition(76.000, 204.000), 22.0, 3.0, TerrainType.WATER, getTerrainService().getTerrainAnalyzer());
         terrainDestinationFinder.find();
         Assert.assertEquals(new DecimalPosition(76.000, 204.000), terrainDestinationFinder.getReachableNode().getCenter());
     }
@@ -201,7 +201,6 @@ public class TerrainDestinationFinderTest extends AStarBaseTest {
 
     private DecimalPosition testBody(DecimalPosition start, double startRadius, TerrainType startTerrainType, DecimalPosition destination, double destinationRadius, double distance) {
         TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(
-                start,
                 destination,
                 startRadius + distance + destinationRadius,
                 startRadius,

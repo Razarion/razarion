@@ -1,4 +1,4 @@
-<p-scrollPanel [style]="{width: '100%', height: '90em'}">
+<p-scrollPanel [style]="{width: '100%', height: '100%'}">
   <div style="width: 40em">
     <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
       <span class="col-span-4">Id</span>
@@ -153,7 +153,7 @@
         <b>&nbsp;Abilities</b>
       </div>
     </p-divider>
-    <p-panel header="Builder" [toggleable]="true" [collapsed]="!baseItemType.builderType" collapseIcon="pi pi-trash"
+    <p-panel header="Builder" [toggleable]="true" [collapsed]="!baseItemType.builderType"
              (collapsedChange)="onBuilderTypeChange(!$event)">
       <div *ngIf="baseItemType.builderType">
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
@@ -187,7 +187,7 @@
       </div>
     </p-panel>
 
-    <p-panel header="Factory" [toggleable]="true" [collapsed]="!baseItemType.factoryType" collapseIcon="pi pi-trash"
+    <p-panel header="Factory" [toggleable]="true" [collapsed]="!baseItemType.factoryType"
              (collapsedChange)="onFactoryTypeChange(!$event)">
       <div *ngIf="baseItemType.factoryType">
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
@@ -208,7 +208,7 @@
     </p-panel>
 
     <p-panel header="Harvester" [toggleable]="true" [collapsed]="!baseItemType.harvesterType"
-             collapseIcon="pi pi-trash" (collapsedChange)="onHarvesterTypeChange(!$event)">
+             (collapsedChange)="onHarvesterTypeChange(!$event)">
       <div *ngIf="baseItemType.harvesterType">
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
           <span class="col-span-4">Range [m]</span>
@@ -234,7 +234,7 @@
       </div>
     </p-panel>
 
-    <p-panel header="Weapon" [toggleable]="true" [collapsed]="!baseItemType.weaponType" collapseIcon="pi pi-trash"
+    <p-panel header="Weapon" [toggleable]="true" [collapsed]="!baseItemType.weaponType"
              (collapsedChange)="onWeaponTypeChange(!$event)">
       <div *ngIf="baseItemType.weaponType">
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
@@ -295,7 +295,7 @@
     </p-panel>
 
     <p-panel header="Generator" [toggleable]="true" [collapsed]="!baseItemType.generatorType"
-             collapseIcon="pi pi-trash" (collapsedChange)="onGeneratorTypeChange(!$event)">
+             (collapsedChange)="onGeneratorTypeChange(!$event)">
       <div *ngIf="baseItemType.generatorType">
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
           <span class="col-span-4">Wattage [w]</span>
@@ -307,7 +307,7 @@
     </p-panel>
 
     <p-panel header="Consumer" [toggleable]="true" [collapsed]="!baseItemType.consumerType"
-             collapseIcon="pi pi-trash" (collapsedChange)="onConsumerTypeChange(!$event)">
+             (collapsedChange)="onConsumerTypeChange(!$event)">
       <div *ngIf="baseItemType.consumerType">
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
           <span class="col-span-4">Wattage [w]</span>
@@ -319,7 +319,7 @@
     </p-panel>
 
     <p-panel header="Item container" [toggleable]="true" [collapsed]="!baseItemType.itemContainerType"
-             collapseIcon="pi pi-trash" (collapsedChange)="onItemContainerTypeChange(!$event)">
+             (collapsedChange)="onItemContainerTypeChange(!$event)">
       <div *ngIf="baseItemType.itemContainerType">
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
           <span class="col-span-4">Range [m]</span>
@@ -344,7 +344,7 @@
       </div>
     </p-panel>
 
-    <p-panel header="House" [toggleable]="true" [collapsed]="!baseItemType.houseType" collapseIcon="pi pi-trash"
+    <p-panel header="House" [toggleable]="true" [collapsed]="!baseItemType.houseType"
              (collapsedChange)="onHouseTypeChange(!$event)">
       <div *ngIf="baseItemType.houseType">
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
@@ -356,7 +356,7 @@
       </div>
     </p-panel>
 
-    <p-panel header="Special" [toggleable]="true" [collapsed]="!baseItemType.specialType" collapseIcon="pi pi-trash"
+    <p-panel header="Special" [toggleable]="true" [collapsed]="!baseItemType.specialType"
              (collapsedChange)="onSpecialTypeChange(!$event)">
       <div *ngIf="baseItemType.specialType">
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">

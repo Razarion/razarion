@@ -16,7 +16,7 @@ import {
   TerrainObjectGeneratorEntityComponent
 } from "./terrain-object-generator-entity/terrain-object-generator-entity.component";
 import {Button} from 'primeng/button';
-import {DatePipe} from '@angular/common';
+import {DatePipe, NgIf} from '@angular/common';
 import {TableModule} from 'primeng/table';
 import {FormsModule} from '@angular/forms';
 import {Divider} from 'primeng/divider';
@@ -31,7 +31,8 @@ import {SelectChangeEvent, SelectModule} from 'primeng/select';
     TerrainObjectGeneratorEntityComponent,
     SelectModule,
     FormsModule,
-    Divider
+    Divider,
+    NgIf
   ],
   templateUrl: './terrain-object-generator.component.html'
 })

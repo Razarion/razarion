@@ -33,6 +33,9 @@ public class LoggingControllerImpl implements LoggingController {
     @PostMapping(value = LOGGING_JSON, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void jsonLogger(@RequestBody LogRecordInfo logRecordInfo) {
         String s = "Gwt Message: " + logRecordInfo.getMessage();
+        if (logRecordInfo.getThrown() != null) {
+            s += "\n - Thrown: " + thrownToString(setupThrown(logRecordInfo.getThrown()));
+        }
         s += "\n - Logger name: " + logRecordInfo.getLoggerName();
         s += "\n - GWT module name: " + logRecordInfo.getGwtModuleName();
         s += "\n - GWT strong name: " + logRecordInfo.getGwtStrongName();
