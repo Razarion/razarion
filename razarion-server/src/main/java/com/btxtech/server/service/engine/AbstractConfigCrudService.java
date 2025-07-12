@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
  * @param <C> Config
  * @param <E> Entity
  */
-public abstract class AbstractConfigCrudPersistence<C extends Config, E extends BaseEntity> extends AbstractBaseEntityCrudService<E> {
+public abstract class AbstractConfigCrudService<C extends Config, E extends BaseEntity> extends AbstractBaseEntityCrudService<E> {
     @Autowired
     @Lazy
     private ServiceProviderService serviceProviderService;
 
-    public AbstractConfigCrudPersistence(Class<E> entityClass, JpaRepository<E, Integer> jpaRepository) {
+    public AbstractConfigCrudService(Class<E> entityClass, JpaRepository<E, Integer> jpaRepository) {
         super(entityClass, jpaRepository);
     }
 

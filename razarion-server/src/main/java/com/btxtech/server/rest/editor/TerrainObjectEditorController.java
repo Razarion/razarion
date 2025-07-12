@@ -20,7 +20,7 @@ public class TerrainObjectEditorController extends AbstractConfigController<Terr
     }
 
     @Override
-    protected TerrainObjectService getConfigCrudPersistence() {
+    protected TerrainObjectService getConfigCrudService() {
         return terrainObjectService;
     }
 

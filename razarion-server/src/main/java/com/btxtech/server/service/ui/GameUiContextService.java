@@ -3,10 +3,10 @@ package com.btxtech.server.service.ui;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.ui.GameUiContextEntity;
 import com.btxtech.server.repository.ui.GameUiContextRepository;
-import com.btxtech.server.service.engine.AbstractConfigCrudPersistence;
+import com.btxtech.server.service.engine.AbstractConfigCrudService;
 import com.btxtech.server.service.engine.DbPropertiesService;
-import com.btxtech.server.service.engine.LevelCrudPersistence;
-import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.LevelCrudService;
+import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.ServerLevelQuestService;
 import com.btxtech.server.service.engine.StartPositionFinderService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
@@ -26,11 +26,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiContextConfig, GameUiContextEntity> {
+public class GameUiContextService extends AbstractConfigCrudService<GameUiContextConfig, GameUiContextEntity> {
     private final Logger logger = LoggerFactory.getLogger(GameUiContextService.class);
     private final StaticGameConfigService staticGameConfigService;
-    private final LevelCrudPersistence levelCrudPersistence;
-    private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    private final LevelCrudService levelCrudPersistence;
+    private final ServerGameEngineService serverGameEngineCrudPersistence;
     private final ServerLevelQuestService serverLevelQuestService;
     private final ServerUnlockService serverUnlockService;
     private final AlarmService alarmService;
@@ -40,8 +40,8 @@ public class GameUiContextService extends AbstractConfigCrudPersistence<GameUiCo
 
     public GameUiContextService(GameUiContextRepository gameUiContextRepository,
                                 StaticGameConfigService staticGameConfigService,
-                                LevelCrudPersistence levelCrudPersistence,
-                                ServerGameEngineCrudPersistence serverGameEngineCrudPersistence, ServerLevelQuestService serverLevelQuestService, ServerUnlockService serverUnlockService,
+                                LevelCrudService levelCrudPersistence,
+                                ServerGameEngineService serverGameEngineCrudPersistence, ServerLevelQuestService serverLevelQuestService, ServerUnlockService serverUnlockService,
                                 AlarmService alarmService, DbPropertiesService dbPropertiesService,
                                 BaseItemService baseItemService,
                                 StartPositionFinderService startPositionFinderService) {

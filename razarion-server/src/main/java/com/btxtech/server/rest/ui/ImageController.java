@@ -3,8 +3,8 @@ package com.btxtech.server.rest.ui;
 import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.ui.Image;
 import com.btxtech.server.model.ui.ImageGalleryItem;
-import com.btxtech.server.service.engine.PlanetCrudPersistence;
-import com.btxtech.server.service.ui.ImagePersistence;
+import com.btxtech.server.service.engine.PlanetCrudService;
+import com.btxtech.server.service.ui.ImageService;
 import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +33,11 @@ import java.util.List;
 @RequestMapping("/rest/image/")
 public class ImageController {
     private final Logger logger = LoggerFactory.getLogger(ImageController.class);
-    private final ImagePersistence imagePersistence;
-    private final PlanetCrudPersistence planetCrudPersistence;
+    private final ImageService imageService;
+    private final PlanetCrudService planetCrudPersistence;
 
-    public ImageController(ImagePersistence imagePersistence, PlanetCrudPersistence planetCrudPersistence) {
-        this.imagePersistence = imagePersistence;
+    public ImageController(ImageService imageService, PlanetCrudService planetCrudPersistence) {
+        this.imageService = imageService;
         this.planetCrudPersistence = planetCrudPersistence;
     }
 
@@ -56,7 +56,7 @@ public class ImageController {
     @GetMapping(value = "{id}", produces = {"image/jpeg", "image/png", "image/gif"})
     public ResponseEntity<byte[]> getImage(@PathVariable("id") int id) {
         try {
-            Image image = imagePersistence.getImage(id);
+            Image image = imageService.getImage(id);
             MediaType mediaType = MediaType.valueOf(image.getType());
             return ResponseEntity
                     .ok()
@@ -87,7 +87,7 @@ public class ImageController {
     @GetMapping(value = "image-gallery", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ImageGalleryItem> getImageGalleryItems() {
         try {
-            return imagePersistence.getImageGalleryItems();
+            return imageService.getImageGalleryItems();
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;
@@ -100,7 +100,7 @@ public class ImageController {
         try {
             byte[] bytes = inputStreamToArray(images[0].getInputStream());
             String type = contentTypeFromArray(bytes);
-            imagePersistence.createImage(bytes, type);
+            imageService.createImage(bytes, type);
         } catch (IOException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new RuntimeException(ex);
@@ -116,7 +116,7 @@ public class ImageController {
         try {
             byte[] bytes = inputStreamToArray(images[0].getInputStream());
             String type = contentTypeFromArray(bytes);
-            imagePersistence.save(id, bytes, type);
+            imageService.save(id, bytes, type);
         } catch (IOException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new RuntimeException(ex);
@@ -130,7 +130,7 @@ public class ImageController {
     @RolesAllowed(Roles.ADMIN)
     void delete(@PathVariable("id") int id) {
         try {
-            imagePersistence.delete(id);
+            imageService.delete(id);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;

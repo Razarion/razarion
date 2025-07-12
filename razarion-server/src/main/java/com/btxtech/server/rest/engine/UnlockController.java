@@ -1,7 +1,7 @@
 package com.btxtech.server.rest.engine;
 
 import com.btxtech.server.gameengine.ServerUnlockService;
-import com.btxtech.server.service.engine.LevelCrudPersistence;
+import com.btxtech.server.service.engine.LevelCrudService;
 import com.btxtech.server.service.engine.ServerInventoryService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
@@ -21,12 +21,12 @@ import java.util.List;
 @RequestMapping("/rest/unlock-controller")
 public class UnlockController {
     private final Logger logger = LoggerFactory.getLogger(UnlockController.class);
-    private final LevelCrudPersistence levelCrudPersistence;
+    private final LevelCrudService levelCrudPersistence;
     private final ServerUnlockService serverUnlockService;
     private final UserService userService;
     private final ServerInventoryService serverInventoryService;
 
-    public UnlockController(LevelCrudPersistence levelCrudPersistence,
+    public UnlockController(LevelCrudService levelCrudPersistence,
                             ServerUnlockService serverUnlockService,
                             UserService userService,
                             ServerInventoryService serverInventoryService) {

@@ -4,9 +4,9 @@ import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.ImageLibraryEntity;
 import com.btxtech.server.model.ui.Model3DEntity;
 import com.btxtech.server.model.ui.ParticleSystemEntity;
-import com.btxtech.server.service.ui.AudioPersistence;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
-import com.btxtech.server.service.engine.BoxItemTypeCrudPersistence;
+import com.btxtech.server.service.engine.BaseItemTypeService;
+import com.btxtech.server.service.engine.BoxItemTypeCrudService;
+import com.btxtech.server.service.ui.AudioService;
 import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
@@ -178,9 +178,9 @@ public class BaseItemTypeEntity extends BaseEntity {
     }
 
     public void fromBaseItemType(BaseItemType baseItemType,
-                                 BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
-                                 BoxItemTypeCrudPersistence boxItemTypeCrudPersistence,
-                                 AudioPersistence audioPersistence,
+                                 BaseItemTypeService baseItemTypeService,
+                                 BoxItemTypeCrudService boxItemTypeCrudPersistence,
+                                 AudioService audioPersistence,
                                  ParticleSystemService particleSystemCrudPersistence) {
         name = baseItemType.getName();
         description = baseItemType.getDescription();
@@ -208,7 +208,7 @@ public class BaseItemTypeEntity extends BaseEntity {
             if (weaponType == null) {
                 weaponType = new WeaponTypeEntity();
             }
-            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeCrudPersistence, audioPersistence, particleSystemCrudPersistence);
+            weaponType.fromWeaponType(baseItemType.getWeaponType(), baseItemTypeService, audioPersistence, particleSystemCrudPersistence);
         } else {
             weaponType = null;
         }
@@ -217,7 +217,7 @@ public class BaseItemTypeEntity extends BaseEntity {
             if (factoryType == null) {
                 factoryType = new FactoryTypeEntity();
             }
-            factoryType.fromFactoryTypeEntity(baseItemType.getFactoryType(), baseItemTypeCrudPersistence);
+            factoryType.fromFactoryTypeEntity(baseItemType.getFactoryType(), baseItemTypeService);
         } else {
             factoryType = null;
         }
@@ -235,7 +235,7 @@ public class BaseItemTypeEntity extends BaseEntity {
             if (builderType == null) {
                 builderType = new BuilderTypeEntity();
             }
-            builderType.fromBuilderType(baseItemType.getBuilderType(), baseItemTypeCrudPersistence, particleSystemCrudPersistence);
+            builderType.fromBuilderType(baseItemType.getBuilderType(), baseItemTypeService, particleSystemCrudPersistence);
         } else {
             builderType = null;
         }
@@ -262,7 +262,7 @@ public class BaseItemTypeEntity extends BaseEntity {
             if (itemContainerType == null) {
                 itemContainerType = new ItemContainerTypeEntity();
             }
-            itemContainerType.fromItemContainerType(baseItemType.getItemContainerType(), baseItemTypeCrudPersistence);
+            itemContainerType.fromItemContainerType(baseItemType.getItemContainerType(), baseItemTypeService);
         } else {
             itemContainerType = null;
         }

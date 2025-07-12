@@ -1,7 +1,7 @@
 package com.btxtech.server.service.engine;
 
-import com.btxtech.server.service.ui.AudioPersistence;
-import com.btxtech.server.service.ui.ImagePersistence;
+import com.btxtech.server.service.ui.AudioService;
+import com.btxtech.server.service.ui.ImageService;
 import com.btxtech.server.service.ui.Model3DService;
 import com.btxtech.server.service.ui.ParticleSystemService;
 import org.springframework.stereotype.Service;
@@ -9,16 +9,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class ServiceProviderService {
     private final Model3DService model3DCrudPersistence;
-    private final ImagePersistence imagePersistence;
-    private final AudioPersistence audioPersistence;
+    private final ImageService imageService;
+    private final AudioService audioPersistence;
     private final ParticleSystemService particleSystemCrudPersistence;
-    private final BoxItemTypeCrudPersistence boxItemTypeCrudPersistence;
-    private final InventoryItemCrudPersistence inventoryItemCrudPersistence;
-    private final BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
+    private final BoxItemTypeCrudService boxItemTypeCrudPersistence;
+    private final InventoryItemService inventoryItemCrudPersistence;
+    private final BaseItemTypeService baseItemTypeCrudPersistence;
 
-    public ServiceProviderService(Model3DService model3DCrudPersistence, ImagePersistence imagePersistence, AudioPersistence audioPersistence, ParticleSystemService particleSystemCrudPersistence, BoxItemTypeCrudPersistence boxItemTypeCrudPersistence, InventoryItemCrudPersistence inventoryItemCrudPersistence, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence) {
+    public ServiceProviderService(Model3DService model3DCrudPersistence, ImageService imageService, AudioService audioPersistence, ParticleSystemService particleSystemCrudPersistence, BoxItemTypeCrudService boxItemTypeCrudPersistence, InventoryItemService inventoryItemCrudPersistence, BaseItemTypeService baseItemTypeCrudPersistence) {
         this.model3DCrudPersistence = model3DCrudPersistence;
-        this.imagePersistence = imagePersistence;
+        this.imageService = imageService;
         this.audioPersistence = audioPersistence;
         this.particleSystemCrudPersistence = particleSystemCrudPersistence;
         this.boxItemTypeCrudPersistence = boxItemTypeCrudPersistence;
@@ -30,11 +30,11 @@ public class ServiceProviderService {
         return model3DCrudPersistence;
     }
 
-    public ImagePersistence getImagePersistence() {
-        return imagePersistence;
+    public ImageService getImagePersistence() {
+        return imageService;
     }
 
-    public AudioPersistence getAudioPersistence() {
+    public AudioService getAudioPersistence() {
         return audioPersistence;
     }
 
@@ -42,15 +42,15 @@ public class ServiceProviderService {
         return particleSystemCrudPersistence;
     }
 
-    public BoxItemTypeCrudPersistence getBoxItemTypeCrudPersistence() {
+    public BoxItemTypeCrudService getBoxItemTypeCrudPersistence() {
         return boxItemTypeCrudPersistence;
     }
 
-    public InventoryItemCrudPersistence getInventoryItemCrudPersistence() {
+    public InventoryItemService getInventoryItemCrudPersistence() {
         return inventoryItemCrudPersistence;
     }
 
-    public BaseItemTypeCrudPersistence getBaseItemTypeCrudPersistence() {
+    public BaseItemTypeService getBaseItemTypeCrudPersistence() {
         return baseItemTypeCrudPersistence;
     }
 }

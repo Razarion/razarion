@@ -1,7 +1,7 @@
 package com.btxtech.server.rest.engine;
 
 import com.btxtech.server.model.Roles;
-import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rest/gz/terrainshape")
 public class TerrainShapeControllerImpl implements TerrainShapeController {
     private final ServerTerrainShapeService serverTerrainShapeService;
-    private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    private final ServerGameEngineService serverGameEngineCrudPersistence;
 
-    public TerrainShapeControllerImpl(ServerTerrainShapeService serverTerrainShapeService, ServerGameEngineCrudPersistence serverGameEngineCrudPersistence) {
+    public TerrainShapeControllerImpl(ServerTerrainShapeService serverTerrainShapeService, ServerGameEngineService serverGameEngineCrudPersistence) {
         this.serverTerrainShapeService = serverTerrainShapeService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
     }

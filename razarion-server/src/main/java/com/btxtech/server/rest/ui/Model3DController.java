@@ -35,7 +35,7 @@ public class Model3DController extends AbstractBaseController<Model3DEntity> {
     }
 
     @Override
-    protected AbstractBaseEntityCrudService<Model3DEntity> getEntityCrudPersistence() {
+    protected AbstractBaseEntityCrudService<Model3DEntity> getBaseEntityCrudService() {
         return model3DCrudPersistence;
     }
 

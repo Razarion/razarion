@@ -6,9 +6,9 @@ import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.LevelUnlockEntity;
 import com.btxtech.server.model.engine.quest.QuestConfigEntity;
 import com.btxtech.server.repository.UserRepository;
-import com.btxtech.server.service.engine.LevelCrudPersistence;
+import com.btxtech.server.service.engine.LevelCrudService;
 import com.btxtech.server.service.engine.QuestConfigService;
-import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UserBackendInfo;
@@ -55,19 +55,19 @@ import static com.btxtech.server.service.PersistenceUtil.extractId;
 public class UserService implements UserDetailsService {
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final Duration checkIntervalRegisteredUser = Duration.ofMinutes(30);
-    private final LevelCrudPersistence levelCrudPersistence;
+    private final LevelCrudService levelCrudPersistence;
     private final Map<String, Instant> lastCheckedRegisteredUsers = new ConcurrentHashMap<>();
     private final Map<String, String> anonymousMap = new HashMap<>();
     private final UserRepository userRepository;
-    private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    private final ServerGameEngineService serverGameEngineCrudPersistence;
     private final QuestConfigService questConfigService;
     @Autowired
     @Lazy
     private BaseItemService baseItemService;
 
-    public UserService(LevelCrudPersistence levelCrudPersistence,
+    public UserService(LevelCrudService levelCrudPersistence,
                        UserRepository userRepository,
-                       ServerGameEngineCrudPersistence serverGameEngineCrudPersistence,
+                       ServerGameEngineService serverGameEngineCrudPersistence,
                        QuestConfigService questConfigService) {
         this.levelCrudPersistence = levelCrudPersistence;
         this.userRepository = userRepository;

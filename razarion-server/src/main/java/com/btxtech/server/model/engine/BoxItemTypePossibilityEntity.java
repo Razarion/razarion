@@ -1,10 +1,13 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.service.engine.InventoryItemCrudPersistence;
+import com.btxtech.server.service.engine.InventoryItemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 /**
  * Created by Beat
@@ -13,7 +16,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "BOX_ITEM_TYPE_POSSIBILITY")
 public class BoxItemTypePossibilityEntity extends BaseEntity {
-    
+
     private double possibility;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
@@ -28,13 +31,13 @@ public class BoxItemTypePossibilityEntity extends BaseEntity {
         return boxItemTypePossibility;
     }
 
-    public void fromBoxItemTypePossibility(BoxItemTypePossibility boxItemTypePossibility, InventoryItemCrudPersistence inventoryPersistence) {
+    public void fromBoxItemTypePossibility(BoxItemTypePossibility boxItemTypePossibility, InventoryItemService inventoryItemService) {
         possibility = boxItemTypePossibility.getPossibility();
         crystals = boxItemTypePossibility.getCrystals();
         if (inventoryItem != null) {
             boxItemTypePossibility.setInventoryItemId(inventoryItem.getId());
         }
-        inventoryItem = inventoryPersistence.getEntity(boxItemTypePossibility.getInventoryItemId());
+        inventoryItem = inventoryItemService.getEntity(boxItemTypePossibility.getInventoryItemId());
     }
 
     @Override

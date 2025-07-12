@@ -4,9 +4,9 @@ import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.engine.DbPropertiesEntity;
 import com.btxtech.server.model.engine.DbPropertyConfig;
 import com.btxtech.server.repository.engine.DbPropertyRepository;
-import com.btxtech.server.service.ui.AudioPersistence;
+import com.btxtech.server.service.ui.AudioService;
 import com.btxtech.server.service.ui.BabylonMaterialService;
-import com.btxtech.server.service.ui.ImagePersistence;
+import com.btxtech.server.service.ui.ImageService;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.DbPropertyType;
@@ -27,19 +27,19 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_PROPERTY;
 public class DbPropertiesService {
     private final Logger logger = Logger.getLogger(DbPropertiesService.class.getName());
     private final DbPropertyRepository dbPropertyRepository;
-    private final AudioPersistence audioPersistence;
-    private final ImagePersistence imagePersistence;
+    private final AudioService audioPersistence;
+    private final ImageService imageService;
     private final BabylonMaterialService babylonMaterialCrudPersistence;
     private final AlarmService alarmService;
 
     public DbPropertiesService(DbPropertyRepository dbPropertyRepository,
-                               AudioPersistence audioPersistence,
-                               ImagePersistence imagePersistence,
+                               AudioService audioPersistence,
+                               ImageService imageService,
                                BabylonMaterialService babylonMaterialCrudPersistence,
                                AlarmService alarmService) {
         this.dbPropertyRepository = dbPropertyRepository;
         this.audioPersistence = audioPersistence;
-        this.imagePersistence = imagePersistence;
+        this.imageService = imageService;
         this.babylonMaterialCrudPersistence = babylonMaterialCrudPersistence;
         this.alarmService = alarmService;
     }
@@ -150,7 +150,7 @@ public class DbPropertiesService {
             dbPropertiesEntity = new DbPropertiesEntity(dbPropertyKey.getKey());
         }
         if (imageId != null) {
-            dbPropertiesEntity.setImage(imagePersistence.getImageLibraryEntity(imageId));
+            dbPropertiesEntity.setImage(imageService.getImageLibraryEntity(imageId));
         } else {
             dbPropertiesEntity.setImage(null);
         }

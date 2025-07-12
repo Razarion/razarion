@@ -39,7 +39,7 @@ public class ParticleSystemController extends AbstractBaseController<ParticleSys
     }
 
     @Override
-    protected AbstractBaseEntityCrudService<ParticleSystemEntity> getEntityCrudPersistence() {
+    protected AbstractBaseEntityCrudService<ParticleSystemEntity> getBaseEntityCrudService() {
         return particleSystemCrudPersistence;
     }
 

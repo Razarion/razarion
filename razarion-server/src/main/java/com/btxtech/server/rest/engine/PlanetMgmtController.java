@@ -3,7 +3,7 @@ package com.btxtech.server.rest.engine;
 import com.btxtech.server.gameengine.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.model.Roles;
-import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
@@ -25,13 +25,13 @@ public class PlanetMgmtController {
     private final ServerGameEngineControl serverGameEngineControl;
     private final ServerTerrainShapeService serverTerrainShapeService;
     private final ClientSystemConnectionService clientSystemConnectionService;
-    private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    private final ServerGameEngineService serverGameEngineCrudPersistence;
 
     public PlanetMgmtController(BaseItemService baseItemService,
                                 ServerGameEngineControl serverGameEngineControl,
                                 ServerTerrainShapeService serverTerrainShapeService,
                                 ClientSystemConnectionService clientSystemConnectionService,
-                                ServerGameEngineCrudPersistence serverGameEngineCrudPersistence) {
+                                ServerGameEngineService serverGameEngineCrudPersistence) {
         this.baseItemService = baseItemService;
         this.serverGameEngineControl = serverGameEngineControl;
         this.serverTerrainShapeService = serverTerrainShapeService;

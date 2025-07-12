@@ -6,8 +6,8 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BotConfigEntityPersistence extends AbstractConfigCrudPersistence<BotConfig, BotConfigEntity> {
-    public BotConfigEntityPersistence(BotConfigRepository botConfigRepository) {
+public class BotConfigEntityService extends AbstractConfigCrudService<BotConfig, BotConfigEntity> {
+    public BotConfigEntityService(BotConfigRepository botConfigRepository) {
         super(BotConfigEntity.class, botConfigRepository);
     }
 

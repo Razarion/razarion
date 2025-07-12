@@ -2,13 +2,17 @@ package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.ImageLibraryEntity;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
-import com.btxtech.server.service.ui.ImagePersistence;
+import com.btxtech.server.service.engine.BaseItemTypeService;
+import com.btxtech.server.service.ui.ImageService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "LEVEL_UNLOCK")
@@ -68,14 +72,14 @@ public class LevelUnlockEntity extends BaseEntity {
     }
 
     public void fromLevelUnlockConfig(LevelUnlockConfig levelUnlockConfig,
-                                      BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
-                                      ImagePersistence imagePersistence) {
+                                      BaseItemTypeService baseItemTypeCrudPersistence,
+                                      ImageService imageService) {
         setId(levelUnlockConfig.getId());
         setInternalName(levelUnlockConfig.getInternalName());
         setCrystalCost(levelUnlockConfig.getCrystalCost());
         setBaseItemType(baseItemTypeCrudPersistence.getEntity(levelUnlockConfig.getBaseItemType()));
         setBaseItemTypeCount(levelUnlockConfig.getBaseItemTypeCount());
-        setThumbnail(imagePersistence.getImageLibraryEntity(levelUnlockConfig.getThumbnail()));
+        setThumbnail(imageService.getImageLibraryEntity(levelUnlockConfig.getThumbnail()));
     }
 
     @JsonGetter("baseItemType")

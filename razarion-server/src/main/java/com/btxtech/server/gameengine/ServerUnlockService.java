@@ -1,7 +1,7 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.model.engine.LevelUnlockEntity;
-import com.btxtech.server.service.engine.LevelCrudPersistence;
+import com.btxtech.server.service.engine.LevelCrudService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
@@ -24,7 +24,7 @@ public class ServerUnlockService {
     @Inject
     private ClientSystemConnectionService systemConnectionService;
     @Inject
-    private LevelCrudPersistence levelCrudPersistence;
+    private LevelCrudService levelCrudService;
     @Inject
     private QuestService questService;
 
@@ -53,11 +53,11 @@ public class ServerUnlockService {
     }
 
     public boolean hasAvailableUnlocks(UserContext userContext) {
-        return levelCrudPersistence.hasAvailableUnlocks(userContext.getLevelId(), userService.unlockedEntityIds(userContext.getUserId()));
+        return levelCrudService.hasAvailableUnlocks(userContext.getLevelId(), userService.unlockedEntityIds(userContext.getUserId()));
     }
 
     public List<LevelUnlockConfig> getAvailableLevelUnlockConfigs(String userId, int levelId) {
-        return levelCrudPersistence.readAvailableLevelUnlockConfigs(levelId, userService.unlockedEntityIds(userId));
+        return levelCrudService.readAvailableLevelUnlockConfigs(levelId, userService.unlockedEntityIds(userId));
     }
 
     public void updateUnlocked(String userId, List<Integer> unlockedIds) {

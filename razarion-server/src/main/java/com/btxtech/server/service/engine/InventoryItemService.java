@@ -6,9 +6,9 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import org.springframework.stereotype.Service;
 
 @Service
-public class InventoryItemCrudPersistence extends AbstractConfigCrudPersistence<InventoryItem, InventoryItemEntity> {
+public class InventoryItemService extends AbstractConfigCrudService<InventoryItem, InventoryItemEntity> {
 
-    public InventoryItemCrudPersistence(InventoryItemRepository inventoryItemRepository) {
+    public InventoryItemService(InventoryItemRepository inventoryItemRepository) {
         super(InventoryItemEntity.class, inventoryItemRepository);
     }
 

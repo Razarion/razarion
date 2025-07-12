@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/rest/editor/brush")
 public class BrushConfigController extends AbstractBaseController<BrushConfigEntity> {
-    private final BrushConfigService persistenceService;
+    private final BrushConfigService brushConfigService;
 
-    public BrushConfigController(BrushConfigService persistenceService) {
-        this.persistenceService = persistenceService;
+    public BrushConfigController(BrushConfigService brushConfigService) {
+        this.brushConfigService = brushConfigService;
     }
 
     @Override
-    protected AbstractBaseEntityCrudService<BrushConfigEntity> getEntityCrudPersistence() {
-        return persistenceService;
+    protected AbstractBaseEntityCrudService<BrushConfigEntity> getBaseEntityCrudService() {
+        return brushConfigService;
     }
 }

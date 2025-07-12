@@ -4,7 +4,7 @@ import com.btxtech.server.model.engine.BaseItemTypeEntity;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.LevelUnlockEntity;
 import com.btxtech.server.repository.engine.LevelRepository;
-import com.btxtech.server.service.ui.ImagePersistence;
+import com.btxtech.server.service.ui.ImageService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import jakarta.transaction.Transactional;
@@ -18,16 +18,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class LevelCrudPersistence extends AbstractConfigCrudPersistence<LevelConfig, LevelEntity> {
-    private final BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
-    private final ImagePersistence imagePersistence;
+public class LevelCrudService extends AbstractConfigCrudService<LevelConfig, LevelEntity> {
+    private final BaseItemTypeService baseItemTypeCrudPersistence;
+    private final ImageService imageService;
 
-    public LevelCrudPersistence(LevelRepository levelRepository,
-                                BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
-                                ImagePersistence imagePersistence) {
+    public LevelCrudService(LevelRepository levelRepository,
+                            BaseItemTypeService baseItemTypeCrudPersistence,
+                            ImageService imageService) {
         super(LevelEntity.class, levelRepository);
         this.baseItemTypeCrudPersistence = baseItemTypeCrudPersistence;
-        this.imagePersistence = imagePersistence;
+        this.imageService = imageService;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class LevelCrudPersistence extends AbstractConfigCrudPersistence<LevelCon
                 itemTypeLimitation.put(baseItemTypeCrudPersistence.getEntity(entry.getKey()), entry.getValue());
             }
         }
-        entity.fromLevelEditConfig(config, itemTypeLimitation, baseItemTypeCrudPersistence, imagePersistence);
+        entity.fromLevelEditConfig(config, itemTypeLimitation, baseItemTypeCrudPersistence, imageService);
     }
 
     @Transactional

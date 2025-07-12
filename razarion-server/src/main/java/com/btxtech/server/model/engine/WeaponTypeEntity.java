@@ -2,11 +2,19 @@ package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.ParticleSystemEntity;
-import com.btxtech.server.service.ui.AudioPersistence;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
+import com.btxtech.server.service.engine.BaseItemTypeService;
+import com.btxtech.server.service.ui.AudioService;
 import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,8 +74,8 @@ public class WeaponTypeEntity extends BaseEntity {
     }
 
     public void fromWeaponType(WeaponType weaponType,
-                               BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
-                               AudioPersistence audioPersistence,
+                               BaseItemTypeService baseItemTypeCrudPersistence,
+                               AudioService audioPersistence,
                                ParticleSystemService particleSystemCrudPersistence) {
         attackRange = weaponType.getRange();
         damage = weaponType.getDamage();

@@ -4,12 +4,20 @@ package com.btxtech.server.model.engine;
 import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.ImageLibraryEntity;
 import com.btxtech.server.model.ui.Model3DEntity;
-import com.btxtech.server.service.engine.InventoryItemCrudPersistence;
+import com.btxtech.server.service.engine.InventoryItemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
-import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +26,8 @@ import static com.btxtech.server.service.PersistenceUtil.extractId;
 @Entity
 @Table(name = "BOX_ITEM_TYPE")
 public class BoxItemTypeEntity extends BaseEntity {
-    
-    
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity thumbnail;
@@ -35,10 +43,9 @@ public class BoxItemTypeEntity extends BaseEntity {
     @JoinColumn(nullable = false)
     private List<BoxItemTypePossibilityEntity> boxItemTypePossibilities;
 
-    
 
     public BoxItemType toBoxItemType() {
-        BoxItemType boxItemType = (BoxItemType)new BoxItemType()
+        BoxItemType boxItemType = (BoxItemType) new BoxItemType()
                 .radius(radius)
                 .ttl(ttl)
                 .fixVerticalNorm(fixVerticalNorm)
@@ -57,7 +64,7 @@ public class BoxItemTypeEntity extends BaseEntity {
         return boxItemType;
     }
 
-    public void fromBoxItemType(BoxItemType boxItemType, InventoryItemCrudPersistence inventoryPersistence) {
+    public void fromBoxItemType(BoxItemType boxItemType, InventoryItemService inventoryItemService) {
         radius = boxItemType.getRadius();
         fixVerticalNorm = boxItemType.isFixVerticalNorm();
         terrainType = boxItemType.getTerrainType();
@@ -69,7 +76,7 @@ public class BoxItemTypeEntity extends BaseEntity {
         if (boxItemType.getBoxItemTypePossibilities() != null) {
             for (BoxItemTypePossibility boxItemTypePossibility : boxItemType.getBoxItemTypePossibilities()) {
                 BoxItemTypePossibilityEntity boxItemTypePossibilityEntity = new BoxItemTypePossibilityEntity();
-                boxItemTypePossibilityEntity.fromBoxItemTypePossibility(boxItemTypePossibility, inventoryPersistence);
+                boxItemTypePossibilityEntity.fromBoxItemTypePossibility(boxItemTypePossibility, inventoryItemService);
                 boxItemTypePossibilities.add(boxItemTypePossibilityEntity);
             }
         }

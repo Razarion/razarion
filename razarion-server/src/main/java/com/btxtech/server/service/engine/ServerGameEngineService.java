@@ -32,12 +32,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
-public class ServerGameEngineCrudPersistence extends AbstractConfigCrudPersistence<ServerGameEngineConfig, ServerGameEngineConfigEntity> {
-    private final Logger logger = LoggerFactory.getLogger(ServerGameEngineCrudPersistence.class);
-    private final LevelCrudPersistence levelCrudPersistence;
+public class ServerGameEngineService extends AbstractConfigCrudService<ServerGameEngineConfig, ServerGameEngineConfigEntity> {
+    private final Logger logger = LoggerFactory.getLogger(ServerGameEngineService.class);
+    private final LevelCrudService levelCrudPersistence;
 
-    public ServerGameEngineCrudPersistence(ServerGameEngineConfigRepository serverGameEngineConfigRepository,
-                                           LevelCrudPersistence levelCrudPersistence) {
+    public ServerGameEngineService(ServerGameEngineConfigRepository serverGameEngineConfigRepository,
+                                   LevelCrudService levelCrudPersistence) {
         super(ServerGameEngineConfigEntity.class, serverGameEngineConfigRepository);
         this.levelCrudPersistence = levelCrudPersistence;
     }

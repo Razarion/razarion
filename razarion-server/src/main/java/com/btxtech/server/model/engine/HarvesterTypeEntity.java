@@ -4,7 +4,11 @@ import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.ParticleSystemEntity;
 import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import static com.btxtech.server.service.PersistenceUtil.extractId;
 
@@ -29,10 +33,10 @@ public class HarvesterTypeEntity extends BaseEntity {
                 .particleSystemConfigId(extractId(particleSystem, ParticleSystemEntity::getId));
     }
 
-    public void fromHarvesterType(HarvesterType harvesterType, ParticleSystemService particleSystemCrudPersistence) {
+    public void fromHarvesterType(HarvesterType harvesterType, ParticleSystemService particleSystemService) {
         harvestRange = harvesterType.getRange();
         progress = harvesterType.getProgress();
-        particleSystem = particleSystemCrudPersistence.getEntity(harvesterType.getParticleSystemConfigId());
+        particleSystem = particleSystemService.getEntity(harvesterType.getParticleSystemConfigId());
     }
 
     @Override

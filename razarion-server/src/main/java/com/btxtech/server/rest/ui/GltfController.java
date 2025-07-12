@@ -25,10 +25,10 @@ import java.util.logging.Logger;
 @RequestMapping("/rest/gltf/")
 public class GltfController extends AbstractBaseController<GltfEntity> {
     private final Logger logger = Logger.getLogger(GltfController.class.getName());
-    private final GltfService gltfCrudPersistence;
+    private final GltfService gltfService;
 
-    public GltfController(GltfService gltfCrudPersistence) {
-        this.gltfCrudPersistence = gltfCrudPersistence;
+    public GltfController(GltfService gltfService) {
+        this.gltfService = gltfService;
     }
 
     public static GltfEntity jpa2JsonStatic(GltfEntity gltfEntity) {
@@ -42,8 +42,8 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
     }
 
     @Override
-    protected AbstractBaseEntityCrudService<GltfEntity> getEntityCrudPersistence() {
-        return gltfCrudPersistence;
+    protected AbstractBaseEntityCrudService<GltfEntity> getBaseEntityCrudService() {
+        return gltfService;
     }
 
     @GetMapping(value = "/glb/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -52,7 +52,7 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
             return ResponseEntity
                     .ok()
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                    .body(gltfCrudPersistence.getGlb(id));
+                    .body(gltfService.getGlb(id));
         } catch (Throwable e) {
             logger.log(Level.SEVERE, "Can not load GltfEntity for id: " + id, e);
             throw e;
@@ -62,7 +62,7 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
     @RolesAllowed(Roles.ADMIN)
     @PutMapping(value = "upload-glb/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void uploadGlb(@PathVariable("id") int id, @RequestBody byte[] data) {
-        gltfCrudPersistence.setGlb(id, data);
+        gltfService.setGlb(id, data);
     }
 
     @Override

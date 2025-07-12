@@ -17,7 +17,7 @@ public class TerrainObjectGeneratorController extends AbstractBaseController<Ter
     }
 
     @Override
-    protected AbstractBaseEntityCrudService<TerrainObjectGeneratorEntity> getEntityCrudPersistence() {
+    protected AbstractBaseEntityCrudService<TerrainObjectGeneratorEntity> getBaseEntityCrudService() {
         return terrainObjectGeneratorPersistence;
     }
 }

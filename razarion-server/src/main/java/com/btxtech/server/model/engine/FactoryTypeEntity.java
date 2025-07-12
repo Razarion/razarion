@@ -1,9 +1,14 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
+import com.btxtech.server.service.engine.BaseItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +40,7 @@ public class FactoryTypeEntity extends BaseEntity {
         return factoryType;
     }
 
-    public void fromFactoryTypeEntity(FactoryType factoryType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence) {
+    public void fromFactoryTypeEntity(FactoryType factoryType, BaseItemTypeService baseItemTypeCrudPersistence) {
         progress = factoryType.getProgress();
         if (factoryType.getAbleToBuildIds() != null && !factoryType.getAbleToBuildIds().isEmpty()) {
             if (ableToBuilds == null) {

@@ -2,7 +2,7 @@ package com.btxtech.server.rest.editor;
 
 import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.engine.ServerGameEngineConfigEntity;
-import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
@@ -26,16 +26,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/rest/editor/server-game-engine")
 public class ServerGameEngineEditorController {
     private final Logger logger = LoggerFactory.getLogger(ServerGameEngineEditorController.class);
-    private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    private final ServerGameEngineService serverGameEngineService;
 
-    public ServerGameEngineEditorController(ServerGameEngineCrudPersistence serverGameEngineCrudPersistence) {
-        this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
+    public ServerGameEngineEditorController(ServerGameEngineService serverGameEngineService) {
+        this.serverGameEngineService = serverGameEngineService;
     }
 
     @GetMapping(value = "read/{id}", produces = APPLICATION_JSON_VALUE)
     @RolesAllowed(Roles.ADMIN)
     public ServerGameEngineConfigEntity read(@PathVariable("id") int id) {
-        return serverGameEngineCrudPersistence.getBaseEntity(id);
+        return serverGameEngineService.getBaseEntity(id);
     }
 
 
@@ -43,7 +43,7 @@ public class ServerGameEngineEditorController {
     @RolesAllowed(Roles.ADMIN)
     public void updateResourceRegionConfig(@PathVariable("serverGameEngineConfigId") int serverGameEngineConfigId, @RequestBody List<ResourceRegionConfig> resourceRegionConfigs) {
         try {
-            serverGameEngineCrudPersistence.updateResourceRegionConfig(serverGameEngineConfigId, resourceRegionConfigs);
+            serverGameEngineService.updateResourceRegionConfig(serverGameEngineConfigId, resourceRegionConfigs);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;
@@ -54,7 +54,7 @@ public class ServerGameEngineEditorController {
     @RolesAllowed(Roles.ADMIN)
     public void updateStartRegionConfig(@PathVariable("serverGameEngineConfigId") int serverGameEngineConfigId, @RequestBody List<StartRegionConfig> startRegionConfigs) {
         try {
-            serverGameEngineCrudPersistence.updateStartRegionConfig(serverGameEngineConfigId, startRegionConfigs);
+            serverGameEngineService.updateStartRegionConfig(serverGameEngineConfigId, startRegionConfigs);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;
@@ -65,7 +65,7 @@ public class ServerGameEngineEditorController {
     @RolesAllowed(Roles.ADMIN)
     public void updateBotConfig(@PathVariable("serverGameEngineConfigId") int serverGameEngineConfigId, @RequestBody List<BotConfig> botConfigs) {
         try {
-            serverGameEngineCrudPersistence.updateBotConfig(serverGameEngineConfigId, botConfigs);
+            serverGameEngineService.updateBotConfig(serverGameEngineConfigId, botConfigs);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;
@@ -76,7 +76,7 @@ public class ServerGameEngineEditorController {
     @RolesAllowed(Roles.ADMIN)
     public void updateServerLevelQuestConfig(@PathVariable("serverGameEngineConfigId") int serverGameEngineConfigId, @RequestBody List<ServerLevelQuestConfig> serverLevelQuestConfigs) {
         try {
-            serverGameEngineCrudPersistence.updateServerLevelQuestConfig(serverGameEngineConfigId, serverLevelQuestConfigs);
+            serverGameEngineService.updateServerLevelQuestConfig(serverGameEngineConfigId, serverLevelQuestConfigs);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;
@@ -87,7 +87,7 @@ public class ServerGameEngineEditorController {
     @RolesAllowed(Roles.ADMIN)
     public void updateBoxRegionConfig(@PathVariable("serverGameEngineConfigId") int serverGameEngineConfigId, @RequestBody List<BoxRegionConfig> boxRegionConfigs) {
         try {
-            serverGameEngineCrudPersistence.updateBoxRegionConfig(serverGameEngineConfigId, boxRegionConfigs);
+            serverGameEngineService.updateBoxRegionConfig(serverGameEngineConfigId, boxRegionConfigs);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;

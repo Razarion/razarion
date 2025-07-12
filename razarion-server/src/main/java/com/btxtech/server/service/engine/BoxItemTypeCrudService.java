@@ -6,9 +6,9 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BoxItemTypeCrudPersistence extends AbstractConfigCrudPersistence<BoxItemType, BoxItemTypeEntity> {
+public class BoxItemTypeCrudService extends AbstractConfigCrudService<BoxItemType, BoxItemTypeEntity> {
 
-    public BoxItemTypeCrudPersistence(BoxItemTypeRepository boxItemTypeRepository) {
+    public BoxItemTypeCrudService(BoxItemTypeRepository boxItemTypeRepository) {
         super(BoxItemTypeEntity.class, boxItemTypeRepository);
     }
 

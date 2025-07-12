@@ -2,8 +2,8 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.engine.BackupPlanetOverview;
-import com.btxtech.server.service.engine.PlanetCrudPersistence;
-import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.PlanetCrudService;
+import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
@@ -59,9 +59,9 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Inject
     private ClientSystemConnectionService systemConnectionService;
     @Inject
-    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    private ServerGameEngineService serverGameEngineService;
     @Inject
-    private PlanetCrudPersistence planetCrudPersistence;
+    private PlanetCrudService planetCrudService;
     @Inject
     private QuestService questService;
     @Inject
@@ -81,14 +81,14 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private boolean running;
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
-        List<ServerGameEngineConfig> serverGameEngineConfigs = serverGameEngineCrudPersistence.read();
+        List<ServerGameEngineConfig> serverGameEngineConfigs = serverGameEngineService.read();
         if (serverGameEngineConfigs.isEmpty()) {
             return;
         }
         ServerGameEngineConfig serverGameEngineConfig = serverGameEngineConfigs.get(0);
-        PlanetConfig planetConfig = planetCrudPersistence.read(serverGameEngineConfig.getPlanetConfigId());
+        PlanetConfig planetConfig = planetCrudService.read(serverGameEngineConfig.getPlanetConfigId());
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
-        planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEngineCrudPersistence.readMasterPlanetConfig(), () -> {
+        planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEngineService.readMasterPlanetConfig(), () -> {
             gameLogicService.setGameLogicListener(this);
             if (finaBackupPlanetInfo != null) {
                 planetService.restoreBases(finaBackupPlanetInfo, this);
@@ -96,7 +96,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             planetService.start();
             planetService.addTickListener(this);
             resourceService.startResourceRegions();
-            boxService.startBoxRegions(serverGameEngineCrudPersistence.readBoxRegionConfigs());
+            boxService.startBoxRegions(serverGameEngineService.readBoxRegionConfigs());
             botService.startBots(serverGameEngineConfig.getBotConfigs());
             planetService.enableTracking(false);
         }, failText -> logger.severe("TerrainSetup failed: " + failText));
@@ -138,7 +138,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @RolesAllowed(Roles.ADMIN)
     public void restartResourceRegions() {
         synchronized (reloadLook) {
-            resourceService.reloadResourceRegions(serverGameEngineCrudPersistence.readMasterPlanetConfig().getResourceRegionConfigs());
+            resourceService.reloadResourceRegions(serverGameEngineService.readMasterPlanetConfig().getResourceRegionConfigs());
         }
     }
 
@@ -146,7 +146,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void restartBoxRegions() {
         synchronized (reloadLook) {
             boxService.stopBoxRegions();
-            boxService.startBoxRegions(serverGameEngineCrudPersistence.readBoxRegionConfigs());
+            boxService.startBoxRegions(serverGameEngineService.readBoxRegionConfigs());
         }
     }
 

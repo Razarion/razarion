@@ -26,8 +26,8 @@ public class ServerLevelQuestService implements QuestListener {
     private final Logger logger = LoggerFactory.getLogger(ServerLevelQuestService.class);
     private final Provider<GameUiContextService> gameUiControlConfigPersistence;
     private final QuestService questService;
-    private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
-    private final LevelCrudPersistence levelCrudPersistence;
+    private final ServerGameEngineService serverGameEngineCrudPersistence;
+    private final LevelCrudService levelCrudPersistence;
     private final UserService userService;
     private final ClientSystemConnectionService clientSystemConnectionService;
     private final Provider<ServerGameEngineControl> serverGameEngineControlInstance;
@@ -36,8 +36,8 @@ public class ServerLevelQuestService implements QuestListener {
 
     public ServerLevelQuestService(Provider<GameUiContextService> gameUiControlConfigPersistence,
                                    QuestService questService,
-                                   ServerGameEngineCrudPersistence serverGameEngineCrudPersistence,
-                                   LevelCrudPersistence levelCrudPersistence,
+                                   ServerGameEngineService serverGameEngineCrudPersistence,
+                                   LevelCrudService levelCrudPersistence,
                                    UserService userService,
                                    ClientSystemConnectionService clientSystemConnectionService,
                                    Provider<ServerGameEngineControl> serverGameEngineControlInstance,

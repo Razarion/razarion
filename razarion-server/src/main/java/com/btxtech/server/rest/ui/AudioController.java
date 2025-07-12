@@ -2,7 +2,7 @@ package com.btxtech.server.rest.ui;
 
 import com.btxtech.server.model.engine.AudioLibraryEntity;
 import com.btxtech.server.rest.AbstractBaseController;
-import com.btxtech.server.service.ui.AudioPersistence;
+import com.btxtech.server.service.ui.AudioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rest/audio")
 public class AudioController extends AbstractBaseController<AudioLibraryEntity> {
     private final Logger logger = LoggerFactory.getLogger(AudioController.class);
-    private AudioPersistence audioPersistence;
+    private final AudioService audioPersistence;
 
-    public AudioController(AudioPersistence audioPersistence) {
+    public AudioController(AudioService audioPersistence) {
         this.audioPersistence = audioPersistence;
     }
 
@@ -36,7 +36,7 @@ public class AudioController extends AbstractBaseController<AudioLibraryEntity> 
     }
 
     @Override
-    protected AudioPersistence getEntityCrudPersistence() {
+    protected AudioService getBaseEntityCrudService() {
         return audioPersistence;
     }
 }

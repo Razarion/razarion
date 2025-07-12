@@ -1,10 +1,17 @@
 package com.btxtech.server.model.engine.quest;
 
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
-import com.btxtech.server.service.engine.BotConfigEntityPersistence;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "QUEST_CONDITION")
@@ -23,7 +30,7 @@ public class ConditionConfigEntity {
 
     public void fromConditionConfig(ConditionConfig conditionConfig) {
         conditionTrigger = conditionConfig.getConditionTrigger();
-        if(comparisonConfig == null) {
+        if (comparisonConfig == null) {
             comparisonConfig = new ComparisonConfigEntity();
         }
         comparisonConfig.fromComparisonConfig(conditionConfig.getComparisonConfig());

@@ -19,15 +19,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class PlanetCrudPersistence extends AbstractConfigCrudPersistence<PlanetConfig, PlanetEntity> {
+public class PlanetCrudService extends AbstractConfigCrudService<PlanetConfig, PlanetEntity> {
     private final TerrainObjectService terrainObjectCrudPersistence;
-    private final BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
-    private final GroundCrudPersistence groundCrudPersistence;
+    private final BaseItemTypeService baseItemTypeCrudPersistence;
+    private final GroundCrudService groundCrudPersistence;
 
-    public PlanetCrudPersistence(PlanetRepository planetRepository,
-                                 TerrainObjectService terrainObjectCrudPersistence,
-                                 BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
-                                 GroundCrudPersistence groundCrudPersistence) {
+    public PlanetCrudService(PlanetRepository planetRepository,
+                             TerrainObjectService terrainObjectCrudPersistence,
+                             BaseItemTypeService baseItemTypeCrudPersistence,
+                             GroundCrudService groundCrudPersistence) {
         super(PlanetEntity.class, planetRepository);
         this.terrainObjectCrudPersistence = terrainObjectCrudPersistence;
         this.baseItemTypeCrudPersistence = baseItemTypeCrudPersistence;

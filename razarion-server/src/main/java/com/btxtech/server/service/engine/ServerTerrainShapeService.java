@@ -27,7 +27,7 @@ import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray
 public class ServerTerrainShapeService {
     final private Logger logger = Logger.getLogger(ServerTerrainShapeService.class.getName());
     private final Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
-    private final PlanetCrudPersistence planetCrudPersistence;
+    private final PlanetCrudService planetCrudPersistence;
     private final TerrainTypeService terrainTypeService;
     private final AlarmService alarmService;
     private final InitializeService initializeService;
@@ -35,7 +35,7 @@ public class ServerTerrainShapeService {
     private final BotService botService;
     private int[] groundHeightMap;
 
-    public ServerTerrainShapeService(PlanetCrudPersistence planetCrudPersistence,
+    public ServerTerrainShapeService(PlanetCrudService planetCrudPersistence,
                                      TerrainTypeService terrainTypeService,
                                      AlarmService alarmService,
                                      InitializeService initializeService,

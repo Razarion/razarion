@@ -7,10 +7,10 @@ import com.btxtech.shared.dto.GroundConfig;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GroundCrudPersistence extends AbstractConfigCrudPersistence<GroundConfig, GroundConfigEntity> {
+public class GroundCrudService extends AbstractConfigCrudService<GroundConfig, GroundConfigEntity> {
     private final BabylonMaterialService babylonMaterialService;
 
-    public GroundCrudPersistence(BabylonMaterialService babylonMaterialService, GroundConfigRepository groundConfigRepository) {
+    public GroundCrudService(BabylonMaterialService babylonMaterialService, GroundConfigRepository groundConfigRepository) {
         super(GroundConfigEntity.class, groundConfigRepository);
         this.babylonMaterialService = babylonMaterialService;
     }

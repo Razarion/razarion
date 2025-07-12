@@ -1,7 +1,7 @@
 package com.btxtech.server;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
-import com.btxtech.server.service.engine.ServerGameEngineCrudPersistence;
+import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
 import com.btxtech.server.user.UserService;
@@ -22,30 +22,30 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_PROPERTY;
 public class RazarionServerInitializer implements ApplicationRunner {
     private final Logger logger = LoggerFactory.getLogger(RazarionServerInitializer.class);
     private final ServerTerrainShapeService serverTerrainShapeService;
-    private final StaticGameConfigService staticGameConfigPersistence;
+    private final StaticGameConfigService staticGameConfigService;
     private final ServerGameEngineControl gameEngineService;
     // TODO private final ChatPersistence chatPersistence;
     // TODO private ServerMgmt serverMgmt;
     private final AlarmService alarmService;
     private final InitializeService initializeService;
-    private final ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    private final ServerGameEngineService serverGameEngineService;
     private final UserService userService;
 
-    public RazarionServerInitializer(ServerGameEngineCrudPersistence serverGameEngineCrudPersistence,
+    public RazarionServerInitializer(ServerGameEngineService serverGameEngineService,
                                      InitializeService initializeService,
                                      AlarmService alarmService,
                                      // TODO ServerMgmt serverMgmt,
                                      // TODO ChatPersistence chatPersistence,
                                      ServerGameEngineControl gameEngineService,
-                                     StaticGameConfigService staticGameConfigPersistence,
+                                     StaticGameConfigService staticGameConfigService,
                                      ServerTerrainShapeService serverTerrainShapeService, UserService userService) {
-        this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
+        this.serverGameEngineService = serverGameEngineService;
         this.initializeService = initializeService;
         this.alarmService = alarmService;
         // TODO this.serverMgmt = serverMgmt;
         // TODO this.chatPersistence = chatPersistence;
         this.gameEngineService = gameEngineService;
-        this.staticGameConfigPersistence = staticGameConfigPersistence;
+        this.staticGameConfigService = staticGameConfigService;
         this.serverTerrainShapeService = serverTerrainShapeService;
         this.userService = userService;
     }
@@ -65,12 +65,12 @@ public class RazarionServerInitializer implements ApplicationRunner {
             logger.error("User connection cleanup failed", e);
         }
         try {
-            initializeService.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
+            initializeService.setStaticGameConfig(staticGameConfigService.loadStaticGameConfig());
         } catch (Exception e) {
             logger.error("setStaticGameConfig failed", e);
         }
         try {
-            ServerGameEngineConfig serverGameEngineConfig = serverGameEngineCrudPersistence.read().get(0);
+            ServerGameEngineConfig serverGameEngineConfig = serverGameEngineService.read().get(0);
             serverTerrainShapeService.start(serverGameEngineConfig.getBotConfigs());
         } catch (Exception e) {
             logger.error("start failed ", e);

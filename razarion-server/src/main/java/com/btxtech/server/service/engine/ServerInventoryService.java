@@ -15,7 +15,7 @@ public class ServerInventoryService {
     @Inject
     private UserService userService;
     @Inject
-    private InventoryItemCrudPersistence inventoryPersistence;
+    private InventoryItemService inventoryPersistence;
     @Inject
     private BaseItemService baseItemService;
 

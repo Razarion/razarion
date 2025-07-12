@@ -1,6 +1,6 @@
 package com.btxtech.server.rest.engine;
 
-import com.btxtech.server.service.engine.PlanetCrudPersistence;
+import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.shared.rest.TerrainHeightMapController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rest/terrainHeightMap")
 public class TerrainHeightMapControllerImpl implements TerrainHeightMapController {
     private final Logger logger = LoggerFactory.getLogger(TerrainHeightMapControllerImpl.class);
-    private final PlanetCrudPersistence planetCrudPersistence;
+    private final PlanetCrudService planetCrudPersistence;
 
-    public TerrainHeightMapControllerImpl(PlanetCrudPersistence planetCrudPersistence) {
+    public TerrainHeightMapControllerImpl(PlanetCrudService planetCrudPersistence) {
         this.planetCrudPersistence = planetCrudPersistence;
     }
 

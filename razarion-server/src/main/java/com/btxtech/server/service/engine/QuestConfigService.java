@@ -12,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-public class QuestConfigService extends AbstractConfigCrudPersistence<QuestConfig, QuestConfigEntity> {
+public class QuestConfigService extends AbstractConfigCrudService<QuestConfig, QuestConfigEntity> {
     private final ServerGameEngineConfigRepository serverGameEngineConfigRepository;
 
     public QuestConfigService(QuestConfigRepository questConfigRepository,

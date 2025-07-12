@@ -16,45 +16,45 @@ import java.util.List;
 
 public abstract class AbstractBaseController<E extends BaseEntity> {
 
-    protected abstract AbstractBaseEntityCrudService<E> getEntityCrudPersistence();
+    protected abstract AbstractBaseEntityCrudService<E> getBaseEntityCrudService();
 
     @RolesAllowed(Roles.ADMIN)
     @GetMapping(value = "objectNameIds", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public List<ObjectNameId> getObjectNameIds() {
-        return getEntityCrudPersistence().getObjectNameIds();
+        return getBaseEntityCrudService().getObjectNameIds();
     }
 
     @RolesAllowed(Roles.ADMIN)
     @PostMapping(value = "create", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public E create() {
-        return getEntityCrudPersistence().createBaseEntity();
+        return getBaseEntityCrudService().createBaseEntity();
     }
 
     @RolesAllowed(Roles.ADMIN)
     @DeleteMapping(value = "delete/{id}")
     public void delete(@PathVariable("id") int id) {
-        getEntityCrudPersistence().delete(id);
+        getBaseEntityCrudService().delete(id);
     }
 
     @RolesAllowed(Roles.ADMIN)
     @Transactional
     @PostMapping(value = "update", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public void update(@RequestBody E entity) {
-        getEntityCrudPersistence().updateBaseEntity(entity);
+        getBaseEntityCrudService().updateBaseEntity(entity);
     }
 
     @RolesAllowed(Roles.ADMIN)
     @Transactional
     @GetMapping(value = "read/{id}", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public E read(@PathVariable("id") int id) {
-        return jpa2Json(getEntityCrudPersistence().getEntity(id));
+        return jpa2Json(getBaseEntityCrudService().getEntity(id));
     }
 
     @RolesAllowed(Roles.ADMIN)
     @Transactional
     @GetMapping(value = "read", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public List<E> readAll() {
-        return getEntityCrudPersistence().getEntities()
+        return getBaseEntityCrudService().getEntities()
                 .stream()
                 .map(this::jpa2Json)
                 .toList();

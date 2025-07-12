@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ImagePersistence {
+public class ImageService {
     private final ImageRepository imageRepository;
 
-    public ImagePersistence(ImageRepository imageRepository) {
+    public ImageService(ImageRepository imageRepository) {
         this.imageRepository = imageRepository;
     }
 

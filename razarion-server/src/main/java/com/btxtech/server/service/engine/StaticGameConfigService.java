@@ -6,20 +6,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class StaticGameConfigService {
     private final TerrainObjectService terrainObjectService;
-    private final GroundCrudPersistence groundCrudPersistence;
-    private final BaseItemTypeCrudPersistence baseItemTypeCrudPersistence;
-    private final ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence;
-    private final BoxItemTypeCrudPersistence boxItemTypeCrudPersistence;
-    private final LevelCrudPersistence levelCrudPersistence;
-    private final InventoryItemCrudPersistence inventoryItemCrudPersistence;
+    private final GroundCrudService groundCrudPersistence;
+    private final BaseItemTypeService baseItemTypeCrudPersistence;
+    private final ResourceItemTypeService resourceItemTypeCrudPersistence;
+    private final BoxItemTypeCrudService boxItemTypeCrudPersistence;
+    private final LevelCrudService levelCrudPersistence;
+    private final InventoryItemService inventoryItemCrudPersistence;
 
     public StaticGameConfigService(TerrainObjectService terrainObjectService,
-                                   GroundCrudPersistence groundCrudPersistence,
-                                   BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
-                                   ResourceItemTypeCrudPersistence resourceItemTypeCrudPersistence,
-                                   BoxItemTypeCrudPersistence boxItemTypeCrudPersistence,
-                                   LevelCrudPersistence levelCrudPersistence,
-                                   InventoryItemCrudPersistence inventoryItemCrudPersistence) {
+                                   GroundCrudService groundCrudPersistence,
+                                   BaseItemTypeService baseItemTypeCrudPersistence,
+                                   ResourceItemTypeService resourceItemTypeCrudPersistence,
+                                   BoxItemTypeCrudService boxItemTypeCrudPersistence,
+                                   LevelCrudService levelCrudPersistence,
+                                   InventoryItemService inventoryItemCrudPersistence) {
         this.terrainObjectService = terrainObjectService;
         this.groundCrudPersistence = groundCrudPersistence;
         this.baseItemTypeCrudPersistence = baseItemTypeCrudPersistence;

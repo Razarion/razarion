@@ -2,7 +2,7 @@ package com.btxtech.server.rest.editor;
 
 import com.btxtech.server.model.DataUrlDecoder;
 import com.btxtech.server.model.Roles;
-import com.btxtech.server.service.engine.PlanetCrudPersistence;
+import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rest/editor/planeteditor")
 public class TerrainEditorController {
     private final Logger logger = LoggerFactory.getLogger(TerrainEditorController.class);
-    private final PlanetCrudPersistence planetCrudPersistence;
+    private final PlanetCrudService planetCrudPersistence;
 
-    public TerrainEditorController(PlanetCrudPersistence planetCrudPersistence) {
+    public TerrainEditorController(PlanetCrudService planetCrudPersistence) {
         this.planetCrudPersistence = planetCrudPersistence;
     }
 

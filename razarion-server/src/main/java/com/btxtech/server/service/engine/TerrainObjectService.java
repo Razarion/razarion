@@ -8,7 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TerrainObjectService extends AbstractConfigCrudPersistence<TerrainObjectConfig, TerrainObjectEntity> {
+public class TerrainObjectService extends AbstractConfigCrudService<TerrainObjectConfig, TerrainObjectEntity> {
     private final Model3DService model3DService;
 
     public TerrainObjectService(Model3DService model3DService, TerrainObjectRepository terrainObjectRepository) {

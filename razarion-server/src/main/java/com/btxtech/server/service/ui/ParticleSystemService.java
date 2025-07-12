@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class ParticleSystemService extends AbstractBaseEntityCrudService<ParticleSystemEntity> {
-    private final ImagePersistence imagePersistence;
+    private final ImageService imageService;
 
-    public ParticleSystemService(ImagePersistence imagePersistence, ParticleSystemRepository particleSystemRepository) {
+    public ParticleSystemService(ImageService imageService, ParticleSystemRepository particleSystemRepository) {
         super(ParticleSystemEntity.class, particleSystemRepository);
-        this.imagePersistence = imagePersistence;
+        this.imageService = imageService;
     }
 
     @Transactional
@@ -41,7 +41,7 @@ public class ParticleSystemService extends AbstractBaseEntityCrudService<Particl
 
     @Override
     protected ParticleSystemEntity jsonToJpa(ParticleSystemEntity particleSystemEntity) {
-        particleSystemEntity.setImageLibraryEntity(imagePersistence.getImageLibraryEntity(particleSystemEntity.getImageId()));
+        particleSystemEntity.setImageLibraryEntity(imageService.getImageLibraryEntity(particleSystemEntity.getImageId()));
         return particleSystemEntity;
     }
 

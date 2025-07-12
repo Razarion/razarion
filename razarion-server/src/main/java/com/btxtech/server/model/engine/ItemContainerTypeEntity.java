@@ -1,10 +1,15 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
+import com.btxtech.server.service.engine.BaseItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
-import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +21,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "BASE_ITEM_ITEM_CONTAINER_TYPE")
 public class ItemContainerTypeEntity extends BaseEntity {
-    
+
     private int maxCount;
     private double itemRange;
     @OneToMany(fetch = FetchType.LAZY)
@@ -33,7 +38,7 @@ public class ItemContainerTypeEntity extends BaseEntity {
         return itemContainerType;
     }
 
-    public void fromItemContainerType(ItemContainerType itemContainerType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence) {
+    public void fromItemContainerType(ItemContainerType itemContainerType, BaseItemTypeService baseItemTypeCrudPersistence) {
         maxCount = itemContainerType.getMaxCount();
         itemRange = itemContainerType.getRange();
         if (itemContainerType.getAbleToContain() != null && !itemContainerType.getAbleToContain().isEmpty()) {

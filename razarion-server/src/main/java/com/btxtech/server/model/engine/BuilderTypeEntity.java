@@ -2,10 +2,16 @@ package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.ParticleSystemEntity;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
+import com.btxtech.server.service.engine.BaseItemTypeService;
 import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +53,7 @@ public class BuilderTypeEntity extends BaseEntity {
         return builderType;
     }
 
-    public void fromBuilderType(BuilderType builderType, BaseItemTypeCrudPersistence baseItemTypeCrudPersistence, ParticleSystemService particleSystemCrudPersistence) {
+    public void fromBuilderType(BuilderType builderType, BaseItemTypeService baseItemTypeCrudPersistence, ParticleSystemService particleSystemCrudPersistence) {
         buildRange = builderType.getRange();
         progress = builderType.getProgress();
         if (builderType.getAbleToBuildIds() != null && !builderType.getAbleToBuildIds().isEmpty()) {

@@ -29,7 +29,7 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
     }
 
     @Override
-    protected AbstractBaseEntityCrudService<BabylonMaterialEntity> getEntityCrudPersistence() {
+    protected AbstractBaseEntityCrudService<BabylonMaterialEntity> getBaseEntityCrudService() {
         return babylonMaterialPersistence;
     }
 

@@ -1,8 +1,8 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.service.engine.BaseItemTypeCrudPersistence;
-import com.btxtech.server.service.ui.ImagePersistence;
+import com.btxtech.server.service.engine.BaseItemTypeService;
+import com.btxtech.server.service.ui.ImageService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -62,8 +62,8 @@ public class LevelEntity extends BaseEntity {
 
     public void fromLevelEditConfig(LevelConfig levelConfig,
                                     Map<BaseItemTypeEntity, Integer> itemTypeLimitation,
-                                    BaseItemTypeCrudPersistence baseItemTypeCrudPersistence,
-                                    ImagePersistence imagePersistence) {
+                                    BaseItemTypeService baseItemTypeCrudPersistence,
+                                    ImageService imageService) {
         this.number = levelConfig.getNumber();
         this.xp2LevelUp = levelConfig.getXp2LevelUp();
         if (this.itemTypeLimitation == null) {
@@ -74,7 +74,7 @@ public class LevelEntity extends BaseEntity {
         levelUnlockEntities = fromConfigsNoClear(levelUnlockEntities,
                 levelConfig.getLevelUnlockConfigs(),
                 LevelUnlockEntity::new,
-                (levelUnlockEntity, levelUnlockConfig) -> levelUnlockEntity.fromLevelUnlockConfig(levelUnlockConfig, baseItemTypeCrudPersistence, imagePersistence),
+                (levelUnlockEntity, levelUnlockConfig) -> levelUnlockEntity.fromLevelUnlockConfig(levelUnlockConfig, baseItemTypeCrudPersistence, imageService),
                 LevelUnlockConfig::getId,
                 LevelUnlockEntity::getId);
     }
