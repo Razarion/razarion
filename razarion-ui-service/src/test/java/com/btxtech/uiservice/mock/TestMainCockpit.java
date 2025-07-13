@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.mock;
 
-import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.control.GameUiControl;
 
@@ -28,16 +27,6 @@ public class TestMainCockpit implements MainCockpit {
     @Override
     public void displayLevel(int levelNumber) {
 
-    }
-
-    @Override
-    public Rectangle getInventoryDialogButtonLocation() {
-        return null;
-    }
-
-    @Override
-    public Rectangle getScrollHomeButtonLocation() {
-        return null;
     }
 
     @Override

@@ -28,7 +28,10 @@ export class TipService {
   }
 
   public deactivate(): void {
-
+    if (this.tipTaskContainer) {
+      this.tipTaskContainer.clean();
+      this.tipTaskContainer = null;
+    }
   }
 
   public onSucceed() {

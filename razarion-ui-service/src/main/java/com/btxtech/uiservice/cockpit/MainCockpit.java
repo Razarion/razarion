@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.cockpit;
 
-import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.control.GameUiControl;
 import jsinterop.annotations.JsType;
 
@@ -19,10 +18,6 @@ public interface MainCockpit {
     void displayXps(int xp, int xp2LevelUp);
 
     void displayLevel(int levelNumber);
-
-    Rectangle getInventoryDialogButtonLocation();
-
-    Rectangle getScrollHomeButtonLocation();
 
     void displayItemCount(int itemCount, int usedHouseSpace, int houseSpace);
 

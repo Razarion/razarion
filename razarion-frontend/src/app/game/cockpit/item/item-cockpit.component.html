@@ -23,7 +23,7 @@
     </div>
   </div>
   <div *ngIf="ownItemCockpit.buildupItemInfos" class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
-    <p-popover #tipPopover>
+    <p-popover #tipPopover [dismissable]="false">
       <div class="blinking-popover">
         <p>Click to build</p>
       </div>

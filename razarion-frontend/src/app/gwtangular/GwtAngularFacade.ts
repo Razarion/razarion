@@ -507,10 +507,6 @@ export interface MainCockpit {
 
   displayLevel(levelNumber: number): void;
 
-  getInventoryDialogButtonLocation(): Rectangle;
-
-  getScrollHomeButtonLocation(): Rectangle;
-
   displayItemCount(itemCount: number, usedHouseSpace: number, houseSpace: number): void;
 
   displayEnergy(consuming: number, generating: number): void;

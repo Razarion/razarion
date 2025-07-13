@@ -6,14 +6,10 @@ import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.uiservice.control.GameUiControl;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.function.Function;
 
-/**
- * Created by Beat
- * 16.11.2016.
- */
 @Singleton
 public class MainCockpitService {
     private final LevelService levelService;
@@ -39,7 +35,7 @@ public class MainCockpitService {
     }
 
     public void updateLevelAndXp(UserContext userContext) {
-        if(userContext.getLevelId() == null) {
+        if (userContext.getLevelId() == null) {
             return;
         }
         LevelConfig levelConfig = levelService.getLevel(userContext.getLevelId());
@@ -49,29 +45,6 @@ public class MainCockpitService {
 
     public void updateResource(int resource) {
         mainCockpit.displayResources(resource);
-    }
-
-    public Rectangle getInventoryButtonLocation() {
-        return mainCockpit.getInventoryDialogButtonLocation();
-    }
-
-    public Rectangle getScrollHomeButtonLocation() {
-        return mainCockpit.getScrollHomeButtonLocation();
-    }
-
-    public Rectangle getInventoryUseButtonLocation(int inventoryItemId) {
-        if (inventoryPositionProvider == null) {
-            throw new IllegalStateException("InventoryDialog is not shown");
-        }
-        return inventoryPositionProvider.apply(inventoryItemId);
-    }
-
-    public void onInventoryDialogOpened(Function<Integer, Rectangle> inventoryPositionProvider) {
-        this.inventoryPositionProvider = inventoryPositionProvider;
-    }
-
-    public void onInventoryDialogClosed() {
-        inventoryPositionProvider = null;
     }
 
     public void onItemCountChanged(int itemCount, int usedHouseSpace, int houseSpace) {

@@ -57,4 +57,11 @@ export class TipTaskContainer {
     }
   }
 
+  public clean() {
+    if (this.hasTip()) {
+      this.getCurrentTask().cleanup();
+      this.current = null;
+    }
+  }
+
 }

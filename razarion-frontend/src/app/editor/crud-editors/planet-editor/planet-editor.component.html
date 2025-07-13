@@ -1,51 +1,57 @@
 <div style="width: 40em">
-    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-        <span class="col-span-4">Id</span>
-        <div class="col-span-8">
-            <p-inputNumber [disabled]="true" [(ngModel)]="planetConfig.id"></p-inputNumber>
-        </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Id</span>
+    <div class="col-span-8">
+      <p-inputNumber [disabled]="true" [(ngModel)]="planetConfig.id"></p-inputNumber>
     </div>
-    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-        <span class="col-span-4">Internal name</span>
-        <div class="col-span-8">
-            <input [(ngModel)]="planetConfig.internalName" type="text"
-                class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
-        </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Internal name</span>
+    <div class="col-span-8">
+      <input [(ngModel)]="planetConfig.internalName" type="text"
+             class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
     </div>
-    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-        <span class="col-span-4">Size</span>
-        <div class="col-span-8">
-            <decimal-position [(decimalPosition)]="planetConfig.size"></decimal-position>
-        </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Size</span>
+    <div class="col-span-8">
+      <decimal-position [(decimalPosition)]="planetConfig.size"></decimal-position>
     </div>
-    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-        <span class="col-span-4">Item type limitation</span>
-        <div class="col-span-8">
-            <base-item-type-count [(baseItemTypeCount)]="planetConfig.itemTypeLimitation"></base-item-type-count>
-        </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Item type limitation</span>
+    <div class="col-span-8">
+      <base-item-type-count [(baseItemTypeCount)]="planetConfig.itemTypeLimitation"></base-item-type-count>
     </div>
-    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-        <span class="col-span-4">House space</span>
-        <div class="col-span-8">
-            <p-inputNumber [(ngModel)]="planetConfig.houseSpace"></p-inputNumber>
-        </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">House space</span>
+    <div class="col-span-8">
+      <p-inputNumber [(ngModel)]="planetConfig.houseSpace"></p-inputNumber>
     </div>
-    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-        <span class="col-span-4">Start razarion</span>
-        <div class="col-span-8">
-            <p-inputNumber [(ngModel)]="planetConfig.startRazarion"></p-inputNumber>
-        </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Start razarion</span>
+    <div class="col-span-8">
+      <p-inputNumber [(ngModel)]="planetConfig.startRazarion"></p-inputNumber>
     </div>
-    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-        <span class="col-span-4">Start base item</span>
-        <div class="col-span-8">
-            <base-item-type [(baseItemTypeId)]="planetConfig.startBaseItemTypeId"></base-item-type>
-        </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Start base item</span>
+    <div class="col-span-8">
+      <base-item-type [(baseItemTypeId)]="planetConfig.startBaseItemTypeId"></base-item-type>
     </div>
-    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-        <span class="col-span-4">Ground</span>
-        <div class="col-span-8">
-            <ground [(groundId)]="planetConfig.groundConfigId"></ground>
-        </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Ground</span>
+    <div class="col-span-8">
+      <ground [(groundId)]="planetConfig.groundConfigId"></ground>
     </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Minimap</span>
+    <div class="col-span-8">
+      <p-button (onClick)="showMinimap()">Show</p-button>
+    </div>
+  </div>
 </div>

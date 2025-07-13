@@ -155,16 +155,6 @@ public class DaggerUiBaseIntegrationTest {
             }
 
             @Override
-            public Rectangle getInventoryDialogButtonLocation() {
-                return null;
-            }
-
-            @Override
-            public Rectangle getScrollHomeButtonLocation() {
-                return null;
-            }
-
-            @Override
             public void displayItemCount(int itemCount, int usedHouseSpace, int houseSpace) {
 
             }

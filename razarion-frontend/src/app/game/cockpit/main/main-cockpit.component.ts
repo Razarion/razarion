@@ -51,7 +51,6 @@ export class MainCockpitComponent implements MainCockpit {
   private mouseObservable: Nullable<Observer<PointerInfo>> = null;
   levelNumber!: number;
   resources: number = 0;
-  itemCount: number = 0;
   displayHouseSpace = "";
   displayEnergyString = "";
   displayXp2LevelUp = "";
@@ -99,7 +98,6 @@ export class MainCockpitComponent implements MainCockpit {
 
   displayItemCount(itemCount: number, usedHouseSpace: number, houseSpace: number): void {
     this.zone.run(() => {
-      this.itemCount = itemCount;
       this.displayHouseSpace = `${usedHouseSpace} / ${houseSpace}`;
     });
   }
@@ -120,14 +118,6 @@ export class MainCockpitComponent implements MainCockpit {
     this.zone.run(() => {
       this.displayXp2LevelUp = `${xp} / ${xp2LevelUp}`;
     });
-  }
-
-  getInventoryDialogButtonLocation(): Rectangle {
-    return {};
-  }
-
-  getScrollHomeButtonLocation(): Rectangle {
-    return {};
   }
 
   onInventory(): void {

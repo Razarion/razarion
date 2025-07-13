@@ -136,13 +136,19 @@ export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit,
         }
       );
       if (itemTypeDiv) {
-        this.tipPopover.show(null, itemTypeDiv.nativeElement);
-        return true;
+        if (this.tipPopover) {
+          this.tipPopover.show(null, itemTypeDiv.nativeElement);
+          return true;
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
     } else {
-      this.tipPopover.hide();
+      if (this.tipPopover) {
+        this.tipPopover.hide();
+      }
       return true;
     }
   }
