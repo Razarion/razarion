@@ -18,6 +18,7 @@ import {
   HarvesterType,
   I18nString,
   Index,
+  InGameQuestVisualizationService,
   InputService,
   InventoryItem,
   InventoryTypeService,
@@ -87,6 +88,7 @@ export class GameMockService {
   private startGwtMock() {
     this.gwtAngularService.gwtAngularFacade.inputService = this.inputService;
     this.gwtAngularService.gwtAngularFacade.statusProvider = this.statusProvider;
+    this.gwtAngularService.gwtAngularFacade.inGameQuestVisualizationService = this.inGameQuestVisualizationService;
     this.loadMockStaticGameConfig().then(() => {
       this.babylonModelService.init().then(() => {
         this.gwtAngularService.gwtAngularFacade.terrainTypeService = this.mockTerrainTypeService();
@@ -98,6 +100,7 @@ export class GameMockService {
           // Some very strange babylon behavior, _projectionMatrix is zero matrix
           this.babylonRenderServiceAccessImpl.setViewFieldCenter(8, 8);
           this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
+          this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
         }, 100);
         // this.loadingCover!.hide();
         // this.threeJsRendererService.createProjectile(new class implements Vertex {
@@ -692,6 +695,11 @@ export class GameMockService {
     }
   };
 
+  inGameQuestVisualizationService: InGameQuestVisualizationService = new class implements InGameQuestVisualizationService {
+    setVisible(visible: boolean): void {
+    }
+  };
+
   loadMockStaticGameConfig(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.http.get<TerrainTile[]>("/gwt-mock/static-game-config").subscribe((value: any) => {
@@ -939,7 +947,7 @@ export class GameMockService {
   readonly TILE_Y_COUNT = 2;
 
   mockTerrainTile(threeJsRendererService: BabylonRenderServiceAccessImpl) {
-    fetch('rest/terrainHeightMap/117', {
+    fetch('/rest/terrainHeightMap/117', {
       headers: {
         'Content-Type': 'application/octet-stream'
       }
@@ -1001,6 +1009,7 @@ export class GameMockService {
       .catch(error => console.error('Error:', error));
   }
 
+  // Copied from com.btxtech.common.ClientNativeTerrainShapeAccess.createTileGroundHeightMap()
   private setupHeightMap(terrainTileIndex: Index, terrainHeightMap: Uint16Array): Uint16Array {
     let tileHeightMapStart = this.getTileHeightMapStart(terrainTileIndex);
     let nextXTileHeightMapStart = this.getTileHeightMapStart(terrainTileIndex.add(1, 0));
