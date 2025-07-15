@@ -1,7 +1,8 @@
 {
   "groundConfigs" : [ {
     "id" : 1,
-    "topThreeJsMaterial" : 60
+    "groundBabylonMaterialId" : 7,
+    "waterBabylonMaterialId" : 8
   } ],
   "waterConfigs" : [ {
     "id" : 1,
@@ -363,117 +364,5 @@
     "id" : 1001,
     "angle" : 0.3490658503988659
   } ],
-  "threeJsModelConfigs" : [ {
-    "id" : 49,
-    "internalName" : "Tropical Vegetation Pack 2",
-    "type" : "GLTF",
-    "disabled" : false
-  }, {
-    "id" : 48,
-    "internalName" : "Rocks and Boulders",
-    "type" : "GLTF",
-    "disabled" : false
-  }, {
-    "id" : 22,
-    "internalName" : "Water",
-    "type" : "NODES_MATERIAL",
-    "disabled" : false
-  }, {
-    "id" : 44,
-    "internalName" : "[VC] Wheels",
-    "type" : "GLTF",
-    "disabled" : false
-  }, {
-    "id" : 42,
-    "internalName" : "[VC] WheelsW",
-    "type" : "GLTF",
-    "disabled" : false
-  }, {
-    "id" : 41,
-    "internalName" : "[VC] Vehicles main part",
-    "type" : "GLTF",
-    "nodeMaterialId" : 46,
-    "disabled" : false
-  }, {
-    "id" : 45,
-    "internalName" : "[VC] Tracks",
-    "type" : "GLTF",
-    "disabled" : false
-  }, {
-    "id" : 43,
-    "internalName" : "[VC] Bumpers1",
-    "type" : "GLTF",
-    "disabled" : false
-  }, {
-    "id" : 46,
-    "internalName" : "[VC] Node Material Vehicles main part",
-    "type" : "NODES_MATERIAL",
-    "disabled" : false
-  }, {
-    "id" : 50,
-    "internalName" : "Buildup Beam",
-    "type" : "PARTICLE_SYSTEM_JSON",
-    "disabled" : false
-  }, {
-    "id" : 54,
-    "internalName" : "Progress Bar Material",
-    "type" : "NODES_MATERIAL",
-    "disabled" : false
-  }, {
-    "id" : 55,
-    "internalName" : "Health Bar Material",
-    "type" : "NODES_MATERIAL",
-    "disabled" : false
-  }, {
-    "id" : 60,
-    "internalName" : "Height Map",
-    "type" : "NODES_MATERIAL",
-    "disabled" : false
-  } ],
-  "threeJsModelPackConfigs" : [ {
-    "id" : 105,
-    "internalName" : "banana_plant",
-    "threeJsModelId" : 49,
-    "namePath" : [ "__root__", "banana_plant" ],
-    "position" : {
-      "x" : 0.0,
-      "y" : 0.0,
-      "z" : 0.0
-    },
-    "scale" : {
-      "x" : 1.0,
-      "y" : 1.0,
-      "z" : 1.0
-    },
-    "rotation" : {
-      "x" : 0.0,
-      "y" : 0.0,
-      "z" : 0.0
-    }
-  }, {
-    "id" : 86,
-    "internalName" : "Rock1C",
-    "threeJsModelId" : 48,
-    "namePath" : [ "__root__", "Rock1C" ],
-    "position" : {
-      "x" : 0.0,
-      "y" : 0.0,
-      "z" : 0.0
-    },
-    "scale" : {
-      "x" : 1.0,
-      "y" : 1.0,
-      "z" : 1.0
-    },
-    "rotation" : {
-      "x" : 0.0,
-      "y" : 0.0,
-      "z" : 0.0
-    }
-  } ],
-  "particleSystemConfigs" : [ {
-    "id" : 1,
-    "threeJsModelId" : 50,
-    "emitterMeshPath" : [ "Cannon00 '41'", "Cannon00 '41'.Cannon00" ]
-  } ]
+  "particleSystemConfigs" : []
 }

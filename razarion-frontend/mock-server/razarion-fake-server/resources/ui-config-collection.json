@@ -385,63 +385,7 @@
       "gltfEntityId": 1
     }
   ],
-  "particleSystemEntities": [
-    {
-      "id": 1,
-      "internalName": "Buildup Beam",
-      "emitterNodeId": "Cannon00.Cannon00",
-      "positionOffset": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "imageId": null
-    },
-    {
-      "id": 2,
-      "internalName": "Viper Muzzle",
-      "emitterNodeId": "Cannon04b.Cannon04b",
-      "positionOffset": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "imageId": null
-    },
-    {
-      "id": 3,
-      "internalName": "Harvest",
-      "emitterNodeId": "Body12.Body12",
-      "positionOffset": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "imageId": null
-    },
-    {
-      "id": 4,
-      "internalName": "Projectile trail",
-      "emitterNodeId": null,
-      "positionOffset": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "imageId": 164
-    },
-    {
-      "id": 5,
-      "internalName": "Explosion 2",
-      "emitterNodeId": null,
-      "positionOffset": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "imageId": 164
-    }
-  ],
+  "particleSystemEntities": [],
   "selectionItemMaterialId": 14,
   "progressBarNodeMaterialId": 9,
   "healthBarNodeMaterialId": 10

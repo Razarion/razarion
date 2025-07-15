@@ -100,7 +100,7 @@ export class GameMockService {
           // Some very strange babylon behavior, _projectionMatrix is zero matrix
           this.babylonRenderServiceAccessImpl.setViewFieldCenter(8, 8);
           this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
-          this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
+          // this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
         }, 100);
         // this.loadingCover!.hide();
         // this.threeJsRendererService.createProjectile(new class implements Vertex {
@@ -209,9 +209,9 @@ export class GameMockService {
           babylonBaseItem1.setConstructing(0.01);
           babylonBaseItem1.setHealth(0.99);
           // babylonBaseItem1.mark(MarkerConfig);
-          setTimeout(() => {
-            babylonBaseItem1.onExplode();
-          }, 2000);
+          // setTimeout(() => {
+          //  babylonBaseItem1.onExplode();
+          //}, 2000);
 
 
           /*
@@ -773,11 +773,11 @@ export class GameMockService {
             };
 
             getGroundBabylonMaterialId(): number {
-              return this._groundConfigJson.topThreeJsMaterial; // TODO
+              return this._groundConfigJson.groundBabylonMaterialId;
             };
 
             getWaterBabylonMaterialId(): number {
-              return this._groundConfigJson.bottomThreeJsMaterial; // TODO
+              return this._groundConfigJson.waterBabylonMaterialId;
             };
           }
           return

@@ -34,7 +34,7 @@ import {
   NodeMaterial,
   Nullable,
   ParticleSystem,
-  PolygonMeshBuilder,
+  PolygonMeshBuilder, Quaternion,
   Ray,
   Scene,
   ShadowGenerator,
@@ -207,9 +207,17 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       self.keyPressed.delete(e.key);
     }, true);
     window.addEventListener('wheel', e => {
-      const delta = e.deltaY;
-      this.camera.position.y += delta * 0.05;
-      this.onViewFieldChanged();
+      let delta = e.deltaY;
+      delta = delta * 0.08;
+      const cameraRotation = Quaternion.FromEulerAngles(self.camera.rotation.x, self.camera.rotation.y, self.camera.rotation.z);
+      let deltaVector = Vector3.Zero();
+      new Vector3(0, 0, -delta).rotateByQuaternionToRef(cameraRotation, deltaVector);
+      if (self.camera.position.y + deltaVector.y > 5 && self.camera.position.y + deltaVector.y < 200) {
+        this.camera.position.x += deltaVector.x;
+        this.camera.position.y += deltaVector.y;
+        this.camera.position.z += deltaVector.z;
+        this.onViewFieldChanged();
+      }
     }, true);
 
     // -----  Camera -----
