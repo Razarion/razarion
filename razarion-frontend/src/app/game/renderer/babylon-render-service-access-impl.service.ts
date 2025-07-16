@@ -34,7 +34,8 @@ import {
   NodeMaterial,
   Nullable,
   ParticleSystem,
-  PolygonMeshBuilder, Quaternion,
+  PolygonMeshBuilder,
+  Quaternion,
   Ray,
   Scene,
   ShadowGenerator,
@@ -216,6 +217,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.camera.position.x += deltaVector.x;
         this.camera.position.y += deltaVector.y;
         this.camera.position.z += deltaVector.z;
+        this.ensureCameraViewOnMap();
         this.onViewFieldChanged();
       }
     }, true);
@@ -249,6 +251,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       for (let entry of entries) {
         if (this.canvas == entry.target) {
           this.engine.resize();
+          this.ensureCameraViewOnMap();
           this.onViewFieldChanged();
         }
       }
@@ -331,6 +334,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     let delta = newFieldCenter.subtract(new Vector2(currentViewFieldCenter.x, currentViewFieldCenter.z));
     this.camera.position.x += delta.x;
     this.camera.position.z += delta.y;
+    this.ensureCameraViewOnMap();
     this.onViewFieldChanged();
   }
 
@@ -390,14 +394,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       return;
     }
 
-    if (newX! < -0) {
-      newX = 0;
-    }
-
-    if (newZ! < -15) {
-      newZ = -15;
-    }
-
     if (newX || newX === 0) {
       this.camera.position.x = newX;
     }
@@ -407,7 +403,23 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
 
     if (hasChanged) {
+      this.ensureCameraViewOnMap();
       this.onViewFieldChanged();
+    }
+  }
+
+  private ensureCameraViewOnMap() {
+    let height = LocationVisualization.getHeightFromTerrain(0, 0, this)
+    // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
+    // getViewMatrix() forces recalculation of the camera view matrix
+    this.camera.getViewMatrix();
+    let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
+    let bottomLeft = this.setupTerrainLevelPosition(-1, -1, invertCameraViewProj, height);
+    if (bottomLeft.x < 0) {
+      this.camera.position.x -= bottomLeft.x;
+    }
+    if (bottomLeft.z < 0) {
+      this.camera.position.z -= bottomLeft.z;
     }
   }
 
@@ -559,11 +571,29 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
   }
 
-  private setupZeroLevelPosition(ndcX: number, ndcY: number, invertCameraViewProj: Matrix): Vector3 {
+  private setupZeroLevelPosition(
+    ndcX: number,
+    ndcY: number,
+    invertCameraViewProj:
+    Matrix): Vector3 {
     let worldNearPosition = Vector3.TransformCoordinates(new Vector3(ndcX, ndcY, -1), invertCameraViewProj);
     let direction = worldNearPosition.subtract(this.camera.position).normalize();
     const distanceToNullLevel = -this.camera.position.y / direction.y;
     return this.camera.position.add(direction.multiplyByFloats(distanceToNullLevel, distanceToNullLevel, distanceToNullLevel));
+  }
+
+  private setupTerrainLevelPosition(
+    ndcX: number,
+    ndcY: number,
+    invertCameraViewProj: Matrix,
+    terrainHeight: number
+  ): Vector3 {
+    const worldNearPosition = Vector3.TransformCoordinates(new Vector3(ndcX, ndcY, -1), invertCameraViewProj);
+    const direction = worldNearPosition.subtract(this.camera.position).normalize();
+    const distanceToTerrainLevel = (terrainHeight - this.camera.position.y) / direction.y;
+    return this.camera.position.add(
+      direction.multiplyByFloats(distanceToTerrainLevel, distanceToTerrainLevel, distanceToTerrainLevel)
+    );
   }
 
   private setupTerrainPosition(ndcX: number, ndcY: number, invertCameraViewProj: Matrix): Vector3 | undefined {
