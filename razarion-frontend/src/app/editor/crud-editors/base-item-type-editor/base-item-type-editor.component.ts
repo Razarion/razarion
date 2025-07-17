@@ -69,7 +69,8 @@ export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemT
   onBuilderTypeChange(avtive: boolean) {
     if (avtive) {
       this.baseItemType.builderType = new class implements BuilderType {
-        range = 1;
+        range = 5;
+        rangeOtherTerrain = 15
         progress = 1;
         ableToBuildIds = [];
         particleSystemConfigId = null;

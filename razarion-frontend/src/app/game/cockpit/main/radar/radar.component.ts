@@ -1,11 +1,12 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MiniViewField } from './mini-view-field';
 import { GameUiControl } from 'src/app/gwtangular/GwtAngularFacade';
-import { BabylonRenderServiceAccessImpl, ViewField, ViewFieldListener } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
+import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
 import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 import { MiniTerrain } from './mini-terrain';
 import { MiniItemView } from './mini-item-view';
 import {Button} from 'primeng/button';
+import {ViewField, ViewFieldListener} from '../../../renderer/view-field';
 
 @Component({
   selector: 'radar',

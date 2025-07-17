@@ -93,7 +93,7 @@ public final class FallbackConfig {
         BaseItemType bulldozer = new BaseItemType();
         bulldozer.health(40).boxPickupRange(1).id(BUILDER_ITEM_TYPE_ID).internalName("Builder test");
         bulldozer.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(1.0).angularVelocity(Math.toRadians(30)).radius(2).speed(20.0));
-        bulldozer.setBuilderType(new BuilderType().ableToBuildIds(Arrays.asList(FACTORY_ITEM_TYPE_ID, GENERATOR_ITEM_TYPE_ID, CONSUMER_ITEM_TYPE_ID, HARBOUR_ITEM_TYPE_ID)).progress(5).range(15));
+        bulldozer.setBuilderType(new BuilderType().ableToBuildIds(Arrays.asList(FACTORY_ITEM_TYPE_ID, GENERATOR_ITEM_TYPE_ID, CONSUMER_ITEM_TYPE_ID, HARBOUR_ITEM_TYPE_ID)).progress(5).range(5).rangeOtherTerrain(15));
         baseItemTypes.add(bulldozer);
     }
 

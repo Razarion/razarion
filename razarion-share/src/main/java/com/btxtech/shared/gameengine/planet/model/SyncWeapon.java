@@ -112,7 +112,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 }
                 if (!getSyncPhysicalMovable().hasDestination()) {
                     if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
-                        getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
+                        getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), 0, target));
                         syncService.notifySendSyncBaseItem(getSyncBaseItem());
                     } else {
                         return true;
@@ -124,7 +124,7 @@ public class SyncWeapon extends SyncBaseAbility {
                     if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis()) {
                         if (!targetPosition.equals(target.getAbstractSyncPhysical().getPosition())) {
                             targetPosition = target.getAbstractSyncPhysical().getPosition();
-                            getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
+                            getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), 0, target));
                             syncService.notifySendSyncBaseItem(getSyncBaseItem());
                         }
                         targetPositionLastCheck = System.currentTimeMillis();

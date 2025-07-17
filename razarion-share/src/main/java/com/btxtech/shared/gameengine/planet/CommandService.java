@@ -96,7 +96,7 @@ public class CommandService {
         builderCommand.setToBeBuiltId(itemTypeToBuild.getId());
         builderCommand.setPositionToBeBuilt(positionToBeBuild);
         SimplePath path = pathingService.setupPathToDestination(builder,
-                builder.getBaseItemType().getBuilderType().getRange(),
+                builder.getBaseItemType().getBuilderType().getRangeOtherTerrain(),
                 itemTypeToBuild.getPhysicalAreaConfig().getTerrainType(),
                 positionToBeBuild,
                 itemTypeToBuild.getPhysicalAreaConfig().getRadius());
@@ -114,7 +114,7 @@ public class CommandService {
         builderFinalizeCommand.setId(builder.getId());
         builderFinalizeCommand.updateTimeStamp();
         builderFinalizeCommand.setBuildingId(building.getId());
-        SimplePath path = pathingService.setupPathToDestination(builder, builder.getBaseItemType().getBuilderType().getRange(), building);
+        SimplePath path = pathingService.setupPathToDestination(builder, builder.getBaseItemType().getBuilderType().getRangeOtherTerrain(), building);
         if (moveIfPathTargetUnreachable(builder, path)) {
             return;
         }
@@ -155,7 +155,7 @@ public class CommandService {
     public void harvest(SyncBaseItem harvester, SyncResourceItem resource) {
         checkSyncBaseItem(harvester);
         HarvestCommand harvestCommand = new HarvestCommand();
-        SimplePath path = pathingService.setupPathToDestination(harvester, harvester.getBaseItemType().getHarvesterType().getRange(), resource);
+        SimplePath path = pathingService.setupPathToDestination(harvester, 0, resource);
         if (moveIfPathTargetUnreachable(harvester, path)) {
             return;
         }
@@ -180,7 +180,7 @@ public class CommandService {
         SimplePath path;
         AttackCommand attackCommand = new AttackCommand();
         if (followTarget) {
-            path = pathingService.setupPathToDestination(syncBaseItem, syncBaseItem.getBaseItemType().getWeaponType().getRange(), target);
+            path = pathingService.setupPathToDestination(syncBaseItem, 0, target);
             if (moveIfPathTargetUnreachable(syncBaseItem, path)) {
                 return;
             }
@@ -204,7 +204,7 @@ public class CommandService {
     public void pickupBox(SyncBaseItem picker, SyncBoxItem box) {
         checkSyncBaseItem(picker);
         PickupBoxCommand pickupBoxCommand = new PickupBoxCommand();
-        SimplePath path = pathingService.setupPathToDestination(picker, picker.getBaseItemType().getBoxPickupRange(), box);
+        SimplePath path = pathingService.setupPathToDestination(picker, 0, box);
         if (moveIfPathTargetUnreachable(picker, path)) {
             return;
         }
@@ -227,7 +227,7 @@ public class CommandService {
         checkSyncBaseItem(contained);
         checkSyncBaseItem(container);
         LoadContainerCommand loadContainerCommand = new LoadContainerCommand();
-        SimplePath path = pathingService.setupPathToDestination(contained, container.getSyncItemContainer().getRange(), container);
+        SimplePath path = pathingService.setupPathToDestination(contained, 0, container);
         if (moveIfPathTargetUnreachable(contained, path)) {
             return;
         }

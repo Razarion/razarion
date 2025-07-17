@@ -1,6 +1,7 @@
 import { GameUiControl } from 'src/app/gwtangular/GwtAngularFacade';
 import { AbstractGameCoordinates } from './abstract-game-coordinates';
-import { BabylonRenderServiceAccessImpl, ViewField } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
+import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
+import {ViewField} from "../../../renderer/view-field";
 
 export class MiniViewField extends AbstractGameCoordinates {
     private static readonly LINE_WIDTH = 1;

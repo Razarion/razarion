@@ -26,6 +26,7 @@ import java.util.List;
 @JsType
 public class BuilderType {
     private double range;
+    private double rangeOtherTerrain;
     private double progress;
     private List<Integer> ableToBuildIds;
     private Integer particleSystemConfigId;
@@ -36,6 +37,14 @@ public class BuilderType {
 
     public void setRange(double range) {
         this.range = range;
+    }
+
+    public double getRangeOtherTerrain() {
+        return rangeOtherTerrain;
+    }
+
+    public void setRangeOtherTerrain(double rangeOtherTerrain) {
+        this.rangeOtherTerrain = rangeOtherTerrain;
     }
 
     public double getProgress() {
@@ -64,6 +73,11 @@ public class BuilderType {
 
     public BuilderType range(double range) {
         setRange(range);
+        return this;
+    }
+
+    public BuilderType rangeOtherTerrain(double rangeOtherTerrain) {
+        setRangeOtherTerrain(rangeOtherTerrain);
         return this;
     }
 

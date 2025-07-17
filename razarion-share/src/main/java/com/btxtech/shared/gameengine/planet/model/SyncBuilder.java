@@ -20,12 +20,22 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
-import com.btxtech.shared.gameengine.datatypes.exception.*;
+import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
+import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
+import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
+import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
+import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.planet.*;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
+import com.btxtech.shared.gameengine.planet.SyncService;
+import com.btxtech.shared.gameengine.planet.pathing.TerrainDestinationFinderUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import javax.inject.Inject;
 
@@ -155,12 +165,23 @@ public class SyncBuilder extends SyncBaseAbility {
     }
 
     private boolean isInRange() {
-        if (currentBuildup != null) {
-            return getSyncBaseItem().getAbstractSyncPhysical().isInRange(builderType.getRange(), currentBuildup);
-        } else if (toBeBuildPosition != null && toBeBuiltType != null) {
-            return getSyncBaseItem().getAbstractSyncPhysical().isInRange(builderType.getRange(), toBeBuildPosition, toBeBuiltType);
-        } else {
+        if (toBeBuiltType == null && currentBuildup == null) {
             throw new IllegalStateException();
+        }
+
+        double range;
+        TerrainType toBeBuildTerrainType = toBeBuiltType != null ?
+                toBeBuiltType.getPhysicalAreaConfig().getTerrainType() : currentBuildup.getBaseItemType().getPhysicalAreaConfig().getTerrainType();
+        if (TerrainDestinationFinderUtil.differentTerrain(getSyncBaseItem().getAbstractSyncPhysical().getTerrainType(), toBeBuildTerrainType)) {
+            range = builderType.getRangeOtherTerrain();
+        } else {
+            range = builderType.getRange();
+        }
+
+        if (currentBuildup != null) {
+            return getSyncBaseItem().getAbstractSyncPhysical().isInRange(range, currentBuildup);
+        } else {
+            return getSyncBaseItem().getAbstractSyncPhysical().isInRange(range, toBeBuildPosition, toBeBuiltType);
         }
     }
 

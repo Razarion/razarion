@@ -52,7 +52,6 @@ import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 import {SelectionFrame} from "./selection-frame";
-import {GwtInstance} from "src/app/gwtangular/GwtInstance";
 import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
 import {PlaceConfigComponent} from "src/app/editor/common/place-config/place-config.component";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
@@ -62,6 +61,7 @@ import {getImageUrl} from "src/app/common";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
 import earcut from 'earcut';
+import {ViewField, ViewFieldListener} from './view-field';
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -74,51 +74,6 @@ export enum RazarionMetadataType {
   GROUND,
   TERRAIN_OBJECT,
   SLOPE
-}
-
-export class ViewField {
-  private readonly bottomLeft: DecimalPosition;
-  private readonly bottomRight: DecimalPosition;
-  private readonly topRight: DecimalPosition;
-  private readonly topLeft: DecimalPosition;
-  private center?: DecimalPosition;
-
-  constructor(bottomLeft: Vector3, bottomRight: Vector3, topRight: Vector3, topLeft: Vector3) {
-    this.bottomLeft = GwtInstance.newDecimalPosition(bottomLeft.x, bottomLeft.z);
-    this.bottomRight = GwtInstance.newDecimalPosition(bottomRight.x, bottomRight.z);
-    this.topRight = GwtInstance.newDecimalPosition(topRight.x, topRight.z);
-    this.topLeft = GwtInstance.newDecimalPosition(topLeft.x, topLeft.z);
-  }
-
-  getBottomLeft(): DecimalPosition {
-    return this.bottomLeft;
-  }
-
-  getBottomRight(): DecimalPosition {
-    return this.bottomRight;
-  }
-
-  getTopRight(): DecimalPosition {
-    return this.topRight;
-  }
-
-  getTopLeft(): DecimalPosition {
-    return this.topLeft;
-  }
-
-  getCenter(): DecimalPosition {
-    if (!this.center) {
-      this.center = GwtInstance.newDecimalPosition(
-        (this.bottomLeft.getX() + this.bottomRight.getX() + this.topRight.getX() + this.topLeft.getX()) / 4,
-        (this.bottomLeft.getY() + this.bottomRight.getY() + this.topRight.getY() + this.topLeft.getY()) / 4
-      );
-    }
-    return this.center;
-  }
-}
-
-export interface ViewFieldListener {
-  onViewFieldChanged(viewField: ViewField): void;
 }
 
 @Injectable({
@@ -225,7 +180,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // -----  Camera -----
     //this.camera = new Camera("Main Cam", new Vector3(0, -10, 20), this.scene);
     this.camera = new FreeCamera("Camera", new Vector3(0, 30, -35), this.scene);
-    this.camera.maxZ = 500;
+    this.camera.maxZ = 800;
     this.camera.setTarget(new Vector3(0, 0, 0));
 
     // ----- Light -----
@@ -371,21 +326,21 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.camera.position.y
 
     let newX = null;
-    if (this.keyPressed.get("a")) {
+    if (this.checkKeyDown("a", "A", "ArrowLeft")) {
       newX = this.camera.position.x - speed;
       hasChanged = true;
     }
-    if (this.keyPressed.get("d")) {
+    if (this.checkKeyDown("d", "D", "ArrowRight")) {
       newX = this.camera.position.x + speed;
       hasChanged = true;
     }
 
     let newZ = null;
-    if (this.keyPressed.get("s")) {
+    if (this.checkKeyDown("s", "S", "ArrowDown")) {
       newZ = this.camera.position.z - speed;
       hasChanged = true;
     }
-    if (this.keyPressed.get("w")) {
+    if (this.checkKeyDown("w", "W", "ArrowUp")) {
       newZ = this.camera.position.z + speed;
       hasChanged = true;
     }
@@ -406,6 +361,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       this.ensureCameraViewOnMap();
       this.onViewFieldChanged();
     }
+  }
+
+  private checkKeyDown(key1: string, key2: string, key3: string): boolean {
+    return !!this.keyPressed.get(key1) || !!this.keyPressed.get(key2) || !!this.keyPressed.get(key3);
   }
 
   private ensureCameraViewOnMap() {
@@ -555,7 +514,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     try {
 
       this.viewField = this.setupViewField()
-
       this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
         this.viewField.getBottomLeft().getX(), this.viewField.getBottomLeft().getY(),
         this.viewField.getBottomRight().getX(), this.viewField.getBottomRight().getY(),

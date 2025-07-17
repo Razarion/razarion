@@ -44,25 +44,25 @@ public class PathingService {
         return setupPathToDestination(syncItem, syncItem.getAbstractSyncPhysical().getTerrainType(), destination, 0);
     }
 
-    public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, SyncItem target) {
-        return setupPathToDestination(syncBaseItem, range, target.getAbstractSyncPhysical().getTerrainType(), target.getAbstractSyncPhysical().getPosition(), target.getAbstractSyncPhysical().getRadius());
+    public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double rangeOtherTerrain, SyncItem target) {
+        return setupPathToDestination(syncBaseItem, rangeOtherTerrain, target.getAbstractSyncPhysical().getTerrainType(), target.getAbstractSyncPhysical().getPosition(), target.getAbstractSyncPhysical().getRadius());
     }
 
-    public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, TerrainType targetTerrainType, DecimalPosition targetPosition, double targetRadius) {
-        double totalRange = syncBaseItem.getAbstractSyncPhysical().getRadius() + targetRadius + range;
-        return setupPathToDestination(syncBaseItem, targetTerrainType, targetPosition, totalRange);
+    public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double rangeOtherTerrain, TerrainType targetTerrainType, DecimalPosition targetPosition, double targetRadius) {
+        double totalRangeOtherTerrain = syncBaseItem.getAbstractSyncPhysical().getRadius() + targetRadius + rangeOtherTerrain;
+        return setupPathToDestination(syncBaseItem, targetTerrainType, targetPosition, totalRangeOtherTerrain);
     }
 
-    private SimplePath setupPathToDestination(SyncBaseItem syncItem, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
+    private SimplePath setupPathToDestination(SyncBaseItem syncItem, TerrainType targetTerrainType, DecimalPosition destination, double totalRangeOtherTerrain) {
         return setupPathToDestination(syncItem.getAbstractSyncPhysical().getPosition(),
                 syncItem.getAbstractSyncPhysical().getRadius(),
                 syncItem.getAbstractSyncPhysical().getTerrainType(),
                 targetTerrainType,
                 destination,
-                totalRange);
+                totalRangeOtherTerrain);
     }
 
-    public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType terrainType, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
+    public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType terrainType, TerrainType targetTerrainType, DecimalPosition destination, double totalRangeOtherTerrain) {
         // long time = System.currentTimeMillis();
         // Attention due to performance!! isInSight() surface data (Obstacle-Model) is not based on the AStar surface data -> AStar model must overlap Obstacle-Model
         double correctedRadius = radius + RADIUS_GROW;
@@ -84,7 +84,7 @@ public class PathingService {
         AStarContext aStarContext;
         DecimalPosition additionPathElement = null;
         if (TerrainDestinationFinderUtil.differentTerrain(terrainType, targetTerrainType)) {
-            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(destination, totalRange, radius + 2, terrainType, terrainService.getTerrainAnalyzer());
+            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(destination, totalRangeOtherTerrain, radius + 2, terrainType, terrainService.getTerrainAnalyzer());
             terrainDestinationFinder.find();
             correctedDestinationNode = terrainDestinationFinder.getReachableNode();
             if (correctedDestinationNode != null) {

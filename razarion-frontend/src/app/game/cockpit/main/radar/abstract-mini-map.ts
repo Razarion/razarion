@@ -1,5 +1,6 @@
-import { BabylonRenderServiceAccessImpl, ViewField } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
+import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
 import { DecimalPosition, GameUiControl } from 'src/app/gwtangular/GwtAngularFacade';
+import {ViewField} from "../../../renderer/view-field";
 
 export abstract class AbstractMiniMap {
     private canvasElement!: HTMLCanvasElement;

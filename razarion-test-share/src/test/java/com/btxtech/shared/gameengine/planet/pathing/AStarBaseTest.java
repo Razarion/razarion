@@ -45,10 +45,10 @@ public abstract class AStarBaseTest extends DaggerTerrainServiceTestBase {
         setupTerrainTypeService(null, terrainObjectConfigs, planetConfig, terrainObjectPositions, null);
     }
 
-    protected SimplePath setupPath(double actorRadius, TerrainType actorTerrainType, DecimalPosition actorPosition, double range, double targetRadius, TerrainType targetTerrainType, DecimalPosition targetPosition) {
+    protected SimplePath setupPath(double actorRadius, TerrainType actorTerrainType, DecimalPosition actorPosition, double totalRangeOtherTerrain, double targetRadius, TerrainType targetTerrainType, DecimalPosition targetPosition) {
         SyncBaseItem actor = GameTestHelper.createMockSyncBaseItem(actorRadius, actorTerrainType, actorPosition, getSyncItemContainerService());
         SyncBaseItem target = GameTestHelper.createMockSyncBaseItem(targetRadius, targetTerrainType, targetPosition, getSyncItemContainerService());
-        return getPathingService().setupPathToDestination(actor, range, target);
+        return getPathingService().setupPathToDestination(actor, totalRangeOtherTerrain, target);
     }
 
     protected SimplePath setupPath(double radius, TerrainType land, DecimalPosition start, DecimalPosition destination) {
