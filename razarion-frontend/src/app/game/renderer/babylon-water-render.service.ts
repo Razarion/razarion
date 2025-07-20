@@ -7,7 +7,7 @@ import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 @Injectable({
   providedIn: 'root'
 })
-export class ThreeJsWaterRenderService {
+export class BabylonWaterRenderService {
   constructor(private babylonModelService: BabylonModelService) {
   }
 

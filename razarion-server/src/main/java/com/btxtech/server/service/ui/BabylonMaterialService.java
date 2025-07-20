@@ -23,7 +23,7 @@ public class BabylonMaterialService extends AbstractBaseEntityCrudService<Babylo
     public void setData(int id, byte[] data) {
         BabylonMaterialEntity entity = getEntity(id);
         entity.setData(data);
-        throw new UnsupportedOperationException("...TODO... entityManager.merge(entity)");
+        getJpaRepository().save(entity);
     }
 
     @Override

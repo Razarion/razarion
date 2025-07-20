@@ -18,14 +18,13 @@ import {
 import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
-import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
+import {BabylonWaterRenderService} from "./babylon-water-render.service";
 import {
   AbstractMesh,
   Color3,
-  DirectionalLight,
+  CubeTexture,
   Engine,
   FreeCamera,
-  HemisphericLight,
   InputBlock,
   Matrix,
   Mesh,
@@ -38,7 +37,6 @@ import {
   Quaternion,
   Ray,
   Scene,
-  ShadowGenerator,
   Texture,
   Tools,
   TransformNode,
@@ -83,10 +81,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private scene!: Scene;
   private engine!: Engine;
   private camera!: FreeCamera;
-  public shadowGenerator!: ShadowGenerator;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
-  private directionalLight!: DirectionalLight
   public readonly itemMarkerMaterialCache: Map<Diplomacy, NodeMaterial> = new Map<Diplomacy, NodeMaterial>();
   public baseItemContainer!: TransformNode;
   public resourceItemContainer!: TransformNode;
@@ -111,7 +107,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   constructor(private gwtAngularService: GwtAngularService,
               private babylonModelService: BabylonModelService,
               private uiConfigCollectionService: UiConfigCollectionService,
-              private threeJsWaterRenderService: ThreeJsWaterRenderService,
+              private threeJsWaterRenderService: BabylonWaterRenderService,
               private actionService: ActionService) {
   }
 
@@ -183,24 +179,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.camera.maxZ = 800;
     this.camera.setTarget(new Vector3(0, 0, 0));
 
-    // ----- Light -----
-    const lightDirection = new Vector3(-1, -2, 1);
-    this.directionalLight = new DirectionalLight("DirectionalLight", lightDirection, this.scene);
-    this.directionalLight.intensity = 1;
-    this.directionalLight.autoCalcShadowZBounds = true;
-
-    const hemisphericLight = new HemisphericLight("HemiLight", lightDirection, this.scene);
-    hemisphericLight.diffuse = new Color3(0.945, 0.969, 0.894);
-    hemisphericLight.groundColor = new Color3(0.325, 0.278, 0.055);
-    hemisphericLight.intensity = 0.1;
-
-    this.shadowGenerator = new ShadowGenerator(2048, this.directionalLight);
-    this.shadowGenerator.bias = 0.006;
-    this.shadowGenerator.normalBias = 0;
-    this.shadowGenerator.darkness = 0.2;
-    this.shadowGenerator.filter = ShadowGenerator.FILTER_PCF;
-    this.shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_LOW;
-
     // ----- Resize listener -----
     new ResizeObserver(entries => {
       for (let entry of entries) {
@@ -216,22 +194,20 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
     // ----- Render loop -----
     this.scene.onBeforeRenderObservable.add(() => {
+      const date = Date.now();
+      this.interpolateItemPositions(date);
       this.scrollCamera();
       if (this.pendingSetViewFieldCenter) {
         this.setViewFieldCenter(this.pendingSetViewFieldCenter.x, this.pendingSetViewFieldCenter.y)
       }
     });
 
-    let renderTime = Date.now();
     this.engine.runRenderLoop(() => {
       try {
         if (!this.scene.activeCamera) {
           return;
         }
-        const date = Date.now();
-        this.interpolateItemPositions(date);
         this.scene.render();
-        renderTime = Date.now();
       } catch (e) {
         console.error("Render Engine crashed")
         console.log(e);
@@ -310,8 +286,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.canvas = canvas;
     this.engine = new Engine(this.canvas)
     this.scene = new Scene(this.engine);
-    this.scene.ambientColor = new Color3(0.3, 0.3, 0.3);
+    this.scene.environmentTexture = new CubeTexture("renderer/golden_gate_hills_4k.env", this.scene);
+    this.scene.createDefaultEnvironment({
+      createSkybox: false,
+      createGround: false,
 
+    });
+    this.scene.environmentIntensity = 0.8;
     this.babylonModelService.setScene(this.scene);
     this.baseItemContainer = new TransformNode("Base items");
     this.resourceItemContainer = new TransformNode("Resource items");
@@ -388,20 +369,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   addTerrainTileToScene(transformNode: TransformNode): void {
     this.scene.addTransformNode(transformNode);
-    this.addShadowCaster(transformNode);
-  }
-
-  addShadowCaster(transformNode: TransformNode): void {
-    transformNode.getChildMeshes().forEach(childMesh => {
-      this.shadowGenerator.addShadowCaster(childMesh, true);
-    });
   }
 
   removeTerrainTileFromScene(transformNode: TransformNode): void {
     this.scene.removeTransformNode(transformNode);
-    transformNode.getChildMeshes().forEach(childMesh => {
-      this.shadowGenerator.removeShadowCaster(childMesh, true);
-    });
   }
 
   getScene(): Scene {

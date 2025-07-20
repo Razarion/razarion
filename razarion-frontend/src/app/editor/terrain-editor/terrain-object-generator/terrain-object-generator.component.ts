@@ -200,7 +200,6 @@ export class TerrainObjectGeneratorComponent implements OnInit {
             terrainObjectId = terrainObjectConfig.getId();
           }
           let newTerrainObjectMesh = BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, null);
-          this.renderEngine.addShadowCaster(newTerrainObjectMesh);
           generatedTerrainObjects.generatedObjects.push({mesh: newTerrainObjectMesh, model: terrainObjectModel});
           generatedTerrainObjects.count++;
         }

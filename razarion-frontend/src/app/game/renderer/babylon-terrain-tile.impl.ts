@@ -7,7 +7,7 @@ import {
 } from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
-import {ThreeJsWaterRenderService} from "./three-js-water-render.service";
+import {BabylonWaterRenderService} from "./babylon-water-render.service";
 import {
   ActionManager,
   ExecuteCodeAction,
@@ -44,7 +44,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
               private rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
               private babylonModelService: BabylonModelService,
-              private threeJsWaterRenderService: ThreeJsWaterRenderService) {
+              private threeJsWaterRenderService: BabylonWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
 
     let actionManager = new ActionManager(rendererService.getScene());

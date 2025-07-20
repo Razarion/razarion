@@ -157,7 +157,6 @@ export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit,
                 terrainObjectId = -1;
               }
               let newTerrainObjectMesh = BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, null);
-              this.babylonRenderServiceAccess.addShadowCaster(newTerrainObjectMesh);
               this.selectActiveTerrainObject(<TransformNode>newTerrainObjectMesh, true)
             }
           }

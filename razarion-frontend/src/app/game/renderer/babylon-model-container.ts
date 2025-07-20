@@ -155,7 +155,7 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
     Object.keys(gltf.materialGltfNames).forEach((gltfMaterialName: string) => {
       let materialId = gltf.materialGltfNames[gltfMaterialName];
       let babylonMaterialEntity = this.babylonMaterialContainer.getEntity(materialId);
-      if(babylonMaterialEntity) {
+      if (babylonMaterialEntity) {
         if (babylonMaterialEntity.overrideAlbedoTextureNode
           || babylonMaterialEntity.overrideMetallicTextureNode
           || babylonMaterialEntity.overrideBumpTextureNode

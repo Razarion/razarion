@@ -97,7 +97,6 @@ export class GameComponent implements OnInit {
 
   private startGame(): void {
     GameComponent.insertGameScript('window.RAZ_startTime = new Date().getTime();');
-    // TODO GameComponent.insertMeta('gwt:property', "locale=" + this.frontendService.getLanguage());
     GameComponent.loadGameScriptUrl('/NativeRazarion.js');
     GameComponent.loadGameScriptUrl('/com.btxtech.client.RazarionClient/com.btxtech.client.RazarionClient.nocache.js');
   }
@@ -125,13 +124,6 @@ export class GameComponent implements OnInit {
     scriptObject.type = 'text/javascript';
     scriptObject.charset = 'utf-8';
     document.getElementsByTagName('head')[0].appendChild(scriptObject);
-  }
-
-  private static insertMeta(name: string, content: string) {
-    let meta = document.createElement('meta');
-    meta.name = name;
-    meta.content = content;
-    document.getElementsByTagName('head')[0].appendChild(meta);
   }
 
   getGameComponent(): GameComponent {

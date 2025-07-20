@@ -47,7 +47,7 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
     }
 
     @RolesAllowed(Roles.ADMIN)
-    @PostMapping(value = "upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "upload/{id}", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void uploadData(@PathVariable("id") int id, @RequestBody byte[] data) {
         babylonMaterialPersistence.setData(id, data);
     }

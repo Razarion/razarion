@@ -59,9 +59,6 @@ export class BabylonItemImpl implements BabylonItem {
     }
     this.container.parent = parent;
     this.container.name = `${itemType.getInternalName()} '${id}')`;
-    this.container.getChildMeshes().forEach(childMesh => {
-      rendererService.shadowGenerator.addShadowCaster(childMesh, true);
-    });
 
     let actionManager = new ActionManager(rendererService.getScene());
     actionManager.registerAction(
@@ -150,9 +147,6 @@ export class BabylonItemImpl implements BabylonItem {
       this.disposeCallback();
     }
     this.actionService.removeCursorHandler(this.itemCursorTypeHandler);
-    this.container.getChildMeshes().forEach(childMesh => {
-      this.rendererService.shadowGenerator.removeShadowCaster(childMesh, true);
-    });
     this.rendererService.getScene().removeTransformNode(this.container);
     this.container.dispose();
   }
