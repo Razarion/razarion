@@ -23,6 +23,7 @@ import {
   AbstractMesh,
   Color3,
   CubeTexture,
+  DirectionalLight,
   Engine,
   FreeCamera,
   InputBlock,
@@ -37,6 +38,7 @@ import {
   Quaternion,
   Ray,
   Scene,
+  ShadowGenerator,
   Texture,
   Tools,
   TransformNode,
@@ -80,6 +82,8 @@ export enum RazarionMetadataType {
 export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAccess {
   private scene!: Scene;
   private engine!: Engine;
+  public shadowGenerator!: ShadowGenerator;
+  private directionalLight!: DirectionalLight
   private camera!: FreeCamera;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
@@ -178,6 +182,18 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.camera = new FreeCamera("Camera", new Vector3(0, 30, -35), this.scene);
     this.camera.maxZ = 800;
     this.camera.setTarget(new Vector3(0, 0, 0));
+
+    // ----- Light -----
+    const lightDirection = new Vector3(-3, -10, 3);
+    this.directionalLight = new DirectionalLight("DirectionalLight", lightDirection, this.scene);
+    this.directionalLight.intensity = 1;
+    this.directionalLight.autoCalcShadowZBounds = true;
+    this.directionalLight.diffuse = new Color3(1, 1, 1);
+    this.directionalLight.specular = new Color3(1, 1, 1);
+
+    this.shadowGenerator = new ShadowGenerator(4096, this.directionalLight);
+    this.shadowGenerator.useExponentialShadowMap = true;
+    this.shadowGenerator.darkness = 0.6;
 
     // ----- Resize listener -----
     new ResizeObserver(entries => {
@@ -286,13 +302,20 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.canvas = canvas;
     this.engine = new Engine(this.canvas)
     this.scene = new Scene(this.engine);
-    this.scene.environmentTexture = new CubeTexture("renderer/golden_gate_hills_4k.env", this.scene);
+    this.scene.environmentTexture = CubeTexture.CreateFromImages([
+      "renderer/env/px.jpg", // +X
+      "renderer/env/py.jpg", // +Y
+      "renderer/env/pz.jpg", // +Z
+      "renderer/env/nx.jpg", // -X
+      "renderer/env/ny.jpg", // -Y
+      "renderer/env/nz.jpg", // -Z
+    ], this.scene);
     this.scene.createDefaultEnvironment({
       createSkybox: false,
       createGround: false,
 
     });
-    this.scene.environmentIntensity = 0.8;
+    this.scene.environmentIntensity = 1.0;
     this.babylonModelService.setScene(this.scene);
     this.baseItemContainer = new TransformNode("Base items");
     this.resourceItemContainer = new TransformNode("Resource items");
@@ -367,12 +390,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.setupZeroLevelPosition(0, 0, Matrix.Invert(this.camera.getTransformationMatrix()));
   }
 
-  addTerrainTileToScene(transformNode: TransformNode): void {
-    this.scene.addTransformNode(transformNode);
+  addTerrainTileToScene(terrainTile: BabylonTerrainTileImpl): void {
+    this.scene.addTransformNode(terrainTile.container);
+    terrainTile.addShadowCasters((mesh: AbstractMesh) => this.shadowGenerator.addShadowCaster(mesh, true));
   }
 
-  removeTerrainTileFromScene(transformNode: TransformNode): void {
-    this.scene.removeTransformNode(transformNode);
+  removeTerrainTileFromScene(terrainTile: BabylonTerrainTileImpl): void {
+    this.scene.removeTransformNode(terrainTile.container);
+    terrainTile.removeShadowCasters((mesh: AbstractMesh) => this.shadowGenerator.removeShadowCaster(mesh, true));
   }
 
   getScene(): Scene {

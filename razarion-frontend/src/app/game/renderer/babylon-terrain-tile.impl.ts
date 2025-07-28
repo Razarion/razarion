@@ -24,6 +24,7 @@ import {Nullable} from "@babylonjs/core/types";
 import {ActionService, SelectionInfo} from "../action.service";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import {GwtInstance} from "src/app/gwtangular/GwtInstance";
+import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // See: GWT Java Code TerrainUtil
@@ -35,7 +36,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly HEIGHT_MIN = -200;
   static readonly WATER_LEVEL = 0;
   static readonly HEIGHT_DEFAULT = 0.5;
-  private readonly container: TransformNode;
+  public readonly container: TransformNode;
+  public readonly shadowCasterObjects: TransformNode[] = []
+  private shadowCaster?: ((mesh: AbstractMesh) => void) | null = null;
   private cursorTypeHandler: (selectionInfo: SelectionInfo) => void;
   private groundMesh: Mesh;
 
@@ -122,7 +125,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           throw new Error(`TerrainObjectConfig has no model3DId: ${terrainObjectConfig.toString()}`);
         }
         terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
-          this.createTerrainObject(terrainObjectConfig, terrainObjectModel)
+          this.createTerrainObject(terrainObjectConfig, terrainObjectModel, terrainObjectConfig.getRadius() > 0)
         });
       } catch (error) {
         console.error(terrainTileObjectList);
@@ -131,10 +134,14 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     });
   }
 
-  private createTerrainObject(terrainObjectConfig: TerrainObjectConfig, terrainObjectModel: TerrainObjectModel): void {
+  private createTerrainObject(terrainObjectConfig: TerrainObjectConfig, terrainObjectModel: TerrainObjectModel, castShadow: boolean): void {
     try {
       setTimeout(() => {
-        BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, this.container);
+        let terrainObject = BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, this.container);
+        if (castShadow && this.shadowCaster) {
+          this.shadowCasterObjects.push(terrainObject);
+          terrainObject.getChildMeshes().forEach(mesh => this.shadowCaster!(mesh))
+        }
       }, 1);
     } catch (error) {
       console.error(error);
@@ -183,11 +190,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   addToScene(): void {
-    this.rendererService.addTerrainTileToScene(this.container);
+    this.rendererService.addTerrainTileToScene(this);
   }
 
   removeFromScene(): void {
-    this.rendererService.removeTerrainTileFromScene(this.container);
+    this.rendererService.removeTerrainTileFromScene(this);
     // TODO this.actionService.removeCursorHandler(this.cursorTypeHandler);
   }
 
@@ -199,6 +206,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const indices = [];
     const positions = [];
     const normals = [];
+    const uvs = [];
+
     let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     let xOffset = this.terrainTile.getIndex().getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
@@ -213,6 +222,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           BabylonTerrainTileImpl.setupHeight(index, groundHeightMap),
           y * BabylonTerrainTileImpl.NODE_SIZE + yOffset);
         normals.push(0, 0, 0);
+        uvs.push(x / xCount, 1.0 - y / yCount);
       }
     }
 
@@ -241,6 +251,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     vertexData.indices = indices;
     vertexData.positions = positions;
     vertexData.normals = normals;
+    vertexData.uvs = uvs;
 
     return vertexData;
   }
@@ -266,4 +277,17 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     return Math.round(value * 10) / 10
   }
 
+  addShadowCasters(shadowCaster: (mesh: AbstractMesh) => void) {
+    this.shadowCasterObjects.forEach(node => {
+      node.getChildMeshes().forEach(mesh => shadowCaster(mesh))
+    });
+    this.shadowCaster = shadowCaster;
+  }
+
+  removeShadowCasters(shadowCaster: (mesh: AbstractMesh) => void) {
+    this.shadowCasterObjects.forEach(node => {
+      node.getChildMeshes().forEach(mesh => shadowCaster(mesh))
+    });
+    this.shadowCaster = null;
+  }
 }
