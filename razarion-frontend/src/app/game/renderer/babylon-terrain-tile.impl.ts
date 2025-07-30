@@ -72,7 +72,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     actionService.addCursorHandler(this.cursorTypeHandler);
 
     this.groundMesh = new Mesh("Ground", rendererService.getScene());
-    let vertexData = this.createVertexData(terrainTile.getGroundHeightMap());
+    let uv2GroundHeightMap: number[] = [];
+    let vertexData = this.createVertexData(terrainTile.getGroundHeightMap(), uv2GroundHeightMap);
     vertexData.applyToMesh(this.groundMesh, true);
     this.container.getChildren().push(this.groundMesh);
     this.groundMesh.receiveShadows = true;
@@ -84,7 +85,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
-    this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container);
+    this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container, uv2GroundHeightMap, this.rendererService);
 
     if (terrainTile.getTerrainTileObjectLists()) {
       this.setupTerrainTileObjects(terrainTile.getTerrainTileObjectLists());
@@ -202,7 +203,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     return this.groundMesh;
   }
 
-  private createVertexData(groundHeightMap: Uint16Array): VertexData {
+  private createVertexData(groundHeightMap: Uint16Array, uv2GroundHeightMap: number[]): VertexData {
     const indices = [];
     const positions = [];
     const normals = [];
@@ -223,6 +224,13 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           y * BabylonTerrainTileImpl.NODE_SIZE + yOffset);
         normals.push(0, 0, 0);
         uvs.push(x / xCount, 1.0 - y / yCount);
+
+
+        const invertedY = xCount - y - 1;
+        const index2 = x + invertedY * xCount;
+        const groundHeight = BabylonTerrainTileImpl.setupHeight(index2, groundHeightMap);
+
+        uv2GroundHeightMap.push(groundHeight, 0);
       }
     }
 

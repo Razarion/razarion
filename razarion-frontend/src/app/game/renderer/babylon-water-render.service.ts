@@ -1,8 +1,11 @@
 import {Injectable} from "@angular/core";
 import {GroundConfig, Index} from "../../gwtangular/GwtAngularFacade";
-import {MeshBuilder, NodeMaterial, TransformNode} from "@babylonjs/core";
+import {CubeTexture, MeshBuilder, NodeMaterial, TransformNode, VertexBuffer} from "@babylonjs/core";
 import {BabylonModelService} from "./babylon-model.service";
 import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
+import type {FloatArray} from '@babylonjs/core/types';
+import {ReflectionTextureBaseBlock} from '@babylonjs/core/Materials/Node/Blocks/Dual/reflectionTextureBaseBlock';
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +14,7 @@ export class BabylonWaterRenderService {
   constructor(private babylonModelService: BabylonModelService) {
   }
 
-  public setup(index: Index, groundConfig: GroundConfig, container: TransformNode): void {
+  public setup(index: Index, groundConfig: GroundConfig, container: TransformNode, uv2GroundHeightMap: FloatArray, rendererService: BabylonRenderServiceAccessImpl): void {
     const water = MeshBuilder.CreateGround("Water", {
       width: BabylonTerrainTileImpl.NODE_X_COUNT,
       height: BabylonTerrainTileImpl.NODE_Y_COUNT,
@@ -20,7 +23,16 @@ export class BabylonWaterRenderService {
 
     water.material = this.babylonModelService.getBabylonMaterial(groundConfig.getWaterBabylonMaterialId());
     (<NodeMaterial>water.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
+    (<ReflectionTextureBaseBlock>(<NodeMaterial>water.material).getBlockByName("Reflection")).texture = CubeTexture.CreateFromImages([
+      "renderer/env/clouds.jpg", // +X
+      "renderer/env/clouds.jpg", // +Y
+      "renderer/env/clouds.jpg", // +Z
+      "renderer/env/clouds.jpg", // -X
+      "renderer/env/clouds.jpg", // -Y
+      "renderer/env/clouds.jpg", // -Z
+    ], rendererService.getScene());
 
+    water.setVerticesData(VertexBuffer.UV2Kind, uv2GroundHeightMap)
     water.receiveShadows = true;
     water.parent = container;
     water.position.x = index.getX() * BabylonTerrainTileImpl.NODE_X_COUNT + BabylonTerrainTileImpl.NODE_X_COUNT / 2;
