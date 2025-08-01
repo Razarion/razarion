@@ -187,7 +187,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     const lightDirection = new Vector3(-3, -10, 3);
     this.directionalLight = new DirectionalLight("DirectionalLight", lightDirection, this.scene);
     this.directionalLight.intensity = 1;
-    this.directionalLight.autoCalcShadowZBounds = true;
+    this.directionalLight.shadowMinZ = -55;
+    this.directionalLight.shadowMaxZ = 100;
     this.directionalLight.diffuse = new Color3(1, 1, 1);
     this.directionalLight.specular = new Color3(1, 1, 1);
 
