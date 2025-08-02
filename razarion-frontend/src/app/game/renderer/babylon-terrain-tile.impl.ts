@@ -1,5 +1,7 @@
 import {
+  BabylonDecal,
   BabylonTerrainTile,
+  Index,
   TerrainObjectConfig,
   TerrainObjectModel,
   TerrainTile,
@@ -12,9 +14,10 @@ import {
   ActionManager,
   ExecuteCodeAction,
   Mesh,
-  MeshBuilder,
   Node,
+  NodeMaterial,
   Ray,
+  Texture,
   TransformNode,
   Vector3,
   VertexData
@@ -23,8 +26,8 @@ import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-re
 import {Nullable} from "@babylonjs/core/types";
 import {ActionService, SelectionInfo} from "../action.service";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
-import {GwtInstance} from "src/app/gwtangular/GwtInstance";
 import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
+import {TextureBlock} from '@babylonjs/core/Materials/Node/Blocks/Dual/textureBlock';
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // See: GWT Java Code TerrainUtil
@@ -81,7 +84,14 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.groundMesh.actionManager = actionManager;
 
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
-    this.groundMesh!.material = babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
+    let groundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
+    groundMaterial = groundMaterial!.clone(`Clone of ${groundMaterial.name} `);
+    const textureBlock = <TextureBlock>groundMaterial.getBlockByName("TerrainUtility");
+    if (textureBlock) {
+      textureBlock.texture = this.createBotTerrainUtilityTexture(terrainTile.getBabylonDecals(), terrainTile.getIndex());
+      groundMaterial.build()
+    }
+    this.groundMesh!.material = groundMaterial;
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
@@ -92,30 +102,6 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
 
     this.cursorTypeHandler(actionService.setupSelectionInfo());
-
-    if (terrainTile.getBabylonDecals()) {
-      terrainTile.getBabylonDecals().forEach(babylonDecal => {
-        const material = this.babylonModelService.getBabylonMaterial(babylonDecal.babylonMaterialId);
-
-        let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(babylonDecal.xPos, babylonDecal.yPos));
-        if (pickingInfo && pickingInfo.hit) {
-          const decal = MeshBuilder.CreateDecal("Bot ground", this.groundMesh, {
-            position: pickingInfo!.pickedPoint!,
-            size: new Vector3(babylonDecal.ySize, babylonDecal.xSize, 10),
-            normal: new Vector3(0, 1, 0)
-          });
-          decal.material = material;
-          decal.material.zOffset = -2
-          decal.setParent(this.groundMesh);
-          decal.receiveShadows = true;
-          decal.actionManager = actionManager;
-          BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(decal, RazarionMetadataType.GROUND, undefined, undefined);
-        } else {
-          console.warn(`Can not create BabylonDecals ${babylonDecal}`)
-        }
-
-      });
-    }
   }
 
   private setupTerrainTileObjects(terrainTileObjectLists: TerrainTileObjectList[]): void {
@@ -297,5 +283,27 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       node.getChildMeshes().forEach(mesh => shadowCaster(mesh))
     });
     this.shadowCaster = null;
+  }
+
+  private createBotTerrainUtilityTexture(babylonDecals: BabylonDecal[], index: Index): Texture {
+    const factor = 4;
+    const canvas = document.createElement('canvas');
+    canvas.width = BabylonTerrainTileImpl.NODE_X_COUNT * factor;
+    canvas.height = BabylonTerrainTileImpl.NODE_Y_COUNT * factor;
+    const context = canvas.getContext('2d')!;
+
+    context.fillStyle = "rgba(255, 0, 0, 0.5)";
+
+    if (babylonDecals) {
+      babylonDecals.forEach((babylonDecal) => {
+        context.fillRect(
+          babylonDecal.xPos * factor - index.getX() * 160 * factor,
+          babylonDecal.yPos * factor - index.getY() * 160 * factor,
+          babylonDecal.xSize * factor,
+          babylonDecal.ySize * factor);
+      });
+    }
+
+    return new Texture(canvas.toDataURL(), this.rendererService.getScene());
   }
 }

@@ -17,8 +17,10 @@ import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -120,14 +122,19 @@ public class TerrainShapeManagerSetup {
     public void processBotDecals(List<BabylonDecal> babylonDecals) {
         MapList<Index, NativeBabylonDecal> tileDecals = new MapList<>();
         babylonDecals.forEach(babylonDecal -> {
-            Index tileIndex = terrainPositionToTileIndex(new DecimalPosition(babylonDecal.xPos, babylonDecal.yPos));
+            Set<Index> tileIndices = new HashSet<>();
+            tileIndices.add(terrainPositionToTileIndex(new DecimalPosition(babylonDecal.xPos, babylonDecal.yPos)));
+            tileIndices.add(terrainPositionToTileIndex(new DecimalPosition(babylonDecal.xPos + babylonDecal.xSize, babylonDecal.yPos)));
+            tileIndices.add(terrainPositionToTileIndex(new DecimalPosition(babylonDecal.xPos + babylonDecal.xSize, babylonDecal.yPos + babylonDecal.ySize)));
+            tileIndices.add(terrainPositionToTileIndex(new DecimalPosition(babylonDecal.xPos, babylonDecal.yPos + babylonDecal.ySize)));
+
             NativeBabylonDecal nativeBabylonDecal = new NativeBabylonDecal();
             nativeBabylonDecal.babylonMaterialId = babylonDecal.babylonMaterialId;
             nativeBabylonDecal.xPos = babylonDecal.xPos;
             nativeBabylonDecal.yPos = babylonDecal.yPos;
             nativeBabylonDecal.xSize = babylonDecal.xSize;
             nativeBabylonDecal.ySize = babylonDecal.ySize;
-            tileDecals.put(tileIndex, nativeBabylonDecal);
+            tileIndices.forEach(tileIndex -> tileDecals.put(tileIndex, nativeBabylonDecal));
         });
 
         tileDecals.getMap().forEach((tileIndex, nativeBabylonDecals) -> {

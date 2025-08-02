@@ -45,13 +45,13 @@ public class BotService {
                     if (placeConfig.getPolygon2D() != null) {
                         Rectangle2D aabb = placeConfig.getPolygon2D().toAabb();
                         babylonDecals.add(createBaseBabylonDecal(botConfig,
-                                aabb.center(),
+                                aabb.getStart(),
                                 aabb.width(),
                                 aabb.height()));
                     } else if (placeConfig.getPosition() != null) {
                         if (placeConfig.getRadius() != null) {
                             babylonDecals.add(createBaseBabylonDecal(botConfig,
-                                    placeConfig.getPosition(),
+                                    placeConfig.getPosition().add(placeConfig.getRadius(), placeConfig.getRadius()),
                                     placeConfig.getRadius() * 2,
                                     placeConfig.getRadius() * 2));
                         }
@@ -65,11 +65,11 @@ public class BotService {
         return babylonDecals;
     }
 
-    private static BabylonDecal createBaseBabylonDecal(BotConfig botConfig, DecimalPosition center, double width, double height) {
+    private static BabylonDecal createBaseBabylonDecal(BotConfig botConfig, DecimalPosition start, double width, double height) {
         BabylonDecal babylonDecal = new BabylonDecal();
         babylonDecal.babylonMaterialId = botConfig.getGroundBabylonMaterialId();
-        babylonDecal.xPos = center.getX();
-        babylonDecal.yPos = center.getY();
+        babylonDecal.xPos = start.getX();
+        babylonDecal.yPos = start.getY();
         babylonDecal.xSize = width;
         babylonDecal.ySize = height;
         return babylonDecal;
