@@ -405,7 +405,7 @@ export class GameMockService {
   private simulateStartup() {
     // this.showLoading();
 
-    // this.showUi();
+    this.showUi();
 
     // setInterval(() => {
     //   // this.gwtAngularService.gwtAngularFacade.modelDialogPresenter.showLevelUp();
@@ -413,7 +413,7 @@ export class GameMockService {
     // }, 3000)
     // this.showUi();
 
-    this.showEditor();
+    // this.showEditor();
   }
 
   private showLoading() {

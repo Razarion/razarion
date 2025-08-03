@@ -19,7 +19,7 @@ import {DrawerModule} from 'primeng/drawer';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
 import {InventoryComponent} from './inventory/inventory.component';
 import {UnlockComponent} from './unlock/unlock.component';
-import {AuthService} from '../auth/auth.service';
+import {UserService} from '../auth/user.service';
 
 
 @Component({
@@ -63,13 +63,13 @@ export class GameComponent implements OnInit {
               private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
               private gameMockService: GameMockService,
               private actionService: ActionService,
-              private authService: AuthService,
+              private userService: UserService,
               private zone: NgZone) {
     this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, gwtAngularService);
   }
 
   ngOnInit(): void {
-    this.authService.checkToken()
+    this.userService.checkToken()
       .then(() => {
         this.initAndStart();
       });
@@ -89,7 +89,7 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.babylonRenderServiceAccessImpl.createBaseItemPlacerPresenter();
 
     if (environment.gwtMock) {
-      this.gameMockService.startGame(true, this);
+      this.gameMockService.startGame(false, this);
     } else {
       this.startGame();
     }

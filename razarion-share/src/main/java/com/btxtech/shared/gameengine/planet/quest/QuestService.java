@@ -359,14 +359,4 @@ public class QuestService {
             });
         }
     }
-
-    public void updateUserId(String userId) {
-        synchronized (progressMap) {
-            AbstractConditionProgress abstractConditionProgress = progressMap.remove(userId);
-            if (abstractConditionProgress != null) {
-                abstractConditionProgress.setUserId(userId);
-                progressMap.put(userId, abstractConditionProgress);
-            }
-        }
-    }
 }

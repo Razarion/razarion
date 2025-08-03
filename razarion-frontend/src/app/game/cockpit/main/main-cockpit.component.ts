@@ -1,9 +1,8 @@
 ﻿import {Component, NgZone} from '@angular/core';
-import {MainCockpit, RadarState, Rectangle} from "../../../gwtangular/GwtAngularFacade";
+import {MainCockpit, RadarState} from "../../../gwtangular/GwtAngularFacade";
 import {GameComponent} from '../../game.component';
 import {Nullable, Observer, PointerEventTypes, PointerInfo} from '@babylonjs/core';
 import {BabylonRenderServiceAccessImpl} from '../../renderer/babylon-render-service-access-impl.service';
-import {Router} from '@angular/router';
 import {Button} from 'primeng/button';
 import {RadarComponent} from './radar/radar.component';
 import {RadarNoPowerComponent} from './radar/radar-no-power.component';
@@ -18,8 +17,10 @@ import {TooltipModule} from 'primeng/tooltip';
 import {FormsModule} from '@angular/forms';
 import {Dialog} from 'primeng/dialog';
 import {LoginComponent} from '../../../auth/login/login.component';
-import {AuthService} from '../../../auth/auth.service';
+import {UserService} from '../../../auth/user.service';
 import {UserComponent} from '../../../auth/user/user.component';
+import {RegisterComponent} from '../../../auth/register/register.component';
+import {MainCockpitService} from './main-cockpit.service';
 
 
 @Component({
@@ -40,7 +41,8 @@ import {UserComponent} from '../../../auth/user/user.component';
     FormsModule,
     Dialog,
     LoginComponent,
-    UserComponent
+    UserComponent,
+    RegisterComponent
   ],
   styleUrls: ['main-cockpit.component.scss']
 })
@@ -58,14 +60,13 @@ export class MainCockpitComponent implements MainCockpit {
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
   blinkUnlockEnabled = false;
-  showLoginDialog = false;
-  showUserDialog = false;
 
-  constructor(private zone: NgZone,
+  constructor(public mainCockpitService: MainCockpitService,
+              private zone: NgZone,
               private cockpitDisplayService: CockpitDisplayService,
               private gameComponent: GameComponent,
               private renderService: BabylonRenderServiceAccessImpl,
-              private authService: AuthService) {
+              private userService: UserService) {
   }
 
   show(): void {
@@ -135,11 +136,11 @@ export class MainCockpitComponent implements MainCockpit {
   }
 
   isLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
+    return this.userService.isLoggedIn();
   }
 
   isAdmin(): boolean {
-    return this.authService.isAdmin();
+    return this.userService.isAdmin();
   }
 
   onShowCursorPosition(): void {

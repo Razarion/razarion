@@ -1,5 +1,10 @@
 import {Injectable} from '@angular/core';
-import {AuthControllerClient, HttpClient as HttpClientAdapter, RestResponse} from '../generated/razarion-share';
+import {
+  HttpClient as HttpClientAdapter,
+  RegisterResult,
+  RestResponse,
+  UserControllerClient
+} from '../generated/razarion-share';
 import {HttpClient} from '@angular/common/http';
 import {jwtDecode, JwtPayload} from 'jwt-decode';
 import {TypescriptGenerator} from '../backend/typescript-generator';
@@ -8,20 +13,19 @@ import {Router} from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
-  private authControllerClient: AuthControllerClient;
-
+export class UserService {
+  private userControllerClient: UserControllerClient;
 
   constructor(private httpClient: HttpClient,
               private router: Router) {
-    this.authControllerClient = new AuthControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
+    this.userControllerClient = new UserControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
   public checkToken(): Promise<void> {
     if (this.getAppToken() === null) {
       return Promise.resolve();
     }
-    return this.authControllerClient.checkToken()
+    return this.userControllerClient.checkToken()
       .then(() => {
         return Promise.resolve();
       })
@@ -74,12 +78,11 @@ export class AuthService {
     return (<JwtPayload>jwtDecode<JwtPayload>(localStorage.getItem("app.token")!)).sub || "<unknown>";
   }
 
-  login(username: string, password: string): Promise<string> {
+  login(username: string, password: string): Promise<void> {
     this.logout();
 
     const httpClient = this.httpClient;
-    let authController = new AuthControllerClient(new class implements HttpClientAdapter {
-
+    let userController = new UserControllerClient(new class implements HttpClientAdapter {
         request<R>(requestConfig: {
           method: string;
           url: string;
@@ -96,8 +99,8 @@ export class AuthService {
               body: requestConfig.data
             };
             httpClient.request(requestConfig.method, "/" + requestConfig.url, httpOptions).subscribe({
-              next: (objectNameIds: any) => {
-                resolve(objectNameIds);
+              next: (token: any) => {
+                resolve(token);
               },
               error: (err: any) => {
                 console.log(err);
@@ -109,11 +112,17 @@ export class AuthService {
       }
     );
 
-    return authController.auth()
+    return userController.auth().then(token => {
+      localStorage.setItem("app.token", token);
+    })
   }
 
   logout() {
     localStorage.removeItem("app.token");
     localStorage.removeItem("app.roles");
+  }
+
+  register(email: string, password: string): Promise<RegisterResult> {
+    return this.userControllerClient.registerByEmail({email, password});
   }
 }

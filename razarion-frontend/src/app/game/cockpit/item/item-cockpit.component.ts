@@ -20,7 +20,7 @@ import {NgIf} from '@angular/common';
 import {Carousel} from 'primeng/carousel';
 import {Button} from 'primeng/button';
 import {CockpitDisplayService} from '../cockpit-display.service';
-import {AuthService} from '../../../auth/auth.service';
+import {UserService} from '../../../auth/user.service';
 import {Popover, PopoverModule} from 'primeng/popover';
 import {TipService} from '../../tip/tip.service';
 
@@ -48,7 +48,7 @@ export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit,
 
   constructor(private zone: NgZone,
               private cockpitDisplayService: CockpitDisplayService,
-              private authService: AuthService,
+              private userService: UserService,
               private tipService: TipService) {
   }
 
@@ -61,7 +61,7 @@ export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit,
   }
 
   isAdmin(): boolean {
-    return this.authService.isAdmin();
+    return this.userService.isAdmin();
   }
 
   displayOwnSingleType(count: number, ownItemCockpit: OwnItemCockpit): void {

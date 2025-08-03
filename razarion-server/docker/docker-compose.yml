@@ -37,3 +37,10 @@ services:
     restart: always
     ports:
       - "27017:27017"
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "1025:1025"   # SMTP port
+      - "8025:8025"   # Web UI http://localhost:8025/#

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {AuthService} from '../auth.service';
+import {UserService} from '../user.service';
 import {Button} from 'primeng/button';
 import {Router} from '@angular/router';
 
@@ -9,15 +9,15 @@ import {Router} from '@angular/router';
   templateUrl: './user.component.html'
 })
 export class UserComponent {
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(private userService: UserService, private router: Router) {
   }
 
   logout() {
-    this.authService.logout();
+    this.userService.logout();
     this.router.navigate(['invalid-token']);
   }
 
   getUserName(): string {
-    return this.authService.getUserName();
+    return this.userService.getUserName();
   }
 }

@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
 import {MessageService} from 'primeng/api';
-import {AuthService} from '../auth.service';
+import {UserService} from '../user.service';
 import {FormsModule} from '@angular/forms';
 import {Button} from 'primeng/button';
-import {Router} from '@angular/router';
+import {MainCockpitService} from '../../game/cockpit/main/main-cockpit.service';
 
 @Component({
   selector: 'login',
@@ -19,14 +19,14 @@ export class LoginComponent {
   password: string = "";
   message: string = "";
 
-  constructor(private authService: AuthService,
+  constructor(private mainCockpitService: MainCockpitService,
+              private serviceService: UserService,
               private messageService: MessageService) {
   }
 
   public login(): void {
-    this.authService.login(this.username, this.password)
-      .then((token) => {
-        localStorage.setItem("app.token", token);
+    this.serviceService.login(this.username, this.password)
+      .then(() => {
         window.location.replace("/game");
       })
       .catch((error) => {
@@ -38,4 +38,8 @@ export class LoginComponent {
       })
   }
 
+  onRegister() {
+    this.mainCockpitService.showLoginDialog = false;
+    this.mainCockpitService.showRegisterDialog = true;
+  }
 }

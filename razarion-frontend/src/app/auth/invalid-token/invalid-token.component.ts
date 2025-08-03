@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {LoginComponent} from "../login/login.component";
 import {Button} from "primeng/button";
-import {AuthService} from '../auth.service';
+import {UserService} from '../user.service';
 
 @Component({
   selector: 'invalid-token',
@@ -12,11 +12,11 @@ import {AuthService} from '../auth.service';
   templateUrl: './invalid-token.component.html'
 })
 export class InvalidTokenComponent {
-  constructor(private authService: AuthService) {
+  constructor(private userService: UserService) {
   }
 
   signOutAndPlayGuast() {
-    this.authService.logout();
+    this.userService.logout();
     window.location.replace("/game");
   }
 

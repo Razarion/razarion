@@ -27,13 +27,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "RAZARION_USER")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(length = 190)
-    private String email; // Should not be used for facebook email
+    private String email;
     @Column(length = 190)
     private String passwordHash;
     @Column(columnDefinition = "DATETIME(3)")
@@ -60,19 +60,19 @@ public class UserEntity {
     private QuestConfigEntity activeQuest;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "USER_COMPLETED_QUEST",
-            joinColumns = @JoinColumn(name = "user"),
+            joinColumns = @JoinColumn(name = "razarion-user"),
             inverseJoinColumns = @JoinColumn(name = "quest"))
     private List<QuestConfigEntity> completedQuest;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "USER_INVENTORY",
-            joinColumns = @JoinColumn(name = "user"),
+            joinColumns = @JoinColumn(name = "razarion-user"),
             inverseJoinColumns = @JoinColumn(name = "inventory"))
     private List<InventoryItemEntity> inventory;
     private int xp;
     private int crystals;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "USER_UNLOCKED",
-            joinColumns = @JoinColumn(name = "user"),
+            joinColumns = @JoinColumn(name = "razarion-user"),
             inverseJoinColumns = @JoinColumn(name = "levelUnlockEntity"))
     private List<LevelUnlockEntity> levelUnlockEntities;
     @Column(unique = true)
@@ -92,13 +92,12 @@ public class UserEntity {
         this.userId = userId;
     }
 
-    /**
-     * Should not be used for facebook email
-     *
-     * @return non facebook email
-     */
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPasswordHash() {
@@ -270,15 +269,6 @@ public class UserEntity {
     public void startVerification() {
         verificationStartedDate = new Date();
         verificationId = UUID.randomUUID().toString().toUpperCase();
-    }
-
-    /**
-     * Only used in test
-     *
-     * @param verificationStartedDate date
-     */
-    public void setVerificationStartedDate(Date verificationStartedDate) {
-        this.verificationStartedDate = verificationStartedDate;
     }
 
     public void setVerifiedDone() {

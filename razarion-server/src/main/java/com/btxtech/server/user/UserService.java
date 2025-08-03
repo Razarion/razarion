@@ -9,8 +9,10 @@ import com.btxtech.server.repository.UserRepository;
 import com.btxtech.server.service.engine.LevelCrudService;
 import com.btxtech.server.service.engine.QuestConfigService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
+import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
+import com.btxtech.server.model.RegisterResult;
 import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -61,6 +63,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final ServerGameEngineService serverGameEngineCrudPersistence;
     private final QuestConfigService questConfigService;
+    private final RegisterService registerService;
     @Autowired
     @Lazy
     private BaseItemService baseItemService;
@@ -68,11 +71,13 @@ public class UserService implements UserDetailsService {
     public UserService(LevelCrudService levelCrudPersistence,
                        UserRepository userRepository,
                        ServerGameEngineService serverGameEngineCrudPersistence,
-                       QuestConfigService questConfigService) {
+                       QuestConfigService questConfigService,
+                       RegisterService registerService) {
         this.levelCrudPersistence = levelCrudPersistence;
         this.userRepository = userRepository;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
         this.questConfigService = questConfigService;
+        this.registerService = registerService;
     }
 
     public static Authentication removeAnonymousAuthentication(Authentication authentication) {
@@ -375,6 +380,49 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public RegisterResult registerByEmail(String email, String password) {
+        if (email == null || email.isEmpty()) {
+            return RegisterResult.INVALID_EMAIL;
+        }
+        if (password == null || password.isEmpty()) {
+            return RegisterResult.INVALID_PASSWORD;
+        }
+        var userId = getOrCreateUserIdFromContext();
+        var userEntity = userRepository.findByUserId(userId).orElseThrow();
+        if (userEntity.getEmail() != null) {
+            logger.warn("User hase already an email. UserId {} email {}", userId, email);
+        }
+        ErrorResult errorResult = verifyEmail(email);
+        if (errorResult != null) {
+            switch (errorResult) {
+                case TO_SHORT:
+                    return RegisterResult.INVALID_EMAIL;
+                case ALREADY_USED:
+                    return RegisterResult.EMAIL_ALREADY_USED;
+                case UNKNOWN_ERROR:
+                    return RegisterResult.UNKNOWN_ERROR;
+                default:
+                    logger.warn("verifyEmail(email): {}. Unknown result: {}", email, errorResult);
+            }
+        }
+        // TODO historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
+        userEntity.setEmail(email);
+        registerService.startEmailVerifyingProcess(userEntity);
+        userRepository.save(userEntity);
+        return RegisterResult.OK;
+    }
+
+    @Transactional
+    public ErrorResult verifyEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return ErrorResult.TO_SHORT;
+        }
+        return userRepository.findByEmail(email)
+                .map(userEntity -> ErrorResult.ALREADY_USED)
+                .orElse(null);
+    }
+
+    @Transactional
     public void mgmtDeleteUnregisteredUser(String userId) {
         userRepository.findByUserId(userId).ifPresent(userEntity -> {
             if (userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED) {
@@ -389,7 +437,7 @@ public class UserService implements UserDetailsService {
                 .stream()
                 .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
                 .forEach(userEntity -> {
-                    logger.info("Removing unregistered user startup: " + userEntity);
+                    logger.info("Removing unregistered user startup: {}", userEntity);
                     userRepository.delete(userEntity);
                 });
     }
@@ -402,7 +450,7 @@ public class UserService implements UserDetailsService {
                 .stream()
                 .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
                 .forEach(userEntity -> {
-                    logger.info("Removing user: " + userEntity);
+                    logger.info("Removing user: {}", userEntity);
                     var playerBase = baseItemService.getPlayerBase4UserId(userEntity.getUserId());
                     if (playerBase != null) {
                         baseItemService.mgmtDeleteBase(playerBase.getBaseId());

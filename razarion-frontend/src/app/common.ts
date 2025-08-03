@@ -11,15 +11,6 @@ export const WATER_EDITOR_PATH = EDITOR_PATH + '/water';
 export const PLANET_EDITOR_PATH = EDITOR_PATH + "/planet";
 export const UPDATE_MINI_MAP_IMAGE = EDITOR_PATH + "/planeteditor/updateMiniMapImage";
 
-export enum RegisterResult {
-  USER_ALREADY_LOGGED_IN = 'USER_ALREADY_LOGGED_IN',
-  INVALID_EMAIL = 'INVALID_EMAIL',
-  EMAIL_ALREADY_USED = 'EMAIL_ALREADY_USED',
-  INVALID_PASSWORD = 'INVALID_PASSWORD',
-  OK = 'OK',
-  UNKNOWN_ERROR = 'UNKNOWN_ERROR'
-}
-
 export function getImageUrl(id: number): string {
   return `${URL_IMAGE}/${id}`
 }
