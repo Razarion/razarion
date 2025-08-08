@@ -40,16 +40,9 @@ public class UserEntity {
     private Date verificationStartedDate;
     @Column(columnDefinition = "DATETIME(3)")
     private Date verificationDoneDate;
-    @Column(columnDefinition = "DATETIME(3)")
-    private Date verificationTimedOutDate;
     @Column(length = 190)
 // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String verificationId;
-    @Column(length = 190)
-// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
-    private String facebookUserId;
-    @Column(columnDefinition = "DATETIME(3)")
-    private Date registerDate;
     @Column(columnDefinition = "DATETIME(3)")
     private Date creationDate;
     private String userId;
@@ -199,8 +192,8 @@ public class UserEntity {
         inventory.remove(inventoryItemEntity);
     }
 
-    public String getFacebookUserId() {
-        return facebookUserId;
+    public Date getVerificationStartedDate() {
+        return verificationStartedDate;
     }
 
     public Date getVerificationDoneDate() {
@@ -213,10 +206,6 @@ public class UserEntity {
 
     public void setCreationDate(Date creationDateDate) {
         this.creationDate = creationDateDate;
-    }
-
-    public Date getRegisterDate() {
-        return registerDate;
     }
 
     public int getCrystals() {
@@ -268,15 +257,12 @@ public class UserEntity {
 
     public void startVerification() {
         verificationStartedDate = new Date();
+        verificationDoneDate = null;
         verificationId = UUID.randomUUID().toString().toUpperCase();
     }
 
     public void setVerifiedDone() {
         verificationDoneDate = new Date();
-    }
-
-    public void setVerifiedTimedOut() {
-        verificationTimedOutDate = new Date();
     }
 
     public boolean isVerified() {
@@ -289,16 +275,10 @@ public class UserEntity {
         return verificationId;
     }
 
-    public Date getVerificationTimedOutDate() {
-        return verificationTimedOutDate;
-    }
-
     public UserContext.RegisterState createRegisterState() {
-        if (facebookUserId != null) {
-            return UserContext.RegisterState.FACEBOOK;
-        } else if (verificationDoneDate != null) {
+        if (verificationDoneDate != null) {
             return UserContext.RegisterState.EMAIL_VERIFIED;
-        } else if (verificationStartedDate != null && verificationTimedOutDate == null) {
+        } else if (verificationStartedDate != null) {
             return UserContext.RegisterState.EMAIL_UNVERIFIED;
         } else {
             return UserContext.RegisterState.UNREGISTERED;

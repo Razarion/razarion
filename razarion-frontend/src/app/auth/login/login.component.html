@@ -18,7 +18,7 @@
     </p>
     <div class="flex justify-between">
       <p-button type="submit" label="Login" styleClass="p-button-sm"></p-button>
-      <p-button class="justify-self-end" (onClick)="onRegister()" label="Register" styleClass="p-button-sm"></p-button>
+      <p-button *ngIf="showRegister" class="justify-self-end" (onClick)="onRegister()" label="Register" styleClass="p-button-sm"></p-button>
     </div>
   </form>
 </div>

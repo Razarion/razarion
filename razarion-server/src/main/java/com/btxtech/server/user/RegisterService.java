@@ -18,7 +18,6 @@ import java.util.Map;
 
 @Service
 public class RegisterService {
-
     public static final String NO_REPLY_EMAIL = "no-reply@razarion.com";
     public static final String PERSONAL_NAME = "Razarion";
 

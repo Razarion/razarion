@@ -343,6 +343,18 @@ server.on({
   }
 });
 
+const myOpenQuests = require("./resources/myOpenQuests.json");
+
+server.on({
+  method: 'GET',
+  path: '/rest/quest-controller/readMyOpenQuests',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(myOpenQuests)
+  }
+});
+
 server.on({
   method: 'get',
   path: '*',

@@ -61,10 +61,10 @@
 </div>
 
 <p-dialog header="Login" [(visible)]="mainCockpitService.showLoginDialog">
-  <login *ngIf="mainCockpitService.showLoginDialog"></login>
+  <login *ngIf="mainCockpitService.showLoginDialog" [showRegister]="!userService.registerPending"></login>
 </p-dialog>
 
-<p-dialog header="User" [(visible)]="mainCockpitService.showUserDialog">
+<p-dialog header="User account" [(visible)]="mainCockpitService.showUserDialog">
   <user *ngIf="mainCockpitService.showUserDialog"></user>
 </p-dialog>
 

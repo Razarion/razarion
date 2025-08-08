@@ -1,19 +1,23 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {MessageService} from 'primeng/api';
 import {UserService} from '../user.service';
 import {FormsModule} from '@angular/forms';
 import {Button} from 'primeng/button';
 import {MainCockpitService} from '../../game/cockpit/main/main-cockpit.service';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'login',
   imports: [
     FormsModule,
-    Button
+    Button,
+    NgIf
   ],
   templateUrl: './login.component.html'
 })
 export class LoginComponent {
+  @Input("showRegister")
+  showRegister = false;
 
   username: string = "";
   password: string = "";
@@ -21,6 +25,7 @@ export class LoginComponent {
 
   constructor(private mainCockpitService: MainCockpitService,
               private serviceService: UserService,
+              public userService: UserService,
               private messageService: MessageService) {
   }
 

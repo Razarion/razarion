@@ -1,18 +1,41 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
+import {LoginComponent} from "../login/login.component";
+import {UserControllerClient} from '../../generated/razarion-share';
+import {HttpClient} from '@angular/common/http';
+import {TypescriptGenerator} from '../../backend/typescript-generator';
+import {NgIf} from '@angular/common';
 
 @Component({
-    selector: 'verify-email',
-    imports: [],
-    templateUrl: './verify-email.component.html'
+  selector: 'verify-email',
+  imports: [
+    LoginComponent,
+    NgIf
+  ],
+  templateUrl: './verify-email.component.html'
 })
 export class VerifyEmailComponent implements OnInit {
-    constructor(private route: ActivatedRoute) {
-    }
+  private userControllerClient: UserControllerClient;
+  successful = false;
+  failed = false;
 
-    ngOnInit(): void {
-        let verificationId = this.route.snapshot.paramMap.get('id');
-        console.log(verificationId);
+  constructor(httpClient: HttpClient, private route: ActivatedRoute) {
+    this.userControllerClient = new UserControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
+  }
+
+  ngOnInit(): void {
+    let verificationId = this.route.snapshot.paramMap.get('id');
+    if (verificationId) {
+      this.userControllerClient.verifyEmailVerificationId(verificationId).then(value => {
+        if (value) {
+          this.successful = true;
+        } else {
+          this.failed = true;
+        }
+      }).catch(e => {
+        this.failed = true;
+      })
     }
+  }
 
 }

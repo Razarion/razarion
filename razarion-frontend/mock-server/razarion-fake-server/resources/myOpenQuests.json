@@ -1,0 +1,215 @@
+[
+  {
+    "id": 358,
+    "internalName": null,
+    "xp": 5,
+    "razarion": 0,
+    "crystal": 0,
+    "tipConfig": {
+      "tipString": "BUILD",
+      "actorItemTypeId": 1
+    },
+    "conditionConfig": {
+      "conditionTrigger": "SYNC_ITEM_CREATED",
+      "comparisonConfig": {
+        "count": null,
+        "typeCount": {
+          "4": 1
+        },
+        "includeExisting": false,
+        "timeSeconds": null,
+        "placeConfig": null,
+        "botIds": null
+      }
+    }
+  },
+  {
+    "id": 359,
+    "internalName": null,
+    "xp": 5,
+    "razarion": 0,
+    "crystal": 0,
+    "tipConfig": {
+      "tipString": "FABRICATE",
+      "actorItemTypeId": 4
+    },
+    "conditionConfig": {
+      "conditionTrigger": "SYNC_ITEM_CREATED",
+      "comparisonConfig": {
+        "count": null,
+        "typeCount": {
+          "2": 1
+        },
+        "includeExisting": false,
+        "timeSeconds": null,
+        "placeConfig": null,
+        "botIds": null
+      }
+    }
+  },
+  {
+    "id": 361,
+    "internalName": "",
+    "xp": 20,
+    "razarion": 0,
+    "crystal": 0,
+    "tipConfig": null,
+    "conditionConfig": {
+      "conditionTrigger": "SYNC_ITEM_CREATED",
+      "comparisonConfig": {
+        "count": null,
+        "typeCount": {
+          "6": 1
+        },
+        "includeExisting": true,
+        "timeSeconds": null,
+        "placeConfig": null,
+        "botIds": null
+      }
+    }
+  },
+  {
+    "id": 362,
+    "internalName": "",
+    "xp": 20,
+    "razarion": 0,
+    "crystal": 0,
+    "tipConfig": null,
+    "conditionConfig": {
+      "conditionTrigger": "SYNC_ITEM_CREATED",
+      "comparisonConfig": {
+        "count": null,
+        "typeCount": {
+          "7": 1
+        },
+        "includeExisting": true,
+        "timeSeconds": null,
+        "placeConfig": null,
+        "botIds": null
+      }
+    }
+  },
+  {
+    "id": 363,
+    "internalName": "",
+    "xp": 5,
+    "razarion": 0,
+    "crystal": 0,
+    "tipConfig": {
+      "tipString": "HARVEST",
+      "actorItemTypeId": 2
+    },
+    "conditionConfig": {
+      "conditionTrigger": "HARVEST",
+      "comparisonConfig": {
+        "count": 15,
+        "typeCount": null,
+        "includeExisting": false,
+        "timeSeconds": null,
+        "placeConfig": null,
+        "botIds": null
+      }
+    }
+  },
+  {
+    "id": 364,
+    "internalName": "",
+    "xp": 10,
+    "razarion": 0,
+    "crystal": 0,
+    "tipConfig": null,
+    "conditionConfig": {
+      "conditionTrigger": "SYNC_ITEM_CREATED",
+      "comparisonConfig": {
+        "count": null,
+        "typeCount": {
+          "3": 1
+        },
+        "includeExisting": true,
+        "timeSeconds": null,
+        "placeConfig": null,
+        "botIds": null
+      }
+    }
+  },
+  {
+    "id": 365,
+    "internalName": "",
+    "xp": 15,
+    "razarion": 0,
+    "crystal": 0,
+    "tipConfig": null,
+    "conditionConfig": {
+      "conditionTrigger": "SYNC_ITEM_KILLED",
+      "comparisonConfig": {
+        "count": 1,
+        "typeCount": null,
+        "includeExisting": false,
+        "timeSeconds": null,
+        "placeConfig": null,
+        "botIds": null
+      }
+    }
+  },
+  {
+    "id": 366,
+    "internalName": "",
+    "xp": 20,
+    "razarion": 0,
+    "crystal": 0,
+    "tipConfig": null,
+    "conditionConfig": {
+      "conditionTrigger": "HARVEST",
+      "comparisonConfig": {
+        "count": 30,
+        "typeCount": null,
+        "includeExisting": false,
+        "timeSeconds": null,
+        "placeConfig": null,
+        "botIds": null
+      }
+    }
+  },
+  {
+    "id": 369,
+    "internalName": "",
+    "xp": 20,
+    "razarion": 0,
+    "crystal": 0,
+    "tipConfig": null,
+    "conditionConfig": {
+      "conditionTrigger": "SYNC_ITEM_CREATED",
+      "comparisonConfig": {
+        "count": null,
+        "typeCount": {
+          "3": 3
+        },
+        "includeExisting": true,
+        "timeSeconds": null,
+        "placeConfig": null,
+        "botIds": null
+      }
+    }
+  },
+  {
+    "id": 379,
+    "internalName": "",
+    "xp": 40,
+    "razarion": 0,
+    "crystal": 0,
+    "tipConfig": null,
+    "conditionConfig": {
+      "conditionTrigger": "SYNC_ITEM_KILLED",
+      "comparisonConfig": {
+        "count": null,
+        "typeCount": {
+          "13": 1
+        },
+        "includeExisting": true,
+        "timeSeconds": null,
+        "placeConfig": null,
+        "botIds": null
+      }
+    }
+  }
+]

@@ -1,5 +1,6 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.model.RegisterResult;
 import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.UserEntity;
 import com.btxtech.server.model.engine.LevelEntity;
@@ -12,7 +13,6 @@ import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
-import com.btxtech.server.model.RegisterResult;
 import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -32,6 +32,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -64,6 +65,7 @@ public class UserService implements UserDetailsService {
     private final ServerGameEngineService serverGameEngineCrudPersistence;
     private final QuestConfigService questConfigService;
     private final RegisterService registerService;
+    private final PasswordEncoder passwordEncoder;
     @Autowired
     @Lazy
     private BaseItemService baseItemService;
@@ -72,12 +74,14 @@ public class UserService implements UserDetailsService {
                        UserRepository userRepository,
                        ServerGameEngineService serverGameEngineCrudPersistence,
                        QuestConfigService questConfigService,
-                       RegisterService registerService) {
+                       RegisterService registerService,
+                       PasswordEncoder passwordEncoder) {
         this.levelCrudPersistence = levelCrudPersistence;
         this.userRepository = userRepository;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
         this.questConfigService = questConfigService;
         this.registerService = registerService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public static Authentication removeAnonymousAuthentication(Authentication authentication) {
@@ -93,9 +97,8 @@ public class UserService implements UserDetailsService {
         UserBackendInfo userBackendInfo = new UserBackendInfo()
                 .name(userEntity.getName())
                 .creationDate(userEntity.getCreationDate())
-                .registerDate(userEntity.getRegisterDate())
+                .verificationStartedDate(userEntity.getVerificationStartedDate())
                 .verificationDoneDate(userEntity.getVerificationDoneDate())
-                .facebookId(userEntity.getFacebookUserId())
                 .email(userEntity.getEmail())
                 .userId(userEntity.getUserId())
                 .levelId(extractId(userEntity.getLevel(), LevelEntity::getId))
@@ -374,7 +377,11 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void onClientSystemConnectionClosed(String userId) {
-        var userEntity = userRepository.findByUserId(userId).orElseThrow();
+        var userEntity = userRepository.findByUserId(userId).orElse(null);
+        if (userEntity == null) {
+            // User may be deleted
+            return;
+        }
         userEntity.setSystemConnectionClosed(LocalDateTime.now());
         userRepository.save(userEntity);
     }
@@ -407,6 +414,7 @@ public class UserService implements UserDetailsService {
         }
         // TODO historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
         userEntity.setEmail(email);
+        userEntity.setPasswordHash(passwordEncoder.encode(password));
         registerService.startEmailVerifyingProcess(userEntity);
         userRepository.save(userEntity);
         return RegisterResult.OK;
@@ -443,6 +451,35 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public boolean verifyEmailVerificationId(String verificationId) {
+        List<UserEntity> optionalUser = userRepository.findPendingVerificationUsers(verificationId);
+
+        if (optionalUser.isEmpty()) {
+            logger.warn("No user {} for email verification id", verificationId);
+            return false;
+        }
+
+        if (optionalUser.size() > 1) {
+            logger.warn("More then one User for email verification id {}. Using first user", verificationId);
+        }
+
+        UserEntity userEntity = optionalUser.get(0);
+
+        userEntity.setVerifiedDone();
+        userRepository.save(userEntity);
+        return true;
+    }
+
+    @Transactional
+    public void deleteUser() {
+        var userId = getOrCreateUserIdFromContext();
+        deleteBaseByUser(userId);
+        userRepository.delete(userRepository.findByUserId(userId).orElseThrow());
+        SecurityContextHolder.clearContext();
+        logger.info("User deleted: {}", userId);
+    }
+
+    @Transactional
     @Scheduled(fixedRate = 60000)
     public void cleanupDisconnectedUnregisteredUsers() {
         var cutoff = LocalDateTime.now().minusMinutes(120);
@@ -451,11 +488,29 @@ public class UserService implements UserDetailsService {
                 .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
                 .forEach(userEntity -> {
                     logger.info("Removing user: {}", userEntity);
-                    var playerBase = baseItemService.getPlayerBase4UserId(userEntity.getUserId());
-                    if (playerBase != null) {
-                        baseItemService.mgmtDeleteBase(playerBase.getBaseId());
-                    }
+                    deleteBaseByUser(userEntity.getUserId());
                     userRepository.delete(userEntity);
                 });
+    }
+
+
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void cleanupUnverifiedUsersAfter24h() {
+        var cutoff = LocalDateTime.now().minusHours(24);
+        List<UserEntity> oldUnverified = userRepository.findUnverifiedUsersOlderThan(cutoff);
+
+        for (UserEntity user : oldUnverified) {
+            logger.info("Deleting unverified user older than 24h: {}", user);
+            userRepository.delete(user);
+        }
+    }
+
+
+    private void deleteBaseByUser(String userId) {
+        var playerBase = baseItemService.getPlayerBase4UserId(userId);
+        if (playerBase != null) {
+            baseItemService.deleteBase(playerBase.getBaseId());
+        }
     }
 }

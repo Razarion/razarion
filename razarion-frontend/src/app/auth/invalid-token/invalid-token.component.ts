@@ -15,7 +15,7 @@ export class InvalidTokenComponent {
   constructor(private userService: UserService) {
   }
 
-  signOutAndPlayGuast() {
+  signOutAndPlayGuest() {
     this.userService.logout();
     window.location.replace("/game");
   }

@@ -84,7 +84,7 @@ public class UserMgmtController {
             try {
                 var playerBase = baseItemService.getPlayerBase4UserId(userId);
                 if (playerBase != null) {
-                    baseItemService.mgmtDeleteBase(playerBase.getBaseId());
+                    baseItemService.deleteBase(playerBase.getBaseId());
                 }
                 userService.mgmtDeleteUnregisteredUser(userId);
             } catch (Exception e) {

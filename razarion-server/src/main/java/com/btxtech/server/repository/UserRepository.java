@@ -19,4 +19,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     @Query("SELECT u FROM UserEntity u WHERE u.systemConnectionClosed IS NOT NULL AND u.systemConnectionClosed < :cutoff")
     List<UserEntity> findInactiveSince(@Param("cutoff") LocalDateTime cutoff);
 
+    @Query("SELECT u FROM UserEntity u WHERE u.verificationStartedDate IS NOT NULL AND u.verificationDoneDate IS NULL AND u.verificationStartedDate < :cutoff")
+    List<UserEntity> findUnverifiedUsersOlderThan(@Param("cutoff") LocalDateTime cutoff);
+
+    @Query("SELECT u FROM UserEntity u WHERE u.verificationId = :verificationId " +
+            "AND u.verificationDoneDate IS NULL ")
+    List<UserEntity> findPendingVerificationUsers(@Param("verificationId") String verificationId);
+
 }

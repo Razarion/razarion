@@ -100,7 +100,7 @@ public class PlanetMgmtController {
     @RolesAllowed(Roles.ADMIN)
     public void deleteBase(@PathVariable("baseId") int baseId) {
         try {
-            baseItemService.mgmtDeleteBase(baseId);
+            baseItemService.deleteBase(baseId);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;

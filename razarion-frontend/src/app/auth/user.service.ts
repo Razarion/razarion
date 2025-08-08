@@ -15,28 +15,28 @@ import {Router} from '@angular/router';
 })
 export class UserService {
   private userControllerClient: UserControllerClient;
+  public registerPending = false;
 
   constructor(private httpClient: HttpClient,
               private router: Router) {
     this.userControllerClient = new UserControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
-  public checkToken(): Promise<void> {
+  public async checkToken(): Promise<void> {
     if (this.getAppToken() === null) {
       return Promise.resolve();
     }
-    return this.userControllerClient.checkToken()
-      .then(() => {
-        return Promise.resolve();
-      })
-      .catch((error) => {
-        const status = error?.status ?? error?.response?.status;
-        if (status !== 401) {
-          console.error("Error checking token:", error);
-        }
-        this.router.navigate(['invalid-token']);
-        return Promise.resolve();
-      });
+    try {
+      await this.userControllerClient.checkToken();
+      return await Promise.resolve();
+    } catch (error: any) {
+      const status = error?.status ?? error?.response?.status;
+      if (status !== 401) {
+        console.error("Error checking token:", error);
+      }
+      this.router.navigate(['invalid-token']);
+      return await Promise.resolve();
+    }
   }
 
   getAppToken(): string | null {
@@ -74,11 +74,22 @@ export class UserService {
     return false;
   }
 
-  getUserName(): string {
-    return (<JwtPayload>jwtDecode<JwtPayload>(localStorage.getItem("app.token")!)).sub || "<unknown>";
+  getAuthenticatedUserName(): string {
+    const token = localStorage.getItem("app.token");
+    if (!token) {
+      return "<unknown>";
+    }
+
+    try {
+      const payload = jwtDecode<JwtPayload>(token);
+      return payload.sub || "<unknown>";
+    } catch (e) {
+      console.error("Invalid JWT token", e);
+      return "<unknown>";
+    }
   }
 
-  login(username: string, password: string): Promise<void> {
+  async login(username: string, password: string): Promise<void> {
     this.logout();
 
     const httpClient = this.httpClient;
@@ -112,9 +123,8 @@ export class UserService {
       }
     );
 
-    return userController.auth().then(token => {
-      localStorage.setItem("app.token", token);
-    })
+    const token_2 = await userController.auth();
+    localStorage.setItem("app.token", token_2);
   }
 
   logout() {
@@ -122,7 +132,15 @@ export class UserService {
     localStorage.removeItem("app.roles");
   }
 
-  register(email: string, password: string): Promise<RegisterResult> {
-    return this.userControllerClient.registerByEmail({email, password});
+  async register(email: string, password: string): Promise<RegisterResult> {
+    const result = await this.userControllerClient.registerByEmail({email, password});
+    if (result === RegisterResult.OK) {
+      this.registerPending = true;
+    }
+    return result;
+  }
+
+  async deleteUser(): RestResponse<void> {
+    await this.userControllerClient.deleteUser();
   }
 }

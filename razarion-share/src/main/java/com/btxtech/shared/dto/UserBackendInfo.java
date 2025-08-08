@@ -10,9 +10,8 @@ import java.util.List;
 public class UserBackendInfo {
     private String userId;
     private Date creationDate;
-    private Date registerDate;
+    private Date verificationStartedDate;
     private Date verificationDoneDate;
-    private String facebookId;
     private String email;
     private String name;
     private Integer activeQuest;
@@ -42,12 +41,12 @@ public class UserBackendInfo {
         this.creationDate = creationDate;
     }
 
-    public Date getRegisterDate() {
-        return registerDate;
+    public Date getVerificationStartedDate() {
+        return verificationStartedDate;
     }
 
-    public void setRegisterDate(Date registerDate) {
-        this.registerDate = registerDate;
+    public void setVerificationStartedDate(Date verificationStartedDate) {
+        this.verificationStartedDate = verificationStartedDate;
     }
 
     public Date getVerificationDoneDate() {
@@ -56,14 +55,6 @@ public class UserBackendInfo {
 
     public void setVerificationDoneDate(Date verificationDoneDate) {
         this.verificationDoneDate = verificationDoneDate;
-    }
-
-    public String getFacebookId() {
-        return facebookId;
-    }
-
-    public void setFacebookId(String facebookId) {
-        this.facebookId = facebookId;
     }
 
     public String getEmail() {
@@ -172,18 +163,13 @@ public class UserBackendInfo {
         return this;
     }
 
-    public UserBackendInfo registerDate(Date registerDate) {
-        setRegisterDate(registerDate);
+    public UserBackendInfo verificationStartedDate(Date registerDate) {
+        setVerificationStartedDate(registerDate);
         return this;
     }
 
     public UserBackendInfo verificationDoneDate(Date verificationDoneDate) {
         setVerificationDoneDate(verificationDoneDate);
-        return this;
-    }
-
-    public UserBackendInfo facebookId(String facebookId) {
-        setFacebookId(facebookId);
         return this;
     }
 

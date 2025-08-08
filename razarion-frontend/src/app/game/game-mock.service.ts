@@ -53,8 +53,8 @@ import {HttpClient} from '@angular/common/http';
 import {BabylonModelService} from './renderer/babylon-model.service';
 import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
-import {Tools} from '@babylonjs/core';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
+import {MainCockpitService} from './cockpit/main/main-cockpit.service';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -71,7 +71,8 @@ export class GameMockService {
   constructor(private http: HttpClient,
               private gwtAngularService: GwtAngularService,
               private babylonModelService: BabylonModelService,
-              private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl) {
+              private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
+              private mainCockpitService: MainCockpitService) {
   }
 
   startGame(runGwtMock: boolean, gameComponent: GameComponent) {
@@ -416,6 +417,10 @@ export class GameMockService {
     // this.showEditor();
   }
 
+  private showUserDialog() {
+    this.mainCockpitService.showUserDialog = true
+  }
+
   private showLoading() {
     setTimeout(() => {
       this.gwtAngularService.gwtAngularFacade.screenCover.onStartupProgress(25);
@@ -441,6 +446,8 @@ export class GameMockService {
       // this.displayOwnMultipleItemTypesCockpit();
       this.displayOwnSingleTypeCockpit();
       // this.displayOtherItemTypeCockpit();
+
+      this.showUserDialog();
     }, 10);
   }
 

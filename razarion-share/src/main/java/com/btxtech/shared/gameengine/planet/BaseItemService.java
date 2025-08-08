@@ -470,7 +470,7 @@ public class BaseItemService {
         }
     }
 
-    public void mgmtDeleteBase(int baseId) {
+    public void deleteBase(int baseId) {
         Collection<SyncBaseItem> items = new ArrayList<>(((PlayerBaseFull) getPlayerBase4BaseId(baseId)).getItems());
         items.forEach(this::removeSyncItem);
     }

@@ -66,7 +66,7 @@ export class MainCockpitComponent implements MainCockpit {
               private cockpitDisplayService: CockpitDisplayService,
               private gameComponent: GameComponent,
               private renderService: BabylonRenderServiceAccessImpl,
-              private userService: UserService) {
+              public userService: UserService) {
   }
 
   show(): void {
