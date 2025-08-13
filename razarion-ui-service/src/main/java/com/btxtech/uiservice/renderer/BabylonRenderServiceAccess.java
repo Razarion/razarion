@@ -12,7 +12,7 @@ import jsinterop.annotations.JsType;
 public interface BabylonRenderServiceAccess {
     BabylonTerrainTile createTerrainTile(TerrainTile terrainTile);
 
-    BabylonBaseItem createBabylonBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy);
+    BabylonBaseItem createBabylonBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy, String userName);
 
     BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType baseItemType);
 

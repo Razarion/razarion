@@ -1,14 +1,4 @@
-import {
-  Animation,
-  InputBlock,
-  Mesh,
-  MeshBuilder,
-  NodeMaterial,
-  ParticleSystem,
-  TransformNode,
-  UtilityLayerRenderer,
-  Vector3
-} from "@babylonjs/core";
+import {Animation, MeshBuilder, ParticleSystem, UtilityLayerRenderer, Vector3} from "@babylonjs/core";
 import {
   BabylonBaseItem,
   BaseItemType,
@@ -24,19 +14,20 @@ import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-im
 import {ActionService} from "../action.service";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {AdvancedDynamicTexture, TextBlock} from '@babylonjs/gui';
+import {Slider} from '@babylonjs/gui/2D/controls/sliders/slider';
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   // See GWT java PlanetService
   static readonly TICK_TIME_MILLI_SECONDS: number = 100;
   private buildingParticleSystem: ParticleSystem | null = null;
   private harvestingParticleSystem: ParticleSystem | null = null;
-  private progressBar: Mesh | undefined;
-  private healthBar: Mesh | undefined;
+  private progressSlider: Slider | null = null;
+  private healthSlider: Slider | null = null;
+  private nameBlock: TextBlock | null = null;
   private progress: number = 0;
   private idle = false;
   private readonly utilLayer: UtilityLayerRenderer;
-  private healthInputBlock: InputBlock | undefined;
-  private progressInputBlock: InputBlock | undefined;
   private position3D: Vector3 | null = null;
   private oldPosition3D: Vector3 | null = null;
   private lastPositionUpdateTime: number | null = null;
@@ -44,10 +35,12 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private oldRotation3D: Vector3 | null = null;
   private lastRotationUpdateTime: number | null = null;
   private idleCallback: ((idle: boolean) => void) | null = null;
+  private readonly advancedDynamicTexture: AdvancedDynamicTexture;
 
   constructor(id: number,
               private baseItemType: BaseItemType,
               diplomacy: Diplomacy,
+              userName: string,
               rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
               babylonModelService: BabylonModelService,
@@ -64,10 +57,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       disposeCallback);
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
+    this.advancedDynamicTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
     if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
       rendererService.addInterpolationListener(this);
     }
+
+    this.setupName(userName);
   }
 
   public static createDummy(id: number): BabylonBaseItem {
@@ -148,13 +144,17 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
     this.disposeBuildingParticleSystem();
     this.disposeHarvestingParticleSystem();
-    if (this.healthBar) {
-      this.healthBar.material!.dispose()
-      this.healthBar = undefined;
+    if (this.healthSlider) {
+      this.advancedDynamicTexture.removeControl(this.healthSlider)
+      this.healthSlider = null;
     }
-    if (this.progressBar) {
-      this.progressBar.material!.dispose()
-      this.progressBar = undefined;
+    if (this.progressSlider) {
+      this.advancedDynamicTexture.removeControl(this.progressSlider)
+      this.progressSlider = null;
+    }
+    if (this.nameBlock) {
+      this.advancedDynamicTexture.removeControl(this.nameBlock)
+      this.nameBlock = null;
     }
     super.dispose();
   }
@@ -164,29 +164,26 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   setHealth(health: number): void {
-    if (this.isSelectOrHove() && !this.healthBar) {
-      this.healthBar = MeshBuilder.CreatePlane("Health Bar", {
-        width: this.baseItemType.getPhysicalAreaConfig().getRadius() * 2,
-        height: this.baseItemType.getPhysicalAreaConfig().getRadius() * 0.08
-      }, this.utilLayer.utilityLayerScene);
-      this.healthBar.position.y = 0.5 + this.baseItemType.getPhysicalAreaConfig().getRadius() - this.baseItemType.getPhysicalAreaConfig().getRadius() * 0.08;
-      this.healthBar.parent = this.getContainer();
-      this.healthBar.billboardMode = TransformNode.BILLBOARDMODE_ALL;
-      let nodeMaterial = this.babylonModelService.getBabylonMaterial(this.uiConfigCollectionService.getHealthBarNodeMaterialId());
-      this.healthBar.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
-      this.healthInputBlock = <InputBlock>(<NodeMaterial>this.healthBar.material).getBlockByName("health");
-      if (this.healthInputBlock) {
-        this.healthInputBlock.value = health;
-      } else {
-        console.warn(`'health' block not found in NodeMaterial ${this.uiConfigCollectionService.getHealthBarNodeMaterialId()}`)
-      }
-    } else if (!this.isSelectOrHove() && this.healthBar) {
-      this.healthBar.material!.dispose()
-      this.healthBar.dispose()
-      this.healthBar = undefined;
-    } else if (this.isSelectOrHove() && this.healthBar) {
-      if (this.healthInputBlock) {
-        this.healthInputBlock.value = health;
+    if (this.isSelectOrHove() && !this.healthSlider) {
+      this.healthSlider = new Slider();
+      this.healthSlider.minimum = 0;
+      this.healthSlider.maximum = 1;
+      this.healthSlider.value = health;
+      this.healthSlider.height = "20px";
+      this.healthSlider.width = "150px";
+      this.healthSlider.color = "green";
+      this.healthSlider.background = "red";
+      this.healthSlider.displayThumb = false;
+      this.healthSlider.isReadOnly = false;
+      this.advancedDynamicTexture.addControl(this.healthSlider)
+      this.healthSlider.linkWithMesh(this.getContainer());
+      this.healthSlider.linkOffsetY = -52;
+    } else if (!this.isSelectOrHove() && this.healthSlider) {
+      this.advancedDynamicTexture.removeControl(this.healthSlider)
+      this.healthSlider = null;
+    } else if (this.isSelectOrHove() && this.healthSlider) {
+      if (this.healthSlider) {
+        this.healthSlider.value = health;
       }
     }
   }
@@ -198,8 +195,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   setConstructing(progress: number): void {
     this.progress = progress;
     this.handleConstructing();
-    if (this.progressInputBlock) {
-      this.progressInputBlock.value = this.progress;
+    if (this.progressSlider) {
+      this.progressSlider.value = this.progress;
     }
   }
 
@@ -222,27 +219,26 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   handleConstructing(): void {
     if (this.isSelectOrHove() && this.progress > 0) {
-      if (!this.progressBar) {
-        this.progressBar = MeshBuilder.CreatePlane("Progress Bar", {
-          width: this.baseItemType.getPhysicalAreaConfig().getRadius() * 2,
-          height: this.baseItemType.getPhysicalAreaConfig().getRadius() * 0.08
-        }, this.utilLayer.utilityLayerScene);
-
-        this.progressBar.position.y = 0.5 + this.baseItemType.getPhysicalAreaConfig().getRadius();
-        this.progressBar.parent = this.getContainer();
-        this.progressBar.billboardMode = TransformNode.BILLBOARDMODE_ALL;
+      if (!this.progressSlider) {
+        this.progressSlider = new Slider();
+        this.progressSlider.minimum = 0;
+        this.progressSlider.maximum = 1;
+        this.progressSlider.value = this.progress;
+        this.progressSlider.height = "20px";
+        this.progressSlider.width = "150px";
+        this.progressSlider.color = "dodgerblue";
+        this.progressSlider.background = "black";
+        this.progressSlider.displayThumb = false;
+        this.progressSlider.isReadOnly = false;
+        this.advancedDynamicTexture.addControl(this.progressSlider)
+        this.progressSlider.linkWithMesh(this.getContainer());
+        this.progressSlider.linkOffsetY = -40;
         let nodeMaterial = this.babylonModelService.getBabylonMaterial(this.uiConfigCollectionService.getProgressBarNodeMaterialId());
-        this.progressBar.material = nodeMaterial.clone(`${nodeMaterial.name} '${this.getId()}'`);
-        this.progressInputBlock = <InputBlock>(<NodeMaterial>this.progressBar.material).getBlockByName("progress");
-        if (!this.progressInputBlock) {
-          console.warn(`'progress' block not found in NodeMaterial ${this.uiConfigCollectionService.getProgressBarNodeMaterialId()}`)
-        }
       }
     } else {
-      if (this.progressBar) {
-        this.progressBar.material!.dispose();
-        this.progressBar.dispose();
-        this.progressBar = undefined;
+      if (this.progressSlider) {
+        this.advancedDynamicTexture.removeControl(this.progressSlider)
+        this.progressSlider = null;
       }
     }
   }
@@ -488,6 +484,21 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.rendererService.getScene().removeMesh(mesh);
       mesh.dispose();
     };
+  }
+
+  private setupName(userName: string) {
+    if (!userName) {
+      return;
+    }
+    this.nameBlock = new TextBlock();
+    this.nameBlock.text = userName;
+    this.nameBlock.color = BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy).toHexString();
+    this.nameBlock.fontSize = 18;
+    this.nameBlock.outlineWidth = 5;
+    this.nameBlock.outlineColor = "black";
+    this.advancedDynamicTexture.addControl(this.nameBlock);
+    this.nameBlock.linkWithMesh(this.getContainer());
+    this.nameBlock.linkOffsetY = -62 - this.baseItemType.getPhysicalAreaConfig().getRadius() * 2;
   }
 
   static interpolateAngleRadians(startAngle: number, endAngle: number, t: number): number {

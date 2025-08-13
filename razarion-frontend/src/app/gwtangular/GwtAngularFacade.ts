@@ -344,7 +344,7 @@ export interface ComparisonConfig {
 export interface BabylonRenderServiceAccess {
   createTerrainTile(terrainTile: TerrainTile): BabylonTerrainTile;
 
-  createBabylonBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem;
+  createBabylonBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy, userName: string): BabylonBaseItem;
 
   createBabylonResourceItem(id: number, resourceItemType: ResourceItemType): BabylonResourceItem;
 

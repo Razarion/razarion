@@ -267,8 +267,7 @@ public class UserEntity {
 
     public boolean isVerified() {
         UserContext.RegisterState registerState = createRegisterState();
-        return registerState == UserContext.RegisterState.FACEBOOK
-                || registerState == UserContext.RegisterState.EMAIL_VERIFIED;
+        return registerState == UserContext.RegisterState.EMAIL_VERIFIED;
     }
 
     public String getVerificationId() {

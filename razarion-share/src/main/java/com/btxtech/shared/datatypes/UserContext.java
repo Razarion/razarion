@@ -102,7 +102,7 @@ public class UserContext {
     }
 
     public boolean emailNotVerified() {
-        return registerState != RegisterState.EMAIL_UNVERIFIED;
+        return registerState != RegisterState.EMAIL_VERIFIED;
     }
 
     public boolean checkName() {
@@ -123,7 +123,6 @@ public class UserContext {
     public enum RegisterState {
         UNREGISTERED,
         EMAIL_UNVERIFIED,
-        EMAIL_VERIFIED,
-        FACEBOOK
+        EMAIL_VERIFIED
     }
 }

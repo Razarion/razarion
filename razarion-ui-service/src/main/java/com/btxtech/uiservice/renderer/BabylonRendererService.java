@@ -29,8 +29,8 @@ public class BabylonRendererService {
         return babylonRenderServiceAccess.createTerrainTile(terrainTile);
     }
 
-    public BabylonBaseItem createSyncBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy) {
-        return babylonRenderServiceAccess.createBabylonBaseItem(id, baseItemType, diplomacy);
+    public BabylonBaseItem createSyncBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy, String userName) {
+        return babylonRenderServiceAccess.createBabylonBaseItem(id, baseItemType, diplomacy, userName);
     }
 
     public BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType resourceItemType) {

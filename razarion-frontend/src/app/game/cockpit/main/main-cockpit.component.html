@@ -61,7 +61,7 @@
 </div>
 
 <p-dialog header="Login" [(visible)]="mainCockpitService.showLoginDialog">
-  <login *ngIf="mainCockpitService.showLoginDialog" [showRegister]="!userService.registerPending"></login>
+  <login *ngIf="mainCockpitService.showLoginDialog" [showRegister]="userService.showRegisterButton()"></login>
 </p-dialog>
 
 <p-dialog header="User account" [(visible)]="mainCockpitService.showUserDialog">
@@ -80,3 +80,6 @@
   </div>
 </p-dialog>
 
+<p-dialog header="Set name" [(visible)]="mainCockpitService.showSetUserNameDialog">
+  <set-name *ngIf="mainCockpitService.showSetUserNameDialog"></set-name>
+</p-dialog>

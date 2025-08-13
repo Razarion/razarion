@@ -1,5 +1,6 @@
 package com.btxtech.server.model.ui;
 
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.system.Nullable;
 
 import java.util.List;
@@ -12,6 +13,8 @@ public class UiConfigCollection {
     private Integer selectionItemMaterialId;
     private Integer progressBarNodeMaterialId;
     private Integer healthBarNodeMaterialId;
+    private UserContext.RegisterState registerState;
+    private String name;
 
     public List<BabylonMaterialEntity> getBabylonMaterials() {
         return babylonMaterials;
@@ -69,6 +72,22 @@ public class UiConfigCollection {
         this.healthBarNodeMaterialId = healthBarNodeMaterialId;
     }
 
+    public UserContext.RegisterState getRegisterState() {
+        return registerState;
+    }
+
+    public void setRegisterState(UserContext.RegisterState registerState) {
+        this.registerState = registerState;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public UiConfigCollection babylonMaterials(List<BabylonMaterialEntity> babylonMaterials) {
         setBabylonMaterials(babylonMaterials);
         return this;
@@ -101,6 +120,16 @@ public class UiConfigCollection {
 
     public UiConfigCollection healthBarNodeMaterialId(Integer healthBarNodeMaterialId) {
         setHealthBarNodeMaterialId(healthBarNodeMaterialId);
+        return this;
+    }
+
+    public UiConfigCollection registerState(UserContext.RegisterState registerState) {
+        setRegisterState(registerState);
+        return this;
+    }
+
+    public UiConfigCollection name(String name) {
+        setName(name);
         return this;
     }
 }

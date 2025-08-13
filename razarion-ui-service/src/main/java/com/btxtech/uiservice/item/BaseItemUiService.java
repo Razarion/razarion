@@ -174,9 +174,15 @@ public class BaseItemUiService {
                 // Alive
                 BabylonBaseItem babylonBaseItem = babylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
                 if (babylonBaseItem == null) {
+                    String userName = null;
+                    PlayerBaseDto baseDto = getBase(nativeSyncBaseItemTickInfo.baseId);
+                    if (baseDto.getCharacter() == Character.HUMAN) {
+                        userName = baseDto.getName();
+                    }
                     babylonBaseItem = babylonRendererService.createSyncBaseItem(nativeSyncBaseItemTickInfo.id,
                             baseItemType,
-                            diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo));
+                            diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo),
+                            userName);
                     babylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
                     babylonBaseItem.setPosition(position3d);
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);

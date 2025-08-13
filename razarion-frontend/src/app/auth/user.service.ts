@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {
   HttpClient as HttpClientAdapter,
   RegisterResult,
+  RegisterState,
   RestResponse,
   UserControllerClient
 } from '../generated/razarion-share';
@@ -14,8 +15,10 @@ import {Router} from '@angular/router';
   providedIn: 'root'
 })
 export class UserService {
+  static readonly ROLE_ADMIN = "ROLE_ADMIN";
   private userControllerClient: UserControllerClient;
-  public registerPending = false;
+  public registerState: RegisterState = RegisterState.UNREGISTERED;
+  public name: String | null = null;
 
   constructor(private httpClient: HttpClient,
               private router: Router) {
@@ -51,25 +54,29 @@ export class UserService {
     if (!this.isLoggedIn()) {
       return false;
     }
-    const decodedToken = jwtDecode<JwtPayload>(localStorage.getItem("app.token")!);
-    const roleFromRoute = "ROLE_ADMIN"
-    const roles = (<any>decodedToken).scope;
+    try {
+      const decodedToken = jwtDecode<JwtPayload>(localStorage.getItem("app.token")!);
+      const roles = (<any>decodedToken).scope;
 
-    if (!roles) {
-      return false;
-    }
+      if (!roles) {
+        return false;
+      }
 
-    if (roles.includes(",")) {
-      const roleArray = roles.split(",");
-      for (let role of roleArray) {
-        if (role === roleFromRoute) {
+      if (roles.includes(",")) {
+        const roleArray = roles.split(",");
+        for (let role of roleArray) {
+          if (role === UserService.ROLE_ADMIN) {
+            return true;
+          }
+        }
+      } else {
+        if (roles === UserService.ROLE_ADMIN) {
           return true;
         }
       }
-    } else {
-      if (roles === roleFromRoute) {
-        return true;
-      }
+    } catch (error) {
+      console.error(error);
+      this.logout();
     }
     return false;
   }
@@ -135,12 +142,28 @@ export class UserService {
   async register(email: string, password: string): Promise<RegisterResult> {
     const result = await this.userControllerClient.registerByEmail({email, password});
     if (result === RegisterResult.OK) {
-      this.registerPending = true;
+      this.registerState = RegisterState.EMAIL_UNVERIFIED;
     }
     return result;
   }
 
   async deleteUser(): RestResponse<void> {
     await this.userControllerClient.deleteUser();
+  }
+
+  showRegisterButton() {
+    return this.registerState === RegisterState.UNREGISTERED;
+  }
+
+  disableSetNameButton() {
+    return this.registerState === RegisterState.UNREGISTERED || this.registerState === RegisterState.EMAIL_UNVERIFIED;
+  }
+
+  showSetNameButton(): boolean {
+    return !this.name;
+  }
+
+  setName(name: string) {
+    this.name = name
   }
 }

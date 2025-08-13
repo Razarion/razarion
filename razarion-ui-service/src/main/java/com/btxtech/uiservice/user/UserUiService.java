@@ -145,10 +145,6 @@ public class UserUiService {
         return userContext.registered();
     }
 
-    public boolean isEmailNotVerified() {
-        return userContext.emailNotVerified();
-    }
-
     public boolean isRegisteredAndNamed() {
         return userContext.checkName();
     }

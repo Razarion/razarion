@@ -6,6 +6,7 @@ import {FormsModule} from '@angular/forms';
 import {NgIf} from '@angular/common';
 import {Dialog} from 'primeng/dialog';
 import {InputText} from 'primeng/inputtext';
+import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
 
 @Component({
   selector: 'user',
@@ -20,12 +21,13 @@ import {InputText} from 'primeng/inputtext';
 })
 export class UserComponent implements OnInit {
   login = "";
-  playerName = ""
   showDeleteDialog: boolean = false;
   deleteConfirmationInput: string = '';
 
 
-  constructor(private userService: UserService, private router: Router) {
+  constructor(public userService: UserService,
+              private router: Router,
+              private cockpitDisplayService: CockpitDisplayService) {
   }
 
   ngOnInit(): void {
@@ -50,7 +52,10 @@ export class UserComponent implements OnInit {
     }).catch((error) => {
       console.error('Error deleting user:', error);
     })
-
   }
 
+  onSetName() {
+    this.cockpitDisplayService.showUserDialog = false;
+    this.cockpitDisplayService.showSetUserNameDialog = true;
+  }
 }

@@ -16,6 +16,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
     Optional<UserEntity> findByUserId(String userId);
 
+    boolean existsByNameIgnoreCase(String name);
+
     @Query("SELECT u FROM UserEntity u WHERE u.systemConnectionClosed IS NOT NULL AND u.systemConnectionClosed < :cutoff")
     List<UserEntity> findInactiveSince(@Param("cutoff") LocalDateTime cutoff);
 

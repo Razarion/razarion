@@ -18,7 +18,6 @@ public class WarmGameUiContext {
     private PlanetConfig planetConfig;
     private List<SceneConfig> sceneConfigs;
     private boolean detailedTracking;
-    private PlaybackGameUiControlConfig playbackGameUiControlConfig;
 
     public int getGameUiControlConfigId() {
         return gameUiControlConfigId;
@@ -84,15 +83,6 @@ public class WarmGameUiContext {
         this.detailedTracking = detailedTracking;
     }
 
-    public PlaybackGameUiControlConfig getPlaybackGameUiControlConfig() {
-        return playbackGameUiControlConfig;
-    }
-
-    public void setPlaybackGameUiControlConfig(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
-        this.playbackGameUiControlConfig = playbackGameUiControlConfig;
-    }
-
-
     public WarmGameUiContext gameUiControlConfigId(int gameUiControlConfigId) {
         setGameUiControlConfigId(gameUiControlConfigId);
         return this;
@@ -130,11 +120,6 @@ public class WarmGameUiContext {
 
     public WarmGameUiContext detailedTracking(boolean detailedTracking) {
         setDetailedTracking(detailedTracking);
-        return this;
-    }
-
-    public WarmGameUiContext playbackGameUiControlConfig(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
-        setPlaybackGameUiControlConfig(playbackGameUiControlConfig);
         return this;
     }
 }

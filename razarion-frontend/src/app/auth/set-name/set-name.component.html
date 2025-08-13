@@ -1,0 +1,28 @@
+<div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 gap-3 w-120 items-center">
+  <div class="rounded-xl shadow-xl p-6 w-full max-w-md">
+    <p class="mb-4">
+      Choose your name. This will be visible to other players. You can only set it once, so choose wisely...
+    </p>
+    <span style="color: red; font-size: 0.875em;">{{errorMessage}}</span>    <input
+      type="text"
+      [(ngModel)]="name"
+      (input)="onNameChanged()"
+      class="w-full border border-gray-300 rounded px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-red-200"/>
+    <div class="flex justify-end space-x-2">
+      <p-button
+        class="rounded"
+        severity="secondary"
+        label="Cancel"
+        size="small"
+        (click)="cancel()">
+      </p-button>
+      <p-button
+        [disabled]="disableSaveButton"
+        class="rounded"
+        label="Set"
+        size="small"
+        (click)="setName()">
+      </p-button>
+    </div>
+  </div>
+</div>

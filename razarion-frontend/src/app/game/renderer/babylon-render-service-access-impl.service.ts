@@ -253,11 +253,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
   }
 
-  createBabylonBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy): BabylonBaseItem {
+
+  createBabylonBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy, userName: string): BabylonBaseItem {
     try {
       let item = new BabylonBaseItemImpl(id,
         baseItemType,
         GwtHelper.gwtIssueStringEnum(diplomacy, Diplomacy),
+        userName,
         this,
         this.actionService,
         this.babylonModelService,

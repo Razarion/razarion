@@ -54,7 +54,8 @@ import {BabylonModelService} from './renderer/babylon-model.service';
 import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
-import {MainCockpitService} from './cockpit/main/main-cockpit.service';
+import {CockpitDisplayService} from './cockpit/cockpit-display.service';
+import {Tools} from '@babylonjs/core';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -72,7 +73,7 @@ export class GameMockService {
               private gwtAngularService: GwtAngularService,
               private babylonModelService: BabylonModelService,
               private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
-              private mainCockpitService: MainCockpitService) {
+              private mainCockpitService: CockpitDisplayService) {
   }
 
   startGame(runGwtMock: boolean, gameComponent: GameComponent) {
@@ -200,35 +201,35 @@ export class GameMockService {
           }
         };
 
-        // {
-        //   let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.OWN);
-        //   babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 1));
-        //   babylonBaseItem1.setAngle(Tools.ToRadians(45));
-        //
-        //   babylonBaseItem1.select(false);
-        //
-        //   babylonBaseItem1.setConstructing(0.01);
-        //   babylonBaseItem1.setHealth(0.99);
-        //   // babylonBaseItem1.mark(MarkerConfig);
-        //   // setTimeout(() => {
-        //   //  babylonBaseItem1.onExplode();
-        //   //}, 2000);
-        //
-        //
-        //   /*
-        //   let x = 0;
-        //   setInterval(() => {
-        //     babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
-        //     babylonBaseItem1.setAngle(Tools.ToRadians(x));
-        //     x += 20;
-        //     if (x > 360) {
-        //       x = 0;
-        //     }
-        //   }, 100)
-        //   */
-        //   // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
-        //   // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
-        // }
+        {
+          let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.OWN, "myName");
+          babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 1));
+          babylonBaseItem1.setAngle(Tools.ToRadians(45));
+
+          babylonBaseItem1.select(false);
+
+          babylonBaseItem1.setConstructing(0.01);
+          babylonBaseItem1.setHealth(0.99);
+          // babylonBaseItem1.mark(MarkerConfig);
+          // setTimeout(() => {
+          //  babylonBaseItem1.onExplode();
+          //}, 2000);
+
+
+          /*
+          let x = 0;
+          setInterval(() => {
+            babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
+            babylonBaseItem1.setAngle(Tools.ToRadians(x));
+            x += 20;
+            if (x > 360) {
+              x = 0;
+            }
+          }, 100)
+          */
+          // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
+          // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
+        }
         this.showQuestionCockpit();
         // {
         //   let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);

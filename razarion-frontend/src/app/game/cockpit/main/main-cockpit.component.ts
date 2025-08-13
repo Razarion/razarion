@@ -9,7 +9,6 @@ import {RadarNoPowerComponent} from './radar/radar-no-power.component';
 import {Checkbox} from 'primeng/checkbox';
 import {NgClass, NgIf} from '@angular/common';
 import {Badge} from 'primeng/badge';
-import {CockpitDisplayService} from '../cockpit-display.service';
 import {InputText} from 'primeng/inputtext';
 import {InputGroupAddonModule} from 'primeng/inputgroupaddon';
 import {InputGroupModule} from 'primeng/inputgroup';
@@ -20,7 +19,8 @@ import {LoginComponent} from '../../../auth/login/login.component';
 import {UserService} from '../../../auth/user.service';
 import {UserComponent} from '../../../auth/user/user.component';
 import {RegisterComponent} from '../../../auth/register/register.component';
-import {MainCockpitService} from './main-cockpit.service';
+import {CockpitDisplayService} from '../cockpit-display.service';
+import {SetNameComponent} from '../../../auth/set-name/set-name.component';
 
 
 @Component({
@@ -42,7 +42,8 @@ import {MainCockpitService} from './main-cockpit.service';
     Dialog,
     LoginComponent,
     UserComponent,
-    RegisterComponent
+    RegisterComponent,
+    SetNameComponent
   ],
   styleUrls: ['main-cockpit.component.scss']
 })
@@ -61,7 +62,7 @@ export class MainCockpitComponent implements MainCockpit {
   NO_POWER = RadarState.NO_POWER;
   blinkUnlockEnabled = false;
 
-  constructor(public mainCockpitService: MainCockpitService,
+  constructor(public mainCockpitService: CockpitDisplayService,
               private zone: NgZone,
               private cockpitDisplayService: CockpitDisplayService,
               private gameComponent: GameComponent,

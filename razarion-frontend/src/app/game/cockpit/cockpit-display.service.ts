@@ -7,4 +7,10 @@ export class CockpitDisplayService {
   showMainCockpit = false;
   showItemCockpit = false;
   showQuestCockpit = false;
+
+  showLoginDialog = false;
+  showUserDialog = false;
+  showRegisterDialog = false;
+  showRegisteredDialog = false;
+  showSetUserNameDialog = false;
 }

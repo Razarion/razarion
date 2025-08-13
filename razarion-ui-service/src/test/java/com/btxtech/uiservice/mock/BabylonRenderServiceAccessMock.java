@@ -45,7 +45,7 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
     }
 
     @Override
-    public BabylonBaseItem createBabylonBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy) {
+    public BabylonBaseItem createBabylonBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy, String userName) {
         BabylonBaseItemMock babylonBaseItemMock = new BabylonBaseItemMock(id, baseItemType, diplomacy, babylonBaseItemMocks::remove);
         babylonBaseItemMocks.add(babylonBaseItemMock);
         return babylonBaseItemMock;

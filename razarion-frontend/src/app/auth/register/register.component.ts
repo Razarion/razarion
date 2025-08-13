@@ -4,7 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {UserService} from '../user.service';
 import {RegisterResult} from '../../generated/razarion-share';
-import {MainCockpitService} from '../../game/cockpit/main/main-cockpit.service';
+import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
 
 @Component({
   selector: 'register',
@@ -23,7 +23,7 @@ export class RegisterComponent {
   errorMessage: string = "";
 
 
-  constructor(private mainCockpitService: MainCockpitService,
+  constructor(private mainCockpitService: CockpitDisplayService,
               private userService: UserService) {
   }
 

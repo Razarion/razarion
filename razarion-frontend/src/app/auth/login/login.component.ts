@@ -3,7 +3,7 @@ import {MessageService} from 'primeng/api';
 import {UserService} from '../user.service';
 import {FormsModule} from '@angular/forms';
 import {Button} from 'primeng/button';
-import {MainCockpitService} from '../../game/cockpit/main/main-cockpit.service';
+import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
 import {NgIf} from '@angular/common';
 
 @Component({
@@ -23,14 +23,13 @@ export class LoginComponent {
   password: string = "";
   message: string = "";
 
-  constructor(private mainCockpitService: MainCockpitService,
-              private serviceService: UserService,
+  constructor(private mainCockpitService: CockpitDisplayService,
               public userService: UserService,
               private messageService: MessageService) {
   }
 
   public login(): void {
-    this.serviceService.login(this.username, this.password)
+    this.userService.login(this.username, this.password)
       .then(() => {
         window.location.replace("/game");
       })

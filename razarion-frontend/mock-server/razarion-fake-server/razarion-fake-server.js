@@ -32,17 +32,18 @@ let server = new ServerMock({host: "127.0.0.1", port: PORT});
 
 server.on({
   method: 'POST',
-  path: '/rest/auth/auth',
+  path: '/rest/user/auth',
   reply: {
     status: 200,
     headers: {"content-type": "application/json"},
-    body: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1heCBNdXNlciIsImlhdCI6MTUxNjIzOTAyMn0.DJvLjHkAT44YpiGLAFV1YFxU4kxNOw7M0bN0BMHcQ2s'
+    body: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJuYW1lIjoiTWF4IE11c3Rlcm1hbm4iLCJzY29wZSI6IlJPTEVfQURNSU4iLCJleHAiOjE3NTQ4MjAwMDV9.FhaGNR6_VflcNj7CYB7C4EJ5uhqe7JTfcix-xLWqpjE' // Admin
+    // body: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1heCBNdXNlciIsImlhdCI6MTUxNjIzOTAyMn0.DJvLjHkAT44YpiGLAFV1YFxU4kxNOw7M0bN0BMHcQ2s'
   }
 });
 
 server.on({
   method: 'GET',
-  path: '/rest/auth/checkToken',
+  path: '/rest/user/checkToken',
   reply: {
     status: 200,
   }

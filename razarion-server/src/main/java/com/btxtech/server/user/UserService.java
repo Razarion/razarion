@@ -2,6 +2,8 @@ package com.btxtech.server.user;
 
 import com.btxtech.server.model.RegisterResult;
 import com.btxtech.server.model.Roles;
+import com.btxtech.server.model.SetNameError;
+import com.btxtech.server.model.SetNameResult;
 import com.btxtech.server.model.UserEntity;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.LevelUnlockEntity;
@@ -10,7 +12,6 @@ import com.btxtech.server.repository.UserRepository;
 import com.btxtech.server.service.engine.LevelCrudService;
 import com.btxtech.server.service.engine.QuestConfigService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
-import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UserBackendInfo;
@@ -399,9 +400,9 @@ public class UserService implements UserDetailsService {
         if (userEntity.getEmail() != null) {
             logger.warn("User hase already an email. UserId {} email {}", userId, email);
         }
-        ErrorResult errorResult = verifyEmail(email);
-        if (errorResult != null) {
-            switch (errorResult) {
+        SetNameError setNameError = verifyEmail(email);
+        if (setNameError != null) {
+            switch (setNameError) {
                 case TO_SHORT:
                     return RegisterResult.INVALID_EMAIL;
                 case ALREADY_USED:
@@ -409,7 +410,7 @@ public class UserService implements UserDetailsService {
                 case UNKNOWN_ERROR:
                     return RegisterResult.UNKNOWN_ERROR;
                 default:
-                    logger.warn("verifyEmail(email): {}. Unknown result: {}", email, errorResult);
+                    logger.warn("verifyEmail(email): {}. Unknown result: {}", email, setNameError);
             }
         }
         // TODO historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
@@ -421,12 +422,12 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public ErrorResult verifyEmail(String email) {
+    public SetNameError verifyEmail(String email) {
         if (email == null || email.isEmpty()) {
-            return ErrorResult.TO_SHORT;
+            return SetNameError.TO_SHORT;
         }
         return userRepository.findByEmail(email)
-                .map(userEntity -> ErrorResult.ALREADY_USED)
+                .map(userEntity -> SetNameError.ALREADY_USED)
                 .orElse(null);
     }
 
@@ -512,5 +513,50 @@ public class UserService implements UserDetailsService {
         if (playerBase != null) {
             baseItemService.deleteBase(playerBase.getBaseId());
         }
+    }
+
+    @Transactional
+    public SetNameResult setName(String name) {
+        SetNameError setNameError = verifySetName(name);
+        if (setNameError != null) {
+            return new SetNameResult().errorResult(setNameError);
+        }
+        var userId = getOrCreateUserIdFromContext();
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
+        userEntity.setName(name);
+        userRepository.save(userEntity);
+
+
+//    TODO update game engine    UserContext userContext = getUserContextFromContext();
+//        userContext.setName(name);
+//        serverGameEngine.get().updateUserName(userContext, name);
+        return new SetNameResult().userName(name);
+    }
+
+    @Transactional
+    public SetNameError verifySetName(String name) {
+        if (name == null || name.isEmpty()) {
+            return SetNameError.TO_SHORT;
+        }
+
+        if (name.length() < 3) {
+            return SetNameError.TO_SHORT;
+        }
+        UserContext userContext = getUserContextFromContext();
+        if (!userContext.registered()) {
+            throw new IllegalStateException("Only registered user chan set a name: " + userContext);
+        }
+        if (userContext.emailNotVerified()) {
+            throw new IllegalStateException("Only email verified user can set a name: " + userContext);
+        }
+        if (userContext.checkName()) {
+            throw new IllegalStateException("The name has already been set: " + userContext);
+        }
+
+        if (userRepository.existsByNameIgnoreCase(name)) {
+            return SetNameError.ALREADY_USED;
+        }
+
+        return null;
     }
 }

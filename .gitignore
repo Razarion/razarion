@@ -20,7 +20,6 @@ razarion-client/src/main/webapp/WEB-INF/classes/
 razarion-client-worker/razarion-client-worker.iml
 razarion-client-worker/src/main/webapp/WEB-INF/classes/
 razarion-client-common/razarion-client-common.iml
-razarion-unity-converter/razarion-unity-converter.iml
 
 
 /razarion-server/src/main/angular/frontend/dist/
