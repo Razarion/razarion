@@ -94,11 +94,7 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
     }
 
     public void onBaseNameChanged(PlayerBase playerBase) {
-        sendToClients(GameConnectionPacket.BASE_NAME_CHANGED, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setName(playerBase.getName()));
-    }
-
-    public void onBaseHumanPlayerIdChanged(PlayerBase playerBase) {
-        sendToClients(GameConnectionPacket.BASE_HUMAN_PLAYER_ID_CHANGED, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setUserId(playerBase.getUserId()));
+        sendToClients(GameConnectionPacket.BASE_NAME_CHANGED, new PlayerBaseInfo().baseId(playerBase.getBaseId()).name(playerBase.getName()));
     }
 
     public void sendTickinfo(TickInfo tickInfo) {

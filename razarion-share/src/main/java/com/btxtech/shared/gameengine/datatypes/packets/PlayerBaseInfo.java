@@ -20,53 +20,77 @@ public class PlayerBaseInfo {
         return baseId;
     }
 
-    public PlayerBaseInfo setBaseId(int baseId) {
+    public void setBaseId(int baseId) {
         this.baseId = baseId;
-        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public PlayerBaseInfo setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     public Character getCharacter() {
         return character;
     }
 
-    public PlayerBaseInfo setCharacter(Character character) {
+    public void setCharacter(Character character) {
         this.character = character;
-        return this;
     }
 
     public double getResources() {
         return resources;
     }
 
-    public PlayerBaseInfo setResources(double resources) {
+    public void setResources(double resources) {
         this.resources = resources;
-        return this;
     }
 
     public String getUserId() {
         return userId;
     }
 
-    public PlayerBaseInfo setUserId(String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
-        return this;
     }
 
     public Integer getBotId() {
         return botId;
     }
 
-    public PlayerBaseInfo setBotId(Integer botId) {
+    public void setBotId(Integer botId) {
         this.botId = botId;
+    }
+
+    public PlayerBaseInfo baseId(int baseId) {
+        setBaseId(baseId);
+        return this;
+    }
+
+    public PlayerBaseInfo name(String name) {
+        setName(name);
+        return this;
+    }
+
+    public PlayerBaseInfo character(Character character) {
+        setCharacter(character);
+        return this;
+    }
+
+    public PlayerBaseInfo resources(double resources) {
+        setResources(resources);
+        return this;
+    }
+
+    public PlayerBaseInfo userId(String userId) {
+        setUserId(userId);
+        return this;
+    }
+
+    public PlayerBaseInfo botId(Integer botId) {
+        setBotId(botId);
         return this;
     }
 

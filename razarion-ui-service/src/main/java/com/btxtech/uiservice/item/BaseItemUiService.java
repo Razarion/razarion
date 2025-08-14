@@ -181,6 +181,7 @@ public class BaseItemUiService {
                     }
                     babylonBaseItem = babylonRendererService.createSyncBaseItem(nativeSyncBaseItemTickInfo.id,
                             baseItemType,
+                            nativeSyncBaseItemTickInfo.baseId,
                             diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo),
                             userName);
                     babylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
@@ -334,8 +335,16 @@ public class BaseItemUiService {
     }
 
     public void updateBase(PlayerBaseDto playerBaseDto) {
+        PlayerBaseDto old = bases.get(playerBaseDto.getBaseId());
         synchronized (bases) {
             bases.put(playerBaseDto.getBaseId(), playerBaseDto);
+        }
+        if (old != null && old.getName() == null && playerBaseDto.getName() != null) {
+            babylonBaseItems.values().forEach(babylonBaseItem -> {
+                if (babylonBaseItem.getBaseId() == playerBaseDto.getBaseId()) {
+                    babylonBaseItem.updateUserName(playerBaseDto.getName());
+                }
+            });
         }
     }
 

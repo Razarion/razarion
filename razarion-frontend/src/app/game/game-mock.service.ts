@@ -202,7 +202,7 @@ export class GameMockService {
         };
 
         {
-          let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, Diplomacy.OWN, "myName");
+          let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, 1, Diplomacy.OWN, "myName");
           babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 1));
           babylonBaseItem1.setAngle(Tools.ToRadians(45));
 

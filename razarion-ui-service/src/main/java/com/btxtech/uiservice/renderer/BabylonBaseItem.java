@@ -26,4 +26,8 @@ public interface BabylonBaseItem extends BabylonItem {
     void onProjectileFired(DecimalPosition destination);
 
     void onExplode();
+
+    void updateUserName(String userName);
+
+    int getBaseId();
 }

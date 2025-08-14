@@ -20,6 +20,7 @@ import {Slider} from '@babylonjs/gui/2D/controls/sliders/slider';
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   // See GWT java PlanetService
   static readonly TICK_TIME_MILLI_SECONDS: number = 100;
+  private baseId: number;
   private buildingParticleSystem: ParticleSystem | null = null;
   private harvestingParticleSystem: ParticleSystem | null = null;
   private progressSlider: Slider | null = null;
@@ -39,6 +40,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   constructor(id: number,
               private baseItemType: BaseItemType,
+              baseId: number,
               diplomacy: Diplomacy,
               userName: string,
               rendererService: BabylonRenderServiceAccessImpl,
@@ -55,6 +57,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       actionService,
       rendererService.baseItemContainer,
       disposeCallback);
+
+    this.baseId = baseId;
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
     this.advancedDynamicTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -133,6 +137,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       }
 
       onExplode(): void {
+      }
+
+      getBaseId(): number {
+        return 0;
+      }
+
+      updateUserName(userName: string): void {
       }
 
     }
@@ -368,6 +379,18 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       } catch (e) {
         console.error(e);
       }
+    }
+  }
+
+  getBaseId(): number {
+    return this.baseId;
+  }
+
+  updateUserName(userName: string): void {
+    if (this.nameBlock) {
+      this.nameBlock.text = userName;
+    } else {
+      this.setupName(userName);
     }
   }
 

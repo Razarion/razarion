@@ -1,5 +1,6 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.model.RegisterResult;
 import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.SetNameError;
@@ -70,6 +71,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     @Lazy
     private BaseItemService baseItemService;
+    @Autowired
+    @Lazy
+    private ServerGameEngineControl serverGameEngineControl;
 
     public UserService(LevelCrudService levelCrudPersistence,
                        UserRepository userRepository,
@@ -525,11 +529,7 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
         userEntity.setName(name);
         userRepository.save(userEntity);
-
-
-//    TODO update game engine    UserContext userContext = getUserContextFromContext();
-//        userContext.setName(name);
-//        serverGameEngine.get().updateUserName(userContext, name);
+        serverGameEngineControl.updateUserName(userId, name);
         return new SetNameResult().userName(name);
     }
 

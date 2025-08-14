@@ -46,39 +46,55 @@ import java.util.logging.Logger;
 public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PlanetTickListener {
     private final Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
     private final Object reloadLook = new Object();
-    @Inject
-    private InitializeService initializeService;
-    @Inject
-    private PlanetService planetService;
-    @Inject
-    private StaticGameConfigService staticGameConfigPersistence;
-    @Inject
-    private GameLogicService gameLogicService;
-    @Inject
-    private ClientGameConnectionService clientGameConnectionService;
-    @Inject
-    private ClientSystemConnectionService systemConnectionService;
-    @Inject
-    private ServerGameEngineService serverGameEngineService;
-    @Inject
-    private PlanetCrudService planetCrudService;
-    @Inject
-    private QuestService questService;
-    @Inject
-    private UserService userService;
-    @Inject
-    private BaseItemService baseItemService;
-    @Inject
-    private BotService botService;
-    @Inject
-    private ResourceService resourceService;
-    @Inject
-    private BoxService boxService;
+    private final InitializeService initializeService;
+    private final PlanetService planetService;
+    private final StaticGameConfigService staticGameConfigPersistence;
+    private final GameLogicService gameLogicService;
+    private final ClientGameConnectionService clientGameConnectionService;
+    private final ClientSystemConnectionService systemConnectionService;
+    private final ServerGameEngineService serverGameEngineService;
+    private final PlanetCrudService planetCrudService;
+    private final QuestService questService;
+    private final UserService userService;
+    private final BaseItemService baseItemService;
+    private final BotService botService;
+    private final ResourceService resourceService;
+    private final BoxService boxService;
     // @Inject
     // TODO private PlanetBackupMongoDb planetBackupMongoDb;
     // @Inject
     // TODOprivate ServerInventoryService serverInventoryService;
     private boolean running;
+
+    public ServerGameEngineControl(InitializeService initializeService,
+                                   PlanetService planetService,
+                                   BoxService boxService,
+                                   StaticGameConfigService staticGameConfigPersistence,
+                                   GameLogicService gameLogicService,
+                                   ClientGameConnectionService clientGameConnectionService,
+                                   ClientSystemConnectionService systemConnectionService,
+                                   ServerGameEngineService serverGameEngineService,
+                                   PlanetCrudService planetCrudService,
+                                   QuestService questService,
+                                   UserService userService,
+                                   BaseItemService baseItemService,
+                                   BotService botService,
+                                   ResourceService resourceService) {
+        this.initializeService = initializeService;
+        this.planetService = planetService;
+        this.boxService = boxService;
+        this.staticGameConfigPersistence = staticGameConfigPersistence;
+        this.gameLogicService = gameLogicService;
+        this.clientGameConnectionService = clientGameConnectionService;
+        this.systemConnectionService = systemConnectionService;
+        this.serverGameEngineService = serverGameEngineService;
+        this.planetCrudService = planetCrudService;
+        this.questService = questService;
+        this.userService = userService;
+        this.baseItemService = baseItemService;
+        this.botService = botService;
+        this.resourceService = resourceService;
+    }
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
         List<ServerGameEngineConfig> serverGameEngineConfigs = serverGameEngineService.read();
@@ -309,8 +325,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         return planetService.getPlanetConfig();
     }
 
-    public void updateUserName(UserContext userContext, String name) {
-        PlayerBase playerBase = baseItemService.getPlayerBase4UserId(userContext.getUserId());
+    public void updateUserName(String userId, String name) {
+        PlayerBase playerBase = baseItemService.getPlayerBase4UserId(userId);
         if (playerBase != null) {
             playerBase = baseItemService.changeBaseNameChanged(playerBase.getBaseId(), name);
             clientGameConnectionService.onBaseNameChanged(playerBase);

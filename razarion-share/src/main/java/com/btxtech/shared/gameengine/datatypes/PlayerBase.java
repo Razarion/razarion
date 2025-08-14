@@ -22,11 +22,11 @@ import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
  */
 public class PlayerBase {
     private final int baseId;
+    private final Character character;
+    private final Integer botId;
     private double resources;
     private String name;
-    private final Character character;
     private String userId;
-    private final Integer botId;
     private boolean abandoned;
 
     public PlayerBase(int baseId, String name, Character character, double resources, String userId, Integer botId) {
@@ -78,12 +78,12 @@ public class PlayerBase {
         return resources;
     }
 
-    public void addResource(double resources) {
-        this.resources += resources;
-    }
-
     public void setResources(double resources) {
         this.resources = resources;
+    }
+
+    public void addResource(double resources) {
+        this.resources += resources;
     }
 
     public boolean withdrawalResource(double amount) {
@@ -98,14 +98,13 @@ public class PlayerBase {
     }
 
     public PlayerBaseInfo getPlayerBaseInfo() {
-        PlayerBaseInfo playerBaseInfo = new PlayerBaseInfo();
-        playerBaseInfo.setBaseId(baseId);
-        playerBaseInfo.setCharacter(character);
-        playerBaseInfo.setName(name);
-        playerBaseInfo.setUserId(userId);
-        playerBaseInfo.setBotId(botId);
-        playerBaseInfo.setResources(resources);
-        return playerBaseInfo;
+        return new PlayerBaseInfo()
+                .baseId(baseId)
+                .character(character)
+                .name(name)
+                .userId(userId)
+                .botId(botId)
+                .resources(resources);
     }
 
     @Override

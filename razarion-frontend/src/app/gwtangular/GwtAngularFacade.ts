@@ -344,7 +344,7 @@ export interface ComparisonConfig {
 export interface BabylonRenderServiceAccess {
   createTerrainTile(terrainTile: TerrainTile): BabylonTerrainTile;
 
-  createBabylonBaseItem(id: number, baseItemType: BaseItemType, diplomacy: Diplomacy, userName: string): BabylonBaseItem;
+  createBabylonBaseItem(id: number, baseItemType: BaseItemType, baseId: number, diplomacy: Diplomacy, userName: string): BabylonBaseItem;
 
   createBabylonResourceItem(id: number, resourceItemType: ResourceItemType): BabylonResourceItem;
 
@@ -475,6 +475,10 @@ export interface BabylonBaseItem extends BabylonItem {
   onProjectileFired(destination: DecimalPosition): void;
 
   onExplode(): void;
+
+  updateUserName(userName: string): void;
+
+  getBaseId(): number;
 }
 
 export interface BabylonResourceItem extends BabylonItem {

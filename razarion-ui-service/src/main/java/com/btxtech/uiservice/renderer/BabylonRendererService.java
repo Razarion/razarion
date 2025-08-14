@@ -8,8 +8,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.Diplomacy;
 
-import javax.inject.Singleton;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -29,8 +29,8 @@ public class BabylonRendererService {
         return babylonRenderServiceAccess.createTerrainTile(terrainTile);
     }
 
-    public BabylonBaseItem createSyncBaseItem(int id, BaseItemType baseItemType, Diplomacy diplomacy, String userName) {
-        return babylonRenderServiceAccess.createBabylonBaseItem(id, baseItemType, diplomacy, userName);
+    public BabylonBaseItem createSyncBaseItem(int id, BaseItemType baseItemType, int baseId, Diplomacy diplomacy, String userName) {
+        return babylonRenderServiceAccess.createBabylonBaseItem(id, baseItemType, baseId, diplomacy, userName);
     }
 
     public BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType resourceItemType) {

@@ -230,7 +230,12 @@ public class BaseItemService {
             if (bases.containsKey(playerBaseInfo.getBaseId())) {
                 throw new IllegalStateException("createBaseSlave: Base with Id already exits: " + playerBaseInfo.getBaseId());
             }
-            PlayerBase playerBase = new PlayerBase(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getUserId(), playerBaseInfo.getBotId());
+            PlayerBase playerBase = new PlayerBase(playerBaseInfo.getBaseId(),
+                    playerBaseInfo.getName(),
+                    playerBaseInfo.getCharacter(),
+                    playerBaseInfo.getResources(),
+                    playerBaseInfo.getUserId(),
+                    playerBaseInfo.getBotId());
             bases.put(playerBaseInfo.getBaseId(), playerBase);
             gameLogicService.onBaseSlaveCreated(playerBase);
         }
@@ -720,7 +725,14 @@ public class BaseItemService {
             backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
                 try {
                     lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
-                    bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), baseRestoreProvider.getName(playerBaseInfo), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), baseRestoreProvider.getLevel(playerBaseInfo), baseRestoreProvider.getUnlockedItemLimit(playerBaseInfo), playerBaseInfo.getUserId(), null));
+                    bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(),
+                            baseRestoreProvider.getName(playerBaseInfo),
+                            playerBaseInfo.getCharacter(),
+                            playerBaseInfo.getResources(),
+                            baseRestoreProvider.getLevel(playerBaseInfo),
+                            baseRestoreProvider.getUnlockedItemLimit(playerBaseInfo),
+                            playerBaseInfo.getUserId(),
+                            null));
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "BaseItemService.restore()", e);
                 }
