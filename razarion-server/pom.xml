@@ -116,6 +116,7 @@
                         <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
                         <class>com.btxtech.server.rest.UserController</class>
                         <class>com.btxtech.server.rest.LoggingControllerImpl</class>
+                        <class>com.btxtech.server.rest.ChatController</class>
                         <class>com.btxtech.server.rest.engine.InventoryController</class>
                         <class>com.btxtech.server.rest.engine.UnlockController</class>
                         <class>com.btxtech.server.rest.engine.QuestController</class>

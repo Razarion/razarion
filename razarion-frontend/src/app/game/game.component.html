@@ -31,6 +31,12 @@
     <quest-cockpit #questCockpitContainer></quest-cockpit>
   </div>
 
+  <div class="cockpit-border"
+       [style.visibility]="cockpitDisplayService.showChatCockpit ? 'visible' : 'hidden'"
+       [style]="{position: 'absolute', right: 0, bottom: 0}">
+    <chat-cockpit #chatCockpitComponent></chat-cockpit>
+  </div>
+
   <div *ngIf="!!modelDialogPresenter.title" class="splash">
     <div class="splash-title">
       {{ modelDialogPresenter.title }}

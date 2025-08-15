@@ -55,7 +55,7 @@ public class TerrainShapeManager {
         TerrainShapeManagerSetup terrainShapeSetup = new TerrainShapeManagerSetup(this, terrainTypeService, alarmService);
         terrainShapeSetup.processTerrainObject(terrainObjectPositions);
         terrainShapeSetup.processBotDecals(babylonDecals);
-        logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getId());
+        logger.info("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getId());
     }
 
     public void lazyInit(PlanetConfig planetConfig, Runnable finishCallback, Consumer<String> failCallback) {

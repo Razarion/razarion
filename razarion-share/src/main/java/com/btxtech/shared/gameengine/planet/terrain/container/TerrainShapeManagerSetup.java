@@ -65,7 +65,7 @@ public class TerrainShapeManagerSetup {
             }
         }
         fillInRenderTerrainObject(renderTerrainObjects);
-        logger.severe("Generate Terrain Objects: " + (System.currentTimeMillis() - time));
+        logger.info("Generate Terrain Objects: " + (System.currentTimeMillis() - time));
     }
 
     private double calculateScale(Vertex scale) {

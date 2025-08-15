@@ -20,6 +20,7 @@ import {CockpitDisplayService} from './cockpit/cockpit-display.service';
 import {InventoryComponent} from './inventory/inventory.component';
 import {UnlockComponent} from './unlock/unlock.component';
 import {UserService} from '../auth/user.service';
+import {ChatCockpitComponent} from './cockpit/chat/chat-cockpit.component';
 
 
 @Component({
@@ -35,7 +36,8 @@ import {UserService} from '../auth/user.service';
     EditorDialogComponent,
     ItemCockpitComponent,
     InventoryComponent,
-    UnlockComponent
+    UnlockComponent,
+    ChatCockpitComponent
   ],
   styleUrls: ['game.component.scss']
 })
@@ -50,6 +52,8 @@ export class GameComponent implements OnInit {
   itemCockpitContainer!: ItemCockpitComponent;
   @ViewChild('questCockpitContainer', {static: true})
   questCockpitContainer!: QuestCockpitComponent;
+  @ViewChild('chatCockpitComponent', {static: true})
+  chatCockpitComponent!: ChatCockpitComponent;
   @HostBinding("style.--cursor")
   cursor: string = '';
 

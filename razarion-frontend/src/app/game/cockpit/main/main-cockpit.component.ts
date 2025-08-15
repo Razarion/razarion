@@ -73,12 +73,14 @@ export class MainCockpitComponent implements MainCockpit {
   show(): void {
     this.zone.run(() => {
       this.cockpitDisplayService.showMainCockpit = true;
+      this.cockpitDisplayService.showChatCockpit = true;
     });
   }
 
   hide(): void {
     this.zone.run(() => {
       this.cockpitDisplayService.showMainCockpit = false;
+      this.cockpitDisplayService.showChatCockpit = false;
     });
   }
 
