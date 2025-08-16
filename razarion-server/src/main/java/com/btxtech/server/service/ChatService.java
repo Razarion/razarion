@@ -1,5 +1,6 @@
 package com.btxtech.server.service;
 
+import com.btxtech.server.gameengine.ClientSystemConnectionService;
 import com.btxtech.server.model.ChatMessageEntity;
 import com.btxtech.server.repository.ChatMessagesRepository;
 import com.btxtech.server.user.UserService;
@@ -13,10 +14,12 @@ import java.util.List;
 public class ChatService {
     private final ChatMessagesRepository chatMessagesRepository;
     private final UserService userService;
+    private final ClientSystemConnectionService clientSystemConnectionService;
 
-    public ChatService(ChatMessagesRepository chatMessagesRepository, UserService userService) {
+    public ChatService(ChatMessagesRepository chatMessagesRepository, UserService userService, ClientSystemConnectionService clientSystemConnectionService) {
         this.chatMessagesRepository = chatMessagesRepository;
         this.userService = userService;
+        this.clientSystemConnectionService = clientSystemConnectionService;
     }
 
     @Transactional
@@ -35,7 +38,9 @@ public class ChatService {
             throw new IllegalStateException("The name has not been set for user: " + userContext.getUserId());
         }
 
-        chatMessagesRepository.save(new ChatMessageEntity()
+        var chatMessageEntity = chatMessagesRepository.save(new ChatMessageEntity()
                 .init(userContext.getUserId(), userContext.getName(), message));
+
+        clientSystemConnectionService.sendChatMessage(chatMessageEntity.toChatMessage());
     }
 }

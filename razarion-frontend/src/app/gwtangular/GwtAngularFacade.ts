@@ -10,6 +10,7 @@ export abstract class GwtAngularFacade {
   mainCockpit!: MainCockpit;
   itemCockpitFrontend!: ItemCockpitFrontend;
   questCockpit!: QuestCockpit;
+  chatCockpit!: ChatCockpit;
   inGameQuestVisualizationService!: InGameQuestVisualizationService;
   baseItemPlacerPresenter!: BaseItemPlacerPresenter;
   statusProvider!: StatusProvider;
@@ -568,6 +569,16 @@ export interface QuestCockpit {
 
 export interface InGameQuestVisualizationService {
   setVisible(visible: boolean): void;
+}
+
+export interface ChatCockpit {
+  onMessage(chatMessage: ChatMessage): void;
+}
+
+export interface ChatMessage {
+  getUserName(): string;
+
+  getMessage(): string;
 }
 
 export interface BaseItemPlacerPresenter {

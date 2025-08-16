@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, NgZone, ViewChild} from '@angular/core';
 import {TableModule} from 'primeng/table';
 import {ChatControllerClient, ChatMessage} from '../../../generated/razarion-share';
 import {Button} from 'primeng/button';
@@ -8,6 +8,7 @@ import {NgForOf} from '@angular/common';
 import {ScrollPanel, ScrollPanelModule} from 'primeng/scrollpanel';
 import {HttpClient} from '@angular/common/http';
 import {TypescriptGenerator} from '../../../backend/typescript-generator';
+import {ChatCockpit, ChatMessage as GwtAngularChatMessage} from '../../../gwtangular/GwtAngularFacade';
 
 @Component({
   selector: 'chat-cockpit',
@@ -23,7 +24,7 @@ import {TypescriptGenerator} from '../../../backend/typescript-generator';
   templateUrl: './chat-cockpit.component.html',
   styleUrl: './chat-cockpit.component.scss'
 })
-export class ChatCockpitComponent implements AfterViewInit {
+export class ChatCockpitComponent implements ChatCockpit, AfterViewInit {
   @ViewChild('scrollPanel')
   scrollPanel!: ScrollPanel;
   @ViewChild('chatMessageDiv')
@@ -31,16 +32,25 @@ export class ChatCockpitComponent implements AfterViewInit {
   chatMessages: ChatMessage[] = [];
   messageToSend = ""
   private chatControllerClient: ChatControllerClient;
-  scrollTop: any;
 
-  constructor(httpClient: HttpClient) {
+  constructor(httpClient: HttpClient, private zone: NgZone) {
     this.chatControllerClient = new ChatControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
+  }
+
+  onMessage(gwtAngularChatMessage: GwtAngularChatMessage): void {
+    this.zone.run(() => {
+      this.chatMessages.push({
+        userName: gwtAngularChatMessage.getUserName(),
+        message: gwtAngularChatMessage.getMessage()
+      });
+      this.scrollToBottom();
+    });
   }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.loadChatMessages();
-    }, 20000);
+    }, 10000);
   }
 
   private loadChatMessages() {

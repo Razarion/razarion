@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.ActionServiceListener;
 import com.btxtech.uiservice.SelectionService;
+import com.btxtech.uiservice.cockpit.ChatCockpit;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.QuestCockpit;
 import com.btxtech.uiservice.cockpit.ScreenCover;
@@ -33,6 +34,7 @@ public abstract class GwtAngularFacade {
     public MainCockpit mainCockpit; // Initialized by Angular
     public ItemCockpitFrontend itemCockpitFrontend; // Initialized by Angular
     public QuestCockpit questCockpit; // Initialized by Angular
+    public ChatCockpit chatCockpit; // Initialized by Angular
     public BaseItemPlacerPresenter baseItemPlacerPresenter; // Initialized by Angular
     public BabylonRenderServiceAccess babylonRenderServiceAccess; // Initialized by Angular
     public ModelDialogPresenter modelDialogPresenter; // Initialized by Angular

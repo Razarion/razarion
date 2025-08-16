@@ -1,8 +1,10 @@
 package com.btxtech.shared.datatypes;
 
+import jsinterop.annotations.JsType;
 import org.dominokit.jackson.annotation.JSONMapper;
 
 @JSONMapper
+@JsType
 public class ChatMessage {
     private String userName;
     private String message;

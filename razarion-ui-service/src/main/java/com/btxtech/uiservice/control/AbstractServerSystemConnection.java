@@ -10,23 +10,21 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.SystemConnectionPacket;
-import com.btxtech.uiservice.cockpit.ChatUiService;
+import com.btxtech.uiservice.cockpit.ChatCockpitService;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.user.UserUiService;
-
-import javax.inject.Inject;
 
 public abstract class AbstractServerSystemConnection {
     private final GameUiControl gameUiControl;
     private final UserUiService userUiService;
     private final InventoryUiService inventoryUiService;
-    private final ChatUiService chatUiService;
+    private final ChatCockpitService chatCockpitService;
     private final Boot boot;
 
-    public AbstractServerSystemConnection(Boot boot, ChatUiService chatUiService, InventoryUiService inventoryUiService, UserUiService userUiService, GameUiControl gameUiControl) {
+    public AbstractServerSystemConnection(Boot boot, ChatCockpitService chatCockpitService, InventoryUiService inventoryUiService, UserUiService userUiService, GameUiControl gameUiControl) {
         this.boot = boot;
-        this.chatUiService = chatUiService;
+        this.chatCockpitService = chatCockpitService;
         this.inventoryUiService = inventoryUiService;
         this.userUiService = userUiService;
         this.gameUiControl = gameUiControl;
@@ -45,7 +43,6 @@ public abstract class AbstractServerSystemConnection {
     public abstract void close();
 
     protected void openCallback() {
-        chatUiService.clear();
     }
 
     public void sendGameSessionUuid() {
@@ -90,7 +87,7 @@ public abstract class AbstractServerSystemConnection {
                 onLifecyclePacket((LifecyclePacket) param);
                 break;
             case CHAT_RECEIVE_MESSAGE:
-                chatUiService.onMessage((ChatMessage) param);
+                chatCockpitService.onMessage((ChatMessage) param);
                 break;
             case EMAIL_VERIFIED:
                 userUiService.onEmailVerified();

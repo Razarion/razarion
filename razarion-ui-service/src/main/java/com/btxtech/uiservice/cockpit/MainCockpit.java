@@ -3,10 +3,6 @@ package com.btxtech.uiservice.cockpit;
 import com.btxtech.uiservice.control.GameUiControl;
 import jsinterop.annotations.JsType;
 
-/**
- * Created by Beat
- * 16.11.2016.
- */
 @JsType(isNative = true)
 public interface MainCockpit {
     void show();

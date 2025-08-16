@@ -4,6 +4,7 @@ import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.SelectionService;
+import com.btxtech.uiservice.cockpit.ChatCockpitService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.QuestCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -27,6 +28,7 @@ import javax.inject.Singleton;
 public class GwtAngularService {
     private final GameUiControl gameUiControl;
     private final MainCockpitService cockpitService;
+    private final ChatCockpitService chatCockpitService;
     private final ItemCockpitService itemCockpitService;
     private final QuestCockpitService questCockpitService;
     private final BaseItemPlacerService baseItemPlacerService;
@@ -44,7 +46,7 @@ public class GwtAngularService {
     private GwtAngularFacade gwtAngularFacade;
 
     @Inject
-    public GwtAngularService(InGameQuestVisualizationService inGameQuestVisualizationService,
+    public GwtAngularService(ChatCockpitService chatCockpitService, InGameQuestVisualizationService inGameQuestVisualizationService,
                              InventoryUiService inventoryUiService,
                              InventoryTypeService inventoryTypeService,
                              ModalDialogManager modalDialogManager,
@@ -76,6 +78,7 @@ public class GwtAngularService {
         this.cockpitService = cockpitService;
         this.gameUiControl = gameUiControl;
         this.terrainUiService = terrainUiService;
+        this.chatCockpitService = chatCockpitService;
     }
 
     public static GwtAngularFacade getGwtAngularFacade() {
@@ -98,6 +101,7 @@ public class GwtAngularService {
         cockpitService.init(gwtAngularFacade.mainCockpit);
         itemCockpitService.init(gwtAngularFacade.itemCockpitFrontend);
         questCockpitService.init(gwtAngularFacade.questCockpit);
+        chatCockpitService.init(gwtAngularFacade.chatCockpit);
         selectionService.setActionServiceListener(gwtAngularFacade.actionServiceListener);
         baseItemPlacerService.init(gwtAngularFacade.baseItemPlacerPresenter);
         modalDialogManager.init(gwtAngularFacade.modelDialogPresenter);

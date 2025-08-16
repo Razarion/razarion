@@ -23,7 +23,7 @@ import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.TrackerService;
-import com.btxtech.uiservice.cockpit.ChatUiService;
+import com.btxtech.uiservice.cockpit.ChatCockpitService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -51,7 +51,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private final Provider<Scene> sceneInstance;
     private final BaseItemUiService baseItemUiService;
     private final MainCockpitService cockpitService;
-    private final ChatUiService chatUiService;
+    private final ChatCockpitService chatUiService;
     private final ItemTypeService itemTypeService;
     private final TerrainTypeService terrainTypeService;
     private final LevelService levelService;
@@ -88,7 +88,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
                          LevelService levelService,
                          TerrainTypeService terrainTypeService,
                          ItemTypeService itemTypeService,
-                         ChatUiService chatUiService,
+                         ChatCockpitService chatUiService,
                          MainCockpitService cockpitService,
                          BaseItemUiService baseItemUiService,
                          Provider<Scene> sceneInstance) {
@@ -148,7 +148,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void start() {
         startTimeStamp = new Date();
         cockpitService.show(userUiService.get().getUserContext());
-        chatUiService.start();
         nextSceneNumber = 0;
         if (gameEngineMode == GameEngineMode.SLAVE) {
             // Scene started if slave synchronized (from GameEngine)

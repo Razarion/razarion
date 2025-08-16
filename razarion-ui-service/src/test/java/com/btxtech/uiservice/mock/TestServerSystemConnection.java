@@ -2,7 +2,7 @@ package com.btxtech.uiservice.mock;
 
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.SystemConnectionPacket;
-import com.btxtech.uiservice.cockpit.ChatUiService;
+import com.btxtech.uiservice.cockpit.ChatCockpitService;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.inventory.InventoryUiService;
@@ -16,7 +16,7 @@ public class TestServerSystemConnection extends AbstractServerSystemConnection {
     private final Logger logger = Logger.getLogger(TestServerSystemConnection.class.getName());
 
     @Inject
-    public TestServerSystemConnection(Boot boot, ChatUiService chatUiService, InventoryUiService inventoryUiService, UserUiService userUiService, GameUiControl gameUiControl) {
+    public TestServerSystemConnection(Boot boot, ChatCockpitService chatUiService, InventoryUiService inventoryUiService, UserUiService userUiService, GameUiControl gameUiControl) {
         super(boot, chatUiService, inventoryUiService, userUiService, gameUiControl);
     }
 

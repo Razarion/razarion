@@ -90,6 +90,7 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
     this.gwtAngularService.gwtAngularFacade.questCockpit = this.questCockpitContainer;
+    this.gwtAngularService.gwtAngularFacade.chatCockpit = this.chatCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.babylonRenderServiceAccessImpl.createBaseItemPlacerPresenter();
 
     if (environment.gwtMock) {

@@ -6,7 +6,7 @@ import com.btxtech.common.system.WebSocketWrapper;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.SystemConnectionPacket;
-import com.btxtech.uiservice.cockpit.ChatUiService;
+import com.btxtech.uiservice.cockpit.ChatCockpitService;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.inventory.InventoryUiService;
@@ -35,7 +35,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
     public ClientServerSystemConnection(WebSocketWrapper webSocketWrapper,
                                         LifecycleService lifecycleService,
                                         Boot boot,
-                                        ChatUiService chatUiService,
+                                        ChatCockpitService chatUiService,
                                         InventoryUiService inventoryUiService,
                                         UserUiService userUiService,
                                         GameUiControl gameUiControl) {
@@ -47,10 +47,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
     @Override
     public void init() {
         webSocketWrapper.start(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT + JwtHelper.bearerTokenToUrl(getBearerTokenFromLocalStorage()),
-                () -> {
-                    openCallback();
-                    sendGameSessionUuid();
-                }, this::handleMessage, lifecycleService::handleServerRestart,
+                this::sendGameSessionUuid, this::handleMessage, lifecycleService::handleServerRestart,
                 () -> lifecycleService.onConnectionLost("ClientServerSystemConnection"));
     }
 
