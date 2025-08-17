@@ -166,4 +166,12 @@ export class UserService {
   setName(name: string) {
     this.name = name
   }
+
+  hasValidName() {
+    return !!this.name;
+  }
+
+  isRegistered() {
+    return this.registerState === RegisterState.EMAIL_VERIFIED;
+  }
 }

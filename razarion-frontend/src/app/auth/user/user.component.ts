@@ -3,19 +3,18 @@ import {UserService} from '../user.service';
 import {ButtonModule} from 'primeng/button';
 import {Router} from '@angular/router';
 import {FormsModule} from '@angular/forms';
-import {NgIf} from '@angular/common';
+import {CommonModule, NgIf} from '@angular/common';
 import {Dialog} from 'primeng/dialog';
-import {InputText} from 'primeng/inputtext';
 import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
 
 @Component({
   selector: 'user',
   imports: [
+    CommonModule,
     ButtonModule,
     FormsModule,
     NgIf,
     Dialog,
-    InputText,
   ],
   templateUrl: './user.component.html'
 })
@@ -23,7 +22,6 @@ export class UserComponent implements OnInit {
   login = "";
   showDeleteDialog: boolean = false;
   deleteConfirmationInput: string = '';
-
 
   constructor(public userService: UserService,
               private router: Router,

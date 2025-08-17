@@ -6,6 +6,7 @@ import com.btxtech.server.repository.ChatMessagesRepository;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.ChatMessage;
 import jakarta.transaction.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class ChatService {
     public void send(String message) {
         var userContext = userService.getUserContextFromContext();
         if (!userContext.checkName()) {
-            throw new IllegalStateException("The name has not been set for user: " + userContext.getUserId());
+            throw new AccessDeniedException("The name has not been set for user: " + userContext.getUserId());
         }
 
         var chatMessageEntity = chatMessagesRepository.save(new ChatMessageEntity()

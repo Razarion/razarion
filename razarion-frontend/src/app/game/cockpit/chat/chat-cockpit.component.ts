@@ -4,11 +4,14 @@ import {ChatControllerClient, ChatMessage} from '../../../generated/razarion-sha
 import {Button} from 'primeng/button';
 import {InputText} from 'primeng/inputtext';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import {ScrollPanel, ScrollPanelModule} from 'primeng/scrollpanel';
 import {HttpClient} from '@angular/common/http';
 import {TypescriptGenerator} from '../../../backend/typescript-generator';
 import {ChatCockpit, ChatMessage as GwtAngularChatMessage} from '../../../gwtangular/GwtAngularFacade';
+import {UserService} from '../../../auth/user.service';
+import {Dialog} from 'primeng/dialog';
+import {CockpitDisplayService} from '../cockpit-display.service';
 
 @Component({
   selector: 'chat-cockpit',
@@ -20,6 +23,9 @@ import {ChatCockpit, ChatMessage as GwtAngularChatMessage} from '../../../gwtang
     FormsModule,
     NgForOf,
     ScrollPanelModule,
+    Dialog,
+    NgIf,
+
   ],
   templateUrl: './chat-cockpit.component.html',
   styleUrl: './chat-cockpit.component.scss'
@@ -31,9 +37,13 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit {
   chatMessageDiv!: ElementRef<HTMLDivElement>;
   chatMessages: ChatMessage[] = [];
   messageToSend = ""
+  showUnregisteredDialog = false;
   private chatControllerClient: ChatControllerClient;
 
-  constructor(httpClient: HttpClient, private zone: NgZone) {
+  constructor(httpClient: HttpClient,
+              private zone: NgZone,
+              public userService: UserService,
+              private cockpitDisplayService: CockpitDisplayService) {
     this.chatControllerClient = new ChatControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
@@ -66,6 +76,11 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit {
   }
 
   onSend() {
+    if (!this.userService.hasValidName()) {
+      this.showUnregisteredDialog = true;
+      return;
+    }
+
     this.chatControllerClient.send(this.messageToSend)
       .then(value => {
         this.messageToSend = "";
@@ -81,5 +96,19 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit {
       const chatMessageDivHeight = this.chatMessageDiv.nativeElement.offsetHeight;
       this.scrollPanel.scrollTop(chatMessageDivHeight);
     }, 0);
+  }
+
+  onRegisterClicked() {
+    this.showUnregisteredDialog = false;
+    this.cockpitDisplayService.showRegisterDialog = true;
+  }
+
+  onSetNameClicked() {
+    this.showUnregisteredDialog = false;
+    this.cockpitDisplayService.showSetUserNameDialog = true;
+  }
+
+  showSetNameButton() {
+    return this.userService.showSetNameButton() && this.userService.isRegistered();
   }
 }

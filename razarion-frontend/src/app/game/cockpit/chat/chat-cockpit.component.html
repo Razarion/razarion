@@ -20,3 +20,27 @@
     </p-button>
   </div>
 </div>
+
+<p-dialog header="You have no name" [(visible)]="showUnregisteredDialog">
+  <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 w-120 items-center justify-center gap-3">
+    <p>
+      You must be registered and have chosen a name before sending chat messages
+    </p>
+    <div class="flex gap-2 justify-center">
+      <p-button
+        *ngIf="userService.showRegisterButton()"
+        class="rounded"
+        label="Register"
+        size="small"
+        (click)="onRegisterClicked()">
+      </p-button>
+      <p-button
+        *ngIf="showSetNameButton()"
+        class="rounded"
+        label="Set name"
+        size="small"
+        (click)="onSetNameClicked()">
+      </p-button>
+    </div>
+  </div>
+</p-dialog>

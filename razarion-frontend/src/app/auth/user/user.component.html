@@ -1,30 +1,31 @@
-<div class="flex flex-col gap-1">
+<div class="flex flex-col gap-1 w-130">
 
   <div class="flex flex-col gap-1">
 
-    <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 w-120">
+    <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500">
       <div class="grid grid-cols-12 gap-4 items-center">
         <span class="col-span-3">Email / Login</span>
-        <div class="col-span-7">
-          <input pInputText [ngModel]="login" class="w-full" readonly="readonly"/>
-        </div>
+        <span class="block bg-surface-700 text-white px-3 py-2 rounded col-span-7">
+              {{ login }}
+           </span>
       </div>
       <div class="grid grid-cols-12 gap-4 items-center mt-3">
         <span class="col-span-3 text-white">Player Name</span>
-        <div class="col-span-7">
-          <input pInputText [ngModel]="userService.name" class="w-full" readonly="readonly"/>
-        </div>
+        <span class="block bg-surface-700 text-white px-3 py-2 rounded col-span-7"
+              [ngClass]="{'text-gray-400 italic': !userService.name, 'text-white': userService.name}">
+              {{ userService.name || 'No name set' }}
+        </span>
         <div class="col-span-2">
           <p-button *ngIf="userService.showSetNameButton()"
                     (onClick)="onSetName()"
-                    label="Set"
+                    label="Choose"
                     size="small"
                     [disabled]="userService.disableSetNameButton()"></p-button>
         </div>
       </div>
     </div>
 
-    <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 gap-3 w-120 items-center">
+    <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 gap-3 items-center">
       <p class="w-3/5">
         Log out of your account. You can log in again anytime. If you just want to stop playing, simply close the
         browser tab.
@@ -33,7 +34,7 @@
     </div>
 
     <!-- Delete Account Section -->
-    <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 gap-3 w-120 items-center">
+    <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 gap-3 items-center">
       <p class="w-3/5">
         Permanently delete your account. <strong>This action cannot be undone.</strong>
       </p>
@@ -56,11 +57,11 @@
               class="w-full border border-gray-300 rounded px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-red-200"/>
 
             <div class="flex justify-end space-x-2">
-              <button
+              <p-button
                 class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded"
                 (click)="cancelDelete()">
                 Cancel
-              </button>
+              </p-button>
               <button
                 class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded disabled:opacity-50"
                 [disabled]="deleteConfirmationInput !== 'DELETE'"
