@@ -146,6 +146,7 @@ export class GameComponent implements OnInit {
   addEditorModel(editorModel: EditorModel) {
     this.editorModels.push(editorModel);
     this.cockpitDisplayService.showQuestCockpit = false;
+    this.cockpitDisplayService.showChatCockpit = false;
   }
 
   removeEditorModel(editorModel: EditorModel) {

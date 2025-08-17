@@ -53,10 +53,6 @@ public abstract class AbstractServerSystemConnection {
         sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.LEVEL_UPDATE_CLIENT, toJson(levelConfig.getId())));
     }
 
-    public void sendChatMessage(String message) {
-        sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.CHAT_SEND_MESSAGE, toJson(message)));
-    }
-
     public void handleMessage(String text) {
         SystemConnectionPacket packet = ConnectionMarshaller.deMarshallPackage(text, SystemConnectionPacket.class);
         String jsonString = ConnectionMarshaller.deMarshallPayload(text);

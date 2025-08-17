@@ -138,6 +138,7 @@ export class EditorDialogComponent {
   openBabylonInspector() {
     this.mainCockpitComponent.editorDialog = false;
     this.cockpitDisplayService.showQuestCockpit = false;
+    this.cockpitDisplayService.showChatCockpit = false;
     this.renderService.showInspector();
   }
 

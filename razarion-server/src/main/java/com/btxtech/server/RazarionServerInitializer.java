@@ -8,6 +8,7 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.system.alarm.AlarmService;
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -24,7 +25,6 @@ public class RazarionServerInitializer implements ApplicationRunner {
     private final ServerTerrainShapeService serverTerrainShapeService;
     private final StaticGameConfigService staticGameConfigService;
     private final ServerGameEngineControl gameEngineService;
-    // TODO private final ChatPersistence chatPersistence;
     // TODO private ServerMgmt serverMgmt;
     private final AlarmService alarmService;
     private final InitializeService initializeService;
@@ -35,7 +35,6 @@ public class RazarionServerInitializer implements ApplicationRunner {
                                      InitializeService initializeService,
                                      AlarmService alarmService,
                                      // TODO ServerMgmt serverMgmt,
-                                     // TODO ChatPersistence chatPersistence,
                                      ServerGameEngineControl gameEngineService,
                                      StaticGameConfigService staticGameConfigService,
                                      ServerTerrainShapeService serverTerrainShapeService, UserService userService) {
@@ -43,7 +42,6 @@ public class RazarionServerInitializer implements ApplicationRunner {
         this.initializeService = initializeService;
         this.alarmService = alarmService;
         // TODO this.serverMgmt = serverMgmt;
-        // TODO this.chatPersistence = chatPersistence;
         this.gameEngineService = gameEngineService;
         this.staticGameConfigService = staticGameConfigService;
         this.serverTerrainShapeService = serverTerrainShapeService;
@@ -80,11 +78,10 @@ public class RazarionServerInitializer implements ApplicationRunner {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-//   TODO     try {
-//            chatPersistence.fillCacheFromDb();
-//        } catch (Exception e) {
-//            exceptionHandler.handleException(e);
-//        }
-//        serverMgmt.setServerState(ServerState.RUNNING);
+    }
+
+    @PreDestroy
+    public void onShutdown() {
+        gameEngineService.shutdown();
     }
 }

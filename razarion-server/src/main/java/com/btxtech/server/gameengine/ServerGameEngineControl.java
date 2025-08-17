@@ -1,12 +1,11 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.engine.BackupPlanetOverview;
+import com.btxtech.server.service.engine.PlanetBackupService;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
 import com.btxtech.server.user.UserService;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
@@ -32,11 +31,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.annotation.security.RolesAllowed;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -60,8 +56,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private final BotService botService;
     private final ResourceService resourceService;
     private final BoxService boxService;
-    // @Inject
-    // TODO private PlanetBackupMongoDb planetBackupMongoDb;
+    private final PlanetBackupService planetBackupService;
     // @Inject
     // TODOprivate ServerInventoryService serverInventoryService;
     private boolean running;
@@ -79,7 +74,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                                    UserService userService,
                                    BaseItemService baseItemService,
                                    BotService botService,
-                                   ResourceService resourceService) {
+                                   ResourceService resourceService, PlanetBackupService planetBackupService) {
         this.initializeService = initializeService;
         this.planetService = planetService;
         this.boxService = boxService;
@@ -94,6 +89,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         this.baseItemService = baseItemService;
         this.botService = botService;
         this.resourceService = resourceService;
+        this.planetBackupService = planetBackupService;
     }
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
@@ -126,16 +122,10 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         if (backupPlanetInfo != null) {
             return backupPlanetInfo;
         } else {
-            // TODO return planetBackupMongoDb.loadLastBackup(planetConfig.getId());
-            BackupPlanetInfo empty = new BackupPlanetInfo();
-            empty.setBackupComparisionInfos(new ArrayList<>());
-            empty.setPlayerBaseInfos(new ArrayList<>());
-            empty.setSyncBaseItemInfos(new ArrayList<>());
-            return empty;
+            return planetBackupService.loadLastBackup(planetConfig.getId());
         }
     }
 
-    @RolesAllowed(Roles.ADMIN)
     public void reloadStatic() {
         synchronized (reloadLook) {
             long time = System.currentTimeMillis();
@@ -151,14 +141,12 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 //        }
 //    }
 
-    @RolesAllowed(Roles.ADMIN)
     public void restartResourceRegions() {
         synchronized (reloadLook) {
             resourceService.reloadResourceRegions(serverGameEngineService.readMasterPlanetConfig().getResourceRegionConfigs());
         }
     }
 
-    @RolesAllowed(Roles.ADMIN)
     public void restartBoxRegions() {
         synchronized (reloadLook) {
             boxService.stopBoxRegions();
@@ -166,7 +154,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         }
     }
 
-    @RolesAllowed(Roles.ADMIN)
     public void restartPlanet() {
         if (!running) {
             return;
@@ -178,24 +165,22 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         logger.info("ServerGameEngineControl.restartPlanet() in: " + (System.currentTimeMillis() - time));
     }
 
-    @RolesAllowed(Roles.ADMIN)
     public void backupPlanet() throws JsonProcessingException {
         if (!running) {
             return;
         }
         long time = System.currentTimeMillis();
         BackupPlanetInfo backupPlanetInfo = planetService.backup();
-        // TODO planetBackupMongoDb.saveBackup(backupPlanetInfo);
+        planetBackupService.saveBackup(backupPlanetInfo);
         logger.info("ServerGameEngineControl.backupPlanet() in: " + (System.currentTimeMillis() - time));
     }
 
-    @RolesAllowed(Roles.ADMIN)
     public void restorePlanet(BackupPlanetOverview backupPlanetOverview) {
-//  TODO      long time = System.currentTimeMillis();
-//        BackupPlanetInfo backupPlanetInfo = planetBackupMongoDb.loadBackup(backupPlanetOverview);
-//        stop();
-//        start(backupPlanetInfo, true);
-//        logger.info("ServerGameEngineControl.restorePlanet() in: " + (System.currentTimeMillis() - time));
+        long time = System.currentTimeMillis();
+        BackupPlanetInfo backupPlanetInfo = planetBackupService.loadBackup(backupPlanetOverview);
+        stop();
+        start(backupPlanetInfo, true);
+        logger.info("ServerGameEngineControl.restorePlanet() in: " + (System.currentTimeMillis() - time));
     }
 
     private void activateQuests(BackupPlanetInfo backupPlanetInfo) {
@@ -221,7 +206,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void shutdown() {
         try {
             if (running) {
-                // TODO planetBackupMongoDb.saveBackup(planetService.backup());
+                planetBackupService.saveBackup(planetService.backup());
             }
         } catch (Throwable t) {
             logger.log(Level.WARNING, t.getMessage(), t);

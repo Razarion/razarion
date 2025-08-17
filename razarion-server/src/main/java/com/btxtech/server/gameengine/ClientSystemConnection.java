@@ -37,7 +37,6 @@ public class ClientSystemConnection {
         this.wsSession = wsSession;
         time = new Date();
         this.userId = userId;
-        // TODO chatPersistence.sendLastMessages(getSession());
     }
 
     public void handleMessage(WebSocketMessage<?> message) {
@@ -60,10 +59,6 @@ public class ClientSystemConnection {
             case SET_GAME_SESSION_UUID:
                 gameSessionUuid = (String) param;
                 break;
-            case CHAT_SEND_MESSAGE:
-                // TODO chatPersistence.onMessage(getSession(), (String) param);
-                // TODO break;
-                throw new UnsupportedOperationException("... TODO ...");
             default:
                 throw new IllegalArgumentException("ClientSystemConnection Unknown Packet: " + packet);
         }

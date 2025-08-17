@@ -32,7 +32,6 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     // Unlock
     UNLOCKED_ITEM_LIMIT(UnlockedItemPacket.class),
     // Chat
-    CHAT_SEND_MESSAGE(String.class),
     CHAT_RECEIVE_MESSAGE(ChatMessage.class),
     // User
     EMAIL_VERIFIED(Void.class);

@@ -2,10 +2,6 @@ package com.btxtech.server.model.engine;
 
 import java.util.Date;
 
-/**
- * Created by Beat
- * on 02.09.2017.
- */
 public class BackupPlanetOverview {
     private Date date;
     private int planetId;

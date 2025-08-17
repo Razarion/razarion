@@ -36,7 +36,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
     private final Logger logger = Logger.getLogger(PlanetService.class.getName());
     private final InitializeService initializeService;
-    private final SimpleExecutorService simpleExecutorService;
     private final PathingService pathingService;
     private final BaseItemService baseItemService;
     private final QuestService questService;
@@ -78,7 +77,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
         this.questService = questService;
         this.baseItemService = baseItemService;
         this.pathingService = pathingService;
-        this.simpleExecutorService = simpleExecutorService;
         this.initializeService = initializeService;
         scheduledFuture = simpleExecutorService.scheduleAtFixedRate(TICK_TIME_MILLI_SECONDS, false, this, SimpleExecutorService.Type.GAME_ENGINE);
     }

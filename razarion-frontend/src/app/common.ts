@@ -1,6 +1,5 @@
 export const APPLICATION_PATH = '/rest';
 export const EDITOR_PATH = APPLICATION_PATH + '/editor';
-export const URL_PLANET_MGMT = APPLICATION_PATH + '/servergameenginemgmt';
 export const URL_IMAGE = APPLICATION_PATH + '/image';
 export const URL_GLTF = APPLICATION_PATH + "/gltf";
 export const UPDATE_RADIUS_REST_CALL = EDITOR_PATH + '/terrain-object/update-radius';

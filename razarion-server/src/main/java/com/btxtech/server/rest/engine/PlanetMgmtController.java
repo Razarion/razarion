@@ -3,19 +3,26 @@ package com.btxtech.server.rest.engine;
 import com.btxtech.server.gameengine.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.model.Roles;
+import com.btxtech.server.model.engine.BackupPlanetOverview;
+import com.btxtech.server.service.engine.PlanetBackupService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/rest/planet-mgmt-controller")
@@ -26,17 +33,20 @@ public class PlanetMgmtController {
     private final ServerTerrainShapeService serverTerrainShapeService;
     private final ClientSystemConnectionService clientSystemConnectionService;
     private final ServerGameEngineService serverGameEngineCrudPersistence;
+    private final PlanetBackupService planetBackupService;
 
     public PlanetMgmtController(BaseItemService baseItemService,
                                 ServerGameEngineControl serverGameEngineControl,
                                 ServerTerrainShapeService serverTerrainShapeService,
                                 ClientSystemConnectionService clientSystemConnectionService,
-                                ServerGameEngineService serverGameEngineCrudPersistence) {
+                                ServerGameEngineService serverGameEngineCrudPersistence,
+                                PlanetBackupService planetBackupService) {
         this.baseItemService = baseItemService;
         this.serverGameEngineControl = serverGameEngineControl;
         this.serverTerrainShapeService = serverTerrainShapeService;
         this.clientSystemConnectionService = clientSystemConnectionService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
+        this.planetBackupService = planetBackupService;
     }
 
     @PostMapping("restartBots")
@@ -96,9 +106,9 @@ public class PlanetMgmtController {
         restartPlanet(LifecyclePacket.Type.PLANET_RESTART_COLD);
     }
 
-    @DeleteMapping(value = "delete/{baseId}")
+    @DeleteMapping("delete/{baseId}")
     @RolesAllowed(Roles.ADMIN)
-    public void deleteBase(@PathVariable("baseId") int baseId) {
+    public void deleteBase(@PathVariable int baseId) {
         try {
             baseItemService.deleteBase(baseId);
         } catch (Throwable e) {
@@ -107,11 +117,66 @@ public class PlanetMgmtController {
         }
     }
 
+    @GetMapping("loadAllBackupBaseOverviews")
+    @RolesAllowed(Roles.ADMIN)
+    public List<BackupPlanetOverview> loadAllBackupBaseOverviews() {
+        try {
+            return planetBackupService.loadAllBackupBaseOverviews();
+        } catch (Throwable t) {
+            logger.warn(t.getMessage(), t);
+            throw t;
+        }
+    }
+
+    @PostMapping("doBackup")
+    @RolesAllowed(Roles.ADMIN)
+    public List<BackupPlanetOverview> doBackup() {
+        try {
+            serverGameEngineControl.backupPlanet();
+            return planetBackupService.loadAllBackupBaseOverviews();
+        } catch (JsonProcessingException e) {
+            logger.warn(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } catch (Throwable t) {
+            logger.warn(t.getMessage(), t);
+            throw t;
+        }
+    }
+
+    @PostMapping("doRestore")
+    @RolesAllowed(Roles.ADMIN)
+    public void doRestore(@RequestBody BackupPlanetOverview backupPlanetOverview) {
+        try {
+            serverGameEngineControl.restorePlanet(backupPlanetOverview);
+        } catch (Throwable t) {
+            logger.warn(t.getMessage(), t);
+            throw t;
+        }
+    }
+
+    @DeleteMapping("deleteBackup")
+    @RolesAllowed(Roles.ADMIN)
+    public List<BackupPlanetOverview> deleteBackup(@RequestBody BackupPlanetOverview backupPlanetOverview) {
+        try {
+            planetBackupService.deleteBackup(backupPlanetOverview);
+            return planetBackupService.loadAllBackupBaseOverviews();
+        } catch (Throwable t) {
+            logger.warn(t.getMessage(), t);
+            throw t;
+        }
+    }
+
     private void restartPlanet(LifecyclePacket.Type type) {
         try {
-            clientSystemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
+            clientSystemConnectionService.sendLifecyclePacket(
+                    new LifecyclePacket().setType(LifecyclePacket.Type.HOLD)
+                            .setDialog(LifecyclePacket.Dialog.PLANET_RESTART)
+            );
             ServerGameEngineConfig serverGameEngineConfig = serverGameEngineCrudPersistence.read().get(0);
-            serverTerrainShapeService.createTerrainShape(serverGameEngineConfig.getBotConfigs(), serverGameEngineConfig.getPlanetConfigId());
+            serverTerrainShapeService.createTerrainShape(
+                    serverGameEngineConfig.getBotConfigs(),
+                    serverGameEngineConfig.getPlanetConfigId()
+            );
             serverGameEngineControl.restartPlanet();
             clientSystemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(type));
         } catch (Throwable e) {
@@ -119,5 +184,4 @@ public class PlanetMgmtController {
             throw e;
         }
     }
-
 }
