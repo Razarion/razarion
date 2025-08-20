@@ -22,7 +22,6 @@ import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.shared.utils.GeometricUtil;
-import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.cockpit.ChatCockpitService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
@@ -58,7 +57,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private final InventoryTypeService inventoryTypeService;
     private final Provider<UserUiService> userUiService;
     private final Provider<Boot> boot;
-    private final Provider<TrackerService> trackerService;
     private final InitializeService initializeService;
     private final ModalDialogManager modalDialogManager;
     private final Provider<ScreenCover> screenCover;
@@ -66,7 +64,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private ColdGameUiContext coldGameUiContext;
     private int nextSceneNumber;
     private Scene currentScene;
-    private Date startTimeStamp;
     private Date sceneStartTimeStamp;
     private List<SceneConfig> scenes;
     private AbstractServerSystemConnection abstractServerSystemConnection;
@@ -81,7 +78,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
                          Provider<ScreenCover> screenCover,
                          ModalDialogManager modalDialogManager,
                          InitializeService initializeService,
-                         Provider<TrackerService> trackerService,
                          Provider<Boot> boot,
                          Provider<UserUiService> userUiService,
                          InventoryTypeService inventoryTypeService,
@@ -96,7 +92,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         this.screenCover = screenCover;
         this.modalDialogManager = modalDialogManager;
         this.initializeService = initializeService;
-        this.trackerService = trackerService;
         this.boot = boot;
         this.userUiService = userUiService;
         this.inventoryTypeService = inventoryTypeService;
@@ -146,7 +141,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void start() {
-        startTimeStamp = new Date();
         cockpitService.show(userUiService.get().getUserContext());
         nextSceneNumber = 0;
         if (gameEngineMode == GameEngineMode.SLAVE) {
@@ -154,9 +148,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             return;
         }
         if (gameEngineMode == GameEngineMode.MASTER) {
-            if (coldGameUiContext.getWarmGameUiContext().isDetailedTracking()) {
-                trackerService.get().startDetailedTracking(getPlanetConfig().getId());
-            }
             scenes = coldGameUiContext.getWarmGameUiContext().getSceneConfigs();
             if (scenes.isEmpty()) {
                 throw new AlarmRaisedException(Alarm.Type.INVALID_GAME_UI_CONTEXT, "No scenes defined", coldGameUiContext.getWarmGameUiContext().getGameUiControlConfigId());
@@ -198,21 +189,11 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             logger.warning("sceneStartTimeStamp == null");
             return;
         }
-        trackerService.get().trackScene(sceneStartTimeStamp, currentScene.getSceneConfig().getInternalName());
         sceneStartTimeStamp = null;
     }
 
     public void finished() {
-        if (startTimeStamp == null) {
-            logger.warning("startTimeStamp == null");
-        } else {
-            trackerService.get().trackGameUiControl(startTimeStamp);
-            startTimeStamp = null;
-        }
         if (gameEngineMode == GameEngineMode.MASTER) {
-            if (coldGameUiContext.getWarmGameUiContext().isDetailedTracking()) {
-                trackerService.get().stopDetailedTracking();
-            }
             // TODO Temporary fix for showing move to first multiplayer planet. Pervents loading new planet if multiplayer planet is done. Because there is no new planet
             modalDialogManager.showLeaveStartTutorial(() -> {
                 screenCover.get().fadeInLoadingCover();

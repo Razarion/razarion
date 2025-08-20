@@ -17,4 +17,9 @@ public class AngularForwardController {
     public String forwardGameVerifyEmail(HttpServletRequest request, @PathVariable("verificationId") String verificationId) {
         return "forward:/game/index.html";
     }
+
+    @GetMapping(value = {"/game/backend", "/game/backend/"}, produces = "text/html")
+    public String forwardGameBackend(HttpServletRequest request) {
+        return "forward:/game/index.html";
+    }
 }

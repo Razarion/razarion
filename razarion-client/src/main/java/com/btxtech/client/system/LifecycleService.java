@@ -7,10 +7,8 @@ import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.deprecated.Caller;
-import com.btxtech.shared.deprecated.RemoteCallback;
 import com.btxtech.shared.rest.ServerMgmtController;
 import com.btxtech.shared.system.SimpleExecutorService;
-import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
@@ -27,7 +25,6 @@ import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
-import com.google.gwt.user.client.Window;
 import elemental2.dom.DomGlobal;
 
 import javax.inject.Inject;

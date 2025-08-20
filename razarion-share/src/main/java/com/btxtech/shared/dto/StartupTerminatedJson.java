@@ -2,15 +2,10 @@ package com.btxtech.shared.dto;
 
 import java.util.Date;
 
-/**
- * Created by Beat
- * 03.03.2017.
- */
 public class StartupTerminatedJson {
     private boolean successful;
     private int totalTime;
     private String gameSessionUuid;
-    private String httpSessionId;
     private Date serverTime;
 
     public boolean isSuccessful() {
@@ -37,14 +32,6 @@ public class StartupTerminatedJson {
         this.gameSessionUuid = gameSessionUuid;
     }
 
-    public String getHttpSessionId() {
-        return httpSessionId;
-    }
-
-    public void setHttpSessionId(String httpSessionId) {
-        this.httpSessionId = httpSessionId;
-    }
-
     public Date getServerTime() {
         return serverTime;
     }
@@ -69,11 +56,6 @@ public class StartupTerminatedJson {
         return this;
     }
 
-    public StartupTerminatedJson httpSessionId(String httpSessionId) {
-        setHttpSessionId(httpSessionId);
-        return this;
-    }
-
     public StartupTerminatedJson serverTime(Date serverTime) {
         setServerTime(serverTime);
         return this;
@@ -85,7 +67,6 @@ public class StartupTerminatedJson {
                 "successful=" + successful +
                 ", totalTime=" + totalTime +
                 ", gameSessionUuid='" + gameSessionUuid + '\'' +
-                ", httpSessionId='" + httpSessionId + '\'' +
                 ", serverTime=" + serverTime +
                 '}';
     }

@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
@@ -88,18 +87,15 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private final PerfmonService perfmonService;
     private final TerrainService terrainService;
     private final Provider<AbstractServerGameConnection> connectionInstance;
-    private final Provider<WorkerTrackerHandler> workerTrackerHandlerInstance;
     private UserContext userContext;
     private PlayerBase playerBase;
     private int xpFromKills;
     private boolean sendTickUpdate;
     private AbstractServerGameConnection serverConnection;
     private GameEngineMode gameEngineMode;
-    private WorkerTrackerHandler workerTrackerHandler;
     private String gameSessionUuid;
 
-    public GameEngineWorker(Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
-                            Provider<AbstractServerGameConnection> connectionInstance,
+    public GameEngineWorker(Provider<AbstractServerGameConnection> connectionInstance,
                             TerrainService terrainService,
                             PerfmonService perfmonService,
                             GameLogicService logicService,
@@ -112,7 +108,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                             BotService botService,
                             InitializeService initializeService,
                             PlanetService planetService) {
-        this.workerTrackerHandlerInstance = workerTrackerHandlerInstance;
         this.connectionInstance = connectionInstance;
         this.terrainService = terrainService;
         this.perfmonService = perfmonService;
@@ -136,7 +131,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     protected void dispatch(GameEngineControlPackage controlPackage) {
         switch (controlPackage.getCommand()) {
             case INITIALIZE:
-                initialise((StaticGameConfig) controlPackage.getData(0), (PlanetConfig) controlPackage.getData(1), (UserContext) controlPackage.getData(2), (GameEngineMode) controlPackage.getData(3), (Boolean) controlPackage.getData(4), (String) controlPackage.getData(5));
+                initialise((StaticGameConfig) controlPackage.getData(0), (PlanetConfig) controlPackage.getData(1), (UserContext) controlPackage.getData(2), (GameEngineMode) controlPackage.getData(3), (String) controlPackage.getData(4));
                 break;
             case INITIALIZE_WARM:
                 initialiseWarm((PlanetConfig) controlPackage.getData(0), (UserContext) controlPackage.getData(1), (GameEngineMode) controlPackage.getData(2), (String) controlPackage.getData(3));
@@ -207,21 +202,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case TERRAIN_TILE_REQUEST:
                 getTerrainTile((Index) controlPackage.getData(0));
                 break;
-            case PLAYBACK_PLAYER_BASE:
-                onPlayerBaseTracking((PlayerBaseTracking) controlPackage.getData(0));
-                break;
-            case PLAYBACK_SYNC_ITEM_DELETED:
-                onServerSyncItemDeleted((SyncItemDeletedInfo) controlPackage.getData(0));
-                break;
-            case PLAYBACK_SYNC_BASE_ITEM:
-                baseItemService.onSlaveSyncBaseItemChanged((SyncBaseItemInfo) controlPackage.getData(0));
-                break;
-            case PLAYBACK_SYNC_RESOURCE_ITEM:
-                resourceService.onSlaveSyncResourceItemChanged((SyncResourceItemInfo) controlPackage.getData(0));
-                break;
-            case PLAYBACK_SYNC_BOX_ITEM:
-                boxService.onSlaveSyncBoxItemChanged((SyncBoxItemInfo) controlPackage.getData(0));
-                break;
             case SELL_ITEMS:
                 sellItems((IdsDto) controlPackage.getData(0));
                 break;
@@ -243,20 +223,14 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, boolean detailedTracking, String gameSessionUuid) {
+    private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, String gameSessionUuid) {
         try {
             this.gameSessionUuid = gameSessionUuid;
             initializeService.setStaticGameConfig(staticGameConfig);
             planetService.addTickListener(this);
-            initWarmInternal(planetConfig, userContext, gameEngineMode, () -> {
-                if (gameEngineMode == GameEngineMode.MASTER && detailedTracking) {
-                    workerTrackerHandler = workerTrackerHandlerInstance.get();
-                    workerTrackerHandler.start(gameSessionUuid);
-                }
-                sendToClient(GameEngineControlPackage.Command.INITIALIZED);
-            }, failString -> {
-                sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, failString);
-            });
+            initWarmInternal(planetConfig, userContext, gameEngineMode,
+                    () -> sendToClient(GameEngineControlPackage.Command.INITIALIZED),
+                    failString -> sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, failString));
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "GameEngineWorker.initialise()", t);
             sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, ExceptionUtil.setupStackTrace(null, t));
@@ -267,7 +241,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         try {
             this.gameSessionUuid = gameSessionUuid;
             initWarmInternal(planetConfig, userContext, gameEngineMode, () -> {
-                workerTrackerHandler = null;
                 sendToClient(GameEngineControlPackage.Command.INITIALIZED);
             }, failString -> {
                 sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, failString);
@@ -354,7 +327,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     public void stop() {
         try {
-            workerTrackerHandlerInstance.get().stop();
             perfmonService.stop();
             botService.killAllBots();
             planetService.stop();
@@ -424,17 +396,11 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         syncResourceItemSimpleDto.setItemTypeId(syncResourceItem.getItemType().getId());
         syncResourceItemSimpleDto.setPosition(terrainService.getTerrainAnalyzer().toPosition3d(syncResourceItem.getAbstractSyncPhysical().getPosition()));
         sendToClient(GameEngineControlPackage.Command.RESOURCE_CREATED, syncResourceItemSimpleDto);
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onResourceCreated(syncResourceItem);
-        }
     }
 
     @Override
     public void onResourceDeleted(SyncResourceItem syncResourceItem) {
         sendToClient(GameEngineControlPackage.Command.RESOURCE_DELETED, syncResourceItem.getId());
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncItemDeleted(syncResourceItem, false);
-        }
     }
 
     @Override
@@ -444,9 +410,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         syncBoxItemSimpleDto.setItemTypeId(syncBoxItem.getItemType().getId());
         syncBoxItemSimpleDto.setPosition(terrainService.getTerrainAnalyzer().toPosition3d(syncBoxItem.getAbstractSyncPhysical().getPosition()));
         sendToClient(GameEngineControlPackage.Command.BOX_CREATED, syncBoxItemSimpleDto);
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onBoxCreated(syncBoxItem);
-        }
     }
 
     @Override
@@ -459,43 +422,16 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onSyncBoxDeleted(SyncBoxItem syncBoxItem) {
         sendToClient(GameEngineControlPackage.Command.BOX_DELETED, syncBoxItem.getId());
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncItemDeleted(syncBoxItem, false);
-        }
     }
 
     @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
         sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, syncBaseItem.createNativeSyncBaseItemTickInfo(terrainService.getTerrainAnalyzer()));
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncBaseItem(syncBaseItem);
-        }
-    }
-
-    @Override
-    public void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
-        if (workerTrackerHandler != null) {
-            if (currentBuildup != null) {
-                workerTrackerHandler.onSyncBaseItem(currentBuildup);
-            }
-            workerTrackerHandler.onSyncBaseItem(syncBaseItem);
-        }
-    }
-
-    @Override
-    public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncBaseItem(createdBy);
-            workerTrackerHandler.onSyncBaseItem(syncBaseItem);
-        }
     }
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
         sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, syncBaseItem.createNativeSyncBaseItemTickInfo(terrainService.getTerrainAnalyzer()));
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncBaseItem(syncBaseItem);
-        }
     }
 
     @Override
@@ -504,9 +440,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             this.playerBase = playerBase;
         }
         sendBaseToClient(GameEngineControlPackage.Command.BASE_CREATED, playerBase);
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onBaseCreated(playerBase);
-        }
     }
 
     @Override
@@ -551,9 +484,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             this.playerBase = null;
         }
         sendToClient(GameEngineControlPackage.Command.BASE_DELETED, playerBase.getBaseId());
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onBaseDeleted(playerBase);
-        }
     }
 
     @Override
@@ -573,9 +503,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         if (actor.getBase().getUserId() != null && actor.getBase().getUserId().equals(userContext.getUserId())) {
             xpFromKills += target.getBaseItemType().getXpOnKilling();
         }
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncItemDeleted(target, true);
-        }
     }
 
     @Override
@@ -586,9 +513,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
         removedSyncBaseItemIds.add(syncBaseItem.getId());
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncItemDeleted(syncBaseItem, false);
-        }
     }
 
     @Override
@@ -602,38 +526,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onMasterCommandSent(SyncBaseItem syncItem) {
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncBaseItem(syncItem);
-        }
-    }
-
-    @Override
     public void onSlaveCommandSent(SyncBaseItem syncBaseItemSave, BaseCommand baseCommand) {
         if (serverConnection != null) {
             serverConnection.onCommandSent(baseCommand);
-        }
-    }
-
-    @Override
-    public void onSyncItemLoaded(SyncBaseItem container, SyncBaseItem contained) {
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncBaseItem(container);
-            workerTrackerHandler.onSyncBaseItem(contained);
-        }
-    }
-
-    @Override
-    public void onSyncItemContainerUnloaded(SyncBaseItem container) {
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncBaseItem(container);
-        }
-    }
-
-    @Override
-    public void onSyncItemUnloaded(SyncBaseItem contained) {
-        if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncBaseItem(contained);
         }
     }
 
@@ -688,16 +583,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void updateLevel(int levelId) {
         userContext.levelId(levelId);
         baseItemService.updateLevel(userContext.getUserId(), levelId);
-    }
-
-    public void onPlayerBaseTracking(PlayerBaseTracking playerBaseTracking) {
-        if (playerBaseTracking.getPlayerBaseInfo() != null) {
-            onServerBaseCreated(playerBaseTracking.getPlayerBaseInfo());
-        } else if (playerBaseTracking.getDeletedBaseId() != null) {
-            onServerBaseDeleted(playerBaseTracking.getDeletedBaseId());
-        } else {
-            throw new IllegalArgumentException("GameEngineWorker.onPlayerBaseTracking() invalid input");
-        }
     }
 
     @Override

@@ -17,7 +17,6 @@ public class WarmGameUiContext {
     private SlaveQuestInfo slaveQuestInfo;
     private PlanetConfig planetConfig;
     private List<SceneConfig> sceneConfigs;
-    private boolean detailedTracking;
 
     public int getGameUiControlConfigId() {
         return gameUiControlConfigId;
@@ -75,14 +74,6 @@ public class WarmGameUiContext {
         this.sceneConfigs = sceneConfigs;
     }
 
-    public boolean isDetailedTracking() {
-        return detailedTracking;
-    }
-
-    public void setDetailedTracking(boolean detailedTracking) {
-        this.detailedTracking = detailedTracking;
-    }
-
     public WarmGameUiContext gameUiControlConfigId(int gameUiControlConfigId) {
         setGameUiControlConfigId(gameUiControlConfigId);
         return this;
@@ -115,11 +106,6 @@ public class WarmGameUiContext {
 
     public WarmGameUiContext sceneConfigs(List<SceneConfig> sceneConfigs) {
         setSceneConfigs(sceneConfigs);
-        return this;
-    }
-
-    public WarmGameUiContext detailedTracking(boolean detailedTracking) {
-        setDetailedTracking(detailedTracking);
         return this;
     }
 }

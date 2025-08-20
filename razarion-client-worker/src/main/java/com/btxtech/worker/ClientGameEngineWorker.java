@@ -6,7 +6,6 @@ import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.InitializeService;
-import com.btxtech.shared.gameengine.WorkerTrackerHandler;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
@@ -37,8 +36,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     private final ClientPerformanceTrackerService clientPerformanceTrackerService;
 
     @Inject
-    public ClientGameEngineWorker(Provider<WorkerTrackerHandler> workerTrackerHandlerInstance,
-                                  Provider<AbstractServerGameConnection> connectionInstance,
+    public ClientGameEngineWorker(Provider<AbstractServerGameConnection> connectionInstance,
                                   TerrainService terrainService,
                                   PerfmonService perfmonService,
                                   GameLogicService logicService,
@@ -52,8 +50,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
                                   InitializeService initializeService,
                                   PlanetService planetService,
                                   ClientPerformanceTrackerService clientPerformanceTrackerService) {
-        super(workerTrackerHandlerInstance,
-                connectionInstance,
+        super(connectionInstance,
                 terrainService,
                 perfmonService,
                 logicService,

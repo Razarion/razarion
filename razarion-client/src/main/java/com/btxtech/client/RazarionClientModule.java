@@ -6,7 +6,6 @@ import com.btxtech.client.system.boot.BootImpl;
 import com.btxtech.common.system.ClientSimpleExecutorServiceImpl;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.ServerQuestProvider;
-import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
@@ -47,9 +46,6 @@ public abstract class RazarionClientModule {
 
     @Binds
     public abstract AudioService bindAudioService(ClientAudioService clientAudioService);
-
-    @Binds
-    public abstract TrackerService bindTrackerService(ClientTrackerService clientTrackerService);
 
     @Binds
     public abstract ServerQuestProvider bindServerQuestProvider(ClientServerQuestProvider clientServerQuestProvider);

@@ -71,12 +71,6 @@ public class GameEngineControlPackage {
         GET_TERRAIN_TYPE_ANSWER,
         TERRAIN_TILE_REQUEST,
         TERRAIN_TILE_RESPONSE,
-        // Playback
-        PLAYBACK_PLAYER_BASE,
-        PLAYBACK_SYNC_ITEM_DELETED,
-        PLAYBACK_SYNC_BASE_ITEM,
-        PLAYBACK_SYNC_RESOURCE_ITEM,
-        PLAYBACK_SYNC_BOX_ITEM,
         // Cockpit
         SELL_ITEMS
     }

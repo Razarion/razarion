@@ -12,7 +12,6 @@ public class GameUiContextConfig implements Config {
     private Integer minimalLevelId;
     private Integer planetId;
     private GameEngineMode gameEngineMode;
-    private boolean detailedTracking;
     private List<SceneConfig> scenes;
 
     @Override
@@ -54,14 +53,6 @@ public class GameUiContextConfig implements Config {
         this.gameEngineMode = gameEngineMode;
     }
 
-    public boolean isDetailedTracking() {
-        return detailedTracking;
-    }
-
-    public void setDetailedTracking(boolean detailedTracking) {
-        this.detailedTracking = detailedTracking;
-    }
-
     public List<SceneConfig> getScenes() {
         return scenes;
     }
@@ -92,11 +83,6 @@ public class GameUiContextConfig implements Config {
 
     public GameUiContextConfig gameEngineMode(GameEngineMode gameEngineMode) {
         setGameEngineMode(gameEngineMode);
-        return this;
-    }
-
-    public GameUiContextConfig detailedTracking(boolean detailedTracking) {
-        setDetailedTracking(detailedTracking);
         return this;
     }
 

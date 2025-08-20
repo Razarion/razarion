@@ -1,16 +1,27 @@
-import { Component, ViewChild } from '@angular/core';
-import { BackendControllerClient, StartupTerminatedJson, HttpClient as HttpClientAdapter, RestResponse, StartupTaskJson } from '../generated/razarion-share';
-import { HttpClient } from '@angular/common/http';
-import { OverlayPanel } from 'primeng/overlaypanel';
-import { TypescriptGenerator } from './typescript-generator';
+import {Component} from '@angular/core';
+import {StartupTaskJson, StartupTerminatedJson, TrackerControllerImplClient} from '../generated/razarion-share';
+import {HttpClient} from '@angular/common/http';
+import {TypescriptGenerator} from './typescript-generator';
+import {ButtonModule} from 'primeng/button';
+import {TableModule} from 'primeng/table';
+import {ChartModule} from 'primeng/chart';
+import {DialogModule} from 'primeng/dialog';
+import {CommonModule} from '@angular/common';
 
 @Component({
-    selector: 'app-backend',
-    templateUrl: './backend.component.html',
-    styleUrls: ['./backend.component.scss']
+  selector: 'app-backend',
+  templateUrl: './backend.component.html',
+  imports: [
+    ButtonModule,
+    TableModule,
+    ChartModule,
+    DialogModule,
+    CommonModule,
+  ]
 })
 export class BackendComponent {
   startupTerminatedJsons: StartupTerminatedJson[] = [];
+  detailDialogVisible = false;
   data: any;
   options = {
     scales: {
@@ -27,15 +38,13 @@ export class BackendComponent {
     minute: '2-digit',
     second: '2-digit',
   };
-  @ViewChild('detailOverlayPanel')
-  detailOverlayPanel!: OverlayPanel;
-  private backendControllerClient!: BackendControllerClient;
+  private trackerControllerImplClient!: TrackerControllerImplClient;
   detailStartupTaskJsons: StartupTaskJson[] = [];
 
   constructor(httpClient: HttpClient) {
     try {
-      this.backendControllerClient = new BackendControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
-      this.backendControllerClient.loadStartupTerminatedJson().then(startupTerminatedJsons => {
+      this.trackerControllerImplClient = new TrackerControllerImplClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
+      this.trackerControllerImplClient.loadStartupTerminatedJson().then(startupTerminatedJsons => {
         this.startupTerminatedJsons = startupTerminatedJsons;
         let chartData: number[] = [];
         let labels: string[] = [];
@@ -64,11 +73,11 @@ export class BackendComponent {
     }
   }
 
-  showDetailOverlayPanel(event: Event, startupTerminatedJson: StartupTerminatedJson) {
-    this.backendControllerClient.loadStartupTaskJson(startupTerminatedJson.gameSessionUuid).then(startupTaskJsons => {
+  openDetailDialog(startupTerminatedJson: StartupTerminatedJson) {
+    this.trackerControllerImplClient.loadStartupTaskJson(startupTerminatedJson.gameSessionUuid).then(startupTaskJsons => {
       this.detailStartupTaskJsons = startupTaskJsons;
-      this.detailOverlayPanel.toggle(event);
     });
+    this.detailDialogVisible = true;
   }
 
 }

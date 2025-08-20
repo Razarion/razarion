@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/rest/gz/terrainshape")
-public class TerrainShapeControllerImpl implements TerrainShapeController {
+@RequestMapping("/rest/terrainshape")
+public class TerrainShapeControllerImpl {
     private final ServerTerrainShapeService serverTerrainShapeService;
     private final ServerGameEngineService serverGameEngineCrudPersistence;
 
@@ -24,13 +24,11 @@ public class TerrainShapeControllerImpl implements TerrainShapeController {
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
     }
 
-    @Override
     @GetMapping(value = "/{planetId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public NativeTerrainShape getTerrainShape(@PathVariable("planetId") int planetId) {
         return serverTerrainShapeService.getNativeTerrainShape(planetId);
     }
 
-    @Override
     @RolesAllowed(Roles.ADMIN)
     public void createTerrainShape(int planetId) {
         ServerGameEngineConfig serverGameEngineConfig = serverGameEngineCrudPersistence.read().get(0);

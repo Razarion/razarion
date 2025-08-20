@@ -7,7 +7,12 @@ import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +26,13 @@ public class GameUiContextEntity extends BaseEntity {
     private LevelEntity minimalLevel;
     @Enumerated(EnumType.STRING)
     private GameEngineMode gameEngineMode;
-    private boolean detailedTracking;
 
     public GameUiContextConfig toConfig() {
         GameUiContextConfig gameUiContextConfig = new GameUiContextConfig()
                 .id(getId())
                 .internalName(getInternalName())
                 .gameEngineMode(gameEngineMode)
-                .scenes(setupScenes())
-                .detailedTracking(detailedTracking);
+                .scenes(setupScenes());
         if (minimalLevel != null) {
             gameUiContextConfig.setMinimalLevelId(minimalLevel.getId());
         }
@@ -44,7 +47,6 @@ public class GameUiContextEntity extends BaseEntity {
         gameEngineMode = config.getGameEngineMode();
         this.minimalLevel = minimalLevel;
         this.planetEntity = planetEntity;
-        detailedTracking = config.isDetailedTracking();
     }
 
     public WarmGameUiContext toGameWarmGameUiControlConfig() {
@@ -55,7 +57,6 @@ public class GameUiContextEntity extends BaseEntity {
         }
         warmGameUiContext.setSceneConfigs(setupScenes());
         warmGameUiContext.setGameEngineMode(gameEngineMode);
-        warmGameUiContext.setDetailedTracking(detailedTracking);
         return warmGameUiContext;
     }
 

@@ -1,25 +1,7 @@
-/*
- * Copyright (c) 2010.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; version 2 of the License.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
-
 package com.btxtech.shared.dto;
 
 import java.util.Date;
 
-/**
- * User: beat
- * Date: 05.12.2010
- * Time: 23:23:42
- */
 public class StartupTaskJson {
     private String gameSessionUuid;
     private String taskEnum;
@@ -27,7 +9,6 @@ public class StartupTaskJson {
     private Date serverTime;
     private int duration;
     private String error;
-    private String httpSessionId;
 
     public String getGameSessionUuid() {
         return gameSessionUuid;
@@ -74,14 +55,6 @@ public class StartupTaskJson {
         return this;
     }
 
-    public String getHttpSessionId() {
-        return httpSessionId;
-    }
-
-    public void setHttpSessionId(String httpSessionId) {
-        this.httpSessionId = httpSessionId;
-    }
-
     public Date getServerTime() {
         return serverTime;
     }
@@ -99,7 +72,6 @@ public class StartupTaskJson {
                 ", serverTime=" + serverTime +
                 ", duration=" + duration +
                 ", error='" + error + '\'' +
-                ", httpSessionId='" + httpSessionId + '\'' +
                 '}';
     }
 }

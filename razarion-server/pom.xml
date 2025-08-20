@@ -115,7 +115,6 @@
                     <classes>
                         <class>com.btxtech.shared.dto.ObjectNameId</class>
                         <class>com.btxtech.shared.rest.RestApplication</class>
-                        <class>com.btxtech.server.rest.BackendController</class>
                         <class>com.btxtech.shared.rest.TerrainHeightMapController</class>
                         <class>com.btxtech.shared.rest.InventoryItemEditorController</class>
                         <class>com.btxtech.server.rest.UserController</class>
@@ -124,6 +123,7 @@
                         <class>com.btxtech.server.rest.engine.InventoryController</class>
                         <class>com.btxtech.server.rest.engine.UnlockController</class>
                         <class>com.btxtech.server.rest.engine.QuestController</class>
+                        <class>com.btxtech.server.rest.tracking.TrackerControllerImpl</class>
                         <class>com.btxtech.server.rest.ui.BabylonMaterialController</class>
                         <class>com.btxtech.server.rest.ui.GltfController</class>
                         <class>com.btxtech.server.rest.ui.Model3DController</class>

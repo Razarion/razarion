@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -13,10 +12,6 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IntIntMap;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
@@ -107,11 +102,6 @@ public class WorkerMarshaller {
             case PERFMON_RESPONSE:
             case INITIALISING_FAILED:
             case TERRAIN_TILE_REQUEST:
-            case PLAYBACK_PLAYER_BASE:
-            case PLAYBACK_SYNC_ITEM_DELETED:
-            case PLAYBACK_SYNC_BASE_ITEM:
-            case PLAYBACK_SYNC_RESOURCE_ITEM:
-            case PLAYBACK_SYNC_BOX_ITEM:
             case QUEST_PROGRESS:
             case SELL_ITEMS:
             case USE_INVENTORY_ITEM:
@@ -164,7 +154,6 @@ public class WorkerMarshaller {
                 array.setAt(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 array.setAt(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 array.setAt(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
-                array.setAt(DATA_OFFSET_5, toJson(controlPackage.getData(5)));
                 break;
             // Native marshal terrain buffers
             case TERRAIN_TILE_RESPONSE:
@@ -209,8 +198,7 @@ public class WorkerMarshaller {
                 data.add(fromJson(array[DATA_OFFSET_1].asString(), PlanetConfig.class));
                 data.add(fromJson(array[DATA_OFFSET_2].asString(), UserContext.class));
                 data.add(fromJson(array[DATA_OFFSET_3].asString(), GameEngineMode.class));
-                data.add(fromJson(array[DATA_OFFSET_4].asString(), Boolean.class));
-                data.add(fromJson(array[DATA_OFFSET_5].asString(), String.class));
+                data.add(fromJson(array[DATA_OFFSET_4].asString(), String.class));
                 break;
             case INITIALIZE_WARM:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), PlanetConfig.class));
@@ -350,21 +338,6 @@ public class WorkerMarshaller {
                 break;
             case TERRAIN_TILE_RESPONSE:
                 data.add(demarshallTerrainTile(array[DATA_OFFSET_0]));
-                break;
-            case PLAYBACK_PLAYER_BASE:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), PlayerBaseTracking.class));
-                break;
-            case PLAYBACK_SYNC_ITEM_DELETED:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), SyncItemDeletedInfo.class));
-                break;
-            case PLAYBACK_SYNC_BASE_ITEM:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), SyncBaseItemInfo.class));
-                break;
-            case PLAYBACK_SYNC_RESOURCE_ITEM:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), SyncResourceItemInfo.class));
-                break;
-            case PLAYBACK_SYNC_BOX_ITEM:
-                data.add(fromJson(array[DATA_OFFSET_0].asString(), SyncBoxItemInfo.class));
                 break;
             case QUEST_PROGRESS:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), QuestProgressInfo.class));
