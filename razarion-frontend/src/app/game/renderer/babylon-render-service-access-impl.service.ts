@@ -53,7 +53,6 @@ import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 import {SelectionFrame} from "./selection-frame";
 import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
-import {PlaceConfigComponent} from "src/app/editor/common/place-config/place-config.component";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
 import {ActionService} from "../action.service";
 import {BaseItemPlacerPresenterEvent, BaseItemPlacerPresenterImpl} from "./base-item-placer-presenter.impl";
@@ -62,6 +61,7 @@ import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
 import earcut from 'earcut';
 import {ViewField, ViewFieldListener} from './view-field';
+import {PlaceConfigComponent} from '../../editor/common/place-config/place-config.component';
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -470,10 +470,28 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   private createPlacePolygonMarker(placeConfig: PlaceConfig): Mesh {
-    let polygonData = PlaceConfigComponent.toVertex2ArrayAngular(placeConfig.getPolygon2D()?.toCornersAngular()!)
-    let polygonTriangulation = new PolygonMeshBuilder("Place marker", polygonData, this.scene, earcut);
+    const positions2d = placeConfig.getPolygon2D()?.toCornersAngular()!;
+    const polygon = PlaceConfigComponent.toVertex2ArrayAngular(positions2d);
+    let polygonTriangulation = new PolygonMeshBuilder("Place marker", polygon, this.scene, earcut);
     const polygonMesh = polygonTriangulation.build();
-    polygonMesh.position.y = 0.1 + LocationVisualization.getHeightFromTerrain(polygonData[0].x, polygonData[0].y, this);
+
+    let booleanWater = false;
+    let highest: null | number = null;
+    positions2d.forEach(position2d => {
+      const heightFromTerrain = LocationVisualization.getHeightFromTerrain(position2d.getX(), position2d.getY(), this);
+      if (heightFromTerrain < BabylonTerrainTileImpl.WATER_LEVEL) {
+        booleanWater = true;
+      }
+      if (highest === null || highest < heightFromTerrain) {
+        highest = heightFromTerrain;
+      }
+    });
+    if (booleanWater) {
+      polygonMesh.position.y = BabylonTerrainTileImpl.WATER_LEVEL;
+    } else {
+      polygonMesh.position.y = 0.1 + (highest === null ? 0 : highest);
+    }
+
     polygonMesh.isPickable = false;
     const boundingBox = polygonMesh.getBoundingInfo().boundingBox;
     const width = boundingBox.maximum.x - boundingBox.minimum.x;
@@ -491,9 +509,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   private createPlaceDiscMarker(placeConfig: PlaceConfig): Mesh {
     let radius = placeConfig.toRadiusAngular() || 1;
+    let heightFromTerrain = LocationVisualization.getHeightFromTerrain(placeConfig.getPosition()?.getX()!, placeConfig.getPosition()?.getY()!, this);
+    if (heightFromTerrain < BabylonTerrainTileImpl.WATER_LEVEL) {
+      heightFromTerrain = BabylonTerrainTileImpl.WATER_LEVEL;
+    }
     const diskMesh = MeshBuilder.CreateDisc("Place marker", {radius: radius}, this.scene);
     diskMesh.position.x = placeConfig.getPosition()?.getX()!;
-    diskMesh.position.y = 0.1 + LocationVisualization.getHeightFromTerrain(placeConfig.getPosition()?.getX()!, placeConfig.getPosition()?.getY()!, this);
+    diskMesh.position.y = 0.01 + heightFromTerrain;
     diskMesh.position.z = placeConfig.getPosition()?.getY()!;
     diskMesh.rotation.x = Tools.ToRadians(90);
     diskMesh.isPickable = false;

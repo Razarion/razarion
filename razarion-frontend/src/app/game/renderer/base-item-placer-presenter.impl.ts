@@ -136,7 +136,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private setPosition(baseItemPlacer: BaseItemPlacer, pickedPoint: Vector3) {
     baseItemPlacer.onMove(pickedPoint.x, pickedPoint.z);
     this.disc!.position = pickedPoint
-    this.disc!.position.y += +0.01;
+    this.disc!.position.y += +0.1;
     const positionValid = baseItemPlacer.isPositionValid();
     this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
     this.tip!.setPositionValid(positionValid);

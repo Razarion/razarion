@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class StartupTrackingService {
@@ -31,8 +34,33 @@ public class StartupTrackingService {
     }
 
     public List<StartupTerminatedJson> loadStartupTerminatedJson() {
-        Query query = new Query().with(Sort.by(Sort.Direction.DESC, "serverTime"));
-        return mongoTemplate.find(query, StartupTerminatedJson.class, STARTUP_TRACKING);
+        Query query = new Query()
+                .addCriteria(Criteria.where("_class").is("com.btxtech.shared.dto.StartupTerminatedJson"))
+                .with(Sort.by(Sort.Direction.DESC, "serverTime"));
+        List<StartupTerminatedJson> terminatedList = mongoTemplate.find(query, StartupTerminatedJson.class, STARTUP_TRACKING);
+
+        List<StartupTaskJson> allTasks = mongoTemplate.findAll(StartupTaskJson.class, STARTUP_TRACKING);
+        Map<String, List<StartupTaskJson>> tasksBySession = allTasks.stream()
+                .collect(Collectors.groupingBy(StartupTaskJson::getGameSessionUuid));
+
+
+        Set<String> existingTerminatedSessions = terminatedList.stream()
+                .map(StartupTerminatedJson::getGameSessionUuid)
+                .collect(Collectors.toSet());
+
+        tasksBySession.forEach((sessionId, tasks) -> {
+            if (!existingTerminatedSessions.contains(sessionId)) {
+                StartupTerminatedJson generated = new StartupTerminatedJson()
+                        .gameSessionUuid(sessionId)
+                        .serverTime(new Date())
+                        .successful(false) // oder Logik anpassen
+                        .totalTime(tasks.stream().mapToInt(StartupTaskJson::getDuration).sum());
+                mongoTemplate.save(generated, STARTUP_TRACKING);
+                terminatedList.add(generated);
+            }
+        });
+
+        return terminatedList;
     }
 
     public List<StartupTaskJson> loadStartupTaskJson(String gameSessionUuid) {
