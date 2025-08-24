@@ -18,6 +18,8 @@ import {NgIf} from '@angular/common';
 export class LoginComponent {
   @Input("showRegister")
   showRegister = false;
+  @Input("successUrl")
+  successUrl: string | null = null;
 
   username: string = "";
   password: string = "";
@@ -31,7 +33,11 @@ export class LoginComponent {
   public login(): void {
     this.userService.login(this.username, this.password)
       .then(() => {
-        window.location.replace("/game");
+        if (this.successUrl) {
+          window.location.replace(this.successUrl);
+        } else {
+          window.location.replace("/game");
+        }
       })
       .catch((error) => {
         this.messageService.add({

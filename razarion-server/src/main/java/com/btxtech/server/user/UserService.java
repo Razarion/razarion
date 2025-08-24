@@ -504,7 +504,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     @Scheduled(fixedRate = 60000)
     public void cleanupDisconnectedUnregisteredUsers() {
-        var cutoff = LocalDateTime.now().minusMinutes(120);
+        var cutoff = LocalDateTime.now().minusMinutes(240);
         userRepository.findInactiveSince(cutoff)
                 .stream()
                 .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
