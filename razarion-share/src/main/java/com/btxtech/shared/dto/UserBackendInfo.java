@@ -3,10 +3,6 @@ package com.btxtech.shared.dto;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Beat
- * on 06.09.2017.
- */
 public class UserBackendInfo {
     private String userId;
     private Date creationDate;
@@ -24,6 +20,12 @@ public class UserBackendInfo {
     private List<GameHistoryEntry> gameHistoryEntries;
     private Date systemConnectionOpened;
     private Date systemConnectionClosed;
+    private boolean systemConnectionOpen;
+    private Date systemConnectionLastMessageSent;
+    private Date systemConnectionLastMessageReceived;
+    private boolean gameConnectionOpen;
+    private Date gameConnectionLastMessageSent;
+    private Date gameConnectionLastMessageReceived;
 
     public String getUserId() {
         return userId;
@@ -153,6 +155,54 @@ public class UserBackendInfo {
         this.systemConnectionClosed = systemConnectionClosed;
     }
 
+    public boolean isSystemConnectionOpen() {
+        return systemConnectionOpen;
+    }
+
+    public void setSystemConnectionOpen(boolean systemConnectionOpen) {
+        this.systemConnectionOpen = systemConnectionOpen;
+    }
+
+    public Date getSystemConnectionLastMessageSent() {
+        return systemConnectionLastMessageSent;
+    }
+
+    public void setSystemConnectionLastMessageSent(Date systemConnectionLastMessageSent) {
+        this.systemConnectionLastMessageSent = systemConnectionLastMessageSent;
+    }
+
+    public Date getSystemConnectionLastMessageReceived() {
+        return systemConnectionLastMessageReceived;
+    }
+
+    public void setSystemConnectionLastMessageReceived(Date systemConnectionLastMessageReceived) {
+        this.systemConnectionLastMessageReceived = systemConnectionLastMessageReceived;
+    }
+
+    public boolean isGameConnectionOpen() {
+        return gameConnectionOpen;
+    }
+
+    public void setGameConnectionOpen(boolean gameConnectionOpen) {
+        this.gameConnectionOpen = gameConnectionOpen;
+    }
+
+    public Date getGameConnectionLastMessageSent() {
+        return gameConnectionLastMessageSent;
+    }
+
+    public void setGameConnectionLastMessageSent(Date gameConnectionLastMessageSent) {
+        this.gameConnectionLastMessageSent = gameConnectionLastMessageSent;
+    }
+
+    public Date getGameConnectionLastMessageReceived() {
+        return gameConnectionLastMessageReceived;
+    }
+
+    public void setGameConnectionLastMessageReceived(Date gameConnectionLastMessageReceived) {
+        this.gameConnectionLastMessageReceived = gameConnectionLastMessageReceived;
+    }
+
     public UserBackendInfo userId(String userId) {
         setUserId(userId);
         return this;
@@ -231,6 +281,36 @@ public class UserBackendInfo {
 
     public UserBackendInfo systemConnectionClosed(Date systemConnectionClosed) {
         setSystemConnectionClosed(systemConnectionClosed);
+        return this;
+    }
+
+    public UserBackendInfo systemConnectionOpen(boolean systemConnectionOpen) {
+        setSystemConnectionOpen(systemConnectionOpen);
+        return this;
+    }
+
+    public UserBackendInfo systemConnectionLastMessageSent(Date systemConnectionLastMessageSent) {
+        setSystemConnectionLastMessageSent(systemConnectionLastMessageSent);
+        return this;
+    }
+
+    public UserBackendInfo systemConnectionLastMessageReceived(Date systemConnectionLastMessageReceived) {
+        setSystemConnectionLastMessageReceived(systemConnectionLastMessageReceived);
+        return this;
+    }
+
+    public UserBackendInfo gameConnectionOpen(boolean gameConnectionOpen) {
+        setGameConnectionOpen(gameConnectionOpen);
+        return this;
+    }
+
+    public UserBackendInfo gameConnectionLastMessageSent(Date gameConnectionLastMessageSent) {
+        setGameConnectionLastMessageSent(gameConnectionLastMessageSent);
+        return this;
+    }
+
+    public UserBackendInfo gameConnectionLastMessageReceived(Date gameConnectionLastMessageReceived) {
+        setGameConnectionLastMessageReceived(gameConnectionLastMessageReceived);
         return this;
     }
 }

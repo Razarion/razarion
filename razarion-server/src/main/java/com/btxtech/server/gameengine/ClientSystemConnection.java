@@ -27,6 +27,8 @@ public class ClientSystemConnection {
     private String gameSessionUuid;
     private WebSocketSession wsSession;
     private String userId;
+    private Date lastMessageSent;
+    private Date lastMessageReceived;
 
     public ClientSystemConnection(ServerLevelQuestService serverLevelQuestService, UserService userService) {
         this.serverLevelQuestService = serverLevelQuestService;
@@ -41,6 +43,7 @@ public class ClientSystemConnection {
 
     public void handleMessage(WebSocketMessage<?> message) {
         try {
+            lastMessageReceived = new Date();
             var text = message.getPayload().toString();
             SystemConnectionPacket packet = ConnectionMarshaller.deMarshallPackage(text, SystemConnectionPacket.class);
             String payload = ConnectionMarshaller.deMarshallPayload(text);
@@ -65,6 +68,7 @@ public class ClientSystemConnection {
     }
 
     public void sendToClient(String text) throws IOException {
+        lastMessageSent = new Date();
         wsSession.sendMessage(new TextMessage(text));
     }
 
@@ -78,6 +82,14 @@ public class ClientSystemConnection {
 
     public String getUserId() {
         return userId;
+    }
+
+    public Date getLastMessageSent() {
+        return lastMessageSent;
+    }
+
+    public Date getLastMessageReceived() {
+        return lastMessageReceived;
     }
 
     @Override

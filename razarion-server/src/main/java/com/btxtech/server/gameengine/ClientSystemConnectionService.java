@@ -187,4 +187,9 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
             logger.warn(throwable.getMessage(), throwable);
         }
     }
+
+    public ClientSystemConnection getClientSystemConnection(String userId) {
+        return systemConnections.get(userId);
+    }
+
 }

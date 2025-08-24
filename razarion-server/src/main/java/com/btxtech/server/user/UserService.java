@@ -1,5 +1,7 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.gameengine.ClientGameConnectionService;
+import com.btxtech.server.gameengine.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.model.RegisterResult;
 import com.btxtech.server.model.Roles;
@@ -74,6 +76,12 @@ public class UserService implements UserDetailsService {
     @Autowired
     @Lazy
     private ServerGameEngineControl serverGameEngineControl;
+    @Autowired
+    @Lazy
+    private ClientGameConnectionService clientGameConnectionService;
+    @Autowired
+    @Lazy
+    private ClientSystemConnectionService clientSystemConnectionService;
 
     public UserService(LevelCrudService levelCrudPersistence,
                        UserRepository userRepository,
@@ -98,7 +106,10 @@ public class UserService implements UserDetailsService {
         return authentication;
     }
 
-    private static UserBackendInfo userEntity2UserBackendInfo(UserEntity userEntity) {
+    private UserBackendInfo userEntity2UserBackendInfo(UserEntity userEntity) {
+        var clientSystemConnection = clientSystemConnectionService.getClientSystemConnection(userEntity.getUserId());
+        var clientGameConnection = clientGameConnectionService.getClientGameConnection(userEntity.getUserId());
+
         UserBackendInfo userBackendInfo = new UserBackendInfo()
                 .name(userEntity.getName())
                 .creationDate(userEntity.getCreationDate())
@@ -112,7 +123,13 @@ public class UserService implements UserDetailsService {
                 .crystals(userEntity.getCrystals())
                 .activeQuest(extractId(userEntity.getActiveQuest(), QuestConfigEntity::getId))
                 .systemConnectionOpened(userEntity.getSystemConnectionOpened() != null ? Date.from(userEntity.getSystemConnectionOpened().atZone(ZoneId.systemDefault()).toInstant()) : null)
-                .systemConnectionClosed(userEntity.getSystemConnectionClosed() != null ? Date.from(userEntity.getSystemConnectionClosed().atZone(ZoneId.systemDefault()).toInstant()) : null);
+                .systemConnectionClosed(userEntity.getSystemConnectionClosed() != null ? Date.from(userEntity.getSystemConnectionClosed().atZone(ZoneId.systemDefault()).toInstant()) : null)
+                .systemConnectionOpen(clientSystemConnection != null)
+                .systemConnectionLastMessageSent(clientSystemConnection != null ? clientSystemConnection.getLastMessageSent() : null)
+                .systemConnectionLastMessageReceived(clientSystemConnection != null ? clientSystemConnection.getLastMessageReceived() : null)
+                .gameConnectionOpen(clientGameConnection != null)
+                .gameConnectionLastMessageSent(clientGameConnection != null ? clientGameConnection.getLastMessageSent() : null)
+                .gameConnectionLastMessageReceived(clientGameConnection != null ? clientGameConnection.getLastMessageReceived() : null);
         if (userEntity.getCompletedQuestIds() != null && !userEntity.getCompletedQuestIds().isEmpty()) {
             userBackendInfo.completedQuestIds(userEntity.getCompletedQuest().stream().map(QuestConfigEntity::getId).collect(Collectors.toList()));
         }
@@ -355,7 +372,7 @@ public class UserService implements UserDetailsService {
     public List<UserBackendInfo> getUserBackendInfos() {
         return userRepository.findAll()
                 .stream()
-                .map(UserService::userEntity2UserBackendInfo)
+                .map(this::userEntity2UserBackendInfo)
                 .collect(Collectors.toList());
     }
 

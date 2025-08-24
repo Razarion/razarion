@@ -1,4 +1,4 @@
-package com.btxtech.server.rest;
+package com.btxtech.server.web;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;

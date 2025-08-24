@@ -21,6 +21,7 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Date;
 
 @Component
 @Scope("prototype")
@@ -33,6 +34,8 @@ public class ClientGameConnection {
     private final CommandService commandService;
     private WebSocketSession wsSession;
     private String userId;
+    private Date lastMessageSent;
+    private Date lastMessageReceived;
     private String gameSessionUuid; // TODO
 
     public ClientGameConnection(BaseItemService baseItemService,
@@ -51,6 +54,7 @@ public class ClientGameConnection {
     }
 
     public void handleMessage(WebSocketMessage<?> message) {
+        lastMessageReceived = new Date();
         try {
             var text = message.getPayload().toString();
             GameConnectionPacket packet = ConnectionMarshaller.deMarshallPackage(text, GameConnectionPacket.class);
@@ -63,6 +67,7 @@ public class ClientGameConnection {
     }
 
     public void sendToClient(String text) throws IOException {
+        lastMessageSent = new Date();
         wsSession.sendMessage(new TextMessage(text));
     }
 
@@ -115,6 +120,7 @@ public class ClientGameConnection {
 
     private void sendToClient(GameConnectionPacket packet, Object object) {
         try {
+            lastMessageSent = new Date();
             String text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
             wsSession.sendMessage(new TextMessage(text));
         } catch (Throwable throwable) {
@@ -136,5 +142,13 @@ public class ClientGameConnection {
         } catch (Throwable throwable) {
             logger.warn(throwable.getMessage(), throwable);
         }
+    }
+
+    public Date getLastMessageSent() {
+        return lastMessageSent;
+    }
+
+    public Date getLastMessageReceived() {
+        return lastMessageReceived;
     }
 }

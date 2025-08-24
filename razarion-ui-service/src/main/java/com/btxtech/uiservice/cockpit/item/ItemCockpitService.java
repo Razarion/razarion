@@ -100,7 +100,6 @@ public class ItemCockpitService {
         OwnItemCockpit ownInfoPanel = createSimpleOwnItemCockpit(baseItemType, selectedGroup.getItems());
 
         ownInfoPanel.buildupItemInfos = createBuildupItemInfos(baseItemType, selectedGroup);
-        // TODO setupItemContainerPanel(syncBaseItem, baseItemType);
 
         return ownInfoPanel;
     }
@@ -264,7 +263,6 @@ public class ItemCockpitService {
         ownInfoPanel.itemTypeDescr = baseItemType.getDescription();
         if (!gameUiControl.get().isSellSuppressed()) {
             ownInfoPanel.sellHandler = () -> {
-                // TODO display question dialog
                 gameEngineControl.get().sellItems(items);
             };
         }
@@ -272,16 +270,28 @@ public class ItemCockpitService {
     }
 
     // This method is may not called enough. Only called on Level change and houseSpace and usedHouseSpace changed
-    // If an item is create and and item of a different item type is killed, this is method not called
+    // If an item is created  and item of a different item type is killed, this is method not called
     public void onStateChanged() {
-        buildupItemCockpits.forEach(buildupItemCockpit ->
-                buildupItemCockpit.angularZoneRunner.runInAngularZone(() ->
-                        // Do not replace by methode reference. GWT can not handle that.
-                        buildupItemCockpit.updateState()
-                ));
+        buildupItemCockpits.forEach(buildupItemCockpit -> {
+                    if (buildupItemCockpit.angularZoneRunner == null) {
+                        logger.info("buildupItemCockpit.angularZoneRunner == null in ItemCockpitService.onStateChanged()");
+                    } else {
+                        buildupItemCockpit.angularZoneRunner.runInAngularZone(() ->
+                                // Do not replace by methode reference. GWT can not handle that.
+                                buildupItemCockpit.updateState()
+                        );
+                    }
+                }
+        );
     }
 
     public void onResourcesChanged(int resources) {
-        buildupItemCockpits.forEach(buildupItemCockpit -> buildupItemCockpit.angularZoneRunner.runInAngularZone(() -> buildupItemCockpit.updateResources(resources)));
+        buildupItemCockpits.forEach(buildupItemCockpit -> {
+            if (buildupItemCockpit.angularZoneRunner == null) {
+                logger.info("buildupItemCockpit.angularZoneRunner == null in ItemCockpitService.onResourcesChanged()");
+            } else {
+                buildupItemCockpit.angularZoneRunner.runInAngularZone(() -> buildupItemCockpit.updateResources(resources));
+            }
+        });
     }
 }

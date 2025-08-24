@@ -119,6 +119,10 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         sendToClients(GameConnectionPacket.SYNC_BOX_ITEM_CHANGED, syncBoxItem.getSyncInfo());
     }
 
+    public ClientGameConnection getClientGameConnection(String userId) {
+        return gameConnections.get(userId);
+    }
+
     private void sendToClients(GameConnectionPacket packet, Object object) {
         String text;
         try {
