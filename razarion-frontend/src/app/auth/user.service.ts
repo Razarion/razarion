@@ -42,6 +42,22 @@ export class UserService {
     }
   }
 
+  public async checkToken2(): Promise<void> {
+    if (this.getAppToken() === null) {
+      return Promise.resolve();
+    }
+    try {
+      await this.userControllerClient.checkToken();
+      return await Promise.resolve();
+    } catch (error: any) {
+      const status = error?.status ?? error?.response?.status;
+      if (status !== 401) {
+        console.error("Error checking token:", error);
+      }
+      return await Promise.reject(error);
+    }
+  }
+
   getAppToken(): string | null {
     return localStorage.getItem("app.token");
   }

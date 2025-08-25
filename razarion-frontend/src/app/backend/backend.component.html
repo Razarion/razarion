@@ -1,5 +1,5 @@
-<div *ngIf="userService.isAdmin()" class="grid grid-cols-12 gap-4">
+<div *ngIf="showBackend" class="grid grid-cols-12 gap-4">
   <startup-tracking class="col-span-8"></startup-tracking>
   <user-mgmt class="col-span-4"></user-mgmt>
 </div>
-<login *ngIf="!userService.isAdmin()" [successUrl]="'/game/backend'"></login>
+<login *ngIf="showLogin" [successUrl]="'/game/backend'"></login>

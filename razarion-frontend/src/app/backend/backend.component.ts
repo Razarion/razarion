@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {StartupTrackingComponent} from './startup-tracking/startup-tracking.component';
 import {UserMgmtComponent} from '../editor/user-mgmt/user-mgmt.component';
 import {UserService} from '../auth/user.service';
@@ -15,8 +15,27 @@ import {LoginComponent} from '../auth/login/login.component';
     LoginComponent
   ]
 })
-export class BackendComponent {
+export class BackendComponent implements OnInit {
+  showLogin = false;
+  showBackend = false;
 
-  constructor(public userService: UserService) {
+  constructor(private userService: UserService) {
+  }
+
+  ngOnInit(): void {
+    this.userService.checkToken2()
+      .then(() => {
+        if (this.userService.isAdmin()) {
+          this.showBackend = true;
+          this.showLogin = false;
+        } else {
+          this.showBackend = false;
+          this.showLogin = true;
+        }
+      })
+      .catch(() => {
+        this.showBackend = false;
+        this.showLogin = true;
+      });
   }
 }
