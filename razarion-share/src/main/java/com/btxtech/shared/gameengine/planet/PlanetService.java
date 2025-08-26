@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
@@ -157,7 +158,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
             // DebugHelperStatic.appendAfterTick(tickDatas, tickCount, syncItemContainerService);
         } catch (Throwable t) {
-            logger.log(Level.SEVERE, t.getMessage(), t);
+            ExceptionHandler.handleExceptionOnlyOnce(s -> logger.log(Level.SEVERE, s, t), t.getMessage(), t);
         }
     }
 
@@ -186,7 +187,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
             try {
                 tickListener.onPostTick(synchronizationSendingContext);
             } catch (Throwable t) {
-                logger.log(Level.SEVERE, t.getMessage(), t);
+                ExceptionHandler.handleExceptionOnlyOnce(s -> logger.log(Level.SEVERE, s, t), t.getMessage(), t);
             }
         }
     }
