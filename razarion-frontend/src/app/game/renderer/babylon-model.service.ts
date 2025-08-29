@@ -108,6 +108,7 @@ export class BabylonModelService {
 
   private deepCloneNode(root: Node, parent: Node | null, sourceMap: Map<string, Mesh>, gltfHelper: GltfHelper, diplomacy?: Diplomacy): TransformNode {
     let clonedRoot = root.clone(root.name, parent, true);
+    this.startAnimations(clonedRoot);
     sourceMap.set(root.id, <Mesh>clonedRoot);
     if (clonedRoot instanceof Mesh) {
       const mesh = <Mesh>clonedRoot;
@@ -133,6 +134,7 @@ export class BabylonModelService {
           clonedMesh.receiveShadows = true;
           clonedMesh.hasVertexAlpha = false;
           gltfHelper.handleMaterial(clonedMesh, diplomacy);
+          this.startAnimations(clonedMesh);
         } else {
           const clonedMesh = instancedMesh.sourceMesh.clone(instancedMesh.name); // Instance does not work
           clonedMesh.setParent(clonedRoot);
@@ -146,6 +148,7 @@ export class BabylonModelService {
           clonedMesh.receiveShadows = true;
           clonedMesh.hasVertexAlpha = false;
           gltfHelper.handleMaterial(clonedMesh, diplomacy);
+          this.startAnimations(clonedMesh);
         }
       } else {
         this.deepCloneNode(child, clonedRoot, sourceMap, gltfHelper, diplomacy);
@@ -153,6 +156,17 @@ export class BabylonModelService {
     })
 
     return <TransformNode>clonedRoot;
+  }
+
+  private startAnimations(node: Node | null) {
+    if (!node) {
+      return;
+    }
+    if (node?.animations) {
+      node.animations.forEach((animation) => {
+        node.getScene().beginAnimation(node, 0, 60, true)
+      })
+    }
   }
 
   public static findChildNode(node: Node, namePath: string[]): Node | null {
