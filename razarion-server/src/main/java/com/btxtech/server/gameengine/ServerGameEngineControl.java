@@ -204,6 +204,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     public void shutdown() {
+        logger.info("ServerGameEngineControl.shutdown()");
         try {
             if (running) {
                 planetBackupService.saveBackup(planetService.backup());

@@ -14,7 +14,7 @@ import {Checkbox} from 'primeng/checkbox';
 import {BaseItemTypeComponent} from '../common/base-item-type/base-item-type.component';
 import {Button} from 'primeng/button';
 import {Accordion, AccordionModule,} from 'primeng/accordion';
-import {NgForOf, NgIf} from '@angular/common';
+import {CommonModule, NgForOf} from '@angular/common';
 import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
 import {Divider} from 'primeng/divider';
 import {SelectModule} from 'primeng/select';
@@ -32,7 +32,7 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     Button,
     Accordion,
     NgForOf,
-    NgIf,
+    CommonModule,
     BabylonMaterialComponent,
     Divider,
     SelectModule,

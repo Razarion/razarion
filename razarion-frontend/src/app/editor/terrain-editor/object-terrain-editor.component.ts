@@ -35,7 +35,7 @@ import {SelectButton} from 'primeng/selectbutton';
 import {InputNumber} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
 import {SelectModule} from 'primeng/select';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'object-terrain-editor',
@@ -48,7 +48,7 @@ import {NgIf} from '@angular/common';
     InputNumber,
     FormsModule,
     SelectModule,
-    NgIf
+    CommonModule
   ],
   templateUrl: './object-terrain-editor.component.html'
 })

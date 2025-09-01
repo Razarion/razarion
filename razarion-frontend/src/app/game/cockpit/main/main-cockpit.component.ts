@@ -7,7 +7,7 @@ import {Button} from 'primeng/button';
 import {RadarComponent} from './radar/radar.component';
 import {RadarNoPowerComponent} from './radar/radar-no-power.component';
 import {Checkbox} from 'primeng/checkbox';
-import {NgClass, NgIf} from '@angular/common';
+import {CommonModule, NgClass} from '@angular/common';
 import {Badge} from 'primeng/badge';
 import {InputText} from 'primeng/inputtext';
 import {InputGroupAddonModule} from 'primeng/inputgroupaddon';
@@ -33,7 +33,7 @@ import {SetNameComponent} from '../../../auth/set-name/set-name.component';
     Checkbox,
     NgClass,
     Badge,
-    NgIf,
+    CommonModule,
     InputText,
     InputGroupAddonModule,
     InputGroupModule,

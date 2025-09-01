@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {SelectModule} from 'primeng/select';
 
@@ -8,7 +8,7 @@ import {SelectModule} from 'primeng/select';
   selector: 'base-item-type',
   imports: [
     SelectModule,
-    NgIf,
+    CommonModule,
     FormsModule
   ],
   templateUrl: './base-item-type.component.html'

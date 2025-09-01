@@ -15,10 +15,10 @@ import {PlaceConfigComponent} from '../common/place-config/place-config.componen
 import {Checkbox} from 'primeng/checkbox';
 import {BaseItemTypeCountComponent} from '../common/base-item-type-count/base-item-type-count.component';
 import {SelectModule} from 'primeng/select';
-import {Button, ButtonModule} from 'primeng/button';
+import {Button} from 'primeng/button';
 import {Accordion, AccordionModule} from 'primeng/accordion';
 import {LevelComponent} from '../common/level/level.component';
-import {NgForOf, NgIf} from '@angular/common';
+import {CommonModule, NgForOf} from '@angular/common';
 import {TipComponent} from './tip/tip.component';
 import {MessageService} from 'primeng/api';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
@@ -37,7 +37,7 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     Accordion,
     AccordionModule,
     LevelComponent,
-    NgIf,
+    CommonModule,
     NgForOf,
     TipComponent,
     ScrollPanelModule

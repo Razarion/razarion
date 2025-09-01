@@ -3,7 +3,7 @@ import {UserService} from '../user.service';
 import {ButtonModule} from 'primeng/button';
 import {Router} from '@angular/router';
 import {FormsModule} from '@angular/forms';
-import {CommonModule, NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {Dialog} from 'primeng/dialog';
 import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
 
@@ -13,7 +13,6 @@ import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service'
     CommonModule,
     ButtonModule,
     FormsModule,
-    NgIf,
     Dialog,
   ],
   templateUrl: './user.component.html'

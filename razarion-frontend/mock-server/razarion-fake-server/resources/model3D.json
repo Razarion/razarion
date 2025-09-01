@@ -15,6 +15,10 @@
     {
       "id": 35,
       "name": "Hydra"
+    },
+    {
+      "id": 43,
+      "name": "(Bot) Noob Building"
     }
   ],
   "_1": {
@@ -44,6 +48,12 @@
       "id": 35,
       "internalName": "Hydra",
       "gltfName": "Hydra",
+      "gltfEntityId": 1
+    },
+    {
+      "id": 43,
+      "internalName": "(Bot) Noob Building",
+      "gltfName": "Refinery",
       "gltfEntityId": 1
     }
   ]

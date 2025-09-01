@@ -16,9 +16,9 @@ import {
   OwnItemCockpit,
   OwnMultipleIteCockpit
 } from "../../../gwtangular/GwtAngularFacade";
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {Carousel} from 'primeng/carousel';
-import {Button} from 'primeng/button';
+import {ButtonModule} from 'primeng/button';
 import {CockpitDisplayService} from '../cockpit-display.service';
 import {UserService} from '../../../auth/user.service';
 import {Popover, PopoverModule} from 'primeng/popover';
@@ -29,9 +29,9 @@ import {TipService} from '../../tip/tip.service';
   templateUrl: 'item-cockpit.component.html',
   styleUrls: ['item-cockpit.component.scss'],
   imports: [
-    NgIf,
+    CommonModule,
     Carousel,
-    Button,
+    ButtonModule,
     PopoverModule
   ]
 })

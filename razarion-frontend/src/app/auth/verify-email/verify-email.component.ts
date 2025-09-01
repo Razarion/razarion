@@ -4,13 +4,13 @@ import {LoginComponent} from "../login/login.component";
 import {UserControllerClient} from '../../generated/razarion-share';
 import {HttpClient} from '@angular/common/http';
 import {TypescriptGenerator} from '../../backend/typescript-generator';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'verify-email',
   imports: [
     LoginComponent,
-    NgIf
+    CommonModule
   ],
   templateUrl: './verify-email.component.html'
 })

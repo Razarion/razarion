@@ -40,7 +40,6 @@ import {
   TerrainTile,
   TerrainTileObjectList,
   TerrainTypeService,
-  Tip,
   TipConfig,
   WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
@@ -185,7 +184,7 @@ export class GameMockService {
           }
 
           getModel3DId(): number | null {
-            return 35;
+            return 43;
           }
 
           getPhysicalAreaConfig(): PhysicalAreaConfig {
@@ -203,8 +202,9 @@ export class GameMockService {
 
         {
           let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, 1, Diplomacy.OWN, "myName");
-          babylonBaseItem1.setPosition(GwtInstance.newVertex(8, 8, 1));
-          babylonBaseItem1.setAngle(Tools.ToRadians(45));
+          babylonBaseItem1.setPosition(GwtInstance.newVertex(20, 17, 1));
+          // babylonBaseItem1.setAngle(Tools.ToRadians(45));
+          babylonBaseItem1.setAngle(0);
 
           babylonBaseItem1.select(false);
 
@@ -560,17 +560,18 @@ export class GameMockService {
         return '';
       }
 
-      getTipConfig(): TipConfig {
-        return new class implements TipConfig {
-          getTipString(): Tip {
-            return Tip.BUILD;
-          }
-
-          getActorItemTypeId(): number {
-            return 12;
-          }
-
-        };
+      getTipConfig(): TipConfig | null {
+        // return new class implements TipConfig {
+        //   getTipString(): Tip {
+        //     return Tip.BUILD;
+        //   }
+        //
+        //   getActorItemTypeId(): number {
+        //     return 12;
+        //   }
+        //
+        // };
+        return null;
       }
 
       getConditionConfig(): ConditionConfig {

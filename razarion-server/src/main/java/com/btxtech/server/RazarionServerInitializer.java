@@ -49,7 +49,7 @@ public class RazarionServerInitializer implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         // TODO serverMgmt.setServerState(ServerState.STARTING);
         alarmService.addListener(alarm -> {
             // Temporarily suppress INVALID_PROPERTY

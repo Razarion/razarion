@@ -6,7 +6,7 @@ import {PlaceConfigComponent} from '../common/place-config/place-config.componen
 import {Button} from 'primeng/button';
 import {InputNumber} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {BoxItemTypeComponent} from '../common/box-item-type/box-item-type.component';
 import {Divider} from 'primeng/divider';
 import {SelectModule} from 'primeng/select';
@@ -20,7 +20,7 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     Button,
     InputNumber,
     FormsModule,
-    NgIf,
+    CommonModule,
     BoxItemTypeComponent,
     Divider,
     SelectModule,

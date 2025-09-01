@@ -113,6 +113,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
               private uiConfigCollectionService: UiConfigCollectionService,
               private threeJsWaterRenderService: BabylonWaterRenderService,
               private actionService: ActionService) {
+    this.babylonModelService.renderer = this;
   }
 
   public static color4Diplomacy(diplomacy: Diplomacy): Color3 {

@@ -4,7 +4,7 @@ import {DropdownModule} from 'primeng/dropdown';
 import {TipConfig} from '../../../generated/razarion-share';
 import {FormsModule} from '@angular/forms';
 import {BaseItemTypeComponent} from '../../common/base-item-type/base-item-type.component';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'tip',
@@ -12,7 +12,7 @@ import {NgIf} from '@angular/common';
     DropdownModule,
     FormsModule,
     BaseItemTypeComponent,
-    NgIf
+    CommonModule
   ],
   templateUrl: './tip.component.html'
 })

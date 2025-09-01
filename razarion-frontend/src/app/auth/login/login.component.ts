@@ -2,16 +2,16 @@ import {Component, Input} from '@angular/core';
 import {MessageService} from 'primeng/api';
 import {UserService} from '../user.service';
 import {FormsModule} from '@angular/forms';
-import {Button} from 'primeng/button';
 import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
+import {ButtonModule} from 'primeng/button';
 
 @Component({
   selector: 'login',
   imports: [
     FormsModule,
-    Button,
-    NgIf
+    ButtonModule,
+    CommonModule
   ],
   templateUrl: './login.component.html'
 })

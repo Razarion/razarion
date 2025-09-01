@@ -2,14 +2,14 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
 import {SelectModule} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'resource-item-type',
   imports: [
     SelectModule,
     FormsModule,
-    NgIf
+    CommonModule
   ],
   templateUrl: './resource-item-type.component.html'
 })

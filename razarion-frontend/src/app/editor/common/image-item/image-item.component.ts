@@ -1,21 +1,24 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MessageService } from 'primeng/api';
-import { getImageUrl as common_getImageUrl, getUpdateUrl as common_getUpdateUrl } from 'src/app/common';
-import {Button} from 'primeng/button';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {MessageService} from 'primeng/api';
+import {getImageUrl as common_getImageUrl, getUpdateUrl as common_getUpdateUrl} from 'src/app/common';
+import {ButtonModule} from 'primeng/button';
 import {OverlayPanelModule} from 'primeng/overlaypanel';
 import {ImageGalleryComponent} from './image-gallery.component';
-import {FileUpload} from 'primeng/fileupload';
+import {FileUploadModule} from 'primeng/fileupload';
+import {CommonModule} from '@angular/common';
+import {PopoverModule} from 'primeng/popover';
 
 
 @Component({
   selector: 'image-item',
-  styles: ['.image-gallery-img { width: 100px;height: 100px; background: url(\'public/transparentBg.png\')}'],
   templateUrl: './image-item.component.html',
+  styleUrls: ['./image-item.component.scss'],
   imports: [
-    Button,
-    OverlayPanelModule,
+    ButtonModule,
+    PopoverModule,
     ImageGalleryComponent,
-    FileUpload
+    FileUploadModule,
+    CommonModule
   ],
   inputs: ['imageId']
 })

@@ -13,7 +13,7 @@ import {AbstractMesh, Scene, SceneLoader} from "@babylonjs/core";
 import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 import {Badge} from 'primeng/badge';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {TableModule} from 'primeng/table';
 import {Divider} from 'primeng/divider';
 import {BabylonMaterialComponent} from '../../common/babylon-material/babylon-material.component';
@@ -24,7 +24,7 @@ import {FormsModule} from '@angular/forms';
   selector: 'gltf-editor',
   imports: [
     Badge,
-    NgIf,
+    CommonModule,
     TableModule,
     Divider,
     BabylonMaterialComponent,

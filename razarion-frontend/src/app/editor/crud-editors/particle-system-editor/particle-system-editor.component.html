@@ -39,12 +39,15 @@
     </div>
   </p-divider>
   <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-    Edit in Babylon Inspector
+    <div class="col-span-12">
+      Edit in Babylon Inspector
+    </div>
   </div>
   <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
     <span class="col-span-4">Pick terrain position</span>
     <div class="col-span-8">
-      <decimal-position [(decimalPosition)]="terrainPosition" (decimalPositionChange)="onTerrainPosition()"></decimal-position>
+      <decimal-position [(decimalPosition)]="terrainPosition"
+                        (decimalPositionChange)="onTerrainPosition()"></decimal-position>
     </div>
   </div>
   <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
@@ -83,6 +86,17 @@
     <span class="col-span-4">Upload particle system</span>
     <div class="col-span-8">
       <p-button icon="pi pi-upload" (onClick)="uploadParticleSystem()"></p-button>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Import from file</span>
+    <div class="col-span-8">
+      <p-button icon="pi pi-file" (onClick)="uploadImport()"></p-button>
+      <input
+        type="file"
+        #fileInput
+        (change)="onFileSelected($event)"
+        style="display: none;" />
     </div>
   </div>
 

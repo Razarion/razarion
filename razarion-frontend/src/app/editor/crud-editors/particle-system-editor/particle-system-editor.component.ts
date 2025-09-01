@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {CrudContainerChild} from '../crud-container/crud-container.component';
 import {DecimalPosition, ParticleSystemControllerClient, ParticleSystemEntity} from 'src/app/generated/razarion-share';
 import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
@@ -7,7 +7,7 @@ import {ParticleSystem, Vector3} from '@babylonjs/core';
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
-import {Button} from 'primeng/button';
+import {ButtonModule} from 'primeng/button';
 import {Checkbox} from 'primeng/checkbox';
 import {FormsModule} from '@angular/forms';
 import {InputNumber} from 'primeng/inputnumber';
@@ -15,12 +15,12 @@ import {DecimalPositionComponent} from '../../common/decimal-position/decimal-po
 import {Divider} from 'primeng/divider';
 import {ImageItemComponent} from '../../common/image-item/image-item.component';
 import {VertexEditorComponent} from '../../common/vertex-editor/vertex-editor.component';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'particle-system-editor',
   imports: [
-    Button,
+    ButtonModule,
     Checkbox,
     FormsModule,
     InputNumber,
@@ -28,7 +28,7 @@ import {NgIf} from '@angular/common';
     Divider,
     ImageItemComponent,
     VertexEditorComponent,
-    NgIf
+    CommonModule
   ],
   templateUrl: './particle-system-editor.component.html'
 })
@@ -41,6 +41,8 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
   stretchToDestination = false;
   particleSystem?: ParticleSystem;
   particleSystemControllerClient: ParticleSystemControllerClient;
+  @ViewChild('fileInput')
+  fileInput!: ElementRef<HTMLInputElement>;
 
   constructor(private messageService: MessageService,
               private rendererService: BabylonRenderServiceAccessImpl,
@@ -92,6 +94,39 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
       this.upload(json);
     }
   }
+
+  uploadImport() {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+    const file = input.files[0];
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string;
+        const jsonData = JSON.parse(text);
+        this.particleSystem = ParticleSystem.Parse(jsonData, this.rendererService.getScene(), "");
+        this.particleSystem.name = `Editor: ${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})`;
+        this.particleSystem.emitter = new Vector3(this.terrainPosition!.x, this.terrainHeight!, this.terrainPosition!.y);
+        this.particleSystem.start();
+      } catch (error) {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Exception during particle system import ${error}`,
+          sticky: true
+        });
+        console.error(error);
+      }
+    };
+    reader.readAsText(file);
+  }
+
 
   onTerrainPosition() {
     if (this.terrainPosition) {

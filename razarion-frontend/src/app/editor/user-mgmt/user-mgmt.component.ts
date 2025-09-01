@@ -9,7 +9,7 @@ import {ButtonModule} from 'primeng/button';
 import {InputNumberModule} from 'primeng/inputnumber';
 import {LevelComponent} from '../common/level/level.component';
 import {TableModule} from 'primeng/table';
-import {DatePipe, NgForOf, NgIf} from '@angular/common';
+import {CommonModule, DatePipe, NgForOf} from '@angular/common';
 import {ChipModule} from 'primeng/chip';
 import {FormsModule} from '@angular/forms';
 import {SelectModule} from 'primeng/select';
@@ -30,7 +30,7 @@ import {CheckboxModule} from 'primeng/checkbox';
     FormsModule,
     DropdownModule,
     NgForOf,
-    NgIf,
+    CommonModule,
     ToolbarModule,
     CheckboxModule,
   ],

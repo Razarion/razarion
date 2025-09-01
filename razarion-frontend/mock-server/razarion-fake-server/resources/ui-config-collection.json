@@ -383,6 +383,12 @@
       "internalName": "Resource 1",
       "gltfName": "Resource 1",
       "gltfEntityId": 1
+    },
+    {
+      "id": 43,
+      "internalName": "(Bot) Noob Building",
+      "gltfName": "Refinery",
+      "gltfEntityId": 1
     }
   ],
   "particleSystemEntities": [],

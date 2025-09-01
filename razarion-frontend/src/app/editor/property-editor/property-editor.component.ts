@@ -1,16 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { EditorPanel } from '../editor-model';
-import { DbPropertiesEditorControllerClient, DbPropertyConfig, DbPropertyType } from 'src/app/generated/razarion-share';
-import { HttpClient } from '@angular/common/http';
-import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
-import { MessageService } from 'primeng/api';
+import {Component, OnInit} from '@angular/core';
+import {EditorPanel} from '../editor-model';
+import {DbPropertiesEditorControllerClient, DbPropertyConfig, DbPropertyType} from 'src/app/generated/razarion-share';
+import {HttpClient} from '@angular/common/http';
+import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
+import {MessageService} from 'primeng/api';
 import {Button} from 'primeng/button';
 import {ImageItemComponent} from '../common/image-item/image-item.component';
 import {InputNumber} from 'primeng/inputnumber';
 import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
 import {TableModule} from 'primeng/table';
 import {FormsModule} from '@angular/forms';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'property-editor',
@@ -21,7 +21,7 @@ import {NgIf} from '@angular/common';
     BabylonMaterialComponent,
     TableModule,
     FormsModule,
-    NgIf
+    CommonModule
   ],
   templateUrl: './property-editor.component.html'
 })
@@ -37,7 +37,7 @@ export class PropertyEditorComponent extends EditorPanel implements OnInit {
   dbPropertyConfigs: DbPropertyConfig[] = [];
 
   constructor(httpClient: HttpClient,
-    private messageService: MessageService) {
+              private messageService: MessageService) {
     super();
     this.dbPropertiesEditorControllerClient = new DbPropertiesEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
@@ -55,18 +55,18 @@ export class PropertyEditorComponent extends EditorPanel implements OnInit {
 
   onSave(dbPropertyConfig: DbPropertyConfig) {
     this.dbPropertiesEditorControllerClient.updateProperty(dbPropertyConfig)
-    .then(() => {
-      this.messageService.add({
-        severity: 'success',
-        life: 300,
-        summary: 'Saved successful'
-      });
-    })
-    .catch((error) => this.messageService.add({
-      severity: 'error',
-      summary: `${error.name}: ${error.status}`,
-      detail: `${error.statusText}`,
-      sticky: true
-    }));
+      .then(() => {
+        this.messageService.add({
+          severity: 'success',
+          life: 300,
+          summary: 'Saved successful'
+        });
+      })
+      .catch((error) => this.messageService.add({
+        severity: 'error',
+        summary: `${error.name}: ${error.status}`,
+        detail: `${error.statusText}`,
+        sticky: true
+      }));
   }
 }

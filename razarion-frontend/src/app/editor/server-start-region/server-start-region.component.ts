@@ -8,7 +8,7 @@ import {FormsModule} from '@angular/forms';
 import {InputNumberModule} from 'primeng/inputnumber';
 import {Divider} from 'primeng/divider';
 import {Button} from 'primeng/button';
-import {NgIf} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {SelectModule} from 'primeng/select';
 import {CheckboxModule} from 'primeng/checkbox';
 import {MessageService} from 'primeng/api';
@@ -23,7 +23,7 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     InputNumberModule,
     Divider,
     Button,
-    NgIf,
+    CommonModule,
     SelectModule,
     CheckboxModule,
     ScrollPanelModule

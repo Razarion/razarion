@@ -30,7 +30,7 @@
             <div class="info">
                 <h1 class="title">Open-world RTS — One Planet, All Players</h1>
 
-                <button class="button" onclick="location.href='/game'">Play Now</button>
+                <button class="button" onclick="location.href='/game${qs}'">Play Now</button>
 
                 <div class="text">
                     Experience large-scale real-time battles right in your browser.
