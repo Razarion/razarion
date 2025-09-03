@@ -184,7 +184,7 @@ export class GameMockService {
           }
 
           getModel3DId(): number | null {
-            return 43;
+            return 37;
           }
 
           getPhysicalAreaConfig(): PhysicalAreaConfig {

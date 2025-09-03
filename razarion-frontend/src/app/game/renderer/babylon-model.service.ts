@@ -12,7 +12,7 @@ import {
   NodeMaterial,
   Scene,
   SceneLoader,
-  TransformNode, Vector3
+  TransformNode
 } from "@babylonjs/core";
 import {GLTFFileLoader} from "@babylonjs/loaders";
 import {Model3DEntity, ParticleSystemEntity} from "src/app/generated/razarion-share";
@@ -94,6 +94,18 @@ export class BabylonModelService {
       throw new Error(`No AssetContainer for gltfEntityId ${model3DEntity.gltfEntityId} for model3DId ${model3DId}`);
     }
 
+
+    const allowedAnimationUniqueIds: Set<number> = new Set();
+    if (assetContainer.animationGroups) {
+      assetContainer.animationGroups.forEach(animationGroup => {
+        if (animationGroup.name.startsWith(model3DEntity?.gltfName)) {
+          animationGroup.targetedAnimations.forEach(targetedAnimation => {
+            allowedAnimationUniqueIds.add(targetedAnimation.animation.uniqueId);
+          })
+        }
+      })
+    }
+
     let node = assetContainer
       .getNodes()
       .find(childNode => childNode.name === model3DEntity.gltfName);
@@ -103,25 +115,33 @@ export class BabylonModelService {
     }
 
     const sourceMap = new Map<string, Mesh>();
-    let transformNode = this.deepCloneNode(node, parent, sourceMap, gltfHelper, diplomacy);
+    let transformNode = this.deepCloneNode(node, parent, sourceMap, gltfHelper, allowedAnimationUniqueIds, diplomacy);
     transformNode.position.x = 0.0;
     transformNode.position.z = 0.0;
     return transformNode;
   }
 
-  private deepCloneNode(root: Node, parent: Node | null, sourceMap: Map<string, Mesh>, gltfHelper: GltfHelper, diplomacy?: Diplomacy): TransformNode {
+  private deepCloneNode(root: Node, parent: Node | null, sourceMap: Map<string, Mesh>, gltfHelper: GltfHelper, allowedAnimationUniqueIds: Set<number>, diplomacy?: Diplomacy): TransformNode {
     let clonedRoot = root.clone(root.name, parent, true);
-    this.startAnimations(clonedRoot);
-    this.startParticleSystems(clonedRoot);
     sourceMap.set(root.id, <Mesh>clonedRoot);
     if (clonedRoot instanceof Mesh) {
       const mesh = <Mesh>clonedRoot;
       mesh.receiveShadows = true;
       mesh.hasVertexAlpha = false;
       gltfHelper.handleMaterial(mesh, diplomacy);
+    } else if (clonedRoot instanceof TransformNode) {
+      const transformNode = <TransformNode>clonedRoot;
+      if (root.animations && root.animations.length) {
+        transformNode.animations = [];
+        root.animations.forEach(animation => {
+          transformNode.animations.push(animation.clone());
+        })
+      }
     }
+    this.startAnimations(root, clonedRoot, allowedAnimationUniqueIds);
+    this.startParticleSystems(clonedRoot);
 
-    root.getChildren().forEach(child => {
+    root.getChildren().forEach((child) => {
       if (child instanceof InstancedMesh) {
         const instancedMesh = <InstancedMesh>child;
         const clonedSource = sourceMap.get(instancedMesh.sourceMesh.id);
@@ -138,7 +158,13 @@ export class BabylonModelService {
           clonedMesh.receiveShadows = true;
           clonedMesh.hasVertexAlpha = false;
           gltfHelper.handleMaterial(clonedMesh, diplomacy);
-          this.startAnimations(clonedMesh);
+          if (instancedMesh.animations && instancedMesh.animations.length) {
+            clonedMesh.animations = [];
+            instancedMesh.animations.forEach(animation => {
+              clonedMesh.animations.push(animation.clone());
+            })
+          }
+          this.startAnimations(instancedMesh, clonedMesh, allowedAnimationUniqueIds);
           this.startParticleSystems(clonedMesh);
         } else {
           const clonedMesh = instancedMesh.sourceMesh.clone(instancedMesh.name); // Instance does not work
@@ -153,24 +179,36 @@ export class BabylonModelService {
           clonedMesh.receiveShadows = true;
           clonedMesh.hasVertexAlpha = false;
           gltfHelper.handleMaterial(clonedMesh, diplomacy);
-          this.startAnimations(clonedMesh);
+          if (instancedMesh.animations && instancedMesh.animations.length) {
+            clonedMesh.animations = [];
+            instancedMesh.animations.forEach(animation => {
+              clonedMesh.animations.push(animation.clone());
+            })
+          }
+          this.startAnimations(instancedMesh, clonedMesh, allowedAnimationUniqueIds);
           this.startParticleSystems(clonedMesh);
         }
       } else {
-        this.deepCloneNode(child, clonedRoot, sourceMap, gltfHelper, diplomacy);
+        this.deepCloneNode(child, clonedRoot, sourceMap, gltfHelper, allowedAnimationUniqueIds, diplomacy);
       }
     })
 
     return <TransformNode>clonedRoot;
   }
 
-  private startAnimations(node: Node | null) {
-    if (!node) {
+  private startAnimations(original: Node | null, created: Node | null, allowedAnimationUniqueIds: Set<number>) {
+    if (!original || !created) {
       return;
     }
-    if (node?.animations) {
-      node.animations.forEach((animation) => {
-        node.getScene().beginAnimation(node, 0, 60, true)
+    if (original?.animations && original?.animations.length
+      && created?.animations && created?.animations.length) {
+      original.animations.forEach((originalAnimation) => {
+        if (allowedAnimationUniqueIds.has(originalAnimation.uniqueId)) {
+          let createdAnimation = created.animations.find(c => c.name == originalAnimation.name);
+          if (createdAnimation) {
+            original.getScene().beginAnimation(created, 0, 60, true)
+          }
+        }
       })
     }
   }
