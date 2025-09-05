@@ -104,8 +104,22 @@ export class BabylonMaterialEditorComponent implements CrudContainerChild<Babylo
 
   uploadSelectedMaterial() {
     if (this.selectedMaterial) {
-      const str = JSON.stringify(this.selectedMaterial.serialize());
-      this.upload(str);
+      try {
+        const str = JSON.stringify(this.selectedMaterial.serialize());
+        this.upload(str);
+      } catch (error) {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Exception during JSON.stringify ${error}`,
+          sticky: true
+        });
+      }
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: `No material selected.`,
+        sticky: true
+      });
     }
   }
 
