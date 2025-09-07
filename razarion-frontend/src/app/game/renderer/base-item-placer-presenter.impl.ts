@@ -148,7 +148,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 class Tip {
   static readonly POSITION_VALID_TEXT = "Click left mouse button to deploy";
   static readonly POSITION_IN_VALID_TEXT = "Move mouse to find free position";
-  private readonly advancedDynamicTexture: AdvancedDynamicTexture;
+  private readonly uiTexture: AdvancedDynamicTexture;
   private readonly rect1: Rectangle;
   private readonly label: TextBlock;
   private readonly mouse: Image;
@@ -157,7 +157,7 @@ class Tip {
   constructor(positionValid: boolean,
               private rendererService: BabylonRenderServiceAccessImpl,
               transformNode: TransformNode) {
-    this.advancedDynamicTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI("Base item placer");
     this.rect1 = new Rectangle();
     this.rect1.width = "350px";
     this.rect1.height = "60px";
@@ -165,7 +165,7 @@ class Tip {
     this.rect1.color = "Orange";
     this.rect1.thickness = 4;
     this.rect1.background = "green";
-    this.advancedDynamicTexture.addControl(this.rect1);
+    this.uiTexture.addControl(this.rect1);
 
     let image = new Rectangle();
     image.width = "40px";
@@ -229,7 +229,7 @@ class Tip {
   }
 
   dispose() {
-    this.advancedDynamicTexture.dispose();
+    this.uiTexture.dispose();
   }
 
   private setupMouseButtonAnimation() {

@@ -36,7 +36,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private oldRotation3D: Vector3 | null = null;
   private lastRotationUpdateTime: number | null = null;
   private idleCallback: ((idle: boolean) => void) | null = null;
-  private readonly advancedDynamicTexture: AdvancedDynamicTexture;
+  private readonly uiTexture: AdvancedDynamicTexture;
 
   constructor(id: number,
               private baseItemType: BaseItemType,
@@ -61,7 +61,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.baseId = baseId;
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
-    this.advancedDynamicTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI(`Base item ui ${baseItemType.getInternalName()}`);
 
     if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
       rendererService.addInterpolationListener(this);
@@ -156,17 +156,18 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.disposeBuildingParticleSystem();
     this.disposeHarvestingParticleSystem();
     if (this.healthSlider) {
-      this.advancedDynamicTexture.removeControl(this.healthSlider)
+      this.uiTexture.removeControl(this.healthSlider)
       this.healthSlider = null;
     }
     if (this.progressSlider) {
-      this.advancedDynamicTexture.removeControl(this.progressSlider)
+      this.uiTexture.removeControl(this.progressSlider)
       this.progressSlider = null;
     }
     if (this.nameBlock) {
-      this.advancedDynamicTexture.removeControl(this.nameBlock)
+      this.uiTexture.removeControl(this.nameBlock)
       this.nameBlock = null;
     }
+    this.uiTexture.dispose();
     super.dispose();
   }
 
@@ -186,11 +187,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.healthSlider.background = "red";
       this.healthSlider.displayThumb = false;
       this.healthSlider.isReadOnly = false;
-      this.advancedDynamicTexture.addControl(this.healthSlider)
+      this.uiTexture.addControl(this.healthSlider)
       this.healthSlider.linkWithMesh(this.getContainer());
       this.healthSlider.linkOffsetY = -52;
     } else if (!this.isSelectOrHove() && this.healthSlider) {
-      this.advancedDynamicTexture.removeControl(this.healthSlider)
+      this.uiTexture.removeControl(this.healthSlider)
       this.healthSlider = null;
     } else if (this.isSelectOrHove() && this.healthSlider) {
       if (this.healthSlider) {
@@ -241,14 +242,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         this.progressSlider.background = "black";
         this.progressSlider.displayThumb = false;
         this.progressSlider.isReadOnly = false;
-        this.advancedDynamicTexture.addControl(this.progressSlider)
+        this.uiTexture.addControl(this.progressSlider)
         this.progressSlider.linkWithMesh(this.getContainer());
         this.progressSlider.linkOffsetY = -40;
-        let nodeMaterial = this.babylonModelService.getBabylonMaterial(this.uiConfigCollectionService.getProgressBarNodeMaterialId());
       }
     } else {
       if (this.progressSlider) {
-        this.advancedDynamicTexture.removeControl(this.progressSlider)
+        this.uiTexture.removeControl(this.progressSlider)
         this.progressSlider = null;
       }
     }
@@ -519,7 +519,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.nameBlock.fontSize = 18;
     this.nameBlock.outlineWidth = 5;
     this.nameBlock.outlineColor = "black";
-    this.advancedDynamicTexture.addControl(this.nameBlock);
+    this.uiTexture.addControl(this.nameBlock);
     this.nameBlock.linkWithMesh(this.getContainer());
     this.nameBlock.linkOffsetY = -62 - this.baseItemType.getPhysicalAreaConfig().getRadius() * 2;
   }
