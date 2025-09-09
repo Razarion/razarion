@@ -101,7 +101,7 @@ export class GameMockService {
           // Some very strange babylon behavior, _projectionMatrix is zero matrix
           this.babylonRenderServiceAccessImpl.setViewFieldCenter(8, 8);
           this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
-          // this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
+          this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
         }, 100);
         // this.loadingCover!.hide();
         // this.threeJsRendererService.createProjectile(new class implements Vertex {
