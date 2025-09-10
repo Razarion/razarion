@@ -18,11 +18,16 @@ class Brush {
   }
 }
 
+export enum BrushType {
+  ROUND = "ROUND",
+  SQUARE = "SQUARE"
+}
+
 export class BrushValues {
+  type: BrushType = BrushType.SQUARE;
   height: number = 1;
-  diameter: number = 10;
+  size: number = 10;
   maxSlopeWidth: number = 10;
-  slope: number = 30;
   random: number = 0;
 }
 
@@ -82,17 +87,28 @@ export class BrushValues {
     </div>
 
     <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Type</span>
+      <div class="col-span-7">
+        <p-select
+          [options]="[{label: 'Square', value: BrushType.SQUARE}, {label: 'Round', value: BrushType.ROUND}]"
+          [(ngModel)]="activeBrush.value.brushValues.type"
+          [style]="{ width: '100%' }">
+        </p-select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-1 p-1">
       <span class="col-span-5">Size [m]</span>
       <div class="col-span-7">
-        <input type="number" [(ngModel)]="activeBrush.value.brushValues.diameter" class="w-full"/>
-        <p-slider [(ngModel)]="activeBrush.value.brushValues.diameter" [step]="1" [min]="1" [max]="100"></p-slider>
+        <input type="number" [(ngModel)]="activeBrush.value.brushValues.size" class="w-full"/>
+        <p-slider [(ngModel)]="activeBrush.value.brushValues.size" [step]="1" [min]="1" [max]="100"></p-slider>
       </div>
     </div>
 
     <div class="grid grid-cols-12 gap-1 p-1">
       <span class="col-span-5">Height [m]</span>
       <div class="col-span-7">
-        <input type="number" [(ngModel)]="activeBrush.value.brushValues.height" class="w-full"/>
+        <input type="number" [(ngModel)]="activeBrush.value.brushValues.height" [step]="0.1" class="w-full"/>
         <p-slider [(ngModel)]="activeBrush.value.brushValues.height" [step]="0.1" [min]="-20" [max]="50"></p-slider>
       </div>
     </div>
@@ -107,15 +123,7 @@ export class BrushValues {
     </div>
 
     <div class="grid grid-cols-12 gap-1 p-1">
-      <span class="col-span-5">Slope [&deg;]</span>
-      <div class="col-span-7">
-        <input type="number" [(ngModel)]="activeBrush.value.brushValues.slope" class="w-full"/>
-        <p-slider [(ngModel)]="activeBrush.value.brushValues.slope" [step]="0.01" [min]="0" [max]="90"></p-slider>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-12 gap-1 p-1">
-      <span class="col-span-5">Random (Slope) [m]</span>
+      <span class="col-span-5">Random [m]</span>
       <div class="col-span-7">
         <input type="number" [(ngModel)]="activeBrush.value.brushValues.random" class="w-full"/>
         <p-slider [(ngModel)]="activeBrush.value.brushValues.random" [step]="0.01" [min]="0" [max]="5"></p-slider>
@@ -124,6 +132,7 @@ export class BrushValues {
   `
 })
 export class FixHeightBrushComponent extends AbstractBrush implements OnInit, OnDestroy {
+  BrushType = BrushType;
   brushes: { name: string, value: Brush }[] = [{name: "Dummy", value: new Brush(-9999, "Dummy", new BrushValues())}];
   activeBrush = this.brushes[0];
   private pendingBrushConfigEntityId: Number | null = null;
@@ -196,11 +205,20 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit, On
   }
 
   override calculateHeight(mousePosition: Vector3, oldPosition: Vector3): number | null {
-    return FixHeightBrushComponent.staticCalculateHeight(mousePosition, oldPosition, this.activeBrush.value.brushValues);
+    return FixHeightBrushComponent.staticCalculateHeight(mousePosition, oldPosition, oldPosition.y, this.activeBrush.value.brushValues);
   }
 
-  public static staticCalculateHeight(centerPosition: Vector3, position: Vector3, brushValues: BrushValues): number | null {
-    const radius = brushValues.diameter / 2.0;
+  public static staticCalculateHeight(centerPosition: Vector3, position: Vector3, terrainHeight: number | null, brushValues: BrushValues): number | null {
+    switch (brushValues.type) {
+      case BrushType.ROUND:
+        return FixHeightBrushComponent.calculateHeightRound(centerPosition, position, terrainHeight, brushValues);
+      case BrushType.SQUARE:
+        return FixHeightBrushComponent.calculateHeightSquare(centerPosition, position, terrainHeight, brushValues);
+    }
+  }
+
+  private static calculateHeightRound(centerPosition: Vector3, position: Vector3, terrainHeight: number | null, brushValues: BrushValues): number | null {
+    const radius = brushValues.size / 2.0;
     let distance = Vector2.Distance(new Vector2(position.x, position.z), new Vector2(centerPosition.x, centerPosition.z));
     if (distance < (radius + brushValues.maxSlopeWidth)) {
       let newHeight: number | null = null;
@@ -208,24 +226,67 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit, On
         newHeight = brushValues.height;
       } else {
         let slopeDistance = distance - radius;
-        let deltaHeight = Math.tan(brushValues.slope * Math.PI / 180) * slopeDistance;
+        let deltaHeight = brushValues.height * slopeDistance / brushValues.maxSlopeWidth;
+        if (terrainHeight !== null) {
+          let direction = brushValues.height - terrainHeight;
+          let random = (brushValues.random * (Math.random() - 0.5) * 2.0)
+          let calculatedHeight = brushValues.height + random - deltaHeight;
+          if (direction > 0) {
+            // up
+            if (calculatedHeight > terrainHeight) {
+              newHeight = calculatedHeight;
+            }
+          } else if (direction < 0) {
+            // down
+            if (calculatedHeight < terrainHeight) {
+              newHeight = calculatedHeight;
+            }
+          }
+        } else {
+          let random = (brushValues.random * (Math.random() - 0.5) * 2.0)
+          newHeight = brushValues.height + random - deltaHeight;
+        }
+      }
+      return newHeight
+    } else {
+      return null;
+    }
+  }
+
+  private static calculateHeightSquare(centerPosition: Vector3, position: Vector3, terrainHeight: number | null, brushValues: BrushValues): number | null {
+    const distanceX = Math.abs(centerPosition.x - position.x);
+    const distanceZ = Math.abs(centerPosition.z - position.z);
+
+    if ((distanceX <= brushValues.size / 2.0)
+      && (distanceZ <= brushValues.size / 2.0)) {
+      return brushValues.height;
+    } else if ((distanceX <= brushValues.size / 2.0 + brushValues.maxSlopeWidth)
+      && (distanceZ <= brushValues.size / 2.0 + brushValues.maxSlopeWidth)) {
+      let newHeight: number | null = null;
+
+      let distance = Math.max(distanceX, distanceZ);
+      let slopeDistance = distance - brushValues.size / 2.0;
+      let deltaHeight = brushValues.height * slopeDistance / brushValues.maxSlopeWidth;
+      if (terrainHeight !== null) {
         let direction = brushValues.height - position.y;
         let random = (brushValues.random * (Math.random() - 0.5) * 2.0)
+        let calculatedHeight = brushValues.height + random - deltaHeight;
         if (direction > 0) {
           // up
-          let calculatedHeight = brushValues.height + random - deltaHeight;
-          if (calculatedHeight > position.y) {
+          if (calculatedHeight > terrainHeight) {
             newHeight = calculatedHeight;
           }
         } else if (direction < 0) {
           // down
-          let calculatedHeight = brushValues.height + random + deltaHeight;
-          if (calculatedHeight < position.y) {
+          if (calculatedHeight < terrainHeight) {
             newHeight = calculatedHeight;
           }
         }
+      } else {
+        let random = (brushValues.random * (Math.random() - 0.5) * 2.0)
+        newHeight = brushValues.height + random - deltaHeight;
       }
-      return newHeight
+      return newHeight;
     } else {
       return null;
     }

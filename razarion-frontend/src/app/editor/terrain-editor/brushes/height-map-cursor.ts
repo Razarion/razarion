@@ -15,16 +15,16 @@ export class HeightMapCursor {
     if (this.mesh) {
       this.mesh.dispose();
     }
-    this.mesh = MeshBuilder.CreateSphere("editorCursor inner", {
+    this.mesh = MeshBuilder.CreateSphere("Height map cursor", {
       diameter: 1
     }, this.scene);
     this.mesh.isPickable = false;
     this.currentBrush = {
-      diameter: brushValues.diameter,
+      type: brushValues.type,
+      size: brushValues.size,
       height: brushValues.height,
       maxSlopeWidth: brushValues.maxSlopeWidth,
       random: brushValues.random,
-      slope: brushValues.slope
     }
     let vertexData = this.createVertexData();
     vertexData.applyToMesh(this.mesh, true);
@@ -40,11 +40,11 @@ export class HeightMapCursor {
     this.mesh!.position.x = position.x;
     this.mesh!.position.y = 0;
     this.mesh!.position.z = position.z;
-    if (this.currentBrush.diameter !== brushValues.diameter ||
+    if (this.currentBrush.type !== brushValues.type ||
+      this.currentBrush.size !== brushValues.size ||
       this.currentBrush.height !== brushValues.height ||
       this.currentBrush.maxSlopeWidth !== brushValues.maxSlopeWidth ||
-      this.currentBrush.random !== brushValues.random ||
-      this.currentBrush.slope !== brushValues.slope) {
+      this.currentBrush.random !== brushValues.random) {
       this.setupMesh(brushValues);
     }
   }
@@ -66,7 +66,7 @@ export class HeightMapCursor {
     const normals = [];
     const uvs = [];
 
-    const size = this.currentBrush.maxSlopeWidth * 2 + this.currentBrush.diameter;
+    const size = this.currentBrush.maxSlopeWidth * 2 + this.currentBrush.size;
 
     let xCount = (size / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     let yCount = (size / BabylonTerrainTileImpl.NODE_SIZE) + 1;
@@ -79,7 +79,7 @@ export class HeightMapCursor {
       for (let x = 0; x < xCount; x++) {
         const currentX = startX + x * BabylonTerrainTileImpl.NODE_SIZE;
         const currentY = startY + y * BabylonTerrainTileImpl.NODE_SIZE;
-        let height = FixHeightBrushComponent.staticCalculateHeight(new Vector3(0, 0, 0), new Vector3(currentX, 0, currentY), this.currentBrush);
+        let height = FixHeightBrushComponent.staticCalculateHeight(new Vector3(0, 0, 0), new Vector3(currentX, 0, currentY), null, this.currentBrush);
         if (height === null) {
           height = 0;
         }
