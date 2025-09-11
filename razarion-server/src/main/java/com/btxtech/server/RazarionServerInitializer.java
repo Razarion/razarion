@@ -68,7 +68,7 @@ public class RazarionServerInitializer implements ApplicationRunner {
             logger.error("setStaticGameConfig failed", e);
         }
         try {
-            ServerGameEngineConfig serverGameEngineConfig = serverGameEngineService.read().get(0);
+            ServerGameEngineConfig serverGameEngineConfig = serverGameEngineService.serverGameEngineConfig();
             serverTerrainShapeService.start(serverGameEngineConfig.getBotConfigs());
         } catch (Exception e) {
             logger.error("start failed ", e);

@@ -44,7 +44,7 @@ export class EditorService {
   static RESTART_PLANET_COLD: ServerCommand = new ServerCommand("Restart Planet cold", (client) => client.restartPlanetCold());
   private serverGameEngineEditorControllerClient: ServerGameEngineEditorControllerClient;
   private levelEditorControllerClient: LevelEditorControllerClient;
-  private serverGameEngineControllerClient: PlanetMgmtControllerClient;
+  private planetMgmtControllerClient: PlanetMgmtControllerClient;
 
   public static ALL_SERVER_COMMANDS: ServerCommand[] = [
     EditorService.RESTART_BOTS,
@@ -61,11 +61,11 @@ export class EditorService {
               private messageService: MessageService) {
     this.serverGameEngineEditorControllerClient = new ServerGameEngineEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
     this.levelEditorControllerClient = new LevelEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
-    this.serverGameEngineControllerClient = new PlanetMgmtControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
+    this.planetMgmtControllerClient = new PlanetMgmtControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
   executeServerCommand(serverCommand: ServerCommand) {
-    serverCommand.restcall(this.serverGameEngineControllerClient).then(() => {
+    serverCommand.restcall(this.planetMgmtControllerClient).then(() => {
       this.messageService.add({
         severity: 'success',
         life: 300,

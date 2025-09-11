@@ -93,11 +93,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
-        List<ServerGameEngineConfig> serverGameEngineConfigs = serverGameEngineService.read();
-        if (serverGameEngineConfigs.isEmpty()) {
-            return;
-        }
-        ServerGameEngineConfig serverGameEngineConfig = serverGameEngineConfigs.get(0);
+        ServerGameEngineConfig serverGameEngineConfig = serverGameEngineService.serverGameEngineConfig();
         PlanetConfig planetConfig = planetCrudService.read(serverGameEngineConfig.getPlanetConfigId());
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
         planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEngineService.readMasterPlanetConfig(), () -> {

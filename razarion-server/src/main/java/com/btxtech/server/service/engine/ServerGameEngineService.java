@@ -64,6 +64,11 @@ public class ServerGameEngineService extends AbstractConfigCrudService<ServerGam
         return serverGameEngineConfigEntity().findSlavePlanetConfig4Level(levelCrudPersistence.getLevelNumber4Id(levelId));
     }
 
+    @Transactional
+    public ServerGameEngineConfig serverGameEngineConfig() {
+        return serverGameEngineConfigEntity().toServerGameEngineConfig();
+    }
+
     private ServerGameEngineConfigEntity serverGameEngineConfigEntity() {
         try {
             return getEntities().stream().findFirst().orElseThrow((Supplier<Throwable>) () -> new IllegalStateException("No ServerGameEngineConfigEntity in DB"));

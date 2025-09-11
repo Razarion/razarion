@@ -10,6 +10,7 @@ import com.btxtech.server.service.engine.ServerTerrainShapeService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
@@ -32,27 +33,34 @@ public class PlanetMgmtController {
     private final ServerGameEngineControl serverGameEngineControl;
     private final ServerTerrainShapeService serverTerrainShapeService;
     private final ClientSystemConnectionService clientSystemConnectionService;
-    private final ServerGameEngineService serverGameEngineCrudPersistence;
+    private final ServerGameEngineService serverGameEngineService;
     private final PlanetBackupService planetBackupService;
+    private final BotService botService;
+    private final Object reloadLook = new Object();
 
     public PlanetMgmtController(BaseItemService baseItemService,
                                 ServerGameEngineControl serverGameEngineControl,
                                 ServerTerrainShapeService serverTerrainShapeService,
                                 ClientSystemConnectionService clientSystemConnectionService,
-                                ServerGameEngineService serverGameEngineCrudPersistence,
-                                PlanetBackupService planetBackupService) {
+                                ServerGameEngineService serverGameEngineService,
+                                PlanetBackupService planetBackupService, BotService botService) {
         this.baseItemService = baseItemService;
         this.serverGameEngineControl = serverGameEngineControl;
         this.serverTerrainShapeService = serverTerrainShapeService;
         this.clientSystemConnectionService = clientSystemConnectionService;
-        this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
+        this.serverGameEngineService = serverGameEngineService;
         this.planetBackupService = planetBackupService;
+        this.botService = botService;
     }
 
     @PostMapping("restartBots")
     @RolesAllowed(Roles.ADMIN)
     public void restartBots() {
-        throw new UnsupportedOperationException("...TODO...");
+        ServerGameEngineConfig serverGameEngineConfig = serverGameEngineService.serverGameEngineConfig();
+        synchronized (reloadLook) {
+            botService.killAllBots();
+            botService.startBots(serverGameEngineConfig.getBotConfigs());
+        }
     }
 
     @PostMapping("reloadStatic")
@@ -172,7 +180,7 @@ public class PlanetMgmtController {
                     new LifecyclePacket().setType(LifecyclePacket.Type.HOLD)
                             .setDialog(LifecyclePacket.Dialog.PLANET_RESTART)
             );
-            ServerGameEngineConfig serverGameEngineConfig = serverGameEngineCrudPersistence.read().get(0);
+            ServerGameEngineConfig serverGameEngineConfig = serverGameEngineService.serverGameEngineConfig();
             serverTerrainShapeService.createTerrainShape(
                     serverGameEngineConfig.getBotConfigs(),
                     serverGameEngineConfig.getPlanetConfigId()
