@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST;
 import static com.btxtech.shared.gameengine.GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE;
-import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.heightToUnit16;
 
 /**
  * Created by Beat

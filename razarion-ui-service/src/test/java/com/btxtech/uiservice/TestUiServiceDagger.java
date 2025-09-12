@@ -2,8 +2,11 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
+import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerChecker;
@@ -36,4 +39,12 @@ public interface TestUiServiceDagger {
     ResourceUiService resourceUiService();
 
     BoxUiService boxUiService();
+
+    AlarmService alarmService();
+
+    BaseItemUiService baseItemUiService();
+
+    SelectionService selectionService();
+
+    ItemCockpitService itemCockpitService();
 }

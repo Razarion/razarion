@@ -137,7 +137,6 @@ public class InGameQuestVisualizationServiceBaseItemTest extends DaggerUiBaseInt
                 300, 200,
                 0, 200);
 
-        setupI18nConstants();
         setupCockpit();
 
         getWeldBean(BaseItemUiService.class).addBase(new PlayerBaseDto()

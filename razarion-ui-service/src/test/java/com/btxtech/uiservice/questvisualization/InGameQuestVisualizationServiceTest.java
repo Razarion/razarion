@@ -159,7 +159,6 @@ public class InGameQuestVisualizationServiceTest extends DaggerUiBaseIntegration
                 300, 200,
                 0, 200);
 
-        setupI18nConstants();
         setupCockpit();
 
         return coldGameUiContext;

@@ -8,19 +8,20 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickI
 import com.btxtech.uiservice.DaggerUiBaseIntegrationTest;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.renderer.ViewField;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
 
-import static com.btxtech.shared.dto.FallbackConfig.BUILDER_ITEM_TYPE_ID;
 import static com.btxtech.shared.dto.FallbackConfig.FACTORY_ITEM_TYPE_ID;
+import static com.btxtech.shared.dto.FallbackConfig.SHIP_ATTACKER_ITEM_TYPE_ID;
+import static com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto.from;
 
 public class InputServiceTest extends DaggerUiBaseIntegrationTest {
 
     @Test
-    public void InputService() {
+    public void inputService() {
         // Setup
         ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
         coldGameUiContext.setUserContext(new UserContext()
@@ -29,9 +30,7 @@ public class InputServiceTest extends DaggerUiBaseIntegrationTest {
                 .levelId(1));
         setupUiEnvironment(coldGameUiContext);
         setupAlarmService();
-        setupI18nConstants();
-        // ???
-        GameUiControl gameUiControl = getWeldBean(GameUiControl.class);
+        GameUiControl gameUiControl = getTestUiServiceDagger().gameUiControl();
         gameUiControl.setColdGameUiContext(coldGameUiContext);
         gameUiControl.init();
 
@@ -42,46 +41,50 @@ public class InputServiceTest extends DaggerUiBaseIntegrationTest {
         createBase(coldGameUiContext.getUserContext().getUserId(), baseId);
         NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos = setup2BaseItems(baseId);
 
-        BaseItemUiService baseItemUiService = getWeldBean(BaseItemUiService.class);
+        BaseItemUiService baseItemUiService = getTestUiServiceDagger().baseItemUiService();
 
         // Run ThreeJsRendererServiceAccess test
         getBabylonRendererServiceAccessMock().clear();
-
-        callOnViewChanged(new ViewField(0)
-                .bottomLeft(new DecimalPosition(0, 0))
-                .bottomRight(new DecimalPosition(20, 0))
-                .topRight(new DecimalPosition(20, 20))
-                .topLeft(new DecimalPosition(0, 20)));
+        callOnViewChanged(
+                0, 0,
+                20, 0,
+                20, 20,
+                0, 20);
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
         Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
 
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
         Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
 
-        callOnViewChanged(new ViewField(0)
-                .bottomLeft(new DecimalPosition(30, 30))
-                .bottomRight(new DecimalPosition(50, 30))
-                .topRight(new DecimalPosition(50, 50))
-                .topLeft(new DecimalPosition(30, 50)));
+        getTestUiServiceDagger().selectionService().onBaseItemsSelected(List.of(from(nativeSyncBaseItemTickInfos[0])));
+        getTestUiServiceDagger().inputService().terrainClicked(new DecimalPosition(0, 0));
+
+        showDisplay();
+
+        callOnViewChanged(
+                0, 0,
+                20, 0,
+                20, 20,
+                0, 20);
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
         Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
         Assert.assertTrue(getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().get(0).isDisposed());
         Assert.assertTrue(getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().get(1).isDisposed());
         getBabylonRendererServiceAccessMock().clear();
 
-        callOnViewChanged(new ViewField(0)
-                .bottomLeft(new DecimalPosition(0, 0))
-                .bottomRight(new DecimalPosition(20, 0))
-                .topRight(new DecimalPosition(20, 20))
-                .topLeft(new DecimalPosition(0, 20)));
+        callOnViewChanged(
+                0, 0,
+                20, 0,
+                20, 20,
+                0, 20);
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
         Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
 
-        callOnViewChanged(new ViewField(0)
-                .bottomLeft(new DecimalPosition(1, 1))
-                .bottomRight(new DecimalPosition(21, 1))
-                .topRight(new DecimalPosition(21, 21))
-                .topLeft(new DecimalPosition(1, 21)));
+        callOnViewChanged(
+                0, 0,
+                20, 0,
+                20, 20,
+                0, 20);
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
         Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
     }
@@ -90,7 +93,7 @@ public class InputServiceTest extends DaggerUiBaseIntegrationTest {
         NativeSyncBaseItemTickInfo info1 = new NativeSyncBaseItemTickInfo();
         info1.id = 1;
         info1.baseId = baseId;
-        info1.itemTypeId = BUILDER_ITEM_TYPE_ID;
+        info1.itemTypeId = SHIP_ATTACKER_ITEM_TYPE_ID;
         info1.x = 10;
         info1.y = 10;
         info1.spawning = 1;

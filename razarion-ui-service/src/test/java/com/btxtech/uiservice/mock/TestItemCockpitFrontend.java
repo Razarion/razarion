@@ -7,11 +7,6 @@ import com.btxtech.uiservice.cockpit.item.OwnMultipleIteCockpit;
 
 import javax.inject.Singleton;
 
-/**
- * Created by Beat
- * 24.01.2017.
- */
-@Singleton
 public class TestItemCockpitFrontend implements ItemCockpitFrontend {
     @Override
     public void displayOwnSingleType(int count, OwnItemCockpit ownItemCockpit) {

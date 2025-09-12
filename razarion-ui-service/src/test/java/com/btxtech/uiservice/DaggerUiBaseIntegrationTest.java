@@ -2,7 +2,6 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
@@ -14,19 +13,14 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.cockpit.MainCockpit;
-import com.btxtech.uiservice.cockpit.MainCockpitService;
-import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.gui.AbstractUiTestGuiRenderer;
 import com.btxtech.uiservice.gui.UiTestGuiDisplay;
-import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
 import com.btxtech.uiservice.mock.TestItemCockpitFrontend;
 import com.btxtech.uiservice.mock.TestMainCockpit;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import javafx.scene.paint.Color;
 
 import java.util.logging.Logger;
@@ -68,30 +62,21 @@ public class DaggerUiBaseIntegrationTest {
         return null;
     }
 
-    protected void callOnViewChanged(ViewField viewField) {
-        getWeldBean(BaseItemUiService.class).onViewChanged(viewField, viewField.calculateAabbRectangle());
-    }
-
-    protected TerrainUiService getTerrainUiService() {
-        return getWeldBean(TerrainUiService.class);
+    protected void callOnViewChanged(double bottomLeftX, double bottomLeftY, double bottomRightX, double bottomRightY, double topRightX, double topRightY, double topLeftX, double topLeftY) {
+        testUiServiceDagger.inputService().onViewFieldChanged(bottomLeftX, bottomLeftY, bottomRightX, bottomRightY, topRightX, topRightY, topLeftX, topLeftY);
     }
 
     protected BabylonRenderServiceAccessMock getBabylonRendererServiceAccessMock() {
-        return getWeldBean(BabylonRenderServiceAccessMock.class);
+        return testUiServiceDagger.babylonRenderServiceAccessMock();
     }
 
     protected void setupAlarmService() {
-        AlarmService alarmService = getWeldBean(AlarmService.class);
-        alarmService.addListener(alarm -> LOG.severe(alarm.toString()));
-        alarmService.getAlarms().forEach(alarm -> LOG.severe(alarm.toString()));
-    }
-
-    @Deprecated
-    protected void setupI18nConstants() {
+        testUiServiceDagger.alarmService().addListener(alarm -> LOG.severe(alarm.toString()));
+        testUiServiceDagger.alarmService().getAlarms().forEach(alarm -> LOG.severe(alarm.toString()));
     }
 
     protected void createBase(String userId, int baseId) {
-        getWeldBean(BaseItemUiService.class).addBase(new PlayerBaseDto()
+        getTestUiServiceDagger().baseItemUiService().addBase(new PlayerBaseDto()
                 .name("Test Base")
                 .baseId(baseId)
                 .userId(userId)
@@ -127,8 +112,8 @@ public class DaggerUiBaseIntegrationTest {
     }
 
     protected void setupCockpit() {
-        getWeldBean(ItemCockpitService.class).init(getWeldBean(TestItemCockpitFrontend.class));
-        getWeldBean(MainCockpitService.class).init(new MainCockpit() {
+        testUiServiceDagger.itemCockpitService().init(new TestItemCockpitFrontend());
+        testUiServiceDagger.mainCockpitService().init(new MainCockpit() {
             @Override
             public void show() {
 

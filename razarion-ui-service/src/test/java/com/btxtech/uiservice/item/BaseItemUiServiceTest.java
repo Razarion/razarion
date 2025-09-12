@@ -38,7 +38,6 @@ public class BaseItemUiServiceTest extends DaggerUiBaseIntegrationTest {
                 500, 200,
                 200, 200);
 
-        setupI18nConstants();
         setupCockpit();
 
         // Runtime
