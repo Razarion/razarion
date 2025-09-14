@@ -226,11 +226,11 @@ public class CommandService {
     public void loadContainer(SyncBaseItem contained, SyncBaseItem container) {
         checkSyncBaseItem(contained);
         checkSyncBaseItem(container);
-        LoadContainerCommand loadContainerCommand = new LoadContainerCommand();
-        SimplePath path = pathingService.setupPathToDestination(contained, 0, container);
+        SimplePath path = pathingService.setupPathToDestination(contained, container.getBaseItemType().getItemContainerType().getRange(), container);
         if (moveIfPathTargetUnreachable(contained, path)) {
             return;
         }
+        LoadContainerCommand loadContainerCommand = new LoadContainerCommand();
         loadContainerCommand.setSimplePath(path);
         loadContainerCommand.setId(contained.getId());
         loadContainerCommand.setItemContainer(container.getId());

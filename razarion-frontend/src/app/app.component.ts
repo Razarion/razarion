@@ -14,7 +14,6 @@ import {HttpClient} from '@angular/common/http';
     Toast,
     RouterOutlet
   ],
-  providers: [MessageService]
 })
 export class AppComponent {
 
