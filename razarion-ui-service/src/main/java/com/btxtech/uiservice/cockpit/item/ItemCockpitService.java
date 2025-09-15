@@ -101,6 +101,8 @@ public class ItemCockpitService {
 
         ownInfoPanel.buildupItemInfos = createBuildupItemInfos(baseItemType, selectedGroup);
 
+        ownInfoPanel.itemContainerInfo = createItemContainerInfo(baseItemType, selectedGroup);
+
         return ownInfoPanel;
     }
 
@@ -112,7 +114,7 @@ public class ItemCockpitService {
                     try {
                         selectionService.keepOnlyOwnOfType(entry.getKey());
                     } catch (Throwable t) {
-                        logger.log(Level.SEVERE, t.getMessage(), t);
+                        logger.log(Level.WARNING, t.getMessage(), t);
                     }
                 }
             };
@@ -207,7 +209,7 @@ public class ItemCockpitService {
                             try {
                                 onBuildCallback.accept(itemType);
                             } catch (Throwable t) {
-                                logger.log(Level.SEVERE, t.getMessage(), t);
+                                logger.log(Level.WARNING, t.getMessage(), t);
                             }
                         }
 
@@ -254,6 +256,32 @@ public class ItemCockpitService {
                     buildupItemCockpits.add(buildupItemInfo);
                     return buildupItemInfo;
                 }).toArray(BuildupItemCockpit[]::new);
+    }
+
+    private ItemContainerCockpit createItemContainerInfo(BaseItemType baseItemType, Group selectedGroup) {
+        if (baseItemType.getItemContainerType() != null) {
+            SyncBaseItemSimpleDto transporter = selectedGroup.getFirst();
+            ItemContainerCockpit itemContainerCockpit = new ItemContainerCockpit() {
+
+                @Override
+                public void onUnload() {
+                    try {
+                        int baseItemTypeId = transporter.getContainingItemTypeIds()[0];
+                        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().baseItemCount(1).baseItemTypeId(baseItemTypeId);
+                        baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
+                            audioService.onCommandSent();
+                            gameEngineControl.get().unloadContainerCmd(transporter, CollectionUtils.getFirst(decimalPositions));
+                        });
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, e.getMessage(), e);
+                    }
+                }
+            };
+            itemContainerCockpit.count = transporter.getContainingItemTypeIds() != null ? transporter.getContainingItemTypeIds().length : 0;
+            return itemContainerCockpit;
+        } else {
+            return null;
+        }
     }
 
     private OwnItemCockpit createSimpleOwnItemCockpit(BaseItemType baseItemType, Collection<SyncBaseItemSimpleDto> items) {

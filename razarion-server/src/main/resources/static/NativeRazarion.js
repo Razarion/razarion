@@ -38,7 +38,7 @@ com = {
                         this.harvestingResourcePosition = null;
                         this.buildingPosition = null;
                         this.interpolatableVelocity = null;
-                        this.containingItemCount = 0;
+                        this.containingItemTypeIds = null;
                         this.maxContainingRadius = 0;
                         this.contained = false;
                     },

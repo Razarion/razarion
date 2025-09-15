@@ -54,6 +54,12 @@
       </ng-template>
     </p-carousel>
   </div>
+  <div *ngIf="ownItemCockpit.itemContainerInfo" class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
+    <span>{{ `Containing items: ${ownItemCockpit.itemContainerInfo.count}` }}</span>
+    <p-button label="U"
+              (click)="onUnloadClick(ownItemCockpit.itemContainerInfo)"
+              [disabled]="!ownItemCockpit.itemContainerInfo.count"></p-button>
+  </div>
 </div>
 
 <div *ngIf="ownMultipleIteCockpits" class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">

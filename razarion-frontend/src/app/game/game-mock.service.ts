@@ -22,6 +22,7 @@ import {
   InputService,
   InventoryItem,
   InventoryTypeService,
+  ItemContainerCockpit,
   ItemTypeService,
   NativeSyncBaseItemTickInfo,
   OtherItemCockpit,
@@ -54,7 +55,6 @@ import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
-import {Tools} from '@babylonjs/core';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -473,6 +473,12 @@ export class GameMockService {
       itemTypeDescr = "Builds Units";
       itemTypeName = "Factory";
       buildupItemInfos = buildupItemInfos;
+      itemContainerInfo: ItemContainerCockpit = new class implements ItemContainerCockpit {
+        count = 5;
+
+        onUnload() {
+        }
+      };
 
       sellHandler(): void {
       }
@@ -522,6 +528,12 @@ export class GameMockService {
     for (let i = 0; i < 3; i++) {
       ownMultipleIteCockpits.push(new class implements OwnMultipleIteCockpit {
         ownItemCockpit = new class implements OwnItemCockpit {
+          itemContainerInfo: ItemContainerCockpit = new class implements ItemContainerCockpit {
+            count = 5;
+
+            onUnload() {
+            }
+          };
           imageUrl = "/xxxxx";
           itemTypeName = "Builder";
           itemTypeDescr = "Builds Units";

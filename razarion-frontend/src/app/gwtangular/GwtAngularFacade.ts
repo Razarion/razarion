@@ -538,6 +538,7 @@ export interface OwnItemCockpit {
   itemTypeName: string;
   itemTypeDescr: string;
   buildupItemInfos: BuildupItemCockpit[] | null;
+  itemContainerInfo: ItemContainerCockpit;
   sellHandler: () => void;
 }
 
@@ -557,6 +558,12 @@ export interface BuildupItemCockpit {
   onBuild(): void;
 
   setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void;
+}
+
+export interface ItemContainerCockpit {
+  count: number;
+
+  onUnload(): void;
 }
 
 export interface QuestCockpit {

@@ -21,7 +21,7 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
     private double buildup;
     private double health;
     private double constructing;
-    private int containingItemCount;
+    private int[] containingItemTypeIds;
     private double maxContainingRadius;
     private boolean contained;
     private boolean idle;
@@ -36,7 +36,7 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
         syncBaseItemSimpleDto.setBuildup(nativeSyncBaseItemTickInfo.buildup);
         syncBaseItemSimpleDto.setHealth(nativeSyncBaseItemTickInfo.health);
         syncBaseItemSimpleDto.setConstructing(nativeSyncBaseItemTickInfo.constructing);
-        syncBaseItemSimpleDto.setContainingItemCount(nativeSyncBaseItemTickInfo.containingItemCount);
+        syncBaseItemSimpleDto.setContainingItemTypeIds(nativeSyncBaseItemTickInfo.containingItemTypeIds);
         syncBaseItemSimpleDto.setMaxContainingRadius(nativeSyncBaseItemTickInfo.maxContainingRadius);
         syncBaseItemSimpleDto.setContained(nativeSyncBaseItemTickInfo.contained);
         syncBaseItemSimpleDto.setIdle(nativeSyncBaseItemTickInfo.idle);
@@ -87,12 +87,12 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
         return constructing > 0.0;
     }
 
-    public int getContainingItemCount() {
-        return containingItemCount;
+    public int[] getContainingItemTypeIds() {
+        return containingItemTypeIds;
     }
 
-    public void setContainingItemCount(int containingItemCount) {
-        this.containingItemCount = containingItemCount;
+    public void setContainingItemTypeIds(int[] containingItemTypeIds) {
+        this.containingItemTypeIds = containingItemTypeIds;
     }
 
     public double getMaxContainingRadius() {

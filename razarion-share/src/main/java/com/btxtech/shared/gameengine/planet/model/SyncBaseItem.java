@@ -752,8 +752,11 @@ public class SyncBaseItem extends SyncItem {
         } else {
             nativeSyncBaseItemTickInfo.contained = true;
         }
-        if (syncItemContainer != null) {
-            nativeSyncBaseItemTickInfo.containingItemCount = syncItemContainer.getContainedItems().size();
+        if (syncItemContainer != null && syncItemContainer.getContainedItems() != null && !syncItemContainer.getContainedItems().isEmpty()) {
+            nativeSyncBaseItemTickInfo.containingItemTypeIds = syncItemContainer.getContainedItems()
+                    .stream()
+                    .mapToInt(syncBaseItem -> syncBaseItem.getBaseItemType().getId())
+                    .toArray();
             nativeSyncBaseItemTickInfo.maxContainingRadius = syncItemContainer.getMaxContainingRadius();
         }
         nativeSyncBaseItemTickInfo.spawning = spawnProgress;

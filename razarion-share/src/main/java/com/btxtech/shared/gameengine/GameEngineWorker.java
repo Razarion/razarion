@@ -363,7 +363,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 try {
                     if (syncItem instanceof SyncBaseItem) {
                         SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                        tmp.add(syncBaseItem.createNativeSyncBaseItemTickInfo(terrainAnalyzer));
+                        tmp.add(fixGwtStructureCloneArrayProblem(syncBaseItem.createNativeSyncBaseItemTickInfo(terrainAnalyzer)));
                     }
                 } catch (Throwable t) {
                     logger.log(Level.SEVERE, "onPostTick failed syncItem: " + syncItem, t);
@@ -424,12 +424,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, syncBaseItem.createNativeSyncBaseItemTickInfo(terrainService.getTerrainAnalyzer()));
+        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, fixGwtStructureCloneArrayProblem(syncBaseItem.createNativeSyncBaseItemTickInfo(terrainService.getTerrainAnalyzer())));
     }
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, syncBaseItem.createNativeSyncBaseItemTickInfo(terrainService.getTerrainAnalyzer()));
+        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, fixGwtStructureCloneArrayProblem(syncBaseItem.createNativeSyncBaseItemTickInfo(terrainService.getTerrainAnalyzer())));
     }
 
     @Override
@@ -650,5 +650,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             sendToClient(GameEngineControlPackage.Command.GET_TERRAIN_TYPE_ANSWER, nodeIndex, TerrainType.BLOCKED);
 
         }
+    }
+
+    private NativeSyncBaseItemTickInfo fixGwtStructureCloneArrayProblem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        if (nativeSyncBaseItemTickInfo.containingItemTypeIds != null) {
+            nativeSyncBaseItemTickInfo.containingItemTypeIds = convertIntArray(nativeSyncBaseItemTickInfo.containingItemTypeIds);
+        }
+        return nativeSyncBaseItemTickInfo;
     }
 }

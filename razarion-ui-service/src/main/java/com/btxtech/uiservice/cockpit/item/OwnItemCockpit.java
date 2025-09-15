@@ -13,6 +13,7 @@ public class OwnItemCockpit {
     public String itemTypeName;
     public String itemTypeDescr;
     public BuildupItemCockpit[] buildupItemInfos;
+    public ItemContainerCockpit itemContainerInfo;
     public SellHandler sellHandler;
 
     @JsFunction

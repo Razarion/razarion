@@ -23,7 +23,7 @@ public class NativeSyncBaseItemTickInfo {
     public int constructingBaseItemTypeId; // Id or > 0. Integer is not possible
     public NativeDecimalPosition harvestingResourcePosition;
     public NativeDecimalPosition buildingPosition;
-    public int containingItemCount;
+    public int[] containingItemTypeIds;
     public double maxContainingRadius;
     public boolean contained;
     public boolean idle;

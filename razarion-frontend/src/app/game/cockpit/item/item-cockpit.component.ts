@@ -12,6 +12,7 @@ import {
   AngularZoneRunner,
   BuildupItemCockpit,
   ItemCockpitFrontend,
+  ItemContainerCockpit,
   OtherItemCockpit,
   OwnItemCockpit,
   OwnMultipleIteCockpit
@@ -163,4 +164,9 @@ export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit,
   setBuildClickCallback(buildClickCallback: ((cockpit: BuildupItemCockpit) => void) | null) {
     this.buildClickCallback = buildClickCallback;
   }
+
+  onUnloadClick(itemContainerCockpit: ItemContainerCockpit) {
+    itemContainerCockpit.onUnload();
+  }
+
 }
