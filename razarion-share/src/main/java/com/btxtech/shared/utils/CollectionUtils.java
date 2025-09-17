@@ -5,8 +5,10 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -201,6 +203,38 @@ public class CollectionUtils {
             unsignedIntArray[i] = lower + (upper << 8);
         }
         return unsignedIntArray;
+    }
+
+    public static boolean equalsIgnoreOrder(int[] a, int[] b) {
+        if (a == null || a.length == 0) {
+            return b == null || b.length == 0;
+        }
+        if (b == null || b.length == 0) {
+            return false;
+        }
+
+        if (a.length != b.length) {
+            return false;
+        }
+
+        Map<Integer, Integer> counts = new HashMap<>(a.length);
+        for (int val : a) {
+            counts.merge(val, 1, Integer::sum);
+        }
+
+        for (int val : b) {
+            Integer cnt = counts.get(val);
+            if (cnt == null) {
+                return false;
+            }
+            if (cnt == 1) {
+                counts.remove(val);
+            } else {
+                counts.put(val, cnt - 1);
+            }
+        }
+
+        return counts.isEmpty();
     }
 
 }

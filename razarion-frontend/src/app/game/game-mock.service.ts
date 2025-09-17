@@ -478,6 +478,9 @@ export class GameMockService {
 
         onUnload() {
         }
+
+        setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void {
+        }
       };
 
       sellHandler(): void {
@@ -532,6 +535,9 @@ export class GameMockService {
             count = 5;
 
             onUnload() {
+            }
+
+            setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void {
             }
           };
           imageUrl = "/xxxxx";

@@ -135,6 +135,7 @@ public class BaseItemUiService {
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
                 Vertex position3d = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
                 if (position3d == null) {
+                    updateSyncItemMonitor(nativeSyncBaseItemTickInfo);
                     continue;
                 }
                 DecimalPosition position2d = position3d.toXY();

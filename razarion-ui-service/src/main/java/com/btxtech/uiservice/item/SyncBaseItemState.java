@@ -6,14 +6,13 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-/**
- * Created by Beat
- * 14.02.2017.
- */
+import static com.btxtech.shared.utils.CollectionUtils.equalsIgnoreOrder;
+
 public class SyncBaseItemState extends SyncItemState {
     private double health;
     private double constructing;
     private boolean contained;
+    private int[] containingItemTypeIds;
     private Integer constructingBaseItemTypeId;
     private NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo;
 
@@ -25,6 +24,7 @@ public class SyncBaseItemState extends SyncItemState {
             constructingBaseItemTypeId = nativeSyncBaseItemTickInfo.constructingBaseItemTypeId;
         }
         contained = nativeSyncBaseItemTickInfo.contained;
+        this.containingItemTypeIds = nativeSyncBaseItemTickInfo.containingItemTypeIds;
         this.nativeSyncBaseItemTickInfo = nativeSyncBaseItemTickInfo;
     }
 
@@ -51,6 +51,10 @@ public class SyncBaseItemState extends SyncItemState {
 
     public SyncBaseItemSimpleDto getSyncBaseItem() {
         return SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo);
+    }
+
+    public int[] getContainingItemTypeIds() {
+        return containingItemTypeIds;
     }
 
     @Override
@@ -87,6 +91,13 @@ public class SyncBaseItemState extends SyncItemState {
             contained = nativeSyncBaseItemTickInfo.contained;
             for (SyncItemMonitor monitor : getMonitors()) {
                 ((SyncBaseItemMonitor) monitor).onContainedChanged();
+            }
+        }
+
+        if (!equalsIgnoreOrder(containingItemTypeIds, nativeSyncBaseItemTickInfo.containingItemTypeIds)) {
+            containingItemTypeIds = nativeSyncBaseItemTickInfo.containingItemTypeIds;
+            for (SyncItemMonitor monitor : getMonitors()) {
+                ((SyncBaseItemMonitor) monitor).onContainingChanged();
             }
         }
 

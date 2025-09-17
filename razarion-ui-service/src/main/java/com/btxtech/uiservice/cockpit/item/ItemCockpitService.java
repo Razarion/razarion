@@ -20,6 +20,7 @@ import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.SyncBaseItemMonitor;
 import com.btxtech.uiservice.item.SyncItemMonitor;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 
@@ -181,7 +182,7 @@ public class ItemCockpitService {
                 BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().baseItemCount(1).baseItemTypeId(itemType.getId());
                 baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
                     audioService.onCommandSent();
-                    gameEngineControl.get().buildCmd(selectedGroup.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
+                    gameEngineControl.get().buildCmd(selectedGroup.getItems().stream().findFirst().orElseThrow(RuntimeException::new), CollectionUtils.getFirst(decimalPositions), itemType);
                 });
             };
         } else if (baseItemType.getFactoryType() != null) {
@@ -260,24 +261,39 @@ public class ItemCockpitService {
 
     private ItemContainerCockpit createItemContainerInfo(BaseItemType baseItemType, Group selectedGroup) {
         if (baseItemType.getItemContainerType() != null) {
-            SyncBaseItemSimpleDto transporter = selectedGroup.getFirst();
+            SyncBaseItemMonitor transporter = selectedGroup.getSyncBaseItemsMonitors().stream().findFirst().orElseThrow(RuntimeException::new);
             ItemContainerCockpit itemContainerCockpit = new ItemContainerCockpit() {
+                @Override
+                public void setAngularZoneRunner(AngularZoneRunner angularZoneRunner) {
+                    this.angularZoneRunner = angularZoneRunner;
+                }
 
                 @Override
                 public void onUnload() {
                     try {
-                        int baseItemTypeId = transporter.getContainingItemTypeIds()[0];
+                        int baseItemTypeId = transporter.getSyncBaseItemState().getContainingItemTypeIds()[0];
                         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().baseItemCount(1).baseItemTypeId(baseItemTypeId);
                         baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
                             audioService.onCommandSent();
-                            gameEngineControl.get().unloadContainerCmd(transporter, CollectionUtils.getFirst(decimalPositions));
+                            gameEngineControl.get().unloadContainerCmd(transporter.getSyncItemId(), CollectionUtils.getFirst(decimalPositions));
                         });
                     } catch (Exception e) {
                         logger.log(Level.WARNING, e.getMessage(), e);
                     }
                 }
             };
-            itemContainerCockpit.count = transporter.getContainingItemTypeIds() != null ? transporter.getContainingItemTypeIds().length : 0;
+            transporter.setContainingChangeListener(syncItemMonitor -> {
+                if (itemContainerCockpit.angularZoneRunner == null) {
+                    logger.info("temContainerCockpit.angularZoneRunner == null in ItemCockpitService.createItemContainerInfo()");
+                } else {
+                    itemContainerCockpit.angularZoneRunner.runInAngularZone(() ->
+                            // Do not replace by methode reference. GWT can not handle that.
+                            itemContainerCockpit.count = transporter.getSyncBaseItemState().getContainingItemTypeIds() != null ? transporter.getSyncBaseItemState().getContainingItemTypeIds().length : 0
+                    );
+                }
+            });
+
+            itemContainerCockpit.count = transporter.getSyncBaseItemState().getContainingItemTypeIds() != null ? transporter.getSyncBaseItemState().getContainingItemTypeIds().length : 0;
             return itemContainerCockpit;
         } else {
             return null;

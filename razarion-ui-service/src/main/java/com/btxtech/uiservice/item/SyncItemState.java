@@ -8,10 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-/**
- * Created by Beat
- * 23.01.2017.
- */
 public class SyncItemState {
     private final int syncItemId;
     private final double radius;

@@ -54,9 +54,12 @@
       </ng-template>
     </p-carousel>
   </div>
-  <div *ngIf="ownItemCockpit.itemContainerInfo" class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
+  <div *ngIf="ownItemCockpit.itemContainerInfo"
+       class="flex flex-row  items-center  gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
     <span>{{ `Containing items: ${ownItemCockpit.itemContainerInfo.count}` }}</span>
-    <p-button label="U"
+    <p-button icon="pi pi-upload"
+              label="Unload"
+              size="small"
               (click)="onUnloadClick(ownItemCockpit.itemContainerInfo)"
               [disabled]="!ownItemCockpit.itemContainerInfo.count"></p-button>
   </div>

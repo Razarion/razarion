@@ -191,8 +191,8 @@ public abstract class GameEngineControl {
         // gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.LOAD_CONTAINER).setSynBoxItemId(box.getId()));
     }
 
-    public void unloadContainerCmd(SyncBaseItemSimpleDto container, DecimalPosition unloadPosition) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_UNLOAD_CONTAINER, container.getId(), unloadPosition);
+    public void unloadContainerCmd(int containerId, DecimalPosition unloadPosition) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_UNLOAD_CONTAINER, containerId, unloadPosition);
         // gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.UNLOAD_CONTAINER).setSynBoxItemId(box.getId()));
     }
 

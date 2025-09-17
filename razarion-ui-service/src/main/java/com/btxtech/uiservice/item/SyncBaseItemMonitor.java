@@ -10,6 +10,7 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
     private Consumer<SyncItemMonitor> healthChangeListener;
     private Consumer<SyncItemMonitor> constructingChangeListener;
     private Consumer<SyncItemMonitor> containedChangeListener;
+    private Consumer<SyncItemMonitor> containingChangeListener;
 
     public SyncBaseItemMonitor(SyncBaseItemState syncBaseItemState) {
         super(syncBaseItemState);
@@ -43,6 +44,10 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
         this.containedChangeListener = containedChangeListener;
     }
 
+    public void setContainingChangeListener(Consumer<SyncItemMonitor> containingChangeListener) {
+        this.containingChangeListener = containingChangeListener;
+    }
+
     public void onHealthChanged() {
         if (healthChangeListener != null) {
             healthChangeListener.accept(this);
@@ -58,6 +63,12 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
     public void onContainedChanged() {
         if (containedChangeListener != null) {
             containedChangeListener.accept(this);
+        }
+    }
+
+    public void onContainingChanged() {
+        if (containingChangeListener != null) {
+            containingChangeListener.accept(this);
         }
     }
 

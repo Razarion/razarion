@@ -564,6 +564,8 @@ export interface ItemContainerCockpit {
   count: number;
 
   onUnload(): void;
+
+  setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void;
 }
 
 export interface QuestCockpit {

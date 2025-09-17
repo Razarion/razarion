@@ -84,6 +84,15 @@ export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit,
           });
         });
       }
+      if (ownItemCockpit.itemContainerInfo) {
+        ownItemCockpit.itemContainerInfo.setAngularZoneRunner(new class implements AngularZoneRunner {
+          runInAngularZone(callback: any): void {
+            zone.run(() => {
+              callback();
+            });
+          }
+        });
+      }
     });
   }
 
