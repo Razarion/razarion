@@ -5,6 +5,7 @@ import {
   DecimalPosition,
   Diplomacy,
   MarkerConfig,
+  SelectionService,
   Vertex,
 } from "../../gwtangular/GwtAngularFacade";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
@@ -26,6 +27,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private progressSlider: Slider | null = null;
   private healthSlider: Slider | null = null;
   private nameBlock: TextBlock | null = null;
+  private buildup: number | null = null;
   private progress: number = 0;
   private idle = false;
   private readonly utilLayer: UtilityLayerRenderer;
@@ -45,6 +47,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
               userName: string,
               rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
+              selectionService: SelectionService,
               babylonModelService: BabylonModelService,
               uiConfigCollectionService: UiConfigCollectionService,
               disposeCallback: (() => void) | null) {
@@ -55,6 +58,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       babylonModelService,
       uiConfigCollectionService,
       actionService,
+      selectionService,
       rendererService.baseItemContainer,
       disposeCallback);
 
@@ -202,6 +206,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   setBuildup(buildup: number): void {
     this.getContainer().scaling.y = buildup;
+    if (this.buildup !== null && buildup !== this.buildup && buildup >= 1.0) {
+      this.updateItemCursor();
+    }
+    this.buildup = buildup;
+
   }
 
   setConstructing(progress: number): void {

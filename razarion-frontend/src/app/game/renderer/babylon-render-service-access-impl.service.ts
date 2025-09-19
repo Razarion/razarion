@@ -21,7 +21,7 @@ import {BabylonModelService} from "./babylon-model.service";
 import {BabylonWaterRenderService} from "./babylon-water-render.service";
 import {
   AbstractMesh,
-  Color3,
+  Color3, Constants,
   CubeTexture,
   DirectionalLight,
   Engine,
@@ -264,6 +264,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         userName,
         this,
         this.actionService,
+        this.gwtAngularService.gwtAngularFacade.selectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
         () => this.babylonBaseItems.filter(i => i !== item));
@@ -467,6 +468,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
       // nodeMaterial.material.depthFunction = Constants.ALWAYS;
       this.placeMarkerMesh.material = nodeMaterial;
+      this.placeMarkerMesh.material.disableDepthWrite = true;
+      this.placeMarkerMesh.material.depthFunction = Constants.ALWAYS;
     }
   }
 
@@ -688,6 +691,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         resourceItemType,
         this,
         this.actionService,
+        this.gwtAngularService.gwtAngularFacade.selectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
         () => this.babylonResourceItems.filter(i => i !== item));
@@ -705,6 +709,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         boxItemType,
         this,
         this.actionService,
+        this.gwtAngularService.gwtAngularFacade.selectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
         null);

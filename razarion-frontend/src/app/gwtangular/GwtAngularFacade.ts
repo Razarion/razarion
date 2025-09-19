@@ -153,6 +153,10 @@ export interface SelectionService {
 
   hasHarvesters(): boolean;
 
+  canContain(itemId:number): boolean;
+
+  canBeFinalizeBuild(itemId:number): boolean;
+
   selectRectangle(xStart: number, yStart: number, width: number, height: number): void;
 
   setSelectionListener(callback: () => void): void;

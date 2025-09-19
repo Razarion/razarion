@@ -18,6 +18,7 @@ import {
   ItemType,
   MarkerConfig,
   ResourceItemType,
+  SelectionService,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
 import {SimpleMaterial} from "@babylonjs/materials";
@@ -49,6 +50,7 @@ export class BabylonItemImpl implements BabylonItem {
               protected babylonModelService: BabylonModelService,
               protected uiConfigCollectionService: UiConfigCollectionService,
               protected actionService: ActionService,
+              protected selectionService: SelectionService,
               parent: TransformNode,
               protected disposeCallback: (() => void) | null) {
     if (itemType.getModel3DId()) {
@@ -77,7 +79,13 @@ export class BabylonItemImpl implements BabylonItem {
     );
     this.itemCursorTypeHandler = (selectionInfo: SelectionInfo) => {
       if (diplomacy === Diplomacy.OWN) {
-        actionManager.hoverCursor = "pointer"
+        if (selectionService.canContain(this.id)) {
+          actionManager.hoverCursor = "url(\"cursors/load.png\") 15 15, auto"
+        } else if (selectionService.canBeFinalizeBuild(this.id)) {
+          actionManager.hoverCursor = "url(\"cursors/finalize-build.png\") 15 15, auto"
+        } else {
+          actionManager.hoverCursor = "pointer"
+        }
         return;
       }
 
@@ -117,7 +125,7 @@ export class BabylonItemImpl implements BabylonItem {
       (<AbstractMesh>this.container).actionManager = actionManager;
     }
 
-    this.itemCursorTypeHandler(this.actionService.setupSelectionInfo());
+    this.updateItemCursor();
   }
 
   getId(): number {
@@ -269,6 +277,10 @@ export class BabylonItemImpl implements BabylonItem {
 
   isSelectOrHove(): boolean {
     return this.selectActive || this.hoverActive;
+  }
+
+  protected updateItemCursor() {
+    this.itemCursorTypeHandler(this.actionService.setupSelectionInfo());
   }
 
   private updateMarkedDisk(): void {

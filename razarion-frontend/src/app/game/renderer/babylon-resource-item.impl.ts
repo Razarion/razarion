@@ -4,6 +4,7 @@ import {
   Diplomacy,
   MarkerConfig,
   ResourceItemType,
+  SelectionService,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
@@ -16,6 +17,7 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
               resourceItemType: ResourceItemType,
               rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
+              selectionService: SelectionService,
               babylonModelService: BabylonModelService,
               uiConfigCollectionService: UiConfigCollectionService,
               disposeCallback: (() => void) | null) {
@@ -26,6 +28,7 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
       babylonModelService,
       uiConfigCollectionService,
       actionService,
+      selectionService,
       rendererService.resourceItemContainer,
       disposeCallback);
   }

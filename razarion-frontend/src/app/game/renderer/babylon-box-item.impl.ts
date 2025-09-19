@@ -1,4 +1,11 @@
-import {BabylonBoxItem, BoxItemType, Diplomacy, MarkerConfig, Vertex} from "src/app/gwtangular/GwtAngularFacade";
+import {
+  BabylonBoxItem,
+  BoxItemType,
+  Diplomacy,
+  MarkerConfig,
+  SelectionService,
+  Vertex
+} from "src/app/gwtangular/GwtAngularFacade";
 import {BabylonItemImpl} from "./babylon-item.impl";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonModelService} from "./babylon-model.service";
@@ -10,6 +17,7 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
               private boxItemType: BoxItemType,
               rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
+              selectionService: SelectionService,
               babylonModelService: BabylonModelService,
               uiConfigCollectionService: UiConfigCollectionService,
               disposeCallback: (() => void) | null) {
@@ -20,6 +28,7 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
       babylonModelService,
       uiConfigCollectionService,
       actionService,
+      selectionService,
       rendererService.boxItemContainer,
       disposeCallback);
   }

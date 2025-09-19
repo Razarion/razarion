@@ -1127,6 +1127,14 @@ export class GameMockService {
         return false;
       }
 
+      canContain(itemId:number) {
+        return false;
+      }
+
+      canBeFinalizeBuild(itemId:number) {
+        return false;
+      }
+
       selectRectangle(xStart: number, yStart: number, width: number, height: number): void {
         console.info("selectRectangle");
       }

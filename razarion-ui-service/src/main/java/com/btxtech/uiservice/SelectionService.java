@@ -101,6 +101,16 @@ public class SelectionService {
         return selectedGroup != null && !selectedGroup.getHarvesters().isEmpty();
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean canContain(int itemId) {
+        return selectedGroup != null && selectedGroup.canContain(itemId);
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean canBeFinalizeBuild(int itemId) {
+        return selectedGroup != null && selectedGroup.canBeFinalizeBuild(itemId);
+    }
+
     public void setOtherItemSelected(SyncItemSimpleDto syncItemSimpleDto) {
         clearSelection(true);
         selectedOtherSyncItem = syncItemSimpleDto;

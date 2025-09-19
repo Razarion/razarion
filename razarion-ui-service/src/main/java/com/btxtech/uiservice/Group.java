@@ -158,6 +158,40 @@ public class Group {
         return movable;
     }
 
+    public boolean canContain(int itemId) {
+        SyncBaseItemSimpleDto item = baseItemUiService.getItem4Id(itemId);
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(item.getItemTypeId());
+        if (baseItemType.getItemContainerType() == null) {
+            return false;
+        }
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if (syncBaseItem.getId() == itemId) {
+                return false;
+            }
+            if (baseItemType.getItemContainerType().isAbleToContain(syncBaseItem.getItemTypeId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canBeFinalizeBuild(int itemId) {
+        SyncBaseItemSimpleDto item = baseItemUiService.getItem4Id(itemId);
+        if (item.checkBuildup()) {
+            return false;
+        }
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if (syncBaseItem.getId() == itemId) {
+                return false;
+            }
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (baseItemType.getBuilderType() != null && baseItemType.getBuilderType().checkAbleToBuild(item.getItemTypeId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> getGroupedItems() {
         HashMap<BaseItemType, Collection<SyncBaseItemSimpleDto>> map = new HashMap<>();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
