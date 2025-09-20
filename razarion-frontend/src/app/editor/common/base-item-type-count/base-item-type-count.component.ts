@@ -3,7 +3,9 @@ import {MessageService} from "primeng/api";
 import {TableModule} from 'primeng/table';
 import {BaseItemTypeComponent} from '../base-item-type/base-item-type.component';
 import {FormsModule} from '@angular/forms';
-import {Button} from 'primeng/button';
+import {ButtonModule} from 'primeng/button';
+import {CommonModule} from '@angular/common';
+import {BadgeModule} from 'primeng/badge';
 
 @Component({
   selector: 'base-item-type-count',
@@ -12,13 +14,17 @@ import {Button} from 'primeng/button';
     TableModule,
     BaseItemTypeComponent,
     FormsModule,
-    Button
+    ButtonModule,
+    CommonModule,
+    BadgeModule,
   ],
   styleUrls: ['./base-item-type-count.component.scss']
 })
 export class BaseItemTypeCountComponent implements OnInit {
   @Input("baseItemTypeCount")
   baseItemTypeCount?: { [index: string]: number };
+  @Input("previousBaseItemTypeCount")
+  previousBaseItemTypeCount?: { [index: string]: number };
   @Output()
   baseItemTypeCountChange = new EventEmitter<{ [index: string]: number }>();
   baseItemTypeCountArray: { baseItemTypeId: number, count: number }[] = [];
@@ -63,4 +69,26 @@ export class BaseItemTypeCountComponent implements OnInit {
     this.baseItemTypeCountArray.push({baseItemTypeId: NaN, count: 1})
     this.onChange();
   }
+
+  onImport() {
+    const merged = {...this.baseItemTypeCount, ...this.previousBaseItemTypeCount};
+    this.baseItemTypeCountArray = Object.keys(merged).map(id => ({
+      baseItemTypeId: parseInt(id, 10),
+      count: merged[id]
+    }));
+
+    this.onChange();
+  }
+
+  getPreviousCount(baseItemTypeId: number): number {
+    let found = Object.keys(this.previousBaseItemTypeCount!)
+      .filter(typeIdString => baseItemTypeId === parseInt(typeIdString));
+
+    if (found && this.previousBaseItemTypeCount![found[0]]) {
+      return this.previousBaseItemTypeCount![found[0]];
+    }
+
+    return 0;
+  }
+
 }

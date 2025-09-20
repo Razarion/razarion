@@ -65,7 +65,8 @@
             <span class="col-span-4">Item type limitation</span>
             <div class="col-span-8">
               <base-item-type-count
-                [(baseItemTypeCount)]="levelEntity.itemTypeLimitation">
+                [(baseItemTypeCount)]="levelEntity.itemTypeLimitation"
+                [previousBaseItemTypeCount]="levelEntity.previousLevelItemTypeLimitation">
               </base-item-type-count>
             </div>
           </div>

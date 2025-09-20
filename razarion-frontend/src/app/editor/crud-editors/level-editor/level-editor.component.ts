@@ -77,5 +77,13 @@ export class LevelEditorComponent extends EditorPanel {
   sort() {
     this.levelEntities.sort((a, b) => a.number - b.number);
     this.levelEntities = [...this.levelEntities];
+
+    for (let i = 0; i < this.levelEntities.length; i++) {
+      if (i) {
+        (<any>this.levelEntities[i]).previousLevelItemTypeLimitation = this.levelEntities[i - 1].itemTypeLimitation;
+      }
+    }
+
+
   }
 }

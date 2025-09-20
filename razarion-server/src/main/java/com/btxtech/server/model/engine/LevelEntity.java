@@ -18,6 +18,7 @@ import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +90,9 @@ public class LevelEntity extends BaseEntity {
 
     @JsonGetter("levelUnlockEntities")
     public List<LevelUnlockEntity> getJsonLevelUnlockEntities() {
+        if (levelUnlockEntities == null) {
+            return Collections.emptyList();
+        }
         return levelUnlockEntities.stream()
                 .map(LevelUnlockEntity::toJsonLevelUnlockEnty)
                 .collect(Collectors.toList());
