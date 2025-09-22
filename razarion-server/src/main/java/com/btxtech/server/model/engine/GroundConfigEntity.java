@@ -4,7 +4,11 @@ import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.BabylonMaterialEntity;
 import com.btxtech.server.service.ui.BabylonMaterialService;
 import com.btxtech.shared.dto.GroundConfig;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import static com.btxtech.server.service.PersistenceUtil.extractId;
 
@@ -18,19 +22,29 @@ public class GroundConfigEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BabylonMaterialEntity waterBabylonMaterial;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private BabylonMaterialEntity underWaterBabylonMaterialId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private BabylonMaterialEntity botBabylonMaterialId;
 
     public GroundConfig toConfig() {
         return new GroundConfig()
                 .id(getId())
                 .internalName(getInternalName())
                 .groundBabylonMaterialId(extractId(groundBabylonMaterial, BabylonMaterialEntity::getId))
-                .waterBabylonMaterialId(extractId(waterBabylonMaterial, BabylonMaterialEntity::getId));
+                .waterBabylonMaterialId(extractId(waterBabylonMaterial, BabylonMaterialEntity::getId))
+                .underWaterBabylonMaterialId(extractId(underWaterBabylonMaterialId, BabylonMaterialEntity::getId))
+                .botBabylonMaterialId(extractId(botBabylonMaterialId, BabylonMaterialEntity::getId));
     }
 
     public void fromGroundConfig(GroundConfig config, BabylonMaterialService babylonMaterialService) {
         setInternalName(config.getInternalName());
         groundBabylonMaterial = babylonMaterialService.getEntity(config.getGroundBabylonMaterialId());
         waterBabylonMaterial = babylonMaterialService.getEntity(config.getWaterBabylonMaterialId());
+        underWaterBabylonMaterialId = babylonMaterialService.getEntity(config.getUnderWaterBabylonMaterialId());
+        botBabylonMaterialId = babylonMaterialService.getEntity(config.getBotBabylonMaterialId());
     }
 
     @Override

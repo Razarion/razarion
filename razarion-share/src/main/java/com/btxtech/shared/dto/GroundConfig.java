@@ -15,7 +15,8 @@ public class GroundConfig implements Config {
     private String internalName;
     private Integer groundBabylonMaterialId;
     private Integer waterBabylonMaterialId;
-
+    private Integer underWaterBabylonMaterialId;
+    private Integer botBabylonMaterialId;
 
     public int getId() {
         return id;
@@ -49,6 +50,22 @@ public class GroundConfig implements Config {
         this.waterBabylonMaterialId = waterBabylonMaterialId;
     }
 
+    public Integer getUnderWaterBabylonMaterialId() {
+        return underWaterBabylonMaterialId;
+    }
+
+    public void setUnderWaterBabylonMaterialId(Integer underWaterBabylonMaterialId) {
+        this.underWaterBabylonMaterialId = underWaterBabylonMaterialId;
+    }
+
+    public Integer getBotBabylonMaterialId() {
+        return botBabylonMaterialId;
+    }
+
+    public void setBotBabylonMaterialId(Integer botBabylonMaterialId) {
+        this.botBabylonMaterialId = botBabylonMaterialId;
+    }
+
     public GroundConfig id(int id) {
         setId(id);
         return this;
@@ -66,6 +83,16 @@ public class GroundConfig implements Config {
 
     public GroundConfig waterBabylonMaterialId(Integer waterBabylonMaterialId) {
         setWaterBabylonMaterialId(waterBabylonMaterialId);
+        return this;
+    }
+
+    public GroundConfig underWaterBabylonMaterialId(Integer underWaterBabylonMaterialId) {
+        setUnderWaterBabylonMaterialId(underWaterBabylonMaterialId);
+        return this;
+    }
+
+    public GroundConfig botBabylonMaterialId(Integer botBabylonMaterialId) {
+        setBotBabylonMaterialId(botBabylonMaterialId);
         return this;
     }
 

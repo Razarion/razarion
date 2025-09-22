@@ -793,19 +793,27 @@ export class GameMockService {
 
             getId(): number {
               return this._groundConfigJson.id
-            };
+            }
 
             getInternalName(): string {
               return this._groundConfigJson.internalName
-            };
+            }
 
             getGroundBabylonMaterialId(): number {
               return this._groundConfigJson.groundBabylonMaterialId;
-            };
+            }
 
             getWaterBabylonMaterialId(): number {
               return this._groundConfigJson.waterBabylonMaterialId;
-            };
+            }
+
+            getUnderWaterBabylonMaterialId(): number {
+              return this._groundConfigJson.underWaterBabylonMaterialId;
+            }
+
+            getBotBabylonMaterialId(): number {
+              return this._groundConfigJson.botBabylonMaterialId;
+            }
           }
           return
         });
@@ -1127,11 +1135,11 @@ export class GameMockService {
         return false;
       }
 
-      canContain(itemId:number) {
+      canContain(itemId: number) {
         return false;
       }
 
-      canBeFinalizeBuild(itemId:number) {
+      canBeFinalizeBuild(itemId: number) {
         return false;
       }
 

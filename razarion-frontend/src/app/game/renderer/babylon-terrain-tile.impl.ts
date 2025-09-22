@@ -1,7 +1,6 @@
 import {
   BabylonDecal,
   BabylonTerrainTile,
-  Index,
   TerrainObjectConfig,
   TerrainObjectModel,
   TerrainTile,
@@ -14,10 +13,11 @@ import {
   ActionManager,
   ExecuteCodeAction,
   Mesh,
+  MultiMaterial,
   Node,
   NodeMaterial,
   Ray,
-  Texture,
+  SubMesh,
   TransformNode,
   Vector3,
   VertexData
@@ -27,7 +27,12 @@ import {Nullable} from "@babylonjs/core/types";
 import {ActionService, SelectionInfo} from "../action.service";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
-import {TextureBlock} from '@babylonjs/core/Materials/Node/Blocks/Dual/textureBlock';
+
+enum MaterialIndex {
+  GROUND = 0,
+  UNDER_WATER = 1,
+  BOT = 2,
+}
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // See: GWT Java Code TerrainUtil
@@ -42,8 +47,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   public readonly container: TransformNode;
   public readonly shadowCasterObjects: TransformNode[] = []
   private shadowCaster?: ((mesh: AbstractMesh) => void) | null = null;
-  private cursorTypeHandler: (selectionInfo: SelectionInfo) => void;
-  private groundMesh: Mesh;
+  private readonly cursorTypeHandler: (selectionInfo: SelectionInfo) => void;
+  private readonly groundMesh: Mesh;
 
   constructor(public readonly terrainTile: TerrainTile,
               private gwtAngularService: GwtAngularService,
@@ -76,7 +81,15 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     this.groundMesh = new Mesh("Ground", rendererService.getScene());
     let uv2GroundHeightMap: number[] = [];
-    let vertexData = this.createVertexData(terrainTile.getGroundHeightMap(), uv2GroundHeightMap);
+    const materialSubmeshes: {
+      materialIndex: MaterialIndex,
+      indexStart: number,
+      indexCount: number
+    }[] = [];
+    let vertexData = this.createVertexData(terrainTile.getGroundHeightMap(),
+      uv2GroundHeightMap,
+      materialSubmeshes,
+      terrainTile.getBabylonDecals());
     vertexData.applyToMesh(this.groundMesh, true);
     this.container.getChildren().push(this.groundMesh);
     this.groundMesh.receiveShadows = true;
@@ -86,12 +99,24 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
     let groundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
     groundMaterial = groundMaterial!.clone(`Clone of ${groundMaterial.name} `);
-    const textureBlock = <TextureBlock>groundMaterial.getBlockByName("TerrainUtility");
-    if (textureBlock) {
-      textureBlock.texture = this.createBotTerrainUtilityTexture(terrainTile.getBabylonDecals(), terrainTile.getIndex());
-      groundMaterial.build()
-    }
-    this.groundMesh!.material = groundMaterial;
+
+    let underWaterMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getUnderWaterBabylonMaterialId());
+    underWaterMaterial = underWaterMaterial!.clone(`Clone of ${underWaterMaterial.name} `);
+
+    let botMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotBabylonMaterialId());
+    botMaterial = botMaterial!.clone(`Clone of ${botMaterial.name} `);
+
+    const multiMaterial = new MultiMaterial("multi", rendererService.getScene());
+    multiMaterial.subMaterials[MaterialIndex.GROUND] = groundMaterial;
+    multiMaterial.subMaterials[MaterialIndex.UNDER_WATER] = underWaterMaterial;
+    multiMaterial.subMaterials[MaterialIndex.BOT] = botMaterial;
+
+    this.groundMesh!.material = multiMaterial;
+
+    this.groundMesh.subMeshes = [];
+    const totalVertices = this.groundMesh.getTotalVertices();
+    materialSubmeshes.forEach(materialSubmesh =>
+      new SubMesh(materialSubmesh.materialIndex, 0, totalVertices, materialSubmesh.indexStart, materialSubmesh.indexCount, this.groundMesh));
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
@@ -125,6 +150,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     try {
       setTimeout(() => {
         let terrainObject = BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, this.container);
+        // if (!castShadow) {
+        //   terrainObject.getChildMeshes(false).forEach(abstractMesh => abstractMesh.isPickable = false)
+        // }
         if (castShadow && this.shadowCaster) {
           this.shadowCasterObjects.push(terrainObject);
           terrainObject.getChildMeshes().forEach(mesh => this.shadowCaster!(mesh))
@@ -189,7 +217,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     return this.groundMesh;
   }
 
-  private createVertexData(groundHeightMap: Uint16Array, uv2GroundHeightMap: number[]): VertexData {
+  private createVertexData(groundHeightMap: Uint16Array, uv2GroundHeightMap: number[], materialSubmeshes: {
+    materialIndex: MaterialIndex,
+    indexStart: number,
+    indexCount: number
+  }[], babylonDecals: BabylonDecal[]): VertexData {
     const indices = [];
     const positions = [];
     const normals = [];
@@ -221,12 +253,54 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
 
     // Indices
+    let currentStart = 0;
+    let indexCount = 0;
+    let materialIndex: MaterialIndex | null = null;
+
+    let materialSubmesh: {
+      materialIndex: MaterialIndex,
+      indexStart: number,
+      indexCount: number
+    } | null = null;
+
     for (let y = 0; y < yCount - 1; y++) {
       for (let x = 0; x < xCount - 1; x++) {
         const bLIdx = x + y * xCount;
         const bRIdx = x + 1 + y * xCount;
         const tLIdx = x + (y + 1) * xCount;
         const tRIdx = x + 1 + (y + 1) * xCount;
+
+        const terrainX = x * BabylonTerrainTileImpl.NODE_SIZE + xOffset;
+        const terrainY = y * BabylonTerrainTileImpl.NODE_SIZE + yOffset;
+        const decal = babylonDecals && babylonDecals.find(babylonDecal => {
+          return terrainX >= babylonDecal.xPos
+            && terrainX < babylonDecal.xSize + babylonDecal.xPos
+            && terrainY >= babylonDecal.yPos
+            && terrainY < babylonDecal.ySize + babylonDecal.yPos;
+        })
+
+        let newMaterialIndex;
+        if (decal) {
+          newMaterialIndex = MaterialIndex.BOT;
+        } else if (BabylonTerrainTileImpl.setupHeight(bLIdx, groundHeightMap) <= 0.0
+          || BabylonTerrainTileImpl.setupHeight(bRIdx, groundHeightMap) <= 0.0
+          || BabylonTerrainTileImpl.setupHeight(tLIdx, groundHeightMap) <= 0.0
+          || BabylonTerrainTileImpl.setupHeight(tRIdx, groundHeightMap) <= 0.0) {
+          newMaterialIndex = MaterialIndex.UNDER_WATER;
+        } else {
+          newMaterialIndex = MaterialIndex.GROUND;
+        }
+        if (materialIndex !== newMaterialIndex) {
+          if (materialSubmesh != null) {
+            materialSubmesh.indexCount = indexCount;
+            materialSubmeshes.push(materialSubmesh)
+          }
+          materialSubmesh = {
+            materialIndex: newMaterialIndex, indexStart: currentStart, indexCount: 0
+          }
+          indexCount = 0;
+        }
+        materialIndex = newMaterialIndex;
 
         indices.push(bLIdx);
         indices.push(bRIdx);
@@ -235,7 +309,14 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         indices.push(bRIdx);
         indices.push(tRIdx);
         indices.push(tLIdx);
+
+        currentStart += 6;
+        indexCount += 6;
       }
+    }
+    if (materialSubmesh) {
+      materialSubmesh.indexCount = indexCount;
+      materialSubmeshes.push(materialSubmesh)
     }
 
     VertexData.ComputeNormals(positions, indices, normals);
@@ -283,27 +364,5 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       node.getChildMeshes().forEach(mesh => shadowCaster(mesh))
     });
     this.shadowCaster = null;
-  }
-
-  private createBotTerrainUtilityTexture(babylonDecals: BabylonDecal[], index: Index): Texture {
-    const factor = 4;
-    const canvas = document.createElement('canvas');
-    canvas.width = BabylonTerrainTileImpl.NODE_X_COUNT * factor;
-    canvas.height = BabylonTerrainTileImpl.NODE_Y_COUNT * factor;
-    const context = canvas.getContext('2d')!;
-
-    context.fillStyle = "rgba(255, 0, 0, 0.5)";
-
-    if (babylonDecals) {
-      babylonDecals.forEach((babylonDecal) => {
-        context.fillRect(
-          babylonDecal.xPos * factor - index.getX() * 160 * factor,
-          babylonDecal.yPos * factor - index.getY() * 160 * factor,
-          babylonDecal.xSize * factor,
-          babylonDecal.ySize * factor);
-      });
-    }
-
-    return new Texture(canvas.toDataURL(), this.rendererService.getScene());
   }
 }
