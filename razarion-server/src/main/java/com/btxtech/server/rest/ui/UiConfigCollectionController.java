@@ -47,8 +47,6 @@ public class UiConfigCollectionController {
                 .gltfs(gltfPersistence.readAllBaseEntitiesJson())
                 .model3DEntities(model3DPersistence.readAllBaseEntitiesJson())
                 .particleSystemEntities(particleSystemPersistence.readAllBaseEntitiesJson())
-                .selectionItemMaterialId(dbPropertiesService.getBabylonMaterialProperty(ITEM_SELECTION_MATERIAL))
-                .healthBarNodeMaterialId(dbPropertiesService.getBabylonMaterialProperty(ITEM_HEALTH_BAR_NODE_MATERIAL))
-                .progressBarNodeMaterialId(dbPropertiesService.getBabylonMaterialProperty(ITEM_PROGRESS_BAR_NODE_MATERIAL));
+                .selectionItemMaterialId(dbPropertiesService.getBabylonMaterialProperty(ITEM_SELECTION_MATERIAL));
     }
 }

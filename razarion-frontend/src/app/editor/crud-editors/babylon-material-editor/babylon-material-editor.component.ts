@@ -6,18 +6,19 @@ import {MessageService} from 'primeng/api';
 import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
 import {HttpClient} from '@angular/common/http';
 import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
-import {Material} from '@babylonjs/core';
-import {Button} from 'primeng/button';
+import {Material, NodeMaterial} from '@babylonjs/core';
+import {ButtonModule} from 'primeng/button';
 import {Divider} from 'primeng/divider';
 import {FormsModule} from '@angular/forms';
 import {Checkbox} from 'primeng/checkbox';
 import {InputNumber} from 'primeng/inputnumber';
 import JSZip from 'jszip';
+import {BabylonModelService} from '../../../game/renderer/babylon-model.service';
 
 @Component({
   selector: 'babylon-material-editor',
   imports: [
-    Button,
+    ButtonModule,
     Divider,
     FileUpload,
     FormsModule,
@@ -38,7 +39,8 @@ export class BabylonMaterialEditorComponent implements CrudContainerChild<Babylo
 
   constructor(private messageService: MessageService,
               private httpClient: HttpClient,
-              renderEngine: BabylonRenderServiceAccessImpl) {
+              renderEngine: BabylonRenderServiceAccessImpl,
+              private babylonModelService: BabylonModelService) {
     this.babylonMaterialControllerClient = new BabylonMaterialControllerClient(TypescriptGenerator.generateHttpClientAdapter(this.httpClient));
 
     void Promise.all([
@@ -184,4 +186,19 @@ export class BabylonMaterialEditorComponent implements CrudContainerChild<Babylo
 
   }
 
+  openMaterialNodeEditor() {
+    let mat = this.babylonModelService.getBabylonMaterial(this.babylonMaterialEntity!.id);
+    this.selectedMaterial = undefined;
+    if (mat instanceof NodeMaterial) {
+      this.selectedMaterial = mat;
+      mat.edit();
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: "No node material",
+        detail: `The material is not a node material ${this.babylonMaterialEntity!.internalName} '${this.babylonMaterialEntity!.id}'`,
+        sticky: true
+      })
+    }
+  }
 }

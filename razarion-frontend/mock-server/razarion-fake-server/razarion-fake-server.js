@@ -109,26 +109,6 @@ server.on({
 });
 
 server.on({
-  method: 'GET',
-  path: '/rest/editor/Svelte-jsoneditor/read/-99999',
-  reply: {
-    status: 200,
-    headers: {"content-type": "application/json"},
-    body: '{"value" : -99999}'
-  }
-});
-
-server.on({
-  method: 'POST',
-  path: '/rest/editor/Svelte-jsoneditor/update',
-  reply: {
-    status: 200,
-    headers: {"content-type": "application/json"},
-    body: '{"value" : -99999}'
-  }
-});
-
-server.on({
   method: 'POST',
   path: '/rest/editor/three-js-model-pack-editor/findByThreeJsModelId/12',
   reply: {
@@ -482,6 +462,28 @@ server.on({
     status: 200,
     headers: {"content-type": "application/json"},
     body: JSON.stringify(terrainObject._1)
+  }
+});
+
+const babylonMaterial = require("./resources/babylonMaterial.json");
+
+server.on({
+  method: 'GET',
+  path: '/rest/babylon-material/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(babylonMaterial.objectNameIds)
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/babylon-material/read/1',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(babylonMaterial._1)
   }
 });
 

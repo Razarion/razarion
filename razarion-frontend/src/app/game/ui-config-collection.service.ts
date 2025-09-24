@@ -37,12 +37,4 @@ export class UiConfigCollectionService {
   getSelectionItemMaterialId(): number | null {
     return this.uiConfigCollection!.selectionItemMaterialId;
   }
-
-  getProgressBarNodeMaterialId(): number | null {
-    return this.uiConfigCollection!.progressBarNodeMaterialId;
-  }
-
-  getHealthBarNodeMaterialId(): number | null {
-    return this.uiConfigCollection!.healthBarNodeMaterialId;
-  }
 }

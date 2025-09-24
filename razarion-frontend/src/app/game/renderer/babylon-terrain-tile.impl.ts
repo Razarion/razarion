@@ -98,13 +98,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
     let groundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
-    groundMaterial = groundMaterial!.clone(`Clone of ${groundMaterial.name} `);
-
     let underWaterMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getUnderWaterBabylonMaterialId());
-    underWaterMaterial = underWaterMaterial!.clone(`Clone of ${underWaterMaterial.name} `);
-
     let botMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotBabylonMaterialId());
-    botMaterial = botMaterial!.clone(`Clone of ${botMaterial.name} `);
 
     const multiMaterial = new MultiMaterial("multi", rendererService.getScene());
     multiMaterial.subMaterials[MaterialIndex.GROUND] = groundMaterial;

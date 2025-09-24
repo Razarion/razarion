@@ -11,8 +11,6 @@ public class UiConfigCollection {
     private List<Model3DEntity> model3DEntities;
     private List<ParticleSystemEntity> particleSystemEntities;
     private Integer selectionItemMaterialId;
-    private Integer progressBarNodeMaterialId;
-    private Integer healthBarNodeMaterialId;
     private UserContext.RegisterState registerState;
     private String name;
 
@@ -56,22 +54,6 @@ public class UiConfigCollection {
         this.selectionItemMaterialId = selectionItemMaterialId;
     }
 
-    public @Nullable Integer getProgressBarNodeMaterialId() {
-        return progressBarNodeMaterialId;
-    }
-
-    public void setProgressBarNodeMaterialId(@Nullable Integer progressBarNodeMaterialId) {
-        this.progressBarNodeMaterialId = progressBarNodeMaterialId;
-    }
-
-    public @Nullable Integer getHealthBarNodeMaterialId() {
-        return healthBarNodeMaterialId;
-    }
-
-    public void setHealthBarNodeMaterialId(@Nullable Integer healthBarNodeMaterialId) {
-        this.healthBarNodeMaterialId = healthBarNodeMaterialId;
-    }
-
     public UserContext.RegisterState getRegisterState() {
         return registerState;
     }
@@ -110,16 +92,6 @@ public class UiConfigCollection {
 
     public UiConfigCollection selectionItemMaterialId(Integer selectionItemMaterialId) {
         setSelectionItemMaterialId(selectionItemMaterialId);
-        return this;
-    }
-
-    public UiConfigCollection progressBarNodeMaterialId(Integer progressBarNodeMaterialId) {
-        setProgressBarNodeMaterialId(progressBarNodeMaterialId);
-        return this;
-    }
-
-    public UiConfigCollection healthBarNodeMaterialId(Integer healthBarNodeMaterialId) {
-        setHealthBarNodeMaterialId(healthBarNodeMaterialId);
         return this;
     }
 

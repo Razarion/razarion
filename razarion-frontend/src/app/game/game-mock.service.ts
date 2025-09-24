@@ -55,6 +55,12 @@ import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
+import {
+  BabylonMaterialEditorComponent
+} from '../editor/crud-editors/babylon-material-editor/babylon-material-editor.component';
+import {
+  GeneratedCrudContainerComponent
+} from '../editor/crud-editors/crud-container/generated-crud-container.component';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -101,7 +107,8 @@ export class GameMockService {
           // Some very strange babylon behavior, _projectionMatrix is zero matrix
           this.babylonRenderServiceAccessImpl.setViewFieldCenter(8, 8);
           this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
-          this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
+          // this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
+          this.gameComponent.addEditorModel(new EditorModel("BabylonMaterial", GeneratedCrudContainerComponent, BabylonMaterialEditorComponent));
         }, 100);
         // this.loadingCover!.hide();
         // this.threeJsRendererService.createProjectile(new class implements Vertex {

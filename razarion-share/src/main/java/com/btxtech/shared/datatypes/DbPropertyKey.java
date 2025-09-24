@@ -26,8 +26,6 @@ public enum DbPropertyKey {
     AUDIO_TERRAIN_WATER(AUDIO, "audio.terrain.water"),
     // Item
     ITEM_SELECTION_MATERIAL(BABYLON_MATERIAL, "item.selection.node-material"),
-    ITEM_HEALTH_BAR_NODE_MATERIAL(BABYLON_MATERIAL, "item.health-bar.node-material"),
-    ITEM_PROGRESS_BAR_NODE_MATERIAL(BABYLON_MATERIAL, "item.progress-bar.node-material"),
     // Tips
     TIP_CORNER_MOVE_DURATION(INTEGER, "tip.corner.move.duration"),
     TIP_CORNER_MOVE_DISTANCE(DOUBLE, "tip.corner.move.distance"),
