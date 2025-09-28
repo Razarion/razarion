@@ -236,6 +236,8 @@ export interface GroundConfig {
 
   getBotBabylonMaterialId(): number;
 
+  getBotWallBabylonMaterialId(): number;
+
   getWaterBabylonMaterialId(): number;
 }
 

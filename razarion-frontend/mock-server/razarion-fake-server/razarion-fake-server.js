@@ -62,6 +62,19 @@ server.on({
   }
 });
 
+server.on({
+  method: 'POST',
+  path: '/rest/remote_logging/angularJsonLogger',
+  filter: function (req) {
+    console.warn("---- LOG to /rest/remote_logging/angularJsonLogger ---");
+    console.warn(req.body);
+    return true;
+  },
+  reply: {
+    status: 200
+  }
+});
+
 function loadThreeJsModel(req) {
   let threeJsModelToLoad = req.url.substring("/rest/gz/three-js-model/".length, req.url.length);
 
@@ -465,6 +478,16 @@ server.on({
   }
 });
 
+server.on({
+  method: 'GET',
+  path: '/rest/editor/terrain-object-generator/objectNameIds',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: "[]"
+  }
+});
+
 const babylonMaterial = require("./resources/babylonMaterial.json");
 
 server.on({
@@ -507,6 +530,16 @@ server.on({
     status: 200,
     headers: {"content-type": "application/json"},
     body: loadBabylonMaterial
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '/rest/chat-controller/getall',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: "[]"
   }
 });
 

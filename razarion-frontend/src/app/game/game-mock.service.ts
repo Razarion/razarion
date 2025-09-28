@@ -55,12 +55,6 @@ import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
-import {
-  BabylonMaterialEditorComponent
-} from '../editor/crud-editors/babylon-material-editor/babylon-material-editor.component';
-import {
-  GeneratedCrudContainerComponent
-} from '../editor/crud-editors/crud-container/generated-crud-container.component';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -108,7 +102,7 @@ export class GameMockService {
           this.babylonRenderServiceAccessImpl.setViewFieldCenter(8, 8);
           this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
           // this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
-          this.gameComponent.addEditorModel(new EditorModel("BabylonMaterial", GeneratedCrudContainerComponent, BabylonMaterialEditorComponent));
+          // this.gameComponent.addEditorModel(new EditorModel("BabylonMaterial", GeneratedCrudContainerComponent, BabylonMaterialEditorComponent));
         }, 100);
         // this.loadingCover!.hide();
         // this.threeJsRendererService.createProjectile(new class implements Vertex {
@@ -821,6 +815,10 @@ export class GameMockService {
             getBotBabylonMaterialId(): number {
               return this._groundConfigJson.botBabylonMaterialId;
             }
+
+            getBotWallBabylonMaterialId(): number {
+              return this._groundConfigJson.botWallBabylonMaterialId;
+            }
           }
           return
         });
@@ -1007,11 +1005,7 @@ export class GameMockService {
               }
 
               getGroundConfigId(): number {
-                return 1;
-              }
-
-              getWaterConfigId(): number {
-                return 1;
+                return 252;
               }
 
               getTerrainTileObjectLists(): TerrainTileObjectList[] {
@@ -1019,7 +1013,13 @@ export class GameMockService {
               }
 
               getBabylonDecals(): BabylonDecal[] {
-                return [];
+                return [{
+                  babylonMaterialId: 11,
+                  xPos: 28,
+                  yPos: 19,
+                  xSize: 21,
+                  ySize: 21
+                }];
               }
 
               getIndex(): Index {

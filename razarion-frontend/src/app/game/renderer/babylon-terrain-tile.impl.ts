@@ -32,6 +32,7 @@ enum MaterialIndex {
   GROUND = 0,
   UNDER_WATER = 1,
   BOT = 2,
+  BOT_WALL = 3,
 }
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
@@ -43,6 +44,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly HEIGHT_PRECISION = 0.1;
   static readonly HEIGHT_MIN = -200;
   static readonly WATER_LEVEL = 0;
+  static readonly WALL_HEIGHT_DIFF = 0.5;
   static readonly HEIGHT_DEFAULT = 0.5;
   public readonly container: TransformNode;
   public readonly shadowCasterObjects: TransformNode[] = []
@@ -100,11 +102,13 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     let groundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
     let underWaterMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getUnderWaterBabylonMaterialId());
     let botMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotBabylonMaterialId());
+    let botWallMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotWallBabylonMaterialId());
 
-    const multiMaterial = new MultiMaterial("multi", rendererService.getScene());
+    const multiMaterial = new MultiMaterial(`Ground ${groundConfig.getInternalName()}`, rendererService.getScene());
     multiMaterial.subMaterials[MaterialIndex.GROUND] = groundMaterial;
     multiMaterial.subMaterials[MaterialIndex.UNDER_WATER] = underWaterMaterial;
     multiMaterial.subMaterials[MaterialIndex.BOT] = botMaterial;
+    multiMaterial.subMaterials[MaterialIndex.BOT_WALL] = botWallMaterial;
 
     this.groundMesh!.material = multiMaterial;
 
@@ -221,6 +225,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const positions = [];
     const normals = [];
     const uvs = [];
+    const uvs2 = [];
 
     let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
@@ -231,19 +236,21 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     for (let y = 0; y < yCount; y++) {
       for (let x = 0; x < xCount; x++) {
         const index = x + y * xCount;
+        const height = BabylonTerrainTileImpl.setupHeight(index, groundHeightMap);
         positions.push(
           x * BabylonTerrainTileImpl.NODE_SIZE + xOffset,
-          BabylonTerrainTileImpl.setupHeight(index, groundHeightMap),
+          height,
           y * BabylonTerrainTileImpl.NODE_SIZE + yOffset);
         normals.push(0, 0, 0);
-        uvs.push(x / xCount, 1.0 - y / yCount);
-
+        const uvx = x / xCount;
+        const uvy = 1.0 - y / yCount;
+        uvs.push(uvx, uvy);
+        uvs2.push(uvx + uvy, ((height - 0.5) / 1.5) * 0.05);
 
         const invertedY = xCount - y - 1;
         const index2 = x + invertedY * xCount;
-        const groundHeight = BabylonTerrainTileImpl.setupHeight(index2, groundHeightMap);
-
-        uv2GroundHeightMap.push(groundHeight, 0);
+        const invertedGroundHeight = BabylonTerrainTileImpl.setupHeight(index2, groundHeightMap);
+        uv2GroundHeightMap.push(invertedGroundHeight, 0);
       }
     }
 
@@ -267,6 +274,12 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
         const terrainX = x * BabylonTerrainTileImpl.NODE_SIZE + xOffset;
         const terrainY = y * BabylonTerrainTileImpl.NODE_SIZE + yOffset;
+
+        const bLHeight = BabylonTerrainTileImpl.setupHeight(bLIdx, groundHeightMap);
+        const bRHeight = BabylonTerrainTileImpl.setupHeight(bRIdx, groundHeightMap);
+        const tLHeight = BabylonTerrainTileImpl.setupHeight(tLIdx, groundHeightMap);
+        const tRHeight = BabylonTerrainTileImpl.setupHeight(tRIdx, groundHeightMap);
+
         const decal = babylonDecals && babylonDecals.find(babylonDecal => {
           return terrainX >= babylonDecal.xPos
             && terrainX < babylonDecal.xSize + babylonDecal.xPos
@@ -276,11 +289,17 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
         let newMaterialIndex;
         if (decal) {
-          newMaterialIndex = MaterialIndex.BOT;
-        } else if (BabylonTerrainTileImpl.setupHeight(bLIdx, groundHeightMap) <= 0.0
-          || BabylonTerrainTileImpl.setupHeight(bRIdx, groundHeightMap) <= 0.0
-          || BabylonTerrainTileImpl.setupHeight(tLIdx, groundHeightMap) <= 0.0
-          || BabylonTerrainTileImpl.setupHeight(tRIdx, groundHeightMap) <= 0.0) {
+          const maxHeight = Math.max(bLHeight, bRHeight, tRHeight, tLHeight);
+          const minHeight = Math.min(bLHeight, bRHeight, tRHeight, tLHeight);
+          if (Math.abs(maxHeight - minHeight) < BabylonTerrainTileImpl.WALL_HEIGHT_DIFF) {
+            newMaterialIndex = MaterialIndex.BOT;
+          } else {
+            newMaterialIndex = MaterialIndex.BOT_WALL;
+          }
+        } else if (bLHeight <= 0.0
+          && bRHeight <= 0.0
+          && tLHeight <= 0.0
+          && tRHeight <= 0.0) {
           newMaterialIndex = MaterialIndex.UNDER_WATER;
         } else {
           newMaterialIndex = MaterialIndex.GROUND;
@@ -322,6 +341,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     vertexData.positions = positions;
     vertexData.normals = normals;
     vertexData.uvs = uvs;
+    vertexData.uvs2 = uvs2;
 
     return vertexData;
   }

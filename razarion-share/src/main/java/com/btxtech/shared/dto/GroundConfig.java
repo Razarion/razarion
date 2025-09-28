@@ -17,6 +17,7 @@ public class GroundConfig implements Config {
     private Integer waterBabylonMaterialId;
     private Integer underWaterBabylonMaterialId;
     private Integer botBabylonMaterialId;
+    private Integer botWallBabylonMaterialId;
 
     public int getId() {
         return id;
@@ -66,6 +67,14 @@ public class GroundConfig implements Config {
         this.botBabylonMaterialId = botBabylonMaterialId;
     }
 
+    public Integer getBotWallBabylonMaterialId() {
+        return botWallBabylonMaterialId;
+    }
+
+    public void setBotWallBabylonMaterialId(Integer botWallBabylonMaterialId) {
+        this.botWallBabylonMaterialId = botWallBabylonMaterialId;
+    }
+
     public GroundConfig id(int id) {
         setId(id);
         return this;
@@ -93,6 +102,11 @@ public class GroundConfig implements Config {
 
     public GroundConfig botBabylonMaterialId(Integer botBabylonMaterialId) {
         setBotBabylonMaterialId(botBabylonMaterialId);
+        return this;
+    }
+
+    public GroundConfig botWallBabylonMaterialId(Integer botWallBabylonMaterialId) {
+        setBotWallBabylonMaterialId(botWallBabylonMaterialId);
         return this;
     }
 

@@ -265,6 +265,25 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   }
 
   save() {
+    const compressedHeightMap = this.generateCompressedHeightMap()
+    if (!compressedHeightMap) {
+      return;
+    }
+
+    const blob = new Blob([compressedHeightMap.buffer], {type: 'application/octet-stream'});
+
+    this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
+      .then(() => {
+        this.lastSavedTimeStamp = new Date().toLocaleString();
+        this.lastSavedSize = `${compressedHeightMap.length} bytes`;
+        this.messageService.add({severity: 'success', summary: 'Success', detail: 'Terrain saved'})
+      })
+      .catch(error => {
+        this.messageService.add({severity: 'error', summary: 'Error', detail: error.message})
+      });
+  }
+
+  private generateCompressedHeightMap(): Uint8Array | undefined {
     const uint16Array = new Uint16Array(this.xTileCount * this.yTileCount * BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT);
 
     let index = 0;
@@ -296,18 +315,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
       }
     }
 
-    let compressed = pako.gzip(new Uint8Array(uint16Array.buffer));
-    const blob = new Blob([compressed.buffer], {type: 'application/octet-stream'});
-
-    this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
-      .then(() => {
-        this.lastSavedTimeStamp = new Date().toLocaleString();
-        this.lastSavedSize = `${compressed.length} bytes`;
-        this.messageService.add({severity: 'success', summary: 'Success', detail: 'Terrain saved'})
-      })
-      .catch(error => {
-        this.messageService.add({severity: 'error', summary: 'Error', detail: error.message})
-      });
+    return pako.gzip(new Uint8Array(uint16Array.buffer));
   }
 
   generateMiniMap(canvas: HTMLCanvasElement) {
@@ -421,6 +429,20 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
 
   restartPlanetCold() {
     this.editorService.executeServerCommand(EditorService.RESTART_PLANET_COLD);
+  }
+
+  onDownload() {
+    const compressedHeightMap = this.generateCompressedHeightMap()
+    if (!compressedHeightMap) {
+      return;
+    }
+
+    const blob = new Blob([compressedHeightMap.buffer], {type: 'application/octet-stream'});
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "CompressedHeightMap.bin");
+    link.click();
   }
 }
 

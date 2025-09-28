@@ -1,368 +1,1633 @@
 {
-  "groundConfigs" : [ {
-    "id" : 1,
-    "groundBabylonMaterialId" : 7,
-    "waterBabylonMaterialId" : 8
-  } ],
-  "waterConfigs" : [ {
-    "id" : 1,
-    "waterLevel" : -0.1,
-    "groundLevel" : -1.0,
-    "transparency" : 0.0,
-    "shininess" : 0.0,
-    "specularStrength" : 0.0,
-    "normalMapDepth" : 0.0,
-    "distortionStrength" : 0.0,
-    "distortionAnimationSeconds" : 0.0,
-    "material" : 22
-  } ],
-  "slopeConfigs" : [ ],
-  "terrainObjectConfigs" : [ {
-    "id" : 1,
-    "internalName" : "banana_plant",
-    "radius" : 1.0,
-    "threeJsModelPackConfigId" : 105
-  }, {
-    "id" : 2,
-    "internalName" : "Rock1C",
-    "radius" : 1.0,
-    "threeJsModelPackConfigId" : 86
-  } ],
-  "baseItemTypes" : [ {
-    "id" : 1,
-    "internalName" : "Builder test",
-    "physicalAreaConfig" : {
-      "radius" : 3.0,
-      "fixVerticalNorm" : false,
-      "terrainType" : "LAND",
-      "angularVelocity" : 0.5235987755982988,
-      "speed" : 20.0,
-      "acceleration" : 1.0
+  "groundConfigs": [
+    {
+      "id": 252,
+      "internalName": "Sandy ground",
+      "groundBabylonMaterialId": 7,
+      "waterBabylonMaterialId": 8,
+      "underWaterBabylonMaterialId": 9,
+      "botBabylonMaterialId": 1
+    }
+  ],
+  "terrainObjectConfigs": [
+    {
+      "id": 110,
+      "internalName": "[deco] Rock1 grup3",
+      "radius": 0.0,
+      "model3DId": 3
     },
-    "health" : 40,
-    "price" : 0,
-    "buildup" : 0,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "builderType" : {
-      "range" : 10.0,
-      "progress" : 5.0,
-      "ableToBuildIds" : [ 2, 4, 5, 7 ]
+    {
+      "id": 111,
+      "internalName": "Rock1 grup1",
+      "radius": 0.0,
+      "model3DId": 4
     },
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 1.0,
-    "spawnDurationMillis" : 0
-  }, {
-    "id" : 2,
-    "internalName" : "Factory test",
-    "physicalAreaConfig" : {
-      "radius" : 5.0,
-      "fixVerticalNorm" : false,
-      "terrainType" : "LAND"
+    {
+      "id": 112,
+      "internalName": "[deco] Rock1 grup2",
+      "radius": 0.0,
+      "model3DId": 5
     },
-    "health" : 30,
-    "price" : 0,
-    "buildup" : 0,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "factoryType" : {
-      "progress" : 2.0,
-      "ableToBuildIds" : [ 1, 3, 6 ]
+    {
+      "id": 113,
+      "internalName": "Banana plant big",
+      "radius": 1.0,
+      "model3DId": 6
     },
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 0.0,
-    "spawnDurationMillis" : 0
-  }, {
-    "id" : 3,
-    "internalName" : "Attacker test",
-    "physicalAreaConfig" : {
-      "radius" : 2.0,
-      "fixVerticalNorm" : false,
-      "terrainType" : "LAND",
-      "angularVelocity" : 0.5235987755982988,
-      "speed" : 20.0,
-      "acceleration" : 1.0
+    {
+      "id": 114,
+      "internalName": "Rock1 grup5",
+      "radius": 1.0,
+      "model3DId": 7
     },
-    "health" : 20,
-    "price" : 0,
-    "buildup" : 8,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "weaponType" : {
-      "range" : 10.0,
-      "damage" : 5,
-      "detonationRadius" : 0.0,
-      "reloadTime" : 2.0,
-      "projectileSpeed" : 20.0,
-      "turretType" : {
-        "angleVelocity" : 0.6981317007977318,
-        "turretCenter" : {
-          "x" : 0.0,
-          "y" : 0.0,
-          "z" : 1.0
+    {
+      "id": 115,
+      "internalName": "Rock1 grup4",
+      "radius": 1.0,
+      "model3DId": 8
+    },
+    {
+      "id": 116,
+      "internalName": "Banana plant",
+      "radius": 1.0,
+      "model3DId": 9
+    },
+    {
+      "id": 117,
+      "internalName": "[deco] Banana plant small",
+      "radius": 0.0,
+      "model3DId": 10
+    },
+    {
+      "id": 118,
+      "internalName": "[deco] Fern",
+      "radius": 0.0,
+      "model3DId": 11
+    },
+    {
+      "id": 119,
+      "internalName": "[deco] Fern small",
+      "radius": 0.0,
+      "model3DId": 12
+    },
+    {
+      "id": 120,
+      "internalName": "[deco] Palm bush",
+      "radius": 0.0,
+      "model3DId": 13
+    },
+    {
+      "id": 121,
+      "internalName": "Palm tree1",
+      "radius": 1.0,
+      "model3DId": 14
+    },
+    {
+      "id": 122,
+      "internalName": "Palm tree",
+      "radius": 1.0,
+      "model3DId": 15
+    },
+    {
+      "id": 123,
+      "internalName": "Tropical Plant",
+      "radius": 1.0,
+      "model3DId": 16
+    },
+    {
+      "id": 124,
+      "internalName": "Rock1B",
+      "radius": 1.0,
+      "model3DId": 17
+    },
+    {
+      "id": 125,
+      "internalName": "Rock1A",
+      "radius": 1.0,
+      "model3DId": 18
+    },
+    {
+      "id": 126,
+      "internalName": "Rock3",
+      "radius": 1.0,
+      "model3DId": 19
+    },
+    {
+      "id": 127,
+      "internalName": "Rock2",
+      "radius": 1.0,
+      "model3DId": 20
+    },
+    {
+      "id": 128,
+      "internalName": "Palm tree2",
+      "radius": 1.0,
+      "model3DId": 21
+    },
+    {
+      "id": 129,
+      "internalName": "Rock4B",
+      "radius": 1.0,
+      "model3DId": 22
+    },
+    {
+      "id": 130,
+      "internalName": "[deco] Rock1D",
+      "radius": 0.0,
+      "model3DId": 23
+    },
+    {
+      "id": 131,
+      "internalName": "[deco] Rock1C",
+      "radius": 0.0,
+      "model3DId": 24
+    },
+    {
+      "id": 132,
+      "internalName": "[deco] Rock1E",
+      "radius": 0.0,
+      "model3DId": 25
+    },
+    {
+      "id": 133,
+      "internalName": "Rock5B",
+      "radius": 1.0,
+      "model3DId": 26
+    },
+    {
+      "id": 134,
+      "internalName": "Rock5A",
+      "radius": 1.0,
+      "model3DId": 27
+    },
+    {
+      "id": 135,
+      "internalName": "Rock6B",
+      "radius": 1.0,
+      "model3DId": 28
+    },
+    {
+      "id": 136,
+      "internalName": "Rock6A",
+      "radius": 1.0,
+      "model3DId": 29
+    },
+    {
+      "id": 137,
+      "internalName": "Rock4A",
+      "radius": 1.0,
+      "model3DId": 30
+    },
+    {
+      "id": 138,
+      "internalName": "Rock6C",
+      "radius": 1.0,
+      "model3DId": 31
+    },
+    {
+      "id": 139,
+      "internalName": "[deco] Palm plant",
+      "radius": 0.0,
+      "model3DId": 32
+    }
+  ],
+  "baseItemTypes": [
+    {
+      "id": 1,
+      "internalName": "Builder",
+      "name": "Builder",
+      "description": "Builds buildings",
+      "model3DId": 2,
+      "thumbnail": 45,
+      "physicalAreaConfig": {
+        "radius": 2.0,
+        "fixVerticalNorm": false,
+        "terrainType": "LAND",
+        "angularVelocity": 2.0,
+        "speed": 12.0,
+        "acceleration": 2.0,
+        "startAngleSlowDown": 0.0,
+        "endAngleSlowDown": 1.57
+      },
+      "health": 300,
+      "price": 300,
+      "buildup": 60,
+      "xpOnKilling": 2,
+      "consumingHouseSpace": 1,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": {
+        "range": 5.0,
+        "rangeOtherTerrain": 15.0,
+        "progress": 1.0,
+        "ableToBuildIds": [
+          4,
+          6,
+          7,
+          11,
+          21,
+          23
+        ],
+        "particleSystemConfigId": 1
+      },
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 2.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 27,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 2,
+      "internalName": "Harvester",
+      "name": "Harvester",
+      "description": "Collects resources",
+      "model3DId": 33,
+      "thumbnail": 64,
+      "physicalAreaConfig": {
+        "radius": 1.5,
+        "fixVerticalNorm": false,
+        "terrainType": "LAND",
+        "angularVelocity": 2.5,
+        "speed": 14.0,
+        "acceleration": 2.5,
+        "startAngleSlowDown": 0.0,
+        "endAngleSlowDown": 1.57
+      },
+      "health": 200,
+      "price": 200,
+      "buildup": 20,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 1,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": {
+        "range": 2,
+        "progress": 2.0,
+        "particleSystemConfigId": 3
+      },
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 2.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 27,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 3,
+      "internalName": "Viper",
+      "name": "Viper",
+      "description": "Attacks other units",
+      "model3DId": 34,
+      "thumbnail": 63,
+      "physicalAreaConfig": {
+        "radius": 1.3,
+        "fixVerticalNorm": false,
+        "terrainType": "LAND",
+        "angularVelocity": 3.0,
+        "speed": 17.0,
+        "acceleration": 3.0,
+        "startAngleSlowDown": 0.0,
+        "endAngleSlowDown": 1.57
+      },
+      "health": 150,
+      "price": 100,
+      "buildup": 10,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 1,
+      "weaponType": {
+        "range": 10.0,
+        "damage": 10,
+        "detonationRadius": 1.0,
+        "reloadTime": 1.0,
+        "disallowedItemTypes": null,
+        "projectileSpeed": 30.0,
+        "muzzleFlashParticleSystemConfigId": 2,
+        "turretType": {
+          "angleVelocity": 2.0943951023931953,
+          "turretCenter": {
+            "x": -0.25,
+            "y": 0.0,
+            "z": 2.0
+          },
+          "muzzlePosition": {
+            "x": 1.3,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "shape3dMaterialId": "Turret-material"
         },
-        "muzzlePosition" : {
-          "x" : 2.0,
-          "y" : 0.0,
-          "z" : 1.0
-        }
-      }
+        "muzzleFlashAudioItemConfigId": 10,
+        "trailParticleSystemConfigId": 4
+      },
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 2.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 27,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
     },
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 0.0,
-    "spawnDurationMillis" : 0
-  }, {
-    "id" : 8,
-    "internalName" : "Ship attacker test",
-    "physicalAreaConfig" : {
-      "radius" : 3.0,
-      "fixVerticalNorm" : false,
-      "terrainType" : "WATER",
-      "angularVelocity" : 0.5235987755982988,
-      "speed" : 10.0,
-      "acceleration" : 0.5
+    {
+      "id": 4,
+      "internalName": "Factory",
+      "name": "Factory",
+      "description": "Creates units",
+      "model3DId": 1,
+      "thumbnail": 46,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": true,
+        "terrainType": "LAND",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 500,
+      "price": 300,
+      "buildup": 20,
+      "xpOnKilling": 5,
+      "consumingHouseSpace": 1,
+      "weaponType": null,
+      "factoryType": {
+        "progress": 1.0,
+        "ableToBuildIds": [
+          1,
+          2,
+          3
+        ]
+      },
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 27,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
     },
-    "health" : 30,
-    "price" : 0,
-    "buildup" : 12,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "weaponType" : {
-      "range" : 25.0,
-      "damage" : 5,
-      "detonationRadius" : 0.0,
-      "reloadTime" : 2.0,
-      "projectileSpeed" : 20.0,
-      "turretType" : {
-        "angleVelocity" : 0.6981317007977318,
-        "turretCenter" : {
-          "x" : 0.0,
-          "y" : 0.0,
-          "z" : 1.0
+    {
+      "id": 5,
+      "internalName": "(Bot) Tower",
+      "name": "Tower",
+      "description": "Defense tower",
+      "model3DId": null,
+      "thumbnail": 65,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": true,
+        "terrainType": "LAND",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 250,
+      "price": 0,
+      "buildup": 30,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 0,
+      "weaponType": {
+        "range": 20.0,
+        "damage": 30,
+        "detonationRadius": 2.0,
+        "reloadTime": 2.0,
+        "disallowedItemTypes": null,
+        "projectileSpeed": 47.0,
+        "muzzleFlashParticleSystemConfigId": null,
+        "turretType": {
+          "angleVelocity": 2.6179938779914944,
+          "turretCenter": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 2.0
+          },
+          "muzzlePosition": {
+            "x": 1.33,
+            "y": 0.0,
+            "z": 1.07
+          },
+          "shape3dMaterialId": "TurretMat-material"
         },
-        "muzzlePosition" : {
-          "x" : 2.0,
-          "y" : 0.0,
-          "z" : 1.0
+        "muzzleFlashAudioItemConfigId": null,
+        "trailParticleSystemConfigId": null
+      },
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 27,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 6,
+      "internalName": "Radar",
+      "name": "Radar",
+      "description": "Enables the minimap",
+      "model3DId": 36,
+      "thumbnail": 73,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": true,
+        "terrainType": "LAND",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 400,
+      "price": 300,
+      "buildup": 30,
+      "xpOnKilling": 3,
+      "consumingHouseSpace": 1,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": {
+        "wattage": 100
+      },
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": {
+        "miniTerrain": true
+      },
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": 0,
+      "spawnDurationMillis": 0,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 33,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 7,
+      "internalName": "Powerplant",
+      "name": "Powerplant",
+      "description": "Generatesof electric power",
+      "model3DId": 37,
+      "thumbnail": 74,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": true,
+        "terrainType": "LAND",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 400,
+      "price": 200,
+      "buildup": 30,
+      "xpOnKilling": 2,
+      "consumingHouseSpace": 1,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": {
+        "wattage": 200
+      },
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 0,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 29,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 8,
+      "internalName": "(Bot) Harvester",
+      "name": "Harvester",
+      "description": "Collects resources",
+      "model3DId": null,
+      "thumbnail": 64,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": false,
+        "terrainType": "LAND",
+        "angularVelocity": 6.283185307179586,
+        "speed": 15.0,
+        "acceleration": 5.0,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 200,
+      "price": 200,
+      "buildup": 20,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 0,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": {
+        "range": 3,
+        "progress": 2.0,
+        "particleSystemConfigId": null
+      },
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 27,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 9,
+      "internalName": "(Bot) Dockyard",
+      "name": "Dockyard",
+      "description": "Produces water units",
+      "model3DId": 40,
+      "thumbnail": 75,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": true,
+        "terrainType": "WATER",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 500,
+      "price": 300,
+      "buildup": 10,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 0,
+      "weaponType": null,
+      "factoryType": {
+        "progress": 1.0,
+        "ableToBuildIds": [
+          10
+        ]
+      },
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 0,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 34,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 10,
+      "internalName": "(Bot) Hydra",
+      "name": "Hydra",
+      "description": "Water unit. Attacks other units.",
+      "model3DId": 35,
+      "thumbnail": 76,
+      "physicalAreaConfig": {
+        "radius": 2.0,
+        "fixVerticalNorm": false,
+        "terrainType": "WATER",
+        "angularVelocity": 6.283185307179586,
+        "speed": 10.0,
+        "acceleration": 3.0,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 100,
+      "price": 0,
+      "buildup": 12,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 0,
+      "weaponType": {
+        "range": 15.0,
+        "damage": 12,
+        "detonationRadius": 1.0,
+        "reloadTime": 1.0,
+        "disallowedItemTypes": null,
+        "projectileSpeed": 50.0,
+        "muzzleFlashParticleSystemConfigId": null,
+        "turretType": {
+          "angleVelocity": 2.0943951023931953,
+          "turretCenter": {
+            "x": 1.35245,
+            "y": 0.0,
+            "z": 2.45898
+          },
+          "muzzlePosition": {
+            "x": 1.3,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "shape3dMaterialId": "Turret_Mat-material"
+        },
+        "muzzleFlashAudioItemConfigId": null,
+        "trailParticleSystemConfigId": null
+      },
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 0,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 34,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 11,
+      "internalName": "Dockyard",
+      "name": "Dockyard",
+      "description": "Produces water units",
+      "model3DId": 40,
+      "thumbnail": 75,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": true,
+        "terrainType": "WATER",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 500,
+      "price": 300,
+      "buildup": 20,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 1,
+      "weaponType": null,
+      "factoryType": {
+        "progress": 1.0,
+        "ableToBuildIds": [
+          12,
+          18
+        ]
+      },
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 0,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 34,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 12,
+      "internalName": "Hydra",
+      "name": "Hydra",
+      "description": "Water unit. Attacks other units.",
+      "model3DId": 35,
+      "thumbnail": 76,
+      "physicalAreaConfig": {
+        "radius": 2.0,
+        "fixVerticalNorm": false,
+        "terrainType": "WATER",
+        "angularVelocity": 6.283185307179586,
+        "speed": 10.0,
+        "acceleration": 3.0,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 200,
+      "price": 150,
+      "buildup": 12,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 1,
+      "weaponType": {
+        "range": 15.0,
+        "damage": 12,
+        "detonationRadius": 1.0,
+        "reloadTime": 1.0,
+        "disallowedItemTypes": null,
+        "projectileSpeed": 50.0,
+        "muzzleFlashParticleSystemConfigId": null,
+        "turretType": {
+          "angleVelocity": 2.0943951023931953,
+          "turretCenter": {
+            "x": 1.35245,
+            "y": 0.0,
+            "z": 2.45898
+          },
+          "muzzlePosition": {
+            "x": 1.3,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "shape3dMaterialId": "Turret_Mat-material"
+        },
+        "muzzleFlashAudioItemConfigId": null,
+        "trailParticleSystemConfigId": null
+      },
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 2.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 0,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 29,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 13,
+      "internalName": "(Bot) Builder",
+      "name": "Builder",
+      "description": "Razarion Industries bot builder unit",
+      "model3DId": 2,
+      "thumbnail": 45,
+      "physicalAreaConfig": {
+        "radius": 2.0,
+        "fixVerticalNorm": false,
+        "terrainType": "LAND",
+        "angularVelocity": 2.0,
+        "speed": 12.0,
+        "acceleration": 2.0,
+        "startAngleSlowDown": 0.0,
+        "endAngleSlowDown": 1.57
+      },
+      "health": 30,
+      "price": 0,
+      "buildup": 60,
+      "xpOnKilling": 2,
+      "consumingHouseSpace": 0,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": {
+        "range": 5.0,
+        "rangeOtherTerrain": 15.0,
+        "progress": 1.0,
+        "ableToBuildIds": [
+          5,
+          9,
+          14,
+          15,
+          17,
+          22
+        ],
+        "particleSystemConfigId": 1
+      },
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 2.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 34,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 14,
+      "internalName": "(Bot) Powerplant",
+      "name": "Powerplant",
+      "description": "Generatesof electric power",
+      "model3DId": null,
+      "thumbnail": 74,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": true,
+        "terrainType": "LAND",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 400,
+      "price": 200,
+      "buildup": 30,
+      "xpOnKilling": 2,
+      "consumingHouseSpace": 0,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": {
+        "wattage": 200
+      },
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 0,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 34,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 15,
+      "internalName": "(Bot) Factory",
+      "name": "Factory",
+      "description": "Creates units",
+      "model3DId": 1,
+      "thumbnail": 46,
+      "physicalAreaConfig": {
+        "radius": 4.0,
+        "fixVerticalNorm": true,
+        "terrainType": "LAND",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 500,
+      "price": 300,
+      "buildup": 20,
+      "xpOnKilling": 5,
+      "consumingHouseSpace": 0,
+      "weaponType": null,
+      "factoryType": {
+        "progress": 1.0,
+        "ableToBuildIds": [
+          8,
+          13,
+          16,
+          20
+        ]
+      },
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 34,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 16,
+      "internalName": "(Bot) Viper",
+      "name": "Viper",
+      "description": "Razarion Industries bot defense unit",
+      "model3DId": 34,
+      "thumbnail": 63,
+      "physicalAreaConfig": {
+        "radius": 1.3,
+        "fixVerticalNorm": false,
+        "terrainType": "LAND",
+        "angularVelocity": 3.0,
+        "speed": 17.0,
+        "acceleration": 3.0,
+        "startAngleSlowDown": 0.0,
+        "endAngleSlowDown": 1.57
+      },
+      "health": 80,
+      "price": 100,
+      "buildup": 10,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 0,
+      "weaponType": {
+        "range": 10.0,
+        "damage": 10,
+        "detonationRadius": 1.0,
+        "reloadTime": 1.0,
+        "disallowedItemTypes": null,
+        "projectileSpeed": 30.0,
+        "muzzleFlashParticleSystemConfigId": 2,
+        "turretType": {
+          "angleVelocity": 2.0943951023931953,
+          "turretCenter": {
+            "x": -0.25,
+            "y": 0.0,
+            "z": 2.0
+          },
+          "muzzlePosition": {
+            "x": 1.3,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "shape3dMaterialId": "Turret-material"
+        },
+        "muzzleFlashAudioItemConfigId": 11,
+        "trailParticleSystemConfigId": null
+      },
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 2.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 27,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 17,
+      "internalName": "(Bot) Radar",
+      "name": "Radar",
+      "description": "Enables the minimap",
+      "model3DId": null,
+      "thumbnail": 73,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": false,
+        "terrainType": "LAND",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 400,
+      "price": 300,
+      "buildup": 30,
+      "xpOnKilling": 3,
+      "consumingHouseSpace": 0,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 0,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 34,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 18,
+      "internalName": "Transporter",
+      "name": "Transporter",
+      "description": "Transports units across the water",
+      "model3DId": 44,
+      "thumbnail": 78,
+      "physicalAreaConfig": {
+        "radius": 2.0,
+        "fixVerticalNorm": false,
+        "terrainType": "WATER",
+        "angularVelocity": 6.283185307179586,
+        "speed": 7.0,
+        "acceleration": 2.0,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 100,
+      "price": 200,
+      "buildup": 12,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 1,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": {
+        "ableToContain": [
+          1
+        ],
+        "maxCount": 1,
+        "range": 20.0
+      },
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 34,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 19,
+      "internalName": "(Bot) NPC tutorial Harvester",
+      "name": "Harvester",
+      "description": "Collects resources",
+      "model3DId": null,
+      "thumbnail": 64,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": false,
+        "terrainType": "LAND",
+        "angularVelocity": 6.283185307179586,
+        "speed": 15.0,
+        "acceleration": 5.0,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 20,
+      "price": 200,
+      "buildup": 20,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 1,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": {
+        "range": 3,
+        "progress": 2.0,
+        "particleSystemConfigId": null
+      },
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 27,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 20,
+      "internalName": "(Bot) Badger",
+      "name": "Badger",
+      "description": "Boss unit",
+      "model3DId": null,
+      "thumbnail": 83,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": false,
+        "terrainType": "LAND",
+        "angularVelocity": 6.283185307179586,
+        "speed": 20.0,
+        "acceleration": 7.0,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 250,
+      "price": 150,
+      "buildup": 15,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 0,
+      "weaponType": {
+        "range": 20.0,
+        "damage": 20,
+        "detonationRadius": 2.0,
+        "reloadTime": 1.0,
+        "disallowedItemTypes": null,
+        "projectileSpeed": 50.0,
+        "muzzleFlashParticleSystemConfigId": null,
+        "turretType": {
+          "angleVelocity": 2.6179938779914944,
+          "turretCenter": {
+            "x": -0.8,
+            "y": 0.0,
+            "z": 2.1
+          },
+          "muzzlePosition": {
+            "x": 1.8,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "shape3dMaterialId": "Turret_Mat-material"
+        },
+        "muzzleFlashAudioItemConfigId": null,
+        "trailParticleSystemConfigId": null
+      },
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 34,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 21,
+      "internalName": "Tower",
+      "name": "Tower",
+      "description": "Defense tower",
+      "model3DId": null,
+      "thumbnail": 65,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": true,
+        "terrainType": "LAND",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 259,
+      "price": 250,
+      "buildup": 30,
+      "xpOnKilling": 1,
+      "consumingHouseSpace": 1,
+      "weaponType": {
+        "range": 20.0,
+        "damage": 30,
+        "detonationRadius": 2.0,
+        "reloadTime": 2.0,
+        "disallowedItemTypes": null,
+        "projectileSpeed": 47.0,
+        "muzzleFlashParticleSystemConfigId": null,
+        "turretType": {
+          "angleVelocity": 2.6179938779914944,
+          "turretCenter": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 2.0
+          },
+          "muzzlePosition": {
+            "x": 1.33,
+            "y": 0.0,
+            "z": 1.07
+          },
+          "shape3dMaterialId": "TurretMat-material"
+        },
+        "muzzleFlashAudioItemConfigId": null,
+        "trailParticleSystemConfigId": null
+      },
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 3000,
+      "spawnAudioId": 7,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 27,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 22,
+      "internalName": "(Bot) Noob Building",
+      "name": "Mining unit",
+      "description": "Razarion Industries bot mining unit",
+      "model3DId": 43,
+      "thumbnail": null,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": true,
+        "terrainType": "LAND",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 50,
+      "price": 0,
+      "buildup": 20,
+      "xpOnKilling": 0,
+      "consumingHouseSpace": 0,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": null,
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 0,
+      "spawnAudioId": null,
+      "demolitionStepEffects": null,
+      "demolitionImageId": 27,
+      "buildupTextureId": 17,
+      "explosionAudioItemConfigId": 18,
+      "explosionParticleId": 5
+    },
+    {
+      "id": 23,
+      "internalName": "House",
+      "name": "House",
+      "description": "Increases house space",
+      "model3DId": 38,
+      "thumbnail": 165,
+      "physicalAreaConfig": {
+        "radius": 3.0,
+        "fixVerticalNorm": true,
+        "terrainType": "LAND",
+        "angularVelocity": null,
+        "speed": null,
+        "acceleration": null,
+        "startAngleSlowDown": null,
+        "endAngleSlowDown": null
+      },
+      "health": 300,
+      "price": 300,
+      "buildup": 20,
+      "xpOnKilling": 5,
+      "consumingHouseSpace": 0,
+      "weaponType": null,
+      "factoryType": null,
+      "harvesterType": null,
+      "builderType": null,
+      "generatorType": null,
+      "consumerType": null,
+      "itemContainerType": null,
+      "houseType": {
+        "space": 5
+      },
+      "specialType": null,
+      "dropBoxItemTypeId": null,
+      "dropBoxPossibility": 0.0,
+      "boxPickupRange": 0.0,
+      "unlockCrystals": null,
+      "spawnDurationMillis": 0,
+      "spawnAudioId": null,
+      "demolitionStepEffects": null,
+      "demolitionImageId": null,
+      "buildupTextureId": null,
+      "explosionAudioItemConfigId": null,
+      "explosionParticleId": 5
+    }
+  ],
+  "resourceItemTypes": [
+    {
+      "id": 2,
+      "internalName": "Noob",
+      "name": null,
+      "description": null,
+      "model3DId": 42,
+      "thumbnail": 80,
+      "radius": 0.8,
+      "fixVerticalNorm": true,
+      "terrainType": "LAND",
+      "amount": 1000
+    }
+  ],
+  "boxItemTypes": [
+    {
+      "id": 2,
+      "internalName": "Noob",
+      "name": null,
+      "description": null,
+      "model3DId": 41,
+      "thumbnail": 79,
+      "ttl": 300,
+      "radius": 0.8,
+      "fixVerticalNorm": false,
+      "terrainType": "LAND",
+      "boxItemTypePossibilities": [
+        {
+          "possibility": 1.0,
+          "inventoryItemId": null,
+          "crystals": 1
         }
-      }
+      ]
+    }
+  ],
+  "levelConfigs": [
+    {
+      "id": 265,
+      "internalName": "2",
+      "number": 2,
+      "itemTypeLimitation": {
+        "1": 1,
+        "2": 1,
+        "3": 3,
+        "4": 1
+      },
+      "xp2LevelUp": 30,
+      "levelUnlockConfigs": []
     },
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 0.0,
-    "spawnDurationMillis" : 0
-  }, {
-    "id" : 10,
-    "internalName" : "Ship transporter test",
-    "physicalAreaConfig" : {
-      "radius" : 4.0,
-      "fixVerticalNorm" : false,
-      "terrainType" : "WATER",
-      "angularVelocity" : 0.7853981633974483,
-      "speed" : 8.0,
-      "acceleration" : 0.7
+    {
+      "id": 270,
+      "internalName": "3",
+      "number": 3,
+      "itemTypeLimitation": {
+        "1": 1,
+        "2": 1,
+        "3": 3,
+        "4": 1,
+        "6": 1,
+        "7": 1
+      },
+      "xp2LevelUp": 40,
+      "levelUnlockConfigs": []
     },
-    "health" : 40,
-    "price" : 0,
-    "buildup" : 15,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "itemContainerType" : {
-      "ableToContain" : [ 3, 1 ],
-      "maxCount" : 5,
-      "range" : 15.0
+    {
+      "id": 271,
+      "internalName": "4",
+      "number": 4,
+      "itemTypeLimitation": {
+        "1": 1,
+        "2": 1,
+        "3": 6,
+        "4": 1,
+        "6": 1,
+        "7": 1
+      },
+      "xp2LevelUp": 40,
+      "levelUnlockConfigs": []
     },
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 0.0,
-    "spawnDurationMillis" : 0
-  }, {
-    "id" : 4,
-    "internalName" : "Power planet test",
-    "physicalAreaConfig" : {
-      "radius" : 2.0,
-      "fixVerticalNorm" : false,
-      "terrainType" : "LAND"
+    {
+      "id": 272,
+      "internalName": "1",
+      "number": 1,
+      "itemTypeLimitation": {
+        "1": 1,
+        "2": 1,
+        "4": 1
+      },
+      "xp2LevelUp": 10,
+      "levelUnlockConfigs": []
     },
-    "health" : 15,
-    "price" : 0,
-    "buildup" : 10,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "generatorType" : {
-      "wattage" : 80
+    {
+      "id": 273,
+      "internalName": "5",
+      "number": 5,
+      "itemTypeLimitation": {
+        "1": 1,
+        "2": 1,
+        "3": 6,
+        "4": 1,
+        "6": 1,
+        "7": 1
+      },
+      "xp2LevelUp": 40,
+      "levelUnlockConfigs": []
     },
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 0.0,
-    "spawnDurationMillis" : 0
-  }, {
-    "id" : 5,
-    "internalName" : "Consumer test",
-    "physicalAreaConfig" : {
-      "radius" : 1.5,
-      "fixVerticalNorm" : false,
-      "terrainType" : "LAND"
+    {
+      "id": 274,
+      "internalName": "6",
+      "number": 6,
+      "itemTypeLimitation": {
+        "1": 1,
+        "2": 1,
+        "3": 6,
+        "4": 1,
+        "6": 1,
+        "7": 1,
+        "11": 1
+      },
+      "xp2LevelUp": 40,
+      "levelUnlockConfigs": []
     },
-    "health" : 15,
-    "price" : 0,
-    "buildup" : 20,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "consumerType" : {
-      "wattage" : 60
+    {
+      "id": 275,
+      "internalName": "7",
+      "number": 7,
+      "itemTypeLimitation": {
+        "1": 1,
+        "2": 1,
+        "3": 6,
+        "4": 1,
+        "6": 1,
+        "7": 1,
+        "11": 1,
+        "12": 3
+      },
+      "xp2LevelUp": 40,
+      "levelUnlockConfigs": []
     },
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 0.0,
-    "spawnDurationMillis" : 0
-  }, {
-    "id" : 6,
-    "internalName" : "Harvester test",
-    "physicalAreaConfig" : {
-      "radius" : 2.0,
-      "fixVerticalNorm" : false,
-      "terrainType" : "LAND",
-      "angularVelocity" : 0.6981317007977318,
-      "speed" : 15.0,
-      "acceleration" : 1.5
+    {
+      "id": 276,
+      "internalName": "8",
+      "number": 8,
+      "itemTypeLimitation": {
+        "1": 1,
+        "18": 1,
+        "2": 1,
+        "3": 6,
+        "4": 1,
+        "6": 1,
+        "7": 1,
+        "11": 1,
+        "12": 3
+      },
+      "xp2LevelUp": 60,
+      "levelUnlockConfigs": []
     },
-    "health" : 17,
-    "price" : 0,
-    "buildup" : 18,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "harvesterType" : {
-      "range" : 2,
-      "progress" : 2.0
+    {
+      "id": 277,
+      "internalName": "9",
+      "number": 9,
+      "itemTypeLimitation": {
+        "1": 1,
+        "18": 1,
+        "2": 1,
+        "3": 6,
+        "4": 1,
+        "6": 1,
+        "7": 1,
+        "11": 1,
+        "12": 3
+      },
+      "xp2LevelUp": 999999,
+      "levelUnlockConfigs": []
+    }
+  ],
+  "inventoryItems": [
+    {
+      "id": 1,
+      "i18nName": null,
+      "internalName": "Tutorial 3 Vipers",
+      "razarion": null,
+      "baseItemTypeId": 3,
+      "baseItemTypeCount": 3,
+      "baseItemTypeFreeRange": 2.0,
+      "imageId": 36,
+      "crystalCost": null
     },
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 0.0,
-    "spawnDurationMillis" : 0
-  }, {
-    "id" : 9,
-    "internalName" : "Ship harvester test",
-    "physicalAreaConfig" : {
-      "radius" : 2.5,
-      "fixVerticalNorm" : false,
-      "terrainType" : "WATER",
-      "angularVelocity" : 0.3490658503988659,
-      "speed" : 15.0,
-      "acceleration" : 1.5
-    },
-    "health" : 10,
-    "price" : 0,
-    "buildup" : 5,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "harvesterType" : {
-      "range" : 10,
-      "progress" : 2.0
-    },
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 0.0,
-    "spawnDurationMillis" : 0
-  }, {
-    "id" : 7,
-    "internalName" : "Harbour test",
-    "physicalAreaConfig" : {
-      "radius" : 4.5,
-      "fixVerticalNorm" : false,
-      "terrainType" : "WATER_COAST"
-    },
-    "health" : 40,
-    "price" : 0,
-    "buildup" : 0,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "factoryType" : {
-      "progress" : 3.0,
-      "ableToBuildIds" : [ 8, 9, 10 ]
-    },
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 0.0,
-    "spawnDurationMillis" : 0
-  }, {
-    "id" : 11,
-    "internalName" : "Move Test 1",
-    "physicalAreaConfig" : {
-      "radius" : 2.0,
-      "fixVerticalNorm" : false,
-      "terrainType" : "LAND",
-      "angularVelocity" : 3.141592653589793,
-      "speed" : 17.0,
-      "acceleration" : 5.0
-    },
-    "health" : 1,
-    "price" : 0,
-    "buildup" : 1,
-    "xpOnKilling" : 0,
-    "consumingHouseSpace" : 0,
-    "dropBoxPossibility" : 0.0,
-    "boxPickupRange" : 0.0,
-    "spawnDurationMillis" : 0
-  } ],
-  "resourceItemTypes" : [ {
-    "id" : 101,
-    "internalName" : "Test resource",
-    "radius" : 2.0,
-    "fixVerticalNorm" : false,
-    "terrainType" : "LAND",
-    "amount" : 10000000
-  } ],
-  "boxItemTypes" : [ {
-    "id" : 501,
-    "internalName" : "Test box",
-    "ttl" : 250,
-    "radius" : 1.0,
-    "fixVerticalNorm" : false,
-    "terrainType" : "LAND"
-  }, {
-    "id" : 502,
-    "internalName" : "Test box long",
-    "ttl" : 2147483647,
-    "radius" : 1.0,
-    "fixVerticalNorm" : false,
-    "terrainType" : "LAND",
-    "boxItemTypePossibilities" : [ {
-      "possibility" : 1.0,
-      "inventoryItemId" : 1
-    }, {
-      "possibility" : 1.0,
-      "inventoryItemId" : 1
-    }, {
-      "possibility" : 1.0,
-      "crystals" : 10
-    } ]
-  } ],
-  "levelConfigs" : [ {
-    "id" : 1,
-    "number" : 1,
-    "itemTypeLimitation" : {
-      "1" : 1,
-      "2" : 2,
-      "3" : 10,
-      "4" : 6,
-      "5" : 6,
-      "6" : 3,
-      "7" : 1,
-      "8" : 10,
-      "9" : 2,
-      "10" : 1,
-      "11" : 1000
-    },
-    "xp2LevelUp" : 2
-  } ],
-  "inventoryItems" : [ {
-    "id" : 1,
-    "baseItemTypeId" : 3,
-    "baseItemTypeCount" : 3,
-    "baseItemTypeFreeRange" : 1.0
-  }, {
-    "id" : 1,
-    "razarion" : 100,
-    "baseItemTypeCount" : 0,
-    "baseItemTypeFreeRange" : 0.0
-  } ],
-  "drivewayConfigs" : [ {
-    "id" : 1001,
-    "angle" : 0.3490658503988659
-  } ],
-  "particleSystemConfigs" : []
+    {
+      "id": 2,
+      "i18nName": null,
+      "internalName": "Noob 2 Vipers",
+      "razarion": null,
+      "baseItemTypeId": 3,
+      "baseItemTypeCount": 2,
+      "baseItemTypeFreeRange": 2.0,
+      "imageId": 36,
+      "crystalCost": null
+    }
+  ]
 }

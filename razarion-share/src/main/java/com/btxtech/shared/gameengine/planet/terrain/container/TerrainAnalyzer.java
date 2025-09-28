@@ -69,7 +69,7 @@ public class TerrainAnalyzer {
 
         double maxHeight = CollectionUtils.getMax(blHeight, brHeight, trHeight, tlHeight);
         double minHeight = CollectionUtils.getMin(blHeight, brHeight, trHeight, tlHeight);
-        if (Math.abs(maxHeight - minHeight) < 0.7) {
+        if (Math.abs(maxHeight - minHeight) < WALL_HEIGHT_DIFF) {
             return TerrainType.LAND;
         } else {
             return TerrainType.BLOCKED;

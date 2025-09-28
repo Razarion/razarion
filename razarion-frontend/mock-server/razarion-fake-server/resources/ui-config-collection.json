@@ -61,16 +61,6 @@
       "overrideAmbientOcclusionTextureNode": null
     },
     {
-      "id": 10,
-      "internalName": "Health Bar Material",
-      "nodeMaterial": true,
-      "diplomacyColorNode": null,
-      "overrideAlbedoTextureNode": null,
-      "overrideMetallicTextureNode": null,
-      "overrideBumpTextureNode": null,
-      "overrideAmbientOcclusionTextureNode": null
-    },
-    {
       "id": 11,
       "internalName": "Quest visualization",
       "nodeMaterial": true,
@@ -392,7 +382,5 @@
     }
   ],
   "particleSystemEntities": [],
-  "selectionItemMaterialId": 14,
-  "progressBarNodeMaterialId": 9,
-  "healthBarNodeMaterialId": 10
+  "selectionItemMaterialId": 14
 }
