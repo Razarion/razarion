@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {ObjectTerrainEditorComponent} from "./object-terrain-editor.component";
 import {HeightMapTerrainEditorComponent} from "./height-map-terrain-editor.component";
@@ -12,7 +12,7 @@ import {Divider} from 'primeng/divider';
 import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render-service-access-impl.service';
 import {TerrainEditorControllerClient} from '../../generated/razarion-share';
 import {TypescriptGenerator} from '../../backend/typescript-generator';
-import {ScrollPanel, ScrollPanelModule} from 'primeng/scrollpanel';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 @Component({
   selector: 'terrain-editor',
@@ -28,7 +28,7 @@ import {ScrollPanel, ScrollPanelModule} from 'primeng/scrollpanel';
   ],
   templateUrl: './terrain-editor.component.html'
 })
-export class TerrainEditorComponent extends EditorPanel implements AfterViewInit {
+export class TerrainEditorComponent extends EditorPanel implements AfterViewInit, OnDestroy {
   @ViewChild("objectEditor")
   objectTerrainEditor!: ObjectTerrainEditorComponent;
   @ViewChild("heightMapEditor")
@@ -37,6 +37,7 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
   miniMapCanvas!: ElementRef<HTMLCanvasElement>;
   displayMiniMap = false;
   private terrainEditorControllerClient: TerrainEditorControllerClient;
+  activeIndex: number = 0;
 
   constructor(httpClient: HttpClient,
               private messageService: MessageService,
@@ -49,6 +50,14 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
 
   ngAfterViewInit(): void {
     this.onTabViewChangeEvent(0);
+  }
+
+  ngOnDestroy(): void {
+    if (this.activeIndex === 0) {
+      this.shapeTerrainEditor.deactivate();
+    } else {
+      this.objectTerrainEditor.deactivate();
+    }
   }
 
   onTabViewChangeEvent(index: number) {
