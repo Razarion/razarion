@@ -6,6 +6,7 @@ import {
   BabylonTerrainTile,
   BaseItemType,
   BaseItemUiService,
+  BotGround,
   BuilderType,
   BuildupItemCockpit,
   Character,
@@ -55,6 +56,7 @@ import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
+import {toRadians} from 'chart.js/helpers';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -203,7 +205,7 @@ export class GameMockService {
 
         {
           let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, 1, Diplomacy.OWN, "myName");
-          babylonBaseItem1.setPosition(GwtInstance.newVertex(20, 17, 1));
+          babylonBaseItem1.setPosition(GwtInstance.newVertex(70, 40, 1.6));
           // babylonBaseItem1.setAngle(Tools.ToRadians(45));
           babylonBaseItem1.setAngle(0);
 
@@ -230,6 +232,22 @@ export class GameMockService {
           */
           // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
           // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
+        }
+        {
+          let botGround = this.babylonModelService.cloneModel3D(45, null, Diplomacy.OWN);
+          botGround.position.x = 72;
+          botGround.position.y = -0.5;
+          botGround.position.z = 26;
+          botGround.rotationQuaternion = null;
+          botGround.rotation.x = toRadians(-22.5);
+
+          botGround = this.babylonModelService.cloneModel3D(45, null, Diplomacy.OWN);
+          botGround.position.x = 83.4;
+          botGround.position.y = -1;
+          botGround.position.z = 38;
+          botGround.rotationQuaternion = null;
+          botGround.rotation.z = toRadians(-15);
+
         }
         this.showQuestionCockpit();
         // {
@@ -1020,6 +1038,22 @@ export class GameMockService {
                   xSize: 21,
                   ySize: 21
                 }];
+              }
+
+              getBotGrounds(): BotGround[] {
+                const positions = [];
+                for (let x = 0; x < 5; x++) {
+                  for (let y = 0; y < 5; y++) {
+                    positions.push(GwtInstance.newDecimalPosition(64 + x * 4, 30 + y * 4))
+                  }
+                }
+                const botGround = {
+                  model3DId: 45,
+                  height: -0.5,
+                  positions: positions
+                }
+
+                return [botGround];
               }
 
               getIndex(): Index {

@@ -5,10 +5,6 @@ import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
-/**
- * Created by Beat
- * 28.03.2017.
- */
 @JsType
 public class TerrainTile {
     private Index index;
@@ -16,6 +12,7 @@ public class TerrainTile {
     private int groundConfigId;
     private Uint16ArrayEmu groundHeightMap;
     private BabylonDecal[] babylonDecals;
+    private BotGround[] botGrounds;
 
     public Index getIndex() {
         return index;
@@ -70,5 +67,14 @@ public class TerrainTile {
 
     public void setBabylonDecals(BabylonDecal[] babylonDecals) {
         this.babylonDecals = babylonDecals;
+    }
+
+    @SuppressWarnings("unused") // Used ba angular
+    public BotGround[] getBotGrounds() {
+        return botGrounds;
+    }
+
+    public void setBotGrounds(BotGround[] botGrounds) {
+        this.botGrounds = botGrounds;
     }
 }

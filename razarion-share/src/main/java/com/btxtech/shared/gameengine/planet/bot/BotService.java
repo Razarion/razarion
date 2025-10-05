@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
+import com.btxtech.shared.gameengine.planet.terrain.BotGround;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -19,11 +20,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * User: beat
- * Date: 10.10.2011
- * Time: 13:30:00
- */
 @Singleton
 public class BotService {
     private final Logger logger = Logger.getLogger(BotService.class.getName());
@@ -63,6 +59,20 @@ public class BotService {
             });
         }
         return babylonDecals;
+    }
+
+    static public List<BotGround> generateBotGrounds(List<BotConfig> botConfigs) {
+        List<BotGround> botGrounds = new ArrayList<>();
+        if (botConfigs != null) {
+            botConfigs.stream().filter(botConfig -> botConfig.getGroundBoxModel3DEntityId() != null).forEach(botConfig -> {
+                BotGround botGround = new BotGround();
+                botGround.model3DId = botConfig.getGroundBoxModel3DEntityId();
+                botGround.height = botConfig.getGroundBoxHeight() != null ? botConfig.getGroundBoxHeight() : 0;
+                botGround.positions = botConfig.getGroundBoxPositions() != null ? botConfig.getGroundBoxPositions().stream().toArray(value -> new DecimalPosition[botConfig.getGroundBoxPositions().size()]) : null;
+                botGrounds.add(botGround);
+            });
+        }
+        return botGrounds;
     }
 
     private static BabylonDecal createBaseBabylonDecal(BotConfig botConfig, DecimalPosition start, double width, double height) {

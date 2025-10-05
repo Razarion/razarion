@@ -8,7 +8,7 @@ import {
   ServerGameEngineConfigEntity
 } from "../../generated/razarion-share";
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
-import {InputNumber} from 'primeng/inputnumber';
+import {InputNumberModule} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
 import {Checkbox} from 'primeng/checkbox';
 import {BaseItemTypeComponent} from '../common/base-item-type/base-item-type.component';
@@ -20,12 +20,13 @@ import {Divider} from 'primeng/divider';
 import {SelectModule} from 'primeng/select';
 import {MessageService} from 'primeng/api';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
+import {Model3dComponent} from '../common/model3d/model3d.component';
 
 @Component({
   selector: 'server-bot-editor',
   imports: [
     PlaceConfigComponent,
-    InputNumber,
+    InputNumberModule,
     FormsModule,
     Checkbox,
     BaseItemTypeComponent,
@@ -37,7 +38,8 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     Divider,
     SelectModule,
     AccordionModule,
-    ScrollPanelModule
+    ScrollPanelModule,
+    Model3dComponent
   ],
   templateUrl: './server-bot-editor.component.html'
 })
@@ -88,7 +90,10 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
       name: "",
       npc: false,
       realm: null,
-      groundBabylonMaterialId: null
+      groundBabylonMaterialId: null,
+      groundBoxHeight: null,
+      groundBoxModel3DEntityId: null,
+      groundBoxPositions: [],
     }
     this.serverGameEngineConfigEntity!.botConfigs.push(this.selectedBot)
   }

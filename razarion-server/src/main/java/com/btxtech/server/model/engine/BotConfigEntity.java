@@ -2,16 +2,21 @@ package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.BabylonMaterialEntity;
+import com.btxtech.server.model.ui.Model3DEntity;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
@@ -39,6 +44,14 @@ public class BotConfigEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BabylonMaterialEntity groundBabylonMaterialEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Model3DEntity groundBoxModel3DEntity;
+    private Double groundBoxHeight;
+    @ElementCollection
+    @CollectionTable(name = "BOT_CONFIG_GROUND_BOX_POSITIONS", joinColumns = @JoinColumn(name = "OWNER_ID"))
+    @OrderColumn(name = "orderColumn")
+    private List<DecimalPosition> groundBoxPositions;
 
     public BotConfig toBotConfig() {
         PlaceConfig realm = null;
@@ -50,6 +63,10 @@ public class BotConfigEntity extends BaseEntity {
             for (BotEnragementStateConfigEntity botEnragementStateConfigEnity : this.botEnragementStateConfigs) {
                 botEnragementStateConfigs.add(botEnragementStateConfigEnity.toBotEnragementStateConfig());
             }
+        }
+        List<DecimalPosition> lazyInitPositions = new ArrayList<>();
+        if (groundBoxPositions != null) {
+            lazyInitPositions.addAll(groundBoxPositions);
         }
         return new BotConfig()
                 .auxiliaryId(auxiliaryId)
@@ -65,7 +82,10 @@ public class BotConfigEntity extends BaseEntity {
                 .minActiveMs(minActiveMs)
                 .maxActiveMs(maxActiveMs)
                 .botEnragementStateConfigs(botEnragementStateConfigs)
-                .groundBabylonMaterialId(extractId(groundBabylonMaterialEntity, BabylonMaterialEntity::getId));
+                .groundBabylonMaterialId(extractId(groundBabylonMaterialEntity, BabylonMaterialEntity::getId))
+                .groundBoxModel3DEntityId(extractId(groundBoxModel3DEntity, Model3DEntity::getId))
+                .groundBoxHeight(groundBoxHeight)
+                .groundBoxPositions(lazyInitPositions);
     }
 
     public BotConfigEntity fromBotConfig(BotConfig botConfig) {
@@ -97,6 +117,13 @@ public class BotConfigEntity extends BaseEntity {
             }
         }
         groundBabylonMaterialEntity = botConfig.getGroundBabylonMaterialId() != null ? (BabylonMaterialEntity) new BabylonMaterialEntity().id(botConfig.getGroundBabylonMaterialId()) : null;
+        groundBoxModel3DEntity = botConfig.getGroundBoxModel3DEntityId() != null ? (Model3DEntity) new Model3DEntity().id(botConfig.getGroundBoxModel3DEntityId()) : null;
+        groundBoxHeight = botConfig.getGroundBoxHeight();
+        if (groundBoxPositions == null) {
+            groundBoxPositions = new ArrayList<>();
+        }
+        groundBoxPositions.clear();
+        groundBoxPositions.addAll(botConfig.getGroundBoxPositions());
         return this;
     }
 

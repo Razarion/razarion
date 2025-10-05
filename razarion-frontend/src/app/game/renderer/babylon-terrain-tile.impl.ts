@@ -1,6 +1,8 @@
 import {
   BabylonDecal,
   BabylonTerrainTile,
+  BotGround,
+  Diplomacy,
   TerrainObjectConfig,
   TerrainObjectModel,
   TerrainTile,
@@ -46,6 +48,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly WATER_LEVEL = 0;
   static readonly WALL_HEIGHT_DIFF = 0.5;
   static readonly HEIGHT_DEFAULT = 0.5;
+  static readonly BOT_BLOCK_LENGTH = 4;
   public readonly container: TransformNode;
   public readonly shadowCasterObjects: TransformNode[] = []
   private shadowCaster?: ((mesh: AbstractMesh) => void) | null = null;
@@ -126,6 +129,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
 
     this.cursorTypeHandler(actionService.setupSelectionInfo());
+
+    this.setupBotGrounds(terrainTile.getBotGrounds());
   }
 
   private setupTerrainTileObjects(terrainTileObjectLists: TerrainTileObjectList[]): void {
@@ -379,5 +384,19 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       node.getChildMeshes().forEach(mesh => shadowCaster(mesh))
     });
     this.shadowCaster = null;
+  }
+
+  private setupBotGrounds(botGrounds: BotGround[]) {
+    if (!botGrounds) {
+      return;
+    }
+    botGrounds.forEach((botGround: BotGround) => {
+      botGround.positions.forEach((position) => {
+        const botGroundTransformNode = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
+        botGroundTransformNode.position.x = position.getX();
+        botGroundTransformNode.position.y = botGround.height;
+        botGroundTransformNode.position.z = position.getY();
+      });
+    });
   }
 }

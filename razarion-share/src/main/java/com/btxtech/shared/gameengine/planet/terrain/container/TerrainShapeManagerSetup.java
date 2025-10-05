@@ -8,14 +8,17 @@ import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
+import com.btxtech.shared.gameengine.planet.terrain.BotGround;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBabylonDecal;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBotGround;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectPosition;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeVertex;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,12 +27,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNativeDecimalPositions;
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.BOT_BLOCK_LENGTH;
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.terrainPositionToTileIndex;
 
-/**
- * Created by Beat
- * on 22.06.2017.
- */
 public class TerrainShapeManagerSetup {
     private final Logger logger = Logger.getLogger(TerrainShapeManagerSetup.class.getName());
     private final TerrainShapeManager terrainShape;
@@ -144,7 +145,33 @@ public class TerrainShapeManagerSetup {
                 logger.log(Level.WARNING, "Can not handle BotDecals in tile index: " + tileIndex, t);
             }
         });
+    }
 
+    public void processBotGrounds(List<BotGround> botGrounds) {
+        MapList<Index, NativeBotGround> tileBotGrounds = new MapList<>();
+        botGrounds.forEach(botGround -> {
+            Set<Index> tileIndices = new HashSet<>();
 
+            Arrays.stream(botGround.positions).forEach(position -> {
+                tileIndices.add(terrainPositionToTileIndex(position));
+                tileIndices.add(terrainPositionToTileIndex(position.add(0, BOT_BLOCK_LENGTH)));
+                tileIndices.add(terrainPositionToTileIndex(position.add(BOT_BLOCK_LENGTH, 0)));
+                tileIndices.add(terrainPositionToTileIndex(position.add(BOT_BLOCK_LENGTH, BOT_BLOCK_LENGTH)));
+            });
+
+            NativeBotGround nativeBotGround = new NativeBotGround();
+            nativeBotGround.model3DId = botGround.model3DId;
+            nativeBotGround.height = botGround.height;
+            nativeBotGround.positions = toNativeDecimalPositions(botGround.positions);
+            tileIndices.forEach(tileIndex -> tileBotGrounds.put(tileIndex, nativeBotGround));
+        });
+
+        tileBotGrounds.getMap().forEach((tileIndex, nativeBotGround) -> {
+            try {
+                terrainShape.getOrCreateTerrainShapeTile(tileIndex).setNativeBotGrounds(nativeBotGround.toArray(new NativeBotGround[0]));
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "Can not handle BotGround in tile index: " + tileIndex, t);
+            }
+        });
     }
 }

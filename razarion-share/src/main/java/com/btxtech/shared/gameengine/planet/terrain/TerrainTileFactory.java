@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBabylonDecal;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBotGround;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 
 import javax.inject.Inject;
@@ -18,10 +19,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by Beat
- * 12.04.2017.
- */
+import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toDecimalPositions;
+
 @Singleton
 public class TerrainTileFactory {
     private final Logger logger = Logger.getLogger(TerrainTileFactory.class.getName());
@@ -38,6 +37,7 @@ public class TerrainTileFactory {
         terrainTileBuilder.init(terrainTileIndex);
         insertTerrainObjects(terrainTileBuilder, terrainShapeTile, terrainShapeManager);
         insertBabylonDecals(terrainTileBuilder, terrainShapeTile);
+        insertBotGrounds(terrainTileBuilder, terrainShapeTile);
         return terrainTileBuilder.generate(planetConfig);
     }
 
@@ -111,5 +111,26 @@ public class TerrainTileFactory {
             babylonDecals[i] = babylonDecal;
         }
         terrainTileBuilder.setBabylonDecals(babylonDecals);
+    }
+
+    private void insertBotGrounds(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
+        if (terrainShapeTile == null) {
+            return;
+        }
+        NativeBotGround[] nativeBotGrounds = terrainShapeTile.getNativeBotGrounds();
+        if (nativeBotGrounds == null || nativeBotGrounds.length == 0) {
+            return;
+        }
+
+        BotGround[] botGrounds = new BotGround[nativeBotGrounds.length];
+        for (int i = 0; i < nativeBotGrounds.length; i++) {
+            NativeBotGround nativeBotGround = nativeBotGrounds[i];
+            BotGround botGround = new BotGround();
+            botGround.model3DId = nativeBotGround.model3DId;
+            botGround.height = nativeBotGround.height;
+            botGround.positions = toDecimalPositions(nativeBotGround.positions);
+            botGrounds[i] = botGround;
+        }
+        terrainTileBuilder.setBotGrounds(botGrounds);
     }
 }

@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.system.Nullable;
@@ -22,6 +23,9 @@ public class BotConfig implements Config {
     private Integer maxActiveMs;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
     private Integer groundBabylonMaterialId;
+    private Integer groundBoxModel3DEntityId;
+    private Double groundBoxHeight;
+    private List<DecimalPosition> groundBoxPositions;
 
     public int getId() {
         return id;
@@ -135,6 +139,30 @@ public class BotConfig implements Config {
         this.groundBabylonMaterialId = groundBabylonMaterialId;
     }
 
+    public @Nullable Integer getGroundBoxModel3DEntityId() {
+        return groundBoxModel3DEntityId;
+    }
+
+    public void setGroundBoxModel3DEntityId(@Nullable Integer groundBoxModel3DEntityId) {
+        this.groundBoxModel3DEntityId = groundBoxModel3DEntityId;
+    }
+
+    public @Nullable Double getGroundBoxHeight() {
+        return groundBoxHeight;
+    }
+
+    public void setGroundBoxHeight(@Nullable Double groundBoxHeight) {
+        this.groundBoxHeight = groundBoxHeight;
+    }
+
+    public List<DecimalPosition> getGroundBoxPositions() {
+        return groundBoxPositions;
+    }
+
+    public void setGroundBoxPositions(List<DecimalPosition> groundBoxPositions) {
+        this.groundBoxPositions = groundBoxPositions;
+    }
+
     public BotConfig id(Integer id) {
         setId(id);
         return this;
@@ -202,6 +230,21 @@ public class BotConfig implements Config {
 
     public BotConfig groundBabylonMaterialId(Integer groundBabylonMaterialId) {
         setGroundBabylonMaterialId(groundBabylonMaterialId);
+        return this;
+    }
+
+    public BotConfig groundBoxModel3DEntityId(Integer groundBoxModel3DEntityId) {
+        setGroundBoxModel3DEntityId(groundBoxModel3DEntityId);
+        return this;
+    }
+
+    public BotConfig groundBoxHeight(Double groundBoxHeight) {
+        setGroundBoxHeight(groundBoxHeight);
+        return this;
+    }
+
+    public BotConfig groundBoxPositions(List<DecimalPosition> groundBoxPositions) {
+        setGroundBoxPositions(groundBoxPositions);
         return this;
     }
 

@@ -379,6 +379,12 @@
       "internalName": "(Bot) Noob Building",
       "gltfName": "Refinery",
       "gltfEntityId": 1
+    },
+    {
+      "id": 45,
+      "internalName": "Bot ground",
+      "gltfName": "Bot ground",
+      "gltfEntityId": 1
     }
   ],
   "particleSystemEntities": [],

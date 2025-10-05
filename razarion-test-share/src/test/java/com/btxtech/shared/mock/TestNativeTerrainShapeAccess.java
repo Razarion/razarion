@@ -21,10 +21,6 @@ import java.util.zip.GZIPInputStream;
 
 import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray;
 
-/**
- * Created by Beat
- * on 21.08.2017.
- */
 @Singleton
 public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     private final TerrainTypeService terrainTypeService;
@@ -45,6 +41,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
                 planetConfig,
                 terrainTypeService,
                 alarmService,
+                Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList()
         );

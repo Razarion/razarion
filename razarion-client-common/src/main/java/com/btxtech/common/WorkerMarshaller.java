@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
+import com.btxtech.shared.gameengine.planet.terrain.BotGround;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainObjectModel;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
@@ -441,6 +442,7 @@ public class WorkerMarshaller {
         array.push(marshallBabylonDecals(terrainTile.getBabylonDecals()));
         array.push(terrainTile.getGroundHeightMap());
         array.push(marshallTerrainTileObjectList(terrainTile.getTerrainTileObjectLists()));
+        array.push(marshallBotGrounds(terrainTile.getBotGrounds()));
         return array;
     }
 
@@ -455,6 +457,33 @@ public class WorkerMarshaller {
                 mapOfBabylonDecal.set("xSize", babylonDecal.xSize);
                 mapOfBabylonDecal.set("ySize", babylonDecal.ySize);
                 result.push(mapOfBabylonDecal);
+            }
+        }
+        return result;
+    }
+
+    private static Object marshallBotGrounds(BotGround[] botGrounds) {
+        JsArray<JsPropertyMap<Object>> result = new JsArray<>();
+        if (botGrounds != null) {
+            for (BotGround botGround : botGrounds) {
+                JsPropertyMap<Object> mapOfBotGround = JsPropertyMap.of();
+                mapOfBotGround.set("model3DId", botGround.model3DId);
+                mapOfBotGround.set("height", botGround.height);
+                mapOfBotGround.set("positions", marshallDecimalPositions(botGround.positions));
+                result.push(mapOfBotGround);
+            }
+        }
+        return result;
+    }
+
+    private static Object marshallDecimalPositions(DecimalPosition[] decimalPositions) {
+        JsArray<JsPropertyMap<Object>> result = new JsArray<>();
+        if (decimalPositions != null) {
+            for (DecimalPosition decimalPosition : decimalPositions) {
+                JsPropertyMap<Object> mapOfBotGround = JsPropertyMap.of();
+                mapOfBotGround.set("x", decimalPosition.getX());
+                mapOfBotGround.set("y", decimalPosition.getY());
+                result.push(mapOfBotGround);
             }
         }
         return result;
@@ -496,6 +525,7 @@ public class WorkerMarshaller {
         terrainTile.setBabylonDecals(demarshallBabylonDecals(array[2]));
         terrainTile.setGroundHeightMap(Js.uncheckedCast(array[3].asArrayLike()));
         terrainTile.setTerrainTileObjectLists(demarshallTerrainTileObjectLists(array[4]));
+        terrainTile.setBotGrounds(demarshallBotGrounds(array[5]));
         return terrainTile;
     }
 
@@ -513,6 +543,23 @@ public class WorkerMarshaller {
             babylonDecal.ySize = ((Any) Js.uncheckedCast(anyBabylonDecal.get("ySize"))).asDouble();
             return babylonDecal;
         }).toArray(BabylonDecal[]::new);
+    }
+
+    private static BotGround[] demarshallBotGrounds(Any any) {
+        if (any == null) {
+            return null;
+        }
+        JsPropertyMap<Object>[] array = Js.cast(any);
+        if (array.length == 0) {
+            return null;
+        }
+        return Arrays.stream(array).map(anyBabylonDecal -> {
+            BotGround botGround = new BotGround();
+            botGround.model3DId = ((Any) Js.uncheckedCast(anyBabylonDecal.get("model3DId"))).asInt();
+            botGround.height = ((Any) Js.uncheckedCast(anyBabylonDecal.get("height"))).asDouble();
+            botGround.positions = demarshallDecimalPositions(Js.uncheckedCast(anyBabylonDecal.get("positions")));
+            return botGround;
+        }).toArray(BotGround[]::new);
     }
 
     private static TerrainTileObjectList[] demarshallTerrainTileObjectLists(Any any) {
@@ -543,6 +590,17 @@ public class WorkerMarshaller {
         }).toArray(TerrainObjectModel[]::new);
     }
 
+    private static DecimalPosition[] demarshallDecimalPositions(Any any) {
+        JsPropertyMap<Object>[] array = Js.cast(any);
+        if (array.length == 0) {
+            return null;
+        }
+        return Arrays.stream(array).map(anyDecimalPosition ->
+                new DecimalPosition(
+                        ((Any) Js.uncheckedCast(anyDecimalPosition.get("x"))).asDouble(),
+                        ((Any) Js.uncheckedCast(anyDecimalPosition.get("y"))).asDouble())
+        ).toArray(DecimalPosition[]::new);
+    }
 
     private static JsArrayNumber vertexToArray(Vertex vertex) {
         if (vertex == null) {

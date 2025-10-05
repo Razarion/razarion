@@ -73,7 +73,8 @@ public class ServerTerrainShapeService {
                 terrainTypeService,
                 alarmService,
                 planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()),
-                BotService.generateBotDecals(botConfigs));
+                BotService.generateBotDecals(botConfigs),
+                BotService.generateBotGrounds(botConfigs));
         terrainShapes.put(planetConfig.getId(), terrainShapeManager.toNativeTerrainShape());
     }
 

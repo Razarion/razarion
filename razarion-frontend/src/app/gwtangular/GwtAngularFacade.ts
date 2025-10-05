@@ -153,9 +153,9 @@ export interface SelectionService {
 
   hasHarvesters(): boolean;
 
-  canContain(itemId:number): boolean;
+  canContain(itemId: number): boolean;
 
-  canBeFinalizeBuild(itemId:number): boolean;
+  canBeFinalizeBuild(itemId: number): boolean;
 
   selectRectangle(xStart: number, yStart: number, width: number, height: number): void;
 
@@ -379,6 +379,8 @@ export interface TerrainTile {
 
   getBabylonDecals(): BabylonDecal[];
 
+  getBotGrounds(): BotGround[];
+
   getIndex(): Index;
 }
 
@@ -388,6 +390,12 @@ export interface BabylonDecal {
   yPos: number;
   xSize: number;
   ySize: number;
+}
+
+export interface BotGround {
+  model3DId: number;
+  height: number;
+  positions: DecimalPosition[];
 }
 
 export enum Diplomacy {

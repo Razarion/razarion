@@ -45,6 +45,13 @@
         </div>
       </div>
       <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-3">Action delay [ms]</span>
+        <div class="col-span-9">
+          <p-inputNumber [ngModel]="selectedBot&&selectedBot.actionDelay"
+                         (ngModelChange)="selectedBot && (selectedBot.actionDelay = $event)"></p-inputNumber>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
         <span class="col-span-3">Realm</span>
         <div class="col-span-9">
           <place-config *ngIf="selectedBot" [(placeConfig)]="selectedBot!.realm"></place-config>
@@ -63,11 +70,23 @@
                             [(babylonMaterialId)]="selectedBot!.groundBabylonMaterialId"></babylon-material>
         </div>
       </div>
+      <p-divider align="left">
+        <div class="inline-flex items-center">
+          <i class="pi pi-clock mr-2"></i>
+          <b>Ground box</b>
+        </div>
+      </p-divider>
       <div class="grid grid-cols-12 gap-4">
-        <span class="col-span-3">Action delay [ms]</span>
+        <span class="col-span-3">Box model3D</span>
         <div class="col-span-9">
-          <p-inputNumber [ngModel]="selectedBot&&selectedBot.actionDelay"
-                         (ngModelChange)="selectedBot && (selectedBot.actionDelay = $event)"></p-inputNumber>
+          <model3d *ngIf="selectedBot"
+                   [(model3DId)]="selectedBot!.groundBoxModel3DEntityId"></model3d>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-3">Height</span>
+        <div class="col-span-9">
+          <p-inputNumber [(ngModel)]="selectedBot.groundBoxHeight" [maxFractionDigits]="3"></p-inputNumber>
         </div>
       </div>
 

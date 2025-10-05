@@ -8,17 +8,13 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Beat
- * 03.04.2017.
- */
-
 public class TerrainTileBuilder {
 
     private final List<TerrainTileObjectList> terrainTileObjectLists = new ArrayList<>();
     private final NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private TerrainTile terrainTile;
     private BabylonDecal[] babylonDecals;
+    private BotGround[] botGrounds;
 
     @Inject
     public TerrainTileBuilder(NativeTerrainShapeAccess nativeTerrainShapeAccess) {
@@ -37,6 +33,7 @@ public class TerrainTileBuilder {
         }
         terrainTile.setGroundConfigId(planetConfig.getGroundConfigId());
         terrainTile.setBabylonDecals(babylonDecals);
+        terrainTile.setBotGrounds(botGrounds);
         return terrainTile;
     }
 
@@ -46,5 +43,9 @@ public class TerrainTileBuilder {
 
     public void setBabylonDecals(BabylonDecal[] babylonDecals) {
         this.babylonDecals = babylonDecals;
+    }
+
+    public void setBotGrounds(BotGround[] botGrounds) {
+        this.botGrounds = botGrounds;
     }
 }

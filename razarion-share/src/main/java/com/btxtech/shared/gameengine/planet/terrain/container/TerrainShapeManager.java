@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
+import com.btxtech.shared.gameengine.planet.terrain.BotGround;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
@@ -20,17 +21,12 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by Beat
- * on 17.06.2017.
- */
 public class TerrainShapeManager {
     private final static Logger logger = Logger.getLogger(TerrainShapeManager.class.getName());
     private final NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private final TerrainTypeService terrainTypeService;
     private TerrainShapeTile[][] terrainShapeTiles;
     private TerrainAnalyzer terrainAnalyzer;
-    private DecimalPosition planetSize;
     private int tileXCount;
     private int tileYCount;
 
@@ -43,7 +39,8 @@ public class TerrainShapeManager {
                                TerrainTypeService terrainTypeService,
                                AlarmService alarmService,
                                List<TerrainObjectPosition> terrainObjectPositions,
-                               List<BabylonDecal> babylonDecals) {
+                               List<BabylonDecal> babylonDecals,
+                               List<BotGround> botGrounds) {
         this.terrainTypeService = terrainTypeService;
         long time = System.currentTimeMillis();
         this.nativeTerrainShapeAccess = null;
@@ -55,6 +52,7 @@ public class TerrainShapeManager {
         TerrainShapeManagerSetup terrainShapeSetup = new TerrainShapeManagerSetup(this, terrainTypeService, alarmService);
         terrainShapeSetup.processTerrainObject(terrainObjectPositions);
         terrainShapeSetup.processBotDecals(babylonDecals);
+        terrainShapeSetup.processBotGrounds(botGrounds);
         logger.info("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getId());
     }
 
@@ -75,6 +73,7 @@ public class TerrainShapeManager {
                             terrainShapeTiles[x][y] = terrainShapeTile;
                             terrainShapeTile.setNativeTerrainShapeObjectLists(nativeTerrainShapeTile.nativeTerrainShapeObjectLists);
                             terrainShapeTile.setNativeBabylonDecals(nativeTerrainShapeTile.nativeBabylonDecals);
+                            terrainShapeTile.setNativeBotGrounds(nativeTerrainShapeTile.nativeBotGrounds);
                         }
                     }
                 }
