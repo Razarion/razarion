@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {EditorPanel} from "../editor-model";
 import {EditorService} from "../editor-service";
 import {
@@ -21,6 +21,8 @@ import {SelectModule} from 'primeng/select';
 import {MessageService} from 'primeng/api';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
 import {Model3dComponent} from '../common/model3d/model3d.component';
+import {BotGroundEditorService} from './bot-ground-editor.service';
+import {ToggleButtonModule} from 'primeng/togglebutton';
 
 @Component({
   selector: 'server-bot-editor',
@@ -39,20 +41,30 @@ import {Model3dComponent} from '../common/model3d/model3d.component';
     SelectModule,
     AccordionModule,
     ScrollPanelModule,
-    Model3dComponent
+    Model3dComponent,
+    ToggleButtonModule
   ],
   templateUrl: './server-bot-editor.component.html'
 })
-export class ServerBotEditorComponent extends EditorPanel implements OnInit {
+export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnDestroy {
   serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
   selectedBot?: BotConfig;
+  showGroundEditor = false;
 
-  constructor(public editorService: EditorService, private messageService: MessageService) {
+  constructor(public editorService: EditorService,
+              private messageService: MessageService,
+              private botGroundEditorService: BotGroundEditorService) {
     super();
   }
 
   ngOnInit(): void {
     this.load();
+  }
+
+  ngOnDestroy(): void {
+    if (this.showGroundEditor) {
+      this.botGroundEditorService.deactivate(this.selectedBot!);
+    }
   }
 
   private load(): void {
@@ -143,5 +155,17 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit {
 
   onDeleteBotItem(botItem: BotItemConfig, botEnragementStateConfig: BotEnragementStateConfig) {
     botEnragementStateConfig.botItems.splice(botEnragementStateConfig.botItems.findIndex(b => b === botItem), 1);
+  }
+
+  onOpenGroundEditor() {
+    if (this.showGroundEditor) {
+      this.botGroundEditorService.activate(this.selectedBot!);
+    } else {
+      this.botGroundEditorService.deactivate(this.selectedBot!);
+    }
+  }
+
+  onHeightInput(height: number | string | null) {
+    this.botGroundEditorService.setHeight(height === null ? 0 : <number>height);
   }
 }

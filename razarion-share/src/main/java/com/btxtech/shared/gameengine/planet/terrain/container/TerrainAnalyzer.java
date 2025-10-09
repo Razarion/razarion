@@ -4,7 +4,9 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
@@ -13,17 +15,17 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
 
-/**
- * Created by Beat
- * on 19.06.2017.
- */
 public class TerrainAnalyzer {
-    private final Logger log = Logger.getLogger(TerrainAnalyzer.class.getName());
+    // private final Logger log = Logger.getLogger(TerrainAnalyzer.class.getName());
     private final HeightMapAccess heightMapAccess;
     private final TerrainShapeManager terrainShapeManager;
     private final Map<Index, TerrainType> terrainTypeCache = new HashMap<>();
@@ -102,11 +104,29 @@ public class TerrainAnalyzer {
     }
 
     public double getHeightNodeAt(Index terrainNodeIndex) {
+        if (terrainShapeManager != null) {
+            TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(TerrainUtil.nodeIndexToTileIndex(terrainNodeIndex));
+            if (terrainShapeTile != null && terrainShapeTile.getNativeBotGrounds() != null) {
+                DecimalPosition position = TerrainUtil.nodeIndexToTerrainPosition(terrainNodeIndex);
+                Double height = Arrays.stream(terrainShapeTile.getNativeBotGrounds())
+                        .filter(nativeBotGround ->
+                                Arrays.stream(nativeBotGround.positions)
+                                        .anyMatch(boxPosition -> Rectangle2D.generateRectangleFromMiddlePoint(NativeUtil.toDecimalPosition(boxPosition), BOT_BOX_LENGTH, BOT_BOX_LENGTH).contains(position))
+                        )
+                        .map(nativeBotGround -> nativeBotGround.height)
+                        .findFirst()
+                        .orElse(null);
+                if (height != null) {
+                    return height;
+                }
+            }
+        }
+
         int uint16 = getUInt16GroundHeightAt(terrainNodeIndex);
         return uint16ToHeight(uint16);
     }
 
-    public int getUInt16GroundHeightAt(Index terrainNodeIndex) {
+    private int getUInt16GroundHeightAt(Index terrainNodeIndex) {
         Index terrainTileIndex = nodeIndexToTileIndex(terrainNodeIndex);
 
         int startTileNodeIndex = 0;

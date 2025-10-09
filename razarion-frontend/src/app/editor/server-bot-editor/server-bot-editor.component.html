@@ -86,7 +86,16 @@
       <div class="grid grid-cols-12 gap-4">
         <span class="col-span-3">Height</span>
         <div class="col-span-9">
-          <p-inputNumber [(ngModel)]="selectedBot.groundBoxHeight" [maxFractionDigits]="3"></p-inputNumber>
+          <p-inputNumber
+            [(ngModel)]="selectedBot.groundBoxHeight"
+            [maxFractionDigits]="3"
+            (onInput)="onHeightInput($event.value)"></p-inputNumber>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <span class="col-span-3">Editor</span>
+        <div class="col-span-9">
+          <p-togglebutton [(ngModel)]="showGroundEditor" (onChange)="onOpenGroundEditor()" onLabel="On" offLabel="Off" class="w-24" />
         </div>
       </div>
 

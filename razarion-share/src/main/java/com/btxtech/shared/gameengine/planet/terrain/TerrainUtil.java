@@ -18,7 +18,7 @@ public interface TerrainUtil {
     double HEIGHT_MIN = -200;
     double WATER_LEVEL = 0;
     double WALL_HEIGHT_DIFF = 0.5;
-    double BOT_BLOCK_LENGTH = 4;
+    double BOT_BOX_LENGTH = 4;
     double HEIGHT_DEFAULT = 0.5;
 
     static Index terrainPositionToTileIndex(DecimalPosition terrainPosition) {

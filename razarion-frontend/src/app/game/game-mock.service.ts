@@ -57,6 +57,13 @@ import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
 import {toRadians} from 'chart.js/helpers';
+import {
+  BabylonMaterialEditorComponent
+} from '../editor/crud-editors/babylon-material-editor/babylon-material-editor.component';
+import {
+  GeneratedCrudContainerComponent
+} from '../editor/crud-editors/crud-container/generated-crud-container.component';
+import {ServerBotEditorComponent} from '../editor/server-bot-editor/server-bot-editor.component';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -100,10 +107,10 @@ export class GameMockService {
         this.gwtAngularService.gwtAngularFacade.mainCockpit.showRadar(RadarState.WORKING)
         this.babylonRenderServiceAccessImpl.runRenderer();
         setTimeout(() => {
-          // Some very strange babylon behavior, _projectionMatrix is zero matrix
-          this.babylonRenderServiceAccessImpl.setViewFieldCenter(8, 8);
+          // Some very strange babylon behavior, _projectionMatrix is zero matrixd
+          this.babylonRenderServiceAccessImpl.setViewFieldCenter(74, 40);
           this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
-          // this.gameComponent.addEditorModel(new EditorModel("Terrain Editor", TerrainEditorComponent));
+          this.gameComponent.addEditorModel(new EditorModel("Bot Editor", ServerBotEditorComponent));
           // this.gameComponent.addEditorModel(new EditorModel("BabylonMaterial", GeneratedCrudContainerComponent, BabylonMaterialEditorComponent));
         }, 100);
         // this.loadingCover!.hide();
@@ -1049,7 +1056,7 @@ export class GameMockService {
                 }
                 const botGround = {
                   model3DId: 45,
-                  height: -0.5,
+                  height: 0.6,
                   positions: positions
                 }
 

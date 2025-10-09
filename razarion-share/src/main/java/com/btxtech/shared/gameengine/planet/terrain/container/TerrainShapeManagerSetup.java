@@ -28,7 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNativeDecimalPositions;
-import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.BOT_BLOCK_LENGTH;
+import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.BOT_BOX_LENGTH;
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.terrainPositionToTileIndex;
 
 public class TerrainShapeManagerSetup {
@@ -154,9 +154,9 @@ public class TerrainShapeManagerSetup {
 
             Arrays.stream(botGround.positions).forEach(position -> {
                 tileIndices.add(terrainPositionToTileIndex(position));
-                tileIndices.add(terrainPositionToTileIndex(position.add(0, BOT_BLOCK_LENGTH)));
-                tileIndices.add(terrainPositionToTileIndex(position.add(BOT_BLOCK_LENGTH, 0)));
-                tileIndices.add(terrainPositionToTileIndex(position.add(BOT_BLOCK_LENGTH, BOT_BLOCK_LENGTH)));
+                tileIndices.add(terrainPositionToTileIndex(position.add(0, BOT_BOX_LENGTH)));
+                tileIndices.add(terrainPositionToTileIndex(position.add(BOT_BOX_LENGTH, 0)));
+                tileIndices.add(terrainPositionToTileIndex(position.add(BOT_BOX_LENGTH, BOT_BOX_LENGTH)));
             });
 
             NativeBotGround nativeBotGround = new NativeBotGround();
