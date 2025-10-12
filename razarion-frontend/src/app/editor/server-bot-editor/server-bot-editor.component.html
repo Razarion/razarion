@@ -95,7 +95,28 @@
       <div class="grid grid-cols-12 gap-4">
         <span class="col-span-3">Editor</span>
         <div class="col-span-9">
-          <p-togglebutton [(ngModel)]="showGroundEditor" (onChange)="onOpenGroundEditor()" onLabel="On" offLabel="Off" class="w-24" />
+          <div class="flex flex-row gap-1">
+            <p-togglebutton onIcon="pi pi-pen-to-square"
+                            offIcon="pi pi-pen-to-square"
+                            size="small"
+                            onLabel="On"
+                            offLabel="Off"
+                            [(ngModel)]="showGroundEditor"
+                            (onChange)="onOpenGroundEditor()"></p-togglebutton>
+            <p-togglebutton onIcon="pi pi-sort-up-fill"
+                            offIcon="pi pi-sort-up-fill"
+                            onLabel="Slope"
+                            offLabel="Slope"
+                            size="small"
+                            [(ngModel)]="slopeModeGroundEditor"
+                            (onChange)="onSlopeModeGroundEditor()"
+                            [disabled]="!showGroundEditor"></p-togglebutton>
+            <p-button type="button"
+                      icon="pi pi-sync"
+                      styleClass="p-button-sm"
+                      [disabled]="!showGroundEditor"
+                      (onClick)="onRotationSlopeGroundEditor()"></p-button>
+          </div>
         </div>
       </div>
 

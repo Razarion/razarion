@@ -12,7 +12,7 @@ import {InputNumberModule} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
 import {Checkbox} from 'primeng/checkbox';
 import {BaseItemTypeComponent} from '../common/base-item-type/base-item-type.component';
-import {Button} from 'primeng/button';
+import {ButtonModule} from 'primeng/button';
 import {Accordion, AccordionModule,} from 'primeng/accordion';
 import {CommonModule, NgForOf} from '@angular/common';
 import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
@@ -32,7 +32,7 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
     FormsModule,
     Checkbox,
     BaseItemTypeComponent,
-    Button,
+    ButtonModule,
     Accordion,
     NgForOf,
     CommonModule,
@@ -50,6 +50,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
   serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
   selectedBot?: BotConfig;
   showGroundEditor = false;
+  slopeModeGroundEditor = false;
 
   constructor(public editorService: EditorService,
               private messageService: MessageService,
@@ -166,6 +167,14 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
   }
 
   onHeightInput(height: number | string | null) {
-    this.botGroundEditorService.setHeight(height === null ? 0 : <number>height);
+    this.botGroundEditorService.setHeight(this.selectedBot!, height === null ? 0 : <number>height);
+  }
+
+  onSlopeModeGroundEditor() {
+    this.botGroundEditorService.setSlopeMode(this.selectedBot!, this.slopeModeGroundEditor);
+  }
+
+  onRotationSlopeGroundEditor() {
+    this.botGroundEditorService.rotationSlope(this.selectedBot!);
   }
 }
