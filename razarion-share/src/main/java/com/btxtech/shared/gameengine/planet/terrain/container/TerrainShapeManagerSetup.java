@@ -9,9 +9,11 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.BotGround;
+import com.btxtech.shared.gameengine.planet.terrain.BotGroundSlopeBox;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBotGround;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBotGroundSlopeBox;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectPosition;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeVertex;
@@ -27,6 +29,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNativeBotGroundSlopeBoxes;
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNativeDecimalPositions;
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.BOT_BOX_LENGTH;
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.terrainPositionToTileIndex;
@@ -163,6 +166,7 @@ public class TerrainShapeManagerSetup {
             nativeBotGround.model3DId = botGround.model3DId;
             nativeBotGround.height = botGround.height;
             nativeBotGround.positions = toNativeDecimalPositions(botGround.positions);
+            nativeBotGround.botGroundSlopeBoxes = toNativeBotGroundSlopeBoxes(botGround.botGroundSlopeBoxes);
             tileIndices.forEach(tileIndex -> tileBotGrounds.put(tileIndex, nativeBotGround));
         });
 

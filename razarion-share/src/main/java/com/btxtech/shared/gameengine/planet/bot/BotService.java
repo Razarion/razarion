@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.BotGround;
+import com.btxtech.shared.gameengine.planet.terrain.BotGroundSlopeBox;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -69,6 +70,7 @@ public class BotService {
                 botGround.model3DId = botConfig.getGroundBoxModel3DEntityId();
                 botGround.height = botConfig.getGroundBoxHeight() != null ? botConfig.getGroundBoxHeight() : 0;
                 botGround.positions = botConfig.getGroundBoxPositions() != null ? botConfig.getGroundBoxPositions().stream().toArray(value -> new DecimalPosition[botConfig.getGroundBoxPositions().size()]) : null;
+                botGround.botGroundSlopeBoxes = botConfig.getBotGroundSlopeBoxes() != null ? botConfig.getBotGroundSlopeBoxes().stream().toArray(value -> new BotGroundSlopeBox[botConfig.getBotGroundSlopeBoxes().size()]) : null;
                 botGrounds.add(botGround);
             });
         }

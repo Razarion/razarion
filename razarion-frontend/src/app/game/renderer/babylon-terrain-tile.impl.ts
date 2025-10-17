@@ -55,6 +55,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private shadowCaster?: ((mesh: AbstractMesh) => void) | null = null;
   private readonly cursorTypeHandler: (selectionInfo: SelectionInfo) => void;
   private readonly groundMesh: Mesh;
+  private readonly actionManager: ActionManager;
 
   constructor(public readonly terrainTile: TerrainTile,
               private gwtAngularService: GwtAngularService,
@@ -64,8 +65,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
               private threeJsWaterRenderService: BabylonWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
 
-    let actionManager = new ActionManager(rendererService.getScene());
-    actionManager.registerAction(
+    this.actionManager = new ActionManager(rendererService.getScene());
+    this.actionManager.registerAction(
       new ExecuteCodeAction(
         ActionManager.OnPickTrigger,
         () => {
@@ -78,9 +79,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     );
     this.cursorTypeHandler = (selectionInfo: SelectionInfo) => {
       if (selectionInfo.hasOwnMovable) {
-        actionManager.hoverCursor = "url(\"cursors/go.png\") 15 15, auto"
+        this.actionManager.hoverCursor = "url(\"cursors/go.png\") 15 15, auto"
       } else {
-        actionManager.hoverCursor = "default"
+        this.actionManager.hoverCursor = "default"
       }
     }
     actionService.addCursorHandler(this.cursorTypeHandler);
@@ -100,7 +101,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.container.getChildren().push(this.groundMesh);
     this.groundMesh.receiveShadows = true;
     this.groundMesh.parent = this.container;
-    this.groundMesh.actionManager = actionManager;
+    this.groundMesh.actionManager = this.actionManager;
 
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
     let groundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
@@ -397,7 +398,31 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         botGroundTransformNode.position.x = position.getX();
         botGroundTransformNode.position.y = botGround.height;
         botGroundTransformNode.position.z = position.getY();
+        botGroundTransformNode.getChildMeshes().forEach(childMesh => {
+          childMesh.actionManager = this.actionManager;
+        });
+        if (botGroundTransformNode.hasOwnProperty('actionManager')) {
+          (<AbstractMesh>this.container).actionManager = this.actionManager;
+        }
       });
+      if (botGround.botGroundSlopeBoxes) {
+        botGround.botGroundSlopeBoxes.forEach(botGroundSlopeBox => {
+          const botGroundTransformNode = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
+          botGroundTransformNode.name = "Slope " + botGroundTransformNode.name;
+          botGroundTransformNode.position.x = botGroundSlopeBox.xPos;
+          botGroundTransformNode.position.y = botGroundSlopeBox.height;
+          botGroundTransformNode.position.z = botGroundSlopeBox.yPos;
+          botGroundTransformNode.rotationQuaternion = null;
+          botGroundTransformNode.rotation.y = botGroundSlopeBox.yRot;
+          botGroundTransformNode.rotation.z = botGroundSlopeBox.zRot;
+          botGroundTransformNode.getChildMeshes().forEach(childMesh => {
+            childMesh.actionManager = this.actionManager;
+          });
+          if (botGroundTransformNode.hasOwnProperty('actionManager')) {
+            (<AbstractMesh>this.container).actionManager = this.actionManager;
+          }
+        })
+      }
     });
   }
 }

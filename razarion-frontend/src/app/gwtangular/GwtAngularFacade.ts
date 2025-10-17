@@ -396,6 +396,15 @@ export interface BotGround {
   model3DId: number;
   height: number;
   positions: DecimalPosition[];
+  botGroundSlopeBoxes: BotGroundSlopeBox[];
+}
+
+export interface BotGroundSlopeBox {
+  xPos: number;
+  yPos: number;
+  height: number;
+  yRot: number;
+  zRot: number;
 }
 
 export enum Diplomacy {

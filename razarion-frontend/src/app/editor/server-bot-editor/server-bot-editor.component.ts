@@ -107,6 +107,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
       groundBoxHeight: null,
       groundBoxModel3DEntityId: null,
       groundBoxPositions: [],
+      botGroundSlopeBoxes: [],
     }
     this.serverGameEngineConfigEntity!.botConfigs.push(this.selectedBot)
   }

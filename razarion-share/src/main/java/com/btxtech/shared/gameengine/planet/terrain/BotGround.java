@@ -8,5 +8,5 @@ public class BotGround {
     public int model3DId;
     public double height;
     public DecimalPosition[] positions;
-
+    public BotGroundSlopeBox[] botGroundSlopeBoxes;
 }

@@ -9,6 +9,8 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBotGround;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBotGroundSlopeBox;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectPosition;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -108,6 +110,18 @@ public class TerrainAnalyzer {
             TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(TerrainUtil.nodeIndexToTileIndex(terrainNodeIndex));
             if (terrainShapeTile != null && terrainShapeTile.getNativeBotGrounds() != null) {
                 DecimalPosition position = TerrainUtil.nodeIndexToTerrainPosition(terrainNodeIndex);
+                for (NativeBotGround nativeBotGround : terrainShapeTile.getNativeBotGrounds()) {
+                    if (nativeBotGround.botGroundSlopeBoxes != null) {
+                        for (NativeBotGroundSlopeBox botGroundSlopeBox : nativeBotGround.botGroundSlopeBoxes) {
+                            DecimalPosition boxMiddle = new DecimalPosition(botGroundSlopeBox.xPos, botGroundSlopeBox.yPos);
+                            if (Rectangle2D.generateRectangleFromMiddlePoint(boxMiddle, BOT_BOX_LENGTH, BOT_BOX_LENGTH).contains(position)) {
+                                // double heightDelta = Math.tan(botGroundSlopeBox.zRot) * boxMiddle.getDistance(position);
+                                return botGroundSlopeBox.height/* + heightDelta */;
+                            }
+                        }
+                    }
+                }
+
                 Double height = Arrays.stream(terrainShapeTile.getNativeBotGrounds())
                         .filter(nativeBotGround ->
                                 Arrays.stream(nativeBotGround.positions)

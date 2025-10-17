@@ -57,12 +57,6 @@ import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
 import {toRadians} from 'chart.js/helpers';
-import {
-  BabylonMaterialEditorComponent
-} from '../editor/crud-editors/babylon-material-editor/babylon-material-editor.component';
-import {
-  GeneratedCrudContainerComponent
-} from '../editor/crud-editors/crud-container/generated-crud-container.component';
 import {ServerBotEditorComponent} from '../editor/server-bot-editor/server-bot-editor.component';
 
 let staticGameConfigJson: any = {
@@ -1057,7 +1051,8 @@ export class GameMockService {
                 const botGround = {
                   model3DId: 45,
                   height: 0.6,
-                  positions: positions
+                  positions: positions,
+                  botGroundSlopeBoxes: []
                 }
 
                 return [botGround];

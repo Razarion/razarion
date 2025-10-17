@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
+import com.btxtech.shared.gameengine.planet.terrain.BotGroundSlopeBox;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
@@ -52,6 +53,9 @@ public class BotConfigEntity extends BaseEntity {
     @CollectionTable(name = "BOT_CONFIG_GROUND_BOX_POSITIONS", joinColumns = @JoinColumn(name = "OWNER_ID"))
     @OrderColumn(name = "orderColumn")
     private List<DecimalPosition> groundBoxPositions;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "botConfig", nullable = false)
+    private List<BotGroundSlopeBoxEntity> botGroundSlopeBoxEntities;
 
     public BotConfig toBotConfig() {
         PlaceConfig realm = null;
@@ -67,6 +71,10 @@ public class BotConfigEntity extends BaseEntity {
         List<DecimalPosition> lazyInitPositions = new ArrayList<>();
         if (groundBoxPositions != null) {
             lazyInitPositions.addAll(groundBoxPositions);
+        }
+        List<BotGroundSlopeBox> botGroundSlopeBoxes = new ArrayList<>();
+        if (botGroundSlopeBoxEntities != null) {
+            botGroundSlopeBoxes.addAll(botGroundSlopeBoxEntities.stream().map(BotGroundSlopeBoxEntity::toBotGroundSlopeBox).toList());
         }
         return new BotConfig()
                 .auxiliaryId(auxiliaryId)
@@ -85,7 +93,8 @@ public class BotConfigEntity extends BaseEntity {
                 .groundBabylonMaterialId(extractId(groundBabylonMaterialEntity, BabylonMaterialEntity::getId))
                 .groundBoxModel3DEntityId(extractId(groundBoxModel3DEntity, Model3DEntity::getId))
                 .groundBoxHeight(groundBoxHeight)
-                .groundBoxPositions(lazyInitPositions);
+                .groundBoxPositions(lazyInitPositions)
+                .botGroundSlopeBoxes(botGroundSlopeBoxes);
     }
 
     public BotConfigEntity fromBotConfig(BotConfig botConfig) {
@@ -124,6 +133,16 @@ public class BotConfigEntity extends BaseEntity {
         }
         groundBoxPositions.clear();
         groundBoxPositions.addAll(botConfig.getGroundBoxPositions());
+        if (botGroundSlopeBoxEntities == null) {
+            botGroundSlopeBoxEntities = new ArrayList<>();
+        }
+        botGroundSlopeBoxEntities.clear();
+        if (botConfig.getBotGroundSlopeBoxes() != null) {
+            botGroundSlopeBoxEntities.addAll(botConfig.getBotGroundSlopeBoxes()
+                    .stream()
+                    .map(botGroundSlopeBox -> new BotGroundSlopeBoxEntity().fromBotGroundSlopeBox(botGroundSlopeBox))
+                    .toList());
+        }
         return this;
     }
 

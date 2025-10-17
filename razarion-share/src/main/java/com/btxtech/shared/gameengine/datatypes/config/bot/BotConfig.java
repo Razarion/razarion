@@ -4,6 +4,7 @@ package com.btxtech.shared.gameengine.datatypes.config.bot;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.gameengine.planet.terrain.BotGroundSlopeBox;
 import com.btxtech.shared.system.Nullable;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class BotConfig implements Config {
     private Integer groundBoxModel3DEntityId;
     private Double groundBoxHeight;
     private List<DecimalPosition> groundBoxPositions;
+    private List<BotGroundSlopeBox> botGroundSlopeBoxes;
 
     public int getId() {
         return id;
@@ -163,6 +165,14 @@ public class BotConfig implements Config {
         this.groundBoxPositions = groundBoxPositions;
     }
 
+    public List<BotGroundSlopeBox> getBotGroundSlopeBoxes() {
+        return botGroundSlopeBoxes;
+    }
+
+    public void setBotGroundSlopeBoxes(List<BotGroundSlopeBox> botGroundSlopeBoxes) {
+        this.botGroundSlopeBoxes = botGroundSlopeBoxes;
+    }
+
     public BotConfig id(Integer id) {
         setId(id);
         return this;
@@ -245,6 +255,11 @@ public class BotConfig implements Config {
 
     public BotConfig groundBoxPositions(List<DecimalPosition> groundBoxPositions) {
         setGroundBoxPositions(groundBoxPositions);
+        return this;
+    }
+
+    public BotConfig botGroundSlopeBoxes(List<BotGroundSlopeBox> botGroundSlopeBoxes) {
+        setBotGroundSlopeBoxes(botGroundSlopeBoxes);
         return this;
     }
 

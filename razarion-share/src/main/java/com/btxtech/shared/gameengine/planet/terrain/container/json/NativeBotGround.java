@@ -8,4 +8,5 @@ public class NativeBotGround {
     public int model3DId;
     public double height;
     public NativeDecimalPosition[] positions;
+    public NativeBotGroundSlopeBox[] botGroundSlopeBoxes;
 }

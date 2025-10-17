@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.BotGround;
+import com.btxtech.shared.gameengine.planet.terrain.BotGroundSlopeBox;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainObjectModel;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
@@ -470,6 +471,7 @@ public class WorkerMarshaller {
                 mapOfBotGround.set("model3DId", botGround.model3DId);
                 mapOfBotGround.set("height", botGround.height);
                 mapOfBotGround.set("positions", marshallDecimalPositions(botGround.positions));
+                mapOfBotGround.set("botGroundSlopeBoxes", marshallBotGroundSlopeBoxes(botGround.botGroundSlopeBoxes));
                 result.push(mapOfBotGround);
             }
         }
@@ -483,6 +485,22 @@ public class WorkerMarshaller {
                 JsPropertyMap<Object> mapOfBotGround = JsPropertyMap.of();
                 mapOfBotGround.set("x", decimalPosition.getX());
                 mapOfBotGround.set("y", decimalPosition.getY());
+                result.push(mapOfBotGround);
+            }
+        }
+        return result;
+    }
+
+    private static Object marshallBotGroundSlopeBoxes(BotGroundSlopeBox[] botGroundSlopeBoxes) {
+        JsArray<JsPropertyMap<Object>> result = new JsArray<>();
+        if (botGroundSlopeBoxes != null) {
+            for (BotGroundSlopeBox botGroundSlopeBox : botGroundSlopeBoxes) {
+                JsPropertyMap<Object> mapOfBotGround = JsPropertyMap.of();
+                mapOfBotGround.set("xPos", botGroundSlopeBox.xPos);
+                mapOfBotGround.set("yPos", botGroundSlopeBox.yPos);
+                mapOfBotGround.set("height", botGroundSlopeBox.height);
+                mapOfBotGround.set("yRot", botGroundSlopeBox.yRot);
+                mapOfBotGround.set("zRot", botGroundSlopeBox.zRot);
                 result.push(mapOfBotGround);
             }
         }
@@ -558,6 +576,7 @@ public class WorkerMarshaller {
             botGround.model3DId = ((Any) Js.uncheckedCast(anyBabylonDecal.get("model3DId"))).asInt();
             botGround.height = ((Any) Js.uncheckedCast(anyBabylonDecal.get("height"))).asDouble();
             botGround.positions = demarshallDecimalPositions(Js.uncheckedCast(anyBabylonDecal.get("positions")));
+            botGround.botGroundSlopeBoxes = demarshallBotGroundSlopeBoxes(Js.uncheckedCast(anyBabylonDecal.get("botGroundSlopeBoxes")));
             return botGround;
         }).toArray(BotGround[]::new);
     }
@@ -600,6 +619,23 @@ public class WorkerMarshaller {
                         ((Any) Js.uncheckedCast(anyDecimalPosition.get("x"))).asDouble(),
                         ((Any) Js.uncheckedCast(anyDecimalPosition.get("y"))).asDouble())
         ).toArray(DecimalPosition[]::new);
+    }
+
+    private static BotGroundSlopeBox[] demarshallBotGroundSlopeBoxes(Any any) {
+        JsPropertyMap<Object>[] array = Js.cast(any);
+        if (array.length == 0) {
+            return null;
+        }
+        return Arrays.stream(array).map(anyBotGroundSlopeBox -> {
+                    BotGroundSlopeBox botGroundSlopeBox = new BotGroundSlopeBox();
+                    botGroundSlopeBox.xPos = ((Any) Js.uncheckedCast(anyBotGroundSlopeBox.get("xPos"))).asDouble();
+                    botGroundSlopeBox.yPos = ((Any) Js.uncheckedCast(anyBotGroundSlopeBox.get("yPos"))).asDouble();
+                    botGroundSlopeBox.height = ((Any) Js.uncheckedCast(anyBotGroundSlopeBox.get("height"))).asDouble();
+                    botGroundSlopeBox.yRot = ((Any) Js.uncheckedCast(anyBotGroundSlopeBox.get("yRot"))).asDouble();
+                    botGroundSlopeBox.zRot = ((Any) Js.uncheckedCast(anyBotGroundSlopeBox.get("zRot"))).asDouble();
+                    return botGroundSlopeBox;
+                }
+        ).toArray(BotGroundSlopeBox[]::new);
     }
 
     private static JsArrayNumber vertexToArray(Vertex vertex) {

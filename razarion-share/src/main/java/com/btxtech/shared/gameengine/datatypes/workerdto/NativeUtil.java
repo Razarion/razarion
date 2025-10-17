@@ -2,6 +2,8 @@ package com.btxtech.shared.gameengine.datatypes.workerdto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.terrain.BotGroundSlopeBox;
+import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBotGroundSlopeBox;
 
 import java.util.Arrays;
 
@@ -36,6 +38,22 @@ public interface NativeUtil {
         }
     }
 
+    static NativeBotGroundSlopeBox[] toNativeBotGroundSlopeBoxes(BotGroundSlopeBox[] botGroundSlopeBoxes) {
+        if (botGroundSlopeBoxes != null) {
+            return Arrays.stream(botGroundSlopeBoxes).map(botGroundSlopeBox -> {
+                NativeBotGroundSlopeBox nativeBotGroundSlopeBox = new NativeBotGroundSlopeBox();
+                nativeBotGroundSlopeBox.xPos = botGroundSlopeBox.xPos;
+                nativeBotGroundSlopeBox.yPos = botGroundSlopeBox.yPos;
+                nativeBotGroundSlopeBox.height = botGroundSlopeBox.height;
+                nativeBotGroundSlopeBox.yRot = botGroundSlopeBox.yRot;
+                nativeBotGroundSlopeBox.zRot = botGroundSlopeBox.zRot;
+                return nativeBotGroundSlopeBox;
+            }).toArray(NativeBotGroundSlopeBox[]::new);
+        } else {
+            return null;
+        }
+    }
+
     static NativeDecimalPosition toNativeDecimalPosition(DecimalPosition decimalPosition) {
         if (decimalPosition != null) {
             NativeDecimalPosition nativeDecimalPosition = new NativeDecimalPosition();
@@ -64,4 +82,19 @@ public interface NativeUtil {
     }
 
 
+    static BotGroundSlopeBox[] toBotGroundSlopeBoxes(NativeBotGroundSlopeBox[] nativeBotGroundSlopeBoxes) {
+        if (nativeBotGroundSlopeBoxes != null) {
+            return Arrays.stream(nativeBotGroundSlopeBoxes).map(nativeBotGroundSlopeBox -> {
+                BotGroundSlopeBox botGroundSlopeBox = new BotGroundSlopeBox();
+                botGroundSlopeBox.xPos = nativeBotGroundSlopeBox.xPos;
+                botGroundSlopeBox.yPos = nativeBotGroundSlopeBox.yPos;
+                botGroundSlopeBox.height = nativeBotGroundSlopeBox.height;
+                botGroundSlopeBox.yRot = nativeBotGroundSlopeBox.yRot;
+                botGroundSlopeBox.zRot = nativeBotGroundSlopeBox.zRot;
+                return botGroundSlopeBox;
+            }).toArray(BotGroundSlopeBox[]::new);
+        } else {
+            return null;
+        }
+    }
 }

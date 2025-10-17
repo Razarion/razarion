@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toBotGroundSlopeBoxes;
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toDecimalPositions;
 
 @Singleton
@@ -129,6 +130,7 @@ public class TerrainTileFactory {
             botGround.model3DId = nativeBotGround.model3DId;
             botGround.height = nativeBotGround.height;
             botGround.positions = toDecimalPositions(nativeBotGround.positions);
+            botGround.botGroundSlopeBoxes = toBotGroundSlopeBoxes(nativeBotGround.botGroundSlopeBoxes);
             botGrounds[i] = botGround;
         }
         terrainTileBuilder.setBotGrounds(botGrounds);
