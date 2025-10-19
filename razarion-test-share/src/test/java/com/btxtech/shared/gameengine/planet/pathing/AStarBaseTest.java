@@ -42,7 +42,7 @@ public abstract class AStarBaseTest extends DaggerTerrainServiceTestBase {
         terrainObjectPositions.add((new TerrainObjectPosition().terrainObjectConfigId(3).position(new DecimalPosition(212, 325))));
         terrainObjectPositions.add((new TerrainObjectPosition().terrainObjectConfigId(3).position(new DecimalPosition(223, 290))));
 
-        setupTerrainTypeService(null, terrainObjectConfigs, planetConfig, terrainObjectPositions, null);
+        setupTerrainTypeService(null, terrainObjectConfigs, planetConfig, terrainObjectPositions, null, null);
     }
 
     protected SimplePath setupPath(double actorRadius, TerrainType actorTerrainType, DecimalPosition actorPosition, double totalRangeOtherTerrain, double targetRadius, TerrainType targetTerrainType, DecimalPosition targetPosition) {

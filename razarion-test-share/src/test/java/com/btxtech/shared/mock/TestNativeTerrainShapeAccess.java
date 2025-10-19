@@ -4,6 +4,8 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
@@ -15,7 +17,9 @@ import javax.inject.Singleton;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
 
@@ -27,6 +31,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     private final AlarmService alarmService;
     private PlanetConfig planetConfig;
     private int[] groundHeightMap;
+    private List<BotConfig> botConfigs = new ArrayList<>();
 
     @Inject
     public TestNativeTerrainShapeAccess(TerrainTypeService terrainTypeService,
@@ -43,7 +48,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
                 alarmService,
                 Collections.emptyList(),
                 Collections.emptyList(),
-                Collections.emptyList()
+                botConfigs != null ? BotService.generateBotGrounds(botConfigs) : null
         );
         loadedCallback.accept(terrainShapeManager.toNativeTerrainShape());
     }
@@ -66,6 +71,10 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
 
     public void setPlanetConfig(PlanetConfig planetConfig) {
         this.planetConfig = planetConfig;
+    }
+
+    public void setBotConfigs(List<BotConfig> botConfigs) {
+        this.botConfigs = botConfigs;
     }
 
     public void loadHeightMap(String expectedResource, Class resourceLoader) {

@@ -114,9 +114,23 @@ public class TerrainAnalyzer {
                     if (nativeBotGround.botGroundSlopeBoxes != null) {
                         for (NativeBotGroundSlopeBox botGroundSlopeBox : nativeBotGround.botGroundSlopeBoxes) {
                             DecimalPosition boxMiddle = new DecimalPosition(botGroundSlopeBox.xPos, botGroundSlopeBox.yPos);
-                            if (Rectangle2D.generateRectangleFromMiddlePoint(boxMiddle, BOT_BOX_LENGTH, BOT_BOX_LENGTH).contains(position)) {
-                                // double heightDelta = Math.tan(botGroundSlopeBox.zRot) * boxMiddle.getDistance(position);
-                                return botGroundSlopeBox.height/* + heightDelta */;
+                            Rectangle2D box = Rectangle2D.generateRectangleFromMiddlePoint(boxMiddle, BOT_BOX_LENGTH, BOT_BOX_LENGTH);
+                            if (box.containsExclusive(position)) {
+
+                                double yRot = botGroundSlopeBox.yRot % (2 * Math.PI);
+                                double factor;
+                                if (yRot < Math.toRadians(90)) {
+                                    factor = (position.getX() - box.startX()) / BOT_BOX_LENGTH;
+                                } else if (yRot < Math.toRadians(180)) {
+                                    factor = 1 - (position.getY() - box.startY()) / BOT_BOX_LENGTH;
+                                } else if (yRot < Math.toRadians(270)) {
+                                    factor = 1 - (position.getX() - box.startX()) / BOT_BOX_LENGTH;
+                                } else {
+                                    factor = (position.getY() - box.startY()) / BOT_BOX_LENGTH;
+                                }
+
+                                double heightDelta = Math.tan(botGroundSlopeBox.zRot) * BOT_BOX_LENGTH;
+                                return botGroundSlopeBox.height + heightDelta * factor - heightDelta / 2;
                             }
                         }
                     }
@@ -125,7 +139,7 @@ public class TerrainAnalyzer {
                 Double height = Arrays.stream(terrainShapeTile.getNativeBotGrounds())
                         .filter(nativeBotGround ->
                                 Arrays.stream(nativeBotGround.positions)
-                                        .anyMatch(boxPosition -> Rectangle2D.generateRectangleFromMiddlePoint(NativeUtil.toDecimalPosition(boxPosition), BOT_BOX_LENGTH, BOT_BOX_LENGTH).contains(position))
+                                        .anyMatch(boxPosition -> Rectangle2D.generateRectangleFromMiddlePoint(NativeUtil.toDecimalPosition(boxPosition), BOT_BOX_LENGTH, BOT_BOX_LENGTH).containsExclusive(position))
                         )
                         .map(nativeBotGround -> nativeBotGround.height)
                         .findFirst()

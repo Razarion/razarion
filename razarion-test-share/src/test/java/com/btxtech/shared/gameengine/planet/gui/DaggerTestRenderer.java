@@ -22,7 +22,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.DiffTriangleElement;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
@@ -48,7 +47,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.terrainPositionToNodeIndex;
 
@@ -96,6 +94,31 @@ public class DaggerTestRenderer {
         this.syncItemContainerService = syncItemContainerService;
         this.terrainTypeService = terrainTypeService;
         this.terrainService = terrainService;
+    }
+
+    public static Color color4TerrainType(TerrainType terrainType) {
+        if (terrainType == null) {
+            terrainType = TerrainType.getNullTerrainType();
+        }
+        switch (terrainType) {
+            case LAND:
+                return Color.GREEN;
+            case WATER:
+                return Color.BLUE;
+            case LAND_COAST:
+                return Color.LIGHTGREEN;
+            case WATER_COAST:
+                return Color.SANDYBROWN;
+            case BLOCKED:
+                return Color.GRAY;
+            default:
+                throw new IllegalArgumentException("Unknown terrainType: " + terrainType);
+        }
+    }
+
+    public static Color color4Norm(Vertex norm) {
+        Vertex colorNorm = norm.multiply(0.5).add(0.5, 0.5, 0.5);
+        return Color.color(colorNorm.getX(), colorNorm.getY(), colorNorm.getZ());
     }
 
     public void init(Canvas canvas, double scale) {
@@ -184,6 +207,15 @@ public class DaggerTestRenderer {
         }
     }
 
+    public double getZoom() {
+        if (scale > 1.0) {
+            return scale;
+        } else if (scale < 1.0) {
+            return -1.0 / scale;
+        } else {
+            return 1.0;
+        }
+    }
 
     public void setZoom(double zoom) {
         if (zoom > 1.0) {
@@ -192,16 +224,6 @@ public class DaggerTestRenderer {
             scale = -1.0 / zoom;
         } else {
             scale = 1.0;
-        }
-    }
-
-    public double getZoom() {
-        if (scale > 1.0) {
-            return scale;
-        } else if (scale < 1.0) {
-            return -1.0 / scale;
-        } else {
-            return 1.0;
         }
     }
 
@@ -238,10 +260,10 @@ public class DaggerTestRenderer {
 
         double[] xCorners = new double[polygon.size()];
         double[] yCorners = new double[polygon.size()];
-        for(int i = 0; i<polygon.size();i++) {
+        for (int i = 0; i < polygon.size(); i++) {
             DecimalPosition position = polygon.get(i);
-                    xCorners[i] = position.getX();
-                    yCorners[i] = position.getY();
+            xCorners[i] = position.getX();
+            yCorners[i] = position.getY();
         }
 
         gc.fillPolygon(xCorners, yCorners, polygon.size());
@@ -326,13 +348,15 @@ public class DaggerTestRenderer {
             doRenderTile(fromTileIndex, toTileIndex);
         }
 
-        if (weldTestController.renderShapeAccess()) {
-            renderTerrainShapeAccess();
-        }
-
         // renderTerrainPathingSurfaceAccess();
         if (weldTestController.renderShapeTerrainType() || weldTestController.renderShapeTerrainHeight() || weldTestController.renderShapeFractionalSlope() || weldTestController.renderShapeObstacles() || weldTestController.renderGroundSlopeConnections() || weldTestController.renderShapeWater() || weldTestController.renderShapeTerrainObject()) {
             doRenderShape();
+        }
+        if (weldTestController.renderShapeTerrainType()) {
+            renderShapeTerrainType();
+        }
+        if (weldTestController.renderShapeTerrainHeight()) {
+            renderShapeTerrainHeight();
         }
         if (weldTestController.renderSyncItems()) {
             renderSyncItems();
@@ -360,7 +384,7 @@ public class DaggerTestRenderer {
         }
     }
 
-    private void renderTerrainShapeAccess() {
+    private void renderShapeTerrainType() {
         DecimalPosition from = new DecimalPosition(0, 0);
         double length = 300;
 
@@ -378,6 +402,28 @@ public class DaggerTestRenderer {
             }
         }
     }
+
+    private void renderShapeTerrainHeight() {
+        DecimalPosition from = new DecimalPosition(0, 0);
+        double length = 300;
+
+        for (double x = from.getX(); x < from.getX() + length; x++) {
+            for (double y = from.getY(); y < from.getY() + length; y++) {
+                DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
+                try {
+                    double height = terrainService.getTerrainAnalyzer().getHeightNodeAt(terrainPositionToNodeIndex(samplePosition));
+                    double zoom = 2;
+                    double color = MathHelper.clamp(height / zoom, 0, 1);
+                    gc.setFill(new Color(color, color, color, 1));
+                } catch (Exception e) {
+                    gc.setFill(Color.RED);
+                    // e.printStackTrace();
+                }
+                gc.fillRect(x, y, 1, 1);
+            }
+        }
+    }
+
 
     private void doRenderTile(Index from, Index to) {
         for (int tileX = from.getX(); tileX <= to.getX(); tileX++) {
@@ -528,24 +574,6 @@ public class DaggerTestRenderer {
         return Color.color(value, 0, value);
     }
 
-    private void doRenderShape() {
-        for (int x = 0; x < actual.getTileXCount(); x++) {
-            for (int y = 0; y < actual.getTileYCount(); y++) {
-                TerrainShapeTile terrainShapeTile = terrainShapeTiles[x][y];
-                if (terrainShapeTile != null) {
-                    displayTerrainShapeTile(new Index(x, y), terrainShapeTile);
-                }
-            }
-        }
-    }
-
-    private void renderSyncItems() {
-        syncItemContainerService.iterateOverItems(false, true, null, syncItem -> {
-            drawSyncItem(syncItem);
-            return null;
-        });
-    }
-
 //    private void displayClosedList() {
 //        if (aStar == null) {
 //            return;
@@ -566,46 +594,31 @@ public class DaggerTestRenderer {
 //        }
 //    }
 
+    private void doRenderShape() {
+        for (int x = 0; x < actual.getTileXCount(); x++) {
+            for (int y = 0; y < actual.getTileYCount(); y++) {
+                TerrainShapeTile terrainShapeTile = terrainShapeTiles[x][y];
+                if (terrainShapeTile != null) {
+                    displayTerrainShapeTile(new Index(x, y), terrainShapeTile);
+                }
+            }
+        }
+    }
+
+    private void renderSyncItems() {
+        syncItemContainerService.iterateOverItems(false, true, null, syncItem -> {
+            drawSyncItem(syncItem);
+            return null;
+        });
+    }
+
     private void displayTerrainShapeTile(Index tileIndex, TerrainShapeTile terrainShapeTile) {
         gc.setLineWidth(LINE_WIDTH * 4.0);
         gc.setStroke(Color.DARKGREEN);
-        DecimalPosition absolute = TerrainUtil.toTileAbsolute(tileIndex);
-        // gc.strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
-        // displayNodes(absolute, terrainShapeTile);
 
         if (weldTestController.renderShapeTerrainObject()) {
             displayShapeTerrainObject(terrainShapeTile.getNativeTerrainShapeObjectLists());
         }
-    }
-
-
-    private void displayGroundSlopeConnections(Map<Integer, List<List<Vertex>>> groundSlopeConnectionList) {
-        if (groundSlopeConnectionList == null) {
-            return;
-        }
-        groundSlopeConnectionList.forEach((groundId, groundSlopeConnections) -> {
-            Color color = Color.GREEN;
-            if (groundId == null) {
-                color = Color.DARKGREEN;
-            } else if (groundId == 253) {
-                color = Color.GRAY;
-            }
-            for (List<Vertex> groundSlopeConnection : groundSlopeConnections) {
-                fillVertexPolygon(groundSlopeConnection, color);
-                strokeVertexPolygon(groundSlopeConnection, LINE_WIDTH, color, true);
-            }
-        });
-    }
-
-    private void displayShapeWater(Map<Integer, List<List<Vertex>>> waterSegmentList) {
-        if (waterSegmentList == null) {
-            return;
-        }
-        waterSegmentList.forEach((groundId, waterSegments) -> {
-            for (List<Vertex> waterSegment : waterSegments) {
-                strokeVertexPolygon(waterSegment, LINE_WIDTH, Color.BLUE, true);
-            }
-        });
     }
 
     private void displayShapeTerrainObject(NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists) {
@@ -620,7 +633,7 @@ public class DaggerTestRenderer {
                 double radius = terrainTypeService.getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
                 Arrays.stream(nativeTerrainShapeObjectList.terrainShapeObjectPositions).forEach(nativeTerrainShapeObjectPosition -> {
                     double correctedRadius = radius /* TODO * nativeTerrainShapeObjectPosition.scale*/;
-                     gc.fillOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
+                    gc.fillOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
                 });
             }
         });
@@ -772,30 +785,5 @@ public class DaggerTestRenderer {
         for (DecimalPosition position : positions) {
             drawPosition(position, radius, color);
         }
-    }
-
-    public static Color color4TerrainType(TerrainType terrainType) {
-        if (terrainType == null) {
-            terrainType = TerrainType.getNullTerrainType();
-        }
-        switch (terrainType) {
-            case LAND:
-                return Color.GREEN;
-            case WATER:
-                return Color.BLUE;
-            case LAND_COAST:
-                return Color.LIGHTGREEN;
-            case WATER_COAST:
-                return Color.SANDYBROWN;
-            case BLOCKED:
-                return Color.GRAY;
-            default:
-                throw new IllegalArgumentException("Unknown terrainType: " + terrainType);
-        }
-    }
-
-    public static Color color4Norm(Vertex norm) {
-        Vertex colorNorm = norm.multiply(0.5).add(0.5, 0.5, 0.5);
-        return Color.color(colorNorm.getX(), colorNorm.getY(), colorNorm.getZ());
     }
 }

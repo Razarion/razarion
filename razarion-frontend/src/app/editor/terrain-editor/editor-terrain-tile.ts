@@ -297,7 +297,7 @@ export class EditorTerrainTile {
       for (let x = 0; x < xCount; x++) {
         this.inputService.getTerrainTypeOnTerrain(GwtInstance.newIndex(x + xNodeOffest, y + yNodeOffest))
           .then(terrainType => {
-            const terrainTypeString = terrainType.d // Ugly gwt enum hack
+            const terrainTypeString = terrainType.toString();
 
             if (TerrainType.WATER == terrainTypeString) {
               context.fillStyle = "rgba(0, 0, 255, 0.5)";

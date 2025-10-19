@@ -73,7 +73,7 @@ export interface RazarionMetadata {
 export enum RazarionMetadataType {
   GROUND,
   TERRAIN_OBJECT,
-  SLOPE
+  BOT_BOX
 }
 
 @Injectable({
@@ -653,7 +653,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         if (!razarionMetadata) {
           return false;
         }
-        return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.SLOPE;
+        return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_BOX;
       }
     );
   }
@@ -664,7 +664,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       if (!razarionMetadata) {
         return false;
       }
-      return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.SLOPE;
+      return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_BOX;
     });
   }
 

@@ -57,7 +57,6 @@
                                 <CheckBox fx:id="terrainTileHeightCheck" mnemonicParsing="false" text="Tile Height" />
                                 <CheckBox fx:id="terrainTileTerrainTypeCheck" mnemonicParsing="false" text="Tile Terrain Type" />
                                 <CheckBox fx:id="terrainTileTerrainObjectCheck" mnemonicParsing="false" text="Tile Terrain Object" />
-                                <CheckBox fx:id="shapeAccessCheck" mnemonicParsing="false" text="Shape access" />
                                 <CheckBox fx:id="shapeTerrainTypeCheck" mnemonicParsing="false" text="Shape terrain type" />
                                 <CheckBox fx:id="shapeTerrainHeightCheck" mnemonicParsing="false" text="Shape terrain height (Game engine)" />
                                 <CheckBox fx:id="shapeFractionalSlopeCheck" mnemonicParsing="false" text="Shape fractional slope" />

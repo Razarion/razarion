@@ -163,6 +163,16 @@ public class Rectangle2D {
     }
 
     /**
+     * Returns true if the given position is in the rectangle exclusively
+     *
+     * @param position to check
+     * @return true if contains position exclusively
+     */
+    public boolean containsExclusive(DecimalPosition position) {
+        return position.getX() >= start.getX() && position.getY() >= start.getY() && position.getX() < end.getX() && position.getY() < end.getY();
+    }
+
+    /**
      * Returns the nearest point on the rectangle. Endpoints are inclusive
      *
      * @param point input

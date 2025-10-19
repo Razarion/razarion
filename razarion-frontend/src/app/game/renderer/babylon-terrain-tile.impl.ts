@@ -400,6 +400,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         botGroundTransformNode.position.z = position.getY();
         botGroundTransformNode.getChildMeshes().forEach(childMesh => {
           childMesh.actionManager = this.actionManager;
+          BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(childMesh, RazarionMetadataType.BOT_BOX, undefined, botGround.model3DId);
         });
         if (botGroundTransformNode.hasOwnProperty('actionManager')) {
           (<AbstractMesh>this.container).actionManager = this.actionManager;
@@ -417,6 +418,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           botGroundTransformNode.rotation.z = botGroundSlopeBox.zRot;
           botGroundTransformNode.getChildMeshes().forEach(childMesh => {
             childMesh.actionManager = this.actionManager;
+            BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(childMesh, RazarionMetadataType.BOT_BOX, undefined, botGround.model3DId);
           });
           if (botGroundTransformNode.hasOwnProperty('actionManager')) {
             (<AbstractMesh>this.container).actionManager = this.actionManager;

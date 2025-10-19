@@ -10,6 +10,7 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.DaggerMasterBaseTest;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 
@@ -27,7 +28,8 @@ public class DaggerTerrainServiceTestBase extends DaggerMasterBaseTest {
                                            List<TerrainObjectConfig> terrainObjectConfigs,
                                            PlanetConfig planetConfig,
                                            List<TerrainObjectPosition> terrainObjectPositions,
-                                           List<GroundConfig> groundConfigs) {
+                                           List<GroundConfig> groundConfigs,
+                                           List<BotConfig> botConfigs) {
         if (staticGameConfig == null) {
             staticGameConfig = FallbackConfig.setupStaticGameConfig();
         }
@@ -41,6 +43,7 @@ public class DaggerTerrainServiceTestBase extends DaggerMasterBaseTest {
             planetConfig = FallbackConfig.setupPlanetConfig();
         }
         setupEnvironment(staticGameConfig, planetConfig);
+        getTestNativeTerrainShapeAccess().setBotConfigs(botConfigs);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
         if (getAlarmService().hasAlarms()) {

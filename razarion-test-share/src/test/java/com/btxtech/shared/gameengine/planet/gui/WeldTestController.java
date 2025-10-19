@@ -63,8 +63,6 @@ public class WeldTestController implements Initializable {
     @FXML
     private CheckBox terrainTileTerrainTypeCheck;
     @FXML
-    private CheckBox shapeAccessCheck;
-    @FXML
     private CheckBox shapeTerrainTypeCheck;
     @FXML
     private CheckBox shapeTerrainHeightCheck;
@@ -103,7 +101,7 @@ public class WeldTestController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         weldTestRenderer.setup(this, userObjects);
-        weldTestRenderer.init(canvas, 1.0);
+        weldTestRenderer.init(canvas, 30.0);
         anchorPanel.widthProperty().addListener((observableValue, oldSceneWidth, width) -> {
             canvas.setWidth(width.doubleValue());
             weldTestRenderer.render(scenarioPlaybackController);
@@ -119,7 +117,8 @@ public class WeldTestController implements Initializable {
         zMinField.setText(Double.toString(weldTestRenderer.getZMin()));
         zMaxField.setText(Double.toString(weldTestRenderer.getZMax()));
 
-        shapeAccessCheck.setSelected(true);
+        shapeTerrainTypeCheck.setSelected(true);
+        shapeTerrainHeightCheck.setSelected(true);
 
         addRenderListener(terrainTileWaterCheck);
         addRenderListener(terrainTileGroundCheck);
@@ -127,7 +126,6 @@ public class WeldTestController implements Initializable {
         addRenderListener(terrainTileHeightCheck);
         addRenderListener(terrainTileTerrainObjectCheck);
         addRenderListener(terrainTileTerrainTypeCheck);
-        addRenderListener(shapeAccessCheck);
         addRenderListener(shapeTerrainTypeCheck);
         addRenderListener(shapeTerrainHeightCheck);
         addRenderListener(shapeFractionalSlopeCheck);
@@ -268,10 +266,6 @@ public class WeldTestController implements Initializable {
 
     public boolean renderTerrainTileTerrainType() {
         return terrainTileTerrainTypeCheck.isSelected();
-    }
-
-    public boolean renderShapeAccess() {
-        return shapeAccessCheck.isSelected();
     }
 
     public boolean renderShapeTerrainType() {
