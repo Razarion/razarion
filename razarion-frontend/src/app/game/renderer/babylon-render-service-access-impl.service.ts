@@ -645,7 +645,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   public setupTerrainPickPointFromPosition(position: DecimalPosition): Nullable<PickingInfo> {
-    let ray = new Ray(new Vector3(position.getX(), -100, position.getY()), new Vector3(0, 1, 0), 1000);
+    let ray = new Ray(new Vector3(position.getX(), 100, position.getY()), new Vector3(0, -1, 0), 1000);
 
     return this.scene.pickWithRay(ray,
       (mesh: AbstractMesh) => {

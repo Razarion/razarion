@@ -412,7 +412,7 @@ public class DaggerTestRenderer {
                 DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
                 try {
                     double height = terrainService.getTerrainAnalyzer().getHeightNodeAt(terrainPositionToNodeIndex(samplePosition));
-                    double zoom = 2;
+                    double zoom = 3;
                     double color = MathHelper.clamp(height / zoom, 0, 1);
                     gc.setFill(new Color(color, color, color, 1));
                 } catch (Exception e) {

@@ -48,7 +48,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly WATER_LEVEL = 0;
   static readonly WALL_HEIGHT_DIFF = 0.5;
   static readonly HEIGHT_DEFAULT = 0.5;
-  static readonly BOT_BOX_LENGTH = 4;
+  static readonly BOT_BOX_LENGTH = 8;
   static readonly BOT_BOX_Z_ROTATION = 22;
   public readonly container: TransformNode;
   public readonly shadowCasterObjects: TransformNode[] = []

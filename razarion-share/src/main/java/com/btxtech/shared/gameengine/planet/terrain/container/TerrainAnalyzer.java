@@ -37,6 +37,35 @@ public class TerrainAnalyzer {
         this.terrainShapeManager = terrainShape;
     }
 
+    private static Double findHeightInSlopeBoxes(TerrainShapeTile terrainShapeTile, DecimalPosition position) {
+        for (NativeBotGround nativeBotGround : terrainShapeTile.getNativeBotGrounds()) {
+            if (nativeBotGround.botGroundSlopeBoxes != null) {
+                for (NativeBotGroundSlopeBox botGroundSlopeBox : nativeBotGround.botGroundSlopeBoxes) {
+                    DecimalPosition boxMiddle = new DecimalPosition(botGroundSlopeBox.xPos, botGroundSlopeBox.yPos);
+                    Rectangle2D box = Rectangle2D.generateRectangleFromMiddlePoint(boxMiddle, BOT_BOX_LENGTH, BOT_BOX_LENGTH);
+                    if (box.containsExclusive(position)) {
+
+                        double yRot = botGroundSlopeBox.yRot % (2 * Math.PI);
+                        double factor;
+                        if (yRot < Math.toRadians(90)) {
+                            factor = (position.getX() - box.startX()) / BOT_BOX_LENGTH;
+                        } else if (yRot < Math.toRadians(180)) {
+                            factor = 1 - (position.getY() - box.startY()) / BOT_BOX_LENGTH;
+                        } else if (yRot < Math.toRadians(270)) {
+                            factor = 1 - (position.getX() - box.startX()) / BOT_BOX_LENGTH;
+                        } else {
+                            factor = (position.getY() - box.startY()) / BOT_BOX_LENGTH;
+                        }
+
+                        double heightDelta = Math.tan(botGroundSlopeBox.zRot) * BOT_BOX_LENGTH;
+                        return botGroundSlopeBox.height + heightDelta * factor - heightDelta / 2;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public Vertex toPosition3d(DecimalPosition position2d) {
         double z = getHeightNodeAt(TerrainUtil.terrainPositionToNodeIndex(position2d));
         return new Vertex(position2d, z);
@@ -106,37 +135,15 @@ public class TerrainAnalyzer {
     }
 
     public double getHeightNodeAt(Index terrainNodeIndex) {
+        Double botSlopeHeight = null;
+        Double botHeight = null;
         if (terrainShapeManager != null) {
             TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(TerrainUtil.nodeIndexToTileIndex(terrainNodeIndex));
             if (terrainShapeTile != null && terrainShapeTile.getNativeBotGrounds() != null) {
                 DecimalPosition position = TerrainUtil.nodeIndexToTerrainPosition(terrainNodeIndex);
-                for (NativeBotGround nativeBotGround : terrainShapeTile.getNativeBotGrounds()) {
-                    if (nativeBotGround.botGroundSlopeBoxes != null) {
-                        for (NativeBotGroundSlopeBox botGroundSlopeBox : nativeBotGround.botGroundSlopeBoxes) {
-                            DecimalPosition boxMiddle = new DecimalPosition(botGroundSlopeBox.xPos, botGroundSlopeBox.yPos);
-                            Rectangle2D box = Rectangle2D.generateRectangleFromMiddlePoint(boxMiddle, BOT_BOX_LENGTH, BOT_BOX_LENGTH);
-                            if (box.containsExclusive(position)) {
+                botSlopeHeight = findHeightInSlopeBoxes(terrainShapeTile, position);
 
-                                double yRot = botGroundSlopeBox.yRot % (2 * Math.PI);
-                                double factor;
-                                if (yRot < Math.toRadians(90)) {
-                                    factor = (position.getX() - box.startX()) / BOT_BOX_LENGTH;
-                                } else if (yRot < Math.toRadians(180)) {
-                                    factor = 1 - (position.getY() - box.startY()) / BOT_BOX_LENGTH;
-                                } else if (yRot < Math.toRadians(270)) {
-                                    factor = 1 - (position.getX() - box.startX()) / BOT_BOX_LENGTH;
-                                } else {
-                                    factor = (position.getY() - box.startY()) / BOT_BOX_LENGTH;
-                                }
-
-                                double heightDelta = Math.tan(botGroundSlopeBox.zRot) * BOT_BOX_LENGTH;
-                                return botGroundSlopeBox.height + heightDelta * factor - heightDelta / 2;
-                            }
-                        }
-                    }
-                }
-
-                Double height = Arrays.stream(terrainShapeTile.getNativeBotGrounds())
+                botHeight = Arrays.stream(terrainShapeTile.getNativeBotGrounds())
                         .filter(nativeBotGround ->
                                 Arrays.stream(nativeBotGround.positions)
                                         .anyMatch(boxPosition -> Rectangle2D.generateRectangleFromMiddlePoint(NativeUtil.toDecimalPosition(boxPosition), BOT_BOX_LENGTH, BOT_BOX_LENGTH).containsExclusive(position))
@@ -144,14 +151,23 @@ public class TerrainAnalyzer {
                         .map(nativeBotGround -> nativeBotGround.height)
                         .findFirst()
                         .orElse(null);
-                if (height != null) {
-                    return height;
-                }
             }
         }
 
         int uint16 = getUInt16GroundHeightAt(terrainNodeIndex);
-        return uint16ToHeight(uint16);
+        double height = uint16ToHeight(uint16);
+
+        if (botSlopeHeight != null && botHeight != null) {
+            return Math.max(height, Math.max(botSlopeHeight, botHeight));
+        } else if (botSlopeHeight != null) {
+            return Math.max(height, botSlopeHeight);
+        } else if (botHeight != null) {
+            return Math.max(height, botHeight);
+        } else {
+            return height;
+        }
+
+
     }
 
     private int getUInt16GroundHeightAt(Index terrainNodeIndex) {
