@@ -65,6 +65,7 @@ public class BoxItemTypeEntity extends BaseEntity {
     }
 
     public void fromBoxItemType(BoxItemType boxItemType, InventoryItemService inventoryItemService) {
+        setInternalName(boxItemType.getInternalName());
         radius = boxItemType.getRadius();
         fixVerticalNorm = boxItemType.isFixVerticalNorm();
         terrainType = boxItemType.getTerrainType();

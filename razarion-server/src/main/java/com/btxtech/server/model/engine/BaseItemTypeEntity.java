@@ -182,6 +182,7 @@ public class BaseItemTypeEntity extends BaseEntity {
                                  BoxItemTypeCrudService boxItemTypeCrudPersistence,
                                  AudioService audioPersistence,
                                  ParticleSystemService particleSystemCrudPersistence) {
+        setInternalName(baseItemType.getInternalName());
         name = baseItemType.getName();
         description = baseItemType.getDescription();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();

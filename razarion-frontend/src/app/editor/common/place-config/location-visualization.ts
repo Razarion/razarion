@@ -106,8 +106,8 @@ export class LocationVisualization {
   public static getHeightFromTerrain(x: number, y: number, renderService: BabylonRenderServiceAccessImpl): number {
     let position = LocationVisualization.getTerrainPositionFromRay(
       new Ray(
-        new Vector3(x, -100, y),
-        new Vector3(0, 1, 0),
+        new Vector3(x, 100, y),
+        new Vector3(0, -1, 0),
         1000),
       renderService);
     if (position) {

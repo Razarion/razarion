@@ -46,6 +46,7 @@ public class ResourceItemTypeEntity extends BaseEntity {
     }
 
     public void fromResourceItemType(ResourceItemType resourceItemType) {
+        setInternalName(resourceItemType.getInternalName());
         radius = resourceItemType.getRadius();
         fixVerticalNorm = resourceItemType.isFixVerticalNorm();
         terrainType = resourceItemType.getTerrainType();
