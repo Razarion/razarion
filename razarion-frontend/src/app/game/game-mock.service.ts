@@ -57,7 +57,13 @@ import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
 import {toRadians} from 'chart.js/helpers';
-import {ServerBotEditorComponent} from '../editor/server-bot-editor/server-bot-editor.component';
+import {MeshBuilder, NodeParticleSystemSet, Vector3} from '@babylonjs/core';
+import {
+  ParticleSystemEditorComponent
+} from '../editor/crud-editors/particle-system-editor/particle-system-editor.component';
+import {
+  GeneratedCrudContainerComponent
+} from '../editor/crud-editors/crud-container/generated-crud-container.component';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -104,8 +110,8 @@ export class GameMockService {
           // Some very strange babylon behavior, _projectionMatrix is zero matrixd
           this.babylonRenderServiceAccessImpl.setViewFieldCenter(74, 40);
           this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
-          this.gameComponent.addEditorModel(new EditorModel("Bot Editor", ServerBotEditorComponent));
-          // this.gameComponent.addEditorModel(new EditorModel("BabylonMaterial", GeneratedCrudContainerComponent, BabylonMaterialEditorComponent));
+          // this.gameComponent.addEditorModel(new EditorModel("Mock Bot Editor", ServerBotEditorComponent));
+          this.gameComponent.addEditorModel(new EditorModel("Mock Particle System Editor", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
         }, 100);
         // this.loadingCover!.hide();
         // this.threeJsRendererService.createProjectile(new class implements Vertex {
@@ -188,7 +194,7 @@ export class GameMockService {
           }
 
           getModel3DId(): number | null {
-            return 37;
+            return 43;
           }
 
           getPhysicalAreaConfig(): PhysicalAreaConfig {

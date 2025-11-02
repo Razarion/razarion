@@ -1,12 +1,12 @@
 {
     "objectNameIds": [
         {
-            "id": 1,
+            "id": 6,
             "internalName": "Explosion"
         }
     ],
-    "_1": {
-        "id": 1,
+    "_6": {
+        "id": 6,
         "internalName": "Explosion",
         "positionOffset": {
             "x": 0,

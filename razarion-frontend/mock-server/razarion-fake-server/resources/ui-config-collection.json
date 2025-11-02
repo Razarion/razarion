@@ -387,6 +387,18 @@
       "gltfEntityId": 1
     }
   ],
-  "particleSystemEntities": [],
+  "particleSystemEntities": [
+    {
+      "id": 6,
+      "internalName": "Mock",
+      "emitterNodeId": "Cannon00.Cannon00",
+      "positionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "imageId": null
+    }
+  ],
   "selectionItemMaterialId": 14
 }

@@ -10,6 +10,7 @@ import {
   Mesh,
   Node,
   NodeMaterial,
+  NodeParticleSystemSet,
   Scene,
   SceneLoader,
   TransformNode
@@ -18,7 +19,7 @@ import {GLTFFileLoader} from "@babylonjs/loaders";
 import {Model3DEntity, ParticleSystemEntity} from "src/app/generated/razarion-share";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
-import {BabylonMaterialContainer, GlbContainer, ParticleSystemContainer} from "./babylon-model-container";
+import {BabylonMaterialContainer, GlbContainer, ParticleSystemSetContainer} from "./babylon-model-container";
 import {GltfHelper} from "./gltf-helper";
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 
@@ -28,7 +29,7 @@ import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-im
 export class BabylonModelService {
   private babylonMaterialContainer = new BabylonMaterialContainer();
   private glbContainer = new GlbContainer(this.babylonMaterialContainer);
-  private particleSystemContainer = new ParticleSystemContainer();
+  private particleSystemContainer = new ParticleSystemSetContainer();
   private model3DEntities: Map<number, Model3DEntity> = new Map();
   private scene!: Scene;
   private gwtResolver?: () => void;
@@ -219,16 +220,18 @@ export class BabylonModelService {
     }
     if (node.name.startsWith("RAZ_P_")) {
       if (node instanceof AbstractMesh) {
+        const abstractMesh = (<AbstractMesh>node);
         try {
           const particleSystemEntityId = parseInt(node.name.replace("RAZ_P_", ""), 10);
           let particleSystemEntity = this.getParticleSystemEntity(particleSystemEntityId);
-          let particleSystem = this.renderer.createParticleSystem(particleSystemEntityId,
+          this.renderer.createParticleSystem(particleSystemEntityId,
             particleSystemEntity.imageId,
             node,
             null,
-            false);
-          (<AbstractMesh>node).isVisible = false;
-          particleSystem.start();
+            false).then(particleSystemSet => {
+            abstractMesh.isVisible = false;
+            particleSystemSet.start(abstractMesh);
+          });
         } catch (exception) {
           console.error(exception);
         }
@@ -288,14 +291,13 @@ export class BabylonModelService {
     throw new Error(`No ParticleSystemEntity for '${id}'`);
   }
 
-  getParticleSystemJson(particleSystemEntityId: number): any {
-    particleSystemEntityId = GwtHelper.gwtIssueNumber(particleSystemEntityId);
-    let json = this.particleSystemContainer.getBabylonModel(particleSystemEntityId);
-    if (json) {
-      return json;
+  getNodeParticleSystemSet(particleSystemEntityId: number): NodeParticleSystemSet {
+    let nodeParticleSystemSet = this.particleSystemContainer.getBabylonModel(particleSystemEntityId);
+    if (nodeParticleSystemSet) {
+      return nodeParticleSystemSet;
     }
 
-    throw new Error(`No ParticleSystem json for ParticleSystemEntity ('${particleSystemEntityId}') JSON found`);
+    throw new Error(`No NodeParticleSystemSet for '${particleSystemEntityId}'`);
   }
 
   private setupModel3DEntities(model3DEntities: Model3DEntity[]) {

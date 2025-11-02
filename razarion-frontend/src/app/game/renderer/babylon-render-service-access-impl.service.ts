@@ -21,7 +21,8 @@ import {BabylonModelService} from "./babylon-model.service";
 import {BabylonWaterRenderService} from "./babylon-water-render.service";
 import {
   AbstractMesh,
-  Color3, Constants,
+  Color3,
+  Constants,
   CubeTexture,
   DirectionalLight,
   Engine,
@@ -33,13 +34,12 @@ import {
   Node,
   NodeMaterial,
   Nullable,
-  ParticleSystem,
+  ParticleSystemSet,
   PolygonMeshBuilder,
   Quaternion,
   Ray,
   Scene,
   ShadowGenerator,
-  Texture,
   Tools,
   TransformNode,
   Vector2,
@@ -56,7 +56,6 @@ import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
 import {ActionService} from "../action.service";
 import {BaseItemPlacerPresenterEvent, BaseItemPlacerPresenterImpl} from "./base-item-placer-presenter.impl";
-import {getImageUrl} from "src/app/common";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
 import earcut from 'earcut';
@@ -679,7 +678,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     void Promise.all([
       import("@babylonjs/core/Debug/debugLayer"),
       import("@babylonjs/inspector"),
-      import("@babylonjs/node-editor")
+      import("@babylonjs/node-editor"),
+      import("@babylonjs/node-particle-editor")
     ]).then((_values) => {
       this.scene.debugLayer.show({enableClose: true, embedMode: true});
     });
@@ -778,32 +778,34 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.interpolationListeners.forEach(interpolationListener => interpolationListener.interpolate(date));
   }
 
-  public createParticleSystem(particleSystemEntityId: number | null, imageId: number | null, emitterPosition: AbstractMesh | Vector3, destination: Vector3 | null, stretchToDestination: boolean): ParticleSystem {
+  public createParticleSystem(particleSystemEntityId: number | null, imageId: number | null, emitterPosition: AbstractMesh | Vector3, destination: Vector3 | null, stretchToDestination: boolean): Promise<ParticleSystemSet> {
     if (!particleSystemEntityId && particleSystemEntityId !== 0) {
       throw new Error("particleSystemEntityId not set");
     }
-    const particleJson = this.babylonModelService.getParticleSystemJson(particleSystemEntityId);
+    const nodeParticleSystemSet = this.babylonModelService.getNodeParticleSystemSet(particleSystemEntityId);
+    return nodeParticleSystemSet.buildAsync(this.scene);
 
-    const particleSystem = ParticleSystem.Parse(particleJson, this.scene, "");
-    particleSystem.emitter = emitterPosition;
 
-    let correctedImageId = GwtHelper.gwtIssueNumber(imageId);
-    if (correctedImageId || correctedImageId === 0) {
-      particleSystem.particleTexture = new Texture(getImageUrl(correctedImageId));
-    }
-    if (destination) {
-      const beam = destination.subtract(<Vector3>emitterPosition);
-      const delta = 2;
-      const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
-      const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
-      particleSystem.createPointEmitter(direction1, direction2);
-      if (stretchToDestination) {
-        const distance = beam.length();
-        particleSystem.minLifeTime = distance;
-        particleSystem.maxLifeTime = distance;
-      }
-    }
-    return particleSystem;
+    // const particleSystem = ParticleSystem.Parse(particleJson, this.scene, "");
+    // particleSystem.emitter = emitterPosition;
+    //
+    // let correctedImageId = GwtHelper.gwtIssueNumber(imageId);
+    // if (correctedImageId || correctedImageId === 0) {
+    //   particleSystem.particleTexture = new Texture(getImageUrl(correctedImageId));
+    // }
+    // if (destination) {
+    //   const beam = destination.subtract(<Vector3>emitterPosition);
+    //   const delta = 2;
+    //   const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
+    //   const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
+    //   particleSystem.createPointEmitter(direction1, direction2);
+    //   if (stretchToDestination) {
+    //     const distance = beam.length();
+    //     particleSystem.minLifeTime = distance;
+    //     particleSystem.maxLifeTime = distance;
+    //   }
+    // }
+    // return particleSystem;
   }
 
   getAllBabylonTerrainTile(): BabylonTerrainTileImpl[] {

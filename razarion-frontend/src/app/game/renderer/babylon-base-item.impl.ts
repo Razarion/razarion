@@ -1,4 +1,4 @@
-import {Animation, MeshBuilder, ParticleSystem, UtilityLayerRenderer, Vector3} from "@babylonjs/core";
+import {Animation, MeshBuilder, ParticleSystemSet, UtilityLayerRenderer, Vector3} from "@babylonjs/core";
 import {
   BabylonBaseItem,
   BaseItemType,
@@ -22,8 +22,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   // See GWT java PlanetService
   static readonly TICK_TIME_MILLI_SECONDS: number = 100;
   private baseId: number;
-  private buildingParticleSystem: ParticleSystem | null = null;
-  private harvestingParticleSystem: ParticleSystem | null = null;
+  private buildingParticleSystem: ParticleSystemSet | null = null;
+  private harvestingParticleSystem: ParticleSystemSet | null = null;
   private progressSlider: Slider | null = null;
   private healthSlider: Slider | null = null;
   private nameBlock: TextBlock | null = null;
@@ -284,9 +284,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         emitterMesh.computeWorldMatrix(true);
         projectileStartPosition = emitterMesh.absolutePosition;
       }
-      const particleSystem = this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId, projectileStartPosition, correctDestination, false);
-      particleSystem.disposeOnStop = true;
-      particleSystem.start();
+      this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId, projectileStartPosition, correctDestination, false)
+        .then(particleSystemSet => {
+          // TODO particleSystemSet.disposeOnStop = true;
+          particleSystemSet.start();
+        });
     }
     this.createProjectile(projectileStartPosition, correctDestination);
   }
@@ -305,13 +307,15 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.getContainer().position.y + positionOffset.z,
       this.getContainer().position.z + positionOffset.y);
 
-    const particleSystem = this.rendererService.createParticleSystem(particleSystemConfig.id,
+    this.rendererService.createParticleSystem(particleSystemConfig.id,
       particleSystemConfig.imageId,
       emittingPosition,
       null,
-      false);
-    particleSystem.disposeOnStop = true;
-    particleSystem.start();
+      false)
+      .then(particleSystemSet => {
+        // TODO particleSystemSet.disposeOnStop = true;
+        particleSystemSet.start();
+      });
   }
 
   setBuildingPosition(razarionBuildingPosition: DecimalPosition): void {
@@ -344,8 +348,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
             emitterMesh.computeWorldMatrix(true);
             emitterPosition = emitterMesh.absolutePosition;
           }
-          this.buildingParticleSystem = this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId, emitterPosition, buildingPosition, true);
-          this.buildingParticleSystem.start();
+          this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId, emitterPosition, buildingPosition, true)
+            .then(particleSystemSet => {
+              this.buildingParticleSystem = particleSystemSet;
+              this.buildingParticleSystem.start();
+            });
         }
       } catch (e) {
         console.error(e);
@@ -382,8 +389,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
             emitterMesh.computeWorldMatrix(true);
             emitterPosition = emitterMesh.absolutePosition;
           }
-          this.harvestingParticleSystem = this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId, emitterPosition, harvestingPosition, true);
-          this.harvestingParticleSystem.start();
+          this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId, emitterPosition, harvestingPosition, true)
+            .then(particleSystemSet => {
+              this.harvestingParticleSystem = particleSystemSet;
+              this.harvestingParticleSystem.start();
+            });
         }
       } catch (e) {
         console.error(e);
@@ -474,13 +484,14 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     const trailParticleSystemEntityId = GwtHelper.gwtIssueNumber(this.baseItemType.getWeaponType()!.getTrailParticleSystemConfigId());
     if (trailParticleSystemEntityId || trailParticleSystemEntityId === 0) {
       let particleSystemEntity = this.babylonModelService.getParticleSystemEntity(trailParticleSystemEntityId);
-      let particleSystem = this.rendererService.createParticleSystem(particleSystemEntity.id,
+      this.rendererService.createParticleSystem(particleSystemEntity.id,
         particleSystemEntity.imageId,
         mesh,
         null,
-        false);
-      particleSystem.disposeOnStop = true;
-      particleSystem.start();
+        false).then(particleSystemSet => {
+        // TODO particleSystemSet.disposeOnStop = true;
+        particleSystemSet.start();
+      });
     }
 
     const frameRate = 1;

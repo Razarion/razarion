@@ -41,6 +41,7 @@
     "@babylonjs/core": "^8.24.0",
     "@babylonjs/inspector": "^8.24.0",
     "@babylonjs/node-editor": "^8.24.0",
+    "@babylonjs/node-particle-editor": "^8.24.0",
     "@types/earcut": "^3.0.0",
     "@types/jasmine": "~5.1.0",
     "@types/pako": "^2.0.3",

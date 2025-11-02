@@ -3,7 +3,7 @@ import {CrudContainerChild} from '../crud-container/crud-container.component';
 import {DecimalPosition, ParticleSystemControllerClient, ParticleSystemEntity} from 'src/app/generated/razarion-share';
 import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
 import {LocationVisualization} from '../../common/place-config/location-visualization';
-import {ParticleSystem, Vector3} from '@babylonjs/core';
+import {NodeParticleSystemSet, ParticleSystemSet, Vector3} from '@babylonjs/core';
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
@@ -16,6 +16,8 @@ import {Divider} from 'primeng/divider';
 import {ImageItemComponent} from '../../common/image-item/image-item.component';
 import {VertexEditorComponent} from '../../common/vertex-editor/vertex-editor.component';
 import {CommonModule} from '@angular/common';
+import {SelectModule} from 'primeng/select';
+import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
 
 @Component({
   selector: 'particle-system-editor',
@@ -28,7 +30,8 @@ import {CommonModule} from '@angular/common';
     Divider,
     ImageItemComponent,
     VertexEditorComponent,
-    CommonModule
+    CommonModule,
+    SelectModule,
   ],
   templateUrl: './particle-system-editor.component.html'
 })
@@ -39,15 +42,24 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
   terrainHeight: number | null = null;
   length?: number;
   stretchToDestination = false;
-  particleSystem?: ParticleSystem;
+  particleSystemSet?: ParticleSystemSet;
   particleSystemControllerClient: ParticleSystemControllerClient;
   @ViewChild('fileInput')
   fileInput!: ElementRef<HTMLInputElement>;
 
+  emitterIdentifierOptions: { label: string, identifier: string }[] = [];
+  emitterIdentifier: string | null = null;
+  emittersFound: AbstractMesh[] = [];
+  selectedEmitter: AbstractMesh | null = null;
+
+
   constructor(private messageService: MessageService,
               private rendererService: BabylonRenderServiceAccessImpl,
               httpClient: HttpClient) {
-    this.particleSystemControllerClient = new ParticleSystemControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
+    this.particleSystemControllerClient = new ParticleSystemControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
+    this.emitterIdentifierOptions.push({label: "RAZ_P_<X>", identifier: "RAZ_P_"});
+    this.emitterIdentifierOptions.push({label: "RAZ_I", identifier: "RAZ_I"});
+    this.emitterIdentifierOptions.push({label: "RAZ_M", identifier: "RAZ_M"});
   }
 
   init(particleSystemEntity: ParticleSystemEntity): void {
@@ -63,7 +75,7 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
   }
 
   startParticleSystem() {
-    if (this.particleSystem) {
+    if (this.particleSystemSet) {
       return;
     }
     if (this.terrainPosition) {
@@ -71,26 +83,28 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
       if (this.length) {
         destination = new Vector3(this.terrainPosition.x + this.length, this.terrainHeight!, this.terrainPosition.y);
       }
-      this.particleSystem = this.rendererService.createParticleSystem(this.particleSystemEntity.id,
+      this.rendererService.createParticleSystem(this.particleSystemEntity.id,
         this.particleSystemEntity.imageId,
         new Vector3(this.terrainPosition.x, this.terrainHeight!, this.terrainPosition.y),
         destination,
-        this.stretchToDestination);
-      this.particleSystem.name = `Editor: ${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})`;
-      this.particleSystem.start();
+        this.stretchToDestination).then(particleSystemSet => {
+        this.particleSystemSet = particleSystemSet;
+        // TODO this.particleSystemSet.name = `Editor: ${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})`;
+        this.particleSystemSet.start();
+      });
     }
   }
 
   disposeParticleSystem() {
-    if (this.particleSystem) {
-      this.particleSystem.dispose();
-      this.particleSystem = undefined;
+    if (this.particleSystemSet) {
+      this.particleSystemSet.dispose();
+      this.particleSystemSet = undefined;
     }
   }
 
   uploadParticleSystem() {
-    if (this.particleSystem) {
-      const json = JSON.stringify(this.particleSystem.serialize());
+    if (this.particleSystemSet) {
+      const json = JSON.stringify(this.particleSystemSet.serialize());
       this.upload(json);
     }
   }
@@ -111,10 +125,10 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
       try {
         const text = e.target?.result as string;
         const jsonData = JSON.parse(text);
-        this.particleSystem = ParticleSystem.Parse(jsonData, this.rendererService.getScene(), "");
-        this.particleSystem.name = `Editor: ${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})`;
-        this.particleSystem.emitter = new Vector3(this.terrainPosition!.x, this.terrainHeight!, this.terrainPosition!.y);
-        this.particleSystem.start();
+        //this.particleSystem = ParticleSystem.Parse(jsonData, this.rendererService.getScene(), "");
+        //this.particleSystem.name = `Editor: ${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})`;
+        //this.particleSystem.emitter = new Vector3(this.terrainPosition!.x, this.terrainHeight!, this.terrainPosition!.y);
+        //this.particleSystem.start();
       } catch (error) {
         this.messageService.add({
           severity: 'error',
@@ -163,4 +177,95 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
     }
   }
 
+  onScanEmitterIdentifier() {
+    this.emittersFound = this.rendererService.getScene().meshes.filter(m => m.name.startsWith(this.emitterIdentifier!));
+  }
+
+  onSelectEmitter() {
+    if (!this.selectedEmitter) {
+      this.selectedEmitter = this.emittersFound[0];
+    } else {
+      const currentIndex = this.emittersFound.indexOf(this.selectedEmitter);
+      const nextIndex = (currentIndex + 1) % this.emittersFound.length;
+      this.selectedEmitter = this.emittersFound[nextIndex];
+    }
+  }
+
+  onNodeParticleEditor() {
+    this.particleSystemControllerClient.getData(this.particleSystemEntity.id)
+      .then(data => {
+        let nodeParticleSystemSet;
+        try {
+          nodeParticleSystemSet = NodeParticleSystemSet.Parse(data);
+        } catch (error) {
+          console.warn(error)
+          nodeParticleSystemSet = NodeParticleSystemSet.CreateDefault(this.particleSystemEntity.internalName);
+        }
+        void Promise.all([
+          import("@babylonjs/core/Debug/debugLayer"),
+          import("@babylonjs/inspector"),
+          import("@babylonjs/node-editor"),
+          import("@babylonjs/node-particle-editor")
+        ]).then((_values) => {
+          nodeParticleSystemSet.editAsync(<any>{
+            nodeEditorConfig: {
+              customSave: {
+                label: `Razarion save: '${this.particleSystemEntity.internalName}' ${this.particleSystemEntity.id}`,
+                action: (data: any) => {
+                  return new Promise((resolve, reject) => {
+                    this.particleSystemControllerClient.uploadData(this.particleSystemEntity!.id, data)
+                      .then(value => {
+                        this.messageService.add({
+                          severity: 'success',
+                          life: 300,
+                          summary: "Particle system uploaded"
+                        });
+                        resolve(null);
+                      })
+                      .catch(reason => {
+                        console.log(reason);
+                        this.messageService.add({
+                          severity: 'error',
+                          summary: `Exception during particle system upload ${reason}`,
+                          sticky: true
+                        });
+                        reject();
+                      });
+                  });
+                },
+              },
+            }
+          });
+        });
+        nodeParticleSystemSet.buildAsync(this.rendererService.getScene()).then((nodeParticleSystemSet) => {
+          nodeParticleSystemSet.start(this.selectedEmitter!)
+        });
+      }).catch(err => {
+      console.error(`Load Particle System failed (inner). '${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})' Reason: ${err}`);
+    }).catch(err => {
+      console.error(`Load Particle System failed (outer). '${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})' Reason: ${err}`);
+    })
+    //
+    // NodeParticleSystemSet.SnippetUrl = "/rest/editor/particle-system/data";
+    // NodeParticleSystemSet.ParseFromSnippetAsync("6").then(npe => {
+    //   npe.buildAsync(this.rendererService.getScene()).then(particleSystemSet => {
+    //     particleSystemSet.start(this.selectedEmitter!);
+    //   });
+    //   void Promise.all([
+    //     import("@babylonjs/core/Debug/debugLayer"),
+    //     import("@babylonjs/inspector"),
+    //     import("@babylonjs/node-editor"),
+    //     import("@babylonjs/node-particle-editor")
+    //   ]).then((_values) => {
+    //     npe.editAsync();
+    //   });
+    // });
+  }
+
+  onStopAllParticleSystems() {
+    this.rendererService.getScene().particleSystems.forEach((particleSystem) => {
+      particleSystem.stop();
+      particleSystem.dispose(true);
+    })
+  }
 }

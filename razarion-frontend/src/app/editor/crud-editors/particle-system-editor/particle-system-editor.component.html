@@ -1,31 +1,31 @@
-<div style="width: 40em">
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+<div class="flex flex-col gap-1 bg-surface-800 p-3 bg-surface-100">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Id</span>
     <div class="col-span-8">
       <p-inputNumber [disabled]="true" [(ngModel)]="particleSystemEntity.id"></p-inputNumber>
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Internal name</span>
     <div class="col-span-8">
       <input [(ngModel)]="particleSystemEntity.internalName" type="text"
              class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Emitter node id</span>
     <div class="col-span-8">
       <input [(ngModel)]="particleSystemEntity.emitterNodeId" type="text"
              class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Position offset</span>
     <div class="col-span-8">
       <vertex-editor [(vertex)]="particleSystemEntity.positionOffset"></vertex-editor>
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Texture</span>
     <div class="col-span-8">
       <image-item [(imageId)]="particleSystemEntity.imageId"></image-item>
@@ -38,57 +38,124 @@
       <b>&nbsp;Edit</b>
     </div>
   </p-divider>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
+    <span class="col-span-4">Stop all particle systems</span>
+    <div class="col-span-8">
+      <div class="flex gap-4">
+        <p-button icon="pi pi-power-off"
+                  (onClick)="onStopAllParticleSystems()"
+                  size="small">
+        </p-button>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4">
+    <span class="col-span-4">Emitter identifier</span>
+    <div class="col-span-8">
+      <p-select [placeholder]="'...'"
+                [options]="emitterIdentifierOptions"
+                [(ngModel)]="emitterIdentifier"
+                (onChange)="onScanEmitterIdentifier()"
+                optionLabel="label"
+                optionValue="identifier">
+      </p-select>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4">
+    <span class="col-span-4">Emitters found</span>
+    <div class="col-span-8">
+      <div class="flex gap-4">
+        <span>{{ emittersFound.length }}</span>
+        <p-button icon="pi pi-sync"
+                  (onClick)="onScanEmitterIdentifier()"
+                  size="small">
+        </p-button>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4">
+    <span class="col-span-4">Select emitter</span>
+    <div class="col-span-8">
+      <p-button icon="pi pi-check-square"
+                [disabled]="!emittersFound.length"
+                (onClick)="onSelectEmitter()"
+                size="small">
+      </p-button>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4">
+    <span class="col-span-4">Emitter selected</span>
+    <div class="col-span-8">
+      {{ selectedEmitter }}
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4">
+    <span class="col-span-4">Node particle editor</span>
+    <div class="col-span-8">
+      <p-button icon="pi pi-play-circle"
+                [disabled]="!selectedEmitter"
+                (onClick)="onNodeParticleEditor()"
+                size="small">
+      </p-button>
+    </div>
+  </div>
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-cloud-upload mr-2"></i>
+      <b>&nbsp;Old Edit</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12">
       Edit in Babylon Inspector
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Pick terrain position</span>
     <div class="col-span-8">
       <decimal-position [(decimalPosition)]="terrainPosition"
                         (decimalPositionChange)="onTerrainPosition()"></decimal-position>
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Pick terrain height</span>
     <div class="col-span-8">
       <p-inputNumber [(ngModel)]="terrainHeight" [size]="'small'"
                      [minFractionDigits]="1" [maxFractionDigits]="6" [allowEmpty]="true"></p-inputNumber>
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Length</span>
     <div class="col-span-8">
       <p-inputNumber [(ngModel)]="length" [size]="'small'"
                      [minFractionDigits]="1" [maxFractionDigits]="6"></p-inputNumber>
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Stretch to destination</span>
     <div class="col-span-8">
       <p-checkbox [(ngModel)]="stretchToDestination" [binary]="true"></p-checkbox>
     </div>
   </div>
-  <div *ngIf="!particleSystem" class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div *ngIf="!particleSystemSet" class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Start</span>
     <div class="col-span-8">
       <p-button icon="pi pi-power-off" (onClick)="startParticleSystem()" [disabled]="!terrainPosition"></p-button>
     </div>
   </div>
-  <div *ngIf="particleSystem" class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div *ngIf="particleSystemSet" class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Dispose</span>
     <div class="col-span-8">
       <p-button icon="pi pi-trash" (onClick)="disposeParticleSystem()"></p-button>
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Upload particle system</span>
     <div class="col-span-8">
       <p-button icon="pi pi-upload" (onClick)="uploadParticleSystem()"></p-button>
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Import from file</span>
     <div class="col-span-8">
       <p-button icon="pi pi-file" (onClick)="uploadImport()"></p-button>
@@ -96,8 +163,7 @@
         type="file"
         #fileInput
         (change)="onFileSelected($event)"
-        style="display: none;" />
+        style="display: none;"/>
     </div>
   </div>
-
 </div>

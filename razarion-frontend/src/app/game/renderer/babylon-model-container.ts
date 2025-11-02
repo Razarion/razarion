@@ -6,7 +6,15 @@ import {
   ParticleSystemControllerClient,
   ParticleSystemEntity
 } from "../../generated/razarion-share";
-import {AssetContainer, Material, NodeMaterial, PBRMaterial, Scene, SceneLoader} from "@babylonjs/core";
+import {
+  AssetContainer,
+  Material,
+  NodeMaterial,
+  NodeParticleSystemSet,
+  PBRMaterial,
+  Scene,
+  SceneLoader
+} from "@babylonjs/core";
 import {TypescriptGenerator} from "../../backend/typescript-generator";
 import {HttpClient} from "@angular/common/http";
 import {BabylonModelService} from "./babylon-model.service";
@@ -174,23 +182,25 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
   }
 }
 
-export class ParticleSystemContainer extends BabylonModelContainer<ParticleSystemEntity, any> {
+export class ParticleSystemSetContainer extends BabylonModelContainer<ParticleSystemEntity, NodeParticleSystemSet> {
   private particleSystemControllerClient!: ParticleSystemControllerClient;
 
   public setHttpClient(httpClient: HttpClient): void {
     this.particleSystemControllerClient = new ParticleSystemControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
 
-  protected loadBabylonModel(babylonMaterialEntity: ParticleSystemEntity, scene: Scene): void {
-    this.particleSystemControllerClient.getData(babylonMaterialEntity.id)
+  protected loadBabylonModel(particleSystemEntity: ParticleSystemEntity, scene: Scene): void {
+    this.particleSystemControllerClient.getData(particleSystemEntity.id)
       .then(data => {
-        this.setBabylonModel(babylonMaterialEntity, data);
         this.handleBabylonModelLaded();
-      })
-      .catch(err => {
-        console.error(`Load Particle System failed. '${babylonMaterialEntity.internalName} (${babylonMaterialEntity.id})' Reason: ${err}`);
-        this.handleBabylonModelLaded();
-      })
+        this.setBabylonModel(particleSystemEntity, NodeParticleSystemSet.Parse(data));
+      }).catch(err => {
+      console.error(`Load Particle System failed (inner). '${particleSystemEntity.internalName} (${particleSystemEntity.id})' Reason: ${err}`);
+      this.handleBabylonModelLaded();
+    }).catch(err => {
+      console.error(`Load Particle System failed (outer). '${particleSystemEntity.internalName} (${particleSystemEntity.id})' Reason: ${err}`);
+      this.handleBabylonModelLaded();
+    })
   }
 
 }

@@ -242,11 +242,11 @@ const particleSystem = require("./resources/particle-system.json");
 
 server.on({
   method: 'GET',
-  path: '/rest/editor/particle-system/read/1',
+  path: '/rest/editor/particle-system/read/6',
   reply: {
     status: 200,
     headers: {"content-type": "application/json"},
-    body: JSON.stringify(particleSystem._1)
+    body: JSON.stringify(particleSystem._6)
   }
 });
 
@@ -257,6 +257,54 @@ server.on({
     status: 200,
     headers: {"content-type": "application/json"},
     body: JSON.stringify(particleSystem.objectNameIds)
+  }
+});
+
+
+server.on({
+  method: 'GET',
+  path: '/rest/editor/particle-system/data/6',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: function () {
+      try {
+        const filePath = path.join(__dirname, 'resources', 'nodeParticleSystemSet.json');
+        return fs.readFileSync(filePath, 'utf8');
+      } catch (err) {
+        console.error('Fehler beim Lesen von nodeParticleSystemSet.json:', err);
+        return JSON.stringify({error: 'Datei konnte nicht gelesen werden'});
+      }
+    }
+  }
+});
+
+
+server.on({
+  method: 'PUT',
+  path: '/rest/editor/particle-system/upload/6',
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: function (req) {
+      console.log("Save particle system: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
+
+      try {
+        const data = typeof req.body === 'string' ? req.body : JSON.stringify(req.body, null, 2);
+
+        const snipped = JSON.parse(data);
+        snipped.jsonPayload = snipped.payload
+        snipped.payload = undefined;
+
+        const filePath = path.join(__dirname, 'resources', 'nodeParticleSystemSet.json');
+        fs.writeFileSync(filePath, JSON.stringify(snipped), 'utf8');
+
+        console.log(`Particle system JSON wurde gespeichert unter: ${filePath}`);
+      } catch (err) {
+        console.error('Fehler beim Speichern des Particle-Systems:', err);
+      }
+      return null;
+    }
   }
 });
 
