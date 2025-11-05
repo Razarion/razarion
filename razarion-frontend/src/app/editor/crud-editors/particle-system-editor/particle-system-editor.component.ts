@@ -198,6 +198,11 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
         try {
           nodeParticleSystemSet = NodeParticleSystemSet.Parse(data);
         } catch (error) {
+          this.messageService.add({
+            severity: 'error',
+            summary: `Exception during particle system start ${error}. Default is used`,
+            sticky: true
+          });
           console.warn(error)
           nodeParticleSystemSet = NodeParticleSystemSet.CreateDefault(this.particleSystemEntity.internalName);
         }
@@ -213,7 +218,7 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
                 label: `Razarion save: '${this.particleSystemEntity.internalName}' ${this.particleSystemEntity.id}`,
                 action: (data: any) => {
                   return new Promise((resolve, reject) => {
-                    this.particleSystemControllerClient.uploadData(this.particleSystemEntity!.id, data)
+                    this.particleSystemControllerClient.uploadData(this.particleSystemEntity!.id, nodeParticleSystemSet.serialize())
                       .then(value => {
                         this.messageService.add({
                           severity: 'success',
