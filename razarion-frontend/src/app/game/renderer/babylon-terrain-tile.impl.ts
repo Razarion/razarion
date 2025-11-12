@@ -202,10 +202,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         terrainObjectModel.rotation.getZ(),
         terrainObjectModel.rotation.getY());
     }
-    let terrainObjectMesh;
-    terrainObjectMesh = babylonModelService.cloneModel3D(terrainObjectConfig.getModel3DId(), terrainObjectModelTransform)
-    terrainObjectMesh.name = `TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`;
-    terrainObjectMesh.parent = terrainObjectModelTransform;
+    let renderObject = babylonModelService.cloneModel3D(terrainObjectConfig.getModel3DId(), terrainObjectModelTransform);
+    renderObject.setName(`TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`);
+    renderObject.setParent(terrainObjectModelTransform);
 
     return terrainObjectModelTransform;
   }
@@ -394,35 +393,30 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
     botGrounds.forEach((botGround: BotGround) => {
       botGround.positions.forEach((position) => {
-        const botGroundTransformNode = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
-        botGroundTransformNode.position.x = position.getX();
-        botGroundTransformNode.position.y = botGround.height;
-        botGroundTransformNode.position.z = position.getY();
-        botGroundTransformNode.getChildMeshes().forEach(childMesh => {
-          childMesh.actionManager = this.actionManager;
-          BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(childMesh, RazarionMetadataType.BOT_BOX, undefined, botGround.model3DId);
+        const renderObject = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
+        renderObject.setPosition(new Vector3(position.getX(), botGround.height, position.getY()));
+        renderObject.setMetadata({
+          type: RazarionMetadataType.BOT_BOX,
+          configId: botGround.model3DId,
+          id: undefined,
+          editorHintTerrainObjectPosition: undefined
         });
-        if (botGroundTransformNode.hasOwnProperty('actionManager')) {
-          (<AbstractMesh>this.container).actionManager = this.actionManager;
-        }
+        renderObject.setActionManager(this.actionManager);
       });
       if (botGround.botGroundSlopeBoxes) {
         botGround.botGroundSlopeBoxes.forEach(botGroundSlopeBox => {
-          const botGroundTransformNode = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
-          botGroundTransformNode.name = "Slope " + botGroundTransformNode.name;
-          botGroundTransformNode.position.x = botGroundSlopeBox.xPos;
-          botGroundTransformNode.position.y = botGroundSlopeBox.height;
-          botGroundTransformNode.position.z = botGroundSlopeBox.yPos;
-          botGroundTransformNode.rotationQuaternion = null;
-          botGroundTransformNode.rotation.y = botGroundSlopeBox.yRot;
-          botGroundTransformNode.rotation.z = botGroundSlopeBox.zRot;
-          botGroundTransformNode.getChildMeshes().forEach(childMesh => {
-            childMesh.actionManager = this.actionManager;
-            BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(childMesh, RazarionMetadataType.BOT_BOX, undefined, botGround.model3DId);
+          const renderObject = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
+          renderObject.prefixName("Slope ");
+          renderObject.setPosition(new Vector3(botGroundSlopeBox.xPos, botGroundSlopeBox.height, botGroundSlopeBox.yPos));
+
+          renderObject.setRotationYZ(botGroundSlopeBox.yRot, botGroundSlopeBox.zRot);
+          renderObject.setMetadata({
+            type: RazarionMetadataType.BOT_BOX,
+            configId: botGround.model3DId,
+            id: undefined,
+            editorHintTerrainObjectPosition: undefined
           });
-          if (botGroundTransformNode.hasOwnProperty('actionManager')) {
-            (<AbstractMesh>this.container).actionManager = this.actionManager;
-          }
+          renderObject.setActionManager(this.actionManager);
         })
       }
     });

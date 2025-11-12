@@ -1,0 +1,127 @@
+import {
+  AbstractActionManager,
+  AbstractMesh,
+  Animation,
+  Node,
+  ParticleSystemSet,
+  TransformNode,
+  Vector3
+} from '@babylonjs/core';
+import {BabylonRenderServiceAccessImpl, RazarionMetadata} from './babylon-render-service-access-impl.service';
+import type {Nullable} from '@babylonjs/core/types';
+import {ParticleSystemEntity} from '../../generated/razarion-share';
+
+export class RenderObject {
+  private model3D!: TransformNode;
+  private muzzleFlashParticleEntity: ParticleSystemEntity | null = null;
+  private muzzleFlashEmitterMesh: Nullable<AbstractMesh> = null;
+
+
+  constructor(private rendererService: BabylonRenderServiceAccessImpl) {
+  }
+
+  setModel3D(model3D: TransformNode) {
+    this.model3D = model3D;
+  }
+
+  getModel3D(): TransformNode {
+    return this.model3D;
+  }
+
+  setRotation(rotation3D: Vector3) {
+    this.model3D.rotationQuaternion = null;
+    this.model3D.rotation = rotation3D
+  }
+
+  setRotationY(y: number) {
+    this.model3D.rotationQuaternion = null;
+    this.model3D.rotation.y = y;
+  }
+
+  setRotationYZ(y: number, z: number) {
+    this.model3D.rotationQuaternion = null;
+    this.model3D.rotation.y = y;
+    this.model3D.rotation.z = z;
+  }
+
+  dispose() {
+    this.model3D.dispose();
+  }
+
+  setPosition(position: Vector3) {
+    this.model3D.position = position;
+  }
+
+  setPositionXZ(x: number, z: number) {
+    this.model3D.position.x = x;
+    this.model3D.position.z = z;
+  }
+
+  increaseHeight(delta: number) {
+    this.model3D.position.y += delta;
+  }
+
+  setMetadata(razarionMetadata: RazarionMetadata) {
+    this.model3D.getChildMeshes().forEach(childMesh => {
+      BabylonRenderServiceAccessImpl.setRazarionMetadata(childMesh, razarionMetadata);
+    });
+  }
+
+  setActionManager(actionManager: Nullable<AbstractActionManager>) {
+    this.model3D.getChildMeshes().forEach(childMesh => {
+      childMesh.actionManager = actionManager;
+    });
+    if (this.model3D.hasOwnProperty('actionManager')) {
+      (<AbstractMesh>this.model3D).actionManager = actionManager;
+    }
+  }
+
+  setName(name: string) {
+    this.model3D.name = name;
+  }
+
+  prefixName(name: string) {
+    this.model3D.name = `Slope ${this.model3D.name}`;
+  }
+
+  setParent(parent: Nullable<Node>) {
+    this.model3D.parent = parent;
+  }
+
+  addAnimation(original: Node, animation: Animation) {
+    original.getScene().beginAnimation(animation, 0, 60, true) // Todo Do not stat here
+  }
+
+  addAllShadowCasters(rendererService: BabylonRenderServiceAccessImpl) {
+    this.model3D.getChildMeshes().forEach(childMesh => {
+      rendererService.shadowGenerator.addShadowCaster(childMesh, true);
+    });
+  }
+
+  removeAllShadowCasters(rendererService: BabylonRenderServiceAccessImpl) {
+    this.model3D.getChildMeshes().forEach(childMesh => {
+      rendererService.shadowGenerator.removeShadowCaster(childMesh, true);
+    });
+  }
+
+  setMuzzleFlash(muzzleFlashMeshParticleId: ParticleSystemEntity, muzzleFlashMesh: AbstractMesh) {
+    this.muzzleFlashParticleEntity = muzzleFlashMeshParticleId;
+    this.muzzleFlashEmitterMesh = muzzleFlashMesh;
+  }
+
+  hasMuzzleFlash() {
+    return this.muzzleFlashParticleEntity !== null && this.muzzleFlashEmitterMesh !== null;
+  }
+
+  createMuzzleFlashParticleSystemSet(): Promise<ParticleSystemSet> {
+    return this.rendererService.createParticleSystem(this.muzzleFlashParticleEntity!.id,
+      this.muzzleFlashParticleEntity!.imageId,
+      this.muzzleFlashEmitterMesh!,
+      null,
+      false);
+  }
+
+  getMuzzleFlashMesh(): AbstractMesh {
+    return this.muzzleFlashEmitterMesh!;
+  }
+}

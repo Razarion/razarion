@@ -14,10 +14,10 @@ import {InputNumber} from 'primeng/inputnumber';
 import {DecimalPositionComponent} from '../../common/decimal-position/decimal-position.component';
 import {Divider} from 'primeng/divider';
 import {ImageItemComponent} from '../../common/image-item/image-item.component';
-import {VertexEditorComponent} from '../../common/vertex-editor/vertex-editor.component';
 import {CommonModule} from '@angular/common';
 import {SelectModule} from 'primeng/select';
 import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
+import {BabylonModelService} from '../../../game/renderer/babylon-model.service';
 
 @Component({
   selector: 'particle-system-editor',
@@ -29,7 +29,6 @@ import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
     DecimalPositionComponent,
     Divider,
     ImageItemComponent,
-    VertexEditorComponent,
     CommonModule,
     SelectModule,
   ],
@@ -57,9 +56,9 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
               private rendererService: BabylonRenderServiceAccessImpl,
               httpClient: HttpClient) {
     this.particleSystemControllerClient = new ParticleSystemControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
-    this.emitterIdentifierOptions.push({label: "RAZ_P_<X>", identifier: "RAZ_P_"});
-    this.emitterIdentifierOptions.push({label: "RAZ_I", identifier: "RAZ_I"});
-    this.emitterIdentifierOptions.push({label: "RAZ_M", identifier: "RAZ_M"});
+    this.emitterIdentifierOptions.push({label: "RAZ_P_<N>", identifier: BabylonModelService.RAZ_P_});
+    this.emitterIdentifierOptions.push({label: "RAZ_I", identifier: BabylonModelService.RAZ_I});
+    this.emitterIdentifierOptions.push({label: "RAZ_M_P_<N>", identifier: BabylonModelService.RAZ_M_P_});
   }
 
   init(particleSystemEntity: ParticleSystemEntity): void {

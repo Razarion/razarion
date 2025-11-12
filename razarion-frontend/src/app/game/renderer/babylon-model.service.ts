@@ -22,11 +22,17 @@ import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {BabylonMaterialContainer, GlbContainer, ParticleSystemSetContainer} from "./babylon-model-container";
 import {GltfHelper} from "./gltf-helper";
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
+import {RenderObject} from './render-object';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class BabylonModelService {
+  public static readonly RAZ_P_ = "RAZ_P_"
+  public static readonly RAZ_I = "RAZ_I"
+  public static readonly RAZ_M_P_ = "RAZ_M_P_"
+  //
   private babylonMaterialContainer = new BabylonMaterialContainer();
   private glbContainer = new GlbContainer(this.babylonMaterialContainer);
   private particleSystemContainer = new ParticleSystemSetContainer();
@@ -78,7 +84,7 @@ export class BabylonModelService {
     }
   }
 
-  cloneModel3D(model3DId: number, parent: Node | null, diplomacy?: Diplomacy): TransformNode {
+  cloneModel3D(model3DId: number, parent: Node | null, diplomacy?: Diplomacy): RenderObject {
     model3DId = GwtHelper.gwtIssueNumber(model3DId);
 
     let model3DEntity = this.model3DEntities.get(model3DId);
@@ -116,13 +122,20 @@ export class BabylonModelService {
     }
 
     const sourceMap = new Map<string, Mesh>();
-    let transformNode = this.deepCloneNode(node, parent, sourceMap, gltfHelper, allowedAnimationUniqueIds, diplomacy);
-    transformNode.position.x = 0.0;
-    transformNode.position.z = 0.0;
-    return transformNode;
+    const renderObject = new RenderObject(this.renderer);
+    let transformNode = this.deepCloneNode(node, parent, sourceMap, gltfHelper, allowedAnimationUniqueIds, renderObject, diplomacy);
+    renderObject.setModel3D(transformNode);
+    renderObject.setPositionXZ(0.0, 0.0);
+    return renderObject;
   }
 
-  private deepCloneNode(root: Node, parent: Node | null, sourceMap: Map<string, Mesh>, gltfHelper: GltfHelper, allowedAnimationUniqueIds: Set<number>, diplomacy?: Diplomacy): TransformNode {
+  private deepCloneNode(root: Node,
+                        parent: Node | null,
+                        sourceMap: Map<string, Mesh>,
+                        gltfHelper: GltfHelper,
+                        allowedAnimationUniqueIds: Set<number>,
+                        renderObject: RenderObject,
+                        diplomacy?: Diplomacy): TransformNode {
     let clonedRoot = root.clone(root.name, parent, true);
     sourceMap.set(root.id, <Mesh>clonedRoot);
     if (clonedRoot instanceof Mesh) {
@@ -139,8 +152,8 @@ export class BabylonModelService {
         })
       }
     }
-    this.startAnimations(root, clonedRoot, allowedAnimationUniqueIds);
-    this.startParticleSystems(clonedRoot);
+    this.setupAnimations(root, clonedRoot, allowedAnimationUniqueIds, renderObject);
+    this.setupParticleSystems(clonedRoot, renderObject);
 
     root.getChildren().forEach((child) => {
       if (child instanceof InstancedMesh) {
@@ -165,8 +178,8 @@ export class BabylonModelService {
               clonedMesh.animations.push(animation.clone());
             })
           }
-          this.startAnimations(instancedMesh, clonedMesh, allowedAnimationUniqueIds);
-          this.startParticleSystems(clonedMesh);
+          this.setupAnimations(instancedMesh, clonedMesh, allowedAnimationUniqueIds, renderObject);
+          this.setupParticleSystems(clonedMesh, renderObject);
         } else {
           const clonedMesh = instancedMesh.sourceMesh.clone(instancedMesh.name); // Instance does not work
           clonedMesh.setParent(clonedRoot);
@@ -186,18 +199,18 @@ export class BabylonModelService {
               clonedMesh.animations.push(animation.clone());
             })
           }
-          this.startAnimations(instancedMesh, clonedMesh, allowedAnimationUniqueIds);
-          this.startParticleSystems(clonedMesh);
+          this.setupAnimations(instancedMesh, clonedMesh, allowedAnimationUniqueIds, renderObject);
+          this.setupParticleSystems(clonedMesh, renderObject);
         }
       } else {
-        this.deepCloneNode(child, clonedRoot, sourceMap, gltfHelper, allowedAnimationUniqueIds, diplomacy);
+        this.deepCloneNode(child, clonedRoot, sourceMap, gltfHelper, allowedAnimationUniqueIds, renderObject, diplomacy);
       }
     })
 
     return <TransformNode>clonedRoot;
   }
 
-  private startAnimations(original: Node | null, created: Node | null, allowedAnimationUniqueIds: Set<number>) {
+  private setupAnimations(original: Node | null, created: Node | null, allowedAnimationUniqueIds: Set<number>, renderObject: RenderObject) {
     if (!original || !created) {
       return;
     }
@@ -207,26 +220,26 @@ export class BabylonModelService {
         if (allowedAnimationUniqueIds.has(originalAnimation.uniqueId)) {
           let createdAnimation = created.animations.find(c => c.name == originalAnimation.name);
           if (createdAnimation) {
-            original.getScene().beginAnimation(created, 0, 60, true)
+            renderObject.addAnimation(original, createdAnimation);
           }
         }
       })
     }
   }
 
-  private startParticleSystems(node: Node | null) {
+  private setupParticleSystems(node: Node | null, renderObject: RenderObject) {
     if (!node) {
       return;
     }
-    if (node.name.startsWith("RAZ_P_")) {
-      if (node instanceof AbstractMesh) {
-        const abstractMesh = (<AbstractMesh>node);
+    if (node instanceof AbstractMesh) {
+      const abstractMesh = (<AbstractMesh>node);
+      if (abstractMesh.name.startsWith(BabylonModelService.RAZ_P_)) {
         try {
-          const particleSystemEntityId = parseInt(node.name.replace("RAZ_P_", ""), 10);
+          const particleSystemEntityId = parseInt(abstractMesh.name.replace(BabylonModelService.RAZ_P_, ""), 10);
           let particleSystemEntity = this.getParticleSystemEntity(particleSystemEntityId);
           this.renderer.createParticleSystem(particleSystemEntityId,
             particleSystemEntity.imageId,
-            node,
+            abstractMesh,
             null,
             false).then(particleSystemSet => {
             abstractMesh.isVisible = false;
@@ -235,9 +248,19 @@ export class BabylonModelService {
         } catch (exception) {
           console.error(exception);
         }
+      } else if (abstractMesh.name.startsWith(BabylonModelService.RAZ_M_P_)) {
+        try {
+          const particleSystemEntityId = parseInt(abstractMesh.name.replace(BabylonModelService.RAZ_M_P_, ""), 10);
+          let particleSystemEntity = this.getParticleSystemEntity(particleSystemEntityId);
+          abstractMesh.isVisible = false;
+          renderObject.setMuzzleFlash(particleSystemEntity, abstractMesh);
+        } catch (exception) {
+          console.error(exception);
+        }
       }
     }
   }
+
 
   public static findChildNode(node: Node, namePath: string[]): Node | null {
     if (namePath.length == 0) {

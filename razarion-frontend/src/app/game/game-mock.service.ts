@@ -241,19 +241,19 @@ export class GameMockService {
           // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
         }
         {
-          let botGround = this.babylonModelService.cloneModel3D(45, null, Diplomacy.OWN);
-          botGround.position.x = 72;
-          botGround.position.y = -0.5;
-          botGround.position.z = 26;
-          botGround.rotationQuaternion = null;
-          botGround.rotation.x = toRadians(-22.5);
-
-          botGround = this.babylonModelService.cloneModel3D(45, null, Diplomacy.OWN);
-          botGround.position.x = 83.4;
-          botGround.position.y = -1;
-          botGround.position.z = 38;
-          botGround.rotationQuaternion = null;
-          botGround.rotation.z = toRadians(-15);
+          // let botGround = this.babylonModelService.cloneModel3D(45, null, Diplomacy.OWN);
+          // botGround.position.x = 72;
+          // botGround.position.y = -0.5;
+          // botGround.position.z = 26;
+          // botGround.rotationQuaternion = null;
+          // botGround.rotation.x = toRadians(-22.5);
+          //
+          // botGround = this.babylonModelService.cloneModel3D(45, null, Diplomacy.OWN);
+          // botGround.position.x = 83.4;
+          // botGround.position.y = -1;
+          // botGround.position.z = 38;
+          // botGround.rotationQuaternion = null;
+          // botGround.rotation.z = toRadians(-15);
 
         }
         this.showQuestionCockpit();

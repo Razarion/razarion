@@ -1,10 +1,16 @@
 package com.btxtech.server.model.ui;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.system.Nullable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "PARTICLE_SYSTEM")
@@ -13,8 +19,6 @@ public class ParticleSystemEntity extends BaseEntity {
     @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
     private byte[] data;
-    private String emitterNodeId;
-    private Vertex positionOffset;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "imageId_id")
     @JsonIgnore
@@ -28,22 +32,6 @@ public class ParticleSystemEntity extends BaseEntity {
 
     public void setData(byte[] data) {
         this.data = data;
-    }
-
-    public @Nullable String getEmitterNodeId() {
-        return emitterNodeId;
-    }
-
-    public void setEmitterNodeId(@Nullable String emitterNodeId) {
-        this.emitterNodeId = emitterNodeId;
-    }
-
-    public @Nullable Vertex getPositionOffset() {
-        return positionOffset;
-    }
-
-    public void setPositionOffset(@Nullable Vertex positionOffset) {
-        this.positionOffset = positionOffset;
     }
 
     public ImageLibraryEntity getImageLibraryEntity() {

@@ -1,5 +1,4 @@
 import {
-  AbstractMesh,
   ActionManager,
   ExecuteCodeAction,
   InputBlock,
@@ -27,11 +26,12 @@ import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-im
 import {ActionService, SelectionInfo} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {GwtInstance} from '../../gwtangular/GwtInstance';
+import {RenderObject} from './render-object';
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
   static readonly HOVER_ALPHA: number = 0.6;
-  private readonly container: TransformNode;
+  private readonly renderObject: RenderObject;
   private position: Vertex | null = null;
   private angle: number = 0;
   private diplomacyMarkerDisc: Mesh | null = null;
@@ -54,16 +54,15 @@ export class BabylonItemImpl implements BabylonItem {
               parent: TransformNode,
               protected disposeCallback: (() => void) | null) {
     if (itemType.getModel3DId()) {
-      this.container = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, parent, diplomacy);
+      this.renderObject = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, parent, diplomacy);
     } else {
-      this.container = MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, {diameter: this.getRadius() * 2});
+      this.renderObject = new RenderObject(rendererService);
+      this.renderObject.setModel3D(MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, {diameter: this.getRadius() * 2}))
       console.warn(`No MeshContainerId or ThreeJsModelPackConfigId for ${itemType.getInternalName()} '${itemType.getId()}'`)
     }
-    this.container.parent = parent;
-    this.container.name = `${itemType.getInternalName()} '${id}')`;
-    this.container.getChildMeshes().forEach(childMesh => {
-      rendererService.shadowGenerator.addShadowCaster(childMesh, true);
-    });
+    this.renderObject.setParent(parent);
+    this.renderObject.setName(`${itemType.getInternalName()} '${id}')`);
+    this.renderObject.addAllShadowCasters(rendererService);
 
     let actionManager = new ActionManager(rendererService.getScene());
     actionManager.registerAction(
@@ -117,14 +116,7 @@ export class BabylonItemImpl implements BabylonItem {
       }
     }
     actionService.addCursorHandler(this.itemCursorTypeHandler);
-
-    this.container.getChildMeshes().forEach(function (childMesh) {
-      childMesh.actionManager = actionManager;
-    });
-    if (this.container.hasOwnProperty('actionManager')) {
-      (<AbstractMesh>this.container).actionManager = actionManager;
-    }
-
+    this.renderObject.setActionManager(actionManager);
     this.updateItemCursor();
   }
 
@@ -145,7 +137,7 @@ export class BabylonItemImpl implements BabylonItem {
       rotation3D = new Vector3(0, Tools.ToRadians(90) - this.angle, 0)
     }
     if (this.onRotation3D(rotation3D)) {
-      this.container.rotation = rotation3D;
+      this.renderObject.setRotation(rotation3D);
     }
   }
 
@@ -158,11 +150,9 @@ export class BabylonItemImpl implements BabylonItem {
       this.disposeCallback();
     }
     this.actionService.removeCursorHandler(this.itemCursorTypeHandler);
-    this.container.getChildMeshes().forEach(childMesh => {
-      this.rendererService.shadowGenerator.removeShadowCaster(childMesh, true);
-    });
-    this.rendererService.getScene().removeTransformNode(this.container);
-    this.container.dispose();
+    this.renderObject.removeAllShadowCasters(this.rendererService)
+    this.rendererService.getScene().removeTransformNode(this.renderObject.getModel3D());
+    this.renderObject.dispose();
   }
 
   setPosition(position: Vertex): void {
@@ -170,7 +160,7 @@ export class BabylonItemImpl implements BabylonItem {
       // Position
       let position3D = new Vector3(position.getX(), position.getZ(), position.getY());
       if (this.onPosition3D(position3D)) {
-        this.container.position = position3D;
+        this.renderObject.setPosition(position3D);
       }
       // Rotation
       let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(position.getX(), position.getY()));
@@ -179,7 +169,7 @@ export class BabylonItemImpl implements BabylonItem {
         this.lastNormal = normal;
         let rotation3D = this.calculateRotation(normal);
         if (this.onRotation3D(rotation3D)) {
-          this.container.rotation = rotation3D;
+          this.renderObject.setRotation(rotation3D);
         }
       }
     }
@@ -246,7 +236,7 @@ export class BabylonItemImpl implements BabylonItem {
       this.visualizationMarkerDisc.position.y = 0.01;
       this.visualizationMarkerDisc.rotation.x = Tools.ToRadians(90);
       this.visualizationMarkerDisc.isPickable = false;
-      this.visualizationMarkerDisc.parent = this.container;
+      this.visualizationMarkerDisc.parent = this.renderObject.getModel3D();
       (<NodeMaterial>this.visualizationMarkerDisc.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
     } else {
       if (this.visualizationMarkerDisc) {
@@ -260,8 +250,12 @@ export class BabylonItemImpl implements BabylonItem {
     this.selectionCallback = selectionCallback;
   }
 
+  getRenderObject(): RenderObject {
+    return this.renderObject;
+  }
+
   getContainer(): TransformNode {
-    return this.container;
+    return this.renderObject.getModel3D();
   }
 
   findChildMesh(nodeId: string): Mesh {
@@ -305,7 +299,7 @@ export class BabylonItemImpl implements BabylonItem {
         this.diplomacyMarkerDisc.material = nodeMaterial;
         this.diplomacyMarkerDisc.position.y = 0.2;
         this.diplomacyMarkerDisc.rotation.x = Tools.ToRadians(90);
-        this.diplomacyMarkerDisc.parent = this.container;
+        this.diplomacyMarkerDisc.parent = this.renderObject.getModel3D();
       }
     } else {
       if (this.diplomacyMarkerDisc) {

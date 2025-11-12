@@ -17,6 +17,7 @@ import {BabylonModelService} from "./babylon-model.service";
 import {AdvancedDynamicTexture, Control, Rectangle, StackPanel, TextBlock} from "@babylonjs/gui";
 import {Image} from "@babylonjs/gui/2D/controls/image";
 import {Animation} from "@babylonjs/core/Animations/animation";
+import {RenderObject} from './render-object';
 
 export enum BaseItemPlacerPresenterEvent {
   ACTIVATED,
@@ -26,7 +27,7 @@ export enum BaseItemPlacerPresenterEvent {
 
 export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private disc: Mesh | null = null;
-  private model3D: TransformNode | null = null;
+  private renderObject: RenderObject | null = null;
   private tip: Tip | null = null;
   private readonly material;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
@@ -49,9 +50,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     const positionValid = baseItemPlacer.isPositionValid();
     this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
 
-    this.model3D = this.babylonModelService.cloneModel3D(baseItemPlacer.getModel3DId()!, null, Diplomacy.OWN_PLACER);
-    this.model3D.rotationQuaternion = null;
-    this.model3D.rotation.y = Tools.ToRadians(90);
+    this.renderObject = this.babylonModelService.cloneModel3D(baseItemPlacer.getModel3DId()!, null, Diplomacy.OWN_PLACER);
+    this.renderObject.setRotationY(Tools.ToRadians(90));
 
     this.tip = new Tip(positionValid, this.rendererService, this.disc!)
 
@@ -119,8 +119,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.rendererService.getScene().removeMesh(this.disc!);
     this.disc?.dispose();
     this.disc = null;
-    this.model3D?.dispose();
-    this.model3D = null;
+    this.renderObject?.dispose();
+    this.renderObject = null;
     this.rendererService.baseItemPlacerActive = false;
     this.tip?.dispose();
     this.tip = null;
@@ -140,8 +140,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     const positionValid = baseItemPlacer.isPositionValid();
     this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
     this.tip!.setPositionValid(positionValid);
-    this.model3D!.position = pickedPoint
-    this.model3D!.position.y += +0.01;
+    this.renderObject!.setPosition(pickedPoint);
+    this.renderObject!.increaseHeight(0.01);
   }
 }
 
