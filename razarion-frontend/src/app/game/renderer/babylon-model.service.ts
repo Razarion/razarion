@@ -137,6 +137,7 @@ export class BabylonModelService {
                         renderObject: RenderObject,
                         diplomacy?: Diplomacy): TransformNode {
     let clonedRoot = root.clone(root.name, parent, true);
+    clonedRoot!.metadata = {};
     sourceMap.set(root.id, <Mesh>clonedRoot);
     if (clonedRoot instanceof Mesh) {
       const mesh = <Mesh>clonedRoot;
@@ -161,6 +162,7 @@ export class BabylonModelService {
         const clonedSource = sourceMap.get(instancedMesh.sourceMesh.id);
         if (clonedSource) {
           const clonedMesh = clonedSource.clone(instancedMesh.name); // Instance does not work
+          clonedMesh.metadata = {};
           clonedMesh.setParent(clonedRoot);
           clonedMesh.position.copyFrom(instancedMesh.position);
           clonedMesh.rotation.copyFrom(instancedMesh.rotation);
@@ -182,6 +184,7 @@ export class BabylonModelService {
           this.setupParticleSystems(clonedMesh, renderObject);
         } else {
           const clonedMesh = instancedMesh.sourceMesh.clone(instancedMesh.name); // Instance does not work
+          clonedMesh.metadata = {};
           clonedMesh.setParent(clonedRoot);
           clonedMesh.position.copyFrom(instancedMesh.position);
           clonedMesh.rotation.copyFrom(instancedMesh.rotation);
