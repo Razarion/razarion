@@ -384,7 +384,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   override onPosition3D(position3D: Vector3): boolean {
-    let updateImmediately = !this.position3D || !this.lastPositionUpdateTime;
+    let updateImmediately = !this.position3D || this.lastPositionUpdateTime === null;
     this.oldPosition3D = this.position3D;
     this.position3D = position3D.clone();
     this.lastPositionUpdateTime = Date.now();
@@ -392,7 +392,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   override onRotation3D(rotation3D: Vector3): boolean {
-    let updateImmediately = !this.rotation3D || !this.lastRotationUpdateTime;
+    let updateImmediately = this.rotation3D === null || this.lastRotationUpdateTime === null;
     this.oldRotation3D = this.rotation3D;
     this.rotation3D = rotation3D.clone();
     this.lastRotationUpdateTime = Date.now();
@@ -400,7 +400,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   interpolate(date: number): void {
-    if (this.lastPositionUpdateTime && this.position3D && this.oldPosition3D) {
+    if (this.lastPositionUpdateTime !== null && this.position3D && this.oldPosition3D) {
       let t = (date - this.lastPositionUpdateTime) / BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
       if (t > 1) {
         t = 1;
@@ -408,7 +408,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.getContainer().position = Vector3.Lerp(this.oldPosition3D, this.position3D, t);
     }
 
-    if (this.lastRotationUpdateTime && this.rotation3D && this.oldRotation3D) {
+    if (this.lastRotationUpdateTime !== null && this.rotation3D !== null && this.oldRotation3D !== null) {
       let t = (date - this.lastRotationUpdateTime) / BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
       if (t > 1) {
         t = 1;

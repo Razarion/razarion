@@ -59,7 +59,7 @@ public class SyncWeapon extends SyncBaseAbility {
     private SyncTurret syncTurret;
 
     @Inject
-    public SyncWeapon(SyncService syncService, Provider<com.btxtech.shared.gameengine.planet.model.SyncTurret> syncTurretInstance, PathingService pathingService, SyncItemContainerServiceImpl syncItemContainerService, ProjectileService projectileService, BaseItemService baseItemService) {
+    public SyncWeapon(SyncService syncService, Provider<SyncTurret> syncTurretInstance, PathingService pathingService, SyncItemContainerServiceImpl syncItemContainerService, ProjectileService projectileService, BaseItemService baseItemService) {
         this.syncService = syncService;
         this.syncTurretInstance = syncTurretInstance;
         this.pathingService = pathingService;
@@ -72,8 +72,10 @@ public class SyncWeapon extends SyncBaseAbility {
         super.init(syncBaseItem);
         this.weaponType = weaponType;
         reloadProgress = weaponType.getReloadTime();
-        syncTurret = syncTurretInstance.get();
-        syncTurret.init(getSyncBaseItem(), weaponType.getTurretType());
+        if (weaponType.getTurretType() != null) {
+            syncTurret = syncTurretInstance.get();
+            syncTurret.init(getSyncBaseItem(), weaponType.getTurretType());
+        }
     }
 
     public boolean isActive() {
@@ -139,6 +141,11 @@ public class SyncWeapon extends SyncBaseAbility {
 
             if (syncTurret != null && !syncTurret.isOnTarget(target.getAbstractSyncPhysical().getPosition())) {
                 return true;
+            } else if (getAbstractSyncPhysical().canMove()) {
+                double angle = getSyncBaseItem().getSyncPhysicalMovable().getPosition().getAngle(target.getAbstractSyncPhysical().getPosition());
+                if (getSyncBaseItem().getSyncPhysicalMovable().turnTo(angle)) {
+                    return true;
+                }
             }
 
             doAttack(target);

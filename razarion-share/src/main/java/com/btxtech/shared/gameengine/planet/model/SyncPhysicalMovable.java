@@ -172,13 +172,13 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         return path != null;
     }
 
+    public Path getPath() {
+        return path;
+    }
+
     public void setPath(SimplePath path) {
         this.path = instancePath.get();
         this.path.init(path);
-    }
-
-    public Path getPath() {
-        return path;
     }
 
     @Override
@@ -269,6 +269,23 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
             } else {
                 setAngle(velocity.angle());
             }
+        }
+    }
+
+    public boolean turnTo(double destinationAngle) {
+        double stepDeltaAngle = angularVelocity * PlanetService.TICK_FACTOR;
+
+        double angleDistance = MathHelper.getAngle(getAngle(), destinationAngle);
+        if (stepDeltaAngle > angleDistance) {
+            setAngle(destinationAngle);
+            return false;
+        } else {
+            if (MathHelper.isCounterClock(getAngle(), destinationAngle)) {
+                setAngle(getAngle() + stepDeltaAngle);
+            } else {
+                setAngle(getAngle() - stepDeltaAngle);
+            }
+            return true;
         }
     }
 }
