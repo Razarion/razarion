@@ -223,7 +223,7 @@ export class BabylonModelService {
         if (allowedAnimationUniqueIds.has(originalAnimation.uniqueId)) {
           let createdAnimation = created.animations.find(c => c.name == originalAnimation.name);
           if (createdAnimation) {
-            renderObject.addAnimation(original, createdAnimation);
+            renderObject.addAnimation(original, created);
           }
         }
       })

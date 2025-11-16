@@ -98,6 +98,18 @@ public class SyncBuilder extends SyncBaseAbility {
             getSyncPhysicalMovable().stop();
         }
 
+        if (getAbstractSyncPhysical().canMove()) {
+            double angle;
+            if (currentBuildup != null) {
+                angle = getSyncBaseItem().getSyncPhysicalMovable().getPosition().getAngle(currentBuildup.getAbstractSyncPhysical().getPosition());
+            } else {
+                angle = getSyncBaseItem().getSyncPhysicalMovable().getPosition().getAngle(toBeBuildPosition);
+            }
+            if (getSyncBaseItem().getSyncPhysicalMovable().turnTo(angle)) {
+                return true;
+            }
+        }
+
         if (currentBuildup == null) {
             building = false;
             if (toBeBuiltType == null || toBeBuildPosition == null) {

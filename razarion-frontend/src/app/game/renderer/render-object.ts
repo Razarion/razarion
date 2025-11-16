@@ -88,7 +88,7 @@ export class RenderObject {
     this.model3D.parent = parent;
   }
 
-  addAnimation(original: Node, animation: Animation) {
+  addAnimation(original: Node, animation: Node) {
     original.getScene().beginAnimation(animation, 0, 60, true) // Todo Do not stat here
   }
 

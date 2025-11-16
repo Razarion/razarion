@@ -76,6 +76,14 @@ public class SyncHarvester extends SyncBaseAbility {
         if (getSyncPhysicalMovable().hasDestination()) {
             getSyncPhysicalMovable().stop();
         }
+
+        if (getAbstractSyncPhysical().canMove()) {
+            double angle = getSyncBaseItem().getSyncPhysicalMovable().getPosition().getAngle(resource.getAbstractSyncPhysical().getPosition());
+            if (getSyncBaseItem().getSyncPhysicalMovable().turnTo(angle)) {
+                return true;
+            }
+        }
+
         harvesting = true;
 
         double harvestedResources = resource.harvest(PlanetService.TICK_FACTOR * harvesterType.getProgress());
