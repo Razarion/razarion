@@ -240,11 +240,7 @@ export class BabylonModelService {
         try {
           const particleSystemEntityId = parseInt(abstractMesh.name.replace(BabylonModelService.RAZ_P_, ""), 10);
           let particleSystemEntity = this.getParticleSystemEntity(particleSystemEntityId);
-          this.renderer.createParticleSystem(particleSystemEntityId,
-            particleSystemEntity.imageId,
-            abstractMesh,
-            null,
-            false).then(particleSystemSet => {
+          this.renderer.createParticleSystem(particleSystemEntityId, particleSystemEntity.imageId).then(particleSystemSet => {
             abstractMesh.isVisible = false;
             particleSystemSet.start(abstractMesh);
           });
@@ -260,6 +256,9 @@ export class BabylonModelService {
         } catch (exception) {
           console.error(exception);
         }
+      } else if (abstractMesh.name.startsWith(BabylonModelService.RAZ_I)) {
+        renderObject.addImpactMesh(abstractMesh);
+        abstractMesh.isVisible = false;
       }
     }
   }

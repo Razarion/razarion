@@ -1,12 +1,4 @@
-import {
-  AbstractActionManager,
-  AbstractMesh,
-  Animation,
-  Node,
-  ParticleSystemSet,
-  TransformNode,
-  Vector3
-} from '@babylonjs/core';
+import {AbstractActionManager, AbstractMesh, Node, ParticleSystemSet, TransformNode, Vector3} from '@babylonjs/core';
 import {BabylonRenderServiceAccessImpl, RazarionMetadata} from './babylon-render-service-access-impl.service';
 import type {Nullable} from '@babylonjs/core/types';
 import {ParticleSystemEntity} from '../../generated/razarion-share';
@@ -15,7 +7,7 @@ export class RenderObject {
   private model3D!: TransformNode;
   private muzzleFlashParticleEntity: ParticleSystemEntity | null = null;
   private muzzleFlashEmitterMesh: Nullable<AbstractMesh> = null;
-
+  private impactMeshes: AbstractMesh[] = [];
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl) {
   }
@@ -114,14 +106,24 @@ export class RenderObject {
   }
 
   createMuzzleFlashParticleSystemSet(): Promise<ParticleSystemSet> {
-    return this.rendererService.createParticleSystem(this.muzzleFlashParticleEntity!.id,
-      this.muzzleFlashParticleEntity!.imageId,
-      this.muzzleFlashEmitterMesh!,
-      null,
-      false);
+    return this.rendererService.createParticleSystem(this.muzzleFlashParticleEntity!.id, this.muzzleFlashParticleEntity!.imageId);
   }
 
   getMuzzleFlashMesh(): AbstractMesh {
     return this.muzzleFlashEmitterMesh!;
+  }
+
+  addImpactMesh(mesh: AbstractMesh) {
+    this.impactMeshes.push(mesh)
+  }
+
+  getRandomImpactMesh(): Nullable<AbstractMesh> {
+    if (this.impactMeshes.length == 1) {
+      return this.impactMeshes[0];
+    } else if (this.impactMeshes.length > 1) {
+      return this.impactMeshes[Math.random() * this.impactMeshes.length];
+    } else {
+      return null;
+    }
   }
 }

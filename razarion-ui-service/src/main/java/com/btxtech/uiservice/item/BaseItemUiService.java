@@ -272,10 +272,10 @@ public class BaseItemUiService {
         }
     }
 
-    public void onProjectileFired(int syncBaseItemId, DecimalPosition destination) {
+    public void onProjectileFired(int syncBaseItemId, int tagetSyncBaseItemId, DecimalPosition targetPosition) {
         BabylonBaseItem babylonBaseItem = babylonBaseItems.get(syncBaseItemId);
         if (babylonBaseItem != null) {
-            babylonBaseItem.onProjectileFired(destination);
+            babylonBaseItem.onProjectileFired(tagetSyncBaseItemId, targetPosition);
             audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getWeaponType().getMuzzleFlashAudioItemConfigId());
         }
     }

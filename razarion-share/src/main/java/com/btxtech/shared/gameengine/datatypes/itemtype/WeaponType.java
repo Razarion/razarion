@@ -32,7 +32,7 @@ public class WeaponType {
     private double reloadTime;
     private List<Integer> disallowedItemTypes;
     private Double projectileSpeed; // Meter per second
-    private Integer muzzleFlashParticleSystemConfigId;
+    private Integer impactParticleSystemId;
     private TurretType turretType;
     private Integer muzzleFlashAudioItemConfigId;
     private Integer trailParticleSystemConfigId;
@@ -93,12 +93,12 @@ public class WeaponType {
         this.muzzleFlashAudioItemConfigId = muzzleFlashAudioItemConfigId;
     }
 
-    public @Nullable Integer getMuzzleFlashParticleSystemConfigId() {
-        return muzzleFlashParticleSystemConfigId;
+    public @Nullable Integer getImpactParticleSystemId() {
+        return impactParticleSystemId;
     }
 
-    public void setMuzzleFlashParticleSystemConfigId(@Nullable Integer muzzleFlashParticleSystemConfigId) {
-        this.muzzleFlashParticleSystemConfigId = muzzleFlashParticleSystemConfigId;
+    public void setImpactParticleSystemId(@Nullable Integer impactParticleSystemId) {
+        this.impactParticleSystemId = impactParticleSystemId;
     }
 
     public @Nullable Integer getTrailParticleSystemConfigId() {
@@ -152,8 +152,8 @@ public class WeaponType {
         return this;
     }
 
-    public WeaponType muzzleFlashParticleSystemConfigId(Integer muzzleFlashParticleConfigId) {
-        setMuzzleFlashParticleSystemConfigId(muzzleFlashParticleConfigId);
+    public WeaponType impactParticleSystemId(Integer muzzleFlashParticleConfigId) {
+        setImpactParticleSystemId(muzzleFlashParticleConfigId);
         return this;
     }
 

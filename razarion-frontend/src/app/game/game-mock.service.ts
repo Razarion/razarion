@@ -171,7 +171,7 @@ export class GameMockService {
                 return 30;
               }
 
-              getMuzzleFlashParticleSystemConfigId(): number | null {
+              getImpactParticleSystemId(): number | null {
                 return 2;
               }
 

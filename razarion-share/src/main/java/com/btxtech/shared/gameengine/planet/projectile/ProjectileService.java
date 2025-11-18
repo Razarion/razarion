@@ -55,7 +55,7 @@ public class ProjectileService {
             projectiles.add(projectile);
         }
 
-        gameLogicService.onProjectileFired(actor, target.getAbstractSyncPhysical().getPosition());
+        gameLogicService.onProjectileFired(actor, target.getId(), target.getAbstractSyncPhysical().getPosition());
     }
 
     public void tick() {

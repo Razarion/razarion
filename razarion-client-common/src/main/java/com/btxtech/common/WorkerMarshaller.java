@@ -125,12 +125,12 @@ public class WorkerMarshaller {
             case BASE_UPDATED:
             case PROJECTILE_DETONATION:
             case ENERGY_CHANGED:
-            case PROJECTILE_FIRED:
             case GET_TERRAIN_TYPE_ANSWER:
                 array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.setAt(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
             // Triple JSON data
+            case PROJECTILE_FIRED:
             case COMMAND_BUILD:
                 array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.setAt(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
@@ -319,7 +319,8 @@ public class WorkerMarshaller {
                 break;
             case PROJECTILE_FIRED:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
-                data.add(fromJson(array[DATA_OFFSET_1].asString(), DecimalPosition.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_2].asString(), DecimalPosition.class));
                 break;
             case PROJECTILE_DETONATION:
                 data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));

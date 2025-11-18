@@ -778,7 +778,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.interpolationListeners.forEach(interpolationListener => interpolationListener.interpolate(date));
   }
 
-  public createParticleSystem(particleSystemEntityId: number | null, imageId: number | null, emitterPosition: AbstractMesh | Vector3, destination: Vector3 | null, stretchToDestination: boolean): Promise<ParticleSystemSet> {
+  public createParticleSystem(particleSystemEntityId: number | null, imageId: number | null): Promise<ParticleSystemSet> {
     if (!particleSystemEntityId && particleSystemEntityId !== 0) {
       throw new Error("particleSystemEntityId not set");
     }
@@ -812,7 +812,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.editorTerrainTileContainer;
   }
 
-  public getBabylonBaseItemImpl(diplomacy: Diplomacy, itemTypeId: number): BabylonBaseItemImpl | null {
+  public getBabylonBaseItemById(syncBaseItemTypeId: number): BabylonBaseItemImpl | null {
+    return this.babylonBaseItems.find(item => {
+      return item.getId() === syncBaseItemTypeId;
+    }) || null;
+  }
+
+  public getBabylonBaseItemByDiplomacyItemType(diplomacy: Diplomacy, itemTypeId: number): BabylonBaseItemImpl | null {
     return this.babylonBaseItems.find(item => {
       return item.diplomacy === diplomacy && item.itemType.getId() === itemTypeId;
     }) || null;

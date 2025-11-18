@@ -286,7 +286,7 @@ export interface BuilderType {
 }
 
 export interface WeaponType {
-  getMuzzleFlashParticleSystemConfigId(): number | null;
+  getImpactParticleSystemId(): number | null;
 
   getProjectileSpeed(): number | null;
 
@@ -500,7 +500,7 @@ export interface BabylonBaseItem extends BabylonItem {
 
   setIdle(idle: boolean): void;
 
-  onProjectileFired(destination: DecimalPosition): void;
+  onProjectileFired(tagetSyncBaseItemId: number, targetPosition: DecimalPosition): void;
 
   onExplode(): void;
 

@@ -1,4 +1,4 @@
-import {Animation, MeshBuilder, ParticleSystemSet, UtilityLayerRenderer, Vector3} from "@babylonjs/core";
+import {AbstractMesh, Animation, MeshBuilder, ParticleSystemSet, UtilityLayerRenderer, Vector3} from "@babylonjs/core";
 import {
   BabylonBaseItem,
   BaseItemType,
@@ -16,6 +16,7 @@ import {ActionService} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {AdvancedDynamicTexture, TextBlock} from '@babylonjs/gui';
 import {Slider} from '@babylonjs/gui/2D/controls/sliders/slider';
+import {Nullable} from '@babylonjs/core/types';
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   // See GWT java PlanetService
@@ -136,7 +137,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
       }
 
-      onProjectileFired(destination: DecimalPosition): void {
+      onProjectileFired(tagetSyncBaseItemId: number, targetPosition: DecimalPosition): void {
       }
 
       onExplode(): void {
@@ -262,27 +263,33 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
   }
 
-  onProjectileFired(destination: DecimalPosition): void {
-    if (!this.baseItemType.getWeaponType()!.getMuzzleFlashParticleSystemConfigId()) {
-      console.warn(`No MuzzleFlashParticleSystemConfigId for ${this.baseItemType.getInternalName()} '${this.baseItemType.getId()}'`);
-      return;
+  onProjectileFired(tagetSyncBaseItemId: number, targetPosition: DecimalPosition): void {
+    let targetImpactMesh: Nullable<AbstractMesh> = null;
+    const targetBaseItem = this.rendererService.getBabylonBaseItemById(tagetSyncBaseItemId);
+    if (targetBaseItem) {
+      targetImpactMesh = targetBaseItem.getRenderObject().getRandomImpactMesh();
     }
 
-    let correctDestination;
-    let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(destination);
-    if (pickingInfo && pickingInfo.hit) {
-      correctDestination = pickingInfo.pickedPoint!;
-    } else {
-      correctDestination = new Vector3(destination.getX(), 0, destination.getY());
+    let correctedTargetPosition: Nullable<Vector3> = null;
+    if (!targetImpactMesh) {
+      let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(targetPosition);
+      if (pickingInfo && pickingInfo.hit) {
+        correctedTargetPosition = pickingInfo.pickedPoint!;
+      } else {
+        correctedTargetPosition = new Vector3(targetPosition.getX(), 0, targetPosition.getY());
+      }
     }
-    let projectileStartPosition = this.position3D!;
+
+    let startPosition;
     if (this.getRenderObject().hasMuzzleFlash()) {
       this.getRenderObject().createMuzzleFlashParticleSystemSet()
         .then(particleSystemSet => particleSystemSet
           .start(this.getRenderObject().getMuzzleFlashMesh()));
-      projectileStartPosition = this.getRenderObject().getMuzzleFlashMesh().position.clone();
+      startPosition = this.getRenderObject().getMuzzleFlashMesh().getAbsolutePosition();
+    } else {
+      startPosition = this.getRenderObject().getModel3D().getAbsolutePosition();
     }
-    this.createProjectile(projectileStartPosition, correctDestination);
+    this.createProjectile(startPosition, targetImpactMesh, correctedTargetPosition);
   }
 
   onExplode(): void {
@@ -292,11 +299,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
 
     let particleSystemConfig = this.babylonModelService.getParticleSystemEntity(this.baseItemType.getExplosionParticleId()!);
-    this.rendererService.createParticleSystem(particleSystemConfig.id,
-      particleSystemConfig.imageId,
-      this.getContainer().position.clone(),
-      null,
-      false)
+    this.rendererService.createParticleSystem(particleSystemConfig.id, particleSystemConfig.imageId)
       .then(particleSystemSet => {
         // TODO particleSystemSet.disposeOnStop = true;
         particleSystemSet.start();
@@ -436,7 +439,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
   }
 
-  private createProjectile(start: Vector3, destination: Vector3): void {
+  private createProjectile(start: Vector3, targetImpactMesh: Nullable<AbstractMesh>, targetPosition: Nullable<Vector3>): void {
     if (!this.baseItemType.getWeaponType()!.getProjectileSpeed()) {
       return;
     }
@@ -445,22 +448,19 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       return;
     }
 
-    const mesh = MeshBuilder.CreateSphere("Projectile", {
+    const impactParticleSystemId = GwtHelper.gwtIssueNumber(this.baseItemType.getWeaponType()!.getImpactParticleSystemId());
+
+    const meshProjectile = MeshBuilder.CreateSphere("Projectile", {
       diameter: 0.2,
       segments: 1
     }, this.rendererService.getScene());
-    mesh.material = this.rendererService.projectileMaterial;
+    meshProjectile.material = this.rendererService.projectileMaterial;
 
     const trailParticleSystemEntityId = GwtHelper.gwtIssueNumber(this.baseItemType.getWeaponType()!.getTrailParticleSystemConfigId());
     if (trailParticleSystemEntityId || trailParticleSystemEntityId === 0) {
       let particleSystemEntity = this.babylonModelService.getParticleSystemEntity(trailParticleSystemEntityId);
-      this.rendererService.createParticleSystem(particleSystemEntity.id,
-        particleSystemEntity.imageId,
-        mesh,
-        null,
-        false).then(particleSystemSet => {
-        // TODO particleSystemSet.disposeOnStop = true;
-        particleSystemSet.start();
+      this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId).then(particleSystemSet => {
+        particleSystemSet.start(meshProjectile);
       });
     }
 
@@ -478,6 +478,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       value: start
     });
 
+    const destination = targetImpactMesh ? targetImpactMesh.getAbsolutePosition() : targetPosition!;
     keyFrames.push({
       frame: 1,
       value: destination
@@ -485,17 +486,25 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
     xSlide.setKeys(keyFrames);
 
-    mesh.animations.push(xSlide);
+    meshProjectile.animations.push(xSlide);
 
 
-    let animatable = this.rendererService.getScene().beginAnimation(mesh,
+    let animatable = this.rendererService.getScene().beginAnimation(meshProjectile,
       0,
       1,
       false,
       projectileSpeed / start.subtract(destination).length());
     animatable.onAnimationEnd = () => {
-      this.rendererService.getScene().removeMesh(mesh);
-      mesh.dispose();
+      try {
+        this.rendererService.getScene().removeMesh(meshProjectile);
+        meshProjectile.dispose();
+        if (impactParticleSystemId !== null && impactParticleSystemId !== undefined) {
+          this.rendererService.createParticleSystem(impactParticleSystemId, null)
+            .then(particleSystemSet => particleSystemSet.start(targetImpactMesh ? targetImpactMesh : meshProjectile));
+        }
+      } catch (e) {
+        console.warn(`BabylonBaseItemImpl animatable.onAnimationEnd failed ${e}`)
+      }
     };
   }
 

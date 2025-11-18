@@ -10,7 +10,7 @@ export class StartBuildPlacerTipTask extends AbstractTipTask {
 
   isFulfilled(): boolean {
     return !!this.tipTaskContext.babylonBaseItemImpl?.isSelectOrHove() &&
-      !!this.tipService.renderService.getBabylonBaseItemImpl(Diplomacy.OWN, this.toBeBuiltItemTypeId);
+      !!this.tipService.renderService.getBabylonBaseItemByDiplomacyItemType(Diplomacy.OWN, this.toBeBuiltItemTypeId);
   }
 
   start(): void {

@@ -120,8 +120,8 @@ public class GameLogicService {
     public void onSyncFactoryStopped(SyncBaseItem syncBaseItem) {
     }
 
-    public void onProjectileFired(SyncBaseItem syncBaseItem, DecimalPosition target) {
-        gameLogicListener.ifPresent(listener -> listener.onProjectileFired(syncBaseItem, target));
+    public void onProjectileFired(SyncBaseItem syncBaseItem, int tagetSyncBaseItemId, DecimalPosition targetPosition) {
+        gameLogicListener.ifPresent(listener -> listener.onProjectileFired(syncBaseItem, tagetSyncBaseItemId, targetPosition));
     }
 
     public void onProjectileDetonation(SyncBaseItem syncBaseItem, DecimalPosition position) {

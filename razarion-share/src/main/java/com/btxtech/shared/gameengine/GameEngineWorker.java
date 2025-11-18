@@ -514,8 +514,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onProjectileFired(SyncBaseItem syncBaseItem, DecimalPosition target) {
-        sendToClient(GameEngineControlPackage.Command.PROJECTILE_FIRED, syncBaseItem.getId(), target);
+    public void onProjectileFired(SyncBaseItem syncBaseItem, int tagetSyncBaseItemId, DecimalPosition targetPosition) {
+        sendToClient(GameEngineControlPackage.Command.PROJECTILE_FIRED, syncBaseItem.getId(), tagetSyncBaseItemId, targetPosition);
     }
 
     @Override

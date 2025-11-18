@@ -112,7 +112,7 @@ export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemT
         reloadTime = 1;
         disallowedItemTypes = [];
         projectileSpeed = 1;
-        muzzleFlashParticleSystemConfigId = null;
+        impactParticleSystemId = null;
         trailParticleSystemConfigId = null;
         turretType = <any>null;
         muzzleFlashAudioItemConfigId = <any>null;

@@ -236,7 +236,7 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         }
 
         @Override
-        public void onProjectileFired(DecimalPosition destination) {
+        public void onProjectileFired(int tagetSyncBaseItemId, DecimalPosition targetPosition) {
 
         }
 

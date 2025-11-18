@@ -82,11 +82,7 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
       if (this.length) {
         destination = new Vector3(this.terrainPosition.x + this.length, this.terrainHeight!, this.terrainPosition.y);
       }
-      this.rendererService.createParticleSystem(this.particleSystemEntity.id,
-        this.particleSystemEntity.imageId,
-        new Vector3(this.terrainPosition.x, this.terrainHeight!, this.terrainPosition.y),
-        destination,
-        this.stretchToDestination).then(particleSystemSet => {
+      this.rendererService.createParticleSystem(this.particleSystemEntity.id, this.particleSystemEntity.imageId).then(particleSystemSet => {
         this.particleSystemSet = particleSystemSet;
         // TODO this.particleSystemSet.name = `Editor: ${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})`;
         this.particleSystemSet.start();

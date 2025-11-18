@@ -57,7 +57,7 @@ public interface GameLogicListener {
     default void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
     }
 
-    default void onProjectileFired(SyncBaseItem syncBaseItem, DecimalPosition target) {
+    default void onProjectileFired(SyncBaseItem syncBaseItem, int tagetSyncBaseItemId, DecimalPosition targetPosition) {
     }
 
     default void onProjectileDetonation(int baseItemTypeId, DecimalPosition position) {

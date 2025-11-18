@@ -23,7 +23,7 @@ public interface BabylonBaseItem extends BabylonItem {
 
     void setIdle(boolean idle);
 
-    void onProjectileFired(DecimalPosition destination);
+    void onProjectileFired(int tagetSyncBaseItemId, DecimalPosition targetPosition);
 
     void onExplode();
 

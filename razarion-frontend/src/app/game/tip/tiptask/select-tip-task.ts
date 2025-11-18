@@ -50,7 +50,7 @@ export class SelectTipTask extends AbstractTipTask {
 
   private findActor(): BabylonBaseItemImpl {
     const actorItemTypeId = GwtHelper.gwtIssueNumber(this.tipConfig.getActorItemTypeId());
-    return <BabylonBaseItemImpl>this.tipService.renderService.getBabylonBaseItemImpl(Diplomacy.OWN, actorItemTypeId);
+    return <BabylonBaseItemImpl>this.tipService.renderService.getBabylonBaseItemByDiplomacyItemType(Diplomacy.OWN, actorItemTypeId);
   }
 
 }

@@ -16,7 +16,7 @@ export class SendBuildCommandTipTask extends AbstractTipTask {
   }
 
   start(): void {
-    this.toBeFinalized = this.tipService.renderService.getBabylonBaseItemImpl(Diplomacy.OWN, this.toBeBuiltItemTypeId);
+    this.toBeFinalized = this.tipService.renderService.getBabylonBaseItemByDiplomacyItemType(Diplomacy.OWN, this.toBeBuiltItemTypeId);
     if (this.toBeFinalized) {
       this.toBeFinalized.setItemClickCallback(() => this.onSucceed());
       this.tipTaskContext.babylonBaseItemImpl!.setSelectionCallback(active => {

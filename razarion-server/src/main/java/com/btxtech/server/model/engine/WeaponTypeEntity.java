@@ -43,7 +43,7 @@ public class WeaponTypeEntity extends BaseEntity {
     private AudioLibraryEntity muzzleFlashAudioLibraryEntity;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ParticleSystemEntity muzzleFlashParticleSystem;
+    private ParticleSystemEntity impactParticleSystem;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ParticleSystemEntity trailParticleSystem;
@@ -57,7 +57,7 @@ public class WeaponTypeEntity extends BaseEntity {
                 .detonationRadius(detonationRadius)
                 .reloadTime(reloadTime)
                 .projectileSpeed(projectileSpeed)
-                .muzzleFlashParticleSystemConfigId(extractId(muzzleFlashParticleSystem, ParticleSystemEntity::getId))
+                .impactParticleSystemId(extractId(impactParticleSystem, ParticleSystemEntity::getId))
                 .muzzleFlashAudioItemConfigId(extractId(muzzleFlashAudioLibraryEntity, AudioLibraryEntity::getId))
                 .trailParticleSystemConfigId(extractId(trailParticleSystem, ParticleSystemEntity::getId));
         if (disallowedItemTypes != null && !disallowedItemTypes.isEmpty()) {
@@ -94,7 +94,7 @@ public class WeaponTypeEntity extends BaseEntity {
         }
         projectileSpeed = weaponType.getProjectileSpeed();
         muzzleFlashAudioLibraryEntity = audioPersistence.getAudioLibraryEntity(weaponType.getMuzzleFlashAudioItemConfigId());
-        muzzleFlashParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getMuzzleFlashParticleSystemConfigId());
+        impactParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getImpactParticleSystemId());
         if (weaponType.getTurretType() != null) {
             if (turretType == null) {
                 turretType = new TurretTypeEntity();
