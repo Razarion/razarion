@@ -784,28 +784,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
     const nodeParticleSystemSet = this.babylonModelService.getNodeParticleSystemSet(particleSystemEntityId);
     return nodeParticleSystemSet.buildAsync(this.scene);
-
-
-    // const particleSystem = ParticleSystem.Parse(particleJson, this.scene, "");
-    // particleSystem.emitter = emitterPosition;
-    //
-    // let correctedImageId = GwtHelper.gwtIssueNumber(imageId);
-    // if (correctedImageId || correctedImageId === 0) {
-    //   particleSystem.particleTexture = new Texture(getImageUrl(correctedImageId));
-    // }
-    // if (destination) {
-    //   const beam = destination.subtract(<Vector3>emitterPosition);
-    //   const delta = 2;
-    //   const direction1 = beam.subtractFromFloats(delta, delta, delta).normalize();
-    //   const direction2 = beam.subtractFromFloats(-delta, -delta, -delta).normalize();
-    //   particleSystem.createPointEmitter(direction1, direction2);
-    //   if (stretchToDestination) {
-    //     const distance = beam.length();
-    //     particleSystem.minLifeTime = distance;
-    //     particleSystem.maxLifeTime = distance;
-    //   }
-    // }
-    // return particleSystem;
   }
 
   getAllBabylonTerrainTile(): BabylonTerrainTileImpl[] {

@@ -302,7 +302,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.rendererService.createParticleSystem(particleSystemConfig.id, particleSystemConfig.imageId)
       .then(particleSystemSet => {
         // TODO particleSystemSet.disposeOnStop = true;
-        particleSystemSet.start();
+        particleSystemSet.start(<any>this.getContainer().position.clone());
       });
   }
 

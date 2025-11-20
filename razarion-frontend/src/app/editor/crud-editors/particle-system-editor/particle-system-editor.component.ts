@@ -1,17 +1,14 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component} from '@angular/core';
 import {CrudContainerChild} from '../crud-container/crud-container.component';
-import {DecimalPosition, ParticleSystemControllerClient, ParticleSystemEntity} from 'src/app/generated/razarion-share';
+import {ParticleSystemControllerClient, ParticleSystemEntity} from 'src/app/generated/razarion-share';
 import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
-import {LocationVisualization} from '../../common/place-config/location-visualization';
-import {NodeParticleSystemSet, ParticleSystemSet, Vector3} from '@babylonjs/core';
+import {NodeParticleSystemSet} from '@babylonjs/core';
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {ButtonModule} from 'primeng/button';
-import {Checkbox} from 'primeng/checkbox';
 import {FormsModule} from '@angular/forms';
 import {InputNumber} from 'primeng/inputnumber';
-import {DecimalPositionComponent} from '../../common/decimal-position/decimal-position.component';
 import {Divider} from 'primeng/divider';
 import {ImageItemComponent} from '../../common/image-item/image-item.component';
 import {CommonModule} from '@angular/common';
@@ -23,10 +20,8 @@ import {BabylonModelService} from '../../../game/renderer/babylon-model.service'
   selector: 'particle-system-editor',
   imports: [
     ButtonModule,
-    Checkbox,
     FormsModule,
     InputNumber,
-    DecimalPositionComponent,
     Divider,
     ImageItemComponent,
     CommonModule,
@@ -37,14 +32,8 @@ import {BabylonModelService} from '../../../game/renderer/babylon-model.service'
 export class ParticleSystemEditorComponent implements CrudContainerChild<ParticleSystemEntity> {
   static editorControllerClient = ParticleSystemControllerClient;
   particleSystemEntity!: ParticleSystemEntity;
-  terrainPosition: DecimalPosition | null = null;
-  terrainHeight: number | null = null;
   length?: number;
-  stretchToDestination = false;
-  particleSystemSet?: ParticleSystemSet;
   particleSystemControllerClient: ParticleSystemControllerClient;
-  @ViewChild('fileInput')
-  fileInput!: ElementRef<HTMLInputElement>;
 
   emitterIdentifierOptions: { label: string, identifier: string }[] = [];
   emitterIdentifier: string | null = null;
@@ -73,116 +62,27 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
     return this.particleSystemEntity.id;
   }
 
-  startParticleSystem() {
-    if (this.particleSystemSet) {
-      return;
-    }
-    if (this.terrainPosition) {
-      let destination: Vector3 | null = null;
-      if (this.length) {
-        destination = new Vector3(this.terrainPosition.x + this.length, this.terrainHeight!, this.terrainPosition.y);
-      }
-      this.rendererService.createParticleSystem(this.particleSystemEntity.id, this.particleSystemEntity.imageId).then(particleSystemSet => {
-        this.particleSystemSet = particleSystemSet;
-        // TODO this.particleSystemSet.name = `Editor: ${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})`;
-        this.particleSystemSet.start();
-      });
-    }
-  }
-
-  disposeParticleSystem() {
-    if (this.particleSystemSet) {
-      this.particleSystemSet.dispose();
-      this.particleSystemSet = undefined;
-    }
-  }
-
-  uploadParticleSystem() {
-    if (this.particleSystemSet) {
-      const json = JSON.stringify(this.particleSystemSet.serialize());
-      this.upload(json);
-    }
-  }
-
-  uploadImport() {
-    this.fileInput.nativeElement.click();
-  }
-
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) {
-      return;
-    }
-    const file = input.files[0];
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const text = e.target?.result as string;
-        const jsonData = JSON.parse(text);
-        //this.particleSystem = ParticleSystem.Parse(jsonData, this.rendererService.getScene(), "");
-        //this.particleSystem.name = `Editor: ${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})`;
-        //this.particleSystem.emitter = new Vector3(this.terrainPosition!.x, this.terrainHeight!, this.terrainPosition!.y);
-        //this.particleSystem.start();
-      } catch (error) {
-        this.messageService.add({
-          severity: 'error',
-          summary: `Exception during particle system import ${error}`,
-          sticky: true
-        });
-        console.error(error);
-      }
-    };
-    reader.readAsText(file);
-  }
-
-
-  onTerrainPosition() {
-    if (this.terrainPosition) {
-      this.terrainHeight = LocationVisualization.getHeightFromTerrain(this.terrainPosition.x, this.terrainPosition.y, this.rendererService);
-    }
-  }
-
-  private upload(data: any) {
-    try {
-      const blob = new Blob([data], {type: 'application/octet-stream'});
-      this.particleSystemControllerClient.uploadData(this.particleSystemEntity!.id, blob)
-        .then(() => {
-          this.messageService.add({
-            severity: 'success',
-            life: 300,
-            summary: "Particle system uploaded"
-          });
-        })
-        .catch(err => {
-          this.messageService.add({
-            severity: 'error',
-            summary: `Exception during particle system upload ${err}`,
-            sticky: true
-          });
-          console.error(err);
-        });
-    } catch (e) {
-      this.messageService.add({
-        severity: 'error',
-        summary: `Exception during particle system upload ${e}`,
-        sticky: true
-      });
-      console.error(e);
-    }
-  }
-
   onScanEmitterIdentifier() {
     this.emittersFound = this.rendererService.getScene().meshes.filter(m => m.name.startsWith(this.emitterIdentifier!));
+    this.onSelectEmitter();
   }
 
   onSelectEmitter() {
-    if (!this.selectedEmitter) {
+    if (!this.emittersFound.length) {
+      this.selectedEmitter = null;
+      return;
+    }
+
+    if (this.emittersFound.length == 1) {
       this.selectedEmitter = this.emittersFound[0];
     } else {
-      const currentIndex = this.emittersFound.indexOf(this.selectedEmitter);
-      const nextIndex = (currentIndex + 1) % this.emittersFound.length;
-      this.selectedEmitter = this.emittersFound[nextIndex];
+      if (this.selectedEmitter) {
+        const currentIndex = this.emittersFound.indexOf(this.selectedEmitter);
+        const nextIndex = (currentIndex + 1) % this.emittersFound.length;
+        this.selectedEmitter = this.emittersFound[nextIndex];
+      } else {
+        this.selectedEmitter = this.emittersFound[0];
+      }
     }
   }
 
@@ -211,10 +111,10 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
             nodeEditorConfig: {
               customSave: {
                 label: `Razarion save: '${this.particleSystemEntity.internalName}' ${this.particleSystemEntity.id}`,
-                action: (data: any) => {
+                action: () => {
                   return new Promise((resolve, reject) => {
                     this.particleSystemControllerClient.uploadData(this.particleSystemEntity!.id, nodeParticleSystemSet.serialize())
-                      .then(value => {
+                      .then(() => {
                         this.messageService.add({
                           severity: 'success',
                           life: 300,
@@ -245,21 +145,6 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
     }).catch(err => {
       console.error(`Load Particle System failed (outer). '${this.particleSystemEntity.internalName} (${this.particleSystemEntity.id})' Reason: ${err}`);
     })
-    //
-    // NodeParticleSystemSet.SnippetUrl = "/rest/editor/particle-system/data";
-    // NodeParticleSystemSet.ParseFromSnippetAsync("6").then(npe => {
-    //   npe.buildAsync(this.rendererService.getScene()).then(particleSystemSet => {
-    //     particleSystemSet.start(this.selectedEmitter!);
-    //   });
-    //   void Promise.all([
-    //     import("@babylonjs/core/Debug/debugLayer"),
-    //     import("@babylonjs/inspector"),
-    //     import("@babylonjs/node-editor"),
-    //     import("@babylonjs/node-particle-editor")
-    //   ]).then((_values) => {
-    //     npe.editAsync();
-    //   });
-    // });
   }
 
   onStopAllParticleSystems() {

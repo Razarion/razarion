@@ -61,19 +61,17 @@
     </div>
   </div>
   <div class="grid grid-cols-12 gap-4">
-    <span class="col-span-4">Select emitter</span>
-    <div class="col-span-8">
-      <p-button icon="pi pi-check-square"
-                [disabled]="!emittersFound.length"
-                (onClick)="onSelectEmitter()"
-                size="small">
-      </p-button>
-    </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4">
     <span class="col-span-4">Emitter selected</span>
     <div class="col-span-8">
-      {{ selectedEmitter }}
+      <div class="flex gap-4">
+        <span>{{ selectedEmitter && (selectedEmitter!.name + ": " + (selectedEmitter!.parent && selectedEmitter!.parent!.name)) }}</span>
+        <p-button icon="pi pi-sync"
+                  (onClick)="onSelectEmitter()"
+                  [disabled]="!emittersFound.length"
+                  size="small">
+        </p-button>
+      </div>
+
     </div>
   </div>
   <div class="grid grid-cols-12 gap-4">
@@ -84,73 +82,6 @@
                 (onClick)="onNodeParticleEditor()"
                 size="small">
       </p-button>
-    </div>
-  </div>
-  <p-divider align="left">
-    <div class="inline-flex items-center">
-      <i class="pi pi-cloud-upload mr-2"></i>
-      <b>&nbsp;Old Edit</b>
-    </div>
-  </p-divider>
-  <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12">
-      Edit in Babylon Inspector
-    </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4">
-    <span class="col-span-4">Pick terrain position</span>
-    <div class="col-span-8">
-      <decimal-position [(decimalPosition)]="terrainPosition"
-                        (decimalPositionChange)="onTerrainPosition()"></decimal-position>
-    </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4">
-    <span class="col-span-4">Pick terrain height</span>
-    <div class="col-span-8">
-      <p-inputNumber [(ngModel)]="terrainHeight" [size]="'small'"
-                     [minFractionDigits]="1" [maxFractionDigits]="6" [allowEmpty]="true"></p-inputNumber>
-    </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4">
-    <span class="col-span-4">Length</span>
-    <div class="col-span-8">
-      <p-inputNumber [(ngModel)]="length" [size]="'small'"
-                     [minFractionDigits]="1" [maxFractionDigits]="6"></p-inputNumber>
-    </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4">
-    <span class="col-span-4">Stretch to destination</span>
-    <div class="col-span-8">
-      <p-checkbox [(ngModel)]="stretchToDestination" [binary]="true"></p-checkbox>
-    </div>
-  </div>
-  <div *ngIf="!particleSystemSet" class="grid grid-cols-12 gap-4">
-    <span class="col-span-4">Start</span>
-    <div class="col-span-8">
-      <p-button icon="pi pi-power-off" (onClick)="startParticleSystem()" [disabled]="!terrainPosition"></p-button>
-    </div>
-  </div>
-  <div *ngIf="particleSystemSet" class="grid grid-cols-12 gap-4">
-    <span class="col-span-4">Dispose</span>
-    <div class="col-span-8">
-      <p-button icon="pi pi-trash" (onClick)="disposeParticleSystem()"></p-button>
-    </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4">
-    <span class="col-span-4">Upload particle system</span>
-    <div class="col-span-8">
-      <p-button icon="pi pi-upload" (onClick)="uploadParticleSystem()"></p-button>
-    </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4">
-    <span class="col-span-4">Import from file</span>
-    <div class="col-span-8">
-      <p-button icon="pi pi-file" (onClick)="uploadImport()"></p-button>
-      <input
-        type="file"
-        #fileInput
-        (change)="onFileSelected($event)"
-        style="display: none;"/>
     </div>
   </div>
 </div>
