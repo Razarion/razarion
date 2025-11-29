@@ -15,6 +15,7 @@ import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.InputService;
@@ -54,7 +55,8 @@ public class ClientGameEngineControl extends GameEngineControl {
                                    BoxUiService boxUiService,
                                    ResourceUiService resourceUiService,
                                    BaseItemUiService baseItemUiService,
-                                   Provider<LifecycleService> lifecycleService) {
+                                   Provider<LifecycleService> lifecycleService,
+                                   BabylonRendererService babylonRendererService) {
         super(inputServices,
                 perfmonService,
                 boot,
@@ -66,7 +68,8 @@ public class ClientGameEngineControl extends GameEngineControl {
                 audioService,
                 boxUiService,
                 resourceUiService,
-                baseItemUiService);
+                baseItemUiService,
+                babylonRendererService);
         this.lifecycleService = lifecycleService;
     }
 

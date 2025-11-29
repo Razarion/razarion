@@ -79,6 +79,8 @@ export enum RazarionMetadataType {
   providedIn: 'root'
 })
 export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAccess {
+  private readonly SPAWN_PARTICLE_HEIGHT = 15;
+
   private scene!: Scene;
   private engine!: Engine;
   public shadowGenerator!: ShadowGenerator;
@@ -701,6 +703,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       console.error(error);
       return BabylonResourceItemImpl.createDummy(id);
     }
+  }
+
+  startSpawn(particleSystemId: number, x: number, y: number, z: number): void {
+    this.createParticleSystem(particleSystemId, null).then(particleSystemSet => {
+      particleSystemSet.start(<any>new Vector3(x, z + this.SPAWN_PARTICLE_HEIGHT, y));
+    });
   }
 
   createBabylonBoxItem(id: number, boxItemType: BoxItemType): BabylonBoxItem {

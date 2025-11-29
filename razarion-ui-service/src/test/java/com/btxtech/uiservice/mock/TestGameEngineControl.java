@@ -15,6 +15,7 @@ import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -48,7 +49,8 @@ public class TestGameEngineControl extends GameEngineControl {
                                  AudioService audioService,
                                  BoxUiService boxUiService,
                                  ResourceUiService resourceUiService,
-                                 BaseItemUiService baseItemUiService) {
+                                 BaseItemUiService baseItemUiService,
+                                 BabylonRendererService babylonRendererService) {
         super(inputServices,
                 perfmonService,
                 boot,
@@ -60,7 +62,8 @@ public class TestGameEngineControl extends GameEngineControl {
                 audioService,
                 boxUiService,
                 resourceUiService,
-                baseItemUiService);
+                baseItemUiService,
+                babylonRendererService);
     }
 
     @Override

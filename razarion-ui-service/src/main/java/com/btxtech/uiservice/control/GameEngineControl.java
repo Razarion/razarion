@@ -36,6 +36,7 @@ import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.InputService;
@@ -67,6 +68,7 @@ public abstract class GameEngineControl {
     private final Provider<Boot> boot;
     private final PerfmonService perfmonService;
     private final Provider<InputService> inputServices;
+    private final BabylonRendererService babylonRendererService;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
     private Runnable stopCallback;
@@ -82,7 +84,8 @@ public abstract class GameEngineControl {
                              AudioService audioService,
                              BoxUiService boxUiService,
                              ResourceUiService resourceUiService,
-                             BaseItemUiService baseItemUiService) {
+                             BaseItemUiService baseItemUiService,
+                             BabylonRendererService babylonRendererService) {
         this.inputServices = inputServices;
         this.perfmonService = perfmonService;
         this.boot = boot;
@@ -95,6 +98,7 @@ public abstract class GameEngineControl {
         this.boxUiService = boxUiService;
         this.resourceUiService = resourceUiService;
         this.baseItemUiService = baseItemUiService;
+        this.babylonRendererService = babylonRendererService;
     }
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
@@ -310,7 +314,9 @@ public abstract class GameEngineControl {
                 onTickUpdateFailed();
                 break;
             case SYNC_ITEM_START_SPAWNED:
-                audioService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
+                NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo = castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData());
+                audioService.onSpawnSyncItem(nativeSyncBaseItemTickInfo);
+                babylonRendererService.startSpawn(nativeSyncBaseItemTickInfo);
                 // TODO gameTipService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
                 break;
             case SYNC_ITEM_IDLE:

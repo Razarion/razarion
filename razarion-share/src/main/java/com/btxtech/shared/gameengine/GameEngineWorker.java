@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
@@ -22,6 +23,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemSpawnStart;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IntIntMap;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
@@ -430,6 +432,16 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
         sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, fixGwtStructureCloneArrayProblem(syncBaseItem.createNativeSyncBaseItemTickInfo(terrainService.getTerrainAnalyzer())));
+    }
+
+    public void onSpawnSyncItemStartSlave(SyncItemSpawnStart syncItemSpawnStart) {
+        Vertex terrainPosition = terrainService.getTerrainAnalyzer().toPosition3d(syncItemSpawnStart.getPosition());
+        NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo = new NativeSyncBaseItemTickInfo();
+        nativeSyncBaseItemTickInfo.itemTypeId = syncItemSpawnStart.getBaseItemTypeId();
+        nativeSyncBaseItemTickInfo.x = terrainPosition.getX();
+        nativeSyncBaseItemTickInfo.y = terrainPosition.getY();
+        nativeSyncBaseItemTickInfo.z = terrainPosition.getZ();
+        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, nativeSyncBaseItemTickInfo);
     }
 
     @Override

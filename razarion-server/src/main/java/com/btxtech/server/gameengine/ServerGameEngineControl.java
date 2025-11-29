@@ -33,7 +33,6 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -233,6 +232,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
+        clientGameConnectionService.onSyncItemSpawnStart(syncBaseItem);
         // TODO itemTrackerPersistence.onSpawnSyncItemStart(syncBaseItem);
     }
 

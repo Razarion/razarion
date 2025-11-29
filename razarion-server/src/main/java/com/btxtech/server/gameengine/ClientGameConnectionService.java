@@ -5,8 +5,10 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemSpawnStart;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -103,6 +105,13 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
 
     public void sendResourcesBalanceChanged(PlayerBase playerBase, int resources) {
         sendToClient(playerBase.getUserId(), GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
+    }
+
+    public void onSyncItemSpawnStart(SyncBaseItem syncBaseItem) {
+        SyncItemSpawnStart syncItemSpawnStart = new SyncItemSpawnStart();
+        syncItemSpawnStart.setBaseItemTypeId(syncBaseItem.getBaseItemType().getId());
+        syncItemSpawnStart.setPosition(syncBaseItem.getAbstractSyncPhysical().getPosition());
+        sendToClients(GameConnectionPacket.SYNC_ITEM_SPAWN_START, syncItemSpawnStart);
     }
 
     public void onSyncItemRemoved(SyncItem syncItem, boolean explode) {

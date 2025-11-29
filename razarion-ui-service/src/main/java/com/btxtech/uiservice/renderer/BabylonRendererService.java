@@ -1,12 +1,15 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.dto.ViewFieldConfig;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.Diplomacy;
+import elemental2.dom.DomGlobal;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -16,13 +19,13 @@ import java.util.logging.Logger;
 @Singleton
 public class BabylonRendererService {
     private static final Logger LOG = Logger.getLogger(BabylonRendererService.class.getName());
-
-
+    private final ItemTypeService itemTypeService;
     private BabylonRenderServiceAccess babylonRenderServiceAccess;
 
     @Inject
-    public BabylonRendererService(BabylonRenderServiceAccess babylonRenderServiceAccess) {
+    public BabylonRendererService(BabylonRenderServiceAccess babylonRenderServiceAccess, ItemTypeService itemTypeService) {
         this.babylonRenderServiceAccess = babylonRenderServiceAccess;
+        this.itemTypeService = itemTypeService;
     }
 
     public BabylonTerrainTile createTerrainTile(TerrainTile terrainTile) {
@@ -31,6 +34,13 @@ public class BabylonRendererService {
 
     public BabylonBaseItem createSyncBaseItem(int id, BaseItemType baseItemType, int baseId, Diplomacy diplomacy, String userName) {
         return babylonRenderServiceAccess.createBabylonBaseItem(id, baseItemType, baseId, diplomacy, userName);
+    }
+
+    public void startSpawn(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
+        if (baseItemType.getSpawnParticleSystemId() != null) {
+            babylonRenderServiceAccess.startSpawn(baseItemType.getSpawnParticleSystemId(), nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y, nativeSyncBaseItemTickInfo.z);
+        }
     }
 
     public BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType resourceItemType) {

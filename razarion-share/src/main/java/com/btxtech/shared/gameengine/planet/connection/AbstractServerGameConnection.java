@@ -6,8 +6,10 @@ import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemSpawnStart;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
@@ -99,6 +101,9 @@ public abstract class AbstractServerGameConnection {
                 break;
             case SYNC_ITEM_DELETED:
                 gameEngineWorker.onServerSyncItemDeleted((SyncItemDeletedInfo) param);
+                break;
+            case SYNC_ITEM_SPAWN_START:
+                gameEngineWorker.onSpawnSyncItemStartSlave((SyncItemSpawnStart) param);
                 break;
             case RESOURCE_BALANCE_CHANGED:
                 gameEngineWorker.updateResourceSlave((Integer) param);

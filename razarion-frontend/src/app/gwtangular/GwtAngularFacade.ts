@@ -359,6 +359,8 @@ export interface BabylonRenderServiceAccess {
 
   createBabylonResourceItem(id: number, resourceItemType: ResourceItemType): BabylonResourceItem;
 
+  startSpawn(particleSystemId: number, x: number, y: number, z: number): void;
+
   createBabylonBoxItem(id: number, boxItemType: BoxItemType): BabylonBoxItem;
 
   setViewFieldCenter(x: number, y: number): void;

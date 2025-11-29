@@ -143,6 +143,9 @@ public class BaseItemUiService {
                 boolean isBuildup = nativeSyncBaseItemTickInfo.buildup >= 1.0;
                 boolean isHealthy = nativeSyncBaseItemTickInfo.health >= 1.0;
 
+                if(isSpawning) {
+                    continue;
+                }
 
                 if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
                     tmpItemCount++;

@@ -51,6 +51,18 @@
         <particle-system [(particleSystemId)]="baseItemType.explosionParticleId"></particle-system>
       </div>
     </div>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-4">Spawn particle</span>
+      <div class="col-span-8">
+        <particle-system [(particleSystemId)]="baseItemType.spawnParticleSystemId"></particle-system>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-4">Spawn audio</span>
+      <div class="col-span-8">
+        ...TODO...
+      </div>
+    </div>
 
     <p-divider align="left">
       <div class="inline-flex items-center">
@@ -76,6 +88,12 @@
       <span class="col-span-4">Terrain type</span>
       <div class="col-span-8">
         <terrain-type [(terrainType)]="baseItemType.physicalAreaConfig.terrainType"></terrain-type>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-4">Spawn duration [ms]</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.spawnDurationMillis"></p-inputNumber>
       </div>
     </div>
     <div class="grid grid-cols-12 gap-4 grid-razarion-editor">

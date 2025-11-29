@@ -47,6 +47,7 @@ public class BaseItemType extends ItemType {
     private double boxPickupRange;
     private Integer unlockCrystals;
     private int spawnDurationMillis;
+    private Integer spawnParticleSystemId;
     private Integer spawnAudioId;
     private List<DemolitionStepEffect> demolitionStepEffects;
     @CollectionReference(CollectionReferenceType.IMAGE)
@@ -229,6 +230,14 @@ public class BaseItemType extends ItemType {
         this.spawnDurationMillis = spawnDurationMillis;
     }
 
+    public Integer getSpawnParticleSystemId() {
+        return spawnParticleSystemId;
+    }
+
+    public void setSpawnParticleSystemId(Integer spawnParticleSystemId) {
+        this.spawnParticleSystemId = spawnParticleSystemId;
+    }
+
     public Integer getSpawnAudioId() {
         return spawnAudioId;
     }
@@ -384,6 +393,11 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType spawnDurationMillis(int spawnDurationMillis) {
         setSpawnDurationMillis(spawnDurationMillis);
+        return this;
+    }
+
+    public BaseItemType spawnParticleSystemId(Integer spawnParticleSystemId) {
+        setSpawnParticleSystemId(spawnAudioId);
         return this;
     }
 

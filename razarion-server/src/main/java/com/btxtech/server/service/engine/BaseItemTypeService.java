@@ -25,7 +25,6 @@ public class BaseItemTypeService extends AbstractConfigCrudService<BaseItemType,
                 getServiceProviderService().getAudioPersistence(),
                 getServiceProviderService().getParticleSystemCrudPersistence());
         baseItemTypeEntity.setModel3DEntity(getServiceProviderService().getModel3DCrudPersistence().getEntity(baseItemType.getModel3DId()));
-        // TODO baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getEntity(baseItemType.getSpawnShape3DId()));
         baseItemTypeEntity.setBuildupTexture(getServiceProviderService().getImagePersistence().getImageLibraryEntity(baseItemType.getBuildupTextureId()));
         baseItemTypeEntity.setDemolitionImage(getServiceProviderService().getImagePersistence().getImageLibraryEntity(baseItemType.getDemolitionImageId()));
         // TODO baseItemTypeEntity.setWreckageShape3D(shape3DPersistence.getEntity(baseItemType.getWreckageShape3DId()));

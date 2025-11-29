@@ -4,6 +4,7 @@ package com.btxtech.shared.dto.editor;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class GenericPropertyInfo {
     private Map<String, Map<String, String>> listElementTypes;
     private List<CollectionReferenceInfo> collectionReferenceInfos;

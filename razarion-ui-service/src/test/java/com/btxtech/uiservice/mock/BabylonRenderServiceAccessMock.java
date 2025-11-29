@@ -52,6 +52,11 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
     }
 
     @Override
+    public void startSpawn(int particleSystemId, double x, double y, double z) {
+
+    }
+
+    @Override
     public BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType baseItemType) {
         BabylonResourceItemMock babylonResourceItemMock = new BabylonResourceItemMock(id, baseItemType, babylonResourceItemMocks::remove);
         babylonResourceItemMocks.add(babylonResourceItemMock);

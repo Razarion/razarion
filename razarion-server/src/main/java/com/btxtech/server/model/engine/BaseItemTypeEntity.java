@@ -56,6 +56,9 @@ public class BaseItemTypeEntity extends BaseEntity {
     private Model3DEntity model3DEntity;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    private ParticleSystemEntity spawnParticleSystemEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
     private AudioLibraryEntity spawnAudio;
     private int spawnDurationMillis;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -126,6 +129,9 @@ public class BaseItemTypeEntity extends BaseEntity {
                 .endAngleSlowDown(endAngleSlowDown));
         if (model3DEntity != null) {
             baseItemType.setModel3DId(model3DEntity.getId());
+        }
+        if (spawnParticleSystemEntity != null) {
+            baseItemType.setSpawnParticleSystemId(spawnParticleSystemEntity.getId());
         }
         if (spawnAudio != null) {
             baseItemType.setSpawnAudioId(spawnAudio.getId());
@@ -204,6 +210,12 @@ public class BaseItemTypeEntity extends BaseEntity {
         boxPickupRange = baseItemType.getBoxPickupRange();
         unlockCrystals = baseItemType.getUnlockCrystals();
         explosionAudioLibraryEntity = audioPersistence.getAudioLibraryEntity(baseItemType.getExplosionAudioItemConfigId());
+
+        if (baseItemType.getSpawnParticleSystemId() != null) {
+            spawnParticleSystemEntity = (ParticleSystemEntity) new ParticleSystemEntity().id(baseItemType.getSpawnParticleSystemId());
+        } else {
+            spawnParticleSystemEntity = null;
+        }
 
         if (baseItemType.getWeaponType() != null) {
             if (weaponType == null) {
