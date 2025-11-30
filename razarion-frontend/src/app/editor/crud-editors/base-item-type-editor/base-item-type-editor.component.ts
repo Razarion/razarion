@@ -114,8 +114,8 @@ export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemT
         projectileSpeed = 1;
         impactParticleSystemId = null;
         trailParticleSystemConfigId = null;
-        turretType = <any>null;
         muzzleFlashAudioItemConfigId = <any>null;
+        turretAngleVelocity = <any>null
       };
     } else {
       this.baseItemType.weaponType = null;

@@ -26,9 +26,9 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
+import com.btxtech.shared.utils.MathHelper;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 /**
  * User: beat
@@ -38,6 +38,7 @@ import javax.inject.Provider;
 
 public class SyncWeapon extends SyncBaseAbility {
     private static final long CHECK_DELTA = 1000;
+    private static final double MAX_DELTA_ANGLE = Math.toRadians(1);
 
     private final BaseItemService baseItemService;
 
@@ -47,8 +48,6 @@ public class SyncWeapon extends SyncBaseAbility {
 
     private final PathingService pathingService;
 
-    private final Provider<SyncTurret> syncTurretInstance;
-
     private final SyncService syncService;
     private WeaponType weaponType;
     private SyncBaseItem target;
@@ -56,12 +55,11 @@ public class SyncWeapon extends SyncBaseAbility {
     private double reloadProgress;
     private DecimalPosition targetPosition; // Not Synchronized
     private long targetPositionLastCheck; // Not Synchronized
-    private SyncTurret syncTurret;
+    private Double turretAngle;
 
     @Inject
-    public SyncWeapon(SyncService syncService, Provider<SyncTurret> syncTurretInstance, PathingService pathingService, SyncItemContainerServiceImpl syncItemContainerService, ProjectileService projectileService, BaseItemService baseItemService) {
+    public SyncWeapon(SyncService syncService, PathingService pathingService, SyncItemContainerServiceImpl syncItemContainerService, ProjectileService projectileService, BaseItemService baseItemService) {
         this.syncService = syncService;
-        this.syncTurretInstance = syncTurretInstance;
         this.pathingService = pathingService;
         this.syncItemContainerService = syncItemContainerService;
         this.projectileService = projectileService;
@@ -72,9 +70,8 @@ public class SyncWeapon extends SyncBaseAbility {
         super.init(syncBaseItem);
         this.weaponType = weaponType;
         reloadProgress = weaponType.getReloadTime();
-        if (weaponType.getTurretType() != null) {
-            syncTurret = syncTurretInstance.get();
-            syncTurret.init(getSyncBaseItem(), weaponType.getTurretType());
+        if (weaponType.getTurretAngleVelocity() != null) {
+            turretAngle = 0.0;
         }
     }
 
@@ -100,8 +97,8 @@ public class SyncWeapon extends SyncBaseAbility {
                 return false;
             }
 
-            if (syncTurret != null) {
-                syncTurret.tick(target.getAbstractSyncPhysical().getPosition());
+            if (turretAngle != null) {
+                tickTurret(target.getAbstractSyncPhysical().getPosition());
             }
 
             if (!isInRange(target)) {
@@ -139,7 +136,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 getSyncPhysicalMovable().stop();
             }
 
-            if (syncTurret != null && !syncTurret.isOnTarget(target.getAbstractSyncPhysical().getPosition())) {
+            if (turretAngle != null && !isTurretOnTarget(target.getAbstractSyncPhysical().getPosition())) {
                 return true;
             } else if (getAbstractSyncPhysical().canMove()) {
                 double angle = getSyncBaseItem().getSyncPhysicalMovable().getPosition().getAngle(target.getAbstractSyncPhysical().getPosition());
@@ -155,6 +152,37 @@ public class SyncWeapon extends SyncBaseAbility {
             stop();
             return returnFalseIfReloaded();
         }
+    }
+
+    private void tickTurret(DecimalPosition target) {
+        if (isTurretOnTarget(target)) {
+            return;
+        }
+
+        double absoluteTargetAngle = calculateAbsoluteTargetAngle(target);
+        double absoluteTurretAngle = calculateAbsoluteTurretAngle();
+
+        double deltaAngle = MathHelper.negateAngle(absoluteTurretAngle) - MathHelper.negateAngle(absoluteTargetAngle);
+        double moveAngle = getWeaponType().getTurretAngleVelocity() * PlanetService.TICK_FACTOR;
+        if (Math.abs(deltaAngle) < moveAngle) {
+            this.turretAngle -= deltaAngle;
+        } else {
+            this.turretAngle -= Math.signum(deltaAngle) * moveAngle; // TODO Math.signum() return 0 if deltaAngle = 0
+        }
+    }
+
+    boolean isTurretOnTarget(DecimalPosition target) {
+        double absoluteTargetAngle = calculateAbsoluteTargetAngle(target);
+        double absoluteTorrentAngle = calculateAbsoluteTurretAngle();
+        return MathHelper.compareWithPrecision(MathHelper.getAngle(absoluteTargetAngle, absoluteTorrentAngle), 0.0, MAX_DELTA_ANGLE);
+    }
+
+    private double calculateAbsoluteTargetAngle(DecimalPosition target) {
+        return this.getAbstractSyncPhysical().getPosition().getAngle(target);
+    }
+
+    private double calculateAbsoluteTurretAngle() {
+        return this.turretAngle + this.getAbstractSyncPhysical().getAngle();
     }
 
     private void doAttack(SyncBaseItem targetItem) {
@@ -185,6 +213,7 @@ public class SyncWeapon extends SyncBaseAbility {
         }
         followTarget = syncBaseItemInfo.getFollowTarget();
         reloadProgress = syncBaseItemInfo.getReloadProgress();
+        turretAngle = syncBaseItemInfo.getTurretAngle();
     }
 
     @Override
@@ -194,6 +223,7 @@ public class SyncWeapon extends SyncBaseAbility {
         }
         syncBaseItemInfo.setFollowTarget(followTarget);
         syncBaseItemInfo.setReloadProgress(reloadProgress);
+        syncBaseItemInfo.setTurretAngle(turretAngle);
     }
 
     public void executeCommand(AttackCommand attackCommand) throws ItemDoesNotExistException {
@@ -247,7 +277,7 @@ public class SyncWeapon extends SyncBaseAbility {
         return target;
     }
 
-    public SyncTurret getSyncTurret() {
-        return syncTurret;
+    public Double getTurretAngle() {
+        return turretAngle;
     }
 }

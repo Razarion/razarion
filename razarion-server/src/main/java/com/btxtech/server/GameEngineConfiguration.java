@@ -36,7 +36,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncItemContainer;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.model.SyncTurret;
 import com.btxtech.shared.gameengine.planet.model.SyncWeapon;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
@@ -282,20 +281,12 @@ public class GameEngineConfiguration {
 
     @Bean
     @Scope("prototype")
-    public SyncTurret SyncTurret() {
-        return new SyncTurret();
-    }
-
-    @Bean
-    @Scope("prototype")
     public SyncWeapon syncWeapon(SyncService syncService,
-                                 jakarta.inject.Provider<SyncTurret> syncTurretInstance,
                                  PathingService pathingService,
                                  SyncItemContainerServiceImpl syncItemContainerService,
                                  ProjectileService projectileService,
                                  BaseItemService baseItemService) {
         return new SyncWeapon(syncService,
-                syncTurretInstance::get,
                 pathingService,
                 syncItemContainerService,
                 projectileService,

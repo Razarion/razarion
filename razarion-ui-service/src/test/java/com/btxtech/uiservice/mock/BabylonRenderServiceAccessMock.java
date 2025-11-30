@@ -261,6 +261,11 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         }
 
         @Override
+        public void setTurretAngle(double turretAngle) {
+
+        }
+
+        @Override
         public BaseItemType getBaseItemType() {
             return baseItemType;
         }

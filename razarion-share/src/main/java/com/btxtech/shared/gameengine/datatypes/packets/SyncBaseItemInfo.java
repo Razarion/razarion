@@ -46,6 +46,7 @@ public class SyncBaseItemInfo {
     private DecimalPosition unloadPos;
     private double spawnProgress;
     private Integer syncBoxItemId;
+    private Double turretAngle;
 
     public int getId() {
         return id;
@@ -215,6 +216,14 @@ public class SyncBaseItemInfo {
         this.syncBoxItemId = syncBoxItemId;
     }
 
+    public Double getTurretAngle() {
+        return turretAngle;
+    }
+
+    public void setTurretAngle(Double turretAngle) {
+        this.turretAngle = turretAngle;
+    }
+
     public SyncBaseItemInfo id(int id) {
         setId(id);
         return this;
@@ -317,6 +326,11 @@ public class SyncBaseItemInfo {
 
     public SyncBaseItemInfo syncBoxItemId(Integer syncBoxItemId) {
         setSyncBoxItemId(syncBoxItemId);
+        return this;
+    }
+
+    public SyncBaseItemInfo turretAngle(Double turretAngle) {
+        setTurretAngle(turretAngle);
         return this;
     }
 

@@ -138,14 +138,13 @@ public class BaseItemUiService {
                     updateSyncItemMonitor(nativeSyncBaseItemTickInfo);
                     continue;
                 }
-                DecimalPosition position2d = position3d.toXY();
-                boolean isSpawning = nativeSyncBaseItemTickInfo.spawning < 1.0;
-                boolean isBuildup = nativeSyncBaseItemTickInfo.buildup >= 1.0;
-                boolean isHealthy = nativeSyncBaseItemTickInfo.health >= 1.0;
-
-                if(isSpawning) {
+                if(nativeSyncBaseItemTickInfo.spawning < 1.0) {
                     continue;
                 }
+
+                DecimalPosition position2d = position3d.toXY();
+                boolean isBuildup = nativeSyncBaseItemTickInfo.buildup >= 1.0;
+                boolean isHealthy = nativeSyncBaseItemTickInfo.health >= 1.0;
 
                 if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
                     tmpItemCount++;
@@ -153,7 +152,7 @@ public class BaseItemUiService {
                     if (isBuildup && baseItemType.getHouseType() != null) {
                         houseSpace += baseItemType.getHouseType().getSpace();
                     }
-                    if (baseItemType.getSpecialType() != null && baseItemType.getSpecialType().isMiniTerrain() && isBuildup && !isSpawning) {
+                    if (baseItemType.getSpecialType() != null && baseItemType.getSpecialType().isMiniTerrain() && isBuildup) {
                         radar = true;
                     }
                 }
@@ -166,14 +165,6 @@ public class BaseItemUiService {
                         syncBaseItemSetPositionMonitor.setInvisibleSyncBaseItemTickInfo(position2d, baseItemType, viewFiledCenter);
                     }
                     continue;
-                }
-                boolean attackAble = !isSpawning || !isBuildup;
-                // Spawning
-                // TODO spawningModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.spawning, null));
-                // Buildup
-                if (!isSpawning && !isBuildup) {
-                    attackAble = false;
-                    // TODO buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup, color));
                 }
                 // Alive
                 BabylonBaseItem babylonBaseItem = babylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
@@ -191,7 +182,7 @@ public class BaseItemUiService {
                     babylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
                     babylonBaseItem.setPosition(position3d);
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
-                    if (syncBaseItemSetPositionMonitor != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
+                    if (syncBaseItemSetPositionMonitor != null && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                         syncBaseItemSetPositionMonitor.addVisible(babylonBaseItem);
                     }
                     int selectedIndex = selectedOutOfViewIds.indexOf(nativeSyncBaseItemTickInfo.id);
@@ -216,17 +207,14 @@ public class BaseItemUiService {
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
                 }
 
-                if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
-                    // TODO weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
+                if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretAngleVelocity() != null) {
+                    babylonBaseItem.setTurretAngle(nativeSyncBaseItemTickInfo.turretAngle);
                 }
 
                 // Demolition
-                if (!isSpawning && isBuildup && !isHealthy) {
+                if (isBuildup && !isHealthy) {
                     if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
                         // effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, baseItemType);
-                    }
-                    if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
-                        // TODO weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
                     }
                 }
 

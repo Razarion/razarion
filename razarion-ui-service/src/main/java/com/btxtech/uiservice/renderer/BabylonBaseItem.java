@@ -30,4 +30,6 @@ public interface BabylonBaseItem extends BabylonItem {
     void updateUserName(String userName);
 
     int getBaseId();
+
+    void setTurretAngle(double turretAngle);
 }

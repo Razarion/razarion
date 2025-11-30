@@ -150,6 +150,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       updateUserName(userName: string): void {
       }
 
+      setTurretAngle(turretAngle: number): void {
+      }
     }
   }
 
@@ -376,6 +378,14 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   getBaseId(): number {
     return this.baseId;
+  }
+
+  setTurretAngle(turretAngle: number): void {
+    if (this.getRenderObject().getTurretMesh() != null) {
+      console.log(`setTurretAngle ${turretAngle}`)
+      this.getRenderObject().getTurretMesh()!.rotationQuaternion = null;
+      this.getRenderObject().getTurretMesh()!.rotation.y = -turretAngle;
+    }
   }
 
   updateUserName(userName: string): void {

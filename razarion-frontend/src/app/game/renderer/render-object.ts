@@ -8,6 +8,7 @@ export class RenderObject {
   private muzzleFlashParticleEntity: ParticleSystemEntity | null = null;
   private muzzleFlashEmitterMesh: Nullable<AbstractMesh> = null;
   private impactMeshes: AbstractMesh[] = [];
+  private turretMesh: Nullable<AbstractMesh> = null;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl) {
   }
@@ -125,5 +126,13 @@ export class RenderObject {
     } else {
       return null;
     }
+  }
+
+  setTurretMesh(turretMesh: AbstractMesh) {
+    this.turretMesh = turretMesh;
+  }
+
+  getTurretMesh(): Nullable<AbstractMesh> {
+    return this.turretMesh;
   }
 }

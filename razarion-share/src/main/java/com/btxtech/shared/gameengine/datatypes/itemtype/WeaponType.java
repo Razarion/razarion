@@ -33,7 +33,7 @@ public class WeaponType {
     private List<Integer> disallowedItemTypes;
     private Double projectileSpeed; // Meter per second
     private Integer impactParticleSystemId;
-    private TurretType turretType;
+    private Double turretAngleVelocity;
     private Integer muzzleFlashAudioItemConfigId;
     private Integer trailParticleSystemConfigId;
 
@@ -109,12 +109,12 @@ public class WeaponType {
         this.trailParticleSystemConfigId = trailParticleSystemConfigId;
     }
 
-    public TurretType getTurretType() {
-        return turretType;
+    public Double getTurretAngleVelocity() {
+        return turretAngleVelocity;
     }
 
-    public void setTurretType(TurretType turretType) {
-        this.turretType = turretType;
+    public void setTurretAngleVelocity(Double turretAngleVelocity) {
+        this.turretAngleVelocity = turretAngleVelocity;
     }
 
     public WeaponType range(double range) {
@@ -157,8 +157,8 @@ public class WeaponType {
         return this;
     }
 
-    public WeaponType turretType(TurretType turretType) {
-        setTurretType(turretType);
+    public WeaponType turretAngleVelocity(Double turretAngleVelocity) {
+        setTurretAngleVelocity(turretAngleVelocity);
         return this;
     }
 

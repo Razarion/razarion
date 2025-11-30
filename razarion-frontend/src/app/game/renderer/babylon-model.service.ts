@@ -32,6 +32,7 @@ export class BabylonModelService {
   public static readonly RAZ_P_ = "RAZ_P_"
   public static readonly RAZ_I = "RAZ_I"
   public static readonly RAZ_M_P_ = "RAZ_M_P_"
+  public static readonly RAZ_TURRET_ = "RAZ_TURRET_"
   //
   private babylonMaterialContainer = new BabylonMaterialContainer();
   private glbContainer = new GlbContainer(this.babylonMaterialContainer);
@@ -260,9 +261,12 @@ export class BabylonModelService {
         renderObject.addImpactMesh(abstractMesh);
         abstractMesh.isVisible = false;
       }
+
+      if (abstractMesh.name.startsWith(BabylonModelService.RAZ_TURRET_)) {
+        renderObject.setTurretMesh(abstractMesh);
+      }
     }
   }
-
 
   public static findChildNode(node: Node, namePath: string[]): Node | null {
     if (namePath.length == 0) {

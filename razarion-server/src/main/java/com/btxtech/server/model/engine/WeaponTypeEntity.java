@@ -47,8 +47,7 @@ public class WeaponTypeEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ParticleSystemEntity trailParticleSystem;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private TurretTypeEntity turretType;
+    private Double turretAngleVelocity;
 
     public WeaponType toWeaponType() {
         WeaponType weaponType = new WeaponType()
@@ -59,16 +58,14 @@ public class WeaponTypeEntity extends BaseEntity {
                 .projectileSpeed(projectileSpeed)
                 .impactParticleSystemId(extractId(impactParticleSystem, ParticleSystemEntity::getId))
                 .muzzleFlashAudioItemConfigId(extractId(muzzleFlashAudioLibraryEntity, AudioLibraryEntity::getId))
-                .trailParticleSystemConfigId(extractId(trailParticleSystem, ParticleSystemEntity::getId));
+                .trailParticleSystemConfigId(extractId(trailParticleSystem, ParticleSystemEntity::getId))
+                .turretAngleVelocity(turretAngleVelocity);
         if (disallowedItemTypes != null && !disallowedItemTypes.isEmpty()) {
             List<Integer> disallowedIds = new ArrayList<>();
             for (BaseItemTypeEntity baseItemTypeEntity : disallowedItemTypes) {
                 disallowedIds.add(baseItemTypeEntity.getId());
             }
             weaponType.disallowedItemTypes(disallowedIds);
-        }
-        if (turretType != null) {
-            weaponType.turretType(turretType.toTurretType());
         }
         return weaponType;
     }
@@ -95,14 +92,7 @@ public class WeaponTypeEntity extends BaseEntity {
         projectileSpeed = weaponType.getProjectileSpeed();
         muzzleFlashAudioLibraryEntity = audioPersistence.getAudioLibraryEntity(weaponType.getMuzzleFlashAudioItemConfigId());
         impactParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getImpactParticleSystemId());
-        if (weaponType.getTurretType() != null) {
-            if (turretType == null) {
-                turretType = new TurretTypeEntity();
-            }
-            turretType.fromTurretType(weaponType.getTurretType());
-        } else {
-            turretType = null;
-        }
+        turretAngleVelocity = weaponType.getTurretAngleVelocity();
         trailParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getTrailParticleSystemConfigId());
     }
 

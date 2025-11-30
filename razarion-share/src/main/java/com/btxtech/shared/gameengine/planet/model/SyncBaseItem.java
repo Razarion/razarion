@@ -719,8 +719,8 @@ public class SyncBaseItem extends SyncItem {
         nativeSyncBaseItemTickInfo.baseId = base.getBaseId();
         nativeSyncBaseItemTickInfo.idle = isIdle();
         if (containedIn == null) {
-            if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
-                nativeSyncBaseItemTickInfo.turretAngle = syncWeapon.getSyncTurret().getAngle();
+            if (syncWeapon != null && syncWeapon.getWeaponType().getTurretAngleVelocity() != null) {
+                nativeSyncBaseItemTickInfo.turretAngle = syncWeapon.getTurretAngle();
             }
 
             Vertex terrainPosition;

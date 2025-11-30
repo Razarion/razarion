@@ -2,16 +2,31 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.*;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.GeneratorType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class FallbackConfig {
     public static final int GROUND_CONFIG_ID = 1;
@@ -117,7 +132,7 @@ public final class FallbackConfig {
         BaseItemType attacker = new BaseItemType();
         attacker.health(20).buildup(8).id(ATTACKER_ITEM_TYPE_ID).internalName("Attacker test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.LAND).acceleration(1.0).angularVelocity(Math.toRadians(30)).radius(2).speed(20.0));
-        attacker.setWeaponType(new WeaponType().damage(5).range(10).projectileSpeed(20.0).reloadTime(2).turretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTurretCenter(new Vertex(0, 0, 1))));
+        attacker.setWeaponType(new WeaponType().damage(5).range(10).projectileSpeed(20.0).reloadTime(2).turretAngleVelocity(2.0));
         baseItemTypes.add(attacker);
     }
 
@@ -125,7 +140,7 @@ public final class FallbackConfig {
         BaseItemType attacker = new BaseItemType();
         attacker.health(30).buildup(12).id(SHIP_ATTACKER_ITEM_TYPE_ID).internalName("Ship attacker test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().terrainType(TerrainType.WATER).acceleration(0.5).angularVelocity(Math.toRadians(30)).radius(3).speed(10.0));
-        attacker.setWeaponType(new WeaponType().damage(5).range(25).projectileSpeed(20.0).reloadTime(2).turretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTurretCenter(new Vertex(0, 0, 1))));
+        attacker.setWeaponType(new WeaponType().damage(5).range(25).projectileSpeed(20.0).reloadTime(2).turretAngleVelocity(2.0));
         baseItemTypes.add(attacker);
     }
 

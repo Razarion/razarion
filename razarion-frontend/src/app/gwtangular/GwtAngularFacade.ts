@@ -509,6 +509,8 @@ export interface BabylonBaseItem extends BabylonItem {
   updateUserName(userName: string): void;
 
   getBaseId(): number;
+
+  setTurretAngle(turretAngle: number): void;
 }
 
 export interface BabylonResourceItem extends BabylonItem {

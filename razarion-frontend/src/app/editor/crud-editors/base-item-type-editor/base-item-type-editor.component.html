@@ -290,6 +290,12 @@
           </div>
         </div>
         <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+          <span class="col-span-4">Turret angle velocity [&deg;/s]</span>
+          <div class="col-span-8">
+            <angle [(angle)]="baseItemType.weaponType.turretAngleVelocity" [maxDegreeAngle]="720"></angle>
+          </div>
+        </div>
+        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
           <span class="col-span-4">Disallowed item types</span>
           <div class="col-span-8">
             <base-item-types
