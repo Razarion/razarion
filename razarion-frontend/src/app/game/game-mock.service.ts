@@ -194,7 +194,7 @@ export class GameMockService {
           }
 
           getModel3DId(): number | null {
-            return 43;
+            return 1;
           }
 
           getPhysicalAreaConfig(): PhysicalAreaConfig {
@@ -212,31 +212,28 @@ export class GameMockService {
 
         {
           let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, 1, Diplomacy.OWN, "myName");
-          babylonBaseItem1.setPosition(GwtInstance.newVertex(70, 40, 1.6));
+          babylonBaseItem1.setPosition(GwtInstance.newVertex(70, 40, 0.6));
           // babylonBaseItem1.setAngle(Tools.ToRadians(45));
           babylonBaseItem1.setAngle(0);
 
           babylonBaseItem1.select(false);
 
-          babylonBaseItem1.setConstructing(0.01);
-          babylonBaseItem1.setHealth(0.99);
+          // babylonBaseItem1.setConstructing(0.01);
+          babylonBaseItem1.setHealth(1);
           // babylonBaseItem1.mark(MarkerConfig);
           // setTimeout(() => {
           //  babylonBaseItem1.onExplode();
           //}, 2000);
 
 
-          /*
           let x = 0;
           setInterval(() => {
-            babylonBaseItem1.setPosition(GwtInstance.newDecimalPosition(8, 8));
-            babylonBaseItem1.setAngle(Tools.ToRadians(x));
-            x += 20;
-            if (x > 360) {
+            babylonBaseItem1.setBuildup(x);
+            x += 0.01;
+            if (x >= 1) {
               x = 0;
             }
           }, 100)
-          */
           // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
           // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
         }

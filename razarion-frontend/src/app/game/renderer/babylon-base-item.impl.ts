@@ -1,4 +1,12 @@
-import {AbstractMesh, Animation, MeshBuilder, ParticleSystemSet, UtilityLayerRenderer, Vector3} from "@babylonjs/core";
+import {
+  AbstractMesh,
+  Animation,
+  Mesh,
+  MeshBuilder,
+  ParticleSystemSet,
+  UtilityLayerRenderer,
+  Vector3
+} from "@babylonjs/core";
 import {
   BabylonBaseItem,
   BaseItemType,
@@ -39,6 +47,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private lastRotationUpdateTime: number | null = null;
   private idleCallback: ((idle: boolean) => void) | null = null;
   private readonly uiTexture: AdvancedDynamicTexture;
+  private buildupMeshes: Mesh[] | null = null;
 
   constructor(id: number,
               private baseItemType: BaseItemType,
@@ -207,12 +216,31 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   setBuildup(buildup: number): void {
-    this.getContainer().scaling.y = buildup;
-    if (this.buildup !== null && buildup !== this.buildup && buildup >= 1.0) {
-      this.updateItemCursor();
+    if (buildup >= 1.0 && this.buildupMeshes != null) {
+      this.buildupMeshes.forEach(m => m.isVisible = true);
+      this.buildupMeshes = null;
+      return;
     }
-    this.buildup = buildup;
 
+    if (buildup < 1.0 && this.buildupMeshes == null) {
+
+      this.buildupMeshes = this.getContainer().getChildMeshes() as Mesh[];
+      this.buildupMeshes = this.buildupMeshes.filter(mesh => mesh.isVisible);
+
+      this.buildupMeshes.sort((a, b) => {
+        return a.position.y - b.position.y;
+      });
+
+      this.buildupMeshes.forEach(m => m.isVisible = false);
+    }
+
+    if (buildup < 1.0 && this.buildupMeshes != null) {
+      const stepSize = 1.0 / this.buildupMeshes.length;
+
+      for (let i = 0; i < this.buildupMeshes.length; i++) {
+        this.buildupMeshes[i].isVisible = buildup > i * stepSize;
+      }
+    }
   }
 
   setConstructing(progress: number): void {
