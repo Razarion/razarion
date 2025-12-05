@@ -5,7 +5,12 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,16 +26,17 @@ public class Orca {
     public static final double TIME_HORIZON_ITEMS = 0.5;
     public static final double TIME_HORIZON_OBSTACLES = 0.5; // Do not make bigger, it becomes unstable
     public static final double EPSILON = 0.00001;
+    public static final double RECIPROCAL_FACTOR = 0.5;
     private static final Logger LOGGER = Logger.getLogger(Orca.class.getName());
     private final SyncPhysicalMovable syncPhysicalMovable;
     private final DecimalPosition position;
     private final double radius;
     private final DecimalPosition preferredVelocity;
-    private DecimalPosition newVelocity;
     private final double speed;
     private final List<OrcaLine> itemOrcaLines = new ArrayList<>();
     private final List<OrcaLine> obstacleOrcaLines = new ArrayList<>();
     private final List<ObstacleSlope> debugObstacles_WRONG = new ArrayList<>();
+    private DecimalPosition newVelocity;
     private List<OrcaLine> orcaLines;
 
 
@@ -49,7 +55,6 @@ public class Orca {
 
     public void add(AbstractSyncPhysical other) {
         DecimalPosition otherVelocity = null;
-        double reciprocalFactor = 1.0;
         if (other instanceof SyncPhysicalMovable) {
             otherVelocity = ((SyncPhysicalMovable) other).getPreferredVelocity();
             if (otherVelocity != null) {
@@ -58,17 +63,16 @@ public class Orca {
                     // Ignore pusher from directly behind. We can't do anything against them.
                     return;
                 }
-                reciprocalFactor = 0.5;
             }
         }
-        addOrcaLine(other.getPosition(), otherVelocity, other.getRadius(), reciprocalFactor);
+        addOrcaLine(other.getPosition(), otherVelocity, other.getRadius());
     }
 
     public void add(ObstacleTerrainObject obstacleTerrainObject) {
-        addOrcaLine(obstacleTerrainObject.getCircle().getCenter(), null, obstacleTerrainObject.getCircle().getRadius(), 1.0);
+        addOrcaLine(obstacleTerrainObject.getCircle().getCenter(), null, obstacleTerrainObject.getCircle().getRadius());
     }
 
-    private void addOrcaLine(DecimalPosition otherPosition, DecimalPosition otherVelocity, double otherRadius, double reciprocalFactor) {
+    private void addOrcaLine(DecimalPosition otherPosition, DecimalPosition otherVelocity, double otherRadius) {
         DecimalPosition relativePosition = otherPosition.sub(position);
         DecimalPosition preferredVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity());
         DecimalPosition relativeVelocity = preferredVelocity.sub(DecimalPosition.zeroIfNull(otherVelocity));
@@ -111,13 +115,13 @@ public class Orca {
                     double dotProduct2 = relativeVelocity.dotProduct(direction);
                     u = direction.multiply(dotProduct2).sub(relativeVelocity);
                 }
-                DecimalPosition point = preferredVelocity.add(reciprocalFactor, u);
+                DecimalPosition point = preferredVelocity.add(RECIPROCAL_FACTOR, u);
                 orcaLine = new OrcaLine(point, direction);
             } else {
                 // Collision
                 double overlapDistance = combinedRadius - relativePosition.magnitude();
                 DecimalPosition overlapCorrection = position.sub(otherPosition).normalize(overlapDistance / TICK_FACTOR); // Make sure the collision is eliminated next tick
-                DecimalPosition point = preferredVelocity.add(overlapCorrection.sub(relativeVelocity).multiply(reciprocalFactor));
+                DecimalPosition point = preferredVelocity.add(overlapCorrection.sub(relativeVelocity).multiply(RECIPROCAL_FACTOR));
                 point = point.normalize(Math.min(speed, point.magnitude()));
                 DecimalPosition direction = new DecimalPosition(-relativePosition.getY(), relativePosition.getX()).normalize();
                 orcaLine = new OrcaLine(point, direction);

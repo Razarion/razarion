@@ -66,6 +66,22 @@ public interface GameTestHelper {
         return syncPhysicalMovable;
     }
 
+    static AbstractSyncPhysical createAbstractSyncPhysical(double radius,
+                                                           TerrainType terrainType,
+                                                           DecimalPosition position) {
+        SyncItemContainerServiceImpl itemContainerService = new SyncItemContainerServiceImpl(null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        AbstractSyncPhysical abstractSyncPhysical = new AbstractSyncPhysical(itemContainerService);
+        abstractSyncPhysical.init(null, radius, true, terrainType, position, 0);
+        return abstractSyncPhysical;
+    }
+
     static SyncPhysicalMovable createSyncPhysicalMovable(double radius, int syncItemId, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity, List<DecimalPosition> wayPositions) {
         throw new UnsupportedOperationException();
 //        PathingAccess pathingAccess = EasyMock.createNiceMock(PathingAccess.class);

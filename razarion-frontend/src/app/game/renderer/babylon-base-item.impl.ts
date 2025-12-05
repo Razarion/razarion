@@ -225,7 +225,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (buildup < 1.0 && this.buildupMeshes == null) {
 
       this.buildupMeshes = this.getContainer().getChildMeshes() as Mesh[];
+      console.info(`setBuildup 1 ${this.buildupMeshes.length}`)
       this.buildupMeshes = this.buildupMeshes.filter(mesh => mesh.isVisible);
+      console.info(`setBuildup 2 ${this.buildupMeshes.length}`)
 
       this.buildupMeshes.sort((a, b) => {
         return a.position.y - b.position.y;
@@ -410,7 +412,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   setTurretAngle(turretAngle: number): void {
     if (this.getRenderObject().getTurretMesh() != null) {
-      console.log(`setTurretAngle ${turretAngle}`)
       this.getRenderObject().getTurretMesh()!.rotationQuaternion = null;
       this.getRenderObject().getTurretMesh()!.rotation.y = -turretAngle;
     }

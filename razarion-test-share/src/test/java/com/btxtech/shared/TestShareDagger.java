@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.TestSyncService;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.gui.DaggerTestRenderer;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -48,4 +49,6 @@ public interface TestShareDagger {
     CommandService commandService();
 
     ItemTypeService itemTypeService();
+
+    BotService botService();
 }

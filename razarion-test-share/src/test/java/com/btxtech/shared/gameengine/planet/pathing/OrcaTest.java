@@ -224,6 +224,15 @@ public class OrcaTest {
     }
 
     @Test
+    public void overlapUnmovable1() {
+        SyncPhysicalMovable protagonist = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(20.28207321464821, 23.86211363974772), new DecimalPosition(0.19964944493158018, 0.011836348191563963), null);
+        List<AbstractSyncPhysical> physicalAreas = new ArrayList<>();
+        physicalAreas.add(GameTestHelper.createAbstractSyncPhysical(3.0, TerrainType.LAND, new DecimalPosition(24.5927935691167, 25.56605099410689)));
+
+        runTest(protagonist, physicalAreas, null, new DecimalPosition(-0.18463990822690954, -0.07686419380933122));
+    }
+
+    @Test
     public void unknown1() {
         SyncPhysicalMovable protagonist = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(19.300187279685865, 23.7697593332751), new DecimalPosition(7.7869654150622845, -0.26517646985986776), null);
         List<AbstractSyncPhysical> physicalAreas = new ArrayList<>();
@@ -323,7 +332,7 @@ public class OrcaTest {
     }
 
     @SuppressWarnings("unused")
-    private void display(Orca orca, SyncPhysicalMovable protagonist, List<ObstacleSlope> obstacles, List<List<AbstractSyncPhysical>> physicalAreas) {
+    private void display(Orca orca, SyncPhysicalMovable protagonist, List<ObstacleSlope> obstacles, List<AbstractSyncPhysical> physicalAreas) {
         ShareTestGuiDisplay.show(new AbstractTestGuiRenderer() {
             @Override
             protected void doRender() {
@@ -335,7 +344,7 @@ public class OrcaTest {
                         if (physicalArea instanceof SyncPhysicalMovable) {
                             strokeSyncPhysicalMovable((SyncPhysicalMovable) physicalArea, 0.2, Color.GREEN);
                         } else {
-                            strokeSyncPhysicalArea((AbstractSyncPhysical) physicalArea, 0.2, Color.GRAY);
+                            strokeSyncPhysicalArea(physicalArea, 0.2, Color.GRAY);
                         }
                     });
                 }
