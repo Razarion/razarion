@@ -22,7 +22,7 @@ import {
 } from "../../gwtangular/GwtAngularFacade";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {BabylonModelService} from "./babylon-model.service";
-import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {ActionService, SelectionInfo} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {GwtInstance} from '../../gwtangular/GwtInstance';
@@ -165,7 +165,16 @@ export class BabylonItemImpl implements BabylonItem {
       // Rotation
       let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(position.getX(), position.getY()));
       if (pickingInfo && pickingInfo.hit) {
-        let normal = pickingInfo.getNormal(true)!;
+        let razarionMetadata = pickingInfo.pickedMesh && BabylonRenderServiceAccessImpl.getRazarionMetadata(pickingInfo.pickedMesh);
+        let normal: Vector3 | undefined;
+        if (razarionMetadata) {
+          if (razarionMetadata.type == RazarionMetadataType.BOT_GROUND) {
+            normal = razarionMetadata.botGroundNorm;
+          }
+        }
+        if (!normal) {
+          normal = pickingInfo.getNormal(true)!;
+        }
         this.lastNormal = normal;
         let rotation3D = this.calculateRotation(normal);
         if (this.onRotation3D(rotation3D)) {

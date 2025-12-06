@@ -392,29 +392,37 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       return;
     }
     botGrounds.forEach((botGround: BotGround) => {
+      let botGroundNorm = new Vector3(0, 1, 0).normalize();
       botGround.positions.forEach((position) => {
         const renderObject = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
         renderObject.setPosition(new Vector3(position.getX(), botGround.height, position.getY()));
         renderObject.setMetadata({
-          type: RazarionMetadataType.BOT_BOX,
+          type: RazarionMetadataType.BOT_GROUND,
           configId: botGround.model3DId,
           id: undefined,
-          editorHintTerrainObjectPosition: undefined
+          editorHintTerrainObjectPosition: undefined,
+          botGroundNorm: botGroundNorm
         });
         renderObject.setActionManager(this.actionManager);
       });
       if (botGround.botGroundSlopeBoxes) {
         botGround.botGroundSlopeBoxes.forEach(botGroundSlopeBox => {
+          const x = -Math.sin(botGroundSlopeBox.zRot) * Math.cos(botGroundSlopeBox.yRot);
+          const y =  Math.cos(botGroundSlopeBox.zRot);
+          const z =  Math.sin(botGroundSlopeBox.zRot) * Math.sin(botGroundSlopeBox.yRot);
+          let botGroundNorm = new Vector3(x, y, z).normalize();
+
           const renderObject = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
           renderObject.prefixName("Slope ");
           renderObject.setPosition(new Vector3(botGroundSlopeBox.xPos, botGroundSlopeBox.height, botGroundSlopeBox.yPos));
 
           renderObject.setRotationYZ(botGroundSlopeBox.yRot, botGroundSlopeBox.zRot);
           renderObject.setMetadata({
-            type: RazarionMetadataType.BOT_BOX,
+            type: RazarionMetadataType.BOT_GROUND,
             configId: botGround.model3DId,
             id: undefined,
-            editorHintTerrainObjectPosition: undefined
+            editorHintTerrainObjectPosition: undefined,
+            botGroundNorm: botGroundNorm
           });
           renderObject.setActionManager(this.actionManager);
         })

@@ -124,7 +124,7 @@ export class LocationVisualization {
         if (!razarionMetadata) {
           return false;
         }
-        return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_BOX;
+        return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_GROUND;
       });
     if (pickingInfo && pickingInfo.hit) {
       return pickingInfo.pickedPoint!;

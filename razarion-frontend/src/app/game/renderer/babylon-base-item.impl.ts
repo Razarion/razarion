@@ -219,15 +219,14 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (buildup >= 1.0 && this.buildupMeshes != null) {
       this.buildupMeshes.forEach(m => m.isVisible = true);
       this.buildupMeshes = null;
+      this.updateItemCursor();
       return;
     }
 
     if (buildup < 1.0 && this.buildupMeshes == null) {
 
       this.buildupMeshes = this.getContainer().getChildMeshes() as Mesh[];
-      console.info(`setBuildup 1 ${this.buildupMeshes.length}`)
       this.buildupMeshes = this.buildupMeshes.filter(mesh => mesh.isVisible);
-      console.info(`setBuildup 2 ${this.buildupMeshes.length}`)
 
       this.buildupMeshes.sort((a, b) => {
         return a.position.y - b.position.y;

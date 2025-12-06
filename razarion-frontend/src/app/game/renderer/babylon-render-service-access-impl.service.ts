@@ -67,12 +67,13 @@ export interface RazarionMetadata {
   id: number | undefined;
   configId: number | undefined;
   editorHintTerrainObjectPosition: TerrainObjectPosition | undefined;
+  botGroundNorm: Vector3 | undefined;
 }
 
 export enum RazarionMetadataType {
   GROUND,
   TERRAIN_OBJECT,
-  BOT_BOX
+  BOT_GROUND
 }
 
 @Injectable({
@@ -654,7 +655,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         if (!razarionMetadata) {
           return false;
         }
-        return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_BOX;
+        return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_GROUND;
       }
     );
   }
@@ -665,7 +666,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       if (!razarionMetadata) {
         return false;
       }
-      return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_BOX;
+      return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_GROUND;
     });
   }
 
@@ -753,6 +754,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       id = GwtHelper.gwtIssueNumber(id);
       configId = GwtHelper.gwtIssueNumber(configId);
       editorHintTerrainObjectPosition = undefined;
+      botGroundNorm = undefined;
     });
   }
 
