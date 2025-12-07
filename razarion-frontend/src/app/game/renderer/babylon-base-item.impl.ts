@@ -75,6 +75,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
     this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI(`Base item ui ${baseItemType.getInternalName()}`);
+    this.uiTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
 
     if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
       rendererService.addInterpolationListener(this);

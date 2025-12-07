@@ -90,6 +90,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     this.actionManagerTerrainObject = new ActionManager(rendererService.getScene());
     this.actionManagerTerrainObject.registerAction(
+      // If no action registered, go-no curser is not shown
       new ExecuteCodeAction(
         ActionManager.OnPickDownTrigger,
         () => {

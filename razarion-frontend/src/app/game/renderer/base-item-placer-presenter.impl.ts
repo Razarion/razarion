@@ -158,6 +158,7 @@ class Tip {
               private rendererService: BabylonRenderServiceAccessImpl,
               transformNode: TransformNode) {
     this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI("Base item placer");
+    this.uiTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
     this.rect1 = new Rectangle();
     this.rect1.width = "350px";
     this.rect1.height = "60px";
