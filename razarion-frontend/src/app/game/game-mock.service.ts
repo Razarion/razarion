@@ -56,8 +56,6 @@ import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
-import {toRadians} from 'chart.js/helpers';
-import {MeshBuilder, NodeParticleSystemSet, Vector3} from '@babylonjs/core';
 import {
   ParticleSystemEditorComponent
 } from '../editor/crud-editors/particle-system-editor/particle-system-editor.component';
@@ -111,7 +109,7 @@ export class GameMockService {
           this.babylonRenderServiceAccessImpl.setViewFieldCenter(74, 40);
           this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
           // this.gameComponent.addEditorModel(new EditorModel("Mock Bot Editor", ServerBotEditorComponent));
-          this.gameComponent.addEditorModel(new EditorModel("Mock Particle System Editor", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
+          // this.gameComponent.addEditorModel(new EditorModel("Mock Particle System Editor", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
         }, 100);
         // this.loadingCover!.hide();
         // this.threeJsRendererService.createProjectile(new class implements Vertex {
@@ -773,11 +771,11 @@ export class GameMockService {
           }
           terrainObjectConfig = new class implements TerrainObjectConfig {
             getModel3DId(): number {
-              throw new Error("Method not implemented.");
+              return terrainObjectConfigJson.model3DId;
             }
 
             toString(): string {
-              throw new Error("Method not implemented.");
+              return `${terrainObjectConfigJson.internalName} '${terrainObjectConfigJson.id}'`;
             }
 
             getId(): number {
@@ -1031,7 +1029,34 @@ export class GameMockService {
               }
 
               getTerrainTileObjectLists(): TerrainTileObjectList[] {
-                return [];
+                if (x == 0 && y == 0) {
+                  return [
+                    {
+                      terrainObjectConfigId: 114,
+                      terrainObjectModels: [
+                        {
+                          terrainObjectId: 1,
+                          position: GwtInstance.newVertex(58, 18, 2),
+                          scale: null,
+                          rotation: null,
+                        }
+                      ]
+                    },
+                    {
+                      terrainObjectConfigId: 110,
+                      terrainObjectModels: [
+                        {
+                          terrainObjectId: 2,
+                          position: GwtInstance.newVertex(58, 28, 2),
+                          scale: null,
+                          rotation: null,
+                        }
+                      ]
+                    }
+                  ];
+                } else {
+                  return [];
+                }
               }
 
               getBabylonDecals(): BabylonDecal[] {
@@ -1162,11 +1187,11 @@ export class GameMockService {
   mockSelectionService(): SelectionService {
     return new class implements SelectionService {
       hasOwnSelection(): boolean {
-        return false;
+        return true;
       }
 
       hasOwnMovable(): boolean {
-        return false;
+        return true;
       }
 
       hasAttackers(): boolean {
