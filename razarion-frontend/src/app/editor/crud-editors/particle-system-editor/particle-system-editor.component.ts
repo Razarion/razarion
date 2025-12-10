@@ -46,7 +46,6 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
               httpClient: HttpClient) {
     this.particleSystemControllerClient = new ParticleSystemControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
     this.emitterIdentifierOptions.push({label: "RAZ_P_<N>", identifier: BabylonModelService.RAZ_P_});
-    this.emitterIdentifierOptions.push({label: "RAZ_I", identifier: BabylonModelService.RAZ_I});
     this.emitterIdentifierOptions.push({label: "RAZ_M_P_<N>", identifier: BabylonModelService.RAZ_M_P_});
   }
 

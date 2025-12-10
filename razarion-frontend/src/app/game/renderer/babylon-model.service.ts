@@ -30,7 +30,6 @@ import {RenderObject} from './render-object';
 })
 export class BabylonModelService {
   public static readonly RAZ_P_ = "RAZ_P_"
-  public static readonly RAZ_I = "RAZ_I"
   public static readonly RAZ_M_P_ = "RAZ_M_P_"
   public static readonly RAZ_TURRET_ = "RAZ_TURRET_"
   //
@@ -257,9 +256,6 @@ export class BabylonModelService {
         } catch (exception) {
           console.error(exception);
         }
-      } else if (abstractMesh.name.startsWith(BabylonModelService.RAZ_I)) {
-        renderObject.addImpactMesh(abstractMesh);
-        abstractMesh.isVisible = false;
       }
 
       if (abstractMesh.name.startsWith(BabylonModelService.RAZ_TURRET_)) {

@@ -295,33 +295,54 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
   }
 
-  onProjectileFired(tagetSyncBaseItemId: number, targetPosition: DecimalPosition): void {
-    let targetImpactMesh: Nullable<AbstractMesh> = null;
-    const targetBaseItem = this.rendererService.getBabylonBaseItemById(tagetSyncBaseItemId);
-    if (targetBaseItem) {
-      targetImpactMesh = targetBaseItem.getRenderObject().getRandomImpactMesh();
+  onProjectileFired(targetSyncBaseItemId: number, targetPosition: DecimalPosition): void {
+    const targetBaseItem = this.rendererService.getBabylonBaseItemById(targetSyncBaseItemId);
+    if (!targetBaseItem) {
+      console.warn("Target base item not found:", targetSyncBaseItemId);
+      return;
     }
 
-    let correctedTargetPosition: Nullable<Vector3> = null;
-    if (!targetImpactMesh) {
-      let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(targetPosition);
-      if (pickingInfo && pickingInfo.hit) {
-        correctedTargetPosition = pickingInfo.pickedPoint!;
-      } else {
-        correctedTargetPosition = new Vector3(targetPosition.getX(), 0, targetPosition.getY());
-      }
-    }
-
-    let startPosition;
-    if (this.getRenderObject().hasMuzzleFlash()) {
-      this.getRenderObject().createMuzzleFlashParticleSystemSet()
-        .then(particleSystemSet => particleSystemSet
-          .start(this.getRenderObject().getMuzzleFlashMesh()));
-      startPosition = this.getRenderObject().getMuzzleFlashMesh().getAbsolutePosition();
+    let startPosition: Vector3;
+    const renderObject = this.getRenderObject();
+    if (renderObject.hasMuzzleFlash()) {
+      renderObject.createMuzzleFlashParticleSystemSet()
+        .then(particleSystemSet => particleSystemSet.start(renderObject.getMuzzleFlashMesh()));
+      startPosition = renderObject.getMuzzleFlashMesh().getAbsolutePosition();
     } else {
-      startPosition = this.getRenderObject().getModel3D().getAbsolutePosition();
+      startPosition = renderObject.getModel3D().getAbsolutePosition();
     }
-    this.createProjectile(startPosition, targetImpactMesh, correctedTargetPosition);
+
+    const childMeshes: AbstractMesh[] = targetBaseItem.getContainer().getChildMeshes() as AbstractMesh[];
+
+    let minDistance = Number.MAX_VALUE;
+    let closestPoint: Vector3 | null = null;
+
+    childMeshes
+      .filter(mesh => mesh.isVisible)
+      .forEach(mesh => {
+        const positions = mesh.getVerticesData("position");
+        if (!positions) {
+          return;
+        }
+
+        for (let i = 0; i < positions.length; i += 3) {
+          const vertexLocal = new Vector3(positions[i], positions[i + 1], positions[i + 2]);
+          const vertexWorld = Vector3.TransformCoordinates(vertexLocal, mesh.getWorldMatrix());
+
+          const dist = Vector3.Distance(vertexWorld, startPosition);
+          if (dist < minDistance) {
+            minDistance = dist;
+            closestPoint = vertexWorld;
+          }
+        }
+      });
+
+    if (!closestPoint) {
+      const pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(targetPosition);
+      closestPoint = pickingInfo?.pickedPoint ?? new Vector3(targetPosition.getX(), 0, targetPosition.getY());
+    }
+
+    this.createProjectile(startPosition, null, closestPoint!);
   }
 
   onExplode(): void {

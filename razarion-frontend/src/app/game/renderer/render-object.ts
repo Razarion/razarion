@@ -7,7 +7,6 @@ export class RenderObject {
   private model3D!: TransformNode;
   private muzzleFlashParticleEntity: ParticleSystemEntity | null = null;
   private muzzleFlashEmitterMesh: Nullable<AbstractMesh> = null;
-  private impactMeshes: AbstractMesh[] = [];
   private turretMesh: Nullable<AbstractMesh> = null;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl) {
@@ -112,20 +111,6 @@ export class RenderObject {
 
   getMuzzleFlashMesh(): AbstractMesh {
     return this.muzzleFlashEmitterMesh!;
-  }
-
-  addImpactMesh(mesh: AbstractMesh) {
-    this.impactMeshes.push(mesh)
-  }
-
-  getRandomImpactMesh(): Nullable<AbstractMesh> {
-    if (this.impactMeshes.length == 1) {
-      return this.impactMeshes[0];
-    } else if (this.impactMeshes.length > 1) {
-      return this.impactMeshes[Math.random() * this.impactMeshes.length];
-    } else {
-      return null;
-    }
   }
 
   setTurretMesh(turretMesh: AbstractMesh) {

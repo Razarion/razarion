@@ -56,12 +56,7 @@ import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
-import {
-  ParticleSystemEditorComponent
-} from '../editor/crud-editors/particle-system-editor/particle-system-editor.component';
-import {
-  GeneratedCrudContainerComponent
-} from '../editor/crud-editors/crud-container/generated-crud-container.component';
+import {toRadians} from 'chart.js/helpers';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -138,7 +133,7 @@ export class GameMockService {
         //   }
         // }, 2);
 
-        let baseItemType = new class implements BaseItemType {
+        let baseItemType1 = new class implements BaseItemType {
           getName(): string {
             return "BaseItemType";
           }
@@ -208,8 +203,70 @@ export class GameMockService {
           }
         };
 
+        let baseItemType2 = new class implements BaseItemType {
+          getName(): string {
+            return "BaseItemType 2";
+          }
+
+          getDescription(): string {
+            return "BaseItemType description";
+          }
+
+          getBuilderType(): BuilderType  | null {
+            return null;
+          }
+
+          getHarvesterType(): HarvesterType | null {
+            return null;
+          }
+
+          getWeaponType(): WeaponType {
+            return new class implements WeaponType {
+              getProjectileSpeed(): number | null {
+                return 30;
+              }
+
+              getImpactParticleSystemId(): number | null {
+                return 6;
+              }
+
+              getTrailParticleSystemConfigId(): number | null {
+                return 6;
+              }
+            }
+          }
+
+          getExplosionParticleId(): number | null {
+            return 1;
+          }
+
+          getId(): number {
+            return 12;
+          }
+
+          getInternalName(): string {
+            return "Builder";
+          }
+
+          getModel3DId(): number | null {
+            return 34;
+          }
+
+          getPhysicalAreaConfig(): PhysicalAreaConfig {
+            return new class implements PhysicalAreaConfig {
+              getRadius(): number {
+                return 2;
+              }
+
+              fulfilledMovable(): boolean {
+                return true;
+              }
+            };
+          }
+        };
+
         {
-          let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType, 1, Diplomacy.OWN, "myName");
+          let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType1, 1, Diplomacy.OWN, "myName");
           babylonBaseItem1.setPosition(GwtInstance.newVertex(70, 40, 0.6));
           // babylonBaseItem1.setAngle(Tools.ToRadians(45));
           babylonBaseItem1.setAngle(0);
@@ -223,15 +280,15 @@ export class GameMockService {
           //  babylonBaseItem1.onExplode();
           //}, 2000);
 
+          let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType2, 1, Diplomacy.OWN, "myName");
+          babylonBaseItem2.setPosition(GwtInstance.newVertex(85, 40, 0.6));
+          // babylonBaseItem1.setAngle(Tools.ToRadians(45));
+          babylonBaseItem2.setAngle(toRadians(180));
 
-          let x = 0;
+
           setInterval(() => {
-            babylonBaseItem1.setBuildup(x);
-            x += 0.01;
-            if (x >= 1) {
-              x = 0;
-            }
-          }, 100)
+            babylonBaseItem2.onProjectileFired(999999, GwtInstance.newDecimalPosition(70, 40))
+          }, 1000)
           // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
           // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
         }
@@ -253,7 +310,7 @@ export class GameMockService {
         }
         this.showQuestionCockpit();
         // {
-        //   let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType, Diplomacy.ENEMY);
+        //   let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType1, Diplomacy.ENEMY);
         //   babylonBaseItem2.setPosition(GwtInstance.newVertex(8, 14, 0));
         //   babylonBaseItem2.setAngle(0);
         //
@@ -269,7 +326,7 @@ export class GameMockService {
         //   setInterval(() => babylonBaseItem2.setHealth((Date.now() % 10000) / 10000), 2000);
         // }
         // {
-        //   let babylonBaseItem3 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999997, baseItemType, Diplomacy.ENEMY);
+        //   let babylonBaseItem3 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999997, baseItemType1, Diplomacy.ENEMY);
         //   babylonBaseItem3.setPosition(GwtInstance.newVertex(8, 20, 0));
         //   babylonBaseItem3.setAngle(0);
         //
