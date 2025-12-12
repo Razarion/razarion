@@ -48,6 +48,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private idleCallback: ((idle: boolean) => void) | null = null;
   private readonly uiTexture: AdvancedDynamicTexture;
   private buildupMeshes: Mesh[] | null = null;
+  private demolitionMeshes: { mesh: Mesh; demolished: boolean }[] | null = null;
 
   constructor(id: number,
               private baseItemType: BaseItemType,
@@ -212,6 +213,36 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     } else if (this.isSelectOrHove() && this.healthSlider) {
       if (this.healthSlider) {
         this.healthSlider.value = health;
+      }
+    }
+
+    if (!this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
+      if (health < 1.0 && this.demolitionMeshes == null) {
+        let demolitionMeshes = this.getContainer().getChildMeshes() as Mesh[];
+        demolitionMeshes = demolitionMeshes.filter(mesh => mesh.isVisible);
+        demolitionMeshes.sort((a, b) => {
+          return a.position.y - b.position.y;
+        });
+        this.demolitionMeshes = [];
+        demolitionMeshes.forEach(mesh => {
+          this.demolitionMeshes!.push({mesh: mesh, demolished: false})
+        })
+      } else if (health >= 1.0 && this.demolitionMeshes != null) {
+        this.demolitionMeshes = null;
+      }
+
+      if (health < 1.0 && this.demolitionMeshes != null) {
+        const stepSize = 1.0 / this.demolitionMeshes.length;
+
+        for (let i = 0; i < this.demolitionMeshes.length; i++) {
+          if (health < i * stepSize && !this.demolitionMeshes[i].demolished) {
+            this.demolitionMeshes[i].mesh.rotationQuaternion = null;
+            this.demolitionMeshes[i].mesh.rotation.x -= 0.9 * Math.random();
+            this.demolitionMeshes[i].mesh.rotation.y -= 0.9 * Math.random();
+            this.demolitionMeshes[i].mesh.rotation.z -= 0.9 * Math.random();
+            this.demolitionMeshes[i].demolished = true;
+          }
+        }
       }
     }
   }

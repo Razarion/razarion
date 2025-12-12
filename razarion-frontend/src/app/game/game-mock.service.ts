@@ -56,7 +56,6 @@ import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
-import {toRadians} from 'chart.js/helpers';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -203,75 +202,13 @@ export class GameMockService {
           }
         };
 
-        let baseItemType2 = new class implements BaseItemType {
-          getName(): string {
-            return "BaseItemType 2";
-          }
-
-          getDescription(): string {
-            return "BaseItemType description";
-          }
-
-          getBuilderType(): BuilderType  | null {
-            return null;
-          }
-
-          getHarvesterType(): HarvesterType | null {
-            return null;
-          }
-
-          getWeaponType(): WeaponType {
-            return new class implements WeaponType {
-              getProjectileSpeed(): number | null {
-                return 30;
-              }
-
-              getImpactParticleSystemId(): number | null {
-                return 6;
-              }
-
-              getTrailParticleSystemConfigId(): number | null {
-                return 6;
-              }
-            }
-          }
-
-          getExplosionParticleId(): number | null {
-            return 1;
-          }
-
-          getId(): number {
-            return 12;
-          }
-
-          getInternalName(): string {
-            return "Builder";
-          }
-
-          getModel3DId(): number | null {
-            return 34;
-          }
-
-          getPhysicalAreaConfig(): PhysicalAreaConfig {
-            return new class implements PhysicalAreaConfig {
-              getRadius(): number {
-                return 2;
-              }
-
-              fulfilledMovable(): boolean {
-                return true;
-              }
-            };
-          }
-        };
-
         {
           let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType1, 1, Diplomacy.OWN, "myName");
           babylonBaseItem1.setPosition(GwtInstance.newVertex(70, 40, 0.6));
           // babylonBaseItem1.setAngle(Tools.ToRadians(45));
           babylonBaseItem1.setAngle(0);
 
-          babylonBaseItem1.select(false);
+          babylonBaseItem1.select(true);
 
           // babylonBaseItem1.setConstructing(0.01);
           babylonBaseItem1.setHealth(1);
@@ -280,14 +217,13 @@ export class GameMockService {
           //  babylonBaseItem1.onExplode();
           //}, 2000);
 
-          let babylonBaseItem2 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999998, baseItemType2, 1, Diplomacy.OWN, "myName");
-          babylonBaseItem2.setPosition(GwtInstance.newVertex(85, 40, 0.6));
-          // babylonBaseItem1.setAngle(Tools.ToRadians(45));
-          babylonBaseItem2.setAngle(toRadians(180));
-
-
+          let health = 1.0;
           setInterval(() => {
-            babylonBaseItem2.onProjectileFired(999999, GwtInstance.newDecimalPosition(70, 40))
+            babylonBaseItem1.setHealth(health)
+            health -= 0.1;
+            if (health < 0.0) {
+              health = 1.0;
+            }
           }, 1000)
           // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
           // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
