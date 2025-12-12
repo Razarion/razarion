@@ -3,6 +3,7 @@ import {
   Animation,
   Mesh,
   MeshBuilder,
+  MeshExploder,
   ParticleSystemSet,
   UtilityLayerRenderer,
   Vector3
@@ -49,6 +50,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private readonly uiTexture: AdvancedDynamicTexture;
   private buildupMeshes: Mesh[] | null = null;
   private demolitionMeshes: { mesh: Mesh; demolished: boolean }[] | null = null;
+  private isExploding = false;
 
   constructor(id: number,
               private baseItemType: BaseItemType,
@@ -167,6 +169,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   override dispose() {
+    if (this.isExploding) {
+      return;
+    }
     if (this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
       this.rendererService.removeInterpolationListener(this);
     }
@@ -382,12 +387,57 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       return;
     }
 
-    let particleSystemConfig = this.babylonModelService.getParticleSystemEntity(this.baseItemType.getExplosionParticleId()!);
-    this.rendererService.createParticleSystem(particleSystemConfig.id, particleSystemConfig.imageId)
-      .then(particleSystemSet => {
-        // TODO particleSystemSet.disposeOnStop = true;
-        particleSystemSet.start(<any>this.getContainer().position.clone());
-      });
+    try {
+      let particleSystemConfig = this.babylonModelService.getParticleSystemEntity(this.baseItemType.getExplosionParticleId()!);
+      this.rendererService.createParticleSystem(particleSystemConfig.id, particleSystemConfig.imageId)
+        .then(particleSystemSet => {
+          // TODO particleSystemSet.disposeOnStop = true;
+          particleSystemSet.start(<any>this.getContainer().position.clone());
+        });
+    } catch (e) {
+      console.warn(e);
+    }
+
+    this.isExploding = true;
+    setTimeout(() => {
+      try {
+        let centerMesh = MeshBuilder.CreateBox("Explosion ground");
+        centerMesh.position.x = this.getPosition()!.getX();
+        centerMesh.position.y = this.getPosition()!.getZ();
+        centerMesh.position.z = this.getPosition()!.getY();
+        centerMesh.isVisible = false;
+        centerMesh.setParent(this.getContainer());
+
+        let toExplodeArray = this.getContainer().getChildMeshes() as Mesh[];
+        toExplodeArray = toExplodeArray.filter(mesh => mesh.isVisible);
+
+        let newExplosion = new MeshExploder(toExplodeArray, centerMesh);
+
+        const dateStart = Date.now();
+        const EXPLOSION_DURATION = 500;
+        const MAX_DISTANCE = 10;   // bisher 30 im Code
+
+        const renderCallback = () => {
+          const elapsedTime = Date.now() - dateStart;
+
+          if (elapsedTime < EXPLOSION_DURATION) {
+            const t = elapsedTime / EXPLOSION_DURATION; // 0 → 1
+            const easeOut = t * 0.7 + (1 - (1 - t) * (1 - t)) * 0.3;
+            const distance = MAX_DISTANCE * easeOut;
+            newExplosion.explode(distance);
+          } else {
+            this.isExploding = false;
+            centerMesh.dispose();
+            this.rendererService.getScene().unregisterBeforeRender(renderCallback);
+            this.dispose();
+          }
+        };
+
+        this.rendererService.getScene().registerBeforeRender(renderCallback);
+      } catch (e) {
+        console.warn(e);
+      }
+    }, 100)
   }
 
   setBuildingPosition(razarionBuildingPosition: DecimalPosition): void {

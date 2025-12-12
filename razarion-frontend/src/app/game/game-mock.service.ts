@@ -217,14 +217,9 @@ export class GameMockService {
           //  babylonBaseItem1.onExplode();
           //}, 2000);
 
-          let health = 1.0;
           setInterval(() => {
-            babylonBaseItem1.setHealth(health)
-            health -= 0.1;
-            if (health < 0.0) {
-              health = 1.0;
-            }
-          }, 1000)
+            babylonBaseItem1.onExplode()
+          }, 3000)
           // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
           // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
         }
