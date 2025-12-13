@@ -223,7 +223,7 @@ export class BabylonModelService {
         if (allowedAnimationUniqueIds.has(originalAnimation.uniqueId)) {
           let createdAnimation = created.animations.find(c => c.name == originalAnimation.name);
           if (createdAnimation) {
-            renderObject.addAnimation(original, created);
+            renderObject.addEffectAnimation(original, created);
           }
         }
       })
@@ -241,9 +241,7 @@ export class BabylonModelService {
           const particleSystemEntityId = parseInt(abstractMesh.name.replace(BabylonModelService.RAZ_P_, ""), 10);
           let particleSystemEntity = this.getParticleSystemEntity(particleSystemEntityId);
           abstractMesh.isVisible = false;
-          this.renderer.createParticleSystem(particleSystemEntityId, particleSystemEntity.imageId).then(particleSystemSet => {
-            particleSystemSet.start(abstractMesh);
-          });
+          renderObject.addEffectParticleSystem(particleSystemEntity, abstractMesh);
         } catch (exception) {
           console.error(exception);
         }

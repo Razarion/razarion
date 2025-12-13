@@ -49,6 +49,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private idleCallback: ((idle: boolean) => void) | null = null;
   private readonly uiTexture: AdvancedDynamicTexture;
   private buildupMeshes: Mesh[] | null = null;
+  private demolitionMeshExploder: MeshExploder | null = null;
+  private demolitionCenterMesh: Mesh | null = null;
   private demolitionMeshes: { mesh: Mesh; demolished: boolean }[] | null = null;
   private isExploding = false;
 
@@ -189,6 +191,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.uiTexture.removeControl(this.nameBlock)
       this.nameBlock = null;
     }
+    if (this.demolitionCenterMesh) {
+      this.demolitionCenterMesh.dispose();
+      this.demolitionCenterMesh = null;
+    }
     this.uiTexture.dispose();
     super.dispose();
   }
@@ -222,9 +228,15 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
 
     if (!this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
-      if (health < 1.0 && this.demolitionMeshes == null) {
+      if (health < 1.0 && this.demolitionMeshExploder == null) {
+        this.demolitionCenterMesh = MeshBuilder.CreateBox("Demolition ground");
+        this.demolitionCenterMesh.position.x = this.getPosition()!.getX();
+        this.demolitionCenterMesh.position.y = this.getPosition()!.getZ();
+        this.demolitionCenterMesh.position.z = this.getPosition()!.getY();
+        this.demolitionCenterMesh.isVisible = false;
+        this.demolitionCenterMesh.setParent(this.getContainer());
+
         let demolitionMeshes = this.getContainer().getChildMeshes() as Mesh[];
-        demolitionMeshes = demolitionMeshes.filter(mesh => mesh.isVisible);
         demolitionMeshes.sort((a, b) => {
           return a.position.y - b.position.y;
         });
@@ -232,20 +244,25 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         demolitionMeshes.forEach(mesh => {
           this.demolitionMeshes!.push({mesh: mesh, demolished: false})
         })
-      } else if (health >= 1.0 && this.demolitionMeshes != null) {
+        this.demolitionMeshExploder = new MeshExploder(demolitionMeshes, this.demolitionCenterMesh);
+      } else if (health >= 1.0 && this.demolitionMeshExploder != null) {
+        this.demolitionMeshExploder = null;
         this.demolitionMeshes = null;
+        this.demolitionCenterMesh?.dispose()
+        this.demolitionCenterMesh = null;
       }
 
-      if (health < 1.0 && this.demolitionMeshes != null) {
-        const stepSize = 1.0 / this.demolitionMeshes.length;
+      if (health < 1.0 && this.demolitionMeshExploder != null) {
+        this.demolitionMeshExploder.explode(-(1.0 - health));
 
-        for (let i = 0; i < this.demolitionMeshes.length; i++) {
-          if (health < i * stepSize && !this.demolitionMeshes[i].demolished) {
-            this.demolitionMeshes[i].mesh.rotationQuaternion = null;
-            this.demolitionMeshes[i].mesh.rotation.x -= 0.9 * Math.random();
-            this.demolitionMeshes[i].mesh.rotation.y -= 0.9 * Math.random();
-            this.demolitionMeshes[i].mesh.rotation.z -= 0.9 * Math.random();
-            this.demolitionMeshes[i].demolished = true;
+        const stepSize = 1.0 / this.demolitionMeshes!.length;
+        for (let i = 0; i < this.demolitionMeshes!.length; i++) {
+          if (health < i * stepSize && !this.demolitionMeshes![i].demolished) {
+            this.demolitionMeshes![i].mesh.rotationQuaternion = null;
+            this.demolitionMeshes![i].mesh.rotation.x -= 0.9 * Math.random();
+            this.demolitionMeshes![i].mesh.rotation.y -= 0.9 * Math.random();
+            this.demolitionMeshes![i].mesh.rotation.z -= 0.9 * Math.random();
+            this.demolitionMeshes![i].demolished = true;
           }
         }
       }
@@ -253,6 +270,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   setBuildup(buildup: number): void {
+    this.getRenderObject().setEffectsActive(buildup >= 1.0);
+
     if (buildup >= 1.0 && this.buildupMeshes != null) {
       this.buildupMeshes.forEach(m => m.isVisible = true);
       this.buildupMeshes = null;
@@ -409,7 +428,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         centerMesh.setParent(this.getContainer());
 
         let toExplodeArray = this.getContainer().getChildMeshes() as Mesh[];
-        toExplodeArray = toExplodeArray.filter(mesh => mesh.isVisible);
 
         let newExplosion = new MeshExploder(toExplodeArray, centerMesh);
 

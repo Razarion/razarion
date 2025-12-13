@@ -2,9 +2,15 @@ import {AbstractActionManager, AbstractMesh, Node, ParticleSystemSet, TransformN
 import {BabylonRenderServiceAccessImpl, RazarionMetadata} from './babylon-render-service-access-impl.service';
 import type {Nullable} from '@babylonjs/core/types';
 import {ParticleSystemEntity} from '../../generated/razarion-share';
+import type {Animatable} from '@babylonjs/core/Animations/animatable.core';
 
 export class RenderObject {
   private model3D!: TransformNode;
+  private effectsActive = true;
+  private allEffectAnimations: { original: Node, animation: Node }[] = [];
+  private activeEffectAnimations: Animatable[] = [];
+  private allEffectParticles: { entity: ParticleSystemEntity, emitter: AbstractMesh }[] = [];
+  private activeEffectParticles: ParticleSystemSet[] = [];
   private muzzleFlashParticleEntity: ParticleSystemEntity | null = null;
   private muzzleFlashEmitterMesh: Nullable<AbstractMesh> = null;
   private turretMesh: Nullable<AbstractMesh> = null;
@@ -34,6 +40,32 @@ export class RenderObject {
     this.model3D.rotationQuaternion = null;
     this.model3D.rotation.y = y;
     this.model3D.rotation.z = z;
+  }
+
+  setEffectsActive(active: boolean) {
+    if (this.effectsActive == active) {
+      return;
+    }
+    if (active) {
+      this.allEffectAnimations.forEach((nodes) => {
+        const animatable = nodes.original.getScene().beginAnimation(nodes.animation, 0, 60, true);
+        this.activeEffectAnimations.push(animatable);
+      })
+      this.allEffectParticles.forEach((data) => {
+        this.rendererService.createParticleSystem(data.entity.id, data.entity.imageId).then(particleSystemSet => {
+          particleSystemSet.start(data.emitter);
+          this.activeEffectParticles.push(particleSystemSet);
+        });
+      })
+    } else {
+      this.activeEffectAnimations.forEach((animation => animation.stop()));
+      this.activeEffectAnimations = [];
+      this.activeEffectParticles.forEach((particleSystemSet => {
+        particleSystemSet.dispose();
+      }));
+      this.activeEffectParticles = [];
+    }
+    this.effectsActive = active;
   }
 
   dispose() {
@@ -80,8 +112,22 @@ export class RenderObject {
     this.model3D.parent = parent;
   }
 
-  addAnimation(original: Node, animation: Node) {
-    original.getScene().beginAnimation(animation, 0, 60, true) // Todo Do not stat here
+  addEffectAnimation(original: Node, animation: Node) {
+    this.allEffectAnimations.push({original: original, animation: animation})
+    if (this.effectsActive) {
+      const animatable = original.getScene().beginAnimation(animation, 0, 60, true);
+      this.activeEffectAnimations.push(animatable);
+    }
+  }
+
+  addEffectParticleSystem(particleSystemEntity: ParticleSystemEntity, emitterMesh: AbstractMesh) {
+    this.allEffectParticles.push({entity: particleSystemEntity, emitter: emitterMesh});
+    if (this.effectsActive) {
+      this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId).then(particleSystemSet => {
+        particleSystemSet.start(emitterMesh);
+        this.activeEffectParticles.push(particleSystemSet);
+      });
+    }
   }
 
   addAllShadowCasters(rendererService: BabylonRenderServiceAccessImpl) {
@@ -96,8 +142,8 @@ export class RenderObject {
     });
   }
 
-  setMuzzleFlash(muzzleFlashMeshParticleId: ParticleSystemEntity, muzzleFlashMesh: AbstractMesh) {
-    this.muzzleFlashParticleEntity = muzzleFlashMeshParticleId;
+  setMuzzleFlash(particleSystemEntity: ParticleSystemEntity, muzzleFlashMesh: AbstractMesh) {
+    this.muzzleFlashParticleEntity = particleSystemEntity;
     this.muzzleFlashEmitterMesh = muzzleFlashMesh;
   }
 
