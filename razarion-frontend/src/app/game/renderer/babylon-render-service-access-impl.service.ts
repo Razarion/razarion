@@ -23,7 +23,6 @@ import {
   AbstractMesh,
   Color3,
   Constants,
-  CubeTexture,
   DirectionalLight,
   Engine,
   FreeCamera,
@@ -85,7 +84,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private scene!: Scene;
   private engine!: Engine;
   public shadowGenerator!: ShadowGenerator;
-  private directionalLight!: DirectionalLight
+  public directionalLight!: DirectionalLight
   private camera!: FreeCamera;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
@@ -194,6 +193,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.directionalLight.shadowMaxZ = 100;
     this.directionalLight.diffuse = new Color3(1, 1, 1);
     this.directionalLight.specular = new Color3(1, 1, 1);
+    this.directionalLight.shadowEnabled = true;
 
     this.shadowGenerator = new ShadowGenerator(4096, this.directionalLight);
     this.shadowGenerator.useExponentialShadowMap = true;
@@ -310,18 +310,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.canvas = canvas;
     this.engine = new Engine(this.canvas)
     this.scene = new Scene(this.engine);
-    this.scene.environmentTexture = CubeTexture.CreateFromImages([
-      "renderer/env/px.jpg", // +X
-      "renderer/env/py.jpg", // +Y
-      "renderer/env/pz.jpg", // +Z
-      "renderer/env/nx.jpg", // -X
-      "renderer/env/ny.jpg", // -Y
-      "renderer/env/nz.jpg", // -Z
-    ], this.scene);
     this.scene.createDefaultEnvironment({
-      createSkybox: false,
-      createGround: false,
-
+      environmentTexture: "renderer/env/sanGiuseppeBridge.env"
     });
     this.scene.environmentIntensity = 1.0;
     this.babylonModelService.setScene(this.scene);

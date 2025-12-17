@@ -245,10 +245,16 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   addToScene(): void {
+    this.rendererService.directionalLight.includedOnlyMeshes.push(this.groundMesh);
     this.rendererService.addTerrainTileToScene(this);
   }
 
   removeFromScene(): void {
+    const index = this.rendererService.directionalLight.includedOnlyMeshes.indexOf(this.groundMesh);
+    if (index !== -1) {
+      this.rendererService.directionalLight.includedOnlyMeshes.splice(index, 1);
+    }
+
     this.rendererService.removeTerrainTileFromScene(this);
     // TODO this.actionService.removeCursorHandler(this.cursorTypeHandlerTerrain);
   }
