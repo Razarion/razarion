@@ -33,35 +33,6 @@ public class BotService {
         this.botRunnerInstance = botRunnerInstance;
     }
 
-    static public List<BabylonDecal> generateBotDecals(List<BotConfig> botConfigs) {
-        List<BabylonDecal> babylonDecals = new ArrayList<>();
-        if (botConfigs != null) {
-            botConfigs.forEach(botConfig -> {
-                if (botConfig.getGroundBabylonMaterialId() != null && botConfig.getRealm() != null) {
-                    PlaceConfig placeConfig = botConfig.getRealm();
-                    if (placeConfig.getPolygon2D() != null) {
-                        Rectangle2D aabb = placeConfig.getPolygon2D().toAabb();
-                        babylonDecals.add(createBaseBabylonDecal(botConfig,
-                                aabb.getStart(),
-                                aabb.width(),
-                                aabb.height()));
-                    } else if (placeConfig.getPosition() != null) {
-                        if (placeConfig.getRadius() != null) {
-                            babylonDecals.add(createBaseBabylonDecal(botConfig,
-                                    placeConfig.getPosition().add(placeConfig.getRadius(), placeConfig.getRadius()),
-                                    placeConfig.getRadius() * 2,
-                                    placeConfig.getRadius() * 2));
-                        }
-                    } else {
-                        throw new IllegalArgumentException("Illegal PlaceConfig: to find a random place, a polygon or a position must be set");
-                    }
-
-                }
-            });
-        }
-        return babylonDecals;
-    }
-
     static public List<BotGround> generateBotGrounds(List<BotConfig> botConfigs) {
         List<BotGround> botGrounds = new ArrayList<>();
         if (botConfigs != null) {
@@ -75,16 +46,6 @@ public class BotService {
             });
         }
         return botGrounds;
-    }
-
-    private static BabylonDecal createBaseBabylonDecal(BotConfig botConfig, DecimalPosition start, double width, double height) {
-        BabylonDecal babylonDecal = new BabylonDecal();
-        babylonDecal.babylonMaterialId = botConfig.getGroundBabylonMaterialId();
-        babylonDecal.xPos = start.getX();
-        babylonDecal.yPos = start.getY();
-        babylonDecal.xSize = width;
-        babylonDecal.ySize = height;
-        return babylonDecal;
     }
 
     public void startBots(Collection<BotConfig> botConfigs) {

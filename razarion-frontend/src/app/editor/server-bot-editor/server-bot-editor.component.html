@@ -63,13 +63,6 @@
           <p-checkbox *ngIf="selectedBot" [(ngModel)]="selectedBot!.autoAttack" [binary]="true"></p-checkbox>
         </div>
       </div>
-      <div class="grid grid-cols-12 gap-4">
-        <span class="col-span-3">Bot ground</span>
-        <div class="col-span-9">
-          <babylon-material *ngIf="selectedBot"
-                            [(babylonMaterialId)]="selectedBot!.groundBabylonMaterialId"></babylon-material>
-        </div>
-      </div>
       <p-divider align="left">
         <div class="inline-flex items-center">
           <i class="pi pi-clock mr-2"></i>

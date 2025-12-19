@@ -5,7 +5,7 @@ import {
   Nullable,
   Observer,
   PointerEventTypes,
-  PointerInfo,
+  PointerInfo, StandardMaterial,
   Tools,
   TransformNode,
   Vector3
@@ -35,8 +35,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService) {
-    this.material = new SimpleMaterial("Base Item Placer", this.rendererService.getScene());
-    this.material.diffuseColor = Color3.Red()
+    this.material = new StandardMaterial("Base Item Placer", this.rendererService.getScene());
+    this.material.emissiveColor = Color3.Red()
   }
 
   activate(baseItemPlacer: BaseItemPlacer): void {
@@ -48,7 +48,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.disc.position.y = 0.1;
 
     const positionValid = baseItemPlacer.isPositionValid();
-    this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
+    this.material.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
 
     this.renderObject = this.babylonModelService.cloneModel3D(baseItemPlacer.getModel3DId()!, null, Diplomacy.OWN_PLACER);
     this.renderObject.setRotationY(Tools.ToRadians(90));
@@ -138,7 +138,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.disc!.position = pickedPoint
     this.disc!.position.y += +0.1;
     const positionValid = baseItemPlacer.isPositionValid();
-    this.material.diffuseColor = positionValid ? Color3.Green() : Color3.Red();
+    this.material.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
     this.tip!.setPositionValid(positionValid);
     this.renderObject!.setPosition(pickedPoint);
     this.renderObject!.increaseHeight(0.01);

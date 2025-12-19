@@ -59,6 +59,26 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
     @JsonIgnore
     private List<ServerLevelQuestEntity> serverLevelQuestEntities;
 
+    private static void insertHorizontalPositionPath(List<DecimalPosition> positionPath) {
+        int spawnPointCount = 13;
+        double horizontalDistance = 10;
+        double startX = 178;
+        double startY = 25;
+        for (int i = 0; i < spawnPointCount; i++) {
+            positionPath.add(new DecimalPosition(startX - (i * horizontalDistance), startY));
+        }
+    }
+
+    private static void insertVerticalPositionPath(List<DecimalPosition> positionPath) {
+        int spawnPointCount = 20;
+        double verticalDistance = 10;
+        double startX = 26;
+        double startY = 25;
+        for (int i = 0; i < spawnPointCount; i++) {
+            positionPath.add(new DecimalPosition(startX, startY + (i * verticalDistance)));
+        }
+    }
+
     public ServerGameEngineConfig toServerGameEngineConfig() {
         return new ServerGameEngineConfig()
                 .id(getId())
@@ -122,20 +142,16 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
         if (result == null) {
             return null;
         }
-        int spawnPointCount = 13;
-        double horizontalDistance = 10;
-        double startX = 178;
-        double startY = 25;
-        var positions = new ArrayList<DecimalPosition>();
-        for (int i = 0; i < spawnPointCount; i++) {
-            positions.add(new DecimalPosition(startX - (i * horizontalDistance), startY));
-        }
+        var positionPath = new ArrayList<DecimalPosition>();
+        insertHorizontalPositionPath(positionPath);
+        insertVerticalPositionPath(positionPath);
+
         return new SlavePlanetConfig()
                 .startRegion(result.getStartRegion())
                 .findFreePosition(result.isFindFreePosition())
                 .positionRadius(result.getPositionRadius())
                 .positionMaxItems(result.getPositionMaxItems())
-                .positionPath(positions);
+                .positionPath(positionPath);
     }
 
     @JsonGetter("planetConfigId")

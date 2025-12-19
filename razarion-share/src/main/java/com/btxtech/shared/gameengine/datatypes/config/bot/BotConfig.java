@@ -23,7 +23,6 @@ public class BotConfig implements Config {
     private Integer minActiveMs;
     private Integer maxActiveMs;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
-    private Integer groundBabylonMaterialId;
     private Integer groundBoxModel3DEntityId;
     private Double groundBoxHeight;
     private List<DecimalPosition> groundBoxPositions;
@@ -133,14 +132,6 @@ public class BotConfig implements Config {
         this.botEnragementStateConfigs = botEnragementStateConfigs;
     }
 
-    public @Nullable Integer getGroundBabylonMaterialId() {
-        return groundBabylonMaterialId;
-    }
-
-    public void setGroundBabylonMaterialId(@Nullable Integer groundBabylonMaterialId) {
-        this.groundBabylonMaterialId = groundBabylonMaterialId;
-    }
-
     public @Nullable Integer getGroundBoxModel3DEntityId() {
         return groundBoxModel3DEntityId;
     }
@@ -235,11 +226,6 @@ public class BotConfig implements Config {
 
     public BotConfig botEnragementStateConfigs(List<BotEnragementStateConfig> botEnragementStateConfigs) {
         setBotEnragementStateConfigs(botEnragementStateConfigs);
-        return this;
-    }
-
-    public BotConfig groundBabylonMaterialId(Integer groundBabylonMaterialId) {
-        setGroundBabylonMaterialId(groundBabylonMaterialId);
         return this;
     }
 

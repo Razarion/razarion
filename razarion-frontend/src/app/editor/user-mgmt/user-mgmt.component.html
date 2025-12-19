@@ -164,13 +164,18 @@
           </div>
         </div>
         <div class="grid grid-cols-12 gap-4">
+          <span class="col-span-5">Base id</span>
+          <div class="col-span-7">{{ userBackendInfo.baseId }}</div>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
           <span class="col-span-5">System connection open</span>
           <div class="col-span-7">{{ userBackendInfo.systemConnectionOpen }}
           </div>
         </div>
         <div class="grid grid-cols-12 gap-4">
           <span class="col-span-5">Last message received</span>
-          <div class="col-span-7">{{ userBackendInfo.systemConnectionLastMessageReceived | date:'HH:mm:ss dd.MM.yyyy ' }}
+          <div
+            class="col-span-7">{{ userBackendInfo.systemConnectionLastMessageReceived | date:'HH:mm:ss dd.MM.yyyy ' }}
           </div>
         </div>
         <div class="grid grid-cols-12 gap-4">

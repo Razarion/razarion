@@ -63,7 +63,6 @@ public class TerrainShapeManager {
         setupDimension(planetConfig);
         nativeTerrainShapeAccess.load(planetConfig.getId(), nativeTerrainShape -> {
             try {
-                // long time = System.currentTimeMillis();
                 terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
                 for (int x = 0; x < tileXCount; x++) {
                     for (int y = 0; y < tileYCount; y++) {
@@ -77,7 +76,6 @@ public class TerrainShapeManager {
                         }
                     }
                 }
-                // logger.severe("Setup TerrainShape Net: " + (System.currentTimeMillis() - time));
                 finishCallback.run();
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "NativeTerrainShapeAccess load callback failed", t);

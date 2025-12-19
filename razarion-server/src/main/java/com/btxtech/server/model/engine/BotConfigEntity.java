@@ -44,9 +44,6 @@ public class BotConfigEntity extends BaseEntity {
     private List<BotEnragementStateConfigEntity> botEnragementStateConfigs;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private BabylonMaterialEntity groundBabylonMaterialEntity;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
     private Model3DEntity groundBoxModel3DEntity;
     private Double groundBoxHeight;
     @ElementCollection
@@ -90,7 +87,6 @@ public class BotConfigEntity extends BaseEntity {
                 .minActiveMs(minActiveMs)
                 .maxActiveMs(maxActiveMs)
                 .botEnragementStateConfigs(botEnragementStateConfigs)
-                .groundBabylonMaterialId(extractId(groundBabylonMaterialEntity, BabylonMaterialEntity::getId))
                 .groundBoxModel3DEntityId(extractId(groundBoxModel3DEntity, Model3DEntity::getId))
                 .groundBoxHeight(groundBoxHeight)
                 .groundBoxPositions(lazyInitPositions)
@@ -125,7 +121,6 @@ public class BotConfigEntity extends BaseEntity {
                 this.botEnragementStateConfigs.add(botEnragementStateConfigEntity);
             }
         }
-        groundBabylonMaterialEntity = botConfig.getGroundBabylonMaterialId() != null ? (BabylonMaterialEntity) new BabylonMaterialEntity().id(botConfig.getGroundBabylonMaterialId()) : null;
         groundBoxModel3DEntity = botConfig.getGroundBoxModel3DEntityId() != null ? (Model3DEntity) new Model3DEntity().id(botConfig.getGroundBoxModel3DEntityId()) : null;
         groundBoxHeight = botConfig.getGroundBoxHeight();
         if (groundBoxPositions == null) {

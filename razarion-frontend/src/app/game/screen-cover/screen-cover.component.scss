@@ -38,7 +38,6 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1em;
 }
 
 .info-font {
@@ -48,4 +47,8 @@
 
 ::ng-deep .p-progressbar .p-progressbar-value {
   transition: none !important;
+}
+
+:host ::ng-deep .progressbar-yellow .p-progressbar-value {
+  background-color: #facc15;
 }

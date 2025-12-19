@@ -21,6 +21,8 @@ import {BabylonModelService} from "./babylon-model.service";
 import {URL_GLTF} from "../../common";
 import {GltfHelper} from "./gltf-helper";
 import {Diplomacy} from "../../gwtangular/GwtAngularFacade";
+import {ISceneLoaderProgressEvent} from '@babylonjs/core/Loading/sceneLoader';
+import {NgZone} from '@angular/core';
 
 export abstract class BabylonModelContainer<E extends BaseEntity, B> {
   private entities: Map<number, E> = new Map();
@@ -115,7 +117,7 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
   private gltfHelpers: Map<number, GltfHelper> = new Map();
   diplomacyMaterialCache: Map<number, Map<Diplomacy, Map<string, NodeMaterial>>> = new Map<number, Map<Diplomacy, Map<string, NodeMaterial>>>();
 
-  constructor(private babylonMaterialContainer: BabylonMaterialContainer) {
+  constructor(private babylonMaterialContainer: BabylonMaterialContainer, private zone: NgZone) {
     super();
   }
 
@@ -131,6 +133,9 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
       let hasError = false;
       const result = SceneLoader.LoadAssetContainer(url, '', scene, assetContainer => {
           try {
+            this.zone.run(() => {
+              this.babylonModelService.glbContainerProgress = undefined;
+            });
             if (!hasError) {
               this.setBabylonModel(gltfEntity, assetContainer);
               this.assignGlbTextures(gltfEntity, assetContainer, gltfHelper);
@@ -140,7 +145,12 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
             console.error(error);
           }
         },
-        () => {
+        (event: ISceneLoaderProgressEvent) => {
+          this.zone.run(() => {
+            this.babylonModelService.glbContainerProgress = {
+              loaded: event.loaded, total: event.total
+            }
+          });
         },
         (scene: Scene, message: string, exception?: any) => {
           hasError = true;

@@ -311,6 +311,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.engine = new Engine(this.canvas)
     this.scene = new Scene(this.engine);
     this.scene.createDefaultEnvironment({
+      createSkybox: false,
+      createGround: false,
       environmentTexture: "renderer/env/sanGiuseppeBridge.env"
     });
     this.scene.environmentIntensity = 1.0;

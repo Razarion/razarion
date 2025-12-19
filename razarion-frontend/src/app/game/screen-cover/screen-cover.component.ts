@@ -4,6 +4,7 @@ import {Card} from 'primeng/card';
 import {PrimeTemplate} from 'primeng/api';
 import {ProgressBarModule} from 'primeng/progressbar';
 import {ScreenCover} from '../../gwtangular/GwtAngularFacade';
+import {BabylonModelService} from '../renderer/babylon-model.service';
 
 @Component({
   selector: 'screen-cover',
@@ -16,7 +17,7 @@ export class ScreenCoverComponent implements ScreenCover {
   removeCover: boolean = false;
   loadingProgress = 3;
 
-  constructor(private zone: NgZone) {
+  constructor(private zone: NgZone, public babylonModelService: BabylonModelService) {
   }
 
   removeLoadingCover(): void {
@@ -42,4 +43,6 @@ export class ScreenCoverComponent implements ScreenCover {
   showStoryCover(html: string): void {
     throw new Error("Not Implemented showStoryCover()");
   }
+
+  protected readonly Math = Math;
 }

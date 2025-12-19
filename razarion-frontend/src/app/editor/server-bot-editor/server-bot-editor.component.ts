@@ -103,7 +103,6 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
       name: "",
       npc: false,
       realm: null,
-      groundBabylonMaterialId: null,
       groundBoxHeight: null,
       groundBoxModel3DEntityId: null,
       groundBoxPositions: [],

@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.system.Nullable;
+
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class UserBackendInfo {
     private int crystals;
     private List<Integer> unlockedIds;
     private List<GameHistoryEntry> gameHistoryEntries;
+    private Integer baseId;
     private Date systemConnectionOpened;
     private Date systemConnectionClosed;
     private boolean systemConnectionOpen;
@@ -137,6 +140,14 @@ public class UserBackendInfo {
 
     public void setGameHistoryEntries(List<GameHistoryEntry> gameHistoryEntries) {
         this.gameHistoryEntries = gameHistoryEntries;
+    }
+
+    public @Nullable Integer getBaseId() {
+        return baseId;
+    }
+
+    public void setBaseId(@Nullable Integer baseId) {
+        this.baseId = baseId;
     }
 
     public Date getSystemConnectionOpened() {
@@ -271,6 +282,11 @@ public class UserBackendInfo {
 
     public UserBackendInfo gameHistoryEntries(List<GameHistoryEntry> gameHistoryEntries) {
         setGameHistoryEntries(gameHistoryEntries);
+        return this;
+    }
+
+    public UserBackendInfo baseId(Integer baseId) {
+        setBaseId(baseId);
         return this;
     }
 

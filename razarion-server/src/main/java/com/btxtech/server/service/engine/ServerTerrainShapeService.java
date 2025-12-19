@@ -1,10 +1,12 @@
 package com.btxtech.server.service.engine;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +52,24 @@ public class ServerTerrainShapeService {
         this.botService = botService;
     }
 
+    private static List<BabylonDecal> generateDecals() {
+        List<BabylonDecal> babylonDecals = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            babylonDecals.add(createBaseBabylonDecal(new DecimalPosition(25 + i * 35, 2)));
+        }
+        return babylonDecals;
+    }
+
+    private static BabylonDecal createBaseBabylonDecal(DecimalPosition start) {
+        BabylonDecal babylonDecal = new BabylonDecal();
+        babylonDecal.babylonMaterialId = 1;
+        babylonDecal.xPos = start.getX();
+        babylonDecal.yPos = start.getY();
+        babylonDecal.xSize = 25;
+        babylonDecal.ySize = 25;
+        return babylonDecal;
+    }
+
     public void start(List<BotConfig> botConfigs) {
         terrainShapes.clear();
         planetCrudPersistence.read().forEach(planetConfig -> {
@@ -73,7 +94,7 @@ public class ServerTerrainShapeService {
                 terrainTypeService,
                 alarmService,
                 planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()),
-                BotService.generateBotDecals(botConfigs),
+                ServerTerrainShapeService.generateDecals(),
                 BotService.generateBotGrounds(botConfigs));
         terrainShapes.put(planetConfig.getId(), terrainShapeManager.toNativeTerrainShape());
     }

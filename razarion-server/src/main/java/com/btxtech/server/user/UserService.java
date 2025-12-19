@@ -109,6 +109,7 @@ public class UserService implements UserDetailsService {
     private UserBackendInfo userEntity2UserBackendInfo(UserEntity userEntity) {
         var clientSystemConnection = clientSystemConnectionService.getClientSystemConnection(userEntity.getUserId());
         var clientGameConnection = clientGameConnectionService.getClientGameConnection(userEntity.getUserId());
+        var playerBase = baseItemService.getPlayerBase4UserId(userEntity.getUserId());
 
         UserBackendInfo userBackendInfo = new UserBackendInfo()
                 .name(userEntity.getName())
@@ -135,6 +136,9 @@ public class UserService implements UserDetailsService {
         }
         if (userEntity.getLevelUnlockEntities() != null && !userEntity.getLevelUnlockEntities().isEmpty()) {
             userBackendInfo.unlockedIds(userEntity.getLevelUnlockEntities().stream().map(LevelUnlockEntity::getId).collect(Collectors.toList()));
+        }
+        if (playerBase != null) {
+            userBackendInfo.setBaseId(playerBase.getBaseId());
         }
         return userBackendInfo;
     }

@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import {Injectable, NgZone} from "@angular/core";
 import {Diplomacy} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {HttpClient} from "@angular/common/http";
@@ -34,7 +34,8 @@ export class BabylonModelService {
   public static readonly RAZ_TURRET_ = "RAZ_TURRET_"
   //
   private babylonMaterialContainer = new BabylonMaterialContainer();
-  private glbContainer = new GlbContainer(this.babylonMaterialContainer);
+  private glbContainer;
+  public glbContainerProgress?: { loaded: number, total: number };
   private particleSystemContainer = new ParticleSystemSetContainer();
   private model3DEntities: Map<number, Model3DEntity> = new Map();
   private scene!: Scene;
@@ -42,8 +43,10 @@ export class BabylonModelService {
   public renderer!: BabylonRenderServiceAccessImpl;
 
   constructor(private uiConfigCollectionService: UiConfigCollectionService,
-              httpClient: HttpClient) {
+              httpClient: HttpClient,
+              zone: NgZone) {
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
+    this.glbContainer = new GlbContainer(this.babylonMaterialContainer, zone);
     this.babylonMaterialContainer.setHttpClient(httpClient);
     this.particleSystemContainer.setHttpClient(httpClient);
   }
