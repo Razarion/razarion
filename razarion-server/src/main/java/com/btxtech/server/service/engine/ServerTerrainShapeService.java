@@ -57,6 +57,9 @@ public class ServerTerrainShapeService {
         for (int i = 0; i < 6; i++) {
             babylonDecals.add(createBaseBabylonDecal(new DecimalPosition(25 + i * 35, 2)));
         }
+        for (int i = 0; i < 6; i++) {
+            babylonDecals.add(createBaseBabylonDecal(new DecimalPosition(7, 35 + i * 35)));
+        }
         return babylonDecals;
     }
 
