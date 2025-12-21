@@ -6,7 +6,8 @@ import {
   TerrainObjectConfig,
   TerrainObjectModel,
   TerrainTile,
-  TerrainTileObjectList
+  TerrainTileObjectList,
+  TerrainType
 } from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
@@ -20,6 +21,8 @@ import {
   NodeMaterial,
   Ray,
   SubMesh,
+  Texture,
+  TextureBlock,
   TransformNode,
   Vector3,
   VertexData
@@ -29,6 +32,7 @@ import {Nullable} from "@babylonjs/core/types";
 import {ActionService, SelectionInfo} from "../action.service";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
+import {GroundUtil} from './ground-util';
 
 enum MaterialIndex {
   GROUND = 0,
@@ -58,6 +62,19 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private readonly actionManagerTerrain: ActionManager;
   private readonly cursorTypeHandlerTerrainObject: (selectionInfo: SelectionInfo) => void;
   private readonly actionManagerTerrainObject: ActionManager;
+
+  public static setupTerrainType(bLHeight: number, bRHeight: number, tRHeight: number, tLHeight: number): TerrainType {
+    if (bLHeight <= 0.0 && bRHeight <= 0.0 && tRHeight <= 0.0 && tLHeight <= 0.0) {
+      return TerrainType.WATER;
+    }
+    const maxHeight = Math.max(bLHeight, bRHeight, tRHeight, tLHeight);
+    const minHeight = Math.min(bLHeight, bRHeight, tRHeight, tLHeight);
+    if (Math.abs(maxHeight - minHeight) < BabylonTerrainTileImpl.WALL_HEIGHT_DIFF) {
+      return TerrainType.LAND;
+    } else {
+      return TerrainType.BLOCKED;
+    }
+  }
 
   constructor(public readonly terrainTile: TerrainTile,
               private gwtAngularService: GwtAngularService,
@@ -113,10 +130,12 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       indexStart: number,
       indexCount: number
     }[] = [];
+    const groundUtil = new GroundUtil();
     let vertexData = this.createVertexData(terrainTile.getGroundHeightMap(),
       uv2GroundHeightMap,
       materialSubmeshes,
-      terrainTile.getBabylonDecals());
+      terrainTile.getBabylonDecals(),
+      groundUtil);
     vertexData.applyToMesh(this.groundMesh, true);
     this.container.getChildren().push(this.groundMesh);
     this.groundMesh.receiveShadows = true;
@@ -125,9 +144,16 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
     let groundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
+    groundMaterial = groundMaterial!.clone(groundMaterial.name);
     let underWaterMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getUnderWaterBabylonMaterialId());
     let botMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotBabylonMaterialId());
     let botWallMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotWallBabylonMaterialId());
+
+    const groundUtilityBlock = <TextureBlock>groundMaterial.getBlockByName("GroundUtility");
+    if (groundUtilityBlock) {
+      groundUtilityBlock.texture = new Texture(groundUtil.createGroundTypeTexture().toDataURL(), this.rendererService.getScene());
+      groundMaterial.build()
+    }
 
     const multiMaterial = new MultiMaterial(`Ground ${groundConfig.getInternalName()}`, rendererService.getScene());
     multiMaterial.subMaterials[MaterialIndex.GROUND] = groundMaterial;
@@ -267,7 +293,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     materialIndex: MaterialIndex,
     indexStart: number,
     indexCount: number
-  }[], babylonDecals: BabylonDecal[]): VertexData {
+  }[], babylonDecals: BabylonDecal[], groundUtil: GroundUtil): VertexData {
     const indices = [];
     const positions = [];
     const normals = [];
@@ -284,6 +310,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       for (let x = 0; x < xCount; x++) {
         const index = x + y * xCount;
         const height = BabylonTerrainTileImpl.setupHeight(index, groundHeightMap);
+
+        groundUtil.addHeightAt(height, x, y);
+
         positions.push(
           x * BabylonTerrainTileImpl.NODE_SIZE + xOffset,
           height,
@@ -335,21 +364,21 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         })
 
         let newMaterialIndex;
+        const terrainType = BabylonTerrainTileImpl.setupTerrainType(bLHeight, bRHeight, tRHeight, tLHeight);
         if (decal) {
-          const maxHeight = Math.max(bLHeight, bRHeight, tRHeight, tLHeight);
-          const minHeight = Math.min(bLHeight, bRHeight, tRHeight, tLHeight);
-          if (Math.abs(maxHeight - minHeight) < BabylonTerrainTileImpl.WALL_HEIGHT_DIFF) {
+          if (terrainType == TerrainType.LAND) {
             newMaterialIndex = MaterialIndex.BOT;
-          } else {
+          } else if (terrainType == TerrainType.BLOCKED) {
             newMaterialIndex = MaterialIndex.BOT_WALL;
+          } else {
+            newMaterialIndex = MaterialIndex.UNDER_WATER;
           }
-        } else if (bLHeight <= 0.0
-          && bRHeight <= 0.0
-          && tLHeight <= 0.0
-          && tRHeight <= 0.0) {
-          newMaterialIndex = MaterialIndex.UNDER_WATER;
         } else {
-          newMaterialIndex = MaterialIndex.GROUND;
+          if (terrainType == TerrainType.WATER) {
+            newMaterialIndex = MaterialIndex.UNDER_WATER;
+          } else {
+            newMaterialIndex = MaterialIndex.GROUND;
+          }
         }
         if (materialIndex !== newMaterialIndex) {
           if (materialSubmesh != null) {

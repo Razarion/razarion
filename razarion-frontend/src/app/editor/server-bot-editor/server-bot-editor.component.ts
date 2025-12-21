@@ -15,7 +15,6 @@ import {BaseItemTypeComponent} from '../common/base-item-type/base-item-type.com
 import {ButtonModule} from 'primeng/button';
 import {Accordion, AccordionModule,} from 'primeng/accordion';
 import {CommonModule, NgForOf} from '@angular/common';
-import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
 import {Divider} from 'primeng/divider';
 import {SelectModule} from 'primeng/select';
 import {MessageService} from 'primeng/api';
@@ -36,7 +35,6 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
     Accordion,
     NgForOf,
     CommonModule,
-    BabylonMaterialComponent,
     Divider,
     SelectModule,
     AccordionModule,
