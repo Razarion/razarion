@@ -36,7 +36,11 @@ public class ServerResourceRegionConfigEntity extends BaseEntity {
         setInternalName(resourceRegionConfig.getInternalName());
         count = resourceRegionConfig.getCount();
         minDistanceToItems = resourceRegionConfig.getMinDistanceToItems();
-        resourceItemType = (ResourceItemTypeEntity) new ResourceItemTypeEntity().id(resourceRegionConfig.getResourceItemTypeId());
+        if (resourceRegionConfig.getResourceItemTypeId() != null) {
+            resourceItemType = (ResourceItemTypeEntity) new ResourceItemTypeEntity().id(resourceRegionConfig.getResourceItemTypeId());
+        } else {
+            resourceItemType = null;
+        }
         region = fromConfig(region, resourceRegionConfig.getRegion(), PlaceConfigEntity::new, PlaceConfigEntity::fromPlaceConfig);
         return this;
     }

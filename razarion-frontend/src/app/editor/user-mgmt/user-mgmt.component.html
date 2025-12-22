@@ -26,7 +26,7 @@
 <p-table [value]="userBackendInfos"
          dataKey="userId"
          [scrollable]="true"
-         scrollHeight="flex">
+         scrollHeight="800px">
   <ng-template #header>
     <tr>
       <th></th>
@@ -34,6 +34,7 @@
       <th>Creation</th>
       <th>Name</th>
       <th>Level</th>
+      <th>Base</th>
       <th>Email</th>
       <th></th>
     </tr>
@@ -63,6 +64,9 @@
       </td>
       <td>
         {{ userBackendInfo.levelNumber }}
+      </td>
+      <td>
+        {{ userBackendInfo.baseId ? "Y" : "-" }}
       </td>
       <td>
         {{ userBackendInfo.email }}
