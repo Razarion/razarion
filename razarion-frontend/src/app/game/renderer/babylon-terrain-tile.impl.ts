@@ -2,6 +2,7 @@ import {
   BabylonDecal,
   BabylonTerrainTile,
   BotGround,
+  DecimalPosition,
   Diplomacy,
   TerrainObjectConfig,
   TerrainObjectModel,
@@ -20,6 +21,9 @@ import {
   Node,
   NodeMaterial,
   Ray,
+  Scalar,
+  Sprite,
+  SpriteManager,
   SubMesh,
   Texture,
   TextureBlock,
@@ -33,6 +37,7 @@ import {ActionService, SelectionInfo} from "../action.service";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
 import {GroundUtil} from './ground-util';
+import {GwtInstance} from '../../gwtangular/GwtInstance';
 
 enum MaterialIndex {
   GROUND = 0,
@@ -50,6 +55,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly HEIGHT_PRECISION = 0.1;
   static readonly HEIGHT_MIN = -200;
   static readonly WATER_LEVEL = 0;
+  static readonly BEACH_HEIGHT = 0.3;
   static readonly WALL_HEIGHT_DIFF = 0.5;
   static readonly HEIGHT_DEFAULT = 0.5;
   static readonly BOT_BOX_LENGTH = 8;
@@ -181,6 +187,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.cursorTypeHandlerTerrainObject(selectionInfo);
 
     this.setupBotGrounds(terrainTile.getBotGrounds());
+
+    this.setupSprites();
   }
 
   private setupTerrainTileObjects(terrainTileObjectLists: TerrainTileObjectList[]): void {
@@ -188,7 +196,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       try {
         let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
         if (!terrainObjectConfig.getModel3DId()) {
-          throw new Error(`TerrainObjectConfig has no model3DId: ${terrainObjectConfig.toString()}`);
+          console.error(`TerrainObjectConfig has no model3DId: ${terrainObjectConfig.toString()}`);
+          return;
         }
         terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
           this.createTerrainObject(terrainObjectConfig, terrainObjectModel, terrainObjectConfig.getRadius() <= 0)
@@ -224,7 +233,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
             (<AbstractMesh>terrainObject).actionManager = this.actionManagerTerrainObject;
           }
         }
-      }, 1);
+      }, 10);
     } catch (error) {
       console.error(error);
     }
@@ -355,13 +364,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         const bRHeight = BabylonTerrainTileImpl.setupHeight(bRIdx, groundHeightMap);
         const tLHeight = BabylonTerrainTileImpl.setupHeight(tLIdx, groundHeightMap);
         const tRHeight = BabylonTerrainTileImpl.setupHeight(tRIdx, groundHeightMap);
-
-        const decal = babylonDecals && babylonDecals.find(babylonDecal => {
-          return terrainX >= babylonDecal.xPos
-            && terrainX < babylonDecal.xSize + babylonDecal.xPos
-            && terrainY >= babylonDecal.yPos
-            && terrainY < babylonDecal.ySize + babylonDecal.yPos;
-        })
+        const decal = this.findDecal(babylonDecals, terrainX, terrainY);
 
         let newMaterialIndex;
         const terrainType = BabylonTerrainTileImpl.setupTerrainType(bLHeight, bRHeight, tRHeight, tLHeight);
@@ -420,6 +423,60 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     vertexData.uvs2 = uvs2;
 
     return vertexData;
+  }
+
+  private findDecal(babylonDecals: BabylonDecal[], terrainX: number, terrainY: number) {
+    return babylonDecals && babylonDecals.find(babylonDecal => {
+      return this.insideDecal(terrainX, terrainY, babylonDecal);
+    });
+  }
+
+  private insideDecal(x: number, y: number, babylonDecal: BabylonDecal) {
+    return x >= babylonDecal.xPos
+      && x < babylonDecal.xSize + babylonDecal.xPos
+      && y >= babylonDecal.yPos
+      && y < babylonDecal.ySize + babylonDecal.yPos;
+  }
+
+  private insideBotGround(x: number, y: number) {
+    if (!this.terrainTile.getBotGrounds()) {
+      return false;
+    }
+
+    let found = false;
+
+    this.terrainTile.getBotGrounds().forEach(botGround => {
+      if (botGround.positions) {
+        botGround.positions.forEach(position => {
+          if (this.insideBotGroundPosition(position, x, y)) {
+            found = true;
+          }
+        });
+      }
+    });
+
+    if (found) {
+      return true;
+    }
+
+    this.terrainTile.getBotGrounds().forEach(botGround => {
+      if (botGround.botGroundSlopeBoxes) {
+        botGround.botGroundSlopeBoxes.forEach(groundSlopeBox => {
+          if (this.insideBotGroundPosition(GwtInstance.newDecimalPosition(groundSlopeBox.xPos, groundSlopeBox.yPos), x, y)) {
+            found = true;
+          }
+        });
+      }
+    });
+
+    return found;
+  }
+
+  private insideBotGroundPosition(position: DecimalPosition, x: number, y: number) {
+    return position.getX() - BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 <= x
+      && position.getY() - BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 <= y
+      && position.getX() + BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 > x
+      && position.getY() + BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 > y;
   }
 
   public static setupHeight(index: number, groundHeightMap: Uint16Array): number {
@@ -498,5 +555,60 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         })
       }
     });
+  }
+
+  private setupSprites() {
+    const spriteManagerTrees = new SpriteManager("treesManager", "ground_sprite_4x4.png", 2000,
+      64,
+      this.rendererService.getScene());
+    let count = 300;
+
+    setTimeout(() => {
+      this.placeSprites(count, spriteManagerTrees);
+    }, 10);
+  }
+
+  private placeSprites(count: number, spriteManagerTrees: SpriteManager) {
+    for (let i = 0; i < 10; i++) {
+      if (count <= 0) {
+        return;
+      }
+      count--;
+
+      const x = Scalar.RandomRange(this.terrainTile.getIndex().getX() * BabylonTerrainTileImpl.NODE_X_COUNT, (this.terrainTile.getIndex().getX() + 1) * BabylonTerrainTileImpl.NODE_X_COUNT);
+      const z = Scalar.RandomRange(this.terrainTile.getIndex().getY() * BabylonTerrainTileImpl.NODE_Y_COUNT, (this.terrainTile.getIndex().getY() + 1) * BabylonTerrainTileImpl.NODE_Y_COUNT);
+
+      const decal = this.findDecal(this.terrainTile.getBabylonDecals(), x, z);
+      if (decal) {
+        continue;
+      }
+
+      if (this.insideBotGround(x, z)) {
+        continue;
+      }
+
+      const pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(x, z));
+      if (!pickingInfo || !pickingInfo.hit) {
+        continue;
+      }
+
+      const height = pickingInfo.pickedPoint!.y
+      if (height < BabylonTerrainTileImpl.BEACH_HEIGHT) {
+        continue;
+      }
+
+      const tree = new Sprite("tree", spriteManagerTrees);
+      tree.cellIndex = Math.round(Math.random() * 16);
+      tree.width = 1;
+      tree.height = 1;
+      tree.position.x = x;
+      tree.position.y = height + 0.5
+      tree.position.z = z;
+    }
+    if (count > 0) {
+      setTimeout(() => {
+        this.placeSprites(count, spriteManagerTrees);
+      }, 10);
+    }
   }
 }
