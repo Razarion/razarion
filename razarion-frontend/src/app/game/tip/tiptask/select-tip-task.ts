@@ -1,5 +1,5 @@
 import {AbstractTipTask, TipTaskContext} from './abstract-tip-task';
-import {Diplomacy, MarkerConfig, TipConfig} from '../../../gwtangular/GwtAngularFacade';
+import {Diplomacy, TipConfig} from '../../../gwtangular/GwtAngularFacade';
 import {TipService} from '../tip.service';
 import {BabylonBaseItemImpl} from '../../renderer/babylon-base-item.impl';
 import {GwtHelper} from '../../../gwtangular/GwtHelper';
@@ -12,7 +12,7 @@ export class SelectTipTask extends AbstractTipTask {
   }
 
   override isFulfilled(): boolean {
-    var babylonItem = this.findActor()
+    let babylonItem = this.findActor()
     return !!babylonItem?.isSelectOrHove();
   }
 
@@ -30,21 +30,13 @@ export class SelectTipTask extends AbstractTipTask {
     this.babylonItem.setSelectionCallback((active: boolean) => {
       this.onSucceed();
     })
-    let markerConfig = new class implements MarkerConfig {
-      radius = 10;
-      nodesMaterialId = 11;
-      placeNodesMaterialId = 10;
-      outOfViewNodesMaterialId = 0;
-      outOfViewSize = 0;
-      outOfViewDistanceFromCamera = 0;
-    }
-    this.babylonItem.mark(markerConfig);
+    this.babylonItem.showSelectPromptVisualization();
   }
 
   override cleanup(): void {
     if (this.babylonItem) {
       this.babylonItem.setSelectionCallback(null);
-      this.babylonItem.mark(null);
+      this.babylonItem.hideSelectPromptVisualization();
     }
   }
 

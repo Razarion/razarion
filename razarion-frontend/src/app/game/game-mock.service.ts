@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {
   Alarm,
-  AngularZoneRunner,
+  AngularZoneRunner, BabylonBaseItem,
   BabylonDecal,
   BabylonTerrainTile,
   BaseItemType,
@@ -41,7 +41,7 @@ import {
   TerrainObjectConfig,
   TerrainTile,
   TerrainTileObjectList,
-  TerrainTypeService,
+  TerrainTypeService, Tip,
   TipConfig,
   WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
@@ -56,6 +56,7 @@ import {GameComponent} from './game.component';
 import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
+import {BabylonBaseItemImpl} from './renderer/babylon-base-item.impl';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -208,23 +209,25 @@ export class GameMockService {
           // babylonBaseItem1.setAngle(Tools.ToRadians(45));
           babylonBaseItem1.setAngle(0);
 
-          babylonBaseItem1.select(true);
+          // babylonBaseItem1.select(true);
 
           // babylonBaseItem1.setConstructing(0.01);
           babylonBaseItem1.setHealth(1);
+
+          (<BabylonBaseItemImpl>babylonBaseItem1).showSelectPromptVisualization();
           // babylonBaseItem1.mark(MarkerConfig);
           // setTimeout(() => {
           //  babylonBaseItem1.onExplode();
           //}, 2000);
 
-          let health = 1.0;
-          setInterval(() => {
-            babylonBaseItem1.setHealth(health)
-            health -= 0.1;
-            if (health < 0.0) {
-              health = 1.0;
-            }
-          }, 1000)
+          // let health = 1.0;
+          // setInterval(() => {
+          //   babylonBaseItem1.setHealth(health)
+          //   health -= 0.1;
+          //   if (health < 0.0) {
+          //     health = 1.0;
+          //   }
+          // }, 1000)
           // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
           // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
         }
@@ -999,7 +1002,7 @@ export class GameMockService {
   readonly TILE_X_COUNT = 2;
   readonly TILE_Y_COUNT = 2;
 
-  mockTerrainTile(threeJsRendererService: BabylonRenderServiceAccessImpl) {
+  mockTerrainTile(rendererService: BabylonRenderServiceAccessImpl) {
     fetch('/rest/terrainHeightMap/117', {
       headers: {
         'Content-Type': 'application/octet-stream'
@@ -1099,9 +1102,9 @@ export class GameMockService {
                 }
               }
             }
-            const threeJsTerrainTile: BabylonTerrainTile = threeJsRendererService.createTerrainTile(terrainTile);
-            displayMockTerrainTile.push(threeJsTerrainTile);
-            threeJsTerrainTile.addToScene();
+            const babylonTerrainTile: BabylonTerrainTile = rendererService.createTerrainTile(terrainTile);
+            displayMockTerrainTile.push(babylonTerrainTile);
+            babylonTerrainTile.addToScene();
           }
         }
       })

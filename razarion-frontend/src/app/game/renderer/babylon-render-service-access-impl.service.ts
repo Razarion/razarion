@@ -269,7 +269,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.gwtAngularService.gwtAngularFacade.selectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
-        () => this.babylonBaseItems.filter(i => i !== item));
+        () => this.babylonBaseItems = this.babylonBaseItems.filter(i => i !== item));
       this.babylonBaseItems.push(item)
       return item;
     } catch (error) {

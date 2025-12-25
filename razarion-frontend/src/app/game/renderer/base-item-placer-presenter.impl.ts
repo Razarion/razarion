@@ -5,19 +5,17 @@ import {
   Nullable,
   Observer,
   PointerEventTypes,
-  PointerInfo, StandardMaterial,
+  PointerInfo,
+  StandardMaterial,
   Tools,
-  TransformNode,
   Vector3
 } from "@babylonjs/core";
-import {SimpleMaterial} from "@babylonjs/materials";
 import {BaseItemPlacer, BaseItemPlacerPresenter, Diplomacy} from "src/app/gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonModelService} from "./babylon-model.service";
-import {AdvancedDynamicTexture, Control, Rectangle, StackPanel, TextBlock} from "@babylonjs/gui";
-import {Image} from "@babylonjs/gui/2D/controls/image";
-import {Animation} from "@babylonjs/core/Animations/animation";
+import {AdvancedDynamicTexture} from "@babylonjs/gui";
 import {RenderObject} from './render-object';
+import {PressMouseVisualization} from './press-mouse-visualization';
 
 export enum BaseItemPlacerPresenterEvent {
   ACTIVATED,
@@ -28,7 +26,8 @@ export enum BaseItemPlacerPresenterEvent {
 export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private disc: Mesh | null = null;
   private renderObject: RenderObject | null = null;
-  private tip: Tip | null = null;
+  private uiTexture: AdvancedDynamicTexture | null = null;
+  private pressMouseVisualization: PressMouseVisualization | null = null;
   private readonly material;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private baseItemPlacerCallback: ((event: BaseItemPlacerPresenterEvent) => void) | null = null;
@@ -53,7 +52,12 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.renderObject = this.babylonModelService.cloneModel3D(baseItemPlacer.getModel3DId()!, null, Diplomacy.OWN_PLACER);
     this.renderObject.setRotationY(Tools.ToRadians(90));
 
-    this.tip = new Tip(positionValid, this.rendererService, this.disc!)
+    this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI("Base item placer");
+    this.uiTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
+    this.pressMouseVisualization = new PressMouseVisualization(positionValid, this.rendererService);
+    this.uiTexture.addControl(this.pressMouseVisualization.getContainer());
+    this.pressMouseVisualization.getContainer().linkWithMesh(this.disc!);
+    this.pressMouseVisualization.getContainer().linkOffsetY = -100;
 
     let pickedPoint = this.setupPickedPoint();
     if (pickedPoint) {
@@ -122,8 +126,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.renderObject?.dispose();
     this.renderObject = null;
     this.rendererService.baseItemPlacerActive = false;
-    this.tip?.dispose();
-    this.tip = null;
+    this.uiTexture?.dispose();
+    this.uiTexture = null;
+    this.pressMouseVisualization = null;
     if (this.baseItemPlacerCallback) {
       this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.DEACTIVATED);
     }
@@ -139,136 +144,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.disc!.position.y += +0.1;
     const positionValid = baseItemPlacer.isPositionValid();
     this.material.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
-    this.tip!.setPositionValid(positionValid);
+    this.pressMouseVisualization!.setPositionValid(positionValid);
     this.renderObject!.setPosition(pickedPoint);
     this.renderObject!.increaseHeight(0.01);
-  }
-}
-
-class Tip {
-  static readonly POSITION_VALID_TEXT = "Click left mouse button to deploy";
-  static readonly POSITION_IN_VALID_TEXT = "Move mouse to find free position";
-  private readonly uiTexture: AdvancedDynamicTexture;
-  private readonly rect1: Rectangle;
-  private readonly label: TextBlock;
-  private readonly mouse: Image;
-  private readonly mouseLeftButton: Image;
-
-  constructor(positionValid: boolean,
-              private rendererService: BabylonRenderServiceAccessImpl,
-              transformNode: TransformNode) {
-    this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI("Base item placer");
-    this.uiTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
-    this.rect1 = new Rectangle();
-    this.rect1.width = "350px";
-    this.rect1.height = "60px";
-    this.rect1.cornerRadius = 20;
-    this.rect1.color = "Orange";
-    this.rect1.thickness = 4;
-    this.rect1.background = "green";
-    this.uiTexture.addControl(this.rect1);
-
-    let image = new Rectangle();
-    image.width = "40px";
-    image.height = "40px";
-    image.cornerRadius = 0;
-    image.color = "Orange";
-    image.thickness = 0;
-
-    this.mouse = new Image();
-    this.mouse.source = "babylon-gui/mouse.svg";
-    this.mouse.width = "40px";
-    this.mouse.height = "40px";
-    this.mouse.stretch = Image.STRETCH_UNIFORM;
-    this.mouse.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT
-    image.addControl(this.mouse);
-
-    this.mouseLeftButton = new Image();
-    this.mouseLeftButton.source = "babylon-gui/mouse-left-button.svg";
-    this.mouseLeftButton.width = "40px";
-    this.mouseLeftButton.height = "40px";
-    this.mouseLeftButton.stretch = Image.STRETCH_UNIFORM;
-    this.mouseLeftButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT
-    image.addControl(this.mouseLeftButton);
-
-    let stackPanel = new StackPanel();
-    stackPanel.isVertical = false;
-    stackPanel.addControl(image);
-
-    this.label = new TextBlock();
-    this.label.color = "white";
-    this.label.width = "300px";
-    this.label.height = "40px";
-    this.label.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-    this.label.paddingLeft = "10px";
-    stackPanel.addControl(this.label);
-
-    this.rect1.addControl(stackPanel);
-
-    this.setPositionValid(positionValid);
-
-    this.rect1.linkWithMesh(transformNode);
-    this.rect1.linkOffsetY = -100;
-  }
-
-  setPositionValid(positionValid: boolean) {
-    if (positionValid) {
-      this.rect1.background = "green";
-      this.label.text = Tip.POSITION_VALID_TEXT;
-      this.setupMouseButtonAnimation();
-      this.mouse.animations = [];
-      this.mouse.left = 0;
-      this.rendererService.getScene().stopAnimation(this.mouse);
-    } else {
-      this.rect1.background = "red";
-      this.label.text = Tip.POSITION_IN_VALID_TEXT;
-      this.setupMouseMoveAnimation();
-      this.mouseLeftButton.animations = [];
-      this.mouseLeftButton.alpha = 0;
-      this.rendererService.getScene().stopAnimation(this.mouseLeftButton);
-    }
-  }
-
-  dispose() {
-    this.uiTexture.dispose();
-  }
-
-  private setupMouseButtonAnimation() {
-    let blinkAnimation = new Animation(
-      "blink",
-      "alpha",
-      30,
-      Animation.ANIMATIONTYPE_FLOAT,
-      Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-
-    let keys = [];
-    keys.push({frame: 0, value: 1});
-    keys.push({frame: 15, value: 0});
-    keys.push({frame: 30, value: 1});
-    blinkAnimation.setKeys(keys);
-    this.mouseLeftButton.animations = [blinkAnimation];
-
-    this.rendererService.getScene().beginAnimation(this.mouseLeftButton, 0, 30, true);
-  }
-
-
-  private setupMouseMoveAnimation() {
-    let moveAnimation = new Animation(
-      "move",
-      "left",
-      30,
-      Animation.ANIMATIONTYPE_FLOAT,
-      Animation.ANIMATIONLOOPMODE_CYCLE
-    );
-
-    let keys = [];
-    keys.push({frame: 0, value: 5});
-    keys.push({frame: 15, value: -5});
-    keys.push({frame: 30, value: 5});
-    moveAnimation.setKeys(keys);
-    this.mouse.animations = [moveAnimation];
-
-    this.rendererService.getScene().beginAnimation(this.mouse, 0, 30, true);
   }
 }

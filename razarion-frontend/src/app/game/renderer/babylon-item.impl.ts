@@ -1,5 +1,6 @@
 import {
   ActionManager,
+  Animation,
   ExecuteCodeAction,
   InputBlock,
   Mesh,
@@ -27,6 +28,9 @@ import {ActionService, SelectionInfo} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {GwtInstance} from '../../gwtangular/GwtInstance';
 import {RenderObject} from './render-object';
+import {PressMouseVisualization} from './press-mouse-visualization';
+import {AdvancedDynamicTexture, StackPanel} from '@babylonjs/gui';
+import {Image} from '@babylonjs/gui/2D/controls/image';
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
@@ -42,6 +46,7 @@ export class BabylonItemImpl implements BabylonItem {
   private lastNormal: Vector3 | null = null;
   private selectionCallback: ((active: boolean) => void) | null = null;
   private itemClickCallback: (() => void) | null = null;
+  private selectTipTexture: AdvancedDynamicTexture | null = null;
 
   constructor(private id: number,
               public readonly itemType: ItemType,
@@ -232,7 +237,7 @@ export class BabylonItemImpl implements BabylonItem {
   mark(markerConfig: MarkerConfig | null): void {
     if (markerConfig) {
       if (!markerConfig.nodesMaterialId) {
-        console.warn("markerConfig.babylonModelId == null");
+        console.warn("markerConfig.nodesMaterialId == null");
         return;
       }
       if (this.visualizationMarkerDisc) {
@@ -252,6 +257,59 @@ export class BabylonItemImpl implements BabylonItem {
         this.visualizationMarkerDisc.dispose();
         this.visualizationMarkerDisc = null;
       }
+    }
+  }
+
+  showSelectPromptVisualization(): void {
+    this.selectTipTexture = AdvancedDynamicTexture.CreateFullscreenUI("Select tip");
+    let pressMouseVisualization = new PressMouseVisualization(true, this.rendererService);
+    pressMouseVisualization.label.text = "Click to select"
+    pressMouseVisualization.label.width = "150px";
+    pressMouseVisualization.container.width = "200px";
+    let stackPanel = new StackPanel();
+    stackPanel.spacing = 10;
+    stackPanel.addControl(pressMouseVisualization.getContainer());
+
+    const mouse = new Image();
+    mouse.source = "babylon-gui/arrow-down.svg";
+    mouse.width = "65px";
+    mouse.height = "110px";
+
+    stackPanel.addControl(mouse)
+    this.selectTipTexture.addControl(stackPanel)
+    stackPanel.linkWithMesh(this.getContainer());
+
+    const frameRate = 100;
+    const xSlide = new Animation("xSlide", "linkOffsetY", frameRate, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
+    const keyFrames = [];
+
+    keyFrames.push({
+      frame: 0,
+      value: -150,
+    });
+
+    keyFrames.push({
+      frame: 2 * frameRate,
+      value: -200,
+    });
+
+    keyFrames.push({
+      frame: 3 * frameRate,
+      value: -150,
+    });
+
+    xSlide.setKeys(keyFrames);
+
+    stackPanel.animations = [];
+    stackPanel.animations.push(xSlide);
+
+    this.rendererService.getScene().beginAnimation(stackPanel, 0, 3 * frameRate, true, 4);
+  }
+
+  hideSelectPromptVisualization(): void {
+    if (this.selectTipTexture) {
+      this.selectTipTexture.dispose();
+      this.selectTipTexture = null;
     }
   }
 
