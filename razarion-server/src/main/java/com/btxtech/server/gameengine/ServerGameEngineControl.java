@@ -5,6 +5,7 @@ import com.btxtech.server.service.engine.PlanetBackupService;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
+import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.InitializeService;
@@ -56,6 +57,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private final ResourceService resourceService;
     private final BoxService boxService;
     private final PlanetBackupService planetBackupService;
+    private final UserActivityService userActivityService;
     // @Inject
     // TODOprivate ServerInventoryService serverInventoryService;
     private boolean running;
@@ -73,7 +75,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                                    UserService userService,
                                    BaseItemService baseItemService,
                                    BotService botService,
-                                   ResourceService resourceService, PlanetBackupService planetBackupService) {
+                                   ResourceService resourceService, PlanetBackupService planetBackupService,
+                                   UserActivityService userActivityService) {
         this.initializeService = initializeService;
         this.planetService = planetService;
         this.boxService = boxService;
@@ -89,6 +92,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         this.botService = botService;
         this.resourceService = resourceService;
         this.planetBackupService = planetBackupService;
+        this.userActivityService = userActivityService;
     }
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
@@ -221,7 +225,9 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Override
     public void onBaseCreated(PlayerBaseFull playerBase) {
         clientGameConnectionService.onBaseCreated(playerBase);
-        // TODO itemTrackerPersistence.onBaseCreated(playerBase);
+        if (playerBase.getUserId() != null) {
+            this.userActivityService.onBaseCreated(playerBase.getUserId(), playerBase.getBaseId());
+        }
     }
 
     @Override

@@ -1,20 +1,20 @@
 package com.btxtech.server.rest.tracking;
 
 import com.btxtech.server.model.Roles;
+import com.btxtech.server.model.tracking.TrackingContainer;
+import com.btxtech.server.model.tracking.TrackingRequest;
+import com.btxtech.server.service.tracking.PageRequestService;
 import com.btxtech.server.service.tracking.StartupTrackingService;
+import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.rest.TrackerController;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 import static com.btxtech.shared.CommonUrl.APPLICATION_PATH;
 import static com.btxtech.shared.CommonUrl.TRACKER_PATH;
@@ -23,9 +23,15 @@ import static com.btxtech.shared.CommonUrl.TRACKER_PATH;
 @RequestMapping(APPLICATION_PATH + "/" + TRACKER_PATH)
 public class TrackerControllerImpl implements TrackerController {
     private final StartupTrackingService startupTrackingService;
+    private final PageRequestService pageRequestService;
+    private final UserActivityService userActivityService;
 
-    public TrackerControllerImpl(StartupTrackingService startupTrackingService) {
+    public TrackerControllerImpl(StartupTrackingService startupTrackingService,
+                                 PageRequestService pageRequestService,
+                                 UserActivityService userActivityService) {
         this.startupTrackingService = startupTrackingService;
+        this.pageRequestService = pageRequestService;
+        this.userActivityService = userActivityService;
     }
 
     @Override
@@ -40,16 +46,16 @@ public class TrackerControllerImpl implements TrackerController {
         startupTrackingService.onStartupTerminated(startupTerminatedJson);
     }
 
-    @GetMapping(value = "loadStartupTerminatedJson", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "loadTrackingContainer",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed(Roles.ADMIN)
-    public List<StartupTerminatedJson> loadStartupTerminatedJson() {
-        return startupTrackingService.loadStartupTerminatedJson();
-    }
-
-    @GetMapping(value = "loadStartupTaskJson/{gameSessionUuid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @RolesAllowed(Roles.ADMIN)
-    public List<StartupTaskJson> loadStartupTaskJson(@PathVariable("gameSessionUuid") String gameSessionUuid) {
-        return startupTrackingService.loadStartupTaskJson(gameSessionUuid);
+    public TrackingContainer loadTrackingContainer(@RequestBody TrackingRequest trackingRequest) {
+        return new TrackingContainer()
+                .pageRequests(pageRequestService.loadPageRequests(trackingRequest.getFromDate(), trackingRequest.getToDate()))
+                .userActivities(userActivityService.loadUserActivities(trackingRequest.getFromDate(), trackingRequest.getToDate()))
+                .startupTaskJsons(startupTrackingService.loadStartupTaskJsons(trackingRequest.getFromDate(), trackingRequest.getToDate()))
+                .startupTerminatedJson(startupTrackingService.loadStartupTerminatedJson(trackingRequest.getFromDate(), trackingRequest.getToDate()));
     }
 
 }

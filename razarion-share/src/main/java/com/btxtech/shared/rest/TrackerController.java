@@ -10,10 +10,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 
-/**
- * Created by Beat
- * 03.03.2017.
- */
 @Path(CommonUrl.TRACKER_PATH)
 @RequestFactory
 public interface TrackerController {

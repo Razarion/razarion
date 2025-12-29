@@ -7,6 +7,9 @@ public class StartupTerminatedJson {
     private int totalTime;
     private String gameSessionUuid;
     private Date serverTime;
+    private String rdtCid;
+    private String utmCampaign;
+    private String utmSource;
 
     public boolean isSuccessful() {
         return successful;
@@ -40,6 +43,29 @@ public class StartupTerminatedJson {
         this.serverTime = serverTime;
     }
 
+    public String getRdtCid() {
+        return rdtCid;
+    }
+
+    public void setRdtCid(String rdtCid) {
+        this.rdtCid = rdtCid;
+    }
+
+    public String getUtmCampaign() {
+        return utmCampaign;
+    }
+
+    public void setUtmCampaign(String utmCampaign) {
+        this.utmCampaign = utmCampaign;
+    }
+
+    public String getUtmSource() {
+        return utmSource;
+    }
+
+    public void setUtmSource(String utmSource) {
+        this.utmSource = utmSource;
+    }
 
     public StartupTerminatedJson successful(boolean successful) {
         setSuccessful(successful);
@@ -58,6 +84,21 @@ public class StartupTerminatedJson {
 
     public StartupTerminatedJson serverTime(Date serverTime) {
         setServerTime(serverTime);
+        return this;
+    }
+
+    public StartupTerminatedJson rdtCid(String rdtCid) {
+        setRdtCid(rdtCid);
+        return this;
+    }
+
+    public StartupTerminatedJson utmCampaign(String utmCampaign) {
+        setUtmCampaign(utmCampaign);
+        return this;
+    }
+
+    public StartupTerminatedJson utmSource(String utmSource) {
+        setUtmSource(utmSource);
         return this;
     }
 

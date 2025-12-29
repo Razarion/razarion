@@ -221,9 +221,6 @@ public class BaseItemService {
             playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, unlockedItemLimit, userId, botId);
             bases.put(lastBaseItId, playerBase);
         }
-        if (userId != null) {
-            logger.info("Base created for user: " + userId);
-        }
         gameLogicService.onBaseCreated(playerBase);
         return playerBase;
     }

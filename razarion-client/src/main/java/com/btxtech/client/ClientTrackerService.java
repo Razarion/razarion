@@ -3,11 +3,12 @@ package com.btxtech.client;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.rest.TrackerControllerFactory;
-import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.URLSearchParams;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -25,10 +26,23 @@ import java.util.logging.Logger;
 public class ClientTrackerService implements StartupProgressListener {
     private final Logger logger = Logger.getLogger(ClientTrackerService.class.getName());
     private final Provider<Boot> boot;
+    private String rdtCid;
+    private String utmCampaign;
+    private String utmSource;
+
 
     @Inject
     public ClientTrackerService(Provider<Boot> boot) {
         this.boot = boot;
+        try {
+            String search = DomGlobal.location.search;
+            URLSearchParams queryParams = new URLSearchParams(search);
+            rdtCid = queryParams.get("rdt_cid");
+            utmCampaign = queryParams.get("utm_campaign");
+            utmSource = queryParams.get("utm_source");
+        } catch (Throwable t) {
+            logger.log(Level.WARNING, t.getMessage(), t);
+        }
     }
 
     @Override
@@ -66,17 +80,24 @@ public class ClientTrackerService implements StartupProgressListener {
     }
 
     private StartupTaskJson createStartupTaskJson(AbstractStartupTask task, String error) {
-        StartupTaskJson startupTaskJson = new StartupTaskJson();
-        startupTaskJson.setGameSessionUuid(boot.get().getGameSessionUuid());
-        startupTaskJson.setStartTime(new Date(task.getStartTime())).setDuration((int) task.getDuration());
-        startupTaskJson.setTaskEnum(task.getTaskEnum().name()).setError(error);
-        return startupTaskJson;
+        return new StartupTaskJson()
+                .gameSessionUuid(boot.get().getGameSessionUuid())
+                .startTime(new Date(task.getStartTime()))
+                .duration((int) task.getDuration())
+                .taskEnum(task.getTaskEnum().name())
+                .error(error)
+                .utmCampaign(utmCampaign)
+                .rdtCid(rdtCid)
+                .utmSource(utmSource);
     }
 
     private StartupTerminatedJson createStartupTerminatedJson(long totalTime, boolean success) {
-        StartupTerminatedJson startupTerminatedJson = new StartupTerminatedJson();
-        startupTerminatedJson.setGameSessionUuid(boot.get().getGameSessionUuid());
-        startupTerminatedJson.successful(success).totalTime((int) totalTime);
-        return startupTerminatedJson;
+        return new StartupTerminatedJson()
+                .gameSessionUuid(boot.get().getGameSessionUuid())
+                .successful(success)
+                .totalTime((int) totalTime)
+                .utmCampaign(utmCampaign)
+                .rdtCid(rdtCid)
+                .utmSource(utmSource);
     }
 }

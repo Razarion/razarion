@@ -5,6 +5,7 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.quest.QuestBackendInfo;
+import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.server.service.ui.GameUiContextService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
@@ -33,6 +34,7 @@ public class ServerLevelQuestService implements QuestListener {
     private final Provider<ServerGameEngineControl> serverGameEngineControlInstance;
     private final ServerUnlockService serverUnlockService;
     private final QuestConfigService questConfigService;
+    private final UserActivityService userActivityService;
 
     public ServerLevelQuestService(Provider<GameUiContextService> gameUiControlConfigPersistence,
                                    QuestService questService,
@@ -42,7 +44,8 @@ public class ServerLevelQuestService implements QuestListener {
                                    ClientSystemConnectionService clientSystemConnectionService,
                                    Provider<ServerGameEngineControl> serverGameEngineControlInstance,
                                    ServerUnlockService serverUnlockService,
-                                   QuestConfigService questConfigService) {
+                                   QuestConfigService questConfigService,
+                                   UserActivityService userActivityService) {
         this.gameUiControlConfigPersistence = gameUiControlConfigPersistence;
         this.questService = questService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
@@ -52,6 +55,7 @@ public class ServerLevelQuestService implements QuestListener {
         this.serverGameEngineControlInstance = serverGameEngineControlInstance;
         this.serverUnlockService = serverUnlockService;
         this.questConfigService = questConfigService;
+        this.userActivityService = userActivityService;
         questService.addQuestListener(this);
     }
 
@@ -91,19 +95,17 @@ public class ServerLevelQuestService implements QuestListener {
     @Transactional
     public void onQuestPassed(String userId, QuestConfig questConfig) {
         clientSystemConnectionService.onQuestPassed(userId, questConfig);
-        // TODO historyPersistence.get().onQuest(userId, questConfig, QuestHistoryEntity.Type.QUEST_PASSED);
-        logger.info("Quest passed. User id: {} quest id: {}", userId, questConfig.getId());
         UserContext userContext = userService.getUserContextTransactional(userId);
         // Check for level up
         int newXp = userContext.getXp() + questConfig.getXp();
         LevelEntity currentLevel = levelCrudPersistence.getEntity(userContext.getLevelId());
+        userActivityService.onQuestPassed(userId, questConfig.getId(), currentLevel.getNumber());
         if (newXp >= currentLevel.getXp2LevelUp()) {
             LevelEntity newLevel = levelCrudPersistence.getNextLevel(currentLevel);
             if (newLevel != null) {
                 userContext.levelId(newLevel.getId());
                 userContext.xp(0);
-                // TODO historyPersistence.get().onLevelUp(userId, newLevel);
-                logger.info("Level up. User id: {} new level: {}", userContext.getUserId(), newLevel.getNumber());
+                userActivityService.onLevelUp(userId, newLevel.getNumber());
                 clientSystemConnectionService.onLevelUp(userId,
                         userContext,
                         serverUnlockService.hasAvailableUnlocks(userContext));

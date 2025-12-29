@@ -15,6 +15,7 @@ import com.btxtech.server.repository.UserRepository;
 import com.btxtech.server.service.engine.LevelCrudService;
 import com.btxtech.server.service.engine.QuestConfigService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
+import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UserBackendInfo;
@@ -70,6 +71,7 @@ public class UserService implements UserDetailsService {
     private final QuestConfigService questConfigService;
     private final RegisterService registerService;
     private final PasswordEncoder passwordEncoder;
+    private final UserActivityService userActivityService;
     @Autowired
     @Lazy
     private BaseItemService baseItemService;
@@ -88,13 +90,15 @@ public class UserService implements UserDetailsService {
                        ServerGameEngineService serverGameEngineCrudPersistence,
                        QuestConfigService questConfigService,
                        RegisterService registerService,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       UserActivityService userActivityService) {
         this.levelCrudPersistence = levelCrudPersistence;
         this.userRepository = userRepository;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
         this.questConfigService = questConfigService;
         this.registerService = registerService;
         this.passwordEncoder = passwordEncoder;
+        this.userActivityService = userActivityService;
     }
 
     public static Authentication removeAnonymousAuthentication(Authentication authentication) {
@@ -212,18 +216,20 @@ public class UserService implements UserDetailsService {
             if (userId != null) {
                 return userId;
             }
-            String anonymousUserId = createAnonymousUser();
+            String anonymousUserId = createAnonymousUser(httpSessionId);
             anonymousMap.put(httpSessionId, anonymousUserId);
             return anonymousUserId;
         }
     }
 
-    private String createAnonymousUser() {
+    private String createAnonymousUser(String httpSessionId) {
         var userEntity = new UserEntity();
         userEntity.setUserId(UUID.randomUUID().toString());
         userEntity.setLevel(levelCrudPersistence.getStarterLevel());
         userEntity.setCreationDate(new Date());
-        return userRepository.save(userEntity).getUserId();
+        var userId = userRepository.save(userEntity).getUserId();
+        userActivityService.onUserCreated(userId, httpSessionId);
+        return userId;
     }
 
     @Transactional

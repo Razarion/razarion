@@ -1,0 +1,94 @@
+<div class="flex flex-col">
+  <div class="flex flex-row">
+    <div class="basis-3xs">From
+      <p-datepicker [(ngModel)]="fromDate"
+                    dateFormat="dd.mm.yy"
+                    [showTime]="true"
+                    (onSelect)="load()"
+                    (onInput)="load()">
+      </p-datepicker>
+    </div>
+    <div class="basis-3xs">To
+      <p-datepicker [(ngModel)]="toDate"
+                    dateFormat="dd.mm.yy"
+                    [showTime]="true"
+                    (onSelect)="load()"
+                    (onInput)="load()"></p-datepicker>
+    </div>
+    <div class="basis-3xs">
+      <p-button icon="pi pi-sync"
+                class="mr-2"
+                text
+                severity="secondary"
+                (onClick)="load()"/>
+    </div>
+  </div>
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">History</p-tab>
+      <p-tab value="1">Statistics</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="0">
+        <div class="flex flex-row">
+          <div class="basis-xs">Sort
+            <p-select
+              [options]="sortOptions"
+              [(ngModel)]="sortDesc"
+              (onChange)="onSortChange()"
+              class="w-full md:w-56"/>
+          </div>
+          <div class="basis-xs">Filter
+            <p-select
+              [options]="filterOptions"
+              [(ngModel)]="filter"
+              (onChange)="onFilterChanged()"
+              optionLabel="name"
+              optionValue="value"
+              class="w-full md:w-56"/>
+          </div>
+          <div class="basis-3xs">
+            Found: {{ homePageRequests.length }}
+          </div>
+        </div>
+        <p-dataview [value]="homePageRequests">
+          <ng-template #list let-homePageRequests>
+            <div class="grid grid-cols-12 gap-4 grid-nogutter">
+              <div class="col-span-12" *ngFor="let homePageRequest of homePageRequests; let first = first">
+                <div
+                  class="flex flex-col sm:flex-row sm:items-center p-6 gap-4"
+                  [ngClass]="{ 'border-t border-surface-200 dark:border-surface-700': !first }">
+                  {{ homePageRequest.serverTime | date:'dd.MM.yyyy HH:mm:ss' }}
+                  <br>
+                  {{ gamePageRequest(homePageRequest).length }}
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </p-dataview>
+      </p-tabpanel>
+      <p-tabpanel value="1">
+        <p-table [value]="progressStatistics">
+          <ng-template #header>
+            <tr>
+              <th>Stage</th>
+              <th>Count</th>
+              <th>Percent</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-progressStatistic>
+            <tr>
+              <td>{{ progressStatistic.name }}</td>
+              <td>{{ progressStatistic.count }}</td>
+              <td>{{ progressStatistic.percent !== undefined ? progressStatistic.percent + "%" : "-" }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>
+
+
+
+

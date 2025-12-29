@@ -11,6 +11,7 @@ public class IndexController {
     public String index(
             @RequestParam(required = false) String utm_campaign,
             @RequestParam(required = false) String utm_source,
+            @RequestParam(required = false) String rdt_cid,
             Model model) {
         StringBuilder qs = new StringBuilder();
         if (utm_campaign != null) {
@@ -22,9 +23,15 @@ public class IndexController {
             }
             qs.append("utm_source=").append(utm_source);
         }
+        if (rdt_cid != null) {
+            if (!qs.isEmpty()) {
+                qs.append("&");
+            }
+            qs.append("rdt_cid=").append(rdt_cid);
+        }
 
         if (!qs.isEmpty()) {
-            qs.insert(0, "?"); // führendes Fragezeichen
+            qs.insert(0, "?");
         }
 
         model.addAttribute("qs", qs.toString());
