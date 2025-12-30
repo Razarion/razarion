@@ -13,6 +13,7 @@ import {TabsModule} from 'primeng/tabs';
 import {createStatistics, ProgressStatistic} from './progress-statistic';
 import {TableModule} from 'primeng/table';
 import {TrackingContainerAnalyzer} from './tracking-container-analyzer';
+import {UserMgmtComponent} from '../../editor/user-mgmt/user-mgmt.component';
 
 @Component({
   selector: 'tracking-container',
@@ -23,7 +24,8 @@ import {TrackingContainerAnalyzer} from './tracking-container-analyzer';
     SelectModule,
     ButtonModule,
     TabsModule,
-    TableModule],
+    TableModule,
+    UserMgmtComponent],
   templateUrl: './tracking-container.component.html',
   styleUrl: './tracking-container.component.scss'
 })
@@ -71,33 +73,48 @@ export class TrackingContainerComponent implements OnInit {
     }
   }
 
+  load24h() {
+    this.loadTime(24 * 60 * 60 * 1000)
+  }
+
+  load48h() {
+    this.loadTime(48 * 60 * 60 * 1000)
+  }
+
+  load5d() {
+    this.loadTime(5 * 24 * 60 * 60 * 1000)
+  }
+
+  load7d() {
+    this.loadTime(7 * 24 * 60 * 60 * 1000)
+  }
+
+  private loadTime(millis: number) {
+    this.toDate = new Date();
+    this.fromDate = new Date(this.toDate.getTime() - millis);
+    this.load();
+  }
+
   gamePageRequest(homePageRequest: PageRequest): PageRequest[] {
     return this.trackingContainerAnalyzer.getGames4Home(homePageRequest);
   }
 
   onSortChange() {
-    if (!this.homePageRequests || this.homePageRequests.length === 0) {
-      return;
-    }
-
-    this.homePageRequests.sort((a: PageRequest, b: PageRequest) => {
+    this.homePageRequests = [...this.homePageRequests].sort((a, b) => {
       const timeA = new Date(a.serverTime).getTime();
       const timeB = new Date(b.serverTime).getTime();
 
-      return this.sortDesc
-        ? timeB - timeA
-        : timeA - timeB;
+      return this.sortDesc ? timeB - timeA : timeA - timeB;
     });
   }
 
   onFilterChanged() {
-    this.homePageRequests.length = 0;
     switch (this.filter) {
       case TrackingContainerComponent.FILTER_ALL:
-        this.homePageRequests.push(...this.trackingContainerAnalyzer.getHomePageRequests());
+        this.homePageRequests = this.trackingContainerAnalyzer.getDistinctHomePageRequests();
         break;
       case TrackingContainerComponent.FILTER_GAME:
-        this.homePageRequests.push(...this.trackingContainerAnalyzer.getGamePageRequests());
+        this.homePageRequests = this.trackingContainerAnalyzer.getGamePageRequests();
         break;
     }
     this.onSortChange();
