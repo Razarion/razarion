@@ -307,7 +307,6 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const positions = [];
     const normals = [];
     const uvs = [];
-    const uvs2 = [];
 
     let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
@@ -327,10 +326,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           height,
           y * BabylonTerrainTileImpl.NODE_SIZE + yOffset);
         normals.push(0, 0, 0);
-        const uvx = x / xCount;
-        const uvy = 1.0 - y / yCount;
+        const uvx = x / (xCount - 1);
+        const uvy = 1.0 - y / (yCount - 1);
         uvs.push(uvx, uvy);
-        uvs2.push(uvx + uvy, ((height - 0.5) / 1.5) * 0.05);
 
         const invertedY = xCount - y - 1;
         const index2 = x + invertedY * xCount;
@@ -420,7 +418,6 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     vertexData.positions = positions;
     vertexData.normals = normals;
     vertexData.uvs = uvs;
-    vertexData.uvs2 = uvs2;
 
     return vertexData;
   }
