@@ -1,5 +1,20 @@
 <p-divider align="left">
   <div class="inline-flex items-center">
+    <i class="pi pi-check-square mr-2"></i>
+    <b>Correction</b>
+  </div>
+</p-divider>
+
+<div class="grid grid-cols-12 gap-1 p-1">
+  <span class="col-span-5">Water level</span>
+  <div class="col-span-7 flex gap-2">
+    <p-button icon="pi pi-play-circle" (onClick)="fixWaterLevel()"></p-button>
+    <p-button icon="pi pi-save" (onClick)="saveFixed()" [disabled]="!fixedUint16HeightMap"></p-button>
+  </div>
+</div>
+
+<p-divider align="left">
+  <div class="inline-flex items-center">
     <i class="pi pi-pencil mr-2"></i>
     <b>Brush</b>
   </div>
@@ -63,10 +78,25 @@
     {{ lastSavedSize }}
   </div>
 </div>
+
+<p-divider align="left">
+  <div class="inline-flex items-center">
+    <i class="pi pi-bolt mr-2"></i>
+    <b>Import / Export</b>
+  </div>
+</p-divider>
 <div class="grid grid-cols-12 gap-1 p-1">
-  <span class="col-span-5">Download</span>
+  <span class="col-span-5">Export</span>
   <div class="col-span-7">
     <p-button type="button" icon="pi pi-cloud-download" (onClick)="onDownload()"></p-button>
+  </div>
+</div>
+<div class="grid grid-cols-12">
+  <span class="col-span-5">Import</span>
+  <div class="col-span-7">
+    <p-fileUpload #fileUploadElement chooseLabel="Choose..." chooseIcon="pi pi-folder-open" mode="basic"
+                  styleClass="p-button-sm" [auto]=true [customUpload]=true (uploadHandler)="onImportHeightMap($event)">
+    </p-fileUpload>
   </div>
 </div>
 

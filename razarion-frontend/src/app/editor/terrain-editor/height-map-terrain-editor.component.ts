@@ -30,6 +30,7 @@ import {Divider} from 'primeng/divider';
 import {Checkbox} from 'primeng/checkbox';
 import {FormsModule} from '@angular/forms';
 import {SelectButton} from 'primeng/selectbutton';
+import {FileUpload} from 'primeng/fileupload';
 
 @Component({
   selector: 'height-map-terrain-editor',
@@ -38,7 +39,8 @@ import {SelectButton} from 'primeng/selectbutton';
     Divider,
     Checkbox,
     FormsModule,
-    SelectButton
+    SelectButton,
+    FileUpload
   ],
   templateUrl: './height-map-terrain-editor.component.html'
 })
@@ -55,8 +57,11 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   lastSavedTimeStamp: string = "";
   lastSavedSize: string = "";
   private originalUint16HeightMap?: Uint16Array;
+  fixedUint16HeightMap?: Uint16Array;
+  @ViewChild('fileUploadElement')
+  fileUploadElement!: FileUpload;
 
-  @ViewChild(' brushContainer', {read: ViewContainerRef})
+  @ViewChild('brushContainer', {read: ViewContainerRef})
   brushContainer?: ViewContainerRef;
   brushOptions = [
     {label: 'Fix height', value: FixHeightBrushComponent},
@@ -443,6 +448,90 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     link.href = URL.createObjectURL(blob);
     link.setAttribute("download", "CompressedHeightMap.bin");
     link.click();
+  }
+
+  onImportHeightMap(event: any) {
+    this.fileUploadElement.clear();
+
+    const blob = new Blob([event.files[0]], {type: 'application/octet-stream'});
+
+    this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
+      .then(() => {
+        this.lastSavedTimeStamp = new Date().toLocaleString();
+        this.lastSavedSize = `${event.files[0].length} bytes`;
+        this.messageService.add({severity: 'success', summary: 'Success', detail: 'Terrain saved'})
+        this.fixedUint16HeightMap = undefined;
+      })
+      .catch(error => {
+        this.messageService.add({severity: 'error', summary: 'Error', detail: error.message})
+      });
+
+  }
+
+  fixWaterLevel() {
+    const xNodeCount = this.xTileCount * BabylonTerrainTileImpl.NODE_X_COUNT;
+    const yNodeCount = this.yTileCount * BabylonTerrainTileImpl.NODE_Y_COUNT;
+
+    this.fixedUint16HeightMap = new Uint16Array(this.originalUint16HeightMap!.length);
+
+
+    for (let y = 0; y < yNodeCount - 1; y++) {
+      for (let x = 0; x < xNodeCount - 1; x++) {
+        const bLHeight = this.groundHeightAt(x, y);
+        const bRHeight = this.groundHeightAt(x + 1, y);
+        const tLHeight = this.groundHeightAt(x + 1, y + 1);
+        const tRHeight = this.groundHeightAt(x, y + 1);
+
+        const index = this.groundHeightMapIndex(x, y);
+        if (bLHeight >= BabylonTerrainTileImpl.WATER_LEVEL
+          && bRHeight >= BabylonTerrainTileImpl.WATER_LEVEL
+          && tLHeight >= BabylonTerrainTileImpl.WATER_LEVEL
+          && tRHeight >= BabylonTerrainTileImpl.WATER_LEVEL) {
+          this.fixedUint16HeightMap[index] = this.originalUint16HeightMap![index]!;
+        } else if (bLHeight <= BabylonTerrainTileImpl.WATER_LEVEL
+          && bRHeight <= BabylonTerrainTileImpl.WATER_LEVEL
+          && tLHeight <= BabylonTerrainTileImpl.WATER_LEVEL
+          && tRHeight <= BabylonTerrainTileImpl.WATER_LEVEL) {
+          this.fixedUint16HeightMap[index] = this.originalUint16HeightMap![index]!;
+        } else {
+          this.fixedUint16HeightMap[index] = BabylonTerrainTileImpl.heightToUnit16(BabylonTerrainTileImpl.WATER_LEVEL);
+        }
+      }
+    }
+  }
+
+  groundHeightMapIndex(xTerrainNode: number, yTerrainNode: number) {
+    const xTerrainTileIndex = Math.floor(xTerrainNode / BabylonTerrainTileImpl.NODE_X_COUNT);
+    const yTerrainTileIndex = Math.floor(yTerrainNode / BabylonTerrainTileImpl.NODE_Y_COUNT);
+
+    const startTileNodeIndex = BabylonTerrainTileImpl.TILE_NODE_SIZE * (yTerrainTileIndex * this.xTileCount + xTerrainTileIndex)
+
+    const xOffset = xTerrainNode - (xTerrainTileIndex * BabylonTerrainTileImpl.NODE_X_COUNT);
+    const yOffset = yTerrainNode - (yTerrainTileIndex * BabylonTerrainTileImpl.NODE_Y_COUNT);
+    const offsetTileNodeIndex = yOffset * BabylonTerrainTileImpl.NODE_X_COUNT + xOffset;
+
+    return startTileNodeIndex + offsetTileNodeIndex;
+  }
+
+  groundHeightAt(xTerrainNode: number, yTerrainNode: number) {
+    const uint16Height = this.originalUint16HeightMap![this.groundHeightMapIndex(xTerrainNode, yTerrainNode)];
+
+    return BabylonTerrainTileImpl.uint16ToHeight(uint16Height!);
+  }
+
+  saveFixed() {
+    const compressedHeightMap = pako.gzip(new Uint8Array(this.fixedUint16HeightMap!.buffer));
+    const blob = new Blob([compressedHeightMap.buffer], {type: 'application/octet-stream'});
+    this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
+      .then(() => {
+        this.lastSavedTimeStamp = new Date().toLocaleString();
+        this.lastSavedSize = `${compressedHeightMap!.length} bytes`;
+        this.messageService.add({severity: 'success', summary: 'Success', detail: 'Terrain saved'})
+        this.fixedUint16HeightMap = undefined;
+      })
+      .catch(error => {
+        this.messageService.add({severity: 'error', summary: 'Error', detail: error.message})
+      });
   }
 }
 
