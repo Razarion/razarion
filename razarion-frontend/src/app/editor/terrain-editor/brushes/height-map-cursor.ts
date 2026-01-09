@@ -28,12 +28,17 @@ export class HeightMapCursor {
     }
     let vertexData = this.createVertexData();
     vertexData.applyToMesh(this.mesh, true);
-    let material = new StandardMaterial("cursorMaterial inner", this.scene);
-    material.alpha = 0.5;
-    material.diffuseColor = new Color3(1, 1, 0);
-    material.disableDepthWrite = true;
-    material.depthFunction = Constants.ALWAYS;
-    this.mesh.material = material;
+
+    const wireframeOverMaterial = new StandardMaterial("wireframeOver");
+    wireframeOverMaterial.reservedDataStore = { hidden: true };
+    wireframeOverMaterial.disableLighting = true;
+    wireframeOverMaterial.backFaceCulling = false;
+    wireframeOverMaterial.emissiveColor = Color3.White();
+    wireframeOverMaterial.wireframe = true;
+    wireframeOverMaterial.disableDepthWrite = true;
+    wireframeOverMaterial.depthFunction = Constants.ALWAYS;
+
+    this.mesh.material = wireframeOverMaterial;
   }
 
   update(position: Vector3, brushValues: BrushValues) {
