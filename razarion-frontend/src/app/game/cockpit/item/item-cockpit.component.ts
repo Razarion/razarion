@@ -17,7 +17,7 @@ import {
   OwnItemCockpit,
   OwnMultipleIteCockpit
 } from "../../../gwtangular/GwtAngularFacade";
-import {CommonModule} from '@angular/common';
+
 import {Carousel} from 'primeng/carousel';
 import {ButtonModule} from 'primeng/button';
 import {CockpitDisplayService} from '../cockpit-display.service';
@@ -30,11 +30,10 @@ import {TipService} from '../../tip/tip.service';
   templateUrl: 'item-cockpit.component.html',
   styleUrls: ['item-cockpit.component.scss'],
   imports: [
-    CommonModule,
     Carousel,
     ButtonModule,
     PopoverModule
-  ]
+]
 })
 export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit, OnDestroy {
   ownItemCockpit?: OwnItemCockpit;

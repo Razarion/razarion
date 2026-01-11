@@ -1,10 +1,14 @@
-<p-select *ngIf="!readOnly"
-            [placeholder]="'...'"
-            [options]="levelOptions"
-            [(ngModel)]="levelId"
-            (onChange)="onChange()"
-            optionLabel="label"
-            optionValue="levelId">
-</p-select>
-<span *ngIf="readOnly">{{getCurrentName()}}</span>
+@if (!readOnly) {
+  <p-select
+    [placeholder]="'...'"
+    [options]="levelOptions"
+    [(ngModel)]="levelId"
+    (onChange)="onChange()"
+    optionLabel="label"
+    optionValue="levelId">
+  </p-select>
+}
+@if (readOnly) {
+  <span>{{getCurrentName()}}</span>
+}
 

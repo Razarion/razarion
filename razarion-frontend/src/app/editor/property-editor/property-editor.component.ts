@@ -10,7 +10,7 @@ import {InputNumber} from 'primeng/inputnumber';
 import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
 import {TableModule} from 'primeng/table';
 import {FormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
+
 
 @Component({
   selector: 'property-editor',
@@ -20,9 +20,8 @@ import {CommonModule} from '@angular/common';
     InputNumber,
     BabylonMaterialComponent,
     TableModule,
-    FormsModule,
-    CommonModule
-  ],
+    FormsModule
+],
   templateUrl: './property-editor.component.html'
 })
 export class PropertyEditorComponent extends EditorPanel implements OnInit {

@@ -1,4 +1,8 @@
-<div *ngIf="showBackend">
-  <tracking-container></tracking-container>
-</div>
-<login *ngIf="showLogin" [successUrl]="'/game/backend'"></login>
+@if (showBackend) {
+  <div>
+    <tracking-container></tracking-container>
+  </div>
+}
+@if (showLogin) {
+  <login [successUrl]="'/game/backend'"></login>
+}

@@ -1,7 +1,9 @@
 ﻿<div class="flex flex-col">
-  <div class="mb-2" *ngFor="let serverCommand of EditorService.ALL_SERVER_COMMANDS">
-    <p-button type="button" label="{{serverCommand.name}}" icon="pi pi-cog" styleClass="p-button-sm"
-              (onClick)="execute(serverCommand)"></p-button>
-  </div>
+  @for (serverCommand of EditorService.ALL_SERVER_COMMANDS; track serverCommand) {
+    <div class="mb-2">
+      <p-button type="button" label="{{serverCommand.name}}" icon="pi pi-cog" styleClass="p-button-sm"
+      (onClick)="execute(serverCommand)"></p-button>
+    </div>
+  }
 </div>
 

@@ -6,7 +6,7 @@ import {DataViewModule} from 'primeng/dataview';
 import {CommonModule} from '@angular/common';
 import {DatePickerModule} from 'primeng/datepicker';
 import {FormsModule} from '@angular/forms';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {ButtonModule} from 'primeng/button';
 import {SelectItem} from 'primeng/api';
 import {TabsModule} from 'primeng/tabs';
@@ -21,7 +21,7 @@ import {UserMgmtComponent} from '../../editor/user-mgmt/user-mgmt.component';
     CommonModule,
     DatePickerModule,
     FormsModule,
-    SelectModule,
+    Select,
     ButtonModule,
     TabsModule,
     TableModule,

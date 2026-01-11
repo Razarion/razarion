@@ -1,19 +1,18 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Tip} from '../../../gwtangular/GwtAngularFacade';
-import {DropdownModule} from 'primeng/dropdown';
 import {TipConfig} from '../../../generated/razarion-share';
 import {FormsModule} from '@angular/forms';
 import {BaseItemTypeComponent} from '../../common/base-item-type/base-item-type.component';
-import {CommonModule} from '@angular/common';
+import {Select} from 'primeng/select';
+
 
 @Component({
   selector: 'tip',
   imports: [
-    DropdownModule,
     FormsModule,
     BaseItemTypeComponent,
-    CommonModule
-  ],
+    Select
+],
   templateUrl: './tip.component.html'
 })
 export class TipComponent {

@@ -3,12 +3,12 @@ import {Model3DControllerClient} from "../../../generated/razarion-share";
 import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 import {FormsModule} from '@angular/forms';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 
 @Component({
   selector: 'model3d',
   imports: [
-    SelectModule,
+    Select,
     FormsModule
   ],
   templateUrl: './model3d.component.html'

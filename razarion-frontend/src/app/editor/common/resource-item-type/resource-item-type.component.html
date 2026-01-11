@@ -1,10 +1,14 @@
-<p-select *ngIf="!readOnly"
-            [placeholder]="'...'"
-            [options]="resourceItemTypeOptions"
-            [(ngModel)]="resourceItemTypeId"
-            (onChange)="onChange()"
-            optionLabel="name"
-            optionValue="id">
-</p-select>
-<span *ngIf="readOnly">{{getCurrentName()}}</span>
+@if (!readOnly) {
+  <p-select
+    [placeholder]="'...'"
+    [options]="resourceItemTypeOptions"
+    [(ngModel)]="resourceItemTypeId"
+    (onChange)="onChange()"
+    optionLabel="name"
+    optionValue="id">
+  </p-select>
+}
+@if (readOnly) {
+  <span>{{getCurrentName()}}</span>
+}
 

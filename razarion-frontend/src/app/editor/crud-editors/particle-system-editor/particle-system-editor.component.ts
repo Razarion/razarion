@@ -11,8 +11,8 @@ import {FormsModule} from '@angular/forms';
 import {InputNumber} from 'primeng/inputnumber';
 import {Divider} from 'primeng/divider';
 import {ImageItemComponent} from '../../common/image-item/image-item.component';
-import {CommonModule} from '@angular/common';
-import {SelectModule} from 'primeng/select';
+
+import {Select} from 'primeng/select';
 import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
 import {BabylonModelService} from '../../../game/renderer/babylon-model.service';
 
@@ -24,9 +24,8 @@ import {BabylonModelService} from '../../../game/renderer/babylon-model.service'
     InputNumber,
     Divider,
     ImageItemComponent,
-    CommonModule,
-    SelectModule,
-  ],
+    Select
+],
   templateUrl: './particle-system-editor.component.html'
 })
 export class ParticleSystemEditorComponent implements CrudContainerChild<ParticleSystemEntity> {

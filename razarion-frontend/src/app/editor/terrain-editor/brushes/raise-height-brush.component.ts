@@ -3,7 +3,7 @@ import {AbstractBrush} from './abstract-brush';
 import {PointerEventTypes, Vector2, Vector3} from '@babylonjs/core';
 import {Slider} from 'primeng/slider';
 import {FormsModule} from '@angular/forms';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {BabylonRenderServiceAccessImpl} from '../../../game/renderer/babylon-render-service-access-impl.service';
 import {HeightMapCursor} from './height-map-cursor';
 import {BrushType, BrushValues} from './fix-height-brush.component';
@@ -22,7 +22,7 @@ export class RaiseBrushValues {
   imports: [
     Slider,
     FormsModule,
-    SelectModule
+    Select
   ],
   template: `
     <div class="grid grid-cols-12 gap-1 p-1">

@@ -1,134 +1,167 @@
-﻿<div class="flex flex-col gap-1" *ngIf="ownItemCockpit">
-  <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
-    <div class="w-14 flex-none">
-      <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
-    </div>
-    <div class="grow">
-      <div class="flex flex-col" *ngIf="ownItemCockpit">
-        <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
-          {{ ownItemCockpit.itemTypeName }}
-        </div>
-        <div>
-          {{ ownItemCockpit.itemTypeDescr }}
-        </div>
-        <div>
-          <div *ngIf="count && count > 1">
-            {{ count }}
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="w-8 flex-none" *ngIf="ownItemCockpit.sellHandler">
-      <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (onClick)="ownItemCockpit.sellHandler()"></p-button>
-    </div>
-  </div>
-  <div *ngIf="ownItemCockpit.buildupItemInfos" class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
-    <p-popover #tipPopover [dismissable]="false">
-      <div class="blinking-popover">
-        <p>Click to build</p>
-      </div>
-    </p-popover>
-    <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="5" [numScroll]="5"
-                styleClass="buildup-carousel">
-      <ng-template let-buildupItemCockpit #item>
-        <div class="flex flex-col bg-surface-600" [style]="{margin: '0 2px 0 2px'}">
-          <div #buildupItemDiv [attr.data-item-type-id]="buildupItemCockpit.itemTypeId">
-            <button class='item-cockpit-buildup-button'
-                    (click)="onBuildClick(buildupItemCockpit)"
-                    [title]="buildTooltip(buildupItemCockpit)"
-                    [disabled]="!buildupItemCockpit.enabled">
-              <div *ngIf="!buildupItemCockpit.enabled" class='item-cockpit-buildup-disabled'>
-              </div>
-              <img src="{{buildupItemCockpit.imageUrl}}"
-                   style="position: absolute;top: 0; left: 0; width: 40px; height: 40px"
-                   alt="buildupItemCockpit.imageUrl">
-              <span class="item-cockpit-buildup-limit-label">
-                {{ buildupItemCockpit.itemCount }}/{{ buildupItemCockpit.itemLimit }}
-              </span>
-            </button>
-          </div>
-          <div>
-            {{ buildupItemCockpit.price }}
-          </div>
-        </div>
-      </ng-template>
-    </p-carousel>
-  </div>
-  <div *ngIf="ownItemCockpit.itemContainerInfo"
-       class="flex flex-row  items-center  gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
-    <span>{{ `Containing items: ${ownItemCockpit.itemContainerInfo.count}` }}</span>
-    <p-button icon="pi pi-upload"
-              label="Unload"
-              size="small"
-              (click)="onUnloadClick(ownItemCockpit.itemContainerInfo)"
-              [disabled]="!ownItemCockpit.itemContainerInfo.count"></p-button>
-  </div>
-</div>
-
-<div *ngIf="ownMultipleIteCockpits" class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
-  <p class="text-surface-300">Click to select units by type</p>
-  <p-carousel [value]="ownMultipleIteCockpits" [numVisible]="5" [numScroll]="5"
-              styleClass="multiple-item-carousel">
-    <ng-template let-ownMultipleIteCockpit #item>
-      <div class="flex flex-col" [style]="{margin: '0 2px 0 2px'}">
-        <div class="flex">
-          <button class="item-cockpit-multiple-button"
-                  (click)="ownMultipleIteCockpit.onSelect()"
-                  title="{{ownMultipleIteCockpit.tooltip}}">
-            <img src="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}"
-                 style="width: 40px; height: 40px"
-                 alt="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}">
-          </button>
-        </div>
-        <div class="flex">
-          {{ ownMultipleIteCockpit.count }}
-        </div>
-      </div>
-    </ng-template>
-  </p-carousel>
-</div>
-
-<div class="flex flex-col" *ngIf="otherItemCockpit">
-  <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
-    <div style="font-size: 1.2rem" class="text-surface-300">
-      <span>{{ otherItemCockpit.baseName }}</span>
-      <span *ngIf="isAdmin()">&nbsp;[{{ otherItemCockpit.baseId }}]</span>
-    </div>
-    <div class="flex">
+﻿@if (ownItemCockpit) {
+  <div class="flex flex-col gap-1">
+    <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
       <div class="w-14 flex-none">
-        <img src="{{otherItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{otherItemCockpit.itemTypeName}}">
+        <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
       </div>
       <div class="grow">
-        <div class="flex flex-col">
-          <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
-            <span>{{ otherItemCockpit.itemTypeName }}</span>
-            <span *ngIf="isAdmin()">&nbsp;[{{ otherItemCockpit.id }}]</span>
+        @if (ownItemCockpit) {
+          <div class="flex flex-col">
+            <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
+              {{ ownItemCockpit.itemTypeName }}
+            </div>
+            <div>
+              {{ ownItemCockpit.itemTypeDescr }}
+            </div>
+            <div>
+              @if (count && count > 1) {
+                <div>
+                  {{ count }}
+                </div>
+              }
+            </div>
           </div>
-          <div class="text-surface-300">
-            {{ otherItemCockpit.itemTypeDescr }}
+        }
+      </div>
+      @if (!!ownItemCockpit.sellHandler) {
+        <div class="w-8 flex-none">
+          <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (onClick)="ownItemCockpit.sellHandler()"></p-button>
+        </div>
+      }
+    </div>
+    @if (ownItemCockpit.buildupItemInfos) {
+      <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
+        <p-popover #tipPopover [dismissable]="false">
+          <div class="blinking-popover">
+            <p>Click to build</p>
           </div>
+        </p-popover>
+        <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="5" [numScroll]="5"
+          styleClass="buildup-carousel">
+          <ng-template pTemplate="item" let-buildupItemCockpit>
+            <div class="flex flex-col bg-surface-600" [style]="{margin: '0 2px 0 2px'}">
+              <div #buildupItemDiv [attr.data-item-type-id]="buildupItemCockpit.itemTypeId">
+                <button class='item-cockpit-buildup-button'
+                  (click)="onBuildClick(buildupItemCockpit)"
+                  [title]="buildTooltip(buildupItemCockpit)"
+                  [disabled]="!buildupItemCockpit.enabled">
+                  @if (!buildupItemCockpit.enabled) {
+                    <div class='item-cockpit-buildup-disabled'>
+                    </div>
+                  }
+                  <img src="{{buildupItemCockpit.imageUrl}}"
+                    style="position: absolute;top: 0; left: 0; width: 40px; height: 40px"
+                    alt="buildupItemCockpit.imageUrl">
+                    <span class="item-cockpit-buildup-limit-label">
+                      {{ buildupItemCockpit.itemCount }}/{{ buildupItemCockpit.itemLimit }}
+                    </span>
+                  </button>
+                </div>
+                <div>
+                  {{ buildupItemCockpit.price }}
+                </div>
+              </div>
+            </ng-template>
+          </p-carousel>
+        </div>
+      }
+      @if (ownItemCockpit.itemContainerInfo) {
+        <div
+          class="flex flex-row  items-center  gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
+          <span>{{ `Containing items: ${ownItemCockpit.itemContainerInfo.count}` }}</span>
+          <p-button icon="pi pi-upload"
+            label="Unload"
+            size="small"
+            (click)="onUnloadClick(ownItemCockpit.itemContainerInfo)"
+          [disabled]="!ownItemCockpit.itemContainerInfo.count"></p-button>
+        </div>
+      }
+    </div>
+  }
+
+  @if (ownMultipleIteCockpits) {
+    <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
+      <p class="text-surface-300">Click to select units by type</p>
+      <p-carousel [value]="ownMultipleIteCockpits" [numVisible]="5" [numScroll]="5"
+        styleClass="multiple-item-carousel">
+        <ng-template pTemplate="item" let-ownMultipleIteCockpit>
+          <div class="flex flex-col" [style]="{margin: '0 2px 0 2px'}">
+            <div class="flex">
+              <button class="item-cockpit-multiple-button"
+                (click)="ownMultipleIteCockpit.onSelect()"
+                title="{{ownMultipleIteCockpit.tooltip}}">
+                <img src="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}"
+                  style="width: 40px; height: 40px"
+                  alt="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}">
+                </button>
+              </div>
+              <div class="flex">
+                {{ ownMultipleIteCockpit.count }}
+              </div>
+            </div>
+          </ng-template>
+        </p-carousel>
+      </div>
+    }
+
+    @if (otherItemCockpit) {
+      <div class="flex flex-col">
+        <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
+          <div style="font-size: 1.2rem" class="text-surface-300">
+            <span>{{ otherItemCockpit.baseName }}</span>
+            @if (isAdmin()) {
+              <span>&nbsp;[{{ otherItemCockpit.baseId }}]</span>
+            }
+          </div>
+          <div class="flex">
+            <div class="w-14 flex-none">
+              <img src="{{otherItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{otherItemCockpit.itemTypeName}}">
+            </div>
+            <div class="grow">
+              <div class="flex flex-col">
+                <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
+                  <span>{{ otherItemCockpit.itemTypeName }}</span>
+                  @if (isAdmin()) {
+                    <span>&nbsp;[{{ otherItemCockpit.id }}]</span>
+                  }
+                </div>
+                <div class="text-surface-300">
+                  {{ otherItemCockpit.itemTypeDescr }}
+                </div>
+              </div>
+            </div>
+          </div>
+          @if (otherItemCockpit.resource) {
+            <div class="text-blue-600">
+              <p><i class="pi pi-sparkles" style="font-size: 0.8rem"></i>&nbsp;Collect this resource</p>
+            </div>
+          }
+          @if (otherItemCockpit.box) {
+            <div class="text-blue-600">
+              <p><i class="pi pi-box" style="font-size: 0.8rem"></i>&nbsp;Pick up this box</p>
+            </div>
+          }
+          @if (otherItemCockpit.friend && !otherItemCockpit.bot) {
+            <div class="text-green-500">
+              <p><i class="pi pi-verified" style="font-size: 0.8rem"></i>&nbsp;This is a friendly human player</p>
+            </div>
+          }
+          @if (!otherItemCockpit.friend && otherItemCockpit.bot) {
+            <div class="text-red-500">
+              <p><i class="pi pi-exclamation-triangle" style="font-size: 0.8rem"></i>&nbsp;This is an enemy bot</p>
+            </div>
+          }
+          @if (otherItemCockpit.friend && otherItemCockpit.bot) {
+            <div class="text-green-500">
+              <p><i class="pi pi-verified" style="font-size: 0.8rem"></i>&nbsp;This is an NPC</p>
+            </div>
+          }
+          @if (!otherItemCockpit.friend && !otherItemCockpit.bot && !otherItemCockpit.resource && !otherItemCockpit.box) {
+            <div
+              class="text-red-500">
+              <p><i class="pi pi-exclamation-triangle" style="font-size: 0.8rem"></i>&nbsp;This is an enemy human player</p>
+            </div>
+          }
         </div>
       </div>
-    </div>
-    <div *ngIf="otherItemCockpit.resource" class="text-blue-600">
-      <p><i class="pi pi-sparkles" style="font-size: 0.8rem"></i>&nbsp;Collect this resource</p>
-    </div>
-    <div *ngIf="otherItemCockpit.box" class="text-blue-600">
-      <p><i class="pi pi-box" style="font-size: 0.8rem"></i>&nbsp;Pick up this box</p>
-    </div>
-    <div *ngIf="otherItemCockpit.friend && !otherItemCockpit.bot" class="text-green-500">
-      <p><i class="pi pi-verified" style="font-size: 0.8rem"></i>&nbsp;This is a friendly human player</p>
-    </div>
-    <div *ngIf="!otherItemCockpit.friend && otherItemCockpit.bot" class="text-red-500">
-      <p><i class="pi pi-exclamation-triangle" style="font-size: 0.8rem"></i>&nbsp;This is an enemy bot</p>
-    </div>
-    <div *ngIf="otherItemCockpit.friend && otherItemCockpit.bot" class="text-green-500">
-      <p><i class="pi pi-verified" style="font-size: 0.8rem"></i>&nbsp;This is an NPC</p>
-    </div>
-    <div
-      *ngIf="!otherItemCockpit.friend && !otherItemCockpit.bot && !otherItemCockpit.resource && !otherItemCockpit.box"
-      class="text-red-500">
-      <p><i class="pi pi-exclamation-triangle" style="font-size: 0.8rem"></i>&nbsp;This is an enemy human player</p>
-    </div>
-  </div>
-</div>
+    }

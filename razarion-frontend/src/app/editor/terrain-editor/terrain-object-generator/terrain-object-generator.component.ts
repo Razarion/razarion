@@ -16,11 +16,11 @@ import {
   TerrainObjectGeneratorEntityComponent
 } from "./terrain-object-generator-entity/terrain-object-generator-entity.component";
 import {Button} from 'primeng/button';
-import {CommonModule, DatePipe} from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {TableModule} from 'primeng/table';
 import {FormsModule} from '@angular/forms';
 import {Divider} from 'primeng/divider';
-import {SelectChangeEvent, SelectModule} from 'primeng/select';
+import {Select, SelectChangeEvent} from 'primeng/select';
 
 @Component({
   selector: 'terrain-object-generator',
@@ -29,7 +29,7 @@ import {SelectChangeEvent, SelectModule} from 'primeng/select';
     DatePipe,
     TableModule,
     TerrainObjectGeneratorEntityComponent,
-    SelectModule,
+    Select,
     FormsModule,
     Divider,
     CommonModule

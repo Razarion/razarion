@@ -9,7 +9,7 @@ import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 import { GameComponent } from '../game.component';
 import {Button} from 'primeng/button';
 import {DataViewModule} from 'primeng/dataview';
-import {NgForOf} from '@angular/common';
+
 
 @Component({
   selector: 'inventory',
@@ -17,9 +17,8 @@ import {NgForOf} from '@angular/common';
   styleUrls: ['./inventory.component.scss'],
   imports: [
     Button,
-    DataViewModule,
-    NgForOf,
-  ]
+    DataViewModule
+]
 })
 export class InventoryComponent implements OnInit {
   getImageUrl = getImageUrl;

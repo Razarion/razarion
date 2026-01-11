@@ -5,19 +5,21 @@
       type="email"
       class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
       [(ngModel)]="email" required>
-    <input
-      placeholder="Password"
-      type="password"
-      class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
-      [(ngModel)]="password1" required>
-    <input
-      placeholder="Re-enter password"
-      type="password"
-      class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
-      [(ngModel)]="password2" required>
+      <input
+        placeholder="Password"
+        type="password"
+        class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
+        [(ngModel)]="password1" required>
+        <input
+          placeholder="Re-enter password"
+          type="password"
+          class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
+          [(ngModel)]="password2" required>
 
-    <p *ngIf="errorMessage" class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
+          @if (errorMessage) {
+            <p class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
+          }
 
-    <p-button class="justify-self-end mt-2" (onClick)="onRegister()" label="Register" styleClass="p-button-sm"></p-button>
-  </div>
-</div>
+          <p-button class="justify-self-end mt-2" (onClick)="onRegister()" label="Register" styleClass="p-button-sm"></p-button>
+        </div>
+      </div>

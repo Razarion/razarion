@@ -4,7 +4,7 @@ import {TableModule} from 'primeng/table';
 import {BaseItemTypeComponent} from '../base-item-type/base-item-type.component';
 import {FormsModule} from '@angular/forms';
 import {ButtonModule} from 'primeng/button';
-import {CommonModule} from '@angular/common';
+
 import {BadgeModule} from 'primeng/badge';
 
 @Component({
@@ -15,9 +15,8 @@ import {BadgeModule} from 'primeng/badge';
     BaseItemTypeComponent,
     FormsModule,
     ButtonModule,
-    CommonModule,
-    BadgeModule,
-  ],
+    BadgeModule
+],
   styleUrls: ['./base-item-type-count.component.scss']
 })
 export class BaseItemTypeCountComponent implements OnInit {

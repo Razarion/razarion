@@ -9,8 +9,8 @@ import {ToggleButton} from 'primeng/togglebutton';
 import {FormsModule} from '@angular/forms';
 import {InputNumber} from 'primeng/inputnumber';
 import {Button} from 'primeng/button';
-import {SelectModule} from 'primeng/select';
-import {CommonModule, NgClass} from '@angular/common';
+import {Select} from 'primeng/select';
+import { CommonModule, NgClass } from '@angular/common';
 
 enum Type {
   LOCATION,
@@ -25,7 +25,7 @@ enum Type {
     FormsModule,
     InputNumber,
     Button,
-    SelectModule,
+    Select,
     NgClass,
     CommonModule
   ],

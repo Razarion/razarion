@@ -5,61 +5,73 @@
     <div #canvasDiv [style]="{width: '100%', height:'100%'}">
       <canvas #canvas class="canvas" [style]="{width: '100%', height:'100%'}"></canvas>
     </div>
-    <div class="flex-none flex items-center justify-center" *ngFor="let editorModel of editorModels">
-      <app-editor-panel [editorModel]="editorModel"
-                        [gameComponent]="getGameComponent()"
-                        [mainCockpitComponent]="mainCockpit"
-                        [style]="{height:'100%'}"></app-editor-panel>
-    </div>
+    @for (editorModel of editorModels; track editorModel) {
+      <div class="flex-none flex items-center justify-center">
+        <app-editor-panel [editorModel]="editorModel"
+          [gameComponent]="getGameComponent()"
+          [mainCockpitComponent]="mainCockpit"
+        [style]="{height:'100%'}"></app-editor-panel>
+      </div>
+    }
   </div>
 
   <div class="cockpit-border"
-       [style.visibility]="cockpitDisplayService.showMainCockpit ? 'visible' : 'hidden'"
-       [style]="{position: 'absolute', left: 0, top: 0}">
+    [style.visibility]="cockpitDisplayService.showMainCockpit ? 'visible' : 'hidden'"
+    [style]="{position: 'absolute', left: 0, top: 0}">
     <main-cockpit #mainCockpit></main-cockpit>
   </div>
 
   <div class="cockpit-border"
-       [style.visibility]="cockpitDisplayService.showItemCockpit ? 'visible' : 'hidden'"
-       [style]="{position: 'absolute', bottom: 0, left: 0}">
+    [style.visibility]="cockpitDisplayService.showItemCockpit ? 'visible' : 'hidden'"
+    [style]="{position: 'absolute', bottom: 0, left: 0}">
     <item-cockpit #itemCockpitContainer></item-cockpit>
   </div>
 
   <div class="cockpit-border"
-       [style.visibility]="cockpitDisplayService.showQuestCockpit ? 'visible' : 'hidden'"
-       [style]="{position: 'absolute', right: 0, top: 0}">
+    [style.visibility]="cockpitDisplayService.showQuestCockpit ? 'visible' : 'hidden'"
+    [style]="{position: 'absolute', right: 0, top: 0}">
     <quest-cockpit #questCockpitContainer></quest-cockpit>
   </div>
 
   <div class="cockpit-border"
-       [style.visibility]="cockpitDisplayService.showChatCockpit ? 'visible' : 'hidden'"
-       [style]="{position: 'absolute', right: 0, bottom: 0}">
+    [style.visibility]="cockpitDisplayService.showChatCockpit ? 'visible' : 'hidden'"
+    [style]="{position: 'absolute', right: 0, bottom: 0}">
     <chat-cockpit #chatCockpitComponent></chat-cockpit>
   </div>
 
-  <div *ngIf="!!modelDialogPresenter.title" class="splash">
-    <div class="splash-title">
-      {{ modelDialogPresenter.title }}
-    </div>
-    <div *ngIf="modelDialogPresenter.messageLines" class="splash-subtitle">
-      <div *ngFor="let messageLine of modelDialogPresenter.messageLines">
-        {{ messageLine }} <br>
+  @if (!!modelDialogPresenter.title) {
+    <div class="splash">
+      <div class="splash-title">
+        {{ modelDialogPresenter.title }}
       </div>
+      @if (modelDialogPresenter.messageLines) {
+        <div class="splash-subtitle">
+          @for (messageLine of modelDialogPresenter.messageLines; track messageLine) {
+            <div>
+              {{ messageLine }} <br>
+            </div>
+          }
+        </div>
+      }
     </div>
-  </div>
+  }
 </div>
 
 <p-dialog header="Inventory" [(visible)]="showInventory" [style]="{width: '50vw'}">
-  <inventory *ngIf="showInventory" style="width: 100em;"></inventory>
+  @if (showInventory) {
+    <inventory style="width: 100em;"></inventory>
+  }
 </p-dialog>
 
 <p-dialog header="Unlock" [(visible)]="showUnlock" [style]="{width: '50vw'}">
-  <unlock *ngIf="showUnlock" style="width: 100em;"></unlock>
+  @if (showUnlock) {
+    <unlock style="width: 100em;"></unlock>
+  }
 </p-dialog>
 
 <p-dialog header="Editor" [(visible)]="mainCockpit.editorDialog">
   <editor-dialog [mainCockpitComponent]="mainCockpit"
-                 [gameComponent]="getGameComponent()"></editor-dialog>
+  [gameComponent]="getGameComponent()"></editor-dialog>
 </p-dialog>
 
 

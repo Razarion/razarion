@@ -9,35 +9,37 @@
   <div class="grid grid-cols-12 gap-4 items-center">
     <div class="col-span-9">
       <p-select [options]="terrainObjectGeneratorOptions"
-                [(ngModel)]="terrainObjectGeneratorId"
-                optionLabel="name"
-                optionValue="id"
-                (onChange)="onTerrainObjectGeneratorChange($event)"
-                [style]="{ width: '100%' }"></p-select>
+        [(ngModel)]="terrainObjectGeneratorId"
+        optionLabel="name"
+        optionValue="id"
+        (onChange)="onTerrainObjectGeneratorChange($event)"
+      [style]="{ width: '100%' }"></p-select>
     </div>
 
     <div class="col-span-1">
       <p-button type="button" icon="pi pi-plus"
-                styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
-                (onClick)="onCreateTerrainObjectGenerator()">
+        styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+        (onClick)="onCreateTerrainObjectGenerator()">
       </p-button>
     </div>
     <div class="col-span-1">
       <p-button type="button" icon="pi pi-save"
-                styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                (onClick)="onSaveTerrainObjectGenerator()">
+        styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+        (onClick)="onSaveTerrainObjectGenerator()">
       </p-button>
     </div>
     <div class="col-span-1">
       <p-button type="button" icon="pi pi-trash"
-                styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                (onClick)="onDeleteTerrainObjectGenerator()">
+        styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+        (onClick)="onDeleteTerrainObjectGenerator()">
       </p-button>
     </div>
   </div>
 
-  <terrain-object-generator-entity #terrainObjectGeneratorEntityComponent *ngIf="activeTerrainObjectGenerator"
-                                   [terrainObjectGeneratorEntity]="activeTerrainObjectGenerator!"></terrain-object-generator-entity>
+  @if (activeTerrainObjectGenerator) {
+    <terrain-object-generator-entity #terrainObjectGeneratorEntityComponent
+    [terrainObjectGeneratorEntity]="activeTerrainObjectGenerator!"></terrain-object-generator-entity>
+  }
 
   <div class="grid grid-cols-12 gap-4 items-center">
     <span class="col-span-5">Generate</span>
@@ -47,7 +49,7 @@
   </div>
 
   <p-table [value]="generatedTerrainObjectsEntries"
-           scrollHeight="100px">
+    scrollHeight="100px">
     <ng-template pTemplate="header">
       <tr>
         <th>Generation date</th>
@@ -70,11 +72,11 @@
         </td>
         <td>
           <p-button icon="pi pi-check"
-                    (onClick)="moveGeneratedTerrainObjectsEntry(generatedTerrainObjects)"></p-button>
+          (onClick)="moveGeneratedTerrainObjectsEntry(generatedTerrainObjects)"></p-button>
         </td>
         <td>
           <p-button icon="pi pi-trash"
-                    (onClick)="deleteGeneratedTerrainObjectsEntry(generatedTerrainObjects)"></p-button>
+          (onClick)="deleteGeneratedTerrainObjectsEntry(generatedTerrainObjects)"></p-button>
         </td>
       </tr>
     </ng-template>

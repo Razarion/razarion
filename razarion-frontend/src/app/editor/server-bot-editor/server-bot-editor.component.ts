@@ -14,9 +14,9 @@ import {Checkbox} from 'primeng/checkbox';
 import {BaseItemTypeComponent} from '../common/base-item-type/base-item-type.component';
 import {ButtonModule} from 'primeng/button';
 import {Accordion, AccordionModule,} from 'primeng/accordion';
-import {CommonModule, NgForOf} from '@angular/common';
+
 import {Divider} from 'primeng/divider';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {MessageService} from 'primeng/api';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
 import {Model3dComponent} from '../common/model3d/model3d.component';
@@ -33,15 +33,13 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
     BaseItemTypeComponent,
     ButtonModule,
     Accordion,
-    NgForOf,
-    CommonModule,
     Divider,
-    SelectModule,
+    Select,
     AccordionModule,
     ScrollPanelModule,
     Model3dComponent,
     ToggleButtonModule
-  ],
+],
   templateUrl: './server-bot-editor.component.html'
 })
 export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnDestroy {

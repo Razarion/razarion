@@ -6,10 +6,10 @@ import {PlaceConfigComponent} from '../common/place-config/place-config.componen
 import {Button} from 'primeng/button';
 import {InputNumber} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
+
 import {BoxItemTypeComponent} from '../common/box-item-type/box-item-type.component';
 import {Divider} from 'primeng/divider';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {MessageService} from 'primeng/api';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
 
@@ -20,12 +20,11 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     Button,
     InputNumber,
     FormsModule,
-    CommonModule,
     BoxItemTypeComponent,
     Divider,
-    SelectModule,
+    Select,
     ScrollPanelModule
-  ],
+],
   templateUrl: './box-region.component.html'
 })
 export class BoxRegionComponent extends EditorPanel implements OnInit {

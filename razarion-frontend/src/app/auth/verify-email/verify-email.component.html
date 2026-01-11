@@ -1,13 +1,19 @@
 <div class="flex flex-col gap-5 justify-center items-center min-h-screen w-full max-w-md mx-auto">
-  <div *ngIf="successful"
-       class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 items-center bg-surface-100">
-    <i class="pi pi-check-circle p-2" style="color: green"></i>
-    <p>Your email has been successfully verified!</p>
-  </div>
-  <login *ngIf="successful"></login>
-  <div *ngIf="failed"
-       class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 items-center bg-surface-100">
-    <i class="pi pi-times-circle p-2" style="color: red"></i>
-    <p>Something went wrong while verifying your email.</p>
-  </div>
+  @if (successful) {
+    <div
+      class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 items-center bg-surface-100">
+      <i class="pi pi-check-circle p-2" style="color: green"></i>
+      <p>Your email has been successfully verified!</p>
+    </div>
+  }
+  @if (successful) {
+    <login></login>
+  }
+  @if (failed) {
+    <div
+      class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 items-center bg-surface-100">
+      <i class="pi pi-times-circle p-2" style="color: red"></i>
+      <p>Something went wrong while verifying your email.</p>
+    </div>
+  }
 </div>

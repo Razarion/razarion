@@ -3,16 +3,15 @@ import {MessageService} from 'primeng/api';
 import {UserService} from '../user.service';
 import {FormsModule} from '@angular/forms';
 import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
-import {CommonModule} from '@angular/common';
+
 import {ButtonModule} from 'primeng/button';
 
 @Component({
   selector: 'login',
   imports: [
     FormsModule,
-    ButtonModule,
-    CommonModule
-  ],
+    ButtonModule
+],
   templateUrl: './login.component.html'
 })
 export class LoginComponent {

@@ -8,14 +8,14 @@
   <span class="col-span-5">Terrain Object</span>
   <div class="col-span-7">
     <p-select [appendTo]="'body'" [options]="terrainObjectConfigs" [(ngModel)]="newTerrainObjectConfig"
-              optionLabel="name"></p-select>
+    optionLabel="name"></p-select>
   </div>
 </div>
 <div class="grid grid-cols-12 gap-1 p-1">
   <span class="col-span-5">Mouse</span>
   <div class="col-span-7">
     <p-selectButton [options]="onOffOptions" [(ngModel)]="newTerrainObjectMode" optionLabel="label"
-                    optionValue="value"></p-selectButton>
+    optionValue="value"></p-selectButton>
   </div>
 </div>
 
@@ -28,47 +28,55 @@
 <div class="grid grid-cols-12 gap-1 p-1">
   <span class="col-span-5">TerrainObject</span>
   <div class="col-span-7">
-      <span *ngIf="selectedTerrainObject">{{ selectedTerrainObject.getInternalName() }}
+    @if (selectedTerrainObject) {
+      <span>{{ selectedTerrainObject.getInternalName() }}
         '{{ selectedTerrainObject.getId() }}
-        '</span>
+      '</span>
+    }
   </div>
 </div>
 <div class="grid grid-cols-12 gap-1 p-1">
   <span class="col-span-5">Show Radius</span>
   <div class="col-span-7">
     <p-selectButton [options]="onOffOptions" [(ngModel)]="selectedRadiusShow" (onChange)="showHideRadius()"
-                    optionLabel="label" optionValue="value"></p-selectButton>
+    optionLabel="label" optionValue="value"></p-selectButton>
   </div>
 </div>
 <div class="grid grid-cols-12 gap-1 p-1">
   <span class="col-span-5">Radius</span>
   <div class="col-span-7">
     <p-inputNumber [(ngModel)]="selectedRadius" (onInput)="onSelectedRadiusChange($event.value)" [size]="'small'"
-                   [step]=0.1
-                   [minFractionDigits]="1" [maxFractionDigits]="6" [incrementButtonClass]="'p-button-text'"
-                   [decrementButtonClass]="'p-button-text'" [showButtons]="true"></p-inputNumber>
+      [step]=0.1
+      [minFractionDigits]="1" [maxFractionDigits]="6" [incrementButtonClass]="'p-button-text'"
+    [decrementButtonClass]="'p-button-text'" [showButtons]="true"></p-inputNumber>
     <p-button icon="pi pi-save" (onClick)="saveRadius()"></p-button>
   </div>
 </div>
 <div class="grid grid-cols-12 gap-1 p-1">
   <span class="col-span-5">Position</span>
   <div class="col-span-7">
-    <p-selectButton *ngIf="gizmoManager" [options]="onOffOptions" [(ngModel)]="gizmoManager.positionGizmoEnabled"
-                    optionLabel="label" optionValue="value"></p-selectButton>
+    @if (gizmoManager) {
+      <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.positionGizmoEnabled"
+      optionLabel="label" optionValue="value"></p-selectButton>
+    }
   </div>
 </div>
 <div class="grid grid-cols-12 gap-1 p-1">
   <span class="col-span-5">Rotation</span>
   <div class="col-span-7">
-    <p-selectButton *ngIf="gizmoManager" [options]="onOffOptions" [(ngModel)]="gizmoManager.rotationGizmoEnabled"
-                    optionLabel="label" optionValue="value"></p-selectButton>
+    @if (gizmoManager) {
+      <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.rotationGizmoEnabled"
+      optionLabel="label" optionValue="value"></p-selectButton>
+    }
   </div>
 </div>
 <div class="grid grid-cols-12 gap-1 p-1">
   <span class="col-span-5">Scale</span>
   <div class="col-span-7">
-    <p-selectButton *ngIf="gizmoManager" [options]="onOffOptions" [(ngModel)]="gizmoManager.scaleGizmoEnabled"
-                    optionLabel="label" optionValue="value"></p-selectButton>
+    @if (gizmoManager) {
+      <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.scaleGizmoEnabled"
+      optionLabel="label" optionValue="value"></p-selectButton>
+    }
   </div>
 </div>
 <terrain-object-position #terrainObjectPosition></terrain-object-position>

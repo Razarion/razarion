@@ -278,7 +278,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
       return;
     }
 
-    const blob = new Blob([compressedHeightMap.buffer], {type: 'application/octet-stream'});
+    const blob = new Blob([compressedHeightMap.buffer as ArrayBuffer], {type: 'application/octet-stream'});
 
     this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
       .then(() => {
@@ -445,7 +445,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
       return;
     }
 
-    const blob = new Blob([compressedHeightMap.buffer], {type: 'application/octet-stream'});
+    const blob = new Blob([compressedHeightMap.buffer as ArrayBuffer], {type: 'application/octet-stream'});
 
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -524,7 +524,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
 
   saveFixed() {
     const compressedHeightMap = pako.gzip(new Uint8Array(this.fixedUint16HeightMap!.buffer));
-    const blob = new Blob([compressedHeightMap.buffer], {type: 'application/octet-stream'});
+    const blob = new Blob([compressedHeightMap.buffer as ArrayBuffer], {type: 'application/octet-stream'});
     this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
       .then(() => {
         this.lastSavedTimeStamp = new Date().toLocaleString();

@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {Button} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
+
 import {UserService} from '../user.service';
 import {RegisterResult} from '../../generated/razarion-share';
 import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
@@ -11,9 +11,8 @@ import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service'
   standalone: true,
   imports: [
     Button,
-    FormsModule,
-    CommonModule
-  ],
+    FormsModule
+],
   templateUrl: './register.component.html'
 })
 export class RegisterComponent {

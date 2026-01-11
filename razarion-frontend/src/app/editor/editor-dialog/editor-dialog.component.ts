@@ -33,7 +33,7 @@ import {
   ResourceItemTypeEditorComponent
 } from "../crud-editors/resource-item-type-editor/resource-item-type-editor.component";
 import {Button} from 'primeng/button';
-import {KeyValuePipe, NgForOf} from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
 import {Divider} from 'primeng/divider';
 import {Panel} from 'primeng/panel';
 import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
@@ -45,9 +45,8 @@ import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service'
     Button,
     KeyValuePipe,
     Divider,
-    Panel,
-    NgForOf
-  ],
+    Panel
+],
   styleUrls: ['editor-dialog.component.scss']
 })
 export class EditorDialogComponent {

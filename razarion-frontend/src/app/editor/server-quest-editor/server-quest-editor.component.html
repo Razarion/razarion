@@ -3,158 +3,158 @@
     <div class="flex flex-row gap-1 items-center p-1">
       <p-button type="button" icon="pi pi-save" styleClass="p-button-sm" (onClick)="onSave()"></p-button>
       <p-select [options]="options"
-                [(ngModel)]="selectedLevelQuest"
-                optionLabel="label"
-                optionValue="value">
-        <ng-template #selectedItem let-selectedOption>
+        [(ngModel)]="selectedLevelQuest"
+        optionLabel="label"
+        optionValue="value">
+        <ng-template pTemplate="selectedItem" let-selectedOption>
           {{ selectedOption.label }}
         </ng-template>
       </p-select>
       <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm" (onClick)="onCreate()"></p-button>
       <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm" (onClick)="onDelete()"
-                [disabled]="!selectedLevelQuest"></p-button>
+      [disabled]="!selectedLevelQuest"></p-button>
       <p-button type="button" label="{{EditorService.RESTART_BOTS.name}}" icon="pi pi-cog" styleClass="p-button-sm"
-                (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
+      (onClick)="editorService.executeServerCommand(EditorService.RESTART_BOTS)"></p-button>
     </div>
 
-    <div *ngIf="selectedLevelQuest"
-         class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-      <p-divider align="left">
-        <div class="inline-flex items-center">
-          <i class="pi pi-cog mr-2"></i>
-          <b>Configuration</b>
+    @if (selectedLevelQuest) {
+      <div
+        class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
+        <p-divider align="left">
+          <div class="inline-flex items-center">
+            <i class="pi pi-cog mr-2"></i>
+            <b>Configuration</b>
+          </div>
+        </p-divider>
+        <div class="grid grid-cols-12 gap-4">
+          <span class="col-span-3">Id</span>
+          <div class="col-span-9">
+            <p-inputNumber [disabled]="true" inputId="integeronly"
+            [ngModel]="selectedLevelQuest.id"></p-inputNumber>
+          </div>
         </div>
-      </p-divider>
-      <div class="grid grid-cols-12 gap-4">
-        <span class="col-span-3">Id</span>
-        <div class="col-span-9">
-          <p-inputNumber [disabled]="true" inputId="integeronly"
-                         [ngModel]="selectedLevelQuest.id"></p-inputNumber>
+        <div class="field grid grid-cols-12 gap-4 items-center">
+          <span class="col-span-3">Minimal level (id)</span>
+          <div class="col-span-9">
+            <level [(levelId)]="selectedLevelQuest.minimalLevelId"></level>
+          </div>
         </div>
+        <div class="grid grid-cols-12 gap-4">
+          <span class="col-span-3">Create quest</span>
+          <div class="col-span-9">
+            <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
+            (onClick)="onCreateQuest()"></p-button>
+          </div>
+        </div>
+        <p-accordion>
+          @for (questConfig of selectedLevelQuest.questConfigs; track questConfig; let i = $index) {
+            <p-accordion-panel [value]="i">
+              <p-accordion-header>
+                {{ conditionTriggerToTitleWrapper(questConfig) }}
+                <div class="col-span-1">
+                  <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                  (onClick)="onDeleteQuest(questConfig)"></p-button>
+                </div>
+                <div class="col-span-1">
+                  <p-button type="button" icon="pi pi-angle-up" styleClass="p-button-sm"
+                  (onClick)="onQuestUp(questConfig)"></p-button>
+                </div>
+                <div class="col-span-1">
+                  <p-button type="button" icon="pi pi-angle-down" styleClass="p-button-sm"
+                  (onClick)="onQuestDown(questConfig)"></p-button>
+                </div>
+              </p-accordion-header>
+              <p-accordion-content>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-3">Id</span>
+                  <div class="col-span-9">
+                    <p-inputNumber [disabled]="true" inputId="integeronly" [(ngModel)]="questConfig.id"></p-inputNumber>
+                  </div>
+                </div>
+                <p-divider align="left">
+                  <div class="inline-flex items-center">
+                    <i class="pi pi-cog mr-2"></i>
+                    <b>Condition</b>
+                  </div>
+                </p-divider>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-3">Trigger</span>
+                  <div class="col-span-9">
+                    <p-select [placeholder]="'...'" [options]="CONDITION_TRIGGERS"
+                      [(ngModel)]="questConfig.conditionConfig.conditionTrigger" [style]="{width:'100%'}">
+                    </p-select>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-3">Count</span>
+                  <div class="col-span-9">
+                    <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.count" type="text"
+                      class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-3">Type Count</span>
+                    <div class="col-span-9">
+                      <base-item-type-count
+                      [(baseItemTypeCount)]="questConfig.conditionConfig.comparisonConfig.typeCount"></base-item-type-count>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-3">Include existing</span>
+                    <div class="col-span-9">
+                      <p-checkbox [(ngModel)]="questConfig.conditionConfig.comparisonConfig.includeExisting"
+                      [binary]="true"></p-checkbox>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-3">Time Seconds</span>
+                    <div class="col-span-9">
+                      <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.timeSeconds" type="text"
+                        class="text-primary bg-primary-contrast text-base text-color p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-4">
+                      <span class="col-span-3">Place</span>
+                      <div class="col-span-9">
+                        <place-config [(placeConfig)]="questConfig.conditionConfig.comparisonConfig.placeConfig"></place-config>
+                      </div>
+                    </div>
+                    <p-divider align="left">
+                      <div class="inline-flex items-center">
+                        <i class="pi pi-dollar mr-2"></i>
+                        <b>Rewards</b>
+                      </div>
+                    </p-divider>
+                    <div class="grid grid-cols-12 gap-4">
+                      <span class="col-span-3">Xps</span>
+                      <div class="col-span-9">
+                        <p-inputNumber [(ngModel)]="questConfig.xp" [min]="0"></p-inputNumber>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-4">
+                      <span class="col-span-3">Razarion</span>
+                      <div class="col-span-9">
+                        <p-inputNumber [(ngModel)]="questConfig.razarion" [min]="0"></p-inputNumber>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-4">
+                      <span class="col-span-3">Crystals</span>
+                      <div class="col-span-9">
+                        <p-inputNumber [(ngModel)]="questConfig.crystal" [min]="0"></p-inputNumber>
+                      </div>
+                    </div>
+                    <p-divider align="left">
+                      <div class="inline-flex items-center">
+                        <i class="pi pi-dollar mr-2"></i>
+                        <b>Tips</b>
+                      </div>
+                    </p-divider>
+                    <tip [(tipConfig)]=questConfig.tipConfig></tip>
+                  </p-accordion-content>
+                </p-accordion-panel>
+              }
+            </p-accordion>
+          </div>
+        }
       </div>
-      <div class="field grid grid-cols-12 gap-4 items-center">
-        <span class="col-span-3">Minimal level (id)</span>
-        <div class="col-span-9">
-          <level [(levelId)]="selectedLevelQuest.minimalLevelId"></level>
-        </div>
-      </div>
-      <div class="grid grid-cols-12 gap-4">
-        <span class="col-span-3">Create quest</span>
-        <div class="col-span-9">
-          <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm"
-                    (onClick)="onCreateQuest()"></p-button>
-        </div>
-      </div>
-      <p-accordion>
-        <p-accordion-panel *ngFor="let questConfig of selectedLevelQuest.questConfigs; let i = index" [value]="i">
-          <p-accordion-header>
-            {{ conditionTriggerToTitleWrapper(questConfig) }}
-            <div class="col-span-1">
-              <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                        (onClick)="onDeleteQuest(questConfig)"></p-button>
-            </div>
-            <div class="col-span-1">
-              <p-button type="button" icon="pi pi-angle-up" styleClass="p-button-sm"
-                        (onClick)="onQuestUp(questConfig)"></p-button>
-            </div>
-            <div class="col-span-1">
-              <p-button type="button" icon="pi pi-angle-down" styleClass="p-button-sm"
-                        (onClick)="onQuestDown(questConfig)"></p-button>
-            </div>
-          </p-accordion-header>
-          <p-accordion-content>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Id</span>
-              <div class="col-span-9">
-                <p-inputNumber [disabled]="true" inputId="integeronly" [(ngModel)]="questConfig.id"></p-inputNumber>
-              </div>
-            </div>
-
-            <p-divider align="left">
-              <div class="inline-flex items-center">
-                <i class="pi pi-cog mr-2"></i>
-                <b>Condition</b>
-              </div>
-            </p-divider>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Trigger</span>
-              <div class="col-span-9">
-                <p-select [placeholder]="'...'" [options]="CONDITION_TRIGGERS"
-                          [(ngModel)]="questConfig.conditionConfig.conditionTrigger" [style]="{width:'100%'}">
-                </p-select>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Count</span>
-              <div class="col-span-9">
-                <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.count" type="text"
-                       class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Type Count</span>
-              <div class="col-span-9">
-                <base-item-type-count
-                  [(baseItemTypeCount)]="questConfig.conditionConfig.comparisonConfig.typeCount"></base-item-type-count>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Include existing</span>
-              <div class="col-span-9">
-                <p-checkbox [(ngModel)]="questConfig.conditionConfig.comparisonConfig.includeExisting"
-                            [binary]="true"></p-checkbox>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Time Seconds</span>
-              <div class="col-span-9">
-                <input [(ngModel)]="questConfig.conditionConfig.comparisonConfig.timeSeconds" type="text"
-                       class="text-primary bg-primary-contrast text-base text-color p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Place</span>
-              <div class="col-span-9">
-                <place-config [(placeConfig)]="questConfig.conditionConfig.comparisonConfig.placeConfig"></place-config>
-              </div>
-            </div>
-
-            <p-divider align="left">
-              <div class="inline-flex items-center">
-                <i class="pi pi-dollar mr-2"></i>
-                <b>Rewards</b>
-              </div>
-            </p-divider>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Xps</span>
-              <div class="col-span-9">
-                <p-inputNumber [(ngModel)]="questConfig.xp" [min]="0"></p-inputNumber>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Razarion</span>
-              <div class="col-span-9">
-                <p-inputNumber [(ngModel)]="questConfig.razarion" [min]="0"></p-inputNumber>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Crystals</span>
-              <div class="col-span-9">
-                <p-inputNumber [(ngModel)]="questConfig.crystal" [min]="0"></p-inputNumber>
-              </div>
-            </div>
-
-            <p-divider align="left">
-              <div class="inline-flex items-center">
-                <i class="pi pi-dollar mr-2"></i>
-                <b>Tips</b>
-              </div>
-            </p-divider>
-            <tip [(tipConfig)]=questConfig.tipConfig></tip>
-
-          </p-accordion-content>
-        </p-accordion-panel>
-      </p-accordion>
-    </div>
-  </div>
-</p-scrollpanel>
+    </p-scrollpanel>

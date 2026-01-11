@@ -7,7 +7,7 @@ import {InputNumber} from 'primeng/inputnumber';
 import {Button} from 'primeng/button';
 import {Slider} from 'primeng/slider';
 import {FormsModule} from '@angular/forms';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {TableModule} from 'primeng/table';
 
 @Component({
@@ -17,7 +17,7 @@ import {TableModule} from 'primeng/table';
     Button,
     Slider,
     FormsModule,
-    SelectModule,
+    Select,
     TableModule
   ],
   templateUrl: './terrain-object-generator-entity.component.html'

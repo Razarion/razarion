@@ -1,16 +1,15 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
+
 
 @Component({
   selector: 'ground',
   imports: [
-    SelectModule,
-    FormsModule,
-    CommonModule
-  ],
+    Select,
+    FormsModule
+],
   templateUrl: './ground.component.html'
 })
 export class GroundComponent {

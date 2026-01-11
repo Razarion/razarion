@@ -1,208 +1,220 @@
 <p-toolbar>
-  <ng-template #start>
+  <ng-template pTemplate="start">
     <p-button icon="pi pi-sync"
-              class="mr-2"
-              text
-              severity="secondary"
-              (onClick)="refresh()"/>
-    <p-button icon="pi pi-trash"
-              class="mr-2"
-              text
-              severity="secondary"
-              [disabled]="selectedUserIds.size === 0"
-              (onClick)="deleteSelectedUsers()"/>
-  </ng-template>
-  <ng-template #end>
-    <span>Select unregistered offline [min]&nbsp;</span>
-    <p-inputnumber [(ngModel)]="minutes" inputId="integeronly"></p-inputnumber>
-    <p-button icon="pi pi-play"
-              class="mr-2"
-              text
-              severity="secondary"
-              (onClick)="selectUnregistered()"/>
-  </ng-template>
-</p-toolbar>
+      class="mr-2"
+      text
+      severity="secondary"
+      (onClick)="refresh()"/>
+      <p-button icon="pi pi-trash"
+        class="mr-2"
+        text
+        severity="secondary"
+        [disabled]="selectedUserIds.size === 0"
+        (onClick)="deleteSelectedUsers()"/>
+      </ng-template>
+      <ng-template pTemplate="end">
+        <span>Select unregistered offline [min]&nbsp;</span>
+        <p-inputnumber [(ngModel)]="minutes" inputId="integeronly"></p-inputnumber>
+        <p-button icon="pi pi-play"
+          class="mr-2"
+          text
+          severity="secondary"
+          (onClick)="selectUnregistered()"/>
+        </ng-template>
+      </p-toolbar>
 
-<p-table [value]="userBackendInfos"
-         dataKey="userId"
-         [scrollable]="true"
-         scrollHeight="800px">
-  <ng-template #header>
-    <tr>
-      <th></th>
-      <th>Online</th>
-      <th>Creation</th>
-      <th>Name</th>
-      <th>Level</th>
-      <th>Base</th>
-      <th>Email</th>
-      <th></th>
-    </tr>
-  </ng-template>
-  <ng-template #body let-userBackendInfo let-expanded="expanded">
-    <tr>
-      <td>
-        <p-button type="button" pRipple [pRowToggler]="userBackendInfo" [text]="true" [rounded]="true" [plain]="true"
-                  [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"/>
-      </td>
-      <td *ngIf="userBackendInfo.systemConnectionClosed" style="background-color: #ff7f8a">
-        {{ userBackendInfo.systemConnectionClosed | date:'dd.MM.yyyy HH:mm:ss' }}
-      </td>
-      <td *ngIf="userBackendInfo.systemConnectionOpened && !userBackendInfo.systemConnectionClosed"
-          style="background-color: #63dba9">
-        {{ userBackendInfo.systemConnectionOpened | date:'dd.MM.yyyy HH:mm:ss' }}
-      </td>
-      <td *ngIf="!userBackendInfo.systemConnectionOpened && !userBackendInfo.systemConnectionClosed"
-          style="background-color: #737373">
-        -
-      </td>
-      <td>
-        {{ userBackendInfo.creationDate | date:'dd.MM.yyyy HH:mm:ss' }}
-      </td>
-      <td>
-        {{ userBackendInfo.name }}
-      </td>
-      <td>
-        {{ userBackendInfo.levelNumber }}
-      </td>
-      <td>
-        {{ userBackendInfo.baseId ? "Y" : "-" }}
-      </td>
-      <td>
-        {{ userBackendInfo.email }}
-      </td>
-      <td>
-        <p-checkbox *ngIf="!userBackendInfo.email"
+      <p-table [value]="userBackendInfos"
+        dataKey="userId"
+        [scrollable]="true"
+        scrollHeight="800px">
+        <ng-template pTemplate="header">
+          <tr>
+            <th></th>
+            <th>Online</th>
+            <th>Creation</th>
+            <th>Name</th>
+            <th>Level</th>
+            <th>Base</th>
+            <th>Email</th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-userBackendInfo let-expanded="expanded">
+          <tr>
+            <td>
+              <button type="button" pRipple [pRowToggler]="userBackendInfo" class="p-button p-button-text p-button-rounded p-button-plain">
+                <i [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+            </button>
+              </td>
+              @if (userBackendInfo.systemConnectionClosed) {
+                <td style="background-color: #ff7f8a">
+                  {{ userBackendInfo.systemConnectionClosed | date:'dd.MM.yyyy HH:mm:ss' }}
+                </td>
+              }
+              @if (userBackendInfo.systemConnectionOpened && !userBackendInfo.systemConnectionClosed) {
+                <td
+                  style="background-color: #63dba9">
+                  {{ userBackendInfo.systemConnectionOpened | date:'dd.MM.yyyy HH:mm:ss' }}
+                </td>
+              }
+              @if (!userBackendInfo.systemConnectionOpened && !userBackendInfo.systemConnectionClosed) {
+                <td
+                  style="background-color: #737373">
+                  -
+                </td>
+              }
+              <td>
+                {{ userBackendInfo.creationDate | date:'dd.MM.yyyy HH:mm:ss' }}
+              </td>
+              <td>
+                {{ userBackendInfo.name }}
+              </td>
+              <td>
+                {{ userBackendInfo.levelNumber }}
+              </td>
+              <td>
+                {{ userBackendInfo.baseId ? "Y" : "-" }}
+              </td>
+              <td>
+                {{ userBackendInfo.email }}
+              </td>
+              <td>
+                @if (!userBackendInfo.email) {
+                  <p-checkbox
                     [ngModel]="selectedUserIds.has(userBackendInfo.userId)"
                     (onChange)="onSelectionChanged($event.checked, userBackendInfo)"
                     [binary]="true"/>
-      </td>
-    </tr>
-  </ng-template>
-  <ng-template #expandedrow let-userBackendInfo>
-    <tr>
-      <td colspan="5">
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">User id</span>
-          <div class="col-span-7">
-            {{ userBackendInfo.userId }}
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Registered</span>
-          <div class="col-span-7">
-            {{ userBackendInfo.registerDate | date:'dd.MM.yyyy HH:mm:ss' }}
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Verified</span>
-          <div class="col-span-7">
-            {{ userBackendInfo.verificationDoneDate | date:'dd.MM.yyyy HH:mm:ss' }}
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Level</span>
-          <div class="col-span-7">
-            <level [(levelId)]="userBackendInfo.levelId"></level>
-            <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
+                }
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="expandedrow" let-userBackendInfo>
+            <tr>
+              <td colspan="5">
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">User id</span>
+                  <div class="col-span-7">
+                    {{ userBackendInfo.userId }}
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Registered</span>
+                  <div class="col-span-7">
+                    {{ userBackendInfo.registerDate | date:'dd.MM.yyyy HH:mm:ss' }}
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Verified</span>
+                  <div class="col-span-7">
+                    {{ userBackendInfo.verificationDoneDate | date:'dd.MM.yyyy HH:mm:ss' }}
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Level</span>
+                  <div class="col-span-7">
+                    <level [(levelId)]="userBackendInfo.levelId"></level>
+                    <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
                       (onClick)="onSaveLevel(userBackendInfo)">
-            </p-button>
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Active quest</span>
-          <div class="col-span-7">
-            <p-select [placeholder]="'...'"
+                    </p-button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Active quest</span>
+                  <div class="col-span-7">
+                    <p-select [placeholder]="'...'"
                       [options]="questOptions"
                       [(ngModel)]="userBackendInfo.activeQuest"
                       [showClear]="true"
                       optionLabel="label"
                       optionValue="questId">
-            </p-select>
-            <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
+                    </p-select>
+                    <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
                       (onClick)="onSaveActiveQuest(userBackendInfo)">
-            </p-button>
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Active quest id</span>
-          <div class="col-span-7">
-            {{ userBackendInfo.activeQuest }}
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Crystals</span>
-          <div class="col-span-7">
-            <p-inputNumber inputId="integeronly" [(ngModel)]="userBackendInfo.crystals"
-                           [size]="'small'"></p-inputNumber>
-            <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
+                    </p-button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Active quest id</span>
+                  <div class="col-span-7">
+                    {{ userBackendInfo.activeQuest }}
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Crystals</span>
+                  <div class="col-span-7">
+                    <p-inputNumber inputId="integeronly" [(ngModel)]="userBackendInfo.crystals"
+                    [size]="'small'"></p-inputNumber>
+                    <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
                       (onClick)="onSaveCrystals(userBackendInfo)">
-            </p-button>
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4 w-xl">
-          <span class="col-span-5">Completed quest ids</span>
-          <div class="col-span-7">
-            <p-chip *ngFor="let questId of userBackendInfo.completedQuestIds"
-                    [label]="questId"
-                    [removable]="true"
-                    (onRemove)="removeQuestId(userBackendInfo, questId)">
-            </p-chip>
-            <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
+                    </p-button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4 w-xl">
+                  <span class="col-span-5">Completed quest ids</span>
+                  <div class="col-span-7">
+                    @for (questId of userBackendInfo.completedQuestIds; track questId) {
+                      <p-chip
+                        [label]="questId"
+                        [removable]="true"
+                        (onRemove)="removeQuestId(userBackendInfo, questId)">
+                      </p-chip>
+                    }
+                    <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
                       (onClick)="onSaveCompletedQuestIds(userBackendInfo)">
-            </p-button>
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Unlocked</span>
-          <div class="col-span-7">
-            <p-chip
-              *ngFor="let unlockedId of userBackendInfo.unlockedIds;"
-              [label]="unlockedId"
-              [removable]="true"
-              (onRemove)="removeUnlockedId(userBackendInfo, unlockedId)">
-            </p-chip>
-            <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
+                    </p-button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Unlocked</span>
+                  <div class="col-span-7">
+                    @for (unlockedId of userBackendInfo.unlockedIds; track unlockedId) {
+                      <p-chip
+                        [label]="unlockedId"
+                        [removable]="true"
+                        (onRemove)="removeUnlockedId(userBackendInfo, unlockedId)">
+                      </p-chip>
+                    }
+                    <p-button icon="pi pi-save" styleClass="p-button-rounded p-button-text p-button-sm" title="Save"
                       (onClick)="onSaveUnlockedIds(userBackendInfo)">
-            </p-button>
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Base id</span>
-          <div class="col-span-7">{{ userBackendInfo.baseId }}</div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">System connection open</span>
-          <div class="col-span-7">{{ userBackendInfo.systemConnectionOpen }}
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Last message received</span>
-          <div
-            class="col-span-7">{{ userBackendInfo.systemConnectionLastMessageReceived | date:'HH:mm:ss dd.MM.yyyy ' }}
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Last message sent</span>
-          <div class="col-span-7">{{ userBackendInfo.systemConnectionLastMessageSent | date:'HH:mm:ss dd.MM.yyyy ' }}
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Game connection open</span>
-          <div class="col-span-7">{{ userBackendInfo.gameConnectionOpen }}
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Last message received</span>
-          <div class="col-span-7">{{ userBackendInfo.gameConnectionLastMessageReceived | date:'HH:mm:ss dd.MM.yyyy ' }}
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4">
-          <span class="col-span-5">Last message sent</span>
-          <div class="col-span-7">{{ userBackendInfo.gameConnectionLastMessageSent | date:'HH:mm:ss dd.MM.yyyy ' }}
-          </div>
-        </div>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+                    </p-button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Base id</span>
+                  <div class="col-span-7">{{ userBackendInfo.baseId }}</div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">System connection open</span>
+                  <div class="col-span-7">{{ userBackendInfo.systemConnectionOpen }}
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Last message received</span>
+                  <div
+                    class="col-span-7">{{ userBackendInfo.systemConnectionLastMessageReceived | date:'HH:mm:ss dd.MM.yyyy ' }}
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Last message sent</span>
+                  <div class="col-span-7">{{ userBackendInfo.systemConnectionLastMessageSent | date:'HH:mm:ss dd.MM.yyyy ' }}
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Game connection open</span>
+                  <div class="col-span-7">{{ userBackendInfo.gameConnectionOpen }}
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Last message received</span>
+                  <div class="col-span-7">{{ userBackendInfo.gameConnectionLastMessageReceived | date:'HH:mm:ss dd.MM.yyyy ' }}
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Last message sent</span>
+                  <div class="col-span-7">{{ userBackendInfo.gameConnectionLastMessageSent | date:'HH:mm:ss dd.MM.yyyy ' }}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>

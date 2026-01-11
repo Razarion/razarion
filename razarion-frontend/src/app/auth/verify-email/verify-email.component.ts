@@ -4,14 +4,13 @@ import {LoginComponent} from "../login/login.component";
 import {UserControllerClient} from '../../generated/razarion-share';
 import {HttpClient} from '@angular/common/http';
 import {TypescriptGenerator} from '../../backend/typescript-generator';
-import {CommonModule} from '@angular/common';
+
 
 @Component({
   selector: 'verify-email',
   imports: [
-    LoginComponent,
-    CommonModule
-  ],
+    LoginComponent
+],
   templateUrl: './verify-email.component.html'
 })
 export class VerifyEmailComponent implements OnInit {

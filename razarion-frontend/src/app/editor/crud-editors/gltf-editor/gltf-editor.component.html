@@ -9,86 +9,91 @@
     <span class="col-span-4">Internal name</span>
     <div class="col-span-8">
       <input [(ngModel)]="gltfEntity.internalName" type="text"
-             class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+        class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+      </div>
     </div>
-  </div>
-  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-    <span class="col-span-4">Import GLB</span>
-    <div class="col-span-8">
-      <p-fileUpload #fileUploadElement chooseLabel="Import GLB" chooseIcon="pi pi-folder-open" mode="basic"
-                    styleClass="p-button-sm" [auto]=true [customUpload]=true (uploadHandler)="onImportGlb($event)">
-      </p-fileUpload>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-4">Import GLB</span>
+      <div class="col-span-8">
+        <p-fileUpload #fileUploadElement chooseLabel="Import GLB" chooseIcon="pi pi-folder-open" mode="basic"
+          styleClass="p-button-sm" [auto]=true [customUpload]=true (uploadHandler)="onImportGlb($event)">
+        </p-fileUpload>
+      </div>
     </div>
-  </div>
 
-  <p-divider align="left">
-    <div class="inline-flex items-center">
-      <i class="pi pi-image mr-2"></i>
-      <b>&nbsp;Materials</b>
-    </div>
-  </p-divider>
-  <p-table [value]="materialRows"
-           [autoLayout]="true"
-           [scrollable]="true"
-           scrollHeight="400px">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Gltf name</th>
-        <th>Babylon material</th>
-        <th>State</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-materialRow>
-      <tr>
-        <td style="white-space: nowrap">
-          {{ materialRow.materialGltfName }}
-        </td>
-        <td>
-          <babylon-material [(babylonMaterialId)]="materialRow.babylonMaterialId"></babylon-material>
-        </td>
-        <td>
-          <p-badge *ngIf="materialRow.changeState" [value]="materialRow.changeState"
-                   [severity]="severityByChangeState(materialRow.changeState)"></p-badge>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-
-  <p-divider align="left">
-    <div class="inline-flex items-center">
-      <i class="pi pi-box mr-2"></i>
-      <b>&nbsp;3D Models</b>
-    </div>
-  </p-divider>
-  <p-table [value]="model3DRows"
-           [autoLayout]="true"
-           [scrollable]="true"
-           scrollHeight="400px">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Gltf name</th>
-        <th>3D models</th>
-        <th>State</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-model3DRow>
-      <tr>
-        <td style="white-space: nowrap">
-          {{ model3DRow.model3DEntity.gltfName }}
-        </td>
-        <td *ngIf="model3DRow.model3DEntity.id || model3DRow.model3DEntity.id === 0; else noModel3DEntity">
-          {{ model3DRow.model3DEntity.internalName }} '{{ model3DRow.model3DEntity.id }}'
-        </td>
-        <ng-template #noModel3DEntity>
+    <p-divider align="left">
+      <div class="inline-flex items-center">
+        <i class="pi pi-image mr-2"></i>
+        <b>&nbsp;Materials</b>
+      </div>
+    </p-divider>
+    <p-table [value]="materialRows"
+      
+      [scrollable]="true"
+      scrollHeight="400px">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Gltf name</th>
+          <th>Babylon material</th>
+          <th>State</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-materialRow>
+        <tr>
           <td style="white-space: nowrap">
-            {{ model3DRow.model3DEntity.internalName }}
+            {{ materialRow.materialGltfName }}
           </td>
-        </ng-template>
-        <td>
-          <p-badge *ngIf="model3DRow.changeState" [value]="model3DRow.changeState"
-                   [severity]="severityByChangeState(model3DRow.changeState)"></p-badge>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-</div>
+          <td>
+            <babylon-material [(babylonMaterialId)]="materialRow.babylonMaterialId"></babylon-material>
+          </td>
+          <td>
+            @if (materialRow.changeState) {
+              <p-badge [value]="materialRow.changeState"
+              [severity]="severityByChangeState(materialRow.changeState)"></p-badge>
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <p-divider align="left">
+      <div class="inline-flex items-center">
+        <i class="pi pi-box mr-2"></i>
+        <b>&nbsp;3D Models</b>
+      </div>
+    </p-divider>
+    <p-table [value]="model3DRows"
+      
+      [scrollable]="true"
+      scrollHeight="400px">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Gltf name</th>
+          <th>3D models</th>
+          <th>State</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-model3DRow>
+        <tr>
+          <td style="white-space: nowrap">
+            {{ model3DRow.model3DEntity.gltfName }}
+          </td>
+          @if (model3DRow.model3DEntity.id || model3DRow.model3DEntity.id === 0) {
+            <td>
+              {{ model3DRow.model3DEntity.internalName }} '{{ model3DRow.model3DEntity.id }}'
+            </td>
+          } @else {
+            <td style="white-space: nowrap">
+              {{ model3DRow.model3DEntity.internalName }}
+            </td>
+          }
+          <td>
+            @if (model3DRow.changeState) {
+              <p-badge [value]="model3DRow.changeState"
+              [severity]="severityByChangeState(model3DRow.changeState)"></p-badge>
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>

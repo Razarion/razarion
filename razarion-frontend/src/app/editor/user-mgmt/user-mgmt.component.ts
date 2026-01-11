@@ -9,13 +9,13 @@ import {ButtonModule} from 'primeng/button';
 import {InputNumberModule} from 'primeng/inputnumber';
 import {LevelComponent} from '../common/level/level.component';
 import {TableModule} from 'primeng/table';
-import {CommonModule, DatePipe, NgForOf} from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {ChipModule} from 'primeng/chip';
 import {FormsModule} from '@angular/forms';
-import {SelectModule} from 'primeng/select';
-import {DropdownModule} from 'primeng/dropdown';
+import {Select} from 'primeng/select';
 import {ToolbarModule} from 'primeng/toolbar';
 import {CheckboxModule} from 'primeng/checkbox';
+import {RippleModule} from 'primeng/ripple';
 
 @Component({
   selector: 'user-mgmt',
@@ -25,15 +25,14 @@ import {CheckboxModule} from 'primeng/checkbox';
     LevelComponent,
     TableModule,
     DatePipe,
-    SelectModule,
+    Select,
     ChipModule,
     FormsModule,
-    DropdownModule,
-    NgForOf,
     CommonModule,
     ToolbarModule,
     CheckboxModule,
-  ],
+    RippleModule
+],
   templateUrl: './user-mgmt.component.html'
 })
 export class UserMgmtComponent extends EditorPanel implements OnInit {

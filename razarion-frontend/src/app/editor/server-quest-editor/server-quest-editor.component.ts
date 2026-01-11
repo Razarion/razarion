@@ -14,11 +14,11 @@ import {Divider} from 'primeng/divider';
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
 import {Checkbox} from 'primeng/checkbox';
 import {BaseItemTypeCountComponent} from '../common/base-item-type-count/base-item-type-count.component';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {Button} from 'primeng/button';
 import {Accordion, AccordionModule} from 'primeng/accordion';
 import {LevelComponent} from '../common/level/level.component';
-import {CommonModule, NgForOf} from '@angular/common';
+
 import {TipComponent} from './tip/tip.component';
 import {MessageService} from 'primeng/api';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
@@ -32,16 +32,14 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     PlaceConfigComponent,
     Checkbox,
     BaseItemTypeCountComponent,
-    SelectModule,
+    Select,
     Button,
     Accordion,
     AccordionModule,
     LevelComponent,
-    CommonModule,
-    NgForOf,
     TipComponent,
     ScrollPanelModule
-  ],
+],
   templateUrl: './server-quest-editor.component.html'
 })
 export class ServerQuestEditorComponent extends EditorPanel implements OnInit {

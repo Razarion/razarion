@@ -1,6 +1,6 @@
 ﻿import {Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild} from '@angular/core';
 import {environment} from 'src/environments/environment';
-import {CommonModule} from "@angular/common";
+
 import {ScreenCoverComponent} from "./screen-cover/screen-cover.component";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {GameMockService} from "./game-mock.service";
@@ -26,7 +26,6 @@ import {ChatCockpitComponent} from './cockpit/chat/chat-cockpit.component';
 @Component({
   templateUrl: 'game.component.html',
   imports: [
-    CommonModule,
     ScreenCoverComponent,
     EditorPanelComponent,
     DrawerModule,
@@ -38,7 +37,7 @@ import {ChatCockpitComponent} from './cockpit/chat/chat-cockpit.component';
     InventoryComponent,
     UnlockComponent,
     ChatCockpitComponent
-  ],
+],
   styleUrls: ['game.component.scss']
 })
 export class GameComponent implements OnInit {

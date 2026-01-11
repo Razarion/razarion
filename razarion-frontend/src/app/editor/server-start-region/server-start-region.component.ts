@@ -8,8 +8,8 @@ import {FormsModule} from '@angular/forms';
 import {InputNumberModule} from 'primeng/inputnumber';
 import {Divider} from 'primeng/divider';
 import {Button} from 'primeng/button';
-import {CommonModule} from '@angular/common';
-import {SelectModule} from 'primeng/select';
+
+import {Select} from 'primeng/select';
 import {CheckboxModule} from 'primeng/checkbox';
 import {MessageService} from 'primeng/api';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
@@ -23,11 +23,10 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     InputNumberModule,
     Divider,
     Button,
-    CommonModule,
-    SelectModule,
+    Select,
     CheckboxModule,
     ScrollPanelModule
-  ],
+],
   templateUrl: './server-start-region.component.html'
 })
 export class ServerStartRegionComponent extends EditorPanel implements OnInit {

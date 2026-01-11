@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from '../auth/user.service';
-import {CommonModule} from '@angular/common';
+
 import {LoginComponent} from '../auth/login/login.component';
 import {TrackingContainerComponent} from './tracking-container/tracking-container.component';
 
@@ -8,10 +8,9 @@ import {TrackingContainerComponent} from './tracking-container/tracking-containe
   selector: 'app-backend',
   templateUrl: './backend.component.html',
   imports: [
-    CommonModule,
     LoginComponent,
     TrackingContainerComponent
-  ]
+]
 })
 export class BackendComponent implements OnInit {
   showLogin = false;

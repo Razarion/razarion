@@ -3,18 +3,20 @@
     <tr>
       <th style="white-space: nowrap">Base item Type</th>
       <th>Count</th>
-      <th *ngIf="previousBaseItemTypeCount">
-        <p-button icon="pi pi-file-import"
-                  styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
-                  title="Import from previous level"
-                  (onClick)="onImport()">
-        </p-button>
-      </th>
+      @if (previousBaseItemTypeCount) {
+        <th>
+          <p-button icon="pi pi-file-import"
+            styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+            title="Import from previous level"
+            (onClick)="onImport()">
+          </p-button>
+        </th>
+      }
       <th>
         <p-button icon="pi pi-plus"
-                  styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
-                  title="Create"
-                  (onClick)="onCreate()">
+          styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+          title="Create"
+          (onClick)="onCreate()">
         </p-button>
       </th>
     </tr>
@@ -29,21 +31,27 @@
           [(ngModel)]="typeCount.count"
           (input)="onChange()"
           class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"/>
-      </td>
-      <td *ngIf="previousBaseItemTypeCount">
-        <div *ngIf="typeCount.count > getPreviousCount(typeCount.baseItemTypeId)">
-          <p-badge [value]="'+' + (typeCount.count - getPreviousCount(typeCount.baseItemTypeId))" severity="success"/>
-        </div>
-        <div *ngIf="getPreviousCount(typeCount.baseItemTypeId) > typeCount.count">
-          <p-badge [value]="typeCount.count - getPreviousCount(typeCount.baseItemTypeId)" severity="warn"/>
-        </div>
-      </td>
-      <td>
-        <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                  title="Delete"
-                  (onClick)="onDelete(typeCount.baseItemTypeId)">
-        </p-button>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+        </td>
+        @if (previousBaseItemTypeCount) {
+          <td>
+            @if (typeCount.count > getPreviousCount(typeCount.baseItemTypeId)) {
+              <div>
+                <p-badge [value]="'+' + (typeCount.count - getPreviousCount(typeCount.baseItemTypeId))" severity="success"/>
+              </div>
+            }
+            @if (getPreviousCount(typeCount.baseItemTypeId) > typeCount.count) {
+              <div>
+                <p-badge [value]="typeCount.count - getPreviousCount(typeCount.baseItemTypeId)" severity="warn"/>
+              </div>
+            }
+          </td>
+        }
+        <td>
+          <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+            title="Delete"
+            (onClick)="onDelete(typeCount.baseItemTypeId)">
+          </p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>

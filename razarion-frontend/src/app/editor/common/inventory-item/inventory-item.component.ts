@@ -2,13 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { InventoryItemEditorControllerClient } from 'src/app/generated/razarion-share';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'inventory-item',
   imports: [
-    SelectModule,
+    Select,
     FormsModule
   ],
   templateUrl: './inventory-item.component.html'

@@ -27,7 +27,7 @@ import {Model3dComponent} from '../../common/model3d/model3d.component';
 import {ImageItemComponent} from '../../common/image-item/image-item.component';
 import {AccelerationComponent} from '../../common/acceleration/acceleration.component';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
-import {CommonModule} from '@angular/common';
+
 
 @Component({
   selector: 'base-item-type-editor',
@@ -45,9 +45,8 @@ import {CommonModule} from '@angular/common';
     Model3dComponent,
     ImageItemComponent,
     AccelerationComponent,
-    ScrollPanelModule,
-    CommonModule
-  ],
+    ScrollPanelModule
+],
   templateUrl: './base-item-type-editor.component.html'
 })
 export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemType> {

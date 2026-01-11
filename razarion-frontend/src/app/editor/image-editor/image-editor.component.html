@@ -10,27 +10,29 @@
 
 <div style="max-height: 900px; overflow-y: auto;">
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-    <div *ngFor="let imageGalleryItem of imageGalleryItems" class="m-1 border border-solid border-gray-300">
-      <image-gallery-item [image-gallery-item]="imageGalleryItem"></image-gallery-item>
-      <div class="flex flex-row">
-        <p-button
-          icon="pi pi-trash"
-          styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-          (onClick)="onDeleteImage(imageGalleryItem)">
-        </p-button>
-        <p-fileUpload class="mr-2"
-                      chooseIcon="pi pi-upload"
-                      chooseLabel=" "
-                      mode="basic"
-                      accept="image/*"
-                      name="images"
-                      styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                      [auto]="true"
-                      [url]="getUpdateUrl(imageGalleryItem)"
-                      (onError)="onUpdateError($event)"
-                      (onUpload)="requestAllImages()">
-        </p-fileUpload>
+    @for (imageGalleryItem of imageGalleryItems; track imageGalleryItem) {
+      <div class="m-1 border border-solid border-gray-300">
+        <image-gallery-item [image-gallery-item]="imageGalleryItem"></image-gallery-item>
+        <div class="flex flex-row">
+          <p-button
+            icon="pi pi-trash"
+            styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+            (onClick)="onDeleteImage(imageGalleryItem)">
+          </p-button>
+          <p-fileUpload class="mr-2"
+            chooseIcon="pi pi-upload"
+            chooseLabel=" "
+            mode="basic"
+            accept="image/*"
+            name="images"
+            styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+            [auto]="true"
+            [url]="getUpdateUrl(imageGalleryItem)"
+            (onError)="onUpdateError($event)"
+            (onUpload)="requestAllImages()">
+          </p-fileUpload>
+        </div>
       </div>
-    </div>
+    }
   </div>
 </div>

@@ -6,14 +6,15 @@ import {
   Model3DControllerClient,
   Model3DEntity
 } from "../../../generated/razarion-share";
-import {FileUpload, FileUploadHandlerEvent} from "primeng/fileupload";
+import {FileUpload} from "primeng/fileupload";
+import {FileUploadHandlerEvent} from "primeng/types/fileupload";
 import {MessageService} from "primeng/api";
 import {BabylonRenderServiceAccessImpl} from "../../../game/renderer/babylon-render-service-access-impl.service";
 import {AbstractMesh, Scene, SceneLoader} from "@babylonjs/core";
 import {HttpClient} from "@angular/common/http";
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 import {Badge} from 'primeng/badge';
-import {CommonModule} from '@angular/common';
+
 import {TableModule} from 'primeng/table';
 import {Divider} from 'primeng/divider';
 import {BabylonMaterialComponent} from '../../common/babylon-material/babylon-material.component';
@@ -24,14 +25,13 @@ import {FormsModule} from '@angular/forms';
   selector: 'gltf-editor',
   imports: [
     Badge,
-    CommonModule,
     TableModule,
     Divider,
     BabylonMaterialComponent,
     FileUpload,
     InputNumber,
     FormsModule
-  ],
+],
   templateUrl: './gltf-editor.component.html'
 })
 export class GltfEditorComponent implements CrudContainerChildPreUpdate<GltfEntity> {

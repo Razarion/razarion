@@ -1,35 +1,47 @@
 <div class="flex flex-col gap-1" style="width: 20em">
   <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500"
-       [ngStyle]="{color:'surface-300'}">
+    [ngStyle]="{color:'surface-300'}">
     <div class="font-semibold text-3xl items-center font-semibold">
       {{ title }}
     </div>
-    <div *ngFor="let progressRow of progressRows" class="flex flex-row">
-      <div class="flex items-center justify-center p-1">
-        <i *ngIf="!progressRow.done" class="pi pi-exclamation-triangle" style="color: yellow"></i>
-        <i *ngIf="progressRow.done" class="pi pi-check-circle" style="color: green"></i>
+    @for (progressRow of progressRows; track progressRow) {
+      <div class="flex flex-row">
+        <div class="flex items-center justify-center p-1">
+          @if (!progressRow.done) {
+            <i class="pi pi-exclamation-triangle" style="color: yellow"></i>
+          }
+          @if (progressRow.done) {
+            <i class="pi pi-check-circle" style="color: green"></i>
+          }
+        </div>
+        <div class="flex">{{ progressRow.text }}</div>
       </div>
-      <div class="flex">{{ progressRow.text }}</div>
-    </div>
-    <div *ngIf="timeRow" class="flex flex-col">
-      {{ timeRow }}
-    </div>
+    }
+    @if (timeRow) {
+      <div class="flex flex-col">
+        {{ timeRow }}
+      </div>
+    }
   </div>
   <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 items-center bg-surface-100">
     <div class="grow">
       <p-toggleSwitch (onChange)="onShowQuestInGameVisualisation($event.checked)"
-                      class="flex items-center justify-center"
-                      [(ngModel)]="showQuestInGameVisualisation">
+        class="flex items-center justify-center"
+        [(ngModel)]="showQuestInGameVisualisation">
       </p-toggleSwitch>
     </div>
-    <div *ngIf="showQuestSelectionButton" class="grow">
-      <p-button type="button" label="Quests" icon="pi pi-list" styleClass="p-button-sm"
-                (onClick)="showQuestDialog = true">
-      </p-button>
-    </div>
+    @if (showQuestSelectionButton) {
+      <div class="grow">
+        <p-button type="button" label="Quests" icon="pi pi-list" styleClass="p-button-sm"
+          (onClick)="showQuestDialog = true">
+        </p-button>
+      </div>
+    }
   </div>
 </div>
 
 <p-dialog header="Quests" [(visible)]="showQuestDialog" [style]="{width: '30vw'}">
-  <quest-dialog *ngIf="showQuestDialog"></quest-dialog>
+  @if (showQuestDialog) {
+    <quest-dialog></quest-dialog>
+  }
 </p-dialog>

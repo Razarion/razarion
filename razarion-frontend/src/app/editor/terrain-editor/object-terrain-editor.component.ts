@@ -34,8 +34,8 @@ import {Divider} from 'primeng/divider';
 import {SelectButton} from 'primeng/selectbutton';
 import {InputNumber} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
-import {SelectModule} from 'primeng/select';
-import {CommonModule} from '@angular/common';
+import {Select} from 'primeng/select';
+
 
 @Component({
   selector: 'object-terrain-editor',
@@ -47,9 +47,8 @@ import {CommonModule} from '@angular/common';
     TerrainObjectPositionComponent,
     InputNumber,
     FormsModule,
-    SelectModule,
-    CommonModule
-  ],
+    Select
+],
   templateUrl: './object-terrain-editor.component.html'
 })
 export class ObjectTerrainEditorComponent extends EditorPanel implements OnInit, OnDestroy {

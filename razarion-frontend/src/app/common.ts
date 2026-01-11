@@ -10,7 +10,7 @@ export const WATER_EDITOR_PATH = EDITOR_PATH + '/water';
 export const PLANET_EDITOR_PATH = EDITOR_PATH + "/planet";
 export const UPDATE_MINI_MAP_IMAGE = EDITOR_PATH + "/planeteditor/updateMiniMapImage";
 
-export function getImageUrl(id: number): string {
+export function getImageUrl(id: any): string {
   return `${URL_IMAGE}/${id}`
 }
 

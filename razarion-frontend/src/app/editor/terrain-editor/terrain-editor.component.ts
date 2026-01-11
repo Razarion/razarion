@@ -5,7 +5,7 @@ import {HeightMapTerrainEditorComponent} from "./height-map-terrain-editor.compo
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {GwtAngularService} from 'src/app/gwtangular/GwtAngularService';
-import {TabPanel, TabView} from 'primeng/tabview';
+import {Tabs, TabList, Tab, TabPanels, TabPanel} from 'primeng/tabs';
 import {Dialog} from 'primeng/dialog';
 import {Button} from 'primeng/button';
 import {Divider} from 'primeng/divider';
@@ -18,9 +18,12 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
   selector: 'terrain-editor',
   imports: [
     ObjectTerrainEditorComponent,
-    TabPanel,
     HeightMapTerrainEditorComponent,
-    TabView,
+    Tabs,
+    TabList,
+    Tab,
+    TabPanels,
+    TabPanel,
     Dialog,
     Button,
     Divider,

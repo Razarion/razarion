@@ -8,7 +8,7 @@ import {MessageService} from 'primeng/api';
 import {Slider} from 'primeng/slider';
 import {FormsModule} from '@angular/forms';
 import {Button} from 'primeng/button';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {InputNumber} from 'primeng/inputnumber';
 import {BabylonRenderServiceAccessImpl} from '../../../game/renderer/babylon-render-service-access-impl.service';
 import {HeightMapCursor} from './height-map-cursor';
@@ -37,7 +37,7 @@ export class BrushValues {
     Slider,
     FormsModule,
     Button,
-    SelectModule,
+    Select,
     InputNumber
   ],
   template: `

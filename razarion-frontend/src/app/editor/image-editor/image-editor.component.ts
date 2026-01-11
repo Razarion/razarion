@@ -5,7 +5,7 @@ import {MessageService} from "primeng/api";
 import {getUpdateUrl as common_getUpdateUrl, URL_IMAGE} from "../../common";
 import {ImageGalleryItemComponent} from './image-gallery-item.component';
 import {Button} from 'primeng/button';
-import {NgForOf} from '@angular/common';
+
 import {ImageControllerClient, ImageGalleryItem} from '../../generated/razarion-share';
 import {TypescriptGenerator} from '../../backend/typescript-generator';
 import {FileUploadModule} from 'primeng/fileupload';
@@ -17,9 +17,8 @@ import {CardModule} from 'primeng/card';
     ImageGalleryItemComponent,
     Button,
     FileUploadModule,
-    CardModule,
-    NgForOf
-  ],
+    CardModule
+],
   templateUrl: './image-editor.component.html'
 })
 export class ImageEditorComponent extends EditorPanel implements OnInit {

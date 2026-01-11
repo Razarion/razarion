@@ -2,24 +2,26 @@
   <form (ngSubmit)="login()" class="flex flex-col gap-1" #loginForm="ngForm">
     <p>
       <input id="username"
-             placeholder="Email"
-             type="email"
-             name="username"
-             class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
-             [(ngModel)]="username" required>
-    </p>
-    <p>
-      <input id="password"
-             placeholder="Password"
-             type="password"
-             name="password"
-             class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
-             [(ngModel)]="password" required>
-    </p>
-    <div class="flex justify-between">
-      <p-button type="submit" label="Login" styleClass="p-button-sm"></p-button>
-      <p-button *ngIf="showRegister" class="justify-self-end" (onClick)="onRegister()" label="Register" styleClass="p-button-sm"></p-button>
+        placeholder="Email"
+        type="email"
+        name="username"
+        class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
+        [(ngModel)]="username" required>
+      </p>
+      <p>
+        <input id="password"
+          placeholder="Password"
+          type="password"
+          name="password"
+          class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
+          [(ngModel)]="password" required>
+        </p>
+        <div class="flex justify-between">
+          <p-button type="submit" label="Login" styleClass="p-button-sm"></p-button>
+          @if (showRegister) {
+            <p-button class="justify-self-end" (onClick)="onRegister()" label="Register" styleClass="p-button-sm"></p-button>
+          }
+        </div>
+      </form>
     </div>
-  </form>
-</div>
-<p>{{ message }}</p>
+    <p>{{ message }}</p>

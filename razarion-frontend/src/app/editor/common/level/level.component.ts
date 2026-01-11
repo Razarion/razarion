@@ -1,16 +1,15 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { EditorService } from '../../editor-service';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
-import {NgIf} from '@angular/common';
+
 
 @Component({
   selector: 'level',
   imports: [
-    SelectModule,
-    FormsModule,
-    NgIf
-  ],
+    Select,
+    FormsModule
+],
   templateUrl: './level.component.html'
 })
 export class LevelComponent {

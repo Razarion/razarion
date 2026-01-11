@@ -3,13 +3,13 @@ import {EditorPanel} from "../editor-model";
 import {ResourceRegionConfig, ServerGameEngineConfigEntity} from "../../generated/razarion-share";
 import {EditorService} from "../editor-service";
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
-import {CommonModule} from '@angular/common';
+
 import {ResourceItemTypeComponent} from '../common/resource-item-type/resource-item-type.component';
 import {InputNumber} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
 import {Divider} from 'primeng/divider';
 import {ButtonModule} from 'primeng/button';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {MessageService} from 'primeng/api';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
 
@@ -17,15 +17,14 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
   selector: 'server-resource-region',
   imports: [
     PlaceConfigComponent,
-    CommonModule,
     ResourceItemTypeComponent,
     InputNumber,
     FormsModule,
     Divider,
     ButtonModule,
-    SelectModule,
+    Select,
     ScrollPanelModule
-  ],
+],
   templateUrl: './server-resource-region.component.html'
 })
 export class ServerResourceRegionComponent extends EditorPanel implements OnInit {

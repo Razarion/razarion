@@ -2,13 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { BoxItemTypeEditorControllerClient } from 'src/app/generated/razarion-share';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'box-item-type',
   imports: [
-    SelectModule,
+    Select,
     FormsModule
   ],
   templateUrl: './box-item-type.component.html'

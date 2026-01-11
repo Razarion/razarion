@@ -29,57 +29,79 @@
     </p-inputgroup>
   </div>
   <div class="flex flex-row gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-    <p-button *ngIf="isLoggedIn()" icon="pi pi-ellipsis-v"
-              (onClick)="mainCockpitService.showUserDialog = true"></p-button>
-    <p-button *ngIf="!isLoggedIn()" icon="pi pi-user" (onClick)="mainCockpitService.showLoginDialog = true"></p-button>
+    @if (isLoggedIn()) {
+      <p-button icon="pi pi-ellipsis-v"
+      (onClick)="mainCockpitService.showUserDialog = true"></p-button>
+    }
+    @if (!isLoggedIn()) {
+      <p-button icon="pi pi-user" (onClick)="mainCockpitService.showLoginDialog = true"></p-button>
+    }
     <p-button icon="pi pi-box" title="Inventory" (onClick)="onInventory()">
     </p-button>
     <p-button icon="pi pi-angle-double-up" title="Unlock" (onClick)="onUnlock()"
-              [ngClass]="{'blinking-button': blinkUnlockEnabled}">
+      [ngClass]="{'blinking-button': blinkUnlockEnabled}">
     </p-button>
   </div>
 
-  <div *ngIf="radarState == WORKING || radarState == NO_POWER"
-       class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-    <div *ngIf="radarState == WORKING">
-      <radar></radar>
+  @if (radarState == WORKING || radarState == NO_POWER) {
+    <div
+      class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
+      @if (radarState == WORKING) {
+        <div>
+          <radar></radar>
+        </div>
+      }
+      @if (radarState == NO_POWER) {
+        <div>
+          <radar-no-power></radar-no-power>
+        </div>
+      }
     </div>
-    <div *ngIf="radarState == NO_POWER">
-      <radar-no-power></radar-no-power>
-    </div>
-  </div>
+  }
 
-  <div *ngIf="isAdmin()"
-       class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-    <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
-              (onClick)="this.editorDialog = true"></p-button>
-    <div class="flex">
-      <p-checkbox [(ngModel)]="showCursorPosition" (onChange)="onShowCursorPosition()" [binary]="true"></p-checkbox>
-      &nbsp;{{ cursorPosition ? cursorPosition : 'Show position' }}
+  @if (isAdmin()) {
+    <div
+      class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
+      <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
+      (onClick)="this.editorDialog = true"></p-button>
+      <div class="flex">
+        <p-checkbox [(ngModel)]="showCursorPosition" (onChange)="onShowCursorPosition()" [binary]="true"></p-checkbox>
+        &nbsp;{{ cursorPosition ? cursorPosition : 'Show position' }}
+      </div>
     </div>
-  </div>
+  }
 </div>
 
 <p-dialog header="Login" [(visible)]="mainCockpitService.showLoginDialog">
-  <login *ngIf="mainCockpitService.showLoginDialog" [showRegister]="userService.showRegisterButton()"></login>
+  @if (mainCockpitService.showLoginDialog) {
+    <login [showRegister]="userService.showRegisterButton()"></login>
+  }
 </p-dialog>
 
 <p-dialog header="User account" [(visible)]="mainCockpitService.showUserDialog">
-  <user *ngIf="mainCockpitService.showUserDialog"></user>
+  @if (mainCockpitService.showUserDialog) {
+    <user></user>
+  }
 </p-dialog>
 
 <p-dialog header="Register" [(visible)]="mainCockpitService.showRegisterDialog">
-  <register *ngIf="mainCockpitService.showRegisterDialog"></register>
+  @if (mainCockpitService.showRegisterDialog) {
+    <register></register>
+  }
 </p-dialog>
 
 <p-dialog header="Your registration was successful" [(visible)]="mainCockpitService.showRegisteredDialog">
-  <div *ngIf="mainCockpitService.showRegisteredDialog">
-    <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 w-md">
-      <span>An email with the activation link has been sent. Please check your inbox or spam folder.</span>
+  @if (mainCockpitService.showRegisteredDialog) {
+    <div>
+      <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 w-md">
+        <span>An email with the activation link has been sent. Please check your inbox or spam folder.</span>
+      </div>
     </div>
-  </div>
+  }
 </p-dialog>
 
 <p-dialog header="Set name" [(visible)]="mainCockpitService.showSetUserNameDialog">
-  <set-name *ngIf="mainCockpitService.showSetUserNameDialog"></set-name>
+  @if (mainCockpitService.showSetUserNameDialog) {
+    <set-name></set-name>
+  }
 </p-dialog>

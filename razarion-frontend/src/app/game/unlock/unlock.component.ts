@@ -8,16 +8,15 @@ import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 import { GameComponent } from '../game.component';
 import {Button} from 'primeng/button';
 import {DataViewModule} from 'primeng/dataview';
-import {NgForOf} from '@angular/common';
+
 
 @Component({
   selector: 'unlock',
   templateUrl: './unlock.component.html',
   imports: [
     Button,
-    DataViewModule,
-    NgForOf,
-  ],
+    DataViewModule
+],
   styleUrls: ['./unlock.component.scss']
 })
 export class UnlockComponent implements OnInit {

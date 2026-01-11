@@ -4,7 +4,7 @@ import {ChatControllerClient, ChatMessage} from '../../../generated/razarion-sha
 import {Button} from 'primeng/button';
 import {InputText} from 'primeng/inputtext';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CommonModule, NgForOf} from '@angular/common';
+
 import {ScrollPanel, ScrollPanelModule} from 'primeng/scrollpanel';
 import {HttpClient} from '@angular/common/http';
 import {TypescriptGenerator} from '../../../backend/typescript-generator';
@@ -21,12 +21,9 @@ import {CockpitDisplayService} from '../cockpit-display.service';
     InputText,
     ReactiveFormsModule,
     FormsModule,
-    NgForOf,
     ScrollPanelModule,
-    Dialog,
-    CommonModule,
-
-  ],
+    Dialog
+],
   templateUrl: './chat-cockpit.component.html',
   styleUrl: './chat-cockpit.component.scss'
 })

@@ -1,16 +1,15 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {EditorService} from "../../editor-service";
-import {CommonModule} from '@angular/common';
+
 import {FormsModule} from '@angular/forms';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 
 @Component({
   selector: 'base-item-type',
   imports: [
-    SelectModule,
-    CommonModule,
+    Select,
     FormsModule
-  ],
+],
   templateUrl: './base-item-type.component.html'
 })
 export class BaseItemTypeComponent {

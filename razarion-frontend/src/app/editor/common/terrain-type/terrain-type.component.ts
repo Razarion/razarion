@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TerrainType } from 'src/app/generated/razarion-share';
-import {SelectModule} from 'primeng/select';
+import {Select} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'terrain-type',
   imports: [
-    SelectModule,
+    Select,
     FormsModule
   ],
   templateUrl: './terrain-type.component.html'

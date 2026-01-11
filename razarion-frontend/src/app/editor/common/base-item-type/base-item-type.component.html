@@ -1,9 +1,13 @@
-<p-select *ngIf="!readOnly"
-          [placeholder]="'...'"
-          [options]="baseItemTypeOptions"
-          [(ngModel)]="baseItemTypeId"
-          (onChange)="onChange()"
-          [appendTo]="'body'"
-          optionLabel="name"
-          optionValue="id"/>
-<span *ngIf="readOnly">{{ getCurrentName() }}</span>
+@if (!readOnly) {
+  <p-select
+    [placeholder]="'...'"
+    [options]="baseItemTypeOptions"
+    [(ngModel)]="baseItemTypeId"
+    (onChange)="onChange()"
+    [appendTo]="'body'"
+    optionLabel="name"
+    optionValue="id"/>
+}
+@if (readOnly) {
+  <span>{{ getCurrentName() }}</span>
+}
