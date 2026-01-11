@@ -39,11 +39,13 @@ export class HeightMapCursor {
     wireframeOverMaterial.depthFunction = Constants.ALWAYS;
 
     this.mesh.material = wireframeOverMaterial;
+    // Render cursor after terrain tiles to ensure visibility when new tiles are loaded
+    this.mesh.renderingGroupId = 1;
   }
 
   update(position: Vector3, brushValues: BrushValues) {
     this.mesh!.position.x = position.x;
-    this.mesh!.position.y = 0;
+    this.mesh!.position.y = position.y;
     this.mesh!.position.z = position.z;
     if (this.currentBrush.type !== brushValues.type ||
       this.currentBrush.size !== brushValues.size ||

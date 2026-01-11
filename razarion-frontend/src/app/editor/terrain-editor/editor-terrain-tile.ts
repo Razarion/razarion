@@ -29,6 +29,7 @@ export class EditorTerrainTile {
       });
       this.babylonTerrainTileImpl.getGroundMesh().setVerticesData(VertexBuffer.PositionKind, changedPosition);
       this.babylonTerrainTileImpl.getGroundMesh().createNormals(true);
+      this.babylonTerrainTileImpl.getGroundMesh().refreshBoundingInfo();
     } else {
       this.positions = [];
       const vertexData: VertexData = VertexData.ExtractFromMesh(babylonTerrainTileImpl.getGroundMesh());
@@ -87,6 +88,7 @@ export class EditorTerrainTile {
     if (changed) {
       this.babylonTerrainTileImpl!.getGroundMesh().setVerticesData(VertexBuffer.PositionKind, changedPosition);
       this.babylonTerrainTileImpl!.getGroundMesh().createNormals(true);
+      this.babylonTerrainTileImpl!.getGroundMesh().refreshBoundingInfo();
     }
   }
 

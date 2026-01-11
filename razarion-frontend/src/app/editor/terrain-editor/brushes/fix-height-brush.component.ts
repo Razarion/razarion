@@ -355,9 +355,15 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit, On
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERMOVE: {
           let pickingInfo = this.renderService.setupTerrainPickPoint();
-          if (pickingInfo.hit) {
-            if (this.heightMapCursor) {
+          if (this.heightMapCursor) {
+            if (pickingInfo.hit) {
               this.heightMapCursor.update(pickingInfo.pickedPoint!, this.activeBrush.value.brushValues);
+            } else {
+              // Fallback: use ground position at y=0 when terrain pick fails
+              const fallbackPosition = this.renderService.setupPointerZeroLevelPosition();
+              if (fallbackPosition && isFinite(fallbackPosition.x) && isFinite(fallbackPosition.z)) {
+                this.heightMapCursor.update(fallbackPosition, this.activeBrush.value.brushValues);
+              }
             }
           }
           break;

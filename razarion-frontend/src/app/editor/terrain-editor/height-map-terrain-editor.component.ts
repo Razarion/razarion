@@ -24,6 +24,7 @@ import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
 import {AbstractBrush, BrushContext} from "./brushes/abstract-brush";
 import {FixHeightBrushComponent} from './brushes/fix-height-brush.component';
 import {FlattenBrushComponent} from "./brushes/flattem-brush.component";
+import {RaiseHeightBrushComponent} from './brushes/raise-height-brush.component';
 import {RadarComponent} from 'src/app/game/cockpit/main/radar/radar.component';
 import {Button} from 'primeng/button';
 import {Divider} from 'primeng/divider';
@@ -65,9 +66,10 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   brushContainer?: ViewContainerRef;
   brushOptions = [
     {label: 'Fix height', value: FixHeightBrushComponent},
-    {label: 'Flatten', value: FlattenBrushComponent}
+    {label: 'Flatten', value: FlattenBrushComponent},
+    {label: 'Raise height', value: RaiseHeightBrushComponent}
   ];
-  selectedBrush?: string;
+  selectedBrush?: Type<AbstractBrush>;
 
   private currentBrush?: AbstractBrush
 
@@ -121,6 +123,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
 
   ngAfterViewInit(): void {
     Promise.resolve().then(() => {
+      this.selectedBrush = FixHeightBrushComponent;
       this.setupBrushComponent(FixHeightBrushComponent);
     });
   }

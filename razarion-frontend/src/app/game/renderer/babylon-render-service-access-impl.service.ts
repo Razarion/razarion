@@ -662,6 +662,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     });
   }
 
+  public setupPointerZeroLevelPosition(): Vector3 {
+    // Convert pointer position to NDC
+    const ndcX = (this.scene.pointerX / this.engine.getRenderWidth()) * 2 - 1;
+    const ndcY = 1 - (this.scene.pointerY / this.engine.getRenderHeight()) * 2;
+    this.camera.getViewMatrix();
+    const invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
+    return this.setupZeroLevelPosition(ndcX, ndcY, invertCameraViewProj);
+  }
+
   public setupPickInfoFromNDC(ndcX: number, ndcY: number): PickingInfo {
     const x = (ndcX + 1) / 2 * this.engine.getRenderWidth();
     const y = (1 - ndcY) / 2 * this.engine.getRenderHeight();
