@@ -15,9 +15,7 @@ export class HeightMapCursor {
     if (this.mesh) {
       this.mesh.dispose();
     }
-    this.mesh = MeshBuilder.CreateSphere("Height map cursor", {
-      diameter: 1
-    }, this.scene);
+    this.mesh = new Mesh("Height map cursor", this.scene);
     this.mesh.isPickable = false;
     this.currentBrush = {
       type: brushValues.type,
@@ -44,9 +42,6 @@ export class HeightMapCursor {
   }
 
   update(position: Vector3, brushValues: BrushValues) {
-    this.mesh!.position.x = position.x;
-    this.mesh!.position.y = position.y;
-    this.mesh!.position.z = position.z;
     if (this.currentBrush.type !== brushValues.type ||
       this.currentBrush.size !== brushValues.size ||
       this.currentBrush.height !== brushValues.height ||
@@ -54,6 +49,9 @@ export class HeightMapCursor {
       this.currentBrush.random !== brushValues.random) {
       this.setupMesh(brushValues);
     }
+    this.mesh!.position.x = position.x;
+    this.mesh!.position.y = position.y;
+    this.mesh!.position.z = position.z;
   }
 
   setVisibility(visible: boolean) {

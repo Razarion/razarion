@@ -31,7 +31,6 @@ export class RaiseBrushValues {
         <p-select
           [options]="[{label: 'Square', value: BrushType.SQUARE}, {label: 'Round', value: BrushType.ROUND}]"
           [(ngModel)]="brushValues.type"
-          (ngModelChange)="onBrushValuesChanged()"
           [style]="{ width: '100%' }">
         </p-select>
       </div>
@@ -40,8 +39,8 @@ export class RaiseBrushValues {
     <div class="grid grid-cols-12 gap-1 p-1">
       <span class="col-span-5">Size [m]</span>
       <div class="col-span-7">
-        <input type="number" [(ngModel)]="brushValues.size" (ngModelChange)="onBrushValuesChanged()" class="w-full"/>
-        <p-slider [(ngModel)]="brushValues.size" (ngModelChange)="onBrushValuesChanged()" [step]="1" [min]="1"
+        <input type="number" [(ngModel)]="brushValues.size" class="w-full"/>
+        <p-slider [(ngModel)]="brushValues.size" [step]="1" [min]="1"
                   [max]="100"></p-slider>
       </div>
     </div>
@@ -109,10 +108,6 @@ export class RaiseHeightBrushComponent extends AbstractBrush implements OnInit, 
     if (this.heightMapCursor) {
       this.heightMapCursor.setVisibility(false);
     }
-  }
-
-  onBrushValuesChanged() {
-    // Cursor wird automatisch bei POINTERMOVE aktualisiert
   }
 
   override calculateHeight(mousePosition: Vector3, oldPosition: Vector3): number | null {
