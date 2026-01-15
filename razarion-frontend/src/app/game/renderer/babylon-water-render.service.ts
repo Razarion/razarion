@@ -4,6 +4,7 @@ import {
   ActionManager,
   CubeTexture,
   ExecuteCodeAction,
+  Mesh,
   MeshBuilder,
   NodeMaterial,
   TransformNode,
@@ -25,7 +26,7 @@ export class BabylonWaterRenderService {
               private actionService: ActionService) {
   }
 
-  public setup(index: Index, groundConfig: GroundConfig, container: TransformNode, uv2GroundHeightMap: FloatArray, rendererService: BabylonRenderServiceAccessImpl): void {
+  public setup(index: Index, groundConfig: GroundConfig, container: TransformNode, uv2GroundHeightMap: FloatArray, rendererService: BabylonRenderServiceAccessImpl): Mesh {
     const water = MeshBuilder.CreateGround("Water", {
       width: BabylonTerrainTileImpl.NODE_X_COUNT,
       height: BabylonTerrainTileImpl.NODE_Y_COUNT,
@@ -72,6 +73,25 @@ export class BabylonWaterRenderService {
     this.actionService.addCursorHandler(cursorTypeHandler);
 
     water.actionManager = actionManager;
+
+    return water;
+  }
+
+  public static updateWaterUV2(waterMesh: Mesh, positions: number[]): void {
+    const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    const yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    const uv2GroundHeightMap: number[] = [];
+
+    for (let y = 0; y < yCount; y++) {
+      for (let x = 0; x < xCount; x++) {
+        const invertedY = xCount - y - 1;
+        const index2 = (x + invertedY * xCount) * 3;
+        const invertedGroundHeight = positions[index2 + 1];
+        uv2GroundHeightMap.push(invertedGroundHeight, 0);
+      }
+    }
+
+    waterMesh.setVerticesData(VertexBuffer.UV2Kind, uv2GroundHeightMap);
   }
 
 }

@@ -63,6 +63,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   public readonly container: TransformNode;
   public readonly shadowCasterObjects: TransformNode[] = []
   private readonly groundMesh: Mesh;
+  private waterMesh: Mesh | null = null;
+  private groundMaterial: NodeMaterial | null = null;
   private shadowCaster?: ((mesh: AbstractMesh) => void) | null = null;
   private readonly cursorTypeHandlerTerrain: (selectionInfo: SelectionInfo) => void;
   private readonly actionManagerTerrain: ActionManager;
@@ -149,20 +151,20 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.groundMesh.actionManager = this.actionManagerTerrain;
 
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
-    let groundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
-    groundMaterial = groundMaterial!.clone(groundMaterial.name);
+    this.groundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
+    this.groundMaterial = this.groundMaterial!.clone(this.groundMaterial.name);
     let underWaterMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getUnderWaterBabylonMaterialId());
     let botMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotBabylonMaterialId());
     let botWallMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotWallBabylonMaterialId());
 
-    const groundUtilityBlock = <TextureBlock>groundMaterial.getBlockByName("GroundUtility");
+    const groundUtilityBlock = <TextureBlock>this.groundMaterial.getBlockByName("GroundUtility");
     if (groundUtilityBlock) {
       groundUtilityBlock.texture = new Texture(groundUtil.createGroundTypeTexture().toDataURL(), this.rendererService.getScene());
-      groundMaterial.build()
+      this.groundMaterial.build()
     }
 
     const multiMaterial = new MultiMaterial(`Ground ${groundConfig.getInternalName()}`, rendererService.getScene());
-    multiMaterial.subMaterials[MaterialIndex.GROUND] = groundMaterial;
+    multiMaterial.subMaterials[MaterialIndex.GROUND] = this.groundMaterial;
     multiMaterial.subMaterials[MaterialIndex.UNDER_WATER] = underWaterMaterial;
     multiMaterial.subMaterials[MaterialIndex.BOT] = botMaterial;
     multiMaterial.subMaterials[MaterialIndex.BOT_WALL] = botWallMaterial;
@@ -176,7 +178,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
-    this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container, uv2GroundHeightMap, this.rendererService);
+    this.waterMesh = this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container, uv2GroundHeightMap, this.rendererService);
 
     if (terrainTile.getTerrainTileObjectLists()) {
       this.setupTerrainTileObjects(terrainTile.getTerrainTileObjectLists());
@@ -296,6 +298,45 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
   getGroundMesh(): Mesh {
     return this.groundMesh;
+  }
+
+  updateGroundTypeTexture(positions: number[]): void {
+    if (!this.groundMaterial) {
+      return;
+    }
+
+    const groundUtilityBlock = <TextureBlock>this.groundMaterial.getBlockByName("GroundUtility");
+    if (!groundUtilityBlock) {
+      return;
+    }
+
+    const groundUtil = new GroundUtil();
+    const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    const yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+
+    for (let y = 0; y < yCount; y++) {
+      for (let x = 0; x < xCount; x++) {
+        const index = (x + y * xCount) * 3;
+        const height = positions[index + 1]; // y-component is height
+        groundUtil.addHeightAt(height, x, y);
+      }
+    }
+
+    // Dispose old texture to prevent memory leak
+    if (groundUtilityBlock.texture) {
+      groundUtilityBlock.texture.dispose();
+    }
+
+    groundUtilityBlock.texture = new Texture(
+      groundUtil.createGroundTypeTexture().toDataURL(),
+      this.rendererService.getScene()
+    );
+    this.groundMaterial.build();
+
+    // Update water UV2 for transparency
+    if (this.waterMesh) {
+      BabylonWaterRenderService.updateWaterUV2(this.waterMesh, positions);
+    }
   }
 
   private createVertexData(groundHeightMap: Uint16Array, uv2GroundHeightMap: number[], materialSubmeshes: {

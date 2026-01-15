@@ -7,10 +7,13 @@ import {GwtInstance} from "src/app/gwtangular/GwtInstance";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 
 export class EditorTerrainTile {
+  private static readonly TEXTURE_UPDATE_THROTTLE_MS = 150;
   private positions?: Vector3[];
   private babylonTerrainTileImpl: BabylonTerrainTileImpl | null = null;
   private decalMesh: Mesh | null = null;
   private decalMeshWorker: Mesh | null = null;
+  private pendingTextureUpdate: number[] | null = null;
+  private textureUpdateScheduled: boolean = false;
 
   constructor(private renderService: BabylonRenderServiceAccessImpl,
               private inputService: InputService,
@@ -89,6 +92,22 @@ export class EditorTerrainTile {
       this.babylonTerrainTileImpl!.getGroundMesh().setVerticesData(VertexBuffer.PositionKind, changedPosition);
       this.babylonTerrainTileImpl!.getGroundMesh().createNormals(true);
       this.babylonTerrainTileImpl!.getGroundMesh().refreshBoundingInfo();
+      this.scheduleTextureUpdate(changedPosition);
+    }
+  }
+
+  private scheduleTextureUpdate(positions: number[]): void {
+    this.pendingTextureUpdate = positions;
+
+    if (!this.textureUpdateScheduled) {
+      this.textureUpdateScheduled = true;
+      setTimeout(() => {
+        if (this.pendingTextureUpdate && this.babylonTerrainTileImpl) {
+          this.babylonTerrainTileImpl.updateGroundTypeTexture(this.pendingTextureUpdate);
+        }
+        this.textureUpdateScheduled = false;
+        this.pendingTextureUpdate = null;
+      }, EditorTerrainTile.TEXTURE_UPDATE_THROTTLE_MS);
     }
   }
 
