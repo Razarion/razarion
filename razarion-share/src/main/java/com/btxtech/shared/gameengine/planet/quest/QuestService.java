@@ -197,6 +197,14 @@ public class QuestService {
         triggerValue(userId, ConditionTrigger.UNLOCKED, 1.0);
     }
 
+    public void onSold(SyncBaseItem syncBaseItem) {
+        String userId = syncBaseItem.getBase().getUserId();
+        if (userId == null) {
+            return;
+        }
+        triggerSyncItem(userId, ConditionTrigger.SELL, syncBaseItem);
+    }
+
     public void addQuestListener(QuestListener questListener) {
         questListeners.add(questListener);
     }
@@ -241,6 +249,18 @@ public class QuestService {
                 } else if (comparisonConfig.getCount() != null) {
                     BaseItemCountComparison baseItemCountComparison = baseItemCountComparisonProvider.get();
                     baseItemCountComparison.init(comparisonConfig.getCount(), includeExistingUserId, comparisonConfig.toBotIdSet());
+                    return baseItemCountComparison;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            case SELL:
+                if (comparisonConfig.getTypeCount() != null) {
+                    BaseItemTypeComparison syncItemTypeComparison = baseItemTypeComparisonProvider.get();
+                    syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()), null, comparisonConfig.toBotIdSet());
+                    return syncItemTypeComparison;
+                } else if (comparisonConfig.getCount() != null) {
+                    BaseItemCountComparison baseItemCountComparison = baseItemCountComparisonProvider.get();
+                    baseItemCountComparison.init(comparisonConfig.getCount(), null, comparisonConfig.toBotIdSet());
                     return baseItemCountComparison;
                 } else {
                     throw new UnsupportedOperationException();

@@ -57,6 +57,7 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
       ConditionTrigger.BOX_PICKED,
       ConditionTrigger.INVENTORY_ITEM_PLACED,
       ConditionTrigger.UNLOCKED,
+      ConditionTrigger.SELL,
     ];
 
   constructor(public editorService: EditorService, private messageService: MessageService) {

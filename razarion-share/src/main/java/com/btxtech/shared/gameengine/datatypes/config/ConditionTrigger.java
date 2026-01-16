@@ -93,6 +93,12 @@ public enum ConditionTrigger {
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new ValueConditionProgress(this, abstractComparison);
         }
+    },
+    SELL(true) {
+        @Override
+        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
+            return new BaseItemConditionProgress(this, abstractComparison);
+        }
     };
 
     private final boolean comparisonNeeded;

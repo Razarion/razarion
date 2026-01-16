@@ -454,7 +454,8 @@ public class GameEngineConfiguration {
                                            LevelService levelService,
                                            SyncItemContainerServiceImpl syncItemContainerService,
                                            GameLogicService gameLogicService,
-                                           InitializeService initializeService) {
+                                           InitializeService initializeService,
+                                           QuestService questService) {
         return new BaseItemService(syncService,
                 guardingItemService,
                 terrainService,
@@ -465,7 +466,8 @@ public class GameEngineConfiguration {
                 levelService,
                 syncItemContainerService,
                 gameLogicService,
-                initializeService);
+                initializeService,
+                questService);
     }
 
     @Bean

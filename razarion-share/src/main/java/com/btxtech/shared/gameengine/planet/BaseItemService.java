@@ -32,6 +32,7 @@ import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainTypeNotAllowedException;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -73,6 +74,7 @@ public class BaseItemService {
     private final TerrainService terrainService;
     private final GuardingItemService guardingItemService;
     private final SyncService syncService;
+    private final QuestService questService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
@@ -93,7 +95,8 @@ public class BaseItemService {
                            LevelService levelService,
                            SyncItemContainerServiceImpl syncItemContainerService,
                            GameLogicService gameLogicService,
-                           InitializeService initializeService) {
+                           InitializeService initializeService,
+                           QuestService questService) {
         this.syncService = syncService;
         this.guardingItemService = guardingItemService;
         this.terrainService = terrainService;
@@ -104,6 +107,7 @@ public class BaseItemService {
         this.levelService = levelService;
         this.syncItemContainerService = syncItemContainerService;
         this.gameLogicService = gameLogicService;
+        this.questService = questService;
 
         initializeService.receivePlanetActivationEvent(this::onPlanetActivation);
     }
@@ -468,6 +472,7 @@ public class BaseItemService {
         double resources = health / fullHealth * buildup * spawnProgress * price * ITEM_SELL_FACTOR;
         syncBaseItem.getBase().addResource(resources);
         gameLogicService.onResourcesBalanceChanged(syncBaseItem.getBase(), (int) syncBaseItem.getBase().getResources());
+        questService.onSold(syncBaseItem);
         removeSyncItem(syncBaseItem);
         // Remove containing
         if (syncBaseItem.getSyncItemContainer() != null) {

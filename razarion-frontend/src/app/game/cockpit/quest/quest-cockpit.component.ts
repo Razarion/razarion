@@ -164,6 +164,10 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.setupSingleCount("Item unlocked");
         break;
       }
+      case ConditionTrigger.SELL: {
+        this.specificOrCount("Units or buildings sold", "sold");
+        break;
+      }
       default: {
         console.warn(`Unknown ConditionTrigger ${this.conditionConfig.getConditionTrigger()}`)
         this.progressRows.push({text: `???`, done: false})
@@ -248,6 +252,9 @@ export class QuestCockpitComponent implements QuestCockpit {
       }
       case ConditionTrigger.UNLOCKED: {
         return "Unlock";
+      }
+      case ConditionTrigger.SELL: {
+        return "Sell";
       }
       default: {
         console.warn(`Unknown conditionTrigger ${conditionTrigger}`)
