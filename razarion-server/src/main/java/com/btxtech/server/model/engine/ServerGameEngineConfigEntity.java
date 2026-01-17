@@ -208,6 +208,10 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
         return serverLevelQuestEntities;
     }
 
+    public List<StartRegionConfigEntity> getStartRegionConfigs() {
+        return startRegionConfigs;
+    }
+
     public void setPlanetEntity(PlanetEntity planetEntity) {
         this.planetEntity = planetEntity;
     }

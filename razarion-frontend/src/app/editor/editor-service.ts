@@ -194,6 +194,20 @@ export class EditorService {
     });
   }
 
+  readStartRegionObjectNameIds(): Promise<ObjectNameId[]> {
+    return new Promise((resolve) => {
+      this.readServerGameEngineConfig().then(serverGameEngineConfig => {
+        const objectNameIds: ObjectNameId[] = serverGameEngineConfig.startRegionConfigs
+          .filter(config => config.id !== null)
+          .map(config => ({
+            id: config.id!,
+            internalName: config.internalName
+          }));
+        resolve(objectNameIds);
+      });
+    });
+  }
+
   readGroundObjectNameIds(): Promise<ObjectNameId[]> {
     return this.readObjectNameIds(GROUND_EDITOR_PATH);
   }

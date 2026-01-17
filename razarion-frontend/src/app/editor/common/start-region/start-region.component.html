@@ -1,0 +1,15 @@
+@if (!readOnly) {
+  <p-select
+    [placeholder]="'...'"
+    [options]="startRegionOptions"
+    [(ngModel)]="startRegionId"
+    (onChange)="onChange()"
+    optionLabel="label"
+    optionValue="startRegionId"
+    [showClear]="true">
+  </p-select>
+}
+@if (readOnly) {
+  <span>{{getCurrentName()}}</span>
+}
+

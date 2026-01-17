@@ -11,6 +11,7 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
@@ -77,6 +78,7 @@ public class ServerLevelQuestService implements QuestListener {
             }
             if (newQuest != null) {
                 // TODO historyPersistence.get().onQuest(userContext.getUserId(), newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
+                resolveStartRegionIfNeeded(newQuest);
                 clientSystemConnectionService.onQuestActivated(userContext.getUserId(), newQuest);
                 questService.activateCondition(userContext.getUserId(), newQuest);
                 clientSystemConnectionService.onQuestProgressInfo(userContext.getUserId(), questService.getQuestProgressInfo(userContext.getUserId()));
@@ -149,6 +151,7 @@ public class ServerLevelQuestService implements QuestListener {
         QuestConfig newQuest = userService.getAndSaveNewQuest(userId);
         if (newQuest != null) {
             // TODO historyPersistence.get().onQuest(userId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
+            resolveStartRegionIfNeeded(newQuest);
             clientSystemConnectionService.onQuestActivated(userId, newQuest);
             questService.activateCondition(userId, newQuest);
             clientSystemConnectionService.onQuestProgressInfo(userId, questService.getQuestProgressInfo(userId));
@@ -186,6 +189,7 @@ public class ServerLevelQuestService implements QuestListener {
 
         userService.setActiveQuest(userId, newQuest.getId());
         // TODO historyPersistence.get().onQuest(userId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
+        resolveStartRegionIfNeeded(newQuest);
         clientSystemConnectionService.onQuestActivated(userId, newQuest);
         questService.activateCondition(userId, newQuest);
         clientSystemConnectionService.onQuestProgressInfo(userId, questService.getQuestProgressInfo(userId));
@@ -202,6 +206,20 @@ public class ServerLevelQuestService implements QuestListener {
             QuestConfig oldQuest = userService.getActiveQuest(userId);
             userService.clearActiveQuest(userId);
             // TODO historyPersistence.get().onQuest(userId, oldQuest, QuestHistoryEntity.Type.QUEST_DEACTIVATED);
+        }
+    }
+
+    private void resolveStartRegionIfNeeded(QuestConfig questConfig) {
+        if (questConfig.getConditionConfig() != null
+                && questConfig.getConditionConfig().getComparisonConfig() != null
+                && questConfig.getConditionConfig().getComparisonConfig().getStartRegionId() != null) {
+            int startRegionId = questConfig.getConditionConfig().getComparisonConfig().getStartRegionId();
+            PlaceConfig startRegion = serverGameEngineCrudPersistence.getStartRegionById(startRegionId);
+            if (startRegion != null) {
+                questConfig.getConditionConfig().getComparisonConfig().setPlaceConfig(startRegion);
+            } else {
+                logger.warn("startRegionId is set but no start region found for id: {}", startRegionId);
+            }
         }
     }
 }

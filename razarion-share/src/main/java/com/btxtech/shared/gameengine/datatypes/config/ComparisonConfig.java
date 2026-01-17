@@ -33,6 +33,7 @@ public class ComparisonConfig {
     private boolean includeExisting;
     private Integer timeSeconds;
     private PlaceConfig placeConfig;
+    private Integer startRegionId;
     private List<Integer> botIds;
 
     /**
@@ -99,6 +100,14 @@ public class ComparisonConfig {
         this.placeConfig = placeConfig;
     }
 
+    public @Nullable Integer getStartRegionId() {
+        return startRegionId;
+    }
+
+    public void setStartRegionId(@Nullable Integer startRegionId) {
+        this.startRegionId = startRegionId;
+    }
+
     public List<Integer> getBotIds() {
         return botIds;
     }
@@ -124,6 +133,11 @@ public class ComparisonConfig {
 
     public ComparisonConfig placeConfig(PlaceConfig placeConfig) {
         setPlaceConfig(placeConfig);
+        return this;
+    }
+
+    public ComparisonConfig startRegionId(Integer startRegionId) {
+        setStartRegionId(startRegionId);
         return this;
     }
 

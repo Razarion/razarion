@@ -114,6 +114,12 @@
                       </div>
                     </div>
                     <div class="grid grid-cols-12 gap-4">
+                      <span class="col-span-3">Start Region</span>
+                      <div class="col-span-9">
+                        <start-region [(startRegionId)]="questConfig.conditionConfig.comparisonConfig.startRegionId"></start-region>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-4">
                       <span class="col-span-3">Place</span>
                       <div class="col-span-9">
                         <place-config [(placeConfig)]="questConfig.conditionConfig.comparisonConfig.placeConfig"></place-config>

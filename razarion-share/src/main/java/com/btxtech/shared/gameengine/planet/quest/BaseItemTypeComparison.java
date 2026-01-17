@@ -48,16 +48,33 @@ public class BaseItemTypeComparison extends AbstractBaseItemComparison {
     }
 
     public void init(Map<BaseItemType, Integer> baseItemType, String includeExistingUserId, Set<Integer> botIds) {
+        init(baseItemType, includeExistingUserId, botIds, false);
+    }
+
+    public void init(Map<BaseItemType, Integer> baseItemType, String includeExistingUserId, Set<Integer> botIds, boolean isSellMode) {
         remaining = new HashMap<>();
         if (includeExistingUserId != null) {
             PlayerBaseFull playerBaseFull = (PlayerBaseFull) baseItemService.getPlayerBase4UserId(includeExistingUserId);
             if (playerBaseFull != null) {
                 baseItemType.forEach((existingBaseItemType, count) -> {
                     int existing = playerBaseFull.findItemsOfType(existingBaseItemType.getId()).size();
-                    if (count > existing) {
-                        remaining.put(existingBaseItemType, count - existing);
+                    if (isSellMode) {
+                        // For SELL: can only sell what you have
+                        int canSell = Math.min(count, existing);
+                        if (canSell > 0) {
+                            remaining.put(existingBaseItemType, canSell);
+                        }
+                    } else {
+                        // For SYNC_ITEM_CREATED: reduce by what you already have
+                        if (count > existing) {
+                            remaining.put(existingBaseItemType, count - existing);
+                        }
                     }
                 });
+            } else if (isSellMode) {
+                // No base, nothing to sell - quest is already fulfilled
+            } else {
+                remaining.putAll(baseItemType);
             }
         } else {
             remaining.putAll(baseItemType);

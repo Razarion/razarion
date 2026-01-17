@@ -254,13 +254,14 @@ public class QuestService {
                     throw new UnsupportedOperationException();
                 }
             case SELL:
+                String sellIncludeExistingUserId = comparisonConfig.isIncludeExisting() ? userId : null;
                 if (comparisonConfig.getTypeCount() != null) {
                     BaseItemTypeComparison syncItemTypeComparison = baseItemTypeComparisonProvider.get();
-                    syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()), null, comparisonConfig.toBotIdSet());
+                    syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()), sellIncludeExistingUserId, comparisonConfig.toBotIdSet(), true);
                     return syncItemTypeComparison;
                 } else if (comparisonConfig.getCount() != null) {
                     BaseItemCountComparison baseItemCountComparison = baseItemCountComparisonProvider.get();
-                    baseItemCountComparison.init(comparisonConfig.getCount(), null, comparisonConfig.toBotIdSet());
+                    baseItemCountComparison.init(comparisonConfig.getCount(), sellIncludeExistingUserId, comparisonConfig.toBotIdSet(), true);
                     return baseItemCountComparison;
                 } else {
                     throw new UnsupportedOperationException();

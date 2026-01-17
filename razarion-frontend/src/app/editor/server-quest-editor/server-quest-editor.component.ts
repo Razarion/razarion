@@ -18,6 +18,7 @@ import {Select} from 'primeng/select';
 import {Button} from 'primeng/button';
 import {Accordion, AccordionModule} from 'primeng/accordion';
 import {LevelComponent} from '../common/level/level.component';
+import {StartRegionComponent} from '../common/start-region/start-region.component';
 
 import {TipComponent} from './tip/tip.component';
 import {MessageService} from 'primeng/api';
@@ -38,8 +39,9 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     AccordionModule,
     LevelComponent,
     TipComponent,
-    ScrollPanelModule
-],
+    ScrollPanelModule,
+    StartRegionComponent
+  ],
   templateUrl: './server-quest-editor.component.html'
 })
 export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
@@ -142,6 +144,7 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
           typeCount: {},
           timeSeconds: null,
           placeConfig: null,
+          startRegionId: null,
           botIds: [],
           includeExisting: false
         },

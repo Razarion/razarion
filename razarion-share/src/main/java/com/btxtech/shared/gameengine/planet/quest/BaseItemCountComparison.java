@@ -43,11 +43,27 @@ public class BaseItemCountComparison extends AbstractBaseItemComparison {
     }
 
     public void init(int count, String includeExistingUserId, Set<Integer> botIds) {
+        init(count, includeExistingUserId, botIds, false);
+    }
+
+    public void init(int count, String includeExistingUserId, Set<Integer> botIds, boolean isSellMode) {
         this.count = count;
         this.botIds = botIds;
         if (includeExistingUserId != null) {
             PlayerBaseFull playerBaseFull = (PlayerBaseFull) baseItemService.getPlayerBase4UserId(includeExistingUserId);
-            this.count = Math.max(this.count - playerBaseFull.getItemCount(), 0);
+            if (playerBaseFull != null) {
+                int existing = playerBaseFull.getItemCount();
+                if (isSellMode) {
+                    // For SELL: can only sell what you have
+                    this.count = Math.min(this.count, existing);
+                } else {
+                    // For SYNC_ITEM_CREATED: reduce by what you already have
+                    this.count = Math.max(this.count - existing, 0);
+                }
+            } else if (isSellMode) {
+                // No base, nothing to sell - quest is already fulfilled
+                this.count = 0;
+            }
         }
 
         countTotal = count;

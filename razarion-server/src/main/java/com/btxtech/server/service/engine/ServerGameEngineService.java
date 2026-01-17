@@ -19,6 +19,7 @@ import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.SlavePlanetConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import jakarta.transaction.Transactional;
@@ -62,6 +63,15 @@ public class ServerGameEngineService extends AbstractConfigCrudService<ServerGam
     @Transactional
     public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
         return serverGameEngineConfigEntity().findSlavePlanetConfig4Level(levelCrudPersistence.getLevelNumber4Id(levelId));
+    }
+
+    @Transactional
+    public PlaceConfig getStartRegionById(int startRegionId) {
+        return serverGameEngineConfigEntity().getStartRegionConfigs().stream()
+                .filter(config -> config.getId() != null && config.getId() == startRegionId)
+                .findFirst()
+                .map(config -> config.getStartRegion())
+                .orElse(null);
     }
 
     @Transactional

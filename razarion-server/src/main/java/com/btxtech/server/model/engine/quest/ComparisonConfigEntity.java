@@ -1,8 +1,10 @@
 package com.btxtech.server.model.engine.quest;
 
+import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.engine.BaseItemTypeEntity;
 import com.btxtech.server.model.engine.BotConfigEntity;
 import com.btxtech.server.model.engine.PlaceConfigEntity;
+import com.btxtech.server.model.engine.StartRegionConfigEntity;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -15,9 +17,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
+import static com.btxtech.server.service.PersistenceUtil.extractId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,9 +50,16 @@ public class ComparisonConfigEntity {
             joinColumns = @JoinColumn(name = "comparisonConfig"),
             inverseJoinColumns = @JoinColumn(name = "botConfig"))
     private List<BotConfigEntity> bots;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "startRegionId")
+    private StartRegionConfigEntity startRegion;
 
     public ComparisonConfig toComparisonConfig() {
-        ComparisonConfig comparisonConfig = new ComparisonConfig().count(count).includeExisting(includeExisting).timeSeconds(time);
+        ComparisonConfig comparisonConfig = new ComparisonConfig()
+                .count(count)
+                .includeExisting(includeExisting)
+                .timeSeconds(time)
+                .startRegionId(extractId(startRegion, BaseEntity::getId));
         if (typeCount != null && !typeCount.isEmpty()) {
             comparisonConfig.typeCount(typeCount.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().getId(), Map.Entry::getValue, (a, b) -> b)));
         }
@@ -64,6 +76,11 @@ public class ComparisonConfigEntity {
         includeExisting = comparisonConfig.isIncludeExisting();
         count = comparisonConfig.getCount();
         time = comparisonConfig.getTimeSeconds();
+        if (comparisonConfig.getStartRegionId() != null) {
+            startRegion = (StartRegionConfigEntity) new StartRegionConfigEntity().id(comparisonConfig.getStartRegionId());
+        } else {
+            startRegion = null;
+        }
         if (comparisonConfig.getPlaceConfig() != null) {
             if (placeConfig == null) {
                 placeConfig = new PlaceConfigEntity();
