@@ -15,7 +15,6 @@ public class ColdGameUiContext {
     private UserContext userContext;
     private StaticGameConfig staticGameConfig;
     private AudioConfig audioConfig;
-    private GameTipVisualConfig gameTipVisualConfig;
     private InGameQuestVisualConfig inGameQuestVisualConfig;
     private WarmGameUiContext warmGameUiContext;
 
@@ -41,14 +40,6 @@ public class ColdGameUiContext {
 
     public void setAudioConfig(AudioConfig audioConfig) {
         this.audioConfig = audioConfig;
-    }
-
-    public GameTipVisualConfig getGameTipVisualConfig() {
-        return gameTipVisualConfig;
-    }
-
-    public void setGameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
-        this.gameTipVisualConfig = gameTipVisualConfig;
     }
 
     public InGameQuestVisualConfig getInGameQuestVisualConfig() {
@@ -79,11 +70,6 @@ public class ColdGameUiContext {
 
     public ColdGameUiContext audioConfig(AudioConfig audioConfig) {
         setAudioConfig(audioConfig);
-        return this;
-    }
-
-    public ColdGameUiContext gameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
-        setGameTipVisualConfig(gameTipVisualConfig);
         return this;
     }
 

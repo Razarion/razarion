@@ -160,10 +160,6 @@ public class Scene {
         if (sceneConfig.getBoxItemPositions() != null) {
             gameEngineControl.dropBoxes(sceneConfig.getBoxItemPositions());
         }
-        if (sceneConfig.getGameTipConfig() != null) {
-            inGameQuestVisualizationService.setSuppressed(true);
-            // TODO gameTipService.start(sceneConfig.getGameTipConfig());
-        }
         if (sceneConfig.getProcessServerQuests() != null && sceneConfig.getProcessServerQuests()) {
             if (!gameUiControl.hasActiveServerQuest()) {
                 serverQuestProvider.activateNextPossibleQuest();
@@ -225,10 +221,6 @@ public class Scene {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             questCockpitService.showQuestSideBar(null, false);
-        }
-        if (sceneConfig.getGameTipConfig() != null) {
-            inGameQuestVisualizationService.setSuppressed(false);
-            // TODO gameTipService.stop();
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             // TODO viewService.removeViewFieldListeners(this);

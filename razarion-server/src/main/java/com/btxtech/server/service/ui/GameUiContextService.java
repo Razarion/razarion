@@ -66,7 +66,6 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
             userContext.levelId(levelCrudPersistence.getStarterLevelId());
         }
         coldGameUiContext.audioConfig(setupAudioConfig());
-        // TODO coldGameUiContext.gameTipVisualConfig(setupGameTipVisualConfig());
         coldGameUiContext.inGameQuestVisualConfig(setupInGameQuestVisualConfig());
         coldGameUiContext.warmGameUiContext(loadWarm(userContext));
         return coldGameUiContext;

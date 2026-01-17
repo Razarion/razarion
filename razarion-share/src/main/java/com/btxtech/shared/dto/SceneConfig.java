@@ -34,7 +34,6 @@ public class SceneConfig {
     private Integer duration;
     private ScrollUiQuest scrollUiQuest;
     private List<BoxItemPosition> boxItemPositions;
-    private GameTipConfig gameTipConfig;
 
     public Integer getId() {
         return id;
@@ -228,14 +227,6 @@ public class SceneConfig {
         this.boxItemPositions = boxItemPositions;
     }
 
-    public GameTipConfig getGameTipConfig() {
-        return gameTipConfig;
-    }
-
-    public void setGameTipConfig(GameTipConfig gameTipConfig) {
-        this.gameTipConfig = gameTipConfig;
-    }
-
     public SceneConfig id(int id) {
         this.id = id;
         return this;
@@ -353,11 +344,6 @@ public class SceneConfig {
 
     public SceneConfig boxItemPositions(List<BoxItemPosition> boxItemPositions) {
         this.boxItemPositions = boxItemPositions;
-        return this;
-    }
-
-    public SceneConfig gameTipConfig(GameTipConfig gameTipConfig) {
-        this.gameTipConfig = gameTipConfig;
         return this;
     }
 
