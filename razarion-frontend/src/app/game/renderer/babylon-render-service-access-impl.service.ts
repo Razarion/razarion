@@ -698,7 +698,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.gwtAngularService.gwtAngularFacade.selectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
-        () => this.babylonResourceItems.filter(i => i !== item));
+        () => this.babylonResourceItems = this.babylonResourceItems.filter(i => i !== item));
       this.babylonResourceItems.push(item);
       return item;
     } catch (error) {
@@ -815,6 +815,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   public getBabylonResourceItemImpls(): BabylonResourceItemImpl[] {
     return this.babylonResourceItems;
+  }
+
+  public getBabylonBaseItemsByDiplomacy(diplomacy: Diplomacy): BabylonBaseItemImpl[] {
+    return this.babylonBaseItems.filter(item => item.diplomacy === diplomacy);
   }
 
 

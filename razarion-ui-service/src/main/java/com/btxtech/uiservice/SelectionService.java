@@ -24,6 +24,8 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
+import elemental2.dom.DomGlobal;
+import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
@@ -32,6 +34,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,8 +53,14 @@ public class SelectionService {
     private final Provider<ResourceUiService> resourceUiService;
     private final Provider<BoxUiService> boxUiService;
     private ActionServiceListener actionServiceListener;
+    private final List<SelectionChangeListener> selectionListeners = new ArrayList<>();
     private Group selectedGroup;
     private SyncItemSimpleDto selectedOtherSyncItem;
+
+    @JsFunction
+    public interface SelectionChangeListener {
+        void onSelectionChanged();
+    }
 
     @Inject
     public SelectionService(Provider<BoxUiService> boxUiService,
@@ -241,5 +250,26 @@ public class SelectionService {
         if (this.actionServiceListener != null) {
             this.actionServiceListener.onSelectionChanged();
         }
+        // Notify all selection listeners after other event handlers have completed
+        // (e.g., BaseItemUiService.onSelectionChanged which calls babylonBaseItem.select(true))
+        DomGlobal.setTimeout(args -> {
+            for (SelectionChangeListener listener : selectionListeners) {
+                try {
+                    listener.onSelectionChanged();
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "SelectionListener failed", e);
+                }
+            }
+        }, 0);
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public void addSelectionListener(SelectionChangeListener listener) {
+        selectionListeners.add(listener);
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public void removeSelectionListener(SelectionChangeListener listener) {
+        selectionListeners.remove(listener);
     }
 }

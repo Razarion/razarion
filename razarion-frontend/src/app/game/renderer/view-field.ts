@@ -46,6 +46,67 @@ export class ViewField {
     return this.center;
   }
 
+  contains(position: DecimalPosition): boolean {
+    const x = position.getX();
+    const y = position.getY();
+
+    const corners = [
+      {x: this.bottomLeft.getX(), y: this.bottomLeft.getY()},
+      {x: this.bottomRight.getX(), y: this.bottomRight.getY()},
+      {x: this.topRight.getX(), y: this.topRight.getY()},
+      {x: this.topLeft.getX(), y: this.topLeft.getY()}
+    ];
+
+    let inside = false;
+    for (let i = 0, j = corners.length - 1; i < corners.length; j = i++) {
+      const xi = corners[i].x, yi = corners[i].y;
+      const xj = corners[j].x, yj = corners[j].y;
+
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  getAngleTo(position: DecimalPosition): number {
+    const center = this.getCenter();
+    const normalizedX = position.getX() - center.getX();
+    const normalizedY = position.getY() - center.getY();
+
+    const QUARTER_RADIANT = Math.PI / 2;
+    const HALF_RADIANT = Math.PI;
+    const THREE_QUARTER_RADIANT = 3 * Math.PI / 2;
+
+    if (normalizedY === 0.0) {
+      if (normalizedX > 0.0) {
+        return 0;
+      } else {
+        return HALF_RADIANT;
+      }
+    }
+    if (normalizedX === 0.0) {
+      if (normalizedY > 0.0) {
+        return QUARTER_RADIANT;
+      } else {
+        return THREE_QUARTER_RADIANT;
+      }
+    }
+    if (normalizedX > 0 && normalizedY > 0) {
+      // Quadrant 1
+      return Math.atan(normalizedY / normalizedX);
+    } else if (normalizedX < 0 && normalizedY > 0) {
+      // Quadrant 2
+      return QUARTER_RADIANT + Math.atan(-normalizedX / normalizedY);
+    } else if (normalizedX < 0 && normalizedY < 0) {
+      // Quadrant 3
+      return HALF_RADIANT + Math.atan(-normalizedY / -normalizedX);
+    } else {
+      // Quadrant 4
+      return THREE_QUARTER_RADIANT + Math.atan(normalizedX / -normalizedY);
+    }
+  }
+
   toString(): string {
     return `bottomLeft: ${this.bottomLeft.toString()}
     bottomRight : ${this.bottomRight.toString()}

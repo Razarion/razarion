@@ -9,6 +9,8 @@ import com.btxtech.shared.gameengine.datatypes.config.TipConfig;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -24,8 +26,9 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private ConditionConfigEntity conditionConfigEntity;
     private String tipString;
-    @OneToOne(fetch = FetchType.LAZY)
-    private BaseItemTypeEntity actorItemType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private BaseItemTypeEntity tipActorItemType;
 
     public QuestConfig toQuestConfig() {
         QuestConfig questConfig = new QuestConfig().id(getId()).internalName(getInternalName()).xp(xp).razarion(razarion).crystal(crystal);
@@ -35,7 +38,7 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
         if (tipString != null) {
             questConfig.setTipConfig(new TipConfig()
                     .tipString(tipString)
-                    .actorItemTypeId(extractId(actorItemType, BaseEntity::getId)));
+                    .actorItemTypeId(extractId(tipActorItemType, BaseEntity::getId)));
         }
         return questConfig;
     }
@@ -57,13 +60,13 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
         if (tipConfig != null) {
             tipString = tipConfig.getTipString();
             if (tipConfig.getActorItemTypeId() != null) {
-                actorItemType = (BaseItemTypeEntity) new BaseItemTypeEntity().id(tipConfig.getActorItemTypeId());
+                tipActorItemType = (BaseItemTypeEntity) new BaseItemTypeEntity().id(tipConfig.getActorItemTypeId());
             } else {
-                actorItemType = null;
+                tipActorItemType = null;
             }
         } else {
             tipString = null;
-            actorItemType = null;
+            tipActorItemType = null;
         }
     }
 

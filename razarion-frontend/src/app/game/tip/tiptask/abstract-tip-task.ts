@@ -17,6 +17,15 @@ export abstract class AbstractTipTask {
 
   abstract cleanup(): void;
 
+  /**
+   * Called when the tip target becomes visible again after being out of view.
+   * Override to re-show visualizations.
+   */
+  onBecameVisible(): void {
+    this.cleanup();
+    this.start();
+  }
+
   protected onFailed(): void {
     this.cleanup();
     this.tipService.onTaskFailed();

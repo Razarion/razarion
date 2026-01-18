@@ -605,4 +605,35 @@ public class BaseItemUiService {
             }
         }
     }
+
+    /**
+     * Returns the position of the nearest enemy to the given position.
+     * This searches ALL enemies, not just visible ones.
+     * Called from Angular/TypeScript.
+     *
+     * @param enemyItemTypeId optional filter by item type, null for any enemy
+     */
+    @SuppressWarnings("unused") // Called by Angular
+    public Vertex getNearestEnemyPosition(double fromX, double fromY, Integer enemyItemTypeId) {
+        DecimalPosition from = new DecimalPosition(fromX, fromY);
+        NativeSyncBaseItemTickInfo nearest = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (!isMyEnemy(nativeSyncBaseItemTickInfo)) {
+                continue;
+            }
+            if (enemyItemTypeId != null && nativeSyncBaseItemTickInfo.itemTypeId != enemyItemTypeId) {
+                continue;
+            }
+            DecimalPosition enemyPosition = new DecimalPosition(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y);
+            double distance = enemyPosition.getDistance(from);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearest = nativeSyncBaseItemTickInfo;
+            }
+        }
+
+        return nearest != null ? new Vertex(nearest.x, nearest.y, 0) : null;
+    }
 }

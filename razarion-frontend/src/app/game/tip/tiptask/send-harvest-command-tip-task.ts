@@ -1,10 +1,11 @@
 import {AbstractTipTask, TipTaskContext} from './abstract-tip-task';
-import {MarkerConfig} from '../../../gwtangular/GwtAngularFacade';
 import {TipService} from '../tip.service';
 import {BabylonResourceItemImpl} from '../../renderer/babylon-resource-item.impl';
+import {GwtInstance} from '../../../gwtangular/GwtInstance';
 
 export class SendHarvestCommandTipTask extends AbstractTipTask {
   private resource: BabylonResourceItemImpl | null = null;
+  private selectionListener: (() => void) | null = null;
 
   constructor(tipService: TipService, tipTaskContext: TipTaskContext) {
     super(tipService, tipTaskContext);
@@ -15,13 +16,69 @@ export class SendHarvestCommandTipTask extends AbstractTipTask {
   }
 
   start(): void {
-    this.tipTaskContext.babylonBaseItemImpl!.setSelectionCallback((active: boolean) => {
-      if (!active) {
-        this.onFailed();
+    this.resource = this.findVisibleResource();
+
+    // Register global selection listener
+    if (!this.selectionListener) {
+      this.selectionListener = () => this.onSelectionChanged();
+      this.tipService.gwtAngularFacade.selectionService.addSelectionListener(this.selectionListener);
+    }
+
+    if (!this.resource) {
+      // No visible resource found - check if there's a resource out of view
+      const nearestResourcePosition = this.findNearestResourcePosition();
+      if (nearestResourcePosition) {
+        // Resource exists but is out of view - set OutOfView target and wait
+        this.tipService.setOutOfViewTarget(
+          GwtInstance.newDecimalPosition(nearestResourcePosition.x, nearestResourcePosition.y)
+        );
+        return;
       }
+
+      // No resource found at all - retry after delay (server may not be synchronized)
+      setTimeout(() => {
+        this.start();
+      }, 1000);
+      return;
+    }
+
+    this.resource.setItemClickCallback(() => {
+      this.onSucceed();
     });
-    this.resource = null;
+    this.resource.showSelectPromptVisualization("Click to harvest", "150px");
+
+    // Set OutOfView target for when user scrolls away
+    const resourcePosition = this.resource.getPosition();
+    if (resourcePosition) {
+      this.tipService.setOutOfViewTarget(
+        GwtInstance.newDecimalPosition(resourcePosition.getX(), resourcePosition.getY())
+      );
+    }
+  }
+
+  cleanup(): void {
+    // Remove global selection listener
+    if (this.selectionListener) {
+      this.tipService.gwtAngularFacade.selectionService.removeSelectionListener(this.selectionListener);
+      this.selectionListener = null;
+    }
+    this.tipService.setOutOfViewTarget(null);
+    if (this.resource) {
+      this.resource.hideSelectPromptVisualization();
+      this.resource.setItemClickCallback(null);
+    }
+  }
+
+  private onSelectionChanged(): void {
+    // Check if own selection is still present
+    if (!this.tipService.gwtAngularFacade.selectionService.hasOwnSelection()) {
+      this.onFailed();
+    }
+  }
+
+  private findVisibleResource(): BabylonResourceItemImpl | null {
     const resources = this.tipService.renderService.getBabylonResourceItemImpls();
+    let resourceFound: BabylonResourceItemImpl | null = null;
     if (resources.length > 0) {
       const harvesterPosition = this.tipTaskContext.babylonBaseItemImpl!.getPosition()!;
       let minDistance: number | null = null;
@@ -29,35 +86,38 @@ export class SendHarvestCommandTipTask extends AbstractTipTask {
         const distance = resource.getPosition()?.distance(harvesterPosition)!;
         if (minDistance !== null) {
           if (minDistance > distance) {
-            this.resource = resource;
+            resourceFound = resource;
             minDistance = distance;
           }
         } else {
-          this.resource = resource;
+          resourceFound = resource;
           minDistance = distance;
         }
       }
-
-      let markerConfig = new class implements MarkerConfig {
-        radius = 10;
-        nodesMaterialId = 11;
-        placeNodesMaterialId = 10;
-        outOfViewNodesMaterialId = 0;
-        outOfViewSize = 0;
-        outOfViewDistanceFromCamera = 0;
-      }
-      this.resource!.mark(markerConfig);
-      this.resource!.setItemClickCallback(() => {
-        this.onSucceed();
-      });
     }
+    return resourceFound;
   }
 
-  cleanup(): void {
-    this.tipTaskContext.babylonBaseItemImpl!.setSelectionCallback(null);
-    if (this.resource) {
-      this.resource.mark(null);
-      this.resource.setItemClickCallback(null);
+  private findNearestResourcePosition(): { x: number, y: number } | null {
+    const harvesterPosition = this.tipTaskContext.babylonBaseItemImpl!.getPosition();
+    if (!harvesterPosition) {
+      return null;
     }
+
+    const resourceUiService = this.tipService.gwtAngularFacade.resourceUiService;
+    if (!resourceUiService) {
+      console.warn('ResourceUiService not available');
+      return null;
+    }
+
+    const nearestPosition = resourceUiService.getNearestResourcePosition(
+      harvesterPosition.getX(),
+      harvesterPosition.getY()
+    );
+
+    if (nearestPosition) {
+      return { x: nearestPosition.getX(), y: nearestPosition.getY() };
+    }
+    return null;
   }
 }

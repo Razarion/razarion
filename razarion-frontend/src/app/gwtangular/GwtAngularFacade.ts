@@ -24,6 +24,7 @@ export abstract class GwtAngularFacade {
   inventoryTypeService!: InventoryTypeService;
   inventoryUiService!: InventoryUiService;
   terrainUiService!: TerrainUiService;
+  resourceUiService!: ResourceUiService;
 
   abstract onCrash(): void;
 }
@@ -159,7 +160,9 @@ export interface SelectionService {
 
   selectRectangle(xStart: number, yStart: number, width: number, height: number): void;
 
-  setSelectionListener(callback: () => void): void;
+  addSelectionListener(callback: () => void): void;
+
+  removeSelectionListener(callback: () => void): void;
 }
 
 export interface ItemTypeService {
@@ -182,6 +185,13 @@ export interface BaseItemUiService {
   diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo: NativeSyncBaseItemTickInfo): Diplomacy;
 
   getBases(): PlayerBaseDto[];
+
+  /**
+   * Returns the position of the nearest enemy to the given position.
+   * This searches ALL enemies, not just visible ones.
+   * @param enemyItemTypeId optional filter by item type, null for any enemy
+   */
+  getNearestEnemyPosition(fromX: number, fromY: number, enemyItemTypeId: number | null): Vertex | null;
 }
 
 export interface NativeSyncBaseItemTickInfo {
@@ -303,7 +313,7 @@ export enum Tip {
   BUILD = 'BUILD',
   FABRICATE = 'FABRICATE',
   HARVEST = 'HARVEST',
-  // ATTACK = 'ATTACK',
+  ATTACK = 'ATTACK',
   // LOAD_CONTAINER = 'LOAD_CONTAINER',
   // UNLOAD_CONTAINER = 'UNLOAD_CONTAINER',
 }
@@ -693,6 +703,16 @@ export interface InventoryUiService {
 export interface TerrainUiService {
 
   getTerrainType(terrainPosition: DecimalPosition): TerrainType
+}
+
+// ---------- ResourceUiService ----------
+
+export interface ResourceUiService {
+  /**
+   * Returns the position of the nearest resource to the given position.
+   * This searches ALL resources, not just visible ones.
+   */
+  getNearestResourcePosition(fromX: number, fromY: number): Vertex | null;
 }
 
 // ---------- Dialog ----------

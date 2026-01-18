@@ -260,12 +260,12 @@ export class BabylonItemImpl implements BabylonItem {
     }
   }
 
-  showSelectPromptVisualization(): void {
+  showSelectPromptVisualization(text: string = "Click to select", labelWidth: string = "150px"): void {
     this.selectTipTexture = AdvancedDynamicTexture.CreateFullscreenUI("Select tip");
     this.selectTipTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
     let pressMouseVisualization = new PressMouseVisualization(true, this.rendererService);
-    pressMouseVisualization.label.text = "Click to select"
-    pressMouseVisualization.label.width = "150px";
+    pressMouseVisualization.label.text = text;
+    pressMouseVisualization.label.width = labelWidth;
     pressMouseVisualization.container.width = "200px";
     let stackPanel = new StackPanel();
     stackPanel.spacing = 10;

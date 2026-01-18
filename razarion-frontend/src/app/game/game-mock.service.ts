@@ -43,6 +43,7 @@ import {
   TerrainTileObjectList,
   TerrainTypeService, Tip,
   TipConfig,
+  Vertex,
   WeaponType
 } from "src/app/gwtangular/GwtAngularFacade";
 import {GwtInstance} from "../gwtangular/GwtInstance";
@@ -966,6 +967,10 @@ export class GameMockService {
   };
 
   mockBaseItemUiService: BaseItemUiService = new class implements BaseItemUiService {
+    getNearestEnemyPosition(fromX: number, fromY: number, enemyItemTypeId: number | null): Vertex | null {
+        throw new Error("Method not implemented.");
+    }
+
     getVisibleNativeSyncBaseItemTickInfos(bottomLeft: DecimalPosition, topRight: DecimalPosition): NativeSyncBaseItemTickInfo[] {
       return [
         {
@@ -1214,7 +1219,10 @@ export class GameMockService {
         console.info("selectRectangle");
       }
 
-      setSelectionListener(callback: () => void): void {
+      addSelectionListener(callback: () => void): void {
+      }
+
+      removeSelectionListener(callback: () => void): void {
       }
     }
   }

@@ -2,6 +2,7 @@ package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -14,6 +15,7 @@ import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
+import jsinterop.annotations.JsType;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -30,6 +32,7 @@ import java.util.logging.Logger;
  * 06.01.2017.
  */
 @Singleton
+@JsType
 public class ResourceUiService {
     private final Logger logger = Logger.getLogger(ResourceUiService.class.getName());
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
@@ -264,6 +267,30 @@ public class ResourceUiService {
                 hoverBabylonResourceItem.hover(true);
             }
         }
+    }
+
+    /**
+     * Returns the position of the nearest resource to the given position.
+     * This searches ALL resources, not just visible ones.
+     * Called from Angular/TypeScript.
+     */
+    @SuppressWarnings("unused") // Called by Angular
+    public Vertex getNearestResourcePosition(double fromX, double fromY) {
+        DecimalPosition from = new DecimalPosition(fromX, fromY);
+        SyncResourceItemSimpleDto nearest = null;
+        double minDistance = Double.MAX_VALUE;
+
+        synchronized (resources) {
+            for (SyncResourceItemSimpleDto resource : resources.values()) {
+                double distance = resource.getPosition().toXY().getDistance(from);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = resource;
+                }
+            }
+        }
+
+        return nearest != null ? nearest.getPosition() : null;
     }
 
     // Only for tests

@@ -8,6 +8,7 @@ import {IdleItemTipTask} from './tiptask/idle-item-tip-task';
 import {GwtHelper} from '../../gwtangular/GwtHelper';
 import {SendFabricateCommandTipTask} from './tiptask/send-fabricate-command-tip-task';
 import {SendHarvestCommandTipTask} from './tiptask/send-harvest-command-tip-task';
+import {SendAttackCommandTipTask} from './tiptask/send-attack-command-tip-task';
 
 export class TipTaskFactory {
 
@@ -20,6 +21,8 @@ export class TipTaskFactory {
         return TipTaskFactory.createFabricate(questConfig, tipService);
       case Tip.HARVEST:
         return TipTaskFactory.createHarvest(questConfig, tipService);
+      case Tip.ATTACK:
+        return TipTaskFactory.createAttack(questConfig, tipService);
       default:
         return null;
     }
@@ -60,6 +63,23 @@ export class TipTaskFactory {
     tipTaskContainer.addFallback(new IdleItemTipTask(tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new SendHarvestCommandTipTask(tipService, tipTaskContainer.tipTaskContext));
+    return tipTaskContainer;
+  }
+
+  private static createAttack(questConfig: QuestConfig, tipService: TipService): TipTaskContainer {
+    let tipConfig = questConfig.getTipConfig()!;
+    let typeCount = questConfig.getConditionConfig()?.getComparisonConfig().toTypeCountAngular();
+    let enemyItemTypeId: number | null = null;
+    if (typeCount && typeCount.length > 0) {
+      enemyItemTypeId = GwtHelper.gwtIssueNumber(typeCount[0][0]);
+    }
+    let tipTaskContainer = new TipTaskContainer();
+
+    tipTaskContainer.add(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
+    tipTaskContainer.add(new SendAttackCommandTipTask(enemyItemTypeId, tipService, tipTaskContainer.tipTaskContext));
+    tipTaskContainer.addFallback(new IdleItemTipTask(tipService, tipTaskContainer.tipTaskContext));
+    tipTaskContainer.addFallback(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
+    tipTaskContainer.addFallback(new SendAttackCommandTipTask(enemyItemTypeId, tipService, tipTaskContainer.tipTaskContext));
     return tipTaskContainer;
   }
 

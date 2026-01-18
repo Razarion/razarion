@@ -12,6 +12,7 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
@@ -38,6 +39,7 @@ public class GwtAngularService {
     private final TerrainTypeService terrainTypeService;
     private final ItemTypeService itemTypeService;
     private final BaseItemUiService baseItemUiService;
+    private final ResourceUiService resourceUiService;
     private final ModalDialogManager modalDialogManager;
     private final InventoryTypeService inventoryTypeService;
     private final InventoryUiService inventoryUiService;
@@ -46,11 +48,13 @@ public class GwtAngularService {
     private GwtAngularFacade gwtAngularFacade;
 
     @Inject
-    public GwtAngularService(ChatCockpitService chatCockpitService, InGameQuestVisualizationService inGameQuestVisualizationService,
+    public GwtAngularService(ChatCockpitService chatCockpitService,
+                             InGameQuestVisualizationService inGameQuestVisualizationService,
                              InventoryUiService inventoryUiService,
                              InventoryTypeService inventoryTypeService,
                              ModalDialogManager modalDialogManager,
                              BaseItemUiService baseItemUiService,
+                             ResourceUiService resourceUiService,
                              ItemTypeService itemTypeService,
                              TerrainTypeService terrainTypeService,
                              SelectionService selectionService,
@@ -67,6 +71,7 @@ public class GwtAngularService {
         this.inventoryTypeService = inventoryTypeService;
         this.modalDialogManager = modalDialogManager;
         this.baseItemUiService = baseItemUiService;
+        this.resourceUiService = resourceUiService;
         this.itemTypeService = itemTypeService;
         this.terrainTypeService = terrainTypeService;
         this.selectionService = selectionService;
@@ -95,6 +100,7 @@ public class GwtAngularService {
         gwtAngularFacade.terrainTypeService = terrainTypeService;
         gwtAngularFacade.itemTypeService = itemTypeService;
         gwtAngularFacade.baseItemUiService = baseItemUiService;
+        gwtAngularFacade.resourceUiService = resourceUiService;
         gwtAngularFacade.inventoryTypeService = inventoryTypeService;
         gwtAngularFacade.inventoryUiService = inventoryUiService;
         gwtAngularFacade.terrainUiService = terrainUiService;
