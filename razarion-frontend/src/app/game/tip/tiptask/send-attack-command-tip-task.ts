@@ -119,7 +119,8 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
     const nearestPosition = baseItemUiService.getNearestEnemyPosition(
       attackerPosition.getX(),
       attackerPosition.getY(),
-      this.enemyItemTypeId
+      this.enemyItemTypeId ?? 0,
+      this.enemyItemTypeId !== null
     );
 
     if (nearestPosition) {

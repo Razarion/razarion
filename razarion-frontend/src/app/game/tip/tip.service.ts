@@ -45,6 +45,10 @@ export class TipService implements ViewFieldListener {
 
   setOutOfViewTarget(position: DecimalPosition | null): void {
     this.outOfViewTarget = position;
+    // Ensure we have the current ViewField when setting a target
+    if (position && !this.currentViewField) {
+      this.currentViewField = this.renderService.getCurrentViewField();
+    }
     this.updateOutOfViewMarker();
   }
 

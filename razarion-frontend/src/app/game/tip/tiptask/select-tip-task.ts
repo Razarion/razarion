@@ -17,7 +17,14 @@ export class SelectTipTask extends AbstractTipTask {
 
   override isFulfilled(): boolean {
     let babylonItem = this.findActor()
-    return !!babylonItem?.isSelectOrHove();
+    if(!!babylonItem?.isSelectOrHove()) {
+      if(this.tipTaskContext.babylonBaseItemImpl === null) {
+        this.tipTaskContext.babylonBaseItemImpl = babylonItem;
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   override start(): void {

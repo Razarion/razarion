@@ -611,10 +611,11 @@ public class BaseItemUiService {
      * This searches ALL enemies, not just visible ones.
      * Called from Angular/TypeScript.
      *
-     * @param enemyItemTypeId optional filter by item type, null for any enemy
+     * @param enemyItemTypeId filter by item type (only used if enemyItemTypeIdUsed is true)
+     * @param enemyItemTypeIdUsed if true, filter by enemyItemTypeId; if false, any enemy
      */
     @SuppressWarnings("unused") // Called by Angular
-    public Vertex getNearestEnemyPosition(double fromX, double fromY, Integer enemyItemTypeId) {
+    public Vertex getNearestEnemyPosition(double fromX, double fromY, int enemyItemTypeId, boolean enemyItemTypeIdUsed) {
         DecimalPosition from = new DecimalPosition(fromX, fromY);
         NativeSyncBaseItemTickInfo nearest = null;
         double minDistance = Double.MAX_VALUE;
@@ -623,7 +624,7 @@ public class BaseItemUiService {
             if (!isMyEnemy(nativeSyncBaseItemTickInfo)) {
                 continue;
             }
-            if (enemyItemTypeId != null && nativeSyncBaseItemTickInfo.itemTypeId != enemyItemTypeId) {
+            if (enemyItemTypeIdUsed && nativeSyncBaseItemTickInfo.itemTypeId != enemyItemTypeId) {
                 continue;
             }
             DecimalPosition enemyPosition = new DecimalPosition(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y);

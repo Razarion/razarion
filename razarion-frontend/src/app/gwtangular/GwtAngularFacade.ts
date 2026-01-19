@@ -189,9 +189,10 @@ export interface BaseItemUiService {
   /**
    * Returns the position of the nearest enemy to the given position.
    * This searches ALL enemies, not just visible ones.
-   * @param enemyItemTypeId optional filter by item type, null for any enemy
+   * @param enemyItemTypeId filter by item type (only used if enemyItemTypeIdUsed is true)
+   * @param enemyItemTypeIdUsed if true, filter by enemyItemTypeId; if false, any enemy
    */
-  getNearestEnemyPosition(fromX: number, fromY: number, enemyItemTypeId: number | null): Vertex | null;
+  getNearestEnemyPosition(fromX: number, fromY: number, enemyItemTypeId: number, enemyItemTypeIdUsed: boolean): Vertex | null;
 }
 
 export interface NativeSyncBaseItemTickInfo {

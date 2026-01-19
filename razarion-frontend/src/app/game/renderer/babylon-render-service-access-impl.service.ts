@@ -603,26 +603,30 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     let bottomRight = this.setupTerrainPosition(1, -1, invertCameraViewProj);
     let topRight = this.setupTerrainPosition(1, 1, invertCameraViewProj);
     let topLeft = this.setupTerrainPosition(-1, 1, invertCameraViewProj);
+    let screenCenter = this.setupTerrainPosition(0, 0, invertCameraViewProj);
 
     // console.info(`ViewField BL ${bottomLeft.x}:${bottomLeft.z}:${bottomLeft.y} BR ${bottomRight.x}:${bottomRight.z}:${bottomRight.y} TR ${topRight.x}:${topRight.z}:${topRight.y} TL ${topLeft.x}:${topLeft.z}:${topLeft.y}`)
 
-    if (!bottomLeft || !bottomRight || !topRight || !topLeft) {
+    if (!bottomLeft || !bottomRight || !topRight || !topLeft || !screenCenter) {
       bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
       bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
       topRight = this.setupZeroLevelPosition(1, 1, invertCameraViewProj);
       topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
+      screenCenter = this.setupZeroLevelPosition(0, 0, invertCameraViewProj);
     }
 
     if (isNaN(bottomLeft.x) || isNaN(bottomLeft.x)
       || isNaN(bottomRight.x) || isNaN(bottomRight.z)
       || isNaN(topRight.x) || isNaN(topRight.z)
-      || isNaN(topLeft.x) || isNaN(topLeft.z)) {
+      || isNaN(topLeft.x) || isNaN(topLeft.z)
+      || isNaN(screenCenter.x) || isNaN(screenCenter.z)) {
       console.warn("setupViewField() has NaN");
       return new ViewField(
         new Vector3(0, 0, 0),
         new Vector3(1, 0, 0),
         new Vector3(1, 0, 1),
-        new Vector3(0, 0, 1));
+        new Vector3(0, 0, 1),
+        new Vector3(0.5, 0, 0.5));
     }
     this.gwtAngularService.gwtAngularFacade.inputService.onViewFieldChanged(
       bottomLeft.x, bottomLeft.z,
@@ -631,7 +635,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       topLeft.x, topLeft.z
     );
 
-    return new ViewField(bottomLeft, bottomRight, topRight, topLeft);
+    return new ViewField(bottomLeft, bottomRight, topRight, topLeft, screenCenter);
   }
 
   public setupMeshPickPoint(): PickingInfo {

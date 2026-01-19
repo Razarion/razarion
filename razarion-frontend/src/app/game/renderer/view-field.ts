@@ -11,13 +11,15 @@ export class ViewField {
   private readonly bottomRight: DecimalPosition;
   private readonly topRight: DecimalPosition;
   private readonly topLeft: DecimalPosition;
+  private readonly screenCenter: DecimalPosition;
   private center?: DecimalPosition;
 
-  constructor(bottomLeft: Vector3, bottomRight: Vector3, topRight: Vector3, topLeft: Vector3) {
+  constructor(bottomLeft: Vector3, bottomRight: Vector3, topRight: Vector3, topLeft: Vector3, screenCenter: Vector3) {
     this.bottomLeft = GwtInstance.newDecimalPosition(bottomLeft.x, bottomLeft.z);
     this.bottomRight = GwtInstance.newDecimalPosition(bottomRight.x, bottomRight.z);
     this.topRight = GwtInstance.newDecimalPosition(topRight.x, topRight.z);
     this.topLeft = GwtInstance.newDecimalPosition(topLeft.x, topLeft.z);
+    this.screenCenter = GwtInstance.newDecimalPosition(screenCenter.x, screenCenter.z);
   }
 
   getBottomLeft(): DecimalPosition {
@@ -34,6 +36,10 @@ export class ViewField {
 
   getTopLeft(): DecimalPosition {
     return this.topLeft;
+  }
+
+  getScreenCenter(): DecimalPosition {
+    return this.screenCenter;
   }
 
   getCenter(): DecimalPosition {
@@ -70,9 +76,8 @@ export class ViewField {
   }
 
   getAngleTo(position: DecimalPosition): number {
-    const center = this.getCenter();
-    const normalizedX = position.getX() - center.getX();
-    const normalizedY = position.getY() - center.getY();
+    const normalizedX = position.getX() - this.screenCenter.getX();
+    const normalizedY = position.getY() - this.screenCenter.getY();
 
     const QUARTER_RADIANT = Math.PI / 2;
     const HALF_RADIANT = Math.PI;
