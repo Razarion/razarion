@@ -5,10 +5,11 @@ import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
 import {ConditionTrigger, QuestConfig, QuestControllerClient} from 'src/app/generated/razarion-share';
 import {GwtAngularService} from 'src/app/gwtangular/GwtAngularService';
 import {QuestCockpitComponent} from "../quest-cockpit.component";
-import {Button, ButtonModule} from 'primeng/button';
+import {ButtonModule} from 'primeng/button';
 
 import {DataViewModule} from 'primeng/dataview';
 import {CommonModule} from '@angular/common';
+import {CockpitDisplayService} from '../../cockpit-display.service';
 
 @Component({
   selector: 'quest-dialog',
@@ -16,14 +17,17 @@ import {CommonModule} from '@angular/common';
     CommonModule,
     DataViewModule,
     ButtonModule
-],
+  ],
   templateUrl: './quest-dialog.component.html'
 })
 export class QuestDialogComponent implements OnInit {
   quests: { title: string, description: string, rewards: string[], questId: number }[] = [];
   private questControllerClient: QuestControllerClient;
 
-  constructor(httpClient: HttpClient, private messageService: MessageService, private gwtAngularService: GwtAngularService) {
+  constructor(httpClient: HttpClient,
+              private messageService: MessageService,
+              private gwtAngularService: GwtAngularService,
+              private cockpitDisplayService: CockpitDisplayService) {
     this.questControllerClient = new QuestControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
 
@@ -52,6 +56,9 @@ export class QuestDialogComponent implements OnInit {
 
   onActivate(questId: number): void {
     this.questControllerClient.activateQuest(questId)
+      .then(value => {
+        this.cockpitDisplayService.showQuestDialog = false;
+      })
       .catch(reason => {
         this.messageService.add({
           severity: 'error',

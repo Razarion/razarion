@@ -33,15 +33,15 @@
     @if (showQuestSelectionButton) {
       <div class="grow">
         <p-button type="button" label="Quests" icon="pi pi-list" styleClass="p-button-sm"
-          (onClick)="showQuestDialog = true">
+          (onClick)="cockpitDisplayService.showQuestDialog = true">
         </p-button>
       </div>
     }
   </div>
 </div>
 
-<p-dialog header="Quests" [(visible)]="showQuestDialog" [style]="{width: '30vw'}">
-  @if (showQuestDialog) {
+<p-dialog header="Quests" [(visible)]="cockpitDisplayService.showQuestDialog" [style]="{width: '30vw'}">
+  @if (cockpitDisplayService.showQuestDialog) {
     <quest-dialog></quest-dialog>
   }
 </p-dialog>

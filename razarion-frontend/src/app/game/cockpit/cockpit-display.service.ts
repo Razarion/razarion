@@ -14,4 +14,5 @@ export class CockpitDisplayService {
   showRegisterDialog = false;
   showRegisteredDialog = false;
   showSetUserNameDialog = false;
+  showQuestDialog = false;
 }

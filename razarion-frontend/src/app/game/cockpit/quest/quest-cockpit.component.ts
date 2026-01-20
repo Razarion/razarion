@@ -4,9 +4,7 @@ import {
   QuestCockpit,
   QuestConfig,
   QuestDescriptionConfig,
-  QuestProgressInfo,
-  Tip,
-  TipConfig
+  QuestProgressInfo
 } from "../../../gwtangular/GwtAngularFacade";
 import {GwtHelper} from "../../../gwtangular/GwtHelper";
 import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
@@ -38,14 +36,13 @@ export class QuestCockpitComponent implements QuestCockpit {
   progressRows: { text: string, done: boolean }[] = [];
   timeRow?: string = "";
   showQuestSelectionButton: boolean = false;
-  showQuestDialog: boolean = false;
   showQuestInGameVisualisation: boolean = true;
   private questDescriptionConfig?: QuestDescriptionConfig;
   private conditionConfig?: ConditionConfig;
   private questProgressInfo?: QuestProgressInfo;
 
   constructor(private gwtAngularService: GwtAngularService,
-              private cockpitDisplayService: CockpitDisplayService,
+              public cockpitDisplayService: CockpitDisplayService,
               private tipService: TipService,
               private zone: NgZone) {
   }
@@ -66,7 +63,7 @@ export class QuestCockpitComponent implements QuestCockpit {
           this.onShowQuestInGameVisualisation(false);
         } else {
           this.showQuestInGameVisualisation = true;
-          this.showQuestDialog = false;
+          this.cockpitDisplayService.showQuestDialog = false;
           this.tipService.deactivate()
         }
       } catch (e) {
