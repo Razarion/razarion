@@ -39,6 +39,26 @@ export interface GwtAngularBoot {
 
 export interface GameUiControl {
   getPlanetConfig(): PlanetConfig;
+
+  getColdGameUiContext(): ColdGameUiContext;
+}
+
+export interface ColdGameUiContext {
+  getInGameQuestVisualConfig(): InGameQuestVisualConfig;
+}
+
+export interface InGameQuestVisualConfig {
+  getNodesMaterialId(): number | null;
+
+  getPlaceNodesMaterialId(): number | null;
+
+  getRadius(): number;
+
+  getOutOfViewNodesMaterialId(): number | null;
+
+  getOutOfViewSize(): number;
+
+  getOutOfViewDistanceFromCamera(): number;
 }
 
 
@@ -360,6 +380,8 @@ export interface ComparisonConfig {
   toTypeCountAngular(): number[][]; // Key Item Type, Value count
 
   getTimeSeconds(): number | null;
+
+  getPlaceConfig(): PlaceConfig | null;
 }
 
 // ---------- Renderer ----------

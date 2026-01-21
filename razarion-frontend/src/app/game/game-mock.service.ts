@@ -10,6 +10,7 @@ import {
   BuilderType,
   BuildupItemCockpit,
   Character,
+  ColdGameUiContext,
   ComparisonConfig,
   ConditionConfig,
   DecimalPosition,
@@ -30,6 +31,7 @@ import {
   OwnItemCockpit,
   OwnMultipleIteCockpit,
   PhysicalAreaConfig,
+  PlaceConfig,
   PlanetConfig,
   PlayerBaseDto,
   QuestConfig,
@@ -614,6 +616,10 @@ export class GameMockService {
         return new class implements ConditionConfig {
           getComparisonConfig(): ComparisonConfig {
             return new class implements ComparisonConfig {
+              getPlaceConfig(): PlaceConfig | null {
+                throw new Error("Method not implemented.");
+              }
+
               getCount(): number | null {
                 return 10;
               }
@@ -681,6 +687,9 @@ export class GameMockService {
   // --------------------------------------- old ---------------------------------------
 
   gameUiControl: GameUiControl = new class implements GameUiControl {
+    getColdGameUiContext(): ColdGameUiContext {
+        throw new Error("Method not implemented.");
+    }
     getPlanetConfig(): PlanetConfig {
       return new class implements PlanetConfig {
         getSize(): DecimalPosition {

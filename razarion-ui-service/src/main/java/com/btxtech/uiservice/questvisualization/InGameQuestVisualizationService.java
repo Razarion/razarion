@@ -15,13 +15,12 @@ import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
 import jsinterop.annotations.JsType;
 
-import javax.inject.Provider;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 
 /**
@@ -33,22 +32,20 @@ import java.util.function.Consumer;
 public class InGameQuestVisualizationService {
 
     // private Logger logger = Logger.getLogger(InGameQuestVisualizationService.class.getName());
-    private GameUiControl gameUiControl;
+    private final GameUiControl gameUiControl;
 
-    private BaseItemUiService baseItemUiService;
+    private final BaseItemUiService baseItemUiService;
 
-    private ResourceUiService resourceUiService;
+    private final ResourceUiService resourceUiService;
 
-    private BoxUiService boxUiService;
+    private final BoxUiService boxUiService;
 
-    private Provider<QuestInGamePlaceVisualization> instanceQuestInGamePlaceVisualization;
+    private final Provider<QuestInGamePlaceVisualization> instanceQuestInGamePlaceVisualization;
+
     private AbstractSyncItemSetPositionMonitor syncItemSetPositionMonitor;
     private QuestInGamePlaceVisualization questInGamePlaceVisualization;
     private QuestConfig quest;
     private Set<Integer> itemTypeFilter;
-    private boolean visible = true;
-    private Consumer<Boolean> visibleCallback;
-    private Consumer<Boolean> suppressCallback;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
 
@@ -64,10 +61,6 @@ public class InGameQuestVisualizationService {
     public void onQuestActivated(QuestConfig quest) {
         stop();
         this.quest = quest;
-        if (visibleCallback != null) {
-            visibleCallback.accept(true);
-        }
-        visible = true;
         showVisualization();
     }
 
@@ -85,27 +78,20 @@ public class InGameQuestVisualizationService {
                         itemTypeFilter.add(entry.getKey());
                     }
                 }
-                if(syncItemSetPositionMonitor != null) {
-                    ((SyncBaseItemSetPositionMonitor)syncItemSetPositionMonitor).setItemTypeFilter(itemTypeFilter);
+                if (syncItemSetPositionMonitor != null) {
+                    ((SyncBaseItemSetPositionMonitor) syncItemSetPositionMonitor).setItemTypeFilter(itemTypeFilter);
                 }
             }
         }
     }
 
+    @SuppressWarnings("unused") // Called by Angular
     public void setVisible(boolean visible) {
-        this.visible = visible;
         if (visible) {
             showVisualization();
         } else {
             hideVisualization();
         }
-        if (suppressCallback != null) {
-            visibleCallback.accept(visible);
-        }
-    }
-
-    public boolean isVisible() {
-        return visible;
     }
 
     public void stop() {
@@ -118,7 +104,7 @@ public class InGameQuestVisualizationService {
         if (quest == null) {
             return;
         }
-        if(quest.getTipConfig() != null) {
+        if (quest.getTipConfig() != null) {
             return;
         }
         switch (quest.getConditionConfig().getConditionTrigger()) {
@@ -183,29 +169,6 @@ public class InGameQuestVisualizationService {
         if (syncItemSetPositionMonitor != null) {
             syncItemSetPositionMonitor.release();
             syncItemSetPositionMonitor = null;
-        }
-    }
-
-    public void setVisibleCallback(Consumer<Boolean> visibleCallback) {
-        this.visibleCallback = visibleCallback;
-    }
-
-    public void setSuppressCallback(Consumer<Boolean> suppressCallback) {
-        this.suppressCallback = suppressCallback;
-    }
-
-    public void setSuppressed(boolean suppress) {
-        if (visibleCallback != null) {
-            visibleCallback.accept(!suppress);
-        }
-        if (suppressCallback != null) {
-            suppressCallback.accept(suppress);
-        }
-        visible = !suppress;
-        if (suppress) {
-            hideVisualization();
-        } else {
-            showVisualization();
         }
     }
 

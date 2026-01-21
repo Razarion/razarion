@@ -1,11 +1,14 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.Color;
+import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsType;
 
 /**
  * Created by Beat
  * on 12.09.2017.
  */
+@JsType
 public class InGameQuestVisualConfig {
     private Integer nodesMaterialId;
     private Integer placeNodesMaterialId;
@@ -89,46 +92,55 @@ public class InGameQuestVisualConfig {
         this.pickColor = pickColor;
     }
 
+    @JsIgnore
     public InGameQuestVisualConfig nodesMaterialId(Integer nodesMaterialId) {
         setNodesMaterialId(nodesMaterialId);
         return this;
     }
 
+    @JsIgnore
     public InGameQuestVisualConfig placeNodesMaterialId(Integer nodesMaterialId) {
         setPlaceNodesMaterialId(nodesMaterialId);
         return this;
     }
 
+    @JsIgnore
     public InGameQuestVisualConfig radius(double radius) {
         setRadius(radius);
         return this;
     }
 
+    @JsIgnore
     public InGameQuestVisualConfig outOfViewNodesMaterialId(Integer outOfViewNodesMaterialId) {
         setOutOfViewNodesMaterialId(outOfViewNodesMaterialId);
         return this;
     }
 
+    @JsIgnore
     public InGameQuestVisualConfig outOfViewSize(double outOfViewSize) {
         setOutOfViewSize(outOfViewSize);
         return this;
     }
 
+    @JsIgnore
     public InGameQuestVisualConfig outOfViewDistanceFromCamera(double outOfViewDistanceFromCamera) {
         setOutOfViewDistanceFromCamera(outOfViewDistanceFromCamera);
         return this;
     }
 
+    @JsIgnore
     public InGameQuestVisualConfig harvestColor(Color harvestColor) {
         setHarvestColor(harvestColor);
         return this;
     }
 
+    @JsIgnore
     public InGameQuestVisualConfig attackColor(Color attackColor) {
         setAttackColor(attackColor);
         return this;
     }
 
+    @JsIgnore
     public InGameQuestVisualConfig pickColor(Color pickColor) {
         setPickColor(pickColor);
         return this;

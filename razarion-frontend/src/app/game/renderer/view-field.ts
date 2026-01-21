@@ -75,6 +75,23 @@ export class ViewField {
     return inside;
   }
 
+  /**
+   * Calculates the inner axis-aligned bounding box rectangle.
+   * This is a rectangle inscribed within the view field quadrilateral.
+   */
+  calculateInnerAabbRectangle(): { x: number, y: number, width: number, height: number } {
+    const blX = this.bottomLeft.getX();
+    const blY = this.bottomLeft.getY();
+    const brX = this.bottomRight.getX();
+    const brY = this.bottomRight.getY();
+    const trY = this.topRight.getY();
+
+    const width = Math.sqrt((brX - blX) * (brX - blX) + (brY - blY) * (brY - blY));
+    const height = Math.abs(brY - trY);
+
+    return { x: blX, y: blY, width, height };
+  }
+
   getAngleTo(position: DecimalPosition): number {
     const normalizedX = position.getX() - this.screenCenter.getX();
     const normalizedY = position.getY() - this.screenCenter.getY();

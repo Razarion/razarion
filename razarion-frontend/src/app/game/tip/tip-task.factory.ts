@@ -30,15 +30,17 @@ export class TipTaskFactory {
 
   private static createBuilt(questConfig: QuestConfig, tipService: TipService): TipTaskContainer {
     let tipConfig = questConfig.getTipConfig()!;
-    let toBeBuiltItemTypeId = GwtHelper.gwtIssueNumber(questConfig.getConditionConfig()?.getComparisonConfig().toTypeCountAngular()[0][0])!;
+    let comparisonConfig = questConfig.getConditionConfig()?.getComparisonConfig();
+    let toBeBuiltItemTypeId = GwtHelper.gwtIssueNumber(comparisonConfig?.toTypeCountAngular()[0][0])!;
+    let placeConfig = comparisonConfig?.getPlaceConfig() ?? null;
     let tipTaskContainer = new TipTaskContainer();
     tipTaskContainer.add(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.add(new StartBuildPlacerTipTask(toBeBuiltItemTypeId, tipService, tipTaskContainer.tipTaskContext));
-    tipTaskContainer.add(new SendBuildCommandTipTask(toBeBuiltItemTypeId, tipService, tipTaskContainer.tipTaskContext));
+    tipTaskContainer.add(new SendBuildCommandTipTask(toBeBuiltItemTypeId, placeConfig, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new IdleItemTipTask(tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new StartBuildPlacerTipTask(toBeBuiltItemTypeId, tipService, tipTaskContainer.tipTaskContext));
-    tipTaskContainer.addFallback(new SendBuildCommandTipTask(toBeBuiltItemTypeId, tipService, tipTaskContainer.tipTaskContext));
+    tipTaskContainer.addFallback(new SendBuildCommandTipTask(toBeBuiltItemTypeId, placeConfig, tipService, tipTaskContainer.tipTaskContext));
     return tipTaskContainer;
   }
 

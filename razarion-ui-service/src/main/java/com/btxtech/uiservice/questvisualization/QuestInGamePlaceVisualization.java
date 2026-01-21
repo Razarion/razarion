@@ -15,7 +15,7 @@ import javax.inject.Inject;
  */
 public class QuestInGamePlaceVisualization {
 
-    private BabylonRendererService babylonRendererService;
+    private final BabylonRendererService babylonRendererService;
     private PlaceConfig placeConfig;
     private DecimalPosition center;
     private Rectangle2D placeConfigBoundaryRect;
