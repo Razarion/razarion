@@ -15,7 +15,7 @@ import com.btxtech.uiservice.user.UserUiService;
 import elemental2.dom.Event;
 import elemental2.dom.MessageEvent;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

@@ -22,7 +22,7 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * User: beat

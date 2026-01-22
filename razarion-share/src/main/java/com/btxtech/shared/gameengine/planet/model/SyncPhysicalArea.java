@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Created by Beat

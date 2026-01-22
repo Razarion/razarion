@@ -17,7 +17,7 @@ import com.btxtech.shared.mock.TestSimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
 import dagger.Component;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 @Component(modules = TestSharedDaggerModule.class)

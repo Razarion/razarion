@@ -15,8 +15,8 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import jsinterop.annotations.JsType;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;

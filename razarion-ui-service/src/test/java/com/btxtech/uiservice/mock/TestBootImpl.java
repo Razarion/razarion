@@ -5,8 +5,8 @@ import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.StartupSeq;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * Created by Beat

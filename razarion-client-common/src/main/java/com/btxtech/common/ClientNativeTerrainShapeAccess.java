@@ -12,8 +12,8 @@ import elemental2.core.Uint16Array;
 import elemental2.dom.Response;
 import jsinterop.base.Js;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -37,7 +37,7 @@ import com.btxtech.shared.gameengine.planet.pathing.TerrainDestinationFinderUtil
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * User: beat

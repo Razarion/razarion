@@ -16,7 +16,7 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * User: beat

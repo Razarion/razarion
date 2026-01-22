@@ -20,7 +20,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 

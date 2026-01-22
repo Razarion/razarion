@@ -20,9 +20,9 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import elemental2.dom.DedicatedWorkerGlobalScope;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

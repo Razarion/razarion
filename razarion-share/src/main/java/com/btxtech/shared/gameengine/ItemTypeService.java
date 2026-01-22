@@ -7,8 +7,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import jsinterop.annotations.JsType;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;

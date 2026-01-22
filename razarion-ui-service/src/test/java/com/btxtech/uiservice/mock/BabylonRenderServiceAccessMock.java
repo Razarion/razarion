@@ -15,8 +15,8 @@ import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.BabylonTerrainTile;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;

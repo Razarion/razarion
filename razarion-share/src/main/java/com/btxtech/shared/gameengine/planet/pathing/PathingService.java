@@ -16,8 +16,8 @@ import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

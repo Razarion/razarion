@@ -16,7 +16,7 @@ package com.btxtech.shared.gameengine.planet.quest;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * User: beat

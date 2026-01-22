@@ -10,7 +10,7 @@ After=network.target
 [Service]
 User=game
 WorkingDirectory=/home/game/razarion-server
-ExecStart=/home/game/jdk-19.0.2+7-jre/bin/java -jar razarion-server.jar --spring.profiles.active=prod
+ExecStart=/home/game/jdk-21.0.10+7/bin/java -jar razarion-server.jar --spring.profiles.active=prod
 SuccessExitStatus=143
 Restart=always
 RestartSec=10

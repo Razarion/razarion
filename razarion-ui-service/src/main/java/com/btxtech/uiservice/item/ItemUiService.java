@@ -8,8 +8,8 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.uiservice.Colors;
 
-import javax.inject.Singleton;
-import javax.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.inject.Inject;
 
 /**
  * Created by Beat

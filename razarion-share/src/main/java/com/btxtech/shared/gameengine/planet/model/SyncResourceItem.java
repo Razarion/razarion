@@ -17,7 +17,7 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * User: beat

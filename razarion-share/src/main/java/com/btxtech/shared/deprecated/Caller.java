@@ -1,6 +1,6 @@
 package com.btxtech.shared.deprecated;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class Caller<T> {
 

@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.List;
 
 /**

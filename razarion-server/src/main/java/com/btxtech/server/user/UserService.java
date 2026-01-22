@@ -157,7 +157,7 @@ public class UserService implements UserDetailsService {
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {
                 if (userEntity.isAdmin()) {
-                    return List.of(new SimpleGrantedAuthority(Roles.toJwtRole(Roles.ADMIN)));
+                    return List.of(new SimpleGrantedAuthority(Roles.ADMIN));
                 } else {
                     return List.of();
                 }
@@ -514,15 +514,15 @@ public class UserService implements UserDetailsService {
     @Transactional
     @Scheduled(fixedRate = 60000)
     public void cleanupDisconnectedUnregisteredUsers() {
-        var cutoff = LocalDateTime.now().minusMinutes(240);
-        userRepository.findInactiveSince(cutoff)
-                .stream()
-                .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
-                .forEach(userEntity -> {
-                    logger.info("Removing user: {}", userEntity);
-                    deleteBaseByUser(userEntity.getUserId());
-                    userRepository.delete(userEntity);
-                });
+//        var cutoff = LocalDateTime.now().minusMinutes(240);
+//        userRepository.findInactiveSince(cutoff)
+//                .stream()
+//                .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
+//                .forEach(userEntity -> {
+//                    logger.info("Removing user: {}", userEntity);
+//                    deleteBaseByUser(userEntity.getUserId());
+//                    userRepository.delete(userEntity);
+//                });
     }
 
 

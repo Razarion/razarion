@@ -9,7 +9,7 @@ import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.rest.TrackerController;
-import jakarta.annotation.security.RolesAllowed;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,7 +49,7 @@ public class TrackerControllerImpl implements TrackerController {
     @PostMapping(value = "loadTrackingContainer",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public TrackingContainer loadTrackingContainer(@RequestBody TrackingRequest trackingRequest) {
         return new TrackingContainer()
                 .pageRequests(pageRequestService.loadPageRequests(trackingRequest.getFromDate(), trackingRequest.getToDate()))

@@ -10,9 +10,9 @@ import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBabylon
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBotGround;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeObjectList;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

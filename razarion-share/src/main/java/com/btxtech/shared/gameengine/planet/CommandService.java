@@ -22,8 +22,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

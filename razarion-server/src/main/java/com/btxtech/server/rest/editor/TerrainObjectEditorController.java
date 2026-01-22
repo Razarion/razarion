@@ -4,7 +4,7 @@ import com.btxtech.server.model.Roles;
 import com.btxtech.server.rest.AbstractConfigController;
 import com.btxtech.server.service.engine.TerrainObjectService;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import jakarta.annotation.security.RolesAllowed;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +24,7 @@ public class TerrainObjectEditorController extends AbstractConfigController<Terr
         return terrainObjectService;
     }
 
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     @PostMapping("update-radius/{terrainObjectId}/{radius}")
     void updateRadius(@PathVariable("terrainObjectId") int terrainObjectId, @PathVariable("radius") double radius) {
         terrainObjectService.updateRadius(terrainObjectId, radius);

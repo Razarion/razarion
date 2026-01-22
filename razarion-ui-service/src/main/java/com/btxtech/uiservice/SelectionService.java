@@ -29,9 +29,9 @@ import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

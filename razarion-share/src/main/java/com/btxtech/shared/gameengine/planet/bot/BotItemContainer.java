@@ -38,8 +38,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.utils.CollectionUtils;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

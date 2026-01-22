@@ -23,8 +23,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;

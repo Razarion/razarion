@@ -22,8 +22,8 @@ import elemental2.dom.DomGlobal;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class GwtAngularService {

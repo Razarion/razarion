@@ -10,9 +10,9 @@ import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.URLSearchParams;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;

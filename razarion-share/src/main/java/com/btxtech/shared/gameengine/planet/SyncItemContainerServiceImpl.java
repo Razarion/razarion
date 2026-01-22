@@ -17,9 +17,9 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;

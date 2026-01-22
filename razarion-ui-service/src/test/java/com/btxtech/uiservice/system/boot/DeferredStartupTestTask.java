@@ -13,7 +13,7 @@
 
 package com.btxtech.uiservice.system.boot;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * User: beat

@@ -45,7 +45,7 @@ import java.security.interfaces.RSAPublicKey;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(jsr250Enabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
     // private final Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
     @Value("${spring.websecurity.debug:false}")
@@ -158,4 +158,5 @@ public class SecurityConfiguration {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.debug(webSecurityDebug);
     }
-}
+
+    }

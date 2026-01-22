@@ -7,8 +7,8 @@ import com.btxtech.shared.system.alarm.AlarmService;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @JsType
 @Singleton

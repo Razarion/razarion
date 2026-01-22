@@ -15,7 +15,7 @@ import {Router} from '@angular/router';
   providedIn: 'root'
 })
 export class UserService {
-  static readonly ROLE_ADMIN = "ROLE_ADMIN";
+  static readonly ROLE_ADMIN = "ADMIN";
   private userControllerClient: UserControllerClient;
   public registerState: RegisterState = RegisterState.UNREGISTERED;
   public name: String | null = null;
@@ -78,15 +78,9 @@ export class UserService {
         return false;
       }
 
-      if (roles.includes(",")) {
-        const roleArray = roles.split(",");
-        for (let role of roleArray) {
-          if (role === UserService.ROLE_ADMIN) {
-            return true;
-          }
-        }
-      } else {
-        if (roles === UserService.ROLE_ADMIN) {
+      const roleArray = roles.split(" ");
+      for (let role of roleArray) {
+        if (role === UserService.ROLE_ADMIN) {
           return true;
         }
       }

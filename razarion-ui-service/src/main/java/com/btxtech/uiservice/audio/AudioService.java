@@ -13,7 +13,7 @@ import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_AUDIO_SERVICE;

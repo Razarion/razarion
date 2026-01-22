@@ -7,9 +7,9 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.function.Consumer;
 
 /**

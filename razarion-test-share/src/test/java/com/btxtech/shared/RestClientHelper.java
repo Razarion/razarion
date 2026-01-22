@@ -3,7 +3,7 @@ package com.btxtech.shared;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;

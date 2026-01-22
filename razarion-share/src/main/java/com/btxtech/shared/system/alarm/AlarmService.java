@@ -1,7 +1,7 @@
 package com.btxtech.shared.system.alarm;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

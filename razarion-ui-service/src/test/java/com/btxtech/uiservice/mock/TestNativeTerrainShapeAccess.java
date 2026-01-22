@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.function.Consumer;
 
 /**

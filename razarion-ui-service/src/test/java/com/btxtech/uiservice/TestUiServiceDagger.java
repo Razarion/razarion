@@ -15,7 +15,7 @@ import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import dagger.Component;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 @Component(modules = TestUiServiceDaggerModule.class)

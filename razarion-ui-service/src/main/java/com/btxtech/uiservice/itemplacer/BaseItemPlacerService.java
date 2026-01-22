@@ -3,9 +3,9 @@ package com.btxtech.uiservice.itemplacer;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 
-import javax.inject.Singleton;
-import javax.inject.Provider;
-import javax.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.inject.Provider;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;

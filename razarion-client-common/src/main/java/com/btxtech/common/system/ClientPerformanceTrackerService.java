@@ -6,8 +6,8 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

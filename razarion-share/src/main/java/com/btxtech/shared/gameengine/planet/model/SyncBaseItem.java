@@ -47,8 +47,8 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNativeDecimalPosition;
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.WATER_LEVEL;

@@ -19,7 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * User: beat

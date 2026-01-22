@@ -3,8 +3,8 @@ package com.btxtech.client;
 import com.btxtech.client.rest.DominoRestAccess;
 import com.btxtech.uiservice.ServerQuestProvider;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class ClientServerQuestProvider implements ServerQuestProvider {

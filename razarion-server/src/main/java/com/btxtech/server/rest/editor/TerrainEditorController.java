@@ -4,7 +4,7 @@ import com.btxtech.server.model.DataUrlDecoder;
 import com.btxtech.server.model.Roles;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
-import jakarta.annotation.security.RolesAllowed;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -26,7 +26,7 @@ public class TerrainEditorController {
     }
 
     @PutMapping(value = "updateTerrain/{planetId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void updateTerrain(@PathVariable("planetId") int planetId, @RequestBody TerrainEditorUpdate terrainEditorUpdate) {
         try {
             // Check if terrain is valid
@@ -49,7 +49,7 @@ public class TerrainEditorController {
 
 
     @PutMapping(value = "updateMiniMapImage/{planetId}", consumes = MediaType.TEXT_PLAIN_VALUE)
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void updateMiniMapImage(@PathVariable("planetId") int planetId, @RequestBody String dataUrl) {
         try {
             DataUrlDecoder dataUrlDecoder = new DataUrlDecoder(dataUrl);
@@ -61,7 +61,7 @@ public class TerrainEditorController {
     }
 
     @PostMapping(value = "updateCompressedHeightMap/{planetId}", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void updateCompressedHeightMap(@PathVariable("planetId") int planetId, @RequestBody byte[] zippedHeightMap) {
         try {
             planetCrudPersistence.updateCompressedHeightMap(planetId, zippedHeightMap);

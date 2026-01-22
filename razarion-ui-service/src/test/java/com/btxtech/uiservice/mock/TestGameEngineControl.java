@@ -21,9 +21,9 @@ import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.logging.Logger;
 
 import static com.btxtech.shared.gameengine.GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST;

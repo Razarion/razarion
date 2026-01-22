@@ -4,8 +4,8 @@ import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;

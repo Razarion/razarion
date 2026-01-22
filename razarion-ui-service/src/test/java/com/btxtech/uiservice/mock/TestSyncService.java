@@ -4,8 +4,8 @@ import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.SyncService;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * Created by Beat

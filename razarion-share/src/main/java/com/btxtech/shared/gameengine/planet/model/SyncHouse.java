@@ -18,7 +18,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException
 import com.btxtech.shared.gameengine.datatypes.itemtype.HouseType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * User: beat

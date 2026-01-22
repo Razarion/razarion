@@ -11,7 +11,7 @@ import com.btxtech.uiservice.renderer.BabylonTerrainTile;
 import elemental2.core.Uint16Array;
 import jsinterop.base.Js;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.terrainPositionToTileIndex;
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.tileIndexToNodeIndex;

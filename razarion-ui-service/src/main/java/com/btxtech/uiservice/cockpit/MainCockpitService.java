@@ -6,8 +6,8 @@ import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.uiservice.control.GameUiControl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.function.Function;
 
 @Singleton

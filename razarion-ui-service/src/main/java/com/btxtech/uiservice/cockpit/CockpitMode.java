@@ -15,7 +15,7 @@ package com.btxtech.uiservice.cockpit;
 
 import com.btxtech.uiservice.SelectionEvent;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * User: beat

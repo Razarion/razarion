@@ -12,11 +12,11 @@
     <name>Razarion parent</name>
 
     <properties>
-        <gwt.version>2.11.0</gwt.version>
-        <gwt.elemental2.version>1.2.1</gwt.elemental2.version>
+        <gwt.version>2.12.2</gwt.version>
+        <gwt.elemental2.version>1.2.3</gwt.elemental2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.jboss.resteasy.version>6.2.10.Final</org.jboss.resteasy.version>
-        <com.google.dagger.version>2.45</com.google.dagger.version>
+        <com.google.dagger.version>2.55</com.google.dagger.version>
         <org.dominokit.version>1.0.2</org.dominokit.version>
     </properties>
 

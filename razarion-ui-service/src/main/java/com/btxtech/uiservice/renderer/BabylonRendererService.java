@@ -11,8 +11,8 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.Diplomacy;
 import elemental2.dom.DomGlobal;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.Optional;
 import java.util.logging.Logger;
 

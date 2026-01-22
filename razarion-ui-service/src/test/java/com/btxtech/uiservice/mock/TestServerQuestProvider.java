@@ -2,8 +2,8 @@ package com.btxtech.uiservice.mock;
 
 import com.btxtech.uiservice.ServerQuestProvider;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class TestServerQuestProvider implements ServerQuestProvider {

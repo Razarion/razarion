@@ -9,7 +9,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;

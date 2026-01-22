@@ -6,8 +6,4 @@ public final class Roles {
 
     private Roles() {
     }
-
-    public static String toJwtRole(String role) {
-        return "ROLE_" + role;
-    }
 }

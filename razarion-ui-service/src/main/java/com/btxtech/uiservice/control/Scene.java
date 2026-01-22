@@ -18,7 +18,7 @@ import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Optional;
 import java.util.logging.Logger;
 

@@ -6,7 +6,7 @@ import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.BootContext;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Created by Beat

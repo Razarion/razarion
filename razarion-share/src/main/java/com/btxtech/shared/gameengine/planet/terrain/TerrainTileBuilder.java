@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShapeAccess;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 

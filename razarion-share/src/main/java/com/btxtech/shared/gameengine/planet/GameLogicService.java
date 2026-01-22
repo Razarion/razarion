@@ -14,9 +14,9 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;

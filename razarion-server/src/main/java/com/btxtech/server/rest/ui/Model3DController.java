@@ -6,7 +6,7 @@ import com.btxtech.server.rest.AbstractBaseController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.Model3DService;
 import com.btxtech.shared.CommonUrl;
-import jakarta.annotation.security.RolesAllowed;
+import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.transaction.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +39,7 @@ public class Model3DController extends AbstractBaseController<Model3DEntity> {
         return model3DCrudPersistence;
     }
 
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     @Transactional
     @GetMapping(value = "getModel3DsByGltf/{gltfId}", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     public List<Model3DEntity> getModel3DsByGltf(@PathVariable("gltfId") int gltfId) {

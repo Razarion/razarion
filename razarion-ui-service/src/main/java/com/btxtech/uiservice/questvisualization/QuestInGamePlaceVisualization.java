@@ -7,7 +7,7 @@ import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Created by Beat

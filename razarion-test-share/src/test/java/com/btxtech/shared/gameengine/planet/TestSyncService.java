@@ -3,8 +3,8 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * Created by Beat

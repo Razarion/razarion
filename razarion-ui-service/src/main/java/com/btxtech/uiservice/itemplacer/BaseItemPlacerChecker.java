@@ -9,7 +9,7 @@ import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 

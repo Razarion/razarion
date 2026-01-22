@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Service
 public class ServerInventoryService {

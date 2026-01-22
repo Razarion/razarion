@@ -2,8 +2,8 @@ package com.btxtech.uiservice.mock;
 
 import com.btxtech.uiservice.cockpit.ScreenCover;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * Created by Beat

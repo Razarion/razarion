@@ -11,9 +11,9 @@ import com.google.gwt.dom.client.MediaElement;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLAudioElement;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

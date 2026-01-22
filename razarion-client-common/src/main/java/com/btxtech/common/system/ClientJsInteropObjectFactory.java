@@ -7,7 +7,7 @@ import com.btxtech.shared.system.JsInteropObjectFactory;
 import elemental2.core.Float32Array;
 import jsinterop.base.Js;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.List;
 
 import static com.btxtech.shared.utils.CollectionUtils.toArray;

@@ -12,7 +12,7 @@ import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.annotation.security.RolesAllowed;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,7 +54,7 @@ public class PlanetMgmtController {
     }
 
     @PostMapping("restartBots")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void restartBots() {
         ServerGameEngineConfig serverGameEngineConfig = serverGameEngineService.serverGameEngineConfig();
         synchronized (reloadLook) {
@@ -64,7 +64,7 @@ public class PlanetMgmtController {
     }
 
     @PostMapping("reloadStatic")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void reloadStatic() {
         try {
             serverGameEngineControl.reloadStatic();
@@ -75,7 +75,7 @@ public class PlanetMgmtController {
     }
 
     @PostMapping("restartResourceRegions")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void restartResourceRegions() {
         try {
             serverGameEngineControl.restartResourceRegions();
@@ -86,13 +86,13 @@ public class PlanetMgmtController {
     }
 
     @PostMapping("reloadPlanetShapes")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void reloadPlanetShapes() {
         throw new UnsupportedOperationException("...TODO...");
     }
 
     @PostMapping("restartBoxRegions")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void restartBoxRegions() {
         try {
             serverGameEngineControl.restartBoxRegions();
@@ -103,19 +103,19 @@ public class PlanetMgmtController {
     }
 
     @PostMapping("restartPlanetWarm")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void restartPlanetWarm() {
         restartPlanet(LifecyclePacket.Type.PLANET_RESTART_WARM);
     }
 
     @PostMapping("restartPlanetCold")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void restartPlanetCold() {
         restartPlanet(LifecyclePacket.Type.PLANET_RESTART_COLD);
     }
 
     @DeleteMapping("delete/{baseId}")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void deleteBase(@PathVariable int baseId) {
         try {
             baseItemService.deleteBase(baseId);
@@ -126,7 +126,7 @@ public class PlanetMgmtController {
     }
 
     @GetMapping("loadAllBackupBaseOverviews")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public List<BackupPlanetOverview> loadAllBackupBaseOverviews() {
         try {
             return planetBackupService.loadAllBackupBaseOverviews();
@@ -137,7 +137,7 @@ public class PlanetMgmtController {
     }
 
     @PostMapping("doBackup")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public List<BackupPlanetOverview> doBackup() {
         try {
             serverGameEngineControl.backupPlanet();
@@ -152,7 +152,7 @@ public class PlanetMgmtController {
     }
 
     @PostMapping("doRestore")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void doRestore(@RequestBody BackupPlanetOverview backupPlanetOverview) {
         try {
             serverGameEngineControl.restorePlanet(backupPlanetOverview);
@@ -163,7 +163,7 @@ public class PlanetMgmtController {
     }
 
     @DeleteMapping("deleteBackup")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public List<BackupPlanetOverview> deleteBackup(@RequestBody BackupPlanetOverview backupPlanetOverview) {
         try {
             planetBackupService.deleteBackup(backupPlanetOverview);

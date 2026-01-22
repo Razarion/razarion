@@ -7,8 +7,8 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import java.util.*;
 
 /**

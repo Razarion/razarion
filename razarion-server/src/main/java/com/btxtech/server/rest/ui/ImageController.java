@@ -5,7 +5,7 @@ import com.btxtech.server.model.ui.Image;
 import com.btxtech.server.model.ui.ImageGalleryItem;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.server.service.ui.ImageService;
-import jakarta.annotation.security.RolesAllowed;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -83,7 +83,7 @@ public class ImageController {
         }
     }
 
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     @GetMapping(value = "image-gallery", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ImageGalleryItem> getImageGalleryItems() {
         try {
@@ -94,7 +94,7 @@ public class ImageController {
         }
     }
 
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     @PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     void upload(@RequestParam("images") MultipartFile[] images) {
         try {
@@ -110,7 +110,7 @@ public class ImageController {
         }
     }
 
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     @PostMapping(value = "update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     void update(@PathVariable("id") int id, @RequestParam("images") MultipartFile[] images) {
         try {
@@ -127,7 +127,7 @@ public class ImageController {
     }
 
     @DeleteMapping(value = "delete/{id}")
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     void delete(@PathVariable("id") int id) {
         try {
             imageService.delete(id);

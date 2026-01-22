@@ -9,7 +9,7 @@ import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.logging.Logger;
 
 public class TestServerSystemConnection extends AbstractServerSystemConnection {

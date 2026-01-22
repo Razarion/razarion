@@ -5,7 +5,7 @@ import com.btxtech.uiservice.cockpit.item.OtherItemCockpit;
 import com.btxtech.uiservice.cockpit.item.OwnItemCockpit;
 import com.btxtech.uiservice.cockpit.item.OwnMultipleIteCockpit;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 public class TestItemCockpitFrontend implements ItemCockpitFrontend {
     @Override

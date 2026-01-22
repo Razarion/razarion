@@ -25,7 +25,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.TerrainDestinationFinderUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

@@ -28,7 +28,7 @@ import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * User: beat

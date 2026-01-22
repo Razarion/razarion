@@ -5,7 +5,7 @@ import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import elemental2.dom.DomGlobal;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;

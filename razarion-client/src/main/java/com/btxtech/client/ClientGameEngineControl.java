@@ -24,9 +24,9 @@ import com.btxtech.uiservice.user.UserUiService;
 import elemental2.dom.ErrorEvent;
 import elemental2.dom.Worker;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

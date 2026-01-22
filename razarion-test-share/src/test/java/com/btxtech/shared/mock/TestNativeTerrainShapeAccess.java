@@ -12,8 +12,8 @@ import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrain
 import com.btxtech.shared.mocks.TestUint16Array;
 import com.btxtech.shared.system.alarm.AlarmService;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

@@ -43,7 +43,7 @@ import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;

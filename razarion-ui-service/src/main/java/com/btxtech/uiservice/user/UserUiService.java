@@ -15,9 +15,9 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nConstants;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import java.util.function.Consumer;
 
 /**

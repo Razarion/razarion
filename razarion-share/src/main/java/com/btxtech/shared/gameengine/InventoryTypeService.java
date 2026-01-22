@@ -4,8 +4,8 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import jsinterop.annotations.JsType;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;

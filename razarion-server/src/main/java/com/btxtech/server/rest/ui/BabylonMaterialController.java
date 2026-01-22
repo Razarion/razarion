@@ -5,7 +5,7 @@ import com.btxtech.server.model.ui.BabylonMaterialEntity;
 import com.btxtech.server.rest.AbstractBaseController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.ui.BabylonMaterialService;
-import jakarta.annotation.security.RolesAllowed;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -46,7 +46,7 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
         }
     }
 
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     @PostMapping(value = "upload/{id}", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void uploadData(@PathVariable("id") int id, @RequestBody byte[] data) {
         babylonMaterialPersistence.setData(id, data);

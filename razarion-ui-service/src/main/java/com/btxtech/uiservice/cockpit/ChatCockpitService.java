@@ -2,8 +2,8 @@ package com.btxtech.uiservice.cockpit;
 
 import com.btxtech.shared.datatypes.ChatMessage;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class ChatCockpitService {

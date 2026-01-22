@@ -5,7 +5,7 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Created by Beat

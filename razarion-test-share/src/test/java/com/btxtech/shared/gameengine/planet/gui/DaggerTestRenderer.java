@@ -41,8 +41,8 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 import javafx.scene.paint.Stop;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;

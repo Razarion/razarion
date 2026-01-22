@@ -20,7 +20,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;

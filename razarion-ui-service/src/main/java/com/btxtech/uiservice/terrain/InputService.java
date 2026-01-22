@@ -21,8 +21,8 @@ import com.btxtech.uiservice.renderer.ViewField;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsType;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;

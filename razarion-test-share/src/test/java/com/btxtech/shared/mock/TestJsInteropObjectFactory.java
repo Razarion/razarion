@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.mocks.TestFloat32Array;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.List;
 
 import static com.btxtech.shared.utils.CollectionUtils.toArray;

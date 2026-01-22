@@ -7,7 +7,7 @@ import com.btxtech.shared.system.SimpleScheduledFuture;
 import elemental2.dom.EventListener;
 import elemental2.dom.WebSocket;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

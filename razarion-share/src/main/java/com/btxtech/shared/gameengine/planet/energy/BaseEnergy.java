@@ -5,7 +5,7 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.model.SyncConsumer;
 import com.btxtech.shared.gameengine.planet.model.SyncGenerator;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 

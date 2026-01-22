@@ -21,7 +21,7 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.SyncBaseItemMonitor;
 import com.btxtech.uiservice.item.SyncItemMonitor;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

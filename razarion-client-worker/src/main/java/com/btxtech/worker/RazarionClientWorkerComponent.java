@@ -2,7 +2,7 @@ package com.btxtech.worker;
 
 import dagger.Component;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 @Component(modules = RazarionClientWorkerModule.class)

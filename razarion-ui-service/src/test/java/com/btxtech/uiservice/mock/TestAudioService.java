@@ -7,9 +7,9 @@ import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 
 /**
  * Created by Beat

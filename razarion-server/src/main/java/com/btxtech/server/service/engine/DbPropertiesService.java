@@ -11,7 +11,7 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.DbPropertyType;
 import com.btxtech.shared.system.alarm.AlarmService;
-import jakarta.annotation.security.RolesAllowed;
+import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -106,7 +106,7 @@ public class DbPropertiesService {
     }
 
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void setIntProperty(Integer value, DbPropertyKey dbPropertyKey) {
         DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
         if (dbPropertiesEntity == null) {
@@ -117,7 +117,7 @@ public class DbPropertiesService {
     }
 
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void setDoubleProperty(Double value, DbPropertyKey dbPropertyKey) {
         DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
         if (dbPropertiesEntity == null) {
@@ -128,7 +128,7 @@ public class DbPropertiesService {
     }
 
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void setAudioIdProperty(Integer audioId, DbPropertyKey dbPropertyKey) {
         DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
         if (dbPropertiesEntity == null) {
@@ -143,7 +143,7 @@ public class DbPropertiesService {
     }
 
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void setImageIdProperty(Integer imageId, DbPropertyKey dbPropertyKey) {
         DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
         if (dbPropertiesEntity == null) {
@@ -158,7 +158,7 @@ public class DbPropertiesService {
     }
 
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void setBabylonMaterialProperty(Integer babylonModelId, DbPropertyKey dbPropertyKey) {
         DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
         if (dbPropertiesEntity == null) {
@@ -173,7 +173,7 @@ public class DbPropertiesService {
     }
 
     @Transactional
-    @RolesAllowed(Roles.ADMIN)
+    @PreAuthorize("hasAuthority('ADMIN')") 
     public void setColorProperty(Color color, DbPropertyKey dbPropertyKey) {
         DbPropertiesEntity dbPropertiesEntity = getProperty(dbPropertyKey);
         if (dbPropertiesEntity == null) {

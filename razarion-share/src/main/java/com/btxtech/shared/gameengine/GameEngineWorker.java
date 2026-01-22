@@ -58,7 +58,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
