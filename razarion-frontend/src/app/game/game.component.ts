@@ -21,6 +21,7 @@ import {InventoryComponent} from './inventory/inventory.component';
 import {UnlockComponent} from './unlock/unlock.component';
 import {UserService} from '../auth/user.service';
 import {ChatCockpitComponent} from './cockpit/chat/chat-cockpit.component';
+import {InfoDialogComponent} from './info-dialog/info-dialog.component';
 
 
 @Component({
@@ -36,7 +37,8 @@ import {ChatCockpitComponent} from './cockpit/chat/chat-cockpit.component';
     ItemCockpitComponent,
     InventoryComponent,
     UnlockComponent,
-    ChatCockpitComponent
+    ChatCockpitComponent,
+    InfoDialogComponent
 ],
   styleUrls: ['game.component.scss']
 })
@@ -68,7 +70,7 @@ export class GameComponent implements OnInit {
               private actionService: ActionService,
               private userService: UserService,
               private zone: NgZone) {
-    this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, gwtAngularService);
+    this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, cockpitDisplayService);
   }
 
   ngOnInit(): void {

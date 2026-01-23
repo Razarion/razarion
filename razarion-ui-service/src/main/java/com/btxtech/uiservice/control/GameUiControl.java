@@ -314,6 +314,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         }
     }
 
+    public void onAllQuestsCompleted() {
+        modalDialogManager.showAllQuestsCompleted();
+    }
+
     public boolean hasActiveServerQuest() {
         return currentScene != null && serverQuest != null;
     }

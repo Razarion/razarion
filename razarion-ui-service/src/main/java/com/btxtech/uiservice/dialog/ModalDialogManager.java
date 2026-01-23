@@ -99,6 +99,12 @@ public class ModalDialogManager {
         }
     }
 
+    public void showAllQuestsCompleted() {
+        if (modelDialogPresenter != null) {
+            modelDialogPresenter.showAllQuestsCompleted();
+        }
+    }
+
     public void onLevelPassed(LevelUpPacket levelUpPacket) {
         showLevelUp(levelUpPacket, () -> {
             if (levelUpCallback != null) {

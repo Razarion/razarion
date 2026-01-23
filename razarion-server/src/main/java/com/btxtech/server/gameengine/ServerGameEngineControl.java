@@ -34,13 +34,14 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Service
 public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PlanetTickListener {
-    private final Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(ServerGameEngineControl.class);
     private final Object reloadLook = new Object();
     private final InitializeService initializeService;
     private final PlanetService planetService;
@@ -110,7 +111,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             boxService.startBoxRegions(serverGameEngineService.readBoxRegionConfigs());
             botService.startBots(serverGameEngineConfig.getBotConfigs());
             planetService.enableTracking(false);
-        }, failText -> logger.severe("TerrainSetup failed: " + failText));
+        }, failText -> logger.error("TerrainSetup failed: " + failText));
         if (activateQuests) {
             activateQuests(finaBackupPlanetInfo);
         }
@@ -121,7 +122,12 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         if (backupPlanetInfo != null) {
             return backupPlanetInfo;
         } else {
-            return planetBackupService.loadLastBackup(planetConfig.getId());
+            try {
+                return planetBackupService.loadLastBackup(planetConfig.getId());
+            } catch (Throwable t) {
+                logger.error("Error loadLastBackup", t);
+                return null;
+            }
         }
     }
 
@@ -209,12 +215,12 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                 planetBackupService.saveBackup(planetService.backup());
             }
         } catch (Throwable t) {
-            logger.log(Level.WARNING, t.getMessage(), t);
+            logger.warn(t.getMessage(), t);
         }
         try {
             stop();
         } catch (Throwable t) {
-            logger.log(Level.WARNING, t.getMessage(), t);
+            logger.warn(t.getMessage(), t);
         }
     }
 

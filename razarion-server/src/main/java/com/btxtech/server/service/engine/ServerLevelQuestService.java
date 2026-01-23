@@ -155,6 +155,8 @@ public class ServerLevelQuestService implements QuestListener {
             clientSystemConnectionService.onQuestActivated(userId, newQuest);
             questService.activateCondition(userId, newQuest);
             clientSystemConnectionService.onQuestProgressInfo(userId, questService.getQuestProgressInfo(userId));
+        } else {
+            clientSystemConnectionService.onAllQuestsCompleted(userId);
         }
     }
 

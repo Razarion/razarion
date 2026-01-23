@@ -1,22 +1,30 @@
-<div class="crystals">Crystals: {{ crystals }}</div>
-<p-dataView [value]="inventoryItems" [layout]="'grid'" [emptyMessage]="'Inventory is empty'">
-  <ng-template #grid>
-    <div class="grid grid-nogutter">
-      @for (inventoryItem of inventoryItems; track inventoryItem) {
-        <div class="col-12 sm:col-6 md:col-4 xl:col-6 p-2">
-          <div class="p-4 border-1 surface-border surface-card border-round flex flex-column">
-            <div class="product-list-item">
-              <img [src]="getImageUrl(inventoryItem.getImageId()!)"/>
-              <div class="product-list-detail">
-                <div class="product-name">{{ inventoryItem.getI18nName().getString() }}</div>
-              </div>
-              <div class="product-list-action">
-                <p-button icon="pi pi-play" label="Use" (onClick)="onUse(inventoryItem)"></p-button>
+<div class="flex flex-col gap-3">
+  <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 items-center gap-2">
+    <i class="pi pi-gem text-xl"></i>
+    <span class="text-lg">Crystals: {{ crystals }}</span>
+  </div>
+
+  <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500">
+    <p-dataView [value]="inventoryItems" [layout]="'grid'" [emptyMessage]="'Inventory is empty'">
+      <ng-template #grid>
+        <div class="grid grid-nogutter">
+          @for (inventoryItem of inventoryItems; track inventoryItem) {
+            <div class="col-12 sm:col-6 md:col-4 xl:col-6 p-2">
+              <div class="p-4 bg-surface-700 border-round flex flex-column">
+                <div class="product-list-item">
+                  <img [src]="getImageUrl(inventoryItem.getImageId()!)"/>
+                  <div class="product-list-detail">
+                    <div class="product-name">{{ inventoryItem.getI18nName().getString() }}</div>
+                  </div>
+                  <div class="product-list-action">
+                    <p-button icon="pi pi-play" label="Use" (onClick)="onUse(inventoryItem)"></p-button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          }
         </div>
-      }
-    </div>
-  </ng-template>
-</p-dataView>
+      </ng-template>
+    </p-dataView>
+  </div>
+</div>

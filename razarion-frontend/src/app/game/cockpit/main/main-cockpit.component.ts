@@ -132,6 +132,10 @@ export class MainCockpitComponent implements MainCockpit {
     this.gameComponent.openUnlock();
   }
 
+  onInfo(): void {
+    this.cockpitDisplayService.openInfoDialog('info');
+  }
+
   blinkAvailableUnlock(show: boolean): void {
     this.zone.run(() => {
       this.blinkUnlockEnabled = show;

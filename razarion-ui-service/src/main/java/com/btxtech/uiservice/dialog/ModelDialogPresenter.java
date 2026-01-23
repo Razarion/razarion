@@ -11,6 +11,8 @@ public interface ModelDialogPresenter {
 
     void showQuestPassed();
 
+    void showAllQuestsCompleted();
+
     void showBaseLost();
 
     void showBoxPicked(BoxContent boxContent);

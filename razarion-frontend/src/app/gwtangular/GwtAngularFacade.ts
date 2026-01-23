@@ -745,6 +745,8 @@ export interface ModelDialogPresenter {
 
   showQuestPassed(): void;
 
+  showAllQuestsCompleted(): void;
+
   showBaseLost(): void;
 
   showBoxPicked(boxContent: BoxContent): void;

@@ -25,6 +25,7 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     QUEST_ACTIVATED(QuestConfig.class),
     QUEST_PASSED(QuestConfig.class),
     QUEST_PROGRESS_CHANGED(QuestProgressInfo.class),
+    ALL_QUESTS_COMPLETED(Void.class),
     // XP
     XP_CHANGED(Integer.class),
     // Inventory

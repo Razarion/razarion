@@ -67,6 +67,9 @@ public abstract class AbstractServerSystemConnection {
             case QUEST_PASSED:
                 gameUiControl.onQuestPassedServer((QuestConfig) param);
                 break;
+            case ALL_QUESTS_COMPLETED:
+                gameUiControl.onAllQuestsCompleted();
+                break;
             case LEVEL_UPDATE_SERVER:
                 userUiService.onServerLevelChange((LevelUpPacket) param);
                 break;

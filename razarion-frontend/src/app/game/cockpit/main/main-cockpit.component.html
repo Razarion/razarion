@@ -30,15 +30,17 @@
   </div>
   <div class="flex flex-row gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
     @if (isLoggedIn()) {
-      <p-button icon="pi pi-ellipsis-v"
+      <p-button icon="pi pi-user-edit" title="Account"
       (onClick)="mainCockpitService.showUserDialog = true"></p-button>
     }
     @if (!isLoggedIn()) {
       <p-button icon="pi pi-user" (onClick)="mainCockpitService.showLoginDialog = true"></p-button>
     }
-    <p-button icon="pi pi-box" title="Inventory" (onClick)="onInventory()">
+    <p-button icon="pi pi-info-circle" title="About" (onClick)="onInfo()">
     </p-button>
-    <p-button icon="pi pi-angle-double-up" title="Unlock" (onClick)="onUnlock()"
+    <p-button icon="pi pi-briefcase" title="Inventory" (onClick)="onInventory()">
+    </p-button>
+    <p-button icon="pi pi-lock-open" title="Unlock" (onClick)="onUnlock()"
       [ngClass]="{'blinking-button': blinkUnlockEnabled}">
     </p-button>
   </div>

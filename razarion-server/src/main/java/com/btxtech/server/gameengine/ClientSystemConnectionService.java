@@ -104,6 +104,10 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
         sendToClient(userId, SystemConnectionPacket.QUEST_PASSED, quest);
     }
 
+    public void onAllQuestsCompleted(String userId) {
+        sendToClient(userId, SystemConnectionPacket.ALL_QUESTS_COMPLETED, null);
+    }
+
     public void onXpChanged(String userId, int xp) {
         sendToClient(userId, SystemConnectionPacket.XP_CHANGED, xp);
     }
@@ -157,7 +161,12 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
             }
         }
         try {
-            String text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
+            String text;
+            if (packet.getTheClass() == Void.class) {
+                text = ConnectionMarshaller.marshall(packet, null);
+            } else {
+                text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
+            }
             try {
                 clientSystemConnection.sendToClient(text);
             } catch (Throwable throwable) {

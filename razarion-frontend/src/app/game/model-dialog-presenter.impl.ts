@@ -1,18 +1,26 @@
 import {NgZone} from "@angular/core";
 import {BaseItemType, BoxContent, ModelDialogPresenter} from "../gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
+import {CockpitDisplayService} from "./cockpit/cockpit-display.service";
 
 export class ModelDialogPresenterImpl implements ModelDialogPresenter {
   title?: string;
   messageLines?: string[] = [];
   private queue: { title: string, messageLines?: string[] }[] = [];
 
-  constructor(private zone: NgZone, private gwtAngularService: GwtAngularService) {
+  constructor(private zone: NgZone,
+              private cockpitDisplayService: CockpitDisplayService) {
   }
 
   showQuestPassed(): void {
     this.zone.run(() => {
       this.post("Quest passed");
+    });
+  }
+
+  showAllQuestsCompleted(): void {
+    this.zone.run(() => {
+      this.cockpitDisplayService.openInfoDialog('quest-completed');
     });
   }
 

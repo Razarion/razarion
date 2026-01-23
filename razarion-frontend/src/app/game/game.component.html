@@ -74,4 +74,6 @@
   [gameComponent]="getGameComponent()"></editor-dialog>
 </p-dialog>
 
-
+<info-dialog [(visible)]="cockpitDisplayService.showInfoDialog"
+             [mode]="cockpitDisplayService.infoDialogMode">
+</info-dialog>
