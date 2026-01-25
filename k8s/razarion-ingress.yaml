@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: razarion-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "razarion-ip"
+    networking.gke.io/managed-certificates: "razarion-cert"
+    kubernetes.io/ingress.class: "gce"
+    # HTTP zu HTTPS Redirect
+    kubernetes.io/ingress.allow-http: "true"
+spec:
+  defaultBackend:
+    service:
+      name: razarion-server-service
+      port:
+        number: 80
+  rules:
+    - host: razarion.com
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: razarion-server-service
+                port:
+                  number: 80
+    - host: www.razarion.com
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: razarion-server-service
+                port:
+                  number: 80

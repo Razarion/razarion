@@ -15,7 +15,7 @@
             <div class="progress-bar-container">
               <div class="info-font">Loading models...</div>
               <p-progressbar class="progressbar-yellow"
-                [value]="Math.floor((babylonModelService.glbContainerProgress.loaded / babylonModelService.glbContainerProgress.total) * 100)"
+                [value]="Math.min(100, Math.floor((babylonModelService.glbContainerProgress.loaded / babylonModelService.glbContainerProgress.total) * 100))"
               [style]="{ width: '26em', height: '0.6em' }"></p-progressbar>
             </div>
           }
