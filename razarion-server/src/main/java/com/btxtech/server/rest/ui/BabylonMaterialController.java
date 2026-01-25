@@ -36,10 +36,13 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
     @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<byte[]> getData(@PathVariable("id") int id) {
         try {
+            byte[] data = babylonMaterialPersistence.getData(id);
             return ResponseEntity
                     .ok()
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                    .body(babylonMaterialPersistence.getData(id));
+                    .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400")
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(data.length))
+                    .body(data);
         } catch (Throwable e) {
             logger.warn("Can not load BabylonMaterialEntity for id: " + id, e);
             throw e;

@@ -73,7 +73,6 @@
             <groupId>jakarta.inject</groupId>
             <artifactId>jakarta.inject-api</artifactId>
             <version>2.0.1</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -159,6 +158,16 @@
                         <version>2.37.1128</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.4.6</version>
+                <configuration>
+                    <to>
+                        <image>us-central1-docker.pkg.dev/neural-passkey-426618-j3/razarion-repo/razarion-server:latest</image>
+                    </to>
+                </configuration>
             </plugin>
         </plugins>
     </build>

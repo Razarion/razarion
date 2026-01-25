@@ -62,6 +62,11 @@ spec:
                 secretKeyRef:
                   name: jwt-secrets
                   key: key-password
+            - name: SPRING_MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secrets
+                  key: uri
       volumes:
       - name: keystore
         secret:
