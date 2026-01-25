@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: razarion-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: razarion-server
+  template:
+    metadata:
+      labels:
+        app: razarion-server
+    spec:
+      containers:
+        - name: razarion-server
+          image: us-central1-docker.pkg.dev/neural-passkey-426618-j3/razarion-repo/razarion-server:latest
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: keystore
+              mountPath: "/etc/keystore"
+              readOnly: true
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mariadb://mariadb-service:3306/razarion
+            - name: SPRING_DATASOURCE_USERNAME
+              value: raz_user
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secrets
+                  key: user-password
+            - name: GRAFANA_LOKI_URL
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-loki-secrets
+                  key: grafana-loki-url
+            - name: GRAFANA_LOKI_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-loki-secrets
+                  key: grafana-loki-username
+            - name: GRAFANA_LOKI_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-loki-secrets
+                  key: grafana-loki-password
+            - name: JWT_KEYSTORE_LOCATION
+              value: /etc/keystore/jwt-keystore.p12
+            - name: JWT_KEYSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secrets
+                  key: keystore-password
+            - name: JWT_KEY_ALIAS
+              value: jwt
+            - name: JWT_KEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secrets
+                  key: key-password
+      volumes:
+      - name: keystore
+        secret:
+          secretName: keystore-secret
+          items:
+            - key: jwt-keystore.p12
+              path: jwt-keystore.p12

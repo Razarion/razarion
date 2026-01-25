@@ -1,0 +1,56 @@
+# mariadb-statefulset.yaml (AKTUALISIERT)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: razarion-mariadb
+spec:
+  serviceName: "mariadb-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: razarion-mariadb
+  template:
+    metadata:
+      labels:
+        app: razarion-mariadb
+    spec:
+      terminationGracePeriodSeconds: 10
+      volumes:
+        - name: mariadb-config
+          configMap:
+            name: mariadb-custom-config
+      containers:
+        - name: mariadb
+          image: mariadb:10.5
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secrets
+                  key: root-password
+            - name: MARIADB_DATABASE
+              value: razarion
+            - name: MARIADB_USER
+              value: raz_user
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secrets
+                  key: user-password
+          volumeMounts:
+            - name: mariadb-persistent-storage
+              mountPath: /var/lib/mysql
+            - name: mariadb-config
+              mountPath: /etc/mysql/conf.d/
+              readOnly: true
+  volumeClaimTemplates:
+    - metadata:
+        name: mariadb-persistent-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "standard"
+        resources:
+          requests:
+            storage: 5Gi
