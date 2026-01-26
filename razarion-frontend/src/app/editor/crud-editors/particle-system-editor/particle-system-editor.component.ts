@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {CrudContainerChild} from '../crud-container/crud-container.component';
 import {ParticleSystemControllerClient, ParticleSystemEntity} from 'src/app/generated/razarion-share';
 import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
@@ -11,7 +11,7 @@ import {FormsModule} from '@angular/forms';
 import {InputNumber} from 'primeng/inputnumber';
 import {Divider} from 'primeng/divider';
 import {ImageItemComponent} from '../../common/image-item/image-item.component';
-
+import {FileUpload} from 'primeng/fileupload';
 import {Select} from 'primeng/select';
 import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
 import {BabylonModelService} from '../../../game/renderer/babylon-model.service';
@@ -24,12 +24,15 @@ import {BabylonModelService} from '../../../game/renderer/babylon-model.service'
     InputNumber,
     Divider,
     ImageItemComponent,
+    FileUpload,
     Select
-],
+  ],
   templateUrl: './particle-system-editor.component.html'
 })
 export class ParticleSystemEditorComponent implements CrudContainerChild<ParticleSystemEntity> {
   static editorControllerClient = ParticleSystemControllerClient;
+  @ViewChild('fileUploadElement')
+  fileUploadElement!: FileUpload;
   particleSystemEntity!: ParticleSystemEntity;
   length?: number;
   particleSystemControllerClient: ParticleSystemControllerClient;
@@ -150,5 +153,40 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
       particleSystem.stop();
       particleSystem.dispose(true);
     })
+  }
+
+  onImportParticleSystem(event: any) {
+    this.fileUploadElement.clear();
+    const file = event.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const jsonData = JSON.parse(reader.result as string);
+        this.particleSystemControllerClient.uploadData(this.particleSystemEntity.id, jsonData)
+          .then(() => {
+            this.messageService.add({
+              severity: 'success',
+              life: 300,
+              summary: "Particle system uploaded"
+            });
+          })
+          .catch(err => {
+            this.messageService.add({
+              severity: 'error',
+              summary: `Exception during particle system upload ${err}`,
+              sticky: true
+            });
+            console.error(err);
+          });
+      } catch (e) {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Exception parsing JSON: ${e}`,
+          sticky: true
+        });
+        console.error(e);
+      }
+    };
+    reader.readAsText(file);
   }
 }

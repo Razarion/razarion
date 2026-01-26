@@ -47,6 +47,9 @@ public class Orca {
     public Orca(SyncPhysicalMovable syncPhysicalMovable) {
         this.syncPhysicalMovable = syncPhysicalMovable;
         position = syncPhysicalMovable.getPosition();
+        if (position == null) {
+            throw new IllegalArgumentException("SyncPhysicalMovable has no position: " + syncPhysicalMovable.getSyncItem().getId());
+        }
         radius = syncPhysicalMovable.getRadius();
         preferredVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity());
         speed = preferredVelocity.magnitude();
@@ -54,6 +57,9 @@ public class Orca {
     }
 
     public void add(AbstractSyncPhysical other) {
+        if (other.getPosition() == null) {
+            return;
+        }
         DecimalPosition otherVelocity = null;
         if (other instanceof SyncPhysicalMovable) {
             otherVelocity = ((SyncPhysicalMovable) other).getPreferredVelocity();

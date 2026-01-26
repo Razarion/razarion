@@ -43,6 +43,7 @@ import {
   TerrainObjectConfig,
   TerrainTile,
   TerrainTileObjectList,
+  TerrainType,
   TerrainTypeService, Tip,
   TipConfig,
   Vertex,
@@ -197,6 +198,10 @@ export class GameMockService {
             return new class implements PhysicalAreaConfig {
               getRadius(): number {
                 return 2;
+              }
+
+              getTerrainType(): TerrainType {
+                return TerrainType.LAND;
               }
 
               fulfilledMovable(): boolean {
@@ -897,6 +902,10 @@ export class GameMockService {
             return new class implements PhysicalAreaConfig {
               getRadius(): number {
                 return 3;
+              }
+
+              getTerrainType(): TerrainType {
+                return TerrainType.LAND;
               }
 
               fulfilledMovable(): boolean {

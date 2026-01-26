@@ -309,6 +309,8 @@ export interface BoxItemType extends ItemType {
 export interface PhysicalAreaConfig {
   getRadius(): number;
 
+  getTerrainType(): TerrainType;
+
   fulfilledMovable(): boolean;
 }
 

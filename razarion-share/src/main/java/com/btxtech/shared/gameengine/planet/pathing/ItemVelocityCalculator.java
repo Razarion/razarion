@@ -35,6 +35,9 @@ public class ItemVelocityCalculator {
             if (!abstractSyncPhysical.canMove()) {
                 return;
             }
+            if (!abstractSyncPhysical.hasPosition()) {
+                return;
+            }
 
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) abstractSyncPhysical;
             if (syncPhysicalMovable.isMoving()) {

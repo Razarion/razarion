@@ -19,6 +19,7 @@ import {
   MarkerConfig,
   ResourceItemType,
   SelectionService,
+  TerrainType,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
 import {SimpleMaterial} from "@babylonjs/materials";
@@ -31,6 +32,7 @@ import {RenderObject} from './render-object';
 import {PressMouseVisualization} from './press-mouse-visualization';
 import {AdvancedDynamicTexture, StackPanel} from '@babylonjs/gui';
 import {Image} from '@babylonjs/gui/2D/controls/image';
+import {GwtHelper} from '../../gwtangular/GwtHelper';
 
 export class BabylonItemImpl implements BabylonItem {
   static readonly SELECT_ALPHA: number = 0.3;
@@ -168,26 +170,43 @@ export class BabylonItemImpl implements BabylonItem {
         this.renderObject.setPosition(position3D);
       }
       // Rotation
-      let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(position.getX(), position.getY()));
-      if (pickingInfo && pickingInfo.hit) {
-        let razarionMetadata = pickingInfo.pickedMesh && BabylonRenderServiceAccessImpl.getRazarionMetadata(pickingInfo.pickedMesh);
-        let normal: Vector3 | undefined;
-        if (razarionMetadata) {
-          if (razarionMetadata.type == RazarionMetadataType.BOT_GROUND) {
-            normal = razarionMetadata.botGroundNorm;
+      let normal: Vector3;
+      // Water units use flat normal (0, 1, 0) instead of terrain normal
+      if (this.isWaterUnit()) {
+        normal = new Vector3(0, 1, 0);
+      } else {
+        let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(position.getX(), position.getY()));
+        if (pickingInfo && pickingInfo.hit) {
+          let razarionMetadata = pickingInfo.pickedMesh && BabylonRenderServiceAccessImpl.getRazarionMetadata(pickingInfo.pickedMesh);
+          let pickedNormal: Vector3 | undefined;
+          if (razarionMetadata) {
+            if (razarionMetadata.type == RazarionMetadataType.BOT_GROUND) {
+              pickedNormal = razarionMetadata.botGroundNorm;
+            }
           }
+          if (!pickedNormal) {
+            pickedNormal = pickingInfo.getNormal(true)!;
+          }
+          normal = pickedNormal;
+        } else {
+          normal = new Vector3(0, 1, 0);
         }
-        if (!normal) {
-          normal = pickingInfo.getNormal(true)!;
-        }
-        this.lastNormal = normal;
-        let rotation3D = this.calculateRotation(normal);
-        if (this.onRotation3D(rotation3D)) {
-          this.renderObject.setRotation(rotation3D);
-        }
+      }
+      this.lastNormal = normal;
+      let rotation3D = this.calculateRotation(normal);
+      if (this.onRotation3D(rotation3D)) {
+        this.renderObject.setRotation(rotation3D);
       }
     }
     this.position = position;
+  }
+
+  private isWaterUnit(): boolean {
+    if ((<BaseItemType>this.itemType).getPhysicalAreaConfig !== undefined) {
+      const terrainType = (<BaseItemType>this.itemType).getPhysicalAreaConfig().getTerrainType();
+      return GwtHelper.gwtIssueStringEnum(terrainType, TerrainType) === TerrainType.WATER;
+    }
+    return false;
   }
 
   onPosition3D(position3D: Vector3): boolean {
