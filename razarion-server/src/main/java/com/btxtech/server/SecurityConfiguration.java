@@ -66,6 +66,9 @@ public class SecurityConfiguration {
                         .anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers((headers) -> headers
+                        .cacheControl((cache) -> cache.disable())
+                )
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer((oauth2) -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter(userService)))

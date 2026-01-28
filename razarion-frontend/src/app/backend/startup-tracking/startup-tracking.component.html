@@ -1,0 +1,58 @@
+<p-chart #chart type="bar" [data]="data" [options]="options" height="600"></p-chart>
+
+<p-table [value]="startupTerminatedJsons" [scrollable]="true" scrollHeight="400px">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Server time</th>
+      <th>Successful</th>
+      <th>Total Time</th>
+      <th>Details</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-startupTerminatedJson>
+    <tr>
+      <td>
+        {{ startupTerminatedJson.serverTime | date: 'dd.MM.yyyy HH:mm:ss' }}
+      </td>
+      <td>
+        {{ startupTerminatedJson.successful }}
+      </td>
+      <td>
+        {{ startupTerminatedJson.totalTime }}
+      </td>
+      <td>
+        <p-button
+          icon="pi pi-search"
+          label="Details"
+          (click)="openDetailDialog(startupTerminatedJson)">
+        </p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Dialog -->
+<p-dialog
+  header="Details"
+  [(visible)]="detailDialogVisible"
+  [modal]="true"
+  [style]="{ width: '50vw' }">
+
+  <p-table [value]="detailStartupTaskJsons">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Task</th>
+        <th>Duration</th>
+        <th>Error</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-startupTaskJson>
+      <tr>
+        <td>{{ startupTaskJson.taskEnum }}</td>
+        <td>{{ startupTaskJson.duration }}</td>
+        <td>{{ startupTaskJson.error }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

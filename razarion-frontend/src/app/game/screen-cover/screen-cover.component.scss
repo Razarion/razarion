@@ -4,10 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("public/loading.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(180deg, rgba(10,10,18,0.2) 0%, rgba(10,10,18,0.5) 50%, rgba(10,10,18,0.8) 100%), url("/razarion-bg.webp") center/cover no-repeat;
   z-index: 9999;
 }
 

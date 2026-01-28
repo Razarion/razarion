@@ -7,7 +7,8 @@ const PROXY_CONFIG = [
       "/rest",
       "/gz",
       "/systemconnection",
-      "/gameconnection"
+      "/gameconnection",
+      "/razarion-bg.webp"
     ],
     target: "http://127.0.0.1:8080",
     secure: false,

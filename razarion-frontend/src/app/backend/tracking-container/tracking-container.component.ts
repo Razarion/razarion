@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {PageRequest, TrackerControllerImplClient} from '../../generated/razarion-share';
+import {PageRequest, StartupTaskJson, StartupTerminatedJson, TrackerControllerImplClient} from '../../generated/razarion-share';
 import {TypescriptGenerator} from '../typescript-generator';
 import {DataViewModule} from 'primeng/dataview';
 import {CommonModule} from '@angular/common';
@@ -14,6 +14,7 @@ import {createStatistics, ProgressStatistic} from './progress-statistic';
 import {TableModule} from 'primeng/table';
 import {TrackingContainerAnalyzer} from './tracking-container-analyzer';
 import {UserMgmtComponent} from '../../editor/user-mgmt/user-mgmt.component';
+import {StartupTrackingComponent} from '../startup-tracking/startup-tracking.component';
 
 @Component({
   selector: 'tracking-container',
@@ -25,7 +26,8 @@ import {UserMgmtComponent} from '../../editor/user-mgmt/user-mgmt.component';
     ButtonModule,
     TabsModule,
     TableModule,
-    UserMgmtComponent],
+    UserMgmtComponent,
+    StartupTrackingComponent],
   templateUrl: './tracking-container.component.html',
   styleUrl: './tracking-container.component.scss'
 })
@@ -40,7 +42,9 @@ export class TrackingContainerComponent implements OnInit {
     {name: "Game", value: TrackingContainerComponent.FILTER_GAME}];
   filter = TrackingContainerComponent.FILTER_ALL;
   homePageRequests: PageRequest[] = [];
-  progressStatistics: ProgressStatistic[] = []
+  progressStatistics: ProgressStatistic[] = [];
+  startupTerminatedJsons: StartupTerminatedJson[] = [];
+  startupTaskJsons: StartupTaskJson[] = [];
   private trackerControllerImplClient!: TrackerControllerImplClient;
   private trackingContainerAnalyzer = new TrackingContainerAnalyzer();
 
@@ -66,6 +70,8 @@ export class TrackingContainerComponent implements OnInit {
         this.trackingContainerAnalyzer.setTrackingContainer(trackingContainer);
         this.progressStatistics.length = 0;
         this.progressStatistics.push(...createStatistics(this.trackingContainerAnalyzer));
+        this.startupTerminatedJsons = trackingContainer.startupTerminatedJson || [];
+        this.startupTaskJsons = trackingContainer.startupTaskJsons || [];
         this.onFilterChanged();
       })
     } catch (e) {
@@ -87,6 +93,14 @@ export class TrackingContainerComponent implements OnInit {
 
   load7d() {
     this.loadTime(7 * 24 * 60 * 60 * 1000)
+  }
+
+  load2w() {
+    this.loadTime(14 * 24 * 60 * 60 * 1000)
+  }
+
+  load1m() {
+    this.loadTime(30 * 24 * 60 * 60 * 1000)
   }
 
   private loadTime(millis: number) {

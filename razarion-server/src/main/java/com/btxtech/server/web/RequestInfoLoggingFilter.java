@@ -28,7 +28,7 @@ public class RequestInfoLoggingFilter implements Filter {
             String queryString = httpRequest.getQueryString();
             var hasQueryString = queryString != null && !queryString.isEmpty();
 
-            if (requestURI.equals("/styles.css") && hasQueryString) {
+            if (requestURI.equals("/t.gif") && hasQueryString) {
                 HttpSession session = httpRequest.getSession(true);
                 String sessionId = session != null ? session.getId() : null;
                 String rdtCid = httpRequest.getParameter("rdt_cid");
