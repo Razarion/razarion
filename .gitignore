@@ -57,3 +57,4 @@ razarion-client-common/razarion-client-common.iml
 /razarion-server/src/main/resources/gwt-unitCache
 
 /razarion-nnl-pathing/
+/.claude/settings.local.json

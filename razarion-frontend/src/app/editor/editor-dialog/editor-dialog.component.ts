@@ -80,7 +80,7 @@ export class EditorDialogComponent {
 
   openBackend() {
     this.mainCockpitComponent.editorDialog = false;
-    const url = `/backend`;
+    const url = `/game/backend`;
     window.open(url, "_blank");
   }
 
