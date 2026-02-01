@@ -3,12 +3,14 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 /**
  * Created by Beat
  * 16.09.2016.
  */
 @JsType
+@JsonPersistable
 public class PhysicalAreaConfig {
     private double radius;
     private boolean fixVerticalNorm;

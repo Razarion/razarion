@@ -16,8 +16,10 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 @JsType
+@JsonPersistable
 public class ResourceItemType extends ItemType {
     private double radius;
     private boolean fixVerticalNorm;

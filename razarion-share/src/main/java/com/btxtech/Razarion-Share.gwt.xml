@@ -1,4 +1,5 @@
 <module rename-to="razarionShared">
+    <inherits name="org.teavm.flavour.TeaVMFlavourCompat"/>
     <source path="shared"/>
     <source path="game"/>
 

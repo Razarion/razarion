@@ -81,7 +81,13 @@ public class BoxService {
 
     public void setupSlave(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
         if (initialSlaveSyncItemInfo.getSyncBoxItemInfos() != null) {
-            initialSlaveSyncItemInfo.getSyncBoxItemInfos().forEach(this::createSyncBoxItemSlave);
+            for (SyncBoxItemInfo syncBoxItemInfo : initialSlaveSyncItemInfo.getSyncBoxItemInfos()) {
+                try {
+                    createSyncBoxItemSlave(syncBoxItemInfo);
+                } catch (Throwable t) {
+                    logger.log(Level.WARNING, "BoxService.setupSlave failed for box id=" + syncBoxItemInfo.getId() + ": " + t.getMessage(), t);
+                }
+            }
         }
     }
 

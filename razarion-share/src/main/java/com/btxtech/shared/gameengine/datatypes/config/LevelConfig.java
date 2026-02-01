@@ -16,6 +16,8 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 
+import org.teavm.flavour.json.JsonPersistable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ import java.util.Map;
  * Date: 17.05.2010
  * Time: 18:48:18
  */
+@JsonPersistable
 public class LevelConfig implements Config {
     private int id;
     private String internalName;

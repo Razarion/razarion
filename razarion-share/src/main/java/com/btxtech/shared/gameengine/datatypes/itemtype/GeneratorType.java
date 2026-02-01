@@ -13,11 +13,14 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import org.teavm.flavour.json.JsonPersistable;
+
 /**
  * User: beat
  * Date: 23.12.2009
  * Time: 12:44:52
  */
+@JsonPersistable
 public class GeneratorType {
     private int wattage;
 

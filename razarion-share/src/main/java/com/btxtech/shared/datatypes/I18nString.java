@@ -2,6 +2,7 @@ package com.btxtech.shared.datatypes;
 
 
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 /**
  * User: beat
@@ -9,6 +10,7 @@ import jsinterop.annotations.JsType;
  * Time: 13:14
  */
 @JsType
+@JsonPersistable
 public class I18nString {
     private String string;
 

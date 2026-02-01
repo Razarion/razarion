@@ -17,6 +17,7 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 /**
  * User: beat
@@ -24,6 +25,7 @@ import jsinterop.annotations.JsType;
  * Time: 22:50:01
  */
 @JsType
+@JsonPersistable
 public abstract class ItemType implements Config {
     private int id;
     private String internalName;

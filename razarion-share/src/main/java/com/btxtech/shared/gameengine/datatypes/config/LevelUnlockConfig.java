@@ -4,11 +4,13 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.system.Nullable;
+import org.teavm.flavour.json.JsonPersistable;
 
 /**
  * Created by Beat
  * on 22.09.2017.
  */
+@JsonPersistable
 public class LevelUnlockConfig {
     private Integer id;
     private String internalName;

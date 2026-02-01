@@ -1,12 +1,14 @@
 package com.btxtech.shared.dto;
 
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 /**
  * Created by Beat
  * 10.05.2016.
  */
 @JsType
+@JsonPersistable
 public class TerrainObjectConfig implements Config {
     private int id;
     private String internalName;

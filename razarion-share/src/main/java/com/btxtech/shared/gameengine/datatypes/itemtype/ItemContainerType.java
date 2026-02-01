@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import org.teavm.flavour.json.JsonPersistable;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ import java.util.List;
  * Date: 01.05.2010
  * Time: 10:54:25
  */
+@JsonPersistable
 public class ItemContainerType {
     private List<Integer> ableToContain;
     private int maxCount;

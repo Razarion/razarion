@@ -120,6 +120,9 @@ public class BaseItemUiService {
 
     public void updateSyncBaseItems(NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos) {
         // May be easier if replaced with SyncItemState and SyncItemMonitor
+        logger.info("[BaseItemUiService] updateSyncBaseItems called with "
+            + (nativeSyncBaseItemTickInfos != null ? nativeSyncBaseItemTickInfos.length : "null") + " items");
+
         this.nativeSyncBaseItemTickInfos = nativeSyncBaseItemTickInfos;
         Collection<Integer> leftoversAliveBabylonBaseItems = new ArrayList<>(babylonBaseItems.keySet());
         int tmpItemCount = 0;
@@ -132,13 +135,22 @@ public class BaseItemUiService {
         }
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
             try {
+                logger.info("[BaseItemUiService] Processing item id=" + nativeSyncBaseItemTickInfo.id
+                    + ", typeId=" + nativeSyncBaseItemTickInfo.itemTypeId
+                    + ", x=" + nativeSyncBaseItemTickInfo.x + ", y=" + nativeSyncBaseItemTickInfo.y + ", z=" + nativeSyncBaseItemTickInfo.z
+                    + ", spawning=" + nativeSyncBaseItemTickInfo.spawning + ", buildup=" + nativeSyncBaseItemTickInfo.buildup);
+
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
                 Vertex position3d = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
+                logger.info("[BaseItemUiService] position3d for item " + nativeSyncBaseItemTickInfo.id + " = " + position3d);
+
                 if (position3d == null) {
+                    logger.info("[BaseItemUiService] Skipping item " + nativeSyncBaseItemTickInfo.id + " - position3d is null (contained)");
                     updateSyncItemMonitor(nativeSyncBaseItemTickInfo);
                     continue;
                 }
                 if(nativeSyncBaseItemTickInfo.spawning < 1.0) {
+                    logger.info("[BaseItemUiService] Skipping item " + nativeSyncBaseItemTickInfo.id + " - spawning=" + nativeSyncBaseItemTickInfo.spawning + " < 1.0");
                     continue;
                 }
 
@@ -161,6 +173,8 @@ public class BaseItemUiService {
                     continue;
                 }
                 if ((viewFieldAabb == null) || !viewFieldAabb.adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
+                    logger.info("[BaseItemUiService] Skipping item " + nativeSyncBaseItemTickInfo.id
+                        + " - out of view. viewFieldAabb=" + viewFieldAabb + ", position2d=" + position2d);
                     if (syncBaseItemSetPositionMonitor != null && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                         syncBaseItemSetPositionMonitor.setInvisibleSyncBaseItemTickInfo(position2d, baseItemType, viewFiledCenter);
                     }
@@ -169,6 +183,8 @@ public class BaseItemUiService {
                 // Alive
                 BabylonBaseItem babylonBaseItem = babylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
                 if (babylonBaseItem == null) {
+                    logger.info("[BaseItemUiService] Creating new BabylonBaseItem for id=" + nativeSyncBaseItemTickInfo.id
+                        + " at position " + position3d);
                     String userName = null;
                     PlayerBaseDto baseDto = getBase(nativeSyncBaseItemTickInfo.baseId);
                     if (baseDto.getCharacter() == Character.HUMAN) {
@@ -182,6 +198,7 @@ public class BaseItemUiService {
                     babylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
                     babylonBaseItem.setPosition(position3d);
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
+                    logger.info("[BaseItemUiService] Created BabylonBaseItem for id=" + nativeSyncBaseItemTickInfo.id);
                     if (syncBaseItemSetPositionMonitor != null && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                         syncBaseItemSetPositionMonitor.addVisible(babylonBaseItem);
                     }

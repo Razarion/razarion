@@ -16,6 +16,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ import java.util.List;
  * Time: 23:13:22
  */
 @JsType
+@JsonPersistable
 public class WeaponType {
     private double range;
     private int damage;

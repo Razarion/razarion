@@ -2,6 +2,7 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 import java.util.Objects;
 
@@ -10,6 +11,7 @@ import java.util.Objects;
  * 07.05.2016.
  */
 @JsType
+@JsonPersistable
 public class GroundConfig implements Config {
     private int id;
     private String internalName;

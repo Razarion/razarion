@@ -59,6 +59,12 @@ public class TerrainTileFactory {
             List<TerrainObjectModel> terrainObjectModels = new ArrayList<>();
             Arrays.stream(nativeTerrainShapeObjectList.terrainShapeObjectPositions).forEach(nativeTerrainObjectPosition -> {
                 try {
+                    // Skip positions with invalid values
+                    if (Double.isNaN(nativeTerrainObjectPosition.x) || Double.isNaN(nativeTerrainObjectPosition.y) ||
+                        Double.isInfinite(nativeTerrainObjectPosition.x) || Double.isInfinite(nativeTerrainObjectPosition.y)) {
+                        logger.warning("Skipping terrain object position with invalid coordinates: x=" + nativeTerrainObjectPosition.x + ", y=" + nativeTerrainObjectPosition.y);
+                        return;
+                    }
                     TerrainObjectModel terrainObjectModel = new TerrainObjectModel();
                     Index node = TerrainUtil.terrainPositionToNodeIndex(new DecimalPosition(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y));
                     terrainObjectModel.position = new Vertex(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y, terrainShapeManager.getTerrainAnalyzer().getHeightNodeAt(node));

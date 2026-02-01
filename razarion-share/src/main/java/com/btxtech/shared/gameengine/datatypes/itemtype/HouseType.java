@@ -13,11 +13,14 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import org.teavm.flavour.json.JsonPersistable;
+
 /**
  * User: beat
  * Date: 17.11.2009
  * Time: 23:18:42
  */
+@JsonPersistable
 public class HouseType {
     private int space;
 

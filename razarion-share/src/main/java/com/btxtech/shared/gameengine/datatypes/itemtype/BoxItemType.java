@@ -16,10 +16,12 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 import java.util.List;
 
 @JsType
+@JsonPersistable
 public class BoxItemType extends ItemType {
     private Integer ttl;  // seconds
     private double radius;

@@ -17,6 +17,7 @@ import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ import java.util.List;
  * Time: 20:12:06
  */
 @JsType
+@JsonPersistable
 public class BaseItemType extends ItemType {
     private PhysicalAreaConfig physicalAreaConfig;
     private int health;

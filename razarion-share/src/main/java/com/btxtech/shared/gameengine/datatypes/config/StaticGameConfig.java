@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import org.dominokit.jackson.annotation.JSONMapper;
+import org.teavm.flavour.json.JsonPersistable;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * 18.07.2016.
  */
 @JSONMapper
+@JsonPersistable
 public class StaticGameConfig {
     private List<GroundConfig> groundConfigs;
     private List<TerrainObjectConfig> terrainObjectConfigs;

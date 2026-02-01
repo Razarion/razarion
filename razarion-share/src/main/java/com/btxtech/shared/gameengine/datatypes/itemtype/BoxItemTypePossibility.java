@@ -1,9 +1,12 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import org.teavm.flavour.json.JsonPersistable;
+
 /**
  * Created by Beat
  * 25.10.2016.
  */
+@JsonPersistable
 public class BoxItemTypePossibility {
     private double possibility;
     private Integer inventoryItemId;

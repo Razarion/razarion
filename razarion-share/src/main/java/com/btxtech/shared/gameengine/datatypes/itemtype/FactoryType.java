@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import org.teavm.flavour.json.JsonPersistable;
+
 import java.util.List;
 
 /**
@@ -20,6 +22,7 @@ import java.util.List;
  * Date: 17.11.2009
  * Time: 23:18:42
  */
+@JsonPersistable
 public class FactoryType {
     private double progress;
     private List<Integer> ableToBuildIds;

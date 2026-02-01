@@ -7,12 +7,14 @@ import com.btxtech.shared.dto.editor.CollectionReference;
 import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 /**
  * Created by Beat
  * 25.10.2016.
  */
 @JsType
+@JsonPersistable
 public class InventoryItem implements Config {
     private int id;
     private I18nString i18nName;

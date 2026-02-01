@@ -8,9 +8,12 @@ public class CommonUrl {
     public static final String RAZARION_URL = "https://www.razarion.com";
     // Angular
     public static final String EMAIL_VERIFICATION = "/verify-email";
-    // GWT code path
-    public static final String CLIENT_WORKER_PATH = "/com.btxtech.worker.RazarionClientWorker";
-    public static final String CLIENT_WORKER_SCRIPT = CLIENT_WORKER_PATH + "/com.btxtech.worker.RazarionClientWorker.nocache.js";
+    // GWT code path (legacy)
+    public static final String GWT_CLIENT_WORKER_PATH = "/com.btxtech.worker.RazarionClientWorker";
+    public static final String GWT_CLIENT_WORKER_SCRIPT = GWT_CLIENT_WORKER_PATH + "/com.btxtech.worker.RazarionClientWorker.nocache.js";
+    // TeaVM worker path
+    public static final String TEAVM_WORKER_PATH = "/teavm-worker";
+    public static final String TEAVM_WORKER_SCRIPT = TEAVM_WORKER_PATH + "/worker-bootstrap.js";
     // Web socket
     public static final String GAME_CONNECTION_WEB_SOCKET_ENDPOINT = "/gameconnection";
     public static final String SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT = "/systemconnection";
@@ -54,7 +57,13 @@ public class CommonUrl {
     }
 
     public static String getWorkerScriptUrl() {
-        return CLIENT_WORKER_SCRIPT + "?t=" + System.currentTimeMillis();
+        // Use TeaVM worker (replaces GWT worker)
+        return TEAVM_WORKER_SCRIPT + "?t=" + System.currentTimeMillis();
+    }
+
+    public static String getGwtWorkerScriptUrl() {
+        // Legacy GWT worker (fallback)
+        return GWT_CLIENT_WORKER_SCRIPT + "?t=" + System.currentTimeMillis();
     }
 
     public static String getImageServiceUrlSafe(Integer id) {

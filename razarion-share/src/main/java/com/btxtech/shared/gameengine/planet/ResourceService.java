@@ -93,7 +93,11 @@ public class ResourceService {
     public void setupSlave(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
         if (initialSlaveSyncItemInfo.getSyncResourceItemInfos() != null) {
             for (SyncResourceItemInfo syncResourceItemInfo : initialSlaveSyncItemInfo.getSyncResourceItemInfos()) {
-                createSyncResourceItemSlave(syncResourceItemInfo);
+                try {
+                    createSyncResourceItemSlave(syncResourceItemInfo);
+                } catch (Throwable t) {
+                    logger.log(Level.WARNING, "ResourceService.setupSlave failed for resource id=" + syncResourceItemInfo.getId() + ": " + t.getMessage(), t);
+                }
             }
         }
     }

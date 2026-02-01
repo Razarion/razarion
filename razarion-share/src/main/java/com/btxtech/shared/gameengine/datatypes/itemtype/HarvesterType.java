@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
+import org.teavm.flavour.json.JsonPersistable;
 
 /**
  * User: beat
@@ -22,6 +23,7 @@ import jsinterop.annotations.JsType;
  * Time: 23:23:38
  */
 @JsType
+@JsonPersistable
 public class HarvesterType {
     private int range;
     private double progress;

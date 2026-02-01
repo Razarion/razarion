@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 import org.dominokit.jackson.annotation.JSONMapper;
+import org.teavm.flavour.json.JsonPersistable;
 
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import java.util.Map;
  */
 @JsType
 @JSONMapper
+@JsonPersistable
 public class PlanetConfig implements Config {
     private int id;
     private String internalName;

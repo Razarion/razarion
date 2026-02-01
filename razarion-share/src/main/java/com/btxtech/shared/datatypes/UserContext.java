@@ -2,6 +2,7 @@ package com.btxtech.shared.datatypes;
 
 
 import org.dominokit.jackson.annotation.JSONMapper;
+import org.teavm.flavour.json.JsonPersistable;
 
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import java.util.Map;
  * 30.08.2016.
  */
 @JSONMapper
+@JsonPersistable
 public class UserContext {
     private String userId;
     private RegisterState registerState;

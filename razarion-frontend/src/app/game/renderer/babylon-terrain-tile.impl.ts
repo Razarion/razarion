@@ -196,12 +196,20 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private setupTerrainTileObjects(terrainTileObjectLists: TerrainTileObjectList[]): void {
     terrainTileObjectLists.forEach(terrainTileObjectList => {
       try {
+        // Skip if no models
+        if (!terrainTileObjectList.terrainObjectModels || terrainTileObjectList.terrainObjectModels.length === 0) {
+          return;
+        }
         let terrainObjectConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.terrainObjectConfigId);
         if (!terrainObjectConfig.getModel3DId()) {
           console.error(`TerrainObjectConfig has no model3DId: ${terrainObjectConfig.toString()}`);
           return;
         }
         terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
+          // Skip invalid models
+          if (!terrainObjectModel || !terrainObjectModel.position) {
+            return;
+          }
           this.createTerrainObject(terrainObjectConfig, terrainObjectModel, terrainObjectConfig.getRadius() <= 0)
         });
       } catch (error) {
@@ -486,6 +494,15 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.terrainTile.getBotGrounds().forEach(botGround => {
       if (botGround.positions) {
         botGround.positions.forEach(position => {
+          // Skip invalid positions
+          if (!position || typeof position.getX !== 'function' || typeof position.getY !== 'function') {
+            return;
+          }
+          const posX = position.getX();
+          const posY = position.getY();
+          if (typeof posX !== 'number' || typeof posY !== 'number' || isNaN(posX) || isNaN(posY)) {
+            return;
+          }
           if (this.insideBotGroundPosition(position, x, y)) {
             found = true;
           }
@@ -500,6 +517,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.terrainTile.getBotGrounds().forEach(botGround => {
       if (botGround.botGroundSlopeBoxes) {
         botGround.botGroundSlopeBoxes.forEach(groundSlopeBox => {
+          // Skip invalid slope boxes
+          if (!groundSlopeBox || typeof groundSlopeBox.xPos !== 'number' || typeof groundSlopeBox.yPos !== 'number' ||
+              isNaN(groundSlopeBox.xPos) || isNaN(groundSlopeBox.yPos)) {
+            return;
+          }
           if (this.insideBotGroundPosition(GwtInstance.newDecimalPosition(groundSlopeBox.xPos, groundSlopeBox.yPos), x, y)) {
             found = true;
           }
@@ -557,10 +579,22 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       return;
     }
     botGrounds.forEach((botGround: BotGround) => {
+      if (!botGround || !botGround.positions) {
+        return;
+      }
       let botGroundNorm = new Vector3(0, 1, 0).normalize();
       botGround.positions.forEach((position) => {
+        // Skip invalid positions
+        if (!position || typeof position.getX !== 'function' || typeof position.getY !== 'function') {
+          return;
+        }
+        const posX = position.getX();
+        const posY = position.getY();
+        if (typeof posX !== 'number' || typeof posY !== 'number' || isNaN(posX) || isNaN(posY)) {
+          return;
+        }
         const renderObject = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
-        renderObject.setPosition(new Vector3(position.getX(), botGround.height, position.getY()));
+        renderObject.setPosition(new Vector3(posX, botGround.height, posY));
         renderObject.setMetadata({
           type: RazarionMetadataType.BOT_GROUND,
           configId: botGround.model3DId,
@@ -572,6 +606,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       });
       if (botGround.botGroundSlopeBoxes) {
         botGround.botGroundSlopeBoxes.forEach(botGroundSlopeBox => {
+          // Skip invalid slope boxes
+          if (!botGroundSlopeBox || typeof botGroundSlopeBox.xPos !== 'number' || typeof botGroundSlopeBox.yPos !== 'number' ||
+              isNaN(botGroundSlopeBox.xPos) || isNaN(botGroundSlopeBox.yPos)) {
+            return;
+          }
           const x = -Math.sin(botGroundSlopeBox.zRot) * Math.cos(botGroundSlopeBox.yRot);
           const y = Math.cos(botGroundSlopeBox.zRot);
           const z = Math.sin(botGroundSlopeBox.zRot) * Math.sin(botGroundSlopeBox.yRot);

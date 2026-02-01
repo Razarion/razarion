@@ -19,6 +19,7 @@ import jakarta.persistence.Embeddable;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsType;
 import org.dominokit.jackson.annotation.JSONMapper;
+import org.teavm.flavour.json.JsonPersistable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @JsType
 @Embeddable
 @JSONMapper
+@JsonPersistable
 public class DecimalPosition {
     public static final DecimalPosition NULL = new DecimalPosition(0, 0);
     public static final DecimalPosition EAST = new DecimalPosition(1, 0);

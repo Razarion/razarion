@@ -365,7 +365,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 try {
                     if (syncItem instanceof SyncBaseItem) {
                         SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                        tmp.add(fixGwtStructureCloneArrayProblem(syncBaseItem.createNativeSyncBaseItemTickInfo(terrainAnalyzer)));
+                        NativeSyncBaseItemTickInfo tickInfo = syncBaseItem.createNativeSyncBaseItemTickInfo(terrainAnalyzer);
+                        tmp.add(fixGwtStructureCloneArrayProblem(tickInfo));
                     }
                 } catch (Throwable t) {
                     logger.log(Level.SEVERE, "onPostTick failed syncItem: " + syncItem, t);
