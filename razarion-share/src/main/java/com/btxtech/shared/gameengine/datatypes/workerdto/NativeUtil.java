@@ -11,6 +11,16 @@ import java.util.logging.Logger;
 public interface NativeUtil {
     Logger LOGGER = Logger.getLogger("NativeUtil");
 
+    /**
+     * Check if a double value is invalid (NaN or Infinite).
+     * Uses multiple methods for robustness across different runtimes (JVM, GWT, TeaVM WASM).
+     * The x != x idiom is always true only for NaN and works reliably in all JavaScript runtimes.
+     */
+    static boolean isInvalidDouble(double value) {
+        // x != x is true only for NaN (more reliable than Double.isNaN in some JS runtimes like TeaVM WASM)
+        return value != value || Double.isNaN(value) || Double.isInfinite(value);
+    }
+
     static DecimalPosition toSyncBaseItemPosition2d(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         if (nativeSyncBaseItemTickInfo.contained) {
             return null;
@@ -18,11 +28,11 @@ public interface NativeUtil {
         double x = nativeSyncBaseItemTickInfo.x;
         double y = nativeSyncBaseItemTickInfo.y;
         // Use 0 as fallback for invalid values to keep units functional
-        if (Double.isNaN(x) || Double.isInfinite(x)) {
+        if (isInvalidDouble(x)) {
             LOGGER.warning("[NativeUtil] Invalid x=" + x + " for item " + nativeSyncBaseItemTickInfo.id + ", using 0");
             x = 0;
         }
-        if (Double.isNaN(y) || Double.isInfinite(y)) {
+        if (isInvalidDouble(y)) {
             LOGGER.warning("[NativeUtil] Invalid y=" + y + " for item " + nativeSyncBaseItemTickInfo.id + ", using 0");
             y = 0;
         }
@@ -37,15 +47,15 @@ public interface NativeUtil {
         double y = nativeSyncBaseItemTickInfo.y;
         double z = nativeSyncBaseItemTickInfo.z;
         // Use 0 as fallback for invalid values to keep units functional
-        if (Double.isNaN(x) || Double.isInfinite(x)) {
+        if (isInvalidDouble(x)) {
             LOGGER.warning("[NativeUtil] Invalid x=" + x + " for item " + nativeSyncBaseItemTickInfo.id + ", using 0");
             x = 0;
         }
-        if (Double.isNaN(y) || Double.isInfinite(y)) {
+        if (isInvalidDouble(y)) {
             LOGGER.warning("[NativeUtil] Invalid y=" + y + " for item " + nativeSyncBaseItemTickInfo.id + ", using 0");
             y = 0;
         }
-        if (Double.isNaN(z) || Double.isInfinite(z)) {
+        if (isInvalidDouble(z)) {
             LOGGER.warning("[NativeUtil] Invalid z=" + z + " for item " + nativeSyncBaseItemTickInfo.id + ", using 0");
             z = 0;
         }
@@ -95,8 +105,7 @@ public interface NativeUtil {
     static DecimalPosition toDecimalPosition(NativeDecimalPosition nativeDecimalPosition) {
         if (nativeDecimalPosition != null) {
             // Skip positions with invalid values
-            if (Double.isNaN(nativeDecimalPosition.x) || Double.isNaN(nativeDecimalPosition.y) ||
-                Double.isInfinite(nativeDecimalPosition.x) || Double.isInfinite(nativeDecimalPosition.y)) {
+            if (isInvalidDouble(nativeDecimalPosition.x) || isInvalidDouble(nativeDecimalPosition.y)) {
                 return null;
             }
             return new DecimalPosition(nativeDecimalPosition.x, nativeDecimalPosition.y);
@@ -109,8 +118,7 @@ public interface NativeUtil {
         if (nativeDecimalPositions != null) {
             return Arrays.stream(nativeDecimalPositions)
                 .filter(nativeDecimalPosition -> nativeDecimalPosition != null &&
-                    !Double.isNaN(nativeDecimalPosition.x) && !Double.isNaN(nativeDecimalPosition.y) &&
-                    !Double.isInfinite(nativeDecimalPosition.x) && !Double.isInfinite(nativeDecimalPosition.y))
+                    !isInvalidDouble(nativeDecimalPosition.x) && !isInvalidDouble(nativeDecimalPosition.y))
                 .map(nativeDecimalPosition -> new DecimalPosition(nativeDecimalPosition.x, nativeDecimalPosition.y))
                 .toArray(DecimalPosition[]::new);
         } else {
@@ -123,8 +131,7 @@ public interface NativeUtil {
         if (nativeBotGroundSlopeBoxes != null) {
             return Arrays.stream(nativeBotGroundSlopeBoxes)
                 .filter(nativeBotGroundSlopeBox -> nativeBotGroundSlopeBox != null &&
-                    !Double.isNaN(nativeBotGroundSlopeBox.xPos) && !Double.isNaN(nativeBotGroundSlopeBox.yPos) &&
-                    !Double.isInfinite(nativeBotGroundSlopeBox.xPos) && !Double.isInfinite(nativeBotGroundSlopeBox.yPos))
+                    !isInvalidDouble(nativeBotGroundSlopeBox.xPos) && !isInvalidDouble(nativeBotGroundSlopeBox.yPos))
                 .map(nativeBotGroundSlopeBox -> {
                     BotGroundSlopeBox botGroundSlopeBox = new BotGroundSlopeBox();
                     botGroundSlopeBox.xPos = nativeBotGroundSlopeBox.xPos;

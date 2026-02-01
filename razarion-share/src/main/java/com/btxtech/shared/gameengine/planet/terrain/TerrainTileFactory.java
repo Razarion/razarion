@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.isInvalidDouble;
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toBotGroundSlopeBoxes;
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toDecimalPositions;
 
@@ -59,9 +60,8 @@ public class TerrainTileFactory {
             List<TerrainObjectModel> terrainObjectModels = new ArrayList<>();
             Arrays.stream(nativeTerrainShapeObjectList.terrainShapeObjectPositions).forEach(nativeTerrainObjectPosition -> {
                 try {
-                    // Skip positions with invalid values
-                    if (Double.isNaN(nativeTerrainObjectPosition.x) || Double.isNaN(nativeTerrainObjectPosition.y) ||
-                        Double.isInfinite(nativeTerrainObjectPosition.x) || Double.isInfinite(nativeTerrainObjectPosition.y)) {
+                    // Skip positions with invalid values (using robust NaN check for TeaVM WASM compatibility)
+                    if (isInvalidDouble(nativeTerrainObjectPosition.x) || isInvalidDouble(nativeTerrainObjectPosition.y)) {
                         logger.warning("Skipping terrain object position with invalid coordinates: x=" + nativeTerrainObjectPosition.x + ", y=" + nativeTerrainObjectPosition.y);
                         return;
                     }

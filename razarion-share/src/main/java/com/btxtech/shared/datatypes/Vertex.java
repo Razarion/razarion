@@ -35,13 +35,14 @@ public class Vertex {
 
     @JsIgnore
     public Vertex(double x, double y, double z) {
-        if (Double.isNaN(x) || Double.isInfinite(x)) {
+        // Use x != x idiom for NaN detection - more reliable than Double.isNaN in TeaVM WASM runtime
+        if (x != x || Double.isInfinite(x)) {
             throw new IllegalArgumentException("x is invalid: " + x);
         }
-        if (Double.isNaN(y) || Double.isInfinite(y)) {
+        if (y != y || Double.isInfinite(y)) {
             throw new IllegalArgumentException("y is invalid: " + y);
         }
-        if (Double.isNaN(z) || Double.isInfinite(z)) {
+        if (z != z || Double.isInfinite(z)) {
             throw new IllegalArgumentException("z is invalid: " + z);
         }
         this.x = x;
@@ -51,7 +52,8 @@ public class Vertex {
 
     @JsIgnore
     public Vertex(DecimalPosition xy, double z) {
-        if (Double.isNaN(z) || Double.isInfinite(z)) {
+        // Use z != z idiom for NaN detection - more reliable than Double.isNaN in TeaVM WASM runtime
+        if (z != z || Double.isInfinite(z)) {
             throw new IllegalArgumentException("z is invalid: " + z);
         }
         this.x = xy.getX();
@@ -61,7 +63,8 @@ public class Vertex {
 
     @JsIgnore
     public Vertex(Index xy, double z) {
-        if (Double.isNaN(z) || Double.isInfinite(z)) {
+        // Use z != z idiom for NaN detection - more reliable than Double.isNaN in TeaVM WASM runtime
+        if (z != z || Double.isInfinite(z)) {
             throw new IllegalArgumentException("z is invalid: " + z);
         }
         this.x = xy.getX();

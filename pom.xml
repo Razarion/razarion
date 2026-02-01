@@ -25,7 +25,7 @@
         <module>razarion-test-share</module>
         <module>razarion-frontend</module>
         <module>razarion-client-common</module>
-        <module>razarion-client-worker</module>
+<!--        <module>razarion-client-worker</module>-->
         <module>razarion-client-worker-teavm</module>
         <module>razarion-ui-service</module>
         <module>razarion-client</module>

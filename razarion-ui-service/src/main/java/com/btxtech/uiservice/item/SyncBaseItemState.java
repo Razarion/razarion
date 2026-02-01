@@ -20,7 +20,7 @@ public class SyncBaseItemState extends SyncItemState {
         super(nativeSyncBaseItemTickInfo, radius, releaseMonitorCallback);
         health = nativeSyncBaseItemTickInfo.health;
         constructing = nativeSyncBaseItemTickInfo.constructing;
-        if (nativeSyncBaseItemTickInfo.constructingBaseItemTypeId > -1) {
+        if (nativeSyncBaseItemTickInfo.constructingBaseItemTypeId > 0) {
             constructingBaseItemTypeId = nativeSyncBaseItemTickInfo.constructingBaseItemTypeId;
         }
         contained = nativeSyncBaseItemTickInfo.contained;
@@ -77,7 +77,7 @@ public class SyncBaseItemState extends SyncItemState {
         }
 
         Integer tmpConstructingBaseItemTypeId = null;
-        if (nativeSyncBaseItemTickInfo.constructingBaseItemTypeId > -1) {
+        if (nativeSyncBaseItemTickInfo.constructingBaseItemTypeId > 0) {
             tmpConstructingBaseItemTypeId = nativeSyncBaseItemTickInfo.constructingBaseItemTypeId;
         }
         if (!Objects.equals(constructingBaseItemTypeId, tmpConstructingBaseItemTypeId)) {

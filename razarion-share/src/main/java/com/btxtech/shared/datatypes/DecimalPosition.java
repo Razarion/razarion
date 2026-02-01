@@ -51,10 +51,11 @@ public class DecimalPosition {
 
     @JsIgnore
     public DecimalPosition(double x, double y) {
-        if (Double.isInfinite(x) || Double.isNaN(x)) {
+        // Use x != x idiom for NaN detection - more reliable than Double.isNaN in TeaVM WASM runtime
+        if (Double.isInfinite(x) || x != x) {
             throw new IllegalArgumentException("Can not set x value in DecimalPosition: " + x);
         }
-        if (Double.isInfinite(y) || Double.isNaN(y)) {
+        if (Double.isInfinite(y) || y != y) {
             throw new IllegalArgumentException("Can not set y value in DecimalPosition: " + y);
         }
         this.x = x;

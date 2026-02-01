@@ -26,6 +26,7 @@ import com.btxtech.worker.jso.dto.JsNativeTerrainShapeObjectList;
 import com.btxtech.worker.jso.dto.JsNativeTerrainShapeObjectPosition;
 import com.btxtech.worker.jso.dto.JsNativeTerrainShapeTile;
 import com.btxtech.worker.jso.dto.JsNativeVertex;
+import com.btxtech.worker.jso.JsUint16ArrayWrapper;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.typedarrays.ArrayBuffer;
@@ -204,7 +205,7 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             return null;
         }
 
-        JsNativeTerrainShape jsShape = (JsNativeTerrainShape) jsObj;
+        JsNativeTerrainShape jsShape = castToTerrainShape(jsObj);
         NativeTerrainShape result = new NativeTerrainShape();
 
         int xLen = jsShape.getTilesXLength();
@@ -229,7 +230,7 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     private static native void logObjectKeys(JSObject obj);
 
     private static NativeTerrainShapeTile convertToNativeTerrainShapeTile(JsNativeTerrainShapeTile jsTile) {
-        if (jsTile == null || JsUtils.isNullOrUndefined((JSObject) jsTile)) {
+        if (isJsNullOrUndefined(jsTile)) {
             return null;
         }
         NativeTerrainShapeTile result = new NativeTerrainShapeTile();
@@ -268,7 +269,7 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     }
 
     private static NativeTerrainShapeObjectList convertToNativeTerrainShapeObjectList(JsNativeTerrainShapeObjectList jsList) {
-        if (jsList == null || JsUtils.isNullOrUndefined((JSObject) jsList)) {
+        if (jsList == null || isJsNullOrUndefined(jsList)) {
             return null;
         }
         NativeTerrainShapeObjectList result = new NativeTerrainShapeObjectList();
@@ -287,13 +288,14 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     }
 
     private static NativeTerrainShapeObjectPosition convertToNativeTerrainShapeObjectPosition(JsNativeTerrainShapeObjectPosition jsPos) {
-        if (jsPos == null || JsUtils.isNullOrUndefined((JSObject) jsPos)) {
+        if (jsPos == null || isJsNullOrUndefined(jsPos)) {
             return null;
         }
         NativeTerrainShapeObjectPosition result = new NativeTerrainShapeObjectPosition();
         result.terrainObjectId = jsPos.getTerrainObjectId();
-        result.x = jsPos.getX();
-        result.y = jsPos.getY();
+        // Use safe getter to handle undefined/NaN values from JavaScript
+        result.x = safeGetDoubleX(jsPos);
+        result.y = safeGetDoubleY(jsPos);
         result.scale = convertToNativeVertex(jsPos.getScale());
         result.rotation = convertToNativeVertex(jsPos.getRotation());
         result.offset = convertToNativeVertex(jsPos.getOffset());
@@ -301,18 +303,48 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     }
 
     private static NativeVertex convertToNativeVertex(JsNativeVertex jsVertex) {
-        if (jsVertex == null || JsUtils.isNullOrUndefined((JSObject) jsVertex)) {
+        if (jsVertex == null || isJsNullOrUndefined(jsVertex)) {
             return null;
         }
         NativeVertex result = new NativeVertex();
-        result.x = jsVertex.getX();
-        result.y = jsVertex.getY();
-        result.z = jsVertex.getZ();
+        // Use safe getter to handle undefined/NaN values from JavaScript
+        result.x = safeGetVertexX(jsVertex);
+        result.y = safeGetVertexY(jsVertex);
+        result.z = safeGetVertexZ(jsVertex);
         return result;
     }
 
+    // JavaScript-side safe getters that return 0 for undefined/null/NaN
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.x; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetDoubleX(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.y; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetDoubleY(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.x; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetVertexX(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.y; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetVertexY(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.z; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetVertexZ(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.xPos; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetSlopeBoxXPos(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.yPos; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetSlopeBoxYPos(JSObject obj);
+
     private static NativeBabylonDecal convertToNativeBabylonDecal(JsNativeBabylonDecal jsDecal) {
-        if (jsDecal == null || JsUtils.isNullOrUndefined((JSObject) jsDecal)) {
+        if (jsDecal == null || isJsNullOrUndefined(jsDecal)) {
             return null;
         }
         NativeBabylonDecal result = new NativeBabylonDecal();
@@ -325,7 +357,7 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     }
 
     private static NativeBotGround convertToNativeBotGround(JsNativeBotGround jsBotGround) {
-        if (jsBotGround == null || JsUtils.isNullOrUndefined((JSObject) jsBotGround)) {
+        if (jsBotGround == null || isJsNullOrUndefined(jsBotGround)) {
             return null;
         }
         NativeBotGround result = new NativeBotGround();
@@ -362,49 +394,52 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     }
 
     private static NativeDecimalPosition convertToNativeDecimalPosition(JsNativeDecimalPosition jsPos) {
-        if (jsPos == null || JsUtils.isNullOrUndefined((JSObject) jsPos)) {
+        if (jsPos == null || isJsNullOrUndefined(jsPos)) {
             return null;
         }
-        // Check for valid position data
+        // Check for valid position data using JavaScript-side validation
         if (!jsPos.isValid()) {
             JsConsole.warn("convertToNativeDecimalPosition: invalid position data, skipping");
             return null;
         }
         NativeDecimalPosition result = new NativeDecimalPosition();
-        result.x = jsPos.getX();
-        result.y = jsPos.getY();
+        // Use safe getter to handle undefined/NaN values from JavaScript
+        result.x = safeGetDoubleX(jsPos);
+        result.y = safeGetDoubleY(jsPos);
         return result;
     }
 
     private static NativeBotGroundSlopeBox convertToNativeBotGroundSlopeBox(JsNativeBotGroundSlopeBox jsBox) {
-        if (jsBox == null || JsUtils.isNullOrUndefined((JSObject) jsBox)) {
+        if (jsBox == null || isJsNullOrUndefined(jsBox)) {
             return null;
         }
         NativeBotGroundSlopeBox result = new NativeBotGroundSlopeBox();
-        result.xPos = jsBox.getXPos();
-        result.yPos = jsBox.getYPos();
+        // Use safe getter for xPos and yPos
+        result.xPos = safeGetSlopeBoxXPos(jsBox);
+        result.yPos = safeGetSlopeBoxYPos(jsBox);
         result.height = jsBox.getHeight();
         result.yRot = jsBox.getYRot();
         result.zRot = jsBox.getZRot();
         return result;
     }
 
+    // WASM-GC compatible helper methods - use @JSBody instead of Java casts
+
+    @JSBody(params = {"obj"}, script = "return obj;")
+    private static native JsNativeTerrainShape castToTerrainShape(JSObject obj);
+
+    @JSBody(params = {"obj"}, script = "return obj === null || obj === undefined;")
+    private static native boolean isJsNullOrUndefined(JSObject obj);
+
     // Array helper methods
     @JSBody(params = {"array"}, script = "return array === null || array === undefined;")
-    private static native boolean isArrayNullOrUndefined(Object array);
+    private static native boolean isArrayNullOrUndefined(JSObject array);
 
     @JSBody(params = {"array"}, script = "return array ? array.length : 0;")
-    private static native int getArrayLength(Object array);
+    private static native int getArrayLength(JSObject array);
 
-    @JSBody(params = {"array2d", "index"}, script = "return array2d[index];")
-    private static native JsNativeTerrainShapeTile[] getArray2D(JsNativeTerrainShapeTile[][] array2d, int index);
-
-    @JSBody(params = {"array", "index"}, script = "return array[index];")
-    private static native <T> T getArrayElement(T[] array, int index);
-
-    @SuppressWarnings("unchecked")
     private static Uint16ArrayEmu asUint16ArrayEmu(Uint16Array array) {
-        return (Uint16ArrayEmu) (Object) array;
+        return JsUint16ArrayWrapper.wrap(array);
     }
 
     // Fetch helpers with callbacks

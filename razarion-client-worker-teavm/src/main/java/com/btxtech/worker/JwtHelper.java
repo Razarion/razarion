@@ -1,5 +1,7 @@
 package com.btxtech.worker;
 
+import org.teavm.jso.JSBody;
+
 /**
  * JWT Helper utility for TeaVM worker
  */
@@ -18,6 +20,9 @@ public final class JwtHelper {
         if (bearerToken == null || bearerToken.isEmpty()) {
             return "";
         }
-        return "?access_token=" + bearerToken;
+        return "?token=" + encodeURIComponent(bearerToken);
     }
+
+    @JSBody(params = {"str"}, script = "return encodeURIComponent(str);")
+    private static native String encodeURIComponent(String str);
 }

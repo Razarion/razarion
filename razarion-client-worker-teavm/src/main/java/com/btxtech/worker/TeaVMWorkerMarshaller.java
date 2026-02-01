@@ -58,6 +58,16 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeDecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
+import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
+import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
+import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
+import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
+import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
+import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
+import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.worker.jso.JsArray;
 import com.btxtech.worker.jso.JsConsole;
 import com.btxtech.worker.jso.JsJson;
@@ -104,8 +114,9 @@ public final class TeaVMWorkerMarshaller {
             case INITIALIZED:
             case TICK_UPDATE_RESPONSE_FAIL:
             case CONNECTION_LOST:
-            case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE:
             case COMMAND_MOVE_ACK:
+                break;
+            case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE:
                 break;
 
             // Single JSON data
@@ -127,7 +138,12 @@ public final class TeaVMWorkerMarshaller {
             case SELL_ITEMS:
             case USE_INVENTORY_ITEM:
             case INITIAL_SLAVE_SYNCHRONIZED:
+                setArrayString(array, DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                break;
             case GET_TERRAIN_TYPE:
+            case BASE_CREATED:
+            case BASE_DELETED:
+            case BASE_UPDATED:
                 setArrayString(array, DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
 
@@ -140,9 +156,6 @@ public final class TeaVMWorkerMarshaller {
             case COMMAND_PICK_BOX:
             case COMMAND_LOAD_CONTAINER:
             case COMMAND_UNLOAD_CONTAINER:
-            case BASE_CREATED:
-            case BASE_DELETED:
-            case BASE_UPDATED:
             case PROJECTILE_DETONATION:
             case ENERGY_CHANGED:
             case GET_TERRAIN_TYPE_ANSWER:
@@ -192,10 +205,10 @@ public final class TeaVMWorkerMarshaller {
                 array.set(DATA_OFFSET_0, convertNativeTickInfoToJs((NativeTickInfo) controlPackage.getData(0)));
                 break;
 
-            // Single Structure clone
+            // NativeSyncBaseItemTickInfo - convert to JavaScript object
             case SYNC_ITEM_START_SPAWNED:
             case SYNC_ITEM_IDLE:
-                array.set(DATA_OFFSET_0, (JSObject) controlPackage.getData(0));
+                array.set(DATA_OFFSET_0, convertNativeSyncBaseItemTickInfoToJs((NativeSyncBaseItemTickInfo) controlPackage.getData(0)));
                 break;
 
             case START:
@@ -491,23 +504,39 @@ public final class TeaVMWorkerMarshaller {
         if (posObj == null || JsUtils.isNullOrUndefined((JSObject) posObj)) {
             return null;
         }
-        // Debug: Check actual object structure
-        double x = posObj.getDouble("x");
-        double y = posObj.getDouble("y");
-        // Use 0 as fallback for invalid values
-        if (Double.isNaN(x) || Double.isInfinite(x)) {
-            // Debug: log the object keys to understand structure
-            debugLogObjectKeys(posObj);
+        // Use JavaScript-side safe getter to handle undefined/NaN at the JS level
+        double x = safeGetDouble(posObj, "x");
+        double y = safeGetDouble(posObj, "y");
+        // Additional Java-side validation using x != x idiom (always true for NaN)
+        // This catches any NaN that might slip through
+        if (isInvalidDouble(x)) {
             x = 0;
         }
-        if (Double.isNaN(y) || Double.isInfinite(y)) {
+        if (isInvalidDouble(y)) {
             y = 0;
         }
         return new DecimalPosition(x, y);
     }
 
+    // Check if double is invalid (NaN or Infinite) using multiple methods for robustness
+    private static boolean isInvalidDouble(double value) {
+        // x != x is true only for NaN (more reliable than Double.isNaN in some JS runtimes)
+        return value != value || Double.isNaN(value) || Double.isInfinite(value);
+    }
+
+    // JavaScript-side safe getter that returns 0 for undefined/null/NaN
+    @JSBody(params = {"obj", "key"}, script =
+            "var val = obj[key];" +
+            "if (val === undefined || val === null || Number.isNaN(val)) return 0;" +
+            "return val;")
+    private static native double safeGetDouble(JsObject obj, String key);
+
     @JSBody(params = {"obj"}, script = "console.log('[DEBUG] Object keys:', Object.keys(obj), 'Object:', JSON.stringify(obj).substring(0, 200));")
     private static native void debugLogObjectKeys(JSObject obj);
+
+    // Push a primitive int to a JS array (avoids TeaVM boxing to object)
+    @JSBody(params = {"array", "value"}, script = "array.push(value);")
+    private static native void pushInt(JsArray<Object> array, int value);
 
     // Safe creation of Vertex with NaN/Infinite validation
     // Uses fallback value (0) for invalid values to keep the system functional
@@ -515,20 +544,18 @@ public final class TeaVMWorkerMarshaller {
         if (posObj == null || JsUtils.isNullOrUndefined((JSObject) posObj)) {
             return null;
         }
-        double x = posObj.getDouble("x");
-        double y = posObj.getDouble("y");
-        double z = posObj.getDouble("z");
-        // Use 0 as fallback for invalid values
-        if (Double.isNaN(x) || Double.isInfinite(x)) {
-            JsConsole.warn("safeVertex: invalid x=" + x + ", using 0");
+        // Use JavaScript-side safe getter to handle undefined/NaN at the JS level
+        double x = safeGetDouble(posObj, "x");
+        double y = safeGetDouble(posObj, "y");
+        double z = safeGetDouble(posObj, "z");
+        // Additional Java-side validation
+        if (isInvalidDouble(x)) {
             x = 0;
         }
-        if (Double.isNaN(y) || Double.isInfinite(y)) {
-            JsConsole.warn("safeVertex: invalid y=" + y + ", using 0");
+        if (isInvalidDouble(y)) {
             y = 0;
         }
-        if (Double.isNaN(z) || Double.isInfinite(z)) {
-            JsConsole.warn("safeVertex: invalid z=" + z + ", using 0");
+        if (isInvalidDouble(z)) {
             z = 0;
         }
         return new Vertex(x, y, z);
@@ -789,10 +816,11 @@ public final class TeaVMWorkerMarshaller {
             if (obj == null || JsUtils.isNullOrUndefined((JSObject) obj)) {
                 continue;
             }
-            double x = obj.getDouble("x");
-            double y = obj.getDouble("y");
-            // Skip invalid values
-            if (Double.isNaN(x) || Double.isNaN(y) || Double.isInfinite(x) || Double.isInfinite(y)) {
+            // Use JavaScript-side safe getter to handle undefined/NaN at the JS level
+            double x = safeGetDouble(obj, "x");
+            double y = safeGetDouble(obj, "y");
+            // Skip invalid values (using robust NaN check)
+            if (isInvalidDouble(x) || isInvalidDouble(y)) {
                 continue;
             }
             validPositions.add(new DecimalPosition(x, y));
@@ -1868,7 +1896,7 @@ public final class TeaVMWorkerMarshaller {
             if (ids.getIds() != null) {
                 JsArray<Object> arr = JsArray.create();
                 for (Integer id : ids.getIds()) {
-                    arr.push(id);
+                    pushInt(arr, id.intValue());
                 }
                 result.set("ids", arr);
             }
@@ -1929,6 +1957,110 @@ public final class TeaVMWorkerMarshaller {
             result.set("baseItemTypeCount", item.getBaseItemTypeCount());
             result.set("baseItemTypeFreeRange", item.getBaseItemTypeFreeRange());
             result.setNullableInt("imageId", item.getImageId());
+        } else if (obj instanceof SimplePath) {
+            SimplePath path = (SimplePath) obj;
+            result.set("destinationReachable", path.isDestinationReachable());
+            if (path.getWayPositions() != null) {
+                JsArray<Object> arr = JsArray.create();
+                for (DecimalPosition pos : path.getWayPositions()) {
+                    arr.push(javaToJsObject(pos));
+                }
+                result.set("wayPositions", arr);
+            }
+            if (path.getAlternativeDestination() != null) {
+                result.set("alternativeDestination", javaToJsObject(path.getAlternativeDestination()));
+            }
+        } else if (obj instanceof MoveCommand) {
+            MoveCommand cmd = (MoveCommand) obj;
+            result.set("id", cmd.getId());
+            if (cmd.getTimeStamp() != null) {
+                result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
+            }
+            if (cmd.getSimplePath() != null) {
+                result.set("simplePath", javaToJsObject(cmd.getSimplePath()));
+            }
+        } else if (obj instanceof AttackCommand) {
+            AttackCommand cmd = (AttackCommand) obj;
+            result.set("id", cmd.getId());
+            if (cmd.getTimeStamp() != null) {
+                result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
+            }
+            if (cmd.getSimplePath() != null) {
+                result.set("simplePath", javaToJsObject(cmd.getSimplePath()));
+            }
+            result.set("target", cmd.getTarget());
+            result.set("followTarget", cmd.isFollowTarget());
+        } else if (obj instanceof BuilderCommand) {
+            BuilderCommand cmd = (BuilderCommand) obj;
+            result.set("id", cmd.getId());
+            if (cmd.getTimeStamp() != null) {
+                result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
+            }
+            if (cmd.getSimplePath() != null) {
+                result.set("simplePath", javaToJsObject(cmd.getSimplePath()));
+            }
+            result.set("toBeBuiltId", cmd.getToBeBuiltId());
+            if (cmd.getPositionToBeBuilt() != null) {
+                result.set("positionToBeBuilt", javaToJsObject(cmd.getPositionToBeBuilt()));
+            }
+        } else if (obj instanceof HarvestCommand) {
+            HarvestCommand cmd = (HarvestCommand) obj;
+            result.set("id", cmd.getId());
+            if (cmd.getTimeStamp() != null) {
+                result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
+            }
+            if (cmd.getSimplePath() != null) {
+                result.set("simplePath", javaToJsObject(cmd.getSimplePath()));
+            }
+            result.set("target", cmd.getTarget());
+        } else if (obj instanceof FactoryCommand) {
+            FactoryCommand cmd = (FactoryCommand) obj;
+            result.set("id", cmd.getId());
+            if (cmd.getTimeStamp() != null) {
+                result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
+            }
+            result.set("toBeBuiltId", cmd.getToBeBuiltId());
+        } else if (obj instanceof BuilderFinalizeCommand) {
+            BuilderFinalizeCommand cmd = (BuilderFinalizeCommand) obj;
+            result.set("id", cmd.getId());
+            if (cmd.getTimeStamp() != null) {
+                result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
+            }
+            if (cmd.getSimplePath() != null) {
+                result.set("simplePath", javaToJsObject(cmd.getSimplePath()));
+            }
+            result.set("buildingId", cmd.getBuildingId());
+        } else if (obj instanceof PickupBoxCommand) {
+            PickupBoxCommand cmd = (PickupBoxCommand) obj;
+            result.set("id", cmd.getId());
+            if (cmd.getTimeStamp() != null) {
+                result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
+            }
+            if (cmd.getSimplePath() != null) {
+                result.set("simplePath", javaToJsObject(cmd.getSimplePath()));
+            }
+            result.set("synBoxItemId", cmd.getSynBoxItemId());
+        } else if (obj instanceof LoadContainerCommand) {
+            LoadContainerCommand cmd = (LoadContainerCommand) obj;
+            result.set("id", cmd.getId());
+            if (cmd.getTimeStamp() != null) {
+                result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
+            }
+            if (cmd.getSimplePath() != null) {
+                result.set("simplePath", javaToJsObject(cmd.getSimplePath()));
+            }
+            if (cmd.getItemContainer() != null) {
+                result.set("itemContainer", cmd.getItemContainer().intValue());
+            }
+        } else if (obj instanceof UnloadContainerCommand) {
+            UnloadContainerCommand cmd = (UnloadContainerCommand) obj;
+            result.set("id", cmd.getId());
+            if (cmd.getTimeStamp() != null) {
+                result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
+            }
+            if (cmd.getUnloadPos() != null) {
+                result.set("unloadPos", javaToJsObject(cmd.getUnloadPos()));
+            }
         } else {
             JsConsole.warn("javaToJsObject: Unsupported type: " + obj.getClass().getName());
             return null;

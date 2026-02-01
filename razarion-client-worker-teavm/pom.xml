@@ -16,9 +16,19 @@
     <packaging>jar</packaging>
 
     <properties>
-        <teavm.version>0.10.2</teavm.version>
+        <teavm.version>0.11.0</teavm.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <!-- TeaVM build settings (defaults for development) -->
+        <teavm.minifying>false</teavm.minifying>
+        <teavm.debugInfo>true</teavm.debugInfo>
+        <teavm.sourceMaps>true</teavm.sourceMaps>
+        <teavm.optimizationLevel>SIMPLE</teavm.optimizationLevel>
+        <!-- TeaVM build settings (defaults for production) -->
+<!--        <teavm.minifying>true</teavm.minifying>-->
+<!--        <teavm.debugInfo>false</teavm.debugInfo>-->
+<!--        <teavm.sourceMaps>false</teavm.sourceMaps>-->
+<!--        <teavm.optimizationLevel>FULL</teavm.optimizationLevel>-->
     </properties>
 
     <dependencies>
@@ -87,25 +97,37 @@
                 </configuration>
             </plugin>
 
-            <!-- TeaVM WebAssembly Compilation -->
+            <!-- TeaVM WebAssembly GC Compilation -->
             <plugin>
                 <groupId>org.teavm</groupId>
                 <artifactId>teavm-maven-plugin</artifactId>
                 <version>${teavm.version}</version>
                 <executions>
                     <execution>
+                        <id>compile-wasm-gc</id>
+                        <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
                         <configuration>
                             <mainClass>com.btxtech.worker.TeaVMWorkerMain</mainClass>
                             <targetDirectory>${project.basedir}/../razarion-server/src/main/resources/generated/teavm-worker</targetDirectory>
-                            <targetFileName>razarion-worker.wasm</targetFileName>
-                            <targetType>WEBASSEMBLY</targetType>
-                            <minifying>false</minifying>
-                            <debugInformationGenerated>true</debugInformationGenerated>
-                            <sourceMapsGenerated>true</sourceMapsGenerated>
-                            <optimizationLevel>SIMPLE</optimizationLevel>
+                            <targetFileName>razarion-worker</targetFileName>
+                            <targetType>WEBASSEMBLY_GC</targetType>
+                            <minifying>${teavm.minifying}</minifying>
+                            <debugInformationGenerated>${teavm.debugInfo}</debugInformationGenerated>
+                            <sourceMapsGenerated>${teavm.sourceMaps}</sourceMapsGenerated>
+                            <optimizationLevel>${teavm.optimizationLevel}</optimizationLevel>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-wasm-gc-runtime</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-webassembly-gc-runtime</goal>
+                        </goals>
+                        <configuration>
+                            <targetDirectory>${project.basedir}/../razarion-server/src/main/resources/generated/teavm-worker</targetDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -139,4 +161,17 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Production profile with full optimizations -->
+        <profile>
+            <id>prod</id>
+            <properties>
+                <teavm.minifying>true</teavm.minifying>
+                <teavm.debugInfo>false</teavm.debugInfo>
+                <teavm.sourceMaps>false</teavm.sourceMaps>
+                <teavm.optimizationLevel>FULL</teavm.optimizationLevel>
+            </properties>
+        </profile>
+    </profiles>
 </project>

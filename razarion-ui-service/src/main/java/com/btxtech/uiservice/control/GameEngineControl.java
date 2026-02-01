@@ -43,6 +43,7 @@ import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
+import elemental2.dom.DomGlobal;
 import jakarta.inject.Provider;
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +55,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 02.01.2017.
  */
-public abstract class GameEngineControl {
+    public abstract class GameEngineControl {
     private final Logger logger = Logger.getLogger(GameEngineControl.class.getName());
     private final BaseItemUiService baseItemUiService;
     private final ResourceUiService resourceUiService;
