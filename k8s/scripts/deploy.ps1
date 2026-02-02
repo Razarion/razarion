@@ -2,7 +2,7 @@
 # Baut den Server inkl. Frontend, erstellt Docker-Image und deployt auf GKE
 
 $ErrorActionPreference = "Stop"
-$ProjectRoot = $PSScriptRoot
+$ProjectRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
 $StartTime = Get-Date
 
 Write-Host "=== Razarion Deploy ===" -ForegroundColor Cyan

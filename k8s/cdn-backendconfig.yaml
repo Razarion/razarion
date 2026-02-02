@@ -14,5 +14,9 @@ spec:
     maxTtl: 604800           # 7 Tage max
     clientTtl: 86400         # Browser Cache 24h
   healthCheck:
-    requestPath: /
+    requestPath: /actuator/health
     port: 8080
+    checkIntervalSec: 30
+    timeoutSec: 10
+    healthyThreshold: 1
+    unhealthyThreshold: 5

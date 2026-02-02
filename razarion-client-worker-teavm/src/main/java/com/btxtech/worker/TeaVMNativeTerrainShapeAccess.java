@@ -349,12 +349,30 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
         }
         NativeBabylonDecal result = new NativeBabylonDecal();
         result.babylonMaterialId = jsDecal.getBabylonMaterialId();
-        result.xPos = jsDecal.getXPos();
-        result.yPos = jsDecal.getYPos();
-        result.xSize = jsDecal.getXSize();
-        result.ySize = jsDecal.getYSize();
+        // Use safe getters to handle undefined/NaN values from JavaScript
+        result.xPos = safeGetDecalXPos(jsDecal);
+        result.yPos = safeGetDecalYPos(jsDecal);
+        result.xSize = safeGetDecalXSize(jsDecal);
+        result.ySize = safeGetDecalYSize(jsDecal);
         return result;
     }
+
+    // Safe getters for decal properties
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.xPos; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetDecalXPos(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.yPos; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetDecalYPos(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.xSize; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetDecalXSize(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.ySize; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetDecalYSize(JSObject obj);
 
     private static NativeBotGround convertToNativeBotGround(JsNativeBotGround jsBotGround) {
         if (jsBotGround == null || isJsNullOrUndefined(jsBotGround)) {

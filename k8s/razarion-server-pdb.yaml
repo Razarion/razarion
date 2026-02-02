@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: razarion-server-pdb
+spec:
+  # Erlaubt maximal 0 gleichzeitige Unterbrechungen bei freiwilligen Disruptions
+  # (z.B. Node Drain, Upgrades). Erzwingt, dass K8s wartet bis ein neuer Pod ready ist.
+  maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: razarion-server

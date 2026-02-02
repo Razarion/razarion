@@ -117,6 +117,10 @@ public class ServerTerrainShapeService {
     }
 
     public int getGroundHeightAt(int index) {
+        if (index < 0 || index >= groundHeightMap.length) {
+            logger.warning("getGroundHeightAt: index " + index + " out of bounds (0-" + groundHeightMap.length + "), returning 0");
+            return 0;
+        }
         return groundHeightMap[index];
     }
 
