@@ -13,8 +13,6 @@ import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.item.SyncBaseItemSetPositionMonitor;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
-import jsinterop.annotations.JsType;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
@@ -27,7 +25,6 @@ import java.util.Set;
  * Created by Beat
  * on 12.09.2017.
  */
-@JsType
 @Singleton
 public class InGameQuestVisualizationService {
 

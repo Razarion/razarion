@@ -28,6 +28,9 @@ public final class JsConsole {
     @JSBody(params = {"message", "obj"}, script = "console.log(message, obj);")
     public static native void log(String message, Object obj);
 
+    @JSBody(params = {"message", "obj"}, script = "console.warn(message);")
+    public static native void warn(String message, Object obj);
+
     @JSBody(params = {"message", "obj"}, script = "console.error(message, obj);")
     public static native void error(String message, Object obj);
 }

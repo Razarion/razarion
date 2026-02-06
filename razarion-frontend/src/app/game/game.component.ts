@@ -102,9 +102,7 @@ export class GameComponent implements OnInit {
   }
 
   private startGame(): void {
-    GameComponent.insertGameScript('window.RAZ_startTime = new Date().getTime();');
-    GameComponent.loadGameScriptUrl('/NativeRazarion.js');
-    GameComponent.loadGameScriptUrl('/com.btxtech.client.RazarionClient/com.btxtech.client.RazarionClient.nocache.js');
+    GameComponent.loadGameScriptUrl('/teavm-client/client-bootstrap.js');
   }
 
   private static loadGameScriptUrl(url: string) {

@@ -68,6 +68,8 @@ public class TeaVMClientGameEngineWorker extends GameEngineWorker {
      * Initialize the worker by setting up the message handler
      */
     public void init() {
+        JsConsole.log("[WORKER-WASM] Starting...");
+
         WorkerGlobalScope workerScope = WorkerGlobalScope.current();
 
         workerScope.setOnMessage(evt -> {
@@ -76,11 +78,12 @@ public class TeaVMClientGameEngineWorker extends GameEngineWorker {
                 GameEngineControlPackage controlPackage = TeaVMWorkerMarshaller.deMarshall(messageEvent.getData());
                 dispatch(controlPackage);
             } catch (Throwable t) {
-                JsConsole.error("TeaVMClientGameEngineWorker: exception processing package on worker: " + t.getMessage());
+                JsConsole.error("[WORKER-WASM] Exception processing package: " + t.getMessage());
             }
         });
 
         sendToClient(GameEngineControlPackage.Command.LOADED);
+        JsConsole.log("[WORKER-WASM] ✓ Initialized successfully");
     }
 
     @Override

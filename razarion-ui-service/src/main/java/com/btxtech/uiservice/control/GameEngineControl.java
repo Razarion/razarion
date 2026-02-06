@@ -43,7 +43,6 @@ import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
-import elemental2.dom.DomGlobal;
 import jakarta.inject.Provider;
 import java.util.Collection;
 import java.util.List;

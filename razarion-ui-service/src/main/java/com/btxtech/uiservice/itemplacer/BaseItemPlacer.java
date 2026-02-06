@@ -4,8 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import jsinterop.annotations.JsType;
-
 import jakarta.inject.Inject;
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -18,7 +16,6 @@ import java.util.logging.Logger;
  * Time: 18:02
  */
 
-@JsType
 public class BaseItemPlacer {
     private final Logger logger = Logger.getLogger(BaseItemPlacer.class.getName());
     private final BaseItemPlacerChecker baseItemPlacerChecker;

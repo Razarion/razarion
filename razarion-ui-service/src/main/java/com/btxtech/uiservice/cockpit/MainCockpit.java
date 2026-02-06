@@ -1,9 +1,6 @@
 package com.btxtech.uiservice.cockpit;
 
 import com.btxtech.uiservice.control.GameUiControl;
-import jsinterop.annotations.JsType;
-
-@JsType(isNative = true)
 public interface MainCockpit {
     void show();
 

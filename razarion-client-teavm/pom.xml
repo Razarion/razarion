@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.btxtech</groupId>
+        <artifactId>razarion</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>razarion-client-teavm</artifactId>
+    <name>Razarion client TeaVM</name>
+    <packaging>jar</packaging>
+
+    <properties>
+        <teavm.version>0.11.0</teavm.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <!-- TeaVM build settings (defaults for development) -->
+        <teavm.minifying>false</teavm.minifying>
+        <teavm.debugInfo>true</teavm.debugInfo>
+        <teavm.sourceMaps>true</teavm.sourceMaps>
+        <teavm.optimizationLevel>SIMPLE</teavm.optimizationLevel>
+    </properties>
+
+    <dependencies>
+        <!-- Razarion shared -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-share</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Razarion UI service -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-ui-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- TeaVM -->
+        <dependency>
+            <groupId>org.teavm</groupId>
+            <artifactId>teavm-jso</artifactId>
+            <version>${teavm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.teavm</groupId>
+            <artifactId>teavm-jso-apis</artifactId>
+            <version>${teavm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.teavm</groupId>
+            <artifactId>teavm-classlib</artifactId>
+            <version>${teavm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.teavm</groupId>
+            <artifactId>teavm-interop</artifactId>
+            <version>${teavm.version}</version>
+        </dependency>
+
+        <!-- Dagger (Standard, not GWT) -->
+        <dependency>
+            <groupId>com.google.dagger</groupId>
+            <artifactId>dagger</artifactId>
+            <version>${com.google.dagger.version}</version>
+        </dependency>
+
+        <!-- Jakarta Inject API -->
+        <dependency>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Dagger Annotation Processor -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.0</version>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.dagger</groupId>
+                            <artifactId>dagger-compiler</artifactId>
+                            <version>${com.google.dagger.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!-- TeaVM WebAssembly GC Compilation -->
+            <plugin>
+                <groupId>org.teavm</groupId>
+                <artifactId>teavm-maven-plugin</artifactId>
+                <version>${teavm.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile-wasm-gc</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.btxtech.client.TeaVMClientMain</mainClass>
+                            <targetDirectory>${project.basedir}/../razarion-server/src/main/resources/generated/teavm-client</targetDirectory>
+                            <targetFileName>razarion-client</targetFileName>
+                            <targetType>WEBASSEMBLY_GC</targetType>
+                            <minifying>${teavm.minifying}</minifying>
+                            <debugInformationGenerated>${teavm.debugInfo}</debugInformationGenerated>
+                            <sourceMapsGenerated>${teavm.sourceMaps}</sourceMapsGenerated>
+                            <optimizationLevel>${teavm.optimizationLevel}</optimizationLevel>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-wasm-gc-runtime</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-webassembly-gc-runtime</goal>
+                        </goals>
+                        <configuration>
+                            <targetDirectory>${project.basedir}/../razarion-server/src/main/resources/generated/teavm-client</targetDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Copy client-bootstrap.js to output directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-client-bootstrap</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/../razarion-server/src/main/resources/generated/teavm-client</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>client-bootstrap.js</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- Production profile with full optimizations -->
+        <profile>
+            <id>prod</id>
+            <properties>
+                <teavm.minifying>true</teavm.minifying>
+                <teavm.debugInfo>false</teavm.debugInfo>
+                <teavm.sourceMaps>false</teavm.sourceMaps>
+                <teavm.optimizationLevel>FULL</teavm.optimizationLevel>
+            </properties>
+        </profile>
+    </profiles>
+</project>

@@ -1,28 +1,63 @@
 package com.btxtech.worker;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Uint16ArrayEmu;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.GroundConfig;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
+import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
+import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
+import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
+import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
+import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
+import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
+import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
+import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
+import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.GeneratorType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.HouseType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.SpecialType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemSpawnStart;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemSpawnStart;
-import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IntIntMap;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeDecimalPosition;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
@@ -33,50 +68,15 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainObjectModel;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.GeneratorType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.HouseType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.SpecialType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
-import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
-import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.gameengine.datatypes.workerdto.NativeDecimalPosition;
-import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
-import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
-import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
-import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
-import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
-import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
-import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
-import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
-import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
-import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
-import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.worker.jso.JsArray;
 import com.btxtech.worker.jso.JsConsole;
 import com.btxtech.worker.jso.JsJson;
 import com.btxtech.worker.jso.JsObject;
 import com.btxtech.worker.jso.JsUtils;
 import com.btxtech.worker.jso.dto.JsNativeDecimalPosition;
-import com.btxtech.worker.jso.dto.JsNativeTickInfo;
-import com.btxtech.worker.jso.dto.JsNativeSyncBaseItemTickInfo;
 import com.btxtech.worker.jso.dto.JsNativeSimpleSyncBaseItemTickInfo;
+import com.btxtech.worker.jso.dto.JsNativeSyncBaseItemTickInfo;
+import com.btxtech.worker.jso.dto.JsNativeTickInfo;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 
@@ -224,6 +224,7 @@ public final class TeaVMWorkerMarshaller {
     public static GameEngineControlPackage deMarshall(JSObject javaScriptObject) {
         JsArray<Object> array = (JsArray<Object>) javaScriptObject;
         String commandName = getArrayString(array, COMMAND_OFFSET);
+
         GameEngineControlPackage.Command command = GameEngineControlPackage.Command.valueOf(commandName);
 
         List<Object> data = new ArrayList<>();
@@ -527,8 +528,8 @@ public final class TeaVMWorkerMarshaller {
     // JavaScript-side safe getter that returns 0 for undefined/null/NaN
     @JSBody(params = {"obj", "key"}, script =
             "var val = obj[key];" +
-            "if (val === undefined || val === null || Number.isNaN(val)) return 0;" +
-            "return val;")
+                    "if (val === undefined || val === null || Number.isNaN(val)) return 0;" +
+                    "return val;")
     private static native double safeGetDouble(JsObject obj, String key);
 
     @JSBody(params = {"obj"}, script = "console.log('[DEBUG] Object keys:', Object.keys(obj), 'Object:', JSON.stringify(obj).substring(0, 200));")
@@ -717,7 +718,7 @@ public final class TeaVMWorkerMarshaller {
         double z = vertex.getZ();
         // Return null if any value is NaN or infinite
         if (Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z) ||
-            Double.isInfinite(x) || Double.isInfinite(y) || Double.isInfinite(z)) {
+                Double.isInfinite(x) || Double.isInfinite(y) || Double.isInfinite(z)) {
             return null;
         }
         JsArray<Object> array = JsArray.create();
@@ -906,7 +907,7 @@ public final class TeaVMWorkerMarshaller {
         double z = JsUtils.asDouble((JSObject) array.get(2));
         // Return null if any value is invalid
         if (Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z) ||
-            Double.isInfinite(x) || Double.isInfinite(y) || Double.isInfinite(z)) {
+                Double.isInfinite(x) || Double.isInfinite(y) || Double.isInfinite(z)) {
             return null;
         }
         return new Vertex(x, y, z);
@@ -1414,7 +1415,10 @@ public final class TeaVMWorkerMarshaller {
         if (regStateStr != null && !regStateStr.isEmpty()) {
             ctx.setRegisterState(UserContext.RegisterState.valueOf(regStateStr));
         }
-        ctx.setName(obj.getString("name"));
+        JSObject nameObj = obj.get("name");
+        if (!JsUtils.isNullOrUndefined(nameObj)) {
+            ctx.setName(obj.getString("name"));
+        }
         ctx.setLevelId(obj.getNullableInt("levelId"));
         JSObject unlockedObj = obj.get("unlockedItemLimit");
         if (!JsUtils.isNullOrUndefined(unlockedObj)) {

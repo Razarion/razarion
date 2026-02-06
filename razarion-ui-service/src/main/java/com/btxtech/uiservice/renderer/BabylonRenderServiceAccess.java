@@ -6,9 +6,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.Diplomacy;
-import jsinterop.annotations.JsType;
-
-@JsType(isNative = true)
 public interface BabylonRenderServiceAccess {
     BabylonTerrainTile createTerrainTile(TerrainTile terrainTile);
 

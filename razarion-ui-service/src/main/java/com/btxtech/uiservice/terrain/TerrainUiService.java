@@ -12,9 +12,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.renderer.ViewField;
-import jsinterop.annotations.JsIgnore;
-import jsinterop.annotations.JsType;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
@@ -29,7 +26,6 @@ import java.util.function.Consumer;
  * 09.08.2015.
  */
 @Singleton
-@JsType
 public class TerrainUiService {
     private final Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
     private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
@@ -46,14 +42,12 @@ public class TerrainUiService {
         this.gameEngineControl = gameEngineControl;
     }
 
-    @JsIgnore
     public void setPlanetConfig(PlanetConfig planetConfig) {
         DecimalPosition planetSize = planetConfig.getSize();
         tileXCount = TerrainUtil.terrainPositionToTileIndexCeil(planetSize).getX();
         tileYCount = TerrainUtil.terrainPositionToTileIndexCeil(planetSize).getY();
     }
 
-    @JsIgnore
     public void clear() {
         clearTerrainTiles();
     }
@@ -69,7 +63,6 @@ public class TerrainUiService {
         cacheTerrainTiles.clear();
     }
 
-    @JsIgnore
     public void onViewChanged(ViewField viewField, Rectangle2D viewFieldAabb) {
         Collection<Index> display = GeometricUtil.rasterizeTerrainViewField(viewFieldAabb, viewField.toPolygon());
 
@@ -104,7 +97,6 @@ public class TerrainUiService {
         displayTerrainTiles = newDisplayTerrainTiles;
     }
 
-    @JsIgnore
     public double calculateLandWaterProportion() {
         double value = 0;
         int count = 0;
@@ -121,7 +113,6 @@ public class TerrainUiService {
         }
     }
 
-    @JsIgnore
     public boolean isTerrainFree(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
         double radius = baseItemType.getPhysicalAreaConfig().getRadius();
         TerrainType terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();
@@ -133,7 +124,6 @@ public class TerrainUiService {
         return true;
     }
 
-    @JsIgnore
     public boolean isTerrainFree(DecimalPosition terrainPosition, double radius, TerrainType terrainType) {
         if (terrainType.isAreaCheck()) {
             List<Index> nodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.NODE_SIZE);
@@ -149,7 +139,6 @@ public class TerrainUiService {
         return true;
     }
 
-    @JsIgnore
     public boolean isTerrainFree(DecimalPosition terrainPosition, TerrainType terrainType) {
         Index terrainTile = TerrainUtil.terrainPositionToTileIndex(terrainPosition);
         UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
@@ -171,13 +160,11 @@ public class TerrainUiService {
         return uiTerrainTile.getTerrainType(terrainPosition);
     }
 
-    @JsIgnore
     public void requestTerrainTile(Index terrainTileIndex, Consumer<TerrainTile> terrainTileConsumer) {
         terrainTileConsumers.put(terrainTileIndex, terrainTileConsumer);
         gameEngineControl.get().requestTerrainTile(terrainTileIndex);
     }
 
-    @JsIgnore
     public void onTerrainTileResponse(TerrainTile terrainTile) {
         terrainTileConsumers.remove(terrainTile.getIndex()).accept(terrainTile);
     }

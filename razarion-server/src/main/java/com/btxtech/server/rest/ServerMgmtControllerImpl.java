@@ -19,9 +19,9 @@ public class ServerMgmtControllerImpl implements ServerMgmtController {
     }
 
     @Override
-    @GetMapping(value = "interfaceVersion", produces = MediaType.APPLICATION_JSON_VALUE)
-    public int getInterfaceVersion() {
-        return Constants.INTERFACE_VERSION;
+    @GetMapping(value = "interfaceVersion", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String getInterfaceVersion() {
+        return String.valueOf(Constants.INTERFACE_VERSION);
     }
 
 

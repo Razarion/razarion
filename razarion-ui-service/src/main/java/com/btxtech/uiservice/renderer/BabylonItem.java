@@ -2,9 +2,6 @@ package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
-import jsinterop.annotations.JsType;
-
-@JsType(isNative = true)
 public interface BabylonItem {
     int getId();
 

@@ -15,8 +15,6 @@ import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
-import jsinterop.annotations.JsType;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.util.ArrayList;
@@ -32,7 +30,6 @@ import java.util.logging.Logger;
  * 06.01.2017.
  */
 @Singleton
-@JsType
 public class ResourceUiService {
     private final Logger logger = Logger.getLogger(ResourceUiService.class.getName());
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();

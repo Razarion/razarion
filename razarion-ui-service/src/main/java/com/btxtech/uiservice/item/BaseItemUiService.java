@@ -28,9 +28,6 @@ import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.user.UserUiService;
-import jsinterop.annotations.JsIgnore;
-import jsinterop.annotations.JsType;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
@@ -51,8 +48,7 @@ import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toDec
  * 28.12.2015.
  * *
  */
-@Singleton // This may lead to Errai problems
-@JsType
+@Singleton
 public class BaseItemUiService {
     private final Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
@@ -120,9 +116,6 @@ public class BaseItemUiService {
 
     public void updateSyncBaseItems(NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos) {
         // May be easier if replaced with SyncItemState and SyncItemMonitor
-        logger.info("[BaseItemUiService] updateSyncBaseItems called with "
-            + (nativeSyncBaseItemTickInfos != null ? nativeSyncBaseItemTickInfos.length : "null") + " items");
-
         this.nativeSyncBaseItemTickInfos = nativeSyncBaseItemTickInfos;
         Collection<Integer> leftoversAliveBabylonBaseItems = new ArrayList<>(babylonBaseItems.keySet());
         int tmpItemCount = 0;
@@ -135,22 +128,14 @@ public class BaseItemUiService {
         }
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
             try {
-                logger.info("[BaseItemUiService] Processing item id=" + nativeSyncBaseItemTickInfo.id
-                    + ", typeId=" + nativeSyncBaseItemTickInfo.itemTypeId
-                    + ", x=" + nativeSyncBaseItemTickInfo.x + ", y=" + nativeSyncBaseItemTickInfo.y + ", z=" + nativeSyncBaseItemTickInfo.z
-                    + ", spawning=" + nativeSyncBaseItemTickInfo.spawning + ", buildup=" + nativeSyncBaseItemTickInfo.buildup);
-
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
                 Vertex position3d = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
-                logger.info("[BaseItemUiService] position3d for item " + nativeSyncBaseItemTickInfo.id + " = " + position3d);
 
                 if (position3d == null) {
-                    logger.info("[BaseItemUiService] Skipping item " + nativeSyncBaseItemTickInfo.id + " - position3d is null (contained)");
                     updateSyncItemMonitor(nativeSyncBaseItemTickInfo);
                     continue;
                 }
                 if(nativeSyncBaseItemTickInfo.spawning < 1.0) {
-                    logger.info("[BaseItemUiService] Skipping item " + nativeSyncBaseItemTickInfo.id + " - spawning=" + nativeSyncBaseItemTickInfo.spawning + " < 1.0");
                     continue;
                 }
 
@@ -173,8 +158,6 @@ public class BaseItemUiService {
                     continue;
                 }
                 if ((viewFieldAabb == null) || !viewFieldAabb.adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
-                    logger.info("[BaseItemUiService] Skipping item " + nativeSyncBaseItemTickInfo.id
-                        + " - out of view. viewFieldAabb=" + viewFieldAabb + ", position2d=" + position2d);
                     if (syncBaseItemSetPositionMonitor != null && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                         syncBaseItemSetPositionMonitor.setInvisibleSyncBaseItemTickInfo(position2d, baseItemType, viewFiledCenter);
                     }
@@ -183,8 +166,6 @@ public class BaseItemUiService {
                 // Alive
                 BabylonBaseItem babylonBaseItem = babylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
                 if (babylonBaseItem == null) {
-                    logger.info("[BaseItemUiService] Creating new BabylonBaseItem for id=" + nativeSyncBaseItemTickInfo.id
-                        + " at position " + position3d);
                     String userName = null;
                     PlayerBaseDto baseDto = getBase(nativeSyncBaseItemTickInfo.baseId);
                     if (baseDto.getCharacter() == Character.HUMAN) {
@@ -198,7 +179,6 @@ public class BaseItemUiService {
                     babylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
                     babylonBaseItem.setPosition(position3d);
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
-                    logger.info("[BaseItemUiService] Created BabylonBaseItem for id=" + nativeSyncBaseItemTickInfo.id);
                     if (syncBaseItemSetPositionMonitor != null && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                         syncBaseItemSetPositionMonitor.addVisible(babylonBaseItem);
                     }
@@ -357,7 +337,6 @@ public class BaseItemUiService {
         }
     }
 
-    @JsIgnore
     public PlayerBaseDto getBase(int baseId) {
         synchronized (bases) {
             PlayerBaseDto base = bases.get(baseId);
@@ -368,22 +347,18 @@ public class BaseItemUiService {
         }
     }
 
-    @JsIgnore
     public PlayerBaseDto getBase(SyncBaseItemSimpleDto syncBaseItem) {
         return getBase(syncBaseItem.getBaseId());
     }
 
-    @JsIgnore
     public boolean isMyOwnProperty(SyncBaseItemSimpleDto syncBaseItem) {
         return myBase != null && syncBaseItem.getBaseId() == myBase.getBaseId();
     }
 
-    @JsIgnore
     public boolean isMyOwnProperty(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         return myBase != null && nativeSyncBaseItemTickInfo.baseId == myBase.getBaseId();
     }
 
-    @JsIgnore
     public boolean isMyEnemy(SyncBaseItemSimpleDto syncBaseItem) {
         try {
             return getBase(syncBaseItem).getCharacter() == Character.BOT;
@@ -394,12 +369,10 @@ public class BaseItemUiService {
         }
     }
 
-    @JsIgnore
     public boolean isMyEnemy(BabylonBaseItem babylonBaseItem) {
         return babylonBaseItem.isEnemy();
     }
 
-    @JsIgnore
     public boolean isMyEnemy(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         try {
             return getBase(nativeSyncBaseItemTickInfo.baseId).getCharacter() == Character.BOT;
@@ -410,7 +383,6 @@ public class BaseItemUiService {
         }
     }
 
-    @JsIgnore
     public SyncBaseItemMonitor monitorSyncItem(int basItemId) {
         // Does not work here Arrays.stream(nativeSyncBaseItemTickInfos)
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
@@ -421,7 +393,6 @@ public class BaseItemUiService {
         throw new IllegalArgumentException("No NativeSyncBaseItemTickInfo for basItemId: " + basItemId);
     }
 
-    @JsIgnore
     public SyncBaseItemMonitor monitorSyncItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         double radius = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId).getPhysicalAreaConfig().getRadius();
         SyncBaseItemState syncBaseItemState = syncItemStates.computeIfAbsent(nativeSyncBaseItemTickInfo.id, k -> new SyncBaseItemState(nativeSyncBaseItemTickInfo, radius, this::releaseSyncItemMonitor));

@@ -9,12 +9,14 @@ import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
 import com.btxtech.uiservice.mock.TestAudioService;
 import com.btxtech.uiservice.mock.TestBootImpl;
 import com.btxtech.uiservice.mock.TestGameEngineControl;
+import com.btxtech.uiservice.mock.TestHeightMapConverter;
 import com.btxtech.uiservice.mock.TestScreenCover;
 import com.btxtech.uiservice.mock.TestServerQuestProvider;
 import com.btxtech.uiservice.mock.TestServerSystemConnection;
 import com.btxtech.uiservice.mock.TestSimpleExecutorService;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
 import com.btxtech.uiservice.system.boot.Boot;
+import com.btxtech.uiservice.terrain.HeightMapConverter;
 import dagger.Binds;
 import dagger.Module;
 
@@ -43,5 +45,8 @@ public abstract class TestUiServiceDaggerModule {
 
     @Binds
     public abstract ServerQuestProvider bindServerQuestProvider(TestServerQuestProvider testServerQuestProvider);
+
+    @Binds
+    public abstract HeightMapConverter bindHeightMapConverter(TestHeightMapConverter testHeightMapConverter);
 
 }

@@ -1,9 +1,7 @@
 package com.btxtech.uiservice.system.boot;
 
-import elemental2.promise.Promise;
-import jsinterop.annotations.JsType;
+import java.util.function.Consumer;
 
-@JsType(isNative = true)
 public interface GwtAngularBoot {
-    Promise<Void> loadThreeJsModels();
+    void loadThreeJsModels(Runnable onSuccess, Consumer<String> onError);
 }

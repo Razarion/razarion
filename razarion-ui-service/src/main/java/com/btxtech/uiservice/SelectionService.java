@@ -21,13 +21,10 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
-import elemental2.dom.DomGlobal;
-import jsinterop.annotations.JsFunction;
-import jsinterop.annotations.JsIgnore;
-import jsinterop.annotations.JsType;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
@@ -43,7 +40,6 @@ import java.util.logging.Logger;
  * Date: May 19, 2009
  * Time: 9:09:40 PM
  */
-@JsType
 @Singleton
 public class SelectionService {
     private final Logger logger = Logger.getLogger(SelectionService.class.getName());
@@ -52,12 +48,12 @@ public class SelectionService {
     private final Provider<BaseItemUiService> baseItemUiService;
     private final Provider<ResourceUiService> resourceUiService;
     private final Provider<BoxUiService> boxUiService;
+    private final SimpleExecutorService simpleExecutorService;
     private ActionServiceListener actionServiceListener;
     private final List<SelectionChangeListener> selectionListeners = new ArrayList<>();
     private Group selectedGroup;
     private SyncItemSimpleDto selectedOtherSyncItem;
 
-    @JsFunction
     public interface SelectionChangeListener {
         void onSelectionChanged();
     }
@@ -67,12 +63,14 @@ public class SelectionService {
                             Provider<ResourceUiService> resourceUiService,
                             Provider<BaseItemUiService> baseItemUiService,
                             Provider<com.btxtech.uiservice.Group> groupInstance,
-                            SelectionEventService selectionEventService) {
+                            SelectionEventService selectionEventService,
+                            SimpleExecutorService simpleExecutorService) {
         this.boxUiService = boxUiService;
         this.resourceUiService = resourceUiService;
         this.baseItemUiService = baseItemUiService;
         this.groupInstance = groupInstance;
         this.selectionEventService = selectionEventService;
+        this.simpleExecutorService = simpleExecutorService;
         selectionEventService.receiveSelectionEvent(this::onOwnSelectionChanged);
     }
 
@@ -192,7 +190,6 @@ public class SelectionService {
         selectionEventService.fire(new SelectionEvent(suppressAudio));
     }
 
-    @JsIgnore
     public void baseItemRemoved(int[] removedSyncItemIds) {
         if (selectedGroup != null) {
             boolean changed = false;
@@ -218,7 +215,6 @@ public class SelectionService {
         }
     }
 
-    @JsIgnore
     public void baseItemRemoved(NativeSimpleSyncBaseItemTickInfo[] removedSyncBaseItems) {
         int[] removedIds = new int[removedSyncBaseItems.length];
         // Does not work here Arrays.stream(nativeSyncBaseItemTickInfos)
@@ -252,7 +248,7 @@ public class SelectionService {
         }
         // Notify all selection listeners after other event handlers have completed
         // (e.g., BaseItemUiService.onSelectionChanged which calls babylonBaseItem.select(true))
-        DomGlobal.setTimeout(args -> {
+        simpleExecutorService.schedule(0, () -> {
             for (SelectionChangeListener listener : selectionListeners) {
                 try {
                     listener.onSelectionChanged();
@@ -260,7 +256,7 @@ public class SelectionService {
                     logger.log(Level.WARNING, "SelectionListener failed", e);
                 }
             }
-        }, 0);
+        }, SimpleExecutorService.Type.COVER_FADE);
     }
 
     @SuppressWarnings("unused") // Called by Angular

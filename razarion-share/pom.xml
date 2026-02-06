@@ -52,17 +52,6 @@
             <version>17.0.11</version> <!-- Ersetze durch die neueste Version -->
         </dependency>
         <dependency>
-            <groupId>org.dominokit</groupId>
-            <artifactId>domino-rest-client</artifactId>
-            <version>${org.dominokit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.dominokit</groupId>
-            <artifactId>domino-rest-processor</artifactId>
-            <version>${org.dominokit.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.google.dagger</groupId>
             <artifactId>dagger</artifactId>
             <version>${com.google.dagger.version}</version>
@@ -76,6 +65,18 @@
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
             <version>3.1.0</version>
+        </dependency>
+        <!-- Domino Jackson for JSON mapping annotations -->
+        <dependency>
+            <groupId>org.dominokit</groupId>
+            <artifactId>domino-jackson</artifactId>
+            <version>${org.dominokit.version}</version>
+        </dependency>
+        <!-- JAX-RS API for REST controller annotations -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.1</version>
         </dependency>
     </dependencies>
 

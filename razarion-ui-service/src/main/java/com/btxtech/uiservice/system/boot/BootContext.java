@@ -5,7 +5,8 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.user.UserUiService;
-import elemental2.promise.Promise;
+
+import java.util.function.Consumer;
 
 public class BootContext {
     private final SimpleExecutorService simpleExecutorService;
@@ -43,8 +44,7 @@ public class BootContext {
 
     }
 
-    public Promise<Void> loadThreeJsModels() {
-        return null;
+    public void loadThreeJsModels(Runnable onSuccess, Consumer<String> onError) {
     }
 
     public void initGameEngineControl(ColdGameUiContext coldGameUiContext, DeferredStartup deferredStartup) {

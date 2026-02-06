@@ -29,7 +29,7 @@ export class ActionService implements ActionServiceListener {
     let targetItemType: BaseItemType | undefined = undefined;
 
     if (diplomacy === Diplomacy.OWN) {
-      this.gwtAngularService.gwtAngularFacade.inputService.ownItemClicked(id, <BaseItemType>itemType);
+      this.gwtAngularService.gwtAngularFacade.inputService.ownItemClicked(id);
     } else if (diplomacy === Diplomacy.FRIEND) {
       this.gwtAngularService.gwtAngularFacade.inputService.friendItemClicked(id);
     } else if (diplomacy === Diplomacy.ENEMY) {

@@ -148,7 +148,7 @@ export interface InputService {
     topRightX: number, topRightY: number,
     topLeftX: number, topLeftY: number): void;
 
-  ownItemClicked(id: number, baseItemType: BaseItemType): void;
+  ownItemClicked(id: number): void;
 
   friendItemClicked(id: number): void;
 

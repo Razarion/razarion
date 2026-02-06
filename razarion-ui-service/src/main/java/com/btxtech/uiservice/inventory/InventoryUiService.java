@@ -13,8 +13,6 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
-import jsinterop.annotations.JsType;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import java.util.ArrayList;
@@ -27,7 +25,6 @@ import java.util.logging.Logger;
  * Created by Beat
  * 30.10.2016.
  */
-@JsType
 public class InventoryUiService {
     private final Logger logger = Logger.getLogger(InventoryUiService.class.getName());
     private final ItemTypeService itemTypeService;

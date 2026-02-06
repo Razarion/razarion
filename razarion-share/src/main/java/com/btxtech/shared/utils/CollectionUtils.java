@@ -219,7 +219,7 @@ public class CollectionUtils {
 
         Map<Integer, Integer> counts = new HashMap<>(a.length);
         for (int val : a) {
-            counts.merge(val, 1, Integer::sum);
+            counts.merge(val, 1, (x, y) -> x + y);
         }
 
         for (int val : b) {

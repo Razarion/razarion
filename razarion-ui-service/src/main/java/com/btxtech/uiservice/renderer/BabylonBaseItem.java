@@ -2,10 +2,6 @@ package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import jsinterop.annotations.JsType;
-
-
-@JsType(isNative = true)
 public interface BabylonBaseItem extends BabylonItem {
     BaseItemType getBaseItemType();
 

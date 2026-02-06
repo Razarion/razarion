@@ -2,7 +2,6 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.LogRecordInfo;
-import org.dominokit.rest.shared.request.service.annotations.RequestFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -14,7 +13,6 @@ import javax.ws.rs.core.MediaType;
  * 06.07.2016.
  */
 @Path(CommonUrl.REMOTE_LOGGING)
-@RequestFactory
 public interface LoggingController {
 
     @POST

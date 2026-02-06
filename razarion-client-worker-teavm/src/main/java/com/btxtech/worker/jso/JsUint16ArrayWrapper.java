@@ -13,4 +13,8 @@ public abstract class JsUint16ArrayWrapper implements JSObject, Uint16ArrayEmu {
 
     @JSBody(params = {"array"}, script = "return array;")
     public static native JsUint16ArrayWrapper wrap(Uint16Array array);
+
+    @Override
+    @JSBody(params = {"index"}, script = "return this[index];")
+    public native int getAt(int index);
 }

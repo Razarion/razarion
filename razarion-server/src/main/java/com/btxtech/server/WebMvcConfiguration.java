@@ -31,5 +31,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         registry.addResourceHandler("/teavm-worker/**")
                 .addResourceLocations("classpath:/generated/teavm-worker/")
                 .setCacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic());
+
+        // TeaVM Client files - cache for 1 hour
+        registry.addResourceHandler("/teavm-client/**")
+                .addResourceLocations("classpath:/generated/teavm-client/")
+                .setCacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic());
     }
 }

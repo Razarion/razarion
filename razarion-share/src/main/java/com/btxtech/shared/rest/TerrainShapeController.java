@@ -2,7 +2,6 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
-import org.dominokit.rest.shared.request.service.annotations.RequestFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -12,7 +11,6 @@ import javax.ws.rs.core.MediaType;
  * on 11.02.2018.
  */
 @Path(CommonUrl.TERRAIN_SHAPE_CONTROLLER)
-@RequestFactory
 public interface TerrainShapeController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)

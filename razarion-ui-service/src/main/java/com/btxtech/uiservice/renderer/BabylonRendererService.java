@@ -9,7 +9,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.Diplomacy;
-import elemental2.dom.DomGlobal;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -20,7 +19,7 @@ import java.util.logging.Logger;
 public class BabylonRendererService {
     private static final Logger LOG = Logger.getLogger(BabylonRendererService.class.getName());
     private final ItemTypeService itemTypeService;
-    private BabylonRenderServiceAccess babylonRenderServiceAccess;
+    private final BabylonRenderServiceAccess babylonRenderServiceAccess;
 
     @Inject
     public BabylonRendererService(BabylonRenderServiceAccess babylonRenderServiceAccess, ItemTypeService itemTypeService) {

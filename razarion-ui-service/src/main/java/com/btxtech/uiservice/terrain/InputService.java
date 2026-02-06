@@ -18,8 +18,6 @@ import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ViewField;
-import elemental2.promise.Promise;
-import jsinterop.annotations.JsType;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -30,7 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@JsType
 @Singleton
 public class InputService {
     private final Logger logger = Logger.getLogger(InputService.class.getName());
@@ -84,9 +81,10 @@ public class InputService {
     }
 
     @SuppressWarnings("unused") // Called by Babylonjs
-    public void ownItemClicked(int syncItemId, BaseItemType baseItemType) {
+    public void ownItemClicked(int syncItemId) {
         try {
             SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.getItem4Id(syncItemId);
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (selectionService.hasOwnSelection()) {
                 if (syncBaseItem.checkBuildup() && baseItemType.getItemContainerType() != null) {
                     Collection<SyncBaseItemSimpleDto> contained = selectionService.getOwnSelection().getSyncBaseItemsMonitors().stream().filter(monitor -> baseItemType.getItemContainerType().isAbleToContain(monitor.getSyncBaseItemState().getSyncBaseItem().getItemTypeId())).map(monitor -> monitor.getSyncBaseItemState().getSyncBaseItem()).collect(Collectors.toList());
@@ -208,14 +206,12 @@ public class InputService {
     }
 
     @SuppressWarnings("unused") // Called by Babylonjs
-    public Promise<TerrainType> getTerrainTypeOnTerrain(Index nodeIndex) {
-        return new Promise<>((resolve, reject) -> {
-            boolean contains = terrainTypeOnTerrainConsumers.containsKey(nodeIndex);
-            terrainTypeOnTerrainConsumers.put(nodeIndex, resolve::onInvoke);
-            if (!contains) {
-                gameEngineControl.getTerrainType(nodeIndex);
-            }
-        });
+    public void getTerrainTypeOnTerrain(Index nodeIndex, Consumer<TerrainType> callback) {
+        boolean contains = terrainTypeOnTerrainConsumers.containsKey(nodeIndex);
+        terrainTypeOnTerrainConsumers.put(nodeIndex, callback);
+        if (!contains) {
+            gameEngineControl.getTerrainType(nodeIndex);
+        }
     }
 
     public void onGetTerrainTypeAnswer(Index nodeIndex, TerrainType terrainType) {

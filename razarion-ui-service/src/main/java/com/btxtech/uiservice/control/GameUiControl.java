@@ -29,8 +29,6 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.user.UserUiService;
-import jsinterop.annotations.JsType;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
@@ -44,7 +42,6 @@ import java.util.logging.Logger;
  * 05.07.2016.
  */
 @Singleton // @Singleton lead to crashes with errai CDI
-@JsType
 public class GameUiControl { // Equivalent worker class is PlanetService
     private final Logger logger = Logger.getLogger(GameUiControl.class.getName());
     private final Provider<Scene> sceneInstance;

@@ -1,7 +1,7 @@
 package com.btxtech.worker.jso;
 
+import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
-import org.teavm.jso.JSProperty;
 import org.teavm.jso.dom.events.Event;
 
 /**
@@ -9,6 +9,6 @@ import org.teavm.jso.dom.events.Event;
  */
 public interface JsMessageEvent extends Event {
 
-    @JSProperty
+    @JSBody(script = "return this.data;")
     JSObject getData();
 }
