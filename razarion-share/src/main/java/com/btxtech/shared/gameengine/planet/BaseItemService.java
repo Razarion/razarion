@@ -640,6 +640,23 @@ public class BaseItemService {
         }
     }
 
+    public void executeForwardedCommand(BaseCommand baseCommand, boolean markLocallyCommanded) {
+        try {
+            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(baseCommand.getId());
+            syncBaseItem.stop(false);
+            syncBaseItem.executeCommand(baseCommand);
+            if (markLocallyCommanded && syncBaseItem.getAbstractSyncPhysical().canMove()) {
+                syncBaseItem.getSyncPhysicalMovable().markLocalCommand();
+            }
+            addToActiveItemQueue(syncBaseItem);
+            guardingItemService.remove(syncBaseItem);
+        } catch (ItemDoesNotExistException e) {
+            // Item may not exist locally yet - ignore
+        } catch (Throwable t) {
+            logger.log(Level.WARNING, "executeForwardedCommand failed: " + baseCommand, t);
+        }
+    }
+
     public void addToActiveItemQueue(SyncBaseItem activeItem) {
         synchronized (activeItemQueue) {
             if (!activeItems.contains(activeItem) && !activeItemQueue.contains(activeItem)) {
@@ -772,9 +789,15 @@ public class BaseItemService {
     }
 
     public void processPendingReceivedTickInfos(long tickCount) {
+        if (!pendingReceivedTickInfos.isEmpty()) {
+            TickInfo nextInfo = pendingReceivedTickInfos.peek();
+            long serverTick = (long) nextInfo.getTickCount();
+            logger.info("TICK_SYNC: worker=" + tickCount + " server=" + serverTick + " delta=" + (tickCount - serverTick) + " pending=" + pendingReceivedTickInfos.size() + " items=" + nextInfo.getSyncBaseItemInfos().size());
+        } else if (tickCount % 50 == 0) {
+            logger.info("TICK_SYNC: worker=" + tickCount + " NO pending server ticks");
+        }
         while (!pendingReceivedTickInfos.isEmpty() && pendingReceivedTickInfos.peek().getTickCount() <= tickCount) {
             TickInfo tickInfo = pendingReceivedTickInfos.remove();
-            // System.out.println("Synchronize pending: slaveTickCount: " + tickCount + " info tick count: " + syncBaseItemInfo.getTickCount() + ". " + syncBaseItemInfo);
             tickInfo.getSyncBaseItemInfos().forEach(this::onSlaveSyncBaseItemChanged);
         }
     }

@@ -74,7 +74,11 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "proxyConfig": "src/proxy.conf.js",
-            "buildTarget": "razarion-frontend:build"
+            "buildTarget": "razarion-frontend:build",
+            "headers": {
+              "Cross-Origin-Opener-Policy": "same-origin",
+              "Cross-Origin-Embedder-Policy": "credentialless"
+            }
           },
           "configurations": {
             "production": {

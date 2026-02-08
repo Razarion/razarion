@@ -273,6 +273,10 @@ public class CommandService {
             if (planetService.getGameEngineMode() == GameEngineMode.MASTER) {
                 baseItemService.queueCommand(baseCommand);
             } else if (planetService.getGameEngineMode() == GameEngineMode.SLAVE) {
+                // Execute locally for immediate response (no teleport on direction change)
+                // markLocallyCommanded=true: ignore server syncs for own commands
+                baseItemService.executeForwardedCommand(baseCommand, true);
+                // Also send to server
                 gameLogicService.onSlaveCommandSent(syncItemContainerService.getSyncBaseItemSave(baseCommand.getId()), baseCommand);
             }
         } catch (ItemDoesNotExistException e) {

@@ -118,7 +118,13 @@ import java.util.logging.Logger;
 
     public void start(String bearerToken) {
         sendToWorker(GameEngineControlPackage.Command.START, bearerToken);
-        sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
+        if (!isSharedBufferMode()) {
+            sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
+        }
+    }
+
+    protected boolean isSharedBufferMode() {
+        return false;
     }
 
     public void stop(Runnable stopCallback) {
@@ -240,7 +246,7 @@ import java.util.logging.Logger;
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST, terrainTileIndex);
     }
 
-    private void onTickUpdate(NativeTickInfo nativeTickInfo) {
+    protected void onTickUpdate(NativeTickInfo nativeTickInfo) {
         perfmonService.onEntered(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
         try {
             if (nativeTickInfo.killedSyncBaseItems != null) {
@@ -256,7 +262,9 @@ import java.util.logging.Logger;
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "Exception in onTickUpdate", t);
         }
-        sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
+        if (!isSharedBufferMode()) {
+            sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
+        }
         perfmonService.onLeft(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
     }
 

@@ -60,9 +60,11 @@ public class TeaVMClientMarshaller {
 
     // ============ Marshalling (client → worker) ============
 
+    private static final GameEngineControlPackage.Command[] COMMAND_LOOKUP = GameEngineControlPackage.Command.values();
+
     public static JSObject marshall(GameEngineControlPackage controlPackage) {
         JsArray<Object> array = JsArray.create();
-        setArrayString(array, COMMAND_OFFSET, controlPackage.getCommand().name());
+        setArrayInt(array, COMMAND_OFFSET, controlPackage.getCommand().ordinal());
 
         switch (controlPackage.getCommand()) {
             // No data
@@ -155,26 +157,20 @@ public class TeaVMClientMarshaller {
                 JsConsole.error("TeaVMClientMarshaller.deMarshall: received non-array object: " + stringify(javaScriptObject));
                 throw new IllegalArgumentException("Expected array but got: " + getObjectType(javaScriptObject));
             }
-            // Use JSObject directly instead of casting to avoid WASM-GC type checking issues
-            String commandName = getArrayStringDirect(javaScriptObject, COMMAND_OFFSET);
-            if (commandName == null || commandName.isEmpty()) {
-                JsConsole.error("TeaVMClientMarshaller.deMarshall: command name is null or empty. Array: " + stringify(javaScriptObject));
-                throw new IllegalArgumentException("Command name is null or empty");
+            // Use ordinal-based lookup instead of valueOf() for performance
+            int commandOrdinal = getArrayIntDirect(javaScriptObject, COMMAND_OFFSET);
+            if (commandOrdinal < 0 || commandOrdinal >= COMMAND_LOOKUP.length) {
+                JsConsole.error("TeaVMClientMarshaller.deMarshall: invalid command ordinal: " + commandOrdinal);
+                throw new IllegalArgumentException("Invalid command ordinal: " + commandOrdinal);
             }
 
-            GameEngineControlPackage.Command command;
-            try {
-                command = GameEngineControlPackage.Command.valueOf(commandName);
-            } catch (Throwable t) {
-                JsConsole.error("TeaVMClientMarshaller.deMarshall: unknown command: " + commandName);
-                throw t;
-            }
+            GameEngineControlPackage.Command command = COMMAND_LOOKUP[commandOrdinal];
 
             List<Object> data = new ArrayList<>();
             try {
                 demarshallData(command, javaScriptObject, data);
             } catch (Throwable t) {
-                JsConsole.error("TeaVMClientMarshaller.deMarshall: error processing command " + commandName + ": " + t.getMessage());
+                JsConsole.error("TeaVMClientMarshaller.deMarshall: error processing command " + command + ": " + t.getMessage());
                 throw t;
             }
 
@@ -207,11 +203,11 @@ public class TeaVMClientMarshaller {
                 data.add(fromJson(getArrayStringDirect(javaScriptObject, DATA_OFFSET_0), String.class));
                 break;
 
-            // Native JS objects - pass through as-is
+            // TypedArray-encoded tick data - pass the whole array for direct TypedArray access
             case TICK_UPDATE_RESPONSE:
             case SYNC_ITEM_START_SPAWNED:
             case SYNC_ITEM_IDLE:
-                data.add(getArrayElementDirect(javaScriptObject, DATA_OFFSET_0));
+                data.add(javaScriptObject);
                 break;
 
             case RESOURCE_CREATED:
@@ -745,8 +741,14 @@ public class TeaVMClientMarshaller {
     @JSBody(params = {"array", "index", "value"}, script = "array[index] = value;")
     private static native void setArrayString(JsArray<Object> array, int index, String value);
 
+    @JSBody(params = {"array", "index", "value"}, script = "array[index] = value;")
+    private static native void setArrayInt(JsArray<Object> array, int index, int value);
+
     @JSBody(params = {"array", "index"}, script = "return array[index];")
     private static native String getArrayString(JsArray<Object> array, int index);
+
+    @JSBody(params = {"obj", "index"}, script = "return obj[index] | 0;")
+    private static native int getArrayIntDirect(JSObject obj, int index);
 
     @JSBody(params = {"obj", "index"}, script = "return obj[index];")
     private static native String getArrayStringDirect(JSObject obj, int index);

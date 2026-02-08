@@ -456,17 +456,9 @@ public class DtoConverter {
         if (positions == null) return null;
         JsArray<JSObject> arr = JsArray.create();
         for (DecimalPosition pos : positions) {
-            arr.push(convertDecimalPositionData(pos));
+            arr.push(convertDecimalPosition(pos));
         }
         return arr;
-    }
-
-    private static JSObject convertDecimalPositionData(DecimalPosition pos) {
-        if (pos == null) return null;
-        JsObject obj = JsObject.create();
-        obj.set("x", pos.getX());
-        obj.set("y", pos.getY());
-        return obj;
     }
 
     private static JSObject convertBotGroundSlopeBoxes(BotGroundSlopeBox[] boxes) {

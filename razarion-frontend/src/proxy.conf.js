@@ -11,7 +11,11 @@ const PROXY_CONFIG = [
     ],
     target: "http://127.0.0.1:8080",
     secure: false,
-    ws: true
+    ws: true,
+    onProxyRes: function (proxyRes) {
+      proxyRes.headers["Cross-Origin-Opener-Policy"] = "same-origin";
+      proxyRes.headers["Cross-Origin-Embedder-Policy"] = "credentialless";
+    }
   },
   {
     context: [

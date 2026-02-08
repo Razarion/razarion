@@ -547,7 +547,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   override onPosition3D(position3D: Vector3): boolean {
     let updateImmediately = !this.position3D || this.lastPositionUpdateTime === null;
-    this.oldPosition3D = this.position3D;
+    this.oldPosition3D = this.getContainer().position.clone();
     this.position3D = position3D.clone();
     this.lastPositionUpdateTime = Date.now();
     return updateImmediately;
@@ -555,7 +555,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   override onRotation3D(rotation3D: Vector3): boolean {
     let updateImmediately = this.rotation3D === null || this.lastRotationUpdateTime === null;
-    this.oldRotation3D = this.rotation3D;
+    this.oldRotation3D = this.getContainer().rotation.clone();
     this.rotation3D = rotation3D.clone();
     this.lastRotationUpdateTime = Date.now();
     return updateImmediately;

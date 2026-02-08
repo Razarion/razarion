@@ -114,6 +114,18 @@ public abstract class AbstractServerGameConnection {
             case TICK_COUNT_RESPONSE:
                 planetService.setTickCount((long) ((double) param));
                 break;
+            case FACTORY_COMMAND:
+            case UNLOAD_CONTAINER_COMMAND:
+            case ATTACK_COMMAND:
+            case BUILDER_COMMAND:
+            case BUILDER_FINALIZE_COMMAND:
+            case HARVESTER_COMMAND:
+            case LOAD_CONTAINER_COMMAND:
+            case MOVE_COMMAND:
+            case PICK_BOX_COMMAND:
+                // markLocallyCommanded=false: accept server syncs for other players' commands
+                baseItemService.executeForwardedCommand((BaseCommand) param, false);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);
         }

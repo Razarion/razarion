@@ -32,6 +32,7 @@ public class ClientGameConnection {
     private final PlanetService planetService;
     private final UserService userService;
     private final CommandService commandService;
+    private final ClientGameConnectionService clientGameConnectionService;
     private WebSocketSession wsSession;
     private String userId;
     private Date lastMessageSent;
@@ -41,11 +42,13 @@ public class ClientGameConnection {
     public ClientGameConnection(BaseItemService baseItemService,
                                 PlanetService planetService,
                                 UserService userService,
-                                CommandService commandService) {
+                                CommandService commandService,
+                                ClientGameConnectionService clientGameConnectionService) {
         this.baseItemService = baseItemService;
         this.planetService = planetService;
         this.userService = userService;
         this.commandService = commandService;
+        this.clientGameConnectionService = clientGameConnectionService;
     }
 
     public void init(WebSocketSession wsSession, String userId) {
@@ -99,7 +102,10 @@ public class ClientGameConnection {
             case LOAD_CONTAINER_COMMAND:
             case MOVE_COMMAND:
             case PICK_BOX_COMMAND:
-                commandService.executeCommand((BaseCommand) param);
+                BaseCommand cmd = (BaseCommand) param;
+                cmd.setForwardedByConnection(true);
+                commandService.executeCommand(cmd);
+                clientGameConnectionService.broadcastCommand(packet, param, userId);
                 break;
             case SELL_ITEMS:
                 baseItemService.sellItems(((IdsDto) param).getIds(), getPlayerBase());

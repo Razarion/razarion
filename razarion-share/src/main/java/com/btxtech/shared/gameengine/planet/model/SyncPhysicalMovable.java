@@ -38,7 +38,8 @@ import jakarta.inject.Provider;
 public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
     private static final double STOP_DETECTION_OTHER_UNITS_RADIOS = 20;
-    private static final double ANGLE_SLOW_DOWN = 0.1;
+    // Angle slow-down removed: caused server/client desync when re-issuing commands during movement.
+    // Units still rotate via angularVelocity in finalization().
     // private Logger logger = Logger.getLogger(SyncPhysicalMovable.class.getName());
     private final Provider<Path> instancePath;
     private final SyncItemContainerServiceImpl syncItemContainerService;
@@ -48,10 +49,11 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private Path path;
     private DecimalPosition velocity;
     private DecimalPosition preferredVelocity;
+    private static final int SKIP_SYNC_TICKS_AFTER_LOCAL_COMMAND = 2;
     private DecimalPosition oldPosition;
     private boolean crowded;
-    private Double startAngleSlowDown;
-    private Double endAngleSlowDown;
+    private int skipSyncTicks;
+    private boolean tickSynchronized;
 
     @Inject
     public SyncPhysicalMovable(SyncItemContainerServiceImpl syncItemContainerService, Provider<Path> instancePath) {
@@ -65,11 +67,12 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         maxSpeed = physicalAreaConfig.getSpeed();
         angularVelocity = physicalAreaConfig.getAngularVelocity();
         acceleration = physicalAreaConfig.getAcceleration();
-        startAngleSlowDown = physicalAreaConfig.getStartAngleSlowDown();
-        endAngleSlowDown = physicalAreaConfig.getEndAngleSlowDown();
     }
 
     public void setupPreferredVelocity() {
+        if (skipSyncTicks > 0) {
+            skipSyncTicks--;
+        }
         oldPosition = getPosition();
         crowded = false;
         if (path != null) {
@@ -84,28 +87,6 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
                 desiredSpeed = originalSpeed + acceleration * PlanetService.TICK_FACTOR;
             }
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
-            if (startAngleSlowDown != null || endAngleSlowDown != null) {
-                Double angleSpeed = null;
-                double deltaAngle = Math.abs(MathHelper.negateAngle(desiredAngle - getAngle()));
-                if (startAngleSlowDown != null && endAngleSlowDown == null) {
-                    if (deltaAngle > startAngleSlowDown) {
-                        angleSpeed = ANGLE_SLOW_DOWN;
-                    }
-                } else if (startAngleSlowDown == null && endAngleSlowDown != null) {
-                    if (deltaAngle > endAngleSlowDown) {
-                        angleSpeed = ANGLE_SLOW_DOWN;
-                    }
-                } else if (startAngleSlowDown != null) {
-                    if (deltaAngle > endAngleSlowDown) {
-                        angleSpeed = ANGLE_SLOW_DOWN;
-                    } else if (deltaAngle > startAngleSlowDown && deltaAngle <= endAngleSlowDown) {
-                        angleSpeed = (deltaAngle - startAngleSlowDown) * ((maxSpeed - ANGLE_SLOW_DOWN) / (startAngleSlowDown - endAngleSlowDown)) + maxSpeed;
-                    }
-                }
-                if (angleSpeed != null) {
-                    speed = Math.min(speed, angleSpeed);
-                }
-            }
             preferredVelocity = DecimalPosition.createVector(desiredAngle, speed);
         } else {
             stop();
@@ -191,6 +172,11 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         velocity = null;
         path = null;
         preferredVelocity = null;
+        skipSyncTicks = 0; // Accept server syncs immediately when stopped
+    }
+
+    public void markLocalCommand() {
+        skipSyncTicks = SKIP_SYNC_TICKS_AFTER_LOCAL_COMMAND;
     }
 
     public boolean isMoving() {
@@ -218,12 +204,22 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     }
 
     public void implementPosition() {
+        if (tickSynchronized) {
+            tickSynchronized = false;
+            return;
+        }
         if (velocity != null) {
             setPosition2d(getDesiredPosition(), true);
         }
     }
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
+        if (skipSyncTicks > 0) {
+            // Recently received a local command. Skip server sync to avoid teleportation
+            // from stale TickInfo. Counter expires after a few ticks, then server syncs
+            // are accepted again to correct ORCA divergence.
+            return;
+        }
         super.synchronize(syncPhysicalAreaInfo);
         velocity = syncPhysicalAreaInfo.getVelocity();
         if (syncPhysicalAreaInfo.getWayPositions() != null) {
@@ -233,6 +229,7 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         } else {
             this.path = null;
         }
+        tickSynchronized = true;
     }
 
     public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {

@@ -2,12 +2,14 @@ package com.btxtech.client;
 
 import com.btxtech.client.jso.JsConsole;
 import com.btxtech.client.jso.JsWorker;
+import com.btxtech.client.jso.SharedTickBufferReader;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeDecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SharedTickBufferLayout;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.audio.AudioService;
@@ -24,6 +26,7 @@ import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 import org.teavm.jso.JSBody;
+import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
 
 import jakarta.inject.Inject;
@@ -35,6 +38,8 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     private final Provider<TeaVMLifecycleService> lifecycleService;
     private JsWorker worker;
     private DeferredStartup deferredStartup;
+    private SharedTickBufferReader sharedTickBufferReader;
+    private boolean sharedBufferMode;
 
     @Inject
     public TeaVMClientGameEngineControl(Provider<InputService> inputServices,
@@ -95,6 +100,33 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
         }
     }
 
+    private void initSharedTickBuffer() {
+        try {
+            if (false) {
+                JsConsole.log("[CLIENT-WASM] SharedBuffer disabled for debugging, using postMessage fallback");
+                return;
+            }
+            if (!isCrossOriginIsolated()) {
+                JsConsole.log("[CLIENT-WASM] crossOriginIsolated=false, using postMessage for tick data");
+                return;
+            }
+            JSObject sab = createSharedArrayBuffer(SharedTickBufferLayout.TOTAL_BYTES);
+            if (sab == null) {
+                JsConsole.log("[CLIENT-WASM] SharedArrayBuffer not available, using postMessage fallback");
+                return;
+            }
+            // Send init message to worker
+            sendSharedBufferInit(worker, sab);
+            sharedTickBufferReader = new SharedTickBufferReader(sab);
+            sharedBufferMode = true;
+            JsConsole.log("[CLIENT-WASM] SharedArrayBuffer tick transfer initialized (" + SharedTickBufferLayout.TOTAL_BYTES + " bytes)");
+        } catch (Throwable t) {
+            JsConsole.log("[CLIENT-WASM] SharedArrayBuffer init failed: " + t.getMessage() + ", using postMessage fallback");
+            sharedBufferMode = false;
+            sharedTickBufferReader = null;
+        }
+    }
+
     @Override
     protected void sendToWorker(GameEngineControlPackage.Command command, Object... data) {
         try {
@@ -106,8 +138,41 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     }
 
     @Override
+    protected boolean isSharedBufferMode() {
+        return sharedBufferMode;
+    }
+
+    @Override
+    public void start(String bearerToken) {
+        super.start(bearerToken);
+        if (sharedBufferMode) {
+            startPollLoop();
+        }
+    }
+
+    private void startPollLoop() {
+        requestAnimationFrame(timestamp -> pollTick());
+    }
+
+    private void pollTick() {
+        try {
+            if (sharedTickBufferReader != null && sharedTickBufferReader.hasNewData()) {
+                NativeTickInfo tickInfo = sharedTickBufferReader.readTickData();
+                onTickUpdate(tickInfo);
+            }
+        } catch (Throwable t) {
+            JsConsole.error("[CLIENT-WASM] SharedBuffer poll error: " + t.getMessage());
+        }
+        if (worker != null) {
+            requestAnimationFrame(timestamp -> pollTick());
+        }
+    }
+
+    @Override
     protected void onLoaded() {
-        JsConsole.log("[CLIENT-WASM] ✓ Worker loaded successfully");
+        JsConsole.log("[CLIENT-WASM] Worker loaded, initializing SharedArrayBuffer...");
+        // Worker's onmessage handler is now ready — safe to send SAB init
+        initSharedTickBuffer();
         if (deferredStartup != null) {
             deferredStartup.finished();
             deferredStartup = null;
@@ -124,41 +189,129 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
         lifecycleService.get().onConnectionLost("ClientServerGameConnection");
     }
 
+    // ============ TypedArray tick decoding constants ============
+    private static final int DOUBLES_PER_ITEM = 14;
+    private static final int INTS_PER_ITEM = 4;
+    private static final int KILLED_DOUBLES_PER_ITEM = 2;
+    private static final int KILLED_INTS_PER_ITEM = 2;
+
+    // Wire-format slot indices (matching worker encoding)
+    private static final int TICK_ITEM_COUNT = 1;
+    private static final int TICK_RESOURCES = 2;
+    private static final int TICK_XP_FROM_KILLS = 3;
+    private static final int TICK_HOUSE_SPACE = 4;
+    private static final int TICK_DOUBLES = 5;
+    private static final int TICK_INTS = 6;
+    private static final int TICK_FLAGS = 7;
+    private static final int TICK_CONTAINING_IDS = 8;
+    private static final int TICK_KILLED_COUNT = 9;
+    private static final int TICK_KILLED_DOUBLES = 10;
+    private static final int TICK_KILLED_INTS = 11;
+    private static final int TICK_KILLED_FLAGS = 12;
+    private static final int TICK_REMOVE_IDS = 13;
+
     @Override
     protected NativeTickInfo castToNativeTickInfo(Object javaScriptObject) {
-        JSObject jsObj = (JSObject) javaScriptObject;
+        JSObject array = (JSObject) javaScriptObject;
         NativeTickInfo result = new NativeTickInfo();
-        result.resources = jsGetInt(jsObj, "resources");
-        result.xpFromKills = jsGetInt(jsObj, "xpFromKills");
-        result.houseSpace = jsGetInt(jsObj, "houseSpace");
 
-        // updatedNativeSyncBaseItemTickInfos
-        JSObject updatedArr = jsGetProp(jsObj, "updatedNativeSyncBaseItemTickInfos");
-        if (!jsIsNullOrUndefined(updatedArr)) {
-            int len = jsLength(updatedArr);
-            result.updatedNativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[len];
-            for (int i = 0; i < len; i++) {
-                result.updatedNativeSyncBaseItemTickInfos[i] = convertSyncBaseItemTickInfo(jsArrayGet(updatedArr, i));
+        int itemCount = jsArrayGetInt(array, TICK_ITEM_COUNT);
+        result.resources = jsArrayGetInt(array, TICK_RESOURCES);
+        result.xpFromKills = jsArrayGetInt(array, TICK_XP_FROM_KILLS);
+        result.houseSpace = jsArrayGetInt(array, TICK_HOUSE_SPACE);
+
+        // Decode updated items from TypedArrays
+        if (itemCount > 0) {
+            JSObject tickDoubles = jsArrayGet(array, TICK_DOUBLES);
+            JSObject tickInts = jsArrayGet(array, TICK_INTS);
+            JSObject tickFlags = jsArrayGet(array, TICK_FLAGS);
+            JSObject containingIds = jsArrayGet(array, TICK_CONTAINING_IDS);
+
+            result.updatedNativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[itemCount];
+            int containingOffset = 0;
+
+            for (int i = 0; i < itemCount; i++) {
+                NativeSyncBaseItemTickInfo info = new NativeSyncBaseItemTickInfo();
+                int dOff = i * DOUBLES_PER_ITEM;
+                int iOff = i * INTS_PER_ITEM;
+
+                // Doubles
+                info.x = getFloat64(tickDoubles, dOff + 0);
+                info.y = getFloat64(tickDoubles, dOff + 1);
+                info.z = getFloat64(tickDoubles, dOff + 2);
+                info.angle = getFloat64(tickDoubles, dOff + 3);
+                info.turretAngle = getFloat64(tickDoubles, dOff + 4);
+                info.spawning = getFloat64(tickDoubles, dOff + 5);
+                info.buildup = getFloat64(tickDoubles, dOff + 6);
+                info.health = getFloat64(tickDoubles, dOff + 7);
+                info.constructing = getFloat64(tickDoubles, dOff + 8);
+                info.maxContainingRadius = getFloat64(tickDoubles, dOff + 9);
+
+                // Optional positions (NaN = absent)
+                double harvestX = getFloat64(tickDoubles, dOff + 10);
+                if (!Double.isNaN(harvestX)) {
+                    info.harvestingResourcePosition = new NativeDecimalPosition();
+                    info.harvestingResourcePosition.x = harvestX;
+                    info.harvestingResourcePosition.y = getFloat64(tickDoubles, dOff + 11);
+                }
+                double buildX = getFloat64(tickDoubles, dOff + 12);
+                if (!Double.isNaN(buildX)) {
+                    info.buildingPosition = new NativeDecimalPosition();
+                    info.buildingPosition.x = buildX;
+                    info.buildingPosition.y = getFloat64(tickDoubles, dOff + 13);
+                }
+
+                // Ints
+                info.id = getInt32(tickInts, iOff + 0);
+                info.itemTypeId = getInt32(tickInts, iOff + 1);
+                info.baseId = getInt32(tickInts, iOff + 2);
+                info.constructingBaseItemTypeId = getInt32(tickInts, iOff + 3);
+
+                // Flags
+                int flags = getUint8(tickFlags, i);
+                info.contained = (flags & 1) != 0;
+                info.idle = (flags & 2) != 0;
+                boolean hasContaining = (flags & 4) != 0;
+
+                // ContainingItemTypeIds (prefix-length encoding)
+                if (hasContaining && !jsIsNullOrUndefined(containingIds)) {
+                    int count = getInt32(containingIds, containingOffset++);
+                    info.containingItemTypeIds = new int[count];
+                    for (int c = 0; c < count; c++) {
+                        info.containingItemTypeIds[c] = getInt32(containingIds, containingOffset++);
+                    }
+                }
+
+                result.updatedNativeSyncBaseItemTickInfos[i] = info;
             }
         }
 
-        // killedSyncBaseItems
-        JSObject killedArr = jsGetProp(jsObj, "killedSyncBaseItems");
-        if (!jsIsNullOrUndefined(killedArr)) {
-            int len = jsLength(killedArr);
-            result.killedSyncBaseItems = new NativeSimpleSyncBaseItemTickInfo[len];
-            for (int i = 0; i < len; i++) {
-                result.killedSyncBaseItems[i] = convertSimpleSyncBaseItemTickInfo(jsArrayGet(killedArr, i));
+        // Decode killed items
+        int killedCount = jsArrayGetInt(array, TICK_KILLED_COUNT);
+        if (killedCount > 0) {
+            JSObject killedDoubles = jsArrayGet(array, TICK_KILLED_DOUBLES);
+            JSObject killedInts = jsArrayGet(array, TICK_KILLED_INTS);
+            JSObject killedFlags = jsArrayGet(array, TICK_KILLED_FLAGS);
+
+            result.killedSyncBaseItems = new NativeSimpleSyncBaseItemTickInfo[killedCount];
+            for (int i = 0; i < killedCount; i++) {
+                NativeSimpleSyncBaseItemTickInfo k = new NativeSimpleSyncBaseItemTickInfo();
+                k.x = getFloat64(killedDoubles, i * 2);
+                k.y = getFloat64(killedDoubles, i * 2 + 1);
+                k.id = getInt32(killedInts, i * 2);
+                k.itemTypeId = getInt32(killedInts, i * 2 + 1);
+                k.contained = getUint8(killedFlags, i) != 0;
+                result.killedSyncBaseItems[i] = k;
             }
         }
 
-        // removeSyncBaseItemIds
-        JSObject removeArr = jsGetProp(jsObj, "removeSyncBaseItemIds");
+        // Decode remove IDs
+        JSObject removeArr = jsArrayGet(array, TICK_REMOVE_IDS);
         if (!jsIsNullOrUndefined(removeArr)) {
             int len = jsLength(removeArr);
             result.removeSyncBaseItemIds = new int[len];
             for (int i = 0; i < len; i++) {
-                result.removeSyncBaseItemIds[i] = jsArrayGetInt(removeArr, i);
+                result.removeSyncBaseItemIds[i] = getInt32(removeArr, i);
             }
         }
 
@@ -167,64 +320,66 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
 
     @Override
     protected NativeSyncBaseItemTickInfo castToNativeSyncBaseItemTickInfo(Object javaScriptObject) {
-        return convertSyncBaseItemTickInfo((JSObject) javaScriptObject);
-    }
+        JSObject array = (JSObject) javaScriptObject;
+        int itemCount = jsArrayGetInt(array, TICK_ITEM_COUNT);
+        if (itemCount == 0) {
+            return new NativeSyncBaseItemTickInfo();
+        }
 
-    private static NativeSyncBaseItemTickInfo convertSyncBaseItemTickInfo(JSObject jsObj) {
+        JSObject tickDoubles = jsArrayGet(array, TICK_DOUBLES);
+        JSObject tickInts = jsArrayGet(array, TICK_INTS);
+        JSObject tickFlags = jsArrayGet(array, TICK_FLAGS);
+
         NativeSyncBaseItemTickInfo info = new NativeSyncBaseItemTickInfo();
-        info.id = jsGetInt(jsObj, "id");
-        info.itemTypeId = jsGetInt(jsObj, "itemTypeId");
-        info.x = jsGetDouble(jsObj, "x");
-        info.y = jsGetDouble(jsObj, "y");
-        info.z = jsGetDouble(jsObj, "z");
-        info.angle = jsGetDouble(jsObj, "angle");
-        info.baseId = jsGetInt(jsObj, "baseId");
-        info.turretAngle = jsGetDouble(jsObj, "turretAngle");
-        info.spawning = jsGetDouble(jsObj, "spawning");
-        info.buildup = jsGetDouble(jsObj, "buildup");
-        info.health = jsGetDouble(jsObj, "health");
-        info.constructing = jsGetDouble(jsObj, "constructing");
-        info.constructingBaseItemTypeId = jsGetInt(jsObj, "constructingBaseItemTypeId");
-        info.contained = jsGetBoolean(jsObj, "contained");
-        info.idle = jsGetBoolean(jsObj, "idle");
-        info.maxContainingRadius = jsGetDouble(jsObj, "maxContainingRadius");
 
-        // harvestingResourcePosition
-        JSObject harvestPos = jsGetProp(jsObj, "harvestingResourcePosition");
-        if (!jsIsNullOrUndefined(harvestPos)) {
+        // Doubles
+        info.x = getFloat64(tickDoubles, 0);
+        info.y = getFloat64(tickDoubles, 1);
+        info.z = getFloat64(tickDoubles, 2);
+        info.angle = getFloat64(tickDoubles, 3);
+        info.turretAngle = getFloat64(tickDoubles, 4);
+        info.spawning = getFloat64(tickDoubles, 5);
+        info.buildup = getFloat64(tickDoubles, 6);
+        info.health = getFloat64(tickDoubles, 7);
+        info.constructing = getFloat64(tickDoubles, 8);
+        info.maxContainingRadius = getFloat64(tickDoubles, 9);
+
+        double harvestX = getFloat64(tickDoubles, 10);
+        if (!Double.isNaN(harvestX)) {
             info.harvestingResourcePosition = new NativeDecimalPosition();
-            info.harvestingResourcePosition.x = jsGetDouble(harvestPos, "x");
-            info.harvestingResourcePosition.y = jsGetDouble(harvestPos, "y");
+            info.harvestingResourcePosition.x = harvestX;
+            info.harvestingResourcePosition.y = getFloat64(tickDoubles, 11);
         }
-
-        // buildingPosition
-        JSObject buildPos = jsGetProp(jsObj, "buildingPosition");
-        if (!jsIsNullOrUndefined(buildPos)) {
+        double buildX = getFloat64(tickDoubles, 12);
+        if (!Double.isNaN(buildX)) {
             info.buildingPosition = new NativeDecimalPosition();
-            info.buildingPosition.x = jsGetDouble(buildPos, "x");
-            info.buildingPosition.y = jsGetDouble(buildPos, "y");
+            info.buildingPosition.x = buildX;
+            info.buildingPosition.y = getFloat64(tickDoubles, 13);
         }
 
-        // containingItemTypeIds
-        JSObject containArr = jsGetProp(jsObj, "containingItemTypeIds");
-        if (!jsIsNullOrUndefined(containArr)) {
-            int len = jsLength(containArr);
-            info.containingItemTypeIds = new int[len];
-            for (int i = 0; i < len; i++) {
-                info.containingItemTypeIds[i] = jsArrayGetInt(containArr, i);
+        // Ints
+        info.id = getInt32(tickInts, 0);
+        info.itemTypeId = getInt32(tickInts, 1);
+        info.baseId = getInt32(tickInts, 2);
+        info.constructingBaseItemTypeId = getInt32(tickInts, 3);
+
+        // Flags
+        int flags = getUint8(tickFlags, 0);
+        info.contained = (flags & 1) != 0;
+        info.idle = (flags & 2) != 0;
+        boolean hasContaining = (flags & 4) != 0;
+
+        if (hasContaining) {
+            JSObject containingIds = jsArrayGet(array, TICK_CONTAINING_IDS);
+            if (!jsIsNullOrUndefined(containingIds)) {
+                int count = getInt32(containingIds, 0);
+                info.containingItemTypeIds = new int[count];
+                for (int c = 0; c < count; c++) {
+                    info.containingItemTypeIds[c] = getInt32(containingIds, c + 1);
+                }
             }
         }
 
-        return info;
-    }
-
-    private static NativeSimpleSyncBaseItemTickInfo convertSimpleSyncBaseItemTickInfo(JSObject jsObj) {
-        NativeSimpleSyncBaseItemTickInfo info = new NativeSimpleSyncBaseItemTickInfo();
-        info.id = jsGetInt(jsObj, "id");
-        info.itemTypeId = jsGetInt(jsObj, "itemTypeId");
-        info.x = jsGetDouble(jsObj, "x");
-        info.y = jsGetDouble(jsObj, "y");
-        info.contained = jsGetBoolean(jsObj, "contained");
         return info;
     }
 
@@ -232,18 +387,6 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
 
     @JSBody(params = {"worker", "message"}, script = "worker.postMessage(message);")
     private static native void postMessage(JsWorker worker, JSObject message);
-
-    @JSBody(params = {"obj", "key"}, script = "return obj[key] || 0;")
-    private static native int jsGetInt(JSObject obj, String key);
-
-    @JSBody(params = {"obj", "key"}, script = "var v = obj[key]; return (v === undefined || v === null || Number.isNaN(v) || v !== v) ? 0.0 : v;")
-    private static native double jsGetDouble(JSObject obj, String key);
-
-    @JSBody(params = {"obj", "key"}, script = "return !!obj[key];")
-    private static native boolean jsGetBoolean(JSObject obj, String key);
-
-    @JSBody(params = {"obj", "key"}, script = "return obj[key];")
-    private static native JSObject jsGetProp(JSObject obj, String key);
 
     @JSBody(params = {"obj"}, script = "return obj === null || obj === undefined;")
     private static native boolean jsIsNullOrUndefined(JSObject obj);
@@ -254,11 +397,18 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     @JSBody(params = {"arr", "index"}, script = "return arr[index];")
     private static native JSObject jsArrayGet(JSObject arr, int index);
 
-    @JSBody(params = {"arr", "index"}, script = "return arr[index] || 0;")
+    @JSBody(params = {"arr", "index"}, script = "return arr[index] | 0;")
     private static native int jsArrayGetInt(JSObject arr, int index);
 
-    @JSBody(params = {"obj"}, script = "return typeof obj + (Array.isArray(obj) ? ' (array)' : '');")
-    private static native String getJsType(JSObject obj);
+    // TypedArray reading helpers
+    @JSBody(params = {"arr", "index"}, script = "return arr[index];")
+    private static native double getFloat64(JSObject arr, int index);
+
+    @JSBody(params = {"arr", "index"}, script = "return arr[index] | 0;")
+    private static native int getInt32(JSObject arr, int index);
+
+    @JSBody(params = {"arr", "index"}, script = "return arr[index] | 0;")
+    private static native int getUint8(JSObject arr, int index);
 
     private static String getStackTrace(Throwable t) {
         if (t == null) return "null";
@@ -271,5 +421,24 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
             }
         }
         return sb.toString();
+    }
+
+    // ============ SharedArrayBuffer JS interop ============
+
+    @JSBody(script = "return typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated === true;")
+    private static native boolean isCrossOriginIsolated();
+
+    @JSBody(params = {"size"}, script = "try { return new SharedArrayBuffer(size); } catch(e) { return null; }")
+    private static native JSObject createSharedArrayBuffer(int size);
+
+    @JSBody(params = {"worker", "sab"}, script = "worker.postMessage({type: 'shared-tick-buffer', buffer: sab});")
+    private static native void sendSharedBufferInit(JsWorker worker, JSObject sab);
+
+    @JSBody(params = {"callback"}, script = "requestAnimationFrame(callback);")
+    private static native void requestAnimationFrame(RafCallback callback);
+
+    @JSFunctor
+    interface RafCallback extends JSObject {
+        void onFrame(double timestamp);
     }
 }

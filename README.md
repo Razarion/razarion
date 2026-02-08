@@ -39,7 +39,11 @@ No registration. No installation. Just play.
 ### 🔗 Client
 - **Angular** and **PrimeNG** for UI
 - **Babylon.js** for WebGL 3D rendering
-- **GWT** for the game engine
+- **TeaVM** (WASM) for the game engine
+
+### 📖 Documentation
+
+Detailed technical documentation is available in the [`docs/README.md`](docs/README.md).
 
 ---
 

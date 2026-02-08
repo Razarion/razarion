@@ -128,6 +128,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     protected abstract int[] convertIntArray(int[] intArray);
 
+    protected boolean isSharedBufferMode() {
+        return false;
+    }
+
+    protected void writeTickToSharedBuffer(NativeTickInfo nativeTickInfo) {
+    }
+
     protected void dispatch(GameEngineControlPackage controlPackage) {
         switch (controlPackage.getCommand()) {
             case INITIALIZE:
@@ -353,41 +360,57 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onPostTick(SynchronizationSendingContext synchronizationSendingContext) {
-        if (!sendTickUpdate) {
-            return;
+        if (isSharedBufferMode()) {
+            // SharedArrayBuffer mode: always write, client polls via rAF
+            try {
+                NativeTickInfo nativeTickInfo = buildNativeTickInfo();
+                writeTickToSharedBuffer(nativeTickInfo);
+            } catch (Throwable t) {
+                ExceptionHandler.handleExceptionOnlyOnce(s -> logger.log(Level.SEVERE, s, t), "GameEngineWorker.onPostTick() shared buffer failed " + t.getMessage(), t);
+            }
+        } else {
+            // postMessage mode: only send when client has requested
+            if (!sendTickUpdate) {
+                return;
+            }
+            sendTickUpdate = false;
+            try {
+                NativeTickInfo nativeTickInfo = buildNativeTickInfo();
+                sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE, nativeTickInfo);
+            } catch (Throwable t) {
+                ExceptionHandler.handleExceptionOnlyOnce(s -> logger.log(Level.SEVERE, s, t), "GameEngineWorker.onPostTick() failed " + t.getMessage(), t);
+                sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE_FAIL);
+            }
         }
-        sendTickUpdate = false;
-        try {
-            NativeTickInfo nativeTickInfo = new NativeTickInfo();
-            List<NativeSyncBaseItemTickInfo> tmp = new ArrayList<>();
-            TerrainAnalyzer terrainAnalyzer = terrainService.getTerrainAnalyzer();
-            syncItemContainerService.iterateOverItems(true, true, null, syncItem -> {
-                try {
-                    if (syncItem instanceof SyncBaseItem) {
-                        SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                        NativeSyncBaseItemTickInfo tickInfo = syncBaseItem.createNativeSyncBaseItemTickInfo(terrainAnalyzer);
-                        tmp.add(fixGwtStructureCloneArrayProblem(tickInfo));
-                    }
-                } catch (Throwable t) {
-                    logger.log(Level.SEVERE, "onPostTick failed syncItem: " + syncItem, t);
+    }
+
+    private NativeTickInfo buildNativeTickInfo() {
+        NativeTickInfo nativeTickInfo = new NativeTickInfo();
+        List<NativeSyncBaseItemTickInfo> tmp = new ArrayList<>();
+        TerrainAnalyzer terrainAnalyzer = terrainService.getTerrainAnalyzer();
+        syncItemContainerService.iterateOverItems(true, true, null, syncItem -> {
+            try {
+                if (syncItem instanceof SyncBaseItem) {
+                    SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
+                    NativeSyncBaseItemTickInfo tickInfo = syncBaseItem.createNativeSyncBaseItemTickInfo(terrainAnalyzer);
+                    tmp.add(fixGwtStructureCloneArrayProblem(tickInfo));
                 }
-                return null;
-            });
-            nativeTickInfo.updatedNativeSyncBaseItemTickInfos = tmp.stream().toArray(value -> new NativeSyncBaseItemTickInfo[tmp.size()]);
-            if (gameEngineMode == GameEngineMode.SLAVE) {
-                nativeTickInfo.xpFromKills = xpFromKills;
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "onPostTick failed syncItem: " + syncItem, t);
             }
-            xpFromKills = 0;
-            nativeTickInfo.killedSyncBaseItems = convertAndClearKilled();
-            nativeTickInfo.removeSyncBaseItemIds = convertAndClearRemoved();
-            if (playerBase != null) {
-                nativeTickInfo.resources = (int) playerBase.getResources();
-            }
-            sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE, nativeTickInfo);
-        } catch (Throwable t) {
-            ExceptionHandler.handleExceptionOnlyOnce(s -> logger.log(Level.SEVERE, s, t), "GameEngineWorker.onPostTick() failed " + t.getMessage(), t);
-            sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE_FAIL);
+            return null;
+        });
+        nativeTickInfo.updatedNativeSyncBaseItemTickInfos = tmp.stream().toArray(value -> new NativeSyncBaseItemTickInfo[tmp.size()]);
+        if (gameEngineMode == GameEngineMode.SLAVE) {
+            nativeTickInfo.xpFromKills = xpFromKills;
         }
+        xpFromKills = 0;
+        nativeTickInfo.killedSyncBaseItems = convertAndClearKilled();
+        nativeTickInfo.removeSyncBaseItemIds = convertAndClearRemoved();
+        if (playerBase != null) {
+            nativeTickInfo.resources = (int) playerBase.getResources();
+        }
+        return nativeTickInfo;
     }
 
     @Override

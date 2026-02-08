@@ -7,8 +7,8 @@ Welcome to the Razarion project documentation.
 ### Architecture
 Technical architecture documentation:
 - [TeaVM-Angular Bridge](architecture/teavm-angular-bridge.md) - How Java WASM communicates with Angular TypeScript
+- [Multiplayer Synchronization](architecture/multiplayer-sync.md) - Command forwarding and position sync between clients
 - [Worker Architecture](architecture/worker-architecture.md) - Web Worker design for game logic (TODO)
-- [Data Flow](architecture/data-flow.md) - Client-Server communication patterns (TODO)
 
 ### Development
 Development guides and setup:

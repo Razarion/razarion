@@ -343,6 +343,18 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             "var val = obj.yPos; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
     private static native double safeGetSlopeBoxYPos(JSObject obj);
 
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.height; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetSlopeBoxHeight(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.yRot; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetSlopeBoxYRot(JSObject obj);
+
+    @JSBody(params = {"obj"}, script =
+            "var val = obj.zRot; if (val === undefined || val === null || Number.isNaN(val)) return 0; return val;")
+    private static native double safeGetSlopeBoxZRot(JSObject obj);
+
     private static NativeBabylonDecal convertToNativeBabylonDecal(JsNativeBabylonDecal jsDecal) {
         if (jsDecal == null || isJsNullOrUndefined(jsDecal)) {
             return null;
@@ -398,7 +410,7 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             }
         }
 
-        // Slope boxes - use direct JSBody accessors
+        // Slope boxes - use safe JSBody accessors to avoid TeaVM @JSProperty naming issues
         int slopeBoxesLen = jsBotGround.getSlopeBoxesLength();
         if (slopeBoxesLen > 0) {
             result.botGroundSlopeBoxes = new NativeBotGroundSlopeBox[slopeBoxesLen];
@@ -435,9 +447,9 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
         // Use safe getter for xPos and yPos
         result.xPos = safeGetSlopeBoxXPos(jsBox);
         result.yPos = safeGetSlopeBoxYPos(jsBox);
-        result.height = jsBox.getHeight();
-        result.yRot = jsBox.getYRot();
-        result.zRot = jsBox.getZRot();
+        result.height = safeGetSlopeBoxHeight(jsBox);
+        result.yRot = safeGetSlopeBoxYRot(jsBox);
+        result.zRot = safeGetSlopeBoxZRot(jsBox);
         return result;
     }
 

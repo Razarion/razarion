@@ -118,9 +118,9 @@ public class AbstractSyncPhysical {
         double oldAngle = angle;
         // System.out.println("synchronize: " + getSyncItem().getId() + "|" + syncPhysicalAreaInfo);
         if (position != null && syncPhysicalAreaInfo.getPosition() != null) {
-            if (position.getDistance(syncPhysicalAreaInfo.getPosition()) > 0.5) {
-                // System.out.println("TELEPORTING: " + getSyncItem().getId() + " p: " + position2d + ". new p: " + syncPhysicalAreaInfo.getPosition() + ". distance: " + position2d.getDistance(syncPhysicalAreaInfo.getPosition()));
-                logger.severe("TELEPORTING: " + getSyncItem().getId() + " p: " + position + ". new p: " + syncPhysicalAreaInfo.getPosition() + ". distance: " + position.getDistance(syncPhysicalAreaInfo.getPosition()));
+            double distance = position.getDistance(syncPhysicalAreaInfo.getPosition());
+            if (distance > 0.5) {
+                logger.info("TELEPORTING: " + getSyncItem().getId() + " distance: " + distance);
             }
         }
         position = syncPhysicalAreaInfo.getPosition();

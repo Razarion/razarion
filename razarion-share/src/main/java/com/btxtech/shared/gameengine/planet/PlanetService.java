@@ -133,6 +133,11 @@ public class PlanetService implements Runnable { // Only available in worker. On
                 synchronizationSendingContext = new SynchronizationSendingContext();
             }
             planetServiceTracker.startTick();
+            // Apply server corrections BEFORE local tick to minimize SLAVE desync
+            tickCount++;
+            if (gameEngineMode != GameEngineMode.MASTER) {
+                baseItemService.processPendingReceivedTickInfos(tickCount);
+            }
             questService.tick();
             planetServiceTracker.afterQuestService();
             pathingService.tick(synchronizationSendingContext);
@@ -147,13 +152,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
             planetServiceTracker.afterBoxService();
             notifyTickListeners(synchronizationSendingContext);
             planetServiceTracker.afterTickListener();
-            /// --- new experimental
-            tickCount++;
-            if (gameEngineMode != GameEngineMode.MASTER) {
-                baseItemService.processPendingReceivedTickInfos(tickCount);
-            }
             syncService.sendTickInfo(tickCount);
-            /// --- new experimental ends
             planetServiceTracker.endTick();
 
             // DebugHelperStatic.appendAfterTick(tickDatas, tickCount, syncItemContainerService);

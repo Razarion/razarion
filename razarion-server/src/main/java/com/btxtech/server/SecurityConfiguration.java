@@ -68,6 +68,10 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers((headers) -> headers
                         .cacheControl((cache) -> cache.disable())
+                        .addHeaderWriter((request, response) -> {
+                            response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+                            response.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
+                        })
                 )
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer((oauth2) -> oauth2

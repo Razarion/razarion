@@ -132,6 +132,27 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         return gameConnections.get(userId);
     }
 
+    public void broadcastCommand(GameConnectionPacket packet, Object command, String excludeUserId) {
+        String text;
+        try {
+            text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(command));
+        } catch (Throwable t) {
+            logger.warn(t.getMessage(), t);
+            return;
+        }
+        synchronized (gameConnections) {
+            gameConnections.forEach((userId, conn) -> {
+                if (excludeUserId == null || !userId.equals(excludeUserId)) {
+                    try {
+                        conn.sendToClient(text);
+                    } catch (Throwable t) {
+                        logger.warn(t.getMessage(), t);
+                    }
+                }
+            });
+        }
+    }
+
     private void sendToClients(GameConnectionPacket packet, Object object) {
         String text;
         try {

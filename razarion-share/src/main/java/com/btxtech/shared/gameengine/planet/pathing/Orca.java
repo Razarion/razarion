@@ -137,7 +137,7 @@ public class Orca {
             orcaLine.setCombinedRadius(combinedRadius);
             itemOrcaLines.add(orcaLine);
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Add addOrcaLine failed", e);
+            LOGGER.log(Level.INFO, "Add addOrcaLine failed", e);
         }
     }
 

@@ -14,6 +14,8 @@ import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
@@ -81,6 +83,7 @@ import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -96,12 +99,14 @@ public final class TeaVMWorkerMarshaller {
     private static final int DATA_OFFSET_4 = 5;
     private static final int DATA_OFFSET_5 = 6;
 
+    private static final GameEngineControlPackage.Command[] COMMAND_LOOKUP = GameEngineControlPackage.Command.values();
+
     private TeaVMWorkerMarshaller() {
     }
 
     public static JsArray<Object> marshall(GameEngineControlPackage controlPackage) {
         JsArray<Object> array = JsArray.create();
-        setArrayString(array, COMMAND_OFFSET, controlPackage.getCommand().name());
+        setArrayInt(array, COMMAND_OFFSET, controlPackage.getCommand().ordinal());
 
         switch (controlPackage.getCommand()) {
             // No data
@@ -200,15 +205,15 @@ public final class TeaVMWorkerMarshaller {
                 array.set(DATA_OFFSET_0, marshallTerrainTile((TerrainTile) controlPackage.getData(0)));
                 break;
 
-            // NativeTickInfo - convert to JavaScript object
+            // NativeTickInfo - encode as flat TypedArrays for performance
             case TICK_UPDATE_RESPONSE:
-                array.set(DATA_OFFSET_0, convertNativeTickInfoToJs((NativeTickInfo) controlPackage.getData(0)));
+                marshallTickInfoTypedArrays(array, (NativeTickInfo) controlPackage.getData(0));
                 break;
 
-            // NativeSyncBaseItemTickInfo - convert to JavaScript object
+            // NativeSyncBaseItemTickInfo - encode as TypedArrays with N=1
             case SYNC_ITEM_START_SPAWNED:
             case SYNC_ITEM_IDLE:
-                array.set(DATA_OFFSET_0, convertNativeSyncBaseItemTickInfoToJs((NativeSyncBaseItemTickInfo) controlPackage.getData(0)));
+                marshallSingleItemTypedArrays(array, (NativeSyncBaseItemTickInfo) controlPackage.getData(0));
                 break;
 
             case START:
@@ -223,9 +228,8 @@ public final class TeaVMWorkerMarshaller {
 
     public static GameEngineControlPackage deMarshall(JSObject javaScriptObject) {
         JsArray<Object> array = (JsArray<Object>) javaScriptObject;
-        String commandName = getArrayString(array, COMMAND_OFFSET);
-
-        GameEngineControlPackage.Command command = GameEngineControlPackage.Command.valueOf(commandName);
+        int commandOrdinal = getArrayInt(array, COMMAND_OFFSET);
+        GameEngineControlPackage.Command command = COMMAND_LOOKUP[commandOrdinal];
 
         List<Object> data = new ArrayList<>();
         switch (command) {
@@ -488,8 +492,14 @@ public final class TeaVMWorkerMarshaller {
     @JSBody(params = {"array", "index", "value"}, script = "array[index] = value;")
     private static native void setArrayString(JsArray<Object> array, int index, String value);
 
+    @JSBody(params = {"array", "index", "value"}, script = "array[index] = value;")
+    private static native void setArrayInt(JsArray<Object> array, int index, int value);
+
     @JSBody(params = {"array", "index"}, script = "return array[index];")
     private static native String getArrayString(JsArray<Object> array, int index);
+
+    @JSBody(params = {"array", "index"}, script = "return array[index] | 0;")
+    private static native int getArrayInt(JsArray<Object> array, int index);
 
     private static String escapeJson(String str) {
         return str.replace("\\", "\\\\")
@@ -1014,6 +1024,35 @@ public final class TeaVMWorkerMarshaller {
             return (T) convertSyncItemSpawnStart(obj);
         }
 
+        // Command types (forwarded from server to other clients)
+        if (type == MoveCommand.class) {
+            return (T) convertMoveCommand(obj);
+        }
+        if (type == AttackCommand.class) {
+            return (T) convertAttackCommand(obj);
+        }
+        if (type == BuilderCommand.class) {
+            return (T) convertBuilderCommand(obj);
+        }
+        if (type == BuilderFinalizeCommand.class) {
+            return (T) convertBuilderFinalizeCommand(obj);
+        }
+        if (type == HarvestCommand.class) {
+            return (T) convertHarvestCommand(obj);
+        }
+        if (type == FactoryCommand.class) {
+            return (T) convertFactoryCommand(obj);
+        }
+        if (type == LoadContainerCommand.class) {
+            return (T) convertLoadContainerCommand(obj);
+        }
+        if (type == UnloadContainerCommand.class) {
+            return (T) convertUnloadContainerCommand(obj);
+        }
+        if (type == PickupBoxCommand.class) {
+            return (T) convertPickupBoxCommand(obj);
+        }
+
         // Complex config types
         if (type == StaticGameConfig.class) {
             return (T) convertStaticGameConfig(obj);
@@ -1350,6 +1389,115 @@ public final class TeaVMWorkerMarshaller {
             info.setPosition(safeDecimalPosition((JsObject) positionObj));
         }
         return info;
+    }
+
+    // ============ Command converters (forwarded from server) ============
+
+    private static void populateBaseCommand(BaseCommand cmd, JsObject obj) {
+        cmd.setId(obj.getInt("id"));
+        JSObject timeStampObj = obj.get("timeStamp");
+        if (!JsUtils.isNullOrUndefined(timeStampObj)) {
+            cmd.setTimeStamp(new Date((long) obj.getDouble("timeStamp")));
+        }
+    }
+
+    private static SimplePath convertSimplePath(JsObject obj) {
+        SimplePath path = new SimplePath();
+        JSObject wayPositionsArr = obj.get("wayPositions");
+        if (!JsUtils.isNullOrUndefined(wayPositionsArr)) {
+            path.setWayPositions(convertDecimalPositionList(wayPositionsArr));
+        }
+        // setDestinationReachable AFTER setWayPositions (which forces it to true)
+        path.setDestinationReachable(obj.getBoolean("destinationReachable"));
+        JSObject altDestObj = obj.get("alternativeDestination");
+        if (!JsUtils.isNullOrUndefined(altDestObj)) {
+            path.setAlternativeDestination(safeDecimalPosition((JsObject) altDestObj));
+        }
+        return path;
+    }
+
+    private static void populateSimplePath(PathToDestinationCommand cmd, JsObject obj) {
+        JSObject simplePathObj = obj.get("simplePath");
+        if (!JsUtils.isNullOrUndefined(simplePathObj)) {
+            cmd.setSimplePath(convertSimplePath((JsObject) simplePathObj));
+        }
+    }
+
+    private static MoveCommand convertMoveCommand(JsObject obj) {
+        MoveCommand cmd = new MoveCommand();
+        populateBaseCommand(cmd, obj);
+        populateSimplePath(cmd, obj);
+        return cmd;
+    }
+
+    private static AttackCommand convertAttackCommand(JsObject obj) {
+        AttackCommand cmd = new AttackCommand();
+        populateBaseCommand(cmd, obj);
+        populateSimplePath(cmd, obj);
+        cmd.setTarget(obj.getInt("target"));
+        cmd.setFollowTarget(obj.getBoolean("followTarget"));
+        return cmd;
+    }
+
+    private static BuilderCommand convertBuilderCommand(JsObject obj) {
+        BuilderCommand cmd = new BuilderCommand();
+        populateBaseCommand(cmd, obj);
+        populateSimplePath(cmd, obj);
+        cmd.setToBeBuiltId(obj.getInt("toBeBuiltId"));
+        JSObject posObj = obj.get("positionToBeBuilt");
+        if (!JsUtils.isNullOrUndefined(posObj)) {
+            cmd.setPositionToBeBuilt(safeDecimalPosition((JsObject) posObj));
+        }
+        return cmd;
+    }
+
+    private static BuilderFinalizeCommand convertBuilderFinalizeCommand(JsObject obj) {
+        BuilderFinalizeCommand cmd = new BuilderFinalizeCommand();
+        populateBaseCommand(cmd, obj);
+        populateSimplePath(cmd, obj);
+        cmd.setBuildingId(obj.getInt("buildingId"));
+        return cmd;
+    }
+
+    private static HarvestCommand convertHarvestCommand(JsObject obj) {
+        HarvestCommand cmd = new HarvestCommand();
+        populateBaseCommand(cmd, obj);
+        populateSimplePath(cmd, obj);
+        cmd.setTarget(obj.getInt("target"));
+        return cmd;
+    }
+
+    private static FactoryCommand convertFactoryCommand(JsObject obj) {
+        FactoryCommand cmd = new FactoryCommand();
+        populateBaseCommand(cmd, obj);
+        cmd.setToBeBuiltId(obj.getInt("toBeBuiltId"));
+        return cmd;
+    }
+
+    private static LoadContainerCommand convertLoadContainerCommand(JsObject obj) {
+        LoadContainerCommand cmd = new LoadContainerCommand();
+        populateBaseCommand(cmd, obj);
+        populateSimplePath(cmd, obj);
+        cmd.setItemContainer(obj.getInt("itemContainer"));
+        return cmd;
+    }
+
+    private static UnloadContainerCommand convertUnloadContainerCommand(JsObject obj) {
+        UnloadContainerCommand cmd = new UnloadContainerCommand();
+        populateBaseCommand(cmd, obj);
+        JSObject unloadPosObj = obj.get("unloadPos");
+        if (!JsUtils.isNullOrUndefined(unloadPosObj)) {
+            cmd.setUnloadPos(safeDecimalPosition((JsObject) unloadPosObj));
+        }
+        return cmd;
+    }
+
+    private static PickupBoxCommand convertPickupBoxCommand(JsObject obj) {
+        PickupBoxCommand cmd = new PickupBoxCommand();
+        populateBaseCommand(cmd, obj);
+        populateSimplePath(cmd, obj);
+        cmd.setSynBoxItemId(obj.getInt("synBoxItemId"));
+        return cmd;
     }
 
     // ============ Complex config converters (simplified) ============
@@ -2079,7 +2227,249 @@ public final class TeaVMWorkerMarshaller {
         return (Uint16ArrayEmu) obj;
     }
 
-    // ============ NativeTickInfo conversion to JavaScript object ============
+    // ============ TypedArray tick encoding constants ============
+    private static final int DOUBLES_PER_ITEM = 14;
+    private static final int INTS_PER_ITEM = 4;
+    private static final int KILLED_DOUBLES_PER_ITEM = 2;
+    private static final int KILLED_INTS_PER_ITEM = 2;
+
+    // Wire-format slot indices (after command ordinal at [0])
+    private static final int TICK_ITEM_COUNT = 1;
+    private static final int TICK_RESOURCES = 2;
+    private static final int TICK_XP_FROM_KILLS = 3;
+    private static final int TICK_HOUSE_SPACE = 4;
+    private static final int TICK_DOUBLES = 5;
+    private static final int TICK_INTS = 6;
+    private static final int TICK_FLAGS = 7;
+    private static final int TICK_CONTAINING_IDS = 8;
+    private static final int TICK_KILLED_COUNT = 9;
+    private static final int TICK_KILLED_DOUBLES = 10;
+    private static final int TICK_KILLED_INTS = 11;
+    private static final int TICK_KILLED_FLAGS = 12;
+    private static final int TICK_REMOVE_IDS = 13;
+
+    /**
+     * Encode NativeTickInfo as flat TypedArrays instead of individual JS objects.
+     * This reduces WASM-GC boundary crossings from ~19N to ~3N for N items.
+     */
+    private static void marshallTickInfoTypedArrays(JsArray<Object> array, NativeTickInfo tickInfo) {
+        if (tickInfo == null) {
+            setArrayInt(array, TICK_ITEM_COUNT, 0);
+            setArrayInt(array, TICK_RESOURCES, 0);
+            setArrayInt(array, TICK_XP_FROM_KILLS, 0);
+            setArrayInt(array, TICK_HOUSE_SPACE, 0);
+            return;
+        }
+
+        NativeSyncBaseItemTickInfo[] items = tickInfo.updatedNativeSyncBaseItemTickInfos;
+        int itemCount = items != null ? items.length : 0;
+
+        // Header scalars
+        setArrayInt(array, TICK_ITEM_COUNT, itemCount);
+        setArrayInt(array, TICK_RESOURCES, tickInfo.resources);
+        setArrayInt(array, TICK_XP_FROM_KILLS, tickInfo.xpFromKills);
+        setArrayInt(array, TICK_HOUSE_SPACE, tickInfo.houseSpace);
+
+        // Encode updated items into TypedArrays
+        if (itemCount > 0) {
+            JSObject tickDoubles = createFloat64Array(itemCount * DOUBLES_PER_ITEM);
+            JSObject tickInts = createInt32Array(itemCount * INTS_PER_ITEM);
+            JSObject tickFlags = createUint8Array(itemCount);
+
+            // First pass: count containingItemTypeIds total size
+            int containingTotalSize = 0;
+            for (int i = 0; i < itemCount; i++) {
+                NativeSyncBaseItemTickInfo item = items[i];
+                if (item.containingItemTypeIds != null && item.containingItemTypeIds.length > 0) {
+                    containingTotalSize += 1 + item.containingItemTypeIds.length; // count + ids
+                }
+            }
+            JSObject containingIds = createInt32Array(containingTotalSize);
+
+            int containingOffset = 0;
+            for (int i = 0; i < itemCount; i++) {
+                NativeSyncBaseItemTickInfo item = items[i];
+                int dOff = i * DOUBLES_PER_ITEM;
+                int iOff = i * INTS_PER_ITEM;
+
+                // Float64Array: 14 doubles per item
+                setFloat64(tickDoubles, dOff + 0, item.x);
+                setFloat64(tickDoubles, dOff + 1, item.y);
+                setFloat64(tickDoubles, dOff + 2, item.z);
+                setFloat64(tickDoubles, dOff + 3, item.angle);
+                setFloat64(tickDoubles, dOff + 4, item.turretAngle);
+                setFloat64(tickDoubles, dOff + 5, item.spawning);
+                setFloat64(tickDoubles, dOff + 6, item.buildup);
+                setFloat64(tickDoubles, dOff + 7, item.health);
+                setFloat64(tickDoubles, dOff + 8, item.constructing);
+                setFloat64(tickDoubles, dOff + 9, item.maxContainingRadius);
+                // Optional positions: use NaN for absent
+                if (item.harvestingResourcePosition != null) {
+                    setFloat64(tickDoubles, dOff + 10, item.harvestingResourcePosition.x);
+                    setFloat64(tickDoubles, dOff + 11, item.harvestingResourcePosition.y);
+                } else {
+                    setFloat64(tickDoubles, dOff + 10, Double.NaN);
+                    setFloat64(tickDoubles, dOff + 11, Double.NaN);
+                }
+                if (item.buildingPosition != null) {
+                    setFloat64(tickDoubles, dOff + 12, item.buildingPosition.x);
+                    setFloat64(tickDoubles, dOff + 13, item.buildingPosition.y);
+                } else {
+                    setFloat64(tickDoubles, dOff + 12, Double.NaN);
+                    setFloat64(tickDoubles, dOff + 13, Double.NaN);
+                }
+
+                // Int32Array: 4 ints per item
+                setInt32(tickInts, iOff + 0, item.id);
+                setInt32(tickInts, iOff + 1, item.itemTypeId);
+                setInt32(tickInts, iOff + 2, item.baseId);
+                setInt32(tickInts, iOff + 3, item.constructingBaseItemTypeId);
+
+                // Uint8Array: 1 byte flags per item
+                int flags = 0;
+                if (item.contained) flags |= 1;
+                if (item.idle) flags |= 2;
+                if (item.containingItemTypeIds != null && item.containingItemTypeIds.length > 0) flags |= 4;
+                setUint8(tickFlags, i, flags);
+
+                // ContainingIds: prefix-length encoding
+                if (item.containingItemTypeIds != null && item.containingItemTypeIds.length > 0) {
+                    setInt32(containingIds, containingOffset++, item.containingItemTypeIds.length);
+                    for (int cid : item.containingItemTypeIds) {
+                        setInt32(containingIds, containingOffset++, cid);
+                    }
+                }
+            }
+
+            array.set(TICK_DOUBLES, tickDoubles);
+            array.set(TICK_INTS, tickInts);
+            array.set(TICK_FLAGS, tickFlags);
+            array.set(TICK_CONTAINING_IDS, containingIds);
+        }
+
+        // Encode killed items
+        NativeSimpleSyncBaseItemTickInfo[] killed = tickInfo.killedSyncBaseItems;
+        int killedCount = killed != null ? killed.length : 0;
+        setArrayInt(array, TICK_KILLED_COUNT, killedCount);
+
+        if (killedCount > 0) {
+            JSObject killedDoubles = createFloat64Array(killedCount * KILLED_DOUBLES_PER_ITEM);
+            JSObject killedInts = createInt32Array(killedCount * KILLED_INTS_PER_ITEM);
+            JSObject killedFlags = createUint8Array(killedCount);
+
+            for (int i = 0; i < killedCount; i++) {
+                NativeSimpleSyncBaseItemTickInfo k = killed[i];
+                setFloat64(killedDoubles, i * 2, k.x);
+                setFloat64(killedDoubles, i * 2 + 1, k.y);
+                setInt32(killedInts, i * 2, k.id);
+                setInt32(killedInts, i * 2 + 1, k.itemTypeId);
+                setUint8(killedFlags, i, k.contained ? 1 : 0);
+            }
+
+            array.set(TICK_KILLED_DOUBLES, killedDoubles);
+            array.set(TICK_KILLED_INTS, killedInts);
+            array.set(TICK_KILLED_FLAGS, killedFlags);
+        }
+
+        // Encode remove IDs as Int32Array
+        int[] removeIds = tickInfo.removeSyncBaseItemIds;
+        if (removeIds != null && removeIds.length > 0) {
+            JSObject removeArr = createInt32Array(removeIds.length);
+            for (int i = 0; i < removeIds.length; i++) {
+                setInt32(removeArr, i, removeIds[i]);
+            }
+            array.set(TICK_REMOVE_IDS, removeArr);
+        }
+    }
+
+    /**
+     * Encode a single NativeSyncBaseItemTickInfo (for SYNC_ITEM_START_SPAWNED/SYNC_ITEM_IDLE)
+     * using the same TypedArray format with N=1.
+     */
+    private static void marshallSingleItemTypedArrays(JsArray<Object> array, NativeSyncBaseItemTickInfo item) {
+        if (item == null) {
+            setArrayInt(array, TICK_ITEM_COUNT, 0);
+            return;
+        }
+        setArrayInt(array, TICK_ITEM_COUNT, 1);
+
+        JSObject tickDoubles = createFloat64Array(DOUBLES_PER_ITEM);
+        JSObject tickInts = createInt32Array(INTS_PER_ITEM);
+        JSObject tickFlags = createUint8Array(1);
+
+        setFloat64(tickDoubles, 0, item.x);
+        setFloat64(tickDoubles, 1, item.y);
+        setFloat64(tickDoubles, 2, item.z);
+        setFloat64(tickDoubles, 3, item.angle);
+        setFloat64(tickDoubles, 4, item.turretAngle);
+        setFloat64(tickDoubles, 5, item.spawning);
+        setFloat64(tickDoubles, 6, item.buildup);
+        setFloat64(tickDoubles, 7, item.health);
+        setFloat64(tickDoubles, 8, item.constructing);
+        setFloat64(tickDoubles, 9, item.maxContainingRadius);
+        if (item.harvestingResourcePosition != null) {
+            setFloat64(tickDoubles, 10, item.harvestingResourcePosition.x);
+            setFloat64(tickDoubles, 11, item.harvestingResourcePosition.y);
+        } else {
+            setFloat64(tickDoubles, 10, Double.NaN);
+            setFloat64(tickDoubles, 11, Double.NaN);
+        }
+        if (item.buildingPosition != null) {
+            setFloat64(tickDoubles, 12, item.buildingPosition.x);
+            setFloat64(tickDoubles, 13, item.buildingPosition.y);
+        } else {
+            setFloat64(tickDoubles, 12, Double.NaN);
+            setFloat64(tickDoubles, 13, Double.NaN);
+        }
+
+        setInt32(tickInts, 0, item.id);
+        setInt32(tickInts, 1, item.itemTypeId);
+        setInt32(tickInts, 2, item.baseId);
+        setInt32(tickInts, 3, item.constructingBaseItemTypeId);
+
+        int flags = 0;
+        if (item.contained) flags |= 1;
+        if (item.idle) flags |= 2;
+        if (item.containingItemTypeIds != null && item.containingItemTypeIds.length > 0) flags |= 4;
+        setUint8(tickFlags, 0, flags);
+
+        array.set(TICK_DOUBLES, tickDoubles);
+        array.set(TICK_INTS, tickInts);
+        array.set(TICK_FLAGS, tickFlags);
+
+        // ContainingIds
+        if (item.containingItemTypeIds != null && item.containingItemTypeIds.length > 0) {
+            int totalSize = 1 + item.containingItemTypeIds.length;
+            JSObject containingIds = createInt32Array(totalSize);
+            setInt32(containingIds, 0, item.containingItemTypeIds.length);
+            for (int i = 0; i < item.containingItemTypeIds.length; i++) {
+                setInt32(containingIds, i + 1, item.containingItemTypeIds[i]);
+            }
+            array.set(TICK_CONTAINING_IDS, containingIds);
+        }
+    }
+
+    // ============ TypedArray creation and access helpers ============
+
+    @JSBody(params = {"size"}, script = "return new Float64Array(size);")
+    private static native JSObject createFloat64Array(int size);
+
+    @JSBody(params = {"size"}, script = "return new Int32Array(size);")
+    private static native JSObject createInt32Array(int size);
+
+    @JSBody(params = {"size"}, script = "return new Uint8Array(size);")
+    private static native JSObject createUint8Array(int size);
+
+    @JSBody(params = {"arr", "index", "value"}, script = "arr[index] = value;")
+    private static native void setFloat64(JSObject arr, int index, double value);
+
+    @JSBody(params = {"arr", "index", "value"}, script = "arr[index] = value;")
+    private static native void setInt32(JSObject arr, int index, int value);
+
+    @JSBody(params = {"arr", "index", "value"}, script = "arr[index] = value;")
+    private static native void setUint8(JSObject arr, int index, int value);
+
+    // ============ Legacy NativeTickInfo conversion (no longer used for tick encoding) ============
 
     private static JsNativeTickInfo convertNativeTickInfoToJs(NativeTickInfo nativeTickInfo) {
         if (nativeTickInfo == null) {
