@@ -105,6 +105,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private babylonBaseItems: BabylonBaseItemImpl[] = [];
   private babylonResourceItems: BabylonResourceItemImpl[] = [];
   private baseItemPlacerPresenterImpl!: BaseItemPlacerPresenterImpl;
+  private baseItemPlacerCallback: ((event: BaseItemPlacerPresenterEvent) => void) | null = null;
   private pendingSetViewFieldCenter: Vector2 | null = null;
   public static readonly SCROLL_SPEED = 0.2;
   public static readonly SCROLL_SPEED_CAMERA_HEIGHT_FACTOR = 0.03;
@@ -712,7 +713,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   startSpawn(particleSystemId: number, x: number, y: number, z: number): void {
-    this.createParticleSystem(particleSystemId, null).then(particleSystemSet => {
+    this.createParticleSystem(particleSystemId, null)?.then(particleSystemSet => {
       particleSystemSet.start(<any>new Vector3(x, z + this.SPAWN_PARTICLE_HEIGHT, y));
     });
   }
@@ -735,10 +736,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   createBaseItemPlacerPresenter(): BaseItemPlacerPresenter {
     this.baseItemPlacerPresenterImpl = new BaseItemPlacerPresenterImpl(this, this.babylonModelService);
+    if (this.baseItemPlacerCallback) {
+      this.baseItemPlacerPresenterImpl.setBaseItemPlacerCallback(this.baseItemPlacerCallback);
+    }
     return this.baseItemPlacerPresenterImpl;
   }
 
   setBaseItemPlacerCallback(callback: ((event: BaseItemPlacerPresenterEvent) => void) | null) {
+    this.baseItemPlacerCallback = callback;
     this.baseItemPlacerPresenterImpl.setBaseItemPlacerCallback(callback);
   }
 
@@ -793,11 +798,16 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.interpolationListeners.forEach(interpolationListener => interpolationListener.interpolate(date));
   }
 
-  public createParticleSystem(particleSystemEntityId: number | null, imageId: number | null): Promise<ParticleSystemSet> {
+  public createParticleSystem(particleSystemEntityId: number | null, imageId: number | null): Promise<ParticleSystemSet> | null {
     if (!particleSystemEntityId && particleSystemEntityId !== 0) {
-      throw new Error("particleSystemEntityId not set");
+      console.warn("createParticleSystem: particleSystemEntityId not set");
+      return null;
     }
     const nodeParticleSystemSet = this.babylonModelService.getNodeParticleSystemSet(particleSystemEntityId);
+    if (!nodeParticleSystemSet) {
+      console.warn(`createParticleSystem: No NodeParticleSystemSet for '${particleSystemEntityId}'`);
+      return null;
+    }
     return nodeParticleSystemSet.buildAsync(this.scene);
   }
 

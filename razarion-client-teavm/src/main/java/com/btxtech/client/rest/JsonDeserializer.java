@@ -2,11 +2,15 @@ package com.btxtech.client.rest;
 
 import com.btxtech.client.jso.JsArray;
 import com.btxtech.client.jso.JsObject;
+import com.btxtech.shared.datatypes.ChatMessage;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.I18nString;
+import com.btxtech.shared.datatypes.LevelUpPacket;
+import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
@@ -29,6 +33,7 @@ import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -856,6 +861,46 @@ public class JsonDeserializer {
         if (json == null) return null;
         KillBotCommandConfig r = new KillBotCommandConfig();
         r.setBotAuxiliaryId(json.getNullableInt("botAuxiliaryId"));
+        return r;
+    }
+
+    public static LifecyclePacket deserializeLifecyclePacket(JsObject json) {
+        if (json == null) return null;
+        LifecyclePacket r = new LifecyclePacket();
+        r.setType(deserializeEnum(json, "type", LifecyclePacket.Type.class));
+        r.setDialog(deserializeEnum(json, "dialog", LifecyclePacket.Dialog.class));
+        return r;
+    }
+
+    public static LevelUpPacket deserializeLevelUpPacket(JsObject json) {
+        if (json == null) return null;
+        LevelUpPacket r = new LevelUpPacket();
+        r.setUserContext(deserializeUserContext(obj(json, "userContext")));
+        r.setAvailableUnlocks(json.getBoolean("availableUnlocks"));
+        return r;
+    }
+
+    public static BoxContent deserializeBoxContent(JsObject json) {
+        if (json == null) return null;
+        BoxContent r = new BoxContent();
+        r.setCrystals(json.getInt("crystals"));
+        r.setInventoryItems(list(json, "inventoryItems", JsonDeserializer::deserializeInventoryItem));
+        return r;
+    }
+
+    public static UnlockedItemPacket deserializeUnlockedItemPacket(JsObject json) {
+        if (json == null) return null;
+        UnlockedItemPacket r = new UnlockedItemPacket();
+        r.setUnlockedItemLimit(intIntMap(json, "unlockedItemLimit"));
+        r.setAvailableUnlocks(json.getBoolean("availableUnlocks"));
+        return r;
+    }
+
+    public static ChatMessage deserializeChatMessage(JsObject json) {
+        if (json == null) return null;
+        ChatMessage r = new ChatMessage();
+        r.setUserName(json.isNullOrUndefined("userName") ? null : json.getString("userName"));
+        r.setMessage(json.isNullOrUndefined("message") ? null : json.getString("message"));
         return r;
     }
 }

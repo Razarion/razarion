@@ -1,11 +1,20 @@
 package com.btxtech.client;
 
 import com.btxtech.client.jso.JsConsole;
+import com.btxtech.client.jso.JsJson;
 import com.btxtech.client.jso.JsMessageEvent;
+import com.btxtech.client.jso.JsObject;
 import com.btxtech.client.jso.JsWindow;
+import com.btxtech.client.rest.JsonDeserializer;
 import com.btxtech.client.system.TeaVMWebSocketWrapper;
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.datatypes.ChatMessage;
+import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
+import com.btxtech.shared.datatypes.UnlockedItemPacket;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.cockpit.ChatCockpitService;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
@@ -77,9 +86,42 @@ public class TeaVMClientServerSystemConnection extends AbstractServerSystemConne
         if (packet.getTheClass() == Void.class) {
             return null;
         }
-        // TODO: implement proper JSON deserialization for TeaVM
-        // Needs TeaVMWorkerMarshaller-style deserialization for each packet type
-        JsConsole.warn("fromJson not fully implemented for packet: " + packet.name());
+        if (jsonString == null || jsonString.isEmpty() || "null".equals(jsonString)) {
+            return null;
+        }
+        Class<?> type = packet.getTheClass();
+        if (type == String.class) {
+            if (jsonString.startsWith("\"") && jsonString.endsWith("\"")) {
+                return jsonString.substring(1, jsonString.length() - 1);
+            }
+            return jsonString;
+        }
+        if (type == Integer.class) {
+            return Integer.valueOf(jsonString);
+        }
+        JsObject obj = JsJson.parseObject(jsonString);
+        if (type == QuestConfig.class) {
+            return JsonDeserializer.deserializeQuestConfig(obj);
+        }
+        if (type == QuestProgressInfo.class) {
+            return JsonDeserializer.deserializeQuestProgressInfo(obj);
+        }
+        if (type == LifecyclePacket.class) {
+            return JsonDeserializer.deserializeLifecyclePacket(obj);
+        }
+        if (type == LevelUpPacket.class) {
+            return JsonDeserializer.deserializeLevelUpPacket(obj);
+        }
+        if (type == BoxContent.class) {
+            return JsonDeserializer.deserializeBoxContent(obj);
+        }
+        if (type == UnlockedItemPacket.class) {
+            return JsonDeserializer.deserializeUnlockedItemPacket(obj);
+        }
+        if (type == ChatMessage.class) {
+            return JsonDeserializer.deserializeChatMessage(obj);
+        }
+        JsConsole.warn("fromJson: unsupported packet type: " + packet.name());
         return null;
     }
 

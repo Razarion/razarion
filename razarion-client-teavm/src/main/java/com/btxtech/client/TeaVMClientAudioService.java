@@ -16,7 +16,6 @@ import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 @Singleton
@@ -73,33 +72,24 @@ public class TeaVMClientAudioService extends AudioService {
     }
 
     private JsHTMLAudioElement getAudio(int audioId) {
-        try {
-            Collection<JsHTMLAudioElement> available = audios.computeIfAbsent(audioId, k -> new ArrayList<>());
-            JsHTMLAudioElement audio = null;
-            for (Iterator<JsHTMLAudioElement> iterator = available.iterator(); iterator.hasNext(); ) {
-                JsHTMLAudioElement availableAudio = iterator.next();
-                if (availableAudio.isEnded() || availableAudio.isPaused()) {
-                    audio = availableAudio;
-                    break;
-                }
+        Collection<JsHTMLAudioElement> available = audios.computeIfAbsent(audioId, k -> new ArrayList<>());
+        for (JsHTMLAudioElement availableAudio : available) {
+            if (availableAudio != null && (availableAudio.isEnded() || availableAudio.isPaused())) {
+                availableAudio.setCurrentTime(0);
+                return availableAudio;
             }
-            if (audio != null) {
-                audio.setCurrentTime(0);
-                return audio;
-            }
-            if (available.size() < PARALLEL_PLAY_COUNT) {
-                audio = JsHTMLAudioElement.create();
-                setVolume(audio);
-                audio.setSrc(CommonUrl.getAudioServiceUrl(audioId));
-                available.add(audio);
-                return audio;
-            } else {
+        }
+        if (available.size() < PARALLEL_PLAY_COUNT) {
+            JsHTMLAudioElement audio = JsHTMLAudioElement.create();
+            if (audio == null) {
                 return null;
             }
-        } catch (Exception e) {
-            JsConsole.error("TeaVMClientAudioService.getAudio() " + audioId + " " + e.getMessage());
-            return null;
+            setVolume(audio);
+            audio.setSrc(CommonUrl.getAudioServiceUrl(audioId));
+            available.add(audio);
+            return audio;
         }
+        return null;
     }
 
     private void setVolume(JsHTMLAudioElement audio) {

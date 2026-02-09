@@ -8,6 +8,7 @@ import {GwtInstance} from '../../../gwtangular/GwtInstance';
 export class SelectTipTask extends AbstractTipTask {
   private babylonItem: BabylonBaseItemImpl | null = null;
   private selectionListener: (() => void) | null = null;
+  private retryTimeout: ReturnType<typeof setTimeout> | null = null;
   private actorItemTypeId: number;
 
   constructor(private tipConfig: TipConfig, tipService: TipService, tipTaskContext: TipTaskContext) {
@@ -31,9 +32,7 @@ export class SelectTipTask extends AbstractTipTask {
     this.babylonItem = this.findActor();
     if (!this.babylonItem) {
       // Client engine is may not synchronized with the server
-      setTimeout(() => {
-        this.start();
-      }, 1000);
+      this.retryTimeout = setTimeout(() => this.start(), 1000);
       return;
     }
 
@@ -57,6 +56,10 @@ export class SelectTipTask extends AbstractTipTask {
   }
 
   override cleanup(): void {
+    if (this.retryTimeout !== null) {
+      clearTimeout(this.retryTimeout);
+      this.retryTimeout = null;
+    }
     // Remove global selection listener
     if (this.selectionListener) {
       this.tipService.gwtAngularFacade.selectionService.removeSelectionListener(this.selectionListener);

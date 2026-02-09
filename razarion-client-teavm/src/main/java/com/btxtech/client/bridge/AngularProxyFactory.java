@@ -21,6 +21,10 @@ import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Creates JS proxy objects that Angular can call.
  * With WASM-GC, Java objects are not directly callable from JS,
@@ -188,6 +192,7 @@ public class AngularProxyFactory {
 
     public static JSObject createSelectionServiceProxy(SelectionService selectionService) {
         JsObject proxy = JsObject.create();
+        List<Object[]> listenerPairs = new ArrayList<>();
         setMethodBool(proxy, "hasOwnSelection", selectionService::hasOwnSelection);
         setMethodBool(proxy, "hasOwnMovable", selectionService::hasOwnMovable);
         setMethodBool(proxy, "hasAttackers", selectionService::hasAttackers);
@@ -196,10 +201,21 @@ public class AngularProxyFactory {
         setMethodIntBool(proxy, "canContain", selectionService::canContain);
         setMethodIntBool(proxy, "canBeFinalizeBuild", selectionService::canBeFinalizeBuild);
         setMethod4D(proxy, "selectRectangle", selectionService::selectRectangle);
-        setMethodObjVoid(proxy, "addSelectionListener", listener ->
-                selectionService.addSelectionListener(() -> callJsFunction(listener)));
+        setMethodObjVoid(proxy, "addSelectionListener", listener -> {
+            SelectionService.SelectionChangeListener javaListener = () -> callJsFunction(listener);
+            listenerPairs.add(new Object[]{listener, javaListener});
+            selectionService.addSelectionListener(javaListener);
+        });
         setMethodObjVoid(proxy, "removeSelectionListener", listener -> {
-            JsConsole.warn("removeSelectionListener: listener removal not fully implemented");
+            Iterator<Object[]> it = listenerPairs.iterator();
+            while (it.hasNext()) {
+                Object[] pair = it.next();
+                if (jsObjectEquals((JSObject) pair[0], listener)) {
+                    selectionService.removeSelectionListener((SelectionService.SelectionChangeListener) pair[1]);
+                    it.remove();
+                    return;
+                }
+            }
         });
         return proxy;
     }
@@ -297,4 +313,7 @@ public class AngularProxyFactory {
 
     @JSBody(params = {"fn"}, script = "fn();")
     private static native void callJsFunction(JSObject fn);
+
+    @JSBody(params = {"a", "b"}, script = "return a === b;")
+    private static native boolean jsObjectEquals(JSObject a, JSObject b);
 }

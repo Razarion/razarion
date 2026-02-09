@@ -52,7 +52,7 @@ export class RenderObject {
         this.activeEffectAnimations.push(animatable);
       })
       this.allEffectParticles.forEach((data) => {
-        this.rendererService.createParticleSystem(data.entity.id, data.entity.imageId).then(particleSystemSet => {
+        this.rendererService.createParticleSystem(data.entity.id, data.entity.imageId)?.then(particleSystemSet => {
           particleSystemSet.start(data.emitter);
           this.activeEffectParticles.push(particleSystemSet);
         });
@@ -123,7 +123,7 @@ export class RenderObject {
   addEffectParticleSystem(particleSystemEntity: ParticleSystemEntity, emitterMesh: AbstractMesh) {
     this.allEffectParticles.push({entity: particleSystemEntity, emitter: emitterMesh});
     if (this.effectsActive) {
-      this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId).then(particleSystemSet => {
+      this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId)?.then(particleSystemSet => {
         particleSystemSet.start(emitterMesh);
         this.activeEffectParticles.push(particleSystemSet);
       });
@@ -151,7 +151,7 @@ export class RenderObject {
     return this.muzzleFlashParticleEntity !== null && this.muzzleFlashEmitterMesh !== null;
   }
 
-  createMuzzleFlashParticleSystemSet(): Promise<ParticleSystemSet> {
+  createMuzzleFlashParticleSystemSet(): Promise<ParticleSystemSet> | null {
     return this.rendererService.createParticleSystem(this.muzzleFlashParticleEntity!.id, this.muzzleFlashParticleEntity!.imageId);
   }
 

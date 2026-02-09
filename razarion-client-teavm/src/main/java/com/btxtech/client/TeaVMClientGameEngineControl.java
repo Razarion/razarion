@@ -81,16 +81,11 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
         this.deferredStartup = deferredStartup;
         try {
             worker = JsWorker.create(CommonUrl.getWorkerScriptUrl());
-            worker.setOnMessage(evt -> {
-                try {
-                    JSObject data = evt.getData();
-                    GameEngineControlPackage controlPackage = TeaVMClientMarshaller.deMarshall(data);
-                    dispatch(controlPackage);
-                } catch (Throwable t) {
-                    JsConsole.error("[CLIENT-WASM] Exception during dispatch: " + t.getMessage());
-                    JsConsole.error("Stack trace: " + getStackTrace(t));
-                }
-            });
+            worker.setOnMessage(evt -> safeWasmCall(() -> {
+                JSObject data = evt.getData();
+                GameEngineControlPackage controlPackage = TeaVMClientMarshaller.deMarshall(data);
+                dispatch(controlPackage);
+            }));
             worker.setOnError(evt -> {
                 JsConsole.error("TeaVMClientGameEngineControl: worker error");
             });
@@ -155,14 +150,12 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     }
 
     private void pollTick() {
-        try {
+        safeWasmCall(() -> {
             if (sharedTickBufferReader != null && sharedTickBufferReader.hasNewData()) {
                 NativeTickInfo tickInfo = sharedTickBufferReader.readTickData();
                 onTickUpdate(tickInfo);
             }
-        } catch (Throwable t) {
-            JsConsole.error("[CLIENT-WASM] SharedBuffer poll error: " + t.getMessage());
-        }
+        });
         if (worker != null) {
             requestAnimationFrame(timestamp -> pollTick());
         }
@@ -437,8 +430,16 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     @JSBody(params = {"callback"}, script = "requestAnimationFrame(callback);")
     private static native void requestAnimationFrame(RafCallback callback);
 
+    @JSBody(params = {"fn"}, script = "try { fn(); } catch(e) { console.error('[WASM trap]', e); }")
+    private static native void safeWasmCall(SafeCallback fn);
+
     @JSFunctor
     interface RafCallback extends JSObject {
         void onFrame(double timestamp);
+    }
+
+    @JSFunctor
+    interface SafeCallback extends JSObject {
+        void call();
     }
 }

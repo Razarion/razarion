@@ -6,6 +6,7 @@ import {GwtInstance} from '../../../gwtangular/GwtInstance';
 export class SendHarvestCommandTipTask extends AbstractTipTask {
   private resource: BabylonResourceItemImpl | null = null;
   private selectionListener: (() => void) | null = null;
+  private retryTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(tipService: TipService, tipTaskContext: TipTaskContext) {
     super(tipService, tipTaskContext);
@@ -36,9 +37,7 @@ export class SendHarvestCommandTipTask extends AbstractTipTask {
       }
 
       // No resource found at all - retry after delay (server may not be synchronized)
-      setTimeout(() => {
-        this.start();
-      }, 1000);
+      this.retryTimeout = setTimeout(() => this.start(), 1000);
       return;
     }
 
@@ -57,6 +56,10 @@ export class SendHarvestCommandTipTask extends AbstractTipTask {
   }
 
   cleanup(): void {
+    if (this.retryTimeout !== null) {
+      clearTimeout(this.retryTimeout);
+      this.retryTimeout = null;
+    }
     // Remove global selection listener
     if (this.selectionListener) {
       this.tipService.gwtAngularFacade.selectionService.removeSelectionListener(this.selectionListener);

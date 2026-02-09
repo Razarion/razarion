@@ -317,13 +317,8 @@ export class BabylonModelService {
     throw new Error(`No ParticleSystemEntity for '${id}'`);
   }
 
-  getNodeParticleSystemSet(particleSystemEntityId: number): NodeParticleSystemSet {
-    let nodeParticleSystemSet = this.particleSystemContainer.getBabylonModel(particleSystemEntityId);
-    if (nodeParticleSystemSet) {
-      return nodeParticleSystemSet;
-    }
-
-    throw new Error(`No NodeParticleSystemSet for '${particleSystemEntityId}'`);
+  getNodeParticleSystemSet(particleSystemEntityId: number): NodeParticleSystemSet | null {
+    return this.particleSystemContainer.getBabylonModel(particleSystemEntityId) ?? null;
   }
 
   private setupModel3DEntities(model3DEntities: Model3DEntity[]) {

@@ -163,7 +163,11 @@ export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit,
   }
 
   onBuildClick(buildupItemCockpit: BuildupItemCockpit) {
-    buildupItemCockpit.onBuild();
+    try {
+      buildupItemCockpit.onBuild();
+    } catch (e) {
+      console.error('onBuild() failed', e);
+    }
     if (this.buildClickCallback) {
       this.buildClickCallback(buildupItemCockpit);
     }

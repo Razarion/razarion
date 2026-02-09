@@ -4,6 +4,8 @@ import {BaseItemPlacerPresenterEvent} from '../../renderer/base-item-placer-pres
 import {Diplomacy} from '../../../gwtangular/GwtAngularFacade';
 
 export class StartBuildPlacerTipTask extends AbstractTipTask {
+  private retryTimeout: ReturnType<typeof setTimeout> | null = null;
+
   constructor(private readonly toBeBuiltItemTypeId: number, tipService: TipService, tipTaskContext: TipTaskContext) {
     super(tipService, tipTaskContext);
   }
@@ -38,15 +40,18 @@ export class StartBuildPlacerTipTask extends AbstractTipTask {
         return;
       }
     }
-    setTimeout(() => this.start(), 200);
+    this.retryTimeout = setTimeout(() => this.start(), 200);
   }
 
   cleanup(): void {
+    if (this.retryTimeout !== null) {
+      clearTimeout(this.retryTimeout);
+      this.retryTimeout = null;
+    }
     this.tipTaskContext.babylonBaseItemImpl?.setSelectionCallback(null);
     this.tipService.renderService.setBaseItemPlacerCallback(null);
     if (this.tipService.getItemCockpit()) {
       this.tipService.getItemCockpit()!.showBuildupTip(null);
     }
-
   }
 }

@@ -264,18 +264,24 @@ public class BaseItemUiService {
         BabylonBaseItem babylonBaseItem = babylonBaseItems.get(syncBaseItemId);
         if (babylonBaseItem != null) {
             babylonBaseItem.onProjectileFired(tagetSyncBaseItemId, targetPosition);
-            audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getWeaponType().getMuzzleFlashAudioItemConfigId());
+            if (babylonBaseItem.getBaseItemType().getWeaponType() != null) {
+                audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getWeaponType().getMuzzleFlashAudioItemConfigId());
+            }
         }
     }
 
     public void onSyncBaseItemsExplode(NativeSimpleSyncBaseItemTickInfo[] nativeSimpleSyncBaseItemTickInfos) {
         for (NativeSimpleSyncBaseItemTickInfo nativeSimpleSyncBaseItemTickInfo : nativeSimpleSyncBaseItemTickInfos) {
-            if (!nativeSimpleSyncBaseItemTickInfo.contained) {
-                BabylonBaseItem babylonBaseItem = babylonBaseItems.get(nativeSimpleSyncBaseItemTickInfo.id);
-                if (babylonBaseItem != null) {
-                    babylonBaseItem.onExplode();
-                    audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getExplosionAudioItemConfigId());
+            try {
+                if (!nativeSimpleSyncBaseItemTickInfo.contained) {
+                    BabylonBaseItem babylonBaseItem = babylonBaseItems.get(nativeSimpleSyncBaseItemTickInfo.id);
+                    if (babylonBaseItem != null) {
+                        babylonBaseItem.onExplode();
+                        audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getExplosionAudioItemConfigId());
+                    }
                 }
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "onExplode failed for item " + nativeSimpleSyncBaseItemTickInfo.id, t);
             }
         }
     }

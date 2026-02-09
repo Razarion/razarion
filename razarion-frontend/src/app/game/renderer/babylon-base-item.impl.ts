@@ -361,7 +361,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     const renderObject = this.getRenderObject();
     if (renderObject.hasMuzzleFlash()) {
       renderObject.createMuzzleFlashParticleSystemSet()
-        .then(particleSystemSet => particleSystemSet.start(renderObject.getMuzzleFlashMesh()));
+        ?.then(particleSystemSet => particleSystemSet.start(renderObject.getMuzzleFlashMesh()));
       startPosition = renderObject.getMuzzleFlashMesh().getAbsolutePosition();
     } else {
       startPosition = renderObject.getModel3D().getAbsolutePosition();
@@ -409,7 +409,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     try {
       let particleSystemConfig = this.babylonModelService.getParticleSystemEntity(this.baseItemType.getExplosionParticleId()!);
       this.rendererService.createParticleSystem(particleSystemConfig.id, particleSystemConfig.imageId)
-        .then(particleSystemSet => {
+        ?.then(particleSystemSet => {
           // TODO particleSystemSet.disposeOnStop = true;
           particleSystemSet.start(<any>this.getContainer().position.clone());
         });
@@ -481,7 +481,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         if (this.getRenderObject().hasMuzzleFlash()) {
           this.getRenderObject()
             .createMuzzleFlashParticleSystemSet()
-            .then(particleSystemSet => {
+            ?.then(particleSystemSet => {
               this.buildingParticleSystem = particleSystemSet;
               particleSystemSet.start(this.getRenderObject().getMuzzleFlashMesh());
             });
@@ -514,7 +514,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (razarionHarvestingPosition && !this.harvestingParticleSystem) {
       try {
         if (this.getRenderObject().hasMuzzleFlash()) {
-          this.getRenderObject().createMuzzleFlashParticleSystemSet().then(particleSystemSet => {
+          this.getRenderObject().createMuzzleFlashParticleSystemSet()?.then(particleSystemSet => {
             this.harvestingParticleSystem = particleSystemSet;
             particleSystemSet.start(this.getRenderObject().getMuzzleFlashMesh());
           });
@@ -618,7 +618,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     const trailParticleSystemEntityId = GwtHelper.gwtIssueNumber(this.baseItemType.getWeaponType()!.getTrailParticleSystemConfigId());
     if (trailParticleSystemEntityId || trailParticleSystemEntityId === 0) {
       let particleSystemEntity = this.babylonModelService.getParticleSystemEntity(trailParticleSystemEntityId);
-      this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId).then(particleSystemSet => {
+      this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId)?.then(particleSystemSet => {
         particleSystemSet.start(meshProjectile);
       });
     }
@@ -659,7 +659,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         meshProjectile.dispose();
         if (impactParticleSystemId !== null && impactParticleSystemId !== undefined) {
           this.rendererService.createParticleSystem(impactParticleSystemId, null)
-            .then(particleSystemSet => particleSystemSet.start(targetImpactMesh ? targetImpactMesh : meshProjectile));
+            ?.then(particleSystemSet => particleSystemSet.start(targetImpactMesh ? targetImpactMesh : meshProjectile));
         }
       } catch (e) {
         console.warn(`BabylonBaseItemImpl animatable.onAnimationEnd failed ${e}`)

@@ -5,9 +5,14 @@ import com.btxtech.client.jso.JsObject;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ColdGameUiContext;
+import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.TipConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -157,6 +162,82 @@ public class DtoConverter {
         setGetterInt(obj, "getRazarion", config::getRazarion);
         setGetterInt(obj, "getCrystal", config::getCrystal);
         setGetterObj(obj, "getTipConfig", () -> convertTipConfig(config.getTipConfig()));
+        if (config instanceof QuestConfig) {
+            QuestConfig questConfig = (QuestConfig) config;
+            setGetterObj(obj, "getConditionConfig", () -> convertConditionConfig(questConfig.getConditionConfig()));
+        }
+        return obj;
+    }
+
+    public static JSObject convertConditionConfig(ConditionConfig config) {
+        if (config == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterString(obj, "getConditionTrigger", () ->
+                config.getConditionTrigger() != null ? config.getConditionTrigger().name() : null);
+        setGetterObj(obj, "getComparisonConfig", () -> convertComparisonConfig(config.getComparisonConfig()));
+        return obj;
+    }
+
+    public static JSObject convertComparisonConfig(ComparisonConfig config) {
+        if (config == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterObj(obj, "getCount", () -> convertNullableInt(config.getCount()));
+        setGetterObj(obj, "getTimeSeconds", () -> convertNullableInt(config.getTimeSeconds()));
+        setGetterObj(obj, "getPlaceConfig", () -> convertPlaceConfig(config.getPlaceConfig()));
+        setGetterObj(obj, "toTypeCountAngular", () -> {
+            Integer[][] typeCount = config.toTypeCountAngular();
+            if (typeCount == null) return null;
+            JsArray<JSObject> arr = JsArray.create();
+            for (Integer[] entry : typeCount) {
+                JsArray<JSObject> pair = JsArray.create();
+                pair.push((int) entry[0]);
+                pair.push((int) entry[1]);
+                arr.push(pair);
+            }
+            return arr;
+        });
+        return obj;
+    }
+
+    public static JSObject convertQuestProgressInfo(QuestProgressInfo info) {
+        if (info == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterObj(obj, "getCount", () -> convertNullableInt(info.getCount()));
+        setGetterObj(obj, "getSecondsRemaining", () -> convertNullableInt(info.getSecondsRemaining()));
+        setGetterString(obj, "getBotBasesInformation", info::getBotBasesInformation);
+        setGetterObj(obj, "toTypeCountAngular", () -> {
+            Integer[][] typeCount = info.toTypeCountAngular();
+            if (typeCount == null) return null;
+            JsArray<JSObject> arr = JsArray.create();
+            for (Integer[] entry : typeCount) {
+                JsArray<JSObject> pair = JsArray.create();
+                pair.push((int) entry[0]);
+                pair.push((int) entry[1]);
+                arr.push(pair);
+            }
+            return arr;
+        });
+        return obj;
+    }
+
+    public static JSObject convertPlaceConfig(PlaceConfig config) {
+        if (config == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterObj(obj, "getPosition", () -> convertDecimalPosition(config.getPosition()));
+        setGetterDouble(obj, "toRadiusAngular", () -> config.toRadiusAngular());
+        setGetterObj(obj, "getPolygon2D", () -> {
+            if (config.getPolygon2D() == null) return null;
+            JsObject polyObj = JsObject.create();
+            setGetterObj(polyObj, "toCornersAngular", () -> {
+                DecimalPosition[] corners = config.getPolygon2D().toCornersAngular();
+                JsArray<JSObject> arr = JsArray.create();
+                for (DecimalPosition corner : corners) {
+                    arr.push(convertDecimalPosition(corner));
+                }
+                return arr;
+            });
+            return polyObj;
+        });
         return obj;
     }
 
@@ -214,8 +295,13 @@ public class DtoConverter {
         setGetterDouble(obj, "getX", () -> x);
         setGetterDouble(obj, "getY", () -> y);
         setGetterDouble(obj, "getZ", () -> z);
+        setVertexDistanceMethod(obj, x, y, z);
         return obj;
     }
+
+    @JSBody(params = {"obj", "x", "y", "z"}, script =
+            "obj.distance = function(v) { return Math.sqrt(Math.pow(x - v.getX(), 2) + Math.pow(y - v.getY(), 2) + Math.pow(z - v.getZ(), 2)); };")
+    private static native void setVertexDistanceMethod(JSObject obj, double x, double y, double z);
 
     public static JSObject convertTerrainType(TerrainType terrainType) {
         if (terrainType == null) return null;

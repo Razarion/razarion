@@ -28,13 +28,13 @@ public class JsQuestCockpit implements QuestCockpit {
 
     @Override
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
-        // TODO: Convert QuestProgressInfo to JSObject via proxy factory
-        callOnQuestProgress(js, questProgressInfo);
+        JSObject converted = DtoConverter.convertQuestProgressInfo(questProgressInfo);
+        callOnQuestProgress(js, converted);
     }
 
     @org.teavm.jso.JSBody(params = {"obj", "config", "showButton"}, script = "obj.showQuestSideBar(config, showButton);")
     private static native void callShowQuestSideBar(JSObject obj, JSObject config, boolean showButton);
 
     @org.teavm.jso.JSBody(params = {"obj", "progressInfo"}, script = "obj.onQuestProgress(progressInfo);")
-    private static native void callOnQuestProgress(JSObject obj, Object progressInfo);
+    private static native void callOnQuestProgress(JSObject obj, JSObject progressInfo);
 }

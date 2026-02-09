@@ -7,6 +7,7 @@ import {GwtInstance} from '../../../gwtangular/GwtInstance';
 export class SendAttackCommandTipTask extends AbstractTipTask {
   private enemy: BabylonBaseItemImpl | null = null;
   private selectionListener: (() => void) | null = null;
+  private retryTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private enemyItemTypeId: number | null, tipService: TipService, tipTaskContext: TipTaskContext) {
     super(tipService, tipTaskContext);
@@ -37,9 +38,7 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
       }
 
       // No enemy found at all - retry after delay (server may not be synchronized)
-      setTimeout(() => {
-        this.start();
-      }, 1000);
+      this.retryTimeout = setTimeout(() => this.start(), 1000);
       return;
     }
 
@@ -58,6 +57,10 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
   }
 
   cleanup(): void {
+    if (this.retryTimeout !== null) {
+      clearTimeout(this.retryTimeout);
+      this.retryTimeout = null;
+    }
     // Remove global selection listener
     if (this.selectionListener) {
       this.tipService.gwtAngularFacade.selectionService.removeSelectionListener(this.selectionListener);
