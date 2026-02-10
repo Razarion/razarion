@@ -44,7 +44,7 @@ export class SendBuildCommandTipTask extends AbstractTipTask implements ViewFiel
     this.toBeFinalized = this.tipService.renderService.getBabylonBaseItemByDiplomacyItemType(Diplomacy.OWN, this.toBeBuiltItemTypeId);
     if (this.toBeFinalized) {
       this.toBeFinalized.setItemClickCallback(() => this.onSucceed());
-      this.toBeFinalized.mark(this.markerConfig);
+      this.toBeFinalized.showSelectPromptVisualization("Click to finish building", "200px", "250px");
     } else {
       // Setup place config visualization if configured
       if (this.placeConfig) {
@@ -79,7 +79,7 @@ export class SendBuildCommandTipTask extends AbstractTipTask implements ViewFiel
     this.tipService.renderService.showPlaceMarker(null, null);
     if (this.toBeFinalized) {
       this.toBeFinalized.setItemClickCallback(null);
-      this.toBeFinalized.mark(null);
+      this.toBeFinalized.hideSelectPromptVisualization();
     }
   }
 

@@ -45,7 +45,7 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
     this.enemy.setItemClickCallback(() => {
       this.onSucceed();
     });
-    this.enemy.showSelectPromptVisualization("Click to attack", "150px");
+    this.enemy.showSelectPromptVisualization("Click to attack");
 
     // Set OutOfView target for when user scrolls away
     const enemyPosition = this.enemy.getPosition();

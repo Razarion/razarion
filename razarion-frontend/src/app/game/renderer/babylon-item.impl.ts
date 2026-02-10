@@ -194,9 +194,7 @@ export class BabylonItemImpl implements BabylonItem {
       }
       this.lastNormal = normal;
       let rotation3D = this.calculateRotation(normal);
-      if (this.onRotation3D(rotation3D)) {
-        this.renderObject.setRotation(rotation3D);
-      }
+      this.renderObject.setRotation(rotation3D);
     }
     this.position = position;
   }
@@ -279,13 +277,13 @@ export class BabylonItemImpl implements BabylonItem {
     }
   }
 
-  showSelectPromptVisualization(text: string = "Click to select", labelWidth: string = "150px"): void {
+  showSelectPromptVisualization(text: string = "Click to select", labelWidth: string = "150px", containerWidth: string = "200px"): void {
     this.selectTipTexture = AdvancedDynamicTexture.CreateFullscreenUI("Select tip");
     this.selectTipTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
     let pressMouseVisualization = new PressMouseVisualization(true, this.rendererService);
     pressMouseVisualization.label.text = text;
     pressMouseVisualization.label.width = labelWidth;
-    pressMouseVisualization.container.width = "200px";
+    pressMouseVisualization.container.width = containerWidth;
     let stackPanel = new StackPanel();
     stackPanel.spacing = 10;
     stackPanel.addControl(pressMouseVisualization.getContainer());
