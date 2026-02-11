@@ -27,9 +27,12 @@ public abstract class SyncItem {
     private ItemType itemType;
     private AbstractSyncPhysical abstractSyncPhysical;
 
-    public void init(int id, ItemType itemType, AbstractSyncPhysical abstractSyncPhysical) {
+    public void init(int id, ItemType itemType) {
         this.id = id;
         this.itemType = itemType;
+    }
+
+    public void setAbstractSyncPhysical(AbstractSyncPhysical abstractSyncPhysical) {
         this.abstractSyncPhysical = abstractSyncPhysical;
     }
 

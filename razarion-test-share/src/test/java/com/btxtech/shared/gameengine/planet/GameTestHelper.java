@@ -38,7 +38,8 @@ public interface GameTestHelper {
                 null,
                 null);
         SyncPhysicalMovable syncPhysicalMovable = createSyncPhysicalMovable(radius, terrainType, position, null, syncItemContainerService);
-        syncBaseItem.init(id, null, syncPhysicalMovable);
+        syncBaseItem.init(id, null);
+        syncBaseItem.setAbstractSyncPhysical(syncPhysicalMovable);
         SimpleTestEnvironment.injectService("syncItem", syncPhysicalMovable, AbstractSyncPhysical.class, syncBaseItem);
         return syncBaseItem;
     }

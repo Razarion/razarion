@@ -24,7 +24,6 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.utils.MathHelper;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 
@@ -49,11 +48,8 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private Path path;
     private DecimalPosition velocity;
     private DecimalPosition preferredVelocity;
-    private static final int SKIP_SYNC_TICKS_AFTER_LOCAL_COMMAND = 2;
     private DecimalPosition oldPosition;
     private boolean crowded;
-    private int skipSyncTicks;
-    private boolean tickSynchronized;
 
     @Inject
     public SyncPhysicalMovable(SyncItemContainerServiceImpl syncItemContainerService, Provider<Path> instancePath) {
@@ -70,9 +66,6 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     }
 
     public void setupPreferredVelocity() {
-        if (skipSyncTicks > 0) {
-            skipSyncTicks--;
-        }
         oldPosition = getPosition();
         crowded = false;
         if (path != null) {
@@ -172,11 +165,6 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         velocity = null;
         path = null;
         preferredVelocity = null;
-        skipSyncTicks = 0; // Accept server syncs immediately when stopped
-    }
-
-    public void markLocalCommand() {
-        skipSyncTicks = SKIP_SYNC_TICKS_AFTER_LOCAL_COMMAND;
     }
 
     public boolean isMoving() {
@@ -204,22 +192,12 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     }
 
     public void implementPosition() {
-        if (tickSynchronized) {
-            tickSynchronized = false;
-            return;
-        }
         if (velocity != null) {
             setPosition2d(getDesiredPosition(), true);
         }
     }
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
-        if (skipSyncTicks > 0) {
-            // Recently received a local command. Skip server sync to avoid teleportation
-            // from stale TickInfo. Counter expires after a few ticks, then server syncs
-            // are accepted again to correct ORCA divergence.
-            return;
-        }
         super.synchronize(syncPhysicalAreaInfo);
         velocity = syncPhysicalAreaInfo.getVelocity();
         if (syncPhysicalAreaInfo.getWayPositions() != null) {
@@ -229,7 +207,6 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         } else {
             this.path = null;
         }
-        tickSynchronized = true;
     }
 
     public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {

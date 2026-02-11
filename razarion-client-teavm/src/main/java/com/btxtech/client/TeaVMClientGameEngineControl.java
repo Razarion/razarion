@@ -40,6 +40,7 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     private DeferredStartup deferredStartup;
     private SharedTickBufferReader sharedTickBufferReader;
     private boolean sharedBufferMode;
+    private boolean initialSyncComplete;
 
     @Inject
     public TeaVMClientGameEngineControl(Provider<InputService> inputServices,
@@ -84,6 +85,10 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
             worker.setOnMessage(evt -> safeWasmCall(() -> {
                 JSObject data = evt.getData();
                 GameEngineControlPackage controlPackage = TeaVMClientMarshaller.deMarshall(data);
+                if (controlPackage.getCommand() == GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED
+                        || controlPackage.getCommand() == GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED_NO_BASE) {
+                    initialSyncComplete = true;
+                }
                 dispatch(controlPackage);
             }));
             worker.setOnError(evt -> {
@@ -151,7 +156,7 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
 
     private void pollTick() {
         safeWasmCall(() -> {
-            if (sharedTickBufferReader != null && sharedTickBufferReader.hasNewData()) {
+            if (initialSyncComplete && sharedTickBufferReader != null && sharedTickBufferReader.hasNewData()) {
                 NativeTickInfo tickInfo = sharedTickBufferReader.readTickData();
                 onTickUpdate(tickInfo);
             }

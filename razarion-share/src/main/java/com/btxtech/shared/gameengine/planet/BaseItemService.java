@@ -640,23 +640,6 @@ public class BaseItemService {
         }
     }
 
-    public void executeForwardedCommand(BaseCommand baseCommand, boolean markLocallyCommanded) {
-        try {
-            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(baseCommand.getId());
-            syncBaseItem.stop(false);
-            syncBaseItem.executeCommand(baseCommand);
-            if (markLocallyCommanded && syncBaseItem.getAbstractSyncPhysical().canMove()) {
-                syncBaseItem.getSyncPhysicalMovable().markLocalCommand();
-            }
-            addToActiveItemQueue(syncBaseItem);
-            guardingItemService.remove(syncBaseItem);
-        } catch (ItemDoesNotExistException e) {
-            // Item may not exist locally yet - ignore
-        } catch (Throwable t) {
-            logger.log(Level.WARNING, "executeForwardedCommand failed: " + baseCommand, t);
-        }
-    }
-
     public void addToActiveItemQueue(SyncBaseItem activeItem) {
         synchronized (activeItemQueue) {
             if (!activeItems.contains(activeItem) && !activeItemQueue.contains(activeItem)) {

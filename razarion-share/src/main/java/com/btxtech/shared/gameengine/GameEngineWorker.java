@@ -91,6 +91,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private PlayerBase playerBase;
     private int xpFromKills;
     private boolean sendTickUpdate;
+    private boolean initialSyncComplete;
     private AbstractServerGameConnection serverConnection;
     private GameEngineMode gameEngineMode;
     private String gameSessionUuid;
@@ -270,6 +271,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             playerBase = baseItemService.getPlayerBase4BaseId(initialSlaveSyncItemInfo.getActualBaseId());
         }
         serverConnection.tickCountRequest();
+        initialSyncComplete = true;
         DecimalPosition basePosition = findScrollToBasePosition();
         if (basePosition != null) {
             sendToClient(GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED, basePosition);
@@ -361,6 +363,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onPostTick(SynchronizationSendingContext synchronizationSendingContext) {
         if (isSharedBufferMode()) {
+            if (!initialSyncComplete) {
+                return;
+            }
             // SharedArrayBuffer mode: always write, client polls via rAF
             try {
                 NativeTickInfo nativeTickInfo = buildNativeTickInfo();

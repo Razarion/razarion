@@ -3,6 +3,7 @@ kind: BackendConfig
 metadata:
   name: razarion-cdn-config
 spec:
+  timeoutSec: 3600    # 1h - required for WebSocket connections (default 30s kills idle sockets)
   cdn:
     enabled: true
     cachePolicy:
@@ -14,7 +15,7 @@ spec:
     maxTtl: 604800           # 7 Tage max
     clientTtl: 86400         # Browser Cache 24h
   healthCheck:
-    requestPath: /actuator/health
+    requestPath: /actuator/health/liveness
     port: 8080
     checkIntervalSec: 30
     timeoutSec: 10

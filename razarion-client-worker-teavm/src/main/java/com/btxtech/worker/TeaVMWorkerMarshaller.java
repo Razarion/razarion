@@ -1752,10 +1752,13 @@ public final class TeaVMWorkerMarshaller {
     private static PhysicalAreaConfig convertPhysicalAreaConfig(JsObject obj) {
         PhysicalAreaConfig config = new PhysicalAreaConfig();
         config.setRadius(obj.getDouble("radius"));
-        config.setSpeed(obj.getDouble("speed"));
-        config.setAcceleration(obj.getDouble("acceleration"));
-        config.setAngularVelocity(obj.getDouble("angularVelocity"));
+        config.setFixVerticalNorm(obj.getBoolean("fixVerticalNorm"));
         config.setTerrainType(convertTerrainTypeEnum(obj.getString("terrainType")));
+        config.setAngularVelocity(obj.getNullableDouble("angularVelocity"));
+        config.setSpeed(obj.getNullableDouble("speed"));
+        config.setAcceleration(obj.getNullableDouble("acceleration"));
+        config.setStartAngleSlowDown(obj.getNullableDouble("startAngleSlowDown"));
+        config.setEndAngleSlowDown(obj.getNullableDouble("endAngleSlowDown"));
         return config;
     }
 
