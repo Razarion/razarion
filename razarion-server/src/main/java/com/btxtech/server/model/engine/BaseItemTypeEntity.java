@@ -41,8 +41,7 @@ public class BaseItemTypeEntity extends BaseEntity {
     private Double angularVelocity; //Rad per second
     private Double speed;
     private Double acceleration;
-    private Double startAngleSlowDown;
-    private Double endAngleSlowDown;
+
     private int health;
     private int price;
     private int buildup;
@@ -124,9 +123,7 @@ public class BaseItemTypeEntity extends BaseEntity {
                 .terrainType(terrainType)
                 .speed(speed)
                 .acceleration(acceleration)
-                .angularVelocity(angularVelocity)
-                .startAngleSlowDown(startAngleSlowDown)
-                .endAngleSlowDown(endAngleSlowDown));
+                .angularVelocity(angularVelocity));
         if (model3DEntity != null) {
             baseItemType.setModel3DId(model3DEntity.getId());
         }
@@ -197,8 +194,7 @@ public class BaseItemTypeEntity extends BaseEntity {
         angularVelocity = baseItemType.getPhysicalAreaConfig().getAngularVelocity();
         speed = baseItemType.getPhysicalAreaConfig().getSpeed();
         acceleration = baseItemType.getPhysicalAreaConfig().getAcceleration();
-        startAngleSlowDown = baseItemType.getPhysicalAreaConfig().getStartAngleSlowDown();
-        endAngleSlowDown = baseItemType.getPhysicalAreaConfig().getEndAngleSlowDown();
+
         health = baseItemType.getHealth();
         buildup = baseItemType.getBuildup();
         spawnDurationMillis = baseItemType.getSpawnDurationMillis();

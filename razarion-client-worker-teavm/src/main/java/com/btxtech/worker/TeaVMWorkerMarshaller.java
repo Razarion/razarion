@@ -1757,8 +1757,7 @@ public final class TeaVMWorkerMarshaller {
         config.setAngularVelocity(obj.getNullableDouble("angularVelocity"));
         config.setSpeed(obj.getNullableDouble("speed"));
         config.setAcceleration(obj.getNullableDouble("acceleration"));
-        config.setStartAngleSlowDown(obj.getNullableDouble("startAngleSlowDown"));
-        config.setEndAngleSlowDown(obj.getNullableDouble("endAngleSlowDown"));
+
         return config;
     }
 

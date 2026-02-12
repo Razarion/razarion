@@ -206,8 +206,6 @@
         "angularVelocity": 2.0,
         "speed": 12.0,
         "acceleration": 2.0,
-        "startAngleSlowDown": 0.0,
-        "endAngleSlowDown": 1.57
       },
       "health": 300,
       "price": 300,
@@ -262,8 +260,6 @@
         "angularVelocity": 2.5,
         "speed": 14.0,
         "acceleration": 2.5,
-        "startAngleSlowDown": 0.0,
-        "endAngleSlowDown": 1.57
       },
       "health": 200,
       "price": 200,
@@ -309,8 +305,6 @@
         "angularVelocity": 3.0,
         "speed": 17.0,
         "acceleration": 3.0,
-        "startAngleSlowDown": 0.0,
-        "endAngleSlowDown": 1.57
       },
       "health": 150,
       "price": 100,
@@ -376,8 +370,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 500,
       "price": 300,
@@ -426,8 +418,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 250,
       "price": 0,
@@ -493,8 +483,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 400,
       "price": 300,
@@ -540,8 +528,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 400,
       "price": 200,
@@ -585,8 +571,6 @@
         "angularVelocity": 6.283185307179586,
         "speed": 15.0,
         "acceleration": 5.0,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 200,
       "price": 200,
@@ -632,8 +616,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 500,
       "price": 300,
@@ -680,8 +662,6 @@
         "angularVelocity": 6.283185307179586,
         "speed": 10.0,
         "acceleration": 3.0,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 100,
       "price": 0,
@@ -747,8 +727,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 500,
       "price": 300,
@@ -796,8 +774,6 @@
         "angularVelocity": 6.283185307179586,
         "speed": 10.0,
         "acceleration": 3.0,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 200,
       "price": 150,
@@ -863,8 +839,6 @@
         "angularVelocity": 2.0,
         "speed": 12.0,
         "acceleration": 2.0,
-        "startAngleSlowDown": 0.0,
-        "endAngleSlowDown": 1.57
       },
       "health": 30,
       "price": 0,
@@ -919,8 +893,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 400,
       "price": 200,
@@ -964,8 +936,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 500,
       "price": 300,
@@ -1015,8 +985,6 @@
         "angularVelocity": 3.0,
         "speed": 17.0,
         "acceleration": 3.0,
-        "startAngleSlowDown": 0.0,
-        "endAngleSlowDown": 1.57
       },
       "health": 80,
       "price": 100,
@@ -1082,8 +1050,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 400,
       "price": 300,
@@ -1125,8 +1091,6 @@
         "angularVelocity": 6.283185307179586,
         "speed": 7.0,
         "acceleration": 2.0,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 100,
       "price": 200,
@@ -1174,8 +1138,6 @@
         "angularVelocity": 6.283185307179586,
         "speed": 15.0,
         "acceleration": 5.0,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 20,
       "price": 200,
@@ -1221,8 +1183,6 @@
         "angularVelocity": 6.283185307179586,
         "speed": 20.0,
         "acceleration": 7.0,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 250,
       "price": 150,
@@ -1288,8 +1248,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 259,
       "price": 250,
@@ -1355,8 +1313,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 50,
       "price": 0,
@@ -1398,8 +1354,6 @@
         "angularVelocity": null,
         "speed": null,
         "acceleration": null,
-        "startAngleSlowDown": null,
-        "endAngleSlowDown": null
       },
       "health": 300,
       "price": 300,

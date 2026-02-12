@@ -461,8 +461,7 @@ public class JsonDeserializer {
         r.setAngularVelocity(json.getNullableDouble("angularVelocity"));
         r.setSpeed(json.getNullableDouble("speed"));
         r.setAcceleration(json.getNullableDouble("acceleration"));
-        r.setStartAngleSlowDown(json.getNullableDouble("startAngleSlowDown"));
-        r.setEndAngleSlowDown(json.getNullableDouble("endAngleSlowDown"));
+
         return r;
     }
 

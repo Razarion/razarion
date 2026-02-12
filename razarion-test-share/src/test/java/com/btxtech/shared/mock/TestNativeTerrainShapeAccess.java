@@ -48,7 +48,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
                 alarmService,
                 Collections.emptyList(),
                 Collections.emptyList(),
-                botConfigs != null ? BotService.generateBotGrounds(botConfigs) : null
+                botConfigs != null ? BotService.generateBotGrounds(botConfigs) : Collections.emptyList()
         );
         loadedCallback.accept(terrainShapeManager.toNativeTerrainShape());
     }

@@ -36,6 +36,7 @@ import jakarta.inject.Provider;
 
 public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
+    private static final double STOP_DETECTION_DISTANCE = 0.5;
     private static final double STOP_DETECTION_OTHER_UNITS_RADIOS = 20;
     // Angle slow-down removed: caused server/client desync when re-issuing commands during movement.
     // Units still rotate via angularVelocity in finalization().
@@ -50,6 +51,7 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private DecimalPosition preferredVelocity;
     private DecimalPosition oldPosition;
     private boolean crowded;
+    private double desiredMoveAngle;
 
     @Inject
     public SyncPhysicalMovable(SyncItemContainerServiceImpl syncItemContainerService, Provider<Path> instancePath) {
@@ -71,16 +73,24 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         if (path != null) {
             path.setupCurrentWayPoint(this);
 
-            double desiredAngle = path.getCurrentWayPoint().sub(getPosition()).angle();
+            desiredMoveAngle = path.getCurrentWayPoint().sub(getPosition()).angle();
+
+            // Calculate angle difference between current facing and desired direction
+            double deltaAngle = MathHelper.getAngle(getAngle(), desiredMoveAngle);
 
             // Fix velocity
             double originalSpeed = velocity != null ? velocity.magnitude() : 0;
-            double desiredSpeed = maxSpeed;
-            if (originalSpeed < maxSpeed) {
+            double desiredSpeed;
+            if (deltaAngle > Math.PI / 4) {
+                // Large angle difference: decelerate
+                desiredSpeed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
+            } else {
+                // Small angle difference: accelerate normally
                 desiredSpeed = originalSpeed + acceleration * PlanetService.TICK_FACTOR;
             }
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
-            preferredVelocity = DecimalPosition.createVector(desiredAngle, speed);
+            // Move in current facing direction, not desired direction
+            preferredVelocity = DecimalPosition.createVector(getAngle(), speed);
         } else {
             stop();
         }
@@ -133,9 +143,9 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
             return;
         }
 
-        Line line = new Line(oldPosition, getPosition());
-        if (line.isPointInLineInclusive(path.getCurrentWayPoint())) {
-            // System.out.println("stopIfDestinationReached: " + getSyncItem().getId() + " normal");
+        // Use circle check: vehicle moves in facing direction which may not pass exactly through waypoint
+        Circle2D destinationCircle = new Circle2D(path.getCurrentWayPoint(), STOP_DETECTION_DISTANCE);
+        if (destinationCircle.doesLineCut(new Line(oldPosition, getPosition()))) {
             setPosition2d(path.getCurrentWayPoint(), false);
             stop();
         }
@@ -200,6 +210,7 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
         super.synchronize(syncPhysicalAreaInfo);
         velocity = syncPhysicalAreaInfo.getVelocity();
+        desiredMoveAngle = syncPhysicalAreaInfo.getDesiredMoveAngle();
         if (syncPhysicalAreaInfo.getWayPositions() != null) {
             Path path = instancePath.get();
             path.synchronize(syncPhysicalAreaInfo);
@@ -212,6 +223,7 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {
         SyncPhysicalAreaInfo syncPhysicalAreaInfo = super.getSyncPhysicalAreaInfo();
         syncPhysicalAreaInfo.setVelocity(velocity);
+        syncPhysicalAreaInfo.setDesiredMoveAngle(desiredMoveAngle);
         if (path != null) {
             path.fillSyncPhysicalAreaInfo(syncPhysicalAreaInfo);
         }
@@ -235,13 +247,13 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     }
 
     public void finalization() {
-        // Fix angle
-        if (velocity != null) {
-            double deltaAngle = MathHelper.negateAngle(velocity.angle() - getAngle());
+        // Fix angle - rotate towards desired move direction
+        if (path != null) {
+            double deltaAngle = MathHelper.negateAngle(desiredMoveAngle - getAngle());
             if (Math.abs(deltaAngle) > angularVelocity * PlanetService.TICK_FACTOR) {
                 setAngle(MathHelper.negateAngle(getAngle() + Math.signum(deltaAngle) * angularVelocity * PlanetService.TICK_FACTOR));  // TODO Math.signum() return 0 if deltaAngle = 0
             } else {
-                setAngle(velocity.angle());
+                setAngle(desiredMoveAngle);
             }
         }
     }

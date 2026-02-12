@@ -13,6 +13,7 @@ public class SyncPhysicalAreaInfo {
     private double angle;
     private DecimalPosition velocity;
     private List<DecimalPosition> wayPositions;
+    private double desiredMoveAngle;
 
     public DecimalPosition getPosition() {
         return position;
@@ -47,6 +48,15 @@ public class SyncPhysicalAreaInfo {
 
     public SyncPhysicalAreaInfo setWayPositions(List<DecimalPosition> wayPositions) {
         this.wayPositions = wayPositions;
+        return this;
+    }
+
+    public double getDesiredMoveAngle() {
+        return desiredMoveAngle;
+    }
+
+    public SyncPhysicalAreaInfo setDesiredMoveAngle(double desiredMoveAngle) {
+        this.desiredMoveAngle = desiredMoveAngle;
         return this;
     }
 

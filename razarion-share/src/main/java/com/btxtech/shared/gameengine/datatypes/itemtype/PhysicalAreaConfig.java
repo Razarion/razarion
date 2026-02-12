@@ -18,8 +18,7 @@ public class PhysicalAreaConfig {
     private Double angularVelocity; //Rad per second
     private Double speed;
     private Double acceleration;
-    private Double startAngleSlowDown;
-    private Double endAngleSlowDown;
+
 
     public double getRadius() {
         return radius;
@@ -69,21 +68,6 @@ public class PhysicalAreaConfig {
         this.acceleration = acceleration;
     }
 
-    public @Nullable Double getStartAngleSlowDown() {
-        return startAngleSlowDown;
-    }
-
-    public void setStartAngleSlowDown(@Nullable Double startAngleSlowDown) {
-        this.startAngleSlowDown = startAngleSlowDown;
-    }
-
-    public @Nullable Double getEndAngleSlowDown() {
-        return endAngleSlowDown;
-    }
-
-    public void setEndAngleSlowDown(@Nullable Double endAngleSlowDown) {
-        this.endAngleSlowDown = endAngleSlowDown;
-    }
 
     public PhysicalAreaConfig radius(double radius) {
         setRadius(radius);
@@ -112,16 +96,6 @@ public class PhysicalAreaConfig {
 
     public PhysicalAreaConfig acceleration(Double acceleration) {
         setAcceleration(acceleration);
-        return this;
-    }
-
-    public PhysicalAreaConfig startAngleSlowDown(Double startAngleSlowDown) {
-        setStartAngleSlowDown(startAngleSlowDown);
-        return this;
-    }
-
-    public PhysicalAreaConfig endAngleSlowDown(Double endAngleSlowDown) {
-        setEndAngleSlowDown(endAngleSlowDown);
         return this;
     }
 
