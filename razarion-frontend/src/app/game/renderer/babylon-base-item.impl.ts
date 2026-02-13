@@ -357,6 +357,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       return;
     }
 
+    const muzzleFlashAudioId = this.baseItemType.getWeaponType()?.getMuzzleFlashAudioItemConfigId();
+    if (muzzleFlashAudioId != null) {
+      this.rendererService.babylonAudioService.playAudioAtPosition(muzzleFlashAudioId, this.getContainer().position);
+    }
+
     let startPosition: Vector3;
     const renderObject = this.getRenderObject();
     if (renderObject.hasMuzzleFlash()) {
@@ -401,6 +406,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   onExplode(): void {
+    const explosionAudioId = this.baseItemType.getExplosionAudioItemConfigId();
+    if (explosionAudioId != null) {
+      this.rendererService.babylonAudioService.playAudioAtPosition(explosionAudioId, this.getContainer().position);
+    }
+
     if (GwtHelper.gwtIssueNumber(this.baseItemType.getExplosionParticleId() == null)) {
       console.warn(`No ExplosionParticleId for base item type ${this.getId()}`)
       return;

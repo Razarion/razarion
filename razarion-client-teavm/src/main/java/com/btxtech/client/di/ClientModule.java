@@ -1,18 +1,14 @@
 package com.btxtech.client.di;
 
 import com.btxtech.client.TeaVMBootImpl;
-import com.btxtech.client.TeaVMClientAudioService;
 import com.btxtech.client.TeaVMClientGameEngineControl;
 import com.btxtech.client.TeaVMClientServerQuestProvider;
 import com.btxtech.client.TeaVMClientServerSystemConnection;
-import com.btxtech.client.TeaVMGwtAngularService;
 import com.btxtech.client.TeaVMHeightMapConverter;
-import com.btxtech.client.TeaVMStatusProvider;
 import com.btxtech.client.jso.facade.JsGwtAngularFacade;
 import com.btxtech.client.system.TeaVMSimpleExecutorServiceImpl;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.ServerQuestProvider;
-import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -50,10 +46,6 @@ public abstract class ClientModule {
     @Binds
     public abstract SimpleExecutorService bindSimpleExecutorService(
             TeaVMSimpleExecutorServiceImpl simpleExecutorService);
-
-    @Binds
-    public abstract AudioService bindAudioService(
-            TeaVMClientAudioService audioService);
 
     @Binds
     public abstract ServerQuestProvider bindServerQuestProvider(

@@ -17,6 +17,7 @@ import {ToggleSwitchModule} from 'primeng/toggleswitch';
 import {FormsModule} from '@angular/forms';
 import {CockpitDisplayService} from '../cockpit-display.service';
 import {TipService} from '../../tip/tip.service';
+import {BabylonAudioService} from '../../renderer/babylon-audio.service';
 
 @Component({
   selector: 'quest-cockpit',
@@ -44,6 +45,7 @@ export class QuestCockpitComponent implements QuestCockpit {
   constructor(private gwtAngularService: GwtAngularService,
               public cockpitDisplayService: CockpitDisplayService,
               private tipService: TipService,
+              private babylonAudioService: BabylonAudioService,
               private zone: NgZone) {
   }
 
@@ -57,6 +59,9 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.setupProgress();
         this.showQuestSelectionButton = showQuestSelectionButton;
         this.cockpitDisplayService.showQuestCockpit = !!questDescriptionConfig;
+        if (questDescriptionConfig) {
+          this.babylonAudioService.playQuestActivatedAudio();
+        }
         if (questDescriptionConfig && questDescriptionConfig.getTipConfig()) {
           this.tipService.activate(<QuestConfig>questDescriptionConfig)
           this.showQuestInGameVisualisation = false;

@@ -9,7 +9,6 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmRaiser;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.ServerQuestProvider;
-import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.QuestCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -39,7 +38,6 @@ public class Scene {
     private final BaseItemPlacerService baseItemPlacerService;
     private final ModalDialogManager modalDialogManager;
     private final SimpleExecutorService simpleExecutorService;
-    private final AudioService audioService;
     private final GameEngineControl gameEngineControl;
     private final UserUiService userUiService;
     private final InGameQuestVisualizationService inGameQuestVisualizationService;
@@ -50,12 +48,11 @@ public class Scene {
     private boolean scrollBouncePrevention = true;
 
     @Inject
-    public Scene(ServerQuestProvider serverQuestProvider, InGameQuestVisualizationService inGameQuestVisualizationService, UserUiService userUiService, GameEngineControl gameEngineControl, AudioService audioService, SimpleExecutorService simpleExecutorService, ModalDialogManager modalDialogManager, BaseItemPlacerService baseItemPlacerService, QuestCockpitService questCockpitService, GameUiControl gameUiControl, BabylonRendererService threeJsRendererService, ScreenCover screenCover) {
+    public Scene(ServerQuestProvider serverQuestProvider, InGameQuestVisualizationService inGameQuestVisualizationService, UserUiService userUiService, GameEngineControl gameEngineControl, SimpleExecutorService simpleExecutorService, ModalDialogManager modalDialogManager, BaseItemPlacerService baseItemPlacerService, QuestCockpitService questCockpitService, GameUiControl gameUiControl, BabylonRendererService threeJsRendererService, ScreenCover screenCover) {
         this.serverQuestProvider = serverQuestProvider;
         this.inGameQuestVisualizationService = inGameQuestVisualizationService;
         this.userUiService = userUiService;
         this.gameEngineControl = gameEngineControl;
-        this.audioService = audioService;
         this.simpleExecutorService = simpleExecutorService;
         this.modalDialogManager = modalDialogManager;
         this.baseItemPlacerService = baseItemPlacerService;
@@ -118,7 +115,6 @@ public class Scene {
         }
         if (sceneConfig.getQuestConfig() != null) {
             gameEngineControl.activateQuest(sceneConfig.getQuestConfig());
-            audioService.onQuestActivated();
             questCockpitService.showQuestSideBar(sceneConfig.getQuestConfig(), false);
             inGameQuestVisualizationService.onQuestActivated(sceneConfig.getQuestConfig());
         }
@@ -154,7 +150,6 @@ public class Scene {
         if (sceneConfig.getScrollUiQuest() != null) {
             scrollBouncePrevention = false;
             questCockpitService.showQuestSideBar(sceneConfig.getScrollUiQuest(), false);
-            audioService.onQuestActivated();
             // TODO viewService.addViewFieldListeners(this);
         }
         if (sceneConfig.getBoxItemPositions() != null) {

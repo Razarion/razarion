@@ -22,6 +22,7 @@ import {UnlockComponent} from './unlock/unlock.component';
 import {UserService} from '../auth/user.service';
 import {ChatCockpitComponent} from './cockpit/chat/chat-cockpit.component';
 import {InfoDialogComponent} from './info-dialog/info-dialog.component';
+import {BabylonAudioService} from './renderer/babylon-audio.service';
 
 
 @Component({
@@ -66,6 +67,7 @@ export class GameComponent implements OnInit {
   constructor(private gwtAngularService: GwtAngularService,
               public cockpitDisplayService: CockpitDisplayService,
               private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
+              private babylonAudioService: BabylonAudioService,
               private gameMockService: GameMockService,
               private actionService: ActionService,
               private userService: UserService,
@@ -84,6 +86,7 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.crashListener = () => this.addEditorModel(new EditorModel("Crash Information Panel", CrashPanelComponent));
     this.gwtAngularService.gwtAngularFacade.modelDialogPresenter = this.modelDialogPresenter;
     this.babylonRenderServiceAccessImpl.setup(this.canvas.nativeElement);
+    this.babylonAudioService.init();
 
     this.gwtAngularService.gwtAngularFacade.screenCover = this.loadingComponent;
     this.gwtAngularService.gwtAngularFacade.babylonRenderServiceAccess = this.babylonRenderServiceAccessImpl;

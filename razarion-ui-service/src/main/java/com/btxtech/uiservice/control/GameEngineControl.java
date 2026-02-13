@@ -31,7 +31,6 @@ import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionService;
-import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
@@ -59,7 +58,6 @@ import java.util.logging.Logger;
     private final BaseItemUiService baseItemUiService;
     private final ResourceUiService resourceUiService;
     private final BoxUiService boxUiService;
-    private final AudioService audioService;
     private final GameUiControl gameUiControl;
     private final SelectionService selectionService;
     private final UserUiService userUiService;
@@ -81,7 +79,6 @@ import java.util.logging.Logger;
                              UserUiService userUiService,
                              SelectionService selectionService,
                              GameUiControl gameUiControl,
-                             AudioService audioService,
                              BoxUiService boxUiService,
                              ResourceUiService resourceUiService,
                              BaseItemUiService baseItemUiService,
@@ -94,7 +91,6 @@ import java.util.logging.Logger;
         this.userUiService = userUiService;
         this.selectionService = selectionService;
         this.gameUiControl = gameUiControl;
-        this.audioService = audioService;
         this.boxUiService = boxUiService;
         this.resourceUiService = resourceUiService;
         this.baseItemUiService = baseItemUiService;
@@ -322,10 +318,7 @@ import java.util.logging.Logger;
                 onTickUpdateFailed();
                 break;
             case SYNC_ITEM_START_SPAWNED:
-                NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo = castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData());
-                audioService.onSpawnSyncItem(nativeSyncBaseItemTickInfo);
-                babylonRendererService.startSpawn(nativeSyncBaseItemTickInfo);
-                // TODO gameTipService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
+                babylonRendererService.startSpawn(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
                 break;
             case SYNC_ITEM_IDLE:
                 // TODO gameTipService.onSyncBaseItemIdle(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));

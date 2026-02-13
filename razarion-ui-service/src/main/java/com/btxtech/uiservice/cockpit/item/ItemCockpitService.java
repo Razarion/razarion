@@ -16,7 +16,6 @@ import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.SelectionService;
-import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -42,7 +41,6 @@ public class ItemCockpitService {
     private final Provider<BaseItemUiService> baseItemUiService;
     private final Provider<GameUiControl> gameUiControl;
     private final BaseItemPlacerService baseItemPlacerService;
-    private final AudioService audioService;
     private final Provider<GameEngineControl> gameEngineControl;
     private final SelectionService selectionService;
     private final Collection<BuildupItemCockpit> buildupItemCockpits = new ArrayList<>();
@@ -51,7 +49,6 @@ public class ItemCockpitService {
     @Inject
     public ItemCockpitService(SelectionService selectionService,
                               Provider<GameEngineControl> gameEngineControl,
-                              AudioService audioService,
                               BaseItemPlacerService baseItemPlacerService,
                               Provider<GameUiControl> gameUiControl,
                               Provider<BaseItemUiService> baseItemUiService,
@@ -59,7 +56,6 @@ public class ItemCockpitService {
                               SelectionEventService selectionEventService) {
         this.selectionService = selectionService;
         this.gameEngineControl = gameEngineControl;
-        this.audioService = audioService;
         this.baseItemPlacerService = baseItemPlacerService;
         this.gameUiControl = gameUiControl;
         this.baseItemUiService = baseItemUiService;
@@ -181,7 +177,6 @@ public class ItemCockpitService {
             onBuildCallback = (itemType) -> {
                 BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().baseItemCount(1).baseItemTypeId(itemType.getId());
                 baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
-                    audioService.onCommandSent();
                     gameEngineControl.get().buildCmd(selectedGroup.getItems().stream().findFirst().orElseThrow(RuntimeException::new), CollectionUtils.getFirst(decimalPositions), itemType);
                 });
             };
@@ -189,7 +184,6 @@ public class ItemCockpitService {
             ableToBuildIds = baseItemType.getFactoryType().getAbleToBuildIds();
             // Factory
             onBuildCallback = (itemType) -> {
-                audioService.onCommandSent();
                 selectedGroup.getSyncBaseItemsMonitors().stream()
                         .filter(syncBaseItemMonitor -> syncBaseItemMonitor.getConstructingBaseItemTypeId() == null)
                         .map(SyncItemMonitor::getSyncItemId)
@@ -274,7 +268,6 @@ public class ItemCockpitService {
                         int baseItemTypeId = transporter.getSyncBaseItemState().getContainingItemTypeIds()[0];
                         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().baseItemCount(1).baseItemTypeId(baseItemTypeId);
                         baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
-                            audioService.onCommandSent();
                             gameEngineControl.get().unloadContainerCmd(transporter.getSyncItemId(), CollectionUtils.getFirst(decimalPositions));
                         });
                     } catch (Exception e) {

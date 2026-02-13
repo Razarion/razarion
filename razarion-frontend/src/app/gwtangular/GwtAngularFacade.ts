@@ -296,6 +296,8 @@ export interface BaseItemType extends ItemType {
   getHarvesterType(): HarvesterType | null;
 
   getExplosionParticleId(): number | null;
+
+  getExplosionAudioItemConfigId(): number | null;
 }
 
 export interface ResourceItemType extends ItemType {
@@ -324,6 +326,8 @@ export interface WeaponType {
   getProjectileSpeed(): number | null;
 
   getTrailParticleSystemConfigId(): number | null;
+
+  getMuzzleFlashAudioItemConfigId(): number | null;
 }
 
 export interface HarvesterType {

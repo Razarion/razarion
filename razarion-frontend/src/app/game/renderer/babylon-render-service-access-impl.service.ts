@@ -56,10 +56,12 @@ import {LocationVisualization} from "src/app/editor/common/place-config/location
 import {ActionService} from "../action.service";
 import {BaseItemPlacerPresenterEvent, BaseItemPlacerPresenterImpl} from "./base-item-placer-presenter.impl";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {BabylonAudioService} from "./babylon-audio.service";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
 import earcut from 'earcut';
 import {ViewField, ViewFieldListener} from './view-field';
 import {PlaceConfigComponent} from '../../editor/common/place-config/place-config.component';
+
 
 export interface RazarionMetadata {
   type: RazarionMetadataType;
@@ -114,7 +116,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
               private babylonModelService: BabylonModelService,
               private uiConfigCollectionService: UiConfigCollectionService,
               private threeJsWaterRenderService: BabylonWaterRenderService,
-              private actionService: ActionService) {
+              private actionService: ActionService,
+              public babylonAudioService: BabylonAudioService) {
     this.babylonModelService.renderer = this;
   }
 
@@ -185,6 +188,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.camera = new FreeCamera("Camera", new Vector3(0, 30, -35), this.scene);
     this.camera.maxZ = 800;
     this.camera.setTarget(new Vector3(0, 0, 0));
+    this.babylonAudioService.attachListenerTo(this.camera);
 
     // ----- Light -----
     const lightDirection = new Vector3(-3, -10, 3);
@@ -328,7 +332,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   scrollCamera() {
     let hasChanged = false;
     const speed = BabylonRenderServiceAccessImpl.SCROLL_SPEED + this.camera.position.y * BabylonRenderServiceAccessImpl.SCROLL_SPEED_CAMERA_HEIGHT_FACTOR;
-    this.camera.position.y
 
     let newX = null;
     if (this.checkKeyDown("a", "A", "ArrowLeft")) {
@@ -735,7 +738,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   createBaseItemPlacerPresenter(): BaseItemPlacerPresenter {
-    this.baseItemPlacerPresenterImpl = new BaseItemPlacerPresenterImpl(this, this.babylonModelService);
+    this.baseItemPlacerPresenterImpl = new BaseItemPlacerPresenterImpl(this, this.babylonModelService, this.babylonAudioService);
     if (this.baseItemPlacerCallback) {
       this.baseItemPlacerPresenterImpl.setBaseItemPlacerCallback(this.baseItemPlacerCallback);
     }

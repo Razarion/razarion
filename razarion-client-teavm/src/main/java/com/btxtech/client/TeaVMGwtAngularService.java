@@ -21,7 +21,6 @@ import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.system.boot.GwtAngularBoot;
 import com.btxtech.uiservice.terrain.InputService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 

@@ -18,7 +18,6 @@ import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionEventService;
 import com.btxtech.uiservice.SelectionService;
-import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -64,7 +63,6 @@ public class BaseItemUiService {
     private final ModalDialogManager modalDialogManager;
     private final Provider<UserUiService> userUiService;
     private final BabylonRendererService babylonRendererService;
-    private final AudioService audioService;
     private PlayerBaseDto myBase;
     private int resources;
     private int houseSpace;
@@ -77,8 +75,7 @@ public class BaseItemUiService {
     private Rectangle2D viewFieldAabb;
 
     @Inject
-    public BaseItemUiService(AudioService audioService,
-                             BabylonRendererService babylonRendererService,
+    public BaseItemUiService(BabylonRendererService babylonRendererService,
                              Provider<UserUiService> userUiService,
                              ModalDialogManager modalDialogManager,
                              ItemCockpitService itemCockpitService,
@@ -87,7 +84,6 @@ public class BaseItemUiService {
                              SelectionService selectionService,
                              ItemTypeService itemTypeService,
                              SelectionEventService selectionEventService) {
-        this.audioService = audioService;
         this.babylonRendererService = babylonRendererService;
         this.userUiService = userUiService;
         this.modalDialogManager = modalDialogManager;
@@ -264,9 +260,6 @@ public class BaseItemUiService {
         BabylonBaseItem babylonBaseItem = babylonBaseItems.get(syncBaseItemId);
         if (babylonBaseItem != null) {
             babylonBaseItem.onProjectileFired(tagetSyncBaseItemId, targetPosition);
-            if (babylonBaseItem.getBaseItemType().getWeaponType() != null) {
-                audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getWeaponType().getMuzzleFlashAudioItemConfigId());
-            }
         }
     }
 
@@ -277,7 +270,6 @@ public class BaseItemUiService {
                     BabylonBaseItem babylonBaseItem = babylonBaseItems.get(nativeSimpleSyncBaseItemTickInfo.id);
                     if (babylonBaseItem != null) {
                         babylonBaseItem.onExplode();
-                        audioService.playAudioSafe(babylonBaseItem.getBaseItemType().getExplosionAudioItemConfigId());
                     }
                 }
             } catch (Throwable t) {

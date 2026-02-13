@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ItemType, Diplomacy, BaseItemType, ActionServiceListener } from '../gwtangular/GwtAngularFacade';
 import { GwtAngularService } from '../gwtangular/GwtAngularService';
 import { GwtInstance } from '../gwtangular/GwtInstance';
+import { BabylonAudioService } from './renderer/babylon-audio.service';
 
 
 export class SelectionInfo {
@@ -17,7 +18,8 @@ export class SelectionInfo {
 export class ActionService implements ActionServiceListener {
   private readonly cursorTypeHandlers: ((selectionInfo: SelectionInfo) => void)[] = [];
 
-  constructor(private gwtAngularService: GwtAngularService) {
+  constructor(private gwtAngularService: GwtAngularService,
+              private babylonAudioService: BabylonAudioService) {
   }
 
   onSelectionChanged(): void {
@@ -26,24 +28,38 @@ export class ActionService implements ActionServiceListener {
   }
 
   onItemClicked(itemType: ItemType, id: number, diplomacy: Diplomacy) {
-    let targetItemType: BaseItemType | undefined = undefined;
+    const selectionService = this.gwtAngularService.gwtAngularFacade.selectionService;
 
     if (diplomacy === Diplomacy.OWN) {
+      if (selectionService.hasOwnSelection()) {
+        this.babylonAudioService.playCommandSentAudio();
+      }
       this.gwtAngularService.gwtAngularFacade.inputService.ownItemClicked(id);
     } else if (diplomacy === Diplomacy.FRIEND) {
       this.gwtAngularService.gwtAngularFacade.inputService.friendItemClicked(id);
     } else if (diplomacy === Diplomacy.ENEMY) {
+      if (selectionService.hasAttackers()) {
+        this.babylonAudioService.playCommandSentAudio();
+      }
       this.gwtAngularService.gwtAngularFacade.inputService.enemyItemClicked(id);
-      targetItemType = <BaseItemType>itemType;
     } else if (diplomacy === Diplomacy.RESOURCE) {
+      if (selectionService.hasHarvesters()) {
+        this.babylonAudioService.playCommandSentAudio();
+      }
       this.gwtAngularService.gwtAngularFacade.inputService.resourceItemClicked(id);
     } else if (diplomacy === Diplomacy.BOX) {
+      if (selectionService.hasOwnMovable()) {
+        this.babylonAudioService.playCommandSentAudio();
+      }
       this.gwtAngularService.gwtAngularFacade.inputService.boxItemClicked(id);
     }
 
   }
 
   onTerrainClicked(xTerrainPosition: number, yTerrainPosition: number) {
+    if (this.gwtAngularService.gwtAngularFacade.selectionService.hasOwnMovable()) {
+      this.babylonAudioService.playCommandSentAudio();
+    }
     this.gwtAngularService.gwtAngularFacade.inputService.terrainClicked(GwtInstance.newDecimalPosition(xTerrainPosition, yTerrainPosition));
   }
 

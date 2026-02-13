@@ -366,6 +366,7 @@ public class DtoConverter {
         setGetterObj(obj, "getWeaponType", () -> convertWeaponType(type));
         setGetterObj(obj, "getHarvesterType", () -> convertHarvesterType(type));
         setGetterObj(obj, "getExplosionParticleId", () -> convertNullableInt(type.getExplosionParticleId()));
+        setGetterObj(obj, "getExplosionAudioItemConfigId", () -> convertNullableInt(type.getExplosionAudioItemConfigId()));
         return obj;
     }
 
@@ -423,6 +424,8 @@ public class DtoConverter {
                 convertNullableDouble(type.getWeaponType().getProjectileSpeed()));
         setGetterObj(obj, "getTrailParticleSystemConfigId", () ->
                 convertNullableInt(type.getWeaponType().getTrailParticleSystemConfigId()));
+        setGetterObj(obj, "getMuzzleFlashAudioItemConfigId", () ->
+                convertNullableInt(type.getWeaponType().getMuzzleFlashAudioItemConfigId()));
         return obj;
     }
 

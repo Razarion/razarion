@@ -175,11 +175,19 @@ export class GameMockService {
               getTrailParticleSystemConfigId(): number | null {
                 return 2;
               }
+
+              getMuzzleFlashAudioItemConfigId(): number | null {
+                return null;
+              }
             }
           }
 
           getExplosionParticleId(): number | null {
             return 1;
+          }
+
+          getExplosionAudioItemConfigId(): number | null {
+            return null;
           }
 
           getId(): number {
@@ -896,6 +904,10 @@ export class GameMockService {
 
           getExplosionParticleId(): number | null {
             throw new Error('Method not implemented.');
+          }
+
+          getExplosionAudioItemConfigId(): number | null {
+            return null;
           }
 
           getPhysicalAreaConfig(): PhysicalAreaConfig {

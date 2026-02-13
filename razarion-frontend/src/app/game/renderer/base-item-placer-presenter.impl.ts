@@ -13,6 +13,7 @@ import {
 import {BaseItemPlacer, BaseItemPlacerPresenter, Diplomacy} from "src/app/gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonModelService} from "./babylon-model.service";
+import {BabylonAudioService} from "./babylon-audio.service";
 import {AdvancedDynamicTexture} from "@babylonjs/gui";
 import {RenderObject} from './render-object';
 import {PressMouseVisualization} from './press-mouse-visualization';
@@ -33,7 +34,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private baseItemPlacerCallback: ((event: BaseItemPlacerPresenterEvent) => void) | null = null;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
-              private babylonModelService: BabylonModelService) {
+              private babylonModelService: BabylonModelService,
+              private babylonAudioService: BabylonAudioService) {
     this.material = new StandardMaterial("Base Item Placer", this.rendererService.getScene());
     this.material.emissiveColor = Color3.Red()
   }
@@ -77,6 +79,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
             if (this.baseItemPlacerCallback) {
               this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.PLACED);
             }
+            this.babylonAudioService.playCommandSentAudio();
             baseItemPlacer.onPlace(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
           }
           break;

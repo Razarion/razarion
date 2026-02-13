@@ -11,7 +11,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.SelectionService;
-import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
@@ -38,7 +37,6 @@ public class InputService {
     private final BoxUiService boxUiService;
     private final InGameQuestVisualizationService inGameQuestVisualizationService;
     private final SelectionService selectionService;
-    private final AudioService audioService;
     private final GameEngineControl gameEngineControl;
     private final ItemTypeService itemTypeService;
     private boolean hasPendingMoveCommand;
@@ -47,7 +45,6 @@ public class InputService {
     @Inject
     public InputService(ItemTypeService itemTypeService,
                         GameEngineControl gameEngineControl,
-                        AudioService audioService,
                         SelectionService selectionService,
                         InGameQuestVisualizationService inGameQuestVisualizationService,
                         BoxUiService boxUiService,
@@ -56,7 +53,6 @@ public class InputService {
                         TerrainUiService terrainUiService) {
         this.itemTypeService = itemTypeService;
         this.gameEngineControl = gameEngineControl;
-        this.audioService = audioService;
         this.selectionService = selectionService;
         this.inGameQuestVisualizationService = inGameQuestVisualizationService;
         this.boxUiService = boxUiService;
@@ -89,14 +85,14 @@ public class InputService {
                 if (syncBaseItem.checkBuildup() && baseItemType.getItemContainerType() != null) {
                     Collection<SyncBaseItemSimpleDto> contained = selectionService.getOwnSelection().getSyncBaseItemsMonitors().stream().filter(monitor -> baseItemType.getItemContainerType().isAbleToContain(monitor.getSyncBaseItemState().getSyncBaseItem().getItemTypeId())).map(monitor -> monitor.getSyncBaseItemState().getSyncBaseItem()).collect(Collectors.toList());
                     if (!contained.isEmpty()) {
-                        audioService.onCommandSent();
+    
                         gameEngineControl.loadContainerCmd(contained, syncBaseItem);
                         return;
                     }
                 } else if (!syncBaseItem.checkBuildup()) {
                     Collection<SyncBaseItemSimpleDto> builders = selectionService.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
                     if (!builders.isEmpty()) {
-                        audioService.onCommandSent();
+    
                         gameEngineControl.finalizeBuildCmd(builders, syncBaseItem);
                         return;
                     }
@@ -125,7 +121,7 @@ public class InputService {
             if (selectionService.hasOwnSelection()) {
                 Collection<SyncBaseItemSimpleDto> attackers = selectionService.getOwnSelection().getAttackers(syncBaseItem.getItemTypeId());
                 if (!attackers.isEmpty()) {
-                    audioService.onCommandSent();
+
                     gameEngineControl.attackCmd(attackers, syncBaseItem);
                 } else {
                     selectionService.onBaseItemsSelected(Collections.singletonList(syncBaseItem));
@@ -145,7 +141,7 @@ public class InputService {
             if (selectionService.hasOwnSelection()) {
                 Collection<SyncBaseItemSimpleDto> harvesters = selectionService.getOwnSelection().getHarvesters();
                 if (!harvesters.isEmpty()) {
-                    audioService.onCommandSent();
+
                     gameEngineControl.harvestCmd(harvesters, syncResourceItem);
                 } else {
                     selectionService.setOtherItemSelected(syncResourceItem);
@@ -165,7 +161,7 @@ public class InputService {
             if (selectionService.hasOwnSelection()) {
                 Collection<SyncBaseItemSimpleDto> pickers = selectionService.getOwnSelection().getMovables();
                 if (!pickers.isEmpty()) {
-                    audioService.onCommandSent();
+
                     gameEngineControl.pickBoxCmd(pickers, syncBoxItem);
                 } else {
                     selectionService.setOtherItemSelected(syncBoxItem);
@@ -192,8 +188,6 @@ public class InputService {
             if (movables.isEmpty()) {
                 return;
             }
-            audioService.onCommandSent();
-
             if (hasPendingMoveCommand) {
                 queuedMoveCommandEntry = new MoveCommandEntry(movables, terrainPosition);
             } else {

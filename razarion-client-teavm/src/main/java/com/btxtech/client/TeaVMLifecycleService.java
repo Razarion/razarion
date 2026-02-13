@@ -9,7 +9,6 @@ import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.SelectionService;
-import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -22,10 +21,10 @@ import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
+
 import java.util.List;
 
 @Singleton
@@ -39,7 +38,6 @@ public class TeaVMLifecycleService {
     private final ResourceUiService resourceUiService;
     private final TrailService trailService;
     private final TerrainUiService terrainUiService;
-    private final AudioService audioService;
     private final Provider<ScreenCover> screenCover;
     private final GameUiControl gameUiControl;
     private final SelectionService selectionService;
@@ -53,7 +51,6 @@ public class TeaVMLifecycleService {
                                  SelectionService selectionService,
                                  GameUiControl gameUiControl,
                                  Provider<ScreenCover> screenCover,
-                                 AudioService audioService,
                                  TerrainUiService terrainUiService,
                                  TrailService trailService,
                                  ResourceUiService resourceUiService,
@@ -68,7 +65,6 @@ public class TeaVMLifecycleService {
         this.selectionService = selectionService;
         this.gameUiControl = gameUiControl;
         this.screenCover = screenCover;
-        this.audioService = audioService;
         this.terrainUiService = terrainUiService;
         this.trailService = trailService;
         this.resourceUiService = resourceUiService;
@@ -149,7 +145,6 @@ public class TeaVMLifecycleService {
         selectionService.clearSelection(true);
         trailService.clear();
         terrainUiService.clear();
-        audioService.muteTerrainLoopAudio();
     }
 
     public void onConnectionLost(String websocketName) {
