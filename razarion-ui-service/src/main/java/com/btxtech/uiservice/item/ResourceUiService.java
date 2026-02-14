@@ -8,9 +8,6 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.SelectionEvent;
-import com.btxtech.uiservice.SelectionEventService;
-import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.BabylonResourceItem;
 import com.btxtech.uiservice.renderer.MarkerConfig;
@@ -35,31 +32,22 @@ public class ResourceUiService {
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
     private final Map<Integer, BabylonResourceItem> babylonResourceItems = new HashMap<>();
     private final ItemTypeService itemTypeService;
-    private final SelectionService selectionService;
     private final BabylonRendererService babylonRendererService;
     private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
-    private BabylonResourceItem selectedBabylonResourceItem;
-    private Integer selectedOutOfViewId;
     private BabylonResourceItem hoverBabylonResourceItem;
 
     @Inject
     public ResourceUiService(BabylonRendererService babylonRendererService,
-                             SelectionService selectionService,
-                             ItemTypeService itemTypeService,
-                             SelectionEventService selectionEventService) {
+                             ItemTypeService itemTypeService) {
         this.babylonRendererService = babylonRendererService;
-        this.selectionService = selectionService;
         this.itemTypeService = itemTypeService;
-        selectionEventService.receiveSelectionEvent(this::onSelectionChanged);
     }
 
     public void clear() {
         resources.clear();
         syncStaticItemSetPositionMonitor = null;
-        selectedBabylonResourceItem = null;
-        selectedOutOfViewId = null;
     }
 
     public void addResource(SyncResourceItemSimpleDto syncResourceItem) {
@@ -78,7 +66,6 @@ public class ResourceUiService {
             if (resource == null) {
                 throw new IllegalStateException("No resource for id: " + id);
             }
-            selectionService.resourceItemRemove(resource);
         }
         updateBabylonResourceItems();
     }
@@ -143,11 +130,6 @@ public class ResourceUiService {
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.addVisible(visibleResource);
                         }
-                        if (id.equals(selectedOutOfViewId)) {
-                            selectedOutOfViewId = null;
-                            visibleResource.select(true);
-                            selectedBabylonResourceItem = visibleResource;
-                        }
                     } else {
                         unused.remove(id);
                     }
@@ -156,10 +138,6 @@ public class ResourceUiService {
                     if (visibleResource != null) {
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.removeVisible(visibleResource);
-                        }
-                        if (selectedBabylonResourceItem != null && selectedBabylonResourceItem.getId() == id) {
-                            selectedBabylonResourceItem = null;
-                            selectedOutOfViewId = id;
                         }
                         visibleResource.dispose();
                         unused.remove(id);
@@ -172,12 +150,6 @@ public class ResourceUiService {
             });
             unused.forEach(id -> {
                 BabylonResourceItem toRemove = babylonResourceItems.remove(id);
-                if (id.equals(selectedOutOfViewId)) {
-                    selectedOutOfViewId = null;
-                }
-                if (selectedBabylonResourceItem != null && selectedBabylonResourceItem.getId() == id) {
-                    selectedBabylonResourceItem = null;
-                }
                 if (syncStaticItemSetPositionMonitor != null) {
                     syncStaticItemSetPositionMonitor.removeVisible(toRemove);
                 }
@@ -232,20 +204,6 @@ public class ResourceUiService {
 
     public SyncResourceItemSimpleDto getSyncResourceItemSimpleDto4IdPlayback(int resourceItemId) {
         return resources.get(resourceItemId);
-    }
-
-    private void onSelectionChanged(SelectionEvent selectionEvent) {
-        selectedOutOfViewId = null;
-        if (selectedBabylonResourceItem != null) {
-            selectedBabylonResourceItem.select(false);
-            selectedBabylonResourceItem = null;
-        }
-        if (selectionEvent.getType() == SelectionEvent.Type.OTHER && selectionEvent.getSelectedOther() instanceof SyncResourceItemSimpleDto) {
-            selectedBabylonResourceItem = babylonResourceItems.get(selectionEvent.getSelectedOther().getId());
-            if (selectedBabylonResourceItem != null) {
-                selectedBabylonResourceItem.select(true);
-            }
-        }
     }
 
     public void onHover(SyncResourceItemSimpleDto syncItem) {

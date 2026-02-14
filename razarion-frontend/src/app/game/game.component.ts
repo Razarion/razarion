@@ -50,8 +50,6 @@ export class GameComponent implements OnInit {
   canvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('mainCockpit', {static: true})
   mainCockpitComponent!: MainCockpitComponent;
-  @ViewChild('itemCockpitContainer', {static: true})
-  itemCockpitContainer!: ItemCockpitComponent;
   @ViewChild('questCockpitContainer', {static: true})
   questCockpitContainer!: QuestCockpitComponent;
   @ViewChild('chatCockpitComponent', {static: true})
@@ -90,12 +88,11 @@ export class GameComponent implements OnInit {
 
     this.gwtAngularService.gwtAngularFacade.screenCover = this.loadingComponent;
     this.gwtAngularService.gwtAngularFacade.babylonRenderServiceAccess = this.babylonRenderServiceAccessImpl;
-    this.gwtAngularService.gwtAngularFacade.actionServiceListener = this.actionService;
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
-    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend = this.itemCockpitContainer;
     this.gwtAngularService.gwtAngularFacade.questCockpit = this.questCockpitContainer;
     this.gwtAngularService.gwtAngularFacade.chatCockpit = this.chatCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.babylonRenderServiceAccessImpl.createBaseItemPlacerPresenter();
+    this.actionService.setRendererService(this.babylonRenderServiceAccessImpl);
 
     if (environment.gwtMock) {
       this.gameMockService.startGame(true, this);

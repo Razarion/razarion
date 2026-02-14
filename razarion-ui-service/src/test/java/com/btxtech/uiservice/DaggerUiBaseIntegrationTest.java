@@ -18,7 +18,6 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.gui.AbstractUiTestGuiRenderer;
 import com.btxtech.uiservice.gui.UiTestGuiDisplay;
 import com.btxtech.uiservice.mock.BabylonRenderServiceAccessMock;
-import com.btxtech.uiservice.mock.TestItemCockpitFrontend;
 import com.btxtech.uiservice.mock.TestMainCockpit;
 import com.btxtech.uiservice.renderer.ViewField;
 import javafx.scene.paint.Color;
@@ -112,7 +111,6 @@ public class DaggerUiBaseIntegrationTest {
     }
 
     protected void setupCockpit() {
-        testUiServiceDagger.itemCockpitService().init(new TestItemCockpitFrontend());
         testUiServiceDagger.mainCockpitService().init(new MainCockpit() {
             @Override
             public void show() {

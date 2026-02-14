@@ -6,6 +6,7 @@ import {BabylonRenderServiceAccessImpl} from '../renderer/babylon-render-service
 import {ItemCockpitComponent} from '../cockpit/item/item-cockpit.component';
 import {ViewField, ViewFieldListener} from '../renderer/view-field';
 import {GwtAngularService} from '../../gwtangular/GwtAngularService';
+import {SelectionService} from '../selection.service';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,8 @@ export class TipService implements ViewFieldListener {
 
   constructor(
     public readonly renderService: BabylonRenderServiceAccessImpl,
-    private readonly gwtAngularService: GwtAngularService
+    private readonly gwtAngularService: GwtAngularService,
+    public readonly selectionService: SelectionService
   ) {
     this.renderService.addViewFieldListener(this);
   }

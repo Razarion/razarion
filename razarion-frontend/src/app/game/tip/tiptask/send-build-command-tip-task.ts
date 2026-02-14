@@ -36,7 +36,7 @@ export class SendBuildCommandTipTask extends AbstractTipTask implements ViewFiel
     // Register global selection listener
     if (!this.selectionListener) {
       this.selectionListener = () => this.onSelectionChanged();
-      this.tipService.gwtAngularFacade.selectionService.addSelectionListener(this.selectionListener);
+      this.tipService.selectionService.addSelectionListener(this.selectionListener);
     }
 
     this.markerConfig = this.getMarkerConfig();
@@ -70,7 +70,7 @@ export class SendBuildCommandTipTask extends AbstractTipTask implements ViewFiel
   cleanup(): void {
     // Remove global selection listener
     if (this.selectionListener) {
-      this.tipService.gwtAngularFacade.selectionService.removeSelectionListener(this.selectionListener);
+      this.tipService.selectionService.removeSelectionListener(this.selectionListener);
       this.selectionListener = null;
     }
     this.tipService.renderService.removeViewFieldListener(this);
@@ -110,7 +110,7 @@ export class SendBuildCommandTipTask extends AbstractTipTask implements ViewFiel
   }
 
   private onSelectionChanged(): void {
-    if (!this.tipService.gwtAngularFacade.selectionService.hasOwnSelection()) {
+    if (!this.tipService.selectionService.hasOwnSelection()) {
       this.onFailed();
     }
   }

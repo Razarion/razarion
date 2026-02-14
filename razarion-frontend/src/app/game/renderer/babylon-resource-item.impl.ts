@@ -4,20 +4,20 @@ import {
   Diplomacy,
   MarkerConfig,
   ResourceItemType,
-  SelectionService,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonModelService} from "./babylon-model.service";
 import {ActionService} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {SelectionService as TsSelectionService} from "../selection.service";
 
 export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonResourceItem {
   constructor(id: number,
               resourceItemType: ResourceItemType,
               rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
-              selectionService: SelectionService,
+              tsSelectionService: TsSelectionService,
               babylonModelService: BabylonModelService,
               uiConfigCollectionService: UiConfigCollectionService,
               disposeCallback: (() => void) | null) {
@@ -28,9 +28,10 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
       babylonModelService,
       uiConfigCollectionService,
       actionService,
-      selectionService,
+      tsSelectionService,
       rendererService.resourceItemContainer,
       disposeCallback);
+    this.updateItemCursor();
   }
 
   public static createDummy(id: number): BabylonResourceItem {

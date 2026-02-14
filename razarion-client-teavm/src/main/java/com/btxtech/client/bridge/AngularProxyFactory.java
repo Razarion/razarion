@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.uiservice.Diplomacy;
-import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -20,10 +19,6 @@ import com.btxtech.client.TeaVMStatusProvider;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Creates JS proxy objects that Angular can call.
@@ -173,6 +168,9 @@ public class AngularProxyFactory {
                 DtoConverter.convertPlanetConfig(ctrl.getPlanetConfig()));
         setMethodRetObj(proxy, "getColdGameUiContext", () ->
                 DtoConverter.convertColdGameUiContext(ctrl.getColdGameUiContext()));
+        setMethodIntObj(proxy, "getMyLimitation4ItemType", id ->
+                DtoConverter.toJsInt(ctrl.getMyLimitation4ItemType(id)));
+        setMethodBool(proxy, "isSellSuppressed", ctrl::isSellSuppressed);
         return proxy;
     }
 
@@ -180,43 +178,6 @@ public class AngularProxyFactory {
         JsObject proxy = JsObject.create();
         setMethod8D(proxy, "onViewFieldChanged", (blX, blY, brX, brY, trX, trY, tlX, tlY) ->
                 inputService.onViewFieldChanged(blX, blY, brX, brY, trX, trY, tlX, tlY));
-        setMethodPosVoid(proxy, "terrainClicked", (x, y) ->
-                inputService.terrainClicked(new com.btxtech.shared.datatypes.DecimalPosition(x, y)));
-        setMethodInt(proxy, "ownItemClicked", inputService::ownItemClicked);
-        setMethodInt(proxy, "friendItemClicked", inputService::friendItemClicked);
-        setMethodInt(proxy, "enemyItemClicked", inputService::enemyItemClicked);
-        setMethodInt(proxy, "resourceItemClicked", inputService::resourceItemClicked);
-        setMethodInt(proxy, "boxItemClicked", inputService::boxItemClicked);
-        return proxy;
-    }
-
-    public static JSObject createSelectionServiceProxy(SelectionService selectionService) {
-        JsObject proxy = JsObject.create();
-        List<Object[]> listenerPairs = new ArrayList<>();
-        setMethodBool(proxy, "hasOwnSelection", selectionService::hasOwnSelection);
-        setMethodBool(proxy, "hasOwnMovable", selectionService::hasOwnMovable);
-        setMethodBool(proxy, "hasAttackers", selectionService::hasAttackers);
-        setMethodIntBool(proxy, "canAttack", selectionService::canAttack);
-        setMethodBool(proxy, "hasHarvesters", selectionService::hasHarvesters);
-        setMethodIntBool(proxy, "canContain", selectionService::canContain);
-        setMethodIntBool(proxy, "canBeFinalizeBuild", selectionService::canBeFinalizeBuild);
-        setMethod4D(proxy, "selectRectangle", selectionService::selectRectangle);
-        setMethodObjVoid(proxy, "addSelectionListener", listener -> {
-            SelectionService.SelectionChangeListener javaListener = () -> callJsFunction(listener);
-            listenerPairs.add(new Object[]{listener, javaListener});
-            selectionService.addSelectionListener(javaListener);
-        });
-        setMethodObjVoid(proxy, "removeSelectionListener", listener -> {
-            Iterator<Object[]> it = listenerPairs.iterator();
-            while (it.hasNext()) {
-                Object[] pair = it.next();
-                if (jsObjectEquals((JSObject) pair[0], listener)) {
-                    selectionService.removeSelectionListener((SelectionService.SelectionChangeListener) pair[1]);
-                    it.remove();
-                    return;
-                }
-            }
-        });
         return proxy;
     }
 
@@ -282,6 +243,18 @@ public class AngularProxyFactory {
             );
             return DtoConverter.convertVertex(vertex);
         });
+
+        // getMyItemCount(itemTypeId): number
+        setMethodIntObj(proxy, "getMyItemCount", id -> DtoConverter.toJsInt(service.getMyItemCount(id)));
+
+        // getResources(): number
+        setMethodRetObj(proxy, "getResources", () -> DtoConverter.toJsInt(service.getResources()));
+
+        // getUsedHouseSpace(): number
+        setMethodRetObj(proxy, "getUsedHouseSpace", () -> DtoConverter.toJsInt(service.getUsedHouseSpace()));
+
+        // getHouseSpace(): number
+        setMethodRetObj(proxy, "getHouseSpace", () -> DtoConverter.toJsInt(service.getHouseSpace()));
 
         return proxy;
     }

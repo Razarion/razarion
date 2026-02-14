@@ -41,7 +41,7 @@ export class SelectTipTask extends AbstractTipTask {
     // Register global selection listener
     if (!this.selectionListener) {
       this.selectionListener = () => this.onSelectionChanged();
-      this.tipService.gwtAngularFacade.selectionService.addSelectionListener(this.selectionListener);
+      this.tipService.selectionService.addSelectionListener(this.selectionListener);
     }
 
     this.babylonItem.showSelectPromptVisualization();
@@ -62,7 +62,7 @@ export class SelectTipTask extends AbstractTipTask {
     }
     // Remove global selection listener
     if (this.selectionListener) {
-      this.tipService.gwtAngularFacade.selectionService.removeSelectionListener(this.selectionListener);
+      this.tipService.selectionService.removeSelectionListener(this.selectionListener);
       this.selectionListener = null;
     }
     this.tipService.setOutOfViewTarget(null);
@@ -73,7 +73,7 @@ export class SelectTipTask extends AbstractTipTask {
 
   private onSelectionChanged(): void {
     // Check if the correct item (actor) is now selected
-    if (this.tipService.gwtAngularFacade.selectionService.hasOwnSelection()) {
+    if (this.tipService.selectionService.hasOwnSelection()) {
       // Check if the selected item is the actor we're looking for
       const babylonItem = this.findActor();
       if (babylonItem?.isSelectOrHove()) {

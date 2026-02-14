@@ -9,7 +9,6 @@ import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
-import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -32,7 +31,6 @@ public class UserUiService {
     private final Provider<GameEngineControl> gameEngineControl;
     private final LevelService levelService;
     private final MainCockpitService cockpitService;
-    private final ItemCockpitService itemCockpitService;
     private final ModalDialogManager dialogManager;
     private final Provider<GameUiControl> gameUiControlInstance;
     private final SimpleExecutorService simpleExecutorService;
@@ -41,13 +39,13 @@ public class UserUiService {
     private Consumer<UserContext> userRegistrationCallback;
     private SimpleScheduledFuture setUserNameFuture;
     private SimpleScheduledFuture registerFuture;
+    private Runnable cockpitStateChangedCallback;
 
     @Inject
     public UserUiService(ModalDialogManager modalDialogManager,
                          SimpleExecutorService simpleExecutorService,
                          Provider<GameUiControl> gameUiControlInstance,
                          ModalDialogManager dialogManager,
-                         ItemCockpitService itemCockpitService,
                          MainCockpitService cockpitService,
                          LevelService levelService,
                          Provider<GameEngineControl> gameEngineControl) {
@@ -55,10 +53,13 @@ public class UserUiService {
         this.simpleExecutorService = simpleExecutorService;
         this.gameUiControlInstance = gameUiControlInstance;
         this.dialogManager = dialogManager;
-        this.itemCockpitService = itemCockpitService;
         this.cockpitService = cockpitService;
         this.levelService = levelService;
         this.gameEngineControl = gameEngineControl;
+    }
+
+    public void setCockpitStateChangedCallback(Runnable callback) {
+        this.cockpitStateChangedCallback = callback;
     }
 
     public void init(UserContext userContext) {
@@ -106,7 +107,9 @@ public class UserUiService {
             userContext.xp(0);
             gameEngineControl.get().updateLevel(newLevelConfig.getId());
             cockpitService.updateLevelAndXp(userContext);
-            itemCockpitService.onStateChanged();
+            if (cockpitStateChangedCallback != null) {
+            cockpitStateChangedCallback.run();
+        }
             dialogManager.onLevelPassed(new LevelUpPacket().userContext(userContext));
             gameUiControlInstance.get().onLevelUpdate(newLevelConfig);
         } else {
@@ -118,7 +121,9 @@ public class UserUiService {
     public void onServerLevelChange(LevelUpPacket levelUpPacket) {
         userContext = levelUpPacket.getUserContext();
         cockpitService.updateLevelAndXp(userContext);
-        itemCockpitService.onStateChanged();
+        if (cockpitStateChangedCallback != null) {
+            cockpitStateChangedCallback.run();
+        }
         cockpitService.blinkAvailableUnlock(levelUpPacket.isAvailableUnlocks());
         dialogManager.onLevelPassed(levelUpPacket);
     }
@@ -130,7 +135,9 @@ public class UserUiService {
 
     public void onUnlockItemLimitChanged(UnlockedItemPacket unlockedItemLimit) {
         userContext.unlockedItemLimit(unlockedItemLimit.getUnlockedItemLimit());
-        itemCockpitService.onStateChanged();
+        if (cockpitStateChangedCallback != null) {
+            cockpitStateChangedCallback.run();
+        }
         cockpitService.blinkAvailableUnlock(unlockedItemLimit.isAvailableUnlocks());
     }
 

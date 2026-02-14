@@ -334,6 +334,16 @@ public class TeaVMClientMarshaller {
         if (obj instanceof PlanetConfig) {
             return planetConfigToJs((PlanetConfig) obj);
         }
+        if (obj instanceof int[]) {
+            int[] arr = (int[]) obj;
+            JsObject result = JsObject.create();
+            JsArray<Object> jsArr = JsArray.create();
+            for (int val : arr) {
+                pushInt(jsArr, val);
+            }
+            result.set("ids", jsArr);
+            return result;
+        }
         if (obj instanceof IdsDto) {
             IdsDto ids = (IdsDto) obj;
             JsObject result = JsObject.create();

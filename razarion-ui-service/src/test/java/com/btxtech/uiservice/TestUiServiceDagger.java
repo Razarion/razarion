@@ -4,7 +4,6 @@ import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.system.alarm.AlarmService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
-import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
@@ -43,8 +42,4 @@ public interface TestUiServiceDagger {
     AlarmService alarmService();
 
     BaseItemUiService baseItemUiService();
-
-    SelectionService selectionService();
-
-    ItemCockpitService itemCockpitService();
 }

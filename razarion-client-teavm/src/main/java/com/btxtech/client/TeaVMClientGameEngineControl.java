@@ -11,7 +11,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickI
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SharedTickBufferLayout;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.inventory.InventoryUiService;
@@ -48,7 +47,6 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
                                         TerrainUiService terrainUiService,
                                         InventoryUiService inventoryUiService,
                                         UserUiService userUiService,
-                                        SelectionService selectionService,
                                         GameUiControl gameUiControl,
                                         BoxUiService boxUiService,
                                         ResourceUiService resourceUiService,
@@ -61,7 +59,6 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
                 terrainUiService,
                 inventoryUiService,
                 userUiService,
-                selectionService,
                 gameUiControl,
                 boxUiService,
                 resourceUiService,

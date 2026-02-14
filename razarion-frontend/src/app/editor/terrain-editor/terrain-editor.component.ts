@@ -10,6 +10,7 @@ import {Dialog} from 'primeng/dialog';
 import {Button} from 'primeng/button';
 import {Divider} from 'primeng/divider';
 import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render-service-access-impl.service';
+import {SelectionService} from '../../game/selection.service';
 import {TerrainEditorControllerClient} from '../../generated/razarion-share';
 import {TypescriptGenerator} from '../../backend/typescript-generator';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
@@ -45,7 +46,8 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
   constructor(httpClient: HttpClient,
               private messageService: MessageService,
               private gwtAngularService: GwtAngularService,
-              private renderService: BabylonRenderServiceAccessImpl) {
+              private renderService: BabylonRenderServiceAccessImpl,
+              private selectionService: SelectionService) {
     super();
     this.terrainEditorControllerClient = new TerrainEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
     this.stopGameUi();
@@ -101,7 +103,7 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
     this.gwtAngularService.gwtAngularFacade.questCockpit.showQuestSideBar(null, false);
     this.gwtAngularService.gwtAngularFacade.inGameQuestVisualizationService.setVisible(false);
     this.renderService.disableSelectionFrame();
-    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.dispose();
+    this.selectionService.clearSelection();
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter.deactivate();
   }
 }

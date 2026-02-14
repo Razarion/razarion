@@ -1,7 +1,7 @@
 import {MeshBuilder, Nullable, PointerEventTypes, Scene, Vector2, Vector3} from "@babylonjs/core";
 import {LinesMesh} from "@babylonjs/core/Meshes/linesMesh";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
-import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
+import {ActionService} from "../action.service";
 import {Observer} from '@babylonjs/core/Misc/observable';
 import type {PointerInfo} from '@babylonjs/core/Events/pointerEvents';
 
@@ -15,7 +15,7 @@ export class SelectionFrame {
 
   constructor(private scene: Scene,
               private renderService: BabylonRenderServiceAccessImpl,
-              private gwtAngularService: GwtAngularService) {
+              private actionService: ActionService) {
     this.observer = this.scene.onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
@@ -100,7 +100,7 @@ export class SelectionFrame {
       return;
     }
 
-    this.gwtAngularService.gwtAngularFacade.selectionService.selectRectangle(
+    this.actionService.selectRectangle(
       Math.min(this.startTerrainPosition.x, endTerrainPosition.x),
       Math.min(this.startTerrainPosition.z, endTerrainPosition.z),
       Math.abs(this.startTerrainPosition.x - endTerrainPosition.x),

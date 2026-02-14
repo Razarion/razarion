@@ -18,7 +18,6 @@ import {
   ItemType,
   MarkerConfig,
   ResourceItemType,
-  SelectionService,
   TerrainType,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
@@ -27,6 +26,7 @@ import {BabylonModelService} from "./babylon-model.service";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {ActionService, SelectionInfo} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {SelectionService as TsSelectionService} from "../selection.service";
 import {GwtInstance} from '../../gwtangular/GwtInstance';
 import {RenderObject} from './render-object';
 import {PressMouseVisualization} from './press-mouse-visualization';
@@ -57,7 +57,7 @@ export class BabylonItemImpl implements BabylonItem {
               protected babylonModelService: BabylonModelService,
               protected uiConfigCollectionService: UiConfigCollectionService,
               protected actionService: ActionService,
-              protected selectionService: SelectionService,
+              protected tsSelectionService: TsSelectionService,
               parent: TransformNode,
               protected disposeCallback: (() => void) | null) {
     if (itemType.getModel3DId()) {
@@ -79,15 +79,15 @@ export class BabylonItemImpl implements BabylonItem {
           if (this.itemClickCallback) {
             this.itemClickCallback();
           }
-          actionService.onItemClicked(itemType, id, diplomacy);
+          actionService.onItemClicked(itemType, id, diplomacy, this);
         }
       )
     );
     this.itemCursorTypeHandler = (selectionInfo: SelectionInfo) => {
       if (diplomacy === Diplomacy.OWN) {
-        if (selectionService.canContain(this.id)) {
+        if (this.tsSelectionService.canContain(this as any)) {
           actionManager.hoverCursor = "url(\"cursors/load.png\") 15 15, auto"
-        } else if (selectionService.canBeFinalizeBuild(this.id)) {
+        } else if (this.tsSelectionService.canBeFinalizeBuild(this as any)) {
           actionManager.hoverCursor = "url(\"cursors/finalize-build.png\") 15 15, auto"
         } else {
           actionManager.hoverCursor = "pointer"
@@ -124,7 +124,6 @@ export class BabylonItemImpl implements BabylonItem {
     }
     actionService.addCursorHandler(this.itemCursorTypeHandler);
     this.renderObject.setActionManager(actionManager);
-    this.updateItemCursor();
   }
 
   getId(): number {

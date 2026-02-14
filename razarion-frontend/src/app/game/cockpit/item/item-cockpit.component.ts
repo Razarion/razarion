@@ -1,29 +1,19 @@
-﻿import {
+import {
   AfterViewInit,
   Component,
   ElementRef,
-  NgZone,
   OnDestroy,
   QueryList,
   ViewChild,
   ViewChildren
 } from '@angular/core';
-import {
-  AngularZoneRunner,
-  BuildupItemCockpit,
-  ItemCockpitFrontend,
-  ItemContainerCockpit,
-  OtherItemCockpit,
-  OwnItemCockpit,
-  OwnMultipleIteCockpit
-} from "../../../gwtangular/GwtAngularFacade";
 
 import {Carousel} from 'primeng/carousel';
 import {ButtonModule} from 'primeng/button';
-import {CockpitDisplayService} from '../cockpit-display.service';
 import {UserService} from '../../../auth/user.service';
 import {Popover, PopoverModule} from 'primeng/popover';
 import {TipService} from '../../tip/tip.service';
+import {BuildupItemModel, ItemCockpitService} from './item-cockpit.service';
 
 @Component({
   selector: 'item-cockpit',
@@ -35,19 +25,14 @@ import {TipService} from '../../tip/tip.service';
     PopoverModule
 ]
 })
-export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit, OnDestroy {
-  ownItemCockpit?: OwnItemCockpit;
-  ownMultipleIteCockpits?: OwnMultipleIteCockpit[];
-  otherItemCockpit?: OtherItemCockpit;
-  count?: number;
+export class ItemCockpitComponent implements AfterViewInit, OnDestroy {
   @ViewChild('tipPopover')
   tipPopover!: Popover;
   @ViewChildren('buildupItemDiv')
   buildupItemDiv?: QueryList<ElementRef>;
-  private buildClickCallback: ((cockpit: BuildupItemCockpit) => void) | null = null;
+  private buildClickCallback: ((model: BuildupItemModel) => void) | null = null;
 
-  constructor(private zone: NgZone,
-              private cockpitDisplayService: CockpitDisplayService,
+  constructor(public itemCockpitService: ItemCockpitService,
               private userService: UserService,
               private tipService: TipService) {
   }
@@ -64,73 +49,15 @@ export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit,
     return this.userService.isAdmin();
   }
 
-  displayOwnSingleType(count: number, ownItemCockpit: OwnItemCockpit): void {
-    setTimeout(() => { // p-carousel strange behavior with this.zone.run()
-      this.cockpitDisplayService.showItemCockpit = true;
-      this.ownItemCockpit = ownItemCockpit;
-      this.ownMultipleIteCockpits = undefined;
-      this.otherItemCockpit = undefined;
-      this.count = count;
-      let zone = this.zone;
-      if (ownItemCockpit.buildupItemInfos) {
-        ownItemCockpit.buildupItemInfos.forEach(buildupItemInfo => {
-          buildupItemInfo.setAngularZoneRunner(new class implements AngularZoneRunner {
-            runInAngularZone(callback: any): void {
-              zone.run(() => {
-                callback();
-              });
-            }
-          });
-        });
-      }
-      if (ownItemCockpit.itemContainerInfo) {
-        ownItemCockpit.itemContainerInfo.setAngularZoneRunner(new class implements AngularZoneRunner {
-          runInAngularZone(callback: any): void {
-            zone.run(() => {
-              callback();
-            });
-          }
-        });
-      }
-    });
-  }
-
-  displayOwnMultipleItemTypes(ownMultipleIteCockpits: OwnMultipleIteCockpit[]): void {
-    this.zone.run(() => {
-      this.cockpitDisplayService.showItemCockpit = true;
-      this.ownItemCockpit = undefined;
-      this.ownMultipleIteCockpits = ownMultipleIteCockpits;
-      this.otherItemCockpit = undefined;
-    });
-  }
-
-  displayOtherItemType(otherItemCockpit: OtherItemCockpit): void {
-    this.zone.run(() => {
-      this.cockpitDisplayService.showItemCockpit = true;
-      this.ownItemCockpit = undefined;
-      this.ownMultipleIteCockpits = undefined;
-      this.otherItemCockpit = otherItemCockpit;
-    });
-  }
-
-  dispose(): void {
-    this.zone.run(() => {
-      this.cockpitDisplayService.showItemCockpit = false;
-      this.ownItemCockpit = undefined;
-      this.ownMultipleIteCockpits = undefined;
-      this.otherItemCockpit = undefined;
-    });
-  }
-
-  buildTooltip(buildupItemCockpit: BuildupItemCockpit): string {
-    if (buildupItemCockpit.buildHouseSpaceReached) {
-      return `Build of ${buildupItemCockpit.itemTypeName} not possible. House space exceeded. Build more houses!`;
-    } else if (buildupItemCockpit.buildLimitReached) {
-      return `Build of ${buildupItemCockpit.itemTypeName} not possible. Item limit exceeded. Go to the next level!`;
-    } else if (buildupItemCockpit.buildNoMoney) {
-      return `Build off ${buildupItemCockpit.itemTypeName} not possible. Not enough Razarion. Earn more Razarion!`;
+  buildTooltip(buildupItem: BuildupItemModel): string {
+    if (buildupItem.buildHouseSpaceReached) {
+      return `Build of ${buildupItem.itemTypeName} not possible. House space exceeded. Build more houses!`;
+    } else if (buildupItem.buildLimitReached) {
+      return `Build of ${buildupItem.itemTypeName} not possible. Item limit exceeded. Go to the next level!`;
+    } else if (buildupItem.buildNoMoney) {
+      return `Build off ${buildupItem.itemTypeName} not possible. Not enough Razarion. Earn more Razarion!`;
     } else {
-      return `Build ${buildupItemCockpit.itemTypeName}`;
+      return `Build ${buildupItem.itemTypeName}`;
     }
   }
 
@@ -162,23 +89,26 @@ export class ItemCockpitComponent implements ItemCockpitFrontend, AfterViewInit,
     }
   }
 
-  onBuildClick(buildupItemCockpit: BuildupItemCockpit) {
+  onBuildClick(buildupItem: BuildupItemModel) {
     try {
-      buildupItemCockpit.onBuild();
+      this.itemCockpitService.onBuild(buildupItem.itemTypeId);
     } catch (e) {
       console.error('onBuild() failed', e);
     }
     if (this.buildClickCallback) {
-      this.buildClickCallback(buildupItemCockpit);
+      this.buildClickCallback(buildupItem);
     }
   }
 
-  setBuildClickCallback(buildClickCallback: ((cockpit: BuildupItemCockpit) => void) | null) {
+  setBuildClickCallback(buildClickCallback: ((model: BuildupItemModel) => void) | null) {
     this.buildClickCallback = buildClickCallback;
   }
 
-  onUnloadClick(itemContainerCockpit: ItemContainerCockpit) {
-    itemContainerCockpit.onUnload();
+  onUnloadClick() {
+    const containerId = this.itemCockpitService.ownItemCockpit?.containerId;
+    if (containerId != null) {
+      this.itemCockpitService.onUnload(containerId);
+    }
   }
 
 }

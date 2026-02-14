@@ -1,11 +1,9 @@
 package com.btxtech.client.jso.facade;
 
-import com.btxtech.uiservice.ActionServiceListener;
 import com.btxtech.uiservice.cockpit.ChatCockpit;
 import com.btxtech.uiservice.cockpit.MainCockpit;
 import com.btxtech.uiservice.cockpit.QuestCockpit;
 import com.btxtech.uiservice.cockpit.ScreenCover;
-import com.btxtech.uiservice.cockpit.item.ItemCockpitFrontend;
 import com.btxtech.uiservice.dialog.ModelDialogPresenter;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerPresenter;
 import com.btxtech.uiservice.renderer.BabylonRenderServiceAccess;
@@ -45,14 +43,8 @@ public class JsGwtAngularFacade {
     @JSBody(params = {"facade"}, script = "return facade.screenCover;")
     private static native JSObject getScreenCoverJs(JSObject facade);
 
-    @JSBody(params = {"facade"}, script = "return facade.actionServiceListener;")
-    private static native JSObject getActionServiceListenerJs(JSObject facade);
-
     @JSBody(params = {"facade"}, script = "return facade.mainCockpit;")
     private static native JSObject getMainCockpitJs(JSObject facade);
-
-    @JSBody(params = {"facade"}, script = "return facade.itemCockpitFrontend;")
-    private static native JSObject getItemCockpitFrontendJs(JSObject facade);
 
     @JSBody(params = {"facade"}, script = "return facade.questCockpit;")
     private static native JSObject getQuestCockpitJs(JSObject facade);
@@ -121,19 +113,9 @@ public class JsGwtAngularFacade {
         };
     }
 
-    public ActionServiceListener getActionServiceListenerAdapter() {
-        JSObject al = getActionServiceListenerJs(facade);
-        return () -> callMethod0(al, "onSelectionChanged");
-    }
-
     public MainCockpit getMainCockpitAdapter() {
         JSObject mc = getMainCockpitJs(facade);
         return new JsMainCockpit(mc);
-    }
-
-    public ItemCockpitFrontend getItemCockpitFrontendAdapter() {
-        JSObject icf = getItemCockpitFrontendJs(facade);
-        return new JsItemCockpitFrontend(icf);
     }
 
     public QuestCockpit getQuestCockpitAdapter() {

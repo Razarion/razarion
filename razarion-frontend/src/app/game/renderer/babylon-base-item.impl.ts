@@ -14,7 +14,6 @@ import {
   DecimalPosition,
   Diplomacy,
   MarkerConfig,
-  SelectionService,
   Vertex,
 } from "../../gwtangular/GwtAngularFacade";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
@@ -23,6 +22,7 @@ import {BabylonModelService} from "./babylon-model.service";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {ActionService} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {SelectionService as TsSelectionService} from "../selection.service";
 import {AdvancedDynamicTexture, TextBlock} from '@babylonjs/gui';
 import {Slider} from '@babylonjs/gui/2D/controls/sliders/slider';
 import {Nullable} from '@babylonjs/core/types';
@@ -61,7 +61,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
               userName: string,
               rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
-              selectionService: SelectionService,
+              tsSelectionService: TsSelectionService,
               babylonModelService: BabylonModelService,
               uiConfigCollectionService: UiConfigCollectionService,
               disposeCallback: (() => void) | null) {
@@ -72,11 +72,12 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       babylonModelService,
       uiConfigCollectionService,
       actionService,
-      selectionService,
+      tsSelectionService,
       rendererService.baseItemContainer,
       disposeCallback);
 
     this.baseId = baseId;
+    this.updateItemCursor();
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
     this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI(`Base item ui ${baseItemType.getInternalName()}`);
@@ -267,6 +268,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         }
       }
     }
+  }
+
+  getBuildup(): number {
+    return this.buildup ?? 1.0;
   }
 
   setBuildup(buildup: number): void {

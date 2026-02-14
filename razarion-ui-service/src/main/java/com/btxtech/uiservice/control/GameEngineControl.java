@@ -30,7 +30,6 @@ import com.btxtech.shared.system.alarm.AlarmRaisedException;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
-import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
@@ -59,7 +58,6 @@ import java.util.logging.Logger;
     private final ResourceUiService resourceUiService;
     private final BoxUiService boxUiService;
     private final GameUiControl gameUiControl;
-    private final SelectionService selectionService;
     private final UserUiService userUiService;
     private final InventoryUiService inventoryUiService;
     private final TerrainUiService terrainUiService;
@@ -77,7 +75,6 @@ import java.util.logging.Logger;
                              TerrainUiService terrainUiService,
                              InventoryUiService inventoryUiService,
                              UserUiService userUiService,
-                             SelectionService selectionService,
                              GameUiControl gameUiControl,
                              BoxUiService boxUiService,
                              ResourceUiService resourceUiService,
@@ -89,7 +86,6 @@ import java.util.logging.Logger;
         this.terrainUiService = terrainUiService;
         this.inventoryUiService = inventoryUiService;
         this.userUiService = userUiService;
-        this.selectionService = selectionService;
         this.gameUiControl = gameUiControl;
         this.boxUiService = boxUiService;
         this.resourceUiService = resourceUiService;
@@ -221,6 +217,44 @@ import java.util.logging.Logger;
         sendToWorker(GameEngineControlPackage.Command.SELL_ITEMS, SyncItemSimpleDtoUtils.toIds(items));
     }
 
+    // --- Direct ID-based command methods (called from TS via GameCommandService bridge) ---
+
+    public void moveCmdIds(int[] itemIds, double x, double y) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_MOVE, itemIds, new DecimalPosition(x, y));
+    }
+
+    public void attackCmdIds(int[] itemIds, int targetId) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_ATTACK, itemIds, targetId);
+    }
+
+    public void harvestCmdIds(int[] itemIds, int resourceId) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_HARVEST, itemIds, resourceId);
+    }
+
+    public void pickBoxCmdIds(int[] itemIds, int boxId) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_PICK_BOX, itemIds, boxId);
+    }
+
+    public void loadContainerCmdIds(int[] itemIds, int containerId) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_LOAD_CONTAINER, itemIds, containerId);
+    }
+
+    public void finalizeBuildCmdIds(int[] itemIds, int toBeFinalizedId) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_FINALIZE_BUILD, itemIds, toBeFinalizedId);
+    }
+
+    public void buildCmdIds(int builderId, DecimalPosition position, int toBeBuildTypeId) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_BUILD, builderId, position, toBeBuildTypeId);
+    }
+
+    public void fabricateCmdIds(int factoryId, int toBeBuildTypeId) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_FABRICATE, factoryId, toBeBuildTypeId);
+    }
+
+    public void sellItemIds(int[] itemIds) {
+        sendToWorker(GameEngineControlPackage.Command.SELL_ITEMS, itemIds);
+    }
+
     public void activateQuest(QuestConfig questConfig) {
         sendToWorker(GameEngineControlPackage.Command.ACTIVATE_QUEST, questConfig);
     }
@@ -246,15 +280,10 @@ import java.util.logging.Logger;
         perfmonService.onEntered(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
         try {
             if (nativeTickInfo.killedSyncBaseItems != null) {
-                selectionService.baseItemRemoved(nativeTickInfo.killedSyncBaseItems);
                 baseItemUiService.onSyncBaseItemsExplode(nativeTickInfo.killedSyncBaseItems);
             }
             baseItemUiService.updateSyncBaseItems(nativeTickInfo.updatedNativeSyncBaseItemTickInfos);
             gameUiControl.setGameInfo(nativeTickInfo);
-            if (nativeTickInfo.removeSyncBaseItemIds != null) {
-                selectionService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
-                // effectVisualizationService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
-            }
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "Exception in onTickUpdate", t);
         }

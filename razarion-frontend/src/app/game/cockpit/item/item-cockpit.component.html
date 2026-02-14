@@ -1,102 +1,100 @@
-﻿@if (ownItemCockpit) {
+@if (itemCockpitService.ownItemCockpit; as ownItemCockpit) {
   <div class="flex flex-col gap-1">
     <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
       <div class="w-14 flex-none">
         <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
       </div>
       <div class="grow">
-        @if (ownItemCockpit) {
-          <div class="flex flex-col">
-            <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
-              {{ ownItemCockpit.itemTypeName }}
-            </div>
-            <div>
-              {{ ownItemCockpit.itemTypeDescr }}
-            </div>
-            <div>
-              @if (count && count > 1) {
-                <div>
-                  {{ count }}
-                </div>
-              }
-            </div>
+        <div class="flex flex-col">
+          <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
+            {{ ownItemCockpit.itemTypeName }}
           </div>
-        }
+          <div>
+            {{ ownItemCockpit.itemTypeDescr }}
+          </div>
+          <div>
+            @if (itemCockpitService.count > 1) {
+              <div>
+                {{ itemCockpitService.count }}
+              </div>
+            }
+          </div>
+        </div>
       </div>
-      @if (!!ownItemCockpit.sellHandler) {
+      @if (ownItemCockpit.canSell) {
         <div class="w-8 flex-none">
-          <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (onClick)="ownItemCockpit.sellHandler()"></p-button>
+          <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (onClick)="itemCockpitService.onSell()"></p-button>
         </div>
       }
     </div>
-    @if (ownItemCockpit.buildupItemInfos) {
+    @if (ownItemCockpit.buildupItems) {
       <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
         <p-popover #tipPopover [dismissable]="false">
           <div class="blinking-popover">
             <p>Click to build</p>
           </div>
         </p-popover>
-        <p-carousel [value]="ownItemCockpit.buildupItemInfos" [numVisible]="5" [numScroll]="5"
+        <p-carousel [value]="ownItemCockpit.buildupItems" [numVisible]="5" [numScroll]="5"
           styleClass="buildup-carousel">
-          <ng-template pTemplate="item" let-buildupItemCockpit>
+          <ng-template pTemplate="item" let-buildupItem>
             <div class="flex flex-col bg-surface-600" [style]="{margin: '0 2px 0 2px'}">
-              <div #buildupItemDiv [attr.data-item-type-id]="buildupItemCockpit.itemTypeId">
+              <div #buildupItemDiv [attr.data-item-type-id]="buildupItem.itemTypeId">
                 <button class='item-cockpit-buildup-button'
-                  (click)="onBuildClick(buildupItemCockpit)"
-                  [title]="buildTooltip(buildupItemCockpit)"
-                  [disabled]="!buildupItemCockpit.enabled">
-                  @if (!buildupItemCockpit.enabled) {
+                  (click)="onBuildClick(buildupItem)"
+                  [title]="buildTooltip(buildupItem)"
+                  [disabled]="!buildupItem.enabled">
+                  @if (!buildupItem.enabled) {
                     <div class='item-cockpit-buildup-disabled'>
                     </div>
                   }
-                  <img src="{{buildupItemCockpit.imageUrl}}"
+                  <img src="{{buildupItem.imageUrl}}"
                     style="position: absolute;top: 0; left: 0; width: 40px; height: 40px"
-                    alt="buildupItemCockpit.imageUrl">
+                    alt="buildupItem.imageUrl">
                     <span class="item-cockpit-buildup-limit-label">
-                      {{ buildupItemCockpit.itemCount }}/{{ buildupItemCockpit.itemLimit }}
+                      {{ buildupItem.itemCount }}/{{ buildupItem.itemLimit }}
                     </span>
                   </button>
                 </div>
                 <div>
-                  {{ buildupItemCockpit.price }}
+                  {{ buildupItem.price }}
                 </div>
               </div>
             </ng-template>
           </p-carousel>
         </div>
       }
-      @if (ownItemCockpit.itemContainerInfo) {
+      @if (ownItemCockpit.containerCount != null) {
         <div
           class="flex flex-row  items-center  gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
-          <span>{{ `Containing items: ${ownItemCockpit.itemContainerInfo.count}` }}</span>
+          <span>{{ `Containing items: ${ownItemCockpit.containerCount}` }}</span>
           <p-button icon="pi pi-upload"
             label="Unload"
             size="small"
-            (click)="onUnloadClick(ownItemCockpit.itemContainerInfo)"
-          [disabled]="!ownItemCockpit.itemContainerInfo.count"></p-button>
+            (click)="onUnloadClick()"
+          [disabled]="!ownItemCockpit.containerCount"></p-button>
         </div>
       }
     </div>
   }
 
-  @if (ownMultipleIteCockpits) {
+  @if (itemCockpitService.ownMultipleItems; as ownMultipleItems) {
     <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
       <p class="text-surface-300">Click to select units by type</p>
-      <p-carousel [value]="ownMultipleIteCockpits" [numVisible]="5" [numScroll]="5"
+      <p-carousel [value]="ownMultipleItems" [numVisible]="5" [numScroll]="5"
         styleClass="multiple-item-carousel">
-        <ng-template pTemplate="item" let-ownMultipleIteCockpit>
+        <ng-template pTemplate="item" let-ownMultipleItem>
           <div class="flex flex-col" [style]="{margin: '0 2px 0 2px'}">
             <div class="flex">
               <button class="item-cockpit-multiple-button"
-                (click)="ownMultipleIteCockpit.onSelect()"
-                title="{{ownMultipleIteCockpit.tooltip}}">
-                <img src="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}"
+                (click)="itemCockpitService.keepOnlyOfType(ownMultipleItem.baseItemTypeId)"
+                title="Select all of this type">
+                <img src="{{ownMultipleItem.ownItemCockpit.imageUrl}}"
                   style="width: 40px; height: 40px"
-                  alt="{{ownMultipleIteCockpit.ownItemCockpit.imageUrl}}">
+                  alt="{{ownMultipleItem.ownItemCockpit.imageUrl}}">
                 </button>
               </div>
               <div class="flex">
-                {{ ownMultipleIteCockpit.count }}
+                {{ ownMultipleItem.count }}
               </div>
             </div>
           </ng-template>
@@ -104,7 +102,7 @@
       </div>
     }
 
-    @if (otherItemCockpit) {
+    @if (itemCockpitService.otherItemCockpit; as otherItemCockpit) {
       <div class="flex flex-col">
         <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
           <div style="font-size: 1.2rem" class="text-surface-300">

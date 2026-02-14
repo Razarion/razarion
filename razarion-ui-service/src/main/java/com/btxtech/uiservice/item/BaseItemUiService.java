@@ -13,13 +13,8 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.uiservice.Diplomacy;
-import com.btxtech.uiservice.SelectionEvent;
-import com.btxtech.uiservice.SelectionEventService;
-import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
-import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.renderer.BabylonBaseItem;
@@ -35,7 +30,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,13 +47,9 @@ public class BaseItemUiService {
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private final Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private final Map<Integer, BabylonBaseItem> babylonBaseItems = new HashMap<>();
-    private final List<BabylonBaseItem> selectedBabylonBaseItems = new ArrayList<>();
-    private final List<Integer> selectedOutOfViewIds = new ArrayList<>();
     private final ItemTypeService itemTypeService;
-    private final SelectionService selectionService;
     private final Provider<GameUiControl> gameUiControl;
     private final MainCockpitService cockpitService;
-    private final ItemCockpitService itemCockpitService;
     private final ModalDialogManager modalDialogManager;
     private final Provider<UserUiService> userUiService;
     private final BabylonRendererService babylonRendererService;
@@ -73,26 +63,25 @@ public class BaseItemUiService {
     private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
+    private Runnable cockpitStateChangedCallback;
 
     @Inject
     public BaseItemUiService(BabylonRendererService babylonRendererService,
                              Provider<UserUiService> userUiService,
                              ModalDialogManager modalDialogManager,
-                             ItemCockpitService itemCockpitService,
                              MainCockpitService cockpitService,
                              Provider<GameUiControl> gameUiControl,
-                             SelectionService selectionService,
-                             ItemTypeService itemTypeService,
-                             SelectionEventService selectionEventService) {
+                             ItemTypeService itemTypeService) {
         this.babylonRendererService = babylonRendererService;
         this.userUiService = userUiService;
         this.modalDialogManager = modalDialogManager;
-        this.itemCockpitService = itemCockpitService;
         this.cockpitService = cockpitService;
         this.gameUiControl = gameUiControl;
-        this.selectionService = selectionService;
         this.itemTypeService = itemTypeService;
-        selectionEventService.receiveSelectionEvent(this::onSelectionChanged);
+    }
+
+    public void setCockpitStateChangedCallback(Runnable callback) {
+        this.cockpitStateChangedCallback = callback;
     }
 
     public void clear() {
@@ -106,8 +95,6 @@ public class BaseItemUiService {
         nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
         babylonBaseItems.clear();
         syncBaseItemSetPositionMonitor = null;
-        selectedBabylonBaseItems.clear();
-        selectedOutOfViewIds.clear();
     }
 
     public void updateSyncBaseItems(NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos) {
@@ -178,12 +165,6 @@ public class BaseItemUiService {
                     if (syncBaseItemSetPositionMonitor != null && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                         syncBaseItemSetPositionMonitor.addVisible(babylonBaseItem);
                     }
-                    int selectedIndex = selectedOutOfViewIds.indexOf(nativeSyncBaseItemTickInfo.id);
-                    if (selectedIndex >= 0) {
-                        selectedOutOfViewIds.remove(selectedIndex);
-                        selectedBabylonBaseItems.add(babylonBaseItem);
-                        babylonBaseItem.select(true);
-                    }
                 }
                 babylonBaseItem.setIdle(nativeSyncBaseItemTickInfo.idle);
                 leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);
@@ -225,9 +206,6 @@ public class BaseItemUiService {
             if (syncBaseItemSetPositionMonitor != null) {
                 syncBaseItemSetPositionMonitor.removeVisible(toRemove);
             }
-            if (selectedBabylonBaseItems.remove(toRemove)) {
-                selectedOutOfViewIds.add(id);
-            }
             toRemove.dispose();
         });
         if (syncBaseItemSetPositionMonitor != null) {
@@ -248,7 +226,9 @@ public class BaseItemUiService {
         }
         if (updateNeeded) {
             updateItemCountOnSideCockpit();
-            itemCockpitService.onStateChanged();
+            if (cockpitStateChangedCallback != null) {
+                cockpitStateChangedCallback.run();
+            }
         }
         if (hasRadar != radar) {
             hasRadar = radar;
@@ -315,7 +295,6 @@ public class BaseItemUiService {
             }
         }
         if (wasMyBase) {
-            selectionService.onMyBaseRemoved();
             modalDialogManager.onShowBaseLost();
             gameUiControl.get().onBaseLost();
         }
@@ -426,11 +405,21 @@ public class BaseItemUiService {
         return resources;
     }
 
+    public int getUsedHouseSpace() {
+        return usedHouseSpace;
+    }
+
+    public int getHouseSpace() {
+        return houseSpace;
+    }
+
     public void updateGameInfo(NativeTickInfo nativeTickInfo) {
         if (resources != nativeTickInfo.resources) {
             resources = nativeTickInfo.resources;
             cockpitService.updateResource(resources);
-            itemCockpitService.onResourcesChanged(resources);
+            if (cockpitStateChangedCallback != null) {
+                cockpitStateChangedCallback.run();
+            }
         }
     }
 
@@ -567,29 +556,6 @@ public class BaseItemUiService {
     public void onViewChanged(ViewField viewField, Rectangle2D viewFieldAabb) {
         this.viewField = viewField;
         this.viewFieldAabb = viewFieldAabb;
-    }
-
-    private void onSelectionChanged(SelectionEvent selectionEvent) {
-        selectedBabylonBaseItems.forEach(babylonBaseItem -> babylonBaseItem.select(false));
-        selectedBabylonBaseItems.clear();
-        selectedOutOfViewIds.clear();
-
-        if (selectionEvent.getType() == SelectionEvent.Type.OWN) {
-            selectionEvent.getSelectedGroup().getItems().stream()
-                    .map(SyncItemSimpleDto::getId)
-                    .map(id -> babylonBaseItems.get(id))
-                    .filter(Objects::nonNull)
-                    .forEach(babylonBaseItem -> {
-                        selectedBabylonBaseItems.add(babylonBaseItem);
-                        babylonBaseItem.select(true);
-                    });
-        } else if (selectionEvent.getType() == SelectionEvent.Type.OTHER) {
-            BabylonBaseItem babylonBaseItem = babylonBaseItems.get(selectionEvent.getSelectedOther().getId());
-            if (babylonBaseItem != null) {
-                selectedBabylonBaseItems.add(babylonBaseItem);
-                babylonBaseItem.select(true);
-            }
-        }
     }
 
     /**

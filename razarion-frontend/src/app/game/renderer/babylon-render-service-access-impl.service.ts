@@ -54,6 +54,7 @@ import {SelectionFrame} from "./selection-frame";
 import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
 import {ActionService} from "../action.service";
+import {SelectionService as TsSelectionService} from "../selection.service";
 import {BaseItemPlacerPresenterEvent, BaseItemPlacerPresenterImpl} from "./base-item-placer-presenter.impl";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {BabylonAudioService} from "./babylon-audio.service";
@@ -117,7 +118,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
               private uiConfigCollectionService: UiConfigCollectionService,
               private threeJsWaterRenderService: BabylonWaterRenderService,
               private actionService: ActionService,
-              public babylonAudioService: BabylonAudioService) {
+              public babylonAudioService: BabylonAudioService,
+              private tsSelectionService: TsSelectionService) {
     this.babylonModelService.renderer = this;
   }
 
@@ -215,7 +217,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
     }).observe(this.canvas);
 
-    this.selectionFrame = new SelectionFrame(this.scene, this, this.gwtAngularService);
+    this.selectionFrame = new SelectionFrame(this.scene, this, this.actionService);
 
     // ----- Render loop -----
     this.scene.onBeforeRenderObservable.add(() => {
@@ -271,11 +273,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         userName,
         this,
         this.actionService,
-        this.gwtAngularService.gwtAngularFacade.selectionService,
+        this.tsSelectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
-        () => this.babylonBaseItems = this.babylonBaseItems.filter(i => i !== item));
-      this.babylonBaseItems.push(item)
+        () => {
+          this.babylonBaseItems = this.babylonBaseItems.filter(i => i !== item);
+          this.tsSelectionService.removeItem(item.getId());
+        });
+      this.babylonBaseItems.push(item);
+      this.tsSelectionService.tryReattachItem(item);
       return item;
     } catch (error) {
       console.error(error);
@@ -703,10 +709,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         resourceItemType,
         this,
         this.actionService,
-        this.gwtAngularService.gwtAngularFacade.selectionService,
+        this.tsSelectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
-        () => this.babylonResourceItems = this.babylonResourceItems.filter(i => i !== item));
+        () => { this.babylonResourceItems = this.babylonResourceItems.filter(i => i !== item); this.tsSelectionService.removeOther(item.getId()); });
       this.babylonResourceItems.push(item);
       return item;
     } catch (error) {
@@ -727,10 +733,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         boxItemType,
         this,
         this.actionService,
-        this.gwtAngularService.gwtAngularFacade.selectionService,
+        this.tsSelectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
-        null);
+        () => { this.tsSelectionService.removeOther(id); });
     } catch (error) {
       console.error(error);
       return BabylonBoxItemImpl.createDummy(id);

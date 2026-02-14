@@ -29,11 +29,6 @@ import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.system.alarm.Alarm;
-import com.btxtech.uiservice.cockpit.item.BuildupItemCockpit;
-import com.btxtech.uiservice.cockpit.item.ItemContainerCockpit;
-import com.btxtech.uiservice.cockpit.item.OtherItemCockpit;
-import com.btxtech.uiservice.cockpit.item.OwnItemCockpit;
-import com.btxtech.uiservice.cockpit.item.OwnMultipleIteCockpit;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacer;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import org.teavm.jso.JSBody;
@@ -107,6 +102,26 @@ public class DtoConverter {
     @JSBody(params = {"obj", "name", "fn"}, script = "Object.defineProperty(obj, name, { get: fn, enumerable: true, configurable: true });")
     private static native void definePropertyBool(JSObject obj, String name, ReturnBooleanCallback fn);
 
+    // --- Method functor: int -> bool (for type-check methods) ---
+
+    @JSFunctor
+    public interface IntToBoolCallback extends JSObject {
+        boolean call(int value);
+    }
+
+    @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
+    private static native void setMethodIntBool(JSObject obj, String name, IntToBoolCallback fn);
+
+    // --- Method functor: int -> int (for query methods returning int) ---
+
+    @JSFunctor
+    public interface IntToIntCallback extends JSObject {
+        int call(int value);
+    }
+
+    @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
+    private static native void setMethodIntReturn(JSObject obj, String name, IntToIntCallback fn);
+
     // --- Void method functors for cockpit callbacks ---
 
     @JSFunctor
@@ -124,9 +139,6 @@ public class DtoConverter {
 
     @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
     private static native void setMethodObjVoid(JSObject obj, String name, VoidWithJSObjectCallback fn);
-
-    @JSBody(params = {"jsRunner", "callback"}, script = "jsRunner.runInAngularZone(callback);")
-    private static native void callRunInAngularZone(JSObject jsRunner, VoidCallback callback);
 
     public static JSObject convertBaseItemPlacer(BaseItemPlacer placer) {
         if (placer == null) return null;
@@ -150,6 +162,8 @@ public class DtoConverter {
         JsObject obj = JsObject.create();
         setGetterInt(obj, "getId", config::getId);
         setGetterObj(obj, "getSize", () -> convertDecimalPosition(config.getSize()));
+        setGetterInt(obj, "getHouseSpace", config::getHouseSpace);
+        setMethodIntReturn(obj, "imitation4ItemType", config::imitation4ItemType);
         return obj;
     }
 
@@ -367,6 +381,11 @@ public class DtoConverter {
         setGetterObj(obj, "getHarvesterType", () -> convertHarvesterType(type));
         setGetterObj(obj, "getExplosionParticleId", () -> convertNullableInt(type.getExplosionParticleId()));
         setGetterObj(obj, "getExplosionAudioItemConfigId", () -> convertNullableInt(type.getExplosionAudioItemConfigId()));
+        setGetterObj(obj, "getItemContainerType", () -> convertItemContainerType(type));
+        setGetterObj(obj, "getFactoryType", () -> convertFactoryType(type));
+        setGetterObj(obj, "getThumbnail", () -> convertNullableInt(type.getThumbnail()));
+        setGetterInt(obj, "getPrice", type::getPrice);
+        setGetterInt(obj, "getConsumingHouseSpace", type::getConsumingHouseSpace);
         return obj;
     }
 
@@ -378,6 +397,7 @@ public class DtoConverter {
         setGetterString(obj, "getName", () -> type.getName() != null ? type.getName() : "");
         setGetterString(obj, "getDescription", () -> type.getDescription() != null ? type.getDescription() : "");
         setGetterObj(obj, "getModel3DId", () -> convertNullableInt(type.getModel3DId()));
+        setGetterObj(obj, "getThumbnail", () -> convertNullableInt(type.getThumbnail()));
         setGetterDouble(obj, "getRadius", type::getRadius);
         return obj;
     }
@@ -390,6 +410,7 @@ public class DtoConverter {
         setGetterString(obj, "getName", () -> type.getName() != null ? type.getName() : "");
         setGetterString(obj, "getDescription", () -> type.getDescription() != null ? type.getDescription() : "");
         setGetterObj(obj, "getModel3DId", () -> convertNullableInt(type.getModel3DId()));
+        setGetterObj(obj, "getThumbnail", () -> convertNullableInt(type.getThumbnail()));
         setGetterDouble(obj, "getRadius", type::getRadius);
         setGetterBool(obj, "isFixVerticalNorm", type::isFixVerticalNorm);
         setGetterString(obj, "getTerrainType", () ->
@@ -412,6 +433,10 @@ public class DtoConverter {
         JsObject obj = JsObject.create();
         setGetterObj(obj, "getParticleSystemConfigId", () ->
                 convertNullableInt(type.getBuilderType().getParticleSystemConfigId()));
+        setMethodIntBool(obj, "checkAbleToBuild", (itemTypeId) ->
+                type.getBuilderType().checkAbleToBuild(itemTypeId));
+        setGetterObj(obj, "getAbleToBuildIds", () ->
+                convertIntegerList(type.getBuilderType().getAbleToBuildIds()));
         return obj;
     }
 
@@ -426,6 +451,8 @@ public class DtoConverter {
                 convertNullableInt(type.getWeaponType().getTrailParticleSystemConfigId()));
         setGetterObj(obj, "getMuzzleFlashAudioItemConfigId", () ->
                 convertNullableInt(type.getWeaponType().getMuzzleFlashAudioItemConfigId()));
+        setMethodIntBool(obj, "checkItemTypeDisallowed", (targetItemTypeId) ->
+                type.getWeaponType().checkItemTypeDisallowed(targetItemTypeId));
         return obj;
     }
 
@@ -435,6 +462,31 @@ public class DtoConverter {
         setGetterObj(obj, "getParticleSystemConfigId", () ->
                 convertNullableInt(type.getHarvesterType().getParticleSystemConfigId()));
         return obj;
+    }
+
+    private static JSObject convertItemContainerType(BaseItemType type) {
+        if (type.getItemContainerType() == null) return null;
+        JsObject obj = JsObject.create();
+        setMethodIntBool(obj, "isAbleToContain", (itemTypeId) ->
+                type.getItemContainerType().isAbleToContain(itemTypeId));
+        return obj;
+    }
+
+    private static JSObject convertFactoryType(BaseItemType type) {
+        if (type.getFactoryType() == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterObj(obj, "getAbleToBuildIds", () ->
+                convertIntegerList(type.getFactoryType().getAbleToBuildIds()));
+        return obj;
+    }
+
+    private static JSObject convertIntegerList(java.util.List<Integer> list) {
+        if (list == null) return null;
+        JsArray arr = JsArray.create();
+        for (Integer val : list) {
+            arr.push(val.intValue());
+        }
+        return arr;
     }
 
     // ============ TerrainTile conversion ============
@@ -629,106 +681,6 @@ public class DtoConverter {
         obj.set("x", info.x);
         obj.set("y", info.y);
         obj.set("baseId", info.baseId);
-        return obj;
-    }
-
-    // ============ Cockpit DTO converters ============
-
-    public static JSObject convertOwnItemCockpit(OwnItemCockpit cockpit) {
-        if (cockpit == null) return null;
-        JsObject obj = JsObject.create();
-        obj.set("imageUrl", cockpit.imageUrl != null ? cockpit.imageUrl : "");
-        obj.set("itemTypeName", cockpit.itemTypeName != null ? cockpit.itemTypeName : "");
-        obj.set("itemTypeDescr", cockpit.itemTypeDescr != null ? cockpit.itemTypeDescr : "");
-        obj.set("buildupItemInfos", convertBuildupItemCockpits(cockpit.buildupItemInfos));
-        obj.set("itemContainerInfo", convertItemContainerCockpit(cockpit.itemContainerInfo));
-        if (cockpit.sellHandler != null) {
-            setMethodVoid(obj, "sellHandler", () -> cockpit.sellHandler.onSell());
-        }
-        return obj;
-    }
-
-    public static JSObject convertBuildupItemCockpits(BuildupItemCockpit[] cockpits) {
-        if (cockpits == null) return null;
-        JsArray<JSObject> arr = JsArray.create();
-        for (BuildupItemCockpit cockpit : cockpits) {
-            arr.push(convertBuildupItemCockpit(cockpit));
-        }
-        return arr;
-    }
-
-    public static JSObject convertBuildupItemCockpit(BuildupItemCockpit cockpit) {
-        if (cockpit == null) return null;
-        JsObject obj = JsObject.create();
-        // Static properties
-        obj.set("imageUrl", cockpit.imageUrl != null ? cockpit.imageUrl : "");
-        obj.set("itemTypeId", cockpit.itemTypeId);
-        obj.set("itemTypeName", cockpit.itemTypeName != null ? cockpit.itemTypeName : "");
-        obj.set("price", cockpit.price);
-        // Mutable properties (Object.defineProperty getters read current Java field values)
-        definePropertyInt(obj, "itemCount", () -> cockpit.itemCount);
-        definePropertyInt(obj, "itemLimit", () -> cockpit.itemLimit);
-        definePropertyBool(obj, "enabled", () -> cockpit.enabled);
-        definePropertyBool(obj, "buildLimitReached", () -> cockpit.buildLimitReached);
-        definePropertyBool(obj, "buildHouseSpaceReached", () -> cockpit.buildHouseSpaceReached);
-        definePropertyBool(obj, "buildNoMoney", () -> cockpit.buildNoMoney);
-        obj.setNull("progress");
-        // Callbacks
-        setMethodVoid(obj, "onBuild", () -> cockpit.onBuild());
-        setMethodObjVoid(obj, "setAngularZoneRunner", jsRunner ->
-                cockpit.setAngularZoneRunner(callback ->
-                        callRunInAngularZone(jsRunner, () -> callback.callback())
-                )
-        );
-        return obj;
-    }
-
-    public static JSObject convertItemContainerCockpit(ItemContainerCockpit cockpit) {
-        if (cockpit == null) return null;
-        JsObject obj = JsObject.create();
-        definePropertyInt(obj, "count", () -> cockpit.count);
-        setMethodVoid(obj, "onUnload", () -> cockpit.onUnload());
-        setMethodObjVoid(obj, "setAngularZoneRunner", jsRunner ->
-                cockpit.setAngularZoneRunner(callback ->
-                        callRunInAngularZone(jsRunner, () -> callback.callback())
-                )
-        );
-        return obj;
-    }
-
-    public static JSObject convertOwnMultipleIteCockpits(OwnMultipleIteCockpit[] cockpits) {
-        if (cockpits == null) return null;
-        JsArray<JSObject> arr = JsArray.create();
-        for (OwnMultipleIteCockpit cockpit : cockpits) {
-            arr.push(convertOwnMultipleIteCockpit(cockpit));
-        }
-        return arr;
-    }
-
-    public static JSObject convertOwnMultipleIteCockpit(OwnMultipleIteCockpit cockpit) {
-        if (cockpit == null) return null;
-        JsObject obj = JsObject.create();
-        obj.set("ownItemCockpit", convertOwnItemCockpit(cockpit.ownItemCockpit));
-        obj.set("count", cockpit.count);
-        setMethodVoid(obj, "onSelect", () -> cockpit.onSelect());
-        return obj;
-    }
-
-    public static JSObject convertOtherItemCockpit(OtherItemCockpit cockpit) {
-        if (cockpit == null) return null;
-        JsObject obj = JsObject.create();
-        obj.set("id", cockpit.id);
-        obj.set("imageUrl", cockpit.imageUrl != null ? cockpit.imageUrl : "");
-        obj.set("itemTypeName", cockpit.itemTypeName != null ? cockpit.itemTypeName : "");
-        obj.set("itemTypeDescr", cockpit.itemTypeDescr != null ? cockpit.itemTypeDescr : "");
-        if (cockpit.baseId != null) {
-            obj.set("baseId", cockpit.baseId);
-        }
-        obj.set("baseName", cockpit.baseName != null ? cockpit.baseName : "");
-        obj.set("friend", cockpit.friend);
-        obj.set("bot", cockpit.bot);
-        obj.set("resource", cockpit.resource);
-        obj.set("box", cockpit.box);
         return obj;
     }
 }

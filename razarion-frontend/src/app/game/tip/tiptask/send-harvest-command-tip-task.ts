@@ -22,7 +22,7 @@ export class SendHarvestCommandTipTask extends AbstractTipTask {
     // Register global selection listener
     if (!this.selectionListener) {
       this.selectionListener = () => this.onSelectionChanged();
-      this.tipService.gwtAngularFacade.selectionService.addSelectionListener(this.selectionListener);
+      this.tipService.selectionService.addSelectionListener(this.selectionListener);
     }
 
     if (!this.resource) {
@@ -62,7 +62,7 @@ export class SendHarvestCommandTipTask extends AbstractTipTask {
     }
     // Remove global selection listener
     if (this.selectionListener) {
-      this.tipService.gwtAngularFacade.selectionService.removeSelectionListener(this.selectionListener);
+      this.tipService.selectionService.removeSelectionListener(this.selectionListener);
       this.selectionListener = null;
     }
     this.tipService.setOutOfViewTarget(null);
@@ -74,7 +74,7 @@ export class SendHarvestCommandTipTask extends AbstractTipTask {
 
   private onSelectionChanged(): void {
     // Check if own selection is still present
-    if (!this.tipService.gwtAngularFacade.selectionService.hasOwnSelection()) {
+    if (!this.tipService.selectionService.hasOwnSelection()) {
       this.onFailed();
     }
   }

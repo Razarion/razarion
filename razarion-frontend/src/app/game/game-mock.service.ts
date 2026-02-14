@@ -1,35 +1,32 @@
 import {Injectable} from "@angular/core";
 import {
   Alarm,
-  AngularZoneRunner, BabylonBaseItem,
   BabylonDecal,
   BabylonTerrainTile,
   BaseItemType,
   BaseItemUiService,
   BotGround,
   BuilderType,
-  BuildupItemCockpit,
   Character,
   ColdGameUiContext,
   ComparisonConfig,
   ConditionConfig,
   DecimalPosition,
   Diplomacy,
+  GameCommandService,
   GameUiControl,
   GroundConfig,
   HarvesterType,
   I18nString,
   Index,
   InGameQuestVisualizationService,
+  FactoryType,
   InputService,
   InventoryItem,
   InventoryTypeService,
-  ItemContainerCockpit,
+  ItemContainerType,
   ItemTypeService,
   NativeSyncBaseItemTickInfo,
-  OtherItemCockpit,
-  OwnItemCockpit,
-  OwnMultipleIteCockpit,
   PhysicalAreaConfig,
   PlaceConfig,
   PlanetConfig,
@@ -38,13 +35,12 @@ import {
   QuestProgressInfo,
   RadarState,
   ResourceItemType,
-  SelectionService,
   StatusProvider,
   TerrainObjectConfig,
   TerrainTile,
   TerrainTileObjectList,
   TerrainType,
-  TerrainTypeService, Tip,
+  TerrainTypeService,
   TipConfig,
   Vertex,
   WeaponType
@@ -151,6 +147,14 @@ export class GameMockService {
               getParticleSystemConfigId(): number | null {
                 return 1;
               }
+
+              checkAbleToBuild(itemTypeId: number): boolean {
+                return false;
+              }
+
+              getAbleToBuildIds(): number[] {
+                return [];
+              }
             }
           }
 
@@ -179,7 +183,19 @@ export class GameMockService {
               getMuzzleFlashAudioItemConfigId(): number | null {
                 return null;
               }
+
+              checkItemTypeDisallowed(targetItemTypeId: number): boolean {
+                return false;
+              }
             }
+          }
+
+          getItemContainerType(): ItemContainerType | null {
+            return null;
+          }
+
+          getFactoryType(): FactoryType | null {
+            return null;
           }
 
           getExplosionParticleId(): number | null {
@@ -216,6 +232,18 @@ export class GameMockService {
                 return false;
               }
             };
+          }
+
+          getThumbnail(): number | null {
+            return null;
+          }
+
+          getPrice(): number {
+            return 100;
+          }
+
+          getConsumingHouseSpace(): number {
+            return 1;
           }
         };
 
@@ -359,6 +387,10 @@ export class GameMockService {
           getModel3DId(): number | null {
             return 42;
           }
+
+          getThumbnail(): number | null {
+            return null;
+          }
         }
 
         // let babylonResourceItem1 = this.babylonRenderServiceAccessImpl.createBabylonResourceItem(999999, resourceItemType);
@@ -433,7 +465,7 @@ export class GameMockService {
     this.gwtAngularService.gwtAngularFacade.baseItemUiService = this.mockBaseItemUiService;
     this.gwtAngularService.gwtAngularFacade.itemTypeService = this.mockItemTypeService();
     this.gwtAngularService.gwtAngularFacade.inventoryTypeService = this.mockInventoryTypeService();
-    this.gwtAngularService.gwtAngularFacade.selectionService = this.mockSelectionService();
+    this.gwtAngularService.gwtAngularFacade.gameCommandService = this.mockGameCommandService();
     this.gwtAngularService.gwtAngularFacade.gameUiControl = this.gameUiControl;
   }
 
@@ -477,9 +509,6 @@ export class GameMockService {
       this.showMainCockpit();
 
       this.showQuestionCockpit();
-      // this.displayOwnMultipleItemTypesCockpit();
-      this.displayOwnSingleTypeCockpit();
-      // this.displayOtherItemTypeCockpit();
 
       this.showUserDialog();
     }, 10);
@@ -493,104 +522,6 @@ export class GameMockService {
       element.style.backgroundPosition = 'center';
     }
     this.gwtAngularService.gwtAngularFacade.screenCover.removeLoadingCover();
-  }
-
-  private displayOwnSingleTypeCockpit() {
-    let buildupItemInfos: BuildupItemCockpit[] = [];
-    for (let i = 0; i < 7; i++) {
-      buildupItemInfos.push(this.buildBuildupItemCockpit(i));
-    }
-
-    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOwnSingleType(1, new class implements OwnItemCockpit {
-      imageUrl = "/xxxxx";
-      itemTypeDescr = "Builds Units";
-      itemTypeName = "Factory";
-      buildupItemInfos = buildupItemInfos;
-      itemContainerInfo: ItemContainerCockpit = new class implements ItemContainerCockpit {
-        count = 5;
-
-        onUnload() {
-        }
-
-        setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void {
-        }
-      };
-
-      sellHandler(): void {
-      }
-    });
-  }
-
-  private buildBuildupItemCockpit(price: number): BuildupItemCockpit {
-    return new class implements BuildupItemCockpit {
-      imageUrl = "/xxxxx";
-      itemTypeId = 12;
-      itemTypeName = "Builder";
-      price = price;
-      itemCount = 13;
-      itemLimit = 14;
-      enabled = true;
-      buildLimitReached = false;
-      buildHouseSpaceReached = false;
-      buildNoMoney = false;
-      progress = 1;
-
-      setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void {
-      }
-
-      onBuild(): void {
-      }
-    };
-  }
-
-  private displayOtherItemTypeCockpit() {
-    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOtherItemType(new class implements OtherItemCockpit {
-      id = 64;
-      imageUrl = "/xxxxx";
-      itemTypeName = "Builder";
-      itemTypeDescr = "Builds Units";
-      baseId = 15;
-      baseName = "Bot base";
-      type = "Bot enemy";
-      friend = false;
-      bot = false;
-      resource = false;
-      box = true;
-    });
-  }
-
-  private displayOwnMultipleItemTypesCockpit() {
-    let ownMultipleIteCockpits: OwnMultipleIteCockpit[] = [];
-    for (let i = 0; i < 3; i++) {
-      ownMultipleIteCockpits.push(new class implements OwnMultipleIteCockpit {
-        ownItemCockpit = new class implements OwnItemCockpit {
-          itemContainerInfo: ItemContainerCockpit = new class implements ItemContainerCockpit {
-            count = 5;
-
-            onUnload() {
-            }
-
-            setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void {
-            }
-          };
-          imageUrl = "/xxxxx";
-          itemTypeName = "Builder";
-          itemTypeDescr = "Builds Units";
-          buildupItemInfos = null;
-
-          sellHandler(): void {
-            throw new Error("Method not implemented.");
-          };
-        };
-        count = 12;
-
-        onSelect(): void {
-          throw new Error("Method not implemented.");
-        }
-      });
-    }
-
-    this.gwtAngularService.gwtAngularFacade.itemCockpitFrontend.displayOwnMultipleItemTypes(ownMultipleIteCockpits);
   }
 
   private showMainCockpit() {
@@ -713,37 +644,28 @@ export class GameMockService {
           return 117;
         }
 
+        getHouseSpace(): number {
+          return 10;
+        }
+
+        imitation4ItemType(itemTypeId: number): number {
+          return 5;
+        }
       };
+    }
+
+    getMyLimitation4ItemType(itemTypeId: number): number {
+      return 5;
+    }
+
+    isSellSuppressed(): boolean {
+      return false;
     }
   };
 
   inputService: InputService = new class implements InputService {
     getTerrainTypeOnTerrain(nodeIndex: Index): Promise<any> {
       throw new Error("Method not implemented.");
-    }
-
-    resourceItemClicked(id: number): void {
-      console.info("resourceItemClicked");
-    }
-
-    enemyItemClicked(id: number): void {
-      console.info("enemyItemClicked");
-    }
-
-    terrainClicked(arg0: DecimalPosition): void {
-      console.info("terrainClicked");
-    }
-
-    friendItemClicked(id: number): void {
-      console.info("friendItemClickedvoi");
-    }
-
-    ownItemClicked(id: number): void {
-      console.info("ownItemClicked");
-    }
-
-    boxItemClicked(id: number): void {
-      console.info("boxItemClicked");
     }
 
     onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
@@ -929,6 +851,26 @@ export class GameMockService {
           getWeaponType(): WeaponType | null {
             return null;
           }
+
+          getItemContainerType(): ItemContainerType | null {
+            return null;
+          }
+
+          getFactoryType(): FactoryType | null {
+            return null;
+          }
+
+          getThumbnail(): number | null {
+            return null;
+          }
+
+          getPrice(): number {
+            return 100;
+          }
+
+          getConsumingHouseSpace(): number {
+            return 1;
+          }
         }
       }
 
@@ -956,6 +898,10 @@ export class GameMockService {
 
           getRadius(): number {
             return 0;
+          }
+
+          getThumbnail(): number | null {
+            return null;
           }
         }
       }
@@ -997,7 +943,7 @@ export class GameMockService {
   };
 
   mockBaseItemUiService: BaseItemUiService = new class implements BaseItemUiService {
-    getNearestEnemyPosition(fromX: number, fromY: number, enemyItemTypeId: number | null): Vertex | null {
+    getNearestEnemyPosition(fromX: number, fromY: number, enemyItemTypeId: number, enemyItemTypeIdUsed: boolean): Vertex | null {
         throw new Error("Method not implemented.");
     }
 
@@ -1031,6 +977,22 @@ export class GameMockService {
 
         }
       ];
+    }
+
+    getMyItemCount(itemTypeId: number): number {
+      return 0;
+    }
+
+    getResources(): number {
+      return 500;
+    }
+
+    getUsedHouseSpace(): number {
+      return 3;
+    }
+
+    getHouseSpace(): number {
+      return 5;
     }
   }
 
@@ -1215,44 +1177,34 @@ export class GameMockService {
     return terrainTileIndex.getY() * (this.TILE_X_COUNT * BabylonTerrainTileImpl.TILE_NODE_SIZE) + terrainTileIndex.getX() * BabylonTerrainTileImpl.TILE_NODE_SIZE;
   }
 
-  mockSelectionService(): SelectionService {
-    return new class implements SelectionService {
-      hasOwnSelection(): boolean {
-        return true;
+  mockGameCommandService(): GameCommandService {
+    return new class implements GameCommandService {
+      moveCmd(itemIds: number[], x: number, y: number): void {
+        console.info("GameCommandService.moveCmd", itemIds, x, y);
       }
 
-      hasOwnMovable(): boolean {
-        return true;
+      attackCmd(itemIds: number[], targetId: number): void {
+        console.info("GameCommandService.attackCmd", itemIds, targetId);
       }
 
-      hasAttackers(): boolean {
-        return false;
+      harvestCmd(itemIds: number[], resourceId: number): void {
+        console.info("GameCommandService.harvestCmd", itemIds, resourceId);
       }
 
-      canAttack(targetItemTypeId: number): boolean {
-        return false;
+      pickBoxCmd(itemIds: number[], boxId: number): void {
+        console.info("GameCommandService.pickBoxCmd", itemIds, boxId);
       }
 
-      hasHarvesters(): boolean {
-        return false;
+      loadContainerCmd(itemIds: number[], containerId: number): void {
+        console.info("GameCommandService.loadContainerCmd", itemIds, containerId);
       }
 
-      canContain(itemId: number) {
-        return false;
+      finalizeBuildCmd(itemIds: number[], toBeFinalizedId: number): void {
+        console.info("GameCommandService.finalizeBuildCmd", itemIds, toBeFinalizedId);
       }
 
-      canBeFinalizeBuild(itemId: number) {
-        return false;
-      }
-
-      selectRectangle(xStart: number, yStart: number, width: number, height: number): void {
-        console.info("selectRectangle");
-      }
-
-      addSelectionListener(callback: () => void): void {
-      }
-
-      removeSelectionListener(callback: () => void): void {
+      setMoveCommandAckCallback(callback: () => void): void {
+        console.info("GameCommandService.setMoveCommandAckCallback");
       }
     }
   }

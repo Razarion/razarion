@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.terrain;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
@@ -12,11 +11,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.List;
 
 import static com.btxtech.shared.dto.FallbackConfig.FACTORY_ITEM_TYPE_ID;
 import static com.btxtech.shared.dto.FallbackConfig.SHIP_ATTACKER_ITEM_TYPE_ID;
-import static com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto.from;
 
 public class InputServiceTest extends DaggerUiBaseIntegrationTest {
 
@@ -55,9 +52,6 @@ public class InputServiceTest extends DaggerUiBaseIntegrationTest {
 
         baseItemUiService.updateSyncBaseItems(nativeSyncBaseItemTickInfos);
         Assert.assertEquals(2, getBabylonRendererServiceAccessMock().getBabylonBaseItemMocks().size());
-
-        getTestUiServiceDagger().selectionService().onBaseItemsSelected(List.of(from(nativeSyncBaseItemTickInfos[0])));
-        getTestUiServiceDagger().inputService().terrainClicked(new DecimalPosition(0, 0));
 
         showDisplay();
 

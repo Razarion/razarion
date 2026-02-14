@@ -6,9 +6,7 @@ export abstract class GwtAngularFacade {
   gwtAngularBoot!: GwtAngularBoot;
   gameUiControl!: GameUiControl;
   screenCover!: ScreenCover;
-  actionServiceListener!: ActionServiceListener;
   mainCockpit!: MainCockpit;
-  itemCockpitFrontend!: ItemCockpitFrontend;
   questCockpit!: QuestCockpit;
   chatCockpit!: ChatCockpit;
   inGameQuestVisualizationService!: InGameQuestVisualizationService;
@@ -16,7 +14,6 @@ export abstract class GwtAngularFacade {
   statusProvider!: StatusProvider;
   babylonRenderServiceAccess!: BabylonRenderServiceAccess;
   inputService!: InputService;
-  selectionService!: SelectionService;
   terrainTypeService!: TerrainTypeService;
   itemTypeService!: ItemTypeService;
   baseItemUiService!: BaseItemUiService
@@ -25,6 +22,8 @@ export abstract class GwtAngularFacade {
   inventoryUiService!: InventoryUiService;
   terrainUiService!: TerrainUiService;
   resourceUiService!: ResourceUiService;
+  gameCommandService!: GameCommandService;
+  itemCockpitBridge!: ItemCockpitBridge;
 
   abstract onCrash(): void;
 }
@@ -41,6 +40,10 @@ export interface GameUiControl {
   getPlanetConfig(): PlanetConfig;
 
   getColdGameUiContext(): ColdGameUiContext;
+
+  getMyLimitation4ItemType(itemTypeId: number): number;
+
+  isSellSuppressed(): boolean;
 }
 
 export interface ColdGameUiContext {
@@ -148,41 +151,39 @@ export interface InputService {
     topRightX: number, topRightY: number,
     topLeftX: number, topLeftY: number): void;
 
-  ownItemClicked(id: number): void;
-
-  friendItemClicked(id: number): void;
-
-  enemyItemClicked(id: number): void;
-
-  resourceItemClicked(id: number): void;
-
-  boxItemClicked(id: number): void;
-
-  terrainClicked(terrainPosition: DecimalPosition): void;
-
   getTerrainTypeOnTerrain(nodeIndex: Index): Promise<any>;
 }
 
-export interface SelectionService {
-  hasOwnSelection(): boolean;
+export interface GameCommandService {
+  moveCmd(itemIds: number[], x: number, y: number): void;
 
-  hasOwnMovable(): boolean;
+  attackCmd(itemIds: number[], targetId: number): void;
 
-  hasAttackers(): boolean;
+  harvestCmd(itemIds: number[], resourceId: number): void;
 
-  canAttack(targetItemTypeId: number): boolean;
+  pickBoxCmd(itemIds: number[], boxId: number): void;
 
-  hasHarvesters(): boolean;
+  loadContainerCmd(itemIds: number[], containerId: number): void;
 
-  canContain(itemId: number): boolean;
+  finalizeBuildCmd(itemIds: number[], toBeFinalizedId: number): void;
 
-  canBeFinalizeBuild(itemId: number): boolean;
+  setMoveCommandAckCallback(callback: () => void): void;
+}
 
-  selectRectangle(xStart: number, yStart: number, width: number, height: number): void;
+export interface ItemCockpitBridge {
+  requestBuild(builderId: number, itemTypeId: number): void;
 
-  addSelectionListener(callback: () => void): void;
+  requestFabricate(factoryIds: number[], itemTypeId: number): void;
 
-  removeSelectionListener(callback: () => void): void;
+  sellItems(itemIds: number[]): void;
+
+  requestUnload(containerId: number): void;
+
+  setCockpitStateCallback(callback: () => void): void;
+
+  watchContainerCount(containerId: number, callback: (count: number) => void): void;
+
+  unwatchContainerCount(): void;
 }
 
 export interface ItemTypeService {
@@ -213,6 +214,14 @@ export interface BaseItemUiService {
    * @param enemyItemTypeIdUsed if true, filter by enemyItemTypeId; if false, any enemy
    */
   getNearestEnemyPosition(fromX: number, fromY: number, enemyItemTypeId: number, enemyItemTypeIdUsed: boolean): Vertex | null;
+
+  getMyItemCount(itemTypeId: number): number;
+
+  getResources(): number;
+
+  getUsedHouseSpace(): number;
+
+  getHouseSpace(): number;
 }
 
 export interface NativeSyncBaseItemTickInfo {
@@ -240,6 +249,10 @@ export interface PlanetConfig {
   getId(): number;
 
   getSize(): DecimalPosition;
+
+  getHouseSpace(): number;
+
+  imitation4ItemType(itemTypeId: number): number;
 }
 
 export interface TerrainObjectConfig {
@@ -284,6 +297,8 @@ export interface ItemType {
   getDescription(): string;
 
   getModel3DId(): number | null;
+
+  getThumbnail(): number | null;
 }
 
 export interface BaseItemType extends ItemType {
@@ -295,9 +310,17 @@ export interface BaseItemType extends ItemType {
 
   getHarvesterType(): HarvesterType | null;
 
+  getItemContainerType(): ItemContainerType | null;
+
+  getFactoryType(): FactoryType | null;
+
   getExplosionParticleId(): number | null;
 
   getExplosionAudioItemConfigId(): number | null;
+
+  getPrice(): number;
+
+  getConsumingHouseSpace(): number;
 }
 
 export interface ResourceItemType extends ItemType {
@@ -318,6 +341,18 @@ export interface PhysicalAreaConfig {
 
 export interface BuilderType {
   getParticleSystemConfigId(): number | null;
+
+  checkAbleToBuild(itemTypeId: number): boolean;
+
+  getAbleToBuildIds(): number[];
+}
+
+export interface ItemContainerType {
+  isAbleToContain(itemTypeId: number): boolean;
+}
+
+export interface FactoryType {
+  getAbleToBuildIds(): number[];
 }
 
 export interface WeaponType {
@@ -328,6 +363,8 @@ export interface WeaponType {
   getTrailParticleSystemConfigId(): number | null;
 
   getMuzzleFlashAudioItemConfigId(): number | null;
+
+  checkItemTypeDisallowed(targetItemTypeId: number): boolean;
 }
 
 export interface HarvesterType {
@@ -567,10 +604,6 @@ export enum RadarState {
   WORKING = "WORKING",
 }
 
-export interface ActionServiceListener {
-  onSelectionChanged(): void;
-}
-
 export interface MainCockpit {
   show(): void;
 
@@ -591,51 +624,6 @@ export interface MainCockpit {
   blinkAvailableUnlock(show: boolean): void
 
   clean(): void;
-}
-
-export interface ItemCockpitFrontend {
-  displayOwnSingleType(count: number, ownItemCockpit: OwnItemCockpit): void;
-
-  displayOwnMultipleItemTypes(ownMultipleIteCockpits: OwnMultipleIteCockpit[]): void;
-
-  displayOtherItemType(otherItemCockpit: OtherItemCockpit): void;
-
-  dispose(): void;
-}
-
-export interface OwnItemCockpit {
-  imageUrl: string;
-  itemTypeName: string;
-  itemTypeDescr: string;
-  buildupItemInfos: BuildupItemCockpit[] | null;
-  itemContainerInfo: ItemContainerCockpit;
-  sellHandler: () => void;
-}
-
-export interface BuildupItemCockpit {
-  imageUrl: string;
-  itemTypeId: number;
-  itemTypeName: string;
-  price: number;
-  itemCount: number;
-  itemLimit: number;
-  enabled: boolean;
-  progress: any;
-  buildLimitReached: boolean;
-  buildHouseSpaceReached: boolean;
-  buildNoMoney: boolean;
-
-  onBuild(): void;
-
-  setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void;
-}
-
-export interface ItemContainerCockpit {
-  count: number;
-
-  onUnload(): void;
-
-  setAngularZoneRunner(angularZoneRunner: AngularZoneRunner): void;
 }
 
 export interface QuestCockpit {
@@ -676,30 +664,6 @@ export interface BaseItemPlacer {
   onMove(xTerrainPosition: number, yTerrainPosition: number): void;
 
   onPlace(xTerrainPosition: number, yTerrainPosition: number): void;
-}
-
-export interface AngularZoneRunner {
-  runInAngularZone(callback: any): void;
-}
-
-export interface OwnMultipleIteCockpit {
-  ownItemCockpit: OwnItemCockpit;
-  count: number;
-
-  onSelect(): void;
-}
-
-export interface OtherItemCockpit {
-  id: number;
-  imageUrl: string;
-  itemTypeName: string;
-  itemTypeDescr: string;
-  baseId: number | undefined;
-  baseName: string;
-  friend: boolean;
-  bot: boolean;
-  resource: boolean;
-  box: boolean;
 }
 
 // ---------- Inventory ----------

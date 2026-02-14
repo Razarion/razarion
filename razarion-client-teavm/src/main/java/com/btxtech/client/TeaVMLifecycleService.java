@@ -8,7 +8,6 @@ import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -40,7 +39,6 @@ public class TeaVMLifecycleService {
     private final TerrainUiService terrainUiService;
     private final Provider<ScreenCover> screenCover;
     private final GameUiControl gameUiControl;
-    private final SelectionService selectionService;
     private final SimpleExecutorService simpleExecutorService;
     private final TeaVMGwtAngularService gwtAngularService;
     private boolean beforeUnload;
@@ -48,7 +46,6 @@ public class TeaVMLifecycleService {
     @Inject
     public TeaVMLifecycleService(TeaVMGwtAngularService gwtAngularService,
                                  SimpleExecutorService simpleExecutorService,
-                                 SelectionService selectionService,
                                  GameUiControl gameUiControl,
                                  Provider<ScreenCover> screenCover,
                                  TerrainUiService terrainUiService,
@@ -62,7 +59,6 @@ public class TeaVMLifecycleService {
                                  Boot boot) {
         this.gwtAngularService = gwtAngularService;
         this.simpleExecutorService = simpleExecutorService;
-        this.selectionService = selectionService;
         this.gameUiControl = gameUiControl;
         this.screenCover = screenCover;
         this.terrainUiService = terrainUiService;
@@ -142,7 +138,6 @@ public class TeaVMLifecycleService {
             }
         });
         perfmonService.stop();
-        selectionService.clearSelection(true);
         trailService.clear();
         terrainUiService.clear();
     }

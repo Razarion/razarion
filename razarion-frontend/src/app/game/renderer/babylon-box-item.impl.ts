@@ -3,7 +3,6 @@ import {
   BoxItemType,
   Diplomacy,
   MarkerConfig,
-  SelectionService,
   Vertex
 } from "src/app/gwtangular/GwtAngularFacade";
 import {BabylonItemImpl} from "./babylon-item.impl";
@@ -11,13 +10,14 @@ import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-im
 import {BabylonModelService} from "./babylon-model.service";
 import {ActionService} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {SelectionService as TsSelectionService} from "../selection.service";
 
 export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxItem {
   constructor(id: number,
               private boxItemType: BoxItemType,
               rendererService: BabylonRenderServiceAccessImpl,
               actionService: ActionService,
-              selectionService: SelectionService,
+              tsSelectionService: TsSelectionService,
               babylonModelService: BabylonModelService,
               uiConfigCollectionService: UiConfigCollectionService,
               disposeCallback: (() => void) | null) {
@@ -28,9 +28,10 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
       babylonModelService,
       uiConfigCollectionService,
       actionService,
-      selectionService,
+      tsSelectionService,
       rendererService.boxItemContainer,
       disposeCallback);
+    this.updateItemCursor();
   }
 
   static createDummy(id: number): BabylonBoxItem {

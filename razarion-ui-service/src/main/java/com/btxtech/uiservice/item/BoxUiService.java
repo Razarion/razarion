@@ -5,9 +5,6 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
-import com.btxtech.uiservice.SelectionEvent;
-import com.btxtech.uiservice.SelectionEventService;
-import com.btxtech.uiservice.SelectionService;
 import com.btxtech.uiservice.renderer.BabylonBoxItem;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.renderer.MarkerConfig;
@@ -33,30 +30,20 @@ public class BoxUiService {
     private final Map<Integer, SyncBoxItemSimpleDto> boxes = new HashMap<>();
     private final Map<Integer, BabylonBoxItem> babylonBoxItems = new HashMap<>();
     private final ItemTypeService itemTypeService;
-    private final SelectionService selectionService;
     private final BabylonRendererService babylonRendererService;
     private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
     private ViewField viewField;
     private Rectangle2D viewFieldAabb;
-    private BabylonBoxItem selectedBabylonBoxItem;
-    private Integer selectedOutOfViewId;
-
     @Inject
     public BoxUiService(BabylonRendererService babylonRendererService,
-                        SelectionService selectionService,
-                        ItemTypeService itemTypeService,
-                        SelectionEventService selectionEventService) {
+                        ItemTypeService itemTypeService) {
         this.babylonRendererService = babylonRendererService;
-        this.selectionService = selectionService;
         this.itemTypeService = itemTypeService;
-        selectionEventService.receiveSelectionEvent(this::onSelectionChanged);
     }
 
     public void clear() {
         boxes.clear();
         syncStaticItemSetPositionMonitor = null;
-        selectedOutOfViewId = null;
-        selectedBabylonBoxItem = null;
     }
 
     public void addBox(SyncBoxItemSimpleDto syncBoxItem) {
@@ -75,7 +62,6 @@ public class BoxUiService {
             if (box == null) {
                 throw new IllegalStateException("No box for id: " + id);
             }
-            selectionService.boxItemRemove(box);
         }
         updateBabylonBoxItems();
     }
@@ -158,11 +144,6 @@ public class BoxUiService {
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.addVisible(visibleBox);
                         }
-                        if (id.equals(selectedOutOfViewId)) {
-                            selectedOutOfViewId = null;
-                            visibleBox.select(true);
-                            selectedBabylonBoxItem = visibleBox;
-                        }
                     } else {
                         unused.remove(id);
                     }
@@ -171,10 +152,6 @@ public class BoxUiService {
                     if (visibleBox != null) {
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.removeVisible(visibleBox);
-                        }
-                        if (selectedBabylonBoxItem != null && selectedBabylonBoxItem.getId() == id) {
-                            selectedBabylonBoxItem = null;
-                            selectedOutOfViewId = id;
                         }
                         visibleBox.dispose();
                         unused.remove(id);
@@ -187,12 +164,6 @@ public class BoxUiService {
             });
             unused.forEach(id -> {
                 BabylonBoxItem toRemove = babylonBoxItems.remove(id);
-                if (id.equals(selectedOutOfViewId)) {
-                    selectedOutOfViewId = null;
-                }
-                if (selectedBabylonBoxItem != null && selectedBabylonBoxItem.getId() == id) {
-                    selectedBabylonBoxItem = null;
-                }
                 if (syncStaticItemSetPositionMonitor != null) {
                     syncStaticItemSetPositionMonitor.removeVisible(toRemove);
                 }
@@ -200,20 +171,6 @@ public class BoxUiService {
             });
             if (syncStaticItemSetPositionMonitor != null) {
                 syncStaticItemSetPositionMonitor.handleOutOfView(viewFiledCenter);
-            }
-        }
-    }
-
-    private void onSelectionChanged(SelectionEvent selectionEvent) {
-        selectedOutOfViewId = null;
-        if (selectedBabylonBoxItem != null) {
-            selectedBabylonBoxItem.select(false);
-            selectedBabylonBoxItem = null;
-        }
-        if (selectionEvent.getType() == SelectionEvent.Type.OTHER && selectionEvent.getSelectedOther() instanceof SyncBoxItemSimpleDto) {
-            selectedBabylonBoxItem = babylonBoxItems.get(selectionEvent.getSelectedOther().getId());
-            if (selectedBabylonBoxItem != null) {
-                selectedBabylonBoxItem.select(true);
             }
         }
     }
