@@ -131,6 +131,7 @@
                         <class>com.btxtech.server.rest.ui.GltfController</class>
                         <class>com.btxtech.server.rest.ui.Model3DController</class>
                         <class>com.btxtech.server.rest.ui.ParticleSystemController</class>
+                        <class>com.btxtech.server.rest.ui.AudioController</class>
                         <class>com.btxtech.server.rest.editor.BrushConfigController</class>
                         <class>com.btxtech.server.rest.editor.TerrainObjectGeneratorController</class>
                         <class>com.btxtech.server.rest.ui.UiConfigCollectionController</class>

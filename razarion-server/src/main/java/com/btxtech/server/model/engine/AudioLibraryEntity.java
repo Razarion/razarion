@@ -23,8 +23,16 @@ public class AudioLibraryEntity extends BaseEntity {
         this.data = data;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public void setType(String type) {
         this.type = type;
+    }
+
+    public long getSize() {
+        return size;
     }
 
     public void setSize(long size) {

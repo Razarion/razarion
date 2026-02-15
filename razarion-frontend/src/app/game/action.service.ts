@@ -54,13 +54,13 @@ export class ActionService {
     if (diplomacy === Diplomacy.OWN) {
       this.handleOwnItemClicked(id);
     } else if (diplomacy === Diplomacy.FRIEND) {
-      this.handleFriendItemClicked(id, babylonItem);
+      this.handleFriendItemClicked(id, babylonItem, itemType.getName());
     } else if (diplomacy === Diplomacy.ENEMY) {
-      this.handleEnemyItemClicked(id, itemType.getId(), babylonItem);
+      this.handleEnemyItemClicked(id, itemType.getId(), babylonItem, itemType.getName());
     } else if (diplomacy === Diplomacy.RESOURCE) {
-      this.handleResourceItemClicked(id, itemType.getId(), babylonItem);
+      this.handleResourceItemClicked(id, itemType.getId(), babylonItem, itemType.getName());
     } else if (diplomacy === Diplomacy.BOX) {
-      this.handleBoxItemClicked(id, itemType.getId(), babylonItem);
+      this.handleBoxItemClicked(id, itemType.getId(), babylonItem, itemType.getName());
     }
   }
 
@@ -72,7 +72,8 @@ export class ActionService {
     if (movableIds.length === 0) {
       return;
     }
-    this.babylonAudioService.playCommandSentAudio();
+
+    this.babylonAudioService.speakCommand('Moving out');
     this.ensureMoveAckCallback();
     if (this.hasPendingMoveCommand) {
       this.queuedMoveCommand = { movableIds, x: xTerrainPosition, y: yTerrainPosition };
@@ -135,7 +136,7 @@ export class ActionService {
       });
 
     if (resources.length > 0) {
-      this.tsSelectionService.selectOther(resources[0].getId(), Diplomacy.RESOURCE, resources[0].itemType.getId(), undefined, resources[0]);
+      this.tsSelectionService.selectOther(resources[0].getId(), Diplomacy.RESOURCE, resources[0].itemType.getId(), undefined, resources[0], resources[0].itemType.getName());
       return;
     }
 
@@ -155,7 +156,8 @@ export class ActionService {
       if (item.getBuildup() >= 1.0 && baseItemType.getItemContainerType() != null) {
         const containableIds = this.tsSelectionService.getContainableIds(baseItemType);
         if (containableIds.length > 0) {
-          this.babylonAudioService.playCommandSentAudio();
+      
+          this.babylonAudioService.speakCommand('Loading up');
           this.gameCommandService.loadContainerCmd(containableIds, id);
           return;
         }
@@ -165,7 +167,8 @@ export class ActionService {
       if (item.getBuildup() < 1.0) {
         const builderIds = this.tsSelectionService.getBuilderIds(baseItemType.getId());
         if (builderIds.length > 0) {
-          this.babylonAudioService.playCommandSentAudio();
+      
+          this.babylonAudioService.speakCommand('Completing construction');
           this.gameCommandService.finalizeBuildCmd(builderIds, id);
           return;
         }
@@ -176,50 +179,50 @@ export class ActionService {
     this.tsSelectionService.selectOwnItems([item]);
   }
 
-  private handleFriendItemClicked(id: number, babylonItem: BabylonItem): void {
+  private handleFriendItemClicked(id: number, babylonItem: BabylonItem, itemTypeName: string): void {
     const item = this.rendererService?.getBabylonBaseItemById(id);
     if (item) {
-      this.tsSelectionService.selectOther(id, Diplomacy.FRIEND, item.getBaseItemType().getId(), item.getBaseId(), babylonItem);
+      this.tsSelectionService.selectOther(id, Diplomacy.FRIEND, item.getBaseItemType().getId(), item.getBaseId(), babylonItem, itemTypeName);
     }
   }
 
-  private handleEnemyItemClicked(id: number, itemTypeId: number, babylonItem: BabylonItem): void {
+  private handleEnemyItemClicked(id: number, itemTypeId: number, babylonItem: BabylonItem, itemTypeName: string): void {
     const item = this.rendererService?.getBabylonBaseItemById(id);
     if (!item) return;
 
     if (this.tsSelectionService.hasOwnSelection()) {
       const attackerIds = this.tsSelectionService.getAttackerIds(item.getBaseItemType().getId());
       if (attackerIds.length > 0) {
-        this.babylonAudioService.playCommandSentAudio();
+        this.babylonAudioService.speakCommand('Engaging target');
         this.gameCommandService.attackCmd(attackerIds, id);
         return;
       }
     }
-    this.tsSelectionService.selectOther(id, Diplomacy.ENEMY, itemTypeId, item.getBaseId(), babylonItem);
+    this.tsSelectionService.selectOther(id, Diplomacy.ENEMY, itemTypeId, item.getBaseId(), babylonItem, itemTypeName);
   }
 
-  private handleResourceItemClicked(id: number, itemTypeId: number, babylonItem: BabylonItem): void {
+  private handleResourceItemClicked(id: number, itemTypeId: number, babylonItem: BabylonItem, itemTypeName: string): void {
     if (this.tsSelectionService.hasOwnSelection()) {
       const harvesterIds = this.tsSelectionService.getHarvesterIds();
       if (harvesterIds.length > 0) {
-        this.babylonAudioService.playCommandSentAudio();
+        this.babylonAudioService.speakCommand('Harvesting');
         this.gameCommandService.harvestCmd(harvesterIds, id);
         return;
       }
     }
-    this.tsSelectionService.selectOther(id, Diplomacy.RESOURCE, itemTypeId, undefined, babylonItem);
+    this.tsSelectionService.selectOther(id, Diplomacy.RESOURCE, itemTypeId, undefined, babylonItem, itemTypeName);
   }
 
-  private handleBoxItemClicked(id: number, itemTypeId: number, babylonItem: BabylonItem): void {
+  private handleBoxItemClicked(id: number, itemTypeId: number, babylonItem: BabylonItem, itemTypeName: string): void {
     if (this.tsSelectionService.hasOwnSelection()) {
       const movableIds = this.tsSelectionService.getMovableIds();
       if (movableIds.length > 0) {
-        this.babylonAudioService.playCommandSentAudio();
+        this.babylonAudioService.speakCommand('Picking up');
         this.gameCommandService.pickBoxCmd(movableIds, id);
         return;
       }
     }
-    this.tsSelectionService.selectOther(id, Diplomacy.BOX, itemTypeId, undefined, babylonItem);
+    this.tsSelectionService.selectOther(id, Diplomacy.BOX, itemTypeId, undefined, babylonItem, itemTypeName);
   }
 
   private onMoveCommandAck(): void {

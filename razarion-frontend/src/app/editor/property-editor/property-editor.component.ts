@@ -8,6 +8,7 @@ import {Button} from 'primeng/button';
 import {ImageItemComponent} from '../common/image-item/image-item.component';
 import {InputNumber} from 'primeng/inputnumber';
 import {BabylonMaterialComponent} from '../common/babylon-material/babylon-material.component';
+import {AudioComponent} from '../common/audio/audio.component';
 import {TableModule} from 'primeng/table';
 import {FormsModule} from '@angular/forms';
 
@@ -19,6 +20,7 @@ import {FormsModule} from '@angular/forms';
     ImageItemComponent,
     InputNumber,
     BabylonMaterialComponent,
+    AudioComponent,
     TableModule,
     FormsModule
 ],

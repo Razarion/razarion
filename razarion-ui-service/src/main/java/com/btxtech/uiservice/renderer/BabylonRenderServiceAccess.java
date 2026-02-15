@@ -11,7 +11,7 @@ public interface BabylonRenderServiceAccess {
 
     BabylonBaseItem createBabylonBaseItem(int id, BaseItemType baseItemType, int baseId, Diplomacy diplomacy, String userName);
 
-    void startSpawn(int particleSystemId, double x, double y, double z);
+    void startSpawn(Integer particleSystemId, Integer spawnAudioId, double x, double y, double z);
 
     BabylonResourceItem createBabylonResourceItem(int id, ResourceItemType baseItemType);
 

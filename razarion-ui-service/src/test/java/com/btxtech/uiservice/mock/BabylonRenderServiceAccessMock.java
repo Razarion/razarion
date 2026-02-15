@@ -52,7 +52,7 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
     }
 
     @Override
-    public void startSpawn(int particleSystemId, double x, double y, double z) {
+    public void startSpawn(Integer particleSystemId, Integer spawnAudioId, double x, double y, double z) {
 
     }
 

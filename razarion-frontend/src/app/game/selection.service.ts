@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BabylonItem, BaseItemType, Diplomacy } from '../gwtangular/GwtAngularFacade';
 import { BabylonBaseItemImpl } from './renderer/babylon-base-item.impl';
+import { BabylonAudioService } from './renderer/babylon-audio.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class SelectionService {
   private selectedOtherItem: BabylonItem | null = null;
   private selectionListeners: (() => void)[] = [];
 
-  constructor() {
+  constructor(private babylonAudioService: BabylonAudioService) {
   }
 
   selectOwnItems(items: BabylonBaseItemImpl[]): void {
@@ -29,9 +30,10 @@ export class SelectionService {
     this.selectedOtherBaseId = null;
     this.selectedOwnItems.forEach(item => item.select(true));
     this.fireSelectionChanged();
+    this.speakOwnSelection(items);
   }
 
-  selectOther(id: number, diplomacy: Diplomacy, itemTypeId?: number, baseId?: number, item?: BabylonItem): void {
+  selectOther(id: number, diplomacy: Diplomacy, itemTypeId?: number, baseId?: number, item?: BabylonItem, itemTypeName?: string): void {
     this.deselectCurrent();
     this.selectedOwnItems = [];
     this.selectedOwnItemIds.clear();
@@ -44,6 +46,7 @@ export class SelectionService {
       this.selectedOtherItem = item;
     }
     this.fireSelectionChanged();
+    this.speakOtherSelection(diplomacy, itemTypeName);
   }
 
   clearSelection(): void {
@@ -240,5 +243,42 @@ export class SelectionService {
 
   private fireSelectionChanged(): void {
     this.selectionListeners.forEach(listener => listener());
+  }
+
+  private speakOwnSelection(items: BabylonBaseItemImpl[]): void {
+    if (items.length === 0) return;
+
+    const counts = new Map<string, number>();
+    for (const item of items) {
+      const name = item.getBaseItemType().getName();
+      if (name) {
+        counts.set(name, (counts.get(name) ?? 0) + 1);
+      }
+    }
+    if (counts.size === 0) return;
+
+    const parts: string[] = [];
+    for (const [name, count] of counts) {
+      parts.push(count === 1 ? name : `${count} ${name}s`);
+    }
+    this.babylonAudioService.speakSelection(parts.join(', '));
+  }
+
+  private speakOtherSelection(diplomacy: Diplomacy, itemTypeName?: string): void {
+    const name = itemTypeName ?? 'target';
+    switch (diplomacy) {
+      case Diplomacy.ENEMY:
+        this.babylonAudioService.speakCommand(`Enemy ${name} spotted`);
+        break;
+      case Diplomacy.FRIEND:
+        this.babylonAudioService.speakCommand(`Other player's ${name}`);
+        break;
+      case Diplomacy.RESOURCE:
+        this.babylonAudioService.speakCommand(`Resource ${name}`);
+        break;
+      case Diplomacy.BOX:
+        this.babylonAudioService.speakCommand(`Supply box`);
+        break;
+    }
   }
 }

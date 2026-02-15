@@ -37,8 +37,10 @@ public class BabylonRendererService {
 
     public void startSpawn(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
-        if (baseItemType.getSpawnParticleSystemId() != null) {
-            babylonRenderServiceAccess.startSpawn(baseItemType.getSpawnParticleSystemId(), nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y, nativeSyncBaseItemTickInfo.z);
+        Integer particleSystemId = baseItemType.getSpawnParticleSystemId();
+        Integer spawnAudioId = baseItemType.getSpawnAudioId();
+        if (particleSystemId != null || spawnAudioId != null) {
+            babylonRenderServiceAccess.startSpawn(particleSystemId, spawnAudioId, nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y, nativeSyncBaseItemTickInfo.z);
         }
     }
 

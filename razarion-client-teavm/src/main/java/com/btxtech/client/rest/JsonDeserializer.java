@@ -63,6 +63,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpecialType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.AudioItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.terrain.BotGroundSlopeBox;
@@ -211,11 +212,6 @@ public class JsonDeserializer {
         r.setOnQuestPassed(json.getNullableInt("onQuestPassed"));
         r.setOnLevelUp(json.getNullableInt("onLevelUp"));
         r.setOnBoxPicked(json.getNullableInt("onBoxPicked"));
-        r.setOnOwnSingleSelection(json.getNullableInt("onOwnSingleSelection"));
-        r.setOnOwnMultiSelection(json.getNullableInt("onOwnMultiSelection"));
-        r.setOnSelectionCleared(json.getNullableInt("onSelectionCleared"));
-        r.setOnOtherSelection(json.getNullableInt("onOtherSelection"));
-        r.setOnCommandSent(json.getNullableInt("onCommandSent"));
         r.setOnBaseLost(json.getNullableInt("onBaseLost"));
         r.setTerrainLoopWater(json.getNullableInt("terrainLoopWater"));
         r.setTerrainLoopLand(json.getNullableInt("terrainLoopLand"));
@@ -465,6 +461,17 @@ public class JsonDeserializer {
         return r;
     }
 
+    public static AudioItemConfig deserializeAudioItemConfig(JsObject json) {
+        if (json == null) return null;
+        AudioItemConfig r = new AudioItemConfig();
+        r.setAudioId(json.getNullableInt("audioId"));
+        r.setPitchCentsMin(json.getInt("pitchCentsMin"));
+        r.setPitchCentsMax(json.getInt("pitchCentsMax"));
+        r.setVolumeMin(json.getDouble("volumeMin"));
+        r.setVolumeMax(json.getDouble("volumeMax"));
+        return r;
+    }
+
     public static WeaponType deserializeWeaponType(JsObject json) {
         if (json == null) return null;
         WeaponType r = new WeaponType();
@@ -476,7 +483,8 @@ public class JsonDeserializer {
         r.setProjectileSpeed(json.getNullableDouble("projectileSpeed"));
         r.setImpactParticleSystemId(json.getNullableInt("impactParticleSystemId"));
         r.setTurretAngleVelocity(json.getNullableDouble("turretAngleVelocity"));
-        r.setMuzzleFlashAudioItemConfigId(json.getNullableInt("muzzleFlashAudioItemConfigId"));
+        r.setMuzzleFlashAudioConfig(deserializeAudioItemConfig(obj(json, "muzzleFlashAudioConfig")));
+        r.setImpactAudioConfig(deserializeAudioItemConfig(obj(json, "impactAudioConfig")));
         r.setTrailParticleSystemConfigId(json.getNullableInt("trailParticleSystemConfigId"));
         return r;
     }

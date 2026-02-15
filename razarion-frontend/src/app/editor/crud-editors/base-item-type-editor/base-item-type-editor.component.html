@@ -60,7 +60,7 @@
           <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
             <span class="col-span-4">Spawn audio</span>
             <div class="col-span-8">
-              ...TODO...
+              <audio-editor [(audioId)]="baseItemType.spawnAudioId"></audio-editor>
             </div>
           </div>
 
@@ -317,6 +317,14 @@
                     [(particleSystemId)]="baseItemType.weaponType.trailParticleSystemConfigId"></particle-system>
                   </div>
                 </div>
+                <p-divider align="left">
+                  <b>Muzzle flash audio</b>
+                </p-divider>
+                <audio-config-editor [(audioConfig)]="baseItemType.weaponType.muzzleFlashAudioConfig"></audio-config-editor>
+                <p-divider align="left">
+                  <b>Impact audio</b>
+                </p-divider>
+                <audio-config-editor [(audioConfig)]="baseItemType.weaponType.impactAudioConfig"></audio-config-editor>
               </div>
             }
           </p-panel>

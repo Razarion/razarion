@@ -79,7 +79,10 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
             if (this.baseItemPlacerCallback) {
               this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.PLACED);
             }
-            this.babylonAudioService.playCommandSentAudio();
+
+            if (baseItemPlacer.isPlayBuildSound()) {
+              this.babylonAudioService.speakCommand('Building');
+            }
             baseItemPlacer.onPlace(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
           }
           break;

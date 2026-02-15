@@ -5,15 +5,14 @@ import com.btxtech.server.model.ui.ParticleSystemEntity;
 import com.btxtech.server.service.engine.BaseItemTypeService;
 import com.btxtech.server.service.ui.AudioService;
 import com.btxtech.server.service.ui.ParticleSystemService;
+import com.btxtech.shared.gameengine.datatypes.itemtype.AudioItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
@@ -41,6 +40,17 @@ public class WeaponTypeEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private AudioLibraryEntity muzzleFlashAudioLibraryEntity;
+    private int muzzleFlashPitchCentsMin = -200;
+    private int muzzleFlashPitchCentsMax = 200;
+    private double muzzleFlashVolumeMin = 0.8;
+    private double muzzleFlashVolumeMax = 1.0;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private AudioLibraryEntity impactAudioLibraryEntity;
+    private int impactPitchCentsMin = -200;
+    private int impactPitchCentsMax = 200;
+    private double impactVolumeMin = 0.8;
+    private double impactVolumeMax = 1.0;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ParticleSystemEntity impactParticleSystem;
@@ -50,6 +60,28 @@ public class WeaponTypeEntity extends BaseEntity {
     private Double turretAngleVelocity;
 
     public WeaponType toWeaponType() {
+        AudioItemConfig muzzleFlashAudioConfig = null;
+        Integer muzzleFlashAudioId = extractId(muzzleFlashAudioLibraryEntity, AudioLibraryEntity::getId);
+        if (muzzleFlashAudioId != null) {
+            muzzleFlashAudioConfig = new AudioItemConfig()
+                    .audioId(muzzleFlashAudioId)
+                    .pitchCentsMin(muzzleFlashPitchCentsMin)
+                    .pitchCentsMax(muzzleFlashPitchCentsMax)
+                    .volumeMin(muzzleFlashVolumeMin)
+                    .volumeMax(muzzleFlashVolumeMax);
+        }
+
+        AudioItemConfig impactAudioConfig = null;
+        Integer impactAudioId = extractId(impactAudioLibraryEntity, AudioLibraryEntity::getId);
+        if (impactAudioId != null) {
+            impactAudioConfig = new AudioItemConfig()
+                    .audioId(impactAudioId)
+                    .pitchCentsMin(impactPitchCentsMin)
+                    .pitchCentsMax(impactPitchCentsMax)
+                    .volumeMin(impactVolumeMin)
+                    .volumeMax(impactVolumeMax);
+        }
+
         WeaponType weaponType = new WeaponType()
                 .range(attackRange)
                 .damage(damage)
@@ -57,7 +89,8 @@ public class WeaponTypeEntity extends BaseEntity {
                 .reloadTime(reloadTime)
                 .projectileSpeed(projectileSpeed)
                 .impactParticleSystemId(extractId(impactParticleSystem, ParticleSystemEntity::getId))
-                .muzzleFlashAudioItemConfigId(extractId(muzzleFlashAudioLibraryEntity, AudioLibraryEntity::getId))
+                .muzzleFlashAudioConfig(muzzleFlashAudioConfig)
+                .impactAudioConfig(impactAudioConfig)
                 .trailParticleSystemConfigId(extractId(trailParticleSystem, ParticleSystemEntity::getId))
                 .turretAngleVelocity(turretAngleVelocity);
         if (disallowedItemTypes != null && !disallowedItemTypes.isEmpty()) {
@@ -90,7 +123,24 @@ public class WeaponTypeEntity extends BaseEntity {
             disallowedItemTypes = null;
         }
         projectileSpeed = weaponType.getProjectileSpeed();
-        muzzleFlashAudioLibraryEntity = audioPersistence.getAudioLibraryEntity(weaponType.getMuzzleFlashAudioItemConfigId());
+        if (weaponType.getMuzzleFlashAudioConfig() != null) {
+            muzzleFlashAudioLibraryEntity = audioPersistence.getAudioLibraryEntity(weaponType.getMuzzleFlashAudioConfig().getAudioId());
+            muzzleFlashPitchCentsMin = weaponType.getMuzzleFlashAudioConfig().getPitchCentsMin();
+            muzzleFlashPitchCentsMax = weaponType.getMuzzleFlashAudioConfig().getPitchCentsMax();
+            muzzleFlashVolumeMin = weaponType.getMuzzleFlashAudioConfig().getVolumeMin();
+            muzzleFlashVolumeMax = weaponType.getMuzzleFlashAudioConfig().getVolumeMax();
+        } else {
+            muzzleFlashAudioLibraryEntity = null;
+        }
+        if (weaponType.getImpactAudioConfig() != null) {
+            impactAudioLibraryEntity = audioPersistence.getAudioLibraryEntity(weaponType.getImpactAudioConfig().getAudioId());
+            impactPitchCentsMin = weaponType.getImpactAudioConfig().getPitchCentsMin();
+            impactPitchCentsMax = weaponType.getImpactAudioConfig().getPitchCentsMax();
+            impactVolumeMin = weaponType.getImpactAudioConfig().getVolumeMin();
+            impactVolumeMax = weaponType.getImpactAudioConfig().getVolumeMax();
+        } else {
+            impactAudioLibraryEntity = null;
+        }
         impactParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getImpactParticleSystemId());
         turretAngleVelocity = weaponType.getTurretAngleVelocity();
         trailParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getTrailParticleSystemConfigId());

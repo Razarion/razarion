@@ -4,6 +4,7 @@ import com.btxtech.client.jso.JsArray;
 import com.btxtech.client.jso.JsObject;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
@@ -13,6 +14,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.TipConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
+import com.btxtech.shared.gameengine.datatypes.itemtype.AudioItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -153,6 +155,8 @@ public class DtoConverter {
             return errorText != null ? errorText : "";
         });
         setGetterObj(obj, "getModel3DId", () -> convertNullableInt(placer.getModel3DId()));
+        setGetterObj(obj, "getSpawnAudioId", () -> convertNullableInt(placer.getSpawnAudioId()));
+        setGetterBool(obj, "isPlayBuildSound", () -> placer.isPlayBuildSound());
 
         return obj;
     }
@@ -263,9 +267,19 @@ public class DtoConverter {
         return obj;
     }
 
+    public static JSObject convertAudioConfig(AudioConfig config) {
+        if (config == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterObj(obj, "getTerrainLoopWater", () -> convertNullableInt(config.getTerrainLoopWater()));
+        setGetterObj(obj, "getTerrainLoopLand", () -> convertNullableInt(config.getTerrainLoopLand()));
+        setGetterObj(obj, "getOnQuestActivated", () -> convertNullableInt(config.getOnQuestActivated()));
+        return obj;
+    }
+
     public static JSObject convertColdGameUiContext(ColdGameUiContext ctx) {
         if (ctx == null) return null;
         JsObject obj = JsObject.create();
+        setGetterObj(obj, "getAudioConfig", () -> convertAudioConfig(ctx.getAudioConfig()));
         setGetterObj(obj, "getInGameQuestVisualConfig", () -> {
             if (ctx.getInGameQuestVisualConfig() == null) return null;
             JsObject vc = JsObject.create();
@@ -384,6 +398,7 @@ public class DtoConverter {
         setGetterObj(obj, "getItemContainerType", () -> convertItemContainerType(type));
         setGetterObj(obj, "getFactoryType", () -> convertFactoryType(type));
         setGetterObj(obj, "getThumbnail", () -> convertNullableInt(type.getThumbnail()));
+        setGetterObj(obj, "getSpawnAudioId", () -> convertNullableInt(type.getSpawnAudioId()));
         setGetterInt(obj, "getPrice", type::getPrice);
         setGetterInt(obj, "getConsumingHouseSpace", type::getConsumingHouseSpace);
         return obj;
@@ -440,6 +455,17 @@ public class DtoConverter {
         return obj;
     }
 
+    private static JSObject convertAudioItemConfig(AudioItemConfig config) {
+        if (config == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterObj(obj, "getAudioId", () -> convertNullableInt(config.getAudioId()));
+        setGetterInt(obj, "getPitchCentsMin", config::getPitchCentsMin);
+        setGetterInt(obj, "getPitchCentsMax", config::getPitchCentsMax);
+        setGetterDouble(obj, "getVolumeMin", config::getVolumeMin);
+        setGetterDouble(obj, "getVolumeMax", config::getVolumeMax);
+        return obj;
+    }
+
     private static JSObject convertWeaponType(BaseItemType type) {
         if (type.getWeaponType() == null) return null;
         JsObject obj = JsObject.create();
@@ -449,8 +475,10 @@ public class DtoConverter {
                 convertNullableDouble(type.getWeaponType().getProjectileSpeed()));
         setGetterObj(obj, "getTrailParticleSystemConfigId", () ->
                 convertNullableInt(type.getWeaponType().getTrailParticleSystemConfigId()));
-        setGetterObj(obj, "getMuzzleFlashAudioItemConfigId", () ->
-                convertNullableInt(type.getWeaponType().getMuzzleFlashAudioItemConfigId()));
+        setGetterObj(obj, "getMuzzleFlashAudioConfig", () ->
+                convertAudioItemConfig(type.getWeaponType().getMuzzleFlashAudioConfig()));
+        setGetterObj(obj, "getImpactAudioConfig", () ->
+                convertAudioItemConfig(type.getWeaponType().getImpactAudioConfig()));
         setMethodIntBool(obj, "checkItemTypeDisallowed", (targetItemTypeId) ->
                 type.getWeaponType().checkItemTypeDisallowed(targetItemTypeId));
         return obj;

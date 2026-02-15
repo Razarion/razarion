@@ -1,0 +1,36 @@
+<div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Audio</span>
+    <div class="col-span-8">
+      <audio-editor [(audioId)]="audioId" (audioIdChange)="onAudioIdChange($event)"></audio-editor>
+    </div>
+  </div>
+  @if (audioId != null) {
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-4">Pitch min [cents]</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="pitchCentsMin" (ngModelChange)="onFieldChange()"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-4">Pitch max [cents]</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="pitchCentsMax" (ngModelChange)="onFieldChange()"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-4">Volume min</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="volumeMin" [minFractionDigits]="2" [maxFractionDigits]="2"
+                       [min]="0" [max]="1" [step]="0.05" (ngModelChange)="onFieldChange()"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+      <span class="col-span-4">Volume max</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="volumeMax" [minFractionDigits]="2" [maxFractionDigits]="2"
+                       [min]="0" [max]="1" [step]="0.05" (ngModelChange)="onFieldChange()"></p-inputNumber>
+      </div>
+    </div>
+  }
+</div>

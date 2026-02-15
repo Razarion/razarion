@@ -12,6 +12,7 @@ import {
 import { GwtAngularService } from '../../../gwtangular/GwtAngularService';
 import { SelectionService } from '../../selection.service';
 import { CockpitDisplayService } from '../cockpit-display.service';
+import { BabylonAudioService } from '../../renderer/babylon-audio.service';
 
 // --- View-Model Interfaces ---
 
@@ -72,7 +73,8 @@ export class ItemCockpitService {
   constructor(
     private selectionService: SelectionService,
     private gwtAngularService: GwtAngularService,
-    private cockpitDisplayService: CockpitDisplayService
+    private cockpitDisplayService: CockpitDisplayService,
+    private babylonAudioService: BabylonAudioService
   ) {
     selectionService.addSelectionListener(() => this.onSelectionChanged());
   }
@@ -406,6 +408,8 @@ export class ItemCockpitService {
       this.itemCockpitBridge.requestBuild(firstItem.getId(), itemTypeId);
     } else if (baseItemType.getFactoryType() != null) {
       const factoryIds = selectedItems.map(item => item.getId());
+      const toBuildType = this.itemTypeService.getBaseItemTypeAngular(itemTypeId);
+      this.babylonAudioService.speakCommand(`Producing ${toBuildType.getName()}`);
       this.itemCockpitBridge.requestFabricate(factoryIds, itemTypeId);
     }
   }

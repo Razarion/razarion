@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {
   Alarm,
+  AudioItemConfig,
   BabylonDecal,
   BabylonTerrainTile,
   BaseItemType,
@@ -180,7 +181,11 @@ export class GameMockService {
                 return 2;
               }
 
-              getMuzzleFlashAudioItemConfigId(): number | null {
+              getMuzzleFlashAudioConfig(): AudioItemConfig | null {
+                return null;
+              }
+
+              getImpactAudioConfig(): AudioItemConfig | null {
                 return null;
               }
 
@@ -244,6 +249,10 @@ export class GameMockService {
 
           getConsumingHouseSpace(): number {
             return 1;
+          }
+
+          getSpawnAudioId(): number | null {
+            return null;
           }
         };
 
@@ -632,7 +641,10 @@ export class GameMockService {
 
   gameUiControl: GameUiControl = new class implements GameUiControl {
     getColdGameUiContext(): ColdGameUiContext {
-        throw new Error("Method not implemented.");
+        return {
+          getAudioConfig() { return null; },
+          getInGameQuestVisualConfig() { return null as any; }
+        };
     }
     getPlanetConfig(): PlanetConfig {
       return new class implements PlanetConfig {
@@ -870,6 +882,10 @@ export class GameMockService {
 
           getConsumingHouseSpace(): number {
             return 1;
+          }
+
+          getSpawnAudioId(): number | null {
+            return null;
           }
         }
       }

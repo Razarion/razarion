@@ -6,7 +6,7 @@
       </td>
       @if (dbPropertyConfig.dbPropertyType === AUDIO) {
         <td style="width: 300px;">
-          AUDIO
+          <audio-editor [(audioId)]="dbPropertyConfig.intValue"></audio-editor>
         </td>
       }
       @if (dbPropertyConfig.dbPropertyType === BABYLON_MATERIAL) {

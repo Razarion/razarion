@@ -88,6 +88,16 @@ public class BaseItemPlacer {
         return baseItemType.getModel3DId();
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public Integer getSpawnAudioId() {
+        return baseItemType.getSpawnAudioId();
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean isPlayBuildSound() {
+        return canBeCanceled;
+    }
+
     private void setupErrorText() {
 //        if (!baseItemPlacerChecker.isEnemiesOk()) {
 //            errorText = ClientI18nHelper.getConstants().enemyTooNear();

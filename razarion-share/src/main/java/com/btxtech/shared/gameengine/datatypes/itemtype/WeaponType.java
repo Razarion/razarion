@@ -36,7 +36,8 @@ public class WeaponType {
     private Double projectileSpeed; // Meter per second
     private Integer impactParticleSystemId;
     private Double turretAngleVelocity;
-    private Integer muzzleFlashAudioItemConfigId;
+    private AudioItemConfig muzzleFlashAudioConfig;
+    private AudioItemConfig impactAudioConfig;
     private Integer trailParticleSystemConfigId;
 
     public double getRange() {
@@ -87,12 +88,20 @@ public class WeaponType {
         this.projectileSpeed = projectileSpeed;
     }
 
-    public Integer getMuzzleFlashAudioItemConfigId() {
-        return muzzleFlashAudioItemConfigId;
+    public AudioItemConfig getMuzzleFlashAudioConfig() {
+        return muzzleFlashAudioConfig;
     }
 
-    public void setMuzzleFlashAudioItemConfigId(Integer muzzleFlashAudioItemConfigId) {
-        this.muzzleFlashAudioItemConfigId = muzzleFlashAudioItemConfigId;
+    public void setMuzzleFlashAudioConfig(AudioItemConfig muzzleFlashAudioConfig) {
+        this.muzzleFlashAudioConfig = muzzleFlashAudioConfig;
+    }
+
+    public AudioItemConfig getImpactAudioConfig() {
+        return impactAudioConfig;
+    }
+
+    public void setImpactAudioConfig(AudioItemConfig impactAudioConfig) {
+        this.impactAudioConfig = impactAudioConfig;
     }
 
     public @Nullable Integer getImpactParticleSystemId() {
@@ -149,8 +158,13 @@ public class WeaponType {
         return this;
     }
 
-    public WeaponType muzzleFlashAudioItemConfigId(Integer muzzleFlashAudioItemConfigId) {
-        setMuzzleFlashAudioItemConfigId(muzzleFlashAudioItemConfigId);
+    public WeaponType muzzleFlashAudioConfig(AudioItemConfig muzzleFlashAudioConfig) {
+        setMuzzleFlashAudioConfig(muzzleFlashAudioConfig);
+        return this;
+    }
+
+    public WeaponType impactAudioConfig(AudioItemConfig impactAudioConfig) {
+        setImpactAudioConfig(impactAudioConfig);
         return this;
     }
 

@@ -1,0 +1,25 @@
+<div class="flex gap-1 items-center">
+  <p-select [placeholder]="'...'"
+              [options]="audioOptions"
+              [(ngModel)]="audioId"
+              (onChange)="onChange()"
+              optionLabel="label"
+              optionValue="audioId"
+              [showClear]="true">
+    <ng-template pTemplate="item" let-option>
+      <div class="flex items-center gap-2 w-full">
+        <span class="flex-1">{{ option.label }}</span>
+        @if (playingId === option.audioId) {
+          <i class="pi pi-stop" style="cursor: pointer; color: var(--red-500)" (click)="onStop(); $event.stopPropagation()"></i>
+        } @else {
+          <i class="pi pi-play" style="cursor: pointer" (click)="onPlay(option.audioId); $event.stopPropagation()"></i>
+        }
+      </div>
+    </ng-template>
+  </p-select>
+  @if (playingId === audioId) {
+    <p-button icon="pi pi-stop" (onClick)="onStop()" size="small" severity="danger" [rounded]="true" [text]="true"></p-button>
+  } @else {
+    <p-button icon="pi pi-play" (onClick)="onPlay(audioId)" size="small" [rounded]="true" [text]="true" [disabled]="!audioId"></p-button>
+  }
+</div>

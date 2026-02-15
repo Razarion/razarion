@@ -22,6 +22,7 @@ import {BoxRegionComponent} from "../box-region/box-region.component";
 import {UserMgmtComponent} from "../user-mgmt/user-mgmt.component";
 import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component";
 import {ParticleSystemEditorComponent} from "../crud-editors/particle-system-editor/particle-system-editor.component";
+import {AudioEditorComponent} from "../crud-editors/audio-editor/audio-editor.component";
 import {
   BabylonMaterialEditorComponent
 } from "../crud-editors/babylon-material-editor/babylon-material-editor.component";
@@ -122,6 +123,11 @@ export class EditorDialogComponent {
   openParticleSystemEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Particle systems editor", GeneratedCrudContainerComponent, ParticleSystemEditorComponent));
+  }
+
+  openAudioEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Audio editor", AudioEditorComponent));
   }
 
   openBabylonMaterialEditor() {

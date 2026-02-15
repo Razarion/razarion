@@ -44,6 +44,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpecialType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.AudioItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
@@ -1768,6 +1769,16 @@ public final class TeaVMWorkerMarshaller {
         return TerrainType.valueOf(value);
     }
 
+    private static AudioItemConfig convertAudioItemConfig(JsObject obj) {
+        AudioItemConfig config = new AudioItemConfig();
+        config.setAudioId(obj.getNullableInt("audioId"));
+        config.setPitchCentsMin(obj.getInt("pitchCentsMin"));
+        config.setPitchCentsMax(obj.getInt("pitchCentsMax"));
+        config.setVolumeMin(obj.getDouble("volumeMin"));
+        config.setVolumeMax(obj.getDouble("volumeMax"));
+        return config;
+    }
+
     private static WeaponType convertWeaponType(JsObject obj) {
         WeaponType type = new WeaponType();
         type.setRange(obj.getDouble("range"));
@@ -1787,7 +1798,14 @@ public final class TeaVMWorkerMarshaller {
         if (!JsUtils.isNullOrUndefined(turretAngleObj)) {
             type.setTurretAngleVelocity(JsUtils.asDouble(turretAngleObj));
         }
-        type.setMuzzleFlashAudioItemConfigId(obj.getNullableInt("muzzleFlashAudioItemConfigId"));
+        JSObject muzzleFlashAudioConfigObj = obj.get("muzzleFlashAudioConfig");
+        if (!JsUtils.isNullOrUndefined(muzzleFlashAudioConfigObj)) {
+            type.setMuzzleFlashAudioConfig(convertAudioItemConfig((JsObject) muzzleFlashAudioConfigObj));
+        }
+        JSObject impactAudioConfigObj = obj.get("impactAudioConfig");
+        if (!JsUtils.isNullOrUndefined(impactAudioConfigObj)) {
+            type.setImpactAudioConfig(convertAudioItemConfig((JsObject) impactAudioConfigObj));
+        }
         type.setTrailParticleSystemConfigId(obj.getNullableInt("trailParticleSystemConfigId"));
         return type;
     }

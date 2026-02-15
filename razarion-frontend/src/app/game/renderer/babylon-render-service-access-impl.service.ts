@@ -191,6 +191,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.camera.maxZ = 800;
     this.camera.setTarget(new Vector3(0, 0, 0));
     this.babylonAudioService.attachListenerTo(this.camera);
+    this.babylonAudioService.setRendererService(this);
 
     // ----- Light -----
     const lightDirection = new Vector3(-3, -10, 3);
@@ -241,6 +242,22 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         throw e;
       }
     });
+
+    // Start atmosphere audio after a short delay to ensure game context is ready
+    setTimeout(() => {
+      try {
+        const audioConfig = this.gwtAngularService.gwtAngularFacade.gameUiControl?.getColdGameUiContext()?.getAudioConfig?.();
+        if (audioConfig) {
+          this.babylonAudioService.configureFromAudioConfig(audioConfig);
+          this.babylonAudioService.startAtmosphere(
+            audioConfig.getTerrainLoopWater(),
+            audioConfig.getTerrainLoopLand()
+          );
+        }
+      } catch (e) {
+        console.error("BabylonRenderServiceAccessImpl: Failed to start atmosphere audio", e);
+      }
+    }, 2000);
   }
 
   createTerrainTile(terrainTile: TerrainTile): BabylonTerrainTile {
@@ -666,6 +683,23 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     );
   }
 
+  public getTerrainHeightAt(x: number, z: number): number | null {
+    const ray = new Ray(new Vector3(x, 100, z), new Vector3(0, -1, 0), 1000);
+    const pickInfo = this.scene.pickWithRay(ray,
+      (mesh: AbstractMesh) => {
+        const razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
+        if (!razarionMetadata) {
+          return false;
+        }
+        return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_GROUND;
+      }
+    );
+    if (pickInfo?.pickedPoint) {
+      return pickInfo.pickedPoint.y;
+    }
+    return null;
+  }
+
   public setupTerrainPickPoint(): PickingInfo {
     return this.scene.pick(this.scene.pointerX, this.scene.pointerY, (mesh: AbstractMesh) => {
       let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
@@ -721,10 +755,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
   }
 
-  startSpawn(particleSystemId: number, x: number, y: number, z: number): void {
-    this.createParticleSystem(particleSystemId, null)?.then(particleSystemSet => {
-      particleSystemSet.start(<any>new Vector3(x, z + this.SPAWN_PARTICLE_HEIGHT, y));
-    });
+  startSpawn(particleSystemId: number | null, spawnAudioId: number | null, x: number, y: number, z: number): void {
+    if (particleSystemId != null) {
+      this.createParticleSystem(particleSystemId, null)?.then(particleSystemSet => {
+        particleSystemSet.start(<any>new Vector3(x, z + this.SPAWN_PARTICLE_HEIGHT, y));
+      });
+    }
+    if (spawnAudioId != null) {
+      this.babylonAudioService.playAudio(spawnAudioId);
+    }
   }
 
   createBabylonBoxItem(id: number, boxItemType: BoxItemType): BabylonBoxItem {

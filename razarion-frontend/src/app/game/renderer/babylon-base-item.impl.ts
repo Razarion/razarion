@@ -362,9 +362,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       return;
     }
 
-    const muzzleFlashAudioId = this.baseItemType.getWeaponType()?.getMuzzleFlashAudioItemConfigId();
-    if (muzzleFlashAudioId != null) {
-      this.rendererService.babylonAudioService.playAudioAtPosition(muzzleFlashAudioId, this.getContainer().position);
+    const muzzleFlashAudioConfig = this.baseItemType.getWeaponType()?.getMuzzleFlashAudioConfig();
+    if (muzzleFlashAudioConfig != null) {
+      this.rendererService.babylonAudioService.playAudioAtPositionWithConfig(muzzleFlashAudioConfig, this.getContainer().position);
     }
 
     let startPosition: Vector3;
@@ -675,6 +675,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         if (impactParticleSystemId !== null && impactParticleSystemId !== undefined) {
           this.rendererService.createParticleSystem(impactParticleSystemId, null)
             ?.then(particleSystemSet => particleSystemSet.start(targetImpactMesh ? targetImpactMesh : meshProjectile));
+        }
+        const impactAudioConfig = this.baseItemType.getWeaponType()?.getImpactAudioConfig();
+        if (impactAudioConfig != null) {
+          this.rendererService.babylonAudioService.playAudioAtPositionWithConfig(impactAudioConfig, destination);
         }
       } catch (e) {
         console.warn(`BabylonBaseItemImpl animatable.onAnimationEnd failed ${e}`)

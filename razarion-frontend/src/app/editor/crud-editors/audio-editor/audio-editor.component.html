@@ -1,0 +1,46 @@
+<div class="flex flex-col h-full" style="width: 40em">
+  <div class="flex gap-2 mb-3">
+    <p-button label="New" icon="pi pi-plus" size="small" (onClick)="onCreate()"></p-button>
+  </div>
+
+  <p-table [value]="allAudioEntries"
+    [scrollable]="true"
+    scrollHeight="flex"
+    class="flex-1 min-h-0">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 4em">Id</th>
+        <th>Name</th>
+        <th style="width: 6em">Size</th>
+        <th style="width: 10em"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-entry>
+      <tr>
+        <td>{{ entry.id }}</td>
+        <td>
+          <div class="flex gap-1 items-center">
+            <input [(ngModel)]="entry.internalName" type="text"
+              class="text-base text-color text-primary bg-primary-contrast p-1 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+            <p-button icon="pi pi-save" (onClick)="onSave(entry)" size="small" [rounded]="true" [text]="true"></p-button>
+          </div>
+        </td>
+        <td>{{ entry.size }}</td>
+        <td>
+          <div class="flex gap-1">
+            <p-fileUpload #fileUploadElements chooseIcon="pi pi-folder-open" chooseLabel=" " mode="basic"
+              accept="audio/*" styleClass="p-button-sm p-button-rounded p-button-text" [auto]="true" [customUpload]="true"
+              (uploadHandler)="onImportAudio($event, entry)">
+            </p-fileUpload>
+            @if (playingId === entry.id) {
+              <p-button icon="pi pi-stop" (onClick)="onStop()" size="small" severity="danger" [rounded]="true" [text]="true"></p-button>
+            } @else {
+              <p-button icon="pi pi-play" (onClick)="onPlay(entry)" size="small" [rounded]="true" [text]="true"></p-button>
+            }
+            <p-button icon="pi pi-trash" (onClick)="onDelete(entry)" size="small" severity="danger" [rounded]="true" [text]="true"></p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

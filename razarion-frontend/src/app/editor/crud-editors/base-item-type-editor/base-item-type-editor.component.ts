@@ -26,6 +26,8 @@ import {TerrainTypeComponent} from '../../common/terrain-type/terrain-type.compo
 import {Model3dComponent} from '../../common/model3d/model3d.component';
 import {ImageItemComponent} from '../../common/image-item/image-item.component';
 import {AccelerationComponent} from '../../common/acceleration/acceleration.component';
+import {AudioComponent} from '../../common/audio/audio.component';
+import {AudioConfigComponent} from '../../common/audio-config/audio-config.component';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 
@@ -45,6 +47,8 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     Model3dComponent,
     ImageItemComponent,
     AccelerationComponent,
+    AudioComponent,
+    AudioConfigComponent,
     ScrollPanelModule
 ],
   templateUrl: './base-item-type-editor.component.html'
@@ -113,7 +117,8 @@ export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemT
         projectileSpeed = 1;
         impactParticleSystemId = null;
         trailParticleSystemConfigId = null;
-        muzzleFlashAudioItemConfigId = <any>null;
+        muzzleFlashAudioConfig = <any>null;
+        impactAudioConfig = <any>null;
         turretAngleVelocity = <any>null
       };
     } else {

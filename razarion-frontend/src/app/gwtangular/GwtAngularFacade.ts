@@ -47,7 +47,17 @@ export interface GameUiControl {
 }
 
 export interface ColdGameUiContext {
+  getAudioConfig(): AudioConfig | null;
+
   getInGameQuestVisualConfig(): InGameQuestVisualConfig;
+}
+
+export interface AudioConfig {
+  getTerrainLoopWater(): number | null;
+
+  getTerrainLoopLand(): number | null;
+
+  getOnQuestActivated(): number | null;
 }
 
 export interface InGameQuestVisualConfig {
@@ -318,6 +328,8 @@ export interface BaseItemType extends ItemType {
 
   getExplosionAudioItemConfigId(): number | null;
 
+  getSpawnAudioId(): number | null;
+
   getPrice(): number;
 
   getConsumingHouseSpace(): number;
@@ -355,6 +367,18 @@ export interface FactoryType {
   getAbleToBuildIds(): number[];
 }
 
+export interface AudioItemConfig {
+  getAudioId(): number | null;
+
+  getPitchCentsMin(): number;
+
+  getPitchCentsMax(): number;
+
+  getVolumeMin(): number;
+
+  getVolumeMax(): number;
+}
+
 export interface WeaponType {
   getImpactParticleSystemId(): number | null;
 
@@ -362,7 +386,9 @@ export interface WeaponType {
 
   getTrailParticleSystemConfigId(): number | null;
 
-  getMuzzleFlashAudioItemConfigId(): number | null;
+  getMuzzleFlashAudioConfig(): AudioItemConfig | null;
+
+  getImpactAudioConfig(): AudioItemConfig | null;
 
   checkItemTypeDisallowed(targetItemTypeId: number): boolean;
 }
@@ -435,7 +461,7 @@ export interface BabylonRenderServiceAccess {
 
   createBabylonResourceItem(id: number, resourceItemType: ResourceItemType): BabylonResourceItem;
 
-  startSpawn(particleSystemId: number, x: number, y: number, z: number): void;
+  startSpawn(particleSystemId: number | null, spawnAudioId: number | null, x: number, y: number, z: number): void;
 
   createBabylonBoxItem(id: number, boxItemType: BoxItemType): BabylonBoxItem;
 
@@ -657,7 +683,11 @@ export interface BaseItemPlacerPresenter {
 export interface BaseItemPlacer {
   getModel3DId(): number;
 
+  getSpawnAudioId(): number | null;
+
   isPositionValid(): boolean;
+
+  isPlayBuildSound(): boolean;
 
   getEnemyFreeRadius(): number;
 

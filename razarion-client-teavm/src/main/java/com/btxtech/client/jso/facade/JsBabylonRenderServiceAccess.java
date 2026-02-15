@@ -36,8 +36,14 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
             script = "return obj.createBabylonBaseItem(id, baseItemType, baseId, diplomacy, userName);")
     private static native JSObject callCreateBabylonBaseItem(JSObject obj, int id, JSObject baseItemType, int baseId, String diplomacy, String userName);
 
-    @JSBody(params = {"obj", "particleSystemId", "x", "y", "z"}, script = "obj.startSpawn(particleSystemId, x, y, z);")
-    private static native void callStartSpawn(JSObject obj, int particleSystemId, double x, double y, double z);
+    @JSBody(params = {"obj", "particleSystemId", "spawnAudioId", "x", "y", "z"}, script = "obj.startSpawn(particleSystemId, spawnAudioId, x, y, z);")
+    private static native void callStartSpawn(JSObject obj, int particleSystemId, int spawnAudioId, double x, double y, double z);
+
+    @JSBody(params = {"obj", "particleSystemId", "x", "y", "z"}, script = "obj.startSpawn(particleSystemId, null, x, y, z);")
+    private static native void callStartSpawnParticleOnly(JSObject obj, int particleSystemId, double x, double y, double z);
+
+    @JSBody(params = {"obj", "spawnAudioId", "x", "y", "z"}, script = "obj.startSpawn(null, spawnAudioId, x, y, z);")
+    private static native void callStartSpawnAudioOnly(JSObject obj, int spawnAudioId, double x, double y, double z);
 
     @JSBody(params = {"obj", "id", "resourceItemType"}, script = "return obj.createBabylonResourceItem(id, resourceItemType);")
     private static native JSObject callCreateBabylonResourceItem(JSObject obj, int id, JSObject resourceItemType);
@@ -97,8 +103,14 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
     }
 
     @Override
-    public void startSpawn(int particleSystemId, double x, double y, double z) {
-        callStartSpawn(js, particleSystemId, x, y, z);
+    public void startSpawn(Integer particleSystemId, Integer spawnAudioId, double x, double y, double z) {
+        if (particleSystemId != null && spawnAudioId != null) {
+            callStartSpawn(js, particleSystemId, spawnAudioId, x, y, z);
+        } else if (particleSystemId != null) {
+            callStartSpawnParticleOnly(js, particleSystemId, x, y, z);
+        } else if (spawnAudioId != null) {
+            callStartSpawnAudioOnly(js, spawnAudioId, x, y, z);
+        }
     }
 
     @Override
