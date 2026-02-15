@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "razarion-ai-content": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["razarion-ai-content/build/index.js"],
+      "env": {
+        "RAZARION_BASE_URL": "${RAZARION_BASE_URL:-http://localhost:8080}",
+        "RAZARION_ADMIN_EMAIL": "${RAZARION_ADMIN_EMAIL:-admin@admin.com}",
+        "RAZARION_ADMIN_PASSWORD": "${RAZARION_ADMIN_PASSWORD:-admin}"
+      }
+    }
+  }
+}
