@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { gunzipSync, deflateSync } from "node:zlib";
 
 // --- Configuration ---
 const BASE_URL = process.env.RAZARION_BASE_URL || "http://localhost:8080";
@@ -410,6 +411,331 @@ server.tool(
   async () => {
     await apiPost("/rest/planet-mgmt-controller/restartPlanetWarm");
     return msg("Planet warm restart initiated.");
+  }
+);
+
+// ============================================================
+// TERRAIN MINIMAP
+// ============================================================
+
+// Terrain constants (from TerrainUtil.java / terrain-system.md)
+const NODE_X_COUNT = 160;
+const NODE_Y_COUNT = 160;
+const TILE_NODE_SIZE = NODE_X_COUNT * NODE_Y_COUNT;
+const HEIGHT_PRECISION = 0.1;
+const HEIGHT_MIN = -200;
+const WATER_LEVEL = 0;
+
+function uint16ToHeight(uint16: number): number {
+  return uint16 * HEIGHT_PRECISION + HEIGHT_MIN;
+}
+
+async function publicFetchBinary(path: string): Promise<Buffer> {
+  const response = await fetch(`${BASE_URL}${path}`);
+  if (!response.ok) {
+    throw new Error(`GET ${path} failed: ${response.status}`);
+  }
+  const arrayBuffer = await response.arrayBuffer();
+  let buffer = Buffer.from(arrayBuffer);
+  // If fetch did not auto-decompress gzip, do it manually
+  if (buffer.length >= 2 && buffer[0] === 0x1f && buffer[1] === 0x8b) {
+    buffer = gunzipSync(buffer);
+  }
+  return buffer;
+}
+
+async function publicFetchJson(path: string): Promise<unknown> {
+  const response = await fetch(`${BASE_URL}${path}`, {
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) {
+    throw new Error(`GET ${path} failed: ${response.status}`);
+  }
+  return response.json();
+}
+
+server.tool(
+  "terrain_minimap",
+  `Generate an ASCII minimap of the terrain heightmap for a planet.
+Fetches the GZIP-compressed heightmap, decodes uint16 values to heights, and renders a downsampled ASCII visualization.
+Characters: ~ water (<0m), . low land (0-3m), : medium (3-10m), + high (10-30m), # mountain (30-80m), ^ peak (>80m).
+Also returns height statistics.`,
+  {
+    planetId: z.number().describe("Planet config ID"),
+    width: z.number().optional().describe("Output width in characters (default: 100, max: 200)"),
+  },
+  async ({ planetId, width }) => {
+    const outWidth = Math.min(width ?? 100, 200);
+
+    // 1. Get terrain shape to determine tile dimensions
+    const terrainShape = (await publicFetchJson(`/rest/terrainshape/${planetId}`)) as {
+      nativeTerrainShapeTiles?: unknown[][];
+    };
+    if (!terrainShape.nativeTerrainShapeTiles || terrainShape.nativeTerrainShapeTiles.length === 0) {
+      throw new Error(`Planet ${planetId} has no terrain shape data.`);
+    }
+    const tileXCount = terrainShape.nativeTerrainShapeTiles.length;
+    const tileYCount = terrainShape.nativeTerrainShapeTiles[0].length;
+    const totalXNodes = tileXCount * NODE_X_COUNT;
+    const totalYNodes = tileYCount * NODE_Y_COUNT;
+
+    // 2. Fetch heightmap binary (public endpoint, GZIP-compressed)
+    const buffer = await publicFetchBinary(`/rest/terrainHeightMap/${planetId}`);
+    const bytes = new Uint8Array(buffer);
+
+    // 3. Convert byte pairs to uint16 (Little-Endian)
+    const heightMapLength = Math.floor(bytes.length / 2);
+    const heightMap = new Uint16Array(heightMapLength);
+    for (let i = 0; i < heightMapLength; i++) {
+      heightMap[i] = bytes[i * 2] + (bytes[i * 2 + 1] << 8);
+    }
+
+    // 4. Determine sampling
+    const step = Math.max(1, Math.ceil(totalXNodes / outWidth));
+    const cols = Math.ceil(totalXNodes / step);
+    const rows = Math.ceil(totalYNodes / step);
+
+    // 5. Render minimap
+    let minH = Infinity, maxH = -Infinity;
+    let waterCount = 0, landCount = 0, totalSampled = 0;
+    const lines: string[] = [];
+
+    for (let oy = rows - 1; oy >= 0; oy--) {
+      let line = "";
+      for (let ox = 0; ox < cols; ox++) {
+        const nodeX = ox * step;
+        const nodeY = oy * step;
+        const tileX = Math.floor(nodeX / NODE_X_COUNT);
+        const tileY = Math.floor(nodeY / NODE_Y_COUNT);
+        const localX = nodeX % NODE_X_COUNT;
+        const localY = nodeY % NODE_Y_COUNT;
+        const idx = TILE_NODE_SIZE * (tileY * tileXCount + tileX) + localY * NODE_X_COUNT + localX;
+
+        if (idx >= heightMapLength) {
+          line += " ";
+          continue;
+        }
+
+        const h = uint16ToHeight(heightMap[idx]);
+        totalSampled++;
+        if (h < minH) minH = h;
+        if (h > maxH) maxH = h;
+
+        if (h < WATER_LEVEL) {
+          line += "~";
+          waterCount++;
+        } else if (h < 3) {
+          line += ".";
+          landCount++;
+        } else if (h < 10) {
+          line += ":";
+          landCount++;
+        } else if (h < 30) {
+          line += "+";
+          landCount++;
+        } else if (h < 80) {
+          line += "#";
+          landCount++;
+        } else {
+          line += "^";
+          landCount++;
+        }
+      }
+      lines.push(line);
+    }
+
+    // 6. Build output
+    let out = `Terrain Minimap - Planet ${planetId}\n`;
+    out += `Size: ${totalXNodes} x ${totalYNodes} m  (${tileXCount} x ${tileYCount} tiles)\n`;
+    out += `Heightmap: ${heightMapLength} values  |  Sample: 1 char = ${step} m  |  ${cols} x ${rows} chars\n\n`;
+    out += lines.join("\n");
+    out += "\n\n";
+    out += "Legend:  ~ water(<0m)  . low(0-3m)  : med(3-10m)  + high(10-30m)  # mountain(30-80m)  ^ peak(>80m)\n";
+    out += `Height range: ${minH.toFixed(1)} m .. ${maxH.toFixed(1)} m\n`;
+    const waterPct = totalSampled > 0 ? ((waterCount / totalSampled) * 100).toFixed(1) : "0";
+    const landPct = totalSampled > 0 ? ((landCount / totalSampled) * 100).toFixed(1) : "0";
+    out += `Coverage: water ${waterPct}%  land ${landPct}%  (${totalSampled} samples)`;
+
+    return msg(out);
+  }
+);
+
+// ============================================================
+// TERRAIN MINIMAP IMAGE (PNG)
+// ============================================================
+
+// CRC32 lookup table for PNG chunk checksums
+const crcTable: number[] = [];
+for (let n = 0; n < 256; n++) {
+  let c = n;
+  for (let k = 0; k < 8; k++) {
+    c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  }
+  crcTable[n] = c;
+}
+
+function crc32(buf: Uint8Array): number {
+  let crc = 0xffffffff;
+  for (let i = 0; i < buf.length; i++) {
+    crc = crcTable[(crc ^ buf[i]) & 0xff] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function pngChunk(type: string, data: Uint8Array): Uint8Array {
+  const typeBytes = new Uint8Array([
+    type.charCodeAt(0), type.charCodeAt(1), type.charCodeAt(2), type.charCodeAt(3),
+  ]);
+  const lenBuf = new Uint8Array(4);
+  new DataView(lenBuf.buffer).setUint32(0, data.length, false);
+  const crcInput = new Uint8Array(4 + data.length);
+  crcInput.set(typeBytes, 0);
+  crcInput.set(data, 4);
+  const crcVal = crc32(crcInput);
+  const crcBuf = new Uint8Array(4);
+  new DataView(crcBuf.buffer).setUint32(0, crcVal, false);
+  const chunk = new Uint8Array(4 + 4 + data.length + 4);
+  chunk.set(lenBuf, 0);
+  chunk.set(typeBytes, 4);
+  chunk.set(data, 8);
+  chunk.set(crcBuf, 8 + data.length);
+  return chunk;
+}
+
+function encodePNG(width: number, height: number, rgb: Uint8Array): Uint8Array {
+  // IHDR
+  const ihdr = new Uint8Array(13);
+  const ihdrView = new DataView(ihdr.buffer);
+  ihdrView.setUint32(0, width, false);
+  ihdrView.setUint32(4, height, false);
+  ihdr[8] = 8;  // bit depth
+  ihdr[9] = 2;  // color type: RGB
+  ihdr[10] = 0; // compression
+  ihdr[11] = 0; // filter
+  ihdr[12] = 0; // interlace
+
+  // Raw scanlines: filter byte (0) + RGB per row
+  const rowSize = 1 + width * 3;
+  const raw = new Uint8Array(height * rowSize);
+  for (let y = 0; y < height; y++) {
+    raw[y * rowSize] = 0; // no filter
+    raw.set(rgb.subarray(y * width * 3, (y + 1) * width * 3), y * rowSize + 1);
+  }
+
+  const compressed = deflateSync(raw, { level: 6 });
+
+  // Assemble PNG
+  const signature = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+  const ihdrChunk = pngChunk("IHDR", ihdr);
+  const idatChunk = pngChunk("IDAT", compressed);
+  const iendChunk = pngChunk("IEND", new Uint8Array(0));
+
+  const png = new Uint8Array(
+    signature.length + ihdrChunk.length + idatChunk.length + iendChunk.length
+  );
+  let offset = 0;
+  png.set(signature, offset); offset += signature.length;
+  png.set(ihdrChunk, offset); offset += ihdrChunk.length;
+  png.set(idatChunk, offset); offset += idatChunk.length;
+  png.set(iendChunk, offset);
+  return png;
+}
+
+function heightToColor(h: number): [number, number, number] {
+  if (h < -5)  return [10, 30, 100];    // deep water
+  if (h < 0)   return [30, 80, 170];    // shallow water
+  if (h < 1)   return [160, 200, 100];  // beach/shore
+  if (h < 3)   return [80, 170, 50];    // low land
+  if (h < 10)  return [100, 150, 40];   // medium land
+  if (h < 20)  return [170, 150, 60];   // high land
+  if (h < 30)  return [150, 120, 60];   // hills
+  if (h < 50)  return [130, 110, 90];   // mountain
+  if (h < 80)  return [160, 155, 150];  // high mountain
+  return [230, 230, 235];               // peak/snow
+}
+
+server.tool(
+  "terrain_minimap_image",
+  `Generate a PNG minimap image of the terrain heightmap for a planet.
+Fetches the GZIP-compressed heightmap, decodes uint16 values to heights, and renders a color-mapped PNG image.
+Colors: dark blue (deep water), blue (water), green (land), yellow-brown (hills), gray (mountains), white (peaks).
+Returns the image as base64-encoded PNG.`,
+  {
+    planetId: z.number().describe("Planet config ID"),
+    width: z.number().optional().describe("Output image width in pixels (default: 400, max: 1024)"),
+  },
+  async ({ planetId, width }) => {
+    const outWidth = Math.min(Math.max(width ?? 400, 32), 1024);
+
+    // 1. Get terrain shape to determine tile dimensions
+    const terrainShape = (await publicFetchJson(`/rest/terrainshape/${planetId}`)) as {
+      nativeTerrainShapeTiles?: unknown[][];
+    };
+    if (!terrainShape.nativeTerrainShapeTiles || terrainShape.nativeTerrainShapeTiles.length === 0) {
+      throw new Error(`Planet ${planetId} has no terrain shape data.`);
+    }
+    const tileXCount = terrainShape.nativeTerrainShapeTiles.length;
+    const tileYCount = terrainShape.nativeTerrainShapeTiles[0].length;
+    const totalXNodes = tileXCount * NODE_X_COUNT;
+    const totalYNodes = tileYCount * NODE_Y_COUNT;
+
+    // 2. Fetch heightmap binary
+    const buffer = await publicFetchBinary(`/rest/terrainHeightMap/${planetId}`);
+    const bytes = new Uint8Array(buffer);
+
+    // 3. Convert byte pairs to uint16 (Little-Endian)
+    const heightMapLength = Math.floor(bytes.length / 2);
+    const heightMap = new Uint16Array(heightMapLength);
+    for (let i = 0; i < heightMapLength; i++) {
+      heightMap[i] = bytes[i * 2] + (bytes[i * 2 + 1] << 8);
+    }
+
+    // 4. Determine sampling
+    const step = Math.max(1, Math.ceil(totalXNodes / outWidth));
+    const cols = Math.ceil(totalXNodes / step);
+    const rows = Math.ceil(totalYNodes / step);
+
+    // 5. Render image (RGB buffer)
+    const rgb = new Uint8Array(cols * rows * 3);
+    for (let oy = 0; oy < rows; oy++) {
+      const srcY = (rows - 1 - oy) * step; // flip Y (top = north)
+      for (let ox = 0; ox < cols; ox++) {
+        const srcX = ox * step;
+        const tileX = Math.floor(srcX / NODE_X_COUNT);
+        const tileY = Math.floor(srcY / NODE_Y_COUNT);
+        const localX = srcX % NODE_X_COUNT;
+        const localY = srcY % NODE_Y_COUNT;
+        const idx = TILE_NODE_SIZE * (tileY * tileXCount + tileX) + localY * NODE_X_COUNT + localX;
+
+        let r = 0, g = 0, b = 0;
+        if (idx < heightMapLength) {
+          const h = uint16ToHeight(heightMap[idx]);
+          [r, g, b] = heightToColor(h);
+        }
+        const px = (oy * cols + ox) * 3;
+        rgb[px] = r;
+        rgb[px + 1] = g;
+        rgb[px + 2] = b;
+      }
+    }
+
+    // 6. Encode PNG and return as base64 image
+    const png = encodePNG(cols, rows, rgb);
+    const base64 = Buffer.from(png).toString("base64");
+
+    return {
+      content: [
+        {
+          type: "image" as const,
+          data: base64,
+          mimeType: "image/png",
+        },
+        {
+          type: "text" as const,
+          text: `Terrain Minimap Image - Planet ${planetId}\nSize: ${totalXNodes} x ${totalYNodes} m (${tileXCount} x ${tileYCount} tiles)\nImage: ${cols} x ${rows} px (1 px = ${step} m)`,
+        },
+      ],
+    };
   }
 );
 

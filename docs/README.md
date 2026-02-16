@@ -17,6 +17,14 @@ Development guides and setup:
 - [Debugging WASM](development/debugging-wasm.md) - WASM debugging guide (TODO)
 - [Testing](development/testing.md) - Testing strategy and guidelines (TODO)
 
+### Terrain
+Terrain system and heightmap:
+- [Terrain System](terrain/terrain-system.md) - Heightmap format, height calculation, terrain classification, and REST endpoints
+
+### Game Design
+Game design and progression:
+- [Game Progression](game-design/progression.md) - Game flow, phases, units, quests, and balancing
+
 ### Deployment
 Deployment and operations:
 - [Kubernetes](deployment/kubernetes.md) - GKE deployment guide

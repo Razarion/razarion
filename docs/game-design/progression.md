@@ -21,32 +21,46 @@ This document defines the game flow, progression, and content design for Razario
 The planet is divided into **four geographic phases**. Each phase has its own gameplay identity, bot behavior, unlock mechanics, and difficulty. Players progress from Phase 1 to Phase 4 by leveling up. The phases are physically separated areas on the map.
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                                                     │
-│   PHASE 4: Alliance Warzone                         │
-│   (PvP, guild warfare, bot alliances)               │
-│   [OPEN DESIGN - details TBD]                       │
-│                                                     │
-├─────────────────────────────────────────────────────┤
-│                                                     │
-│   PHASE 3: The Siege                                │
-│   (Aggressive bots attack players,                  │
-│    survival & defense focus)                         │
-│                                                     │
-├─────────────────────────────────────────────────────┤
-│                                                     │
-│   PHASE 2: Semi-Noob Frontier                       │
-│   (Complex outposts, crystal boxes unlock            │
-│    buildings & vehicles)                             │
-│                                                     │
-├─────────────────────────────────────────────────────┤
-│                                                     │
-│   PHASE 1: Noob Island                              │
-│   (Safe tutorial zone, passive bots,                │
-│    learn basics)                                     │
-│                                                     │
-└─────────────────────────────────────────────────────┘
+Planet: 5120 x 5120 m (32 x 32 tiles)
+Origin (0,0) = bottom-left corner, Y increases upward
+
+Y
+5120 ┌──────────────────────┬──────────────────────────────┐
+     │                      │                              │
+     │                      │                              │
+     │    PHASE 4: Alliance Warzone                        │
+     │    (PvP, guild warfare, bot alliances)              │
+     │    [OPEN DESIGN]                                    │
+     │                      │                              │
+2500 ├──────────────────────┤                              │
+     │                      │                              │
+     │  P2: Semi-Noob       │                              │
+     │  Frontier             │                              │
+     │  (Crystal boxes,     │  PHASE 3: The Siege          │
+     │   unlock buildings   │  (Aggressive bots,           │
+     │   & vehicles)        │   survival & defense)        │
+ 800 ├────────┐             │                              │
+     │ P1:    │             │                              │
+     │ Noob   │             │                              │
+     │ Island │             │                              │
+   0 └────────┴─────────────┴──────────────────────────────┘
+     0       820          2000                           5120  X
 ```
+
+### Phase Coordinates (PlaceConfig regions)
+
+| Phase | X Range | Y Range | Size | Area |
+|-------|---------|---------|------|------|
+| 1 - Noob Island | 0 – 820 | 0 – 800 | 820 x 800 m | 0.66 km² |
+| 2 - Semi-Noob Frontier | 0 – 2000 x 0 – 2000 (minus P1) | — | ~2000 x 2000 m | ~3.34 km² |
+| 3 - The Siege | 2000 – 5120 | 0 – 2500 | 3120 x 2500 m | 7.80 km² |
+| 4 - Alliance Warzone | 0 – 5120 x 2500 – 5120 + 0 – 2000 x 2000 – 2500 (L-shape) | — | L-shaped | ~14.42 km² |
+
+**Phase boundary logic:**
+1. If X < 820 and Y < 800 → **Phase 1**
+2. If X < 2000 and Y < 2000 (and not Phase 1) → **Phase 2**
+3. If X ≥ 2000 and Y < 2500 → **Phase 3**
+4. Everything else → **Phase 4**
 
 ### Phase Transition
 
@@ -171,7 +185,8 @@ Quests are grouped by level range. Each group introduces mechanics appropriate f
 
 ### 3.6 Map Layout
 
-- Located in the northern part of the planet, separated by terrain ridges
+- **Region:** Bottom-left corner (X: 0–820, Y: 0–800), ~0.66 km²
+- The lake with its island forms a natural boundary — water surrounds the play area
 - Multiple start zones so new players don't overlap too much
 - Resource nodes within short walking distance of every start zone
 - Bot difficulty increases with distance from start zones:
@@ -179,8 +194,8 @@ Quests are grouped by level range. Each group introduces mechanics appropriate f
   - Mid island: 2-3 Raider Camps (Level 3-4 targets)
   - Far from start: 2 Raider Outposts (Level 5-6 targets)
   - Island edges: 1-2 Raider Fortresses (Level 7-9 targets)
-- Natural terrain barriers (ridges/cliffs) separate Noob Island from Phase 2 — impassable on foot
-- **Transporter launch zone** near island edge: designated area where the Transporter departs
+- The lake edge forms the boundary to Phase 2 — the Transporter crosses the water to reach P2
+- **Transporter launch zone** near lake edge: designated area where the Transporter departs
 
 ---
 
@@ -251,11 +266,13 @@ This means two players at the same level may have different unlocks depending on
 
 ### 4.7 Map Layout
 
-- Larger area than Noob Island, wrapping around it
+- **Region:** X: 0–2000, Y: 0–2000 (minus Phase 1 area), ~3.34 km²
+- Wraps around Phase 1 (the lake) on the top and right side
+- Includes the elevated ring/hill terrain feature (~X: 900–1800, Y: 1200–2100)
 - Terrain is more varied (chokepoints, elevated areas, open plains)
 - Bot outposts guard the approaches to valuable box spawn areas
 - Resource nodes are more spread out than Phase 1 (longer supply lines)
-- Transition to Phase 3 is through a narrow passage guarded by Armored Outposts
+- Transition to Phase 3 is across the eastern boundary (X=2000), transition to Phase 4 across the northern boundary (Y=2000)
 
 ---
 
@@ -321,6 +338,8 @@ Players need to think about:
 
 ### 5.6 Map Layout
 
+- **Region:** X: 2000–5120, Y: 0–2500, 3120 x 2500 m = 7.80 km²
+- Located to the right of Phase 2, separated by terrain barriers along X=2000
 - Harsh, contested territory
 - Fewer safe spots — players must create their own safety through defense
 - Siege Bot bases are positioned to threaten multiple player build areas
@@ -374,7 +393,8 @@ The endgame phase where the game transitions from PvE to PvP. Key ideas:
 
 ### 6.5 Map Layout (Concept)
 
-- Largest area on the map
+- **Region:** L-shaped — X: 0–5120, Y: 2500–5120 plus X: 0–2000, Y: 2000–2500, ~14.42 km²
+- Largest area on the map (above Phase 2 and Phase 3)
 - Multiple bot faction territories
 - Rich resource zones at contested borders between factions
 - Open terrain favoring large army battles

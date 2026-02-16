@@ -43,7 +43,11 @@ No registration. No installation. Just play.
 
 ### 📖 Documentation
 
-Detailed technical documentation is available in the [`docs/README.md`](docs/README.md).
+Detailed technical documentation is available in the [`docs/README.md`](docs/README.md):
+- [Architecture](docs/architecture/) – TeaVM-Angular Bridge, Multiplayer Sync, Quest Tip System
+- [Terrain System](docs/terrain/terrain-system.md) – Heightmap format, terrain classification, REST endpoints
+- [Game Design](docs/game-design/progression.md) – Game progression, phases, units, quests
+- [Deployment](docs/deployment/kubernetes.md) – Kubernetes / GKE deployment
 
 ---
 
