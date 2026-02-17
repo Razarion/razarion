@@ -6,7 +6,7 @@ import { gunzipSync, deflateSync } from "node:zlib";
 // --- Configuration ---
 const BASE_URL = process.env.RAZARION_BASE_URL || "http://localhost:8080";
 const ADMIN_EMAIL = process.env.RAZARION_ADMIN_EMAIL || "admin@admin.com";
-const ADMIN_PASSWORD = process.env.RAZARION_ADMIN_PASSWORD || "admin";
+const ADMIN_PASSWORD = process.env.RAZARION_ADMIN_PASSWORD || "1234";
 
 let jwtToken: string | null = null;
 
@@ -737,6 +737,251 @@ Returns the image as base64-encoded PNG.`,
       ],
     };
   }
+);
+
+// ============================================================
+// TERRAIN HEIGHTMAP UPLOAD
+// ============================================================
+
+async function apiPostBinary(path: string, data: Uint8Array): Promise<void> {
+  const token = await authenticate();
+  const response = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/octet-stream",
+    },
+    body: data as any,
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`POST ${path} failed: ${response.status} ${text}`);
+  }
+}
+
+server.tool(
+  "upload_heightmap",
+  `Upload a complete heightmap for a planet. The heightmap is provided as a flat JSON array of uint16 values (0-65535).
+Height conversion: height_meters = uint16 * 0.1 - 200. So uint16=2000 → 0m (water level), uint16=2005 → 0.5m (default land).
+Array layout: tile-by-tile in row-major order (tileY * tileXCount + tileX), within each tile node-by-node (localY * 160 + localX).
+Tile size: 160x160 nodes. For a 5120x5120m planet: 32x32 tiles, 26,214,400 total values.
+WARNING: This replaces the ENTIRE heightmap. Use terrain_minimap first to verify the current state.`,
+  {
+    planetId: z.number().describe("Planet config ID"),
+    heightmap: z.array(z.number()).describe("Flat array of uint16 height values (0-65535), tile-by-tile row-major order"),
+  },
+  async ({ planetId, heightmap }) => {
+    // Convert uint16 array to Little-Endian byte buffer
+    const buf = Buffer.alloc(heightmap.length * 2);
+    for (let i = 0; i < heightmap.length; i++) {
+      const v = Math.max(0, Math.min(65535, Math.round(heightmap[i])));
+      buf[i * 2] = v & 0xff;
+      buf[i * 2 + 1] = (v >> 8) & 0xff;
+    }
+    const { gzipSync } = await import("node:zlib");
+    const compressed = gzipSync(buf);
+    await apiPostBinary(`/rest/editor/planeteditor/updateCompressedHeightMap/${planetId}`, compressed);
+    return msg(`Heightmap uploaded for planet ${planetId}. ${heightmap.length} values (${compressed.length} bytes compressed). Use terrain_minimap to verify.`);
+  }
+);
+
+server.tool(
+  "modify_heightmap_region",
+  `Modify a rectangular region of the heightmap. Downloads the current heightmap, applies changes to the specified region, and uploads the result.
+Supports operations: "set" (absolute height), "add" (add to current), "max" (take maximum), "min" (take minimum).
+Height is in METERS. Conversion: uint16 = (height_meters + 200) / 0.1. Water level = 0m, default land = 0.5m.
+Coordinate system: (0,0) = bottom-left, X increases right, Y increases up. Each node = 1 meter.`,
+  {
+    planetId: z.number().describe("Planet config ID"),
+    x1: z.number().describe("Left edge X coordinate (meters)"),
+    y1: z.number().describe("Bottom edge Y coordinate (meters)"),
+    x2: z.number().describe("Right edge X coordinate (meters)"),
+    y2: z.number().describe("Top edge Y coordinate (meters)"),
+    height: z.number().describe("Height value in meters"),
+    operation: z.enum(["set", "add", "max", "min"]).optional().describe("Operation to apply (default: set)"),
+  },
+  async ({ planetId, x1, y1, x2, y2, height, operation }) => {
+    const op = operation ?? "set";
+
+    // Fetch current heightmap
+    const buffer = await publicFetchBinary(`/rest/terrainHeightMap/${planetId}`);
+    const bytes = new Uint8Array(buffer);
+    const hmLen = Math.floor(bytes.length / 2);
+    const hmap = new Uint16Array(hmLen);
+    for (let i = 0; i < hmLen; i++) {
+      hmap[i] = bytes[i * 2] + (bytes[i * 2 + 1] << 8);
+    }
+
+    // Determine planet tile dimensions
+    const terrainShape = (await publicFetchJson(`/rest/terrainshape/${planetId}`)) as {
+      nativeTerrainShapeTiles?: unknown[][];
+    };
+    if (!terrainShape.nativeTerrainShapeTiles) throw new Error("No terrain shape");
+    const tileXCount = terrainShape.nativeTerrainShapeTiles.length;
+
+    const hu16 = Math.max(0, Math.min(65535, Math.round((height + 200) / 0.1)));
+    const nx1 = Math.max(0, Math.floor(x1));
+    const ny1 = Math.max(0, Math.floor(y1));
+    const nx2 = Math.min(Math.ceil(x2), tileXCount * NODE_X_COUNT - 1);
+    const ny2 = Math.min(Math.ceil(y2), terrainShape.nativeTerrainShapeTiles[0].length * NODE_Y_COUNT - 1);
+
+    let modified = 0;
+    for (let ny = ny1; ny <= ny2; ny++) {
+      for (let nx = nx1; nx <= nx2; nx++) {
+        const tx = Math.floor(nx / NODE_X_COUNT);
+        const ty = Math.floor(ny / NODE_Y_COUNT);
+        const lx = nx % NODE_X_COUNT;
+        const ly = ny % NODE_Y_COUNT;
+        const idx = TILE_NODE_SIZE * (ty * tileXCount + tx) + ly * NODE_X_COUNT + lx;
+        if (idx >= hmLen) continue;
+
+        if (op === "set") hmap[idx] = hu16;
+        else if (op === "add") hmap[idx] = Math.max(0, Math.min(65535, hmap[idx] + hu16 - 2000));
+        else if (op === "max") hmap[idx] = Math.max(hmap[idx], hu16);
+        else if (op === "min") hmap[idx] = Math.min(hmap[idx], hu16);
+        modified++;
+      }
+    }
+
+    // Upload
+    const outBuf = Buffer.alloc(hmLen * 2);
+    for (let i = 0; i < hmLen; i++) {
+      outBuf[i * 2] = hmap[i] & 0xff;
+      outBuf[i * 2 + 1] = (hmap[i] >> 8) & 0xff;
+    }
+    const { gzipSync } = await import("node:zlib");
+    const compressed = gzipSync(outBuf);
+    await apiPostBinary(`/rest/editor/planeteditor/updateCompressedHeightMap/${planetId}`, compressed);
+
+    return msg(`Modified ${modified} nodes in region (${nx1},${ny1})-(${nx2},${ny2}), op=${op}, height=${height}m. Use terrain_minimap to verify.`);
+  }
+);
+
+// ============================================================
+// PROMPTS
+// ============================================================
+
+server.prompt(
+  "generate_phase2_terrain",
+  `Generate Phase 2 ("Semi-Noob Frontier") terrain for a Razarion planet. Provides complete design specifications, terrain feature parameters, and a step-by-step generation procedure.`,
+  { planetId: z.string().describe("Planet config ID (e.g. '117')") },
+  async ({ planetId }) => ({
+    messages: [
+      {
+        role: "user" as const,
+        content: {
+          type: "text" as const,
+          text: `# Generate Phase 2 Terrain for Planet ${planetId}
+
+## 1. Phase 2 Overview
+
+Phase 2 ("Semi-Noob Frontier") is the second map phase in Razarion.
+- **Region:** X: 0–2000, Y: 0–2000 (minus Phase 1 at X: 0–820, Y: 0–800)
+- **Area:** ~3.34 km² wrapping around Phase 1 on top and right
+- **Theme:** Exploration & unlock — players find Crystal boxes guarded by defensive bot outposts
+- **Terrain character:** More varied than Phase 1 — chokepoints, elevated areas, open plains, border ridges
+
+## 2. Terrain Features to Generate
+
+### 2.1 Rolling Base Terrain (entire Phase 2)
+- Multi-octave sine noise for gentle undulation
+- Height range: 0.3–3.5m (always above water level 0m)
+- Algorithm:
+  \`\`\`
+  noise(x,y,seed) = sin(x*0.0131+seed+1.7)*cos(y*0.0173+seed*1.3)*0.5
+                   + sin(x*0.0293+y*0.0311+seed*2.1)*0.25
+                   + cos(x*0.0531-y*0.0471+seed*3.7)*0.125
+                   + sin(x*0.0971+y*0.0893+seed*5.3)*0.0625
+  base_height = max(0.3, 1.5 + noise(x,y,42)*1.2 + noise(x,y,123)*0.6 + fineNoise(x,y,77)*0.2)
+  \`\`\`
+
+### 2.2 Ring Hill Formation
+- **Center:** (1350, 1650) — matches design doc range X: 900–1800, Y: 1200–2100
+- **Inner radius:** 200m, **Outer radius:** 420m
+- **Peak height:** ~22m with ±6m noise variation
+- **Profile:** Smooth bell curve across ring wall width
+- **4 Gaps (passes):** East (0°, width 0.38 rad), NNE (99°, 0.30), West (180°, 0.35), SSW (-72°, 0.28)
+- **Interior plateau:** 3–5m elevated, suitable for base building
+- Gaps create natural chokepoints where bot outposts can guard
+
+### 2.3 Eastern Border Ridge (Phase 2 → Phase 3)
+- **Position:** X: 1870–2070, ridge peak at X≈1960
+- **Height:** 16m base + ±4m noise
+- **3 Passes at:** Y≈400, Y≈1150, Y≈1750 (pass width: 90m with smoothstep)
+- Separates Phase 2 from Phase 3 territory
+
+### 2.4 Northern Border Ridge (Phase 2 → Phase 4)
+- **Position:** Y: 1870–2070, ridge peak at Y≈1960
+- **Height:** 14m base + ±4m noise
+- **3 Passes at:** X≈450, X≈1050, X≈1650 (pass width: 90m)
+- Separates Phase 2 from Phase 4 territory
+
+### 2.5 Scattered Hills (tactical cover)
+| Center X | Center Y | Radius | Height |
+|----------|----------|--------|--------|
+| 550      | 1100     | 85m    | 9m     |
+| 1700     | 400      | 65m    | 7m     |
+| 280      | 1550     | 75m    | 11m    |
+| 1100     | 500      | 95m    | 8m     |
+| 1680     | 1050     | 55m    | 6m     |
+| 850      | 350      | 70m    | 7m     |
+| 400      | 900      | 60m    | 5m     |
+
+### 2.6 Ponds (water features)
+| Center X | Center Y | Radius | Depth  |
+|----------|----------|--------|--------|
+| 1300     | 1680     | 30m    | -3.0m  | (inside ring)
+| 1400     | 1600     | 22m    | -2.0m  | (inside ring)
+| 750      | 1250     | 35m    | -2.5m  | (west of ring)
+
+### 2.7 Phase 1 Transition Zone
+- **Preserve:** All nodes at X<810, Y<790 (Phase 1 core)
+- **Blend zone:** 60m wide at Phase 1 boundary using smoothstep
+- **Edge fade:** Beyond X=2000 or Y=2000, fade to existing terrain over 100m
+
+## 3. Technical Reference
+
+### Heightmap Format
+- uint16 values, Little-Endian, GZIP-compressed
+- Conversion: \`height_m = uint16 * 0.1 - 200\`, \`uint16 = (height_m + 200) / 0.1\`
+- Key values: 0m (water) = uint16 2000, 0.5m (default) = uint16 2005
+- Tile layout: 160×160 nodes per tile, row-major order (tileY * tileXCount + tileX)
+
+### REST Endpoints
+- Download: \`GET /rest/terrainHeightMap/{planetId}\` (GZIP binary, public)
+- Upload: \`POST /rest/editor/planeteditor/updateCompressedHeightMap/{planetId}\` (GZIP binary, requires JWT)
+- Auth: \`POST /rest/user/auth\` with HTTP Basic → returns JWT token
+
+## 4. Procedure
+
+1. Use \`terrain_minimap\` tool to view current terrain state for planet ${planetId}
+2. Write a Node.js script that:
+   a. Authenticates via \`POST /rest/user/auth\` (Basic auth admin@admin.com:1234 → JWT)
+   b. Downloads heightmap via \`GET /rest/terrainHeightMap/${planetId}\`
+   c. Decompresses GZIP, parses uint16 Little-Endian array
+   d. Iterates Phase 2 nodes (X: 0–2100, Y: 0–2100, skipping Phase 1 core)
+   e. Computes height = sum of all feature generators (base + ring + ridges + hills + ponds)
+   f. Applies Phase 1 transition blending
+   g. Packs back to uint16 LE, GZIP compresses
+   h. Uploads via \`POST /rest/editor/planeteditor/updateCompressedHeightMap/${planetId}\` with Bearer JWT
+3. Run the script
+4. Verify with \`terrain_minimap_image\` tool
+5. Apply changes with \`restart_planet_warm\` tool
+
+## 5. Expected Result
+
+The Phase 2 terrain should show:
+- A distinct ring-shaped hill formation in the center-west with 4 passable gaps
+- Brown/elevated border ridges along X≈2000 and Y≈2000 with passable gaps
+- Gently rolling green terrain throughout (no flat areas)
+- A few scattered hills providing tactical variety
+- 3 small ponds (2 inside ring, 1 outside)
+- Smooth transitions to Phase 1 (preserved) and to flat Phase 3/4 areas
+- Water coverage ~1.4%, height range roughly -10m to 30m`,
+        },
+      },
+    ],
+  })
 );
 
 // --- Start ---

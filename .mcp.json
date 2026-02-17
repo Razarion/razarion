@@ -7,7 +7,7 @@
       "env": {
         "RAZARION_BASE_URL": "${RAZARION_BASE_URL:-http://localhost:8080}",
         "RAZARION_ADMIN_EMAIL": "${RAZARION_ADMIN_EMAIL:-admin@admin.com}",
-        "RAZARION_ADMIN_PASSWORD": "${RAZARION_ADMIN_PASSWORD:-admin}"
+        "RAZARION_ADMIN_PASSWORD": "${RAZARION_ADMIN_PASSWORD:-1234}"
       }
     }
   }
