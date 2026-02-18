@@ -232,7 +232,7 @@ export class EditorTerrainTile {
         // }
 
         let terrainType = GwtHelper.gwtIssueStringEnum(
-          this.terrainUiService.getTerrainType(GwtInstance.newDecimalPosition(x + xNodeTile,y + yNodeTile)),
+          this.terrainUiService.getTerrainType(x + xNodeTile, y + yNodeTile),
           TerrainType
         );
         switch (terrainType) {

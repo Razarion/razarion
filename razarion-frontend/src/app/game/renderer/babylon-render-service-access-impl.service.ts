@@ -110,6 +110,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private baseItemPlacerPresenterImpl!: BaseItemPlacerPresenterImpl;
   private baseItemPlacerCallback: ((event: BaseItemPlacerPresenterEvent) => void) | null = null;
   private pendingSetViewFieldCenter: Vector2 | null = null;
+  private overviewMode = false;
+  private savedCameraState: { position: Vector3, rotation: Vector3 } | null = null;
   public static readonly SCROLL_SPEED = 0.2;
   public static readonly SCROLL_SPEED_CAMERA_HEIGHT_FACTOR = 0.03;
 
@@ -176,7 +178,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       const cameraRotation = Quaternion.FromEulerAngles(self.camera.rotation.x, self.camera.rotation.y, self.camera.rotation.z);
       let deltaVector = Vector3.Zero();
       new Vector3(0, 0, -delta).rotateByQuaternionToRef(cameraRotation, deltaVector);
-      if (self.camera.position.y + deltaVector.y > 5 && self.camera.position.y + deltaVector.y < 200) {
+      const maxHeight = self.overviewMode ? 1500 : 200;
+      if (self.camera.position.y + deltaVector.y > 5 && self.camera.position.y + deltaVector.y < maxHeight) {
         this.camera.position.x += deltaVector.x;
         this.camera.position.y += deltaVector.y;
         this.camera.position.z += deltaVector.z;
@@ -354,7 +357,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   scrollCamera() {
     let hasChanged = false;
-    const speed = BabylonRenderServiceAccessImpl.SCROLL_SPEED + this.camera.position.y * BabylonRenderServiceAccessImpl.SCROLL_SPEED_CAMERA_HEIGHT_FACTOR;
+    const deltaFactor = this.engine.getDeltaTime() / 16.667; // Normalize to 60fps
+    const speed = (BabylonRenderServiceAccessImpl.SCROLL_SPEED + this.camera.position.y * BabylonRenderServiceAccessImpl.SCROLL_SPEED_CAMERA_HEIGHT_FACTOR) * deltaFactor;
 
     let newX = null;
     if (this.checkKeyDown("a", "A", "ArrowLeft")) {
@@ -883,6 +887,35 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.babylonBaseItems.filter(item => item.diplomacy === diplomacy);
   }
 
+
+  setOverviewMode(enabled: boolean): void {
+    if (enabled === this.overviewMode) {
+      return;
+    }
+    this.overviewMode = enabled;
+    if (enabled) {
+      this.savedCameraState = {
+        position: this.camera.position.clone(),
+        rotation: this.camera.rotation.clone()
+      };
+      this.camera.rotation.x = Math.PI / 2;
+      this.camera.rotation.y = 0;
+      this.camera.rotation.z = 0;
+      this.camera.maxZ = 2000;
+    } else {
+      if (this.savedCameraState) {
+        this.camera.position.copyFrom(this.savedCameraState.position);
+        this.camera.rotation.copyFrom(this.savedCameraState.rotation);
+        this.savedCameraState = null;
+      }
+      this.camera.maxZ = 800;
+    }
+    this.onViewFieldChanged();
+  }
+
+  isOverviewMode(): boolean {
+    return this.overviewMode;
+  }
 
   disableSelectionFrame() {
     this.selectionFrame.disable();

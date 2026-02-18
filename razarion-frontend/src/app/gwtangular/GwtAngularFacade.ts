@@ -725,7 +725,7 @@ export interface InventoryUiService {
 
 export interface TerrainUiService {
 
-  getTerrainType(terrainPosition: DecimalPosition): TerrainType
+  getTerrainType(x: number, y: number): TerrainType
 }
 
 // ---------- ResourceUiService ----------

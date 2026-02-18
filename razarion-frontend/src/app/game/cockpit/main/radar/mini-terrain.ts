@@ -21,7 +21,7 @@ export class MiniTerrain extends AbstractMiniMap {
         image.onerror = () => {
             console.warn("MiniTerrain loading image failed: " + imageUrl);
         };
-        image.src = imageUrl;
+        image.src = imageUrl + '?t=' + Date.now();
     }
 
     protected setupTransformation(zoom: number, ctx: CanvasRenderingContext2D, width: number, height: number): void {

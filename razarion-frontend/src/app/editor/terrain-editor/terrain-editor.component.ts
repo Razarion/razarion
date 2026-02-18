@@ -5,6 +5,7 @@ import {HeightMapTerrainEditorComponent} from "./height-map-terrain-editor.compo
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";
 import {GwtAngularService} from 'src/app/gwtangular/GwtAngularService';
+import {RadarState} from 'src/app/gwtangular/GwtAngularFacade';
 import {Tabs, TabList, Tab, TabPanels, TabPanel} from 'primeng/tabs';
 import {Dialog} from 'primeng/dialog';
 import {Button} from 'primeng/button';
@@ -14,6 +15,8 @@ import {SelectionService} from '../../game/selection.service';
 import {TerrainEditorControllerClient} from '../../generated/razarion-share';
 import {TypescriptGenerator} from '../../backend/typescript-generator';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
+import {Checkbox} from 'primeng/checkbox';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'terrain-editor',
@@ -28,7 +31,9 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     Dialog,
     Button,
     Divider,
-    ScrollPanelModule
+    ScrollPanelModule,
+    Checkbox,
+    FormsModule
   ],
   templateUrl: './terrain-editor.component.html'
 })
@@ -40,6 +45,7 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
   @ViewChild('miniMapCanvas', {static: true})
   miniMapCanvas!: ElementRef<HTMLCanvasElement>;
   displayMiniMap = false;
+  overviewMode = false;
   private terrainEditorControllerClient: TerrainEditorControllerClient;
   activeIndex: number = 0;
 
@@ -58,6 +64,10 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
   }
 
   ngOnDestroy(): void {
+    if (this.overviewMode) {
+      this.gwtAngularService.gwtAngularFacade.mainCockpit.showRadar(RadarState.NONE);
+    }
+    this.renderService.setOverviewMode(false);
     if (this.activeIndex === 0) {
       this.shapeTerrainEditor.deactivate();
     } else {
@@ -97,6 +107,15 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
         sticky: true
       });
     })
+  }
+
+  onOverviewModeChanged(): void {
+    this.renderService.setOverviewMode(this.overviewMode);
+    if (this.overviewMode) {
+      this.gwtAngularService.gwtAngularFacade.mainCockpit.showRadar(RadarState.WORKING);
+    } else {
+      this.gwtAngularService.gwtAngularFacade.mainCockpit.showRadar(RadarState.NONE);
+    }
   }
 
   private stopGameUi() {

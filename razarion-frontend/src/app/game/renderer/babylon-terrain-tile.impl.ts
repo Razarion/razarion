@@ -151,8 +151,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.groundMesh.actionManager = this.actionManagerTerrain;
 
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
-    this.groundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
-    this.groundMaterial = this.groundMaterial!.clone(this.groundMaterial.name);
+    const originalGroundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
+    this.groundMaterial = new NodeMaterial(originalGroundMaterial.name, rendererService.getScene());
+    this.groundMaterial.parseSerializedObject(originalGroundMaterial.serialize());
     let underWaterMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getUnderWaterBabylonMaterialId());
     let botMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotBabylonMaterialId());
     let botWallMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotWallBabylonMaterialId());
@@ -160,8 +161,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const groundUtilityBlock = <TextureBlock>this.groundMaterial.getBlockByName("GroundUtility");
     if (groundUtilityBlock) {
       groundUtilityBlock.texture = new Texture(groundUtil.createGroundTypeTexture().toDataURL(), this.rendererService.getScene());
-      this.groundMaterial.build()
     }
+    this.groundMaterial.build();
 
     const multiMaterial = new MultiMaterial(`Ground ${groundConfig.getInternalName()}`, rendererService.getScene());
     multiMaterial.subMaterials[MaterialIndex.GROUND] = this.groundMaterial;

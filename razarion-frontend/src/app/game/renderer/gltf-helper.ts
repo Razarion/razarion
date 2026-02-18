@@ -44,8 +44,10 @@ export class GltfHelper {
         }
         let cachedMaterial = cachedMaterialNames.get(mesh.material!.name);
         if (!cachedMaterial) {
-          cachedMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(materialId).clone(`${mesh.material!.name} ${materialId} '${diplomacy}'`)!;
-          cachedMaterial = cachedMaterial.clone(cachedMaterial.name)!
+          const originalMat = <NodeMaterial>this.babylonModelService.getBabylonMaterial(materialId);
+          const materialName = `${mesh.material!.name} ${materialId} '${diplomacy}'`;
+          cachedMaterial = new NodeMaterial(materialName, originalMat.getScene());
+          cachedMaterial.parseSerializedObject(originalMat.serialize());
           this.checkAndSetAlpha(diplomacy, cachedMaterial);
           const diplomacyColorNode = (<NodeMaterial>cachedMaterial).getBlockByPredicate(block => {
             return babylonMaterialEntity.diplomacyColorNode === block.name;
@@ -60,7 +62,7 @@ export class GltfHelper {
             let gltfTextures = this.gltfTexturesMap.get(originalMaterialName);
             gltfTextures && gltfTextures.overrideTexture(<NodeMaterial>cachedMaterial);
           }
-          (<NodeMaterial>cachedMaterial).build()
+          (<NodeMaterial>cachedMaterial).build();
           cachedMaterialNames.set(mesh.material!.name, cachedMaterial);
         }
         mesh.material = cachedMaterial!;
