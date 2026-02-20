@@ -26,6 +26,9 @@ import {AudioEditorComponent} from "../crud-editors/audio-editor/audio-editor.co
 import {
   BabylonMaterialEditorComponent
 } from "../crud-editors/babylon-material-editor/babylon-material-editor.component";
+import {
+  BabylonMaterialCrudContainerComponent
+} from "../crud-editors/babylon-material-editor/babylon-material-crud-container.component";
 import {PropertyEditorComponent} from "../property-editor/property-editor.component";
 import {GltfEditorComponent} from "../crud-editors/gltf-editor/gltf-editor.component";
 import {TerrainObjectEditorComponent} from "../crud-editors/terrain-object-editor/terrain-object-editor.component";
@@ -132,7 +135,7 @@ export class EditorDialogComponent {
 
   openBabylonMaterialEditor() {
     this.mainCockpitComponent.editorDialog = false;
-    this.gameComponent.addEditorModel(new EditorModel("Babylon material editor", GeneratedCrudContainerComponent, BabylonMaterialEditorComponent));
+    this.gameComponent.addEditorModel(new EditorModel("Babylon material editor", BabylonMaterialCrudContainerComponent, BabylonMaterialEditorComponent));
   }
 
   openGltfEditor() {

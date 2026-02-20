@@ -38,7 +38,7 @@ export class FlattenBrushValues {
       <div class="col-span-7">
         <input type="number" [(ngModel)]="brushValues.size" class="w-full"/>
         <p-slider [(ngModel)]="brushValues.size" [step]="1" [min]="1"
-                  [max]="100"></p-slider>
+                  [max]="500"></p-slider>
       </div>
     </div>
     <div class="grid grid-cols-12 gap-1 p-1">
@@ -68,6 +68,10 @@ export class FlattenBrushComponent extends AbstractBrush implements OnInit, OnDe
       this.heightMapCursor.dispose();
       this.heightMapCursor = null;
     }
+  }
+
+  override getEffectiveRadius(): number {
+    return this.brushValues.size / 2;
   }
 
   override isInRadius(mousePosition: Vector3, oldPosition: Vector3): boolean {

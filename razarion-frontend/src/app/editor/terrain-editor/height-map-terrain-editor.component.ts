@@ -25,6 +25,9 @@ import {AbstractBrush, BrushContext} from "./brushes/abstract-brush";
 import {FixHeightBrushComponent} from './brushes/fix-height-brush.component';
 import {FlattenBrushComponent} from "./brushes/flattem-brush.component";
 import {RaiseHeightBrushComponent} from './brushes/raise-height-brush.component';
+import {SmoothBrushComponent} from './brushes/smooth-brush.component';
+import {NoiseBrushComponent} from './brushes/noise-brush.component';
+import {ErosionBrushComponent} from './brushes/erosion-brush.component';
 import {RadarComponent} from 'src/app/game/cockpit/main/radar/radar.component';
 import {Button} from 'primeng/button';
 import {Divider} from 'primeng/divider';
@@ -67,7 +70,10 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   brushOptions = [
     {label: 'Fix height', value: FixHeightBrushComponent},
     {label: 'Flatten', value: FlattenBrushComponent},
-    {label: 'Raise height', value: RaiseHeightBrushComponent}
+    {label: 'Raise height', value: RaiseHeightBrushComponent},
+    {label: 'Smooth', value: SmoothBrushComponent},
+    {label: 'Noise', value: NoiseBrushComponent},
+    {label: 'Erosion', value: ErosionBrushComponent}
   ];
   selectedBrush?: Type<AbstractBrush>;
 
@@ -200,24 +206,22 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
           break;
         }
         case PointerEventTypes.POINTERUP: {
-          let pickingInfo = this.renderService.setupTerrainPickPoint();
-          if (pickingInfo && pickingInfo.pickedPoint) {
-
-          }
           break;
         }
         case PointerEventTypes.POINTERMOVE: {
           let pickingInfo = this.renderService.setupTerrainPickPoint();
           if (pickingInfo && pickingInfo.pickedPoint) {
             if ((pointerInfo.event.buttons & 0x01) == 0x01) {
-              this.modelTerrain(pickingInfo.pickedPoint);
+              // Stamp-mode brushes only apply on click, not on drag
+              if (!this.currentBrush || !this.currentBrush.isStampMode()) {
+                this.modelTerrain(pickingInfo.pickedPoint);
+              }
             }
           }
           break;
         }
       }
     });
-
   }
 
   private loadEditorTerrainTiles() {
@@ -238,12 +242,14 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   }
 
   private modelTerrain(position: Vector3) {
+    const brushRadius = this.currentBrush!.getEffectiveRadius();
+
     if (this.currentBrush!.isContextDependent()) {
       let brushContext = new BrushContext(this.currentBrush!);
 
       for (let x = 0; x < this.xTileCount; x++) {
         for (let y = 0; y < this.yTileCount; y++) {
-          if (this.editorTerrainTiles[y][x].isInside(position)) {
+          if (this.editorTerrainTiles[y][x].isInside(position, brushRadius)) {
             this.editorTerrainTiles[y][x].prepareContext(brushContext, position);
           }
         }
@@ -252,9 +258,11 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
       this.currentBrush!.setBrushContext(brushContext);
     }
 
+    this.currentBrush!.preCalculate(position);
+
     for (let x = 0; x < this.xTileCount; x++) {
       for (let y = 0; y < this.yTileCount; y++) {
-        if (this.editorTerrainTiles[y][x].isInside(position)) {
+        if (this.editorTerrainTiles[y][x].isInside(position, brushRadius)) {
           this.editorTerrainTiles[y][x].modelTerrain(this.currentBrush!, position);
         }
       }

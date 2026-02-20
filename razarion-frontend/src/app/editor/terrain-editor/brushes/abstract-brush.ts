@@ -1,9 +1,16 @@
 import {Vector3} from "@babylonjs/core";
 import {HeightMapTerrainEditorComponent} from "../height-map-terrain-editor.component";
 
+export interface SpatialHeight {
+  x: number;
+  z: number;
+  height: number;
+}
+
 export class BrushContext {
   private heights: number[] = [];
-  private avgHeight?: number
+  private spatialHeights: SpatialHeight[] = [];
+  private avgHeight?: number;
 
   constructor(public readonly brush: AbstractBrush) {
     this.brush = brush;
@@ -17,6 +24,11 @@ export class BrushContext {
     this.heights.push(height);
   }
 
+  addSpatialHeight(x: number, z: number, height: number) {
+    this.spatialHeights.push({x, z, height});
+    this.addHeight(height);
+  }
+
   finishPrepare() {
     let totalHeight = 0;
     this.heights.forEach(height => {
@@ -27,6 +39,10 @@ export class BrushContext {
 
   getAvgHeight(): number {
     return this.avgHeight!;
+  }
+
+  getSpatialHeights(): SpatialHeight[] {
+    return this.spatialHeights;
   }
 }
 
@@ -44,6 +60,20 @@ export abstract class AbstractBrush {
     return false;
   }
 
+  /** Returns the effective radius in meters for tile-culling. */
+  getEffectiveRadius(): number {
+    return 0;
+  }
+
+  /** If true, brush applies only on click, not on drag. */
+  isStampMode(): boolean {
+    return false;
+  }
+
+  /** Pre-calculation step called before vertex iteration (e.g. erosion simulation). */
+  preCalculate(mousePosition: Vector3): void {
+  }
+
   setBrushContext(brushContext: BrushContext | null) {
     this.brushContext = brushContext;
   }
@@ -52,12 +82,9 @@ export abstract class AbstractBrush {
     return this.brushContext;
   }
 
-
   showCursor() {
-
   }
 
   hideCursor() {
-
   }
 }

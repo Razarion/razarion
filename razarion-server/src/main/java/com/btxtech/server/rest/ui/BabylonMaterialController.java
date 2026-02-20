@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/rest/babylon-material")
 public class BabylonMaterialController extends AbstractBaseController<BabylonMaterialEntity> {
@@ -49,7 +51,12 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')") 
+    @GetMapping("sizes")
+    public List<MaterialSizeInfo> getMaterialSizes() {
+        return babylonMaterialPersistence.getMaterialSizes();
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "upload/{id}", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void uploadData(@PathVariable("id") int id, @RequestBody byte[] data) {
         babylonMaterialPersistence.setData(id, data);

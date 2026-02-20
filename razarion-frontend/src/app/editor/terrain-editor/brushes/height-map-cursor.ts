@@ -73,17 +73,19 @@ export class HeightMapCursor {
 
     const size = this.currentBrush.maxSlopeWidth * 2 + this.currentBrush.size;
 
-    let xCount = (size / BabylonTerrainTileImpl.NODE_SIZE) + 1;
-    let yCount = (size / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    // Dynamic step to keep vertex count manageable for large brushes
+    const step = Math.max(BabylonTerrainTileImpl.NODE_SIZE, Math.ceil(size / 100));
+    let xCount = Math.floor(size / step) + 1;
+    let yCount = Math.floor(size / step) + 1;
 
-    const startX = -xCount / 2 * BabylonTerrainTileImpl.NODE_SIZE;
-    const startY = -yCount / 2 * BabylonTerrainTileImpl.NODE_SIZE;
+    const startX = -xCount / 2 * step;
+    const startY = -yCount / 2 * step;
 
     // Vertices
     for (let y = 0; y < yCount; y++) {
       for (let x = 0; x < xCount; x++) {
-        const currentX = startX + x * BabylonTerrainTileImpl.NODE_SIZE;
-        const currentY = startY + y * BabylonTerrainTileImpl.NODE_SIZE;
+        const currentX = startX + x * step;
+        const currentY = startY + y * step;
         let height = FixHeightBrushComponent.staticCalculateHeight(new Vector3(0, 0, 0), new Vector3(currentX, 0, currentY), null, this.currentBrush);
         if (height === null) {
           height = 0;

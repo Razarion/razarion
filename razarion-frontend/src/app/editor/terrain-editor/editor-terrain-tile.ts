@@ -45,8 +45,21 @@ export class EditorTerrainTile {
     }
   }
 
-  isInside(position: Vector3): boolean {
-    return true;
+  isInside(position: Vector3, brushRadius: number): boolean {
+    if (brushRadius <= 0) {
+      return true;
+    }
+    const tileMinX = this.index.getX() * BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_SIZE;
+    const tileMinZ = this.index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT * BabylonTerrainTileImpl.NODE_SIZE;
+    const tileMaxX = tileMinX + BabylonTerrainTileImpl.NODE_X_COUNT * BabylonTerrainTileImpl.NODE_SIZE;
+    const tileMaxZ = tileMinZ + BabylonTerrainTileImpl.NODE_Y_COUNT * BabylonTerrainTileImpl.NODE_SIZE;
+
+    // Check if the brush circle/square overlaps this tile's AABB
+    const closestX = Math.max(tileMinX, Math.min(position.x, tileMaxX));
+    const closestZ = Math.max(tileMinZ, Math.min(position.z, tileMaxZ));
+    const dx = position.x - closestX;
+    const dz = position.z - closestZ;
+    return (dx * dx + dz * dz) <= (brushRadius * brushRadius);
   }
 
   prepareContext(brushContext: BrushContext, mousePosition: Vector3) {
@@ -60,7 +73,7 @@ export class EditorTerrainTile {
         continue;
       }
       if (brushContext.isInRadius(mousePosition, oldPosition)) {
-        brushContext.addHeight(oldPosition.y);
+        brushContext.addSpatialHeight(oldPosition.x, oldPosition.z, oldPosition.y);
       }
     }
   }

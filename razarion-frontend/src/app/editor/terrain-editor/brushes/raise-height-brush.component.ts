@@ -41,7 +41,7 @@ export class RaiseBrushValues {
       <div class="col-span-7">
         <input type="number" [(ngModel)]="brushValues.size" class="w-full"/>
         <p-slider [(ngModel)]="brushValues.size" [step]="1" [min]="1"
-                  [max]="100"></p-slider>
+                  [max]="500"></p-slider>
       </div>
     </div>
 
@@ -57,7 +57,7 @@ export class RaiseBrushValues {
       <span class="col-span-5">Max slope width [m]</span>
       <div class="col-span-7">
         <input type="number" [(ngModel)]="brushValues.maxSlopeWidth" class="w-full"/>
-        <p-slider [(ngModel)]="brushValues.maxSlopeWidth" [step]="1" [min]="0" [max]="50"></p-slider>
+        <p-slider [(ngModel)]="brushValues.maxSlopeWidth" [step]="1" [min]="0" [max]="250"></p-slider>
       </div>
     </div>
 
@@ -108,6 +108,10 @@ export class RaiseHeightBrushComponent extends AbstractBrush implements OnInit, 
     if (this.heightMapCursor) {
       this.heightMapCursor.setVisibility(false);
     }
+  }
+
+  override getEffectiveRadius(): number {
+    return this.brushValues.size / 2 + this.brushValues.maxSlopeWidth;
   }
 
   override calculateHeight(mousePosition: Vector3, oldPosition: Vector3): number | null {

@@ -101,7 +101,7 @@ export class BrushValues {
       <span class="col-span-5">Size [m]</span>
       <div class="col-span-7">
         <input type="number" [(ngModel)]="activeBrush.value.brushValues.size" class="w-full"/>
-        <p-slider [(ngModel)]="activeBrush.value.brushValues.size" [step]="1" [min]="1" [max]="100"></p-slider>
+        <p-slider [(ngModel)]="activeBrush.value.brushValues.size" [step]="1" [min]="1" [max]="500"></p-slider>
       </div>
     </div>
 
@@ -118,7 +118,7 @@ export class BrushValues {
       <div class="col-span-7">
         <input type="number" [(ngModel)]="activeBrush.value.brushValues.maxSlopeWidth" class="w-full"/>
         <p-slider [(ngModel)]="activeBrush.value.brushValues.maxSlopeWidth" [step]="1" [min]="0"
-                  [max]="100"></p-slider>
+                  [max]="250"></p-slider>
       </div>
     </div>
 
@@ -202,6 +202,10 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit, On
         sticky: true
       });
     });
+  }
+
+  override getEffectiveRadius(): number {
+    return this.activeBrush.value.brushValues.size / 2 + this.activeBrush.value.brushValues.maxSlopeWidth;
   }
 
   override calculateHeight(mousePosition: Vector3, oldPosition: Vector3): number | null {
