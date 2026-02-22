@@ -267,6 +267,18 @@ public class DtoConverter {
         return obj;
     }
 
+    public static JSObject convertMarkerConfig(MarkerConfig config) {
+        if (config == null) return null;
+        JsObject obj = JsObject.create();
+        obj.set("radius", config.radius);
+        obj.setNullableInt("nodesMaterialId", config.nodesMaterialId);
+        obj.setNullableInt("placeNodesMaterialId", config.placeNodesMaterialId);
+        obj.setNullableInt("outOfViewNodesMaterialId", config.outOfViewNodesMaterialId);
+        obj.set("outOfViewSize", config.outOfViewSize);
+        obj.set("outOfViewDistanceFromCamera", config.outOfViewDistanceFromCamera);
+        return obj;
+    }
+
     public static JSObject convertAudioConfig(AudioConfig config) {
         if (config == null) return null;
         JsObject obj = JsObject.create();

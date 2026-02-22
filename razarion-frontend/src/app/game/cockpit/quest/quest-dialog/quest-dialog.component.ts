@@ -109,6 +109,9 @@ export class QuestDialogComponent implements OnInit {
       case ConditionTrigger.UNLOCKED: {
         return `Item unlocked ${questConfig.conditionConfig.comparisonConfig.count}`;
       }
+      case ConditionTrigger.SELL: {
+        return this.specificOrCount("units or buildings sold", "sold", questConfig);
+      }
       default: {
         console.warn(`Unknown ConditionTrigger ${questConfig.conditionConfig.conditionTrigger}`);
         return "";

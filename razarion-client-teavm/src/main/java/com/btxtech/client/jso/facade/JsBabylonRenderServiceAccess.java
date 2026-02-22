@@ -52,10 +52,16 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
     private static native JSObject callCreateBabylonBoxItem(JSObject obj, int id, JSObject boxItemType);
 
     @JSBody(params = {"obj", "markerConfig", "angle"}, script = "obj.showOutOfViewMarker(markerConfig, angle);")
-    private static native void callShowOutOfViewMarker(JSObject obj, Object markerConfig, double angle);
+    private static native void callShowOutOfViewMarker(JSObject obj, JSObject markerConfig, double angle);
+
+    @JSBody(params = {"obj", "angle"}, script = "obj.showOutOfViewMarker(null, angle);")
+    private static native void callShowOutOfViewMarkerNull(JSObject obj, double angle);
 
     @JSBody(params = {"obj", "placeConfig", "markerConfig"}, script = "obj.showPlaceMarker(placeConfig, markerConfig);")
-    private static native void callShowPlaceMarker(JSObject obj, Object placeConfig, Object markerConfig);
+    private static native void callShowPlaceMarker(JSObject obj, JSObject placeConfig, JSObject markerConfig);
+
+    @JSBody(params = {"obj"}, script = "obj.showPlaceMarker(null, null);")
+    private static native void callShowPlaceMarkerNull(JSObject obj);
 
     @JSBody(params = {"obj", "vertex"}, script = "obj.setPosition(vertex);")
     private static native void callSetPositionVertex(JSObject obj, JSObject vertex);
@@ -72,7 +78,10 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
     private static native void callOnProjectileFired(JSObject obj, int targetId, double x, double y);
 
     @JSBody(params = {"obj", "markerConfig"}, script = "obj.mark(markerConfig);")
-    private static native void callMark(JSObject obj, Object markerConfig);
+    private static native void callMark(JSObject obj, JSObject markerConfig);
+
+    @JSBody(params = {"obj"}, script = "obj.mark(null);")
+    private static native void callMarkNull(JSObject obj);
 
     @JSBody(params = {"obj", "prop"}, script = "return obj[prop];")
     private static native int getIntProp(JSObject obj, String prop);
@@ -141,14 +150,20 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
 
     @Override
     public void showOutOfViewMarker(MarkerConfig markerConfig, double angle) {
-        // TODO: Convert MarkerConfig to JSObject via proxy factory
-        callShowOutOfViewMarker(js, markerConfig, angle);
+        if (markerConfig != null) {
+            callShowOutOfViewMarker(js, DtoConverter.convertMarkerConfig(markerConfig), angle);
+        } else {
+            callShowOutOfViewMarkerNull(js, angle);
+        }
     }
 
     @Override
     public void showPlaceMarker(PlaceConfig placeConfig, MarkerConfig markerConfig) {
-        // TODO: Convert PlaceConfig and MarkerConfig to JSObject via proxy factory
-        callShowPlaceMarker(js, placeConfig, markerConfig);
+        if (placeConfig != null && markerConfig != null) {
+            callShowPlaceMarker(js, DtoConverter.convertPlaceConfig(placeConfig), DtoConverter.convertMarkerConfig(markerConfig));
+        } else {
+            callShowPlaceMarkerNull(js);
+        }
     }
 
     private static class JsBabylonTerrainTile implements BabylonTerrainTile {
@@ -225,8 +240,11 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
         }
 
         public void mark(MarkerConfig markerConfig) {
-            // TODO: Convert MarkerConfig to JSObject via proxy factory
-            callMark(js, markerConfig);
+            if (markerConfig != null) {
+                callMark(js, DtoConverter.convertMarkerConfig(markerConfig));
+            } else {
+                callMarkNull(js);
+            }
         }
     }
 

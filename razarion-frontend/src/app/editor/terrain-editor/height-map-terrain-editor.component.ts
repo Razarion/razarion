@@ -28,6 +28,7 @@ import {RaiseHeightBrushComponent} from './brushes/raise-height-brush.component'
 import {SmoothBrushComponent} from './brushes/smooth-brush.component';
 import {NoiseBrushComponent} from './brushes/noise-brush.component';
 import {ErosionBrushComponent} from './brushes/erosion-brush.component';
+import {FixBoundaryBrushComponent} from './brushes/fix-boundary-brush.component';
 import {RadarComponent} from 'src/app/game/cockpit/main/radar/radar.component';
 import {Button} from 'primeng/button';
 import {Divider} from 'primeng/divider';
@@ -52,6 +53,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   wireframe: boolean = false;
   showTerrainType: boolean = false;
   showTerrainTypeWorker: boolean = false;
+  showMaterialIndex: boolean = false;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private planetConfig: PlanetConfig;
   private editorTerrainTiles: EditorTerrainTile[][] = [];
@@ -73,7 +75,8 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     {label: 'Raise height', value: RaiseHeightBrushComponent},
     {label: 'Smooth', value: SmoothBrushComponent},
     {label: 'Noise', value: NoiseBrushComponent},
-    {label: 'Erosion', value: ErosionBrushComponent}
+    {label: 'Erosion', value: ErosionBrushComponent},
+    {label: 'Fix boundary', value: FixBoundaryBrushComponent}
   ];
   selectedBrush?: Type<AbstractBrush>;
 
@@ -195,6 +198,20 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     }
   }
 
+  onShowMaterialIndexChanged(): void {
+    for (let x = 0; x < this.xTileCount; x++) {
+      for (let y = 0; y < this.yTileCount; y++) {
+        if (this.editorTerrainTiles[y][x].hasPositions()) {
+          if (this.showMaterialIndex) {
+            this.editorTerrainTiles[y][x].showMaterialIndex();
+          } else {
+            this.editorTerrainTiles[y][x].hideMaterialIndex();
+          }
+        }
+      }
+    }
+  }
+
   private registerInputEvents() {
     this.pointerObservable = this.renderService.getScene().onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
@@ -232,10 +249,8 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
 
   private setupEditorTerrainTile(babylonTerrainTile: BabylonTerrainTileImpl) {
     let index = babylonTerrainTile.terrainTile.getIndex();
-    if (babylonTerrainTile.getGroundMesh().material) {
-      babylonTerrainTile.getGroundMesh().material!.wireframe = this.wireframe;
-    }
     this.editorTerrainTiles[index.getY()][index.getX()].setBabylonTerrainTile(babylonTerrainTile);
+    this.editorTerrainTiles[index.getY()][index.getX()].setWireframe(this.wireframe);
     if (this.showTerrainType) {
       this.editorTerrainTiles[index.getY()][index.getX()].showTerrainType();
     }

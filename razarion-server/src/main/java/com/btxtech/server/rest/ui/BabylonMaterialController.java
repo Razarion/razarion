@@ -42,7 +42,7 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
             return ResponseEntity
                     .ok()
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                    .header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400")
+                    .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
                     .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(data.length))
                     .body(data);
         } catch (Throwable e) {

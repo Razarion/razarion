@@ -1,5 +1,5 @@
 import {Index, InputService, TerrainType, TerrainUiService} from "../../gwtangular/GwtAngularFacade";
-import {Color3, Mesh, MeshBuilder, StandardMaterial, Texture, Vector3, VertexBuffer, VertexData} from "@babylonjs/core";
+import {Color3, Mesh, MeshBuilder, MultiMaterial, StandardMaterial, SubMesh, Texture, Vector3, VertexBuffer, VertexData} from "@babylonjs/core";
 import {BabylonTerrainTileImpl} from 'src/app/game/renderer/babylon-terrain-tile.impl';
 import {AbstractBrush, BrushContext} from "./brushes/abstract-brush";
 import {BabylonRenderServiceAccessImpl} from "src/app/game/renderer/babylon-render-service-access-impl.service";
@@ -12,6 +12,7 @@ export class EditorTerrainTile {
   private babylonTerrainTileImpl: BabylonTerrainTileImpl | null = null;
   private decalMesh: Mesh | null = null;
   private decalMeshWorker: Mesh | null = null;
+  private materialIndexDecalMesh: Mesh | null = null;
   private pendingTextureUpdate: number[] | null = null;
   private textureUpdateScheduled: boolean = false;
 
@@ -126,7 +127,14 @@ export class EditorTerrainTile {
 
   setWireframe(wireframe: boolean) {
     if (this.babylonTerrainTileImpl) {
-      this.babylonTerrainTileImpl.getGroundMesh().material!.wireframe = wireframe;
+      const material = this.babylonTerrainTileImpl.getGroundMesh().material;
+      if (material instanceof MultiMaterial) {
+        material.subMaterials.forEach(subMat => {
+          if (subMat) subMat.wireframe = wireframe;
+        });
+      } else if (material) {
+        material.wireframe = wireframe;
+      }
     }
   }
 
@@ -172,6 +180,95 @@ export class EditorTerrainTile {
     }
   }
 
+  public showMaterialIndex() {
+    this.hideMaterialIndex();
+    this.materialIndexDecalMesh = this.createMaterialIndexDecal();
+  }
+
+  public hideMaterialIndex() {
+    if (this.materialIndexDecalMesh) {
+      this.materialIndexDecalMesh.dispose();
+    }
+    this.materialIndexDecalMesh = null;
+  }
+
+  private createMaterialIndexDecal(): Mesh {
+    let xOffset = BabylonTerrainTileImpl.NODE_X_COUNT / 2 + this.index.getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
+    let yOffset = BabylonTerrainTileImpl.NODE_Y_COUNT / 2 + this.index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
+    var decalSize = new Vector3(BabylonTerrainTileImpl.NODE_X_COUNT, BabylonTerrainTileImpl.NODE_Y_COUNT, 100);
+    var decal = MeshBuilder.CreateDecal("Material index", this.babylonTerrainTileImpl!.getGroundMesh(), {
+      position: new Vector3(xOffset, 0.5, yOffset),
+      normal: new Vector3(0, 1, 0),
+      size: decalSize,
+    });
+    var decalMaterial = new StandardMaterial("materialIndexDecalMat", this.renderService.getScene());
+    decalMaterial.disableLighting = true;
+    const texture = this.createMaterialIndexTexture();
+    texture.hasAlpha = true;
+    decalMaterial.emissiveTexture = texture;
+    decalMaterial.opacityTexture = texture;
+    decal.material = decalMaterial;
+    decal.isPickable = false;
+    decal.setParent(this.babylonTerrainTileImpl!.getGroundMesh());
+    return decal;
+  }
+
+  private createMaterialIndexTexture(): Texture {
+    const factor = 10;
+    const border = 0.3;
+    const effectiveBorder = factor * border;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = BabylonTerrainTileImpl.NODE_X_COUNT * factor;
+    canvas.height = BabylonTerrainTileImpl.NODE_Y_COUNT * factor;
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    var context = canvas.getContext('2d')!;
+    context.translate(centerX, centerY);
+    context.rotate(Math.PI / 2);
+    context.translate(-centerX, -centerY);
+
+    const MATERIAL_COLORS: { [key: number]: string } = {
+      0: "rgba(0, 200, 0, 0.5)",    // GROUND - Green
+      1: "rgba(0, 0, 255, 0.5)",    // UNDER_WATER - Blue
+      2: "rgba(255, 165, 0, 0.5)",  // BOT - Orange
+      3: "rgba(180, 0, 255, 0.5)",  // BOT_WALL - Purple
+    };
+
+    const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    const quadsPerRow = xCount - 1;
+
+    const groundMesh = this.babylonTerrainTileImpl!.getGroundMesh();
+    const subMeshes: SubMesh[] = groundMesh.subMeshes;
+
+    // Build a per-quad color map from subMesh data
+    const quadColors: string[] = new Array(quadsPerRow * quadsPerRow).fill("rgba(128, 128, 128, 0.5)");
+
+    for (const subMesh of subMeshes) {
+      const color = MATERIAL_COLORS[subMesh.materialIndex] || "rgba(128, 128, 128, 0.5)";
+      const startQuad = subMesh.indexStart / 6;
+      const quadCount = subMesh.indexCount / 6;
+      for (let i = 0; i < quadCount; i++) {
+        quadColors[startQuad + i] = color;
+      }
+    }
+
+    // Draw quads
+    for (let qi = 0; qi < quadColors.length; qi++) {
+      const x = qi % quadsPerRow;
+      const y = Math.floor(qi / quadsPerRow);
+      context.fillStyle = quadColors[qi];
+      context.fillRect(
+        (x + 1) * factor - effectiveBorder * 2,
+        (quadsPerRow - y) * factor - effectiveBorder * 2,
+        factor - effectiveBorder * 2,
+        factor - effectiveBorder * 2);
+    }
+
+    return new Texture(canvas.toDataURL(), this.renderService.getScene());
+  }
+
   private createTerrainTypeDecal(): Mesh {
     let xOffset = BabylonTerrainTileImpl.NODE_X_COUNT / 2 + this.index.getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
     let yOffset = BabylonTerrainTileImpl.NODE_Y_COUNT / 2 + this.index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
@@ -182,9 +279,11 @@ export class EditorTerrainTile {
       size: decalSize,
     });
     var decalMaterial = new StandardMaterial("decalMat", this.renderService.getScene());
-    decalMaterial.diffuseTexture = this.createDynamicTexture();
-    decalMaterial.diffuseTexture.hasAlpha = true;
-    decalMaterial.specularColor = new Color3(0, 0, 0)
+    decalMaterial.disableLighting = true;
+    const texture = this.createDynamicTexture();
+    texture.hasAlpha = true;
+    decalMaterial.emissiveTexture = texture;
+    decalMaterial.opacityTexture = texture;
     decal.material = decalMaterial;
     decal.isPickable = false;
     decal.setParent(this.babylonTerrainTileImpl!.getGroundMesh());
@@ -303,8 +402,8 @@ export class EditorTerrainTile {
       position: new Vector3(xOffset, 0.5, yOffset), normal: new Vector3(0, 1, 0), size: decalSize
     });
     var decalMaterial = new StandardMaterial("decalMat", this.renderService.getScene());
-    this.createDynamicTextureGameEngine(decalMaterial)
-    decalMaterial.specularColor = new Color3(0, 0, 0)
+    decalMaterial.disableLighting = true;
+    this.createDynamicTextureGameEngine(decalMaterial);
     decal.material = decalMaterial;
     decal.isPickable = false;
     return decal
@@ -349,8 +448,9 @@ export class EditorTerrainTile {
             remaining--;
             if (remaining === 0) {
               const dynamicTexture = new Texture(canvas.toDataURL(), this.renderService.getScene());
-              decalMaterial.diffuseTexture = dynamicTexture;
-              decalMaterial.diffuseTexture.hasAlpha = true;
+              dynamicTexture.hasAlpha = true;
+              decalMaterial.emissiveTexture = dynamicTexture;
+              decalMaterial.opacityTexture = dynamicTexture;
             }
 
           })

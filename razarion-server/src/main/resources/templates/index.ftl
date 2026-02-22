@@ -2,23 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Razarion - Free Browser RTS Game</title>
+    <title>Razarion - Open World Browser RTS Game</title>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Free browser-based RTS game. Build armies, command units, fight in a persistent multiplayer world. No download required.">
+    <meta name="description" content="Open world browser RTS game inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. Open-source and community-driven.">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
     <!-- Open Graph Tags -->
-    <meta property="og:title" content="Razarion - Free Browser RTS Game">
-    <meta property="og:description" content="Free browser-based RTS game. Build armies, command units, fight in a persistent multiplayer world. No download required.">
+    <meta property="og:title" content="Razarion - Open World Browser RTS Game">
+    <meta property="og:description" content="Open world browser RTS game inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. Open-source and community-driven.">
     <meta property="og:image" content="https://razarion.com/card.jpg">
     <meta property="og:url" content="https://razarion.com">
     <meta property="og:type" content="website">
 
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Razarion - Free Browser RTS Game">
-    <meta name="twitter:description" content="Free browser-based RTS game. Build armies, command units, fight in a persistent multiplayer world. No download required.">
+    <meta name="twitter:title" content="Razarion - Open World Browser RTS Game">
+    <meta name="twitter:description" content="Open world browser RTS game inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. Open-source and community-driven.">
     <meta name="twitter:image" content="https://razarion.com/card.jpg">
 
     <style>

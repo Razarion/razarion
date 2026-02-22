@@ -88,7 +88,11 @@ public class ServerLevelQuestService implements QuestListener {
 
     public SlaveQuestInfo getSlaveQuestInfo(String userId) {
         SlaveQuestInfo slaveQuestInfo = new SlaveQuestInfo();
-        slaveQuestInfo.setActiveQuest(userService.findActiveQuestConfig4CurrentUser(userId));
+        QuestConfig activeQuest = userService.findActiveQuestConfig4CurrentUser(userId);
+        if (activeQuest != null) {
+            resolveStartRegionIfNeeded(activeQuest);
+        }
+        slaveQuestInfo.setActiveQuest(activeQuest);
         slaveQuestInfo.setQuestProgressInfo(questService.getQuestProgressInfo(userId));
         return slaveQuestInfo;
     }
