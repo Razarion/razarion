@@ -1,25 +1,28 @@
 <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500">
-  <div class="flex flex-col gap-1">
+  <form class="flex flex-col gap-1" (ngSubmit)="onRegister()">
     <input
       placeholder="Email"
       type="email"
+      autocomplete="email"
       class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
-      [(ngModel)]="email" required>
-      <input
-        placeholder="Password"
-        type="password"
-        class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
-        [(ngModel)]="password1" required>
-        <input
-          placeholder="Re-enter password"
-          type="password"
-          class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
-          [(ngModel)]="password2" required>
+      [(ngModel)]="email" name="email" required>
+    <input
+      placeholder="Password"
+      type="password"
+      autocomplete="new-password"
+      class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
+      [(ngModel)]="password1" name="password1" required>
+    <input
+      placeholder="Re-enter password"
+      type="password"
+      autocomplete="new-password"
+      class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
+      [(ngModel)]="password2" name="password2" required>
 
-          @if (errorMessage) {
-            <p class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
-          }
+    @if (errorMessage) {
+      <p class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
+    }
 
-          <p-button class="justify-self-end mt-2" (onClick)="onRegister()" label="Register" styleClass="p-button-sm"></p-button>
-        </div>
-      </div>
+    <p-button class="justify-self-end mt-2" (onClick)="onRegister()" label="Register" styleClass="p-button-sm"></p-button>
+  </form>
+</div>

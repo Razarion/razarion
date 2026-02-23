@@ -90,6 +90,21 @@ spec:
                 secretKeyRef:
                   name: mongodb-secrets
                   key: uri
+            - name: SPRING_MAIL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: mail-secrets
+                  key: host
+            - name: SPRING_MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mail-secrets
+                  key: username
+            - name: SPRING_MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mail-secrets
+                  key: password
       volumes:
       - name: keystore
         secret:

@@ -5,6 +5,7 @@
         placeholder="Email"
         type="email"
         name="username"
+        autocomplete="email"
         class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
         [(ngModel)]="username" required>
       </p>
@@ -13,6 +14,7 @@
           placeholder="Password"
           type="password"
           name="password"
+          autocomplete="current-password"
           class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
           [(ngModel)]="password" required>
         </p>
