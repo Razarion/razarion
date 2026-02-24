@@ -13,7 +13,7 @@ export class NoiseBrushValues {
   type: BrushType = BrushType.ROUND;
   size: number = 100;
   amplitude: number = 2;
-  scale: number = 0.02;
+  zoom: number = 50;
   octaves: number = 4;
   seed: number = 42;
 }
@@ -55,10 +55,10 @@ export class NoiseBrushValues {
     </div>
 
     <div class="grid grid-cols-12 gap-1 p-1">
-      <span class="col-span-5">Scale</span>
+      <span class="col-span-5">Zoom [m]</span>
       <div class="col-span-7">
-        <input type="number" [(ngModel)]="brushValues.scale" [step]="0.001" class="w-full"/>
-        <p-slider [(ngModel)]="brushValues.scale" [step]="0.001" [min]="0.001" [max]="0.5"></p-slider>
+        <input type="number" [(ngModel)]="brushValues.zoom" [step]="1" class="w-full"/>
+        <p-slider [(ngModel)]="brushValues.zoom" [step]="1" [min]="2" [max]="1000"></p-slider>
       </div>
     </div>
 
@@ -131,10 +131,11 @@ export class NoiseBrushComponent extends AbstractBrush implements OnInit, OnDest
     // Recreate noise if seed changed
     this.perlinNoise = new PerlinNoise(this.brushValues.seed);
 
-    // Use world coordinates for coherent noise
+    // Use world coordinates for coherent noise, zoom stretches the noise
+    const frequency = 1 / this.brushValues.zoom;
     const noiseValue = this.perlinNoise.fbm(
-      oldPosition.x * this.brushValues.scale,
-      oldPosition.z * this.brushValues.scale,
+      oldPosition.x * frequency,
+      oldPosition.z * frequency,
       this.brushValues.octaves
     );
 

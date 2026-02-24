@@ -11,7 +11,7 @@ import {HttpClient} from "@angular/common/http";
 import {GwtAngularService} from "../../gwtangular/GwtAngularService";
 import {MessageService} from "primeng/api";
 import * as pako from "pako";
-import {HttpClient as HttpClientAdapter, RestResponse, TerrainType} from '../../generated/razarion-share';
+import {HttpClient as HttpClientAdapter, RestResponse} from '../../generated/razarion-share';
 import {PlanetConfig} from "../../gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "../../game/renderer/babylon-render-service-access-impl.service";
 import {Nullable, Observer, PointerEventTypes, PointerInfo, Vector3} from "@babylonjs/core";
@@ -62,6 +62,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   private terrainEditorControllerClient: TerrainEditorControllerClient;
   lastSavedTimeStamp: string = "";
   lastSavedSize: string = "";
+  lastSavedSizeLoading: boolean = false;
   private originalUint16HeightMap?: Uint16Array;
   fixedUint16HeightMap?: Uint16Array;
   @ViewChild('fileUploadElement')
@@ -128,6 +129,8 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
       this.setupEditorTerrainTile(babylonTerrainTile);
       return undefined;
     });
+
+    this.loadHeightmapSize();
   }
 
   ngAfterViewInit(): void {
@@ -295,6 +298,26 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     }
   }
 
+  loadHeightmapSize() {
+    this.lastSavedSizeLoading = true;
+    this.terrainEditorControllerClient.getHeightmapSize(this.planetConfig.getId())
+      .then(size => {
+        this.lastSavedSize = this.formatSize(size);
+        this.lastSavedSizeLoading = false;
+      })
+      .catch(error => {
+        console.error(error);
+        this.lastSavedSizeLoading = false;
+      });
+  }
+
+  formatSize(bytes: number): string {
+    if (bytes < 0) return 'Error';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
   save() {
     const compressedHeightMap = this.generateCompressedHeightMap()
     if (!compressedHeightMap) {
@@ -306,7 +329,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
       .then(() => {
         this.lastSavedTimeStamp = new Date().toLocaleString();
-        this.lastSavedSize = `${compressedHeightMap.length} bytes`;
+        this.lastSavedSize = this.formatSize(compressedHeightMap.length);
         this.messageService.add({severity: 'success', summary: 'Success', detail: 'Terrain saved'})
       })
       .catch(error => {
@@ -350,108 +373,53 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   }
 
   generateMiniMap(canvas: HTMLCanvasElement) {
-    canvas.width = RadarComponent.MINI_MAP_IMAGE_WIDTH;
-    canvas.height = RadarComponent.MINI_MAP_IMAGE_HEIGHT;
+    const width = RadarComponent.MINI_MAP_IMAGE_WIDTH;
+    const height = RadarComponent.MINI_MAP_IMAGE_HEIGHT;
+    canvas.width = width;
+    canvas.height = height;
     const context = canvas.getContext('2d')!;
-    context.fillStyle = "rgba(0, 0, 0, 1)";
-    context.fillRect(0, 0, canvas.width, canvas.height)
-    const factor = RadarComponent.MINI_MAP_IMAGE_WIDTH / (this.xTileCount * BabylonTerrainTileImpl.NODE_SIZE * BabylonTerrainTileImpl.NODE_X_COUNT);
+    const imageData = context.createImageData(width, height);
+    const data = imageData.data;
 
-    let y = 0;
-    const self = this;
-    let invokeDraw = function () {
-      self.drawMiniMapLine(y, context, factor);
-      y++;
-      if (y < self.yTileCount) {
-        setTimeout(invokeDraw);
+    const totalNodesX = this.xTileCount * BabylonTerrainTileImpl.NODE_X_COUNT;
+    const totalNodesY = this.yTileCount * BabylonTerrainTileImpl.NODE_Y_COUNT;
+    const tileNodesX = BabylonTerrainTileImpl.NODE_X_COUNT;
+    const tileNodesY = BabylonTerrainTileImpl.NODE_Y_COUNT;
+
+    for (let py = 0; py < height; py++) {
+      // Flip Y: top of canvas = high Y in world
+      const nodeY = Math.floor((height - 1 - py) * totalNodesY / height);
+      const tileY = Math.floor(nodeY / tileNodesY);
+      const localY = nodeY - tileY * tileNodesY;
+
+      for (let px = 0; px < width; px++) {
+        const nodeX = Math.floor(px * totalNodesX / width);
+        const tileX = Math.floor(nodeX / tileNodesX);
+        const localX = nodeX - tileX * tileNodesX;
+
+        let h = BabylonTerrainTileImpl.HEIGHT_DEFAULT;
+
+        const editorTile = this.editorTerrainTiles[tileY]?.[tileX];
+        if (editorTile && editorTile.hasPositions()) {
+          h = editorTile.getHeightAtNode(localX, localY);
+        } else if (this.originalUint16HeightMap) {
+          const tileIndex = tileY * this.xTileCount + tileX;
+          const idx = tileIndex * tileNodesX * tileNodesY + localY * tileNodesX + localX;
+          if (idx < this.originalUint16HeightMap.length) {
+            h = BabylonTerrainTileImpl.uint16ToHeight(this.originalUint16HeightMap[idx]);
+          }
+        }
+
+        const rgb = EditorTerrainTile.heightToRgb(h);
+        const offset = (py * width + px) * 4;
+        data[offset] = rgb[0];
+        data[offset + 1] = rgb[1];
+        data[offset + 2] = rgb[2];
+        data[offset + 3] = 255;
       }
     }
-    setTimeout(invokeDraw);
-  }
 
-  private drawMiniMapLine(y: number, context: CanvasRenderingContext2D, factor: number) {
-    for (let x = 0; x < this.xTileCount; x++) {
-      let editorTerrainTile = this.editorTerrainTiles[y][x];
-      const xNodeTile = x * BabylonTerrainTileImpl.NODE_SIZE * BabylonTerrainTileImpl.NODE_X_COUNT;
-      const yNodeTile = y * BabylonTerrainTileImpl.NODE_SIZE * BabylonTerrainTileImpl.NODE_Y_COUNT;
-      const xCanvas = xNodeTile * factor;
-      const yCanvas = (((this.yTileCount - 1) * BabylonTerrainTileImpl.NODE_SIZE * BabylonTerrainTileImpl.NODE_Y_COUNT) - yNodeTile) * factor;
-
-      if (editorTerrainTile.hasPositions()) {
-        context.translate(xCanvas, yCanvas);
-        editorTerrainTile.drawMiniMap(
-          context,
-          true,
-          factor,
-          0,
-          "rgba(0, 0, 255, 0.5)",
-          "rgba(0, 255, 0, 0.5)",
-          "rgba(255, 0, 0, 0.5)");
-        context.translate(-xCanvas, -yCanvas);
-      } else {
-        if (!this.originalUint16HeightMap) {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'No original height map loaded'
-          });
-          return;
-        }
-
-        const indexTileNode = (BabylonTerrainTileImpl.NODE_Y_COUNT * BabylonTerrainTileImpl.NODE_Y_COUNT) * (y * this.xTileCount + x)
-
-        const originalUint16HeightMap = this.originalUint16HeightMap;
-        const setupTerrainType = function (indexNode: number): TerrainType {
-          const indexAbsolute = indexNode + indexTileNode;
-          if (indexAbsolute >= originalUint16HeightMap.length) {
-            return TerrainType.LAND;
-          }
-          const blHeight = BabylonTerrainTileImpl.uint16ToHeight(originalUint16HeightMap[indexAbsolute]);
-          if (indexAbsolute + 1 >= originalUint16HeightMap.length) {
-            return TerrainType.LAND;
-          }
-          const brHeight = BabylonTerrainTileImpl.uint16ToHeight(originalUint16HeightMap[indexAbsolute + 1]);
-          const indexTop = indexAbsolute + BabylonTerrainTileImpl.NODE_Y_COUNT;
-          if (indexTop >= originalUint16HeightMap.length) {
-            return TerrainType.LAND;
-          }
-          const tlHeight = BabylonTerrainTileImpl.uint16ToHeight(originalUint16HeightMap[indexTop]);
-
-          if (indexTop + 1 >= originalUint16HeightMap.length) {
-            return TerrainType.LAND;
-          }
-          const trHeight = BabylonTerrainTileImpl.uint16ToHeight(originalUint16HeightMap[indexTop + 1]);
-          return <any>EditorTerrainTile.setupTerrainType(blHeight, brHeight, trHeight, tlHeight);
-        }
-        context.translate(xCanvas, yCanvas);
-
-        let indexNode = 0;
-        for (let yNode = 0; yNode < BabylonTerrainTileImpl.NODE_Y_COUNT; yNode++) {
-          for (let xNode = 0; xNode < BabylonTerrainTileImpl.NODE_X_COUNT; xNode++) {
-            switch (setupTerrainType(indexNode)) {
-              case TerrainType.WATER:
-                context.fillStyle = "rgba(0, 0, 255, 0.5)";
-                break;
-              case TerrainType.LAND:
-                context.fillStyle = "rgba(0, 255, 0, 0.5)";
-                break;
-              case TerrainType.BLOCKED:
-                context.fillStyle = "rgba(255, 0, 0, 0.5)";
-                break;
-              default:
-                context.fillStyle = "rgba(1, 1, 1, 1)";
-            }
-            indexNode++;
-            context.fillRect(
-              xNode * BabylonTerrainTileImpl.NODE_SIZE * factor,
-              (BabylonTerrainTileImpl.NODE_Y_COUNT - yNode) * BabylonTerrainTileImpl.NODE_SIZE * factor,
-              BabylonTerrainTileImpl.NODE_SIZE * factor,
-              BabylonTerrainTileImpl.NODE_SIZE * factor);
-          }
-        }
-        context.translate(-xCanvas, -yCanvas);
-      }
-    }
+    context.putImageData(imageData, 0, 0);
   }
 
   restartPlanetWarm() {
@@ -484,7 +452,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
       .then(() => {
         this.lastSavedTimeStamp = new Date().toLocaleString();
-        this.lastSavedSize = `${event.files[0].length} bytes`;
+        this.lastSavedSize = this.formatSize(event.files[0].length);
         this.messageService.add({severity: 'success', summary: 'Success', detail: 'Terrain saved'})
         this.fixedUint16HeightMap = undefined;
       })
@@ -551,7 +519,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     this.terrainEditorControllerClient.updateCompressedHeightMap(this.planetConfig.getId(), blob)
       .then(() => {
         this.lastSavedTimeStamp = new Date().toLocaleString();
-        this.lastSavedSize = `${compressedHeightMap!.length} bytes`;
+        this.lastSavedSize = this.formatSize(compressedHeightMap!.length);
         this.messageService.add({severity: 'success', summary: 'Success', detail: 'Terrain saved'})
         this.fixedUint16HeightMap = undefined;
       })

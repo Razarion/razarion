@@ -324,25 +324,6 @@ export class EditorTerrainTile {
     let yNodeTile = (this.index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT) * BabylonTerrainTileImpl.NODE_SIZE;
     for (let x = 0; x < xCount; x++) {
       for (let y = 0; y < yCount; y++) {
-        // const blHeight = this.positions![x + y * xCount].y;
-        // const brHeight = this.positions![x + 1 + y * xCount].y;
-        // const tlHeight = this.positions![x + (y + 1) * xCount].y;
-        // const trHeight = this.positions![x + 1 + (y + 1) * xCount].y;
-        //
-        // switch (EditorTerrainTile.setupTerrainType(blHeight, brHeight, trHeight, tlHeight)) {
-        //   case TerrainType.WATER:
-        //     context.fillStyle = waterColor;
-        //     break;
-        //   case TerrainType.LAND:
-        //     context.fillStyle = landColor;
-        //     break;
-        //   case TerrainType.BLOCKED:
-        //     context.fillStyle = blockedColor;
-        //     break;
-        //   default:
-        //     context.fillStyle = "rgba(1, 1, 1, 1)";
-        // }
-
         let terrainType = GwtHelper.gwtIssueStringEnum(
           this.terrainUiService.getTerrainType(x + xNodeTile, y + yNodeTile),
           TerrainType
@@ -361,12 +342,6 @@ export class EditorTerrainTile {
             context.fillStyle = "rgba(1, 1, 1, 1)";
         }
 
-        // if(y < BabylonTerrainTileImpl.NODE_Y_COUNT / 2) {
-        //   context.fillStyle = "rgba(255, 0, 0, 0.5)";
-        // } else {
-        //   context.fillStyle = "rgba(0, 255, 0, 0.5)";
-        // }
-
         context.fillRect(
           (x + 1) * factor - effectiveBorder * 2,
           (flipY ? (yCount - y - 1) : (y + 1)) * factor - effectiveBorder * 2,
@@ -374,6 +349,84 @@ export class EditorTerrainTile {
           factor - effectiveBorder * 2);
       }
     }
+  }
+
+  drawMiniMapRealistic(context: CanvasRenderingContext2D, flipY: boolean, factor: number, effectiveBorder: number) {
+    let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    for (let x = 0; x < xCount; x++) {
+      for (let y = 0; y < yCount; y++) {
+        const height = this.positions![x + y * xCount].y;
+        context.fillStyle = EditorTerrainTile.heightToColor(height);
+        context.fillRect(
+          (x + 1) * factor - effectiveBorder * 2,
+          (flipY ? (yCount - y - 1) : (y + 1)) * factor - effectiveBorder * 2,
+          factor - effectiveBorder * 2,
+          factor - effectiveBorder * 2);
+      }
+    }
+  }
+
+  static heightToColor(height: number): string {
+    const rgb = EditorTerrainTile.heightToRgb(height);
+    return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+  }
+
+  static heightToRgb(height: number): [number, number, number] {
+    if (height < BabylonTerrainTileImpl.WATER_LEVEL) {
+      // Water: deeper = darker blue
+      const depth = Math.min(-height, 10);
+      const t = depth / 10; // 0 = surface, 1 = deep
+      return [
+        Math.round(30 * (1 - t)),
+        Math.round(100 + 80 * (1 - t)),
+        Math.round(140 + 115 * (1 - t))
+      ];
+    } else if (height < BabylonTerrainTileImpl.BEACH_HEIGHT) {
+      // Beach/sand
+      return [210, 190, 140];
+    } else if (height < 3) {
+      // Low land: green
+      const t = (height - 0.3) / 2.7;
+      return [
+        Math.round(50 + 50 * t),
+        Math.round(160 - 30 * t),
+        Math.round(40 + 20 * t)
+      ];
+    } else if (height < 10) {
+      // Hills: green to brown
+      const t = (height - 3) / 7;
+      return [
+        Math.round(100 + 50 * t),
+        Math.round(130 - 40 * t),
+        Math.round(60 - 20 * t)
+      ];
+    } else if (height < 30) {
+      // Mountains: brown to gray
+      const t = (height - 10) / 20;
+      return [
+        Math.round(150 - 30 * t),
+        Math.round(90 + 50 * t),
+        Math.round(40 + 90 * t)
+      ];
+    } else {
+      // Peaks: gray to white
+      const t = Math.min((height - 30) / 50, 1);
+      const val = Math.round(180 + 75 * t);
+      return [val, val, val];
+    }
+  }
+
+  getHeightAtNode(localX: number, localY: number): number {
+    if (!this.positions) {
+      return BabylonTerrainTileImpl.HEIGHT_DEFAULT;
+    }
+    const stride = BabylonTerrainTileImpl.NODE_X_COUNT + 1;
+    const index = localX + localY * stride;
+    if (index < this.positions.length) {
+      return this.positions[index].y;
+    }
+    return BabylonTerrainTileImpl.HEIGHT_DEFAULT;
   }
 
   public static setupTerrainType(blHeight: number, brHeight: number, trHeight: number, tlHeight: number): TerrainType {

@@ -75,6 +75,7 @@ public class ImageController {
             byte[] data = planetCrudPersistence.getMiniMapImage(planetId);
             return ResponseEntity
                     .ok()
+                    .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
                     .lastModified(ZonedDateTime.now())
                     .body(data);
         } catch (Throwable e) {

@@ -143,4 +143,8 @@ public class PlanetCrudService extends AbstractConfigCrudService<PlanetConfig, P
     public byte[] getCompressedHeightMap(int planetId) {
         return getEntity(planetId).getCompressedHeightMap();
     }
+
+    public int getHeightmapSize(int planetId) {
+        return ((PlanetRepository) getJpaRepository()).findHeightmapSize(planetId);
+    }
 }

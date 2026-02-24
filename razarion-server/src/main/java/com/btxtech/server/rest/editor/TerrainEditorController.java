@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -61,7 +62,7 @@ public class TerrainEditorController {
     }
 
     @PostMapping(value = "updateCompressedHeightMap/{planetId}", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    @PreAuthorize("hasAuthority('ADMIN')") 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void updateCompressedHeightMap(@PathVariable("planetId") int planetId, @RequestBody byte[] zippedHeightMap) {
         try {
             planetCrudPersistence.updateCompressedHeightMap(planetId, zippedHeightMap);
@@ -69,5 +70,10 @@ public class TerrainEditorController {
             logger.warn(e.getMessage(), e);
             throw e;
         }
+    }
+
+    @GetMapping("heightmapSize/{planetId}")
+    public int getHeightmapSize(@PathVariable("planetId") int planetId) {
+        return planetCrudPersistence.getHeightmapSize(planetId);
     }
 }
