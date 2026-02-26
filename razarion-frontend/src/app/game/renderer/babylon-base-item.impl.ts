@@ -47,6 +47,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private oldRotation3D: Vector3 | null = null;
   private lastRotationUpdateTime: number | null = null;
   private idleCallback: ((idle: boolean) => void) | null = null;
+  private buildupCallback: ((buildup: number) => void) | null = null;
   private readonly uiTexture: AdvancedDynamicTexture;
   private buildupMeshes: Mesh[] | null = null;
   private demolitionMeshExploder: MeshExploder | null = null;
@@ -275,6 +276,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   setBuildup(buildup: number): void {
+    this.buildup = buildup;
+    if (this.buildupCallback) {
+      this.buildupCallback(buildup);
+    }
     this.getRenderObject().setEffectsActive(buildup >= 1.0);
 
     if (buildup >= 1.0 && this.buildupMeshes != null) {
@@ -328,6 +333,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   setIdleCallback(callback: ((idle: boolean) => void) | null) {
     this.idleCallback = callback;
+  }
+
+  setBuildupCallback(callback: ((buildup: number) => void) | null) {
+    this.buildupCallback = callback;
   }
 
   handleConstructing(): void {

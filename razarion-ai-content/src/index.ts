@@ -647,11 +647,11 @@ function heightToColor(h: number): [number, number, number] {
   if (h < 1)   return [160, 200, 100];  // beach/shore
   if (h < 3)   return [80, 170, 50];    // low land
   if (h < 10)  return [100, 150, 40];   // medium land
-  if (h < 20)  return [170, 150, 60];   // high land
-  if (h < 30)  return [150, 120, 60];   // hills
-  if (h < 50)  return [130, 110, 90];   // mountain
-  if (h < 80)  return [160, 155, 150];  // high mountain
-  return [230, 230, 235];               // peak/snow
+  if (h < 20)  return [120, 115, 70];   // hills - earthy olive
+  if (h < 30)  return [115, 110, 85];   // mountain - gray-brown
+  if (h < 50)  return [125, 120, 105];  // high mountain - rocky gray
+  if (h < 80)  return [150, 148, 142];  // very high mountain - light gray
+  return [210, 210, 215];               // peak/snow
 }
 
 server.tool(

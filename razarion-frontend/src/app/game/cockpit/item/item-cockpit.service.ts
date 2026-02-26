@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import {
   BaseItemType,
   BaseItemUiService,
@@ -13,6 +13,7 @@ import { GwtAngularService } from '../../../gwtangular/GwtAngularService';
 import { SelectionService } from '../../selection.service';
 import { CockpitDisplayService } from '../cockpit-display.service';
 import { BabylonAudioService } from '../../renderer/babylon-audio.service';
+import { BabylonBaseItemImpl } from '../../renderer/babylon-base-item.impl';
 
 // --- View-Model Interfaces ---
 
@@ -24,6 +25,7 @@ export interface OwnItemCockpitModel {
   containerCount: number | null;
   containerId: number | null;
   canSell: boolean;
+  buildupProgress: number | null;
 }
 
 export interface BuildupItemModel {
@@ -69,12 +71,14 @@ export class ItemCockpitService {
   otherItemCockpit: OtherItemCockpitModel | null = null;
   count: number = 0;
   private initialized = false;
+  private watchedBuildupItem: BabylonBaseItemImpl | null = null;
 
   constructor(
     private selectionService: SelectionService,
     private gwtAngularService: GwtAngularService,
     private cockpitDisplayService: CockpitDisplayService,
-    private babylonAudioService: BabylonAudioService
+    private babylonAudioService: BabylonAudioService,
+    private zone: NgZone
   ) {
     selectionService.addSelectionListener(() => this.onSelectionChanged());
   }
@@ -106,8 +110,9 @@ export class ItemCockpitService {
     if (!this.initialized) {
       this.init();
     }
-    // Unwatch container from previous selection
+    // Unwatch from previous selection
     this.itemCockpitBridge.unwatchContainerCount();
+    this.unwatchBuildup();
 
     const selectedItems = this.selectionService.getSelectedOwnItems();
     if (selectedItems.length > 0) {
@@ -131,6 +136,7 @@ export class ItemCockpitService {
         this.ownMultipleItems = null;
         this.otherItemCockpit = null;
         this.count = items.length;
+        this.watchBuildup(items);
       } else {
         // Multiple types selected
         this.ownItemCockpit = null;
@@ -159,6 +165,9 @@ export class ItemCockpitService {
   private createOwnItemCockpit(baseItemType: BaseItemType, items: { getId(): number }[]): OwnItemCockpitModel {
     const canSell = !this.gameUiControl.isSellSuppressed();
 
+    const firstItem = items[0] as BabylonBaseItemImpl;
+    const currentBuildup = firstItem.getBuildup();
+
     const model: OwnItemCockpitModel = {
       imageUrl: getImageServiceUrl(baseItemType.getThumbnail()),
       itemTypeName: baseItemType.getName(),
@@ -166,7 +175,8 @@ export class ItemCockpitService {
       buildupItems: this.createBuildupItems(baseItemType),
       containerCount: null,
       containerId: null,
-      canSell
+      canSell,
+      buildupProgress: currentBuildup < 1.0 ? currentBuildup : null
     };
 
     // Container info
@@ -267,7 +277,8 @@ export class ItemCockpitService {
           buildupItems: null,
           containerCount: null,
           containerId: null,
-          canSell
+          canSell,
+          buildupProgress: null
         },
         count: items.length,
         baseItemTypeId: typeId
@@ -392,6 +403,28 @@ export class ItemCockpitService {
         item.buildNoMoney = true;
         item.enabled = false;
       }
+    }
+  }
+
+  private watchBuildup(items: BabylonBaseItemImpl[]): void {
+    if (items.length !== 1) return;
+    const item = items[0];
+    if (item.getBuildup() >= 1.0) return;
+
+    this.watchedBuildupItem = item;
+    item.setBuildupCallback((buildup: number) => {
+      this.zone.run(() => {
+        if (this.ownItemCockpit) {
+          this.ownItemCockpit.buildupProgress = buildup < 1.0 ? buildup : null;
+        }
+      });
+    });
+  }
+
+  private unwatchBuildup(): void {
+    if (this.watchedBuildupItem) {
+      this.watchedBuildupItem.setBuildupCallback(null);
+      this.watchedBuildupItem = null;
     }
   }
 

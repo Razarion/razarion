@@ -32,6 +32,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private readonly material;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private baseItemPlacerCallback: ((event: BaseItemPlacerPresenterEvent) => void) | null = null;
+  private keydownHandler: ((event: KeyboardEvent) => void) | null = null;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService,
@@ -96,6 +97,14 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
         }
       }
     });
+
+    this.keydownHandler = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && baseItemPlacer.isCanBeCanceled()) {
+        baseItemPlacer.cancel();
+      }
+    };
+    window.addEventListener('keydown', this.keydownHandler);
+
     if (this.baseItemPlacerCallback) {
       this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.ACTIVATED);
     }
@@ -125,6 +134,10 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   }
 
   deactivate(): void {
+    if (this.keydownHandler) {
+      window.removeEventListener('keydown', this.keydownHandler);
+      this.keydownHandler = null;
+    }
     this.rendererService.getScene().onPointerObservable.remove(this.pointerObservable);
     this.rendererService.getScene().removeMesh(this.disc!);
     this.disc?.dispose();
@@ -145,13 +158,14 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   }
 
   private setPosition(baseItemPlacer: BaseItemPlacer, pickedPoint: Vector3) {
+    if (!this.disc) return;
     baseItemPlacer.onMove(pickedPoint.x, pickedPoint.z);
-    this.disc!.position = pickedPoint
-    this.disc!.position.y += +0.1;
+    this.disc.position = pickedPoint
+    this.disc.position.y += 0.1;
     const positionValid = baseItemPlacer.isPositionValid();
     this.material.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
-    this.pressMouseVisualization!.setPositionValid(positionValid);
-    this.renderObject!.setPosition(pickedPoint);
-    this.renderObject!.increaseHeight(0.01);
+    this.pressMouseVisualization?.setPositionValid(positionValid);
+    this.renderObject?.setPosition(pickedPoint);
+    this.renderObject?.increaseHeight(0.01);
   }
 }

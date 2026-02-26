@@ -17,16 +17,16 @@ function uint16ToHeight(uint16) {
 }
 
 function heightToColor(h) {
-  if (h < -5)  return [10, 30, 100];
-  if (h < 0)   return [30, 80, 170];
-  if (h < 1)   return [160, 200, 100];
-  if (h < 3)   return [80, 170, 50];
-  if (h < 10)  return [100, 150, 40];
-  if (h < 20)  return [170, 150, 60];
-  if (h < 30)  return [150, 120, 60];
-  if (h < 50)  return [130, 110, 90];
-  if (h < 80)  return [160, 155, 150];
-  return [230, 230, 235];
+  if (h < -5)  return [10, 30, 100];      // Deep water
+  if (h < 0)   return [30, 80, 170];      // Shallow water
+  if (h < 1)   return [160, 200, 100];    // Beach/shore
+  if (h < 3)   return [80, 170, 50];      // Low land
+  if (h < 10)  return [100, 150, 40];     // Medium land
+  if (h < 20)  return [120, 115, 70];     // Hills - earthy olive
+  if (h < 30)  return [115, 110, 85];     // Mountain - gray-brown
+  if (h < 50)  return [125, 120, 105];    // High mountain - rocky gray
+  if (h < 80)  return [150, 148, 142];    // Very high mountain - light gray
+  return [210, 210, 215];                 // Peak/snow
 }
 
 // --- CRC32 for PNG ---

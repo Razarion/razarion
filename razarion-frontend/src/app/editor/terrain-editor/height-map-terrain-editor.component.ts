@@ -36,6 +36,7 @@ import {Checkbox} from 'primeng/checkbox';
 import {FormsModule} from '@angular/forms';
 import {SelectButton} from 'primeng/selectbutton';
 import {FileUpload} from 'primeng/fileupload';
+import {BotConfig} from 'src/app/generated/razarion-share';
 
 @Component({
   selector: 'height-map-terrain-editor',
@@ -372,7 +373,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     return pako.gzip(new Uint8Array(uint16Array.buffer));
   }
 
-  generateMiniMap(canvas: HTMLCanvasElement) {
+  generateMiniMap(canvas: HTMLCanvasElement, botConfigs?: BotConfig[]) {
     const width = RadarComponent.MINI_MAP_IMAGE_WIDTH;
     const height = RadarComponent.MINI_MAP_IMAGE_HEIGHT;
     canvas.width = width;
@@ -420,6 +421,25 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     }
 
     context.putImageData(imageData, 0, 0);
+
+    if (botConfigs) {
+      this.drawBotOverlay(context, botConfigs, width, height, totalNodesX, totalNodesY);
+    }
+  }
+
+  private drawBotOverlay(context: CanvasRenderingContext2D, botConfigs: BotConfig[], width: number, height: number, totalNodesX: number, totalNodesY: number) {
+    // Draw bot grounds as orange squares
+    for (const botConfig of botConfigs) {
+      if (botConfig.groundBoxPositions?.length) {
+        for (const pos of botConfig.groundBoxPositions) {
+          const px = Math.round(pos.x * width / totalNodesX);
+          const py = height - 1 - Math.round(pos.y * height / totalNodesY);
+          context.fillStyle = 'rgba(255, 160, 0, 0.8)';
+          context.fillRect(px - 2, py - 2, 5, 5);
+        }
+      }
+
+    }
   }
 
   restartPlanetWarm() {

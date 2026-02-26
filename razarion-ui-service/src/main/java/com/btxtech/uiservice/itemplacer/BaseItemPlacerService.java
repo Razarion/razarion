@@ -34,7 +34,7 @@ public class BaseItemPlacerService {
 
     public void activate(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<Collection<DecimalPosition>> executionCallback) {
         this.executionCallback = executionCallback;
-        baseItemPlacer = provider.get().init(baseItemPlacerConfig, canBeCanceled, this::onPlace);
+        baseItemPlacer = provider.get().init(baseItemPlacerConfig, canBeCanceled, this::onPlace, this::deactivate);
         baseItemPlacerPresenter.activate(baseItemPlacer);
         new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.activatePlacer(baseItemPlacer));
     }

@@ -27,7 +27,17 @@
         </div>
       }
     </div>
-    @if (ownItemCockpit.buildupItems) {
+    @if (ownItemCockpit.buildupProgress != null) {
+      <div class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-wrench text-yellow-400" style="font-size: 0.9rem"></i>
+          <span class="text-yellow-400 text-sm">Under Construction {{ ownItemCockpit.buildupProgress * 100 | number:'1.0-0' }}%</span>
+        </div>
+        <p-progressbar [value]="ownItemCockpit.buildupProgress * 100"
+          [style]="{ height: '1rem' }" [showValue]="false" />
+      </div>
+    }
+    @if (ownItemCockpit.buildupItems && ownItemCockpit.buildupProgress == null) {
       <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
         <p-popover #tipPopover [dismissable]="false">
           <div class="blinking-popover">

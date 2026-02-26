@@ -4,6 +4,7 @@ import {GwtAngularService} from "../gwtangular/GwtAngularService";
 import {CockpitDisplayService} from "./cockpit/cockpit-display.service";
 
 export class ModelDialogPresenterImpl implements ModelDialogPresenter {
+  private static readonly SPLASH_DISPLAY_DURATION_MS = 1000;
   title?: string;
   messageLines?: string[] = [];
   private queue: { title: string, messageLines?: string[] }[] = [];
@@ -87,6 +88,6 @@ export class ModelDialogPresenterImpl implements ModelDialogPresenter {
                 let queueEntry = this.queue.shift()!;
                 this.displayMessage(queueEntry.title, queueEntry.messageLines);
             }
-        }, 2000);
+        }, ModelDialogPresenterImpl.SPLASH_DISPLAY_DURATION_MS);
   }
 }

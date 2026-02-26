@@ -8,8 +8,10 @@ import {
   ViewChildren
 } from '@angular/core';
 
+import {DecimalPipe} from '@angular/common';
 import {Carousel} from 'primeng/carousel';
 import {ButtonModule} from 'primeng/button';
+import {ProgressBar} from 'primeng/progressbar';
 import {UserService} from '../../../auth/user.service';
 import {Popover, PopoverModule} from 'primeng/popover';
 import {TipService} from '../../tip/tip.service';
@@ -20,9 +22,11 @@ import {BuildupItemModel, ItemCockpitService} from './item-cockpit.service';
   templateUrl: 'item-cockpit.component.html',
   styleUrls: ['item-cockpit.component.scss'],
   imports: [
+    DecimalPipe,
     Carousel,
     ButtonModule,
-    PopoverModule
+    PopoverModule,
+    ProgressBar
 ]
 })
 export class ItemCockpitComponent implements AfterViewInit, OnDestroy {

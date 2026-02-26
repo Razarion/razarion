@@ -157,6 +157,8 @@ public class DtoConverter {
         setGetterObj(obj, "getModel3DId", () -> convertNullableInt(placer.getModel3DId()));
         setGetterObj(obj, "getSpawnAudioId", () -> convertNullableInt(placer.getSpawnAudioId()));
         setGetterBool(obj, "isPlayBuildSound", () -> placer.isPlayBuildSound());
+        setGetterBool(obj, "isCanBeCanceled", () -> placer.isCanBeCanceled());
+        setMethodVoid(obj, "cancel", placer::cancel);
 
         return obj;
     }

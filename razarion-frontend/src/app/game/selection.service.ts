@@ -70,6 +70,17 @@ export class SelectionService {
     }
   }
 
+  /** Permanently remove a disposed item (sold/destroyed). Clears selection if empty. */
+  disposeItem(id: number): void {
+    const idx = this.selectedOwnItems.findIndex(item => item.getId() === id);
+    if (idx >= 0) {
+      this.selectedOwnItems.splice(idx, 1);
+    }
+    if (this.selectedOwnItemIds.delete(id) && this.selectedOwnItemIds.size === 0) {
+      this.fireSelectionChanged();
+    }
+  }
+
   /**
    * Called when a BabylonBaseItemImpl is created (item scrolls into view).
    * If its ID is in the persistent selection, reattach it.
@@ -91,6 +102,21 @@ export class SelectionService {
       }
       // Keep selectedOtherId and metadata — item just scrolled out of view.
       // Do NOT fire selectionChanged so cockpit stays visible.
+    }
+  }
+
+  /** Permanently remove a disposed other item (destroyed). Clears selection. */
+  disposeOther(id: number): void {
+    if (this.selectedOtherId === id) {
+      if (this.selectedOtherItem) {
+        this.selectedOtherItem.select(false);
+        this.selectedOtherItem = null;
+      }
+      this.selectedOtherId = null;
+      this.selectedOtherDiplomacy = null;
+      this.selectedOtherItemTypeId = null;
+      this.selectedOtherBaseId = null;
+      this.fireSelectionChanged();
     }
   }
 

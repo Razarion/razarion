@@ -17,6 +17,7 @@ import {TypescriptGenerator} from '../../backend/typescript-generator';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
 import {Checkbox} from 'primeng/checkbox';
 import {FormsModule} from '@angular/forms';
+import {EditorService} from '../editor-service';
 
 @Component({
   selector: 'terrain-editor',
@@ -53,7 +54,8 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
               private messageService: MessageService,
               private gwtAngularService: GwtAngularService,
               private renderService: BabylonRenderServiceAccessImpl,
-              private selectionService: SelectionService) {
+              private selectionService: SelectionService,
+              private editorService: EditorService) {
     super();
     this.terrainEditorControllerClient = new TerrainEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
     this.stopGameUi();
@@ -86,8 +88,10 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
   }
 
   onShowMiniMapDialog() {
-    this.shapeTerrainEditor.generateMiniMap(this.miniMapCanvas.nativeElement);
-    this.displayMiniMap = true;
+    this.editorService.readServerGameEngineConfig().then(config => {
+      this.shapeTerrainEditor.generateMiniMap(this.miniMapCanvas.nativeElement, config.botConfigs);
+      this.displayMiniMap = true;
+    });
   }
 
   saveMiniMap() {

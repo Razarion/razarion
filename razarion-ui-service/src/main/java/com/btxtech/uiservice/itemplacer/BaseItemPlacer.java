@@ -22,6 +22,7 @@ public class BaseItemPlacer {
     private final ItemTypeService itemTypeService;
     private boolean canBeCanceled;
     private Consumer<DecimalPosition> placeCallback;
+    private Runnable cancelCallback;
     private BaseItemType baseItemType;
     private String errorText;
 
@@ -31,10 +32,11 @@ public class BaseItemPlacer {
         this.baseItemPlacerChecker = baseItemPlacerChecker;
     }
 
-    public BaseItemPlacer init(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<DecimalPosition> placeCallback) {
+    public BaseItemPlacer init(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<DecimalPosition> placeCallback, Runnable cancelCallback) {
         baseItemType = itemTypeService.getBaseItemType(baseItemPlacerConfig.getBaseItemTypeId());
         this.canBeCanceled = canBeCanceled;
         this.placeCallback = placeCallback;
+        this.cancelCallback = cancelCallback;
         baseItemPlacerChecker.init(baseItemType, baseItemPlacerConfig);
 //        if (baseItemPlacerConfig.getSuggestedPosition() != null) {
 //            onMove(new Vertex(baseItemPlacerConfig.getSuggestedPosition(), 0));
@@ -96,6 +98,18 @@ public class BaseItemPlacer {
     @SuppressWarnings("unused") // Called by Angular
     public boolean isPlayBuildSound() {
         return canBeCanceled;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean isCanBeCanceled() {
+        return canBeCanceled;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public void cancel() {
+        if (canBeCanceled) {
+            cancelCallback.run();
+        }
     }
 
     private void setupErrorText() {

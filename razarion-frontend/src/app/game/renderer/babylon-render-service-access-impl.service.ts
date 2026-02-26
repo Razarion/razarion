@@ -298,7 +298,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.uiConfigCollectionService,
         () => {
           this.babylonBaseItems = this.babylonBaseItems.filter(i => i !== item);
-          this.tsSelectionService.removeItem(item.getId());
+          this.tsSelectionService.disposeItem(item.getId());
         });
       this.babylonBaseItems.push(item);
       this.tsSelectionService.tryReattachItem(item);
@@ -750,7 +750,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.tsSelectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
-        () => { this.babylonResourceItems = this.babylonResourceItems.filter(i => i !== item); this.tsSelectionService.removeOther(item.getId()); });
+        () => { this.babylonResourceItems = this.babylonResourceItems.filter(i => i !== item); this.tsSelectionService.disposeOther(item.getId()); });
       this.babylonResourceItems.push(item);
       return item;
     } catch (error) {
@@ -779,7 +779,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.tsSelectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
-        () => { this.tsSelectionService.removeOther(id); });
+        () => { this.tsSelectionService.disposeOther(id); });
     } catch (error) {
       console.error(error);
       return BabylonBoxItemImpl.createDummy(id);

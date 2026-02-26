@@ -393,27 +393,38 @@ export class EditorTerrainTile {
         Math.round(160 - 30 * t),
         Math.round(40 + 20 * t)
       ];
-    } else if (height < 10) {
-      // Hills: green to brown
-      const t = (height - 3) / 7;
+    } else if (height < 8) {
+      // Hills: green to dark olive
+      const t = (height - 3) / 5;
       return [
-        Math.round(100 + 50 * t),
-        Math.round(130 - 40 * t),
-        Math.round(60 - 20 * t)
+        Math.round(90 + 30 * t),
+        Math.round(130 - 20 * t),
+        Math.round(55 - 10 * t)
       ];
-    } else if (height < 30) {
-      // Mountains: brown to gray
-      const t = (height - 10) / 20;
+    } else if (height < 18) {
+      // Mountains: olive to earthy gray-brown
+      const t = (height - 8) / 10;
       return [
-        Math.round(150 - 30 * t),
-        Math.round(90 + 50 * t),
-        Math.round(40 + 90 * t)
+        Math.round(120 - 10 * t),
+        Math.round(110 - 5 * t),
+        Math.round(70 + 20 * t)
+      ];
+    } else if (height < 35) {
+      // High mountains: gray-brown to rocky gray
+      const t = (height - 18) / 17;
+      return [
+        Math.round(120 + 10 * t),
+        Math.round(110 + 15 * t),
+        Math.round(95 + 15 * t)
       ];
     } else {
-      // Peaks: gray to white
-      const t = Math.min((height - 30) / 50, 1);
-      const val = Math.round(180 + 75 * t);
-      return [val, val, val];
+      // Peaks: rocky gray to light gray
+      const t = Math.min((height - 35) / 15, 1);
+      return [
+        Math.round(130 + 30 * t),
+        Math.round(125 + 30 * t),
+        Math.round(110 + 30 * t)
+      ];
     }
   }
 

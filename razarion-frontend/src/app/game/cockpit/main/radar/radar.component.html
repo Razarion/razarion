@@ -3,9 +3,12 @@
     <canvas #miniItemViewElement style="position: absolute; top: 0; left: 0"></canvas>
     <canvas #miniViewFieldElement style="position: absolute; top: 0; left: 0"></canvas>
 </div>
-<p-button icon="pi pi-search-plus" styleClass="p-button-text p-button-sm" title="Zoom in"
-    (onClick)="zoomInButtonClick()">
-</p-button>
-<p-button icon="pi pi-search-minus" styleClass="p-button-text p-button-sm" title="Zoom in"
-    (onClick)="zoomOuButtonClick()">
-</p-button>
+<div class="radar-zoom-controls">
+    <p-button icon="pi pi-search-minus" styleClass="p-button-text p-button-sm" title="Zoom out"
+        (onClick)="zoomOuButtonClick()">
+    </p-button>
+    <p-slider [(ngModel)]="zoom" [min]="1" [max]="maxZoom" (onChange)="onZoomSliderChange()" class="radar-zoom-slider"/>
+    <p-button icon="pi pi-search-plus" styleClass="p-button-text p-button-sm" title="Zoom in"
+        (onClick)="zoomInButtonClick()">
+    </p-button>
+</div>

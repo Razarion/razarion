@@ -694,6 +694,10 @@ export interface BaseItemPlacer {
   onMove(xTerrainPosition: number, yTerrainPosition: number): void;
 
   onPlace(xTerrainPosition: number, yTerrainPosition: number): void;
+
+  isCanBeCanceled(): boolean;
+
+  cancel(): void;
 }
 
 // ---------- Inventory ----------

@@ -6,13 +6,17 @@ import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 import { MiniTerrain } from './mini-terrain';
 import { MiniItemView } from './mini-item-view';
 import {Button} from 'primeng/button';
+import {Slider} from 'primeng/slider';
+import {FormsModule} from '@angular/forms';
 import {ViewField, ViewFieldListener} from '../../../renderer/view-field';
 
 @Component({
   selector: 'radar',
   templateUrl: './radar.component.html',
   imports: [
-    Button
+    Button,
+    Slider,
+    FormsModule
   ],
   styleUrls: ['./radar.component.scss']
 })
@@ -23,10 +27,13 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
   public static readonly MAX_ZOOM = 15;
   public static readonly MINI_MAP_IMAGE_WIDTH = 1000;
   public static readonly MINI_MAP_IMAGE_HEIGHT = 1000;
-  private zoom = RadarComponent.DEFAULT_ZOOM;
+  private static readonly ZOOM_ANIMATION_DURATION_MS = 2000;
+  zoom = 1;
+  readonly maxZoom = RadarComponent.MAX_ZOOM;
   private miniViewField: MiniViewField;
   private miniTerrain: MiniTerrain;
   private miniItemView: MiniItemView;
+  private zoomAnimationId: number | null = null;
 
   @ViewChild('miniMapElement', { static: true })
   miniMapElement!: ElementRef<HTMLDivElement>;
@@ -44,6 +51,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.zoom = 1;
     this.miniTerrain.init(this.miniTerrainElement.nativeElement, RadarComponent.WIDTH, RadarComponent.HEIGHT, this.zoom);
     this.miniViewField.init(this.miniViewFieldElement.nativeElement, RadarComponent.WIDTH, RadarComponent.HEIGHT, this.zoom);
     this.miniItemView.init(this.miniItemViewElement.nativeElement, RadarComponent.WIDTH, RadarComponent.HEIGHT, this.zoom);
@@ -52,11 +60,15 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
     this.miniMapElement.nativeElement.style.setProperty("height", RadarComponent.HEIGHT + "px");
     this.renderService.addViewFieldListener(this);
 
-    this.miniTerrain.show(() => this.updateMiniMap());
+    this.miniTerrain.show(() => {
+      this.updateMiniMap();
+      this.animateZoomIn();
+    });
     this.miniItemView.startUpdater();
   }
 
   ngOnDestroy(): void {
+    this.cancelZoomAnimation();
     this.renderService.removeViewFieldListener(this);
     this.miniItemView.stopUpdater();
   }
@@ -75,6 +87,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
   }
 
   zoomInButtonClick() {
+    this.cancelZoomAnimation();
     this.zoom++;
     if (this.zoom > RadarComponent.MAX_ZOOM) {
       this.zoom = RadarComponent.MAX_ZOOM;
@@ -83,11 +96,49 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
   }
 
   zoomOuButtonClick() {
+    this.cancelZoomAnimation();
     this.zoom--;
     if (this.zoom < 1) {
       this.zoom = 1;
     }
     this.changeZoom();
+  }
+
+  onZoomSliderChange() {
+    this.cancelZoomAnimation();
+    this.changeZoom();
+  }
+
+  private animateZoomIn() {
+    const startZoom = 1;
+    const targetZoom = RadarComponent.DEFAULT_ZOOM;
+    const duration = RadarComponent.ZOOM_ANIMATION_DURATION_MS;
+    const startTime = performance.now();
+
+    const step = (now: number) => {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const eased = t * t * t * t * t; // ease-in quintic
+      this.zoom = t < 1
+        ? startZoom + (targetZoom - startZoom) * eased
+        : targetZoom;
+      this.changeZoom();
+
+      if (t < 1) {
+        this.zoomAnimationId = requestAnimationFrame(step);
+      } else {
+        this.zoomAnimationId = null;
+      }
+    };
+
+    this.zoomAnimationId = requestAnimationFrame(step);
+  }
+
+  private cancelZoomAnimation() {
+    if (this.zoomAnimationId !== null) {
+      cancelAnimationFrame(this.zoomAnimationId);
+      this.zoomAnimationId = null;
+    }
   }
 
   private changeZoom() {
