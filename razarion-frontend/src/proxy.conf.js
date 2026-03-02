@@ -4,6 +4,7 @@ const PROXY_CONFIG = [
       "/teavm-client",
       "/teavm-worker",
       "/rest",
+      "/editor",
       "/gz",
       "/systemconnection",
       "/gameconnection",

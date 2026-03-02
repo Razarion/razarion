@@ -148,7 +148,9 @@ export class PolygonVisualization {
   private setupPolygonMesh() {
     let polygon = PlaceConfigComponent.toVertex2Array(this.placeConfigComponent.placeConfig!.polygon2D!.corners);
     // Must be called before dispose because it triggers an observable call due to matrix change
-    let height = LocationVisualization.getHeightFromTerrain(polygon[0].x, polygon[0].y, this.renderService);
+    let height = this.placeConfigComponent.heightOverride != null
+      ? this.placeConfigComponent.heightOverride
+      : LocationVisualization.getHeightFromTerrain(polygon[0].x, polygon[0].y, this.renderService);
     if (this.polygonMarker) {
       this.polygonMarker.dispose();
     }
@@ -175,7 +177,7 @@ export class PolygonVisualization {
     for (let i = 0; i < this.placeConfigComponent.placeConfig!.polygon2D!.corners.length; i++) {
       this.draggableCorners.push(new DraggableCorner(this.renderService, this.placeConfigComponent!.placeConfig!.polygon2D!.corners!, i, () => {
         this.setupPolygonMesh();
-      }));
+      }, this.placeConfigComponent.heightOverride));
     }
   }
 
@@ -195,7 +197,7 @@ class DraggableCorner {
   private readonly planeDragGizmo;
   public readonly box;
 
-  constructor(renderService: BabylonRenderServiceAccessImpl, corners: DecimalPosition[], public readonly index: number, onChange: () => any) {
+  constructor(renderService: BabylonRenderServiceAccessImpl, corners: DecimalPosition[], public readonly index: number, onChange: () => any, heightOverride: number | null = null) {
     if (!DraggableCorner.cornerDiscMaterial) {
       DraggableCorner.cornerDiscMaterial = new SimpleMaterial(`Location marker disc`, renderService.getScene());
       DraggableCorner.cornerDiscMaterial.diffuseColor.r = 1;
@@ -206,7 +208,7 @@ class DraggableCorner {
     this.box = MeshBuilder.CreateBox("Polygon editor corner", { size: 0.1 });
     this.box.material = DraggableCorner.cornerDiscMaterial;
     this.box.position.x = corners[index].x;
-    this.box.position.y = LocationVisualization.getHeightFromTerrain(corners[0].x, corners[0].y, renderService);
+    this.box.position.y = heightOverride != null ? heightOverride : LocationVisualization.getHeightFromTerrain(corners[0].x, corners[0].y, renderService);
     this.box.position.z = corners[index].y;
 
     this.planeDragGizmo = new PlaneDragGizmo(new Vector3(0, 1, 0), new Color3(1, 0, 0));

@@ -5,8 +5,10 @@ import {
   BotConfig,
   BotEnragementStateConfig,
   BotItemConfig,
+  DecimalPosition,
   ServerGameEngineConfigEntity
 } from "../../generated/razarion-share";
+import {BabylonTerrainTileImpl} from '../../game/renderer/babylon-terrain-tile.impl';
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
 import {InputNumberModule} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
@@ -172,5 +174,212 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
 
   onRotationSlopeGroundEditor() {
     this.botGroundEditorService.rotationSlope(this.selectedBot!);
+  }
+
+  onGenerateGroundFromRealm() {
+    if (!this.selectedBot?.realm) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'No Realm',
+        detail: 'Bot has no realm configured'
+      });
+      return;
+    }
+
+    const realm = this.selectedBot.realm;
+    const boxLength = BabylonTerrainTileImpl.BOT_BOX_LENGTH;
+    const positions: DecimalPosition[] = [];
+
+    if (realm.polygon2D?.corners && realm.polygon2D.corners.length >= 3) {
+      const corners = realm.polygon2D.corners;
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const corner of corners) {
+        minX = Math.min(minX, corner.x);
+        minY = Math.min(minY, corner.y);
+        maxX = Math.max(maxX, corner.x);
+        maxY = Math.max(maxY, corner.y);
+      }
+
+      const startX = Math.floor(minX / boxLength) * boxLength;
+      const startY = Math.floor(minY / boxLength) * boxLength;
+
+      for (let x = startX; x <= maxX; x += boxLength) {
+        for (let y = startY; y <= maxY; y += boxLength) {
+          if (this.isPointInPolygon({x, y}, corners)) {
+            positions.push({x, y});
+          }
+        }
+      }
+    } else if (realm.position && realm.radius) {
+      const cx = realm.position.x;
+      const cy = realm.position.y;
+      const r = realm.radius;
+
+      const startX = Math.floor((cx - r) / boxLength) * boxLength;
+      const startY = Math.floor((cy - r) / boxLength) * boxLength;
+
+      for (let x = startX; x <= cx + r; x += boxLength) {
+        for (let y = startY; y <= cy + r; y += boxLength) {
+          const dx = x - cx;
+          const dy = y - cy;
+          if (dx * dx + dy * dy <= r * r) {
+            positions.push({x, y});
+          }
+        }
+      }
+    }
+
+    this.selectedBot.groundBoxPositions = positions;
+
+    if (this.showGroundEditor) {
+      this.botGroundEditorService.deactivate(this.selectedBot);
+      this.botGroundEditorService.activate(this.selectedBot);
+    }
+
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Ground generated',
+      detail: `${positions.length} box positions generated from realm`
+    });
+  }
+
+  onGenerateRealmFromGroundBoxes() {
+    if (!this.selectedBot) {
+      return;
+    }
+
+    const points: DecimalPosition[] = [];
+
+    if (this.selectedBot.groundBoxPositions) {
+      for (const pos of this.selectedBot.groundBoxPositions) {
+        points.push(pos);
+      }
+    }
+
+    if (this.selectedBot.botGroundSlopeBoxes) {
+      for (const box of this.selectedBot.botGroundSlopeBoxes) {
+        points.push({x: box.xPos, y: box.yPos});
+      }
+    }
+
+    if (points.length < 1) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Not enough points',
+        detail: 'At least 1 ground box position is needed to generate a realm polygon'
+      });
+      return;
+    }
+
+    const boxLength = BabylonTerrainTileImpl.BOT_BOX_LENGTH;
+    const halfBox = boxLength / 2;
+
+    // Build grid occupancy set from box center positions
+    const occupied = new Set<string>();
+    const gridPositions: Array<{ gx: number, gy: number, x: number, y: number }> = [];
+
+    for (const p of points) {
+      const gx = Math.round(p.x / boxLength);
+      const gy = Math.round(p.y / boxLength);
+      const key = `${gx},${gy}`;
+      if (!occupied.has(key)) {
+        occupied.add(key);
+        gridPositions.push({gx, gy, x: gx * boxLength, y: gy * boxLength});
+      }
+    }
+
+    // Collect directed boundary edges (counterclockwise winding)
+    type Edge = { fromX: number, fromY: number, toX: number, toY: number };
+    const edges: Edge[] = [];
+
+    for (const {gx, gy, x, y} of gridPositions) {
+      if (!occupied.has(`${gx},${gy - 1}`)) { // bottom empty
+        edges.push({fromX: x - halfBox, fromY: y - halfBox, toX: x + halfBox, toY: y - halfBox});
+      }
+      if (!occupied.has(`${gx + 1},${gy}`)) { // right empty
+        edges.push({fromX: x + halfBox, fromY: y - halfBox, toX: x + halfBox, toY: y + halfBox});
+      }
+      if (!occupied.has(`${gx},${gy + 1}`)) { // top empty
+        edges.push({fromX: x + halfBox, fromY: y + halfBox, toX: x - halfBox, toY: y + halfBox});
+      }
+      if (!occupied.has(`${gx - 1},${gy}`)) { // left empty
+        edges.push({fromX: x - halfBox, fromY: y + halfBox, toX: x - halfBox, toY: y - halfBox});
+      }
+    }
+
+    // Build adjacency: from vertex key → outgoing edges
+    const adjacency = new Map<string, Edge[]>();
+    for (const edge of edges) {
+      const key = `${edge.fromX},${edge.fromY}`;
+      if (!adjacency.has(key)) adjacency.set(key, []);
+      adjacency.get(key)!.push(edge);
+    }
+
+    // Trace boundary loops, keep the longest (outer boundary)
+    const visited = new Set<Edge>();
+    let longestLoop: DecimalPosition[] = [];
+
+    for (const edge of edges) {
+      if (visited.has(edge)) continue;
+
+      const loop: DecimalPosition[] = [];
+      let current: Edge | undefined = edge;
+
+      while (current && !visited.has(current)) {
+        visited.add(current);
+        loop.push({x: current.fromX, y: current.fromY});
+
+        const toKey = `${current.toX},${current.toY}`;
+        const nextEdges = adjacency.get(toKey);
+        current = nextEdges?.find(e => !visited.has(e));
+      }
+
+      if (loop.length > longestLoop.length) {
+        longestLoop = loop;
+      }
+    }
+
+    // Remove collinear points (straight edges)
+    const simplified = this.removeCollinearPoints(longestLoop);
+
+    this.selectedBot.realm = {
+      polygon2D: {corners: simplified, lines: []},
+      position: null,
+      radius: null
+    };
+
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Realm generated',
+      detail: `Realm polygon with ${simplified.length} corners generated from ${points.length} ground box positions`
+    });
+  }
+
+  private removeCollinearPoints(points: DecimalPosition[]): DecimalPosition[] {
+    if (points.length < 3) return points;
+    const result: DecimalPosition[] = [];
+    const n = points.length;
+    for (let i = 0; i < n; i++) {
+      const prev = points[(i - 1 + n) % n];
+      const curr = points[i];
+      const next = points[(i + 1) % n];
+      const cross = (curr.x - prev.x) * (next.y - prev.y) - (curr.y - prev.y) * (next.x - prev.x);
+      if (Math.abs(cross) > 0.001) {
+        result.push(curr);
+      }
+    }
+    return result;
+  }
+
+  private isPointInPolygon(point: DecimalPosition, polygon: DecimalPosition[]): boolean {
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].x, yi = polygon[i].y;
+      const xj = polygon[j].x, yj = polygon[j].y;
+      const intersect = ((yi > point.y) !== (yj > point.y))
+        && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+    }
+    return inside;
   }
 }

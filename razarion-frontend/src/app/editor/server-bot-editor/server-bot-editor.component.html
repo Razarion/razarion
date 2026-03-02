@@ -55,9 +55,18 @@
             <div class="grid grid-cols-12 gap-4">
               <span class="col-span-3">Realm</span>
               <div class="col-span-9">
-                @if (selectedBot) {
-                  <place-config [(placeConfig)]="selectedBot!.realm"></place-config>
-                }
+                <div class="flex flex-row gap-1 items-start">
+                  @if (selectedBot) {
+                    <place-config [(placeConfig)]="selectedBot!.realm" [heightOverride]="selectedBot!.groundBoxHeight"></place-config>
+                  }
+                  <p-button type="button"
+                    label="From Ground"
+                    icon="pi pi-map"
+                    styleClass="p-button-sm"
+                    [disabled]="!selectedBot!.groundBoxPositions?.length && !selectedBot!.botGroundSlopeBoxes?.length"
+                    (onClick)="onGenerateRealmFromGroundBoxes()"
+                    ></p-button>
+                </div>
               </div>
             </div>
             <div class="grid grid-cols-12 gap-4">
@@ -90,6 +99,17 @@
                   [(ngModel)]="selectedBot.groundBoxHeight"
                   [maxFractionDigits]="3"
                 (onInput)="onHeightInput($event.value)"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4">
+              <span class="col-span-3">Generate</span>
+              <div class="col-span-9">
+                <p-button type="button"
+                  label="From Realm"
+                  icon="pi pi-map"
+                  styleClass="p-button-sm"
+                  [disabled]="!selectedBot!.realm"
+                  (onClick)="onGenerateGroundFromRealm()"></p-button>
               </div>
             </div>
             <div class="grid grid-cols-12 gap-4">

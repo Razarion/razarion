@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {DecimalPosition, PlaceConfig} from "../../../generated/razarion-share";
 import {DecimalPosition as DecimalPositionGwt} from "../../../gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "../../../game/renderer/babylon-render-service-access-impl.service";
@@ -31,10 +31,12 @@ enum Type {
   ],
   styleUrls: ['./place-config.component.scss']
 })
-export class PlaceConfigComponent implements OnInit {
+export class PlaceConfigComponent implements OnInit, OnChanges {
   static readonly NEW_POLYGON_HALF_LENGTH = 4;
   @Input("placeConfig")
   placeConfig: PlaceConfig | null = null;
+  @Input()
+  heightOverride: number | null = null;
   @Output()
   placeConfigChange = new EventEmitter<PlaceConfig | null>();
   locationVisualization?: LocationVisualization;
@@ -62,6 +64,19 @@ export class PlaceConfigComponent implements OnInit {
     }
 
     this.display();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['placeConfig'] && !changes['placeConfig'].firstChange) {
+      if (this.placeConfig) {
+        if (this.placeConfig.position) {
+          this.selectedType = this.types[0];
+        } else if (this.placeConfig.polygon2D) {
+          this.selectedType = this.types[1];
+        }
+      }
+      this.display();
+    }
   }
 
   onVisibilityChange() {

@@ -64,7 +64,9 @@ export class LocationVisualization {
               this.setupMeshes();
             }
             this.locationMarker!.position = pickingInfo.pickedPoint!;
-            this.locationMarker!.position.y = LocationVisualization.getHeightFromTerrain(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, this.renderService);
+            this.locationMarker!.position.y = this.placeConfigComponent.heightOverride != null
+              ? this.placeConfigComponent.heightOverride
+              : LocationVisualization.getHeightFromTerrain(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z, this.renderService);
             if (this.placeConfigComponent.placeConfig?.position) {
               this.placeConfigComponent.placeConfig.position.x = pickingInfo.pickedPoint!.x;
               this.placeConfigComponent.placeConfig.position.y = pickingInfo.pickedPoint!.z;
@@ -93,7 +95,9 @@ export class LocationVisualization {
     if (this.placeConfigComponent.visible && this.placeConfigComponent.placeConfig?.position && !this.locationMarker) {
       this.setupMarkers();
       this.locationMarker!.position = new Vector3(this.placeConfigComponent.placeConfig.position!.x, 0, this.placeConfigComponent.placeConfig.position!.y);
-      this.locationMarker!.position.y = LocationVisualization.getHeightFromTerrain(this.placeConfigComponent.placeConfig.position!.x, this.placeConfigComponent.placeConfig.position!.y, this.renderService);
+      this.locationMarker!.position.y = this.placeConfigComponent.heightOverride != null
+        ? this.placeConfigComponent.heightOverride
+        : LocationVisualization.getHeightFromTerrain(this.placeConfigComponent.placeConfig.position!.x, this.placeConfigComponent.placeConfig.position!.y, this.renderService);
       if (this.placeConfigComponent.placeConfig.radius) {
         this.radiusMarker!.position = this.locationMarker!.position;
       }
