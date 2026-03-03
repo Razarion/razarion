@@ -59,7 +59,7 @@ export class BabylonItemImpl implements BabylonItem {
               protected actionService: ActionService,
               protected tsSelectionService: TsSelectionService,
               parent: TransformNode,
-              protected disposeCallback: (() => void) | null) {
+              protected disposeCallback: ((permanent: boolean) => void) | null) {
     if (itemType.getModel3DId()) {
       this.renderObject = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, parent, diplomacy);
     } else {
@@ -74,7 +74,7 @@ export class BabylonItemImpl implements BabylonItem {
     let actionManager = new ActionManager(rendererService.getScene());
     actionManager.registerAction(
       new ExecuteCodeAction(
-        ActionManager.OnPickTrigger,
+        ActionManager.OnPickDownTrigger,
         () => {
           if (this.itemClickCallback) {
             this.itemClickCallback();
@@ -152,8 +152,16 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   dispose(): void {
+    this.disposeInternal(true);
+  }
+
+  removeFromView(): void {
+    this.disposeInternal(false);
+  }
+
+  private disposeInternal(permanent: boolean): void {
     if (this.disposeCallback) {
-      this.disposeCallback();
+      this.disposeCallback(permanent);
     }
     this.actionService.removeCursorHandler(this.itemCursorTypeHandler);
     this.renderObject.removeAllShadowCasters(this.rendererService)

@@ -30,6 +30,15 @@
         <module>razarion-server</module>
     </modules>
 
+    <profiles>
+        <profile>
+            <id>e2e</id>
+            <modules>
+                <module>razarion-e2e-test</module>
+            </modules>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
         </plugins>

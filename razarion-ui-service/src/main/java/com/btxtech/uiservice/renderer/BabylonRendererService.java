@@ -71,4 +71,8 @@ public class BabylonRendererService {
     public void runRenderer() {
         babylonRenderServiceAccess.runRenderer();
     }
+
+    public void disposeOutOfViewItem(int id) {
+        babylonRenderServiceAccess.disposeOutOfViewItem(id);
+    }
 }

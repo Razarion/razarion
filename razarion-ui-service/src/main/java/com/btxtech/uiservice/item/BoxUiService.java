@@ -153,7 +153,7 @@ public class BoxUiService {
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.removeVisible(visibleBox);
                         }
-                        visibleBox.dispose();
+                        visibleBox.removeFromView();
                         unused.remove(id);
                     }
 

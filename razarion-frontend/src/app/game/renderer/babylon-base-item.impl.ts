@@ -65,7 +65,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
               tsSelectionService: TsSelectionService,
               babylonModelService: BabylonModelService,
               uiConfigCollectionService: UiConfigCollectionService,
-              disposeCallback: (() => void) | null) {
+              disposeCallback: ((permanent: boolean) => void) | null) {
     super(id,
       baseItemType,
       diplomacy,
@@ -98,6 +98,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       }
 
       dispose(): void {
+      }
+
+      removeFromView(): void {
       }
 
       setAngle(angle: number): void {
@@ -176,6 +179,19 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (this.isExploding) {
       return;
     }
+    this.cleanupBaseItem();
+    super.dispose();
+  }
+
+  override removeFromView() {
+    if (this.isExploding) {
+      return;
+    }
+    this.cleanupBaseItem();
+    super.removeFromView();
+  }
+
+  private cleanupBaseItem() {
     if (this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
       this.rendererService.removeInterpolationListener(this);
     }
@@ -198,7 +214,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.demolitionCenterMesh = null;
     }
     this.uiTexture.dispose();
-    super.dispose();
   }
 
   getBaseItemType(): BaseItemType {

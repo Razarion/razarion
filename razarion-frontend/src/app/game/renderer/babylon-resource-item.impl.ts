@@ -20,7 +20,7 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
               tsSelectionService: TsSelectionService,
               babylonModelService: BabylonModelService,
               uiConfigCollectionService: UiConfigCollectionService,
-              disposeCallback: (() => void) | null) {
+              disposeCallback: ((permanent: boolean) => void) | null) {
     super(id,
       resourceItemType,
       Diplomacy.RESOURCE,
@@ -37,6 +37,9 @@ export class BabylonResourceItemImpl extends BabylonItemImpl implements BabylonR
   public static createDummy(id: number): BabylonResourceItem {
     return new class implements BabylonResourceItem {
       dispose(): void {
+      }
+
+      removeFromView(): void {
       }
 
       getAngle(): number {

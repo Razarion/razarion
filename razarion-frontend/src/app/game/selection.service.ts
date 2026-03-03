@@ -9,6 +9,7 @@ import { BabylonAudioService } from './renderer/babylon-audio.service';
 export class SelectionService {
   private selectedOwnItems: BabylonBaseItemImpl[] = [];
   private selectedOwnItemIds = new Set<number>();
+  private selectedOwnItemTypes = new Map<number, BaseItemType>();
   private selectedOtherId: number | null = null;
   private selectedOtherDiplomacy: Diplomacy | null = null;
   private selectedOtherItemTypeId: number | null = null;
@@ -23,7 +24,11 @@ export class SelectionService {
     this.deselectCurrent();
     this.selectedOwnItems = [...items];
     this.selectedOwnItemIds.clear();
-    items.forEach(item => this.selectedOwnItemIds.add(item.getId()));
+    this.selectedOwnItemTypes.clear();
+    items.forEach(item => {
+      this.selectedOwnItemIds.add(item.getId());
+      this.selectedOwnItemTypes.set(item.getId(), item.getBaseItemType());
+    });
     this.selectedOtherId = null;
     this.selectedOtherDiplomacy = null;
     this.selectedOtherItemTypeId = null;
@@ -37,6 +42,7 @@ export class SelectionService {
     this.deselectCurrent();
     this.selectedOwnItems = [];
     this.selectedOwnItemIds.clear();
+    this.selectedOwnItemTypes.clear();
     this.selectedOtherId = id;
     this.selectedOtherDiplomacy = diplomacy;
     this.selectedOtherItemTypeId = itemTypeId ?? null;
@@ -53,6 +59,7 @@ export class SelectionService {
     this.deselectCurrent();
     this.selectedOwnItems = [];
     this.selectedOwnItemIds.clear();
+    this.selectedOwnItemTypes.clear();
     this.selectedOtherId = null;
     this.selectedOtherDiplomacy = null;
     this.selectedOtherItemTypeId = null;
@@ -76,6 +83,7 @@ export class SelectionService {
     if (idx >= 0) {
       this.selectedOwnItems.splice(idx, 1);
     }
+    this.selectedOwnItemTypes.delete(id);
     if (this.selectedOwnItemIds.delete(id) && this.selectedOwnItemIds.size === 0) {
       this.fireSelectionChanged();
     }
@@ -134,6 +142,7 @@ export class SelectionService {
     removed.forEach(item => {
       item.select(false);
       this.selectedOwnItemIds.delete(item.getId());
+      this.selectedOwnItemTypes.delete(item.getId());
     });
     this.selectedOwnItems = kept;
     this.fireSelectionChanged();
@@ -168,56 +177,78 @@ export class SelectionService {
   }
 
   getMovableIds(): number[] {
-    return this.selectedOwnItems
-      .filter(item => item.getBaseItemType().getPhysicalAreaConfig().fulfilledMovable())
-      .map(item => item.getId());
+    const ids: number[] = [];
+    for (const [id, type] of this.selectedOwnItemTypes) {
+      if (type.getPhysicalAreaConfig().fulfilledMovable()) {
+        ids.push(id);
+      }
+    }
+    return ids;
   }
 
   getAttackerIds(targetItemTypeId: number): number[] {
-    return this.selectedOwnItems
-      .filter(item => {
-        const weapon = item.getBaseItemType().getWeaponType();
-        return weapon != null && !weapon.checkItemTypeDisallowed(targetItemTypeId);
-      })
-      .map(item => item.getId());
+    const ids: number[] = [];
+    for (const [id, type] of this.selectedOwnItemTypes) {
+      const weapon = type.getWeaponType();
+      if (weapon != null && !weapon.checkItemTypeDisallowed(targetItemTypeId)) {
+        ids.push(id);
+      }
+    }
+    return ids;
   }
 
   getHarvesterIds(): number[] {
-    return this.selectedOwnItems
-      .filter(item => item.getBaseItemType().getHarvesterType() != null)
-      .map(item => item.getId());
+    const ids: number[] = [];
+    for (const [id, type] of this.selectedOwnItemTypes) {
+      if (type.getHarvesterType() != null) {
+        ids.push(id);
+      }
+    }
+    return ids;
   }
 
   getBuilderIds(itemTypeId: number): number[] {
-    return this.selectedOwnItems
-      .filter(item => {
-        const builder = item.getBaseItemType().getBuilderType();
-        return builder != null && builder.checkAbleToBuild(itemTypeId);
-      })
-      .map(item => item.getId());
+    const ids: number[] = [];
+    for (const [id, type] of this.selectedOwnItemTypes) {
+      const builder = type.getBuilderType();
+      if (builder != null && builder.checkAbleToBuild(itemTypeId)) {
+        ids.push(id);
+      }
+    }
+    return ids;
   }
 
   getContainableIds(containerItemType: BaseItemType): number[] {
     const containerType = containerItemType.getItemContainerType();
     if (containerType == null) return [];
-    return this.selectedOwnItems
-      .filter(item => containerType.isAbleToContain(item.getBaseItemType().getId()))
-      .map(item => item.getId());
+    const ids: number[] = [];
+    for (const [id, type] of this.selectedOwnItemTypes) {
+      if (containerType.isAbleToContain(type.getId())) {
+        ids.push(id);
+      }
+    }
+    return ids;
   }
 
   hasMovables(): boolean {
-    return this.selectedOwnItems.some(item =>
-      item.getBaseItemType().getPhysicalAreaConfig().fulfilledMovable());
+    for (const type of this.selectedOwnItemTypes.values()) {
+      if (type.getPhysicalAreaConfig().fulfilledMovable()) return true;
+    }
+    return false;
   }
 
   hasAttackers(): boolean {
-    return this.selectedOwnItems.some(item =>
-      item.getBaseItemType().getWeaponType() != null);
+    for (const type of this.selectedOwnItemTypes.values()) {
+      if (type.getWeaponType() != null) return true;
+    }
+    return false;
   }
 
   hasHarvesters(): boolean {
-    return this.selectedOwnItems.some(item =>
-      item.getBaseItemType().getHarvesterType() != null);
+    for (const type of this.selectedOwnItemTypes.values()) {
+      if (type.getHarvesterType() != null) return true;
+    }
+    return false;
   }
 
   /**
@@ -229,9 +260,12 @@ export class SelectionService {
     if (!baseItemType) return false;
     const containerType = baseItemType.getItemContainerType();
     if (containerType == null) return false;
-    return this.selectedOwnItems.some(item =>
-      item.getId() !== targetItem.getId() &&
-      containerType.isAbleToContain(item.getBaseItemType().getId()));
+    for (const [id, type] of this.selectedOwnItemTypes) {
+      if (id !== targetItem.getId() && containerType.isAbleToContain(type.getId())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -241,11 +275,14 @@ export class SelectionService {
   canBeFinalizeBuild(targetItem: BabylonBaseItemImpl): boolean {
     if (targetItem.getBuildup() >= 1.0) return false;
     const targetItemTypeId = targetItem.getBaseItemType().getId();
-    return this.selectedOwnItems.some(item => {
-      if (item.getId() === targetItem.getId()) return false;
-      const builder = item.getBaseItemType().getBuilderType();
-      return builder != null && builder.checkAbleToBuild(targetItemTypeId);
-    });
+    for (const [id, type] of this.selectedOwnItemTypes) {
+      if (id === targetItem.getId()) continue;
+      const builder = type.getBuilderType();
+      if (builder != null && builder.checkAbleToBuild(targetItemTypeId)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   addSelectionListener(callback: () => void): void {

@@ -28,6 +28,7 @@ import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +48,7 @@ public class BaseItemUiService {
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private final Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private final Map<Integer, BabylonBaseItem> babylonBaseItems = new HashMap<>();
+    private final Set<Integer> outOfViewItemIds = new HashSet<>();
     private final ItemTypeService itemTypeService;
     private final Provider<GameUiControl> gameUiControl;
     private final MainCockpitService cockpitService;
@@ -94,6 +96,7 @@ public class BaseItemUiService {
         itemCount = 0;
         nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
         babylonBaseItems.clear();
+        outOfViewItemIds.clear();
         syncBaseItemSetPositionMonitor = null;
     }
 
@@ -101,6 +104,10 @@ public class BaseItemUiService {
         // May be easier if replaced with SyncItemState and SyncItemMonitor
         this.nativeSyncBaseItemTickInfos = nativeSyncBaseItemTickInfos;
         Collection<Integer> leftoversAliveBabylonBaseItems = new ArrayList<>(babylonBaseItems.keySet());
+        Set<Integer> aliveItemIds = new HashSet<>();
+        for (NativeSyncBaseItemTickInfo info : nativeSyncBaseItemTickInfos) {
+            aliveItemIds.add(info.id);
+        }
         int tmpItemCount = 0;
         int houseSpace = 0;
         int usedHouseSpace = 0;
@@ -206,7 +213,22 @@ public class BaseItemUiService {
             if (syncBaseItemSetPositionMonitor != null) {
                 syncBaseItemSetPositionMonitor.removeVisible(toRemove);
             }
-            toRemove.dispose();
+            if (aliveItemIds.contains(id)) {
+                toRemove.removeFromView();
+                outOfViewItemIds.add(id);
+            } else {
+                toRemove.dispose();
+            }
+        });
+        outOfViewItemIds.removeIf(id -> {
+            if (babylonBaseItems.containsKey(id)) {
+                return true; // Back in view
+            }
+            if (!aliveItemIds.contains(id)) {
+                babylonRendererService.disposeOutOfViewItem(id);
+                return true; // Destroyed while out of view
+            }
+            return false;
         });
         if (syncBaseItemSetPositionMonitor != null) {
             syncBaseItemSetPositionMonitor.handleOutOfView(viewFiledCenter);

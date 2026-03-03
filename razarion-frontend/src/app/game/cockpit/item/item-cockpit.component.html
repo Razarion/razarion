@@ -23,7 +23,7 @@
       </div>
       @if (ownItemCockpit.canSell) {
         <div class="w-8 flex-none">
-          <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (onClick)="itemCockpitService.onSell()"></p-button>
+          <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (mousedown)="itemCockpitService.onSell()"></p-button>
         </div>
       }
     </div>
@@ -50,7 +50,7 @@
             <div class="flex flex-col bg-surface-600" [style]="{margin: '0 2px 0 2px'}">
               <div #buildupItemDiv [attr.data-item-type-id]="buildupItem.itemTypeId">
                 <button class='item-cockpit-buildup-button'
-                  (click)="onBuildClick(buildupItem)"
+                  (mousedown)="onBuildClick(buildupItem)"
                   [title]="buildTooltip(buildupItem)"
                   [disabled]="!buildupItem.enabled">
                   @if (!buildupItem.enabled) {
@@ -80,7 +80,7 @@
           <p-button icon="pi pi-upload"
             label="Unload"
             size="small"
-            (click)="onUnloadClick()"
+            (mousedown)="onUnloadClick()"
           [disabled]="!ownItemCockpit.containerCount"></p-button>
         </div>
       }

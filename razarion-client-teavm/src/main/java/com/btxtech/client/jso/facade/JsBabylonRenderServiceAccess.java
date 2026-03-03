@@ -166,6 +166,11 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
         }
     }
 
+    @Override
+    public void disposeOutOfViewItem(int id) {
+        callMethod1I(js, "disposeOutOfViewItem", id);
+    }
+
     private static class JsBabylonTerrainTile implements BabylonTerrainTile {
         private final JSObject js;
 
@@ -198,6 +203,10 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
 
         public void dispose() {
             callMethod0(js, "dispose");
+        }
+
+        public void removeFromView() {
+            callMethod0(js, "removeFromView");
         }
 
         public Vertex getPosition() {

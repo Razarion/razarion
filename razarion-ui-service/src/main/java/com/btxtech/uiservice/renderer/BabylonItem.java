@@ -7,6 +7,8 @@ public interface BabylonItem {
 
     void dispose();
 
+    void removeFromView();
+
     Vertex getPosition();
 
     void setPosition(Vertex position);

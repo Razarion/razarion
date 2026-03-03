@@ -95,7 +95,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.actionManagerTerrain = new ActionManager(rendererService.getScene());
     this.actionManagerTerrain.registerAction(
       new ExecuteCodeAction(
-        ActionManager.OnPickTrigger,
+        ActionManager.OnPickDownTrigger,
         () => {
           let pickingInfo = rendererService.setupMeshPickPoint();
           if (pickingInfo.hit) {

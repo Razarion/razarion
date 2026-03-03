@@ -472,6 +472,8 @@ export interface BabylonRenderServiceAccess {
   showOutOfViewMarker(markerConfig: MarkerConfig | null, angle: number): void;
 
   showPlaceMarker(placeConfig: PlaceConfig | null, markerConfig: MarkerConfig | null): void;
+
+  disposeOutOfViewItem(id: number): void;
 }
 
 export interface TerrainTile {
@@ -571,6 +573,8 @@ export interface BabylonItem {
   getId(): number;
 
   dispose(): void;
+
+  removeFromView(): void;
 
   getPosition(): Vertex | null;
 

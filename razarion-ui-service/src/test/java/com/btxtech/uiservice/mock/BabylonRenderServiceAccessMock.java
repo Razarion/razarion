@@ -113,6 +113,11 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
 
     }
 
+    @Override
+    public void disposeOutOfViewItem(int id) {
+
+    }
+
     public MarkerConfig getShowOutOfViewMarkerConfig() {
         return showOutOfViewMarkerConfig;
     }
@@ -148,6 +153,11 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         @Override
         public void dispose() {
             disposed = true;
+            onDisposeCallback.accept(this);
+        }
+
+        @Override
+        public void removeFromView() {
             onDisposeCallback.accept(this);
         }
 
@@ -295,6 +305,11 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         }
 
         @Override
+        public void removeFromView() {
+            onDisposeCallback.accept(this);
+        }
+
+        @Override
         public double getAngle() {
             return 0;
         }
@@ -351,6 +366,11 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
 
         @Override
         public void dispose() {
+            this.onDisposeCallback.accept(this);
+        }
+
+        @Override
+        public void removeFromView() {
             this.onDisposeCallback.accept(this);
         }
 

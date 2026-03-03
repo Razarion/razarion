@@ -296,9 +296,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.tsSelectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
-        () => {
+        (permanent: boolean) => {
           this.babylonBaseItems = this.babylonBaseItems.filter(i => i !== item);
-          this.tsSelectionService.disposeItem(item.getId());
+          if (permanent) {
+            this.tsSelectionService.disposeItem(item.getId());
+          } else {
+            this.tsSelectionService.removeItem(item.getId());
+          }
         });
       this.babylonBaseItems.push(item);
       this.tsSelectionService.tryReattachItem(item);
@@ -750,7 +754,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.tsSelectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
-        () => { this.babylonResourceItems = this.babylonResourceItems.filter(i => i !== item); this.tsSelectionService.disposeOther(item.getId()); });
+        (permanent: boolean) => {
+          this.babylonResourceItems = this.babylonResourceItems.filter(i => i !== item);
+          if (permanent) {
+            this.tsSelectionService.disposeOther(item.getId());
+          } else {
+            this.tsSelectionService.removeOther(item.getId());
+          }
+        });
       this.babylonResourceItems.push(item);
       return item;
     } catch (error) {
@@ -779,11 +790,22 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.tsSelectionService,
         this.babylonModelService,
         this.uiConfigCollectionService,
-        () => { this.tsSelectionService.disposeOther(id); });
+        (permanent: boolean) => {
+          if (permanent) {
+            this.tsSelectionService.disposeOther(id);
+          } else {
+            this.tsSelectionService.removeOther(id);
+          }
+        });
     } catch (error) {
       console.error(error);
       return BabylonBoxItemImpl.createDummy(id);
     }
+  }
+
+  disposeOutOfViewItem(id: number): void {
+    this.tsSelectionService.disposeItem(id);
+    this.tsSelectionService.disposeOther(id);
   }
 
   createBaseItemPlacerPresenter(): BaseItemPlacerPresenter {

@@ -54,7 +54,7 @@ export class BabylonWaterRenderService {
     let actionManager = new ActionManager(rendererService.getScene());
     actionManager.registerAction(
       new ExecuteCodeAction(
-        ActionManager.OnPickTrigger,
+        ActionManager.OnPickDownTrigger,
         () => {
           let pickingInfo = rendererService.setupMeshPickPoint();
           if (pickingInfo.hit) {

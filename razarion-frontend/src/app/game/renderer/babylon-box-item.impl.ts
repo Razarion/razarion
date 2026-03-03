@@ -20,7 +20,7 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
               tsSelectionService: TsSelectionService,
               babylonModelService: BabylonModelService,
               uiConfigCollectionService: UiConfigCollectionService,
-              disposeCallback: (() => void) | null) {
+              disposeCallback: ((permanent: boolean) => void) | null) {
     super(id,
       boxItemType,
       Diplomacy.BOX,
@@ -37,6 +37,9 @@ export class BabylonBoxItemImpl extends BabylonItemImpl implements BabylonBoxIte
   static createDummy(id: number): BabylonBoxItem {
     return new class implements BabylonBoxItem {
       dispose(): void {
+      }
+
+      removeFromView(): void {
       }
 
       getAngle(): number {

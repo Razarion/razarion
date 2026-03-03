@@ -24,4 +24,6 @@ public interface BabylonRenderServiceAccess {
     void showOutOfViewMarker(MarkerConfig markerConfig, double angle);
 
     void showPlaceMarker(PlaceConfig placeConfig, MarkerConfig markerConfig);
+
+    void disposeOutOfViewItem(int id);
 }

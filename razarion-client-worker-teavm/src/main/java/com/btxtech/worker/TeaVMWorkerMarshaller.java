@@ -1831,6 +1831,7 @@ public final class TeaVMWorkerMarshaller {
     private static BuilderType convertBuilderType(JsObject obj) {
         BuilderType type = new BuilderType();
         type.setRange(obj.getDouble("range"));
+        type.setRangeOtherTerrain(obj.getDouble("rangeOtherTerrain"));
         type.setProgress(obj.getDouble("progress"));
         JSObject ableToBuildArr = obj.get("ableToBuildIds");
         if (!JsUtils.isNullOrUndefined(ableToBuildArr)) {

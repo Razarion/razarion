@@ -139,7 +139,7 @@ public class ResourceUiService {
                         if (syncStaticItemSetPositionMonitor != null) {
                             syncStaticItemSetPositionMonitor.removeVisible(visibleResource);
                         }
-                        visibleResource.dispose();
+                        visibleResource.removeFromView();
                         unused.remove(id);
                     }
 

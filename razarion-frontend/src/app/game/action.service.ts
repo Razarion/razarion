@@ -32,6 +32,11 @@ export class ActionService {
 
   setRendererService(rendererService: BabylonRenderServiceAccessImpl): void {
     this.rendererService = rendererService;
+    window.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !this.rendererService?.baseItemPlacerActive) {
+        this.tsSelectionService.clearSelection();
+      }
+    });
   }
 
   private get gameCommandService(): GameCommandService {
@@ -65,6 +70,9 @@ export class ActionService {
   }
 
   onTerrainClicked(xTerrainPosition: number, yTerrainPosition: number) {
+    if (this.rendererService?.baseItemPlacerActive) {
+      return;
+    }
     if (!this.tsSelectionService.hasOwnSelection()) {
       return;
     }

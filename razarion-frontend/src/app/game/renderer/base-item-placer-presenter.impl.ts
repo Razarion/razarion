@@ -73,7 +73,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
     this.pointerObservable = this.rendererService.getScene().onPointerObservable.add((pointerInfo) => {
       switch (pointerInfo.type) {
-        case PointerEventTypes.POINTERUP: {
+        case PointerEventTypes.POINTERDOWN: {
           let pickingInfo = this.rendererService.setupTerrainPickPoint();
           if (pickingInfo.hit) {
             this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
@@ -144,7 +144,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.disc = null;
     this.renderObject?.dispose();
     this.renderObject = null;
-    this.rendererService.baseItemPlacerActive = false;
+    // Defer clearing so ActionManager handlers (terrain/water click) that fire
+    // in the same event loop tick still see the placer as active
+    setTimeout(() => { this.rendererService.baseItemPlacerActive = false; }, 0);
     this.uiTexture?.dispose();
     this.uiTexture = null;
     this.pressMouseVisualization = null;
