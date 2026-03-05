@@ -4,6 +4,8 @@ metadata:
   name: razarion-server
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: razarion-server
@@ -105,6 +107,16 @@ spec:
                 secretKeyRef:
                   name: mail-secrets
                   key: password
+            - name: REDDIT_ADS_PIXEL_ID
+              valueFrom:
+                secretKeyRef:
+                  name: reddit-ads-secrets
+                  key: pixel-id
+            - name: REDDIT_ADS_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: reddit-ads-secrets
+                  key: access-token
       volumes:
       - name: keystore
         secret:

@@ -110,6 +110,11 @@ public class JsItemCockpitBridge {
             try {
                 unwatchContainerMonitor();
                 watchedContainerMonitor = baseItemUiService.monitorSyncItem(containerId);
+                // Send initial count immediately
+                int[] initialIds = watchedContainerMonitor.getSyncBaseItemState().getContainingItemTypeIds();
+                int initialCount = initialIds != null ? initialIds.length : 0;
+                callJsFunctionWithInt(callback, initialCount);
+                // Listen for changes
                 watchedContainerMonitor.setContainingChangeListener(monitor -> {
                     int[] ids = watchedContainerMonitor.getSyncBaseItemState().getContainingItemTypeIds();
                     int count = ids != null ? ids.length : 0;

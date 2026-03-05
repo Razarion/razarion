@@ -21,10 +21,12 @@ import {BabylonModelService} from "./babylon-model.service";
 import {BabylonWaterRenderService} from "./babylon-water-render.service";
 import {
   AbstractMesh,
+  ActionManager,
   Color3,
   Constants,
   DirectionalLight,
   Engine,
+  ExecuteCodeAction,
   FreeCamera,
   InputBlock,
   Matrix,
@@ -102,6 +104,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private outOfViewPlane?: Mesh;
   private placeMarkerMesh?: Mesh;
   baseItemPlacerActive = false;
+  public terrainObjectActionManager!: ActionManager;
   private editorTerrainTileContainer: BabylonTerrainTileImpl[] = [];
   private editorTerrainTileCreationCallback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined;
   private interpolationListeners: BabylonBaseItemImpl[] = [];
@@ -223,6 +226,38 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
     this.selectionFrame = new SelectionFrame(this.scene, this, this.actionService);
 
+    // ----- Terrain click handler (centralized, replaces per-tile ActionManagers) -----
+    this.scene.onPointerDown = (_evt, pickResult) => {
+      if (this.baseItemPlacerActive) return;
+      if (!pickResult.hit || !pickResult.pickedMesh || !pickResult.pickedPoint) return;
+
+      const metadataNode = BabylonRenderServiceAccessImpl.findRazarionMetadataNode(pickResult.pickedMesh);
+      if (!metadataNode) return;
+      const metadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(metadataNode);
+      if (!metadata) return;
+
+      if (metadata.type === RazarionMetadataType.GROUND || metadata.type === RazarionMetadataType.BOT_GROUND) {
+        this.actionService.onTerrainClicked(pickResult.pickedPoint.x, pickResult.pickedPoint.z);
+      }
+    };
+
+    // ----- Terrain object ActionManager (no-go cursor for blocked objects) -----
+    this.terrainObjectActionManager = new ActionManager(this.scene);
+    this.terrainObjectActionManager.registerAction(
+      new ExecuteCodeAction(ActionManager.OnPickDownTrigger, () => {})
+    );
+
+    // ----- Terrain cursor (centralized) -----
+    this.actionService.addCursorHandler((selectionInfo) => {
+      if (selectionInfo.hasOwnMovable) {
+        this.scene.defaultCursor = 'url("cursors/go.png") 15 15, auto';
+        this.terrainObjectActionManager.hoverCursor = 'url("cursors/go-no.png") 15 15, auto';
+      } else {
+        this.scene.defaultCursor = 'default';
+        this.terrainObjectActionManager.hoverCursor = 'default';
+      }
+    });
+
     // ----- Render loop -----
     this.scene.onBeforeRenderObservable.add(() => {
       const date = Date.now();
@@ -268,7 +303,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       let babylonTerrainTileImpl = new BabylonTerrainTileImpl(terrainTile,
         this.gwtAngularService,
         this,
-        this.actionService,
         this.babylonModelService,
         this.threeJsWaterRenderService);
       if (this.editorTerrainTileCreationCallback) {

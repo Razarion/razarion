@@ -105,8 +105,12 @@ public class BaseItemUiService {
         this.nativeSyncBaseItemTickInfos = nativeSyncBaseItemTickInfos;
         Collection<Integer> leftoversAliveBabylonBaseItems = new ArrayList<>(babylonBaseItems.keySet());
         Set<Integer> aliveItemIds = new HashSet<>();
+        Set<Integer> containedItemIds = new HashSet<>();
         for (NativeSyncBaseItemTickInfo info : nativeSyncBaseItemTickInfos) {
             aliveItemIds.add(info.id);
+            if (info.contained) {
+                containedItemIds.add(info.id);
+            }
         }
         int tmpItemCount = 0;
         int houseSpace = 0;
@@ -213,7 +217,7 @@ public class BaseItemUiService {
             if (syncBaseItemSetPositionMonitor != null) {
                 syncBaseItemSetPositionMonitor.removeVisible(toRemove);
             }
-            if (aliveItemIds.contains(id)) {
+            if (aliveItemIds.contains(id) && !containedItemIds.contains(id)) {
                 toRemove.removeFromView();
                 outOfViewItemIds.add(id);
             } else {

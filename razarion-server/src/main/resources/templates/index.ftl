@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Razarion - Open World Browser RTS Game powered by WebAssembly powered by WebAssembly</title>
+    <title>Razarion - Open World Browser RTS Game powered by WebAssembly</title>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Open world browser RTS game powered by WebAssembly, inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. Open-source and community-driven.">

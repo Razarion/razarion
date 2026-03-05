@@ -1,9 +1,7 @@
 import {Injectable} from "@angular/core";
 import {GroundConfig, Index} from "../../gwtangular/GwtAngularFacade";
 import {
-  ActionManager,
   CubeTexture,
-  ExecuteCodeAction,
   Mesh,
   MeshBuilder,
   NodeMaterial,
@@ -14,16 +12,14 @@ import {BabylonModelService} from "./babylon-model.service";
 import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 import type {FloatArray} from '@babylonjs/core/types';
 import {ReflectionTextureBaseBlock} from '@babylonjs/core/Materials/Node/Blocks/Dual/reflectionTextureBaseBlock';
-import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
-import {ActionService, SelectionInfo} from '../action.service';
+import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class BabylonWaterRenderService {
 
-  constructor(private babylonModelService: BabylonModelService,
-              private actionService: ActionService) {
+  constructor(private babylonModelService: BabylonModelService) {
   }
 
   public setup(index: Index, groundConfig: GroundConfig, container: TransformNode, uv2GroundHeightMap: FloatArray, rendererService: BabylonRenderServiceAccessImpl): Mesh {
@@ -51,28 +47,7 @@ export class BabylonWaterRenderService {
     water.position.z = index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT + BabylonTerrainTileImpl.NODE_Y_COUNT / 2;
     container.getChildren().push(water);
 
-    let actionManager = new ActionManager(rendererService.getScene());
-    actionManager.registerAction(
-      new ExecuteCodeAction(
-        ActionManager.OnPickDownTrigger,
-        () => {
-          let pickingInfo = rendererService.setupMeshPickPoint();
-          if (pickingInfo.hit) {
-            this.actionService.onTerrainClicked(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
-          }
-        }
-      )
-    );
-    const cursorTypeHandler: (selectionInfo: SelectionInfo) => void = (selectionInfo: SelectionInfo) => {
-      if (selectionInfo.hasOwnMovable) {
-        actionManager.hoverCursor = "url(\"cursors/go.png\") 15 15, auto"
-      } else {
-        actionManager.hoverCursor = "default"
-      }
-    }
-    this.actionService.addCursorHandler(cursorTypeHandler);
-
-    water.actionManager = actionManager;
+    BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(water, RazarionMetadataType.GROUND, undefined, undefined);
 
     return water;
   }

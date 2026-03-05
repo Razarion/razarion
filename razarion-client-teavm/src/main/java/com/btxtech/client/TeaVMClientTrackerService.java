@@ -1,11 +1,11 @@
 package com.btxtech.client;
 
 import com.btxtech.client.jso.JsConsole;
+import com.btxtech.client.jso.JsJson;
+import com.btxtech.client.jso.JsObject;
 import com.btxtech.client.jso.JsURLSearchParams;
 import com.btxtech.client.jso.JsWindow;
 import com.btxtech.client.rest.TeaVMRestAccess;
-import com.btxtech.shared.dto.StartupTaskJson;
-import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
@@ -14,7 +14,6 @@ import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
-import java.util.Date;
 import java.util.List;
 
 @Singleton
@@ -64,17 +63,24 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
 
     private void sendStartupTask(AbstractStartupTask task, String error) {
         try {
-            StartupTaskJson json = new StartupTaskJson()
-                    .gameSessionUuid(boot.get().getGameSessionUuid())
-                    .startTime(new Date(task.getStartTime()))
-                    .duration((int) task.getDuration())
-                    .taskEnum(task.getTaskEnum().name())
-                    .error(error)
-                    .utmCampaign(utmCampaign)
-                    .rdtCid(rdtCid)
-                    .utmSource(utmSource);
-            // TODO: serialize and send via REST
-            // TeaVMRestAccess.post("/rest/tracker/startupTask", serialize(json), null, null);
+            JsObject jsObj = JsObject.create();
+            jsObj.set("gameSessionUuid", boot.get().getGameSessionUuid());
+            jsObj.set("startTime", (double) task.getStartTime());
+            jsObj.set("duration", (int) task.getDuration());
+            jsObj.set("taskEnum", task.getTaskEnum().name());
+            if (error != null) {
+                jsObj.set("error", error);
+            }
+            if (rdtCid != null) {
+                jsObj.set("rdtCid", rdtCid);
+            }
+            if (utmCampaign != null) {
+                jsObj.set("utmCampaign", utmCampaign);
+            }
+            if (utmSource != null) {
+                jsObj.set("utmSource", utmSource);
+            }
+            TeaVMRestAccess.post("/rest/tracker/startupTask", JsJson.stringify(jsObj), null, null);
         } catch (Throwable t) {
             JsConsole.error("sendStartupTask failed: " + t.getMessage());
         }
@@ -82,15 +88,20 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
 
     private void sendStartupTerminated(long totalTime, boolean success) {
         try {
-            StartupTerminatedJson json = new StartupTerminatedJson()
-                    .gameSessionUuid(boot.get().getGameSessionUuid())
-                    .successful(success)
-                    .totalTime((int) totalTime)
-                    .utmCampaign(utmCampaign)
-                    .rdtCid(rdtCid)
-                    .utmSource(utmSource);
-            // TODO: serialize and send via REST
-            // TeaVMRestAccess.post("/rest/tracker/startupTerminated", serialize(json), null, null);
+            JsObject jsObj = JsObject.create();
+            jsObj.set("gameSessionUuid", boot.get().getGameSessionUuid());
+            jsObj.set("successful", success);
+            jsObj.set("totalTime", (int) totalTime);
+            if (rdtCid != null) {
+                jsObj.set("rdtCid", rdtCid);
+            }
+            if (utmCampaign != null) {
+                jsObj.set("utmCampaign", utmCampaign);
+            }
+            if (utmSource != null) {
+                jsObj.set("utmSource", utmSource);
+            }
+            TeaVMRestAccess.post("/rest/tracker/startupTerminated", JsJson.stringify(jsObj), null, null);
         } catch (Throwable t) {
             JsConsole.error("sendStartupTerminated failed: " + t.getMessage());
         }

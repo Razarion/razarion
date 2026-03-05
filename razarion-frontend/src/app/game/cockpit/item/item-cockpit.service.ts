@@ -185,9 +185,9 @@ export class ItemCockpitService {
       model.containerId = containerId;
       model.containerCount = 0; // Initial; will be updated by watch
       this.itemCockpitBridge.watchContainerCount(containerId, (count: number) => {
-        if (this.ownItemCockpit && this.ownItemCockpit.containerId === containerId) {
-          this.ownItemCockpit.containerCount = count;
-        }
+        this.zone.run(() => {
+          model.containerCount = count;
+        });
       });
     }
 

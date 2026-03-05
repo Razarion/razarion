@@ -23,7 +23,7 @@ export class ProgressStatistic {
   percent?: number;
 
   constructor(public readonly name: String, public readonly count: number, lastCount?: number) {
-    if (lastCount !== undefined) {
+    if (lastCount !== undefined && lastCount > 0) {
       this.percent = Math.round(count / lastCount * 100);
     }
   }

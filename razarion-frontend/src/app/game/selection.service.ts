@@ -77,14 +77,14 @@ export class SelectionService {
     }
   }
 
-  /** Permanently remove a disposed item (sold/destroyed). Clears selection if empty. */
+  /** Permanently remove a disposed item (sold/destroyed/contained). Updates selection. */
   disposeItem(id: number): void {
     const idx = this.selectedOwnItems.findIndex(item => item.getId() === id);
     if (idx >= 0) {
       this.selectedOwnItems.splice(idx, 1);
     }
     this.selectedOwnItemTypes.delete(id);
-    if (this.selectedOwnItemIds.delete(id) && this.selectedOwnItemIds.size === 0) {
+    if (this.selectedOwnItemIds.delete(id)) {
       this.fireSelectionChanged();
     }
   }

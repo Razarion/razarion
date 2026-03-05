@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ApplicationRef, Component, NgZone} from '@angular/core';
 import {Toast} from 'primeng/toast';
 import {RouterOutlet} from '@angular/router';
 import {MessageService} from 'primeng/api';
@@ -17,7 +17,10 @@ import {HttpClient} from '@angular/common/http';
 })
 export class AppComponent {
 
-  constructor(httpClient: HttpClient) {
+  constructor(httpClient: HttpClient, ngZone: NgZone, appRef: ApplicationRef) {
+    // Expose for E2E testing
+    (window as any).__e2eNgZone = ngZone;
+    (window as any).__e2eAppRef = appRef;
     const loggingController = new LoggingControllerImplClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
 
     const originalWarn = console.warn;

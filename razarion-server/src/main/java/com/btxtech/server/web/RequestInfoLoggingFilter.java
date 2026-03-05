@@ -1,6 +1,7 @@
 package com.btxtech.server.web;
 
 import com.btxtech.server.service.tracking.PageRequestService;
+import com.btxtech.server.service.tracking.RedditConversionService;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,9 +16,12 @@ import java.io.IOException;
 @Component
 public class RequestInfoLoggingFilter implements Filter {
     private final PageRequestService pageRequestService;
+    private final RedditConversionService redditConversionService;
 
-    public RequestInfoLoggingFilter(PageRequestService pageRequestService) {
+    public RequestInfoLoggingFilter(PageRequestService pageRequestService,
+                                    RedditConversionService redditConversionService) {
         this.pageRequestService = pageRequestService;
+        this.redditConversionService = redditConversionService;
     }
 
     @Override
@@ -42,6 +46,7 @@ public class RequestInfoLoggingFilter implements Filter {
                 String utmCampaign = httpRequest.getParameter("utm_campaign");
                 String utmSource = httpRequest.getParameter("utm_source");
                 pageRequestService.onGame(sessionId, utmCampaign, utmSource, rdtCid);
+                redditConversionService.sendPageVisitEvent(rdtCid);
             }
         }
         chain.doFilter(request, response);
