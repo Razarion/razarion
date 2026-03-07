@@ -516,9 +516,69 @@ public class GamePage {
 
     /**
      * Attacks a specific enemy item type.
+     * If the enemy is not rendered, uses baseItemUiService to find it and sends attack directly.
      */
     public void jsAttackEnemyOfType(int enemyItemTypeId) {
-        // First try direct attack on rendered enemies
+        Object result = executeScript(
+                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
+                "var gameCmd = window.gwtAngularFacade.gameCommandService;" +
+                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
+                "var attackerIds = [];" +
+                "for (var i = 0; i < items.length; i++) {" +
+                "  if (items[i].getBaseItemType().getWeaponType() != null) {" +
+                "    attackerIds.push(items[i].getId());" +
+                "  }" +
+                "}" +
+                "if (attackerIds.length === 0) return 'no attackers found';" +
+                // Try to find rendered enemy first
+                "var enemies = svc.getBabylonBaseItemsByDiplomacy('ENEMY');" +
+                "for (var i = 0; i < enemies.length; i++) {" +
+                "  if (enemies[i].getBaseItemType().getId() === " + enemyItemTypeId + ") {" +
+                "    gameCmd.attackCmd(attackerIds, enemies[i].getId());" +
+                "    return 'attack sent: enemyId=' + enemies[i].getId();" +
+                "  }" +
+                "}" +
+                // Enemy not rendered — use baseItemUiService to get enemy ID and attack directly
+                "var baseUi = window.gwtAngularFacade.baseItemUiService;" +
+                "if (baseUi && baseUi.getNearestEnemyId) {" +
+                "  var attacker = items[0];" +
+                "  var pos = attacker.getPosition();" +
+                "  if (pos) {" +
+                "    var enemyId = baseUi.getNearestEnemyId(pos.getX(), pos.getY(), " + enemyItemTypeId + ");" +
+                "    if (enemyId > 0) {" +
+                "      gameCmd.attackCmd(attackerIds, enemyId);" +
+                "      return 'attack sent via baseUi: enemyId=' + enemyId;" +
+                "    }" +
+                "  }" +
+                "}" +
+                // Fallback: get enemy position and send attack to all enemies near that position
+                "var baseUi2 = window.gwtAngularFacade.baseItemUiService;" +
+                "var attacker2 = items[0];" +
+                "var pos2 = attacker2.getPosition();" +
+                "if (!pos2) return 'no attacker position';" +
+                "var enemyPos = baseUi2.getNearestEnemyPosition(pos2.getX(), pos2.getY(), " + enemyItemTypeId + ", true);" +
+                "if (!enemyPos) return 'enemy type " + enemyItemTypeId + " not found via baseUi';" +
+                // Try all rendered enemies to find one near the expected position
+                "for (var i = 0; i < enemies.length; i++) {" +
+                "  var epos = enemies[i].getPosition();" +
+                "  if (epos) {" +
+                "    var dx = epos.getX() - enemyPos.getX();" +
+                "    var dy = epos.getY() - enemyPos.getY();" +
+                "    if (dx*dx+dy*dy < 100) {" +
+                "      gameCmd.attackCmd(attackerIds, enemies[i].getId());" +
+                "      return 'attack sent: nearby enemyId=' + enemies[i].getId();" +
+                "    }" +
+                "  }" +
+                "}" +
+                "return 'enemy type " + enemyItemTypeId + " not found, pos=' + enemyPos.getX().toFixed(0) + ',' + enemyPos.getY().toFixed(0) + ', rendered enemies=' + enemies.length;"
+        );
+        System.out.println("[E2E] jsAttackEnemyOfType(" + enemyItemTypeId + "): " + result);
+    }
+
+    /**
+     * Moves attackers toward the nearest enemy that is NOT of the excluded type.
+     */
+    public void jsMoveAttackersToEnemyExcludingType(int excludeItemTypeId) {
         Object result = executeScript(
                 "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
                 "var gameCmd = window.gwtAngularFacade.gameCommandService;" +
@@ -532,50 +592,21 @@ public class GamePage {
                 "if (attackerIds.length === 0) return 'no attackers found';" +
                 "var enemies = svc.getBabylonBaseItemsByDiplomacy('ENEMY');" +
                 "for (var i = 0; i < enemies.length; i++) {" +
-                "  if (enemies[i].getBaseItemType().getId() === " + enemyItemTypeId + ") {" +
-                "    gameCmd.attackCmd(attackerIds, enemies[i].getId());" +
-                "    return 'attack sent directly';" +
+                "  if (enemies[i].getBaseItemType().getId() !== " + excludeItemTypeId + ") {" +
+                "    var pos = enemies[i].getPosition();" +
+                "    if (pos) {" +
+                "      try {" +
+                "        gameCmd.moveCmd(attackerIds, pos.getX(), pos.getY());" +
+                "        return 'moving ' + JSON.stringify(attackerIds) + ' to enemy pos ' + pos.getX().toFixed(0) + ',' + pos.getY().toFixed(0);" +
+                "      } catch(e) {" +
+                "        return 'moveCmd ERROR: ' + e.message;" +
+                "      }" +
+                "    }" +
                 "  }" +
                 "}" +
-                // Enemy not rendered — use baseItemUiService to find its position and move attackers there
-                "var baseUi = window.gwtAngularFacade.baseItemUiService;" +
-                "var attacker = items[0];" +
-                "var pos = attacker.getPosition();" +
-                "if (!pos) return 'no attacker position';" +
-                "var enemyPos = baseUi.getNearestEnemyPosition(pos.getX(), pos.getY(), " + enemyItemTypeId + ", true);" +
-                "if (!enemyPos) return 'enemy type " + enemyItemTypeId + " not found via getNearestEnemyPosition';" +
-                "gameCmd.moveCmd(attackerIds, enemyPos.getX(), enemyPos.getY());" +
-                "return 'moving attackers to enemy pos: ' + enemyPos.getX() + ',' + enemyPos.getY();"
+                "return 'no non-excluded enemies found';"
         );
-        System.out.println("[E2E] jsAttackEnemyOfType(" + enemyItemTypeId + "): " + result);
-
-        // If we moved to the enemy, poll until it's rendered and attack it
-        if (result != null && result.toString().startsWith("moving attackers")) {
-            wait.until(d -> {
-                Object attackResult = executeScript(
-                        "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
-                        "var gameCmd = window.gwtAngularFacade.gameCommandService;" +
-                        "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
-                        "var attackerIds = [];" +
-                        "for (var i = 0; i < items.length; i++) {" +
-                        "  if (items[i].getBaseItemType().getWeaponType() != null) {" +
-                        "    attackerIds.push(items[i].getId());" +
-                        "  }" +
-                        "}" +
-                        "if (attackerIds.length === 0) return false;" +
-                        "var enemies = svc.getBabylonBaseItemsByDiplomacy('ENEMY');" +
-                        "for (var i = 0; i < enemies.length; i++) {" +
-                        "  if (enemies[i].getBaseItemType().getId() === " + enemyItemTypeId + ") {" +
-                        "    gameCmd.attackCmd(attackerIds, enemies[i].getId());" +
-                        "    return true;" +
-                        "  }" +
-                        "}" +
-                        "return false;"
-                );
-                return Boolean.TRUE.equals(attackResult);
-            });
-            System.out.println("[E2E] jsAttackEnemyOfType(" + enemyItemTypeId + "): attack command sent after moving");
-        }
+        System.out.println("[E2E] jsMoveAttackersToEnemyExcludingType(" + excludeItemTypeId + "): " + result);
     }
 
     /**
@@ -596,13 +627,175 @@ public class GamePage {
                 "var enemies = svc.getBabylonBaseItemsByDiplomacy('ENEMY');" +
                 "for (var i = 0; i < enemies.length; i++) {" +
                 "  if (enemies[i].getBaseItemType().getId() !== " + excludeItemTypeId + ") {" +
-                "    gameCmd.attackCmd(attackerIds, enemies[i].getId());" +
-                "    return 'attack sent: attackerIds=' + JSON.stringify(attackerIds) + ' enemyId=' + enemies[i].getId() + ' type=' + enemies[i].getBaseItemType().getId();" +
+                "    try {" +
+                "      gameCmd.attackCmd(attackerIds, enemies[i].getId());" +
+                "      return 'attack sent: attackerIds=' + JSON.stringify(attackerIds) + ' enemyId=' + enemies[i].getId() + ' type=' + enemies[i].getBaseItemType().getId();" +
+                "    } catch(e) {" +
+                "      return 'attackCmd ERROR: ' + e.message;" +
+                "    }" +
                 "  }" +
                 "}" +
                 "return 'no non-excluded enemies found';"
         );
         System.out.println("[E2E] jsAttackEnemyExcludingType(" + excludeItemTypeId + "): " + result);
+    }
+
+    /**
+     * Repeatedly sends attack commands against enemies (excluding a type) until the quest advances.
+     */
+    public void jsAttackEnemyExcludingTypeUntilDone(int excludeItemTypeId) {
+        // Wait for attacker to be fully built before commanding
+        waitForAttackerReady();
+        jsAttackEnemyExcludingType(excludeItemTypeId);
+        waitForQuestDoneWithRetry(() -> {
+            logAttackerState();
+            logBrowserErrors();
+            jsAttackEnemyExcludingType(excludeItemTypeId);
+        }, "Destroy");
+    }
+
+    /**
+     * Waits until at least one own attacker has buildup >= 1.0 and is not spawning.
+     */
+    private void waitForAttackerReady() {
+        wait.until(d -> {
+            Object result = executeScript(
+                    "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
+                    "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
+                    "for (var i = 0; i < items.length; i++) {" +
+                    "  if (items[i].getBaseItemType().getWeaponType() != null && items[i].getBuildup() >= 1.0) {" +
+                    "    return true;" +
+                    "  }" +
+                    "}" +
+                    "return false;"
+            );
+            return Boolean.TRUE.equals(result);
+        });
+        System.out.println("[E2E] attacker ready (buildup complete)");
+    }
+
+    /**
+     * Repeatedly sends attack commands against a specific enemy type until the quest advances.
+     */
+    public void jsAttackEnemyOfTypeUntilDone(int enemyItemTypeId) {
+        jsAttackEnemyOfType(enemyItemTypeId);
+        waitForQuestDoneWithRetry(() -> jsAttackEnemyOfType(enemyItemTypeId), "Destroy");
+    }
+
+    public void logBrowserErrors() {
+        Object result = executeScript(
+                "if (!window.__e2eErrors) return 'no error capture';" +
+                "var errors = window.__e2eErrors.splice(0);" +
+                "return errors.length > 0 ? errors.join(' | ') : 'no errors';"
+        );
+        System.out.println("[E2E] browser errors: " + result);
+    }
+
+    public void logGameMode() {
+        Object result = executeScript(
+                "try {" +
+                "  var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
+                "  var scene = svc.getScene();" +
+                "  return 'scene meshes: ' + scene.meshes.length;" +
+                "} catch(e) { return 'error: ' + e.message; }"
+        );
+        System.out.println("[E2E] gameMode info: " + result);
+    }
+
+    public void setupErrorCapture() {
+        executeScript(
+                "window.__e2eErrors = window.__e2eErrors || [];" +
+                "if (!window.__e2eErrorCaptureSet) {" +
+                "  window.__e2eErrorCaptureSet = true;" +
+                "  var origError = console.error;" +
+                "  console.error = function() {" +
+                "    var msg = Array.from(arguments).join(' ');" +
+                "    window.__e2eErrors.push(msg);" +
+                "    origError.apply(console, arguments);" +
+                "  };" +
+                "  var origWarn = console.warn;" +
+                "  console.warn = function() {" +
+                "    var msg = Array.from(arguments).join(' ');" +
+                "    if (msg.indexOf('WASM') !== -1 || msg.indexOf('worker') !== -1 || msg.indexOf('error') !== -1) {" +
+                "      window.__e2eErrors.push('WARN: ' + msg);" +
+                "    }" +
+                "    origWarn.apply(console, arguments);" +
+                "  };" +
+                "  window.addEventListener('error', function(e) {" +
+                "    window.__e2eErrors.push('UNCAUGHT: ' + e.message);" +
+                "  });" +
+                "}"
+        );
+    }
+
+    public void logAttackerState() {
+        Object result = executeScript(
+                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
+                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
+                "var enemies = svc.getBabylonBaseItemsByDiplomacy('ENEMY');" +
+                "var info = 'own:['; " +
+                "for (var i = 0; i < items.length; i++) {" +
+                "  var it = items[i]; var pos = it.getPosition();" +
+                "  info += '{id:'+it.getId()+',type:'+it.getBaseItemType().getId()+" +
+                "    ',pos:'+(pos?pos.getX().toFixed(0)+','+pos.getY().toFixed(0):'null')+" +
+                "    ',weapon:'+(it.getBaseItemType().getWeaponType()!=null)+" +
+                "    ',buildup:'+it.getBuildup().toFixed(2)+" +
+                "    ',idle:'+it.isIdle()+'}';" +
+                "  if(i<items.length-1) info+=',';" +
+                "}" +
+                "info += '] enemies:['; " +
+                "for (var i = 0; i < enemies.length; i++) {" +
+                "  var en = enemies[i]; var epos = en.getPosition();" +
+                "  info += '{id:'+en.getId()+',type:'+en.getBaseItemType().getId()+" +
+                "    ',pos:'+(epos?epos.getX().toFixed(0)+','+epos.getY().toFixed(0):'null')+'}';" +
+                "  if(i<enemies.length-1) info+=',';" +
+                "}" +
+                "info += ']';" +
+                "return info;"
+        );
+        System.out.println("[E2E] state: " + result);
+    }
+
+    /**
+     * Polls quest completion, re-executing the action every 10s in case units are idle.
+     */
+    private void waitForQuestDoneWithRetry(Runnable retryAction, String currentQuestTitle) {
+        final long[] lastRetry = {System.currentTimeMillis()};
+        final long[] lastLog = {0};
+        new WebDriverWait(driver, Duration.ofSeconds(120)).until(d -> {
+            long now = System.currentTimeMillis();
+
+            // Log every 5 seconds
+            if (now - lastLog[0] > 5000) {
+                try {
+                    String title = getQuestTitle();
+                    System.out.println("[E2E] waitForQuestDone('" + currentQuestTitle + "') title='" + title + "'");
+                    if (!currentQuestTitle.equals(title)) return true;
+                } catch (Exception e) {
+                    System.out.println("[E2E] waitForQuestDone: getQuestTitle error: " + e.getClass().getSimpleName());
+                }
+                lastLog[0] = now;
+            }
+
+            // Retry action every 10s
+            if (now - lastRetry[0] > 10000) {
+                try {
+                    retryAction.run();
+                } catch (Exception e) {
+                    System.out.println("[E2E] waitForQuestDone: retry error: " + e.getMessage());
+                }
+                lastRetry[0] = now;
+            }
+
+            // Quick check without logging
+            try {
+                String title = getQuestTitle();
+                if (!currentQuestTitle.equals(title)) return true;
+                return isQuestProgressAllDone();
+            } catch (Exception e) {
+                return false;
+            }
+        });
     }
 
     /**
@@ -676,7 +869,7 @@ public class GamePage {
                 "var transporterId = null;" +
                 "var loadIds = [];" +
                 "for (var i = 0; i < items.length; i++) {" +
-                "  if (items[i].getBaseItemType().getId() === 18) {" + // Transporter
+                "  if (items[i].getBaseItemType().getId() === 18) {" +
                 "    transporterId = items[i].getId();" +
                 "  }" +
                 "  if (items[i].getBaseItemType().getId() === " + itemTypeIdToLoad + ") {" +

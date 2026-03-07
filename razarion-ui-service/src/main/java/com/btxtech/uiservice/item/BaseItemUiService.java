@@ -615,4 +615,27 @@ public class BaseItemUiService {
 
         return nearest != null ? new Vertex(nearest.x, nearest.y, 0) : null;
     }
+
+    public int getNearestEnemyId(double fromX, double fromY, int enemyItemTypeId) {
+        DecimalPosition from = new DecimalPosition(fromX, fromY);
+        NativeSyncBaseItemTickInfo nearest = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (!isMyEnemy(nativeSyncBaseItemTickInfo)) {
+                continue;
+            }
+            if (nativeSyncBaseItemTickInfo.itemTypeId != enemyItemTypeId) {
+                continue;
+            }
+            DecimalPosition enemyPosition = new DecimalPosition(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y);
+            double distance = enemyPosition.getDistance(from);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearest = nativeSyncBaseItemTickInfo;
+            }
+        }
+
+        return nearest != null ? nearest.id : -1;
+    }
 }

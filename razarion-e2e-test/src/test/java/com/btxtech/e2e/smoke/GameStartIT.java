@@ -1,8 +1,10 @@
 package com.btxtech.e2e.smoke;
 
+import com.btxtech.e2e.base.AdminApiClient;
 import com.btxtech.e2e.base.BaseE2eTest;
 import com.btxtech.e2e.page.GamePage;
 import com.btxtech.e2e.page.LandingPage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +34,13 @@ class GameStartIT extends BaseE2eTest {
     private static final int TRANSPORTER = 18;
     private static final int BOT_REFINERY_2 = 24;
 
+    @BeforeEach
+    void cleanupGameState() {
+        AdminApiClient admin = new AdminApiClient();
+        admin.deleteAllHumanBases();
+        admin.restartPlanetWarm();
+    }
+
     @Test
     void fullGameFlow() {
         navigateTo("/");
@@ -56,6 +65,7 @@ class GameStartIT extends BaseE2eTest {
         gamePage.waitForCanvasPresent();
         assertThat(gamePage.isCanvasDisplayed()).isTrue();
         gamePage.waitForGameReady();
+        gamePage.setupErrorCapture();
         assertThat(gamePage.isMainCockpitVisible()).isTrue();
 
         gamePage.waitForQuestCockpitVisible();
@@ -100,7 +110,8 @@ class GameStartIT extends BaseE2eTest {
 
         // Quest 365: Kill 1 enemy unit (avoid killing Refinery 2 needed for level 5)
         gamePage.verifyQuestCockpit("Destroy");
-        gamePage.jsAttackEnemyExcludingType(BOT_REFINERY_2);
+        gamePage.waitForOwnItemCountByType(VIPER, 1);
+        gamePage.jsAttackEnemyExcludingTypeUntilDone(BOT_REFINERY_2);
     }
 
     // ========== Level 3: Build Radar, Build Powerplant ==========
@@ -144,7 +155,7 @@ class GameStartIT extends BaseE2eTest {
 
         // Quest 379: Kill (Bot) Refinery 2
         gamePage.verifyQuestCockpit("Destroy");
-        gamePage.jsAttackEnemyOfType(BOT_REFINERY_2);
+        gamePage.jsAttackEnemyOfTypeUntilDone(BOT_REFINERY_2);
     }
 
     // ========== Level 6: Dockyard in region ==========
@@ -169,7 +180,7 @@ class GameStartIT extends BaseE2eTest {
 
         // Quest 388: Kill (Bot) Hydra
         gamePage.verifyQuestCockpit("Destroy");
-        gamePage.jsAttackEnemyOfType(BOT_HYDRA);
+        gamePage.jsAttackEnemyOfTypeUntilDone(BOT_HYDRA);
     }
 
     // ========== Level 8: Fabricate Transporter, Builder on region ==========

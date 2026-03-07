@@ -43,7 +43,7 @@ public class RedditConversionService {
         try {
             Map<String, Object> event = new HashMap<>();
             event.put("event_at", System.currentTimeMillis());
-            event.put("action_source", "web");
+            event.put("action_source", "WEBSITE");
             event.put("type", Map.of("tracking_type", "CUSTOM", "custom_event_name", "GamePageVisit"));
 
             if (rdtCid != null && !rdtCid.isEmpty()) {
