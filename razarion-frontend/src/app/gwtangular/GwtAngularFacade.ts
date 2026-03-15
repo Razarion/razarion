@@ -394,7 +394,6 @@ export interface WeaponType {
 }
 
 export interface HarvesterType {
-  getParticleSystemConfigId(): number | null;
 }
 
 // ---------- Quest ----------

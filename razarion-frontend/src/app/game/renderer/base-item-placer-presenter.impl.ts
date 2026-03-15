@@ -33,6 +33,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private baseItemPlacerCallback: ((event: BaseItemPlacerPresenterEvent) => void) | null = null;
   private keydownHandler: ((event: KeyboardEvent) => void) | null = null;
+  private activationGeneration = 0;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService,
@@ -42,6 +43,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   }
 
   activate(baseItemPlacer: BaseItemPlacer): void {
+    this.cleanupPreviousPlacer();
+    this.activationGeneration++;
+    const currentGeneration = this.activationGeneration;
     this.disc = MeshBuilder.CreateDisc("Base Item Placer", {radius: baseItemPlacer.getEnemyFreeRadius()}, this.rendererService.getScene());
     this.disc.visibility = 0.5;
     this.disc.material = this.material;
@@ -66,7 +70,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     if (pickedPoint) {
       this.setPosition(baseItemPlacer, pickedPoint);
     } else {
-      this.setupPickedPointDelayed(baseItemPlacer);
+      this.setupPickedPointDelayed(baseItemPlacer, currentGeneration);
     }
 
     this.rendererService.baseItemPlacerActive = true;
@@ -122,34 +126,54 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     }
   }
 
-  private setupPickedPointDelayed(baseItemPlacer: BaseItemPlacer) {
+  private setupPickedPointDelayed(baseItemPlacer: BaseItemPlacer, generation: number) {
     setTimeout(() => {
+      if (this.activationGeneration !== generation) return;
       let pickedPoint = this.setupPickedPoint();
       if (pickedPoint) {
         this.setPosition(baseItemPlacer, pickedPoint);
       } else {
-        this.setupPickedPointDelayed(baseItemPlacer);
+        this.setupPickedPointDelayed(baseItemPlacer, generation);
       }
     }, 1000);
   }
 
-  deactivate(): void {
+  private cleanupPreviousPlacer(): void {
     if (this.keydownHandler) {
       window.removeEventListener('keydown', this.keydownHandler);
       this.keydownHandler = null;
     }
-    this.rendererService.getScene().onPointerObservable.remove(this.pointerObservable);
-    this.rendererService.getScene().removeMesh(this.disc!);
-    this.disc?.dispose();
-    this.disc = null;
-    this.renderObject?.dispose();
-    this.renderObject = null;
-    // Defer clearing so ActionManager handlers (terrain/water click) that fire
-    // in the same event loop tick still see the placer as active
-    setTimeout(() => { this.rendererService.baseItemPlacerActive = false; }, 0);
-    this.uiTexture?.dispose();
-    this.uiTexture = null;
+    if (this.pointerObservable) {
+      this.rendererService.getScene().onPointerObservable.remove(this.pointerObservable);
+      this.pointerObservable = null;
+    }
+    if (this.disc) {
+      this.rendererService.getScene().removeMesh(this.disc);
+      this.disc.dispose();
+      this.disc = null;
+    }
+    if (this.renderObject) {
+      this.renderObject.dispose();
+      this.renderObject = null;
+    }
+    if (this.uiTexture) {
+      this.uiTexture.dispose();
+      this.uiTexture = null;
+    }
     this.pressMouseVisualization = null;
+  }
+
+  deactivate(): void {
+    this.cleanupPreviousPlacer();
+    // Defer clearing so ActionManager handlers (terrain/water click) that fire
+    // in the same event loop tick still see the placer as active.
+    // Use generation check to avoid undoing a subsequent activate().
+    const gen = this.activationGeneration;
+    setTimeout(() => {
+      if (this.activationGeneration === gen) {
+        this.rendererService.baseItemPlacerActive = false;
+      }
+    }, 0);
     if (this.baseItemPlacerCallback) {
       this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.DEACTIVATED);
     }

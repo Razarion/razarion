@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,7 +62,12 @@ public class ParticleSystemController extends AbstractBaseController<ParticleSys
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')") 
+    @GetMapping("sizes")
+    public List<MaterialSizeInfo> getParticleSizes() {
+        return particleSystemCrudPersistence.getParticleSizes();
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "upload/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void uploadData(@PathVariable("id") int id, @RequestBody byte[] data) {
         particleSystemCrudPersistence.setData(id, data);

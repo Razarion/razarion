@@ -192,17 +192,165 @@ public class GamePage {
     }
 
     public void placeOnFreePosition() {
-        int[][] offsets = {{0, 0}, {150, 0}, {-150, 0}, {0, 150}, {0, -150}, {150, 150}, {-150, -150}};
-        for (int[] offset : offsets) {
-            clickCanvasAt(offset[0], offset[1]);
-            try {
-                new WebDriverWait(driver, Duration.ofSeconds(3)).until(d -> isBaseItemPlacerInactive());
-                return;
-            } catch (Exception e) {
-                // Terrain not free, try next position
+        // Try a wide grid of positions across the canvas, spiraling outward
+        List<int[]> offsets = new ArrayList<>();
+        offsets.add(new int[]{0, 0});
+        for (int radius = 80; radius <= 500; radius += 80) {
+            for (int angle = 0; angle < 360; angle += 30) {
+                int x = (int) (radius * Math.cos(Math.toRadians(angle)));
+                int y = (int) (radius * Math.sin(Math.toRadians(angle)));
+                offsets.add(new int[]{x, y});
             }
         }
-        throw new RuntimeException("Could not find free terrain for placement after trying " + offsets.length + " positions");
+        for (int[] offset : offsets) {
+            try {
+                clickCanvasAt(offset[0], offset[1]);
+                new WebDriverWait(driver, Duration.ofSeconds(1)).until(d -> isBaseItemPlacerInactive());
+                return;
+            } catch (Exception e) {
+                // Terrain not free, out of bounds, or not in quest region — try next
+            }
+        }
+        throw new RuntimeException("Could not find free terrain for placement after trying " + offsets.size() + " positions");
+    }
+
+    /**
+     * Gets the quest region center from the active quest's PlaceConfig via REST API.
+     * Returns [x, y] or null if no place config found.
+     */
+    @SuppressWarnings("unchecked")
+    public double[] getQuestRegionCenter() {
+        // First try REST API
+        Object result = executeScript(
+                "var xhr = new XMLHttpRequest();" +
+                "xhr.open('GET', '/rest/quest-controller/readMyOpenQuests', false);" +
+                "xhr.send();" +
+                "if (xhr.status !== 200) return 'REST_ERROR:' + xhr.status + ':' + xhr.responseText.substring(0,200);" +
+                "var resp = xhr.responseText;" +
+                "try {" +
+                "  var quests = JSON.parse(resp);" +
+                "  if (!quests || (Array.isArray(quests) && quests.length === 0)) return 'EMPTY_QUESTS';" +
+                "  var quest = Array.isArray(quests) ? quests[0] : quests;" +
+                "  var cc = quest.conditionConfig;" +
+                "  if (!cc) return 'NO_CONDITION:' + JSON.stringify(Object.keys(quest));" +
+                "  var comp = cc.comparisonConfig;" +
+                "  if (!comp) return 'NO_COMPARISON:' + JSON.stringify(Object.keys(cc));" +
+                "  var pc = comp.placeConfig;" +
+                "  if (!pc) return 'NO_PLACE_CONFIG:' + JSON.stringify(Object.keys(comp));" +
+                "  if (pc.position) return [pc.position.x, pc.position.y];" +
+                "  if (pc.polygon2D && pc.polygon2D.corners && pc.polygon2D.corners.length > 0) {" +
+                "    var cx = 0, cy = 0;" +
+                "    for (var i = 0; i < pc.polygon2D.corners.length; i++) {" +
+                "      cx += pc.polygon2D.corners[i].x; cy += pc.polygon2D.corners[i].y;" +
+                "    }" +
+                "    return [cx / pc.polygon2D.corners.length, cy / pc.polygon2D.corners.length];" +
+                "  }" +
+                "  return 'PLACE_CONFIG_EMPTY:' + JSON.stringify(pc);" +
+                "} catch(e) {" +
+                "  return 'PARSE_ERROR:' + e.message + ':' + resp.substring(0,200);" +
+                "}"
+        );
+        if (result instanceof java.util.List) {
+            java.util.List<?> list = (java.util.List<?>) result;
+            double[] center = new double[]{((Number) list.get(0)).doubleValue(), ((Number) list.get(1)).doubleValue()};
+            System.out.println("[E2E] Quest region center: " + center[0] + ", " + center[1]);
+            return center;
+        }
+        System.out.println("[E2E] Quest region REST debug: " + result);
+
+        // Fallback: Try to find quest region visualization mesh in the Babylon scene
+        Object meshResult = executeScript(
+                "var scene = window.gwtAngularFacade.babylonRenderServiceAccess.getScene();" +
+                "var meshes = scene.meshes;" +
+                "var questMeshes = [];" +
+                "for (var i = 0; i < meshes.length; i++) {" +
+                "  var name = meshes[i].name || '';" +
+                "  if (name.toLowerCase().indexOf('quest') !== -1 || " +
+                "      name.toLowerCase().indexOf('place') !== -1 || " +
+                "      name.toLowerCase().indexOf('marker') !== -1 || " +
+                "      name.toLowerCase().indexOf('region') !== -1) {" +
+                "    var pos = meshes[i].position;" +
+                "    questMeshes.push(name + '@' + pos.x.toFixed(1) + ',' + pos.z.toFixed(1));" +
+                "  }" +
+                "}" +
+                // Also check for meshes with special metadata
+                "for (var i = 0; i < meshes.length; i++) {" +
+                "  var m = meshes[i].metadata;" +
+                "  if (m && m.razarionMetadata && m.razarionMetadata.type === 4) {" +  // type 4 might be quest marker
+                "    var pos = meshes[i].position;" +
+                "    questMeshes.push('META:' + meshes[i].name + '@' + pos.x.toFixed(1) + ',' + pos.z.toFixed(1));" +
+                "  }" +
+                "}" +
+                "return questMeshes.length > 0 ? questMeshes.join(' | ') : 'NO_QUEST_MESHES (total: ' + meshes.length + ')';"
+        );
+        System.out.println("[E2E] Quest meshes: " + meshResult);
+
+        // Try to find place marker polygon nodes
+        Object markerResult = executeScript(
+                "var scene = window.gwtAngularFacade.babylonRenderServiceAccess.getScene();" +
+                "var nodes = scene.getTransformNodeByName('Quest Place Markers') || " +
+                "            scene.getTransformNodeByName('PlaceMarkers') || " +
+                "            scene.getTransformNodeByName('QuestMarkers');" +
+                "if (nodes) {" +
+                "  var children = nodes.getChildren();" +
+                "  var info = 'found container: ' + nodes.name + ' children: ' + children.length;" +
+                "  for (var i = 0; i < Math.min(children.length, 5); i++) {" +
+                "    var p = children[i].position;" +
+                "    info += ' [' + children[i].name + '@' + p.x.toFixed(1) + ',' + p.z.toFixed(1) + ']';" +
+                "  }" +
+                "  return info;" +
+                "}" +
+                // List all top-level transform nodes for debugging
+                "var tnodes = scene.transformNodes;" +
+                "var names = [];" +
+                "for (var i = 0; i < tnodes.length; i++) {" +
+                "  if (!tnodes[i].parent) names.push(tnodes[i].name);" +
+                "}" +
+                "return 'NO_MARKER_CONTAINER top-level: ' + names.join(', ');"
+        );
+        System.out.println("[E2E] Quest marker nodes: " + markerResult);
+
+        return null;
+    }
+
+    /**
+     * Places building by moving camera to the quest region (if available), then trying clicks.
+     * Falls back to searching camera positions in a grid.
+     */
+    public void placeInQuestRegion() {
+        double[] regionCenter = getQuestRegionCenter();
+        if (regionCenter != null) {
+            jsMoveCamera(regionCenter[0], regionCenter[1]);
+            try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+            try {
+                placeOnFreePosition();
+                return;
+            } catch (RuntimeException e) {
+                System.out.println("[E2E] Placement failed at quest region center, trying offsets");
+            }
+        }
+        // Search a grid of camera positions across the Phase 1 area
+        double[][] cameraPositions = {
+                {150, 180}, {180, 180}, {120, 180},  // near coastline (~y200)
+                {150, 150}, {180, 150}, {120, 150},  // south of coastline
+                {150, 220}, {180, 220}, {120, 220},  // at coastline
+                {150, 250}, {180, 250}, {100, 200},  // in water area
+                {200, 180}, {200, 150}, {80, 180},   // east/west coast
+                {178, 100}, {178, 50}, {150, 100},   // close to base
+                {250, 180}, {250, 150}, {250, 200},  // further east
+                {100, 150}, {100, 100}, {50, 180},   // west
+        };
+        for (double[] pos : cameraPositions) {
+            jsMoveCamera(pos[0], pos[1]);
+            try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+            try {
+                placeOnFreePosition();
+                return;
+            } catch (RuntimeException e) {
+                System.out.println("[E2E] Placement failed at camera (" + pos[0] + "," + pos[1] + ")");
+            }
+        }
+        throw new RuntimeException("Could not place building in quest region after exhaustive search");
     }
 
     // ========== Item Cockpit ==========
@@ -515,13 +663,30 @@ public class GamePage {
     }
 
     /**
+     * Moves the camera to the given terrain position.
+     */
+    public void jsMoveCamera(double x, double y) {
+        executeScript(
+                "var scene = window.gwtAngularFacade.babylonRenderServiceAccess.getScene();" +
+                "var camera = scene.activeCamera;" +
+                "if (camera && camera.target) {" +
+                "  camera.target.x = " + x + ";" +
+                "  camera.target.z = " + y + ";" +
+                "}"
+        );
+        System.out.println("[E2E] Camera moved to " + x + ", " + y);
+    }
+
+    /**
      * Attacks a specific enemy item type.
-     * If the enemy is not rendered, uses baseItemUiService to find it and sends attack directly.
+     * If the enemy is not rendered, moves the camera to the enemy position,
+     * waits for it to be synced, then attacks.
      */
     public void jsAttackEnemyOfType(int enemyItemTypeId) {
         Object result = executeScript(
                 "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
                 "var gameCmd = window.gwtAngularFacade.gameCommandService;" +
+                "var baseUi = window.gwtAngularFacade.baseItemUiService;" +
                 "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
                 "var attackerIds = [];" +
                 "for (var i = 0; i < items.length; i++) {" +
@@ -535,44 +700,44 @@ public class GamePage {
                 "for (var i = 0; i < enemies.length; i++) {" +
                 "  if (enemies[i].getBaseItemType().getId() === " + enemyItemTypeId + ") {" +
                 "    gameCmd.attackCmd(attackerIds, enemies[i].getId());" +
-                "    return 'attack sent: enemyId=' + enemies[i].getId();" +
+                "    return 'attack rendered: enemyId=' + enemies[i].getId();" +
                 "  }" +
                 "}" +
-                // Enemy not rendered — use baseItemUiService to get enemy ID and attack directly
-                "var baseUi = window.gwtAngularFacade.baseItemUiService;" +
-                "if (baseUi && baseUi.getNearestEnemyId) {" +
-                "  var attacker = items[0];" +
-                "  var pos = attacker.getPosition();" +
-                "  if (pos) {" +
-                "    var enemyId = baseUi.getNearestEnemyId(pos.getX(), pos.getY(), " + enemyItemTypeId + ");" +
-                "    if (enemyId > 0) {" +
-                "      gameCmd.attackCmd(attackerIds, enemyId);" +
-                "      return 'attack sent via baseUi: enemyId=' + enemyId;" +
-                "    }" +
+                // Not rendered - try to get enemy ID from server-side service and attack by ID
+                "var attacker = items[0];" +
+                "var pos = attacker.getPosition();" +
+                "if (!pos) return 'no attacker position';" +
+                "try {" +
+                "  var enemyId = baseUi.getNearestEnemyId(pos.getX(), pos.getY(), " + enemyItemTypeId + ");" +
+                "  if (enemyId > 0) {" +
+                "    gameCmd.attackCmd(attackerIds, enemyId);" +
+                "    return 'attack by ID: enemyId=' + enemyId;" +
                 "  }" +
+                "} catch(e) {" +
+                "  return 'getNearestEnemyId error: ' + e.message;" +
                 "}" +
-                // Fallback: get enemy position and send attack to all enemies near that position
-                "var baseUi2 = window.gwtAngularFacade.baseItemUiService;" +
-                "var attacker2 = items[0];" +
-                "var pos2 = attacker2.getPosition();" +
-                "if (!pos2) return 'no attacker position';" +
-                "var enemyPos = baseUi2.getNearestEnemyPosition(pos2.getX(), pos2.getY(), " + enemyItemTypeId + ", true);" +
+                // Fallback: get position for camera move
+                "var enemyPos = baseUi.getNearestEnemyPosition(pos.getX(), pos.getY(), " + enemyItemTypeId + ", true);" +
                 "if (!enemyPos) return 'enemy type " + enemyItemTypeId + " not found via baseUi';" +
-                // Try all rendered enemies to find one near the expected position
-                "for (var i = 0; i < enemies.length; i++) {" +
-                "  var epos = enemies[i].getPosition();" +
-                "  if (epos) {" +
-                "    var dx = epos.getX() - enemyPos.getX();" +
-                "    var dy = epos.getY() - enemyPos.getY();" +
-                "    if (dx*dx+dy*dy < 100) {" +
-                "      gameCmd.attackCmd(attackerIds, enemies[i].getId());" +
-                "      return 'attack sent: nearby enemyId=' + enemies[i].getId();" +
-                "    }" +
-                "  }" +
-                "}" +
-                "return 'enemy type " + enemyItemTypeId + " not found, pos=' + enemyPos.getX().toFixed(0) + ',' + enemyPos.getY().toFixed(0) + ', rendered enemies=' + enemies.length;"
+                "return 'NOT_RENDERED:' + enemyPos.getX() + ':' + enemyPos.getY();"
         );
-        System.out.println("[E2E] jsAttackEnemyOfType(" + enemyItemTypeId + "): " + result);
+        String resultStr = result != null ? result.toString() : "";
+        System.out.println("[E2E] jsAttackEnemyOfType(" + enemyItemTypeId + "): " + resultStr);
+
+        if (resultStr.startsWith("NOT_RENDERED:")) {
+            // Move camera to enemy position to trigger rendering
+            String[] parts = resultStr.split(":");
+            double enemyX = Double.parseDouble(parts[1]);
+            double enemyY = Double.parseDouble(parts[2]);
+            jsMoveCamera(enemyX, enemyY);
+            try {
+                new WebDriverWait(driver, Duration.ofSeconds(5)).until(d -> jsHasEnemyOfType(enemyItemTypeId));
+                System.out.println("[E2E] Enemy type " + enemyItemTypeId + " now rendered after camera move");
+                jsAttackEnemyOfType(enemyItemTypeId);
+            } catch (Exception e) {
+                System.out.println("[E2E] Enemy type " + enemyItemTypeId + " still not rendered after camera move");
+            }
+        }
     }
 
     /**
@@ -648,8 +813,15 @@ public class GamePage {
         waitForAttackerReady();
         jsAttackEnemyExcludingType(excludeItemTypeId);
         waitForQuestDoneWithRetry(() -> {
-            logAttackerState();
-            logBrowserErrors();
+            try { logAttackerState(); } catch (Exception e) { /* ignore logging errors */ }
+            try { logBrowserErrors(); } catch (Exception e) { /* ignore logging errors */ }
+            // If all attackers died, fabricate a new Viper
+            if (getOwnItemCountByType(3) == 0) { // 3 = VIPER
+                System.out.println("[E2E] No Vipers left, fabricating a new one");
+                jsFabricate(4, 3); // Factory(4) -> Viper(3)
+                waitForOwnItemCountByType(3, 1);
+                waitForAttackerReady();
+            }
             jsAttackEnemyExcludingType(excludeItemTypeId);
         }, "Destroy");
     }
@@ -678,8 +850,80 @@ public class GamePage {
      * Repeatedly sends attack commands against a specific enemy type until the quest advances.
      */
     public void jsAttackEnemyOfTypeUntilDone(int enemyItemTypeId) {
+        waitForAttackerReady();
+        // Move vipers toward the enemy first (if not rendered, attackCmd won't work)
+        jsMoveAttackersTowardEnemy(enemyItemTypeId);
         jsAttackEnemyOfType(enemyItemTypeId);
-        waitForQuestDoneWithRetry(() -> jsAttackEnemyOfType(enemyItemTypeId), "Destroy");
+        waitForQuestDoneWithRetry(() -> {
+            try { logViperPositions("retry"); } catch (Exception e) { /* ignore */ }
+            try { logBrowserErrors(); } catch (Exception e) { /* ignore */ }
+            // If attackers low, fabricate more Vipers
+            long viperCount = getOwnItemCountByType(3); // 3 = VIPER
+            if (viperCount < 2) {
+                int toFabricate = (int)(4 - viperCount);
+                System.out.println("[E2E] Only " + viperCount + " Vipers, fabricating " + toFabricate + " more");
+                for (int i = 0; i < toFabricate; i++) {
+                    jsFabricate(4, 3); // Factory(4) -> Viper(3)
+                    waitForOwnItemCountByType(3, viperCount + i + 1);
+                }
+                waitForAttackerReady();
+            }
+            jsMoveAttackersTowardEnemy(enemyItemTypeId);
+            jsAttackEnemyOfType(enemyItemTypeId);
+        }, "Destroy");
+    }
+
+    /**
+     * Moves attackers toward the nearest enemy of the given type using moveCmd.
+     */
+    public void jsMoveAttackersTowardEnemy(int enemyItemTypeId) {
+        Object result = executeScript(
+                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
+                "var gameCmd = window.gwtAngularFacade.gameCommandService;" +
+                "var baseUi = window.gwtAngularFacade.baseItemUiService;" +
+                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
+                "var attackerIds = [];" +
+                "for (var i = 0; i < items.length; i++) {" +
+                "  if (items[i].getBaseItemType().getWeaponType() != null) {" +
+                "    attackerIds.push(items[i].getId());" +
+                "  }" +
+                "}" +
+                "if (attackerIds.length === 0) return 'no attackers';" +
+                // Check if enemy is already rendered
+                "var enemies = svc.getBabylonBaseItemsByDiplomacy('ENEMY');" +
+                "for (var i = 0; i < enemies.length; i++) {" +
+                "  if (enemies[i].getBaseItemType().getId() === " + enemyItemTypeId + ") {" +
+                "    return 'enemy already rendered';" +
+                "  }" +
+                "}" +
+                // Enemy not rendered - get position and move toward it
+                "var pos = items[0].getPosition();" +
+                "if (!pos) return 'no position';" +
+                "var enemyPos = baseUi.getNearestEnemyPosition(pos.getX(), pos.getY(), " + enemyItemTypeId + ", true);" +
+                "if (!enemyPos) return 'enemy not found';" +
+                "gameCmd.moveCmd(attackerIds, enemyPos.getX(), enemyPos.getY());" +
+                "return 'moving ' + attackerIds.length + ' attackers toward ' + enemyPos.getX().toFixed(0) + ',' + enemyPos.getY().toFixed(0);"
+        );
+        System.out.println("[E2E] jsMoveAttackersTowardEnemy(" + enemyItemTypeId + "): " + result);
+    }
+
+    /**
+     * Logs positions of all own vipers (type 3).
+     */
+    public void logViperPositions(String label) {
+        Object result = executeScript(
+                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
+                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
+                "var info = '';" +
+                "for (var i = 0; i < items.length; i++) {" +
+                "  if (items[i].getBaseItemType().getId() === 3) {" +
+                "    var pos = items[i].getPosition();" +
+                "    info += 'viper#' + items[i].getId() + '@' + (pos ? pos.getX().toFixed(1) + ',' + pos.getY().toFixed(1) : 'null') + ' ';" +
+                "  }" +
+                "}" +
+                "return info || 'NO VIPERS';"
+        );
+        System.out.println("[E2E] viperPositions[" + label + "]: " + result);
     }
 
     public void logBrowserErrors() {
@@ -739,8 +983,7 @@ public class GamePage {
                 "  info += '{id:'+it.getId()+',type:'+it.getBaseItemType().getId()+" +
                 "    ',pos:'+(pos?pos.getX().toFixed(0)+','+pos.getY().toFixed(0):'null')+" +
                 "    ',weapon:'+(it.getBaseItemType().getWeaponType()!=null)+" +
-                "    ',buildup:'+it.getBuildup().toFixed(2)+" +
-                "    ',idle:'+it.isIdle()+'}';" +
+                "    ',buildup:'+it.getBuildup().toFixed(2)+'}';" +
                 "  if(i<items.length-1) info+=',';" +
                 "}" +
                 "info += '] enemies:['; " +
@@ -1019,6 +1262,20 @@ public class GamePage {
         waitForBaseItemPlacerActive();
         try { Thread.sleep(500); } catch (InterruptedException ignored) {} // Let placer initialize
         placeOnFreePosition();
+        waitForBaseItemCountAbove(countBefore);
+    }
+
+    /**
+     * Builds with quest region awareness - moves camera to quest region before placing.
+     */
+    public void buildViaBuilderInQuestRegion(int itemTypeId) {
+        long countBefore = getBaseItemCount();
+        waitForBuildButtonForItemType(itemTypeId);
+        try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+        clickBuildButtonForItemType(itemTypeId);
+        waitForBaseItemPlacerActive();
+        try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+        placeInQuestRegion();
         waitForBaseItemCountAbove(countBefore);
     }
 

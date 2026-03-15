@@ -235,7 +235,7 @@ public class BaseItemTypeEntity extends BaseEntity {
             if (harvesterType == null) {
                 harvesterType = new HarvesterTypeEntity();
             }
-            harvesterType.fromHarvesterType(baseItemType.getHarvesterType(), particleSystemCrudPersistence);
+            harvesterType.fromHarvesterType(baseItemType.getHarvesterType());
         } else {
             harvesterType = null;
         }

@@ -63,7 +63,7 @@
                     label="From Ground"
                     icon="pi pi-map"
                     styleClass="p-button-sm"
-                    [disabled]="!selectedBot!.groundBoxPositions?.length && !selectedBot!.botGroundSlopeBoxes?.length"
+                    [disabled]="!selectedBot!.groundBoxPositions.length && !selectedBot!.botGroundSlopeBoxes.length"
                     (onClick)="onGenerateRealmFromGroundBoxes()"
                     ></p-button>
                 </div>

@@ -155,7 +155,23 @@ class GameStartIT extends BaseE2eTest {
 
         // Quest 379: Kill (Bot) Refinery 2
         gamePage.verifyQuestCockpit("Destroy");
+
+        // Bot Refinery 2 is far from base (~165,125). Build up a large attack force first.
+        gamePage.jsHarvestNearest();
+        try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
+
+        // Fabricate extra vipers for the assault (need ~6 total)
+        long viperCount = gamePage.getOwnItemCountByType(VIPER);
+        int targetVipers = 6;
+        for (long i = viperCount; i < targetVipers; i++) {
+            gamePage.jsFabricate(FACTORY, VIPER);
+            gamePage.waitForOwnItemCountByType(VIPER, i + 1);
+        }
+
         gamePage.jsAttackEnemyOfTypeUntilDone(BOT_REFINERY_2);
+
+        // Move camera back to base for level 6
+        gamePage.jsMoveCamera(178, 20);
     }
 
     // ========== Level 6: Dockyard in region ==========
@@ -163,10 +179,10 @@ class GameStartIT extends BaseE2eTest {
     private void level6(GamePage gamePage) {
         gamePage.verifyMainCockpit(6);
 
-        // Quest 386: Build Dockyard in quest region
+        // Quest 386: Build Dockyard in quest region (use quest region API to find location)
         gamePage.verifyQuestCockpit("Region");
         gamePage.selectItemByType(BUILDER);
-        gamePage.buildViaBuilder(DOCKYARD);
+        gamePage.buildViaBuilderInQuestRegion(DOCKYARD);
     }
 
     // ========== Level 7: Fabricate Hydra, Kill Bot Hydra ==========

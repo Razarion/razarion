@@ -37,6 +37,22 @@
 
   <p-divider align="left">
     <div class="inline-flex items-center">
+      <i class="pi pi-download mr-2"></i>
+      <b>&nbsp;Download</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-4">
+    <span class="col-span-4">Download particle system</span>
+    <div class="col-span-8">
+      <p-button icon="pi pi-download"
+                (onClick)="onDownloadParticleSystem()"
+                size="small">
+      </p-button>
+    </div>
+  </div>
+
+  <p-divider align="left">
+    <div class="inline-flex items-center">
       <i class="pi pi-play mr-2"></i>
       <b>&nbsp;Edit</b>
     </div>

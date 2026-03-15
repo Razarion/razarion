@@ -270,8 +270,7 @@
       "factoryType": null,
       "harvesterType": {
         "range": 2,
-        "progress": 2.0,
-        "particleSystemConfigId": 3
+        "progress": 2.0
       },
       "builderType": null,
       "generatorType": null,
@@ -581,8 +580,7 @@
       "factoryType": null,
       "harvesterType": {
         "range": 3,
-        "progress": 2.0,
-        "particleSystemConfigId": null
+        "progress": 2.0
       },
       "builderType": null,
       "generatorType": null,
@@ -1148,8 +1146,7 @@
       "factoryType": null,
       "harvesterType": {
         "range": 3,
-        "progress": 2.0,
-        "particleSystemConfigId": null
+        "progress": 2.0
       },
       "builderType": null,
       "generatorType": null,

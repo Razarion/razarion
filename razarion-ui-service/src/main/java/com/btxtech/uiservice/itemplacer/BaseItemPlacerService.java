@@ -33,6 +33,9 @@ public class BaseItemPlacerService {
     }
 
     public void activate(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<Collection<DecimalPosition>> executionCallback) {
+        if (isActive()) {
+            deactivateInternal(true);
+        }
         this.executionCallback = executionCallback;
         baseItemPlacer = provider.get().init(baseItemPlacerConfig, canBeCanceled, this::onPlace, this::deactivate);
         baseItemPlacerPresenter.activate(baseItemPlacer);

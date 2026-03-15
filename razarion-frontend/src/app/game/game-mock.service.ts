@@ -161,9 +161,6 @@ export class GameMockService {
 
           getHarvesterType(): HarvesterType {
             return new class implements HarvesterType {
-              getParticleSystemConfigId(): number | null {
-                return 2;
-              }
             }
           }
 

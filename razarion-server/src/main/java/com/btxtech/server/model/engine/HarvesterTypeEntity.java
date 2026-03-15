@@ -1,16 +1,9 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.model.ui.ParticleSystemEntity;
-import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import static com.btxtech.server.service.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -22,21 +15,16 @@ public class HarvesterTypeEntity extends BaseEntity {
 
     private int harvestRange;
     private double progress;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ParticleSystemEntity particleSystem;
 
     public HarvesterType toHarvesterType() {
         return new HarvesterType()
                 .range(harvestRange)
-                .progress(progress)
-                .particleSystemConfigId(extractId(particleSystem, ParticleSystemEntity::getId));
+                .progress(progress);
     }
 
-    public void fromHarvesterType(HarvesterType harvesterType, ParticleSystemService particleSystemService) {
+    public void fromHarvesterType(HarvesterType harvesterType) {
         harvestRange = harvesterType.getRange();
         progress = harvesterType.getProgress();
-        particleSystem = particleSystemService.getEntity(harvesterType.getParticleSystemConfigId());
     }
 
     @Override

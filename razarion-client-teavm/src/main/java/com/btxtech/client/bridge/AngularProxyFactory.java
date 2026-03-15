@@ -160,6 +160,14 @@ public class AngularProxyFactory {
         JSObject call(double a, double b, double c, double d);
     }
 
+    @JSFunctor
+    public interface TwoDoubleIntToIntCallback extends JSObject {
+        int call(double a, double b, int c);
+    }
+
+    @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
+    private static native void setMethod2DIntRetInt(JSObject obj, String name, TwoDoubleIntToIntCallback fn);
+
     // --- Proxy creation methods ---
 
     public static JSObject createGameUiControlProxy(GameUiControl ctrl) {
@@ -243,6 +251,10 @@ public class AngularProxyFactory {
             );
             return DtoConverter.convertVertex(vertex);
         });
+
+        // getNearestEnemyId(fromX, fromY, enemyItemTypeId): number
+        setMethod2DIntRetInt(proxy, "getNearestEnemyId", (fromX, fromY, enemyItemTypeId) ->
+                service.getNearestEnemyId(fromX, fromY, enemyItemTypeId));
 
         // getMyItemCount(itemTypeId): number
         setMethodIntObj(proxy, "getMyItemCount", id -> DtoConverter.toJsInt(service.getMyItemCount(id)));

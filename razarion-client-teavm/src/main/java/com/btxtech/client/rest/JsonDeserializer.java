@@ -513,7 +513,6 @@ public class JsonDeserializer {
         HarvesterType r = new HarvesterType();
         r.setRange(json.getInt("range"));
         r.setProgress(json.getDouble("progress"));
-        r.setParticleSystemConfigId(json.getNullableInt("particleSystemConfigId"));
         return r;
     }
 

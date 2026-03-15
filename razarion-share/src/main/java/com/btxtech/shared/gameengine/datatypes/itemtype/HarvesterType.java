@@ -13,7 +13,6 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 import org.teavm.flavour.json.JsonPersistable;
 
@@ -27,7 +26,6 @@ import org.teavm.flavour.json.JsonPersistable;
 public class HarvesterType {
     private int range;
     private double progress;
-    private Integer particleSystemConfigId;
 
     public int getRange() {
         return range;
@@ -52,19 +50,6 @@ public class HarvesterType {
 
     public HarvesterType progress(double progress) {
         this.progress = progress;
-        return this;
-    }
-
-    public @Nullable Integer getParticleSystemConfigId() {
-        return particleSystemConfigId;
-    }
-
-    public void setParticleSystemConfigId(@Nullable Integer particleSystemConfigId) {
-        this.particleSystemConfigId = particleSystemConfigId;
-    }
-
-    public HarvesterType particleSystemConfigId(Integer particleSystemConfigId) {
-        setParticleSystemConfigId(particleSystemConfigId);
         return this;
     }
 }

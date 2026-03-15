@@ -36,7 +36,7 @@ Write-Host "Importing into MariaDB (drop + recreate razarion) ..." -ForegroundCo
 docker exec db mariadb -uroot -p1234 -e "DROP DATABASE IF EXISTS razarion; CREATE DATABASE razarion; GRANT ALL ON razarion.* TO 'raz_user'@'%';"
 if ($LASTEXITCODE -ne 0) { Write-Error "Database reset failed"; exit 1 }
 
-docker exec db bash -c "mariadb -uroot -p1234 razarion < /tmp/import.sql"
+docker exec db bash -c "mariadb --binary-mode --default-character-set=binary -uroot -p1234 razarion < /tmp/import.sql"
 if ($LASTEXITCODE -ne 0) { Write-Error "SQL import failed"; exit 1 }
 
 # Create test users (admin@admin.com and user@user.com, both pwd: 1234)

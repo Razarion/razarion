@@ -1824,7 +1824,6 @@ public final class TeaVMWorkerMarshaller {
         HarvesterType type = new HarvesterType();
         type.setRange(obj.getInt("range"));
         type.setProgress(obj.getDouble("progress"));
-        type.setParticleSystemConfigId(obj.getNullableInt("particleSystemConfigId"));
         return type;
     }
 

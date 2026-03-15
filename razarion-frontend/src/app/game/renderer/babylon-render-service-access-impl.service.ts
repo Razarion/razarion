@@ -244,7 +244,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // ----- Terrain object ActionManager (no-go cursor for blocked objects) -----
     this.terrainObjectActionManager = new ActionManager(this.scene);
     this.terrainObjectActionManager.registerAction(
-      new ExecuteCodeAction(ActionManager.OnPickDownTrigger, () => {})
+      new ExecuteCodeAction(ActionManager.OnPickDownTrigger, () => {
+      })
     );
 
     // ----- Terrain cursor (centralized) -----
@@ -807,7 +808,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   startSpawn(particleSystemId: number | null, spawnAudioId: number | null, x: number, y: number, z: number): void {
     if (particleSystemId != null) {
       this.createParticleSystem(particleSystemId, null)?.then(particleSystemSet => {
-        particleSystemSet.start(<any>new Vector3(x, z + this.SPAWN_PARTICLE_HEIGHT, y));
+        particleSystemSet.emitterNode = new Vector3(x, z + this.SPAWN_PARTICLE_HEIGHT, y);
+        for (const sys of particleSystemSet.systems) {
+          if (sys.name === "Orb system" || sys.name === "Burst system") {
+            sys.emitter = new Vector3(x, z, y);
+          }
+        }
+        particleSystemSet.start();
+
       });
     }
     if (spawnAudioId != null) {
@@ -941,6 +949,22 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   public getBabylonBaseItemsByDiplomacy(diplomacy: Diplomacy): BabylonBaseItemImpl[] {
     return this.babylonBaseItems.filter(item => item.diplomacy === diplomacy);
+  }
+
+  public findBabylonBaseItemAtPosition(worldPos: Vector3): BabylonBaseItemImpl | null {
+    let closest: BabylonBaseItemImpl | null = null;
+    let closestDist = Infinity;
+    for (const item of this.babylonBaseItems) {
+      const pos = item.getContainer().position;
+      const dx = pos.x - worldPos.x;
+      const dz = pos.z - worldPos.z;
+      const dist = dx * dx + dz * dz;
+      if (dist < closestDist) {
+        closestDist = dist;
+        closest = item;
+      }
+    }
+    return closestDist < 4 ? closest : null;
   }
 
 

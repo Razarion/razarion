@@ -99,7 +99,6 @@ export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemT
       this.baseItemType.harvesterType = new class implements HarvesterType {
         range = 1;
         progress = 1;
-        particleSystemConfigId = null;
       };
     } else {
       this.baseItemType.harvesterType = null;

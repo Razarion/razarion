@@ -21,6 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
@@ -220,27 +221,27 @@ import java.util.logging.Logger;
     // --- Direct ID-based command methods (called from TS via GameCommandService bridge) ---
 
     public void moveCmdIds(int[] itemIds, double x, double y) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_MOVE, itemIds, new DecimalPosition(x, y));
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_MOVE, intArrayToIdsDto(itemIds), new DecimalPosition(x, y));
     }
 
     public void attackCmdIds(int[] itemIds, int targetId) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_ATTACK, itemIds, targetId);
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_ATTACK, intArrayToIdsDto(itemIds), targetId);
     }
 
     public void harvestCmdIds(int[] itemIds, int resourceId) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_HARVEST, itemIds, resourceId);
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_HARVEST, intArrayToIdsDto(itemIds), resourceId);
     }
 
     public void pickBoxCmdIds(int[] itemIds, int boxId) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_PICK_BOX, itemIds, boxId);
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_PICK_BOX, intArrayToIdsDto(itemIds), boxId);
     }
 
     public void loadContainerCmdIds(int[] itemIds, int containerId) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_LOAD_CONTAINER, itemIds, containerId);
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_LOAD_CONTAINER, intArrayToIdsDto(itemIds), containerId);
     }
 
     public void finalizeBuildCmdIds(int[] itemIds, int toBeFinalizedId) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_FINALIZE_BUILD, itemIds, toBeFinalizedId);
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_FINALIZE_BUILD, intArrayToIdsDto(itemIds), toBeFinalizedId);
     }
 
     public void buildCmdIds(int builderId, DecimalPosition position, int toBeBuildTypeId) {
@@ -252,7 +253,15 @@ import java.util.logging.Logger;
     }
 
     public void sellItemIds(int[] itemIds) {
-        sendToWorker(GameEngineControlPackage.Command.SELL_ITEMS, itemIds);
+        sendToWorker(GameEngineControlPackage.Command.SELL_ITEMS, intArrayToIdsDto(itemIds));
+    }
+
+    private IdsDto intArrayToIdsDto(int[] ids) {
+        java.util.List<Integer> list = new java.util.ArrayList<>(ids.length);
+        for (int id : ids) {
+            list.add(id);
+        }
+        return new IdsDto().ids(list);
     }
 
     public void activateQuest(QuestConfig questConfig) {

@@ -501,8 +501,6 @@ public class DtoConverter {
     private static JSObject convertHarvesterType(BaseItemType type) {
         if (type.getHarvesterType() == null) return null;
         JsObject obj = JsObject.create();
-        setGetterObj(obj, "getParticleSystemConfigId", () ->
-                convertNullableInt(type.getHarvesterType().getParticleSystemConfigId()));
         return obj;
     }
 

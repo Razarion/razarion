@@ -155,6 +155,26 @@ export class ParticleSystemEditorComponent implements CrudContainerChild<Particl
     })
   }
 
+  onDownloadParticleSystem() {
+    this.particleSystemControllerClient.getData(this.particleSystemEntity.id)
+      .then(data => {
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], {type: 'application/json'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', `${this.particleSystemEntity.internalName}_${this.particleSystemEntity.id}.json`);
+        link.click();
+      })
+      .catch(err => {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Download failed: ${err}`,
+          sticky: true
+        });
+        console.error(err);
+      });
+  }
+
   onImportParticleSystem(event: any) {
     this.fileUploadElement.clear();
     const file = event.files[0];

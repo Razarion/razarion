@@ -58,3 +58,4 @@ razarion-client-common/razarion-client-common.iml
 
 /razarion-nnl-pathing/
 /.claude/settings.local.json
+razarion-frontend/mock-server/razarion-fake-server/resources/razarion_optimized.glb
