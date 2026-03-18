@@ -164,6 +164,10 @@ export class SelectionService {
     return this.selectedOtherId;
   }
 
+  getBaseItemTypeForId(id: number): BaseItemType | undefined {
+    return this.selectedOwnItemTypes.get(id);
+  }
+
   getSelectedOtherDiplomacy(): Diplomacy | null {
     return this.selectedOtherDiplomacy;
   }

@@ -1,22 +1,17 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.model.ui.ParticleSystemEntity;
 import com.btxtech.server.service.engine.BaseItemTypeService;
-import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.btxtech.server.service.PersistenceUtil.extractId;
 
 /**
  * Created by Beat
@@ -34,16 +29,12 @@ public class BuilderTypeEntity extends BaseEntity {
             joinColumns = @JoinColumn(name = "builder"),
             inverseJoinColumns = @JoinColumn(name = "baseItemType"))
     private List<BaseItemTypeEntity> ableToBuilds;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ParticleSystemEntity particleSystem;
 
     public BuilderType toBuilderType() {
         BuilderType builderType = new BuilderType()
                 .range(buildRange)
                 .rangeOtherTerrain(buildRangeOtherTerrain)
-                .progress(progress)
-                .particleSystemConfigId(extractId(particleSystem, ParticleSystemEntity::getId));
+                .progress(progress);
 
         if (ableToBuilds != null && !ableToBuilds.isEmpty()) {
             List<Integer> ableToBuildIds = new ArrayList<>();
@@ -55,7 +46,7 @@ public class BuilderTypeEntity extends BaseEntity {
         return builderType;
     }
 
-    public void fromBuilderType(BuilderType builderType, BaseItemTypeService baseItemTypeCrudPersistence, ParticleSystemService particleSystemCrudPersistence) {
+    public void fromBuilderType(BuilderType builderType, BaseItemTypeService baseItemTypeCrudPersistence) {
         buildRange = builderType.getRange();
         buildRangeOtherTerrain = builderType.getRangeOtherTerrain();
         progress = builderType.getProgress();
@@ -70,7 +61,6 @@ public class BuilderTypeEntity extends BaseEntity {
         } else {
             ableToBuilds = null;
         }
-        particleSystem = particleSystemCrudPersistence.getEntity(builderType.getParticleSystemConfigId());
     }
 
     @Override

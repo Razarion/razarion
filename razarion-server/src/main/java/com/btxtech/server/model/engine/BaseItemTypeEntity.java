@@ -244,7 +244,7 @@ public class BaseItemTypeEntity extends BaseEntity {
             if (builderType == null) {
                 builderType = new BuilderTypeEntity();
             }
-            builderType.fromBuilderType(baseItemType.getBuilderType(), baseItemTypeService, particleSystemCrudPersistence);
+            builderType.fromBuilderType(baseItemType.getBuilderType(), baseItemTypeService);
         } else {
             builderType = null;
         }

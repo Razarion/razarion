@@ -13,6 +13,7 @@ export class RenderObject {
   private activeEffectParticles: ParticleSystemSet[] = [];
   private muzzleFlashParticleEntity: ParticleSystemEntity | null = null;
   private muzzleFlashEmitterMesh: Nullable<AbstractMesh> = null;
+  private muzzleMesh: Nullable<AbstractMesh> = null;
   private turretMesh: Nullable<AbstractMesh> = null;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl) {
@@ -157,6 +158,25 @@ export class RenderObject {
 
   getMuzzleFlashMesh(): AbstractMesh {
     return this.muzzleFlashEmitterMesh!;
+  }
+
+  setMuzzleMesh(muzzleMesh: AbstractMesh) {
+    this.muzzleMesh = muzzleMesh;
+  }
+
+  /**
+   * Returns the beam origin position. Priority:
+   * 1. RAZ_MUZZLE mesh (pure position marker)
+   * 2. RAZ_M_P_ mesh (muzzle flash particle emitter)
+   * 3. null (caller should fall back to model position)
+   */
+  getBeamOrigin(): Vector3 | null {
+    const mesh = this.muzzleMesh ?? this.muzzleFlashEmitterMesh;
+    if (mesh) {
+      mesh.computeWorldMatrix(true);
+      return mesh.getAbsolutePosition().clone();
+    }
+    return null;
   }
 
   setTurretMesh(turretMesh: AbstractMesh) {

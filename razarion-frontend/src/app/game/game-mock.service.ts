@@ -145,10 +145,6 @@ export class GameMockService {
 
           getBuilderType(): BuilderType {
             return new class implements BuilderType {
-              getParticleSystemConfigId(): number | null {
-                return 1;
-              }
-
               checkAbleToBuild(itemTypeId: number): boolean {
                 return false;
               }

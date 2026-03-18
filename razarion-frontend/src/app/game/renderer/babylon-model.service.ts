@@ -31,6 +31,7 @@ import {RenderObject} from './render-object';
 export class BabylonModelService {
   public static readonly RAZ_P_ = "RAZ_P_"
   public static readonly RAZ_M_P_ = "RAZ_M_P_"
+  public static readonly RAZ_MUZZLE = "RAZ_MUZZLE"
   public static readonly RAZ_TURRET_ = "RAZ_TURRET_"
   //
   private babylonMaterialContainer = new BabylonMaterialContainer();
@@ -257,6 +258,11 @@ export class BabylonModelService {
         } catch (exception) {
           console.error(exception);
         }
+      }
+
+      if (abstractMesh.name.startsWith(BabylonModelService.RAZ_MUZZLE)) {
+        abstractMesh.isVisible = false;
+        renderObject.setMuzzleMesh(abstractMesh);
       }
 
       if (abstractMesh.name.startsWith(BabylonModelService.RAZ_TURRET_)) {

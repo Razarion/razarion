@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {
   BaseItemType,
   BaseItemUiService,
@@ -9,11 +9,11 @@ import {
   ItemTypeService,
   PlayerBaseDto
 } from '../../../gwtangular/GwtAngularFacade';
-import { GwtAngularService } from '../../../gwtangular/GwtAngularService';
-import { SelectionService } from '../../selection.service';
-import { CockpitDisplayService } from '../cockpit-display.service';
-import { BabylonAudioService } from '../../renderer/babylon-audio.service';
-import { BabylonBaseItemImpl } from '../../renderer/babylon-base-item.impl';
+import {GwtAngularService} from '../../../gwtangular/GwtAngularService';
+import {SelectionService} from '../../selection.service';
+import {CockpitDisplayService} from '../cockpit-display.service';
+import {BabylonAudioService} from '../../renderer/babylon-audio.service';
+import {BabylonBaseItemImpl} from '../../renderer/babylon-base-item.impl';
 
 // --- View-Model Interfaces ---
 
@@ -64,7 +64,7 @@ function getImageServiceUrl(thumbnailId: number | null): string {
   return thumbnailId != null ? `/rest/image/${thumbnailId}` : '';
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class ItemCockpitService {
   ownItemCockpit: OwnItemCockpitModel | null = null;
   ownMultipleItems: OwnMultipleModel[] | null = null;
@@ -264,7 +264,10 @@ export class ItemCockpitService {
     };
   }
 
-  private createOwnMultipleInfo(groupedByType: Map<number, { getId(): number, getBaseItemType(): BaseItemType }[]>): OwnMultipleModel[] {
+  private createOwnMultipleInfo(groupedByType: Map<number, {
+    getId(): number,
+    getBaseItemType(): BaseItemType
+  }[]>): OwnMultipleModel[] {
     const models: OwnMultipleModel[] = [];
     for (const [typeId, items] of groupedByType) {
       const baseItemType = this.itemTypeService.getBaseItemTypeAngular(typeId);
@@ -431,19 +434,23 @@ export class ItemCockpitService {
   // --- Command methods called from the component ---
 
   onBuild(itemTypeId: number): void {
-    const selectedItems = this.selectionService.getSelectedOwnItems();
-    if (selectedItems.length === 0) return;
+    const selectedIds = this.selectionService.getSelectedOwnItemIds();
+    if (selectedIds.length === 0) {
+      return;
+    }
 
-    const firstItem = selectedItems[0];
-    const baseItemType = firstItem.getBaseItemType();
+    const firstId = selectedIds[0];
+    const baseItemType = this.selectionService.getBaseItemTypeForId(firstId);
+    if (!baseItemType) {
+      return;
+    }
 
     if (baseItemType.getBuilderType() != null) {
-      this.itemCockpitBridge.requestBuild(firstItem.getId(), itemTypeId);
+      this.itemCockpitBridge.requestBuild(firstId, itemTypeId);
     } else if (baseItemType.getFactoryType() != null) {
-      const factoryIds = selectedItems.map(item => item.getId());
       const toBuildType = this.itemTypeService.getBaseItemTypeAngular(itemTypeId);
       this.babylonAudioService.speakCommand(`Producing ${toBuildType.getName()}`);
-      this.itemCockpitBridge.requestFabricate(factoryIds, itemTypeId);
+      this.itemCockpitBridge.requestFabricate(selectedIds, itemTypeId);
     }
   }
 

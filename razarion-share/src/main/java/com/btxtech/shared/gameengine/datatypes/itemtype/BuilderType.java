@@ -13,7 +13,6 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 import org.teavm.flavour.json.JsonPersistable;
 
@@ -31,7 +30,6 @@ public class BuilderType {
     private double rangeOtherTerrain;
     private double progress;
     private List<Integer> ableToBuildIds;
-    private Integer particleSystemConfigId;
 
     public double getRange() {
         return range;
@@ -65,14 +63,6 @@ public class BuilderType {
         this.ableToBuildIds = ableToBuildIds;
     }
 
-    public @Nullable Integer getParticleSystemConfigId() {
-        return particleSystemConfigId;
-    }
-
-    public void setParticleSystemConfigId(@Nullable Integer particleSystemConfigId) {
-        this.particleSystemConfigId = particleSystemConfigId;
-    }
-
     public BuilderType range(double range) {
         setRange(range);
         return this;
@@ -97,8 +87,4 @@ public class BuilderType {
         return ableToBuildIds.contains(itemTypeId);
     }
 
-    public BuilderType particleSystemConfigId(Integer particleSystemConfigId) {
-        setParticleSystemConfigId(particleSystemConfigId);
-        return this;
-    }
 }

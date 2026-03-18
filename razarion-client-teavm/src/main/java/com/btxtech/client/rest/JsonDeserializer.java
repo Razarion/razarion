@@ -504,7 +504,6 @@ public class JsonDeserializer {
         r.setRangeOtherTerrain(json.getDouble("rangeOtherTerrain"));
         r.setProgress(json.getDouble("progress"));
         r.setAbleToBuildIds(intList(json, "ableToBuildIds"));
-        r.setParticleSystemConfigId(json.getNullableInt("particleSystemConfigId"));
         return r;
     }
 

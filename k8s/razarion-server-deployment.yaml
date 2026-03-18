@@ -47,6 +47,8 @@ spec:
               mountPath: "/etc/keystore"
               readOnly: true
           env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=75.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
             - name: SPRING_PROFILES_ACTIVE
               value: prod
             - name: SPRING_DATASOURCE_URL

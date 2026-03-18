@@ -737,15 +737,12 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.rendererService.babylonAudioService.playAudioAtPositionWithConfig(muzzleFlashAudioConfig, this.getContainer().position);
     }
 
-    let startPosition: Vector3;
     const renderObject = this.getRenderObject();
     if (renderObject.hasMuzzleFlash()) {
       renderObject.createMuzzleFlashParticleSystemSet()
         ?.then(particleSystemSet => particleSystemSet.start(renderObject.getMuzzleFlashMesh()));
-      startPosition = renderObject.getMuzzleFlashMesh().getAbsolutePosition();
-    } else {
-      startPosition = renderObject.getModel3D().getAbsolutePosition();
     }
+    let startPosition: Vector3 = renderObject.getBeamOrigin() ?? renderObject.getModel3D().getAbsolutePosition();
 
     const childMeshes: AbstractMesh[] = targetBaseItem.getContainer().getChildMeshes() as AbstractMesh[];
 
@@ -887,14 +884,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   private updateBuildingBeam(): void {
-    let startPos: Vector3;
-    if (this.getRenderObject().hasMuzzleFlash()) {
-      const muzzle = this.getRenderObject().getMuzzleFlashMesh();
-      muzzle.computeWorldMatrix(true);
-      startPos = muzzle.getAbsolutePosition().clone();
-    } else {
-      startPos = this.getContainer().position.clone();
-    }
+    let startPos: Vector3 = this.getRenderObject().getBeamOrigin() ?? this.getContainer().position.clone();
 
     if (!this.buildingBeamTarget) {
       return;
@@ -995,14 +985,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   private updateHarvestingBeam(): void {
-    let startPos: Vector3;
-    if (this.getRenderObject().hasMuzzleFlash()) {
-      const muzzle = this.getRenderObject().getMuzzleFlashMesh();
-      muzzle.computeWorldMatrix(true);
-      startPos = muzzle.getAbsolutePosition().clone();
-    } else {
-      startPos = this.getContainer().position.clone();
-    }
+    let startPos: Vector3 = this.getRenderObject().getBeamOrigin() ?? this.getContainer().position.clone();
 
     if (!this.harvestingBeamTarget) {
       return;

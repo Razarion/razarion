@@ -352,8 +352,6 @@ export interface PhysicalAreaConfig {
 }
 
 export interface BuilderType {
-  getParticleSystemConfigId(): number | null;
-
   checkAbleToBuild(itemTypeId: number): boolean;
 
   getAbleToBuildIds(): number[];

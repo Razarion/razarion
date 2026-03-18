@@ -460,8 +460,6 @@ public class DtoConverter {
     private static JSObject convertBuilderType(BaseItemType type) {
         if (type.getBuilderType() == null) return null;
         JsObject obj = JsObject.create();
-        setGetterObj(obj, "getParticleSystemConfigId", () ->
-                convertNullableInt(type.getBuilderType().getParticleSystemConfigId()));
         setMethodIntBool(obj, "checkAbleToBuild", (itemTypeId) ->
                 type.getBuilderType().checkAbleToBuild(itemTypeId));
         setGetterObj(obj, "getAbleToBuildIds", () ->

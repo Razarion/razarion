@@ -18,6 +18,10 @@ Development guides and setup:
 - [Testing](development/testing.md) - Testing strategy and guidelines (TODO)
 - [Page Request Tracking](development/tracking.md) - Campaign tracking filter and test URLs
 
+### Assets
+3D models, materials, and visual assets:
+- [3D Model Pipeline](assets/3d-model-pipeline.md) - How 3D models are imported, stored, and rendered (GLB upload, materials, runtime loading)
+
 ### Terrain
 Terrain system and heightmap:
 - [Terrain System](terrain/terrain-system.md) - Heightmap format, height calculation, terrain classification, and REST endpoints
