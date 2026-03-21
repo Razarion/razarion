@@ -180,6 +180,10 @@ export class SelectionService {
     return this.selectedOtherBaseId;
   }
 
+  getSelectedOtherAsBaseItem(): BabylonBaseItemImpl | null {
+    return this.selectedOtherItem instanceof BabylonBaseItemImpl ? this.selectedOtherItem : null;
+  }
+
   getMovableIds(): number[] {
     const ids: number[] = [];
     for (const [id, type] of this.selectedOwnItemTypes) {

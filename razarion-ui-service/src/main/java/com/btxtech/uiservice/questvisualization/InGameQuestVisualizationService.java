@@ -71,6 +71,11 @@ public class InGameQuestVisualizationService {
         }
     }
 
+    @SuppressWarnings("unused") // Called by Angular / E2E tests
+    public QuestConfig getActiveQuest() {
+        return quest;
+    }
+
     @SuppressWarnings("unused") // Called by Angular
     public void setVisible(boolean visible) {
         if (visible) {

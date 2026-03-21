@@ -215,130 +215,56 @@ public class GamePage {
     }
 
     /**
-     * Gets the quest region center from the active quest's PlaceConfig via REST API.
+     * Gets the quest region center from the active quest's PlaceConfig via WASM bridge.
      * Returns [x, y] or null if no place config found.
      */
     @SuppressWarnings("unchecked")
     public double[] getQuestRegionCenter() {
-        // First try REST API
         Object result = executeScript(
-                "var xhr = new XMLHttpRequest();" +
-                "xhr.open('GET', '/rest/quest-controller/readMyOpenQuests', false);" +
-                "xhr.send();" +
-                "if (xhr.status !== 200) return 'REST_ERROR:' + xhr.status + ':' + xhr.responseText.substring(0,200);" +
-                "var resp = xhr.responseText;" +
-                "try {" +
-                "  var quests = JSON.parse(resp);" +
-                "  if (!quests || (Array.isArray(quests) && quests.length === 0)) return 'EMPTY_QUESTS';" +
-                "  var quest = Array.isArray(quests) ? quests[0] : quests;" +
-                "  var cc = quest.conditionConfig;" +
-                "  if (!cc) return 'NO_CONDITION:' + JSON.stringify(Object.keys(quest));" +
-                "  var comp = cc.comparisonConfig;" +
-                "  if (!comp) return 'NO_COMPARISON:' + JSON.stringify(Object.keys(cc));" +
-                "  var pc = comp.placeConfig;" +
-                "  if (!pc) return 'NO_PLACE_CONFIG:' + JSON.stringify(Object.keys(comp));" +
-                "  if (pc.position) return [pc.position.x, pc.position.y];" +
-                "  if (pc.polygon2D && pc.polygon2D.corners && pc.polygon2D.corners.length > 0) {" +
+                "var questVis = window.gwtAngularFacade.inGameQuestVisualizationService;" +
+                "if (!questVis || !questVis.getActiveQuestPlaceConfig) return 'NO_BRIDGE';" +
+                "var pc = questVis.getActiveQuestPlaceConfig();" +
+                "if (!pc) return 'NO_PLACE_CONFIG';" +
+                "var pos = pc.getPosition();" +
+                "if (pos) return [pos.getX(), pos.getY()];" +
+                "var poly = pc.getPolygon2D();" +
+                "if (poly) {" +
+                "  var corners = poly.toCornersAngular();" +
+                "  if (corners && corners.length > 0) {" +
                 "    var cx = 0, cy = 0;" +
-                "    for (var i = 0; i < pc.polygon2D.corners.length; i++) {" +
-                "      cx += pc.polygon2D.corners[i].x; cy += pc.polygon2D.corners[i].y;" +
+                "    for (var i = 0; i < corners.length; i++) {" +
+                "      cx += corners[i].getX(); cy += corners[i].getY();" +
                 "    }" +
-                "    return [cx / pc.polygon2D.corners.length, cy / pc.polygon2D.corners.length];" +
+                "    return [cx / corners.length, cy / corners.length];" +
                 "  }" +
-                "  return 'PLACE_CONFIG_EMPTY:' + JSON.stringify(pc);" +
-                "} catch(e) {" +
-                "  return 'PARSE_ERROR:' + e.message + ':' + resp.substring(0,200);" +
-                "}"
+                "}" +
+                "return 'PLACE_CONFIG_EMPTY';"
         );
         if (result instanceof java.util.List) {
             java.util.List<?> list = (java.util.List<?>) result;
             double[] center = new double[]{((Number) list.get(0)).doubleValue(), ((Number) list.get(1)).doubleValue()};
-            System.out.println("[E2E] Quest region center: " + center[0] + ", " + center[1]);
+            System.out.println("[E2E] Quest region center (bridge): " + center[0] + ", " + center[1]);
             return center;
         }
-        System.out.println("[E2E] Quest region REST debug: " + result);
-
-        // Fallback: Try to find quest region visualization mesh in the Babylon scene
-        Object meshResult = executeScript(
-                "var scene = window.gwtAngularFacade.babylonRenderServiceAccess.getScene();" +
-                "var meshes = scene.meshes;" +
-                "var questMeshes = [];" +
-                "for (var i = 0; i < meshes.length; i++) {" +
-                "  var name = meshes[i].name || '';" +
-                "  if (name.toLowerCase().indexOf('quest') !== -1 || " +
-                "      name.toLowerCase().indexOf('place') !== -1 || " +
-                "      name.toLowerCase().indexOf('marker') !== -1 || " +
-                "      name.toLowerCase().indexOf('region') !== -1) {" +
-                "    var pos = meshes[i].position;" +
-                "    questMeshes.push(name + '@' + pos.x.toFixed(1) + ',' + pos.z.toFixed(1));" +
-                "  }" +
-                "}" +
-                // Also check for meshes with special metadata
-                "for (var i = 0; i < meshes.length; i++) {" +
-                "  var m = meshes[i].metadata;" +
-                "  if (m && m.razarionMetadata && m.razarionMetadata.type === 4) {" +  // type 4 might be quest marker
-                "    var pos = meshes[i].position;" +
-                "    questMeshes.push('META:' + meshes[i].name + '@' + pos.x.toFixed(1) + ',' + pos.z.toFixed(1));" +
-                "  }" +
-                "}" +
-                "return questMeshes.length > 0 ? questMeshes.join(' | ') : 'NO_QUEST_MESHES (total: ' + meshes.length + ')';"
-        );
-        System.out.println("[E2E] Quest meshes: " + meshResult);
-
-        // Try to find place marker polygon nodes
-        Object markerResult = executeScript(
-                "var scene = window.gwtAngularFacade.babylonRenderServiceAccess.getScene();" +
-                "var nodes = scene.getTransformNodeByName('Quest Place Markers') || " +
-                "            scene.getTransformNodeByName('PlaceMarkers') || " +
-                "            scene.getTransformNodeByName('QuestMarkers');" +
-                "if (nodes) {" +
-                "  var children = nodes.getChildren();" +
-                "  var info = 'found container: ' + nodes.name + ' children: ' + children.length;" +
-                "  for (var i = 0; i < Math.min(children.length, 5); i++) {" +
-                "    var p = children[i].position;" +
-                "    info += ' [' + children[i].name + '@' + p.x.toFixed(1) + ',' + p.z.toFixed(1) + ']';" +
-                "  }" +
-                "  return info;" +
-                "}" +
-                // List all top-level transform nodes for debugging
-                "var tnodes = scene.transformNodes;" +
-                "var names = [];" +
-                "for (var i = 0; i < tnodes.length; i++) {" +
-                "  if (!tnodes[i].parent) names.push(tnodes[i].name);" +
-                "}" +
-                "return 'NO_MARKER_CONTAINER top-level: ' + names.join(', ');"
-        );
-        System.out.println("[E2E] Quest marker nodes: " + markerResult);
-
+        System.out.println("[E2E] Quest region bridge debug: " + result);
         return null;
     }
 
     /**
-     * Places building by moving camera to the quest region (if available), then trying clicks.
-     * Falls back to searching camera positions in a grid.
+     * Places building at the quest region using buildCmd with coordinates.
+     * Falls back to camera grid + canvas click if bridge unavailable.
      */
     public void placeInQuestRegion() {
-        double[] regionCenter = getQuestRegionCenter();
-        if (regionCenter != null) {
-            jsMoveCamera(regionCenter[0], regionCenter[1]);
-            try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
-            try {
-                placeOnFreePosition();
-                return;
-            } catch (RuntimeException e) {
-                System.out.println("[E2E] Placement failed at quest region center, trying offsets");
-            }
-        }
-        // Search a grid of camera positions across the Phase 1 area
+        // Fallback: search camera positions + canvas click (bridge path is in buildViaBuilderInQuestRegion)
         double[][] cameraPositions = {
-                {150, 180}, {180, 180}, {120, 180},  // near coastline (~y200)
-                {150, 150}, {180, 150}, {120, 150},  // south of coastline
-                {150, 220}, {180, 220}, {120, 220},  // at coastline
-                {150, 250}, {180, 250}, {100, 200},  // in water area
-                {200, 180}, {200, 150}, {80, 180},   // east/west coast
-                {178, 100}, {178, 50}, {150, 100},   // close to base
-                {250, 180}, {250, 150}, {250, 200},  // further east
-                {100, 150}, {100, 100}, {50, 180},   // west
+                {150, 180}, {180, 180}, {120, 180},
+                {150, 150}, {180, 150}, {120, 150},
+                {150, 220}, {180, 220}, {120, 220},
+                {150, 250}, {180, 250}, {100, 200},
+                {200, 180}, {200, 150}, {80, 180},
+                {178, 100}, {178, 50}, {150, 100},
+                {250, 180}, {250, 150}, {250, 200},
+                {100, 150}, {100, 100}, {50, 180},
         };
         for (double[] pos : cameraPositions) {
             jsMoveCamera(pos[0], pos[1]);
@@ -351,6 +277,32 @@ public class GamePage {
             }
         }
         throw new RuntimeException("Could not place building in quest region after exhaustive search");
+    }
+
+    /**
+     * Sends buildCmd directly to place a building at specific terrain coordinates.
+     */
+    public void jsBuildAtPosition(int itemTypeId, double x, double y) {
+        Object result = executeScript(
+                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
+                "var gameCmd = window.gwtAngularFacade.gameCommandService;" +
+                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
+                "var builderId = null;" +
+                "for (var i = 0; i < items.length; i++) {" +
+                "  if (items[i].getBaseItemType().getBuilderType() != null) {" +
+                "    builderId = items[i].getId();" +
+                "    break;" +
+                "  }" +
+                "}" +
+                "if (!builderId) return 'no builder found';" +
+                "try {" +
+                "  gameCmd.buildCmd(builderId, " + x + ", " + y + ", " + itemTypeId + ");" +
+                "  return 'buildCmd sent: builder=' + builderId + ' at ' + " + x + " + ',' + " + y + " + ' type=' + " + itemTypeId + ";" +
+                "} catch(e) {" +
+                "  return 'buildCmd error: ' + e.message;" +
+                "}"
+        );
+        System.out.println("[E2E] jsBuildAtPosition: " + result);
     }
 
     // ========== Item Cockpit ==========
@@ -1000,12 +952,23 @@ public class GamePage {
     }
 
     /**
+     * Public version: polls quest completion, re-executing the action every 10s.
+     */
+    public void waitForQuestCompletedWithRetry(Runnable retryAction, String currentQuestTitle, int timeoutSeconds) {
+        waitForQuestDoneWithRetry(retryAction, currentQuestTitle, timeoutSeconds);
+    }
+
+    /**
      * Polls quest completion, re-executing the action every 10s in case units are idle.
      */
     private void waitForQuestDoneWithRetry(Runnable retryAction, String currentQuestTitle) {
+        waitForQuestDoneWithRetry(retryAction, currentQuestTitle, 120);
+    }
+
+    private void waitForQuestDoneWithRetry(Runnable retryAction, String currentQuestTitle, int timeoutSeconds) {
         final long[] lastRetry = {System.currentTimeMillis()};
         final long[] lastLog = {0};
-        new WebDriverWait(driver, Duration.ofSeconds(120)).until(d -> {
+        new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds)).until(d -> {
             long now = System.currentTimeMillis();
 
             // Log every 5 seconds
@@ -1266,10 +1229,24 @@ public class GamePage {
     }
 
     /**
-     * Builds with quest region awareness - moves camera to quest region before placing.
+     * Builds with quest region awareness.
+     * If quest region center is available via bridge, uses buildCmd directly.
+     * Otherwise, activates placer and searches camera positions.
      */
     public void buildViaBuilderInQuestRegion(int itemTypeId) {
         long countBefore = getBaseItemCount();
+
+        // Try direct buildCmd with quest region coordinates
+        double[] regionCenter = getQuestRegionCenter();
+        if (regionCenter != null) {
+            System.out.println("[E2E] Building " + itemTypeId + " via buildCmd at quest region: " + regionCenter[0] + ", " + regionCenter[1]);
+            jsBuildAtPosition(itemTypeId, regionCenter[0], regionCenter[1]);
+            waitForBaseItemCountAbove(countBefore);
+            return;
+        }
+
+        // Fallback: use placer UI + camera grid search
+        System.out.println("[E2E] No quest region from bridge, using placer UI fallback");
         waitForBuildButtonForItemType(itemTypeId);
         try { Thread.sleep(500); } catch (InterruptedException ignored) {}
         clickBuildButtonForItemType(itemTypeId);

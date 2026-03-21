@@ -663,6 +663,7 @@ export interface QuestCockpit {
 
 export interface InGameQuestVisualizationService {
   setVisible(visible: boolean): void;
+  getActiveQuestPlaceConfig(): PlaceConfig | null;
 }
 
 export interface ChatCockpit {

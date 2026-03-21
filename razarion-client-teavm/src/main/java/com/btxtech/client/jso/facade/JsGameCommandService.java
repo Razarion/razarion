@@ -52,6 +52,17 @@ public class JsGameCommandService {
             gameEngineControl.finalizeBuildCmdIds(ids, toBeFinalizedId);
         });
 
+        // buildCmd(builderId: number, x: number, y: number, toBeBuildTypeId: number)
+        setBuildCmd(proxy, "buildCmd", (builderId, x, y, toBeBuildTypeId) -> {
+            gameEngineControl.buildCmdIds(builderId, new com.btxtech.shared.datatypes.DecimalPosition(x, y), toBeBuildTypeId);
+        });
+
+        // sellItemsCmd(itemIds: number[])
+        setSellCmd(proxy, "sellItemsCmd", (jsIds) -> {
+            int[] ids = jsArrayToIntArray(jsIds);
+            gameEngineControl.sellItemIds(ids);
+        });
+
         // setMoveCommandAckCallback(callback: () => void)
         setCallbackSetter(proxy, "setMoveCommandAckCallback", (callback) -> {
             inputService.setMoveCommandAckCallback(() -> callJsFunction(callback));
@@ -83,6 +94,16 @@ public class JsGameCommandService {
         void call(JSObject callback);
     }
 
+    @JSFunctor
+    interface BuildCmdCallback extends JSObject {
+        void call(int builderId, double x, double y, int toBeBuildTypeId);
+    }
+
+    @JSFunctor
+    interface SellCmdCallback extends JSObject {
+        void call(JSObject itemIds);
+    }
+
     // --- setMethod helpers ---
 
     @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
@@ -93,6 +114,12 @@ public class JsGameCommandService {
 
     @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
     private static native void setCallbackSetter(JSObject obj, String name, CallbackSetterCallback fn);
+
+    @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
+    private static native void setBuildCmd(JSObject obj, String name, BuildCmdCallback fn);
+
+    @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
+    private static native void setSellCmd(JSObject obj, String name, SellCmdCallback fn);
 
     @JSBody(params = {"fn"}, script = "fn();")
     private static native void callJsFunction(JSObject fn);

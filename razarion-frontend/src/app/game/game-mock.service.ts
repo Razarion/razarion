@@ -692,6 +692,9 @@ export class GameMockService {
   inGameQuestVisualizationService: InGameQuestVisualizationService = new class implements InGameQuestVisualizationService {
     setVisible(visible: boolean): void {
     }
+    getActiveQuestPlaceConfig(): PlaceConfig | null {
+      return null;
+    }
   };
 
   loadMockStaticGameConfig(): Promise<void> {

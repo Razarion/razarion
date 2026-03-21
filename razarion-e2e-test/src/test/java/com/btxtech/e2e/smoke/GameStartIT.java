@@ -207,17 +207,34 @@ class GameStartIT extends BaseE2eTest {
         // Quest 389: Fabricate Transporter from Dockyard
         gamePage.verifyQuestCockpit("Build");
         gamePage.jsFabricate(DOCKYARD, TRANSPORTER);
+        gamePage.waitForOwnItemCountByType(TRANSPORTER, 1);
 
         // Quest 392: Move Builder to Phase 2 region
         gamePage.verifyQuestCockpit("Region");
+        double[] regionCenter = gamePage.getQuestRegionCenter();
+        double destX = regionCenter != null ? regionCenter[0] : 200;
+        double destY = regionCenter != null ? regionCenter[1] : 500;
         gamePage.jsLoadIntoTransporter(BUILDER);
-        gamePage.jsMoveItemsOfType(TRANSPORTER, 200, 500);
+        try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+        gamePage.jsMoveItemsOfType(TRANSPORTER, destX, destY);
+        // Wait for arrival, then unload repeatedly until quest completes
+        gamePage.waitForQuestCompletedWithRetry(() -> {
+            gamePage.jsUnloadTransporter();
+            try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
+            gamePage.jsMoveItemsOfType(TRANSPORTER, destX, destY);
+        }, "Region", 120);
     }
 
     // ========== Level 9: Sell, Relocate, Sell ==========
 
     private void level9(GamePage gamePage) {
         gamePage.verifyMainCockpit(9);
+
+        // Move camera to builder's location (Phase 2 region after level 8 transport)
+        double[] builderPos = gamePage.jsGetOwnItemPosition(BUILDER);
+        if (builderPos != null) {
+            gamePage.jsMoveCamera(builderPos[0], builderPos[1]);
+        }
 
         // Quest 393: Sell Factory
         gamePage.verifyQuestCockpit("Sell");
@@ -235,7 +252,7 @@ class GameStartIT extends BaseE2eTest {
         gamePage.selectItemByType(BUILDER);
         gamePage.buildViaBuilder(POWERPLANT);
 
-        // Quest 400: Harvester x2 + Viper x6 in region
+        // Quest 400: Harvester x2 + Viper x6
         gamePage.waitForQuestProgressContaining("Harvester");
         long harvestersBefore = gamePage.getOwnItemCountByType(HARVESTER);
         for (int i = 0; i < 2; i++) {
@@ -247,6 +264,7 @@ class GameStartIT extends BaseE2eTest {
             gamePage.jsFabricate(FACTORY, VIPER);
             gamePage.waitForOwnItemCountByType(VIPER, vipersBefore9 + i + 1);
         }
+
         // Quest 401: Sell Dockyard
         gamePage.verifyQuestCockpit("Sell");
         gamePage.jsSellItemsOfType(DOCKYARD);

@@ -199,6 +199,12 @@ public class AngularProxyFactory {
     public static JSObject createInGameQuestVisualizationServiceProxy(InGameQuestVisualizationService service) {
         JsObject proxy = JsObject.create();
         setMethodBoolVoid(proxy, "setVisible", service::setVisible);
+        setMethodRetObj(proxy, "getActiveQuestPlaceConfig", () -> {
+            var quest = service.getActiveQuest();
+            if (quest == null || quest.getConditionConfig() == null) return null;
+            var placeConfig = quest.getConditionConfig().getComparisonConfig().getPlaceConfig();
+            return DtoConverter.convertPlaceConfig(placeConfig);
+        });
         return proxy;
     }
 

@@ -78,3 +78,15 @@
   animation: blink 1s infinite;
   background-color: #f66464;
 }
+
+:host ::ng-deep .health-bar-green .p-progressbar-value {
+  background-color: #4ade80 !important;
+}
+
+:host ::ng-deep .health-bar-orange .p-progressbar-value {
+  background-color: #fb923c !important;
+}
+
+:host ::ng-deep .health-bar-red .p-progressbar-value {
+  background-color: #ef4444 !important;
+}

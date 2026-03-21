@@ -26,6 +26,7 @@ export interface OwnItemCockpitModel {
   containerId: number | null;
   canSell: boolean;
   buildupProgress: number | null;
+  health: number;
 }
 
 export interface BuildupItemModel {
@@ -58,6 +59,7 @@ export interface OtherItemCockpitModel {
   bot: boolean;
   resource: boolean;
   box: boolean;
+  health: number | null;
 }
 
 function getImageServiceUrl(thumbnailId: number | null): string {
@@ -72,6 +74,7 @@ export class ItemCockpitService {
   count: number = 0;
   private initialized = false;
   private watchedBuildupItem: BabylonBaseItemImpl | null = null;
+  private watchedHealthItems: BabylonBaseItemImpl[] = [];
 
   constructor(
     private selectionService: SelectionService,
@@ -113,6 +116,7 @@ export class ItemCockpitService {
     // Unwatch from previous selection
     this.itemCockpitBridge.unwatchContainerCount();
     this.unwatchBuildup();
+    this.unwatchHealth();
 
     const selectedItems = this.selectionService.getSelectedOwnItems();
     if (selectedItems.length > 0) {
@@ -137,6 +141,7 @@ export class ItemCockpitService {
         this.otherItemCockpit = null;
         this.count = items.length;
         this.watchBuildup(items);
+        this.watchHealth(items, this.ownItemCockpit);
       } else {
         // Multiple types selected
         this.ownItemCockpit = null;
@@ -152,6 +157,7 @@ export class ItemCockpitService {
       this.otherItemCockpit = this.createOtherItemCockpit();
       this.count = 1;
       this.cockpitDisplayService.showItemCockpit = true;
+      this.watchOtherHealth(this.otherItemCockpit);
     } else {
       // No selection
       this.ownItemCockpit = null;
@@ -176,7 +182,8 @@ export class ItemCockpitService {
       containerCount: null,
       containerId: null,
       canSell,
-      buildupProgress: currentBuildup < 1.0 ? currentBuildup : null
+      buildupProgress: currentBuildup < 1.0 ? currentBuildup : null,
+      health: firstItem.getHealth()
     };
 
     // Container info
@@ -281,7 +288,8 @@ export class ItemCockpitService {
           containerCount: null,
           containerId: null,
           canSell,
-          buildupProgress: null
+          buildupProgress: null,
+          health: 1.0
         },
         count: items.length,
         baseItemTypeId: typeId
@@ -351,6 +359,7 @@ export class ItemCockpitService {
       }
     }
 
+    const otherBaseItem = this.selectionService.getSelectedOtherAsBaseItem();
     return {
       id,
       imageUrl,
@@ -361,7 +370,8 @@ export class ItemCockpitService {
       friend,
       bot,
       resource,
-      box
+      box,
+      health: otherBaseItem ? otherBaseItem.getHealth() : null
     };
   }
 
@@ -429,6 +439,35 @@ export class ItemCockpitService {
       this.watchedBuildupItem.setBuildupCallback(null);
       this.watchedBuildupItem = null;
     }
+  }
+
+  private watchHealth(items: BabylonBaseItemImpl[], model: OwnItemCockpitModel): void {
+    for (const item of items) {
+      this.watchedHealthItems.push(item);
+      item.setHealthCallback((health: number) => {
+        this.zone.run(() => {
+          model.health = health;
+        });
+      });
+    }
+  }
+
+  private watchOtherHealth(model: OtherItemCockpitModel): void {
+    const otherBaseItem = this.selectionService.getSelectedOtherAsBaseItem();
+    if (!otherBaseItem) return;
+    this.watchedHealthItems.push(otherBaseItem);
+    otherBaseItem.setHealthCallback((health: number) => {
+      this.zone.run(() => {
+        model.health = health;
+      });
+    });
+  }
+
+  private unwatchHealth(): void {
+    for (const item of this.watchedHealthItems) {
+      item.setHealthCallback(null);
+    }
+    this.watchedHealthItems = [];
   }
 
   // --- Command methods called from the component ---

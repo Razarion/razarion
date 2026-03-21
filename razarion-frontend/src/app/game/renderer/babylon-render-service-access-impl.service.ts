@@ -226,19 +226,61 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
     this.selectionFrame = new SelectionFrame(this.scene, this, this.actionService);
 
-    // ----- Terrain click handler (centralized, replaces per-tile ActionManagers) -----
-    this.scene.onPointerDown = (_evt, pickResult) => {
-      if (this.baseItemPlacerActive) return;
-      if (!pickResult.hit || !pickResult.pickedMesh || !pickResult.pickedPoint) return;
+    // ----- Terrain click handler (short delay to distinguish click from drag) -----
+    let terrainDownPos: { x: number, y: number } | null = null;
+    let terrainClickTimer: ReturnType<typeof setTimeout> | null = null;
+    let terrainDragDetected = false;
+    const DRAG_THRESHOLD = 5; // pixels
+    const CLICK_DELAY = 150; // ms
 
+    const fireTerrainClick = (pickResult: any) => {
+      if (!pickResult?.hit || !pickResult.pickedMesh || !pickResult.pickedPoint) return;
       const metadataNode = BabylonRenderServiceAccessImpl.findRazarionMetadataNode(pickResult.pickedMesh);
       if (!metadataNode) return;
       const metadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(metadataNode);
       if (!metadata) return;
-
       if (metadata.type === RazarionMetadataType.GROUND || metadata.type === RazarionMetadataType.BOT_GROUND) {
         this.actionService.onTerrainClicked(pickResult.pickedPoint.x, pickResult.pickedPoint.z);
       }
+    };
+
+    this.scene.onPointerDown = (_evt, pickResult) => {
+      if (this.baseItemPlacerActive) return;
+      terrainDownPos = { x: this.scene.pointerX, y: this.scene.pointerY };
+      terrainDragDetected = false;
+
+      // Fire after short delay if no drag detected
+      const savedPickResult = pickResult;
+      terrainClickTimer = setTimeout(() => {
+        terrainClickTimer = null;
+        if (!terrainDragDetected) {
+          fireTerrainClick(savedPickResult);
+        }
+      }, CLICK_DELAY);
+    };
+
+    this.scene.onPointerMove = () => {
+      if (!terrainDownPos) return;
+      const dx = Math.abs(this.scene.pointerX - terrainDownPos.x);
+      const dy = Math.abs(this.scene.pointerY - terrainDownPos.y);
+      if (dx > DRAG_THRESHOLD || dy > DRAG_THRESHOLD) {
+        terrainDragDetected = true;
+        if (terrainClickTimer) {
+          clearTimeout(terrainClickTimer);
+          terrainClickTimer = null;
+        }
+      }
+    };
+
+    this.scene.onPointerUp = (_evt, pickResult) => {
+      if (this.baseItemPlacerActive) return;
+      // If timer still pending and no drag → fire immediately (fast click)
+      if (terrainClickTimer && !terrainDragDetected) {
+        clearTimeout(terrainClickTimer);
+        terrainClickTimer = null;
+        fireTerrainClick(pickResult);
+      }
+      terrainDownPos = null;
     };
 
     // ----- Terrain object ActionManager (no-go cursor for blocked objects) -----
@@ -335,8 +377,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           this.babylonBaseItems = this.babylonBaseItems.filter(i => i !== item);
           if (permanent) {
             this.tsSelectionService.disposeItem(item.getId());
+            this.tsSelectionService.disposeOther(item.getId());
           } else {
             this.tsSelectionService.removeItem(item.getId());
+            this.tsSelectionService.removeOther(item.getId());
           }
         });
       this.babylonBaseItems.push(item);

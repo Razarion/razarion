@@ -1,31 +1,43 @@
 @if (itemCockpitService.ownItemCockpit; as ownItemCockpit) {
   <div class="flex flex-col gap-1">
-    <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
-      <div class="w-14 flex-none">
-        <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
-      </div>
-      <div class="grow">
-        <div class="flex flex-col">
-          <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
-            {{ ownItemCockpit.itemTypeName }}
-          </div>
-          <div>
-            {{ ownItemCockpit.itemTypeDescr }}
-          </div>
-          <div>
-            @if (itemCockpitService.count > 1) {
-              <div>
-                {{ itemCockpitService.count }}
-              </div>
-            }
+    <div class="flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
+      <div class="flex">
+        <div class="w-14 flex-none">
+          <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
+        </div>
+        <div class="grow">
+          <div class="flex flex-col">
+            <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
+              {{ ownItemCockpit.itemTypeName }}
+            </div>
+            <div>
+              {{ ownItemCockpit.itemTypeDescr }}
+            </div>
+            <div>
+              @if (itemCockpitService.count > 1) {
+                <div>
+                  {{ itemCockpitService.count }}
+                </div>
+              }
+            </div>
           </div>
         </div>
+        @if (ownItemCockpit.canSell) {
+          <div class="w-8 flex-none">
+            <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (mousedown)="itemCockpitService.onSell()"></p-button>
+          </div>
+        }
       </div>
-      @if (ownItemCockpit.canSell) {
-        <div class="w-8 flex-none">
-          <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (mousedown)="itemCockpitService.onSell()"></p-button>
-        </div>
-      }
+      <div class="flex items-center gap-2">
+        <i class="pi pi-heart flex-none" [style.color]="ownItemCockpit.health > 0.5 ? '#4ade80' : ownItemCockpit.health > 0.25 ? '#fb923c' : '#ef4444'" style="font-size: 0.9rem"></i>
+        <span class="text-sm flex-none" [style.color]="ownItemCockpit.health > 0.5 ? '#4ade80' : ownItemCockpit.health > 0.25 ? '#fb923c' : '#ef4444'">
+          {{ ownItemCockpit.health * 100 | number:'1.0-0' }}%
+        </span>
+        <p-progressbar class="grow" [value]="ownItemCockpit.health * 100"
+          [style]="{ height: '0.8rem' }"
+          [showValue]="false"
+          [styleClass]="ownItemCockpit.health > 0.5 ? 'health-bar-green' : ownItemCockpit.health > 0.25 ? 'health-bar-orange' : 'health-bar-red'" />
+      </div>
     </div>
     @if (ownItemCockpit.buildupProgress != null) {
       <div class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500">
@@ -168,6 +180,18 @@
             <div
               class="text-red-500">
               <p><i class="pi pi-exclamation-triangle" style="font-size: 0.8rem"></i>&nbsp;This is an enemy human player</p>
+            </div>
+          }
+          @if (otherItemCockpit.health != null) {
+            <div class="flex items-center gap-2 mt-2">
+              <i class="pi pi-heart flex-none" [style.color]="otherItemCockpit.health > 0.5 ? '#4ade80' : otherItemCockpit.health > 0.25 ? '#fb923c' : '#ef4444'" style="font-size: 0.9rem"></i>
+              <span class="text-sm flex-none" [style.color]="otherItemCockpit.health > 0.5 ? '#4ade80' : otherItemCockpit.health > 0.25 ? '#fb923c' : '#ef4444'">
+                {{ otherItemCockpit.health * 100 | number:'1.0-0' }}%
+              </span>
+              <p-progressbar class="grow" [value]="otherItemCockpit.health! * 100"
+                [style]="{ height: '0.8rem' }"
+                [showValue]="false"
+                [styleClass]="otherItemCockpit.health! > 0.5 ? 'health-bar-green' : otherItemCockpit.health! > 0.25 ? 'health-bar-orange' : 'health-bar-red'" />
             </div>
           }
         </div>

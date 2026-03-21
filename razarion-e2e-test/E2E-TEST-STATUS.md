@@ -6,14 +6,28 @@ Continue developing the `GameStartIT.fullGameFlow()` E2E test that covers Phase 
 
 ### E2E Test Files
 - `razarion-e2e-test/src/test/java/com/btxtech/e2e/smoke/GameStartIT.java` - Test flow for all 9 levels
-- `razarion-e2e-test/src/test/java/com/btxtech/e2e/page/GamePage.java` - Page object with JS commands
+- `razarion-e2e-test/src/test/java/com/btxtech/e2e/page/GamePage.java` - Page object with JS commands (1268 lines)
 - `razarion-e2e-test/src/test/java/com/btxtech/e2e/base/AdminApiClient.java` - REST API cleanup (delete bases, restart planet)
 
 ### Server/WASM Files (changes need rebuild + server restart)
 - `razarion-frontend/src/app/app.component.ts` - Exposes `window.__e2eNgZone` and `window.__e2eAppRef`
 - `razarion-ui-service/.../item/BaseItemUiService.java` - Added `getNearestEnemyId()` method — **DONE**
-- `razarion-client-teavm/.../bridge/AngularProxyFactory.java` - Added proxy for `getNearestEnemyId` — **DONE**
+- `razarion-client-teavm/.../bridge/AngularProxyFactory.java` - Added proxy for `getNearestEnemyId` + `getActiveQuestPlaceConfig` — **DONE**
 - `razarion-ui-service/.../control/GameEngineControl.java` - Fixed `int[]` → `IdsDto` marshalling in all `*CmdIds` methods — **DONE**
+- `razarion-ui-service/.../questvisualization/InGameQuestVisualizationService.java` - Added `getActiveQuest()` public accessor — **DONE**
+- `razarion-frontend/src/app/gwtangular/GwtAngularFacade.ts` - Added `getActiveQuestPlaceConfig()` to `InGameQuestVisualizationService` interface — **DONE**
+- `razarion-frontend/src/app/game/game-mock.service.ts` - Added mock for `getActiveQuestPlaceConfig()` — **DONE**
+
+### Uncommitted Changes (git diff summary)
+All changes are **unstaged**. The following files have been modified:
+1. `AngularProxyFactory.java` — +6 lines: `getActiveQuestPlaceConfig` proxy method using `DtoConverter.convertPlaceConfig()`
+2. `JsGameCommandService.java` — +27 lines (details not verified)
+3. `GamePage.java` — +187/-107 lines: quest region methods, transporter/sell/load commands
+4. `GameStartIT.java` — +22 lines: level 6-9 method stubs
+5. `GwtAngularFacade.ts` — +1 line: `getActiveQuestPlaceConfig()` interface method
+6. `game-mock.service.ts` — +3 lines: mock returning null
+7. `InGameQuestVisualizationService.java` — +5 lines: `getActiveQuest()` accessor
+8. `underwater-normal.jpg` — deleted (was added then removed)
 
 ## How to Run
 ```bash
@@ -51,10 +65,10 @@ This is **critical** - without restart, accumulated game state causes flaky fail
 | 3 | **PASS** | Build Radar, build Powerplant |
 | 4 | **PASS** | Harvest 30, fabricate 3 Vipers |
 | 5 | **PASS** | Kill Bot Refinery 2 — uses `getNearestEnemyId` + `moveCmd` + mass viper fabrication |
-| 6 | **BLOCKED** | Build Dockyard in quest region — quest region is NOT near base, camera search needed. See details below. |
-| 7 | NOT TESTED | Fabricate Hydra, kill Bot Hydra |
-| 8 | NOT TESTED | Fabricate Transporter, move Builder to region |
-| 9 | NOT TESTED | Sell, relocate, rebuild |
+| 6 | **BLOCKED** | Build Dockyard in quest region — quest region is NOT near base, bridge for `getActiveQuestPlaceConfig` is implemented but **untested**. See details below. |
+| 7 | **CODE WRITTEN, UNTESTED** | Fabricate Hydra from Dockyard, kill Bot Hydra |
+| 8 | **CODE WRITTEN, UNTESTED** | Fabricate Transporter, load Builder, move to Phase 2 region, unload |
+| 9 | **CODE WRITTEN, UNTESTED** | Sell Factory, rebuild in Phase 2, fabricate units, sell Dockyard |
 
 ## Verified Working (Session 2026-03-15)
 
@@ -89,11 +103,35 @@ Changing `waitForQuestDoneWithRetry` from 10s to 5s caused level 2 to fail — t
 ### Root Problem
 The quest requires the Dockyard to be placed inside a `PlaceConfig` region defined by the quest. This region is NOT near the player base (~178, 20). It is somewhere near the coastline/water which starts at y≈200 based on the terrain heightmap.
 
-### What Was Tried
+### Bridge Implementation (Done, Untested)
+The `getActiveQuestPlaceConfig` bridge has been implemented across all layers:
+
+1. **Java service**: `InGameQuestVisualizationService.getActiveQuest()` — returns the active `QuestConfig` (line 75-77)
+2. **WASM proxy**: `AngularProxyFactory.java` — `setMethodRetObj(proxy, "getActiveQuestPlaceConfig", ...)` reads quest → conditionConfig → comparisonConfig → placeConfig, converts via `DtoConverter.convertPlaceConfig()`
+3. **TS interface**: `GwtAngularFacade.ts` — `getActiveQuestPlaceConfig(): PlaceConfig | null`
+4. **Mock**: `game-mock.service.ts` — returns `null`
+
+**GamePage.java `getQuestRegionCenter()`** (line 222-251) calls this bridge:
+```javascript
+var questVis = window.gwtAngularFacade.inGameQuestVisualizationService;
+var pc = questVis.getActiveQuestPlaceConfig();
+// reads position or polygon2D centroid
+```
+
+**GamePage.java `buildViaBuilderInQuestRegion()`** (line 1236-1257):
+1. Tries `getQuestRegionCenter()` → if found, calls `jsBuildAtPosition(itemTypeId, x, y)` directly
+2. Fallback: activates placer UI, then searches 24 camera positions with `placeInQuestRegion()`
+
+### What Needs Testing
+1. **Does `getActiveQuestPlaceConfig()` return a non-null PlaceConfig at level 6?** — The quest's conditionTrigger is `SYNC_ITEM_POSITION`, and `showVisualization()` (line 119-128) does access the placeConfig, so it should be set.
+2. **Does `DtoConverter.convertPlaceConfig()` produce correct JS object with position/polygon?** — This method already exists and is used elsewhere, so it should work.
+3. **Does `jsBuildAtPosition()` succeed at the quest region coordinates?** — It calls `gameCmd.buildCmd(builderId, x, y, itemTypeId)`. The builder may need to be close enough to the build position, or it might auto-walk there.
+
+### What Was Tried Previously
 1. **Canvas click spiral grid** (73 positions around canvas center) — fails because camera is at base, quest region is off-screen
 2. **REST API `/rest/quest-controller/readMyOpenQuests`** — returns empty array (anonymous browser session has no authenticated quests)
 3. **Babylon scene mesh search** for quest markers — no quest region meshes found; only "Base Item Placer" mesh present
-4. **Camera search grid** across 24 positions from (50,100) to (250,250) — **currently running, untested result**
+4. **Camera search grid** across 24 positions from (50,100) to (250,250) — coded as fallback in `placeInQuestRegion()`
 
 ### Scene Debug Output (Level 6)
 ```
@@ -110,13 +148,13 @@ Planet is 5120x5120m. Phase 1 (Noob Island) = bottom-left 820x800m. The terrain 
 - **Coastline**: roughly y≈200 at x≈150–200 (this is where the Dockyard quest region likely is)
 
 ### Possible Solutions (try in order)
-1. **Query quest PlaceConfig from game client**: The `InGameQuestVisualizationService` (Java UI service) stores the active quest's `PlaceConfig`. If exposed via the WASM bridge, JS could read it. Key method: `quest.getConditionConfig().getComparisonConfig().getPlaceConfig()`. Fields: `position` (center), `radius`, or `polygon2D.corners[]`.
-2. **Expose quest region via new proxy**: Add a proxy method like `getActiveQuestRegionCenter()` in `AngularProxyFactory.java` that returns the PlaceConfig center. This requires server rebuild.
-3. **Use `finalizeBuildCmd` directly**: Instead of clicking canvas, call `gameCommandService.finalizeBuildCmd(builderIds, x, y)` at terrain coordinates within the quest region. Need to know the coordinates.
-4. **Camera brute-force grid search**: Move camera across Phase 1 area in 50m steps, try placement at each. Slow (~2min per camera position with 73 clicks) but guaranteed to find the region eventually.
-5. **Check if quest region mesh exists**: The "Dockyard" transform node might contain child meshes with position data. Investigate with `scene.getTransformNodeByName('Dockyard').getChildren()`.
+1. **Test the bridge (most likely to work)**: Rebuild (`mvn clean install -DskipTests`), restart server, run the E2E test. The `getActiveQuestPlaceConfig` bridge should return the PlaceConfig center, and `jsBuildAtPosition` should place the Dockyard directly.
+2. **If bridge returns null**: Debug by checking if `quest` is set in `InGameQuestVisualizationService` at level 6. The quest trigger is `SYNC_ITEM_POSITION` which should have a placeConfig.
+3. **If buildCmd fails at coordinates**: The builder may need to be within range. Move the builder (via `moveCmd`) to the quest region first, then build.
+4. **Camera brute-force fallback**: The `placeInQuestRegion()` method already implements this — 24 camera positions with canvas click spiral at each.
+5. **Check "Dockyard" scene node**: `scene.getTransformNodeByName('Dockyard').getChildren()` might have position data.
 
-### PlaceConfig Architecture (for implementing solution 1 or 2)
+### PlaceConfig Architecture (for debugging)
 ```
 QuestConfig
   → conditionConfig: ConditionConfig
@@ -151,6 +189,58 @@ if (enemyId > 0) {
 }
 ```
 
+## Levels 7-9 Code (Written, Untested)
+
+### Level 7: Fabricate Hydra, Kill Bot Hydra
+```java
+// Quest 387: Fabricate Hydra from Dockyard
+gamePage.jsFabricate(DOCKYARD, HYDRA);   // Dockyard=11, Hydra=12
+// Quest 388: Kill (Bot) Hydra
+gamePage.jsAttackEnemyOfTypeUntilDone(BOT_HYDRA);  // BotHydra=10
+```
+**Potential issues**: Bot Hydra location unknown — may require camera move + moveCmd like level 5. The `jsAttackEnemyOfTypeUntilDone` pattern should handle this (it uses `jsMoveAttackersTowardEnemy` + `getNearestEnemyId` fallback).
+
+### Level 8: Transporter + Builder to Phase 2
+```java
+// Quest 389: Fabricate Transporter from Dockyard
+gamePage.jsFabricate(DOCKYARD, TRANSPORTER);  // Transporter=18
+// Quest 392: Move Builder to Phase 2 region
+double[] regionCenter = gamePage.getQuestRegionCenter();  // Uses bridge
+gamePage.jsLoadIntoTransporter(BUILDER);       // loadContainerCmd
+gamePage.jsMoveItemsOfType(TRANSPORTER, destX, destY);  // moveCmd
+// Retry loop: unload → wait → move again until quest completes
+gamePage.waitForQuestCompletedWithRetry(() -> {
+    gamePage.jsUnloadTransporter();
+    gamePage.jsMoveItemsOfType(TRANSPORTER, destX, destY);
+}, "Region", 120);
+```
+**Potential issues**:
+- `getQuestRegionCenter()` must work (same bridge as level 6)
+- `loadContainerCmd` sends through `GameEngineControl.loadContainerCmdIds()` which was fixed for IdsDto
+- `requestUnload` uses `itemCockpitBridge.requestUnload(transporterId)` — need to verify this proxy exists
+- Fallback coordinates (200, 500) if bridge returns null — may not be in the quest region
+
+### Level 9: Sell, Relocate, Rebuild
+```java
+// Move camera to builder's Phase 2 location
+double[] builderPos = gamePage.jsGetOwnItemPosition(BUILDER);
+gamePage.jsMoveCamera(builderPos[0], builderPos[1]);
+// Quest 393: Sell Factory
+gamePage.jsSellItemsOfType(FACTORY);  // uses itemCockpitBridge.sellItems()
+// Quest 395: Build Factory in Phase 2 start region
+gamePage.buildViaBuilder(FACTORY);     // standard build (near builder)
+// Quest 396: Radar + Powerplant
+gamePage.buildViaBuilder(RADAR);
+gamePage.buildViaBuilder(POWERPLANT);
+// Quest 400: Fabricate 2 Harvesters + 6 Vipers
+// Quest 401: Sell Dockyard
+gamePage.jsSellItemsOfType(DOCKYARD);
+```
+**Potential issues**:
+- Quest 395 may require building in a specific start region (use `buildViaBuilderInQuestRegion` instead of `buildViaBuilder`)
+- Quest 400 progress text check: `waitForQuestProgressContaining("Harvester")` — verify this matches the actual quest progress UI
+- Selling Dockyard at the end — the Dockyard may be far away (in Phase 1 area) while the builder is in Phase 2. `jsSellItemsOfType` sells via `itemCockpitBridge.sellItems(ids)` which should work regardless of camera/distance
+
 ## What Was Already Solved
 1. **Admin cleanup before tests**: `AdminApiClient` deletes human bases and restarts planet warm
 2. **`waitForQuestCompleted()` missing transitions**: Removed; `verifyMainCockpit(N)` confirms level transitions
@@ -169,13 +259,82 @@ if (enemyId > 0) {
 15. **MoveTargetOutOfBounds**: `placeOnFreePosition` wraps `clickCanvasAt` in try-catch to handle out-of-bounds offsets
 
 ## Key Patterns
-- **JS bridge access**: `window.gwtAngularFacade.babylonRenderServiceAccess` for rendered items, `.gameCommandService` for commands, `.baseItemUiService` for server-side queries, `.itemCockpitBridge` for build/fabricate/sell
+- **JS bridge access**: `window.gwtAngularFacade.babylonRenderServiceAccess` for rendered items, `.gameCommandService` for commands, `.baseItemUiService` for server-side queries, `.itemCockpitBridge` for build/fabricate/sell, `.inGameQuestVisualizationService` for quest data
 - **Diplomacy strings**: `'OWN'`, `'ENEMY'`, `'RESOURCE'` (not numeric)
 - **Angular zone**: `window.__e2eNgZone.run(fn)` for change detection, `window.__e2eAppRef.tick()` to force render (but NOT in polling loops)
 - **Item type IDs**: Builder=1, Harvester=2, Viper=3, Factory=4, Radar=6, Powerplant=7, (Bot)Hydra=10, Dockyard=11, Hydra=12, Transporter=18, Tower=21, (Bot)Refinery=22, House=23, (Bot)Refinery2=24
 - **Camera move**: `jsMoveCamera(x, y)` sets `camera.target.x = x; camera.target.z = y;` (z = game Y axis)
 - **Quest region API**: `/rest/quest-controller/readMyOpenQuests` exists but returns empty for anonymous sessions
-- **Build placement**: `buildViaBuilder` clicks build button → waits for placer active → `placeOnFreePosition()` clicks canvas offsets → waits for placer inactive. For quest regions, use `buildViaBuilderInQuestRegion` which moves camera first.
+- **Build placement**: `buildViaBuilder` clicks build button → waits for placer active → `placeOnFreePosition()` clicks canvas offsets → waits for placer inactive. For quest regions, use `buildViaBuilderInQuestRegion` which tries bridge first, then camera grid fallback.
+- **Quest region bridge**: `getQuestRegionCenter()` calls `inGameQuestVisualizationService.getActiveQuestPlaceConfig()` → reads position or polygon2D centroid
+
+## GamePage.java Method Reference
+
+### Canvas & Loading
+| Method | Line | Description |
+|--------|------|-------------|
+| `waitForCanvasPresent()` | 39 | Waits for `canvas.canvas` element |
+| `waitForGameReady()` | 43 | Waits for loading overlay to disappear |
+| `isCanvasDisplayed()` | 47 | Checks canvas visibility |
+
+### Quest Cockpit
+| Method | Line | Description |
+|--------|------|-------------|
+| `waitForQuestCockpitVisible()` | 83 | Waits for quest-cockpit element |
+| `getQuestTitle()` | 91 | Reads quest title text |
+| `waitForQuestTitle(title)` | 95 | Waits for specific quest title |
+| `waitForQuestProgressContaining(text)` | 128 | Waits for progress text substring |
+| `waitForQuestCompleted()` | 120 | Waits for all progress rows done |
+| `waitForQuestDoneWithRetry(action, title)` | 964 | Polls quest done, retries action every 10s |
+| `waitForQuestCompletedWithRetry(action, title, timeout)` | 957 | Public version with custom timeout |
+
+### Build & Place
+| Method | Line | Description |
+|--------|------|-------------|
+| `waitForBaseItemPlacerActive()` | 162 | Waits for placer mode active |
+| `placeOnFreePosition()` | 194 | Spiral canvas click to find free terrain |
+| `getQuestRegionCenter()` | 222 | Bridge: reads PlaceConfig from active quest |
+| `placeInQuestRegion()` | 257 | Camera grid search + canvas click fallback |
+| `jsBuildAtPosition(type, x, y)` | 285 | Direct buildCmd at terrain coordinates |
+| `buildViaBuilder(type)` | 1220 | Click build button → placer → place |
+| `buildViaBuilderInQuestRegion(type)` | 1236 | Bridge-first build, camera grid fallback |
+
+### Item Selection & Cockpit
+| Method | Line | Description |
+|--------|------|-------------|
+| `selectItemByType(typeId)` | 1190 | Selects own item via `actionService.onItemClicked` |
+| `waitForItemCockpitVisible()` | 310 | Waits for item cockpit to show |
+| `waitForBuildButtonForItemType(typeId)` | 358 | Waits for build button enabled |
+| `clickBuildButtonForItemType(typeId)` | 347 | Clicks specific build button |
+
+### Game Commands (JS Bridge)
+| Method | Line | Description |
+|--------|------|-------------|
+| `jsHarvestNearest()` | 572 | Sends harvesters to nearest resource |
+| `jsAttackNearest()` | 595 | Attacks nearest rendered enemy |
+| `jsAttackEnemyOfType(typeId)` | 637 | Attacks specific type, fallback to getNearestEnemyId |
+| `jsAttackEnemyExcludingType(typeId)` | 732 | Attacks any enemy except excluded type |
+| `jsAttackEnemyOfTypeUntilDone(typeId)` | 804 | Retry loop: move + attack until quest done |
+| `jsAttackEnemyExcludingTypeUntilDone(typeId)` | 763 | Retry loop: attack non-excluded until done |
+| `jsMoveAttackersTowardEnemy(typeId)` | 831 | moveCmd toward enemy via getNearestEnemyPosition |
+| `jsMoveCamera(x, y)` | 620 | Sets camera target position |
+| `jsFabricate(factoryType, unitType)` | 1030 | Fabricates unit via itemCockpitBridge |
+| `jsSellItemsOfType(typeId)` | 1050 | Sells all items of type via itemCockpitBridge |
+| `jsMoveItemsOfType(typeId, x, y)` | 1010 | Moves items of type to position |
+| `jsLoadIntoTransporter(typeId)` | 1070 | loadContainerCmd for type into transporter(18) |
+| `jsUnloadTransporter()` | 1094 | requestUnload via itemCockpitBridge |
+| `jsGetOwnItemPosition(typeId)` | 1111 | Returns [x,y] of first item of type |
+| `jsHasEnemyOfType(typeId)` | 1133 | Checks if enemy type is rendered |
+
+### Verification & Debug
+| Method | Line | Description |
+|--------|------|-------------|
+| `verifyMainCockpit(level)` | 1149 | Asserts main cockpit visible + level |
+| `verifyQuestCockpit(title)` | 1157 | Waits for quest title |
+| `setupErrorCapture()` | 901 | Installs console.error/warn capture |
+| `logBrowserErrors()` | 881 | Prints captured browser errors |
+| `logAttackerState()` | 927 | Prints own + enemy item positions |
+| `logViperPositions(label)` | 865 | Prints viper positions |
 
 ## WASM Bridge Architecture (for debugging)
 
@@ -196,7 +355,7 @@ JS: gameCmd.attackCmd([141], 126)
 
 Key files:
 - `razarion-client-teavm/.../jso/facade/JsGameCommandService.java` - JS proxy with functors
-- `razarion-client-teavm/.../bridge/AngularProxyFactory.java` - Service proxies (getNearestEnemyId added here)
+- `razarion-client-teavm/.../bridge/AngularProxyFactory.java` - Service proxies (getNearestEnemyId + getActiveQuestPlaceConfig)
 - `razarion-client-teavm/.../TeaVMClientMarshaller.java` - Client-side marshalling
 - `razarion-client-worker-teavm/.../TeaVMWorkerMarshaller.java` - Worker demarshalling
 - `razarion-ui-service/.../control/GameEngineControl.java` - Command dispatch (IdsDto fix here)
@@ -204,9 +363,10 @@ Key files:
 - `razarion-share/.../GameEngineWorker.java` - Worker dispatch + SLAVE forwarding
 
 ## Next Steps (Priority Order)
-1. **Fix Level 6 Dockyard placement** — Find the quest region coordinates. Best approach: expose quest PlaceConfig via WASM bridge proxy (option 2 above) or investigate the "Dockyard" scene node.
-2. **Level 7**: Fabricate Hydra + kill Bot Hydra — should work with existing `jsFabricate` + `jsAttackEnemyOfTypeUntilDone` patterns
-3. **Level 8**: Transporter movement — `moveCmd` works now. `jsLoadIntoTransporter` + `jsMoveItemsOfType` should work. Need quest region for destination (use `getQuestRegionCenter`).
-4. **Level 9**: Sell + build + fabricate in new region — use `jsSellItemsOfType`, then `buildViaBuilderInQuestRegion` for region-aware placement
-5. **Clean up debug logging** (remove `logViperPositions`, quest mesh debugging, etc.)
-6. **Commit the working test**
+1. **Test Level 6 Dockyard placement** — Rebuild (`mvn clean install -DskipTests`), restart server, run E2E test. The `getActiveQuestPlaceConfig` bridge should return coordinates. If `jsBuildAtPosition` fails, try moving the builder to the region first via `moveCmd`.
+2. **Test Levels 7-9** — Code is already written. Run sequentially after level 6 passes.
+3. **Level 7 potential fix**: If Bot Hydra is far away, the existing `jsAttackEnemyOfTypeUntilDone` pattern with `getNearestEnemyId` should handle it.
+4. **Level 8 potential fix**: If quest region bridge fails, hardcode fallback coordinates from the terrain minimap.
+5. **Level 9 potential fix**: Check if Factory build needs `buildViaBuilderInQuestRegion` instead of `buildViaBuilder` (Quest 395 might require placement in Phase 2 start region).
+6. **Clean up debug logging** (remove `logViperPositions`, quest mesh debugging, etc.)
+7. **Commit the working test**
