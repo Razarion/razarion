@@ -27,8 +27,11 @@ import {
   TextureBlock,
   TransformNode,
   Vector3,
+  VertexBuffer,
   VertexData
 } from "@babylonjs/core";
+import {buildGroundMaterial} from "./ground-material";
+import {detectShoreline, computeShoreDistance} from "./shoreline-detection";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {Nullable} from "@babylonjs/core/types";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
@@ -38,9 +41,7 @@ import {GwtInstance} from '../../gwtangular/GwtInstance';
 
 enum MaterialIndex {
   GROUND = 0,
-  UNDER_WATER = 1,
-  BOT = 2,
-  BOT_WALL = 3,
+  ASPHALT = 1,
 }
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
@@ -49,7 +50,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly NODE_Y_COUNT = 160;
   static readonly NODE_SIZE = 1;
   static readonly TILE_NODE_SIZE = this.NODE_X_COUNT * this.NODE_Y_COUNT;
-  static readonly HEIGHT_PRECISION = 0.1;
+  static readonly HEIGHT_PRECISION = 0.01;
   static readonly HEIGHT_MIN = -200;
   static readonly WATER_LEVEL = 0;
   static readonly BEACH_HEIGHT = 0.3;
@@ -98,29 +99,35 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       terrainTile.getBabylonDecals(),
       groundUtil);
     vertexData.applyToMesh(this.groundMesh, true);
+
+    // Compute shore distance UV2 for ground mesh (used by ground material for foam)
+    const groundHeightMap = terrainTile.getGroundHeightMap();
+    const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    const yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    const groundHeights: number[] = [];
+    for (let i = 0; i < xCount * yCount; i++) {
+      groundHeights.push(BabylonTerrainTileImpl.setupHeight(i, groundHeightMap));
+    }
+    const shoreSegments = detectShoreline(groundHeights, xCount, yCount);
+    const groundUv2 = computeShoreDistance(shoreSegments, groundHeights, xCount, yCount);
+    this.groundMesh.setVerticesData(VertexBuffer.UV2Kind, groundUv2);
+
     this.container.getChildren().push(this.groundMesh);
     this.groundMesh.receiveShadows = true;
     this.groundMesh.parent = this.container;
 
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
-    const originalGroundMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getGroundBabylonMaterialId());
-    this.groundMaterial = new NodeMaterial(originalGroundMaterial.name, rendererService.getScene());
-    this.groundMaterial.parseSerializedObject(originalGroundMaterial.serialize());
-    let underWaterMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getUnderWaterBabylonMaterialId());
-    let botMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotBabylonMaterialId());
-    let botWallMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getBotWallBabylonMaterialId());
-
+    this.groundMaterial = buildGroundMaterial(rendererService.getScene());
     const groundUtilityBlock = <TextureBlock>this.groundMaterial.getBlockByName("GroundUtility");
     if (groundUtilityBlock) {
       groundUtilityBlock.texture = new Texture(groundUtil.createGroundTypeTexture().toDataURL(), this.rendererService.getScene());
+      this.groundMaterial.build();
     }
-    this.groundMaterial.build();
+    let asphaltMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getAsphaltBabylonMaterialId());
 
     const multiMaterial = new MultiMaterial(`Ground ${groundConfig.getInternalName()}`, rendererService.getScene());
     multiMaterial.subMaterials[MaterialIndex.GROUND] = this.groundMaterial;
-    multiMaterial.subMaterials[MaterialIndex.UNDER_WATER] = underWaterMaterial;
-    multiMaterial.subMaterials[MaterialIndex.BOT] = botMaterial;
-    multiMaterial.subMaterials[MaterialIndex.BOT_WALL] = botWallMaterial;
+    multiMaterial.subMaterials[MaterialIndex.ASPHALT] = asphaltMaterial;
 
     this.groundMesh!.material = multiMaterial;
 
@@ -325,6 +332,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       }
     }
 
+    // Compute shore direction (gradient of ground height) and store angle in UV2.y
+    BabylonTerrainTileImpl.computeShoreDirections(uv2GroundHeightMap, xCount, yCount);
+
     // Indices
     let currentStart = 0;
     let indexCount = 0;
@@ -354,20 +364,10 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
         let newMaterialIndex;
         const terrainType = BabylonTerrainTileImpl.setupTerrainType(bLHeight, bRHeight, tRHeight, tLHeight);
-        if (decal) {
-          if (terrainType == TerrainType.LAND) {
-            newMaterialIndex = MaterialIndex.BOT;
-          } else if (terrainType == TerrainType.BLOCKED) {
-            newMaterialIndex = MaterialIndex.BOT_WALL;
-          } else {
-            newMaterialIndex = MaterialIndex.UNDER_WATER;
-          }
+        if (decal && (terrainType == TerrainType.LAND || terrainType == TerrainType.BLOCKED)) {
+          newMaterialIndex = MaterialIndex.ASPHALT;
         } else {
-          if (terrainType == TerrainType.WATER) {
-            newMaterialIndex = MaterialIndex.UNDER_WATER;
-          } else {
-            newMaterialIndex = MaterialIndex.GROUND;
-          }
+          newMaterialIndex = MaterialIndex.GROUND;
         }
         if (materialIndex !== newMaterialIndex) {
           if (materialSubmesh != null) {
@@ -476,6 +476,34 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       && position.getY() - BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 <= y
       && position.getX() + BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 > x
       && position.getY() + BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 > y;
+  }
+
+  /**
+   * Computes shore direction from ground height gradient and stores the angle in UV2.y.
+   * The gradient of ground height points uphill (toward shore).
+   * UV2 layout: [height0, angle0, height1, angle1, ...]
+   */
+  public static computeShoreDirections(uv2: number[], xCount: number, yCount: number): void {
+    for (let y = 0; y < yCount; y++) {
+      for (let x = 0; x < xCount; x++) {
+        const idx = (y * xCount + x) * 2;
+        const h = uv2[idx]; // ground height at this vertex
+
+        // Central differences for gradient (clamped at edges)
+        const xL = x > 0 ? uv2[((y * xCount) + (x - 1)) * 2] : h;
+        const xR = x < xCount - 1 ? uv2[((y * xCount) + (x + 1)) * 2] : h;
+        const yD = y > 0 ? uv2[(((y - 1) * xCount) + x) * 2] : h;
+        const yU = y < yCount - 1 ? uv2[(((y + 1) * xCount) + x) * 2] : h;
+
+        const dx = xR - xL;
+        const dy = yU - yD;
+
+        // atan2 gives angle of gradient (direction toward shore)
+        // Default to 0 on flat areas (no gradient)
+        const angle = (dx === 0 && dy === 0) ? 0 : Math.atan2(dy, dx);
+        uv2[idx + 1] = angle;
+      }
+    }
   }
 
   public static setupHeight(index: number, groundHeightMap: Uint16Array): number {

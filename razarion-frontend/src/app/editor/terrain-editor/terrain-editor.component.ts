@@ -12,6 +12,7 @@ import {Button} from 'primeng/button';
 import {Divider} from 'primeng/divider';
 import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render-service-access-impl.service';
 import {SelectionService} from '../../game/selection.service';
+import {MainCockpitComponent} from '../../game/cockpit/main/main-cockpit.component';
 import {TerrainEditorControllerClient} from '../../generated/razarion-share';
 import {TypescriptGenerator} from '../../backend/typescript-generator';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
@@ -49,6 +50,7 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
   overviewMode = false;
   private terrainEditorControllerClient: TerrainEditorControllerClient;
   activeIndex: number = 0;
+  private cursorPositionEnabledByEditor = false;
 
   constructor(httpClient: HttpClient,
               private messageService: MessageService,
@@ -66,6 +68,11 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
   }
 
   ngOnDestroy(): void {
+    if (this.cursorPositionEnabledByEditor) {
+      const mainCockpit = this.gwtAngularService.gwtAngularFacade.mainCockpit as MainCockpitComponent;
+      mainCockpit.showCursorPosition = false;
+      mainCockpit.onShowCursorPosition();
+    }
     if (this.overviewMode) {
       this.gwtAngularService.gwtAngularFacade.mainCockpit.showRadar(RadarState.NONE);
     }
@@ -128,5 +135,11 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
     this.renderService.disableSelectionFrame();
     this.selectionService.clearSelection();
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter.deactivate();
+    const mainCockpit = this.gwtAngularService.gwtAngularFacade.mainCockpit as MainCockpitComponent;
+    if (!mainCockpit.showCursorPosition) {
+      mainCockpit.showCursorPosition = true;
+      mainCockpit.onShowCursorPosition();
+      this.cursorPositionEnabledByEditor = true;
+    }
   }
 }

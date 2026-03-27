@@ -108,7 +108,7 @@ Source: `game-mock.service.ts:setupHeightMap()` (TypeScript copy of `ClientNativ
 
 | Constant | Value | Source |
 |----------|-------|--------|
-| `HEIGHT_PRECISION` | `0.1` | `TerrainUtil.java` |
+| `HEIGHT_PRECISION` | `0.01` | `TerrainUtil.java` |
 | `HEIGHT_MIN` | `-200` | `TerrainUtil.java` |
 | `WATER_LEVEL` | `0` | `TerrainUtil.java` |
 | `WALL_HEIGHT_DIFF` | `0.5` | `TerrainUtil.java` |
@@ -121,29 +121,51 @@ Source: `game-mock.service.ts:setupHeightMap()` (TypeScript copy of `ClientNativ
 
 ```
 height = uint16 * HEIGHT_PRECISION + HEIGHT_MIN
-       = uint16 * 0.1 + (-200)
+       = uint16 * 0.01 + (-200)
 ```
 
 ### Height to Uint16
 
 ```
 uint16 = (height - HEIGHT_MIN) / HEIGHT_PRECISION
-       = (height - (-200)) / 0.1
-       = (height + 200) / 0.1
+       = (height - (-200)) / 0.01
+       = (height + 200) / 0.01
 ```
 
-(Rounded to nearest 0.1 before conversion: `Math.round(value * 10) / 10`)
+(Rounded to nearest integer: `Math.round(value * 10) / 10`)
 
 ### Value Range
 
 | Uint16 | Height |
 |--------|--------|
 | 0 | -200.0 m |
-| 2000 | 0.0 m (water level) |
-| 2005 | 0.5 m (default height) |
-| 65535 | +6353.5 m |
+| 20000 | 0.0 m (water level) |
+| 20050 | 0.5 m (default height) |
+| 65535 | +455.35 m |
 
 Source: `TerrainUtil.uint16ToHeight()`, `TerrainUtil.heightToUnit16()`
+
+### Precision Upgrade (2026-03-27)
+
+`HEIGHT_PRECISION` was changed from `0.1` (10 cm) to `0.01` (1 cm).
+
+**Motivation:** The beach zone spans y = 0.0 to 0.5 m. With 10 cm precision there were only ~5 discrete height steps, making fine height-dependent effects (e.g. gradual sand-to-grass splatter transitions) impossible. With 1 cm precision the same zone contains ~50 steps.
+
+**Impact on stored data:** All existing heightmap uint16 values must be multiplied by 10 so they represent the same physical heights under the new formula. A one-time migration (`HeightPrecisionMigration.java`, `@Order(0)` ApplicationRunner) performs this automatically on the first server start. **Remove this class after the migration has run**, as it would re-multiply values on every subsequent start.
+
+**Impact on value range:**
+
+| | Before (0.1) | After (0.01) |
+|---|---|---|
+| Resolution | 10 cm | 1 cm |
+| Water level uint16 | 2000 | 20000 |
+| Default height uint16 | 2005 | 20050 |
+| Max representable height | +6353.5 m | +455.35 m |
+| Beach zone steps (0–0.5 m) | ~5 | ~50 |
+
+The reduced maximum height of 455 m is more than sufficient for the game world.
+
+**Files changed:** `TerrainUtil.java`, `BabylonTerrainTileImpl` (TypeScript), all `razarion-ai-content` scripts, `generate-p2-terrain.js`.
 
 ## 4. Terrain Classification (TerrainType)
 
@@ -325,8 +347,7 @@ Source: `razarion-share/.../dto/TerrainObjectConfig.java`
 | `groundBabylonMaterialId` | Integer | Babylon.js ground material |
 | `waterBabylonMaterialId` | Integer | Babylon.js water material |
 | `underWaterBabylonMaterialId` | Integer | Babylon.js underwater material |
-| `botBabylonMaterialId` | Integer | Babylon.js bot/slope material |
-| `botWallBabylonMaterialId` | Integer | Babylon.js bot wall material |
+| `asphaltBabylonMaterialId` | Integer | Babylon.js asphalt material |
 
 Source: `razarion-share/.../dto/GroundConfig.java`
 

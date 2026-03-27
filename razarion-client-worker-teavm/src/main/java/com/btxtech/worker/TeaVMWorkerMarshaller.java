@@ -1631,8 +1631,7 @@ public final class TeaVMWorkerMarshaller {
         config.setGroundBabylonMaterialId(obj.getNullableInt("groundBabylonMaterialId"));
         config.setWaterBabylonMaterialId(obj.getNullableInt("waterBabylonMaterialId"));
         config.setUnderWaterBabylonMaterialId(obj.getNullableInt("underWaterBabylonMaterialId"));
-        config.setBotBabylonMaterialId(obj.getNullableInt("botBabylonMaterialId"));
-        config.setBotWallBabylonMaterialId(obj.getNullableInt("botWallBabylonMaterialId"));
+        config.setAsphaltBabylonMaterialId(obj.getNullableInt("asphaltBabylonMaterialId"));
         return config;
     }
 

@@ -390,8 +390,7 @@ public class DtoConverter {
         setGetterObj(obj, "getGroundBabylonMaterialId", () -> convertNullableInt(gc.getGroundBabylonMaterialId()));
         setGetterObj(obj, "getWaterBabylonMaterialId", () -> convertNullableInt(gc.getWaterBabylonMaterialId()));
         setGetterObj(obj, "getUnderWaterBabylonMaterialId", () -> convertNullableInt(gc.getUnderWaterBabylonMaterialId()));
-        setGetterObj(obj, "getBotBabylonMaterialId", () -> convertNullableInt(gc.getBotBabylonMaterialId()));
-        setGetterObj(obj, "getBotWallBabylonMaterialId", () -> convertNullableInt(gc.getBotWallBabylonMaterialId()));
+        setGetterObj(obj, "getAsphaltBabylonMaterialId", () -> convertNullableInt(gc.getAsphaltBabylonMaterialId()));
         return obj;
     }
 

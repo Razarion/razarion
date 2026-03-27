@@ -292,8 +292,7 @@ public class JsonDeserializer {
         r.setGroundBabylonMaterialId(json.getNullableInt("groundBabylonMaterialId"));
         r.setWaterBabylonMaterialId(json.getNullableInt("waterBabylonMaterialId"));
         r.setUnderWaterBabylonMaterialId(json.getNullableInt("underWaterBabylonMaterialId"));
-        r.setBotBabylonMaterialId(json.getNullableInt("botBabylonMaterialId"));
-        r.setBotWallBabylonMaterialId(json.getNullableInt("botWallBabylonMaterialId"));
+        r.setAsphaltBabylonMaterialId(json.getNullableInt("asphaltBabylonMaterialId"));
         return r;
     }
 

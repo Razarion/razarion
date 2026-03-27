@@ -232,8 +232,7 @@ export class EditorTerrainTile {
     const MATERIAL_COLORS: { [key: number]: string } = {
       0: "rgba(0, 200, 0, 0.5)",    // GROUND - Green
       1: "rgba(0, 0, 255, 0.5)",    // UNDER_WATER - Blue
-      2: "rgba(255, 165, 0, 0.5)",  // BOT - Orange
-      3: "rgba(180, 0, 255, 0.5)",  // BOT_WALL - Purple
+      2: "rgba(255, 165, 0, 0.5)",  // ASPHALT - Orange
     };
 
     const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;

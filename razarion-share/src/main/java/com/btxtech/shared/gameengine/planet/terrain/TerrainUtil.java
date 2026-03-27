@@ -13,7 +13,7 @@ public interface TerrainUtil {
     int NODE_X_COUNT = 160;
     int NODE_Y_COUNT = 160;
     int TILE_NODE_SIZE = NODE_X_COUNT * NODE_Y_COUNT;
-    double HEIGHT_PRECISION = 0.1;
+    double HEIGHT_PRECISION = 0.01;
     double NODE_SIZE = 1;
     double HEIGHT_MIN = -200;
     double WATER_LEVEL = 0;

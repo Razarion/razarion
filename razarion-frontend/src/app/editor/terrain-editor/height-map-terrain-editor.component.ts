@@ -29,6 +29,7 @@ import {SmoothBrushComponent} from './brushes/smooth-brush.component';
 import {NoiseBrushComponent} from './brushes/noise-brush.component';
 import {ErosionBrushComponent} from './brushes/erosion-brush.component';
 import {FixBoundaryBrushComponent} from './brushes/fix-boundary-brush.component';
+import {CoastBrushComponent} from './brushes/coast-brush.component';
 import {RadarComponent} from 'src/app/game/cockpit/main/radar/radar.component';
 import {Button} from 'primeng/button';
 import {Divider} from 'primeng/divider';
@@ -78,7 +79,8 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     {label: 'Smooth', value: SmoothBrushComponent},
     {label: 'Noise', value: NoiseBrushComponent},
     {label: 'Erosion', value: ErosionBrushComponent},
-    {label: 'Fix boundary', value: FixBoundaryBrushComponent}
+    {label: 'Fix boundary', value: FixBoundaryBrushComponent},
+    {label: 'Coast', value: CoastBrushComponent}
   ];
   selectedBrush?: Type<AbstractBrush>;
 

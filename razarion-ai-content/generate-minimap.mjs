@@ -9,7 +9,7 @@ const OUT_FILE = process.argv[4] || `minimap-planet-${PLANET_ID}.png`;
 const NODE_X_COUNT = 160;
 const NODE_Y_COUNT = 160;
 const TILE_NODE_SIZE = NODE_X_COUNT * NODE_Y_COUNT;
-const HEIGHT_PRECISION = 0.1;
+const HEIGHT_PRECISION = 0.01;
 const HEIGHT_MIN = -200;
 
 function uint16ToHeight(uint16) {

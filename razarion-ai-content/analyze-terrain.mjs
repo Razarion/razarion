@@ -4,7 +4,7 @@ const BASE_URL = "http://localhost:8080";
 const PLANET_ID = 117;
 const NODE_X_COUNT = 160, NODE_Y_COUNT = 160;
 const TILE_NODE_SIZE = NODE_X_COUNT * NODE_Y_COUNT;
-const HEIGHT_PRECISION = 0.1, HEIGHT_MIN = -200;
+const HEIGHT_PRECISION = 0.01, HEIGHT_MIN = -200;
 
 function uint16ToHeight(v) { return v * HEIGHT_PRECISION + HEIGHT_MIN; }
 

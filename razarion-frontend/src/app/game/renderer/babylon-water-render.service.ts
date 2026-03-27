@@ -6,6 +6,7 @@ import {
   MeshBuilder,
   NodeMaterial,
   TransformNode,
+  Vector3,
   VertexBuffer
 } from "@babylonjs/core";
 import {BabylonModelService} from "./babylon-model.service";
@@ -13,12 +14,12 @@ import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 import type {FloatArray} from '@babylonjs/core/types';
 import {ReflectionTextureBaseBlock} from '@babylonjs/core/Materials/Node/Blocks/Dual/reflectionTextureBaseBlock';
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
+import {buildWhitecapMaterial} from "./whitecap-material";
 
 @Injectable({
   providedIn: 'root'
 })
 export class BabylonWaterRenderService {
-
   constructor(private babylonModelService: BabylonModelService) {
   }
 
@@ -40,6 +41,17 @@ export class BabylonWaterRenderService {
       "renderer/env/clouds.jpg", // -Z
     ], rendererService.getScene());
 
+    // Reduce water texture tiling — default Ground Scale of 15 is too repetitive
+    const waterMat = water.material as NodeMaterial;
+    const groundScaleBlock = waterMat.getInputBlocks().find(b => b.name === "Ground Scale");
+    if (groundScaleBlock) {
+      groundScaleBlock.value = new Vector3(40, 40, 40);
+    }
+    const waveSpeedBlock = waterMat.getInputBlocks().find(b => b.name === "Wave Speed");
+    if (waveSpeedBlock) {
+      waveSpeedBlock.value = 0.03;
+    }
+
     water.setVerticesData(VertexBuffer.UV2Kind, uv2GroundHeightMap)
     water.receiveShadows = true;
     water.parent = container;
@@ -48,6 +60,20 @@ export class BabylonWaterRenderService {
     container.getChildren().push(water);
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(water, RazarionMetadataType.GROUND, undefined, undefined);
+
+    // Whitecap overlay mesh — sits just above water surface
+    const whitecaps = MeshBuilder.CreateGround("Whitecaps", {
+      width: BabylonTerrainTileImpl.NODE_X_COUNT,
+      height: BabylonTerrainTileImpl.NODE_Y_COUNT,
+      subdivisions: 160
+    });
+    whitecaps.material = buildWhitecapMaterial(rendererService.getScene());
+    whitecaps.setVerticesData(VertexBuffer.UV2Kind, uv2GroundHeightMap);
+    whitecaps.parent = container;
+    whitecaps.position.x = water.position.x;
+    whitecaps.position.y = 0.02;
+    whitecaps.position.z = water.position.z;
+    container.getChildren().push(whitecaps);
 
     return water;
   }
@@ -66,6 +92,7 @@ export class BabylonWaterRenderService {
       }
     }
 
+    BabylonTerrainTileImpl.computeShoreDirections(uv2GroundHeightMap, xCount, yCount);
     waterMesh.setVerticesData(VertexBuffer.UV2Kind, uv2GroundHeightMap);
   }
 

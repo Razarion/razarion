@@ -18,8 +18,7 @@ public class GroundConfig implements Config {
     private Integer groundBabylonMaterialId;
     private Integer waterBabylonMaterialId;
     private Integer underWaterBabylonMaterialId;
-    private Integer botBabylonMaterialId;
-    private Integer botWallBabylonMaterialId;
+    private Integer asphaltBabylonMaterialId;
 
     public int getId() {
         return id;
@@ -61,20 +60,12 @@ public class GroundConfig implements Config {
         this.underWaterBabylonMaterialId = underWaterBabylonMaterialId;
     }
 
-    public Integer getBotBabylonMaterialId() {
-        return botBabylonMaterialId;
+    public Integer getAsphaltBabylonMaterialId() {
+        return asphaltBabylonMaterialId;
     }
 
-    public void setBotBabylonMaterialId(Integer botBabylonMaterialId) {
-        this.botBabylonMaterialId = botBabylonMaterialId;
-    }
-
-    public Integer getBotWallBabylonMaterialId() {
-        return botWallBabylonMaterialId;
-    }
-
-    public void setBotWallBabylonMaterialId(Integer botWallBabylonMaterialId) {
-        this.botWallBabylonMaterialId = botWallBabylonMaterialId;
+    public void setAsphaltBabylonMaterialId(Integer asphaltBabylonMaterialId) {
+        this.asphaltBabylonMaterialId = asphaltBabylonMaterialId;
     }
 
     public GroundConfig id(int id) {
@@ -102,13 +93,8 @@ public class GroundConfig implements Config {
         return this;
     }
 
-    public GroundConfig botBabylonMaterialId(Integer botBabylonMaterialId) {
-        setBotBabylonMaterialId(botBabylonMaterialId);
-        return this;
-    }
-
-    public GroundConfig botWallBabylonMaterialId(Integer botWallBabylonMaterialId) {
-        setBotWallBabylonMaterialId(botWallBabylonMaterialId);
+    public GroundConfig asphaltBabylonMaterialId(Integer asphaltBabylonMaterialId) {
+        setAsphaltBabylonMaterialId(asphaltBabylonMaterialId);
         return this;
     }
 

@@ -93,6 +93,7 @@ Java DTOs from `razarion-share` are automatically transpiled to TypeScript inter
 Comprehensive documentation is available in the [`docs/`](docs/) directory:
 - **[TeaVM-Angular Bridge](docs/architecture/teavm-angular-bridge.md)** - Bidirectional bridge architecture
 - **[Multiplayer Sync](docs/architecture/multiplayer-sync.md)** - Command forwarding and sync patterns
+- **[Terrain Rendering](docs/architecture/terrain-rendering.md)** - Ground, underwater, and water surface composition
 - **[Kubernetes Deployment](docs/deployment/kubernetes.md)** - GKE deployment guide
 
 ## Local Development Setup

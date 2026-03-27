@@ -108,8 +108,8 @@ export class BrushValues {
     <div class="grid grid-cols-12 gap-1 p-1">
       <span class="col-span-5">Height [m]</span>
       <div class="col-span-7">
-        <input type="number" [(ngModel)]="activeBrush.value.brushValues.height" [step]="0.1" class="w-full"/>
-        <p-slider [(ngModel)]="activeBrush.value.brushValues.height" [step]="0.1" [min]="-20" [max]="50"></p-slider>
+        <input type="number" [(ngModel)]="activeBrush.value.brushValues.height" [step]="0.01" class="w-full"/>
+        <p-slider [(ngModel)]="activeBrush.value.brushValues.height" [step]="0.01" [min]="-20" [max]="50"></p-slider>
       </div>
     </div>
 

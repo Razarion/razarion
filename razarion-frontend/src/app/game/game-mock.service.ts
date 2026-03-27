@@ -781,13 +781,10 @@ export class GameMockService {
               return this._groundConfigJson.underWaterBabylonMaterialId;
             }
 
-            getBotBabylonMaterialId(): number {
-              return this._groundConfigJson.botBabylonMaterialId;
+            getAsphaltBabylonMaterialId(): number {
+              return this._groundConfigJson.asphaltBabylonMaterialId;
             }
 
-            getBotWallBabylonMaterialId(): number {
-              return this._groundConfigJson.botWallBabylonMaterialId;
-            }
           }
           return
         });

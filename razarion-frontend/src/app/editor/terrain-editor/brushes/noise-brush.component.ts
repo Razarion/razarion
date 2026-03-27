@@ -49,8 +49,8 @@ export class NoiseBrushValues {
     <div class="grid grid-cols-12 gap-1 p-1">
       <span class="col-span-5">Amplitude [m]</span>
       <div class="col-span-7">
-        <input type="number" [(ngModel)]="brushValues.amplitude" [step]="0.1" class="w-full"/>
-        <p-slider [(ngModel)]="brushValues.amplitude" [step]="0.1" [min]="0.1" [max]="10"></p-slider>
+        <input type="number" [(ngModel)]="brushValues.amplitude" [step]="0.01" class="w-full"/>
+        <p-slider [(ngModel)]="brushValues.amplitude" [step]="0.01" [min]="0.01" [max]="10"></p-slider>
       </div>
     </div>
 

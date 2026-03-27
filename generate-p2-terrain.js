@@ -14,10 +14,10 @@ const NODE_Y_COUNT = 160;
 const TILE_NODE_SIZE = NODE_X_COUNT * NODE_Y_COUNT;
 
 function heightToUint16(meters) {
-  return Math.max(0, Math.min(65535, Math.round((meters + 200) / 0.1)));
+  return Math.max(0, Math.min(65535, Math.round((meters + 200) / 0.01)));
 }
 function uint16ToHeight(u16) {
-  return u16 * 0.1 - 200;
+  return u16 * 0.01 - 200;
 }
 
 // ============================================================

@@ -422,7 +422,7 @@ server.tool(
 const NODE_X_COUNT = 160;
 const NODE_Y_COUNT = 160;
 const TILE_NODE_SIZE = NODE_X_COUNT * NODE_Y_COUNT;
-const HEIGHT_PRECISION = 0.1;
+const HEIGHT_PRECISION = 0.01;
 const HEIGHT_MIN = -200;
 const WATER_LEVEL = 0;
 

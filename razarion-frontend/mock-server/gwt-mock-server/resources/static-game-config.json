@@ -6,7 +6,7 @@
       "groundBabylonMaterialId": 7,
       "waterBabylonMaterialId": 8,
       "underWaterBabylonMaterialId": 9,
-      "botBabylonMaterialId": 1
+      "asphaltBabylonMaterialId": 1
     }
   ],
   "terrainObjectConfigs": [

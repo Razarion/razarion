@@ -26,11 +26,8 @@ public class GroundConfigEntity extends BaseEntity {
     @JoinColumn
     private BabylonMaterialEntity underWaterBabylonMaterialId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private BabylonMaterialEntity botBabylonMaterialId;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private BabylonMaterialEntity botWallBabylonMaterialId;
+    @JoinColumn(name = "botBabylonMaterialId_id")
+    private BabylonMaterialEntity asphaltBabylonMaterialId;
 
     public GroundConfig toConfig() {
         return new GroundConfig()
@@ -39,8 +36,7 @@ public class GroundConfigEntity extends BaseEntity {
                 .groundBabylonMaterialId(extractId(groundBabylonMaterial, BabylonMaterialEntity::getId))
                 .waterBabylonMaterialId(extractId(waterBabylonMaterial, BabylonMaterialEntity::getId))
                 .underWaterBabylonMaterialId(extractId(underWaterBabylonMaterialId, BabylonMaterialEntity::getId))
-                .botBabylonMaterialId(extractId(botBabylonMaterialId, BabylonMaterialEntity::getId))
-                .botWallBabylonMaterialId(extractId(botWallBabylonMaterialId, BabylonMaterialEntity::getId));
+                .asphaltBabylonMaterialId(extractId(asphaltBabylonMaterialId, BabylonMaterialEntity::getId));
     }
 
     public void fromGroundConfig(GroundConfig config, BabylonMaterialService babylonMaterialService) {
@@ -48,8 +44,7 @@ public class GroundConfigEntity extends BaseEntity {
         groundBabylonMaterial = babylonMaterialService.getEntity(config.getGroundBabylonMaterialId());
         waterBabylonMaterial = babylonMaterialService.getEntity(config.getWaterBabylonMaterialId());
         underWaterBabylonMaterialId = babylonMaterialService.getEntity(config.getUnderWaterBabylonMaterialId());
-        botBabylonMaterialId = babylonMaterialService.getEntity(config.getBotBabylonMaterialId());
-        botWallBabylonMaterialId = babylonMaterialService.getEntity(config.getBotWallBabylonMaterialId());
+        asphaltBabylonMaterialId = babylonMaterialService.getEntity(config.getAsphaltBabylonMaterialId());
     }
 
     @Override
