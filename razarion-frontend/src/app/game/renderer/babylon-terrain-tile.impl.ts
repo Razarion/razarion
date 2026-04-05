@@ -32,6 +32,7 @@ import {
 } from "@babylonjs/core";
 import {buildGroundMaterial} from "./ground-material";
 import {detectShoreline, computeShoreDistance} from "./shoreline-detection";
+import {initPerm, SEED, splatterValue} from "./procedural-textures";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {Nullable} from "@babylonjs/core/types";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
@@ -42,6 +43,13 @@ import {GwtInstance} from '../../gwtangular/GwtInstance';
 enum MaterialIndex {
   GROUND = 0,
   ASPHALT = 1,
+}
+
+enum TerrainZone {
+  UPPER = 0,
+  UNDER = 1,
+  BEACH = 2,
+  UNDERWATER = 3,
 }
 
 export class BabylonTerrainTileImpl implements BabylonTerrainTile {
@@ -599,19 +607,61 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     });
   }
 
-  private setupSprites() {
-    const spriteManagerTrees = new SpriteManager("treesManager", "ground_sprite_4x4.png", 2000,
-      64,
-      this.rendererService.getScene());
-    let count = 300;
+  private static readonly SPLATTER_UV_SCALE = 0.012;
+  private static readonly SPRITE_CELL_SIZE = 64;
+  private static readonly SPRITES_PER_TILE = 2500;
+  private static readonly SPRITES_PER_BATCH = 50;
+  private static readonly SPRITE_BATCH_DELAY = 10;
+  private static permInitialized = false;
 
-    setTimeout(() => {
-      this.placeSprites(count, spriteManagerTrees);
-    }, 10);
+  private static ensurePermInitialized(): void {
+    if (!BabylonTerrainTileImpl.permInitialized) {
+      initPerm(SEED);
+      BabylonTerrainTileImpl.permInitialized = true;
+    }
   }
 
-  private placeSprites(count: number, spriteManagerTrees: SpriteManager) {
-    for (let i = 0; i < 10; i++) {
+  /**
+   * Determine terrain zone at world position using height and splatter value.
+   * Matches the shader logic in ground-material.ts.
+   */
+  private static getTerrainZone(worldX: number, worldZ: number, height: number): TerrainZone {
+    if (height <= BabylonTerrainTileImpl.WATER_LEVEL - 0.5) {
+      return TerrainZone.UNDERWATER;
+    }
+    if (height < BabylonTerrainTileImpl.BEACH_HEIGHT + 0.1) {
+      return TerrainZone.BEACH;
+    }
+    BabylonTerrainTileImpl.ensurePermInitialized();
+    const nx = (worldX * BabylonTerrainTileImpl.SPLATTER_UV_SCALE) % 1.0;
+    const ny = (worldZ * BabylonTerrainTileImpl.SPLATTER_UV_SCALE) % 1.0;
+    const sv = splatterValue(nx < 0 ? nx + 1 : nx, ny < 0 ? ny + 1 : ny);
+    // sv: 0 = under (rock/dirt), 1 = upper (grass)
+    if (sv > 0.6) {
+      return TerrainZone.UPPER;
+    } else if (sv < 0.4) {
+      return TerrainZone.UNDER;
+    }
+    // Transition zone — randomly pick based on splatter value
+    return Math.random() < sv ? TerrainZone.UPPER : TerrainZone.UNDER;
+  }
+
+  private setupSprites() {
+    const scene = this.rendererService.getScene();
+    const spriteManagers: Record<TerrainZone, SpriteManager> = {
+      [TerrainZone.UPPER]: new SpriteManager("upperSprites", "sprites_upper_4x4.png", 2500, BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
+      [TerrainZone.UNDER]: new SpriteManager("underSprites", "sprites_under_4x4.png", 1500, BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
+      [TerrainZone.BEACH]: new SpriteManager("beachSprites", "sprites_beach_4x4.png", 800, BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
+      [TerrainZone.UNDERWATER]: new SpriteManager("underwaterSprites", "sprites_underwater_4x4.png", 800, BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
+    };
+
+    setTimeout(() => {
+      this.placeSprites(BabylonTerrainTileImpl.SPRITES_PER_TILE, spriteManagers);
+    }, BabylonTerrainTileImpl.SPRITE_BATCH_DELAY);
+  }
+
+  private placeSprites(count: number, spriteManagers: Record<TerrainZone, SpriteManager>) {
+    for (let i = 0; i < BabylonTerrainTileImpl.SPRITES_PER_BATCH; i++) {
       if (count <= 0) {
         return;
       }
@@ -629,28 +679,40 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         continue;
       }
 
-      const pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(x, z));
+      const pickingInfo = this.rendererService.pickGroundMeshOnly(GwtInstance.newDecimalPosition(x, z));
       if (!pickingInfo || !pickingInfo.hit) {
         continue;
       }
 
-      const height = pickingInfo.pickedPoint!.y
-      if (height < BabylonTerrainTileImpl.BEACH_HEIGHT) {
+      const height = pickingInfo.pickedPoint!.y;
+      const zone = BabylonTerrainTileImpl.getTerrainZone(x, z, height);
+
+      // No sprites below -5m
+      if (height < -5) {
         continue;
       }
 
-      const tree = new Sprite("tree", spriteManagerTrees);
-      tree.cellIndex = Math.round(Math.random() * 16);
-      tree.width = 1;
-      tree.height = 1;
-      tree.position.x = x;
-      tree.position.y = height + 0.5
-      tree.position.z = z;
+      // 50% less sprites for beach and underwater
+      if ((zone === TerrainZone.BEACH || zone === TerrainZone.UNDERWATER) && Math.random() < 0.5) {
+        continue;
+      }
+
+      const manager = spriteManagers[zone];
+      const sprite = new Sprite("sprite", manager);
+      sprite.cellIndex = Math.floor(Math.random() * 16);
+      sprite.width = 2;
+      sprite.height = 2;
+      if (zone === TerrainZone.UNDERWATER) {
+        sprite.color.a = 0.5;
+      }
+      sprite.position.x = x;
+      sprite.position.y = height + 0.5;
+      sprite.position.z = z;
     }
     if (count > 0) {
       setTimeout(() => {
-        this.placeSprites(count, spriteManagerTrees);
-      }, 10);
+        this.placeSprites(count, spriteManagers);
+      }, BabylonTerrainTileImpl.SPRITE_BATCH_DELAY);
     }
   }
 }

@@ -1106,6 +1106,51 @@ public class GamePage {
     }
 
     /**
+     * Gets the game ID of the first own item of given type (requires item to be rendered).
+     */
+    public int jsGetOwnItemId(int itemTypeId) {
+        Object result = executeScript(
+                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
+                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
+                "for (var i = 0; i < items.length; i++) {" +
+                "  if (items[i].getBaseItemType().getId() === " + itemTypeId + ") {" +
+                "    return items[i].getId();" +
+                "  }" +
+                "}" +
+                "return -1;"
+        );
+        return ((Number) result).intValue();
+    }
+
+    /**
+     * Sends moveCmd for a specific item ID to terrain coordinates (works regardless of rendering).
+     */
+    public void jsMoveById(int itemId, double x, double y) {
+        Object result = executeScript(
+                "var gameCmd = window.gwtAngularFacade.gameCommandService;" +
+                "gameCmd.moveCmd([" + itemId + "], " + x + ", " + y + ");" +
+                "return 'moveCmd sent: id=" + itemId + " to " + x + "," + y + "';"
+        );
+        System.out.println("[E2E] " + result);
+    }
+
+    /**
+     * Sends buildCmd for a specific builder ID (works regardless of rendering).
+     */
+    public void jsBuildById(int builderId, int itemTypeId, double x, double y) {
+        Object result = executeScript(
+                "var gameCmd = window.gwtAngularFacade.gameCommandService;" +
+                "try {" +
+                "  gameCmd.buildCmd(" + builderId + ", " + x + ", " + y + ", " + itemTypeId + ");" +
+                "  return 'buildCmd sent: builder=" + builderId + " at " + x + "," + y + " type=" + itemTypeId + "';" +
+                "} catch(e) {" +
+                "  return 'buildCmd error: ' + e.message;" +
+                "}"
+        );
+        System.out.println("[E2E] " + result);
+    }
+
+    /**
      * Gets position of first own item of given type as [x, y].
      */
     public double[] jsGetOwnItemPosition(int itemTypeId) {

@@ -72,17 +72,49 @@ The ground `NodeMaterial` handles all terrain rendering in a single shader — l
 ### Terrain Layers
 
 1. **Ground Upper** — grass/soil (UV scale 20)
-2. **Ground Under** — darker soil variant (UV scale 20)
-3. **Mountain** — triplanar rocky texture (UV scale 6.39)
+2. **Ground Under** — dirt/sand variant (UV scale 10)
+3. **Mountain** — triplanar rocky texture (UV scale 0.3 triplanar position, UV scale 20 for flat mapping) with ambient occlusion and darkening (0.65×) for contrast against grass
+
+### Upper/Under Splatter Blending
+
+The transition between ground upper and ground under uses a procedurally generated splatter mask with a derived normal for 3D depth at the edges:
+
+**Splatter mask:** Generated at runtime in `procedural-textures.ts` using domain-warped tileable Perlin noise (512×512). White = upper (grass), black = under (sand). The normal is derived from screen-space derivatives of the mask (no separate normal texture needed).
+
+**Splatter normal blending:** At the transition zone, the splatter normal is blended into the ground normals using `borderIntensity = heightStep × (1 − heightStep) × 4` (peaks at 1.0 where heightStep = 0.5). This creates a raised-grass-over-sand effect through lighting alone.
+
+**Terrain sprites:** Procedurally generated sprite sheets (4×4 grids, 256×256) add vegetation and detail per terrain zone. Generated via `generate-sprites.js`:
+```bash
+cd razarion-frontend
+node generate-sprites.js
+```
+- **`sprites_upper_4x4.png`** — grass tufts, bushy plants, drooping grass
+- **`sprites_under_4x4.png`** — angular stones and pebbles in gray tones
+- **`sprites_beach_4x4.png`** — shells, driftwood, beach grass in sandy tones
+- **`sprites_underwater_4x4.png`** — seaweed, algae in dark green/brown tones
+
+Sprites are placed at runtime using ray-picking (`pickGroundMeshOnly`) which skips the water mesh to get true seabed depth. Zone detection uses height and the splatter value to match shader logic.
+
+### Mountain Blending
+
+The mountain/grass edge uses noise to break up straight boundaries:
+
+```
+mountainBlend = GroundUtility.r × 1.5
+              + (noiseTex(worldXZ × 0.7) − 0.1) × 0.5
+mountainStep  = smoothstep(0.4, 0.6, mountainBlend)
+```
+
+The noise texture (`ground-splatter.jpg`) adds organic irregularity. The `smoothstep` creates a soft transition band instead of a hard edge.
 
 ### Blending Chain
 
 ```
                           ┌─────────────────────────┐
   Ground Upper ──┐        │  GroundUtility.r channel │
-                 ├─ Lerp (height texture) ──┐       │
-  Ground Under ──┘                          ├─ Lerp (mountain blend)
-                              Mountain ─────┘       │
+                 ├─ Lerp (splatter mask) ───┐       │
+  Ground Under ──┘                          ├─ Lerp (mountain step)
+                       Mountain (AO) ───────┘       │
                                                     │
                                     ┌───────────────┘
                                     │
@@ -96,7 +128,7 @@ The ground `NodeMaterial` handles all terrain rendering in a single shader — l
                         │
 ```
 
-**Beach textures:** The beach uses dedicated diffuse (`ground-beach-diffuse.png`) and normal (`ground-beach-norm.png`) textures instead of a flat color. A UV scale of 4 controls texture tiling.
+**Beach textures:** The beach uses dedicated diffuse (`ground-beach-diffuse.jpg`) and normal (`ground-beach-norm.jpg`) textures instead of a flat color. A UV scale of 4 controls texture tiling.
 
 **Wet sand effect:** Near the waterline, the beach diffuse is darkened to 90% to simulate wet sand. This uses a `smoothstep(0.15, -0.5, position.y)` — the effect transitions from dry sand (above y=0.15) through the waterline into shallow underwater (y=-0.5). The darkened texture is also used for the shallow underwater sand blend.
 
@@ -104,24 +136,18 @@ The ground `NodeMaterial` handles all terrain rendering in a single shader — l
 
 ### Beach Detection (Splatter)
 
-The sand-to-grass transition uses a dual-layer noise approach for organic, fringed edges:
-
-**Splatter layers:**
-- **Large scale** (`ground-splatter.jpg`, UV scale 2) — defines the overall shape of grass patches
-- **Fine scale** (same texture, UV scale 16) — adds small fringe detail at the edges
-
-Both layers are averaged, then combined with vertex height:
+The sand-to-grass transition uses a noise texture combined with vertex height for organic edges:
 
 ```
-beachValue = (avg(splatterLarge.r, splatterFine.r) - 0.4) × 0.6 + position.y × 1.2
+beachValue = (splatter.r - 0.4) × 0.6 + position.y × 1.2
 beachStep = smoothstep(0.23, 0.30, beachValue)
 ```
 
-Where `beachStep = 0` → sand, `beachStep = 1` → grass/terrain.
+Where `beachStep = 0` → sand, `beachStep = 1` → grass/terrain. The splatter texture (`ground-splatter.jpg`) is sampled at world-space UVs (scale 0.0125) for seamless tiling across terrain tile boundaries.
 
-The height bias factor (1.2×) makes higher terrain favor grass and lower terrain favor sand. With `HEIGHT_PRECISION` of 0.01m there are ~50 discrete height steps in the beach zone (y=0.0 to 0.5), enabling fine height-dependent gradients.
+The height bias factor (1.2×) makes higher terrain favor grass and lower terrain favor sand.
 
-**Grass edge shadow:** A thin darkening strip (60% brightness) is applied on the sand side near the grass edge (`beachStep 0.0–0.3`), simulating the shadow cast by raised grass onto the sand below.
+**Grass edge shadow:** A darkening strip (80% brightness) is applied on the sand side near the grass edge (`beachStep 0.3–0.5`), simulating the shadow cast by raised grass onto the sand below.
 
 **Underwater blending:** A `smoothstep(0.0, 0.1, position.y)` determines the underwater factor. Below water level, a depth gradient replaces the land diffuse color. In the shallow underwater zone (y=0 to y=-1), the sand texture is blended over the gradient for a natural sand-to-water transition.
 
@@ -140,7 +166,7 @@ Uses `position.y` scaled by 0.1 to drive a color gradient:
 
 In the shallow zone (y=0 to y=-1), the sand diffuse texture (darkened) is blended over the gradient, providing a textured sand floor visible through shallow water.
 
-**Normal mapping:** Separate normal maps per layer (beach, ground upper/under, mountain triplanar) are blended with the same lerp chain. Bump strengths: beach 0.44, ground 0.28, mountain 1.5, underwater 0.05. Near the shoreline, the wet sand zone reduces bump to 0.05 for a smooth flat appearance.
+**Normal mapping:** Separate normal maps per layer (beach, ground upper/under, mountain triplanar) are blended with the same lerp chain. The ground-under normal has its green channel flipped (DirectX → OpenGL convention). Bump strengths: beach 0.44, ground upper 0.4, ground under 2.0, mountain 1.5, underwater 0.05. At the upper/under transition, the splatter normal (derived from screen-space derivatives, strength 0.3) is blended in for 3D edge depth. Near the shoreline, the wet sand zone reduces bump to 0.05 for a smooth flat appearance.
 
 ### GroundUtility Texture
 
@@ -205,17 +231,16 @@ The foam is composited on top of the lit ground color as a white overlay control
 - Water side: fades in from distance -3 to -0.5 (deep water → shallow)
 - Land side: fades out from distance 0.1 to 0.8 (shore → inland)
 
-**Texture mapping** — two foam layers with different scales and scroll speeds are combined via `max()` for a richer wave pattern:
+**Texture mapping** — a single foam layer with scrolling animation:
 
-| Layer | U Scale | V Scale | Scroll Speed |
-|-------|---------|---------|--------------|
-| 1 | 0.1 | 0.25 | 0.2 |
-| 2 | 0.15 | 0.35 | 0.13 |
+| U Scale | V Scale | Scroll Speed |
+|---------|---------|--------------|
+| 0.1 | 0.25 | 0.2 |
 
 - **U axis** = along shore (from precomputed arc-length in UV2.y)
 - **V axis** = perpendicular to shore (from signed distance in UV2.x), scrolling with time
 
-The foam texture (`foam-wave.png`) uses RGB for color and alpha for visibility. Both channels are combined via `max()` across layers. The foam RGB is lerped over the ground color using the combined alpha scaled by fade and opacity (currently 0.7).
+The foam texture (`foam-wave.png`) uses RGB for color and alpha for visibility. The foam RGB is lerped over the ground color using alpha scaled by fade and opacity (currently 0.7).
 
 ### Pipeline
 
@@ -233,9 +258,7 @@ Signed Distance per vertex              Arc-Length per vertex
                         ▼
               Ground Shader (foam)
               ├── Fade band (smoothstep on dist)
-              ├── Layer 1: foam texture (scale A, speed A)
-              ├── Layer 2: foam texture (scale B, speed B)
-              └── max(layer1, layer2) × fade × opacity → white overlay
+              └── foam texture (scrolling) × fade × opacity → white overlay
 ```
 
 ## Whitecaps (Open Water Foam)
@@ -264,6 +287,8 @@ The water material is a pre-authored NodeMaterial loaded from the database. At r
 |------|---------|
 | `razarion-frontend/.../renderer/babylon-terrain-tile.impl.ts` | Terrain tile mesh construction, material assignment, height processing |
 | `razarion-frontend/.../renderer/ground-material.ts` | Ground NodeMaterial (beach/terrain/mountain/underwater blending) |
+| `razarion-frontend/.../renderer/procedural-textures.ts` | Procedural splatter mask generation (tileable Perlin noise) |
+| `razarion-frontend/generate-sprites.js` | Generates terrain sprite sheets (upper, under, beach, underwater) |
 | `razarion-frontend/.../renderer/babylon-water-render.service.ts` | Water surface mesh creation and UV2 setup |
 | `razarion-frontend/.../renderer/shoreline-detection.ts` | Marching Squares shoreline detection, shore distance computation |
 | `razarion-frontend/.../renderer/whitecap-material.ts` | Whitecap foam material for open water |

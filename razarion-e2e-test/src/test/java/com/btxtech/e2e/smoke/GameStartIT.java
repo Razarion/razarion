@@ -179,10 +179,25 @@ class GameStartIT extends BaseE2eTest {
     private void level6(GamePage gamePage) {
         gamePage.verifyMainCockpit(6);
 
-        // Quest 386: Build Dockyard in quest region (use quest region API to find location)
+        // Quest 386: Build Dockyard in quest region
+        // Polygon region: coastal strip, centroid ~(200,230), safe interior point ~(200,245)
         gamePage.verifyQuestCockpit("Region");
-        gamePage.selectItemByType(BUILDER);
-        gamePage.buildViaBuilderInQuestRegion(DOCKYARD);
+
+        // Get builder ID while it's rendered at base
+        int builderId = gamePage.jsGetOwnItemId(BUILDER);
+        System.out.println("[E2E] Builder ID: " + builderId);
+
+        // Send move command by ID to quest region (works regardless of rendering)
+        gamePage.jsMoveById(builderId, 200, 240);
+        // Wait for builder to arrive (it moves ~10 units/sec, distance ~220 units → ~25s)
+        try { Thread.sleep(25000); } catch (InterruptedException ignored) {}
+
+        // Move camera to quest region and build
+        gamePage.jsMoveCamera(200, 240);
+        try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+        gamePage.jsBuildById(builderId, DOCKYARD, 200, 245);
+        // Wait longer - building needs construction time + quest detection
+        gamePage.waitForQuestCompletedWithRetry(() -> {}, "Region", 120);
     }
 
     // ========== Level 7: Fabricate Hydra, Kill Bot Hydra ==========

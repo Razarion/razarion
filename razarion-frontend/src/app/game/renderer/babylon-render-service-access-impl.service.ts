@@ -202,9 +202,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // ----- Light -----
     const lightDirection = new Vector3(-3, -10, 3);
     this.directionalLight = new DirectionalLight("DirectionalLight", lightDirection, this.scene);
-    this.directionalLight.intensity = 1;
-    this.directionalLight.shadowMinZ = -55;
-    this.directionalLight.shadowMaxZ = 100;
+    this.directionalLight.intensity = 0.8;
+    this.directionalLight.shadowMinZ = -100;
+    this.directionalLight.shadowMaxZ = 200;
+    this.directionalLight.autoUpdateExtends = false;
+    this.directionalLight.shadowFrustumSize = 150;
     this.directionalLight.diffuse = new Color3(1, 1, 1);
     this.directionalLight.specular = new Color3(1, 1, 1);
     this.directionalLight.shadowEnabled = true;
@@ -309,6 +311,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       if (this.pendingSetViewFieldCenter) {
         this.setViewFieldCenter(this.pendingSetViewFieldCenter.x, this.pendingSetViewFieldCenter.y)
       }
+      // Move shadow frustum to follow camera
+      const groundTarget = this.setupCenterGroundPosition();
+      this.directionalLight.position.set(
+        groundTarget.x,
+        0,
+        groundTarget.z
+      );
     });
 
     this.engine.runRenderLoop(() => {
@@ -785,6 +794,22 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       return pickInfo.pickedPoint.y;
     }
     return null;
+  }
+
+  public pickGroundMeshOnly(position: DecimalPosition): Nullable<PickingInfo> {
+    const ray = new Ray(new Vector3(position.getX(), 100, position.getY()), new Vector3(0, -1, 0), 1000);
+    return this.scene.pickWithRay(ray,
+      (mesh: AbstractMesh) => {
+        if (mesh.name === "Water" || mesh.name === "Whitecaps") {
+          return false;
+        }
+        const razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
+        if (!razarionMetadata) {
+          return false;
+        }
+        return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_GROUND;
+      }
+    );
   }
 
   public setupTerrainPickPoint(): PickingInfo {

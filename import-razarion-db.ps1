@@ -1,9 +1,27 @@
 param(
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$false)]
     [string]$ZipFile
 )
 
 $ErrorActionPreference = "Stop"
+
+if (-not $ZipFile) {
+    $BackupDir = "C:\dev\backup\razarion_db"
+    $latest = Get-ChildItem -Path $BackupDir -Filter "db_*.zip" |
+        Sort-Object {
+            if ($_.BaseName -match '^db_(\d{4})_(\d{2})_(\d{2})(?:_(\d+))?$') {
+                $suffix = if ($Matches[4]) { [int]$Matches[4] } else { 1 }
+                $Matches[1] + $Matches[2] + $Matches[3] + "_" + $suffix.ToString("D10")
+            } else { "" }
+        } -Descending |
+        Select-Object -First 1
+    if (-not $latest) {
+        Write-Error "Kein Backup in $BackupDir gefunden"
+        exit 1
+    }
+    $ZipFile = $latest.FullName
+    Write-Host "Kein Parameter angegeben, verwende neuestes Backup: $($latest.Name)" -ForegroundColor Yellow
+}
 
 if (-not (Test-Path $ZipFile)) {
     Write-Error "File not found: $ZipFile"

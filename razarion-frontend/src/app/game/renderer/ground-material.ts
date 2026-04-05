@@ -1,4 +1,6 @@
 import {Color3, NodeMaterial, Texture} from "@babylonjs/core";
+import {loadSplatterTexture} from "./procedural-textures";
+import {DerivativeBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment/derivativeBlock";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
 import {NodeMaterialBlockConnectionPointTypes} from "@babylonjs/core/Materials/Node/Enums/nodeMaterialBlockConnectionPointTypes";
 import {NodeMaterialSystemValues} from "@babylonjs/core/Materials/Node/Enums/nodeMaterialSystemValues";
@@ -8,11 +10,9 @@ import {FragmentOutputBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragmen
 import {LightBlock} from "@babylonjs/core/Materials/Node/Blocks/Dual/lightBlock";
 import {PerturbNormalBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment/perturbNormalBlock";
 import {TextureBlock} from "@babylonjs/core/Materials/Node/Blocks/Dual/textureBlock";
-import {TriPlanarBlock} from "@babylonjs/core/Materials/Node/Blocks/triPlanarBlock";
 import {AddBlock} from "@babylonjs/core/Materials/Node/Blocks/addBlock";
 import {SubtractBlock} from "@babylonjs/core/Materials/Node/Blocks/subtractBlock";
 import {MultiplyBlock} from "@babylonjs/core/Materials/Node/Blocks/multiplyBlock";
-import {MaxBlock} from "@babylonjs/core/Materials/Node/Blocks/maxBlock";
 import {ScaleBlock} from "@babylonjs/core/Materials/Node/Blocks/scaleBlock";
 import {NegateBlock} from "@babylonjs/core/Materials/Node/Blocks/negateBlock";
 import {LerpBlock} from "@babylonjs/core/Materials/Node/Blocks/lerpBlock";
@@ -23,6 +23,7 @@ import {ClampBlock} from "@babylonjs/core/Materials/Node/Blocks/clampBlock";
 import {OneMinusBlock} from "@babylonjs/core/Materials/Node/Blocks/oneMinusBlock";
 import {PowBlock} from "@babylonjs/core/Materials/Node/Blocks/powBlock";
 import {GradientBlock, GradientBlockColorStep} from "@babylonjs/core/Materials/Node/Blocks/gradientBlock";
+import {TriPlanarBlock} from "@babylonjs/core/Materials/Node/Blocks/triPlanarBlock";
 import type {Scene} from "@babylonjs/core/scene";
 
 const TEX_PATH = "renderer/textures/";
@@ -82,13 +83,18 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   const vectorSplitter = new VectorSplitterBlock("VectorSplitter");
   position.output.connectTo(vectorSplitter.xyzIn);
 
+  // ========== World-space XZ for seamless splatter across tiles ==========
+  const worldXZ = new VectorMergerBlock("World XZ");
+  vectorSplitter.x.connectTo(worldXZ.x);
+  vectorSplitter.z.connectTo(worldXZ.y);
+
   // ========== UV scales ==========
-  const uvScaleMountain = floatInput("uv scale mountain", 6.39);
+  const uvScaleMountain = floatInput("uv scale mountain", 20);
   const uvMountain = new ScaleBlock("Scale uv mountain");
   uv.output.connectTo(uvMountain.input);
   uvScaleMountain.output.connectTo(uvMountain.factor);
 
-  const uvScaleGroundUnder = floatInput("uv scale ground under", 20);
+  const uvScaleGroundUnder = floatInput("uv scale ground under", 10);
   const uvGroundUnder = new ScaleBlock("Scale uv ground under");
   uv.output.connectTo(uvGroundUnder.input);
   uvScaleGroundUnder.output.connectTo(uvGroundUnder.factor);
@@ -103,32 +109,54 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   uv.output.connectTo(uvGroundUpper.input);
   uvScaleGroundUpper.output.connectTo(uvGroundUpper.factor);
 
-  const uvSplatterScale = floatInput("uv beach splatter", 2);
+  const uvSplatterScale = floatInput("uv beach splatter", 0.0125);
   const uvSplatter = new ScaleBlock("Scale splatter");
-  uv.output.connectTo(uvSplatter.input);
+  worldXZ.xy.connectTo(uvSplatter.input);
   uvSplatterScale.output.connectTo(uvSplatter.factor);
 
-  const uvHeightScale = floatInput("uv height scale", 1.8);
-  const uvHeight = new ScaleBlock("Scale uv height");
-  uv.output.connectTo(uvHeight.input);
-  uvHeightScale.output.connectTo(uvHeight.factor);
+  const uvSplatterUpperUnderVal = floatInput("uv splatter upper/under", 0.012);
+  const uvSplatterUpperUnder = new ScaleBlock("Scale splatter upper/under");
+  worldXZ.xy.connectTo(uvSplatterUpperUnder.input);
+  uvSplatterUpperUnderVal.output.connectTo(uvSplatterUpperUnder.factor);
 
-  // TriPlanar position = WorldPos * 0.22
-  const triPlanarScale = floatInput("triplanar scale", 0.22);
-  const triPlanarPos = new ScaleBlock("Scale triplanar pos");
-  worldPos.output.connectTo(triPlanarPos.input);
-  triPlanarScale.output.connectTo(triPlanarPos.factor);
+
 
   // ========== GroundUtility texture (set externally) ==========
   const groundUtility = new TextureBlock("GroundUtility");
   uv.output.connectTo(groundUtility.uv);
   // Texture set at runtime by BabylonTerrainTileImpl
 
-  // Mountain factor = GroundUtility.r * 1.0
-  const mountainBlendFactor = floatInput("mountain blend factor", 1);
-  const mountainBlend = new ScaleBlock("Scale mountain blend");
-  groundUtility.r.connectTo(mountainBlend.input);
-  mountainBlendFactor.output.connectTo(mountainBlend.factor);
+  // Mountain factor with noise for organic edge
+  const mountainBlendRaw = new ScaleBlock("Scale mountain blend");
+  groundUtility.r.connectTo(mountainBlendRaw.input);
+  floatInput("mountain blend factor", 1.5).output.connectTo(mountainBlendRaw.factor);
+
+  // Noise to break up the straight mountain/grass edgee
+  const uvMountainNoise = new ScaleBlock("Scale uv mountain noise");
+  worldXZ.xy.connectTo(uvMountainNoise.input);
+  floatInput("mountain noise uv scale", 0.7).output.connectTo(uvMountainNoise.factor);
+
+  const mountainNoiseTex = new TextureBlock("Mountain noise");
+  uvMountainNoise.output.connectTo(mountainNoiseTex.uv);
+  mountainNoiseTex.texture = new Texture(TEX_PATH + "ground-splatter.jpg", scene);
+
+  // noise centered around 0: (tex.r - 0.5) * strength
+  const mountainNoiseCenter = new SubtractBlock("Mountain noise center");
+  mountainNoiseTex.r.connectTo(mountainNoiseCenter.left);
+  floatInput("mountain noise offset", 0.1).output.connectTo(mountainNoiseCenter.right);
+
+  const mountainNoiseScaled = new ScaleBlock("Mountain noise scaled");
+  mountainNoiseCenter.output.connectTo(mountainNoiseScaled.input);
+  floatInput("mountain noise strength", 0.5).output.connectTo(mountainNoiseScaled.factor);
+
+  const mountainBlendNoisy = new AddBlock("Mountain blend noisy");
+  mountainBlendRaw.output.connectTo(mountainBlendNoisy.left);
+  mountainNoiseScaled.output.connectTo(mountainBlendNoisy.right);
+
+  const mountainBlend = new SmoothStepBlock("Mountain blend step");
+  mountainBlendNoisy.output.connectTo(mountainBlend.value);
+  floatInput("mountain edge0", 0.4).output.connectTo(mountainBlend.edge0);
+  floatInput("mountain edge1", 0.6).output.connectTo(mountainBlend.edge1);
 
   // ========== Beach detection ==========
   // Splatter texture — large scale (overall shape)
@@ -136,28 +164,10 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   uvSplatter.output.connectTo(splatterTex.uv);
   splatterTex.texture = new Texture(TEX_PATH + "ground-splatter.jpg", scene);
 
-  // Splatter texture — small scale (fine fringe detail)
-  const uvSplatterFine = new ScaleBlock("Scale splatter fine");
-  uv.output.connectTo(uvSplatterFine.input);
-  floatInput("uv splatter fine", 16).output.connectTo(uvSplatterFine.factor);
-
-  const splatterTexFine = new TextureBlock("Splatter texture fine");
-  uvSplatterFine.output.connectTo(splatterTexFine.uv);
-  splatterTexFine.texture = new Texture(TEX_PATH + "ground-splatter.jpg", scene);
-
-  // Combine: average of large + fine for organic fringed edges
-  const splatterCombined = new AddBlock("Add splatter layers");
-  splatterTex.r.connectTo(splatterCombined.left);
-  splatterTexFine.r.connectTo(splatterCombined.right);
-
-  const splatterAvg = new ScaleBlock("Avg splatter");
-  splatterCombined.output.connectTo(splatterAvg.input);
-  floatInput("splatter avg", 0.5).output.connectTo(splatterAvg.factor);
-
-  // (splatterAvg - 0.4) * 0.6 + position.y
+  // (splatterTex.r - 0.4) * 0.6 + position.y
   const splatterOffset = floatInput("splatter offset", 0.4);
   const splatterSub = new SubtractBlock("Subtract splatter");
-  splatterAvg.output.connectTo(splatterSub.left);
+  splatterTex.r.connectTo(splatterSub.left);
   splatterOffset.output.connectTo(splatterSub.right);
 
   const splatterMul = floatInput("splatter mul", 0.6);
@@ -182,17 +192,27 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   beachEdge1.output.connectTo(beachStep.edge1);
   // beachStep: 0 = beach, 1 = land
 
-  // ========== Height blending (ground upper/under) ==========
-  const heightTex = new TextureBlock("Height texture");
-  uvHeight.output.connectTo(heightTex.uv);
-  heightTex.texture = new Texture(TEX_PATH + "ground-height.jpg", scene);
+  // ========== Height blending (ground upper/under) — procedural splatter ==========
+  const splatterMaskTex = new TextureBlock("Splatter mask");
+  uvSplatterUpperUnder.output.connectTo(splatterMaskTex.uv);
+  splatterMaskTex.texture = loadSplatterTexture(scene);
 
-  const heightEdge0 = floatInput("height edge0", 0.5);
-  const heightEdge1 = floatInput("height edge1", 0.56);
-  const heightStep = new SmoothStepBlock("Smooth step height");
-  heightTex.r.connectTo(heightStep.value);
-  heightEdge0.output.connectTo(heightStep.edge0);
-  heightEdge1.output.connectTo(heightStep.edge1);
+  // heightStep: 0 = under, 1 = upper (directly from splatter mask, already smoothstepped)
+  const heightStep = splatterMaskTex;
+
+  // Derive normal from splatter mask via screen-space derivatives (no extra texture needed)
+  const splatterDeriv = new DerivativeBlock("Splatter derivative");
+  splatterMaskTex.r.connectTo(splatterDeriv.input);
+  // Build normal: (-dFdx, -dFdy, 1/strength) then normalize
+  const splatterNormStrengthVal = floatInput("splatter deriv strength", 0.3);
+  const derivNegX = new NegateBlock("negate dFdx");
+  splatterDeriv.dx.connectTo(derivNegX.value);
+  const derivNegY = new NegateBlock("negate dFdy");
+  splatterDeriv.dy.connectTo(derivNegY.value);
+  const splatterNormMerge = new VectorMergerBlock("Splatter normal merge");
+  derivNegX.output.connectTo(splatterNormMerge.x);
+  derivNegY.output.connectTo(splatterNormMerge.y);
+  splatterNormStrengthVal.output.connectTo(splatterNormMerge.z);
 
   // ========== Diffuse textures ==========
   const groundUpperDiffuse = new TextureBlock("Ground upper");
@@ -203,21 +223,47 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   uvGroundUnder.output.connectTo(groundUnderDiffuse.uv);
   groundUnderDiffuse.texture = new Texture(TEX_PATH + "ground-under-diffuse.jpg", scene);
 
+  // ========== TriPlanar for mountain (no stretching on steep faces) ==========
+  const triPlanarScale = floatInput("triplanar scale", 0.3);
+  const triPlanarPos = new ScaleBlock("Scale triplanar pos");
+  worldPos.output.connectTo(triPlanarPos.input);
+  triPlanarScale.output.connectTo(triPlanarPos.factor);
+
   const mountainDiffuseTriplanar = new TriPlanarBlock("TriPlanar diffuse");
   triPlanarPos.output.connectTo(mountainDiffuseTriplanar.position);
   worldNormal.output.connectTo(mountainDiffuseTriplanar.normal);
-  mountainDiffuseTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-diffuse-triplanar.jpg", scene);
+  mountainDiffuseTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-diffuse.jpg", scene);
+
+  // Mountain ambient occlusion (also triplanar)
+  const mountainAOTriplanar = new TriPlanarBlock("TriPlanar AO");
+  triPlanarPos.output.connectTo(mountainAOTriplanar.position);
+  worldNormal.output.connectTo(mountainAOTriplanar.normal);
+  mountainAOTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-ao.jpg", scene);
+
+  // Darken mountain diffuse for better contrast against grass
+  const mountainDiffuseDarken = new ScaleBlock("Mountain diffuse darken");
+  mountainDiffuseTriplanar.rgb.connectTo(mountainDiffuseDarken.input);
+  floatInput("mountain darken", 0.65).output.connectTo(mountainDiffuseDarken.factor);
+
+  // Blend AO: lerp(diffuse * AO, diffuse, aoStrength) — 0 = full AO, 1 = no AO
+  const mountainDiffuseMulAO = new MultiplyBlock("Mountain diffuse * AO");
+  mountainDiffuseDarken.output.connectTo(mountainDiffuseMulAO.left);
+  mountainAOTriplanar.rgb.connectTo(mountainDiffuseMulAO.right);
+  const mountainDiffuseAO = new LerpBlock("Mountain AO blend");
+  mountainDiffuseMulAO.output.connectTo(mountainDiffuseAO.left);
+  mountainDiffuseDarken.output.connectTo(mountainDiffuseAO.right);
+  floatInput("mountain ao strength", 0.25).output.connectTo(mountainDiffuseAO.gradient);
 
   // Lerp ground upper/under by height
   const diffuseHeightLerp = new LerpBlock("Lerp diffuse height");
-  groundUpperDiffuse.rgb.connectTo(diffuseHeightLerp.left);
-  groundUnderDiffuse.rgb.connectTo(diffuseHeightLerp.right);
-  heightStep.output.connectTo(diffuseHeightLerp.gradient);
+  groundUnderDiffuse.rgb.connectTo(diffuseHeightLerp.left);
+  groundUpperDiffuse.rgb.connectTo(diffuseHeightLerp.right);
+  heightStep.r.connectTo(diffuseHeightLerp.gradient);
 
   // Lerp ground/mountain by mountainBlend
   const diffuseMountainLerp = new LerpBlock("Lerp diffuse mountain");
   diffuseHeightLerp.output.connectTo(diffuseMountainLerp.left);
-  mountainDiffuseTriplanar.rgb.connectTo(diffuseMountainLerp.right);
+  mountainDiffuseAO.output.connectTo(diffuseMountainLerp.right);
   mountainBlend.output.connectTo(diffuseMountainLerp.gradient);
 
   // ========== Underwater depth gradient ==========
@@ -251,7 +297,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   // Beach diffuse texture
   const beachDiffuse = new TextureBlock("Beach diffuse");
   uvBeach.output.connectTo(beachDiffuse.uv);
-  beachDiffuse.texture = new Texture(TEX_PATH + "ground-beach-diffuse.png", scene);
+  beachDiffuse.texture = new Texture(TEX_PATH + "ground-beach-diffuse.jpg", scene);
 
   // Darken sand near waterline (wet sand effect)
   const beachDiffuseWet = new ScaleBlock("beach diffuse wet");
@@ -272,12 +318,12 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   // beachStep 0.05–0.4: shadow on sand right next to grass
   const grassShadowBand = new SmoothStepBlock("grass shadow band");
   beachStep.output.connectTo(grassShadowBand.value);
-  floatInput("grass shadow lo", 0.0).output.connectTo(grassShadowBand.edge0);
-  floatInput("grass shadow hi", 0.3).output.connectTo(grassShadowBand.edge1);
+  floatInput("grass shadow lo", 0.3).output.connectTo(grassShadowBand.edge0);
+  floatInput("grass shadow hi", 0.5).output.connectTo(grassShadowBand.edge1);
 
   const grassShadowDarken = new ScaleBlock("grass shadow darken");
   beachDiffuseBlended.output.connectTo(grassShadowDarken.input);
-  floatInput("grass shadow amount", 0.6).output.connectTo(grassShadowDarken.factor);
+  floatInput("grass shadow amount", 0.8).output.connectTo(grassShadowDarken.factor);
 
   const beachWithShadow = new LerpBlock("Lerp beach with shadow");
   beachDiffuseBlended.output.connectTo(beachWithShadow.left);
@@ -311,30 +357,60 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   // ========== Normal map textures ==========
   const beachNorm = new TextureBlock("Beach texture");
   uvBeach.output.connectTo(beachNorm.uv);
-  beachNorm.texture = new Texture(TEX_PATH + "ground-beach-norm.png", scene);
+  beachNorm.texture = new Texture(TEX_PATH + "ground-beach-norm.jpg", scene);
 
   const groundUpperNorm = new TextureBlock("Ground upper norm");
-  uvGroundUnder.output.connectTo(groundUpperNorm.uv);
+  uvGroundUpper.output.connectTo(groundUpperNorm.uv);
   groundUpperNorm.texture = new Texture(TEX_PATH + "ground-upper-norm.jpg", scene);
 
-  const groundUnderNorm = new TextureBlock("Ground under norm");
-  uvGroundUnder.output.connectTo(groundUnderNorm.uv);
-  groundUnderNorm.texture = new Texture(TEX_PATH + "ground-under-norm.jpg", scene);
+  const groundUnderNormTex = new TextureBlock("Ground under norm");
+  uvGroundUnder.output.connectTo(groundUnderNormTex.uv);
+  groundUnderNormTex.texture = new Texture(TEX_PATH + "ground-under-norm.jpg", scene);
+
+  // Flip green channel (DirectX → OpenGL normal map convention)
+  const underNormFlipG = new OneMinusBlock("Flip under norm G");
+  groundUnderNormTex.g.connectTo(underNormFlipG.input);
+  const groundUnderNorm = new VectorMergerBlock("Under norm flipped");
+  groundUnderNormTex.r.connectTo(groundUnderNorm.x);
+  underNormFlipG.output.connectTo(groundUnderNorm.y);
+  groundUnderNormTex.b.connectTo(groundUnderNorm.z);
 
   const mountainNormTriplanar = new TriPlanarBlock("TriPlanar norm");
   triPlanarPos.output.connectTo(mountainNormTriplanar.position);
   worldNormal.output.connectTo(mountainNormTriplanar.normal);
-  mountainNormTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-norm-triplanar.jpg", scene);
+  mountainNormTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-norm.jpg", scene);
 
   // Lerp upper/under normals by height
   const normHeightLerp = new LerpBlock("Lerp norm height");
-  groundUpperNorm.rgb.connectTo(normHeightLerp.left);
-  groundUnderNorm.rgb.connectTo(normHeightLerp.right);
-  heightStep.output.connectTo(normHeightLerp.gradient);
+  groundUnderNorm.xyz.connectTo(normHeightLerp.left);
+  groundUpperNorm.rgb.connectTo(normHeightLerp.right);
+  heightStep.r.connectTo(normHeightLerp.gradient);
+
+  // Blend splatter normal at transition edges for 3D depth
+  // borderIntensity peaks at 1.0 where heightStep = 0.5 (the transition zone)
+  const heightStepInv = new OneMinusBlock("1 - heightStep");
+  heightStep.r.connectTo(heightStepInv.input);
+  const borderRaw = new MultiplyBlock("border raw");
+  heightStep.r.connectTo(borderRaw.left);
+  heightStepInv.output.connectTo(borderRaw.right);
+  // Scale up raw (max 0.25 at edge) then clamp to widen the bump zone
+  const borderWiden = new ScaleBlock("border widen");
+  borderRaw.output.connectTo(borderWiden.input);
+  floatInput("splatter border width", 1).output.connectTo(borderWiden.factor);
+  const borderClamped = new ClampBlock("border clamp");
+  borderWiden.output.connectTo(borderClamped.value);
+  const borderIntensity = new ScaleBlock("border intensity");
+  borderClamped.output.connectTo(borderIntensity.input);
+  floatInput("splatter norm strength", 1).output.connectTo(borderIntensity.factor);
+
+  const normWithSplatter = new LerpBlock("Lerp norm with splatter");
+  normHeightLerp.output.connectTo(normWithSplatter.left);
+  splatterNormMerge.xyz.connectTo(normWithSplatter.right);
+  borderIntensity.output.connectTo(normWithSplatter.gradient);
 
   // Lerp ground/mountain normals
   const normMountainLerp = new LerpBlock("Lerp norm mountain");
-  normHeightLerp.output.connectTo(normMountainLerp.left);
+  normWithSplatter.output.connectTo(normMountainLerp.left);
   mountainNormTriplanar.rgb.connectTo(normMountainLerp.right);
   mountainBlend.output.connectTo(normMountainLerp.gradient);
 
@@ -360,11 +436,18 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
 
   // ========== Bump strength ==========
   const strengthBeach = floatInput("strength beach", 0.44);
-  const strengthGround = floatInput("strength ground", 0.28);
-  const strengthMountain = floatInput("strength mountain", 1.5);
+  const strengthGroundUpper = floatInput("strength ground upper", 1);
+  const strengthGroundUnder = floatInput("strength ground under", 0.5);
+  const strengthMountain = floatInput("strength mountain", 8);
+
+  // Lerp upper/under bump strength by heightStep
+  const strengthGroundLerp = new LerpBlock("Lerp strength ground upper/under");
+  strengthGroundUnder.output.connectTo(strengthGroundLerp.left);
+  strengthGroundUpper.output.connectTo(strengthGroundLerp.right);
+  heightStep.r.connectTo(strengthGroundLerp.gradient);
 
   const strengthLerpGM = new LerpBlock("Lerp strength ground/mountain");
-  strengthGround.output.connectTo(strengthLerpGM.left);
+  strengthGroundLerp.output.connectTo(strengthLerpGM.left);
   strengthMountain.output.connectTo(strengthLerpGM.right);
   mountainBlend.output.connectTo(strengthLerpGM.gradient);
 
@@ -421,7 +504,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
 
   // ========== Glossiness ==========
   const glossGround = floatInput("glossiness ground", 0.45);
-  const glossMountain = floatInput("glossiness mountain", 0.51);
+  const glossMountain = floatInput("glossiness mountain", 0.2);
   const glossLerp = new LerpBlock("Lerp glossiness");
   glossGround.output.connectTo(glossLerp.left);
   glossMountain.output.connectTo(glossLerp.right);
@@ -436,7 +519,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
 
   // ========== Specular color ==========
   const specGround = color3Input("Specular color ground", 0.227, 0.239, 0.227);
-  const specMountain = color3Input("Specular color mountain", 0.192, 0.192, 0.192);
+  const specMountain = color3Input("Specular color mountain", 0.15, 0.15, 0.15);
   const specLerp = new LerpBlock("Lerp specular");
   specGround.output.connectTo(specLerp.left);
   specMountain.output.connectTo(specLerp.right);
@@ -524,43 +607,9 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   foamUv.xy.connectTo(foamTex.uv);
   foamTex.texture = new Texture(TEX_PATH + "foam-wave.png", scene);
 
-  // Second foam layer: different scale and scroll speed for more wave crests
-  const foamU2 = new ScaleBlock("foam U2 scale");
-  uv2Split.y.connectTo(foamU2.input);
-  floatInput("foam u2 scale", 0.15).output.connectTo(foamU2.factor);
-
-  const foamTexSpeed2 = new ScaleBlock("foam tex speed 2");
-  foamTime.output.connectTo(foamTexSpeed2.input);
-  floatInput("foam scroll speed 2", 0.13).output.connectTo(foamTexSpeed2.factor);
-
-  const foamVBase2 = new ScaleBlock("foam V2 base");
-  uv2Split.x.connectTo(foamVBase2.input);
-  floatInput("foam v2 scale", -0.35).output.connectTo(foamVBase2.factor);
-
-  const foamV2 = new AddBlock("foam V2 animated");
-  foamVBase2.output.connectTo(foamV2.left);
-  foamTexSpeed2.output.connectTo(foamV2.right);
-
-  const foamUv2 = new VectorMergerBlock("foam uv 2");
-  foamU2.output.connectTo(foamUv2.x);
-  foamV2.output.connectTo(foamUv2.y);
-
-  const foamTex2 = new TextureBlock("Foam texture 2");
-  foamUv2.xy.connectTo(foamTex2.uv);
-  foamTex2.texture = new Texture(TEX_PATH + "foam-wave.png", scene);
-
-  // Combine both layers: max(layer1, layer2) for more visible crests
-  const foamCombinedRgb = new MaxBlock("foam combined rgb");
-  foamTex.rgb.connectTo(foamCombinedRgb.left);
-  foamTex2.rgb.connectTo(foamCombinedRgb.right);
-
-  const foamCombinedAlpha = new MaxBlock("foam combined alpha");
-  foamTex.a.connectTo(foamCombinedAlpha.left);
-  foamTex2.a.connectTo(foamCombinedAlpha.right);
-
   // Foam alpha = textureAlpha * foamFade * foamOpacity
   const foamAlphaFaded = new MultiplyBlock("foam alpha faded");
-  foamCombinedAlpha.output.connectTo(foamAlphaFaded.left);
+  foamTex.a.connectTo(foamAlphaFaded.left);
   foamFade.output.connectTo(foamAlphaFaded.right);
 
   const foamAlpha = new ScaleBlock("foam alpha");
@@ -573,7 +622,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   // Lerp ground to foam RGB based on alpha
   const finalColor = new LerpBlock("Lerp foam over ground");
   addLighting.output.connectTo(finalColor.left);
-  foamCombinedRgb.output.connectTo(finalColor.right);
+  foamTex.rgb.connectTo(finalColor.right);
   foamAlphaClamped.output.connectTo(finalColor.gradient);
 
   // ========== Fragment output ==========

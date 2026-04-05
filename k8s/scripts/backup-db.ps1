@@ -62,22 +62,54 @@ if ($localSize -ne $podSize) {
     $localMB = [math]::Round($localSize/1MB, 2)
     $podMB = [math]::Round($podSize/1MB, 2)
     Write-Host "WARNUNG: Groessen stimmen nicht ueberein! Pod: $podMB MB, Lokal: $localMB MB" -ForegroundColor Red
-    Write-Host "Versuche erneuten Download mit base64-Kodierung..." -ForegroundColor Yellow
+    Write-Host "Versuche erneuten Download mit gzip-Komprimierung..." -ForegroundColor Yellow
 
     Remove-Item $TempSqlFile -Force
 
-    # Fallback: base64-kodiert uebertragen um kubectl cp Probleme zu umgehen
-    kubectl exec razarion-mariadb-0 -- bash -c "base64 /tmp/backup.sql" > "$TempSqlFile.b64"
-    # Dekodieren mit certutil (Windows-Bordmittel)
-    certutil -decode "$TempSqlFile.b64" $TempSqlFile > $null
-    Remove-Item "$TempSqlFile.b64" -Force
+    # Fallback: Im Pod gzip-komprimieren, dann kubectl cp (kleinere Datei = weniger Truncation-Risiko)
+    Write-Host "Komprimiere im Pod und lade erneut herunter..." -ForegroundColor Yellow
+    kubectl exec razarion-mariadb-0 -- bash -c "gzip -c /tmp/backup.sql > /tmp/backup.sql.gz"
+    if ($LASTEXITCODE -ne 0) { throw "Fehler beim Komprimieren im Pod" }
+
+    $podGzSize = kubectl exec razarion-mariadb-0 -- bash -c "wc -c < /tmp/backup.sql.gz"
+    $podGzSize = [long]$podGzSize.Trim()
+    Write-Host "Komprimierte Groesse im Pod: $([math]::Round($podGzSize/1MB, 2)) MB" -ForegroundColor Cyan
+
+    $LocalTempGz = ".\backup_temp.sql.gz"
+    $ErrorActionPreference = "SilentlyContinue"
+    kubectl cp razarion-mariadb-0:/tmp/backup.sql.gz $LocalTempGz *>$null
+    $ErrorActionPreference = "Stop"
+
+    if (-not (Test-Path $LocalTempGz)) {
+        throw "Fehler: Komprimierter Download fehlgeschlagen"
+    }
+
+    $localGzSize = (Get-Item $LocalTempGz).Length
+    if ($localGzSize -ne $podGzSize) {
+        Remove-Item $LocalTempGz -Force
+        throw "Fehler: Auch komprimierter Download abgeschnitten. Pod: $([math]::Round($podGzSize/1MB, 2)) MB, Lokal: $([math]::Round($localGzSize/1MB, 2)) MB"
+    }
+
+    # Lokal entpacken mit tar (in Windows enthalten) oder PowerShell
+    # GZip-Stream zum Dekomprimieren verwenden
+    $gzStream = [System.IO.File]::OpenRead((Resolve-Path $LocalTempGz))
+    $decompStream = New-Object System.IO.Compression.GZipStream($gzStream, [System.IO.Compression.CompressionMode]::Decompress)
+    $outStream = [System.IO.File]::Create($TempSqlFile)
+    $decompStream.CopyTo($outStream)
+    $outStream.Close()
+    $decompStream.Close()
+    $gzStream.Close()
+    Remove-Item $LocalTempGz -Force
 
     $localSize = (Get-Item $TempSqlFile).Length
     if ($localSize -ne $podSize) {
         $localMB = [math]::Round($localSize/1MB, 2)
         Remove-Item $TempSqlFile
-        throw "Fehler: Auch base64-Transfer fehlgeschlagen. Pod: $podMB MB, Lokal: $localMB MB"
+        throw "Fehler: Entpackte Groesse stimmt nicht. Pod: $podMB MB, Lokal: $localMB MB"
     }
+
+    # gz im Pod aufraeumen
+    kubectl exec razarion-mariadb-0 -- rm -f /tmp/backup.sql.gz
 }
 
 Write-Host "Download OK ($([math]::Round($localSize/1MB, 2)) MB)" -ForegroundColor Cyan
