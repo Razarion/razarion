@@ -14,6 +14,7 @@ import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {BabylonWaterRenderService} from "./babylon-water-render.service";
 import {
+  Color3,
   Mesh,
   MultiMaterial,
   Node,
@@ -22,6 +23,7 @@ import {
   Scalar,
   Sprite,
   SpriteManager,
+  StandardMaterial,
   SubMesh,
   Texture,
   TextureBlock,
@@ -35,8 +37,8 @@ import {detectShoreline, computeShoreDistance} from "./shoreline-detection";
 import {initPerm, SEED, splatterValue} from "./procedural-textures";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {Nullable} from "@babylonjs/core/types";
-import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
+import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import {GroundUtil} from './ground-util';
 import {GwtInstance} from '../../gwtangular/GwtInstance';
 
@@ -72,6 +74,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private waterMesh: Mesh | null = null;
   private groundMaterial: NodeMaterial | null = null;
   private shadowCaster?: ((mesh: AbstractMesh) => void) | null = null;
+  private groundHeights: number[] = [];
+  private tileXOffset: number = 0;
+  private tileYOffset: number = 0;
 
   public static setupTerrainType(bLHeight: number, bRHeight: number, tRHeight: number, tLHeight: number): TerrainType {
     if (bLHeight <= 0.0 && bRHeight <= 0.0 && tRHeight <= 0.0 && tLHeight <= 0.0) {
@@ -86,67 +91,126 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
   }
 
+  /** Schedule work for next idle period or after a minimal delay */
+  private static scheduleIdle(callback: () => void): void {
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(() => callback(), { timeout: 100 });
+    } else {
+      setTimeout(callback, 4);
+    }
+  }
+
   constructor(public readonly terrainTile: TerrainTile,
               private gwtAngularService: GwtAngularService,
               private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService,
               private threeJsWaterRenderService: BabylonWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
-
     this.groundMesh = new Mesh("Ground", rendererService.getScene());
-    let uv2GroundHeightMap: number[] = [];
-    const materialSubmeshes: {
-      materialIndex: MaterialIndex,
-      indexStart: number,
-      indexCount: number
-    }[] = [];
-    const groundUtil = new GroundUtil();
+
+    // Phase 1 (sync): Vertex data — needed immediately for visible ground mesh
+    this.buildPhase1_VertexData();
+
+    // Phase 2 (deferred): Shore detection, materials, water, objects, sprites
+    BabylonTerrainTileImpl.scheduleIdle(() => this.buildPhase2_ShoreAndMaterial());
+  }
+
+  private buildPhase1_VertexData(): void {
+    const terrainTile = this.terrainTile;
+    this.uv2GroundHeightMap = [];
+    this.materialSubmeshes = [];
+    this.groundUtil = new GroundUtil();
+
     let vertexData = this.createVertexData(terrainTile.getGroundHeightMap(),
-      uv2GroundHeightMap,
-      materialSubmeshes,
+      this.uv2GroundHeightMap,
+      this.materialSubmeshes,
       terrainTile.getBabylonDecals(),
-      groundUtil);
+      this.groundUtil);
     vertexData.applyToMesh(this.groundMesh, true);
 
-    // Compute shore distance UV2 for ground mesh (used by ground material for foam)
+    // Cache ground heights for sprite placement
     const groundHeightMap = terrainTile.getGroundHeightMap();
     const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     const yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
-    const groundHeights: number[] = [];
+    this.tileXOffset = terrainTile.getIndex().getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
+    this.tileYOffset = terrainTile.getIndex().getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
+    this.groundHeights = [];
     for (let i = 0; i < xCount * yCount; i++) {
-      groundHeights.push(BabylonTerrainTileImpl.setupHeight(i, groundHeightMap));
+      this.groundHeights.push(BabylonTerrainTileImpl.setupHeight(i, groundHeightMap));
     }
-    const shoreSegments = detectShoreline(groundHeights, xCount, yCount);
-    const groundUv2 = computeShoreDistance(shoreSegments, groundHeights, xCount, yCount);
-    this.groundMesh.setVerticesData(VertexBuffer.UV2Kind, groundUv2);
 
     this.container.getChildren().push(this.groundMesh);
     this.groundMesh.receiveShadows = true;
     this.groundMesh.parent = this.container;
 
+    // Placeholder material while the real material loads
+    const avgHeight = this.groundHeights.reduce((a, b) => a + b, 0) / this.groundHeights.length;
+    const placeholder = new StandardMaterial("placeholder", this.rendererService.getScene());
+    placeholder.disableLighting = true;
+    if (avgHeight <= 0) {
+      placeholder.emissiveColor = new Color3(0.12, 0.30, 0.55); // water blue
+    } else {
+      placeholder.emissiveColor = new Color3(0.30, 0.42, 0.18); // land green
+    }
+    this.groundMesh.material = placeholder;
+  }
+
+  private uv2GroundHeightMap: number[] = [];
+  private materialSubmeshes: { materialIndex: MaterialIndex, indexStart: number, indexCount: number }[] = [];
+  private groundUtil: GroundUtil | null = null;
+
+  private buildPhase2_ShoreAndMaterial(): void {
+    const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    const yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+
+    // Shore detection + UV2
+    const shoreSegments = detectShoreline(this.groundHeights, xCount, yCount);
+    const groundUv2 = computeShoreDistance(shoreSegments, this.groundHeights, xCount, yCount);
+    this.groundMesh.setVerticesData(VertexBuffer.UV2Kind, groundUv2);
+
+    BabylonTerrainTileImpl.scheduleIdle(() => this.buildPhase3_Material());
+  }
+
+  private buildPhase3_Material(): void {
+    const terrainTile = this.terrainTile;
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
-    this.groundMaterial = buildGroundMaterial(rendererService.getScene());
+    this.groundMaterial = buildGroundMaterial(this.rendererService.getScene());
     const groundUtilityBlock = <TextureBlock>this.groundMaterial.getBlockByName("GroundUtility");
-    if (groundUtilityBlock) {
-      groundUtilityBlock.texture = new Texture(groundUtil.createGroundTypeTexture().toDataURL(), this.rendererService.getScene());
+    if (groundUtilityBlock && this.groundUtil) {
+      groundUtilityBlock.texture = new Texture(this.groundUtil.createGroundTypeTexture().toDataURL(), this.rendererService.getScene());
       this.groundMaterial.build();
     }
-    let asphaltMaterial = <NodeMaterial>babylonModelService.getBabylonMaterial(groundConfig.getAsphaltBabylonMaterialId());
+    let asphaltMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(groundConfig.getAsphaltBabylonMaterialId());
 
-    const multiMaterial = new MultiMaterial(`Ground ${groundConfig.getInternalName()}`, rendererService.getScene());
+    const multiMaterial = new MultiMaterial(`Ground ${groundConfig.getInternalName()}`, this.rendererService.getScene());
     multiMaterial.subMaterials[MaterialIndex.GROUND] = this.groundMaterial;
     multiMaterial.subMaterials[MaterialIndex.ASPHALT] = asphaltMaterial;
 
+    // Dispose placeholder material and assign the real one
+    if (this.groundMesh.material instanceof StandardMaterial) {
+      this.groundMesh.material.dispose();
+    }
     this.groundMesh!.material = multiMaterial;
 
     this.groundMesh.subMeshes = [];
     const totalVertices = this.groundMesh.getTotalVertices();
-    materialSubmeshes.forEach(materialSubmesh =>
+    this.materialSubmeshes.forEach(materialSubmesh =>
       new SubMesh(materialSubmesh.materialIndex, 0, totalVertices, materialSubmesh.indexStart, materialSubmesh.indexCount, this.groundMesh));
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
-    this.waterMesh = this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container, uv2GroundHeightMap, this.rendererService);
+    // Free references no longer needed
+    this.groundUtil = null;
+    this.materialSubmeshes = [];
+
+    BabylonTerrainTileImpl.scheduleIdle(() => this.buildPhase4_WaterAndObjects());
+  }
+
+  private buildPhase4_WaterAndObjects(): void {
+    const terrainTile = this.terrainTile;
+    let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
+
+    this.waterMesh = this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container, this.uv2GroundHeightMap, this.rendererService);
 
     if (terrainTile.getTerrainTileObjectLists()) {
       this.setupTerrainTileObjects(terrainTile.getTerrainTileObjectLists());
@@ -157,10 +221,15 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.setupSprites();
   }
 
+  private static readonly TERRAIN_OBJECTS_PER_BATCH = 10;
+  private static readonly TERRAIN_OBJECT_BATCH_DELAY = 50;
+
   private setupTerrainTileObjects(terrainTileObjectLists: TerrainTileObjectList[]): void {
+    // Collect all terrain objects to create, then batch-process them
+    const pending: { config: TerrainObjectConfig, model: TerrainObjectModel, zeroRadius: boolean }[] = [];
+
     terrainTileObjectLists.forEach(terrainTileObjectList => {
       try {
-        // Skip if no models
         if (!terrainTileObjectList.terrainObjectModels || terrainTileObjectList.terrainObjectModels.length === 0) {
           return;
         }
@@ -170,23 +239,26 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           return;
         }
         terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
-          // Skip invalid models
           if (!terrainObjectModel || !terrainObjectModel.position) {
             return;
           }
-          this.createTerrainObject(terrainObjectConfig, terrainObjectModel, terrainObjectConfig.getRadius() <= 0)
+          pending.push({ config: terrainObjectConfig, model: terrainObjectModel, zeroRadius: terrainObjectConfig.getRadius() <= 0 });
         });
       } catch (error) {
         console.error(terrainTileObjectList);
         console.error(error);
       }
     });
+
+    this.createTerrainObjectsBatched(pending, 0);
   }
 
-  private createTerrainObject(terrainObjectConfig: TerrainObjectConfig, terrainObjectModel: TerrainObjectModel, zeroRadius: boolean): void {
-    try {
-      setTimeout(() => {
-        let terrainObject = BabylonTerrainTileImpl.createTerrainObject(terrainObjectModel, terrainObjectConfig, this.babylonModelService, this.container);
+  private createTerrainObjectsBatched(pending: { config: TerrainObjectConfig, model: TerrainObjectModel, zeroRadius: boolean }[], index: number): void {
+    const end = Math.min(index + BabylonTerrainTileImpl.TERRAIN_OBJECTS_PER_BATCH, pending.length);
+    for (let i = index; i < end; i++) {
+      const { config, model, zeroRadius } = pending[i];
+      try {
+        let terrainObject = BabylonTerrainTileImpl.createTerrainObject(model, config, this.babylonModelService, this.container);
         if (!zeroRadius) {
           if (this.shadowCaster) {
             this.shadowCasterObjects.push(terrainObject);
@@ -197,10 +269,12 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
             childMesh.actionManager = actionManager;
           });
         }
-
-      }, 10);
-    } catch (error) {
-      console.error(error);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    if (end < pending.length) {
+      setTimeout(() => this.createTerrainObjectsBatched(pending, end), BabylonTerrainTileImpl.TERRAIN_OBJECT_BATCH_DELAY);
     }
   }
 
@@ -607,11 +681,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     });
   }
 
-  private static readonly SPLATTER_UV_SCALE = 0.012;
+  private static readonly SPLATTER_UV_SCALE = 0.006;
   private static readonly SPRITE_CELL_SIZE = 64;
   private static readonly SPRITES_PER_TILE = 2500;
-  private static readonly SPRITES_PER_BATCH = 50;
-  private static readonly SPRITE_BATCH_DELAY = 10;
+  private static readonly SPRITES_PER_BATCH = 200;
+  private static readonly SPRITE_BATCH_DELAY = 50;
   private static permInitialized = false;
 
   private static ensurePermInitialized(): void {
@@ -644,6 +718,17 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
     // Transition zone — randomly pick based on splatter value
     return Math.random() < sv ? TerrainZone.UPPER : TerrainZone.UNDER;
+  }
+
+  /** Fast height lookup from cached heightmap — no raycasting */
+  private getHeightAt(worldX: number, worldZ: number): number {
+    const localX = Math.floor(worldX - this.tileXOffset);
+    const localY = Math.floor(worldZ - this.tileYOffset);
+    const xCount = BabylonTerrainTileImpl.NODE_X_COUNT + 1;
+    if (localX < 0 || localX >= xCount || localY < 0 || localY >= BabylonTerrainTileImpl.NODE_Y_COUNT + 1) {
+      return BabylonTerrainTileImpl.HEIGHT_DEFAULT;
+    }
+    return this.groundHeights[localX + localY * xCount] ?? BabylonTerrainTileImpl.HEIGHT_DEFAULT;
   }
 
   private setupSprites() {
@@ -679,12 +764,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         continue;
       }
 
-      const pickingInfo = this.rendererService.pickGroundMeshOnly(GwtInstance.newDecimalPosition(x, z));
-      if (!pickingInfo || !pickingInfo.hit) {
-        continue;
-      }
-
-      const height = pickingInfo.pickedPoint!.y;
+      const height = this.getHeightAt(x, z);
       const zone = BabylonTerrainTileImpl.getTerrainZone(x, z, height);
 
       // No sprites below -5m

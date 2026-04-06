@@ -68,7 +68,7 @@ function warpedFbmTile(x: number, y: number, octaves: number, warpStr: number, w
 
 export const SEED = 77;
 const SIZE = 512;
-const SCALE = 8;
+const SCALE = 4;
 const WARP_STRENGTH = 1.5;
 const SMOOTHSTEP_EDGE0 = 0.495;
 const SMOOTHSTEP_EDGE1 = 0.505;
@@ -81,7 +81,7 @@ export function splatterValue(nx: number, ny: number): number {
   const detail = fbmTile(nx * SCALE * 12, ny * SCALE * 12, 3, 2.0, 0.5, SCALE * 12, SCALE * 12) * 0.1;
   // Smooth transition instead of hard binary cutoff
   const v = raw + detail;
-  const t = clamp01((v - 0.45) / 0.1); // smoothly ramp from 0.45 to 0.55
+  const t = clamp01((v - 0.48) / 0.04); // sharply ramp from 0.48 to 0.52
   return t * t * (3 - 2 * t); // smoothstep
 }
 

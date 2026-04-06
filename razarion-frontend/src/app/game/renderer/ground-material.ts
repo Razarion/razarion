@@ -114,7 +114,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   worldXZ.xy.connectTo(uvSplatter.input);
   uvSplatterScale.output.connectTo(uvSplatter.factor);
 
-  const uvSplatterUpperUnderVal = floatInput("uv splatter upper/under", 0.012);
+  const uvSplatterUpperUnderVal = floatInput("uv splatter upper/under", 0.006);
   const uvSplatterUpperUnder = new ScaleBlock("Scale splatter upper/under");
   worldXZ.xy.connectTo(uvSplatterUpperUnder.input);
   uvSplatterUpperUnderVal.output.connectTo(uvSplatterUpperUnder.factor);
@@ -129,12 +129,12 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   // Mountain factor with noise for organic edge
   const mountainBlendRaw = new ScaleBlock("Scale mountain blend");
   groundUtility.r.connectTo(mountainBlendRaw.input);
-  floatInput("mountain blend factor", 1.5).output.connectTo(mountainBlendRaw.factor);
+  floatInput("mountain blend factor", 1).output.connectTo(mountainBlendRaw.factor);
 
   // Noise to break up the straight mountain/grass edgee
   const uvMountainNoise = new ScaleBlock("Scale uv mountain noise");
   worldXZ.xy.connectTo(uvMountainNoise.input);
-  floatInput("mountain noise uv scale", 0.7).output.connectTo(uvMountainNoise.factor);
+  floatInput("mountain noise uv scale", 0.2).output.connectTo(uvMountainNoise.factor);
 
   const mountainNoiseTex = new TextureBlock("Mountain noise");
   uvMountainNoise.output.connectTo(mountainNoiseTex.uv);
@@ -147,7 +147,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
 
   const mountainNoiseScaled = new ScaleBlock("Mountain noise scaled");
   mountainNoiseCenter.output.connectTo(mountainNoiseScaled.input);
-  floatInput("mountain noise strength", 0.5).output.connectTo(mountainNoiseScaled.factor);
+  floatInput("mountain noise strength", 1).output.connectTo(mountainNoiseScaled.factor);
 
   const mountainBlendNoisy = new AddBlock("Mountain blend noisy");
   mountainBlendRaw.output.connectTo(mountainBlendNoisy.left);
@@ -155,8 +155,8 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
 
   const mountainBlend = new SmoothStepBlock("Mountain blend step");
   mountainBlendNoisy.output.connectTo(mountainBlend.value);
-  floatInput("mountain edge0", 0.4).output.connectTo(mountainBlend.edge0);
-  floatInput("mountain edge1", 0.6).output.connectTo(mountainBlend.edge1);
+  floatInput("mountain edge0", 0.6).output.connectTo(mountainBlend.edge0);
+  floatInput("mountain edge1", 1).output.connectTo(mountainBlend.edge1);
 
   // ========== Beach detection ==========
   // Splatter texture — large scale (overall shape)
@@ -224,7 +224,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   groundUnderDiffuse.texture = new Texture(TEX_PATH + "ground-under-diffuse.jpg", scene);
 
   // ========== TriPlanar for mountain (no stretching on steep faces) ==========
-  const triPlanarScale = floatInput("triplanar scale", 0.3);
+  const triPlanarScale = floatInput("triplanar scale", 0.2);
   const triPlanarPos = new ScaleBlock("Scale triplanar pos");
   worldPos.output.connectTo(triPlanarPos.input);
   triPlanarScale.output.connectTo(triPlanarPos.factor);
@@ -243,7 +243,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   // Darken mountain diffuse for better contrast against grass
   const mountainDiffuseDarken = new ScaleBlock("Mountain diffuse darken");
   mountainDiffuseTriplanar.rgb.connectTo(mountainDiffuseDarken.input);
-  floatInput("mountain darken", 0.65).output.connectTo(mountainDiffuseDarken.factor);
+  floatInput("mountain darken", 1.0).output.connectTo(mountainDiffuseDarken.factor);
 
   // Blend AO: lerp(diffuse * AO, diffuse, aoStrength) — 0 = full AO, 1 = no AO
   const mountainDiffuseMulAO = new MultiplyBlock("Mountain diffuse * AO");
@@ -252,7 +252,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   const mountainDiffuseAO = new LerpBlock("Mountain AO blend");
   mountainDiffuseMulAO.output.connectTo(mountainDiffuseAO.left);
   mountainDiffuseDarken.output.connectTo(mountainDiffuseAO.right);
-  floatInput("mountain ao strength", 0.25).output.connectTo(mountainDiffuseAO.gradient);
+  floatInput("mountain ao strength", 0.7).output.connectTo(mountainDiffuseAO.gradient);
 
   // Lerp ground upper/under by height
   const diffuseHeightLerp = new LerpBlock("Lerp diffuse height");
@@ -438,7 +438,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   const strengthBeach = floatInput("strength beach", 0.44);
   const strengthGroundUpper = floatInput("strength ground upper", 1);
   const strengthGroundUnder = floatInput("strength ground under", 0.5);
-  const strengthMountain = floatInput("strength mountain", 8);
+  const strengthMountain = floatInput("strength mountain", 1);
 
   // Lerp upper/under bump strength by heightStep
   const strengthGroundLerp = new LerpBlock("Lerp strength ground upper/under");
@@ -504,7 +504,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
 
   // ========== Glossiness ==========
   const glossGround = floatInput("glossiness ground", 0.45);
-  const glossMountain = floatInput("glossiness mountain", 0.2);
+  const glossMountain = floatInput("glossiness mountain", 0.36);
   const glossLerp = new LerpBlock("Lerp glossiness");
   glossGround.output.connectTo(glossLerp.left);
   glossMountain.output.connectTo(glossLerp.right);
@@ -519,7 +519,7 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
 
   // ========== Specular color ==========
   const specGround = color3Input("Specular color ground", 0.227, 0.239, 0.227);
-  const specMountain = color3Input("Specular color mountain", 0.15, 0.15, 0.15);
+  const specMountain = color3Input("Specular color mountain", 0.20, 0.16, 0.16);
   const specLerp = new LerpBlock("Lerp specular");
   specGround.output.connectTo(specLerp.left);
   specMountain.output.connectTo(specLerp.right);
