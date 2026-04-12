@@ -24,6 +24,8 @@ public class BuilderTypeEntity extends BaseEntity {
     private double buildRange;
     private double buildRangeOtherTerrain;
     private double progress;
+    private double buildAnimationWarmupSeconds;
+    private double buildAnimationCooldownSeconds;
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD",
             joinColumns = @JoinColumn(name = "builder"),
@@ -34,7 +36,9 @@ public class BuilderTypeEntity extends BaseEntity {
         BuilderType builderType = new BuilderType()
                 .range(buildRange)
                 .rangeOtherTerrain(buildRangeOtherTerrain)
-                .progress(progress);
+                .progress(progress)
+                .buildAnimationWarmupSeconds(buildAnimationWarmupSeconds)
+                .buildAnimationCooldownSeconds(buildAnimationCooldownSeconds);
 
         if (ableToBuilds != null && !ableToBuilds.isEmpty()) {
             List<Integer> ableToBuildIds = new ArrayList<>();
@@ -50,6 +54,8 @@ public class BuilderTypeEntity extends BaseEntity {
         buildRange = builderType.getRange();
         buildRangeOtherTerrain = builderType.getRangeOtherTerrain();
         progress = builderType.getProgress();
+        buildAnimationWarmupSeconds = builderType.getBuildAnimationWarmupSeconds();
+        buildAnimationCooldownSeconds = builderType.getBuildAnimationCooldownSeconds();
         if (builderType.getAbleToBuildIds() != null && !builderType.getAbleToBuildIds().isEmpty()) {
             if (ableToBuilds == null) {
                 ableToBuilds = new ArrayList<>();

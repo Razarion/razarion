@@ -32,6 +32,12 @@ public class SyncBaseItemInfo {
     private DecimalPosition toBeBuildPosition;
     private Integer toBeBuiltTypeId;
     private Integer currentBuildup;
+    /**
+     * True while the SyncBuilder is in its build phase (warmup, active building, or cooldown).
+     * Synced explicitly so slaves see the build animation phase even when currentBuildup is still
+     * null during the warmup window.
+     */
+    private Boolean builderBuilding;
     private Double factoryBuildupProgress;
     private Integer target;
     private double health;
@@ -102,6 +108,14 @@ public class SyncBaseItemInfo {
 
     public void setCurrentBuildup(Integer currentBuildup) {
         this.currentBuildup = currentBuildup;
+    }
+
+    public Boolean getBuilderBuilding() {
+        return builderBuilding;
+    }
+
+    public void setBuilderBuilding(Boolean builderBuilding) {
+        this.builderBuilding = builderBuilding;
     }
 
     public Double getFactoryBuildupProgress() {
@@ -256,6 +270,11 @@ public class SyncBaseItemInfo {
 
     public SyncBaseItemInfo currentBuildup(Integer currentBuildup) {
         setCurrentBuildup(currentBuildup);
+        return this;
+    }
+
+    public SyncBaseItemInfo builderBuilding(Boolean builderBuilding) {
+        setBuilderBuilding(builderBuilding);
         return this;
     }
 

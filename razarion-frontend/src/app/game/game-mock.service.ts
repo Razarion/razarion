@@ -152,6 +152,14 @@ export class GameMockService {
               getAbleToBuildIds(): number[] {
                 return [];
               }
+
+              getBuildAnimationWarmupSeconds(): number {
+                return 0;
+              }
+
+              getBuildAnimationCooldownSeconds(): number {
+                return 0;
+              }
             }
           }
 

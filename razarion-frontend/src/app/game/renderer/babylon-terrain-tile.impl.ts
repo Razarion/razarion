@@ -221,8 +221,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.setupSprites();
   }
 
-  private static readonly TERRAIN_OBJECTS_PER_BATCH = 10;
-  private static readonly TERRAIN_OBJECT_BATCH_DELAY = 50;
+  private static readonly TERRAIN_OBJECTS_PER_BATCH = 100;
+  private static readonly TERRAIN_OBJECT_BATCH_DELAY = 16;
 
   private setupTerrainTileObjects(terrainTileObjectLists: TerrainTileObjectList[]): void {
     // Collect all terrain objects to create, then batch-process them
@@ -684,8 +684,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private static readonly SPLATTER_UV_SCALE = 0.006;
   private static readonly SPRITE_CELL_SIZE = 64;
   private static readonly SPRITES_PER_TILE = 2500;
-  private static readonly SPRITES_PER_BATCH = 200;
-  private static readonly SPRITE_BATCH_DELAY = 50;
+  private static readonly SPRITES_PER_BATCH = 1000;
+  private static readonly SPRITE_BATCH_DELAY = 16;
   private static permInitialized = false;
 
   private static ensurePermInitialized(): void {

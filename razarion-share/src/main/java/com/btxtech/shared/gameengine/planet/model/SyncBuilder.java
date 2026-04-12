@@ -57,6 +57,17 @@ public class SyncBuilder extends SyncBaseAbility {
     private DecimalPosition toBeBuildPosition;
     private BaseItemType toBeBuiltType;
     private boolean building;
+    /**
+     * Sentinel -1 = not in warmup. >= 0 = ticks remaining before the target item is created and
+     * the first addBuildup runs. Set on the first in-range tick after the builder finished turning,
+     * decremented each subsequent tick. Drives the client-side build intro animation window.
+     */
+    private int warmupTicksRemaining = -1;
+    /**
+     * Sentinel -1 = not in cooldown. >= 0 = ticks remaining after the target reached buildup 1.0
+     * before the build job is released via stop(). Drives the client-side build outro animation window.
+     */
+    private int cooldownTicksRemaining = -1;
 
     @Inject
     public SyncBuilder(SyncService syncService,
@@ -85,6 +96,8 @@ public class SyncBuilder extends SyncBaseAbility {
     public synchronized boolean tick() {
         if (!isInRange()) {
             building = false;
+            warmupTicksRemaining = -1;
+            cooldownTicksRemaining = -1;
             if (!getAbstractSyncPhysical().canMove()) {
                 throw new IllegalStateException("SyncBuilder out of range from build position and getSyncPhysicalArea can not move: " + getSyncBaseItem());
             }
@@ -111,7 +124,6 @@ public class SyncBuilder extends SyncBaseAbility {
         }
 
         if (currentBuildup == null) {
-            building = false;
             if (toBeBuiltType == null || toBeBuildPosition == null) {
                 throw new IllegalArgumentException("Invalid attributes |" + toBeBuiltType + "|" + toBeBuildPosition);
             }
@@ -120,6 +132,23 @@ public class SyncBuilder extends SyncBaseAbility {
                     stop();
                     return false;
                 }
+                // Warmup phase: hold the builder in "building" state for N ticks before creating
+                // the target item, so the client gets time to play the build intro animation.
+                if (warmupTicksRemaining < 0) {
+                    warmupTicksRemaining = computeWarmupTicks();
+                    if (warmupTicksRemaining > 0) {
+                        building = true;
+                        // Notify slaves about the new "building" state so they also play the intro
+                        syncService.notifySendSyncBaseItem(getSyncBaseItem());
+                    }
+                }
+                if (warmupTicksRemaining > 0) {
+                    building = true;
+                    warmupTicksRemaining--;
+                    return true;
+                }
+                // warmupTicksRemaining is now 0 — warmup complete. Leave at 0 (not -1) so the
+                // else branch sees "already warmed up" and does not repeat.
                 try {
                     currentBuildup = baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
                     syncService.notifySendSyncBaseItem(currentBuildup, true);
@@ -146,8 +175,28 @@ public class SyncBuilder extends SyncBaseAbility {
                 return false;
             }
             if (currentBuildup.isBuildup()) {
-                stop();
-                return false;
+                // Already at buildup 1.0 (e.g. completed by another builder, or we just finished)
+                // — run the cooldown phase before releasing the build job.
+                return tickCooldown();
+            }
+
+            // Warmup phase for continuing an existing partially-built target
+            // (BuilderFinalizeCommand). warmupTicksRemaining == 0 means the null branch above
+            // already did the warmup for a fresh build — skip. warmupTicksRemaining == -1 means
+            // this is the first time we enter the else branch for this build job.
+            // Runs on BOTH master and slave so the slave's local simulation does not advance
+            // buildup while the intro animation plays.
+            if (warmupTicksRemaining < 0) {
+                warmupTicksRemaining = computeWarmupTicks();
+                if (warmupTicksRemaining > 0) {
+                    building = true;
+                    syncService.notifySendSyncBaseItem(getSyncBaseItem());
+                }
+            }
+            if (warmupTicksRemaining > 0) {
+                building = true;
+                warmupTicksRemaining--;
+                return true;
             }
 
             building = true;
@@ -156,8 +205,7 @@ public class SyncBuilder extends SyncBaseAbility {
                 currentBuildup.addBuildup(buildFactor);
                 if (currentBuildup.isBuildup()) {
                     syncService.notifySendSyncBaseItem(currentBuildup);
-                    stop();
-                    return false;
+                    return tickCooldown();
                 }
                 return true;
             } else {
@@ -166,6 +214,49 @@ public class SyncBuilder extends SyncBaseAbility {
                 return true;
             }
         }
+    }
+
+    /**
+     * Cooldown phase: keep the builder in "building" state for N ticks after the target reached
+     * buildup 1.0, so the client has time to play the build outro animation. Returns true while
+     * the cooldown is still ticking, false (and calls stop()) once it's done.
+     */
+    private boolean tickCooldown() {
+        if (cooldownTicksRemaining < 0) {
+            cooldownTicksRemaining = computeCooldownTicks();
+            if (cooldownTicksRemaining > 0) {
+                building = true;
+                // Notify slaves so they keep showing the build phase during the cooldown window
+                syncService.notifySendSyncBaseItem(getSyncBaseItem());
+            }
+        }
+        if (cooldownTicksRemaining > 0) {
+            building = true;
+            cooldownTicksRemaining--;
+            return true;
+        }
+        cooldownTicksRemaining = -1;
+        stop();
+        return false;
+    }
+
+    private int computeWarmupTicks() {
+        return Math.max(0, (int) Math.round(builderType.getBuildAnimationWarmupSeconds() * PlanetService.TICKS_PER_SECONDS));
+    }
+
+    private int computeCooldownTicks() {
+        return Math.max(0, (int) Math.round(builderType.getBuildAnimationCooldownSeconds() * PlanetService.TICKS_PER_SECONDS));
+    }
+
+    /**
+     * The position the build animation/beam should aim at. During warmup the target item does not
+     * exist yet, so we fall back to the requested build position.
+     */
+    public DecimalPosition getEffectiveBuildingPosition() {
+        if (currentBuildup != null) {
+            return currentBuildup.getAbstractSyncPhysical().getPosition();
+        }
+        return toBeBuildPosition;
     }
 
     private double setupBuildFactor() {
@@ -204,6 +295,8 @@ public class SyncBuilder extends SyncBaseAbility {
         toBeBuiltType = null;
         toBeBuildPosition = null;
         building = false;
+        warmupTicksRemaining = -1;
+        cooldownTicksRemaining = -1;
         if (propagationNeeded) {
             gameLogicService.onSynBuilderStopped(getSyncBaseItem(), tmpCurrentBuildup);
         }
@@ -218,14 +311,24 @@ public class SyncBuilder extends SyncBaseAbility {
             toBeBuiltType = null;
         }
         Integer currentBuildupId = syncBaseItemInfo.getCurrentBuildup();
+        boolean hadNoBuildup = (currentBuildup == null);
         if (currentBuildupId != null) {
             currentBuildup = syncItemContainerService.getSyncBaseItemSave(currentBuildupId);
         } else {
             currentBuildup = null;
         }
-        if (currentBuildup == null) {
-            building = false;
+        // When the master just created the target item (null -> non-null), mark warmup as done
+        // so the else branch does not trigger a redundant second warmup on the slave.
+        // For continue-build (BuilderFinalizeCommand), currentBuildup was already non-null from
+        // the start, so hadNoBuildup is false and warmupTicksRemaining stays at -1, enabling
+        // the else-branch warmup correctly.
+        if (hadNoBuildup && currentBuildup != null) {
+            warmupTicksRemaining = 0;
         }
+        // Mirror the master's building flag explicitly so the slave correctly sees the warmup
+        // window (where currentBuildup is still null but the build animation should already play).
+        Boolean syncedBuilding = syncBaseItemInfo.getBuilderBuilding();
+        building = syncedBuilding != null && syncedBuilding;
     }
 
     @Override
@@ -237,6 +340,7 @@ public class SyncBuilder extends SyncBaseAbility {
         if (currentBuildup != null) {
             syncBaseItemInfo.setCurrentBuildup(currentBuildup.getId());
         }
+        syncBaseItemInfo.setBuilderBuilding(building);
     }
 
     public void executeCommand(BuilderCommand builderCommand) {

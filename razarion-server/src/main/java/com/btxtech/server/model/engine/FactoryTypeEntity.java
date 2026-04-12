@@ -22,6 +22,10 @@ import java.util.List;
 public class FactoryTypeEntity extends BaseEntity {
 
     private double progress;
+    private double animationIntroSeconds;
+    private double animationOutroSeconds;
+    private double rallyOffsetX;
+    private double rallyOffsetY;
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD",
             joinColumns = @JoinColumn(name = "factory"),
@@ -29,7 +33,7 @@ public class FactoryTypeEntity extends BaseEntity {
     private List<BaseItemTypeEntity> ableToBuilds;
 
     public FactoryType toFactoryType() {
-        FactoryType factoryType = new FactoryType().setProgress(progress);
+        FactoryType factoryType = new FactoryType().setProgress(progress).setAnimationIntroSeconds(animationIntroSeconds).setAnimationOutroSeconds(animationOutroSeconds).setRallyOffsetX(rallyOffsetX).setRallyOffsetY(rallyOffsetY);
         if (ableToBuilds != null && !ableToBuilds.isEmpty()) {
             List<Integer> ableToBuildIds = new ArrayList<>();
             for (BaseItemTypeEntity ableToBuild : ableToBuilds) {
@@ -42,6 +46,10 @@ public class FactoryTypeEntity extends BaseEntity {
 
     public void fromFactoryTypeEntity(FactoryType factoryType, BaseItemTypeService baseItemTypeCrudPersistence) {
         progress = factoryType.getProgress();
+        animationIntroSeconds = factoryType.getAnimationIntroSeconds();
+        animationOutroSeconds = factoryType.getAnimationOutroSeconds();
+        rallyOffsetX = factoryType.getRallyOffsetX();
+        rallyOffsetY = factoryType.getRallyOffsetY();
         if (factoryType.getAbleToBuildIds() != null && !factoryType.getAbleToBuildIds().isEmpty()) {
             if (ableToBuilds == null) {
                 ableToBuilds = new ArrayList<>();

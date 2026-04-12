@@ -353,6 +353,10 @@ export interface BuilderType {
   checkAbleToBuild(itemTypeId: number): boolean;
 
   getAbleToBuildIds(): number[];
+
+  getBuildAnimationWarmupSeconds(): number;
+
+  getBuildAnimationCooldownSeconds(): number;
 }
 
 export interface ItemContainerType {
@@ -361,6 +365,10 @@ export interface ItemContainerType {
 
 export interface FactoryType {
   getAbleToBuildIds(): number[];
+  getAnimationIntroSeconds(): number;
+  getAnimationOutroSeconds(): number;
+  getRallyOffsetX(): number;
+  getRallyOffsetY(): number;
 }
 
 export interface AudioItemConfig {
@@ -599,7 +607,7 @@ export interface BabylonBaseItem extends BabylonItem {
 
   setBuildup(buildup: number): void;
 
-  setConstructing(progress: number): void;
+  setConstructing(progress: number, constructingBaseItemTypeId: number): void;
 
   setIdle(idle: boolean): void;
 

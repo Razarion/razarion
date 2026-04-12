@@ -207,7 +207,7 @@ public class BaseItemUiService {
                 babylonBaseItem.setHarvestingPosition(toDecimalPosition(nativeSyncBaseItemTickInfo.harvestingResourcePosition));
                 babylonBaseItem.setBuildingPosition(toDecimalPosition(nativeSyncBaseItemTickInfo.buildingPosition));
                 babylonBaseItem.setBuildup(nativeSyncBaseItemTickInfo.buildup);
-                babylonBaseItem.setConstructing(nativeSyncBaseItemTickInfo.constructing);
+                babylonBaseItem.setConstructing(nativeSyncBaseItemTickInfo.constructing, nativeSyncBaseItemTickInfo.constructingBaseItemTypeId);
             } catch (Throwable t) {
                 logger.log(Level.WARNING, t.getMessage(), t);
             }

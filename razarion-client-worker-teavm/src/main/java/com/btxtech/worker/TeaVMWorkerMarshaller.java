@@ -1249,6 +1249,7 @@ public final class TeaVMWorkerMarshaller {
         }
         info.setToBeBuiltTypeId(obj.getNullableInt("toBeBuiltTypeId"));
         info.setCurrentBuildup(obj.getNullableInt("currentBuildup"));
+        info.setBuilderBuilding(obj.getNullableBoolean("builderBuilding"));
         info.setFactoryBuildupProgress(obj.getNullableDouble("factoryBuildupProgress"));
         info.setTarget(obj.getNullableInt("target"));
         info.setFollowTarget(obj.getNullableBoolean("followTarget"));
@@ -1812,6 +1813,10 @@ public final class TeaVMWorkerMarshaller {
     private static FactoryType convertFactoryType(JsObject obj) {
         FactoryType type = new FactoryType();
         type.setProgress(obj.getDouble("progress"));
+        type.setAnimationIntroSeconds(obj.getDouble("animationIntroSeconds"));
+        type.setAnimationOutroSeconds(obj.getDouble("animationOutroSeconds"));
+        type.setRallyOffsetX(obj.getDouble("rallyOffsetX"));
+        type.setRallyOffsetY(obj.getDouble("rallyOffsetY"));
         JSObject ableToBuildArr = obj.get("ableToBuildIds");
         if (!JsUtils.isNullOrUndefined(ableToBuildArr)) {
             type.setAbleToBuildIds(convertIntegerList(ableToBuildArr));
@@ -1831,6 +1836,8 @@ public final class TeaVMWorkerMarshaller {
         type.setRange(obj.getDouble("range"));
         type.setRangeOtherTerrain(obj.getDouble("rangeOtherTerrain"));
         type.setProgress(obj.getDouble("progress"));
+        type.setBuildAnimationWarmupSeconds(obj.getDouble("buildAnimationWarmupSeconds"));
+        type.setBuildAnimationCooldownSeconds(obj.getDouble("buildAnimationCooldownSeconds"));
         JSObject ableToBuildArr = obj.get("ableToBuildIds");
         if (!JsUtils.isNullOrUndefined(ableToBuildArr)) {
             type.setAbleToBuildIds(convertIntegerList(ableToBuildArr));

@@ -492,6 +492,10 @@ public class JsonDeserializer {
         if (json == null) return null;
         FactoryType r = new FactoryType();
         r.setProgress(json.getDouble("progress"));
+        r.setAnimationIntroSeconds(json.getDouble("animationIntroSeconds"));
+        r.setAnimationOutroSeconds(json.getDouble("animationOutroSeconds"));
+        r.setRallyOffsetX(json.getDouble("rallyOffsetX"));
+        r.setRallyOffsetY(json.getDouble("rallyOffsetY"));
         r.setAbleToBuildIds(intList(json, "ableToBuildIds"));
         return r;
     }
@@ -502,6 +506,8 @@ public class JsonDeserializer {
         r.setRange(json.getDouble("range"));
         r.setRangeOtherTerrain(json.getDouble("rangeOtherTerrain"));
         r.setProgress(json.getDouble("progress"));
+        r.setBuildAnimationWarmupSeconds(json.getDouble("buildAnimationWarmupSeconds"));
+        r.setBuildAnimationCooldownSeconds(json.getDouble("buildAnimationCooldownSeconds"));
         r.setAbleToBuildIds(intList(json, "ableToBuildIds"));
         return r;
     }

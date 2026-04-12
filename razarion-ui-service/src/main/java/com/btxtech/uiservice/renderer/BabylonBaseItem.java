@@ -15,7 +15,7 @@ public interface BabylonBaseItem extends BabylonItem {
 
     void setBuildup(double buildup);
 
-    void setConstructing(double progress);
+    void setConstructing(double progress, int constructingBaseItemTypeId);
 
     void setIdle(boolean idle);
 

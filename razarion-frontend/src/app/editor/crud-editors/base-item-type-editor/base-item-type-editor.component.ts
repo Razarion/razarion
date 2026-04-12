@@ -75,6 +75,8 @@ export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemT
         range = 5;
         rangeOtherTerrain = 15
         progress = 1;
+        buildAnimationWarmupSeconds = 0;
+        buildAnimationCooldownSeconds = 0;
         ableToBuildIds = [];
       };
     } else {
@@ -86,6 +88,10 @@ export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemT
     if (avtive) {
       this.baseItemType.factoryType = new class implements FactoryType {
         progress = 1;
+        animationIntroSeconds = 0;
+        animationOutroSeconds = 0;
+        rallyOffsetX = 0;
+        rallyOffsetY = 0;
         ableToBuildIds = [];
       };
     } else {

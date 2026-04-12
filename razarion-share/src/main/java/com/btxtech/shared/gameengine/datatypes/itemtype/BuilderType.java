@@ -29,6 +29,18 @@ public class BuilderType {
     private double range;
     private double rangeOtherTerrain;
     private double progress;
+    /**
+     * Seconds the builder waits at the build position BEFORE starting to add buildup to the target.
+     * Used to give the client time to play a "build intro" animation (e.g. arm extending) before
+     * the target item is created and the build beam starts. 0 = no warmup (legacy behavior).
+     */
+    private double buildAnimationWarmupSeconds;
+    /**
+     * Seconds the builder stays at the build position AFTER the target reaches buildup 1.0,
+     * before releasing the build job. Used to give the client time to play a "build outro"
+     * animation (e.g. arm retracting). 0 = no cooldown (legacy behavior).
+     */
+    private double buildAnimationCooldownSeconds;
     private List<Integer> ableToBuildIds;
 
     public double getRange() {
@@ -55,6 +67,22 @@ public class BuilderType {
         this.progress = progress;
     }
 
+    public double getBuildAnimationWarmupSeconds() {
+        return buildAnimationWarmupSeconds;
+    }
+
+    public void setBuildAnimationWarmupSeconds(double buildAnimationWarmupSeconds) {
+        this.buildAnimationWarmupSeconds = buildAnimationWarmupSeconds;
+    }
+
+    public double getBuildAnimationCooldownSeconds() {
+        return buildAnimationCooldownSeconds;
+    }
+
+    public void setBuildAnimationCooldownSeconds(double buildAnimationCooldownSeconds) {
+        this.buildAnimationCooldownSeconds = buildAnimationCooldownSeconds;
+    }
+
     public List<Integer> getAbleToBuildIds() {
         return ableToBuildIds;
     }
@@ -75,6 +103,16 @@ public class BuilderType {
 
     public BuilderType progress(double progress) {
         setProgress(progress);
+        return this;
+    }
+
+    public BuilderType buildAnimationWarmupSeconds(double buildAnimationWarmupSeconds) {
+        setBuildAnimationWarmupSeconds(buildAnimationWarmupSeconds);
+        return this;
+    }
+
+    public BuilderType buildAnimationCooldownSeconds(double buildAnimationCooldownSeconds) {
+        setBuildAnimationCooldownSeconds(buildAnimationCooldownSeconds);
         return this;
     }
 

@@ -201,7 +201,7 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         }
 
         @Override
-        public void setConstructing(double progress) {
+        public void setConstructing(double progress, int constructingBaseItemTypeId) {
 
         }
 

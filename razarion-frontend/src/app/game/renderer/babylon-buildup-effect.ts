@@ -169,8 +169,99 @@ export class BabylonBuildupEffect {
     };
     this.scene.registerBeforeRender(this.discRenderCallback);
 
-    // Spark particle system around the ring with animated sprite sheet
-    const ps = new ParticleSystem("BuildupSparks", 200, this.scene);
+    this.particleSystem = BabylonBuildupEffect.createLightningSparkParticles(
+      this.scene, this.scanLine as Mesh, this.radius, this.radius);
+  }
+
+  /**
+   * Like {@link createRing}, but creates a rectangular scan plate sized to a specific footprint.
+   * Used by factories where the visible "scan area" is a rectangle defined by the column layout
+   * (rather than a building's circular collision radius). The torus outline is replaced with an
+   * invisible parent transform; the holographic discs become rectangular planes that fill the
+   * footprint and pulse via the same animation as createRing.
+   *
+   * Compared to createRing: brighter glow, higher emissive, alpha never drops below 0.6, and the
+   * plates always cover at least 70% of full size — so the effect stays visually dominant rather
+   * than fading to invisible at the cycle minimum.
+   *
+   * @param width local-X extent of the scan plate (column width)
+   * @param depth local-Z extent of the scan plate (column depth)
+   */
+  createRectangularScan(width: number, depth: number): void {
+    // Invisible thin plane acts as the scanLine parent so its Y position can be moved per-tick
+    // (scanLine is the public hook the caller animates).
+    this.scanLine = MeshBuilder.CreatePlane("BuildupScanLineRect", {width: 0.01, height: 0.01}, this.scene);
+    this.scanLine.parent = this.container;
+    this.scanLine.isPickable = false;
+    this.scanLine.isVisible = false;
+
+    const gl = new GlowLayer("BuildupGlow", this.scene, {
+      blurKernelSize: 128,
+      mainTextureFixedSize: 256
+    });
+    gl.intensity = 10.0;
+    this.glowLayer = gl;
+
+    const holoTex = BabylonBuildupEffect.createHologramTexture(this.scene);
+
+    const createPlate = (name: string): Mesh => {
+      const plate = MeshBuilder.CreatePlane(name, {width, height: depth}, this.scene);
+      plate.parent = this.scanLine;
+      plate.rotation.x = Math.PI / 2;
+      plate.isPickable = false;
+
+      const mat = new StandardMaterial(name + "Mat", this.scene);
+      mat.emissiveColor = new Color3(0, 6, 6);
+      mat.diffuseColor = new Color3(0, 0, 0);
+      mat.disableLighting = true;
+      mat.alpha = 1.0;
+      mat.backFaceCulling = false;
+      mat.useEmissiveAsIllumination = true;
+      mat.emissiveTexture = holoTex;
+      mat.opacityTexture = holoTex;
+      plate.material = mat;
+      gl.addIncludedOnlyMesh(plate);
+      return plate;
+    };
+
+    // Constant base plate: always at full size and full alpha so the scan area is unmistakable.
+    this.gridDisc = createPlate("BuildupRectBase");
+    this.gridDisc.scaling.set(1, 1, 1);
+    (this.gridDisc.material as StandardMaterial).alpha = 1.0;
+
+    // Pulsing overlay plate: oscillates between 70% and 100% scale and 0.6→1.0 alpha so the effect
+    // breathes without ever fading out completely.
+    this.gridDisc2 = createPlate("BuildupRectPulse");
+    this.gridDisc2.position.y = 0.02;
+
+    const cycleDuration = 1500;
+    const startTime = Date.now();
+
+    this.discRenderCallback = () => {
+      const elapsed = Date.now() - startTime;
+      const t = (elapsed % cycleDuration) / cycleDuration;
+      const wave = Math.sin(t * Math.PI * 2); // -1 .. 1
+      const scale = 0.85 + 0.15 * wave; // 0.7 .. 1.0
+      const alpha = 0.8 + 0.2 * wave; // 0.6 .. 1.0
+
+      if (this.gridDisc2) {
+        this.gridDisc2.scaling.set(scale, scale, scale);
+        (this.gridDisc2.material as StandardMaterial).alpha = alpha;
+      }
+    };
+    this.scene.registerBeforeRender(this.discRenderCallback);
+
+    this.particleSystem = BabylonBuildupEffect.createLightningSparkParticles(
+      this.scene, this.scanLine, width / 2, depth / 2);
+  }
+
+  /**
+   * Creates a sprite-sheet of jagged lightning bolts and a particle system that emits them around
+   * the given scan area. Used by both the circular ring (createRing) and the rectangular scan
+   * (createRectangularScan); the only difference is the emit box dimensions.
+   */
+  private static createLightningSparkParticles(scene: Scene, emitter: Mesh, halfX: number, halfZ: number): ParticleSystem {
+    const ps = new ParticleSystem("BuildupSparks", 200, scene);
 
     const cellSize = 64;
     const cols = 4, rows = 4;
@@ -241,7 +332,7 @@ export class BabylonBuildupEffect {
 
     const imgData = sCtx.getImageData(0, 0, sheetCanvas.width, sheetCanvas.height);
     ps.particleTexture = RawTexture.CreateRGBATexture(
-      new Uint8Array(imgData.data), sheetCanvas.width, sheetCanvas.height, this.scene, false, false
+      new Uint8Array(imgData.data), sheetCanvas.width, sheetCanvas.height, scene, false, false
     );
     ps.particleTexture.hasAlpha = true;
 
@@ -253,9 +344,9 @@ export class BabylonBuildupEffect {
     ps.spriteCellChangeSpeed = 4;
     ps.spriteRandomStartCell = true;
 
-    ps.emitter = this.scanLine;
-    ps.minEmitBox = new Vector3(-this.radius, 0, -this.radius);
-    ps.maxEmitBox = new Vector3(this.radius, 0, this.radius);
+    ps.emitter = emitter;
+    ps.minEmitBox = new Vector3(-halfX, 0, -halfZ);
+    ps.maxEmitBox = new Vector3(halfX, 0, halfZ);
 
     ps.color1 = new Color4(0, 0.8, 1, 1);
     ps.color2 = new Color4(0.5, 0.9, 1, 1);
@@ -282,7 +373,7 @@ export class BabylonBuildupEffect {
     ps.maxAngularSpeed = Math.PI;
 
     ps.start();
-    this.particleSystem = ps;
+    return ps;
   }
 
   updateVisibility(buildup: number): void {
@@ -297,6 +388,16 @@ export class BabylonBuildupEffect {
       this.scanLine.position.y = worldClipY - this.container.position.y;
     }
 
+    this.applyMeshVisibilityAtWorldY(worldClipY);
+  }
+
+  /**
+   * Like {@link updateVisibility} but takes an explicit world-Y scan position instead of computing
+   * one from the buildup percentage. Used by the factory's unit-build preview where the scan line
+   * Y must stay in sync with the factory's column scan plate (which has its own coordinate system
+   * unrelated to the unit's bounding box).
+   */
+  applyMeshVisibilityAtWorldY(worldClipY: number): void {
     if (this.meshes) {
       this.meshes.forEach(mesh => {
         const bb = mesh.getBoundingInfo().boundingBox;

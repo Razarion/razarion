@@ -23,7 +23,7 @@ import {ActionService} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {SelectionService as TsSelectionService} from "../selection.service";
 import {AdvancedDynamicTexture, TextBlock} from '@babylonjs/gui';
-import {Slider} from '@babylonjs/gui/2D/controls/sliders/slider';
+
 import {Nullable} from '@babylonjs/core/types';
 import {BabylonMuzzleFlash} from "./babylon-muzzle-flash";
 import {BabylonBuildupEffect} from "./babylon-buildup-effect";
@@ -31,13 +31,13 @@ import {BabylonHarvestingBeam} from "./babylon-harvesting-beam";
 import {BabylonImpact} from "./babylon-impact";
 import {BabylonWreckage} from "./babylon-wreckage";
 import {BabylonDamageEffect} from "./babylon-damage-effect";
+import {RenderObject} from "./render-object";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   // See GWT java PlanetService
   static readonly TICK_TIME_MILLI_SECONDS: number = 100;
   private baseId: number;
   private harvestingBeamEffect: BabylonHarvestingBeam | null = null;
-  private progressSlider: Slider | null = null;
   private nameBlock: TextBlock | null = null;
   private buildup: number | null = null;
   private progress: number = 0;
@@ -57,6 +57,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private buildupEffect: BabylonBuildupEffect | null = null;
   private isExploding = false;
   private damageEffect: BabylonDamageEffect | null = null;
+  private factoryBuildPhase: 'idle' | 'intro' | 'progress' | 'exiting' = 'idle';
+  private factoryScanEffect: BabylonBuildupEffect | null = null;
+  // Preview model of the unit currently being built by this factory (null when idle).
+  private factoryBuildPreviewRenderObject: RenderObject | null = null;
+  private factoryBuildPreviewBuildupEffect: BabylonBuildupEffect | null = null;
+  private factoryBuildPreviewTypeId: number = 0;
+  private factoryExitCallback: (() => void) | null = null;
 
   constructor(id: number,
               private baseItemType: BaseItemType,
@@ -153,7 +160,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       setBuildup(buildup: number): void {
       }
 
-      setConstructing(progress: number): void {
+      setConstructing(progress: number, constructingBaseItemTypeId: number): void {
       }
 
       setIdle(idle: boolean): void {
@@ -204,10 +211,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.harvestingBeamEffect = null;
     this.damageEffect?.dispose();
     this.damageEffect = null;
-    if (this.progressSlider) {
-      this.uiTexture.removeControl(this.progressSlider)
-      this.progressSlider = null;
-    }
+    this.factoryBuildPhase = 'idle';
+    this.disposeFactoryScanEffect();
+    this.stopFactoryExitAnimation();
+    this.disposeFactoryBuildPreview();
     if (this.nameBlock) {
       this.uiTexture.removeControl(this.nameBlock)
       this.nameBlock = null;
@@ -303,12 +310,57 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
   }
 
-  setConstructing(progress: number): void {
-    this.progress = progress;
-    this.handleConstructing();
-    if (this.progressSlider) {
-      this.progressSlider.value = this.progress;
+  setConstructing(progress: number, constructingBaseItemTypeId: number): void {
+    this.progress = Math.max(0, progress);
+
+    const renderObject = this.getRenderObject();
+
+    // Factory build animation: intro (platform goes down) then progress-scrubbed (platform rises).
+    // progress < 0 is the master's warmup sentinel (see SyncFactory.fillSyncItemInfo).
+    if (renderObject.hasProgressAnimation()) {
+      if (progress < 0 && this.factoryBuildPhase === 'idle') {
+        // Warmup phase: play intro animation (platform goes down)
+        this.factoryBuildPhase = 'intro';
+        const introSeconds = this.baseItemType.getFactoryType()?.getAnimationIntroSeconds() || 0;
+        renderObject.setBuildAnimationActive(true, () => {
+          if (this.factoryBuildPhase === 'intro') {
+            this.factoryBuildPhase = 'progress';
+            renderObject.setProgressAnimationValue(this.progress);
+            this.startFactoryScanEffect();
+          }
+        }, introSeconds);
+      } else if (progress < 0) {
+        // Still in warmup phase (server intro) — skip, intro animation is already playing.
+      } else if (progress === 0 && this.factoryBuildPhase !== 'idle') {
+        // Factory stopped (cooldown done or warmup cancelled): cleanup animations immediately,
+        // but delay the preview disposal by 500ms so the real unit (arriving via a separate sync
+        // channel) has time to appear — avoids a visible "blink" between preview and real unit.
+        this.factoryBuildPhase = 'idle';
+        renderObject.setBuildAnimationActive(false);
+        this.disposeFactoryScanEffect();
+        this.stopFactoryExitAnimation();
+        setTimeout(() => this.disposeFactoryBuildPreview(), 300);
+      } else if (this.factoryBuildPhase === 'progress') {
+        renderObject.setProgressAnimationValue(progress);
+        this.startFactoryScanEffect();
+        this.updateFactoryScanEffectPosition(progress);
+        this.startFactoryBuildPreview(constructingBaseItemTypeId);
+        this.updateFactoryBuildPreview(progress);
+        if (progress >= 1.0) {
+          // Build complete — enter outro (exit animation). The server is now in cooldown phase
+          // and keeps sending progress=1.0. When cooldown ends, server sends progress=0 and
+          // the progress===0 branch above cleans up.
+          this.factoryBuildPhase = 'exiting';
+          renderObject.setBuildAnimationActive(false);
+          this.disposeFactoryScanEffect();
+          this.startFactoryExitAnimation();
+        }
+      }
+      // 'exiting' phase: exit animation is running (render callback). Server sends 1.0 during
+      // cooldown which we ignore. When server sends 0, the progress===0 branch cleans up.
     }
+
+    this.handleConstructing();
   }
 
   setIdle(idle: boolean): void {
@@ -333,28 +385,209 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   handleConstructing(): void {
-    // Only show progress slider for factories, builders have the buildup animation
-    if (this.isSelectOrHove() && this.progress > 0 && this.baseItemType.getFactoryType() != null) {
-      if (!this.progressSlider) {
-        this.progressSlider = new Slider();
-        this.progressSlider.minimum = 0;
-        this.progressSlider.maximum = 1;
-        this.progressSlider.value = this.progress;
-        this.progressSlider.height = "20px";
-        this.progressSlider.width = "150px";
-        this.progressSlider.color = "dodgerblue";
-        this.progressSlider.background = "black";
-        this.progressSlider.displayThumb = false;
-        this.progressSlider.isReadOnly = false;
-        this.uiTexture.addControl(this.progressSlider)
-        this.progressSlider.linkWithMesh(this.getContainer());
-        this.progressSlider.linkOffsetY = -40;
-      }
+    // Factory progress slider removed — the scan plate + build preview now provide visual feedback.
+  }
+
+  /**
+   * Creates the factory's scan plate effect (rectangular holographic plates) inside the rising
+   * column footprint. The plate's Y position is updated by updateFactoryScanEffectPosition().
+   * Idempotent — safe to call repeatedly while the factory is in the progress phase.
+   */
+  private startFactoryScanEffect(): void {
+    if (this.factoryScanEffect) {
+      return;
+    }
+    const renderObject = this.getRenderObject();
+    const footprint = renderObject.getProgressAnimationFootprintExtents();
+    if (!footprint) {
+      return;
+    }
+    this.factoryScanEffect = new BabylonBuildupEffect(
+      this.rendererService.getScene(),
+      this.getContainer() as Mesh,
+      BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy),
+      // Radius unused by createRectangularScan — pass smallest half-extent for any future fallback.
+      Math.min(footprint.width, footprint.depth) / 2
+    );
+    this.factoryScanEffect.createRectangularScan(footprint.width, footprint.depth);
+    // The column rectangle isn't necessarily centered on the model origin, so offset the parent
+    // transform to the footprint center. The plates inherit this offset.
+    if (this.factoryScanEffect.scanLine) {
+      this.factoryScanEffect.scanLine.position.x = footprint.centerX;
+      this.factoryScanEffect.scanLine.position.z = footprint.centerZ;
+    }
+    this.updateFactoryScanEffectPosition(this.progress);
+  }
+
+  private updateFactoryScanEffectPosition(progress: number): void {
+    if (!this.factoryScanEffect || !this.factoryScanEffect.scanLine) {
+      return;
+    }
+    const yRange = this.getRenderObject().getProgressAnimationLocalYRange();
+    if (!yRange) {
+      return;
+    }
+    // Track the column tops as they rise from frame 0 (y=min) to frame last (y=max).
+    this.factoryScanEffect.scanLine.position.y = yRange.min + progress * (yRange.max - yRange.min);
+  }
+
+  private disposeFactoryScanEffect(): void {
+    if (this.factoryScanEffect) {
+      this.factoryScanEffect.cleanupRing();
+      this.factoryScanEffect = null;
+    }
+  }
+
+  /**
+   * Clones the unit-to-be-built's model3D inside the factory container and prepares a
+   * BabylonBuildupEffect for it. Idempotent (returns early if the same typeId is already loaded);
+   * disposes and recreates if the factory switched to building a different unit type.
+   */
+  private startFactoryBuildPreview(constructingBaseItemTypeId: number): void {
+    if (constructingBaseItemTypeId <= 0) {
+      return;
+    }
+    if (this.factoryBuildPreviewTypeId === constructingBaseItemTypeId) {
+      return;
+    }
+    this.disposeFactoryBuildPreview();
+
+    // Look up the BaseItemType for the to-be-built unit via the ItemTypeService bridge.
+    const itemTypeService: any = (this.rendererService as any).gwtAngularService?.gwtAngularFacade?.itemTypeService;
+    if (!itemTypeService || typeof itemTypeService.getBaseItemTypeAngular !== 'function') {
+      return;
+    }
+    const toBeBuiltType = itemTypeService.getBaseItemTypeAngular(constructingBaseItemTypeId);
+    if (!toBeBuiltType) {
+      return;
+    }
+    const model3DId = toBeBuiltType.getModel3DId?.();
+    if (model3DId == null) {
+      return;
+    }
+
+    this.factoryBuildPreviewTypeId = constructingBaseItemTypeId;
+    this.factoryBuildPreviewRenderObject = this.babylonModelService.cloneModel3D(
+      model3DId, this.getContainer(), this.diplomacy);
+
+    // Position the preview at the column rectangle center so it sits inside the rising platform
+    // rather than at the model origin (which may be offset from the column footprint center).
+    const footprint = this.getRenderObject().getProgressAnimationFootprintExtents();
+    if (footprint) {
+      this.factoryBuildPreviewRenderObject.setPositionXZ(footprint.centerX, footprint.centerZ);
+    }
+
+    // Rotate the preview to face toward the rally point offset so the unit looks in the direction
+    // it will exit. Game angle convention: atan2(dx, dy) where dy = game Y = Babylon Z.
+    // Negate because Babylon's Y rotation is CW from above but models face -Z by default.
+    const factoryType = this.baseItemType.getFactoryType();
+    const rox = factoryType?.getRallyOffsetX() || 0;
+    const roy = factoryType?.getRallyOffsetY() || 0;
+    if (rox !== 0 || roy !== 0) {
+      this.factoryBuildPreviewRenderObject.setRotationY(-Math.atan2(roy, rox));
+    }
+
+    // Set up the buildup effect so meshes above the scan line render with the grid material and
+    // meshes below render with the unit's normal materials. We deliberately skip createRing() —
+    // the factory has its own scan plate so the unit doesn't need its own ring.
+    const previewMesh = this.factoryBuildPreviewRenderObject.getModel3D() as Mesh;
+    this.factoryBuildPreviewBuildupEffect = new BabylonBuildupEffect(
+      this.rendererService.getScene(),
+      previewMesh,
+      BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy),
+      toBeBuiltType.getPhysicalAreaConfig().getRadius()
+    );
+    this.factoryBuildPreviewBuildupEffect.init();
+  }
+
+  /**
+   * Updates the build preview's mesh visibility so the scan line stays in sync with the factory's
+   * column scan plate. The scan plate's Y is computed from the column animation Y range mapped to
+   * the current progress value.
+   */
+  private updateFactoryBuildPreview(progress: number): void {
+    if (!this.factoryBuildPreviewBuildupEffect || !this.factoryBuildPreviewBuildupEffect.isInitialized()) {
+      return;
+    }
+    const yRange = this.getRenderObject().getProgressAnimationLocalYRange();
+    if (!yRange) {
+      return;
+    }
+    const localScanY = yRange.min + progress * (yRange.max - yRange.min);
+    const worldScanY = this.getContainer().position.y + localScanY;
+    this.factoryBuildPreviewBuildupEffect.applyMeshVisibilityAtWorldY(worldScanY);
+  }
+
+  private disposeFactoryBuildPreview(): void {
+    if (this.factoryBuildPreviewBuildupEffect) {
+      this.factoryBuildPreviewBuildupEffect.cleanup();
+      this.factoryBuildPreviewBuildupEffect = null;
+    }
+    if (this.factoryBuildPreviewRenderObject) {
+      this.factoryBuildPreviewRenderObject.dispose();
+      this.factoryBuildPreviewRenderObject = null;
+    }
+    this.factoryBuildPreviewTypeId = 0;
+  }
+
+  /**
+   * Slides the build preview from the factory center toward the factory's forward direction over
+   * animationOutroSeconds. The preview is made fully solid first (buildup effect completed). The
+   * actual cleanup happens when the server sends progress=0 (cooldown done, factory stopped).
+   */
+  private startFactoryExitAnimation(): void {
+    if (!this.factoryBuildPreviewRenderObject) {
+      return;
+    }
+    // Make the preview fully solid by completing the buildup effect (restores original materials)
+    if (this.factoryBuildPreviewBuildupEffect?.isInitialized()) {
+      this.factoryBuildPreviewBuildupEffect.complete();
+    }
+
+    const previewModel = this.factoryBuildPreviewRenderObject.getModel3D();
+    const startPos = previewModel.position.clone();
+    const factoryType = this.baseItemType.getFactoryType();
+    const offsetX = factoryType?.getRallyOffsetX() || 0;
+    const offsetY = factoryType?.getRallyOffsetY() || 0;
+    let endPos: Vector3;
+    if (offsetX !== 0 || offsetY !== 0) {
+      // Compute end position in Babylon WORLD space by rotating the rally offset by the game
+      // angle, then convert to container-local via inverse world matrix. This correctly handles
+      // the non-trivial mapping: Babylon rotation.y = PI/2 - gameAngle (see setAngle()).
+      const gameAngle = Math.PI / 2 - (this.getContainer().rotation?.y || 0);
+      const cos = Math.cos(gameAngle);
+      const sin = Math.sin(gameAngle);
+      const cp = this.getContainer().position;
+      const worldEnd = new Vector3(
+        cp.x + offsetX * cos - offsetY * sin,
+        cp.y,
+        cp.z + offsetX * sin + offsetY * cos
+      );
+      this.getContainer().computeWorldMatrix(true);
+      endPos = Vector3.TransformCoordinates(worldEnd, this.getContainer().getWorldMatrix().clone().invert());
     } else {
-      if (this.progressSlider) {
-        this.uiTexture.removeControl(this.progressSlider)
-        this.progressSlider = null;
-      }
+      const exitDistance = this.baseItemType.getPhysicalAreaConfig().getRadius() * 2.5;
+      endPos = startPos.add(this.getContainer().forward.clone().scale(exitDistance));
+    }
+
+    const outroSeconds = this.baseItemType.getFactoryType()?.getAnimationOutroSeconds() || 1.5;
+    const durationMs = outroSeconds * 1000;
+    const startTime = Date.now();
+
+    this.factoryExitCallback = () => {
+      const elapsed = Date.now() - startTime;
+      const t = Math.min(elapsed / durationMs, 1.0);
+      // Ease-out curve for natural deceleration
+      const eased = 1 - (1 - t) * (1 - t);
+      previewModel.position = Vector3.Lerp(startPos, endPos, eased);
+    };
+    this.rendererService.getScene().registerBeforeRender(this.factoryExitCallback);
+  }
+
+  private stopFactoryExitAnimation(): void {
+    if (this.factoryExitCallback) {
+      this.rendererService.getScene().unregisterBeforeRender(this.factoryExitCallback);
+      this.factoryExitCallback = null;
     }
   }
 
@@ -479,6 +712,14 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   setBuildingPosition(xOrPosition: any, y?: number): void {
+    // Only Builders use the buildingPosition channel. Factories also have a build animation
+    // (driven via setConstructing) but share the same RenderObject.buildAnimationActive flag,
+    // so without this guard the per-tick setBuildingPosition(null) call from BaseItemUiService
+    // would cancel the factory's intro animation immediately.
+    if (this.baseItemType.getBuilderType() == null) {
+      return;
+    }
+
     let bx: number | null = null;
     let by: number | null = null;
 
@@ -492,15 +733,27 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
     const hasPosition = bx !== null && by !== null;
 
-    if (hasPosition && this.buildupEffect?.isBuildingBeamActive()) {
+    const renderObject = this.getRenderObject();
+    // Idempotency guards: use both the build animation flag (covers the intro window before the
+    // beam itself starts) and the beam state (covers units without an intro phase).
+    const buildInProgress = renderObject.isBuildAnimationActive() || this.buildupEffect?.isBuildingBeamActive() === true;
+
+    if (hasPosition && buildInProgress) {
       return;
     }
-    if (!hasPosition && !this.buildupEffect?.isBuildingBeamActive()) {
+    if (!hasPosition && !buildInProgress) {
       return;
     }
 
+    // Read warmup/cooldown durations from the BuilderType so the intro/outro animations can be
+    // time-stretched to match the server-side warmup/cooldown windows. 0 = no scaling.
+    const builderType = this.baseItemType.getBuilderType();
+    const warmupSeconds = builderType ? builderType.getBuildAnimationWarmupSeconds() : 0;
+    const cooldownSeconds = builderType ? builderType.getBuildAnimationCooldownSeconds() : 0;
+
     if (!hasPosition) {
       this.buildupEffect?.disposeBuildingBeam();
+      renderObject.setBuildAnimationActive(false, undefined, undefined, cooldownSeconds);
       return;
     }
 
@@ -513,22 +766,27 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       );
     }
 
-    const renderObject = this.getRenderObject();
-    this.buildupEffect.startBuildingBeam(
-      new Vector3(bx!, this.getContainer().position.y, by!),
-      {
-        getBeamOrigin: () => renderObject.getBeamOrigin(),
-        getContainerPosition: () => this.getContainer().position.clone()
-      },
-      (target: Vector3) => {
-        const targetItem = this.rendererService.findBabylonBaseItemAtPosition(target);
-        if (targetItem?.buildupEffect?.scanLine) {
-          targetItem.buildupEffect.scanLine.computeWorldMatrix(true);
-          return targetItem.buildupEffect.scanLine.getAbsolutePosition().clone();
+    const targetVector = new Vector3(bx!, this.getContainer().position.y, by!);
+    // Defer the build beam start until the intro animation finishes (e.g. Builder arm fully
+    // extended). For units without an intro phase the callback fires immediately, so the beam
+    // starts on the same tick as before — backwards compatible.
+    renderObject.setBuildAnimationActive(true, () => {
+      this.buildupEffect!.startBuildingBeam(
+        targetVector,
+        {
+          getBeamOrigin: () => renderObject.getBeamOrigin(),
+          getContainerPosition: () => this.getContainer().position.clone()
+        },
+        (target: Vector3) => {
+          const targetItem = this.rendererService.findBabylonBaseItemAtPosition(target);
+          if (targetItem?.buildupEffect?.scanLine) {
+            targetItem.buildupEffect.scanLine.computeWorldMatrix(true);
+            return targetItem.buildupEffect.scanLine.getAbsolutePosition().clone();
+          }
+          return null;
         }
-        return null;
-      }
-    );
+      );
+    }, warmupSeconds, cooldownSeconds);
   }
 
   setHarvestingPosition(xOrPosition: any, y?: number): void {
@@ -624,7 +882,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
 
   }
-
 
 
   private createProjectile(start: Vector3, targetImpactMesh: Nullable<AbstractMesh>, targetPosition: Nullable<Vector3>): void {

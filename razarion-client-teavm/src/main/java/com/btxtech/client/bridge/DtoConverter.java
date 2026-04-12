@@ -463,6 +463,10 @@ public class DtoConverter {
                 type.getBuilderType().checkAbleToBuild(itemTypeId));
         setGetterObj(obj, "getAbleToBuildIds", () ->
                 convertIntegerList(type.getBuilderType().getAbleToBuildIds()));
+        setGetterDouble(obj, "getBuildAnimationWarmupSeconds", () ->
+                type.getBuilderType().getBuildAnimationWarmupSeconds());
+        setGetterDouble(obj, "getBuildAnimationCooldownSeconds", () ->
+                type.getBuilderType().getBuildAnimationCooldownSeconds());
         return obj;
     }
 
@@ -514,6 +518,14 @@ public class DtoConverter {
         JsObject obj = JsObject.create();
         setGetterObj(obj, "getAbleToBuildIds", () ->
                 convertIntegerList(type.getFactoryType().getAbleToBuildIds()));
+        setGetterDouble(obj, "getAnimationIntroSeconds", () ->
+                type.getFactoryType().getAnimationIntroSeconds());
+        setGetterDouble(obj, "getAnimationOutroSeconds", () ->
+                type.getFactoryType().getAnimationOutroSeconds());
+        setGetterDouble(obj, "getRallyOffsetX", () ->
+                type.getFactoryType().getRallyOffsetX());
+        setGetterDouble(obj, "getRallyOffsetY", () ->
+                type.getFactoryType().getRallyOffsetY());
         return obj;
     }
 

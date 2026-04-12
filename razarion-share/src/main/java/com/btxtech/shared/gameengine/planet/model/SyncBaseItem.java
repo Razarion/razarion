@@ -738,12 +738,20 @@ public class SyncBaseItem extends SyncItem {
                 nativeSyncBaseItemTickInfo.harvestingResourcePosition = toNativeDecimalPosition(syncHarvester.getResource().getAbstractSyncPhysical().getPosition());
             }
             if (syncBuilder != null && syncBuilder.isBuilding()) {
-                nativeSyncBaseItemTickInfo.buildingPosition = toNativeDecimalPosition(syncBuilder.getCurrentBuildup().getAbstractSyncPhysical().getPosition());
-                nativeSyncBaseItemTickInfo.constructing = syncBuilder.getCurrentBuildup().getBuildup();
-                nativeSyncBaseItemTickInfo.constructingBaseItemTypeId = syncBuilder.getCurrentBuildup().getBaseItemType().getId();
+                // During the warmup window currentBuildup is still null — fall back to the
+                // requested build position so the client can already play the build intro animation.
+                DecimalPosition effectiveBuildingPosition = syncBuilder.getEffectiveBuildingPosition();
+                if (effectiveBuildingPosition != null) {
+                    nativeSyncBaseItemTickInfo.buildingPosition = toNativeDecimalPosition(effectiveBuildingPosition);
+                }
+                SyncBaseItem buildingTarget = syncBuilder.getCurrentBuildup();
+                if (buildingTarget != null) {
+                    nativeSyncBaseItemTickInfo.constructing = buildingTarget.getBuildup();
+                    nativeSyncBaseItemTickInfo.constructingBaseItemTypeId = buildingTarget.getBaseItemType().getId();
+                }
             }
             if (syncFactory != null && syncFactory.isActive()) {
-                nativeSyncBaseItemTickInfo.constructing = syncFactory.getBuildup();
+                nativeSyncBaseItemTickInfo.constructing = syncFactory.isInWarmup() ? -1 : syncFactory.getBuildup();
                 if (syncFactory.getToBeBuiltType() != null) {
                     nativeSyncBaseItemTickInfo.constructingBaseItemTypeId = syncFactory.getToBeBuiltType().getId();
                 }

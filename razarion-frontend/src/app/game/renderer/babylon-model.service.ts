@@ -4,6 +4,7 @@ import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {HttpClient} from "@angular/common/http";
 import {
   AbstractMesh,
+  AnimationGroup,
   Color3,
   InstancedMesh,
   Material,
@@ -22,7 +23,9 @@ import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {BabylonMaterialContainer, GlbContainer, ParticleSystemSetContainer} from "./babylon-model-container";
 import {GltfHelper} from "./gltf-helper";
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
-import {RenderObject} from './render-object';
+import {BuildAnimationPhase, RenderObject} from './render-object';
+
+type AnimationGroupClassification = BuildAnimationPhase | 'legacy';
 
 
 @Injectable({
@@ -106,15 +109,24 @@ export class BabylonModelService {
     }
 
 
-    const allowedAnimationUniqueIds: Set<number> = new Set();
+    // Sort matching animation groups into "legacy" (no suffix; played per-node via beginAnimation
+    // for backwards compatibility) and "phased" (intro/loop/outro; played as cloned AnimationGroups
+    // by the build phase sequencer).
+    const allowedLegacyAnimationUniqueIds: Set<number> = new Set();
+    const phasedSourceGroups: { phase: BuildAnimationPhase, group: AnimationGroup }[] = [];
     if (assetContainer.animationGroups) {
       assetContainer.animationGroups.forEach(animationGroup => {
         if (animationGroup.name.startsWith(model3DEntity?.gltfName)) {
-          animationGroup.targetedAnimations.forEach(targetedAnimation => {
-            allowedAnimationUniqueIds.add(targetedAnimation.animation.uniqueId);
-          })
+          const classification = BabylonModelService.classifyAnimationGroup(animationGroup.name, model3DEntity!.gltfName);
+          if (classification === 'legacy') {
+            animationGroup.targetedAnimations.forEach(targetedAnimation => {
+              allowedLegacyAnimationUniqueIds.add(targetedAnimation.animation.uniqueId);
+            })
+          } else {
+            phasedSourceGroups.push({phase: classification, group: animationGroup});
+          }
         }
-      })
+      });
     }
 
     let node = assetContainer
@@ -126,23 +138,62 @@ export class BabylonModelService {
     }
 
     const sourceMap = new Map<string, Mesh>();
+    const nodeByName = new Map<string, Node>();
     const renderObject = new RenderObject(this.renderer);
-    let transformNode = this.deepCloneNode(node, parent, sourceMap, gltfHelper, allowedAnimationUniqueIds, renderObject, diplomacy);
+    let transformNode = this.deepCloneNode(node, parent, sourceMap, nodeByName, gltfHelper, allowedLegacyAnimationUniqueIds, renderObject, diplomacy);
     renderObject.setModel3D(transformNode);
     renderObject.setPositionXZ(0.0, 0.0);
+
+    // Clone phased animation groups, retargeting each Animation onto the corresponding cloned node.
+    // This is the canonical Babylon way to give each unit instance its own independent phase animations.
+    phasedSourceGroups.forEach(({phase, group}) => {
+      const clonedGroup = group.clone(`${group.name}#${transformNode.uniqueId}`, (originalTarget: any) => {
+        if (!originalTarget) {
+          return originalTarget;
+        }
+        if (originalTarget.id !== undefined) {
+          const clonedById = sourceMap.get(originalTarget.id);
+          if (clonedById) return clonedById;
+        }
+        if (originalTarget.name) {
+          const clonedByName = nodeByName.get(originalTarget.name);
+          if (clonedByName) return clonedByName;
+        }
+        // Fallback: leave the original target. Better than nothing — a missing target would throw.
+        return originalTarget;
+      });
+      renderObject.addPhasedAnimationGroup(phase, clonedGroup);
+    });
+
     return renderObject;
+  }
+
+  private static classifyAnimationGroup(animationGroupName: string, gltfName: string): AnimationGroupClassification {
+    const suffix = animationGroupName.substring(gltfName.length);
+    if (suffix === '_intro') return 'intro';
+    if (suffix === '_loop') return 'loop';
+    if (suffix === '_outro') return 'outro';
+    if (suffix === '_progress') return 'progress';
+    return 'legacy';
   }
 
   private deepCloneNode(root: Node,
                         parent: Node | null,
                         sourceMap: Map<string, Mesh>,
+                        nodeByName: Map<string, Node>,
                         gltfHelper: GltfHelper,
                         allowedAnimationUniqueIds: Set<number>,
                         renderObject: RenderObject,
                         diplomacy?: Diplomacy): TransformNode {
     let clonedRoot = root.clone(root.name, parent, true);
-    clonedRoot!.metadata = {};
+    if (!clonedRoot) {
+      return root as TransformNode;
+    }
+    clonedRoot.metadata = {};
     sourceMap.set(root.id, <Mesh>clonedRoot);
+    if (root.name) {
+      nodeByName.set(root.name, clonedRoot);
+    }
     if (clonedRoot instanceof Mesh) {
       const mesh = <Mesh>clonedRoot;
       mesh.receiveShadows = true;
@@ -165,7 +216,7 @@ export class BabylonModelService {
         const instancedMesh = <InstancedMesh>child;
         const clonedSource = sourceMap.get(instancedMesh.sourceMesh.id);
         if (clonedSource) {
-          const clonedMesh = clonedSource.clone(instancedMesh.name); // Instance does not work
+          const clonedMesh = clonedSource.clone(instancedMesh.name, null, true); // doNotCloneChildren — children are handled by recursive deepCloneNode below
           clonedMesh.metadata = {};
           clonedMesh.setParent(clonedRoot);
           clonedMesh.position.copyFrom(instancedMesh.position);
@@ -185,9 +236,17 @@ export class BabylonModelService {
             })
           }
           this.setupAnimations(instancedMesh, clonedMesh, allowedAnimationUniqueIds, renderObject);
+          if (clonedMesh && instancedMesh.name) {
+            nodeByName.set(instancedMesh.name, clonedMesh);
+          }
           this.setupParticleSystems(clonedMesh, renderObject);
+          // Recursively clone children of the InstancedMesh (e.g. Detail meshes parented to a
+          // Column). Without this, child nodes added under instanced meshes in the GLB are lost.
+          instancedMesh.getChildren().forEach((grandchild) => {
+            this.deepCloneNode(grandchild, clonedMesh, sourceMap, nodeByName, gltfHelper, allowedAnimationUniqueIds, renderObject, diplomacy);
+          });
         } else {
-          const clonedMesh = instancedMesh.sourceMesh.clone(instancedMesh.name); // Instance does not work
+          const clonedMesh = instancedMesh.sourceMesh.clone(instancedMesh.name, null, true); // doNotCloneChildren — children are handled by recursive deepCloneNode below
           clonedMesh.metadata = {};
           clonedMesh.setParent(clonedRoot);
           clonedMesh.position.copyFrom(instancedMesh.position);
@@ -207,10 +266,17 @@ export class BabylonModelService {
             })
           }
           this.setupAnimations(instancedMesh, clonedMesh, allowedAnimationUniqueIds, renderObject);
+          if (clonedMesh && instancedMesh.name) {
+            nodeByName.set(instancedMesh.name, clonedMesh);
+          }
           this.setupParticleSystems(clonedMesh, renderObject);
+          // Recursively clone children of the InstancedMesh (same as above for the else branch).
+          instancedMesh.getChildren().forEach((grandchild) => {
+            this.deepCloneNode(grandchild, clonedMesh, sourceMap, nodeByName, gltfHelper, allowedAnimationUniqueIds, renderObject, diplomacy);
+          });
         }
       } else {
-        this.deepCloneNode(child, clonedRoot, sourceMap, gltfHelper, allowedAnimationUniqueIds, renderObject, diplomacy);
+        this.deepCloneNode(child, clonedRoot, sourceMap, nodeByName, gltfHelper, allowedAnimationUniqueIds, renderObject, diplomacy);
       }
     })
 

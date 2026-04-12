@@ -185,6 +185,20 @@
                   </div>
                 </div>
                 <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                  <span class="col-span-4">Build animation warmup [s]</span>
+                  <div class="col-span-8">
+                    <p-inputNumber [(ngModel)]="baseItemType.builderType.buildAnimationWarmupSeconds" [minFractionDigits]="2"
+                    [maxFractionDigits]="2"></p-inputNumber>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                  <span class="col-span-4">Build animation cooldown [s]</span>
+                  <div class="col-span-8">
+                    <p-inputNumber [(ngModel)]="baseItemType.builderType.buildAnimationCooldownSeconds" [minFractionDigits]="2"
+                    [maxFractionDigits]="2"></p-inputNumber>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
                   <span class="col-span-4">Able to build</span>
                   <div class="col-span-8">
                     <base-item-types
@@ -203,6 +217,34 @@
                   <span class="col-span-4">Progress</span>
                   <div class="col-span-8">
                     <p-inputNumber [(ngModel)]="baseItemType.factoryType.progress" [minFractionDigits]="2"
+                    [maxFractionDigits]="2"></p-inputNumber>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                  <span class="col-span-4">Animation intro [s]</span>
+                  <div class="col-span-8">
+                    <p-inputNumber [(ngModel)]="baseItemType.factoryType.animationIntroSeconds" [minFractionDigits]="2"
+                    [maxFractionDigits]="2"></p-inputNumber>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                  <span class="col-span-4">Animation outro [s]</span>
+                  <div class="col-span-8">
+                    <p-inputNumber [(ngModel)]="baseItemType.factoryType.animationOutroSeconds" [minFractionDigits]="2"
+                    [maxFractionDigits]="2"></p-inputNumber>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                  <span class="col-span-4">Rally offset X</span>
+                  <div class="col-span-8">
+                    <p-inputNumber [(ngModel)]="baseItemType.factoryType.rallyOffsetX" [minFractionDigits]="2"
+                    [maxFractionDigits]="2"></p-inputNumber>
+                  </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                  <span class="col-span-4">Rally offset Y</span>
+                  <div class="col-span-8">
+                    <p-inputNumber [(ngModel)]="baseItemType.factoryType.rallyOffsetY" [minFractionDigits]="2"
                     [maxFractionDigits]="2"></p-inputNumber>
                   </div>
                 </div>

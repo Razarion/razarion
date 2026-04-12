@@ -306,8 +306,8 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
         }
 
         @Override
-        public void setConstructing(double progress) {
-            callMethod1D(js, "setConstructing", progress);
+        public void setConstructing(double progress, int constructingBaseItemTypeId) {
+            callMethod2DI(js, "setConstructing", progress, constructingBaseItemTypeId);
         }
 
         @Override
