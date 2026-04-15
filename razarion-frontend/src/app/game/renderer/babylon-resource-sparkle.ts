@@ -57,6 +57,7 @@ export class BabylonResourceSparkle {
     ps.minEmitPower = 0.3;
     ps.maxEmitPower = 0.8;
 
+    ps.renderingGroupId = 1;
     ps.start();
     this.particleSystem = ps;
   }

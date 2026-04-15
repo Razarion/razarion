@@ -822,7 +822,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       () => renderObject.getBeamOrigin(),
       () => this.getContainer().position.clone()
     );
-    this.harvestingBeamEffect.start(new Vector3(hx!, this.getContainer().position.y, hy!));
+    const terrainY = this.rendererService.getTerrainHeightAt(hx!, hy!) ?? 0;
+    this.harvestingBeamEffect.start(new Vector3(hx!, terrainY, hy!));
   }
 
   getBaseId(): number {

@@ -81,6 +81,8 @@ export class BabylonHarvestingBeam {
     const dist = Vector3.Distance(startPos, endPos);
     const dir = endPos.subtract(startPos).normalize();
     const angle = Math.atan2(dir.x, dir.z);
+    const hDist = Math.sqrt(dir.x * dir.x + dir.z * dir.z);
+    const pitch = Math.atan2(dir.y, hDist);
 
     const narrowWidth = 0.4;
     const wideWidth = 1.2;
@@ -105,7 +107,7 @@ export class BabylonHarvestingBeam {
 
     this.beam.position = startPos.clone();
     this.beam.rotationQuaternion = null;
-    this.beam.rotation.set(Math.PI / 2, angle, 0);
+    this.beam.rotation.set(Math.PI / 2 - pitch, angle, 0);
 
     // Scroll texture along beam (energy flowing from resource to harvester)
     const elapsed = (Date.now() - this.beamStartTime) / 1000;
