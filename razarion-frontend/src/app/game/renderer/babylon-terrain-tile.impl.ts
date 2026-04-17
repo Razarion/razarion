@@ -3,7 +3,6 @@ import {
   BabylonTerrainTile,
   BotGround,
   DecimalPosition,
-  Diplomacy,
   TerrainObjectConfig,
   TerrainObjectModel,
   TerrainTile,
@@ -16,6 +15,7 @@ import {BabylonWaterRenderService} from "./babylon-water-render.service";
 import {
   Color3,
   Mesh,
+  MeshBuilder,
   MultiMaterial,
   Node,
   NodeMaterial,
@@ -33,6 +33,8 @@ import {
   VertexData
 } from "@babylonjs/core";
 import {buildGroundMaterial} from "./ground-material";
+import {buildBotGroundTopMaterial} from "./bot-ground-top-material";
+import {buildBotGroundSideMaterial} from "./bot-ground-side-material";
 import {detectShoreline, computeShoreDistance} from "./shoreline-detection";
 import {initPerm, SEED, splatterValue} from "./procedural-textures";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
@@ -319,16 +321,26 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   addToScene(): void {
-    this.rendererService.directionalLight.includedOnlyMeshes.push(this.groundMesh);
+    const included = this.rendererService.directionalLight.includedOnlyMeshes;
+    if (!included.includes(this.groundMesh)) {
+      included.push(this.groundMesh);
+    }
+    // Bot ground boxes are deliberately NOT re-registered here. Each box is
+    // added to `includedOnlyMeshes` once at creation (see createBotGroundBox)
+    // and left there for its lifetime. Mutating the list on tile add/remove
+    // caused sibling bot grounds (sharing the same NodeMaterial) to go dark
+    // when an adjacent tile scrolled out of view — the shared LightBlock
+    // effect state was apparently re-evaluated across all users of the
+    // material, breaking the light binding for the still-visible boxes.
     this.rendererService.addTerrainTileToScene(this);
   }
 
   removeFromScene(): void {
-    const index = this.rendererService.directionalLight.includedOnlyMeshes.indexOf(this.groundMesh);
+    const included = this.rendererService.directionalLight.includedOnlyMeshes;
+    const index = included.indexOf(this.groundMesh);
     if (index !== -1) {
-      this.rendererService.directionalLight.includedOnlyMeshes.splice(index, 1);
+      included.splice(index, 1);
     }
-
     this.rendererService.removeTerrainTileFromScene(this);
   }
 
@@ -623,6 +635,73 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.shadowCaster = null;
   }
 
+  private botGroundMeshes: Mesh[] = [];
+
+  // Scene-global singletons so the Inspector shows exactly one editable
+  // "BotGround top" / "BotGround side" / "BotGround multi" instead of one copy
+  // per tile. Editing the shared material instantly updates every bot ground
+  // box. Re-created if the scene was disposed and replaced.
+  private static sharedBotGroundScene: Nullable<any> = null;
+  private static sharedBotGroundTopMaterial: Nullable<NodeMaterial> = null;
+  private static sharedBotGroundSideMaterial: Nullable<NodeMaterial> = null;
+  private static sharedBotGroundMultiMaterial: Nullable<MultiMaterial> = null;
+
+  // Top uses a dedicated NodeMaterial built in code (bot-ground-top-material.ts)
+  // that samples local clones of the asphalt textures — editable independently
+  // of the planet's shared asphalt patches. Sides use a sibling NodeMaterial
+  // (bot-ground-side-material.ts) without the faction-colored border pattern.
+  private ensureSharedBotGroundMaterials(): MultiMaterial {
+    const scene = this.rendererService.getScene();
+    if (BabylonTerrainTileImpl.sharedBotGroundScene !== scene
+        || !BabylonTerrainTileImpl.sharedBotGroundMultiMaterial) {
+      const top = buildBotGroundTopMaterial(scene);
+      const side = buildBotGroundSideMaterial(scene);
+
+      const multi = new MultiMaterial("BotGround multi", scene);
+      multi.subMaterials.push(side);
+      multi.subMaterials.push(top);
+
+      BabylonTerrainTileImpl.sharedBotGroundScene = scene;
+      BabylonTerrainTileImpl.sharedBotGroundTopMaterial = top;
+      BabylonTerrainTileImpl.sharedBotGroundSideMaterial = side;
+      BabylonTerrainTileImpl.sharedBotGroundMultiMaterial = multi;
+    }
+    return BabylonTerrainTileImpl.sharedBotGroundMultiMaterial!;
+  }
+
+  // Builds a BOT_BOX_LENGTH cube with its origin at the top face, matching
+  // the editor box layout so `botGround.height` aligns the top with the ground.
+  // Uses the shared BotGround MultiMaterial: top face (+Y) = material index 1
+  // (top), the other 5 faces = material index 0 (side). Box face index order:
+  // +Z, -Z, +X, -X, +Y, -Y, 6 indices per face — top occupies [24..30).
+  private createBotGroundBox(name: string): Mesh {
+    const scene = this.rendererService.getScene();
+    const box = MeshBuilder.CreateBox(name, {size: BabylonTerrainTileImpl.BOT_BOX_LENGTH}, scene);
+    box.position.y = -BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2.0;
+    box.bakeCurrentTransformIntoVertices();
+    box.position.y = 0;
+    box.parent = this.container;
+    box.receiveShadows = true;
+
+    box.material = this.ensureSharedBotGroundMaterials();
+
+    const totalVertices = box.getTotalVertices();
+    box.subMeshes = [];
+    new SubMesh(0, 0, totalVertices, 0, 24, box);
+    new SubMesh(1, 0, totalVertices, 24, 6, box);
+    new SubMesh(0, 0, totalVertices, 30, 6, box);
+
+    // The directional light uses includedOnlyMeshes — unregistered meshes
+    // render black. Track the box so removeFromScene can detach it again.
+    const included = this.rendererService.directionalLight.includedOnlyMeshes;
+    if (!included.includes(box)) {
+      included.push(box);
+    }
+    this.botGroundMeshes.push(box);
+
+    return box;
+  }
+
   private setupBotGrounds(botGrounds: BotGround[]) {
     if (!botGrounds) {
       return;
@@ -642,9 +721,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         if (typeof posX !== 'number' || typeof posY !== 'number' || isNaN(posX) || isNaN(posY)) {
           return;
         }
-        const renderObject = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
-        renderObject.setPosition(new Vector3(posX, botGround.height, posY));
-        renderObject.setMetadata({
+        const box = this.createBotGroundBox(`BotGround ${posX},${posY}`);
+        box.position = new Vector3(posX, botGround.height, posY);
+        BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
           type: RazarionMetadataType.BOT_GROUND,
           configId: botGround.model3DId,
           id: undefined,
@@ -664,12 +743,12 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           const z = Math.sin(botGroundSlopeBox.zRot) * Math.sin(botGroundSlopeBox.yRot);
           let botGroundNorm = new Vector3(x, y, z).normalize();
 
-          const renderObject = this.babylonModelService.cloneModel3D(botGround.model3DId, this.container, Diplomacy.OWN);
-          renderObject.prefixName("Slope ");
-          renderObject.setPosition(new Vector3(botGroundSlopeBox.xPos, botGroundSlopeBox.height, botGroundSlopeBox.yPos));
-
-          renderObject.setRotationYZ(botGroundSlopeBox.yRot, botGroundSlopeBox.zRot);
-          renderObject.setMetadata({
+          const box = this.createBotGroundBox(`Slope BotGround ${botGroundSlopeBox.xPos},${botGroundSlopeBox.yPos}`);
+          box.position = new Vector3(botGroundSlopeBox.xPos, botGroundSlopeBox.height, botGroundSlopeBox.yPos);
+          box.rotationQuaternion = null;
+          box.rotation.y = botGroundSlopeBox.yRot;
+          box.rotation.z = botGroundSlopeBox.zRot;
+          BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
             type: RazarionMetadataType.BOT_GROUND,
             configId: botGround.model3DId,
             id: undefined,
