@@ -631,7 +631,6 @@ public final class TeaVMWorkerMarshaller {
                     continue;
                 }
                 JsObject obj = JsObject.create();
-                obj.set("model3DId", botGround.model3DId);
                 obj.set("height", botGround.height);
                 obj.set("positions", positionsArray);
                 obj.set("botGroundSlopeBoxes", marshallBotGroundSlopeBoxes(botGround.botGroundSlopeBoxes));
@@ -804,7 +803,6 @@ public final class TeaVMWorkerMarshaller {
         for (int i = 0; i < length; i++) {
             JsObject obj = (JsObject) array.get(i);
             BotGround botGround = new BotGround();
-            botGround.model3DId = obj.getInt("model3DId");
             botGround.height = obj.getDouble("height");
             botGround.positions = demarshallDecimalPositions(obj.get("positions"));
             botGround.botGroundSlopeBoxes = demarshallBotGroundSlopeBoxes(obj.get("botGroundSlopeBoxes"));

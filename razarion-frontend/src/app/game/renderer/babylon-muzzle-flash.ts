@@ -3,111 +3,79 @@ import {Scene} from "@babylonjs/core/scene";
 
 export class BabylonMuzzleFlash {
   private static flashTextureCache: DynamicTexture | null = null;
-  private static fireballTextureCache: DynamicTexture | null = null;
   private static smokeTextureCache: DynamicTexture | null = null;
 
+  // Persistent instances kept alive so they stay visible and tunable in the Babylon Inspector
+  private static flash: ParticleSystem | null = null;
+  private static smoke: ParticleSystem | null = null;
+
   static fire(scene: Scene, muzzlePosition: Vector3, forward: Vector3): void {
-    // === 1) FLASH — bright, instant, at muzzle ===
-    const flash = new ParticleSystem("muzzleFlash", 20, scene);
-    flash.particleTexture = BabylonMuzzleFlash.getFlashTexture(scene);
+    if (!BabylonMuzzleFlash.flash) {
+      BabylonMuzzleFlash.flash = BabylonMuzzleFlash.buildFlash(scene);
+      BabylonMuzzleFlash.smoke = BabylonMuzzleFlash.buildSmoke(scene);
+    }
+
+    const flash = BabylonMuzzleFlash.flash!;
     flash.emitter = muzzlePosition.clone();
-    flash.blendMode = ParticleSystem.BLENDMODE_ADD;
-
-    flash.minEmitBox = new Vector3(-0.02, -0.02, -0.02);
-    flash.maxEmitBox = new Vector3(0.02, 0.02, 0.02);
-
     flash.direction1 = forward.scale(0.5).add(new Vector3(-0.3, -0.3, -0.3));
     flash.direction2 = forward.scale(1.0).add(new Vector3(0.3, 0.3, 0.3));
-
-    flash.minLifeTime = 0.05;
-    flash.maxLifeTime = 0.15;
-    flash.emitRate = 500;
-    flash.targetStopDuration = 0.08;
-
-    flash.minSize = 1.2;
-    flash.maxSize = 2.5;
-    flash.minEmitPower = 0.5;
-    flash.maxEmitPower = 1.0;
-
-    flash.addColorGradient(0, new Color4(1, 1, 0.9, 1));
-    flash.addColorGradient(0.5, new Color4(1, 0.9, 0.5, 1));
-    flash.addColorGradient(1.0, new Color4(1, 0.7, 0.2, 0));
-
-    flash.disposeOnStop = true;
-    flash.particleTexture!.dispose = () => {};
+    // Single-frame burst so the flash is at full intensity immediately (no ramp-up)
+    flash.manualEmitCount = 20;
     flash.start();
 
-    // === 2) FIREBALL — moves away from barrel ===
-    const fireball = new ParticleSystem("muzzleFireball", 60, scene);
-    fireball.particleTexture = BabylonMuzzleFlash.getFireballTexture(scene);
-    fireball.emitter = muzzlePosition.clone();
-    fireball.blendMode = ParticleSystem.BLENDMODE_ADD;
-
-    fireball.minEmitBox = new Vector3(-0.03, -0.03, -0.03);
-    fireball.maxEmitBox = new Vector3(0.03, 0.03, 0.03);
-
-    fireball.direction1 = forward.scale(1.5).add(new Vector3(-0.1, -0.1, -0.1));
-    fireball.direction2 = forward.scale(3.0).add(new Vector3(0.1, 0.1, 0.1));
-
-    fireball.minLifeTime = 0.1;
-    fireball.maxLifeTime = 0.3;
-    fireball.emitRate = 400;
-    fireball.targetStopDuration = 0.12;
-
-    fireball.minSize = 0.3;
-    fireball.maxSize = 0.8;
-    fireball.minEmitPower = 2.0;
-    fireball.maxEmitPower = 5.0;
-
-    fireball.addColorGradient(0, new Color4(1, 1, 0.6, 1));
-    fireball.addColorGradient(0.3, new Color4(1, 0.7, 0.1, 1));
-    fireball.addColorGradient(0.7, new Color4(1, 0.3, 0.0, 0.8));
-    fireball.addColorGradient(1.0, new Color4(0.5, 0.1, 0.0, 0));
-
-    fireball.addSizeGradient(0, 0.3);
-    fireball.addSizeGradient(0.5, 0.7);
-    fireball.addSizeGradient(1.0, 0.1);
-
-    fireball.gravity = new Vector3(0, -0.5, 0);
-    fireball.disposeOnStop = true;
-    fireball.particleTexture!.dispose = () => {};
-    fireball.start();
-
-    // === 3) SMOKE — slow, fading, drifts from muzzle ===
-    const smoke = new ParticleSystem("muzzleSmoke", 40, scene);
-    smoke.particleTexture = BabylonMuzzleFlash.getSmokeTexture(scene);
+    const smoke = BabylonMuzzleFlash.smoke!;
     smoke.emitter = muzzlePosition.clone();
-    smoke.blendMode = ParticleSystem.BLENDMODE_STANDARD;
-
-    smoke.minEmitBox = new Vector3(-0.05, -0.05, -0.05);
-    smoke.maxEmitBox = new Vector3(0.05, 0.05, 0.05);
-
-    smoke.direction1 = forward.scale(0.3).add(new Vector3(-0.15, 0.1, -0.15));
-    smoke.direction2 = forward.scale(0.8).add(new Vector3(0.15, 0.4, 0.15));
-
-    smoke.minLifeTime = 0.8;
-    smoke.maxLifeTime = 2.0;
-    smoke.emitRate = 150;
-    smoke.targetStopDuration = 0.25;
-
-    smoke.minSize = 0.2;
-    smoke.maxSize = 0.6;
-    smoke.minEmitPower = 0.3;
-    smoke.maxEmitPower = 1.0;
-
-    smoke.addColorGradient(0, new Color4(0.6, 0.6, 0.55, 0.4));
-    smoke.addColorGradient(0.3, new Color4(0.5, 0.5, 0.48, 0.3));
-    smoke.addColorGradient(0.7, new Color4(0.4, 0.4, 0.38, 0.15));
-    smoke.addColorGradient(1.0, new Color4(0.3, 0.3, 0.3, 0));
-
-    smoke.addSizeGradient(0, 0.2);
-    smoke.addSizeGradient(0.5, 0.5);
-    smoke.addSizeGradient(1.0, 0.8);
-
-    smoke.gravity = new Vector3(0, 0.2, 0);
-    smoke.disposeOnStop = true;
-    smoke.particleTexture!.dispose = () => {};
+    smoke.direction1 = forward.scale(0.8).add(new Vector3(-0.15, 0.1, -0.15));
+    smoke.direction2 = forward.scale(1.6).add(new Vector3(0.15, 0.4, 0.15));
     smoke.start();
+  }
+
+  private static buildFlash(scene: Scene): ParticleSystem {
+    const ps = new ParticleSystem("muzzleFlash", 20, scene);
+    ps.particleTexture = BabylonMuzzleFlash.getFlashTexture(scene);
+    ps.blendMode = ParticleSystem.BLENDMODE_ADD;
+    ps.minEmitBox = new Vector3(-0.02, -0.02, -0.02);
+    ps.maxEmitBox = new Vector3(0.02, 0.02, 0.02);
+    ps.minLifeTime = 0.05;
+    ps.maxLifeTime = 0.15;
+    ps.emitRate = 0;
+    ps.minSize = 1.2;
+    ps.maxSize = 2.5;
+    ps.minEmitPower = 0.5;
+    ps.maxEmitPower = 1.0;
+    ps.addColorGradient(0, new Color4(1, 1, 0.9, 1));
+    ps.addColorGradient(0.5, new Color4(1, 0.9, 0.5, 1));
+    ps.addColorGradient(1.0, new Color4(1, 0.7, 0.2, 0));
+    ps.particleTexture!.dispose = () => {
+    };
+    return ps;
+  }
+
+  private static buildSmoke(scene: Scene): ParticleSystem {
+    const ps = new ParticleSystem("muzzleSmoke", 44, scene);
+    ps.particleTexture = BabylonMuzzleFlash.getSmokeTexture(scene);
+    ps.blendMode = ParticleSystem.BLENDMODE_STANDARD;
+    ps.minEmitBox = new Vector3(-0.05, -0.05, -0.05);
+    ps.maxEmitBox = new Vector3(0.05, 0.05, 0.05);
+    ps.minLifeTime = 0.6;
+    ps.maxLifeTime = 1.5;
+    ps.emitRate = 165;
+    ps.targetStopDuration = 0.25;
+    ps.minSize = 0.5;
+    ps.maxSize = 1.2;
+    ps.minEmitPower = 1.0;
+    ps.maxEmitPower = 2.5;
+    ps.addColorGradient(0, new Color4(0.6, 0.6, 0.55, 0.4));
+    ps.addColorGradient(0.3, new Color4(0.5, 0.5, 0.48, 0.3));
+    ps.addColorGradient(0.7, new Color4(0.4, 0.4, 0.38, 0.15));
+    ps.addColorGradient(1.0, new Color4(0.3, 0.3, 0.3, 0));
+    ps.addSizeGradient(0, 0.5);
+    ps.addSizeGradient(0.5, 1.2);
+    ps.addSizeGradient(1.0, 1.8);
+    ps.gravity = new Vector3(0, 0.2, 0);
+    ps.particleTexture!.dispose = () => {
+    };
+    return ps;
   }
 
   private static getFlashTexture(scene: Scene): DynamicTexture {
@@ -153,37 +121,6 @@ export class BabylonMuzzleFlash {
     ctx.fillRect(0, 0, size, size);
     tex.update();
     BabylonMuzzleFlash.flashTextureCache = tex;
-    return tex;
-  }
-
-  private static getFireballTexture(scene: Scene): DynamicTexture {
-    if (BabylonMuzzleFlash.fireballTextureCache) return BabylonMuzzleFlash.fireballTextureCache;
-    const tex = new DynamicTexture("muzzleFireballTex", 256, scene, false);
-    tex.hasAlpha = true;
-    const ctx = tex.getContext();
-    const size = 256;
-    const cx = size / 2;
-    const cy = size / 2;
-    const blobs = [
-      {x: cx, y: cy, r: 100},
-      {x: cx - 25, y: cy - 15, r: 65},
-      {x: cx + 30, y: cy + 20, r: 60},
-      {x: cx + 15, y: cy - 30, r: 50},
-      {x: cx - 20, y: cy + 25, r: 55},
-      {x: cx - 10, y: cy + 5, r: 75},
-    ];
-    for (const blob of blobs) {
-      const grad = ctx.createRadialGradient(blob.x, blob.y, 0, blob.x, blob.y, blob.r);
-      grad.addColorStop(0, "rgba(255, 255, 200, 0.7)");
-      grad.addColorStop(0.25, "rgba(255, 200, 80, 0.6)");
-      grad.addColorStop(0.5, "rgba(255, 120, 20, 0.4)");
-      grad.addColorStop(0.75, "rgba(200, 50, 0, 0.15)");
-      grad.addColorStop(1.0, "rgba(100, 20, 0, 0)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, size, size);
-    }
-    tex.update();
-    BabylonMuzzleFlash.fireballTextureCache = tex;
     return tex;
   }
 

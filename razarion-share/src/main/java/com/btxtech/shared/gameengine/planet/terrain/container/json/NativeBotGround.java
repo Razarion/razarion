@@ -5,7 +5,6 @@ import jsinterop.annotations.JsType;
 
 @JsType(name = "NativeBotGround", namespace = "com.btxtech.shared.json")
 public class NativeBotGround {
-    public int model3DId;
     public double height;
     public NativeDecimalPosition[] positions;
     public NativeBotGroundSlopeBox[] botGroundSlopeBoxes;

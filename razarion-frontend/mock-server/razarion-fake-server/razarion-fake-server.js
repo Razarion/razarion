@@ -12,12 +12,22 @@ const zlib = require('zlib');
 
 const PORT = 8080;
 let zip = null;
+let particleZip = null;
 
 fs.readFile("./resources/BabylonMaterials.zip",
   function (err, data) {
     if (err) throw err;
     JSZip.loadAsync(data).then(function (z) {
       zip = z;
+    });
+  }
+);
+
+fs.readFile("./resources/ParticleSystems.zip",
+  function (err, data) {
+    if (err) throw err;
+    JSZip.loadAsync(data).then(function (z) {
+      particleZip = z;
     });
   }
 );
@@ -242,16 +252,6 @@ const particleSystem = require("./resources/particle-system.json");
 
 server.on({
   method: 'GET',
-  path: '/rest/editor/particle-system/read/6',
-  reply: {
-    status: 200,
-    headers: {"content-type": "application/json"},
-    body: JSON.stringify(particleSystem._6)
-  }
-});
-
-server.on({
-  method: 'GET',
   path: '/rest/editor/particle-system/objectNameIds',
   reply: {
     status: 200,
@@ -260,49 +260,57 @@ server.on({
   }
 });
 
-
 server.on({
   method: 'GET',
-  path: '/rest/editor/particle-system/data/6',
-  reply: {
-    status: 200,
-    headers: {"content-type": "application/json"},
-    body: function () {
-      try {
-        const filePath = path.join(__dirname, 'resources', 'nodeParticleSystemSet.json');
-        return fs.readFileSync(filePath, 'utf8');
-      } catch (err) {
-        console.error('Fehler beim Lesen von nodeParticleSystemSet.json:', err);
-        return JSON.stringify({error: 'Datei konnte nicht gelesen werden'});
-      }
-    }
-  }
-});
-
-
-server.on({
-  method: 'PUT',
-  path: '/rest/editor/particle-system/upload/6',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/editor/particle-system/read/");
+  },
   reply: {
     status: 200,
     headers: {"content-type": "application/json"},
     body: function (req) {
-      console.log("Save particle system: " + req.headers['content-length'] + " content-type: " + req.headers['content-type']);
-
-      try {
-        const data = typeof req.body === 'string' ? req.body : JSON.stringify(req.body, null, 2);
-
-        const snipped = JSON.parse(data);
-        snipped.jsonPayload = snipped.payload
-        snipped.payload = undefined;
-
-        const filePath = path.join(__dirname, 'resources', 'nodeParticleSystemSet.json');
-        fs.writeFileSync(filePath, JSON.stringify(snipped), 'utf8');
-
-        console.log(`Particle system JSON wurde gespeichert unter: ${filePath}`);
-      } catch (err) {
-        console.error('Fehler beim Speichern des Particle-Systems:', err);
+      const id = req.url.substring("/rest/editor/particle-system/read/".length);
+      const entry = particleSystem["_" + id];
+      if (!entry) {
+        throw Error("particle-system metadata not found for id " + id);
       }
+      return JSON.stringify(entry);
+    }
+  }
+});
+
+server.on({
+  method: 'GET',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/editor/particle-system/data/");
+  },
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: function (req) {
+      const id = req.url.substring("/rest/editor/particle-system/data/".length);
+      const zipObject = particleZip.file("id_" + id);
+      if (!zipObject || !zipObject._data || !zipObject._data.compressedContent) {
+        throw Error("particle data not found for id " + id);
+      }
+      return zipObject._data.compressedContent;
+    }
+  }
+});
+
+server.on({
+  method: 'PUT',
+  path: '*',
+  filter: function (req) {
+    return req.url.startsWith("/rest/editor/particle-system/upload/");
+  },
+  reply: {
+    status: 200,
+    headers: {"content-type": "application/json"},
+    body: function (req) {
+      console.log("Save particle system (mock no-op): " + req.url + " length=" + req.headers['content-length']);
       return null;
     }
   }

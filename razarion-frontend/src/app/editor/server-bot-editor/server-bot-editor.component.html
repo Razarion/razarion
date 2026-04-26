@@ -84,11 +84,10 @@
               </div>
             </p-divider>
             <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Box model3D</span>
+              <span class="col-span-3">Enabled</span>
               <div class="col-span-9">
                 @if (selectedBot) {
-                  <model3d
-                  [(model3DId)]="selectedBot!.groundBoxModel3DEntityId"></model3d>
+                  <p-checkbox [(ngModel)]="selectedBot!.groundBoxEnabled" [binary]="true"></p-checkbox>
                 }
               </div>
             </div>

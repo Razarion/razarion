@@ -216,7 +216,6 @@ BotGrounds are flat platforms (driveways) placed by bot configurations. They con
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `model3DId` | int | 3D model reference |
 | `height` | double | Platform height |
 | `positions` | DecimalPosition[] | Platform polygon vertices |
 | `botGroundSlopeBoxes` | SlopeBox[] | Ramp definitions |
@@ -397,7 +396,6 @@ NativeBabylonDecal
   ySize: double
 
 NativeBotGround
-  model3DId: int
   height: double
   positions: NativeDecimalPosition[]
   botGroundSlopeBoxes: NativeBotGroundSlopeBox[]

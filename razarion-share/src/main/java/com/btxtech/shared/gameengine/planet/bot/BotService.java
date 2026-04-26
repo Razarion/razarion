@@ -36,9 +36,8 @@ public class BotService {
     static public List<BotGround> generateBotGrounds(List<BotConfig> botConfigs) {
         List<BotGround> botGrounds = new ArrayList<>();
         if (botConfigs != null) {
-            botConfigs.stream().filter(botConfig -> botConfig.getGroundBoxModel3DEntityId() != null).forEach(botConfig -> {
+            botConfigs.stream().filter(BotConfig::isGroundBoxEnabled).forEach(botConfig -> {
                 BotGround botGround = new BotGround();
-                botGround.model3DId = botConfig.getGroundBoxModel3DEntityId();
                 botGround.height = botConfig.getGroundBoxHeight() != null ? botConfig.getGroundBoxHeight() : 0;
                 botGround.positions = botConfig.getGroundBoxPositions() != null ? botConfig.getGroundBoxPositions().stream().toArray(value -> new DecimalPosition[botConfig.getGroundBoxPositions().size()]) : null;
                 botGround.botGroundSlopeBoxes = botConfig.getBotGroundSlopeBoxes() != null ? botConfig.getBotGroundSlopeBoxes().stream().toArray(value -> new BotGroundSlopeBox[botConfig.getBotGroundSlopeBoxes().size()]) : null;

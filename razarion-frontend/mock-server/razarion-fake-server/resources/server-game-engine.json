@@ -299,7 +299,7 @@
       },
       "name": "Raza Outpost Mini",
       "autoAttack": true,
-      "groundBoxModel3DEntityId": 1,
+      "groundBoxEnabled": true,
       "groundBoxHeight": 1,
       "groundBoxPositions": [
         {

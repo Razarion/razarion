@@ -502,7 +502,6 @@ export interface BabylonDecal {
 }
 
 export interface BotGround {
-  model3DId: number;
   height: number;
   positions: DecimalPosition[];
   botGroundSlopeBoxes: BotGroundSlopeBox[];

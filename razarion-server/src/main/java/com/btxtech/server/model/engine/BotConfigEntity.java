@@ -1,8 +1,6 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
-import com.btxtech.server.model.ui.BabylonMaterialEntity;
-import com.btxtech.server.model.ui.Model3DEntity;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -14,7 +12,6 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderColumn;
@@ -22,8 +19,6 @@ import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.btxtech.server.service.PersistenceUtil.extractId;
 
 @Entity
 @Table(name = "BOT_CONFIG")
@@ -42,9 +37,7 @@ public class BotConfigEntity extends BaseEntity {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "botConfig", nullable = false)
     private List<BotEnragementStateConfigEntity> botEnragementStateConfigs;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private Model3DEntity groundBoxModel3DEntity;
+    private boolean groundBoxEnabled;
     private Double groundBoxHeight;
     @ElementCollection
     @CollectionTable(name = "BOT_CONFIG_GROUND_BOX_POSITIONS", joinColumns = @JoinColumn(name = "OWNER_ID"))
@@ -87,7 +80,7 @@ public class BotConfigEntity extends BaseEntity {
                 .minActiveMs(minActiveMs)
                 .maxActiveMs(maxActiveMs)
                 .botEnragementStateConfigs(botEnragementStateConfigs)
-                .groundBoxModel3DEntityId(extractId(groundBoxModel3DEntity, Model3DEntity::getId))
+                .groundBoxEnabled(groundBoxEnabled)
                 .groundBoxHeight(groundBoxHeight)
                 .groundBoxPositions(lazyInitPositions)
                 .botGroundSlopeBoxes(botGroundSlopeBoxes);
@@ -121,7 +114,7 @@ public class BotConfigEntity extends BaseEntity {
                 this.botEnragementStateConfigs.add(botEnragementStateConfigEntity);
             }
         }
-        groundBoxModel3DEntity = botConfig.getGroundBoxModel3DEntityId() != null ? (Model3DEntity) new Model3DEntity().id(botConfig.getGroundBoxModel3DEntityId()) : null;
+        groundBoxEnabled = botConfig.isGroundBoxEnabled();
         groundBoxHeight = botConfig.getGroundBoxHeight();
         if (groundBoxPositions == null) {
             groundBoxPositions = new ArrayList<>();

@@ -725,7 +725,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         box.position = new Vector3(posX, botGround.height, posY);
         BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
           type: RazarionMetadataType.BOT_GROUND,
-          configId: botGround.model3DId,
+          configId: undefined,
           id: undefined,
           editorHintTerrainObjectPosition: undefined,
           botGroundNorm: botGroundNorm
@@ -750,7 +750,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           box.rotation.z = botGroundSlopeBox.zRot;
           BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
             type: RazarionMetadataType.BOT_GROUND,
-            configId: botGround.model3DId,
+            configId: undefined,
             id: undefined,
             editorHintTerrainObjectPosition: undefined,
             botGroundNorm: botGroundNorm

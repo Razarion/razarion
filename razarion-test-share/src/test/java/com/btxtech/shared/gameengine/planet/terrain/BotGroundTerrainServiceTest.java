@@ -48,7 +48,7 @@ public class BotGroundTerrainServiceTest extends DaggerTerrainServiceTestBase {
 
         List<BotConfig> botConfigs = List.of(new BotConfig()
                 .groundBoxHeight(3.0)
-                .groundBoxModel3DEntityId(1)
+                .groundBoxEnabled(true)
                 .groundBoxPositions(List.of(new DecimalPosition(15, 15)))
                 .botGroundSlopeBoxes(List.of(westSlopeBox, eastSlopeBox, southSlopeBox, nordSlopeBox))
         );

@@ -136,11 +136,11 @@ export class GameMockService {
 
         let baseItemType1 = new class implements BaseItemType {
           getName(): string {
-            return "BaseItemType";
+            return "Viper";
           }
 
           getDescription(): string {
-            return "BaseItemType description";
+            return "Viper attack unit";
           }
 
           getBuilderType(): BuilderType {
@@ -175,11 +175,11 @@ export class GameMockService {
               }
 
               getImpactParticleSystemId(): number | null {
-                return 2;
+                return 7;
               }
 
               getTrailParticleSystemConfigId(): number | null {
-                return 2;
+                return 4;
               }
 
               getMuzzleFlashAudioConfig(): AudioItemConfig | null {
@@ -205,7 +205,7 @@ export class GameMockService {
           }
 
           getExplosionParticleId(): number | null {
-            return 1;
+            return 5;
           }
 
           getExplosionAudioItemConfigId(): number | null {
@@ -213,21 +213,21 @@ export class GameMockService {
           }
 
           getId(): number {
-            return 12;
+            return 3;
           }
 
           getInternalName(): string {
-            return "Builder";
+            return "Viper";
           }
 
           getModel3DId(): number | null {
-            return 1;
+            return 34;
           }
 
           getPhysicalAreaConfig(): PhysicalAreaConfig {
             return new class implements PhysicalAreaConfig {
               getRadius(): number {
-                return 2;
+                return 1.3;
               }
 
               getTerrainType(): TerrainType {
@@ -257,33 +257,53 @@ export class GameMockService {
           }
         };
 
+        let refineryType = new class implements BaseItemType {
+          getName(): string { return "BotRefinery"; }
+          getDescription(): string { return "Bot refinery building"; }
+          getBuilderType(): BuilderType { return null as any; }
+          getHarvesterType(): HarvesterType { return null as any; }
+          getWeaponType(): WeaponType | null { return null; }
+          getItemContainerType(): ItemContainerType | null { return null; }
+          getFactoryType(): FactoryType | null { return null; }
+          getExplosionParticleId(): number | null { return 5; }
+          getExplosionAudioItemConfigId(): number | null { return null; }
+          getId(): number { return 22; }
+          getInternalName(): string { return "BotRefinery"; }
+          getModel3DId(): number | null { return 43; }
+          getPhysicalAreaConfig(): PhysicalAreaConfig {
+            return new class implements PhysicalAreaConfig {
+              getRadius(): number { return 3; }
+              getTerrainType(): TerrainType { return TerrainType.LAND; }
+              fulfilledMovable(): boolean { return true; }
+            };
+          }
+          getThumbnail(): number | null { return null; }
+          getPrice(): number { return 200; }
+          getConsumingHouseSpace(): number { return 0; }
+          getSpawnAudioId(): number | null { return null; }
+        };
+
         {
-          let babylonBaseItem1 = this.babylonRenderServiceAccessImpl.createBabylonBaseItem(999999, baseItemType1, 1, Diplomacy.OWN, "myName");
-          babylonBaseItem1.setPosition(GwtInstance.newVertex(70, 40, 0.6));
-          // babylonBaseItem1.setAngle(Tools.ToRadians(45));
-          babylonBaseItem1.setAngle(0);
+          // Viper attacks an enemy refinery: muzzle flash + projectile + impact every
+          // 1.5s. No onExplode call — the refinery stays alive so the loop keeps firing.
+          const refineryId = 999998;
+          const viperId = 999997;
 
-          // babylonBaseItem1.select(true);
+          const refineryItem = <BabylonBaseItemImpl>this.babylonRenderServiceAccessImpl
+            .createBabylonBaseItem(refineryId, refineryType, 2, Diplomacy.ENEMY, "");
+          refineryItem.setPosition(GwtInstance.newVertex(80, 40, 0.6));
+          refineryItem.setAngle(Math.PI);
+          refineryItem.setHealth(1);
 
-          // babylonBaseItem1.setConstructing(0.01);
-          babylonBaseItem1.setHealth(1);
+          const viperItem = <BabylonBaseItemImpl>this.babylonRenderServiceAccessImpl
+            .createBabylonBaseItem(viperId, baseItemType1, 1, Diplomacy.OWN, "");
+          viperItem.setPosition(GwtInstance.newVertex(60, 25, 0.6));
+          viperItem.setAngle(Math.PI / 4);
+          viperItem.setHealth(1);
 
-          (<BabylonBaseItemImpl>babylonBaseItem1).showSelectPromptVisualization();
-          // babylonBaseItem1.mark(MarkerConfig);
-          // setTimeout(() => {
-          //  babylonBaseItem1.onExplode();
-          //}, 2000);
-
-          // let health = 1.0;
-          // setInterval(() => {
-          //   babylonBaseItem1.setHealth(health)
-          //   health -= 0.1;
-          //   if (health < 0.0) {
-          //     health = 1.0;
-          //   }
-          // }, 1000)
-          // setInterval(() => babylonBaseItem.setConstructing((Date.now() % 5000) / 5000), 500);
-          // setInterval(() => babylonBaseItem1.setHealth(1.0 - (Date.now() % 10000) / 10000), 2000);
+          setInterval(() => {
+            viperItem.onProjectileFired(refineryId, GwtInstance.newDecimalPosition(80, 40));
+          }, 1500);
         }
         {
           // let botGround = this.babylonModelService.cloneModel3D(45, null, Diplomacy.OWN);
@@ -1087,7 +1107,6 @@ export class GameMockService {
                   }
                 }
                 const botGround = {
-                  model3DId: 45,
                   height: 0.6,
                   positions: positions,
                   botGroundSlopeBoxes: []

@@ -635,7 +635,6 @@ public class DtoConverter {
     private static JSObject convertBotGround(BotGround bg) {
         if (bg == null) return null;
         JsObject obj = JsObject.create();
-        obj.set("model3DId", bg.model3DId);
         obj.set("height", bg.height);
         obj.set("positions", convertDecimalPositions(bg.positions));
         obj.set("botGroundSlopeBoxes", convertBotGroundSlopeBoxes(bg.botGroundSlopeBoxes));

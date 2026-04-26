@@ -5,7 +5,6 @@ import {
   DynamicTexture,
   Mesh,
   MeshBuilder,
-  PBRMaterial,
   ParticleSystem,
   Ray,
   StandardMaterial,
@@ -20,7 +19,16 @@ export class BabylonWreckage {
   private static readonly WRECKAGE_LIFETIME = 15000; // ms before fade-out starts
   private static readonly FADE_DURATION = 5000; // ms for fade-out
 
-  static spawn(scene: Scene, position: Vector3, radius: number, survivingMeshes?: Mesh[]): void {
+  // When keepDebrisTransforms is true, survivingMeshes are assumed to have been placed
+  // (and rotated) by the caller — typically the tumble-physics pass in BabylonBuildingDebris.
+  // In that case we only re-scale and darken the materials, we do NOT reposition.
+  static spawn(
+    scene: Scene,
+    position: Vector3,
+    radius: number,
+    survivingMeshes?: Mesh[],
+    keepDebrisTransforms = false,
+  ): void {
     // Find ground height via raycast (hits Ground and BotGround)
     const groundPos = position.clone();
     const ray = new Ray(new Vector3(position.x, 100, position.z), new Vector3(0, -1, 0), 200);
@@ -89,30 +97,30 @@ export class BabylonWreckage {
 
     if (survivingMeshes && survivingMeshes.length > 0) {
       for (const debris of survivingMeshes) {
-        const scale = 0.3 + Math.random() * 0.4;
-        debris.scaling.setAll(scale);
+        if (!keepDebrisTransforms) {
+          const scale = 0.3 + Math.random() * 0.4;
+          debris.scaling.setAll(scale);
 
-        const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * radius * 0.8;
-        debris.position = groundPos.clone();
-        debris.position.x += Math.cos(angle) * dist;
-        debris.position.z += Math.sin(angle) * dist;
-        debris.position.y += 0.1;
+          const angle = Math.random() * Math.PI * 2;
+          const dist = Math.random() * radius * 0.8;
+          debris.position = groundPos.clone();
+          debris.position.x += Math.cos(angle) * dist;
+          debris.position.z += Math.sin(angle) * dist;
+          debris.position.y += 0.1;
 
-        debris.rotationQuaternion = null;
-        debris.rotation.x = (Math.random() - 0.5) * 1.2;
-        debris.rotation.y = Math.random() * Math.PI * 2;
-        debris.rotation.z = (Math.random() - 0.5) * 1.2;
+          debris.rotationQuaternion = null;
+          debris.rotation.x = (Math.random() - 0.5) * 1.2;
+          debris.rotation.y = Math.random() * Math.PI * 2;
+          debris.rotation.z = (Math.random() - 0.5) * 1.2;
+        }
 
         debris.isPickable = false;
 
-        // Darken material to look fire-damaged
-        const darken = 0.05 + Math.random() * 0.1;
-        const darkMat = new PBRMaterial(`wreckDark_${debris.name}`, scene);
-        darkMat.albedoColor = new Color3(darken, darken * 0.95, darken * 0.9);
-        darkMat.metallic = 0.0;
-        darkMat.roughness = 0.9;
-        debris.material = darkMat;
+        // No material modification — we fade via mesh.visibility below, which Babylon
+        // applies per-mesh-instance without touching the (possibly shared) material.
+        // Cloning or replacing materials here was causing black textures on buildings
+        // constructed after an explosion: disposing a cloned material can corrupt the
+        // shared texture's internal reference state even when forceDisposeTextures=false.
 
         debrisMeshes.push(debris);
       }
@@ -165,10 +173,11 @@ export class BabylonWreckage {
         if (scorchMat) {
           scorchMat.alpha = 1 - fadeT;
         }
+        // Per-mesh visibility — Babylon forces alpha blending when visibility < 1,
+        // independent of the material's transparencyMode. Keeps the (possibly shared)
+        // source material untouched.
         for (const d of debrisMeshes) {
-          if (d.material) {
-            d.material.alpha = 1 - fadeT;
-          }
+          d.visibility = 1 - fadeT;
         }
 
         // Reduce smoke as we fade
@@ -183,8 +192,10 @@ export class BabylonWreckage {
           if (scorchMat) {
             scorchMat.dispose();
           }
+          // Dispose meshes but NOT their materials — these are references into the
+          // asset container's shared PBR pool, disposing them breaks future buildings
+          // of the same type.
           for (const d of debrisMeshes) {
-            d.material?.dispose();
             d.dispose();
           }
           smoke.stop();

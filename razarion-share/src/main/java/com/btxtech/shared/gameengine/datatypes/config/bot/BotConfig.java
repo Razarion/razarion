@@ -23,7 +23,7 @@ public class BotConfig implements Config {
     private Integer minActiveMs;
     private Integer maxActiveMs;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
-    private Integer groundBoxModel3DEntityId;
+    private boolean groundBoxEnabled;
     private Double groundBoxHeight;
     private List<DecimalPosition> groundBoxPositions;
     private List<BotGroundSlopeBox> botGroundSlopeBoxes;
@@ -132,12 +132,12 @@ public class BotConfig implements Config {
         this.botEnragementStateConfigs = botEnragementStateConfigs;
     }
 
-    public @Nullable Integer getGroundBoxModel3DEntityId() {
-        return groundBoxModel3DEntityId;
+    public boolean isGroundBoxEnabled() {
+        return groundBoxEnabled;
     }
 
-    public void setGroundBoxModel3DEntityId(@Nullable Integer groundBoxModel3DEntityId) {
-        this.groundBoxModel3DEntityId = groundBoxModel3DEntityId;
+    public void setGroundBoxEnabled(boolean groundBoxEnabled) {
+        this.groundBoxEnabled = groundBoxEnabled;
     }
 
     public @Nullable Double getGroundBoxHeight() {
@@ -229,8 +229,8 @@ public class BotConfig implements Config {
         return this;
     }
 
-    public BotConfig groundBoxModel3DEntityId(Integer groundBoxModel3DEntityId) {
-        setGroundBoxModel3DEntityId(groundBoxModel3DEntityId);
+    public BotConfig groundBoxEnabled(boolean groundBoxEnabled) {
+        setGroundBoxEnabled(groundBoxEnabled);
         return this;
     }
 

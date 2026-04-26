@@ -14,9 +14,6 @@ public interface JsNativeBotGround extends JSObject {
         throw new UnsupportedOperationException("Implemented by TeaVM");
     }
 
-    @JSBody(script = "return this.model3DId || 0;")
-    int getModel3DId();
-
     @JSBody(script = "return this.height || 0;")
     double getHeight();
 

@@ -1,9 +1,12 @@
 import {
   AbstractMesh,
   Animation,
+  Color4,
+  DynamicTexture,
   Mesh,
   MeshBuilder,
-  MeshExploder,
+  ParticleSystem,
+  Scene,
   UtilityLayerRenderer,
   Vector3,
 } from "@babylonjs/core";
@@ -28,12 +31,16 @@ import {Nullable} from '@babylonjs/core/types';
 import {BabylonMuzzleFlash} from "./babylon-muzzle-flash";
 import {BabylonBuildupEffect} from "./babylon-buildup-effect";
 import {BabylonHarvestingBeam} from "./babylon-harvesting-beam";
+import {BabylonBuildingDebris} from "./babylon-building-debris";
+import {BabylonExplosion} from "./babylon-explosion";
 import {BabylonImpact} from "./babylon-impact";
 import {BabylonWreckage} from "./babylon-wreckage";
 import {BabylonDamageEffect} from "./babylon-damage-effect";
 import {RenderObject} from "./render-object";
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
+  private static trailSmokeTextureCache: DynamicTexture | null = null;
+
   // See GWT java PlanetService
   static readonly TICK_TIME_MILLI_SECONDS: number = 100;
   private baseId: number;
@@ -622,89 +629,82 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.rendererService.babylonAudioService.playAudioAtPosition(explosionAudioId, this.getContainer().position);
     }
 
-    if (GwtHelper.gwtIssueNumber(this.baseItemType.getExplosionParticleId() == null)) {
-      console.warn(`No ExplosionParticleId for base item type ${this.getId()}`)
-      return;
-    }
-
-    try {
-      let particleSystemConfig = this.babylonModelService.getParticleSystemEntity(this.baseItemType.getExplosionParticleId()!);
-      this.rendererService.createParticleSystem(particleSystemConfig.id, particleSystemConfig.imageId)
-        ?.then(particleSystemSet => {
-          // TODO particleSystemSet.disposeOnStop = true;
-          particleSystemSet.start(<any>this.getContainer().position.clone());
-        });
-    } catch (e) {
-      console.warn(e);
-    }
+    // Fireball + debris + shockwave — procedural effect, independent of server-side
+    // NodeParticleSystemSet data so it also runs in gwtmock mode.
+    BabylonExplosion.detonate(
+      this.rendererService.getScene(),
+      this.getContainer().position.clone(),
+    );
 
     const wreckagePosition = this.getContainer().position.clone();
     const wreckageRadius = this.baseItemType.getPhysicalAreaConfig().getRadius();
+    const scene = this.rendererService.getScene();
 
     this.isExploding = true;
     setTimeout(() => {
       try {
-        let centerMesh = MeshBuilder.CreateBox("Explosion ground");
-        centerMesh.position.x = this.getPosition()!.getX();
-        centerMesh.position.y = this.getPosition()!.getZ();
-        centerMesh.position.z = this.getPosition()!.getY();
-        centerMesh.isVisible = false;
-        centerMesh.setParent(this.getContainer());
+        // Freeze all AnimationGroups targeting this render object. Otherwise loop/idle
+        // animations (spinning dishes, fans, construction progress) keep writing to the
+        // detached debris meshes' position/rotation every frame and fight with the
+        // physics integration in BabylonBuildingDebris.
+        this.stopAllAnimations();
 
-        let toExplodeArray = this.getContainer().getChildMeshes() as Mesh[];
-
-        let newExplosion = new MeshExploder(toExplodeArray, centerMesh);
-
-        const dateStart = Date.now();
-        const EXPLOSION_DURATION = 500;
-        const MAX_DISTANCE = 10;
-
-        const renderCallback = () => {
-          const elapsedTime = Date.now() - dateStart;
-
-          if (elapsedTime < EXPLOSION_DURATION) {
-            const t = elapsedTime / EXPLOSION_DURATION; // 0 → 1
-            const easeOut = t * 0.7 + (1 - (1 - t) * (1 - t)) * 0.3;
-            const distance = MAX_DISTANCE * easeOut;
-            newExplosion.explode(distance);
-          } else {
-            this.isExploding = false;
-            centerMesh.dispose();
-            this.rendererService.getScene().unregisterBeforeRender(renderCallback);
-            // Detach visible meshes and create extra clones for more debris
-            const survivingMeshes: Mesh[] = [];
-            const originals: Mesh[] = [];
-            for (const mesh of this.getContainer().getChildMeshes(false) as Mesh[]) {
-              if (mesh.isVisible && mesh.getTotalVertices() > 0) {
-                mesh.setParent(null);
-                survivingMeshes.push(mesh);
-                originals.push(mesh);
-              }
-            }
-            // Clone each original 2-3 extra times for denser debris
-            for (const orig of originals) {
-              const extraCount = 5 + Math.floor(Math.random() * 4);
-              for (let c = 0; c < extraCount; c++) {
-                try {
-                  const clone = orig.clone(`${orig.name}_debris${c}`, null);
-                  if (clone) {
-                    clone.material = orig.material;
-                    survivingMeshes.push(clone);
-                  }
-                } catch (_) {}
-              }
-            }
-            this.dispose();
-            BabylonWreckage.spawn(
-              this.rendererService.getScene(),
-              wreckagePosition,
-              wreckageRadius,
-              survivingMeshes
-            );
+        // Collect the visible child meshes, clone each a few times for density, and
+        // detach them into world space — then let BabylonBuildingDebris simulate each
+        // as an independent rigid body (outward+upward impulse, gravity, ground bounce).
+        // Zero Hour–style "wegspicken": individual chunks tumble instead of a uniform
+        // radial push (MeshExploder).
+        const container = this.getContainer();
+        const originals: Mesh[] = [];
+        for (const mesh of container.getChildMeshes(false) as Mesh[]) {
+          if (mesh.isVisible && mesh.getTotalVertices() > 0) {
+            originals.push(mesh);
           }
-        };
+        }
 
-        this.rendererService.getScene().registerBeforeRender(renderCallback);
+        const survivingMeshes: Mesh[] = [];
+        const clonesPerOriginal = 3;
+        for (const orig of originals) {
+          // World-space anchor for each chunk's initial position: the mesh's current
+          // absolute transform, captured BEFORE detaching so the parent world matrix
+          // is still in effect.
+          const worldPos = orig.getAbsolutePosition().clone();
+
+          orig.setParent(null);
+          orig.position.copyFrom(worldPos);
+          survivingMeshes.push(orig);
+
+          for (let c = 0; c < clonesPerOriginal; c++) {
+            try {
+              const clone = orig.clone(`${orig.name}_debris${c}`, null);
+              if (clone) {
+                clone.setParent(null);
+                clone.material = orig.material;
+                // Slight positional jitter so clones don't z-fight with the original.
+                clone.position.copyFrom(worldPos);
+                clone.position.x += (Math.random() - 0.5) * wreckageRadius * 0.5;
+                clone.position.y += Math.random() * 1.5;
+                clone.position.z += (Math.random() - 0.5) * wreckageRadius * 0.5;
+                survivingMeshes.push(clone);
+              }
+            } catch (_) {}
+          }
+        }
+
+        BabylonBuildingDebris.tumble(scene, survivingMeshes, wreckagePosition, settledMeshes => {
+          // Order matters: clear isExploding FIRST so the override dispose() guard doesn't
+          // no-op the cleanup (the renderObject/container would otherwise leak, and the
+          // BaseItem stays registered in BaseItemUiService).
+          this.isExploding = false;
+          this.dispose();
+          BabylonWreckage.spawn(
+            scene,
+            wreckagePosition,
+            wreckageRadius,
+            settledMeshes,
+            true, // keepDebrisTransforms — physics already placed them on the ground
+          );
+        });
       } catch (e) {
         console.warn(e);
       }
@@ -885,6 +885,44 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
 
+  private static getTrailSmokeTexture(scene: Scene): DynamicTexture {
+    if (BabylonBaseItemImpl.trailSmokeTextureCache) return BabylonBaseItemImpl.trailSmokeTextureCache;
+    const size = 256;
+    const tex = new DynamicTexture("ProjectileTrailSmokeTex", {width: size, height: size}, scene, false);
+    tex.hasAlpha = true;
+    const ctx = tex.getContext() as unknown as CanvasRenderingContext2D;
+
+    // Soft round puff billboarded toward camera — organic cloud shape of overlapping blobs.
+    const cx = size / 2;
+    const cy = size / 2;
+    const blobs = [
+      {x: cx, y: cy, r: 110},
+      {x: cx - 30, y: cy - 20, r: 70},
+      {x: cx + 35, y: cy + 15, r: 65},
+      {x: cx + 10, y: cy - 35, r: 55},
+      {x: cx - 25, y: cy + 30, r: 50},
+      {x: cx + 30, y: cy - 25, r: 45},
+      {x: cx - 15, y: cy - 10, r: 80},
+    ];
+    for (const blob of blobs) {
+      const grad = ctx.createRadialGradient(blob.x, blob.y, 0, blob.x, blob.y, blob.r);
+      grad.addColorStop(0.0, "rgba(235, 235, 230, 0.95)");
+      grad.addColorStop(0.4, "rgba(220, 220, 215, 0.6)");
+      grad.addColorStop(0.8, "rgba(190, 190, 185, 0.2)");
+      grad.addColorStop(1.0, "rgba(160, 160, 155, 0)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, size, size);
+    }
+
+    tex.update();
+    // Prevent the shared cache from being disposed together with any ParticleSystem that uses it
+    // (disposeOnStop = true on the trail would otherwise wipe the texture after the first projectile).
+    tex.dispose = () => {
+    };
+    BabylonBaseItemImpl.trailSmokeTextureCache = tex;
+    return tex;
+  }
+
   private createProjectile(start: Vector3, targetImpactMesh: Nullable<AbstractMesh>, targetPosition: Nullable<Vector3>): void {
     if (!this.baseItemType.getWeaponType()!.getProjectileSpeed()) {
       return;
@@ -901,14 +939,41 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       segments: 1
     }, scene);
     meshProjectile.material = this.rendererService.projectileMaterial;
+    meshProjectile.position = start.clone();
+    meshProjectile.computeWorldMatrix(true);
 
-    const trailParticleSystemEntityId = GwtHelper.gwtIssueNumber(this.baseItemType.getWeaponType()!.getTrailParticleSystemConfigId());
-    if (trailParticleSystemEntityId || trailParticleSystemEntityId === 0) {
-      let particleSystemEntity = this.babylonModelService.getParticleSystemEntity(trailParticleSystemEntityId);
-      this.rendererService.createParticleSystem(particleSystemEntity.id, particleSystemEntity.imageId)?.then(particleSystemSet => {
-        particleSystemSet.start(meshProjectile);
-      });
-    }
+    // Rocket exhaust trail: billboarded smoke puffs emitted from the projectile.
+    const destination = targetImpactMesh ? targetImpactMesh.getAbsolutePosition() : targetPosition!;
+
+    const smokeTrail = new ParticleSystem("ProjectileSmokeTrail", 400, scene);
+    smokeTrail.particleTexture = BabylonBaseItemImpl.getTrailSmokeTexture(scene);
+    smokeTrail.emitter = meshProjectile;
+    smokeTrail.blendMode = ParticleSystem.BLENDMODE_STANDARD;
+    smokeTrail.minEmitBox = new Vector3(-0.05, -0.05, -0.05);
+    smokeTrail.maxEmitBox = new Vector3(0.05, 0.05, 0.05);
+    smokeTrail.direction1 = new Vector3(-0.2, -0.2, -0.2);
+    smokeTrail.direction2 = new Vector3(0.2, 0.2, 0.2);
+    smokeTrail.minLifeTime = 0.1;
+    smokeTrail.maxLifeTime = 0.2;
+    smokeTrail.emitRate = 300;
+    smokeTrail.minSize = 0.25;
+    smokeTrail.maxSize = 0.4;
+    smokeTrail.minEmitPower = 0.05;
+    smokeTrail.maxEmitPower = 0.2;
+    // Almost-white hot core → fiery orange → warm transition → grey smoke → fade.
+    smokeTrail.addColorGradient(0.00, new Color4(1.00, 0.97, 0.90, 0.95));
+    smokeTrail.addColorGradient(0.08, new Color4(1.00, 0.75, 0.35, 0.92));
+    smokeTrail.addColorGradient(0.20, new Color4(1.00, 0.55, 0.15, 0.88));
+    smokeTrail.addColorGradient(0.40, new Color4(0.90, 0.75, 0.60, 0.75));
+    smokeTrail.addColorGradient(0.65, new Color4(0.78, 0.76, 0.73, 0.55));
+    smokeTrail.addColorGradient(0.85, new Color4(0.68, 0.68, 0.68, 0.30));
+    smokeTrail.addColorGradient(1.00, new Color4(0.40, 0.40, 0.40, 0.00));
+    smokeTrail.addSizeGradient(0.00, 0.3);
+    smokeTrail.addSizeGradient(0.40, 0.65);
+    smokeTrail.addSizeGradient(1.00, 1.0);
+    smokeTrail.gravity = new Vector3(0, 0.2, 0);
+    smokeTrail.disposeOnStop = true;
+    smokeTrail.start();
 
     const frameRate = 1;
     const xSlide = new Animation("Projectile",
@@ -924,7 +989,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       value: start
     });
 
-    const destination = targetImpactMesh ? targetImpactMesh.getAbsolutePosition() : targetPosition!;
     keyFrames.push({
       frame: 1,
       value: destination
@@ -942,6 +1006,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       projectileSpeed / start.subtract(destination).length());
     animatable.onAnimationEnd = () => {
       try {
+        // Freeze the emitter so already-emitted puffs keep rendering after the projectile is gone.
+        smokeTrail.emitter = meshProjectile.getAbsolutePosition().clone();
+        smokeTrail.stop();
         scene.removeMesh(meshProjectile);
         meshProjectile.dispose();
         BabylonImpact.detonate(scene, destination);

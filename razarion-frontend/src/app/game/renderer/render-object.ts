@@ -285,10 +285,23 @@ export class RenderObject {
   }
 
   private stopAllPhasedGroups() {
+    this.stopAllAnimations();
+  }
+
+  // Freezes every animation that targets this render object. Used by callers that
+  // need the meshes' transforms to be writable without being overwritten by an animation
+  // track the next frame — e.g. the building debris physics after an explosion.
+  //
+  // Covers BOTH animation sources in this class:
+  //  - phased AnimationGroups (intro/loop/outro/progress) — driven by setBuildAnimationActive
+  //  - effect Animatables (spinning radars/antennas/flames) — driven by setEffectsActive
+  // Missing the second set meant wreckage pieces kept spinning after the building exploded.
+  stopAllAnimations() {
     this.introAnimationGroups.forEach(group => group.stop());
     this.loopAnimationGroups.forEach(group => group.stop());
     this.outroAnimationGroups.forEach(group => group.stop());
     this.progressAnimationGroups.forEach(group => group.stop());
+    this.setEffectsActive(false);
   }
 
   dispose() {

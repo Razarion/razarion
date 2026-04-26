@@ -133,7 +133,6 @@ public class TerrainTileFactory {
         for (int i = 0; i < nativeBotGrounds.length; i++) {
             NativeBotGround nativeBotGround = nativeBotGrounds[i];
             BotGround botGround = new BotGround();
-            botGround.model3DId = nativeBotGround.model3DId;
             botGround.height = nativeBotGround.height;
             botGround.positions = toDecimalPositions(nativeBotGround.positions);
             botGround.botGroundSlopeBoxes = toBotGroundSlopeBoxes(nativeBotGround.botGroundSlopeBoxes);

@@ -163,7 +163,6 @@ public class TerrainShapeManagerSetup {
             });
 
             NativeBotGround nativeBotGround = new NativeBotGround();
-            nativeBotGround.model3DId = botGround.model3DId;
             nativeBotGround.height = botGround.height;
             nativeBotGround.positions = toNativeDecimalPositions(botGround.positions);
             nativeBotGround.botGroundSlopeBoxes = toNativeBotGroundSlopeBoxes(botGround.botGroundSlopeBoxes);

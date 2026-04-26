@@ -391,7 +391,6 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             return null;
         }
         NativeBotGround result = new NativeBotGround();
-        result.model3DId = jsBotGround.getModel3DId();
         result.height = jsBotGround.getHeight();
 
         // Positions - use direct JSBody accessors, filter out invalid positions

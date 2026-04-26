@@ -389,15 +389,34 @@
   ],
   "particleSystemEntities": [
     {
+      "id": 2,
+      "imageId": null,
+      "internalName": "Viper Muzzle"
+    },
+    {
+      "id": 4,
+      "imageId": 164,
+      "internalName": "Projectile trail"
+    },
+    {
+      "id": 5,
+      "imageId": 164,
+      "internalName": "Explosion 2"
+    },
+    {
       "id": 6,
-      "internalName": "Mock",
-      "emitterNodeId": "Cannon00.Cannon00",
-      "positionOffset": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "imageId": null
+      "imageId": 164,
+      "internalName": "Smoke"
+    },
+    {
+      "id": 7,
+      "imageId": null,
+      "internalName": "Impact"
+    },
+    {
+      "id": 8,
+      "imageId": null,
+      "internalName": "Spawn"
     }
   ],
   "selectionItemMaterialId": 14

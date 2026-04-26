@@ -108,6 +108,9 @@ export class BabylonDamageEffect {
     // Seed random per-vertex offsets once
     if (!this.deformSeeded) {
       for (const mesh of meshes) {
+        // getChildMeshes() also returns InstancedMesh/AbstractMesh subclasses that don't own
+        // geometry and don't expose makeGeometryUnique() — skip them to avoid a runtime error.
+        if (!(mesh instanceof Mesh)) continue;
         const positions = mesh.getVerticesData(VertexBuffer.PositionKind);
         const normals = mesh.getVerticesData(VertexBuffer.NormalKind);
         if (!positions || !normals) continue;

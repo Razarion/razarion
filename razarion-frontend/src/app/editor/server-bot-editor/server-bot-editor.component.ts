@@ -21,7 +21,6 @@ import {Divider} from 'primeng/divider';
 import {Select} from 'primeng/select';
 import {MessageService} from 'primeng/api';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
-import {Model3dComponent} from '../common/model3d/model3d.component';
 import {BotGroundEditorService} from './bot-ground-editor.service';
 import {ToggleButtonModule} from 'primeng/togglebutton';
 
@@ -39,7 +38,6 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
     Select,
     AccordionModule,
     ScrollPanelModule,
-    Model3dComponent,
     ToggleButtonModule
 ],
   templateUrl: './server-bot-editor.component.html'
@@ -102,7 +100,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
       npc: false,
       realm: null,
       groundBoxHeight: null,
-      groundBoxModel3DEntityId: null,
+      groundBoxEnabled: false,
       groundBoxPositions: [],
       botGroundSlopeBoxes: [],
     }

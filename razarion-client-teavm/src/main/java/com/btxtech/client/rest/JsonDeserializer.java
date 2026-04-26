@@ -759,7 +759,7 @@ public class JsonDeserializer {
         r.setMinActiveMs(json.getNullableInt("minActiveMs"));
         r.setMaxActiveMs(json.getNullableInt("maxActiveMs"));
         r.setBotEnragementStateConfigs(list(json, "botEnragementStateConfigs", JsonDeserializer::deserializeBotEnragementStateConfig));
-        r.setGroundBoxModel3DEntityId(json.getNullableInt("groundBoxModel3DEntityId"));
+        r.setGroundBoxEnabled(json.getBoolean("groundBoxEnabled"));
         r.setGroundBoxHeight(json.getNullableDouble("groundBoxHeight"));
         r.setGroundBoxPositions(decimalPositionList(json, "groundBoxPositions"));
         r.setBotGroundSlopeBoxes(list(json, "botGroundSlopeBoxes", JsonDeserializer::deserializeBotGroundSlopeBox));

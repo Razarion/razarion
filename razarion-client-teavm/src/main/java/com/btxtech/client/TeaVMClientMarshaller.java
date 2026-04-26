@@ -699,7 +699,6 @@ public class TeaVMClientMarshaller {
         for (int i = 0; i < length; i++) {
             JsObject obj = JsObject.cast(getArrayElementDirect(array, i));
             BotGround botGround = new BotGround();
-            botGround.model3DId = obj.getInt("model3DId");
             botGround.height = obj.getDouble("height");
             botGround.positions = demarshallDecimalPositions(obj.get("positions"));
             botGround.botGroundSlopeBoxes = demarshallBotGroundSlopeBoxes(obj.get("botGroundSlopeBoxes"));

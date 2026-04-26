@@ -159,6 +159,10 @@ export class BabylonItemImpl implements BabylonItem {
     this.disposeInternal(false);
   }
 
+  stopAllAnimations(): void {
+    this.renderObject.stopAllAnimations();
+  }
+
   private disposeInternal(permanent: boolean): void {
     if (this.disposeCallback) {
       this.disposeCallback(permanent);

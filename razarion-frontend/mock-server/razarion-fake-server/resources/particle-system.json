@@ -1,17 +1,82 @@
 {
-    "objectNameIds": [
-        {
-            "id": 6,
-            "internalName": "Explosion"
-        }
-    ],
-    "_6": {
-        "id": 6,
-        "internalName": "Explosion",
-        "positionOffset": {
-            "x": 0,
-            "y": 0,
-            "z": 1
-        }
+  "objectNameIds": [
+    {
+      "id": 2,
+      "internalName": "Viper Muzzle"
+    },
+    {
+      "id": 4,
+      "internalName": "Projectile trail"
+    },
+    {
+      "id": 5,
+      "internalName": "Explosion 2"
+    },
+    {
+      "id": 6,
+      "internalName": "Smoke"
+    },
+    {
+      "id": 7,
+      "internalName": "Impact"
+    },
+    {
+      "id": 8,
+      "internalName": "Spawn"
     }
+  ],
+  "_2": {
+    "id": 2,
+    "internalName": "Viper Muzzle",
+    "positionOffset": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  "_4": {
+    "id": 4,
+    "internalName": "Projectile trail",
+    "positionOffset": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  "_5": {
+    "id": 5,
+    "internalName": "Explosion 2",
+    "positionOffset": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  "_6": {
+    "id": 6,
+    "internalName": "Smoke",
+    "positionOffset": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  "_7": {
+    "id": 7,
+    "internalName": "Impact",
+    "positionOffset": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  "_8": {
+    "id": 8,
+    "internalName": "Spawn",
+    "positionOffset": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  }
 }
