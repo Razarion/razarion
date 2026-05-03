@@ -97,6 +97,12 @@ public class SharedTickBufferReader {
                     info.buildingPosition.x = buildX;
                     info.buildingPosition.y = getFloat64(itemDoubles, dOff + 13);
                 }
+                double rallyX = getFloat64(itemDoubles, dOff + 14);
+                if (!Double.isNaN(rallyX)) {
+                    info.factoryRallyPoint = new NativeDecimalPosition();
+                    info.factoryRallyPoint.x = rallyX;
+                    info.factoryRallyPoint.y = getFloat64(itemDoubles, dOff + 15);
+                }
 
                 // Ints
                 info.id = getInt32(itemInts, iOff + 0);

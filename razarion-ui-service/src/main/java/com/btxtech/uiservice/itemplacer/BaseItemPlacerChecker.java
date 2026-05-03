@@ -3,8 +3,12 @@ package com.btxtech.uiservice.itemplacer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -24,25 +28,32 @@ public class BaseItemPlacerChecker {
     private static final double SAFETY_DISTANCE = 0.2;
     private final TerrainUiService terrainUiService;
     private final BaseItemUiService baseItemUiService;
+    private final ItemTypeService itemTypeService;
     private Collection<DecimalPosition> relativeItemPositions;
     private boolean isAllowedAreaOk;
     private boolean isTerrainOk;
     private boolean isItemsOk;
     private boolean isEnemiesOk;
+    private boolean isRallyTerrainOk;
     private BaseItemType baseItemType;
     private PlaceConfig allowedArea;
     private double enemyFreeRadius;
+    private DecimalPosition relativeRallyPosition;
+    private double rallyRadius;
+    private TerrainType rallyTerrainType;
 
     @Inject
-    public BaseItemPlacerChecker(BaseItemUiService baseItemUiService, TerrainUiService terrainUiService) {
+    public BaseItemPlacerChecker(BaseItemUiService baseItemUiService, TerrainUiService terrainUiService, ItemTypeService itemTypeService) {
         this.baseItemUiService = baseItemUiService;
         this.terrainUiService = terrainUiService;
+        this.itemTypeService = itemTypeService;
     }
 
     public void init(BaseItemType baseItemType, BaseItemPlacerConfig baseItemPlacerConfig) {
         this.baseItemType = baseItemType;
         allowedArea = baseItemPlacerConfig.getAllowedArea();
         setupGeometry(baseItemType, baseItemPlacerConfig);
+        setupRallyGeometry(baseItemType);
     }
 
     public void check(DecimalPosition position) {
@@ -57,6 +68,7 @@ public class BaseItemPlacerChecker {
             isItemsOk = !baseItemUiService.hasItemsInRangeInViewField(absoluteItemPositions, baseItemType.getPhysicalAreaConfig().getRadius());
         }
         isTerrainOk = isItemsOk && terrainUiService.isTerrainFree(absoluteItemPositions, baseItemType);
+        isRallyTerrainOk = !hasRallyPoint() || terrainUiService.isTerrainFree(getAbsoluteRallyPosition(position), rallyRadius, rallyTerrainType);
     }
 
     public boolean isAllowedAreaOk() {
@@ -76,7 +88,7 @@ public class BaseItemPlacerChecker {
     }
 
     public boolean isPositionValid() {
-        return isAllowedAreaOk && isItemsOk && isEnemiesOk && isTerrainOk;
+        return isAllowedAreaOk && isItemsOk && isEnemiesOk && isTerrainOk && isRallyTerrainOk;
     }
 
     public double getEnemyFreeRadius() {
@@ -85,6 +97,45 @@ public class BaseItemPlacerChecker {
 
     public Collection<DecimalPosition> setupAbsolutePositions(DecimalPosition position) {
         return DecimalPosition.add(relativeItemPositions, position);
+    }
+
+    public boolean hasRallyPoint() {
+        return relativeRallyPosition != null;
+    }
+
+    public DecimalPosition getRelativeRallyPosition() {
+        return relativeRallyPosition;
+    }
+
+    public double getRallyRadius() {
+        return rallyRadius;
+    }
+
+    public DecimalPosition getAbsoluteRallyPosition(DecimalPosition itemPosition) {
+        return relativeRallyPosition != null ? itemPosition.add(relativeRallyPosition) : null;
+    }
+
+    private void setupRallyGeometry(BaseItemType baseItemType) {
+        relativeRallyPosition = null;
+        FactoryType factoryType = baseItemType.getFactoryType();
+        if (factoryType == null || factoryType.getAbleToBuildIds() == null || factoryType.getAbleToBuildIds().isEmpty()) {
+            return;
+        }
+        double maxRadius = 0;
+        TerrainType terrainType = TerrainType.LAND;
+        for (int ableToBuildId : factoryType.getAbleToBuildIds()) {
+            BaseItemType buildable = itemTypeService.getBaseItemType(ableToBuildId);
+            double radius = buildable.getPhysicalAreaConfig().getRadius();
+            if (radius > maxRadius) {
+                maxRadius = radius;
+            }
+            terrainType = buildable.getPhysicalAreaConfig().getTerrainType();
+        }
+        rallyRadius = maxRadius;
+        rallyTerrainType = terrainType;
+        // Mirror SyncFactory.setupRallyPoint: rally to the right of the factory at totalRadius distance.
+        double totalRadius = maxRadius + baseItemType.getPhysicalAreaConfig().getRadius() + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE;
+        relativeRallyPosition = new DecimalPosition(totalRadius, 0);
     }
 
     private void setupGeometry(BaseItemType baseItemType, BaseItemPlacerConfig baseItemPlacerConfig) {

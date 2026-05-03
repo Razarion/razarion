@@ -1,6 +1,7 @@
 .gwt/
 .idea/
 .tmp-prod-backup/
+/backup_temp.*
 razarion.iml
 target/
 razarion-ui-service/razarion-ui-service.iml

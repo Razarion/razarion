@@ -173,10 +173,17 @@ public final class TeaVMWorkerMarshaller {
 
             // Triple JSON data
             case PROJECTILE_FIRED:
+                setArrayString(array, DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                setArrayString(array, DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                setArrayString(array, DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                break;
+
+            // Quadruple JSON data: builderId, position, toBeBuildTypeId, rallyPoint (rallyPoint nullable)
             case COMMAND_BUILD:
                 setArrayString(array, DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 setArrayString(array, DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 setArrayString(array, DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                setArrayString(array, DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 break;
 
             case INITIALIZE_WARM:
@@ -303,6 +310,7 @@ public final class TeaVMWorkerMarshaller {
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_0), Integer.class));
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_1), DecimalPosition.class));
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_2), Integer.class));
+                data.add(fromJson(getArrayString(array, DATA_OFFSET_3), DecimalPosition.class));
                 break;
 
             case COMMAND_FABRICATE:
@@ -1464,6 +1472,10 @@ public final class TeaVMWorkerMarshaller {
         if (!JsUtils.isNullOrUndefined(posObj)) {
             cmd.setPositionToBeBuilt(safeDecimalPosition((JsObject) posObj));
         }
+        JSObject rallyObj = obj.get("rallyPoint");
+        if (!JsUtils.isNullOrUndefined(rallyObj)) {
+            cmd.setRallyPoint(safeDecimalPosition((JsObject) rallyObj));
+        }
         return cmd;
     }
 
@@ -2200,6 +2212,9 @@ public final class TeaVMWorkerMarshaller {
             if (cmd.getPositionToBeBuilt() != null) {
                 result.set("positionToBeBuilt", javaToJsObject(cmd.getPositionToBeBuilt()));
             }
+            if (cmd.getRallyPoint() != null) {
+                result.set("rallyPoint", javaToJsObject(cmd.getRallyPoint()));
+            }
         } else if (obj instanceof HarvestCommand) {
             HarvestCommand cmd = (HarvestCommand) obj;
             result.set("id", cmd.getId());
@@ -2273,7 +2288,7 @@ public final class TeaVMWorkerMarshaller {
     }
 
     // ============ TypedArray tick encoding constants ============
-    private static final int DOUBLES_PER_ITEM = 14;
+    private static final int DOUBLES_PER_ITEM = 16;
     private static final int INTS_PER_ITEM = 4;
     private static final int KILLED_DOUBLES_PER_ITEM = 2;
     private static final int KILLED_INTS_PER_ITEM = 2;
@@ -2362,6 +2377,13 @@ public final class TeaVMWorkerMarshaller {
                 } else {
                     setFloat64(tickDoubles, dOff + 12, Double.NaN);
                     setFloat64(tickDoubles, dOff + 13, Double.NaN);
+                }
+                if (item.factoryRallyPoint != null) {
+                    setFloat64(tickDoubles, dOff + 14, item.factoryRallyPoint.x);
+                    setFloat64(tickDoubles, dOff + 15, item.factoryRallyPoint.y);
+                } else {
+                    setFloat64(tickDoubles, dOff + 14, Double.NaN);
+                    setFloat64(tickDoubles, dOff + 15, Double.NaN);
                 }
 
                 // Int32Array: 4 ints per item
@@ -2465,6 +2487,13 @@ public final class TeaVMWorkerMarshaller {
         } else {
             setFloat64(tickDoubles, 12, Double.NaN);
             setFloat64(tickDoubles, 13, Double.NaN);
+        }
+        if (item.factoryRallyPoint != null) {
+            setFloat64(tickDoubles, 14, item.factoryRallyPoint.x);
+            setFloat64(tickDoubles, 15, item.factoryRallyPoint.y);
+        } else {
+            setFloat64(tickDoubles, 14, Double.NaN);
+            setFloat64(tickDoubles, 15, Double.NaN);
         }
 
         setInt32(tickInts, 0, item.id);
@@ -2583,6 +2612,9 @@ public final class TeaVMWorkerMarshaller {
         }
         if (info.buildingPosition != null) {
             jsInfo.setBuildingPosition(convertNativeDecimalPositionToJs(info.buildingPosition));
+        }
+        if (info.factoryRallyPoint != null) {
+            jsInfo.setFactoryRallyPoint(convertNativeDecimalPositionToJs(info.factoryRallyPoint));
         }
 
         if (info.containingItemTypeIds != null) {

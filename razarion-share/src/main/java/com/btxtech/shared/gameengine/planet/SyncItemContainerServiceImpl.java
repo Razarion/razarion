@@ -344,6 +344,17 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
         return iterateOverItems(false, false, false, syncItem -> syncItem.getAbstractSyncPhysical().overlap(position, radius));
     }
 
+    public Collection<SyncBaseItem> findBaseItemsOverlapping(DecimalPosition position, double radius, SyncBaseItem ignore) {
+        Collection<SyncBaseItem> result = new ArrayList<>();
+        iterateOverBaseItems(false, false, ignore, (Void) null, syncBaseItem -> {
+            if (syncBaseItem.getAbstractSyncPhysical().overlap(position, radius)) {
+                result.add(syncBaseItem);
+            }
+            return null;
+        });
+        return result;
+    }
+
     public Collection<SyncBaseItem> findEnemyItems(final PlayerBase playerBase, PlaceConfig region) {
         Collection<SyncBaseItem> enemyItems = new ArrayList<>();
         iterateOverItems(false, false, null, (ItemIteratorHandler<Void>) syncItem -> {

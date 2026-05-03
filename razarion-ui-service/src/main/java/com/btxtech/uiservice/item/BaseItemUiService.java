@@ -216,6 +216,7 @@ public class BaseItemUiService {
                 babylonBaseItem.setBuildingPosition(toDecimalPosition(nativeSyncBaseItemTickInfo.buildingPosition));
                 babylonBaseItem.setBuildup(nativeSyncBaseItemTickInfo.buildup);
                 babylonBaseItem.setConstructing(nativeSyncBaseItemTickInfo.constructing, nativeSyncBaseItemTickInfo.constructingBaseItemTypeId);
+                babylonBaseItem.setFactoryRallyPoint(toDecimalPosition(nativeSyncBaseItemTickInfo.factoryRallyPoint));
             } catch (Throwable t) {
                 logger.log(Level.WARNING, t.getMessage(), t);
             }

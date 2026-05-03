@@ -291,11 +291,14 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
-    public SyncBaseItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+    public SyncBaseItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, DecimalPosition position, DecimalPosition rallyPoint, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
         if (!terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), position, toBeBuilt.getPhysicalAreaConfig().getRadius())) {
             throw new TerrainTypeNotAllowedException("BaseItemService.createSyncBaseItem4Builder() " + toBeBuilt + " " + position);
         }
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, 0, base);
+        if (rallyPoint != null && syncBaseItem.getSyncFactory() != null) {
+            syncBaseItem.getSyncFactory().setRallyPoint(rallyPoint);
+        }
 
         syncBaseItem.setSpawnProgress(1.0);
         gameLogicService.onBuildingSyncItem(syncBaseItem, createdBy);

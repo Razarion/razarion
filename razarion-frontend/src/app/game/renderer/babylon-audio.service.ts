@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import type {AbstractSound, AudioEngineV2, StaticSoundBuffer} from "@babylonjs/core";
-import {CreateAudioEngineAsync, CreateSoundAsync,} from "@babylonjs/core";
+import {CreateAudioEngineAsync, CreateSoundAsync, CreateSoundBufferAsync} from "@babylonjs/core";
 import {Vector3} from "@babylonjs/core/Maths/math.vector";
 import type {Nullable} from '@babylonjs/core/types';
 import type {Node} from '@babylonjs/core/node';
@@ -11,11 +11,23 @@ const MAX_INSTANCES = 5;
 const ATMOSPHERE_VOLUME = 0.3;
 const ATMOSPHERE_CROSSFADE_DURATION = 1.0;
 const ATMOSPHERE_CHECK_INTERVAL = 500;
+// Distance at which a spatial sound fades to silence. 100 units was inaudible
+// for any sound played beyond camera-zoom range (e.g. defensive Tesla coils
+// at base perimeter while the player watches frontline combat).
+const SPATIAL_MAX_DISTANCE = 300;
 
 @Injectable({providedIn: 'root'})
 export class BabylonAudioService {
   private audioEngine: AudioEngineV2 | null = null;
   private soundBufferCache = new Map<number, StaticSoundBuffer>();
+  // Dedup parallel first-loads: N simultaneous Tesla shots should trigger ONE
+  // network fetch, not N. All callers await the same in-flight Promise.
+  private bufferLoadPromises = new Map<number, Promise<StaticSoundBuffer>>();
+  // Holds references to one-shot Sounds while they play. Without this, the
+  // Sound is unreferenced after .play() and the GC may collect it mid-playback —
+  // disposing the underlying Web Audio source mid-stream produces a quiet click
+  // instead of the full sound. Sounds are removed and disposed on completion.
+  private activeOneShots = new Set<AbstractSound>();
   private waterLoop: AbstractSound | null = null;
   private landLoop: AbstractSound | null = null;
   private atmosphereInterval: ReturnType<typeof setInterval> | null = null;
@@ -90,15 +102,57 @@ export class BabylonAudioService {
     this.audioConfig = config;
   }
 
+  /**
+   * Loads (or returns cached) decoded audio buffer for the given id. Subsequent
+   * calls for the same id are O(map-lookup) — no network, no decode. Concurrent
+   * first-calls share one in-flight Promise.
+   */
+  preloadAudio(audioId: number): Promise<StaticSoundBuffer | null> {
+    if (!this.audioEngine) {
+      return Promise.resolve(null);
+    }
+    return this.getOrLoadBuffer(audioId);
+  }
+
+  private getOrLoadBuffer(audioId: number): Promise<StaticSoundBuffer> {
+    const cached = this.soundBufferCache.get(audioId);
+    if (cached) {
+      return Promise.resolve(cached);
+    }
+    const inflight = this.bufferLoadPromises.get(audioId);
+    if (inflight) {
+      return inflight;
+    }
+    const promise = CreateSoundBufferAsync(`/rest/audio/${audioId}`, {}, this.audioEngine!)
+      .then(buf => {
+        this.soundBufferCache.set(audioId, buf);
+        this.bufferLoadPromises.delete(audioId);
+        return buf;
+      })
+      .catch(e => {
+        this.bufferLoadPromises.delete(audioId);
+        throw e;
+      });
+    this.bufferLoadPromises.set(audioId, promise);
+    return promise;
+  }
+
+  private trackAndPlay(sound: AbstractSound): void {
+    this.activeOneShots.add(sound);
+    sound.onEndedObservable.addOnce(() => {
+      this.activeOneShots.delete(sound);
+      sound.dispose();
+    });
+    sound.play();
+  }
+
   playAudio(audioId: number): void {
     if (!this.audioEngine) {
       return;
     }
-    const url = `/rest/audio/${audioId}`;
-    const buffer = this.soundBufferCache.get(audioId);
-    const source = buffer ?? url;
-    CreateSoundAsync(`sound-${audioId}`, source, {maxInstances: MAX_INSTANCES}, this.audioEngine)
-      .then(sound => sound.play())
+    this.getOrLoadBuffer(audioId)
+      .then(buffer => CreateSoundAsync(`sound-${audioId}`, buffer, {maxInstances: MAX_INSTANCES}, this.audioEngine!))
+      .then(sound => this.trackAndPlay(sound))
       .catch(e => console.error(`BabylonAudioService: playAudio failed for ${audioId}`, e));
   }
 
@@ -106,16 +160,14 @@ export class BabylonAudioService {
     if (!this.audioEngine) {
       return;
     }
-    const url = `/rest/audio/${audioId}`;
-    const buffer = this.soundBufferCache.get(audioId);
-    const source = buffer ?? url;
-    CreateSoundAsync(`sound-${audioId}`, source, {
-      maxInstances: MAX_INSTANCES,
-      spatialEnabled: true,
-      spatialPosition: position,
-      spatialMaxDistance: 100,
-    }, this.audioEngine)
-      .then(sound => sound.play())
+    this.getOrLoadBuffer(audioId)
+      .then(buffer => CreateSoundAsync(`sound-${audioId}`, buffer, {
+        maxInstances: MAX_INSTANCES,
+        spatialEnabled: true,
+        spatialPosition: position,
+        spatialMaxDistance: SPATIAL_MAX_DISTANCE,
+      }, this.audioEngine!))
+      .then(sound => this.trackAndPlay(sound))
       .catch(e => console.error(`BabylonAudioService: playAudioAtPosition failed for ${audioId}`, e));
   }
 
@@ -124,23 +176,21 @@ export class BabylonAudioService {
     if (!this.audioEngine || audioId == null) {
       return;
     }
-    const url = `/rest/audio/${audioId}`;
-    const buffer = this.soundBufferCache.get(audioId);
-    const source = buffer ?? url;
     const pitchMin = config.getPitchCentsMin();
     const pitchMax = config.getPitchCentsMax();
     const volMin = config.getVolumeMin();
     const volMax = config.getVolumeMax();
-    CreateSoundAsync(`sound-${audioId}`, source, {
-      maxInstances: MAX_INSTANCES,
-      spatialEnabled: true,
-      spatialPosition: position,
-      spatialMaxDistance: 100,
-    }, this.audioEngine)
+    this.getOrLoadBuffer(audioId)
+      .then(buffer => CreateSoundAsync(`sound-${audioId}`, buffer, {
+        maxInstances: MAX_INSTANCES,
+        spatialEnabled: true,
+        spatialPosition: position,
+        spatialMaxDistance: SPATIAL_MAX_DISTANCE,
+      }, this.audioEngine!))
       .then(sound => {
         sound.pitch = pitchMin + Math.random() * (pitchMax - pitchMin);
         sound.volume = volMin + Math.random() * (volMax - volMin);
-        sound.play();
+        this.trackAndPlay(sound);
       })
       .catch(e => console.error(`BabylonAudioService: playAudioAtPositionWithConfig failed for ${audioId}`, e));
   }

@@ -106,7 +106,7 @@ public class Scene {
                     "No Start base item type in planet",
                     gameUiControl.getPlanetConfig().getId());
             sceneConfig.getStartPointPlacerConfig().baseItemTypeId(gameUiControl.getPlanetConfig().getStartBaseItemTypeId());
-            baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), false, decimalPositions -> {
+            baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), false, (decimalPositions, rallyPoint) -> {
                 if (decimalPositions.size() != 1) {
                     throw new IllegalArgumentException("To create a new human base, only one base item is allowed. Given: " + decimalPositions.size());
                 }

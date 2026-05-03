@@ -53,8 +53,9 @@ public class JsGameCommandService {
         });
 
         // buildCmd(builderId: number, x: number, y: number, toBeBuildTypeId: number)
+        // E2E callers don't provide a rally point — pass null so the server auto-computes.
         setBuildCmd(proxy, "buildCmd", (builderId, x, y, toBeBuildTypeId) -> {
-            gameEngineControl.buildCmdIds(builderId, new com.btxtech.shared.datatypes.DecimalPosition(x, y), toBeBuildTypeId);
+            gameEngineControl.buildCmdIds(builderId, new com.btxtech.shared.datatypes.DecimalPosition(x, y), toBeBuildTypeId, null);
         });
 
         // sellItemsCmd(itemIds: number[])

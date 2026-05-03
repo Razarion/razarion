@@ -755,6 +755,9 @@ public class SyncBaseItem extends SyncItem {
                 if (syncFactory.getToBeBuiltType() != null) {
                     nativeSyncBaseItemTickInfo.constructingBaseItemTypeId = syncFactory.getToBeBuiltType().getId();
                 }
+                if (syncFactory.getRallyPoint() != null) {
+                    nativeSyncBaseItemTickInfo.factoryRallyPoint = toNativeDecimalPosition(syncFactory.getRallyPoint());
+                }
             }
             nativeSyncBaseItemTickInfo.contained = false;
         } else {

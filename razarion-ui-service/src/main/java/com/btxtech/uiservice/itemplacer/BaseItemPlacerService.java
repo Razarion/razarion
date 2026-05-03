@@ -8,7 +8,7 @@ import jakarta.inject.Provider;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * Created by Beat
@@ -20,7 +20,7 @@ public class BaseItemPlacerService {
     private Provider<BaseItemPlacer> provider;
     private BaseItemPlacer baseItemPlacer;
     private BaseItemPlacerPresenter baseItemPlacerPresenter;
-    private Consumer<Collection<DecimalPosition>> executionCallback;
+    private BiConsumer<Collection<DecimalPosition>, DecimalPosition> executionCallback;
     private final Collection<BaseItemPlacerListener> listeners = new ArrayList<>();
 
     @Inject
@@ -32,7 +32,7 @@ public class BaseItemPlacerService {
         this.baseItemPlacerPresenter = baseItemPlacerPresenter;
     }
 
-    public void activate(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<Collection<DecimalPosition>> executionCallback) {
+    public void activate(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, BiConsumer<Collection<DecimalPosition>, DecimalPosition> executionCallback) {
         if (isActive()) {
             deactivateInternal(true);
         }
@@ -52,7 +52,7 @@ public class BaseItemPlacerService {
 
     public void onPlace(DecimalPosition terrainPosition) {
         if (baseItemPlacer.isPositionValid()) {
-            executionCallback.accept(baseItemPlacer.setupAbsolutePositions(terrainPosition));
+            executionCallback.accept(baseItemPlacer.setupAbsolutePositions(terrainPosition), baseItemPlacer.getAbsoluteRallyPosition(terrainPosition));
             deactivateInternal(false);
         }
     }

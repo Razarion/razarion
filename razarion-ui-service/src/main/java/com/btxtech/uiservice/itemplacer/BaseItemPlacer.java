@@ -77,12 +77,36 @@ public class BaseItemPlacer {
         return baseItemPlacerChecker.isPositionValid();
     }
 
+    @SuppressWarnings("unused") // Called by Angular
+    public boolean hasRallyPoint() {
+        return baseItemPlacerChecker.hasRallyPoint();
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public double getRallyOffsetX() {
+        return baseItemPlacerChecker.getRelativeRallyPosition() != null ? baseItemPlacerChecker.getRelativeRallyPosition().getX() : 0;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public double getRallyOffsetY() {
+        return baseItemPlacerChecker.getRelativeRallyPosition() != null ? baseItemPlacerChecker.getRelativeRallyPosition().getY() : 0;
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
+    public double getRallyRadius() {
+        return baseItemPlacerChecker.getRallyRadius();
+    }
+
     public String getErrorText() {
         return errorText;
     }
 
     Collection<DecimalPosition> setupAbsolutePositions(DecimalPosition terrainPosition) {
         return baseItemPlacerChecker.setupAbsolutePositions(terrainPosition);
+    }
+
+    DecimalPosition getAbsoluteRallyPosition(DecimalPosition terrainPosition) {
+        return baseItemPlacerChecker.getAbsoluteRallyPosition(terrainPosition);
     }
 
     @SuppressWarnings("unused") // Called by Angular

@@ -56,6 +56,7 @@ public class SyncBuilder extends SyncBaseAbility {
     private SyncBaseItem currentBuildup;
     private DecimalPosition toBeBuildPosition;
     private BaseItemType toBeBuiltType;
+    private DecimalPosition rallyPoint;
     private boolean building;
     /**
      * Sentinel -1 = not in warmup. >= 0 = ticks remaining before the target item is created and
@@ -150,12 +151,13 @@ public class SyncBuilder extends SyncBaseAbility {
                 // warmupTicksRemaining is now 0 — warmup complete. Leave at 0 (not -1) so the
                 // else branch sees "already warmed up" and does not repeat.
                 try {
-                    currentBuildup = baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
+                    currentBuildup = baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, rallyPoint, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
                     syncService.notifySendSyncBaseItem(currentBuildup, true);
                     syncService.notifySendSyncBaseItem(getSyncBaseItem());
                     gameLogicService.onStartBuildingSyncBaseItem(getSyncBaseItem(), currentBuildup);
                     toBeBuildPosition = null;
                     toBeBuiltType = null;
+                    rallyPoint = null;
                     return true;
                 } catch (ItemLimitExceededException e) {
                     stop();
@@ -294,6 +296,7 @@ public class SyncBuilder extends SyncBaseAbility {
         currentBuildup = null;
         toBeBuiltType = null;
         toBeBuildPosition = null;
+        rallyPoint = null;
         building = false;
         warmupTicksRemaining = -1;
         cooldownTicksRemaining = -1;
@@ -354,6 +357,7 @@ public class SyncBuilder extends SyncBaseAbility {
 
         toBeBuiltType = tmpToBeBuiltType;
         toBeBuildPosition = builderCommand.getPositionToBeBuilt();
+        rallyPoint = builderCommand.getRallyPoint();
         getSyncPhysicalMovable().setPath(builderCommand.getSimplePath());
     }
 

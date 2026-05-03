@@ -17,6 +17,8 @@ public interface BabylonBaseItem extends BabylonItem {
 
     void setConstructing(double progress, int constructingBaseItemTypeId);
 
+    void setFactoryRallyPoint(DecimalPosition rallyPoint);
+
     void setIdle(boolean idle);
 
     void onProjectileFired(int tagetSyncBaseItemId, DecimalPosition targetPosition);

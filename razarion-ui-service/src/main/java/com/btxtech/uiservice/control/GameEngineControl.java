@@ -199,11 +199,6 @@ import java.util.logging.Logger;
         // gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.UNLOAD_CONTAINER).setSynBoxItemId(box.getId()));
     }
 
-    public void buildCmd(SyncBaseItemSimpleDto builder, DecimalPosition position, BaseItemType toBeBuild) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_BUILD, builder.getId(), position, toBeBuild.getId());
-        // TODO gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.BUILD).setToBeBuiltId(toBeBuild.getId()));
-    }
-
     public void finalizeBuildCmd(Collection<SyncBaseItemSimpleDto> builders, SyncBaseItemSimpleDto toBeFinalized) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_FINALIZE_BUILD, SyncItemSimpleDtoUtils.toIds(builders), toBeFinalized.getId());
         // TODO gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.FINALIZE_BUILD).setToBeFinalizedId(toBeFinalized.getId()));
@@ -244,8 +239,8 @@ import java.util.logging.Logger;
         sendToWorker(GameEngineControlPackage.Command.COMMAND_FINALIZE_BUILD, intArrayToIdsDto(itemIds), toBeFinalizedId);
     }
 
-    public void buildCmdIds(int builderId, DecimalPosition position, int toBeBuildTypeId) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_BUILD, builderId, position, toBeBuildTypeId);
+    public void buildCmdIds(int builderId, DecimalPosition position, int toBeBuildTypeId, DecimalPosition rallyPoint) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_BUILD, builderId, position, toBeBuildTypeId, rallyPoint);
     }
 
     public void fabricateCmdIds(int factoryId, int toBeBuildTypeId) {

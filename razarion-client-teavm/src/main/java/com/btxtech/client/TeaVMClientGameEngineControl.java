@@ -182,7 +182,7 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     }
 
     // ============ TypedArray tick decoding constants ============
-    private static final int DOUBLES_PER_ITEM = 14;
+    private static final int DOUBLES_PER_ITEM = 16;
     private static final int INTS_PER_ITEM = 4;
     private static final int KILLED_DOUBLES_PER_ITEM = 2;
     private static final int KILLED_INTS_PER_ITEM = 2;
@@ -251,6 +251,12 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
                     info.buildingPosition = new NativeDecimalPosition();
                     info.buildingPosition.x = buildX;
                     info.buildingPosition.y = getFloat64(tickDoubles, dOff + 13);
+                }
+                double rallyX = getFloat64(tickDoubles, dOff + 14);
+                if (!Double.isNaN(rallyX)) {
+                    info.factoryRallyPoint = new NativeDecimalPosition();
+                    info.factoryRallyPoint.x = rallyX;
+                    info.factoryRallyPoint.y = getFloat64(tickDoubles, dOff + 15);
                 }
 
                 // Ints

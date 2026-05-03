@@ -27,6 +27,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -34,6 +35,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.MathHelper;
 
 import jakarta.inject.Inject;
+import java.util.Collection;
 
 /**
  * User: beat
@@ -50,6 +52,7 @@ public class SyncFactory extends SyncBaseAbility {
     private final TerrainService terrainService;
     private final CommandService commandService;
     private final SyncService syncService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
     private FactoryType factoryType;
     private BaseItemType toBeBuiltType;
     private double buildup;
@@ -79,13 +82,15 @@ public class SyncFactory extends SyncBaseAbility {
                        ItemTypeService itemTypeService,
                        BaseItemService baseItemService,
                        GameLogicService gameLogicService,
-                       SyncService syncService) {
+                       SyncService syncService,
+                       SyncItemContainerServiceImpl syncItemContainerService) {
         this.commandService = commandService;
         this.terrainService = terrainService;
         this.itemTypeService = itemTypeService;
         this.baseItemService = baseItemService;
         this.gameLogicService = gameLogicService;
         this.syncService = syncService;
+        this.syncItemContainerService = syncItemContainerService;
     }
 
     public void init(FactoryType factoryType, SyncBaseItem syncBaseItem) throws NoSuchItemTypeException {
@@ -100,6 +105,19 @@ public class SyncFactory extends SyncBaseAbility {
 
     public boolean isActive() {
         return toBeBuiltType != null;
+    }
+
+    /**
+     * Override the rally point computed by setupRallyPoint(). Called when the builder's
+     * BuilderCommand carried an explicit rally point — the placer already validated it on
+     * the client, so we trust it here. Master only.
+     */
+    public void setRallyPoint(DecimalPosition rallyPoint) {
+        this.rallyPoint = rallyPoint;
+    }
+
+    public DecimalPosition getRallyPoint() {
+        return rallyPoint;
     }
 
     public boolean tick() {
@@ -149,6 +167,12 @@ public class SyncFactory extends SyncBaseAbility {
             // (preview unit sliding out of the factory). Similar to SyncBuilder's cooldown.
             if (cooldownTicksRemaining < 0) {
                 cooldownTicksRemaining = computeCooldownTicks();
+                // Kick the previous unit off the rally point now (start of cooldown), so it has
+                // the entire outro animation window to walk away. By the time we actually spawn
+                // the new unit at the end of cooldown, the rally point is typically already clear.
+                if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
+                    displaceUnitsAtRallyPoint();
+                }
             }
             if (cooldownTicksRemaining > 0) {
                 cooldownTicksRemaining--;
@@ -245,6 +269,76 @@ public class SyncFactory extends SyncBaseAbility {
 
     public BaseItemType getToBeBuiltType() {
         return toBeBuiltType;
+    }
+
+    /**
+     * If a previously-built unit is still parked on the rally point, send it a move command to a
+     * free spot nearby so the just-finished unit can take its place. Without this, two units would
+     * spawn overlapping each other and stay stuck because ORCA only resolves overlap during
+     * movement — two stationary units never push apart.
+     *
+     * Buildings can't move and are ignored; units already on the move keep their existing path
+     * (we don't overwrite — they'll clear the rally point on their own as they move out).
+     */
+    private void displaceUnitsAtRallyPoint() {
+        double radius = toBeBuiltType.getPhysicalAreaConfig().getRadius();
+        Collection<SyncBaseItem> overlapping = syncItemContainerService.findBaseItemsOverlapping(rallyPoint, radius, getSyncBaseItem());
+        if (overlapping.isEmpty()) {
+            return;
+        }
+        TerrainType terrainType = toBeBuiltType.getPhysicalAreaConfig().getTerrainType();
+        for (SyncBaseItem occupant : overlapping) {
+            if (!occupant.getAbstractSyncPhysical().canMove()) {
+                continue;
+            }
+            // Only displace genuinely idle units — don't yank attackers, harvesters, or units already
+            // moving somewhere. Active units will clear the rally point on their own (or ORCA resolves
+            // any brief overlap once they move).
+            if (!occupant.isIdle()) {
+                continue;
+            }
+            DecimalPosition freeSpot = findDisplacementSpot(occupant, terrainType);
+            if (freeSpot != null) {
+                try {
+                    commandService.move(occupant, freeSpot);
+                } catch (Exception e) {
+                    // Move command can fail if the path becomes unreachable mid-tick. Not fatal —
+                    // worst case the new unit overlaps the occupant and ORCA sorts it out the next
+                    // time either of them moves.
+                }
+            }
+        }
+    }
+
+    /**
+     * Search radial angles around the occupant for a position that's terrain-allowed for its
+     * physical area, far enough from the rally point that it won't be re-displaced next tick.
+     */
+    private DecimalPosition findDisplacementSpot(SyncBaseItem occupant, TerrainType terrainType) {
+        double occupantRadius = occupant.getAbstractSyncPhysical().getRadius();
+        double newUnitRadius = toBeBuiltType.getPhysicalAreaConfig().getRadius();
+        double distance = newUnitRadius + occupantRadius + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE;
+        DecimalPosition occupantPos = occupant.getAbstractSyncPhysical().getPosition();
+        // Start by trying the direction occupant is already pushed to (away from rally), then sweep.
+        // If occupant sits exactly on the rally point, fall back to +X.
+        double baseAngle = rallyPoint.equals(occupantPos) ? 0 : rallyPoint.getAngle(occupantPos);
+        double delta = MathHelper.QUARTER_RADIANT;
+        while (delta > GIVE_UP_RELAY_MIN) {
+            for (double angle = 0; angle <= MathHelper.ONE_RADIANT; angle += delta) {
+                DecimalPosition candidate = rallyPoint.getPointWithDistance(MathHelper.normaliseAngle(baseAngle + angle), distance);
+                if (terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, candidate, occupantRadius)) {
+                    return candidate;
+                }
+                if (angle > 0) {
+                    candidate = rallyPoint.getPointWithDistance(MathHelper.normaliseAngle(baseAngle - angle), distance);
+                    if (terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, candidate, occupantRadius)) {
+                        return candidate;
+                    }
+                }
+            }
+            delta /= 2.0;
+        }
+        return null;
     }
 
     private void setupRallyPoint() {

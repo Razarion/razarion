@@ -27,6 +27,7 @@ import org.dominokit.jackson.annotation.JSONMapper;
 public class BuilderCommand extends PathToDestinationCommand {
     private int toBeBuiltId;
     private DecimalPosition positionToBeBuilt;
+    private DecimalPosition rallyPoint;
 
     public int getToBeBuiltId() {
         return toBeBuiltId;
@@ -44,6 +45,14 @@ public class BuilderCommand extends PathToDestinationCommand {
         this.positionToBeBuilt = positionToBeBuilt;
     }
 
+    public DecimalPosition getRallyPoint() {
+        return rallyPoint;
+    }
+
+    public void setRallyPoint(DecimalPosition rallyPoint) {
+        this.rallyPoint = rallyPoint;
+    }
+
     @Override
     public GameConnectionPacket connectionPackage() {
         return GameConnectionPacket.BUILDER_COMMAND;
@@ -51,7 +60,7 @@ public class BuilderCommand extends PathToDestinationCommand {
 
     @Override
     public String toString() {
-        return super.toString() + " toBeBuiltId: " + toBeBuiltId + " positionToBeBuilt: " + positionToBeBuilt;
+        return super.toString() + " toBeBuiltId: " + toBeBuiltId + " positionToBeBuilt: " + positionToBeBuilt + " rallyPoint: " + rallyPoint;
     }
 
 }

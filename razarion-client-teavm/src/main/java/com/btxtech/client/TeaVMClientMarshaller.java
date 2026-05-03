@@ -126,11 +126,12 @@ public class TeaVMClientMarshaller {
                 setArrayString(array, DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
 
-            // Triple JSON data
+            // Quadruple JSON data: builderId, position, toBeBuildTypeId, rallyPoint (rallyPoint nullable)
             case COMMAND_BUILD:
                 setArrayString(array, DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 setArrayString(array, DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 setArrayString(array, DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                setArrayString(array, DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 break;
 
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:

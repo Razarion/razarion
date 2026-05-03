@@ -72,6 +72,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private factoryBuildPreviewBuildupEffect: BabylonBuildupEffect | null = null;
   private factoryBuildPreviewTypeId: number = 0;
   private factoryExitCallback: (() => void) | null = null;
+  // Server-provided rally point in game coords (DecimalPosition.x → world X, .y → world Z).
+  // Null until the first tick after factory creation. Used by the outro animation so the build
+  // preview slides to the actual spawn position instead of the static FactoryType offset.
+  private factoryRallyPointGameX: number | null = null;
+  private factoryRallyPointGameZ: number | null = null;
 
   constructor(id: number,
               private baseItemType: BaseItemType,
@@ -107,6 +112,27 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
 
     this.setupName(userName);
+    this.preloadWeaponAndExplosionAudio();
+  }
+
+  // Pre-warms the audio buffer cache so the very first muzzle/impact/explosion
+  // shot has no network+decode latency. Construction takes seconds — plenty of
+  // time for the buffers to be ready before the first shot fires.
+  private preloadWeaponAndExplosionAudio(): void {
+    const audioService = this.rendererService.babylonAudioService;
+    const weapon = this.baseItemType.getWeaponType();
+    const muzzleId = weapon?.getMuzzleFlashAudioConfig()?.getAudioId();
+    if (muzzleId != null) {
+      audioService.preloadAudio(muzzleId);
+    }
+    const impactId = weapon?.getImpactAudioConfig()?.getAudioId();
+    if (impactId != null) {
+      audioService.preloadAudio(impactId);
+    }
+    const explosionId = this.baseItemType.getExplosionAudioItemConfigId();
+    if (explosionId != null) {
+      audioService.preloadAudio(explosionId);
+    }
   }
 
   public static createDummy(id: number): BabylonBaseItem {
@@ -169,6 +195,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       }
 
       setConstructing(progress: number, constructingBaseItemTypeId: number): void {
+      }
+
+      setFactoryRallyPoint(xOrPosition: any, y?: number): void {
       }
 
       setIdle(idle: boolean): void {
@@ -371,6 +400,19 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.handleConstructing();
   }
 
+  setFactoryRallyPoint(xOrPosition: any, y?: number): void {
+    if (typeof xOrPosition === 'number' && typeof y === 'number') {
+      this.factoryRallyPointGameX = xOrPosition;
+      this.factoryRallyPointGameZ = y;
+    } else if (xOrPosition && typeof xOrPosition.getX === 'function') {
+      this.factoryRallyPointGameX = xOrPosition.getX();
+      this.factoryRallyPointGameZ = xOrPosition.getY();
+    } else {
+      this.factoryRallyPointGameX = null;
+      this.factoryRallyPointGameZ = null;
+    }
+  }
+
   setIdle(idle: boolean): void {
     if (this.idle != idle) {
       if (this.idleCallback) {
@@ -553,29 +595,32 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
 
     const previewModel = this.factoryBuildPreviewRenderObject.getModel3D();
-    const startPos = previewModel.position.clone();
-    const factoryType = this.baseItemType.getFactoryType();
-    const offsetX = factoryType?.getRallyOffsetX() || 0;
-    const offsetY = factoryType?.getRallyOffsetY() || 0;
-    let endPos: Vector3;
-    if (offsetX !== 0 || offsetY !== 0) {
-      // Compute end position in Babylon WORLD space by rotating the rally offset by the game
-      // angle, then convert to container-local via inverse world matrix. This correctly handles
-      // the non-trivial mapping: Babylon rotation.y = PI/2 - gameAngle (see setAngle()).
-      const gameAngle = Math.PI / 2 - (this.getContainer().rotation?.y || 0);
-      const cos = Math.cos(gameAngle);
-      const sin = Math.sin(gameAngle);
-      const cp = this.getContainer().position;
-      const worldEnd = new Vector3(
-        cp.x + offsetX * cos - offsetY * sin,
-        cp.y,
-        cp.z + offsetX * sin + offsetY * cos
-      );
-      this.getContainer().computeWorldMatrix(true);
-      endPos = Vector3.TransformCoordinates(worldEnd, this.getContainer().getWorldMatrix().clone().invert());
+    // Detach the preview from the factory and reparent it to the world container so the slide
+    // animation runs in pure world space. The factory's container has both a translation and a
+    // rotation (game gameAngle → babylonRotY = PI/2 - gameAngle), so leaving the preview parented
+    // means the rendered model is offset from the pivot by the factory's local→world transform.
+    // The spawned unit, however, lives directly under baseItemContainer with no such offset, so
+    // pivot-aligning the preview to the rally point (via parent-relative position math) leaves a
+    // visual gap of up to a model-radius, which the user sees as a "jump back" of 1–2 m once the
+    // real unit takes over. Reparenting eliminates the parent transform from the equation.
+    previewModel.computeWorldMatrix(true);
+    const previewWorldRotY = previewModel.absoluteRotationQuaternion
+      ? previewModel.absoluteRotationQuaternion.toEulerAngles().y
+      : (this.getContainer().rotation?.y || 0);
+    const startWorldPos = previewModel.absolutePosition.clone();
+    previewModel.setParent(this.rendererService.baseItemContainer);
+    previewModel.position = startWorldPos.clone();
+    previewModel.rotationQuaternion = null;
+    previewModel.rotation.y = previewWorldRotY;
+
+    let endWorldPos: Vector3;
+    if (this.factoryRallyPointGameX !== null && this.factoryRallyPointGameZ !== null) {
+      // Server-provided rally point in game coords (DecimalPosition.x → world X, .y → world Z).
+      endWorldPos = new Vector3(this.factoryRallyPointGameX, startWorldPos.y, this.factoryRallyPointGameZ);
     } else {
       const exitDistance = this.baseItemType.getPhysicalAreaConfig().getRadius() * 2.5;
-      endPos = startPos.add(this.getContainer().forward.clone().scale(exitDistance));
+      const forward = this.getContainer().forward.clone();
+      endWorldPos = startWorldPos.add(forward.scale(exitDistance));
     }
 
     const outroSeconds = this.baseItemType.getFactoryType()?.getAnimationOutroSeconds() || 1.5;
@@ -587,7 +632,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       const t = Math.min(elapsed / durationMs, 1.0);
       // Ease-out curve for natural deceleration
       const eased = 1 - (1 - t) * (1 - t);
-      previewModel.position = Vector3.Lerp(startPos, endPos, eased);
+      previewModel.position = Vector3.Lerp(startWorldPos, endWorldPos, eased);
     };
     this.rendererService.getScene().registerBeforeRender(this.factoryExitCallback);
   }

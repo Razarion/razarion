@@ -69,6 +69,9 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
     @JSBody(params = {"obj", "x", "y"}, script = "obj.setBuildingPosition(x, y);")
     private static native void callSetBuildingPosition(JSObject obj, double x, double y);
 
+    @JSBody(params = {"obj", "x", "y"}, script = "obj.setFactoryRallyPoint(x, y);")
+    private static native void callSetFactoryRallyPoint(JSObject obj, double x, double y);
+
     // --- Native bridge methods ---
 
     @JSBody(params = {"obj", "x", "y"}, script = "obj.setHarvestingPosition(x, y);")
@@ -308,6 +311,15 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
         @Override
         public void setConstructing(double progress, int constructingBaseItemTypeId) {
             callMethod2DI(js, "setConstructing", progress, constructingBaseItemTypeId);
+        }
+
+        @Override
+        public void setFactoryRallyPoint(DecimalPosition rallyPoint) {
+            if (rallyPoint != null) {
+                callSetFactoryRallyPoint(js, rallyPoint.getX(), rallyPoint.getY());
+            } else {
+                callMethod1(js, "setFactoryRallyPoint", null);
+            }
         }
 
         @Override

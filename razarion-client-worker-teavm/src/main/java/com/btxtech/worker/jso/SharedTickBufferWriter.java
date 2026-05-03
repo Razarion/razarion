@@ -102,6 +102,13 @@ public class SharedTickBufferWriter {
                     setFloat64(itemDoubles, dOff + 12, Double.NaN);
                     setFloat64(itemDoubles, dOff + 13, Double.NaN);
                 }
+                if (item.factoryRallyPoint != null) {
+                    setFloat64(itemDoubles, dOff + 14, item.factoryRallyPoint.x);
+                    setFloat64(itemDoubles, dOff + 15, item.factoryRallyPoint.y);
+                } else {
+                    setFloat64(itemDoubles, dOff + 14, Double.NaN);
+                    setFloat64(itemDoubles, dOff + 15, Double.NaN);
+                }
 
                 // Int32: 4 ints per item
                 setInt32(itemInts, iOff + 0, item.id);

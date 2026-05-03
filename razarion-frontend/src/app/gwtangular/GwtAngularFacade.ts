@@ -614,6 +614,8 @@ export interface BabylonBaseItem extends BabylonItem {
 
   setConstructing(progress: number, constructingBaseItemTypeId: number): void;
 
+  setFactoryRallyPoint(rallyPoint: DecimalPosition | null): void;
+
   setIdle(idle: boolean): void;
 
   onProjectileFired(tagetSyncBaseItemId: number, targetPosition: DecimalPosition): void;
@@ -711,6 +713,14 @@ export interface BaseItemPlacer {
   isCanBeCanceled(): boolean;
 
   cancel(): void;
+
+  hasRallyPoint(): boolean;
+
+  getRallyOffsetX(): number;
+
+  getRallyOffsetY(): number;
+
+  getRallyRadius(): number;
 }
 
 // ---------- Inventory ----------

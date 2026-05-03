@@ -206,6 +206,11 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
         }
 
         @Override
+        public void setFactoryRallyPoint(DecimalPosition rallyPoint) {
+
+        }
+
+        @Override
         public void setIdle(boolean idle) {
 
         }

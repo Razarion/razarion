@@ -83,18 +83,27 @@ public class CommandService {
     }
 
     public void build(int builderId, DecimalPosition positionToBeBuild, int itemTypeIdToBuild) {
+        build(builderId, positionToBeBuild, itemTypeIdToBuild, null);
+    }
+
+    public void build(int builderId, DecimalPosition positionToBeBuild, int itemTypeIdToBuild, DecimalPosition rallyPoint) {
         SyncBaseItem builder = syncItemContainerService.getSyncBaseItemSave(builderId);
         BaseItemType toBuild = itemTypeService.getBaseItemType(itemTypeIdToBuild);
-        build(builder, positionToBeBuild, toBuild);
+        build(builder, positionToBeBuild, toBuild, rallyPoint);
     }
 
     public void build(SyncBaseItem builder, DecimalPosition positionToBeBuild, BaseItemType itemTypeToBuild) {
+        build(builder, positionToBeBuild, itemTypeToBuild, null);
+    }
+
+    public void build(SyncBaseItem builder, DecimalPosition positionToBeBuild, BaseItemType itemTypeToBuild, DecimalPosition rallyPoint) {
         checkSyncBaseItem(builder);
         BuilderCommand builderCommand = new BuilderCommand();
         builderCommand.setId(builder.getId());
         builderCommand.updateTimeStamp();
         builderCommand.setToBeBuiltId(itemTypeToBuild.getId());
         builderCommand.setPositionToBeBuilt(positionToBeBuild);
+        builderCommand.setRallyPoint(rallyPoint);
         SimplePath path = pathingService.setupPathToDestination(builder,
                 builder.getBaseItemType().getBuilderType().getRangeOtherTerrain(),
                 itemTypeToBuild.getPhysicalAreaConfig().getTerrainType(),

@@ -29,10 +29,13 @@ public final class SharedTickBufferLayout {
     public static final int MAX_REMOVE = 64;
 
     // --- Per-item sizes (matching TypedArray encoding) ---
-    public static final int DOUBLES_PER_ITEM = 14;
+    // Doubles 0..9: x, y, z, angle, turretAngle, spawning, buildup, health, constructing, maxContainingRadius
+    // Doubles 10..11: harvestingResourcePosition x, y (NaN if absent)
+    // Doubles 12..13: buildingPosition x, y (NaN if absent)
+    // Doubles 14..15: factoryRallyPoint x, y (NaN if absent)
+    public static final int DOUBLES_PER_ITEM = 16;
     public static final int INTS_PER_ITEM = 4;
     public static final int FLAGS_PER_ITEM = 1;
-    // Bytes per item: 14*8 + 4*4 + 1 = 112 + 16 + 1 = 129
     public static final int BYTES_PER_ITEM = DOUBLES_PER_ITEM * 8 + INTS_PER_ITEM * 4 + FLAGS_PER_ITEM;
 
     // --- Per-killed sizes ---

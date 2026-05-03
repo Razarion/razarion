@@ -271,13 +271,15 @@ public class GameEngineConfiguration {
                                    ItemTypeService itemTypeService,
                                    BaseItemService baseItemService,
                                    GameLogicService gameLogicService,
-                                   SyncService syncService) {
+                                   SyncService syncService,
+                                   SyncItemContainerServiceImpl syncItemContainerService) {
         return new SyncFactory(commandService,
                 terrainService,
                 itemTypeService,
                 baseItemService,
                 gameLogicService,
-                syncService);
+                syncService,
+                syncItemContainerService);
     }
 
 

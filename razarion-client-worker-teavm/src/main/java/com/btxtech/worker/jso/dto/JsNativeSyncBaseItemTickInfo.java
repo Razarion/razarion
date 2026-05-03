@@ -106,6 +106,12 @@ public interface JsNativeSyncBaseItemTickInfo extends JSObject {
     void setBuildingPosition(JsNativeDecimalPosition pos);
 
     @JSProperty
+    JsNativeDecimalPosition getFactoryRallyPoint();
+
+    @JSProperty
+    void setFactoryRallyPoint(JsNativeDecimalPosition pos);
+
+    @JSProperty
     int[] getContainingItemTypeIds();
 
     @JSProperty

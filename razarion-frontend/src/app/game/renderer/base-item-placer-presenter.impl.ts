@@ -26,10 +26,14 @@ export enum BaseItemPlacerPresenterEvent {
 
 export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private disc: Mesh | null = null;
+  private rallyDisc: Mesh | null = null;
+  private rallyOffsetX = 0;
+  private rallyOffsetZ = 0;
   private renderObject: RenderObject | null = null;
   private uiTexture: AdvancedDynamicTexture | null = null;
   private pressMouseVisualization: PressMouseVisualization | null = null;
   private readonly material;
+  private readonly rallyMaterial;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private baseItemPlacerCallback: ((event: BaseItemPlacerPresenterEvent) => void) | null = null;
   private keydownHandler: ((event: KeyboardEvent) => void) | null = null;
@@ -40,6 +44,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
               private babylonAudioService: BabylonAudioService) {
     this.material = new StandardMaterial("Base Item Placer", this.rendererService.getScene());
     this.material.emissiveColor = Color3.Red()
+    this.rallyMaterial = new StandardMaterial("Base Item Rally", this.rendererService.getScene());
+    this.rallyMaterial.emissiveColor = Color3.Red();
   }
 
   activate(baseItemPlacer: BaseItemPlacer): void {
@@ -53,8 +59,21 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.disc.isPickable = false;
     this.disc.position.y = 0.1;
 
+    if (baseItemPlacer.hasRallyPoint()) {
+      // DecimalPosition.y maps to world-Z (game uses XZ ground plane).
+      this.rallyOffsetX = baseItemPlacer.getRallyOffsetX();
+      this.rallyOffsetZ = baseItemPlacer.getRallyOffsetY();
+      this.rallyDisc = MeshBuilder.CreateDisc("Base Item Rally", {radius: baseItemPlacer.getRallyRadius()}, this.rendererService.getScene());
+      this.rallyDisc.visibility = 0.5;
+      this.rallyDisc.material = this.rallyMaterial;
+      this.rallyDisc.rotation.x = Tools.ToRadians(90);
+      this.rallyDisc.isPickable = false;
+      this.rallyDisc.position.y = 0.1;
+    }
+
     const positionValid = baseItemPlacer.isPositionValid();
     this.material.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
+    this.rallyMaterial.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
 
     this.renderObject = this.babylonModelService.cloneModel3D(baseItemPlacer.getModel3DId()!, null, Diplomacy.OWN_PLACER);
     this.renderObject.setRotationY(Tools.ToRadians(90));
@@ -152,6 +171,11 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       this.disc.dispose();
       this.disc = null;
     }
+    if (this.rallyDisc) {
+      this.rendererService.getScene().removeMesh(this.rallyDisc);
+      this.rallyDisc.dispose();
+      this.rallyDisc = null;
+    }
     if (this.renderObject) {
       this.renderObject.dispose();
       this.renderObject = null;
@@ -188,8 +212,12 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     baseItemPlacer.onMove(pickedPoint.x, pickedPoint.z);
     this.disc.position = pickedPoint
     this.disc.position.y += 0.1;
+    if (this.rallyDisc) {
+      this.rallyDisc.position = new Vector3(pickedPoint.x + this.rallyOffsetX, this.disc.position.y, pickedPoint.z + this.rallyOffsetZ);
+    }
     const positionValid = baseItemPlacer.isPositionValid();
     this.material.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
+    this.rallyMaterial.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
     this.pressMouseVisualization?.setPositionValid(positionValid);
     this.renderObject?.setPosition(pickedPoint);
     this.renderObject?.increaseHeight(0.01);

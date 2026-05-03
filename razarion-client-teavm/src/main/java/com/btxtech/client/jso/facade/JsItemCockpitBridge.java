@@ -37,8 +37,8 @@ public class JsItemCockpitBridge {
             try {
                 BaseItemType toBeBuild = itemTypeService.getBaseItemType(itemTypeId);
                 BaseItemPlacerConfig config = new BaseItemPlacerConfig().baseItemCount(1).baseItemTypeId(itemTypeId);
-                baseItemPlacerService.activate(config, true, decimalPositions -> {
-                    gameEngineControl.buildCmdIds(builderId, CollectionUtils.getFirst(decimalPositions), itemTypeId);
+                baseItemPlacerService.activate(config, true, (decimalPositions, rallyPoint) -> {
+                    gameEngineControl.buildCmdIds(builderId, CollectionUtils.getFirst(decimalPositions), itemTypeId, rallyPoint);
                 });
             } catch (Throwable t) {
                 logger.log(Level.WARNING, "requestBuild failed", t);
@@ -91,7 +91,7 @@ public class JsItemCockpitBridge {
                 if (containingIds != null && containingIds.length > 0) {
                     int baseItemTypeId = containingIds[0];
                     BaseItemPlacerConfig config = new BaseItemPlacerConfig().baseItemCount(1).baseItemTypeId(baseItemTypeId);
-                    baseItemPlacerService.activate(config, true, decimalPositions -> {
+                    baseItemPlacerService.activate(config, true, (decimalPositions, rallyPoint) -> {
                         gameEngineControl.unloadContainerCmd(containerId, CollectionUtils.getFirst(decimalPositions));
                     });
                 }
