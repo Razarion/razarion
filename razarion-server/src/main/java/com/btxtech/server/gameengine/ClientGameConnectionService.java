@@ -3,7 +3,9 @@ package com.btxtech.server.gameengine;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.ProjectileFiredInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemSpawnStart;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
@@ -112,6 +114,14 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         syncItemSpawnStart.setBaseItemTypeId(syncBaseItem.getBaseItemType().getId());
         syncItemSpawnStart.setPosition(syncBaseItem.getAbstractSyncPhysical().getPosition());
         sendToClients(GameConnectionPacket.SYNC_ITEM_SPAWN_START, syncItemSpawnStart);
+    }
+
+    public void onProjectileFired(int actorSyncBaseItemId, int targetSyncBaseItemId, DecimalPosition targetPosition) {
+        ProjectileFiredInfo info = new ProjectileFiredInfo();
+        info.setActorSyncBaseItemId(actorSyncBaseItemId);
+        info.setTargetSyncBaseItemId(targetSyncBaseItemId);
+        info.setTargetPosition(targetPosition);
+        sendToClients(GameConnectionPacket.PROJECTILE_FIRED, info);
     }
 
     public void onSyncItemRemoved(SyncItem syncItem, boolean explode) {

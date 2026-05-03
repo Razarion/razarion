@@ -48,6 +48,14 @@ public class BaseItemUiService {
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private final Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private final Map<Integer, BabylonBaseItem> babylonBaseItems = new HashMap<>();
+    // Same shot may be reported twice: once from the worker's local prediction (instant for
+    // the player's own units, lagging by ~one reload for bot units) and once from the
+    // server's authoritative broadcast (~50ms after the server fires). Both call into
+    // onProjectileFired with identical actor+target. Drop the second within a short window
+    // so we don't render the bolt twice. The window is much shorter than any realistic
+    // reload time, so legitimate re-fires aren't swallowed.
+    private static final long PROJECTILE_FIRED_DEDUPE_WINDOW_MS = 500;
+    private final Map<Long, Long> recentProjectileFires = new HashMap<>();
     private final Set<Integer> outOfViewItemIds = new HashSet<>();
     private final ItemTypeService itemTypeService;
     private final Provider<GameUiControl> gameUiControl;
@@ -263,6 +271,17 @@ public class BaseItemUiService {
     }
 
     public void onProjectileFired(int syncBaseItemId, int tagetSyncBaseItemId, DecimalPosition targetPosition) {
+        long now = System.currentTimeMillis();
+        long key = ((long) syncBaseItemId << 32) | (tagetSyncBaseItemId & 0xFFFFFFFFL);
+        Long previous = recentProjectileFires.get(key);
+        if (previous != null && (now - previous) < PROJECTILE_FIRED_DEDUPE_WINDOW_MS) {
+            return;
+        }
+        recentProjectileFires.put(key, now);
+        // Opportunistic eviction so the map doesn't grow unboundedly during long sessions.
+        if (recentProjectileFires.size() > 256) {
+            recentProjectileFires.entrySet().removeIf(e -> (now - e.getValue()) >= PROJECTILE_FIRED_DEDUPE_WINDOW_MS);
+        }
         BabylonBaseItem babylonBaseItem = babylonBaseItems.get(syncBaseItemId);
         if (babylonBaseItem != null) {
             babylonBaseItem.onProjectileFired(tagetSyncBaseItemId, targetPosition);

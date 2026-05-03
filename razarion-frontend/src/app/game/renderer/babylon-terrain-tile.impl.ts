@@ -39,7 +39,6 @@ import {detectShoreline, computeShoreDistance} from "./shoreline-detection";
 import {initPerm, SEED, splatterValue} from "./procedural-textures";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {Nullable} from "@babylonjs/core/types";
-import type {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import {GroundUtil} from './ground-util';
 import {GwtInstance} from '../../gwtangular/GwtInstance';
@@ -71,11 +70,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly BOT_BOX_LENGTH = 8;
   static readonly BOT_BOX_Z_ROTATION = 22;
   public readonly container: TransformNode;
-  public readonly shadowCasterObjects: TransformNode[] = []
   private readonly groundMesh: Mesh;
   private waterMesh: Mesh | null = null;
   private groundMaterial: NodeMaterial | null = null;
-  private shadowCaster?: ((mesh: AbstractMesh) => void) | null = null;
   private groundHeights: number[] = [];
   private tileXOffset: number = 0;
   private tileYOffset: number = 0;
@@ -228,7 +225,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
   private setupTerrainTileObjects(terrainTileObjectLists: TerrainTileObjectList[]): void {
     // Collect all terrain objects to create, then batch-process them
-    const pending: { config: TerrainObjectConfig, model: TerrainObjectModel, zeroRadius: boolean }[] = [];
+    const pending: { config: TerrainObjectConfig, model: TerrainObjectModel }[] = [];
 
     terrainTileObjectLists.forEach(terrainTileObjectList => {
       try {
@@ -244,7 +241,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           if (!terrainObjectModel || !terrainObjectModel.position) {
             return;
           }
-          pending.push({ config: terrainObjectConfig, model: terrainObjectModel, zeroRadius: terrainObjectConfig.getRadius() <= 0 });
+          pending.push({ config: terrainObjectConfig, model: terrainObjectModel });
         });
       } catch (error) {
         console.error(terrainTileObjectList);
@@ -255,22 +252,17 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.createTerrainObjectsBatched(pending, 0);
   }
 
-  private createTerrainObjectsBatched(pending: { config: TerrainObjectConfig, model: TerrainObjectModel, zeroRadius: boolean }[], index: number): void {
+  private createTerrainObjectsBatched(pending: { config: TerrainObjectConfig, model: TerrainObjectModel }[], index: number): void {
     const end = Math.min(index + BabylonTerrainTileImpl.TERRAIN_OBJECTS_PER_BATCH, pending.length);
     for (let i = index; i < end; i++) {
-      const { config, model, zeroRadius } = pending[i];
+      const { config, model } = pending[i];
       try {
-        let terrainObject = BabylonTerrainTileImpl.createTerrainObject(model, config, this.babylonModelService, this.container);
-        if (!zeroRadius) {
-          if (this.shadowCaster) {
-            this.shadowCasterObjects.push(terrainObject);
-            terrainObject.getChildMeshes().forEach(mesh => this.shadowCaster!(mesh))
-          }
-          const actionManager = this.rendererService.terrainObjectActionManager;
-          terrainObject.getChildMeshes().forEach(childMesh => {
-            childMesh.actionManager = actionManager;
-          });
-        }
+        BabylonTerrainTileImpl.createTerrainObject(model, config, this.babylonModelService, this.container);
+        // Shadow casting is handled centrally on the source-mesh template in
+        // BabylonModelService — instances are auto-included by the ShadowGenerator.
+        // No per-instance ActionManager is attached: with ~1500 hardware instances each
+        // carrying its own ActionManager, Babylon's pointer-move pipeline becomes
+        // O(instances) per pointer event and the framerate collapses on mouse motion.
       } catch (error) {
         console.error(error);
       }
@@ -313,9 +305,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         terrainObjectModel.rotation.getZ(),
         terrainObjectModel.rotation.getY());
     }
-    let renderObject = babylonModelService.cloneModel3D(terrainObjectConfig.getModel3DId(), terrainObjectModelTransform);
-    renderObject.setName(`TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`);
-    renderObject.setParent(terrainObjectModelTransform);
+    // Static-model path: hardware-instanced TerrainObjects share geometry+material across
+    // all placements, so 1500 trees collapse to ~1 draw call per source mesh in both the
+    // main and shadow passes.
+    const instanceRoot = babylonModelService.instantiateStaticModel(terrainObjectConfig.getModel3DId(), terrainObjectModelTransform);
+    instanceRoot.name = `TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`;
 
     return terrainObjectModelTransform;
   }
@@ -619,20 +613,6 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   public static heightToUnit16(height: number): number {
     let value = (height - BabylonTerrainTileImpl.HEIGHT_MIN) / BabylonTerrainTileImpl.HEIGHT_PRECISION;
     return Math.round(value * 10) / 10
-  }
-
-  addShadowCasters(shadowCaster: (mesh: AbstractMesh) => void) {
-    this.shadowCasterObjects.forEach(node => {
-      node.getChildMeshes().forEach(mesh => shadowCaster(mesh))
-    });
-    this.shadowCaster = shadowCaster;
-  }
-
-  removeShadowCasters(shadowCaster: (mesh: AbstractMesh) => void) {
-    this.shadowCasterObjects.forEach(node => {
-      node.getChildMeshes().forEach(mesh => shadowCaster(mesh))
-    });
-    this.shadowCaster = null;
   }
 
   private botGroundMeshes: Mesh[] = [];

@@ -26,6 +26,7 @@ import {
   Constants,
   DirectionalLight,
   Engine,
+  EngineInstrumentation,
   ExecuteCodeAction,
   FreeCamera,
   InputBlock,
@@ -40,6 +41,7 @@ import {
   Quaternion,
   Ray,
   Scene,
+  SceneInstrumentation,
   ShadowGenerator,
   Tools,
   TransformNode,
@@ -51,6 +53,8 @@ import {SimpleMaterial} from "@babylonjs/materials";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
+import {BabylonLightning} from "./babylon-lightning";
+import {BabylonImpact} from "./babylon-impact";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 import {SelectionFrame} from "./selection-frame";
 import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
@@ -115,6 +119,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private pendingSetViewFieldCenter: Vector2 | null = null;
   private overviewMode = false;
   private savedCameraState: { position: Vector3, rotation: Vector3 } | null = null;
+  private perfDebugActive = false;
+  private sceneInstrumentation: SceneInstrumentation | null = null;
+  private engineInstrumentation: EngineInstrumentation | null = null;
+  private perfStatsLogIntervalId: ReturnType<typeof setInterval> | null = null;
+  // Terrain objects (trees/rocks) cost ~1500 draw calls in the shadow pass but are core to
+  // the visual feel — kept on by default. F11 toggles them off for perf comparisons.
+  private loadedTerrainTiles: Set<BabylonTerrainTileImpl> = new Set();
+  private terrainShadowsEnabled = true;
   public static readonly SCROLL_SPEED = 0.2;
   public static readonly SCROLL_SPEED_CAMERA_HEIGHT_FACTOR = 0.03;
 
@@ -167,9 +179,26 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   internalSetup() {
     // ----- Keyboard -----
     const self = this;
+    // Console fallback in case F9 is intercepted by the browser/IDE.
+    (window as any).togglePerfDebug = () => self.togglePerfDebug();
     window.addEventListener("keydown", e => {
       if (!self.keyPressed.has(e.key)) {
         self.keyPressed.set(e.key, Date.now());
+      }
+      if (e.key === "F9") {
+        e.preventDefault();
+        console.log("[PerfDebug] F9 pressed");
+        self.togglePerfDebug();
+      }
+      if (e.key === "F10") {
+        e.preventDefault();
+        const enabled = !self.directionalLight.shadowEnabled;
+        self.directionalLight.shadowEnabled = enabled;
+        console.log(`[PerfDebug] shadows ${enabled ? "ON" : "OFF"}`);
+      }
+      if (e.key === "F11") {
+        e.preventDefault();
+        self.toggleTerrainObjectShadows();
       }
     }, true);
     window.addEventListener("keyup", e => {
@@ -214,6 +243,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.shadowGenerator = new ShadowGenerator(4096, this.directionalLight);
     this.shadowGenerator.useExponentialShadowMap = true;
     this.shadowGenerator.darkness = 0.6;
+
+    // Pre-fire hidden warmup VFX at Y=-1000 so the first user-visible Tesla shot's bolt and
+    // impact don't render blank while Babylon compiles shaders / uploads textures on demand.
+    BabylonLightning.preWarm(this.scene);
+    BabylonImpact.preWarm(this.scene);
 
     // ----- Resize listener -----
     new ResizeObserver(entries => {
@@ -515,12 +549,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   addTerrainTileToScene(terrainTile: BabylonTerrainTileImpl): void {
     this.scene.addTransformNode(terrainTile.container);
-    terrainTile.addShadowCasters((mesh: AbstractMesh) => this.shadowGenerator.addShadowCaster(mesh, true));
+    this.loadedTerrainTiles.add(terrainTile);
+    // Shadow registration for TerrainObjects now happens once per model3DId on the
+    // BabylonModelService template — instances are auto-included by the ShadowGenerator.
   }
 
   removeTerrainTileFromScene(terrainTile: BabylonTerrainTileImpl): void {
     this.scene.removeTransformNode(terrainTile.container);
-    terrainTile.removeShadowCasters((mesh: AbstractMesh) => this.shadowGenerator.removeShadowCaster(mesh, true));
+    this.loadedTerrainTiles.delete(terrainTile);
   }
 
   getScene(): Scene {
@@ -1068,6 +1104,72 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   disableSelectionFrame() {
     this.selectionFrame.disable();
+  }
+
+  private toggleTerrainObjectShadows(): void {
+    this.terrainShadowsEnabled = !this.terrainShadowsEnabled;
+    this.babylonModelService.setStaticModelsShadowCasting(this.terrainShadowsEnabled);
+    console.log(`[PerfDebug] terrain object shadows ${this.terrainShadowsEnabled ? "ON" : "OFF"} (${this.babylonModelService.getStaticTemplateCount()} templates affected)`);
+  }
+
+  private async togglePerfDebug(): Promise<void> {
+    if (this.perfDebugActive) {
+      this.perfDebugActive = false;
+      this.scene.debugLayer.hide();
+      if (this.perfStatsLogIntervalId !== null) {
+        clearInterval(this.perfStatsLogIntervalId);
+        this.perfStatsLogIntervalId = null;
+      }
+      this.sceneInstrumentation?.dispose();
+      this.sceneInstrumentation = null;
+      this.engineInstrumentation?.dispose();
+      this.engineInstrumentation = null;
+      console.log("[PerfDebug] disabled");
+      return;
+    }
+    this.perfDebugActive = true;
+    // Dynamic import keeps the inspector out of the main bundle until needed.
+    await import("@babylonjs/inspector");
+    this.scene.debugLayer.show({embedMode: true, overlay: true});
+
+    this.sceneInstrumentation = new SceneInstrumentation(this.scene);
+    this.sceneInstrumentation.captureActiveMeshesEvaluationTime = true;
+    this.sceneInstrumentation.captureRenderTargetsRenderTime = true;
+    this.sceneInstrumentation.captureFrameTime = true;
+    this.sceneInstrumentation.captureRenderTime = true;
+    this.sceneInstrumentation.captureInterFrameTime = true;
+    this.sceneInstrumentation.captureParticlesRenderTime = true;
+    this.sceneInstrumentation.captureSpritesRenderTime = true;
+    this.sceneInstrumentation.capturePhysicsTime = true;
+    this.sceneInstrumentation.captureAnimationsTime = true;
+    this.sceneInstrumentation.captureCameraRenderTime = true;
+
+    this.engineInstrumentation = new EngineInstrumentation(this.engine);
+    this.engineInstrumentation.captureGPUFrameTime = true;
+    this.engineInstrumentation.captureShaderCompilationTime = true;
+
+    this.perfStatsLogIntervalId = setInterval(() => {
+      const si = this.sceneInstrumentation!;
+      const ei = this.engineInstrumentation!;
+      const fmt = (counter: { current: number, average: number }) =>
+        `${counter.current.toFixed(2)}ms (avg ${counter.average.toFixed(2)})`;
+      const gpuMs = ei.gpuFrameTimeCounter.lastSecAverage / 1_000_000;
+      console.log(
+        `[PerfDebug] FPS=${this.engine.getFps().toFixed(1)} ` +
+        `frame=${fmt(si.frameTimeCounter)} ` +
+        `render=${fmt(si.renderTimeCounter)} ` +
+        `meshEval=${fmt(si.activeMeshesEvaluationTimeCounter)} ` +
+        `particles=${fmt(si.particlesRenderTimeCounter)} ` +
+        `renderTargets=${fmt(si.renderTargetsRenderTimeCounter)} ` +
+        `gpu=${gpuMs.toFixed(2)}ms ` +
+        `meshes=${this.scene.meshes.length} ` +
+        `materials=${this.scene.materials.length} ` +
+        `activeMeshes=${this.scene.getActiveMeshes().length} ` +
+        `drawCalls=${si.drawCallsCounter.current}`
+      );
+    }, 1000);
+
+    console.log("[PerfDebug] enabled — F9 again to disable. Inspector → Statistics tab for live numbers.");
   }
 }
 

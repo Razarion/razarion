@@ -10,6 +10,7 @@ import {
   HouseType,
   ItemContainerType,
   SpecialType,
+  WeaponKind,
   WeaponType
 } from 'src/app/generated/razarion-share';
 import {CrudContainerChild} from '../crud-container/crud-container.component';
@@ -29,6 +30,7 @@ import {AccelerationComponent} from '../../common/acceleration/acceleration.comp
 import {AudioComponent} from '../../common/audio/audio.component';
 import {AudioConfigComponent} from '../../common/audio-config/audio-config.component';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
+import {Select} from 'primeng/select';
 
 
 @Component({
@@ -49,13 +51,19 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     AccelerationComponent,
     AudioComponent,
     AudioConfigComponent,
-    ScrollPanelModule
+    ScrollPanelModule,
+    Select
 ],
   templateUrl: './base-item-type-editor.component.html'
 })
 export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemType> {
   static editorControllerClient = BaseItemTypeEditorControllerClient;
   baseItemType!: BaseItemType;
+  weaponKindOptions: { label: string, value: WeaponKind }[] = [
+    {label: "Projectile", value: WeaponKind.PROJECTILE},
+    {label: "Lightning", value: WeaponKind.LIGHTNING},
+  ];
+  readonly LIGHTNING: WeaponKind = WeaponKind.LIGHTNING;
 
   init(baseItemType: BaseItemType): void {
     this.baseItemType = baseItemType;
@@ -123,7 +131,9 @@ export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemT
         trailParticleSystemConfigId = null;
         muzzleFlashAudioConfig = <any>null;
         impactAudioConfig = <any>null;
-        turretAngleVelocity = <any>null
+        turretAngleVelocity = <any>null;
+        weaponKind = WeaponKind.PROJECTILE;
+        lightningDurationMs = null;
       };
     } else {
       this.baseItemType.weaponType = null;

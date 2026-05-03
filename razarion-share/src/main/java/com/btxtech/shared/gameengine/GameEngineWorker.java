@@ -21,6 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.ProjectileFiredInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemSpawnStart;
@@ -557,6 +558,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onProjectileFired(SyncBaseItem syncBaseItem, int tagetSyncBaseItemId, DecimalPosition targetPosition) {
         sendToClient(GameEngineControlPackage.Command.PROJECTILE_FIRED, syncBaseItem.getId(), tagetSyncBaseItemId, targetPosition);
+    }
+
+    public void onServerProjectileFired(ProjectileFiredInfo info) {
+        sendToClient(GameEngineControlPackage.Command.PROJECTILE_FIRED,
+                info.getActorSyncBaseItemId(),
+                info.getTargetSyncBaseItemId(),
+                info.getTargetPosition());
     }
 
     @Override

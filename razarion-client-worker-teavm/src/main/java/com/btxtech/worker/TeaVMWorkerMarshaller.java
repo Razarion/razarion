@@ -45,8 +45,10 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpecialType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.AudioItemConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponKind;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.ProjectileFiredInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
@@ -1022,6 +1024,9 @@ public final class TeaVMWorkerMarshaller {
         if (type == SyncItemSpawnStart.class) {
             return (T) convertSyncItemSpawnStart(obj);
         }
+        if (type == ProjectileFiredInfo.class) {
+            return (T) convertProjectileFiredInfo(obj);
+        }
 
         // Command types (forwarded from server to other clients)
         if (type == MoveCommand.class) {
@@ -1387,6 +1392,17 @@ public final class TeaVMWorkerMarshaller {
         JSObject positionObj = obj.get("position");
         if (!JsUtils.isNullOrUndefined(positionObj)) {
             info.setPosition(safeDecimalPosition((JsObject) positionObj));
+        }
+        return info;
+    }
+
+    private static ProjectileFiredInfo convertProjectileFiredInfo(JsObject obj) {
+        ProjectileFiredInfo info = new ProjectileFiredInfo();
+        info.setActorSyncBaseItemId(obj.getInt("actorSyncBaseItemId"));
+        info.setTargetSyncBaseItemId(obj.getInt("targetSyncBaseItemId"));
+        JSObject positionObj = obj.get("targetPosition");
+        if (!JsUtils.isNullOrUndefined(positionObj)) {
+            info.setTargetPosition(safeDecimalPosition((JsObject) positionObj));
         }
         return info;
     }
@@ -1805,6 +1821,11 @@ public final class TeaVMWorkerMarshaller {
             type.setImpactAudioConfig(convertAudioItemConfig((JsObject) impactAudioConfigObj));
         }
         type.setTrailParticleSystemConfigId(obj.getNullableInt("trailParticleSystemConfigId"));
+        String weaponKindStr = obj.getString("weaponKind");
+        if (weaponKindStr != null) {
+            type.setWeaponKind(WeaponKind.valueOf(weaponKindStr));
+        }
+        type.setLightningDurationMs(obj.getNullableInt("lightningDurationMs"));
         return type;
     }
 

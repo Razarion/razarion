@@ -1,12 +1,18 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {Slider} from 'primeng/slider';
 import {FormsModule} from '@angular/forms';
+import {ButtonModule} from 'primeng/button';
+import {InputTextModule} from 'primeng/inputtext';
+import {Tooltip} from 'primeng/tooltip';
 
 @Component({
   selector: 'angle',
   imports: [
     Slider,
-    FormsModule
+    FormsModule,
+    ButtonModule,
+    InputTextModule,
+    Tooltip
   ],
   templateUrl: './angle.component.html'
 })
@@ -42,5 +48,11 @@ export class AngleComponent implements OnInit {
       degreeAngle = this.maxDegreeAngle;
     }
     this.onChange(degreeAngle);
+  }
+
+  clear() {
+    this.degreeAngle = undefined;
+    this.angle = null;
+    this.angleChange.emit(this.angle);
   }
 }

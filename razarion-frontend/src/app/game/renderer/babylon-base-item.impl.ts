@@ -28,6 +28,7 @@ import {SelectionService as TsSelectionService} from "../selection.service";
 import {AdvancedDynamicTexture, TextBlock} from '@babylonjs/gui';
 
 import {Nullable} from '@babylonjs/core/types';
+import {BabylonLightning} from "./babylon-lightning";
 import {BabylonMuzzleFlash} from "./babylon-muzzle-flash";
 import {BabylonBuildupEffect} from "./babylon-buildup-effect";
 import {BabylonHarvestingBeam} from "./babylon-harvesting-beam";
@@ -620,10 +621,31 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     // Raise impact point above the target so the effect is visible, not hidden inside the mesh
     const targetRadius = targetBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius();
     targetPos.y += targetRadius * 0.8;
+
+    if (this.baseItemType.getWeaponType()?.getWeaponKind() === "LIGHTNING") {
+      const scene = this.rendererService.getScene();
+      const durationMs = this.baseItemType.getWeaponType()?.getLightningDurationMs() ?? undefined;
+      BabylonLightning.fire(scene, startPosition, targetPos, durationMs);
+      // Lightning has no flying projectile, so the impact VFX must be triggered here.
+      BabylonImpact.detonate(scene, targetPos);
+      const impactAudioConfig = this.baseItemType.getWeaponType()?.getImpactAudioConfig();
+      if (impactAudioConfig != null) {
+        this.rendererService.babylonAudioService.playAudioAtPositionWithConfig(impactAudioConfig, targetPos);
+      }
+      return;
+    }
+
     this.createProjectile(startPosition, null, targetPos);
   }
 
   onExplode(): void {
+    // Drop selection/hover/marker discs BEFORE the debris loop detaches and clones
+    // child meshes — otherwise diplomacyMarkerDisc (a Plane parented to the container)
+    // is treated as a regular child mesh, cloned 3x and tumbled with the wreckage.
+    this.select(false);
+    this.hover(false);
+    this.mark(null);
+
     const explosionAudioId = this.baseItemType.getExplosionAudioItemConfigId();
     if (explosionAudioId != null) {
       this.rendererService.babylonAudioService.playAudioAtPosition(explosionAudioId, this.getContainer().position);

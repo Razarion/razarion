@@ -286,6 +286,24 @@
             @if (baseItemType.weaponType) {
               <div>
                 <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                  <span class="col-span-4">Weapon kind</span>
+                  <div class="col-span-8">
+                    <p-select [options]="weaponKindOptions"
+                              [(ngModel)]="baseItemType.weaponType.weaponKind"
+                              optionLabel="label"
+                              optionValue="value">
+                    </p-select>
+                  </div>
+                </div>
+                @if (baseItemType.weaponType.weaponKind === LIGHTNING) {
+                  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+                    <span class="col-span-4">Lightning duration [ms]</span>
+                    <div class="col-span-8">
+                      <p-inputNumber [(ngModel)]="baseItemType.weaponType.lightningDurationMs"></p-inputNumber>
+                    </div>
+                  </div>
+                }
+                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
                   <span class="col-span-4">Range [m]</span>
                   <div class="col-span-8">
                     <p-inputNumber [(ngModel)]="baseItemType.weaponType.range" [minFractionDigits]="2"

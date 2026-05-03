@@ -385,6 +385,12 @@
       "internalName": "Bot ground",
       "gltfName": "Bot ground",
       "gltfEntityId": 1
+    },
+    {
+      "id": 100,
+      "internalName": "Tesla",
+      "gltfName": "Tesla",
+      "gltfEntityId": 1
     }
   ],
   "particleSystemEntities": [

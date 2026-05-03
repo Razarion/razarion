@@ -64,6 +64,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpecialType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.AudioItemConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponKind;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.terrain.BotGroundSlopeBox;
@@ -485,6 +486,11 @@ public class JsonDeserializer {
         r.setMuzzleFlashAudioConfig(deserializeAudioItemConfig(obj(json, "muzzleFlashAudioConfig")));
         r.setImpactAudioConfig(deserializeAudioItemConfig(obj(json, "impactAudioConfig")));
         r.setTrailParticleSystemConfigId(json.getNullableInt("trailParticleSystemConfigId"));
+        WeaponKind weaponKind = deserializeEnum(json, "weaponKind", WeaponKind.class);
+        if (weaponKind != null) {
+            r.setWeaponKind(weaponKind);
+        }
+        r.setLightningDurationMs(json.getNullableInt("lightningDurationMs"));
         return r;
     }
 

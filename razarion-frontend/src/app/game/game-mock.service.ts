@@ -58,6 +58,9 @@ import {EditorModel} from '../editor/editor-model';
 import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.component';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
 import {BabylonBaseItemImpl} from './renderer/babylon-base-item.impl';
+import {BabylonImpact} from './renderer/babylon-impact';
+import {BabylonLightning} from './renderer/babylon-lightning';
+import {Vector3} from '@babylonjs/core';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []
@@ -134,132 +137,9 @@ export class GameMockService {
         //   }
         // }, 2);
 
-        let baseItemType1 = new class implements BaseItemType {
-          getName(): string {
-            return "Viper";
-          }
-
-          getDescription(): string {
-            return "Viper attack unit";
-          }
-
-          getBuilderType(): BuilderType {
-            return new class implements BuilderType {
-              checkAbleToBuild(itemTypeId: number): boolean {
-                return false;
-              }
-
-              getAbleToBuildIds(): number[] {
-                return [];
-              }
-
-              getBuildAnimationWarmupSeconds(): number {
-                return 0;
-              }
-
-              getBuildAnimationCooldownSeconds(): number {
-                return 0;
-              }
-            }
-          }
-
-          getHarvesterType(): HarvesterType {
-            return new class implements HarvesterType {
-            }
-          }
-
-          getWeaponType(): WeaponType {
-            return new class implements WeaponType {
-              getProjectileSpeed(): number | null {
-                return 30;
-              }
-
-              getImpactParticleSystemId(): number | null {
-                return 7;
-              }
-
-              getTrailParticleSystemConfigId(): number | null {
-                return 4;
-              }
-
-              getMuzzleFlashAudioConfig(): AudioItemConfig | null {
-                return null;
-              }
-
-              getImpactAudioConfig(): AudioItemConfig | null {
-                return null;
-              }
-
-              checkItemTypeDisallowed(targetItemTypeId: number): boolean {
-                return false;
-              }
-            }
-          }
-
-          getItemContainerType(): ItemContainerType | null {
-            return null;
-          }
-
-          getFactoryType(): FactoryType | null {
-            return null;
-          }
-
-          getExplosionParticleId(): number | null {
-            return 5;
-          }
-
-          getExplosionAudioItemConfigId(): number | null {
-            return null;
-          }
-
-          getId(): number {
-            return 3;
-          }
-
-          getInternalName(): string {
-            return "Viper";
-          }
-
-          getModel3DId(): number | null {
-            return 34;
-          }
-
-          getPhysicalAreaConfig(): PhysicalAreaConfig {
-            return new class implements PhysicalAreaConfig {
-              getRadius(): number {
-                return 1.3;
-              }
-
-              getTerrainType(): TerrainType {
-                return TerrainType.LAND;
-              }
-
-              fulfilledMovable(): boolean {
-                return false;
-              }
-            };
-          }
-
-          getThumbnail(): number | null {
-            return null;
-          }
-
-          getPrice(): number {
-            return 100;
-          }
-
-          getConsumingHouseSpace(): number {
-            return 1;
-          }
-
-          getSpawnAudioId(): number | null {
-            return null;
-          }
-        };
-
-        let refineryType = new class implements BaseItemType {
-          getName(): string { return "BotRefinery"; }
-          getDescription(): string { return "Bot refinery building"; }
+        const teslaType = new class implements BaseItemType {
+          getName(): string { return "Tesla Coil"; }
+          getDescription(): string { return "Static defense tower firing lightning bolts"; }
           getBuilderType(): BuilderType { return null as any; }
           getHarvesterType(): HarvesterType { return null as any; }
           getWeaponType(): WeaponType | null { return null; }
@@ -267,12 +147,12 @@ export class GameMockService {
           getFactoryType(): FactoryType | null { return null; }
           getExplosionParticleId(): number | null { return 5; }
           getExplosionAudioItemConfigId(): number | null { return null; }
-          getId(): number { return 22; }
-          getInternalName(): string { return "BotRefinery"; }
-          getModel3DId(): number | null { return 43; }
+          getId(): number { return 50; }
+          getInternalName(): string { return "Tesla"; }
+          getModel3DId(): number | null { return 100; }
           getPhysicalAreaConfig(): PhysicalAreaConfig {
             return new class implements PhysicalAreaConfig {
-              getRadius(): number { return 3; }
+              getRadius(): number { return 1.5; }
               getTerrainType(): TerrainType { return TerrainType.LAND; }
               fulfilledMovable(): boolean { return true; }
             };
@@ -283,27 +163,59 @@ export class GameMockService {
           getSpawnAudioId(): number | null { return null; }
         };
 
-        {
-          // Viper attacks an enemy refinery: muzzle flash + projectile + impact every
-          // 1.5s. No onExplode call — the refinery stays alive so the loop keeps firing.
-          const refineryId = 999998;
-          const viperId = 999997;
+        const viperType = new class implements BaseItemType {
+          getName(): string { return "Viper"; }
+          getDescription(): string { return "Viper attack unit"; }
+          getBuilderType(): BuilderType { return null as any; }
+          getHarvesterType(): HarvesterType { return null as any; }
+          getWeaponType(): WeaponType | null { return null; }
+          getItemContainerType(): ItemContainerType | null { return null; }
+          getFactoryType(): FactoryType | null { return null; }
+          getExplosionParticleId(): number | null { return 5; }
+          getExplosionAudioItemConfigId(): number | null { return null; }
+          getId(): number { return 3; }
+          getInternalName(): string { return "Viper"; }
+          getModel3DId(): number | null { return 34; }
+          getPhysicalAreaConfig(): PhysicalAreaConfig {
+            return new class implements PhysicalAreaConfig {
+              getRadius(): number { return 1.3; }
+              getTerrainType(): TerrainType { return TerrainType.LAND; }
+              fulfilledMovable(): boolean { return false; }
+            };
+          }
+          getThumbnail(): number | null { return null; }
+          getPrice(): number { return 100; }
+          getConsumingHouseSpace(): number { return 1; }
+          getSpawnAudioId(): number | null { return null; }
+        };
 
-          const refineryItem = <BabylonBaseItemImpl>this.babylonRenderServiceAccessImpl
-            .createBabylonBaseItem(refineryId, refineryType, 2, Diplomacy.ENEMY, "");
-          refineryItem.setPosition(GwtInstance.newVertex(80, 40, 0.6));
-          refineryItem.setAngle(Math.PI);
-          refineryItem.setHealth(1);
+        {
+          // Tesla coil shoots lightning at a Viper target every 3s.
+          const teslaWorldX = 65, teslaWorldY = 40, groundZ = 0.6;
+          const viperWorldX = 80, viperWorldY = 40;
+
+          const teslaItem = <BabylonBaseItemImpl>this.babylonRenderServiceAccessImpl
+            .createBabylonBaseItem(999996, teslaType, 1, Diplomacy.OWN, "");
+          teslaItem.setPosition(GwtInstance.newVertex(teslaWorldX, teslaWorldY, groundZ));
+          teslaItem.setAngle(0);
+          teslaItem.setHealth(1);
 
           const viperItem = <BabylonBaseItemImpl>this.babylonRenderServiceAccessImpl
-            .createBabylonBaseItem(viperId, baseItemType1, 1, Diplomacy.OWN, "");
-          viperItem.setPosition(GwtInstance.newVertex(60, 25, 0.6));
-          viperItem.setAngle(Math.PI / 4);
+            .createBabylonBaseItem(999997, viperType, 2, Diplomacy.ENEMY, "");
+          viperItem.setPosition(GwtInstance.newVertex(viperWorldX, viperWorldY, groundZ));
+          viperItem.setAngle(Math.PI);
           viperItem.setHealth(1);
 
-          setInterval(() => {
-            viperItem.onProjectileFired(refineryId, GwtInstance.newDecimalPosition(80, 40));
-          }, 1500);
+          // Babylon coords: world (x, y, z=height) → babylon (x, height, y)
+          const boltOrigin = new Vector3(teslaWorldX, groundZ + 4.0, teslaWorldY);
+          const boltTarget = new Vector3(viperWorldX, groundZ + 1.2, viperWorldY);
+          const fire = () => {
+            const scene = this.babylonRenderServiceAccessImpl.getScene();
+            BabylonLightning.fire(scene, boltOrigin, boltTarget);
+            BabylonImpact.detonate(scene, boltTarget);
+          };
+          setTimeout(fire, 800);
+          setInterval(fire, 3000);
         }
         {
           // let botGround = this.babylonModelService.cloneModel3D(45, null, Diplomacy.OWN);

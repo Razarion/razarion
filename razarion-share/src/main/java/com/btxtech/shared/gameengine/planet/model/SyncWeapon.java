@@ -83,11 +83,14 @@ public class SyncWeapon extends SyncBaseAbility {
      * @return true if more tick are needed to fulfil the job
      */
     public boolean tick() {
+        tickReload();
+        return target != null && tickAttack();
+    }
+
+    public void tickReload() {
         if (reloadProgress < weaponType.getReloadTime()) {
             reloadProgress += PlanetService.TICK_FACTOR;
         }
-
-        return target != null && tickAttack();
     }
 
     private boolean tickAttack() {
@@ -192,13 +195,13 @@ public class SyncWeapon extends SyncBaseAbility {
         }
     }
 
-    private boolean returnFalseIfReloaded() {
-        return reloadProgress < weaponType.getReloadTime();
-    }
-
     public void stop() {
         target = null;
         targetPosition = null;
+    }
+
+    private boolean returnFalseIfReloaded() {
+        return reloadProgress < weaponType.getReloadTime();
     }
 
     @Override
@@ -213,7 +216,22 @@ public class SyncWeapon extends SyncBaseAbility {
         }
         followTarget = syncBaseItemInfo.getFollowTarget();
         reloadProgress = syncBaseItemInfo.getReloadProgress();
-        turretAngle = syncBaseItemInfo.getTurretAngle();
+        // Reconcile turretAngle with the *current* WeaponType: a warm restart restores
+        // SyncBaseItemInfo from a backup taken before turretAngleVelocity was nulled (e.g. when
+        // converting a turreted projectile tower to a Tesla coil), so a non-null backup value
+        // would survive even though the new weapon has no turret. Subsequent tickTurret() calls
+        // would then NPE on getTurretAngleVelocity() * TICK_FACTOR — caught by the outer
+        // try/catch in BaseItemService, which silently stops the unit, re-guards it, and the
+        // cycle repeats every tick: muzzle-flash plays each retry but the LIGHTNING/IMPACT
+        // branch is never reached, so the player sees no bolt and no damage until something
+        // resolves the loop.
+        if (weaponType.getTurretAngleVelocity() == null) {
+            turretAngle = null;
+        } else {
+            turretAngle = syncBaseItemInfo.getTurretAngle() != null
+                    ? syncBaseItemInfo.getTurretAngle()
+                    : 0.0;
+        }
     }
 
     @Override

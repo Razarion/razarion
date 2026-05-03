@@ -1,5 +1,9 @@
 <div style="width:13em">
-    <input type="text" pInputText [(ngModel)]="degreeAngle" class="w-full" (input)="onTextChange($event)"/>
+    <div class="flex gap-1 items-center">
+        <input type="text" pInputText [(ngModel)]="degreeAngle" class="flex-1 min-w-0" (input)="onTextChange($event)"/>
+        <p-button icon="pi pi-times" severity="secondary" size="small" [text]="true"
+            pTooltip="Clear (set to null)" (onClick)="clear()"></p-button>
+    </div>
     <p-slider [(ngModel)]="degreeAngle" class="w-full" [min]="0" [max]="maxDegreeAngle"
         (onChange)="onChange($event.value)"></p-slider>
 </div>

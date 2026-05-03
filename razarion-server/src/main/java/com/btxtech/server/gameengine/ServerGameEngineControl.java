@@ -249,6 +249,16 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
+    public void onProjectileFired(SyncBaseItem syncBaseItem, int targetSyncBaseItemId, com.btxtech.shared.datatypes.DecimalPosition targetPosition) {
+        // The fire event is the only authoritative trigger the client can rely on for
+        // bot-controlled units: the worker's local prediction is reactive (the server has
+        // already reset reloadProgress to 0 by the time the worker syncs the new target),
+        // so without this broadcast the first bot bolt is silently dropped while damage
+        // still lands via SyncBaseItemInfo.
+        clientGameConnectionService.onProjectileFired(syncBaseItem.getId(), targetSyncBaseItemId, targetPosition);
+    }
+
+    @Override
     public void onSpawnSyncItemNoSpan(SyncBaseItem syncBaseItem) {
         // TODO itemTrackerPersistence.onSpawnSyncItemNoSpan(syncBaseItem);
     }

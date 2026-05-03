@@ -1,6 +1,8 @@
 package com.btxtech.shared.gameengine.planet.projectile;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponKind;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
@@ -45,17 +47,22 @@ public class ProjectileService {
 
     public void fireProjectile(SyncBaseItem actor, SyncBaseItem target) {
         WeaponType weaponType = actor.getSyncWeapon().getWeaponType();
+        DecimalPosition targetPos = target.getAbstractSyncPhysical().getPosition();
 
-        if (weaponType.getProjectileSpeed() == null) {
-            // projectileDetonation(projectileGroup);
-            throw new UnsupportedOperationException();
+        if (weaponType.getWeaponKind() == WeaponKind.LIGHTNING) {
+            // Instant hit: damage applied this tick. Both events fire so the client
+            // can render bolt + impact in sync. Visual duration lives on the client.
+            gameLogicService.onProjectileFired(actor, target.getId(), targetPos);
+            gameLogicService.onProjectileDetonation(actor, targetPos);
+            applyDamage(actor, targetPos);
+            return;
         }
-        Projectile projectile = new Projectile(actor, target.getAbstractSyncPhysical().getPosition());
+        Projectile projectile = new Projectile(actor, targetPos);
         synchronized (projectiles) {
             projectiles.add(projectile);
         }
 
-        gameLogicService.onProjectileFired(actor, target.getId(), target.getAbstractSyncPhysical().getPosition());
+        gameLogicService.onProjectileFired(actor, target.getId(), targetPos);
     }
 
     public void tick() {
@@ -75,17 +82,21 @@ public class ProjectileService {
     }
 
     private void projectileDetonation(Projectile detonationProjectile) {
-        WeaponType weaponType = detonationProjectile.getActor().getSyncWeapon().getWeaponType();
         gameLogicService.onProjectileDetonation(detonationProjectile.getActor(), detonationProjectile.getTarget());
-        Collection<SyncBaseItem> possibleTargets = syncItemContainerService.findBaseItemInRect(Rectangle2D.generateRectangleFromMiddlePoint(detonationProjectile.getTarget(), weaponType.getRange(), weaponType.getRange()));
+        applyDamage(detonationProjectile.getActor(), detonationProjectile.getTarget());
+    }
+
+    private void applyDamage(SyncBaseItem actor, DecimalPosition targetPos) {
+        WeaponType weaponType = actor.getSyncWeapon().getWeaponType();
+        Collection<SyncBaseItem> possibleTargets = syncItemContainerService.findBaseItemInRect(Rectangle2D.generateRectangleFromMiddlePoint(targetPos, weaponType.getRange(), weaponType.getRange()));
         for (SyncBaseItem target : possibleTargets) {
-            if (!target.getAbstractSyncPhysical().overlap(detonationProjectile.getTarget(), weaponType.getDetonationRadius())) {
+            if (!target.getAbstractSyncPhysical().overlap(targetPos, weaponType.getDetonationRadius())) {
                 continue;
             }
-            if (!baseItemService.isEnemy(detonationProjectile.getActor(), target)) {
+            if (!baseItemService.isEnemy(actor, target)) {
                 continue;
             }
-            target.onAttacked(weaponType.getDamage(), detonationProjectile.getActor());
+            target.onAttacked(weaponType.getDamage(), actor);
         }
     }
 }

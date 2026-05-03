@@ -17,6 +17,15 @@ export class BabylonImpact {
     BabylonImpact.spawnShockwave(scene, position);
   }
 
+  /**
+   * Force-runs the entire impact pipeline (six particle systems + shockwave mesh/material) at
+   * a hidden Y=-1000 position so the first user-visible impact doesn't render blank while
+   * shaders compile and textures upload. Call once at scene init.
+   */
+  static preWarm(scene: Scene): void {
+    BabylonImpact.detonate(scene, new Vector3(0, -1000, 0));
+  }
+
   // TEMP helper: only the shrapnel trails, for isolated tuning
   private static spawnShrapnelTrailsOnly(scene: Scene, position: Vector3): void {
     const trails = new ParticleSystem("shrapnelTrails", 100, scene);

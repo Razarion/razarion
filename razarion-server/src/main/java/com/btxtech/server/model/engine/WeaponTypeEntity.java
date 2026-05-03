@@ -6,8 +6,11 @@ import com.btxtech.server.service.engine.BaseItemTypeService;
 import com.btxtech.server.service.ui.AudioService;
 import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.AudioItemConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponKind;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -58,6 +61,9 @@ public class WeaponTypeEntity extends BaseEntity {
     @JoinColumn
     private ParticleSystemEntity trailParticleSystem;
     private Double turretAngleVelocity;
+    @Enumerated(EnumType.STRING)
+    private WeaponKind weaponKind = WeaponKind.PROJECTILE;
+    private Integer lightningDurationMs;
 
     public WeaponType toWeaponType() {
         AudioItemConfig muzzleFlashAudioConfig = null;
@@ -92,7 +98,9 @@ public class WeaponTypeEntity extends BaseEntity {
                 .muzzleFlashAudioConfig(muzzleFlashAudioConfig)
                 .impactAudioConfig(impactAudioConfig)
                 .trailParticleSystemConfigId(extractId(trailParticleSystem, ParticleSystemEntity::getId))
-                .turretAngleVelocity(turretAngleVelocity);
+                .turretAngleVelocity(turretAngleVelocity)
+                .weaponKind(weaponKind != null ? weaponKind : WeaponKind.PROJECTILE)
+                .lightningDurationMs(lightningDurationMs);
         if (disallowedItemTypes != null && !disallowedItemTypes.isEmpty()) {
             List<Integer> disallowedIds = new ArrayList<>();
             for (BaseItemTypeEntity baseItemTypeEntity : disallowedItemTypes) {
@@ -144,6 +152,8 @@ public class WeaponTypeEntity extends BaseEntity {
         impactParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getImpactParticleSystemId());
         turretAngleVelocity = weaponType.getTurretAngleVelocity();
         trailParticleSystem = particleSystemCrudPersistence.getEntity(weaponType.getTrailParticleSystemConfigId());
+        weaponKind = weaponType.getWeaponKind() != null ? weaponType.getWeaponKind() : WeaponKind.PROJECTILE;
+        lightningDurationMs = weaponType.getLightningDurationMs();
     }
 
     @Override

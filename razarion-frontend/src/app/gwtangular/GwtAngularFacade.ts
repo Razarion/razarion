@@ -383,6 +383,8 @@ export interface AudioItemConfig {
   getVolumeMax(): number;
 }
 
+export type WeaponKind = "PROJECTILE" | "LIGHTNING";
+
 export interface WeaponType {
   getImpactParticleSystemId(): number | null;
 
@@ -393,6 +395,10 @@ export interface WeaponType {
   getMuzzleFlashAudioConfig(): AudioItemConfig | null;
 
   getImpactAudioConfig(): AudioItemConfig | null;
+
+  getWeaponKind(): WeaponKind | null;
+
+  getLightningDurationMs(): number | null;
 
   checkItemTypeDisallowed(targetItemTypeId: number): boolean;
 }

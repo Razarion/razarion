@@ -494,6 +494,10 @@ public class DtoConverter {
                 convertAudioItemConfig(type.getWeaponType().getMuzzleFlashAudioConfig()));
         setGetterObj(obj, "getImpactAudioConfig", () ->
                 convertAudioItemConfig(type.getWeaponType().getImpactAudioConfig()));
+        setGetterString(obj, "getWeaponKind", () ->
+                type.getWeaponType().getWeaponKind() != null ? type.getWeaponType().getWeaponKind().name() : null);
+        setGetterObj(obj, "getLightningDurationMs", () ->
+                convertNullableInt(type.getWeaponType().getLightningDurationMs()));
         setMethodIntBool(obj, "checkItemTypeDisallowed", (targetItemTypeId) ->
                 type.getWeaponType().checkItemTypeDisallowed(targetItemTypeId));
         return obj;

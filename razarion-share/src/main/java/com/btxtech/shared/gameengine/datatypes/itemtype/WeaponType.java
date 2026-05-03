@@ -39,6 +39,8 @@ public class WeaponType {
     private AudioItemConfig muzzleFlashAudioConfig;
     private AudioItemConfig impactAudioConfig;
     private Integer trailParticleSystemConfigId;
+    private WeaponKind weaponKind = WeaponKind.PROJECTILE;
+    private Integer lightningDurationMs; // Render-only duration for LIGHTNING; ignored by game engine
 
     public double getRange() {
         return range;
@@ -180,6 +182,32 @@ public class WeaponType {
 
     public WeaponType trailParticleSystemConfigId(Integer trailParticleSystemConfigId) {
         setTrailParticleSystemConfigId(trailParticleSystemConfigId);
+        return this;
+    }
+
+    public WeaponKind getWeaponKind() {
+        return weaponKind;
+    }
+
+    public void setWeaponKind(WeaponKind weaponKind) {
+        this.weaponKind = weaponKind;
+    }
+
+    public WeaponType weaponKind(WeaponKind weaponKind) {
+        setWeaponKind(weaponKind);
+        return this;
+    }
+
+    public @Nullable Integer getLightningDurationMs() {
+        return lightningDurationMs;
+    }
+
+    public void setLightningDurationMs(@Nullable Integer lightningDurationMs) {
+        this.lightningDurationMs = lightningDurationMs;
+    }
+
+    public WeaponType lightningDurationMs(Integer lightningDurationMs) {
+        setLightningDurationMs(lightningDurationMs);
         return this;
     }
 

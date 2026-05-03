@@ -45,6 +45,14 @@ export class BabylonModelService {
   private scene!: Scene;
   private gwtResolver?: () => void;
   public renderer!: BabylonRenderServiceAccessImpl;
+  // Hardware-instancing templates for static models (TerrainObjects). Each template is a
+  // single fully-set-up RenderObject hierarchy whose meshes serve as the source for
+  // Mesh.createInstance() calls — Babylon batches all instances of one source mesh into a
+  // single instanced draw call (main pass + shadow pass).
+  private staticTemplates: Map<number, TransformNode> = new Map();
+  private staticTemplateMeshes: Map<number, Mesh[]> = new Map();
+  private staticTemplatesParent: TransformNode | null = null;
+  private shadowsEnabledForStatics = true;
 
   constructor(private uiConfigCollectionService: UiConfigCollectionService,
               httpClient: HttpClient,
@@ -89,6 +97,132 @@ export class BabylonModelService {
         this.gwtResolver();
       }
     }
+  }
+
+  /**
+   * Instantiate a static model (TerrainObject) using hardware instancing.
+   * The first call for a given model3DId builds a hidden template via cloneModel3D and
+   * caches it; subsequent calls walk the template and emit InstancedMesh nodes that share
+   * geometry+material with the template — Babylon merges all instances of one source mesh
+   * into a single instanced draw call (main pass and shadow pass).
+   *
+   * Use this for visually static objects (no animations, no diplomacy color, no particles).
+   * Use cloneModel3D() for SyncItems where each instance needs its own material/animations.
+   */
+  instantiateStaticModel(model3DId: number, parent: Node | null): TransformNode {
+    model3DId = GwtHelper.gwtIssueNumber(model3DId);
+    let template = this.staticTemplates.get(model3DId);
+    if (!template) {
+      template = this.createStaticTemplate(model3DId);
+      this.staticTemplates.set(model3DId, template);
+    }
+    const sourceMeshSet = new Set(this.staticTemplateMeshes.get(model3DId) ?? []);
+    const root = this.cloneTemplateAsInstances(template, parent, sourceMeshSet);
+    root.name = `StaticInstance(${model3DId})`;
+    return root;
+  }
+
+  /** Toggle shadow casting for all static-model instances (drives F11 perf debug). */
+  setStaticModelsShadowCasting(enabled: boolean): void {
+    if (!this.renderer || !this.renderer.shadowGenerator) {
+      return;
+    }
+    this.shadowsEnabledForStatics = enabled;
+    const generator = this.renderer.shadowGenerator;
+    this.staticTemplateMeshes.forEach(meshes => {
+      meshes.forEach(source => {
+        if (enabled) {
+          generator.addShadowCaster(source, false);
+        } else {
+          generator.removeShadowCaster(source, false);
+        }
+        // mesh.instances is Babylon's built-in list of every InstancedMesh derived from this source
+        source.instances.forEach(inst => {
+          if (enabled) {
+            generator.addShadowCaster(inst, false);
+          } else {
+            generator.removeShadowCaster(inst, false);
+          }
+        });
+      });
+    });
+  }
+
+  getStaticTemplateCount(): number {
+    return this.staticTemplates.size;
+  }
+
+  private createStaticTemplate(model3DId: number): TransformNode {
+    if (!this.staticTemplatesParent) {
+      this.staticTemplatesParent = new TransformNode("StaticModelTemplates", this.scene);
+    }
+
+    const renderObject = this.cloneModel3D(model3DId, this.staticTemplatesParent);
+    const root = renderObject.getModel3D();
+    const sourceMeshes: Mesh[] = [];
+    root.getChildMeshes(false).forEach(mesh => {
+      if (mesh instanceof Mesh && (mesh as Mesh).getTotalVertices() > 0) {
+        const m = mesh as Mesh;
+        // The source mesh must stay isVisible=true and unculled so the ShadowGenerator
+        // submits the instanced draw call — Babylon skips invisible/culled meshes from
+        // the shadow pass, which would also drop all of its hardware instances. We snap
+        // the source's own scale to zero so its 0th render contributes no pixels (and no
+        // shadow), and stash the original local scaling on metadata so each placement
+        // InstancedMesh can read it back when copying transforms.
+        m.metadata = m.metadata || {};
+        m.metadata.staticTemplateOriginalScaling = m.scaling.clone();
+        m.scaling.setAll(0);
+        m.alwaysSelectAsActiveMesh = true;
+        sourceMeshes.push(m);
+      }
+    });
+    this.staticTemplateMeshes.set(model3DId, sourceMeshes);
+
+    if (this.shadowsEnabledForStatics && this.renderer && this.renderer.shadowGenerator) {
+      sourceMeshes.forEach(mesh => this.renderer.shadowGenerator.addShadowCaster(mesh, false));
+    }
+    return root;
+  }
+
+  private cloneTemplateAsInstances(source: Node, parent: Node | null, sourceMeshSet: Set<Mesh>): TransformNode {
+    let cloned: TransformNode;
+    let isInstancedSource = false;
+    // Only meshes captured as instance sources (i.e. originally visible, non-particle-marker)
+    // become InstancedMesh nodes. Everything else collapses to a plain TransformNode so the
+    // local hierarchy/transforms are preserved without dragging stray markers into the scene.
+    if (source instanceof Mesh && sourceMeshSet.has(source as Mesh)) {
+      const inst = (source as Mesh).createInstance(`${source.name}#inst`);
+      // Babylon doesn't auto-include hardware instances in the ShadowGenerator's
+      // renderList — each InstancedMesh must be registered explicitly. The renderer still
+      // batches them into a single instanced draw call per source mesh in the shadow pass.
+      if (this.shadowsEnabledForStatics) {
+        this.renderer?.shadowGenerator?.addShadowCaster(inst, false);
+      }
+      cloned = inst;
+      isInstancedSource = true;
+    } else {
+      cloned = new TransformNode(`${source.name}#inst`, this.scene);
+    }
+    cloned.setParent(parent);
+
+    const srcTN = source as TransformNode;
+    cloned.position.copyFrom(srcTN.position);
+    cloned.rotation.copyFrom(srcTN.rotation);
+    if (srcTN.rotationQuaternion) {
+      cloned.rotationQuaternion = srcTN.rotationQuaternion.clone();
+    }
+    // Source meshes have their scaling zeroed (so the source's 0th-instance render
+    // collapses to nothing) — read the original GLTF scaling from metadata instead.
+    if (isInstancedSource && (source as Mesh).metadata?.staticTemplateOriginalScaling) {
+      cloned.scaling.copyFrom((source as Mesh).metadata.staticTemplateOriginalScaling);
+    } else {
+      cloned.scaling.copyFrom(srcTN.scaling);
+    }
+
+    source.getChildren().forEach(child => {
+      this.cloneTemplateAsInstances(child, cloned, sourceMeshSet);
+    });
+    return cloned;
   }
 
   cloneModel3D(model3DId: number, parent: Node | null, diplomacy?: Diplomacy): RenderObject {

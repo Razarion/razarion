@@ -50,7 +50,11 @@ public class GuardingItemService {
             attackers = new ArrayList<>(guardingItems);
         }
         while (!attackers.isEmpty()) {
-            handleGuardingItemHasEnemiesInRange(attackers.remove(0));
+            SyncBaseItem item = attackers.remove(0);
+            if (item.getSyncWeapon() != null) {
+                item.getSyncWeapon().tickReload();
+            }
+            handleGuardingItemHasEnemiesInRange(item);
         }
     }
 
