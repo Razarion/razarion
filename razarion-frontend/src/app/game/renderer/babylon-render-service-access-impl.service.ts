@@ -97,7 +97,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private camera!: FreeCamera;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
-  public readonly itemMarkerMaterialCache: Map<Diplomacy, NodeMaterial> = new Map<Diplomacy, NodeMaterial>();
   public baseItemContainer!: TransformNode;
   public resourceItemContainer!: TransformNode;
   public boxItemContainer!: TransformNode;

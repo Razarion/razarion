@@ -21,6 +21,7 @@ import {UserComponent} from '../../../auth/user/user.component';
 import {RegisterComponent} from '../../../auth/register/register.component';
 import {CockpitDisplayService} from '../cockpit-display.service';
 import {SetNameComponent} from '../../../auth/set-name/set-name.component';
+import {SelectionShortcutCategory, SelectionShortcutsService} from '../../selection-shortcuts.service';
 
 
 @Component({
@@ -61,13 +62,24 @@ export class MainCockpitComponent implements MainCockpit {
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
   blinkUnlockEnabled = false;
+  shortcutCategories: { id: SelectionShortcutCategory, icon: string, tooltip: string }[] = [
+    {id: 'builder', icon: 'pi pi-wrench', tooltip: 'Next builder'},
+    {id: 'factory', icon: 'pi pi-cog', tooltip: 'Next factory'},
+    {id: 'harvester', icon: 'pi pi-truck', tooltip: 'Next harvester'},
+    {id: 'viper', icon: 'pi pi-bolt', tooltip: 'Next viper'},
+  ];
 
   constructor(public mainCockpitService: CockpitDisplayService,
               private zone: NgZone,
               private cockpitDisplayService: CockpitDisplayService,
               private gameComponent: GameComponent,
               private renderService: BabylonRenderServiceAccessImpl,
-              public userService: UserService) {
+              public userService: UserService,
+              public selectionShortcuts: SelectionShortcutsService) {
+  }
+
+  shortcutBadge(category: SelectionShortcutCategory): string {
+    return this.selectionShortcuts.getCount(category).toString();
   }
 
   show(): void {

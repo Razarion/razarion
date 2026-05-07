@@ -1,4 +1,4 @@
-import {AbstractActionManager, AbstractMesh, AnimationGroup, Node, ParticleSystemSet, TransformNode, Vector3} from '@babylonjs/core';
+import {AbstractActionManager, AbstractMesh, AnimationGroup, Node, Observable, ParticleSystemSet, TransformNode, Vector3} from '@babylonjs/core';
 import {BabylonRenderServiceAccessImpl, RazarionMetadata} from './babylon-render-service-access-impl.service';
 import type {Nullable} from '@babylonjs/core/types';
 import {ParticleSystemEntity} from '../../generated/razarion-share';
@@ -24,6 +24,7 @@ export class RenderObject {
   private muzzleFlashEmitterMesh: Nullable<AbstractMesh> = null;
   private muzzleMesh: Nullable<AbstractMesh> = null;
   private turretMesh: Nullable<AbstractMesh> = null;
+  public readonly onBuildAnimationActiveChanged = new Observable<boolean>();
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl) {
   }
@@ -99,6 +100,7 @@ export class RenderObject {
       return;
     }
     this.buildAnimationActive = active;
+    this.onBuildAnimationActiveChanged.notifyObservers(active);
     if (active) {
       this.stopAllPhasedGroups();
       if (this.introAnimationGroups.length > 0) {

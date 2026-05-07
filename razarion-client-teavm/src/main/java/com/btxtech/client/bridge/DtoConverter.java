@@ -398,6 +398,15 @@ public class DtoConverter {
         return obj;
     }
 
+    public static JSObject convertBaseItemTypes(java.util.Collection<BaseItemType> types) {
+        if (types == null) return null;
+        JsArray<JSObject> arr = JsArray.create();
+        for (BaseItemType type : types) {
+            arr.push(convertBaseItemType(type));
+        }
+        return arr;
+    }
+
     public static JSObject convertBaseItemType(BaseItemType type) {
         if (type == null) return null;
         JsObject obj = JsObject.create();
@@ -734,6 +743,8 @@ public class DtoConverter {
     public static JSObject convertNativeSyncBaseItemTickInfo(NativeSyncBaseItemTickInfo info) {
         if (info == null) return null;
         JsObject obj = JsObject.create();
+        obj.set("id", info.id);
+        obj.set("itemTypeId", info.itemTypeId);
         obj.set("x", info.x);
         obj.set("y", info.y);
         obj.set("baseId", info.baseId);

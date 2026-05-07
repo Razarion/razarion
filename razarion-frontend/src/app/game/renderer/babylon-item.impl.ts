@@ -1,15 +1,17 @@
 import {
   ActionManager,
   Animation,
+  Color3,
   ExecuteCodeAction,
-  InputBlock,
   Mesh,
   MeshBuilder,
   NodeMaterial,
+  Nullable,
   Tools,
   TransformNode,
   Vector3
 } from "@babylonjs/core";
+import {Observer} from "@babylonjs/core/Misc/observable";
 import {
   BabylonItem,
   BaseItemType,
@@ -21,7 +23,6 @@ import {
   TerrainType,
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
-import {SimpleMaterial} from "@babylonjs/materials";
 import {BabylonModelService} from "./babylon-model.service";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {ActionService, SelectionInfo} from "../action.service";
@@ -35,12 +36,14 @@ import {Image} from '@babylonjs/gui/2D/controls/image';
 import {GwtHelper} from '../../gwtangular/GwtHelper';
 
 export class BabylonItemImpl implements BabylonItem {
-  static readonly SELECT_ALPHA: number = 0.3;
-  static readonly HOVER_ALPHA: number = 0.6;
+  private static readonly HIGHLIGHT_HOVER_INTENSITY = 0.45;
+  private static readonly OUTLINE_WIDTH = 0.06;
   private readonly renderObject: RenderObject;
   private position: Vertex | null = null;
   private angle: number = 0;
-  private diplomacyMarkerDisc: Mesh | null = null;
+  private highlightedMeshes: Mesh[] = [];
+  private highlightActive: 'select' | 'hover' | null = null;
+  private buildStateObserver: Nullable<Observer<boolean>> = null;
   private visualizationMarkerDisc: Mesh | null = null;
   private selectActive: boolean = false;
   private hoverActive: boolean = false;
@@ -124,6 +127,9 @@ export class BabylonItemImpl implements BabylonItem {
     }
     actionService.addCursorHandler(this.itemCursorTypeHandler);
     this.renderObject.setActionManager(actionManager);
+    this.buildStateObserver = this.renderObject.onBuildAnimationActiveChanged.add(() => {
+      this.updateHighlight();
+    });
   }
 
   getId(): number {
@@ -168,6 +174,11 @@ export class BabylonItemImpl implements BabylonItem {
       this.disposeCallback(permanent);
     }
     this.actionService.removeCursorHandler(this.itemCursorTypeHandler);
+    if (this.buildStateObserver) {
+      this.renderObject.onBuildAnimationActiveChanged.remove(this.buildStateObserver);
+      this.buildStateObserver = null;
+    }
+    this.removeHighlight();
     this.renderObject.removeAllShadowCasters(this.rendererService)
     this.rendererService.getScene().removeTransformNode(this.renderObject.getModel3D());
     this.renderObject.dispose();
@@ -251,7 +262,7 @@ export class BabylonItemImpl implements BabylonItem {
 
   select(active: boolean): void {
     this.selectActive = active;
-    this.updateMarkedDisk();
+    this.updateHighlight();
     if (this.selectionCallback) {
       this.selectionCallback(active);
     }
@@ -259,7 +270,7 @@ export class BabylonItemImpl implements BabylonItem {
 
   hover(active: boolean): void {
     this.hoverActive = active;
-    this.updateMarkedDisk();
+    this.updateHighlight();
   }
 
   mark(markerConfig: MarkerConfig | null): void {
@@ -373,42 +384,54 @@ export class BabylonItemImpl implements BabylonItem {
     this.itemCursorTypeHandler(this.actionService.setupSelectionInfo());
   }
 
-  private updateMarkedDisk(): void {
-    if (this.isSelectOrHove()) {
-      if (!this.diplomacyMarkerDisc) {
-        this.diplomacyMarkerDisc = MeshBuilder.CreatePlane("Item Selection", {
-          size: (this.getRadius() * 2) + 0.3,
-        });
-        let nodeMaterial = this.rendererService.itemMarkerMaterialCache.get(this.diplomacy);
-        if (!nodeMaterial) {
-          nodeMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(this.uiConfigCollectionService.getSelectionItemMaterialId());
-          nodeMaterial = nodeMaterial.clone(`${nodeMaterial.name}  ${this.diplomacy}`);
-          nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
-          let diplomacyColor = <InputBlock>nodeMaterial.getBlockByName("diplomacyColor");
-          if (diplomacyColor) {
-            diplomacyColor.value = BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy);
-          } else {
-            console.warn(`'diplomacyColor' block not found in NodeMaterial ${this.uiConfigCollectionService.getSelectionItemMaterialId()}`)
-          }
-          this.rendererService.itemMarkerMaterialCache.set(this.diplomacy, nodeMaterial);
-        }
-        this.diplomacyMarkerDisc.material = nodeMaterial;
-        this.diplomacyMarkerDisc.position.y = 0.2;
-        this.diplomacyMarkerDisc.rotation.x = Tools.ToRadians(90);
-        this.diplomacyMarkerDisc.parent = this.renderObject.getModel3D();
-      }
-    } else {
-      if (this.diplomacyMarkerDisc) {
-        this.diplomacyMarkerDisc.dispose();
-        this.diplomacyMarkerDisc = null;
-      }
+  private updateHighlight(): void {
+    // Suppress while a build animation is running — even with renderOutline, partial mesh
+    // visibility during the intro/outro can produce visually noisy outlines on the moving parts.
+    const buildActive = this.renderObject.isBuildAnimationActive();
+    const desired: 'select' | 'hover' | null = buildActive ? null
+      : (this.selectActive ? 'select' : (this.hoverActive ? 'hover' : null));
+    if (desired === this.highlightActive) {
+      return;
     }
+    this.removeHighlight();
+    if (!desired) {
+      return;
+    }
+    const baseColor = BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy);
+    const color: Color3 = desired === 'select'
+      ? baseColor
+      : baseColor.scale(BabylonItemImpl.HIGHLIGHT_HOVER_INTENSITY);
+    const root = this.renderObject.getModel3D();
+    if (root instanceof Mesh) {
+      this.applyOutline(root, color);
+    }
+    root.getChildMeshes(false).forEach(mesh => {
+      if (mesh instanceof Mesh) {
+        this.applyOutline(mesh, color);
+      }
+    });
+    this.highlightActive = desired;
+  }
 
-    if (this.selectActive) {
-      (<SimpleMaterial>this.diplomacyMarkerDisc!.material).alpha = BabylonItemImpl.HOVER_ALPHA;
-    } else if (this.hoverActive) {
-      (<SimpleMaterial>this.diplomacyMarkerDisc!.material).alpha = BabylonItemImpl.SELECT_ALPHA;
+  private applyOutline(mesh: Mesh, color: Color3): void {
+    mesh.renderOutline = true;
+    mesh.outlineColor = color;
+    mesh.outlineWidth = BabylonItemImpl.OUTLINE_WIDTH;
+    this.highlightedMeshes.push(mesh);
+  }
+
+  private removeHighlight(): void {
+    if (this.highlightedMeshes.length === 0) {
+      this.highlightActive = null;
+      return;
     }
+    this.highlightedMeshes.forEach(mesh => {
+      if (!mesh.isDisposed()) {
+        mesh.renderOutline = false;
+      }
+    });
+    this.highlightedMeshes = [];
+    this.highlightActive = null;
   }
 
   private getRadius(): number {

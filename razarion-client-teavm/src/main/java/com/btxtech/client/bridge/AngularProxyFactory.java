@@ -223,6 +223,8 @@ public class AngularProxyFactory {
                 DtoConverter.convertResourceItemType(service.getResourceItemType(id)));
         setMethodIntObj(proxy, "getBaseItemTypeAngular", id ->
                 DtoConverter.convertBaseItemType(service.getBaseItemType(id)));
+        setMethodRetObj(proxy, "getAllBaseItemTypes", () ->
+                DtoConverter.convertBaseItemTypes(service.getBaseItemTypes()));
         return proxy;
     }
 
@@ -264,6 +266,10 @@ public class AngularProxyFactory {
 
         // getMyItemCount(itemTypeId): number
         setMethodIntObj(proxy, "getMyItemCount", id -> DtoConverter.toJsInt(service.getMyItemCount(id)));
+
+        // getMyOwnSyncItemTickInfos(): NativeSyncBaseItemTickInfo[]
+        setMethodRetObj(proxy, "getMyOwnSyncItemTickInfos", () ->
+                DtoConverter.convertNativeSyncBaseItemTickInfos(service.getMyOwnSyncItemTickInfos()));
 
         // getResources(): number
         setMethodRetObj(proxy, "getResources", () -> DtoConverter.toJsInt(service.getResources()));

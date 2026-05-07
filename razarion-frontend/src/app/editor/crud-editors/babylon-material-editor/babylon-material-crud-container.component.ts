@@ -52,7 +52,9 @@ import {Divider} from 'primeng/divider';
         </p-table>
       }
     </div>
-    <p-menubar class="mb-0" [model]="items"></p-menubar>
+    <div style="position: relative; z-index: 1000;">
+      <p-menubar class="mb-0" [model]="items"></p-menubar>
+    </div>
     <ng-template #configContainer></ng-template>
   `
 })

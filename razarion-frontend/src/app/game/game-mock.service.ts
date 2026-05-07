@@ -854,6 +854,10 @@ export class GameMockService {
           }
         }
       }
+
+      getAllBaseItemTypes(): BaseItemType[] {
+        return [];
+      }
     }
   }
 
@@ -899,10 +903,17 @@ export class GameMockService {
     getVisibleNativeSyncBaseItemTickInfos(bottomLeft: DecimalPosition, topRight: DecimalPosition): NativeSyncBaseItemTickInfo[] {
       return [
         {
+          id: 1,
+          itemTypeId: 1,
           x: 50,
-          y: 60
+          y: 60,
+          baseId: 1
         }
       ];
+    }
+
+    getMyOwnSyncItemTickInfos(): NativeSyncBaseItemTickInfo[] {
+      return [];
     }
 
     diplomacy4SyncBaseItem(nativeSyncBaseItemTickInfo: NativeSyncBaseItemTickInfo): Diplomacy {

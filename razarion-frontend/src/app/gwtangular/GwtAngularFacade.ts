@@ -200,6 +200,8 @@ export interface ItemTypeService {
   getResourceItemTypeAngular(resourceItemTypeId: number): ResourceItemType;
 
   getBaseItemTypeAngular(baseItemTypeId: number): BaseItemType;
+
+  getAllBaseItemTypes(): BaseItemType[];
 }
 
 export interface TerrainTypeService {
@@ -227,6 +229,12 @@ export interface BaseItemUiService {
 
   getMyItemCount(itemTypeId: number): number;
 
+  /**
+   * Returns id+itemTypeId+position for ALL of the player's own units (not just visible ones).
+   * Used by the cockpit selection-cycle shortcuts to navigate the camera to off-screen units.
+   */
+  getMyOwnSyncItemTickInfos(): NativeSyncBaseItemTickInfo[];
+
   getResources(): number;
 
   getUsedHouseSpace(): number;
@@ -235,8 +243,11 @@ export interface BaseItemUiService {
 }
 
 export interface NativeSyncBaseItemTickInfo {
+  id: number;
+  itemTypeId: number;
   x: number;
   y: number;
+  baseId: number;
 }
 
 export interface PlayerBaseDto {

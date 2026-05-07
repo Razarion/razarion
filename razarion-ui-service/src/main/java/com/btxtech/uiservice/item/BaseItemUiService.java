@@ -494,6 +494,17 @@ public class BaseItemUiService {
         return count;
     }
 
+    @SuppressWarnings("unused") // Called by Angular for the selection-cycle cockpit shortcuts
+    public NativeSyncBaseItemTickInfo[] getMyOwnSyncItemTickInfos() {
+        List<NativeSyncBaseItemTickInfo> result = new ArrayList<>();
+        for (NativeSyncBaseItemTickInfo info : nativeSyncBaseItemTickInfos) {
+            if (isMyOwnProperty(info)) {
+                result.add(info);
+            }
+        }
+        return result.toArray(new NativeSyncBaseItemTickInfo[0]);
+    }
+
     private NativeSyncBaseItemTickInfo findMyEnemyItemWithPlace(PlaceConfig placeConfig) {
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
             if (nativeSyncBaseItemTickInfo.contained) {

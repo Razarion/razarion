@@ -1,17 +1,15 @@
-import {MeshBuilder, Nullable, PointerEventTypes, Scene, Vector2, Vector3} from "@babylonjs/core";
-import {LinesMesh} from "@babylonjs/core/Meshes/linesMesh";
+import {Nullable, PointerEventTypes, Scene, Vector2, Vector3} from "@babylonjs/core";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {ActionService} from "../action.service";
 import {Observer} from '@babylonjs/core/Misc/observable';
 import type {PointerInfo} from '@babylonjs/core/Events/pointerEvents';
 
 export class SelectionFrame {
-  private readonly MIN_DISTANCE = 0.5;
+  private static readonly MIN_DISTANCE = 0.5;
   private mousePos0: Vector2 | undefined;
-  private mousePos1: Vector2 | undefined;
-  private lines: LinesMesh | undefined;
   private startTerrainPosition: Nullable<Vector3> = null;
   private observer: Observer<PointerInfo> | null = null;
+  private overlay: HTMLDivElement | null = null;
 
   constructor(private scene: Scene,
               private renderService: BabylonRenderServiceAccessImpl,
@@ -29,7 +27,7 @@ export class SelectionFrame {
           if (renderService.baseItemPlacerActive) {
             return;
           }
-          this.onPointerUp(this.scene.pointerX, this.scene.pointerY);
+          this.onPointerUp();
           break;
         }
         case PointerEventTypes.POINTERMOVE: {
@@ -52,81 +50,94 @@ export class SelectionFrame {
     if (!this.mousePos0) {
       return;
     }
-
-    if (!this.lines) {
-      this.lines = this.setupLines();
-    }
-
-    this.mousePos1 = new Vector2(x, y);
-    let rayBL = this.scene.createPickingRay(this.mousePos0.x, this.mousePos0.y, null, null)
-    let rayBR = this.scene.createPickingRay(this.mousePos1.x, this.mousePos0.y, null, null)
-    let rayTL = this.scene.createPickingRay(this.mousePos0.x, this.mousePos1.y, null, null)
-
-    let bl = rayBL.origin.add(rayBL.direction);
-    let br = rayBR.origin.add(rayBR.direction);
-    let tl = rayTL.origin.add(rayTL.direction);
-
-    this.lines.position.copyFrom(bl);
-    this.lines.scaling.x = Vector3.Distance(bl, br);
-    this.lines.scaling.y = -Vector3.Distance(bl, tl);
-
-    this.lines.lookAt(br, -Math.PI * 0.5);
-
-    if (this.mousePos1.y < this.mousePos0.y) {
-      this.lines.scaling.y *= -1;
-    }
+    this.updateOverlay(x, y);
   }
 
-  private onPointerUp(x: number, y: number) {
-    if (this.lines) {
-      this.lines.dispose();
-      this.lines = undefined;
-    }
+  private onPointerUp() {
+    this.hideOverlay();
+    const start = this.startTerrainPosition;
     this.mousePos0 = undefined;
+    this.startTerrainPosition = null;
 
-    if (!this.startTerrainPosition) {
-      console.warn("No startTerrainPosition in SelectionFrame")
+    if (!start) {
+      console.warn("No startTerrainPosition in SelectionFrame");
       return;
     }
     let pickingInfo = this.renderService.setupTerrainPickPoint();
     if (!pickingInfo.hit) {
-      console.warn("No pickingInfo in SelectionFrame")
+      console.warn("No pickingInfo in SelectionFrame");
       return;
     }
-    let endTerrainPosition = pickingInfo.pickedPoint!;
+    const end = pickingInfo.pickedPoint!;
 
-    if (Math.abs(this.startTerrainPosition.x - endTerrainPosition.x) < this.MIN_DISTANCE &&
-      Math.abs(this.startTerrainPosition.z - endTerrainPosition.z) < this.MIN_DISTANCE) {
+    if (Math.abs(start.x - end.x) < SelectionFrame.MIN_DISTANCE &&
+      Math.abs(start.z - end.z) < SelectionFrame.MIN_DISTANCE) {
       return;
     }
 
     this.actionService.selectRectangle(
-      Math.min(this.startTerrainPosition.x, endTerrainPosition.x),
-      Math.min(this.startTerrainPosition.z, endTerrainPosition.z),
-      Math.abs(this.startTerrainPosition.x - endTerrainPosition.x),
-      Math.abs(this.startTerrainPosition.z - endTerrainPosition.z),
+      Math.min(start.x, end.x),
+      Math.min(start.z, end.z),
+      Math.abs(start.x - end.x),
+      Math.abs(start.z - end.z),
     );
   }
 
-  private setupLines() {
-    let lines = MeshBuilder.CreateLines("Selection Frame",
-      {
-        points: [
-          new Vector3(0, 0, 0),
-          new Vector3(1, 0, 0),
-          new Vector3(1, 1, 0),
-          new Vector3(0, 1, 0),
-          new Vector3(0, 0, 0)
-        ]
-      }, this.scene);
-    lines.billboardMode = 7;
-    return lines;
+  private updateOverlay(x: number, y: number) {
+    if (!this.mousePos0) {
+      return;
+    }
+    const canvas = this.scene.getEngine().getRenderingCanvas();
+    if (!canvas) {
+      return;
+    }
+    const overlay = this.ensureOverlay();
+    const rect = canvas.getBoundingClientRect();
+    const left = rect.left + Math.min(this.mousePos0.x, x);
+    const top = rect.top + Math.min(this.mousePos0.y, y);
+    const width = Math.abs(x - this.mousePos0.x);
+    const height = Math.abs(y - this.mousePos0.y);
+    overlay.style.display = "block";
+    overlay.style.left = `${left}px`;
+    overlay.style.top = `${top}px`;
+    overlay.style.width = `${width}px`;
+    overlay.style.height = `${height}px`;
+  }
+
+  private hideOverlay() {
+    if (this.overlay) {
+      this.overlay.style.display = "none";
+    }
+  }
+
+  private ensureOverlay(): HTMLDivElement {
+    if (this.overlay) {
+      return this.overlay;
+    }
+    const div = document.createElement("div");
+    div.className = "razarion-selection-frame";
+    div.style.position = "fixed";
+    div.style.pointerEvents = "none";
+    // box-sizing so the border doesn't push the rectangle outward as the user drags.
+    div.style.boxSizing = "border-box";
+    div.style.border = "2px solid rgb(0, 255, 0)";
+    div.style.backgroundColor = "rgba(0, 255, 0, 0.1)";
+    div.style.boxShadow = "0 0 6px rgba(0, 255, 0, 0.4)";
+    div.style.display = "none";
+    div.style.zIndex = "100";
+    document.body.appendChild(div);
+    this.overlay = div;
+    return this.overlay;
   }
 
   disable() {
     if (this.observer) {
       this.observer.remove();
       this.observer = null;
+    }
+    if (this.overlay) {
+      this.overlay.remove();
+      this.overlay = null;
     }
   }
 }
