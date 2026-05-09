@@ -6,7 +6,7 @@ import {
   BotEnragementStateConfig,
   BotItemConfig,
   DecimalPosition,
-  ServerGameEngineConfigEntity
+  ServerGameEngineConfig
 } from "../../generated/razarion-share";
 import {BabylonTerrainTileImpl} from '../../game/renderer/babylon-terrain-tile.impl';
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
@@ -43,7 +43,7 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
   templateUrl: './server-bot-editor.component.html'
 })
 export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnDestroy {
-  serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
+  serverGameEngineConfigEntity!: ServerGameEngineConfig;
   selectedBot?: BotConfig;
   showGroundEditor = false;
   slopeModeGroundEditor = false;

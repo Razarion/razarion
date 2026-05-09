@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {EditorPanel} from '../editor-model';
-import {BoxRegionConfig, ServerGameEngineConfigEntity} from 'src/app/generated/razarion-share';
+import {BoxRegionConfig, ServerGameEngineConfig} from 'src/app/generated/razarion-share';
 import {EditorService} from '../editor-service';
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
 import {Button} from 'primeng/button';
@@ -29,7 +29,7 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
 })
 export class BoxRegionComponent extends EditorPanel implements OnInit {
   protected readonly EditorService = EditorService;
-  serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
+  serverGameEngineConfigEntity!: ServerGameEngineConfig;
   selectedBoxRegionConfig?: BoxRegionConfig;
 
   constructor(public editorService: EditorService, private messageService: MessageService) {

@@ -81,6 +81,8 @@ Players transition between phases by reaching a required level. The transition i
 
 ## 3. Phase 1: Noob Island
 
+> **Operational plan:** See [`phase-1-plan.md`](phase-1-plan.md) for detailed level/quest/bot configuration.
+
 ### 3.1 Concept
 
 A safe, isolated area where new players learn the game over **9 levels**. Bots are passive and won't attack unless provoked. Resources are abundant. Quests guide the player through all basic mechanics. The extended level range allows gradual introduction of units, buildings, and increasingly complex bot encounters — all within a safe environment.

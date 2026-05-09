@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ServerGameEngineConfigEntity, StartRegionConfig} from "../../generated/razarion-share";
+import {ServerGameEngineConfig, StartRegionConfig} from "../../generated/razarion-share";
 import {EditorService} from "../editor-service";
 import {EditorPanel} from "../editor-model";
 import {PlaceConfigComponent} from '../common/place-config/place-config.component';
@@ -30,7 +30,7 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
   templateUrl: './server-start-region.component.html'
 })
 export class ServerStartRegionComponent extends EditorPanel implements OnInit {
-  serverGameEngineConfigEntity!: ServerGameEngineConfigEntity;
+  serverGameEngineConfigEntity!: ServerGameEngineConfig;
   selectedStartRegion?: StartRegionConfig;
 
   constructor(private editorService: EditorService, private messageService: MessageService) {

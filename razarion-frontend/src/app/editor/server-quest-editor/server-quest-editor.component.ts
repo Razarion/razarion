@@ -4,7 +4,7 @@ import {EditorService} from "../editor-service";
 import {
   ConditionTrigger,
   QuestConfig,
-  ServerGameEngineConfigEntity,
+  ServerGameEngineConfig,
   ServerLevelQuestConfig
 } from "../../generated/razarion-share";
 import {QuestCockpitComponent} from 'src/app/game/cockpit/quest/quest-cockpit.component';
@@ -45,7 +45,7 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
   templateUrl: './server-quest-editor.component.html'
 })
 export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
-  serverGameEngineConfig!: ServerGameEngineConfigEntity;
+  serverGameEngineConfig!: ServerGameEngineConfig;
   options: { label: string, value: ServerLevelQuestConfig }[] = [];
   selectedLevelQuest?: ServerLevelQuestConfig;
 

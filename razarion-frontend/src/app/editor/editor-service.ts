@@ -18,7 +18,7 @@ import {
   PlanetConfig,
   PlanetMgmtControllerClient,
   ResourceRegionConfig,
-  ServerGameEngineConfigEntity,
+  ServerGameEngineConfig,
   ServerGameEngineEditorControllerClient,
   ServerLevelQuestConfig,
   StartRegionConfig
@@ -81,7 +81,7 @@ export class EditorService {
     });
   }
 
-  readServerGameEngineConfig(): Promise<ServerGameEngineConfigEntity> {
+  readServerGameEngineConfig(): Promise<ServerGameEngineConfig> {
     return new Promise((resolve) => {
       this.serverGameEngineEditorControllerClient.read(EditorService.SERVER_GAME_ENGINE_ID).then(serverGameEngineConfig => {
         resolve(serverGameEngineConfig);
