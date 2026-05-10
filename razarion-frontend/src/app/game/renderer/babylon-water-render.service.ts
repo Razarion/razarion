@@ -73,6 +73,7 @@ export class BabylonWaterRenderService {
     whitecaps.position.x = water.position.x;
     whitecaps.position.y = 0.02;
     whitecaps.position.z = water.position.z;
+    whitecaps.isPickable = false;
     container.getChildren().push(whitecaps);
 
     return water;

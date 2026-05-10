@@ -22,6 +22,7 @@ import {RegisterComponent} from '../../../auth/register/register.component';
 import {CockpitDisplayService} from '../cockpit-display.service';
 import {SetNameComponent} from '../../../auth/set-name/set-name.component';
 import {SelectionShortcutCategory, SelectionShortcutsService} from '../../selection-shortcuts.service';
+import {SettingsComponent} from '../settings/settings.component';
 
 
 @Component({
@@ -44,7 +45,8 @@ import {SelectionShortcutCategory, SelectionShortcutsService} from '../../select
     LoginComponent,
     UserComponent,
     RegisterComponent,
-    SetNameComponent
+    SetNameComponent,
+    SettingsComponent
   ],
   styleUrls: ['main-cockpit.component.scss']
 })

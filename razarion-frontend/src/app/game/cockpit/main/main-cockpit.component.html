@@ -38,6 +38,8 @@
     }
     <p-button icon="pi pi-info-circle" title="About" (onClick)="onInfo()">
     </p-button>
+    <p-button icon="pi pi-sliders-h" title="Settings" (onClick)="mainCockpitService.showSettingsDialog = true">
+    </p-button>
     <p-button icon="pi pi-briefcase" title="Inventory" (onClick)="onInventory()">
     </p-button>
     <p-button icon="pi pi-lock-open" title="Unlock" (onClick)="onUnlock()"
@@ -116,5 +118,11 @@
 <p-dialog header="Set name" [(visible)]="mainCockpitService.showSetUserNameDialog">
   @if (mainCockpitService.showSetUserNameDialog) {
     <set-name></set-name>
+  }
+</p-dialog>
+
+<p-dialog header="Settings" [(visible)]="mainCockpitService.showSettingsDialog">
+  @if (mainCockpitService.showSettingsDialog) {
+    <settings></settings>
   }
 </p-dialog>

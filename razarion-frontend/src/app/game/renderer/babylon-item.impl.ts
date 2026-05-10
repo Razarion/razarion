@@ -1,8 +1,11 @@
 import {
+  AbstractMesh,
   ActionManager,
   Animation,
   Color3,
   ExecuteCodeAction,
+  LinesMesh,
+  Matrix,
   Mesh,
   MeshBuilder,
   NodeMaterial,
@@ -36,12 +39,16 @@ import {Image} from '@babylonjs/gui/2D/controls/image';
 import {GwtHelper} from '../../gwtangular/GwtHelper';
 
 export class BabylonItemImpl implements BabylonItem {
-  private static readonly HIGHLIGHT_HOVER_INTENSITY = 0.45;
-  private static readonly OUTLINE_WIDTH = 0.06;
+  private static readonly HIGHLIGHT_HOVER_INTENSITY = 0.55;
+  // Bracket arm length is a fraction of the AABB's smallest extent (clamped) so brackets stay
+  // visually balanced across tiny boxes and large buildings.
+  private static readonly BRACKET_ARM_FRACTION = 0.22;
+  private static readonly BRACKET_ARM_MIN = 0.35;
+  private static readonly BRACKET_ARM_MAX = 1.5;
   private readonly renderObject: RenderObject;
   private position: Vertex | null = null;
   private angle: number = 0;
-  private highlightedMeshes: Mesh[] = [];
+  private bracketMesh: LinesMesh | null = null;
   private highlightActive: 'select' | 'hover' | null = null;
   private buildStateObserver: Nullable<Observer<boolean>> = null;
   private visualizationMarkerDisc: Mesh | null = null;
@@ -72,7 +79,12 @@ export class BabylonItemImpl implements BabylonItem {
     }
     this.renderObject.setParent(parent);
     this.renderObject.setName(`${itemType.getInternalName()} '${id}')`);
-    this.renderObject.addAllShadowCasters(rendererService);
+    // Water units (ships, water buildings) skip shadow casting — the only
+    // surface the shadow could land on is the underwater seabed, where it
+    // looks unnatural and hides the bow-wave foam halo overlay.
+    if (!this.isWaterUnit()) {
+      this.renderObject.addAllShadowCasters(rendererService);
+    }
 
     let actionManager = new ActionManager(rendererService.getScene());
     actionManager.registerAction(
@@ -221,7 +233,7 @@ export class BabylonItemImpl implements BabylonItem {
     this.position = position;
   }
 
-  private isWaterUnit(): boolean {
+  protected isWaterUnit(): boolean {
     if ((<BaseItemType>this.itemType).getPhysicalAreaConfig !== undefined) {
       const terrainType = (<BaseItemType>this.itemType).getPhysicalAreaConfig().getTerrainType();
       return GwtHelper.gwtIssueStringEnum(terrainType, TerrainType) === TerrainType.WATER;
@@ -385,8 +397,8 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   private updateHighlight(): void {
-    // Suppress while a build animation is running — even with renderOutline, partial mesh
-    // visibility during the intro/outro can produce visually noisy outlines on the moving parts.
+    // Suppress while a build animation is running — partial mesh visibility during the
+    // intro/outro phase produces a wrong AABB and visually noisy bracket positions.
     const buildActive = this.renderObject.isBuildAnimationActive();
     const desired: 'select' | 'hover' | null = buildActive ? null
       : (this.selectActive ? 'select' : (this.hoverActive ? 'hover' : null));
@@ -401,36 +413,95 @@ export class BabylonItemImpl implements BabylonItem {
     const color: Color3 = desired === 'select'
       ? baseColor
       : baseColor.scale(BabylonItemImpl.HIGHLIGHT_HOVER_INTENSITY);
-    const root = this.renderObject.getModel3D();
-    if (root instanceof Mesh) {
-      this.applyOutline(root, color);
-    }
-    root.getChildMeshes(false).forEach(mesh => {
-      if (mesh instanceof Mesh) {
-        this.applyOutline(mesh, color);
-      }
-    });
+    this.createBrackets(color);
     this.highlightActive = desired;
   }
 
-  private applyOutline(mesh: Mesh, color: Color3): void {
-    mesh.renderOutline = true;
-    mesh.outlineColor = color;
-    mesh.outlineWidth = BabylonItemImpl.OUTLINE_WIDTH;
-    this.highlightedMeshes.push(mesh);
+  private createBrackets(color: Color3): void {
+    const root = this.renderObject.getModel3D();
+    const aabb = this.computeLocalAABB(root);
+    if (!aabb) {
+      return;
+    }
+    const {min, max} = aabb;
+    const sizeX = max.x - min.x;
+    const sizeY = max.y - min.y;
+    const sizeZ = max.z - min.z;
+    if (sizeX <= 0 || sizeY <= 0 || sizeZ <= 0) {
+      return;
+    }
+    const minDim = Math.min(sizeX, sizeY, sizeZ);
+    const arm = Math.max(BabylonItemImpl.BRACKET_ARM_MIN,
+      Math.min(BabylonItemImpl.BRACKET_ARM_MAX, minDim * BabylonItemImpl.BRACKET_ARM_FRACTION));
+
+    const lines: Vector3[][] = [];
+    for (let i = 0; i < 8; i++) {
+      const cx = (i & 1) ? max.x : min.x;
+      const cy = (i & 2) ? max.y : min.y;
+      const cz = (i & 4) ? max.z : min.z;
+      // Each arm grows from the corner toward the inside of the box.
+      const sx = (i & 1) ? -1 : 1;
+      const sy = (i & 2) ? -1 : 1;
+      const sz = (i & 4) ? -1 : 1;
+      const corner = new Vector3(cx, cy, cz);
+      lines.push([corner, new Vector3(cx + sx * arm, cy, cz)]);
+      lines.push([corner, new Vector3(cx, cy + sy * arm, cz)]);
+      lines.push([corner, new Vector3(cx, cy, cz + sz * arm)]);
+    }
+    const brackets = MeshBuilder.CreateLineSystem(`Selection brackets '${this.id}'`,
+      {lines, updatable: false}, this.rendererService.getScene());
+    brackets.color = color;
+    brackets.isPickable = false;
+    brackets.parent = root;
+    // Render after the regular scene so brackets stay visible against the unit and terrain bumps.
+    brackets.renderingGroupId = 1;
+    this.bracketMesh = brackets;
+  }
+
+  // Local-space AABB of the model hierarchy: for each descendant mesh, take its local bounding
+  // box corners, transform them into root-local space, and accumulate min/max. Walking corners
+  // (rather than relying on world-space vectorsWorld) keeps the box tight regardless of any
+  // sub-node rotations.
+  private computeLocalAABB(root: TransformNode): { min: Vector3, max: Vector3 } | null {
+    root.computeWorldMatrix(true);
+    const rootInverse = Matrix.Invert(root.getWorldMatrix());
+    let minX = Infinity, minY = Infinity, minZ = Infinity;
+    let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+    let any = false;
+    const meshes: AbstractMesh[] = [];
+    if (root instanceof AbstractMesh) {
+      meshes.push(root);
+    }
+    root.getChildMeshes(false).forEach(m => meshes.push(m));
+    meshes.forEach(mesh => {
+      if (!(mesh instanceof Mesh) || mesh.getTotalVertices() === 0) {
+        return;
+      }
+      mesh.computeWorldMatrix(true);
+      const bb = mesh.getBoundingInfo().boundingBox;
+      const meshToRoot = mesh.getWorldMatrix().multiply(rootInverse);
+      for (let i = 0; i < 8; i++) {
+        const lx = (i & 1) ? bb.maximum.x : bb.minimum.x;
+        const ly = (i & 2) ? bb.maximum.y : bb.minimum.y;
+        const lz = (i & 4) ? bb.maximum.z : bb.minimum.z;
+        const corner = Vector3.TransformCoordinates(new Vector3(lx, ly, lz), meshToRoot);
+        if (corner.x < minX) minX = corner.x;
+        if (corner.y < minY) minY = corner.y;
+        if (corner.z < minZ) minZ = corner.z;
+        if (corner.x > maxX) maxX = corner.x;
+        if (corner.y > maxY) maxY = corner.y;
+        if (corner.z > maxZ) maxZ = corner.z;
+        any = true;
+      }
+    });
+    return any ? {min: new Vector3(minX, minY, minZ), max: new Vector3(maxX, maxY, maxZ)} : null;
   }
 
   private removeHighlight(): void {
-    if (this.highlightedMeshes.length === 0) {
-      this.highlightActive = null;
-      return;
+    if (this.bracketMesh) {
+      this.bracketMesh.dispose();
+      this.bracketMesh = null;
     }
-    this.highlightedMeshes.forEach(mesh => {
-      if (!mesh.isDisposed()) {
-        mesh.renderOutline = false;
-      }
-    });
-    this.highlightedMeshes = [];
     this.highlightActive = null;
   }
 

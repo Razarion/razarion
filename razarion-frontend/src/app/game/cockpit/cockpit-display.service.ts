@@ -20,6 +20,8 @@ export class CockpitDisplayService {
   showInfoDialog = false;
   infoDialogMode: InfoDialogMode = 'info';
 
+  showSettingsDialog = false;
+
   openInfoDialog(mode: InfoDialogMode = 'info'): void {
     this.infoDialogMode = mode;
     this.showInfoDialog = true;

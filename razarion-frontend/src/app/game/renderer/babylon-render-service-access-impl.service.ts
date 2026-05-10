@@ -63,6 +63,7 @@ import {ActionService} from "../action.service";
 import {SelectionService as TsSelectionService} from "../selection.service";
 import {BaseItemPlacerPresenterEvent, BaseItemPlacerPresenterImpl} from "./base-item-placer-presenter.impl";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {UiSettingsService} from "../ui-settings.service";
 import {BabylonAudioService} from "./babylon-audio.service";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
 import earcut from 'earcut';
@@ -135,7 +136,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
               private threeJsWaterRenderService: BabylonWaterRenderService,
               private actionService: ActionService,
               public babylonAudioService: BabylonAudioService,
-              private tsSelectionService: TsSelectionService) {
+              private tsSelectionService: TsSelectionService,
+              public uiSettingsService: UiSettingsService) {
     this.babylonModelService.renderer = this;
   }
 

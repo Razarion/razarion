@@ -38,6 +38,9 @@ import {BabylonImpact} from "./babylon-impact";
 import {BabylonWreckage} from "./babylon-wreckage";
 import {BabylonDamageEffect} from "./babylon-damage-effect";
 import {RenderObject} from "./render-object";
+import {ShipWakeRenderer} from "./ship-wake-renderer";
+import {BowWaveHalo} from "./bow-wave-halo";
+import {Subscription} from 'rxjs';
 
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   private static trailSmokeTextureCache: DynamicTexture | null = null;
@@ -77,6 +80,12 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   // preview slides to the actual spawn position instead of the static FactoryType offset.
   private factoryRallyPointGameX: number | null = null;
   private factoryRallyPointGameZ: number | null = null;
+  private wakeRenderer: ShipWakeRenderer | null = null;
+  // Bow-wave foam halo for non-movable water units (e.g. dockyards).
+  // Movable water units get their halo via ShipWakeRenderer instead. Created
+  // lazily on first setPosition so it doesn't briefly flash at world origin.
+  private bowHalo: BowWaveHalo | null = null;
+  private nameVisibilitySubscription: Subscription | null = null;
 
   constructor(id: number,
               private baseItemType: BaseItemType,
@@ -109,7 +118,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
     if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
       rendererService.addInterpolationListener(this);
+      if (this.isWaterUnit()) {
+        this.wakeRenderer = new ShipWakeRenderer(rendererService.getScene());
+      }
     }
+    // BowWaveHalo for non-movable water units is created lazily in setPosition.
 
     this.setupName(userName);
     this.preloadWeaponAndExplosionAudio();
@@ -230,6 +243,26 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     super.dispose();
   }
 
+  override setPosition(position: Vertex): void {
+    super.setPosition(position);
+    // Lazy bow-wave halo for non-movable water buildings (e.g. dockyards).
+    // Movable water units route their halo through ShipWakeRenderer instead.
+    if (
+      position &&
+      this.isWaterUnit() &&
+      !this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()
+    ) {
+      if (!this.bowHalo) {
+        const radius = this.baseItemType.getPhysicalAreaConfig().getRadius();
+        // Square halo slightly larger than the building footprint.
+        const size = radius * 2.4;
+        this.bowHalo = new BowWaveHalo(this.rendererService.getScene(), size, size);
+      }
+      const c = this.getContainer();
+      this.bowHalo.setPose(c.position.x, c.position.z, c.rotation.y);
+    }
+  }
+
   override removeFromView() {
     if (this.isExploding) {
       return;
@@ -242,6 +275,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
       this.rendererService.removeInterpolationListener(this);
     }
+    this.wakeRenderer?.dispose();
+    this.wakeRenderer = null;
+    this.bowHalo?.dispose();
+    this.bowHalo = null;
     this.buildupEffect?.cleanup();
     this.buildupEffect = null;
     this.harvestingBeamEffect?.dispose();
@@ -252,6 +289,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.disposeFactoryScanEffect();
     this.stopFactoryExitAnimation();
     this.disposeFactoryBuildPreview();
+    this.nameVisibilitySubscription?.unsubscribe();
+    this.nameVisibilitySubscription = null;
     if (this.nameBlock) {
       this.uiTexture.removeControl(this.nameBlock)
       this.nameBlock = null;
@@ -684,9 +723,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   onExplode(): void {
-    // Drop selection/hover/marker discs BEFORE the debris loop detaches and clones
-    // child meshes — otherwise diplomacyMarkerDisc (a Plane parented to the container)
-    // is treated as a regular child mesh, cloned 3x and tumbled with the wreckage.
+    // Drop selection brackets, hover, and the marker disc BEFORE the debris loop detaches
+    // and clones child meshes — otherwise these container-parented decorations get treated as
+    // regular child meshes, cloned 3x and tumbled with the wreckage.
     this.select(false);
     this.hover(false);
     this.mark(null);
@@ -949,6 +988,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       );
     }
 
+    if (this.wakeRenderer && this.position3D !== null) {
+      const c = this.getContainer();
+      this.wakeRenderer.update(date, c.position, c.rotation.y);
+    }
   }
 
 
@@ -1102,6 +1145,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.uiTexture.addControl(this.nameBlock);
     this.nameBlock.linkWithMesh(this.getContainer());
     this.nameBlock.linkOffsetY = -62 - this.baseItemType.getPhysicalAreaConfig().getRadius() * 2;
+    // Honour the user's "Show unit names" preference live.
+    this.nameVisibilitySubscription = this.rendererService.uiSettingsService.unitNamesVisible$
+      .subscribe(visible => {
+        if (this.nameBlock) {
+          this.nameBlock.isVisible = visible;
+        }
+      });
   }
 
   static interpolateAngleRadians(startAngle: number, endAngle: number, t: number): number {

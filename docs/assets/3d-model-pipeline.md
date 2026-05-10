@@ -110,6 +110,64 @@ Export your 3D model from Blender (or another tool) as a **GLB file** (binary gl
 
 The `RAZ_MUZZLE` mesh defines the origin point for builder beams and harvester beams. It is hidden at runtime. If no `RAZ_MUZZLE` mesh is present, the beam falls back to `RAZ_M_P_` (muzzle flash emitter) or the model's root position.
 
+### Step 1b: Compress the GLB (optional)
+
+Source GLBs from Blender are typically large (~30 MB for the full Razarion asset bundle). Compress them with `gltf-transform` before uploading. Three default optimizations must be **disabled** because they break Razarion-specific content:
+
+```bash
+npx -y -p @gltf-transform/cli@latest gltf-transform optimize \
+  razarion.glb razarion_post.glb \
+  --compress draco \
+  --texture-compress webp \
+  --texture-size 1024 \
+  --flatten false --join false --prune-attributes false
+```
+
+Typical result: **~30 MB → ~8 MB** (≈3.85×).
+
+**Why each disabled flag matters:**
+
+| Flag | Default | Razarion impact when default is kept |
+|------|---------|---------------------------------------|
+| `--flatten false` | `true` | Flattens scene graph, dropping the `RAZ_MUZZLE`, `RAZ_M_P_<id>`, `RAZ_P_<id>`, and `RAZ_TURRET_<name>` marker nodes. Beams, muzzle flashes, particle attachments, and turret animations stop working. |
+| `--join false` | `true` | Joins meshes to reduce draw calls; same destruction of marker-named nodes. Requires `--flatten`, but disable explicitly to be safe. |
+| `--prune-attributes false` | `true` | Removes vertex attributes the heuristic considers "unused". Razarion's diplomacy materials are assigned at **runtime** (see `gltf-helper.ts`), so the heuristic cannot see that `TEXCOORD_0` is needed and strips UVs from ~30 building primitives (`ArmoredCabin*`, `Base*`, `Beam*`, `Body*`, `Cabin*`, `Cannon*`, `Flanc*`, `Turret*`). Result: untextured buildings. |
+
+**Other defaults (kept):**
+
+- `--compress draco` — Draco geometry compression. The alternative `meshopt` is faster to decode but compresses less.
+- `--texture-compress webp` — WebP for albedo/normal/AO textures. KTX2 saves VRAM but bloats download size; AVIF is slower to decode.
+- `--texture-size 1024` — caps texture dimensions at 1024 px. Higher values (2048) double texture bytes with no visible quality gain in-game.
+
+**Tools that don't work:**
+
+- `gltf-pipeline` (Cesium's CLI) does Draco only — it cannot do WebP texture compression. Use `gltf-transform` for the full pipeline.
+
+**Verification:** After compression, confirm node count, RAZ_-marker count, and `TEXCOORD_0` coverage match the source. Quick Node.js check:
+
+```javascript
+const fs = require('fs');
+function readJson(p) {
+  const d = fs.readFileSync(p);
+  const jsonLen = d.readUInt32LE(12);
+  return JSON.parse(d.slice(20, 20 + jsonLen).toString('utf8'));
+}
+for (const p of ['razarion.glb', 'razarion_post.glb']) {
+  const j = readJson(p);
+  const raz = (j.nodes || []).filter(n => (n.name || '').startsWith('RAZ_'));
+  let total = 0, withUV = 0;
+  for (const m of j.meshes || [])
+    for (const prim of m.primitives || []) {
+      total++;
+      if (prim.attributes?.TEXCOORD_0 !== undefined) withUV++;
+    }
+  console.log(p, 'nodes:', j.nodes.length, 'RAZ_:', raz.length,
+              'prims:', total, 'withUV:', withUV);
+}
+```
+
+Both files must report identical `RAZ_:` and `withUV:` counts.
+
 ### Step 2: Upload via GLTF Editor
 
 1. Open the admin editor at `/editor`
