@@ -16,6 +16,9 @@ import {
 } from '@babylonjs/core';
 import {StudioSceneSummary} from '../../../../../src/app/generated/razarion-share';
 import {BabylonModelService} from '../../../../../src/app/game/renderer/babylon-model.service';
+import {BabylonImpact} from '../../../../../src/app/game/renderer/babylon-impact';
+import {BabylonLightning} from '../../../../../src/app/game/renderer/babylon-lightning';
+import {BabylonMuzzleFlash} from '../../../../../src/app/game/renderer/babylon-muzzle-flash';
 import {BabylonRenderServiceAccessImpl} from '../../../../../src/app/game/renderer/babylon-render-service-access-impl.service';
 import {RenderObject} from '../../../../../src/app/game/renderer/render-object';
 import {Diplomacy} from '../../../../../src/app/gwtangular/GwtAngularFacade';
@@ -207,6 +210,24 @@ export type GizmoTool = 'move' | 'rotate' | 'scale';
                   }
                 </select>
               </div>
+              <div class="prop-row">
+                <span class="prop-label">Attack target</span>
+                <select [ngModel]="it.attackTargetId ?? ''" (ngModelChange)="updateProp('attackTargetId', $event)">
+                  <option value="">— none —</option>
+                  @for (other of otherItems(it.id); track other.id) {
+                    <option [value]="other.id">{{ libraryLabel(other) }} #{{ other.id }}</option>
+                  }
+                </select>
+              </div>
+              @if (it.attackTargetId != null) {
+                <div class="prop-row">
+                  <button (click)="fireAttack(it.id)">Fire once</button>
+                  <label class="muted" style="display:flex;align-items:center;gap:4px;">
+                    <input type="checkbox" [checked]="isLooping(it.id)" (change)="toggleAttackLoop(it.id)">
+                    Loop
+                  </label>
+                </div>
+              }
               <div class="prop-row">
                 <button class="ghost" (click)="deleteSelected()">Delete item</button>
               </div>
@@ -526,6 +547,11 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   private readonly nodes = new Map<number, TransformNode>();
   private readonly renderObjects = new Map<number, RenderObject>();
   private nextItemId = 1;
+  /** Item ids whose attack VFX is auto-replayed on a timer. Volatile — never
+   *  persisted because a saved scene should always load idle. */
+  private readonly attackLoops = new Map<number, ReturnType<typeof setInterval>>();
+  /** Bump this to force template re-eval of isLooping(). */
+  private readonly loopTick = signal(0);
 
   async ngOnInit(): Promise<void> {
     if (!this.hasToken()) return;
@@ -599,6 +625,88 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     return lib?.internalName ?? `${it.kind}#${it.itemTypeId}`;
   }
 
+  /** All scene items excluding the given id (used by the attack-target dropdown). */
+  otherItems(excludeId: number): SceneItem[] {
+    return (this.content()?.items ?? []).filter(i => i.id !== excludeId);
+  }
+
+  // ===== Attack VFX =====
+
+  isLooping(id: number): boolean {
+    // Read loopTick so isLooping() re-evaluates when toggleAttackLoop runs.
+    this.loopTick();
+    return this.attackLoops.has(id);
+  }
+
+  toggleAttackLoop(id: number): void {
+    if (this.attackLoops.has(id)) {
+      this.stopAttackLoop(id);
+    } else {
+      // ~600ms keeps a couple lightning bolts alive at once and gives the user
+      // a wide window for screenshotting; cheap enough not to hurt the loop.
+      const handle = setInterval(() => this.fireAttack(id), 600);
+      this.attackLoops.set(id, handle);
+      this.fireAttack(id); // fire immediately so the user gets visual feedback
+    }
+    this.loopTick.update(n => n + 1);
+  }
+
+  private stopAttackLoop(id: number): void {
+    const h = this.attackLoops.get(id);
+    if (h != null) {
+      clearInterval(h);
+      this.attackLoops.delete(id);
+      this.loopTick.update(n => n + 1);
+    }
+  }
+
+  /**
+   * Plays the production lightning VFX from attacker → target: muzzle flash at
+   * the beam origin, a lightning bolt between the two, and an impact burst on
+   * the target. Other weapon kinds (projectile/rocket) would need the trail +
+   * flying mesh path from babylon-base-item, deferred for now.
+   */
+  fireAttack(attackerId: number): void {
+    const attacker = this.content()?.items.find(i => i.id === attackerId);
+    if (!attacker || attacker.attackTargetId == null) return;
+    const target = this.content()?.items.find(i => i.id === attacker.attackTargetId);
+    if (!target) return;
+
+    const attackerRender = this.renderObjects.get(attackerId);
+    const targetNode = this.nodes.get(target.id);
+    if (!attackerRender || !targetNode) return;
+
+    const scene = this.babylonRender.getScene();
+    const start = attackerRender.getBeamOrigin() ?? attackerRender.getModel3D().getAbsolutePosition().clone();
+    // Lift impact off the ground so the bolt terminates inside the target mesh
+    // rather than at its pivot. Half the item scale is a good rough match.
+    const end = targetNode.position.clone();
+    end.y += Math.max(1, target.scale * 1.5);
+
+    BabylonMuzzleFlash.fire(scene, start, end.subtract(start).normalize());
+    BabylonLightning.fire(scene, start, end);
+    BabylonImpact.detonate(scene, end);
+  }
+
+  /** Rotate the attacker's turret (if any) to face its current target. */
+  private aimTurret(attackerId: number): void {
+    const attacker = this.content()?.items.find(i => i.id === attackerId);
+    if (!attacker) return;
+    const renderObject = this.renderObjects.get(attackerId);
+    const turret = renderObject?.getTurretMesh?.();
+    if (!turret) return;
+    if (attacker.attackTargetId == null) {
+      turret.rotation.y = 0;
+      return;
+    }
+    const target = this.content()?.items.find(i => i.id === attacker.attackTargetId);
+    const targetNode = target ? this.nodes.get(target.id) : null;
+    if (!targetNode) return;
+    const dx = targetNode.position.x - this.nodes.get(attackerId)!.position.x;
+    const dz = targetNode.position.z - this.nodes.get(attackerId)!.position.z;
+    turret.rotation.y = Math.atan2(dx, dz) - attacker.rotationY;
+  }
+
   // ===== Scene CRUD =====
 
   async reload(): Promise<void> {
@@ -639,6 +747,11 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       this.nextItemId = content.items.reduce((m, i) => Math.max(m, i.id), 0) + 1;
       for (const item of content.items) {
         this.spawnNode(item);
+      }
+      // After every node exists, aim turrets so any persisted attackTargetId
+      // shows up visually even before the user clicks anything.
+      for (const item of content.items) {
+        if (item.attackTargetId != null) this.aimTurret(item.id);
       }
       // Terrain — fired after items so terrain build progress isn't blocking
       // the item display. Errors are logged but don't abort scene open.
@@ -760,7 +873,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     this.gizmoManager?.attachToMesh(null);
   }
 
-  updateProp(field: 'px' | 'py' | 'pz' | 'ry' | 's' | 'diplomacy', value: number | string): void {
+  updateProp(field: 'px' | 'py' | 'pz' | 'ry' | 's' | 'diplomacy' | 'attackTargetId', value: number | string): void {
     const id = this.selectedItemId();
     if (id == null) return;
     this.content.update(c => {
@@ -775,12 +888,20 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
           case 'ry': next.rotationY = +value; break;
           case 's':  next.scale = Math.max(0.01, +value); break;
           case 'diplomacy': next.diplomacy = String(value); break;
+          case 'attackTargetId': {
+            const v = String(value);
+            next.attackTargetId = v === '' ? null : parseInt(v, 10);
+            // Stop a running loop if the target was cleared.
+            if (next.attackTargetId == null) this.stopAttackLoop(id);
+            break;
+          }
         }
         return next;
       });
       return {...c, items};
     });
     this.applyToNode(id);
+    if (field === 'attackTargetId') this.aimTurret(id);
   }
 
   // ===== Babylon plumbing =====
@@ -1006,6 +1127,13 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
         (node as any).bakedDiplomacy = item.diplomacy;
       }
     }
+    // Re-aim this item's turret in case the move changed the bearing, and any
+    // other item that's targeting this one — moving the target affects the
+    // attacker's turret too.
+    this.aimTurret(id);
+    for (const other of this.content()?.items ?? []) {
+      if (other.id !== id && other.attackTargetId === id) this.aimTurret(other.id);
+    }
   }
 
   private attachGizmoToSelection(): void {
@@ -1031,6 +1159,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   }
 
   private disposeItem(id: number): void {
+    this.stopAttackLoop(id);
     const ro = this.renderObjects.get(id);
     if (ro) ro.dispose();
     this.nodes.delete(id);

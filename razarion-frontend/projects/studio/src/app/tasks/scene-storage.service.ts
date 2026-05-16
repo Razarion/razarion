@@ -40,6 +40,9 @@ export interface SceneItem {
   rotationY: number;
   scale: number;
   diplomacy: string;
+  /** Another item in the scene this one is firing at, or null. Drives turret
+   *  aiming and the optional looping attack VFX. */
+  attackTargetId?: number | null;
 }
 
 export interface SceneParticle {
