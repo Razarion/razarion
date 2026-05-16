@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-1">
     <div class="flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
       <div class="flex">
-        <div class="w-14 flex-none">
+        <div class="w-[100px] flex-none">
           <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
         </div>
         <div class="grow">
@@ -70,7 +70,7 @@
                     </div>
                   }
                   <img src="{{buildupItem.imageUrl}}"
-                    style="position: absolute;top: 0; left: 0; width: 40px; height: 40px"
+                    style="position: absolute;top: 0; left: 0; width: 60px; height: 60px"
                     alt="buildupItem.imageUrl">
                     <span class="item-cockpit-buildup-limit-label">
                       {{ buildupItem.itemCount }}/{{ buildupItem.itemLimit }}
@@ -111,7 +111,7 @@
                 (click)="itemCockpitService.keepOnlyOfType(ownMultipleItem.baseItemTypeId)"
                 title="Select all of this type">
                 <img src="{{ownMultipleItem.ownItemCockpit.imageUrl}}"
-                  style="width: 40px; height: 40px"
+                  style="width: 60px; height: 60px"
                   alt="{{ownMultipleItem.ownItemCockpit.imageUrl}}">
                 </button>
               </div>
@@ -134,7 +134,7 @@
             }
           </div>
           <div class="flex">
-            <div class="w-14 flex-none">
+            <div class="w-[100px] flex-none">
               <img src="{{otherItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{otherItemCockpit.itemTypeName}}">
             </div>
             <div class="grow">

@@ -6,8 +6,8 @@
 .item-cockpit-image {
   border: 1px solid aqua;
   background-color: white;
-  width: 50px;
-  height: 50px;
+  width: 75px;
+  height: 75px;
 }
 
 //Remove the carousel paginator
@@ -31,8 +31,8 @@
   z-index: 1;
   background: white;
   border: none;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   border-radius: 0;
 }
 
@@ -40,8 +40,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: vpx;
   z-index: 3;
   background: rgba(0, 0, 0, 0.6);
 }
@@ -59,8 +59,8 @@
 .item-cockpit-multiple-button {
   padding: 0;
   border: none;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   background: white;
   cursor: pointer;
 }

@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -42,6 +43,8 @@ public class BoxItemTypeEntity extends BaseEntity {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private List<BoxItemTypePossibilityEntity> boxItemTypePossibilities;
+    @Embedded
+    private ThumbnailCameraEmbeddable thumbnailCamera;
 
 
     public BoxItemType toBoxItemType() {
@@ -87,8 +90,24 @@ public class BoxItemTypeEntity extends BaseEntity {
         this.model3DEntity = model3DEntity;
     }
 
+    public Model3DEntity getModel3DEntity() {
+        return model3DEntity;
+    }
+
     public void setThumbnail(ImageLibraryEntity thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public ImageLibraryEntity getThumbnail() {
+        return thumbnail;
+    }
+
+    public ThumbnailCameraEmbeddable getThumbnailCamera() {
+        return thumbnailCamera;
+    }
+
+    public void setThumbnailCamera(ThumbnailCameraEmbeddable thumbnailCamera) {
+        this.thumbnailCamera = thumbnailCamera;
     }
 
     @Override

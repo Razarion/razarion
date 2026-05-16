@@ -26,12 +26,12 @@ public class ImageService {
     }
 
     @Transactional
-    public void createImage(byte[] imageData, String type) {
+    public ImageLibraryEntity createImage(byte[] imageData, String type) {
         ImageLibraryEntity imageLibraryEntity = new ImageLibraryEntity();
         imageLibraryEntity.setType(type);
         imageLibraryEntity.setData(imageData);
         imageLibraryEntity.setSize(imageData.length);
-        imageRepository.save(imageLibraryEntity);
+        return imageRepository.save(imageLibraryEntity);
     }
 
     @Transactional

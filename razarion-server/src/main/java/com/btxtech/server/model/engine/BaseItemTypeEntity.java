@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -100,6 +101,12 @@ public class BaseItemTypeEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ParticleSystemEntity explosionParticleSystem;
+    /**
+     * Studio-only metadata: camera framing for the thumbnail render. Not exposed
+     * via the BaseItemType DTO — see BaseItemTypeThumbnailEditorController.
+     */
+    @Embedded
+    private ThumbnailCameraEmbeddable thumbnailCamera;
 
 
     public BaseItemType toBaseItemType() {
@@ -303,6 +310,10 @@ public class BaseItemTypeEntity extends BaseEntity {
         this.model3DEntity = model3DEntity;
     }
 
+    public Model3DEntity getModel3DEntity() {
+        return model3DEntity;
+    }
+
     public void setBuildupTexture(ImageLibraryEntity buildupTexture) {
         this.buildupTexture = buildupTexture;
     }
@@ -317,6 +328,18 @@ public class BaseItemTypeEntity extends BaseEntity {
 
     public void setThumbnail(ImageLibraryEntity thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public ImageLibraryEntity getThumbnail() {
+        return thumbnail;
+    }
+
+    public ThumbnailCameraEmbeddable getThumbnailCamera() {
+        return thumbnailCamera;
+    }
+
+    public void setThumbnailCamera(ThumbnailCameraEmbeddable thumbnailCamera) {
+        this.thumbnailCamera = thumbnailCamera;
     }
 
     @Override

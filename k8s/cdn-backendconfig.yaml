@@ -10,9 +10,13 @@ spec:
       includeHost: true
       includeProtocol: true
       includeQueryString: false
-    cacheMode: CACHE_ALL_STATIC
-    defaultTtl: 86400        # 24h für statische Assets
-    maxTtl: 604800           # 7 Tage max
+    # Respektiert Cache-Control vom Origin. Statische Assets (WebMvcConfiguration
+    # setzt Cache-Control: public, max-age=86400 für /*.js etc.) werden weiterhin
+    # gecached. /rest/* und /editor/* setzen Cache-Control: no-store via
+    # NoCacheRestFilter, damit POST-Responses nicht durch CDN abgefangen werden.
+    cacheMode: USE_ORIGIN_HEADERS
+    defaultTtl: 86400        # 24h fallback, wenn Origin keine TTL liefert
+    maxTtl: 604800           # 7 Tage hard cap
     clientTtl: 86400         # Browser Cache 24h
   healthCheck:
     requestPath: /actuator/health/liveness

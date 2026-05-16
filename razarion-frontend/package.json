@@ -4,9 +4,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build razarion-frontend && ng build studio --configuration=production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "studio:start": "ng serve studio",
+    "studio:build": "ng build studio",
+    "studio:fake-server": "cd mock-server/razarion-fake-server && node razarion-fake-server.js"
   },
   "private": true,
   "dependencies": {

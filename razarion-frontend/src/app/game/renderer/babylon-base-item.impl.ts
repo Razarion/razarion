@@ -42,6 +42,17 @@ import {ShipWakeRenderer} from "./ship-wake-renderer";
 import {BowWaveHalo} from "./bow-wave-halo";
 import {Subscription} from 'rxjs';
 
+// Wave-bobbing for ships: small sinusoidal Y / pitch / roll oscillation so
+// stationary water units visibly ride the surface. Three different periods
+// (and a per-ship phase offset derived from the item id) keep neighbouring
+// ships from rocking in sync, which would betray the procedural source.
+const SHIP_BOB_AMP_Y_M = 0.08;
+const SHIP_BOB_AMP_PITCH = 0.025;  // ~1.4 deg
+const SHIP_BOB_AMP_ROLL = 0.040;   // ~2.3 deg
+const SHIP_BOB_PERIOD_Y_S = 3.2;
+const SHIP_BOB_PERIOD_PITCH_S = 4.1;
+const SHIP_BOB_PERIOD_ROLL_S = 5.3;
+
 export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseItem {
   private static trailSmokeTextureCache: DynamicTexture | null = null;
 
@@ -988,8 +999,17 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       );
     }
 
+    // Wave-bobbing: applied AFTER position/rotation interpolation so the
+    // sinusoidal offsets ride on top of the underlying lerp, and BEFORE
+    // wakeRenderer so the wake spawn point follows the bobbing hull.
     if (this.wakeRenderer && this.position3D !== null) {
       const c = this.getContainer();
+      const tSec = date / 1000;
+      const phase = this.getId() * 0.6;
+      const TWO_PI = 2 * Math.PI;
+      c.position.y += Math.sin(tSec * TWO_PI / SHIP_BOB_PERIOD_Y_S + phase) * SHIP_BOB_AMP_Y_M;
+      c.rotation.x += Math.sin(tSec * TWO_PI / SHIP_BOB_PERIOD_PITCH_S + phase * 1.3) * SHIP_BOB_AMP_PITCH;
+      c.rotation.z += Math.sin(tSec * TWO_PI / SHIP_BOB_PERIOD_ROLL_S + phase * 0.7) * SHIP_BOB_AMP_ROLL;
       this.wakeRenderer.update(date, c.position, c.rotation.y);
     }
   }

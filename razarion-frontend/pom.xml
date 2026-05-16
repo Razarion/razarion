@@ -82,6 +82,24 @@
               </resources>
             </configuration>
           </execution>
+          <execution>
+            <id>copy-studio-build</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/../razarion-server/src/main/resources/generated/studio</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/dist/studio/browser</directory>
+                  <includes>
+                    <include>**/*</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>

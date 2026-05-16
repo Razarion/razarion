@@ -28,6 +28,8 @@ public class ResourceItemTypeEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Model3DEntity model3DEntity;
+    @Embedded
+    private ThumbnailCameraEmbeddable thumbnailCamera;
 
 
     public ResourceItemType toResourceItemType() {
@@ -57,8 +59,24 @@ public class ResourceItemTypeEntity extends BaseEntity {
         this.thumbnail = thumbnail;
     }
 
+    public ImageLibraryEntity getThumbnail() {
+        return thumbnail;
+    }
+
     public void setModel3DEntity(Model3DEntity model3DEntity) {
         this.model3DEntity = model3DEntity;
+    }
+
+    public Model3DEntity getModel3DEntity() {
+        return model3DEntity;
+    }
+
+    public ThumbnailCameraEmbeddable getThumbnailCamera() {
+        return thumbnailCamera;
+    }
+
+    public void setThumbnailCamera(ThumbnailCameraEmbeddable thumbnailCamera) {
+        this.thumbnailCamera = thumbnailCamera;
     }
 
     @Override

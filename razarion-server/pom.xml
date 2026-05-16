@@ -141,6 +141,10 @@
                         <class>com.btxtech.server.rest.editor.TerrainEditorController</class>
                         <class>com.btxtech.server.rest.editor.LevelEditorController</class>
                         <class>com.btxtech.server.rest.editor.BaseItemTypeEditorController</class>
+                        <class>com.btxtech.server.rest.editor.BaseItemTypeThumbnailEditorController</class>
+                        <class>com.btxtech.server.rest.editor.ResourceItemTypeThumbnailEditorController</class>
+                        <class>com.btxtech.server.rest.editor.BoxItemTypeThumbnailEditorController</class>
+                        <class>com.btxtech.server.rest.editor.StudioSceneEditorController</class>
                         <class>com.btxtech.server.rest.editor.ServerGameEngineEditorController</class>
                         <class>com.btxtech.server.rest.editor.BoxItemTypeEditorController</class>
                         <class>com.btxtech.server.rest.editor.ResourceItemTypeEditorController</class>

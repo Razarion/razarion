@@ -91,6 +91,11 @@ export class EditorDialogComponent {
     window.open(url, "_blank");
   }
 
+  openStudio() {
+    this.mainCockpitComponent.editorDialog = false;
+    window.open('/studio/', "_blank");
+  }
+
   openTerrainEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Terrain editor", TerrainEditorComponent));

@@ -22,4 +22,9 @@ public class AngularForwardController {
     public String forwardGameBackend(HttpServletRequest request) {
         return "forward:/game/index.html";
     }
+
+    @GetMapping(value = {"/studio/", "/studio"}, produces = "text/html")
+    public String forwardStudio(HttpServletRequest request) {
+        return "forward:/studio/index.html";
+    }
 }
