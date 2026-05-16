@@ -43,6 +43,10 @@ export interface SceneItem {
   /** Another item in the scene this one is firing at, or null. Drives turret
    *  aiming and the optional looping attack VFX. */
   attackTargetId?: number | null;
+  /** Detonate the target item every time this one fires. Persisted so a saved
+   *  attack-scene re-arms automatically; only meaningful when attackTargetId
+   *  is set. */
+  explodeTargetOnFire?: boolean;
 }
 
 export interface SceneParticle {

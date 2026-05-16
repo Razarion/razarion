@@ -16,9 +16,11 @@ import {
 } from '@babylonjs/core';
 import {StudioSceneSummary} from '../../../../../src/app/generated/razarion-share';
 import {BabylonModelService} from '../../../../../src/app/game/renderer/babylon-model.service';
+import {BabylonExplosion} from '../../../../../src/app/game/renderer/babylon-explosion';
 import {BabylonImpact} from '../../../../../src/app/game/renderer/babylon-impact';
 import {BabylonLightning} from '../../../../../src/app/game/renderer/babylon-lightning';
 import {BabylonMuzzleFlash} from '../../../../../src/app/game/renderer/babylon-muzzle-flash';
+import {BabylonWreckage} from '../../../../../src/app/game/renderer/babylon-wreckage';
 import {BabylonRenderServiceAccessImpl} from '../../../../../src/app/game/renderer/babylon-render-service-access-impl.service';
 import {RenderObject} from '../../../../../src/app/game/renderer/render-object';
 import {Diplomacy} from '../../../../../src/app/gwtangular/GwtAngularFacade';
@@ -226,9 +228,15 @@ export type GizmoTool = 'move' | 'rotate' | 'scale';
                     <input type="checkbox" [checked]="isLooping(it.id)" (change)="toggleAttackLoop(it.id)">
                     Loop
                   </label>
+                  <label class="muted" style="display:flex;align-items:center;gap:4px;">
+                    <input type="checkbox" [checked]="it.explodeTargetOnFire === true"
+                           (change)="updateProp('explodeTargetOnFire', $any($event.target).checked)">
+                    Explode target
+                  </label>
                 </div>
               }
               <div class="prop-row">
+                <button (click)="explodeItem(it.id, true)">Explode now</button>
                 <button class="ghost" (click)="deleteSelected()">Delete item</button>
               </div>
             </div>
@@ -683,9 +691,53 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     const end = targetNode.position.clone();
     end.y += Math.max(1, target.scale * 1.5);
 
+    // Make sure the target is visible at the start of every cycle — the
+    // previous fire may have hidden it via explode-on-fire, and looping callers
+    // expect the target to "respawn" each tick.
+    targetNode.setEnabled(true);
+
     BabylonMuzzleFlash.fire(scene, start, end.subtract(start).normalize());
     BabylonLightning.fire(scene, start, end);
     BabylonImpact.detonate(scene, end);
+    if (attacker.explodeTargetOnFire) {
+      // Brief delay so the explosion reads as a consequence of the bolt, not
+      // simultaneous with the muzzle flash. Lightning lifetime is ~250ms in
+      // BabylonLightning, so 180ms lands the explosion mid-bolt.
+      setTimeout(() => this.explodeItem(target.id, /*hide*/ true), 180);
+    }
+  }
+
+  /**
+   * Detonate an item's position with the production explosion VFX (fireball +
+   * debris + shockwave). When hide is true, the item's model is removed once
+   * the fireball is in bloom — so the result reads as "destroyed" rather than
+   * "fireball next to an undamaged Viper".
+   */
+  explodeItem(id: number, hide = false): void {
+    const node = this.nodes.get(id);
+    if (!node) return;
+    const item = this.content()?.items.find(i => i.id === id);
+    // Lift the detonation off the ground so the fireball engulfs the body
+    // instead of igniting at the feet.
+    const center = node.position.clone();
+    center.y += Math.max(1, (item?.scale ?? 1) * 1.5);
+    BabylonExplosion.detonate(this.babylonRender.getScene(), center);
+    if (hide) {
+      // 120ms into the explosion the fireball is opaque enough to mask the
+      // model disappearing — earlier looks like a jump-cut, later spoils it.
+      setTimeout(() => {
+        node.setEnabled(false);
+        // Scorch + lingering smoke at the ground footprint where the unit
+        // stood. Self-cleans after ~15s (BabylonWreckage.WRECKAGE_LIFETIME).
+        const radius = Math.max(1, (item?.scale ?? 1) * 2);
+        BabylonWreckage.spawn(this.babylonRender.getScene(), node.position.clone(), radius);
+      }, 120);
+      // Respawn after 5s so the user keeps a continuously-readable scene
+      // (otherwise an "Explode now" leaves a hole on screen until reload).
+      // No-op in loop mode — fireAttack re-enables at the start of every
+      // cycle anyway.
+      setTimeout(() => node.setEnabled(true), 5000);
+    }
   }
 
   /** Rotate the attacker's turret (if any) to face its current target. */
@@ -873,7 +925,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     this.gizmoManager?.attachToMesh(null);
   }
 
-  updateProp(field: 'px' | 'py' | 'pz' | 'ry' | 's' | 'diplomacy' | 'attackTargetId', value: number | string): void {
+  updateProp(field: 'px' | 'py' | 'pz' | 'ry' | 's' | 'diplomacy' | 'attackTargetId' | 'explodeTargetOnFire', value: number | string | boolean): void {
     const id = this.selectedItemId();
     if (id == null) return;
     this.content.update(c => {
@@ -895,6 +947,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
             if (next.attackTargetId == null) this.stopAttackLoop(id);
             break;
           }
+          case 'explodeTargetOnFire': next.explodeTargetOnFire = Boolean(value); break;
         }
         return next;
       });
@@ -1147,10 +1200,18 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   private applyCamera(content: SceneContent): void {
     if (!this.camera) return;
     const c = content.camera;
+    // Target MUST be set first: ArcRotateCamera.target's setter internally
+    // calls rebuildAnglesAndRadius(), which derives alpha/beta/radius from
+    // the current world position relative to the new target — that would
+    // overwrite our explicit saved values if we set them before the target.
+    this.camera.target = new Vector3(...c.target);
     if (c.alpha != null) this.camera.alpha = c.alpha;
     if (c.beta != null) this.camera.beta = c.beta;
     if (c.radius != null) this.camera.radius = c.radius;
-    this.camera.target = new Vector3(...c.target);
+    // The next render loop tick reads target+alpha+beta+radius and computes
+    // the new position automatically — no manual position recomputation
+    // needed (and any setPosition/rebuildAnglesAndRadius call here would
+    // overwrite the spherical values we just set).
   }
 
   private disposeAllItems(): void {
