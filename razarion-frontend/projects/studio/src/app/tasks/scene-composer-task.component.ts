@@ -10,6 +10,7 @@ import {
   PointerEventTypes,
   Scene,
   ShadowGenerator,
+  Tools,
   TransformNode,
   Vector3
 } from '@babylonjs/core';
@@ -114,6 +115,39 @@ export type GizmoTool = 'move' | 'rotate' | 'scale';
                   <option [value]="p.id" [selected]="p.id === content()?.terrain?.planetId">{{ p.internalName }} (#{{ p.id }})</option>
                 }
               </select>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <header><h3>Render</h3></header>
+          <div class="scene-settings">
+            <div class="prop-row">
+              <span class="prop-label">Resolution</span>
+              <select [(ngModel)]="screenshotPreset">
+                @for (p of screenshotPresets; track p.label) {
+                  <option [ngValue]="p">{{ p.label }}</option>
+                }
+              </select>
+            </div>
+            @if (screenshotPreset.w === 0) {
+              <div class="prop-row">
+                <span class="prop-label">Width × Height</span>
+                <input type="number" min="64" step="16" [(ngModel)]="customWidth">
+                <input type="number" min="64" step="16" [(ngModel)]="customHeight">
+              </div>
+            }
+            <div class="prop-row">
+              <span class="prop-label">Background</span>
+              <select [(ngModel)]="screenshotBackground">
+                <option value="transparent">Transparent PNG</option>
+                <option value="scene">Scene background</option>
+              </select>
+            </div>
+            <div class="prop-row">
+              <button (click)="takeScreenshot()" [disabled]="!rendererReady() || screenshotBusy()">
+                {{ screenshotBusy() ? 'Rendering…' : 'Take screenshot' }}
+              </button>
             </div>
           </div>
 
@@ -472,7 +506,21 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   currentName = '';
   libraryFilter = '';
 
-  private rendererReady = false;
+  readonly screenshotPresets: ReadonlyArray<{label: string; w: number; h: number}> = [
+    {label: '1920 × 1080 (FHD landscape)', w: 1920, h: 1080},
+    {label: '1080 × 1920 (FHD portrait)', w: 1080, h: 1920},
+    {label: '1080 × 1080 (social square)', w: 1080, h: 1080},
+    {label: '2560 × 1440 (QHD)', w: 2560, h: 1440},
+    {label: '3840 × 2160 (4K)', w: 3840, h: 2160},
+    {label: 'Custom…', w: 0, h: 0}
+  ];
+  screenshotPreset = this.screenshotPresets[0];
+  customWidth = 1920;
+  customHeight = 1080;
+  screenshotBackground: 'transparent' | 'scene' = 'transparent';
+  readonly screenshotBusy = signal(false);
+  readonly rendererReady = signal(false);
+
   private camera: ArcRotateCamera | null = null;
   private gizmoManager: GizmoManager | null = null;
   private readonly nodes = new Map<number, TransformNode>();
@@ -521,7 +569,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   /** Blender-ish shortcuts; ignore when typing into an input. */
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    if (!this.current() || !this.rendererReady) return;
+    if (!this.current() || !this.rendererReady()) return;
     const target = event.target as HTMLElement | null;
     if (target && (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'TEXTAREA')) return;
     switch (event.key.toLowerCase()) {
@@ -571,7 +619,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
 
   async openScene(id: number): Promise<void> {
     this.busy.set(true);
-    this.rendererStatus.set(this.rendererReady ? 'Loading scene…' : 'Initialising renderer…');
+    this.rendererStatus.set(this.rendererReady() ? 'Loading scene…' : 'Initialising renderer…');
     try {
       const {summary, content} = await this.storage.read(id);
       this.disposeAllItems();
@@ -738,7 +786,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   // ===== Babylon plumbing =====
 
   private async ensureRenderer(): Promise<void> {
-    if (this.rendererReady) return;
+    if (this.rendererReady()) return;
     this.babylonRender.setup(this.canvasRef.nativeElement);
     const scene = this.babylonRender.getScene();
     scene.clearColor = new Color4(0.05, 0.06, 0.08, 1);
@@ -808,7 +856,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     });
 
     scene.getEngine().runRenderLoop(() => scene.render());
-    this.rendererReady = true;
+    this.rendererReady.set(true);
     this.rendererStatus.set('');
   }
 
@@ -850,6 +898,54 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       if (held.has('q')) delta.y -= speed;
       this.camera.target.addInPlace(delta);
     });
+  }
+
+  /**
+   * Render the current view to a PNG at the chosen resolution and trigger a
+   * download. Uses CreateScreenshotUsingRenderTarget so the output size is
+   * decoupled from the canvas; for transparent backgrounds we briefly swap
+   * scene.clearColor to (0,0,0,0) and restore afterwards.
+   */
+  async takeScreenshot(): Promise<void> {
+    if (!this.camera || !this.rendererReady() || this.screenshotBusy()) return;
+    const engine = this.babylonRender.getScene().getEngine();
+    const scene = this.babylonRender.getScene();
+
+    const preset = this.screenshotPreset;
+    const width = preset.w > 0 ? preset.w : Math.max(64, Math.round(this.customWidth));
+    const height = preset.h > 0 ? preset.h : Math.max(64, Math.round(this.customHeight));
+
+    const originalClear = scene.clearColor.clone();
+    if (this.screenshotBackground === 'transparent') {
+      scene.clearColor = new Color4(0, 0, 0, 0);
+    }
+    this.screenshotBusy.set(true);
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        try {
+          Tools.CreateScreenshotUsingRenderTarget(
+            engine, this.camera!, {width, height}, resolve, 'image/png', 4, true
+          );
+        } catch (e) { reject(e); }
+      });
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = this.makeScreenshotFilename(width, height);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (e) {
+      console.error('[Studio] screenshot failed', e);
+    } finally {
+      scene.clearColor = originalClear;
+      this.screenshotBusy.set(false);
+    }
+  }
+
+  private makeScreenshotFilename(w: number, h: number): string {
+    const slug = (this.current()?.name ?? 'scene').replace(/[^a-z0-9-_]+/gi, '_').toLowerCase();
+    const ts = new Date().toISOString().replace(/[:.]/g, '-').replace('T', '_').slice(0, 19);
+    return `${slug}_${w}x${h}_${ts}.png`;
   }
 
   private spawnNode(item: SceneItem): void {
