@@ -31,7 +31,7 @@ import {ThumbnailItem, ThumbnailStorageService} from './thumbnail-storage.servic
 
 const DIPLOMACIES: Diplomacy[] = [Diplomacy.OWN, Diplomacy.ENEMY, Diplomacy.FRIEND, Diplomacy.RESOURCE, Diplomacy.BOX];
 
-export type GizmoTool = 'move' | 'rotate' | 'scale';
+export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
 
 /**
  * Three-pane scene composer: Scene list · Babylon viewport · Library/Properties.
@@ -87,6 +87,7 @@ export type GizmoTool = 'move' | 'rotate' | 'scale';
               <button [class.active]="gizmoTool() === 'move'" (click)="setGizmoTool('move')" title="Move (G)">↔</button>
               <button [class.active]="gizmoTool() === 'rotate'" (click)="setGizmoTool('rotate')" title="Rotate (R)">↻</button>
               <button [class.active]="gizmoTool() === 'scale'" (click)="setGizmoTool('scale')" title="Scale (S)">⤡</button>
+              <button [class.active]="gizmoTool() === 'none'" (click)="setGizmoTool('none')" title="Hide gizmo, keep selection (H)">∅</button>
             </div>
             <div class="spacer"></div>
             <button class="primary" (click)="saveScene()" [disabled]="busy() || !!rendererStatus()">
@@ -182,7 +183,12 @@ export type GizmoTool = 'move' | 'rotate' | 'scale';
 
           <div class="divider"></div>
 
-          <header><h3>Properties</h3></header>
+          <header>
+            <h3>Properties</h3>
+            @if (selectedItem()) {
+              <button class="ghost" (click)="deselect()" title="Esc">Deselect</button>
+            }
+          </header>
           @if (selectedItem(); as it) {
             <div class="props">
               <div class="prop-row">
@@ -610,9 +616,17 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       case 'g': this.setGizmoTool('move'); break;
       case 'r': this.setGizmoTool('rotate'); break;
       case 's': this.setGizmoTool('scale'); break;
+      case 'h': this.setGizmoTool('none'); break;
+      case 'escape': this.deselect(); break;
       default: return;
     }
     event.preventDefault();
+  }
+
+  /** Drop the current selection and hide the gizmo. */
+  deselect(): void {
+    this.selectedItemId.set(null);
+    this.gizmoManager?.attachToMesh(null);
   }
 
   filteredLibrary(): ThumbnailItem[] {
