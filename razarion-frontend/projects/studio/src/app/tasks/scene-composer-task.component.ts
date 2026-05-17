@@ -17,9 +17,12 @@ import {
 import {StudioSceneSummary} from '../../../../../src/app/generated/razarion-share';
 import {BabylonModelService} from '../../../../../src/app/game/renderer/babylon-model.service';
 import {BabylonExplosion} from '../../../../../src/app/game/renderer/babylon-explosion';
+import {BabylonHarvestingBeam} from '../../../../../src/app/game/renderer/babylon-harvesting-beam';
 import {BabylonImpact} from '../../../../../src/app/game/renderer/babylon-impact';
 import {BabylonLightning} from '../../../../../src/app/game/renderer/babylon-lightning';
 import {BabylonMuzzleFlash} from '../../../../../src/app/game/renderer/babylon-muzzle-flash';
+import {BabylonResourceDecal} from '../../../../../src/app/game/renderer/babylon-resource-decal';
+import {BabylonResourceSparkle} from '../../../../../src/app/game/renderer/babylon-resource-sparkle';
 import {BabylonWreckage} from '../../../../../src/app/game/renderer/babylon-wreckage';
 import {BabylonRenderServiceAccessImpl} from '../../../../../src/app/game/renderer/babylon-render-service-access-impl.service';
 import {RenderObject} from '../../../../../src/app/game/renderer/render-object';
@@ -251,6 +254,22 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
                     <input type="number" min="0" step="10" [(ngModel)]="captureDelayMs" style="width:64px;">
                     ms
                   </label>
+                </div>
+              }
+              <div class="prop-row">
+                <span class="prop-label">Harvest target</span>
+                <select [ngModel]="it.harvestTargetId ?? ''" (ngModelChange)="updateProp('harvestTargetId', $event)">
+                  <option value="">— none —</option>
+                  @for (res of harvestTargets(it.id); track res.id) {
+                    <option [value]="res.id">{{ libraryLabel(res) }} #{{ res.id }}</option>
+                  }
+                </select>
+              </div>
+              @if (it.harvestTargetId != null) {
+                <div class="prop-row">
+                  <button (click)="toggleHarvest(it.id)">
+                    {{ isHarvesting(it.id) ? 'Stop harvest' : 'Start harvest' }}
+                  </button>
                 </div>
               }
               <div class="prop-row">
@@ -680,6 +699,21 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   private readonly attackLoops = new Map<number, ReturnType<typeof setInterval>>();
   /** Bump this to force template re-eval of isLooping(). */
   private readonly loopTick = signal(0);
+  /** Active harvest beams keyed by harvester item id. Created on toggleHarvest,
+   *  disposed when the harvester stops, the target is cleared, or the item is
+   *  removed. Volatile — never persisted; a saved scene always loads idle. */
+  private readonly harvestingBeams = new Map<number, BabylonHarvestingBeam>();
+  /** Bump this to force template re-eval of isHarvesting(). */
+  private readonly harvestTick = signal(0);
+  /** Per-resource VFX so the studio mirrors the in-game look: a ground decal
+   *  under the rock + the floating blue-white sparkle particles. Spawned in
+   *  spawnNode for kind==='resource', re-built when scale (== radius proxy)
+   *  changes, disposed in disposeItem. */
+  private readonly resourceDecals = new Map<number, BabylonResourceDecal>();
+  private readonly resourceSparkles = new Map<number, BabylonResourceSparkle>();
+  /** Last spawned radius per resource — used to detect scale changes in
+   *  applyToNode so position-only updates don't restart the sparkle particles. */
+  private readonly resourceRadii = new Map<number, number>();
 
   async ngOnInit(): Promise<void> {
     if (!this.hasToken()) return;
@@ -776,6 +810,13 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     return (this.content()?.items ?? []).filter(i => i.id !== excludeId);
   }
 
+  /** Resource items in the scene, excluding the given id. Used by the
+   *  harvest-target dropdown — only resource-kind items make sense as
+   *  the source of the BabylonHarvestingBeam's crystals. */
+  harvestTargets(excludeId: number): SceneItem[] {
+    return (this.content()?.items ?? []).filter(i => i.id !== excludeId && i.kind === 'resource');
+  }
+
   // ===== Attack VFX =====
 
   isLooping(id: number): boolean {
@@ -858,6 +899,99 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     const delay = Math.max(0, this.captureDelayMs | 0);
     await new Promise(r => setTimeout(r, delay));
     await this.takeScreenshot();
+  }
+
+  // ===== Harvest VFX =====
+
+  isHarvesting(id: number): boolean {
+    // Read harvestTick so the template re-evaluates when toggleHarvest runs.
+    this.harvestTick();
+    return this.harvestingBeams.has(id);
+  }
+
+  /** Start or stop the harvesting beam for the given item. The beam is
+   *  continuous (crystals spiral indefinitely) so a single toggle is enough —
+   *  no Loop/Fire-once distinction like the attack VFX. */
+  toggleHarvest(id: number): void {
+    if (this.harvestingBeams.has(id)) {
+      this.stopHarvest(id);
+      return;
+    }
+    const item = this.content()?.items.find(i => i.id === id);
+    if (!item || item.harvestTargetId == null) return;
+    const target = this.content()?.items.find(i => i.id === item.harvestTargetId);
+    if (!target) return;
+    const renderObject = this.renderObjects.get(id);
+    const targetNode = this.nodes.get(target.id);
+    if (!renderObject || !targetNode) return;
+
+    const scene = this.babylonRender.getScene();
+    // getBeamOrigin / getContainerPosition are read every frame so the beam
+    // tracks live movement if the user drags the harvester via the gizmo.
+    const beam = new BabylonHarvestingBeam(
+      scene,
+      () => renderObject.getBeamOrigin() ?? renderObject.getModel3D().getAbsolutePosition().clone(),
+      () => renderObject.getModel3D().getAbsolutePosition().clone(),
+    );
+    // Resource crystals spawn at the top of the rock cluster — lift the target
+    // off the ground so the helix terminates inside the rock, not at its base.
+    const targetPos = targetNode.position.clone();
+    targetPos.y += Math.max(0.5, target.scale * 0.8);
+    beam.start(targetPos);
+    this.harvestingBeams.set(id, beam);
+    this.harvestTick.update(n => n + 1);
+  }
+
+  private stopHarvest(id: number): void {
+    const beam = this.harvestingBeams.get(id);
+    if (!beam) return;
+    beam.dispose();
+    this.harvestingBeams.delete(id);
+    this.harvestTick.update(n => n + 1);
+  }
+
+  // ===== Resource VFX (decal + sparkle) =====
+
+  /** Mirror the in-game BabylonResourceItemImpl visuals: ground decal under
+   *  the rock and the floating blue-white sparkle particles around it. Uses
+   *  item.scale as the radius proxy since the studio doesn't load the actual
+   *  ResourceItemType.getRadius() value. */
+  private spawnResourceVfx(item: SceneItem): void {
+    if (item.kind !== 'resource') return;
+    const scene = this.babylonRender.getScene();
+    const radius = item.scale;
+    const sparkle = new BabylonResourceSparkle(scene, radius);
+    sparkle.emitter.copyFrom(new Vector3(...item.position));
+    const decal = new BabylonResourceDecal(scene, radius, this.babylonRender);
+    decal.updatePosition(item.position[0], item.position[1], item.position[2]);
+    this.resourceSparkles.set(item.id, sparkle);
+    this.resourceDecals.set(item.id, decal);
+    this.resourceRadii.set(item.id, radius);
+  }
+
+  private updateResourceVfx(item: SceneItem): void {
+    if (item.kind !== 'resource') return;
+    // Radius is baked into both the sparkle's emit box and the decal's size at
+    // construction. If scale changed we have to rebuild — otherwise we'd see
+    // the particle box detach from the rock and the decal stay at old size.
+    const lastRadius = this.resourceRadii.get(item.id);
+    if (lastRadius !== item.scale) {
+      this.disposeResourceVfx(item.id);
+      this.spawnResourceVfx(item);
+      return;
+    }
+    // Position-only: in-place updates so the existing particles keep flowing
+    // (no visible restart while the user drags the gizmo).
+    this.resourceSparkles.get(item.id)?.emitter.copyFrom(new Vector3(...item.position));
+    this.resourceDecals.get(item.id)?.updatePosition(item.position[0], item.position[1], item.position[2]);
+  }
+
+  private disposeResourceVfx(id: number): void {
+    this.resourceSparkles.get(id)?.dispose();
+    this.resourceDecals.get(id)?.dispose();
+    this.resourceSparkles.delete(id);
+    this.resourceDecals.delete(id);
+    this.resourceRadii.delete(id);
   }
 
   /**
@@ -1085,7 +1219,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     this.gizmoManager?.attachToMesh(null);
   }
 
-  updateProp(field: 'px' | 'py' | 'pz' | 'ry' | 's' | 'diplomacy' | 'attackTargetId' | 'explodeTargetOnFire', value: number | string | boolean): void {
+  updateProp(field: 'px' | 'py' | 'pz' | 'ry' | 's' | 'diplomacy' | 'attackTargetId' | 'explodeTargetOnFire' | 'harvestTargetId', value: number | string | boolean): void {
     const id = this.selectedItemId();
     if (id == null) return;
     this.content.update(c => {
@@ -1108,6 +1242,15 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
             break;
           }
           case 'explodeTargetOnFire': next.explodeTargetOnFire = Boolean(value); break;
+          case 'harvestTargetId': {
+            const v = String(value);
+            next.harvestTargetId = v === '' ? null : parseInt(v, 10);
+            // Stop the beam if the target was cleared or changed — the new
+            // target (if any) requires a fresh toggle so the user sees the
+            // change deliberately, not silently rebuilt against a new rock.
+            this.stopHarvest(id);
+            break;
+          }
         }
         return next;
       });
@@ -1345,6 +1488,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     this.tagNodeTree(node, item.id);
     this.nodes.set(item.id, node);
     this.renderObjects.set(item.id, renderObject);
+    this.spawnResourceVfx(item);
   }
 
   private tagNodeTree(node: TransformNode, sceneItemId: number): void {
@@ -1395,6 +1539,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     for (const other of this.content()?.items ?? []) {
       if (other.id !== id && other.attackTargetId === id) this.aimTurret(other.id);
     }
+    this.updateResourceVfx(item);
   }
 
   private attachGizmoToSelection(): void {
@@ -1429,6 +1574,8 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
 
   private disposeItem(id: number): void {
     this.stopAttackLoop(id);
+    this.stopHarvest(id);
+    this.disposeResourceVfx(id);
     const ro = this.renderObjects.get(id);
     if (ro) ro.dispose();
     this.nodes.delete(id);

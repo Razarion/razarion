@@ -47,6 +47,10 @@ export interface SceneItem {
    *  attack-scene re-arms automatically; only meaningful when attackTargetId
    *  is set. */
   explodeTargetOnFire?: boolean;
+  /** Another item in the scene this one is harvesting from. Drives the
+   *  BabylonHarvestingBeam (red beam + spiraling crystals). Only meaningful
+   *  when the target's kind === 'resource'. */
+  harvestTargetId?: number | null;
 }
 
 export interface SceneParticle {
