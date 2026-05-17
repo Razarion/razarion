@@ -663,7 +663,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   screenshotBackground: 'transparent' | 'scene' = 'transparent';
   /** Delay between fireAttack() and takeScreenshot() in "Fire + capture" mode.
    *  70ms = BabylonLightning bolt peak (PEAK_MS in babylon-lightning.ts). */
-  captureDelayMs = 70;
+  captureDelayMs = 600;
   readonly screenshotBusy = signal(false);
   /** Pending screenshot awaiting Save/Discard decision in the preview modal.
    *  Set by takeScreenshot(); consumed by saveScreenshot()/discardScreenshot(). */
@@ -835,7 +835,10 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     targetNode.setEnabled(true);
 
     BabylonMuzzleFlash.fire(scene, start, end.subtract(start).normalize());
-    BabylonLightning.fire(scene, start, end);
+    // Long bolt lifetime so the bolt is still visible at late capture delays
+    // (e.g. 500ms when the explosion fireball is at its peak). Default 700ms
+    // would leave the bolt at ~32% alpha at 500ms; 3000ms keeps it at ~85%.
+    BabylonLightning.fire(scene, start, end, 3000);
     BabylonImpact.detonate(scene, end);
     if (attacker.explodeTargetOnFire) {
       // Brief delay so the explosion reads as a consequence of the bolt, not
@@ -875,13 +878,20 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     if (hide) {
       // 120ms into the explosion the fireball is opaque enough to mask the
       // model disappearing — earlier looks like a jump-cut, later spoils it.
+      setTimeout(() => node.setEnabled(false), 120);
+      // Scorch + lingering smoke at the ground footprint. Delayed until the
+      // fireball is in its fade phase (~600ms into the 1.0–1.4s lifetime),
+      // otherwise the dark ground decal competes with the bright fireball
+      // and the PNG reads as "wreckage in front of explosion".
+      // Short lifetime+fade (vs the in-game 15s+5s) so back-to-back screenshot
+      // sessions aren't gated on stale wreckage from the previous capture.
       setTimeout(() => {
-        node.setEnabled(false);
-        // Scorch + lingering smoke at the ground footprint where the unit
-        // stood. Self-cleans after ~15s (BabylonWreckage.WRECKAGE_LIFETIME).
         const radius = Math.max(1, (item?.scale ?? 1) * 2);
-        BabylonWreckage.spawn(this.babylonRender.getScene(), node.position.clone(), radius);
-      }, 120);
+        BabylonWreckage.spawn(
+          this.babylonRender.getScene(), node.position.clone(), radius,
+          undefined, false, {lifetimeMs: 1000, fadeMs: 1000},
+        );
+      }, 600);
       // Respawn after 5s so the user keeps a continuously-readable scene
       // (otherwise an "Explode now" leaves a hole on screen until reload).
       // No-op in loop mode — fireAttack re-enables at the start of every

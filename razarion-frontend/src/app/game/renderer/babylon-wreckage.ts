@@ -28,6 +28,7 @@ export class BabylonWreckage {
     radius: number,
     survivingMeshes?: Mesh[],
     keepDebrisTransforms = false,
+    options?: { lifetimeMs?: number; fadeMs?: number },
   ): void {
     // Find ground height via raycast (hits Ground and BotGround)
     const groundPos = position.clone();
@@ -162,13 +163,15 @@ export class BabylonWreckage {
 
     // === 4) Timed cleanup with fade ===
     const startTime = Date.now();
+    const lifetimeMs = options?.lifetimeMs ?? BabylonWreckage.WRECKAGE_LIFETIME;
+    const fadeMs = options?.fadeMs ?? BabylonWreckage.FADE_DURATION;
 
     const fadeCallback = () => {
       const elapsed = Date.now() - startTime;
 
-      if (elapsed > BabylonWreckage.WRECKAGE_LIFETIME) {
-        const fadeElapsed = elapsed - BabylonWreckage.WRECKAGE_LIFETIME;
-        const fadeT = Math.min(fadeElapsed / BabylonWreckage.FADE_DURATION, 1.0);
+      if (elapsed > lifetimeMs) {
+        const fadeElapsed = elapsed - lifetimeMs;
+        const fadeT = Math.min(fadeElapsed / fadeMs, 1.0);
 
         if (scorchMat) {
           scorchMat.alpha = 1 - fadeT;
