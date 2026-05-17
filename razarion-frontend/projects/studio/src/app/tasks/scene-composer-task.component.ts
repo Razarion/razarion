@@ -1272,9 +1272,12 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
           // Setting renderList=null forces the RTT to use scene.meshes live at
           // render time, so whatever VFX exists when capture finally runs gets
           // rendered.
+          // renderSprites: true — terrain tiles place SpriteManager-managed
+          // grass / sand / beach decorations. RTT defaults to false and would
+          // produce a screenshot of bare ground without any of these details.
           Tools.CreateScreenshotUsingRenderTarget(
             engine, this.camera!, {width, height}, resolve, 'image/png', 1, false,
-            undefined, false, false, true, undefined,
+            undefined, true, false, true, undefined,
             (texture) => { texture.renderList = null; }
           );
         } catch (e) { reject(e); }
