@@ -240,6 +240,18 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
                     Explode target
                   </label>
                 </div>
+                <div class="prop-row">
+                  <button (click)="fireAndCapture(it.id)"
+                          [disabled]="!rendererReady() || screenshotBusy()"
+                          title="Fire attack, then auto-screenshot after the delay">
+                    Fire + capture
+                  </button>
+                  <label class="muted" style="display:flex;align-items:center;gap:4px;">
+                    Delay
+                    <input type="number" min="0" step="10" [(ngModel)]="captureDelayMs" style="width:64px;">
+                    ms
+                  </label>
+                </div>
               }
               <div class="prop-row">
                 <button (click)="explodeItem(it.id, true)">Explode now</button>
@@ -254,6 +266,26 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
           }
         }
       </aside>
+
+      <!-- ============ Screenshot preview modal ============ -->
+      @if (screenshotPreview(); as p) {
+        <div class="modal-backdrop" (click)="discardScreenshot()">
+          <div class="modal" (click)="$event.stopPropagation()">
+            <header class="modal-header">
+              <h3>Screenshot preview</h3>
+              <span class="muted">{{ p.w }} × {{ p.h }}</span>
+            </header>
+            <div class="modal-body">
+              <img [src]="p.dataUrl" [alt]="p.filename">
+            </div>
+            <footer class="modal-footer">
+              <span class="muted filename">{{ p.filename }}</span>
+              <button class="ghost" (click)="discardScreenshot()" title="Esc">Discard</button>
+              <button class="primary" (click)="saveScreenshot()">Save PNG</button>
+            </footer>
+          </div>
+        </div>
+      }
     </div>
   `,
   styles: [`
@@ -518,6 +550,82 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
       font-family: inherit;
     }
     .scene-settings select:focus { outline: none; border-color: #4a9eff; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal {
+      background: #15171c;
+      border: 1px solid #2a2e35;
+      border-radius: 6px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      max-width: calc(100vw - 48px);
+      max-height: calc(100vh - 48px);
+      overflow: hidden;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid #2a2e35;
+      gap: 12px;
+    }
+    .modal-header h3 {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #ddd;
+    }
+    .modal-body {
+      flex: 1;
+      overflow: auto;
+      padding: 16px;
+      background:
+        linear-gradient(45deg, #1a1d22 25%, transparent 25%),
+        linear-gradient(-45deg, #1a1d22 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1a1d22 75%),
+        linear-gradient(-45deg, transparent 75%, #1a1d22 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+      background-color: #0e1014;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-body img {
+      max-width: 100%;
+      max-height: calc(100vh - 200px);
+      display: block;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-top: 1px solid #2a2e35;
+    }
+    .modal-footer .filename {
+      flex: 1;
+      font-family: monospace;
+      color: #888;
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   `]
 })
 export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
@@ -553,7 +661,13 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   customWidth = 1920;
   customHeight = 1080;
   screenshotBackground: 'transparent' | 'scene' = 'transparent';
+  /** Delay between fireAttack() and takeScreenshot() in "Fire + capture" mode.
+   *  70ms = BabylonLightning bolt peak (PEAK_MS in babylon-lightning.ts). */
+  captureDelayMs = 70;
   readonly screenshotBusy = signal(false);
+  /** Pending screenshot awaiting Save/Discard decision in the preview modal.
+   *  Set by takeScreenshot(); consumed by saveScreenshot()/discardScreenshot(). */
+  readonly screenshotPreview = signal<{dataUrl: string; w: number; h: number; filename: string} | null>(null);
   readonly rendererReady = signal(false);
 
   private camera: ArcRotateCamera | null = null;
@@ -609,6 +723,16 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   /** Blender-ish shortcuts; ignore when typing into an input. */
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
+    // Preview modal owns Escape while open — close it before any other handler
+    // (gizmo/deselect) sees the key. Block other shortcuts while the modal is
+    // up so 'g'/'r'/'s' don't silently flip the gizmo tool behind the preview.
+    if (this.screenshotPreview()) {
+      if (event.key === 'Escape') {
+        this.discardScreenshot();
+        event.preventDefault();
+      }
+      return;
+    }
     if (!this.current() || !this.rendererReady()) return;
     const target = event.target as HTMLElement | null;
     if (target && (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'TEXTAREA')) return;
@@ -719,6 +843,18 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       // BabylonLightning, so 180ms lands the explosion mid-bolt.
       setTimeout(() => this.explodeItem(target.id, /*hide*/ true), 180);
     }
+  }
+
+  /**
+   * Fire the attack VFX and auto-trigger a screenshot at the configured delay,
+   * so the user doesn't have to hit "Take screenshot" with frame-level timing
+   * to catch the lightning bolt peak (~70ms) or the impact explosion (~180ms).
+   */
+  async fireAndCapture(attackerId: number): Promise<void> {
+    this.fireAttack(attackerId);
+    const delay = Math.max(0, this.captureDelayMs | 0);
+    await new Promise(r => setTimeout(r, delay));
+    await this.takeScreenshot();
   }
 
   /**
@@ -1000,6 +1136,15 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     shadowGenerator.darkness = 0.6;
     this.babylonRender.shadowGenerator = shadowGenerator;
 
+    // Pre-fire hidden warmup VFX so the FIRST visible bolt + impact don't
+    // render blank while Babylon compiles shaders and uploads textures on
+    // demand. Without this, "Fire + capture" misses the bolt on the very
+    // first try because CreateScreenshotUsingRenderTarget's _RetryWithInterval
+    // is still waiting for the bolt material to become ready when the bolt
+    // has already faded.
+    BabylonLightning.preWarm(scene);
+    BabylonImpact.preWarm(scene);
+
     this.rendererStatus.set('Loading model library…');
     await this.babylonModel.init();
 
@@ -1089,10 +1234,12 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Render the current view to a PNG at the chosen resolution and trigger a
-   * download. Uses CreateScreenshotUsingRenderTarget so the output size is
-   * decoupled from the canvas; for transparent backgrounds we briefly swap
-   * scene.clearColor to (0,0,0,0) and restore afterwards.
+   * Render the current view to a PNG at the chosen resolution and open it in
+   * the preview modal — the user decides whether to download it via
+   * saveScreenshot() or throw it away via discardScreenshot(). Uses
+   * CreateScreenshotUsingRenderTarget so the output size is decoupled from the
+   * canvas; for transparent backgrounds we briefly swap scene.clearColor to
+   * (0,0,0,0) and restore afterwards.
    */
   async takeScreenshot(): Promise<void> {
     if (!this.camera || !this.rendererReady() || this.screenshotBusy()) return;
@@ -1111,23 +1258,57 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     try {
       const dataUrl = await new Promise<string>((resolve, reject) => {
         try {
+          // samples=1, antialiasing=false: FXAA + MSAA each add an async
+          // ready-check stage (FxaaPostProcess onCompiled) that adds frames
+          // before the capture runs. For short-lived transient VFX like the
+          // Tesla bolt (700ms) those extra frames let the bolt fade.
+          //
+          // customizeTexture: Babylon snapshots scene.meshes into renderList at
+          // call time (screenshotTools.js: texture.renderList = scene.meshes.slice()).
+          // _RetryWithInterval then waits for camera.isReady(true), which can
+          // span several frames. During those frames the VFX's beforeRender keeps
+          // ticking and may dispose the bolt/shockwave (lifetime 600-700ms).
+          // The snapshot then points at disposed meshes → invisible in the PNG.
+          // Setting renderList=null forces the RTT to use scene.meshes live at
+          // render time, so whatever VFX exists when capture finally runs gets
+          // rendered.
           Tools.CreateScreenshotUsingRenderTarget(
-            engine, this.camera!, {width, height}, resolve, 'image/png', 4, true
+            engine, this.camera!, {width, height}, resolve, 'image/png', 1, false,
+            undefined, false, false, true, undefined,
+            (texture) => { texture.renderList = null; }
           );
         } catch (e) { reject(e); }
       });
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = this.makeScreenshotFilename(width, height);
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      this.screenshotPreview.set({
+        dataUrl,
+        w: width,
+        h: height,
+        filename: this.makeScreenshotFilename(width, height),
+      });
     } catch (e) {
       console.error('[Studio] screenshot failed', e);
     } finally {
       scene.clearColor = originalClear;
       this.screenshotBusy.set(false);
     }
+  }
+
+  /** Download the pending preview as a PNG and close the dialog. */
+  saveScreenshot(): void {
+    const p = this.screenshotPreview();
+    if (!p) return;
+    const a = document.createElement('a');
+    a.href = p.dataUrl;
+    a.download = p.filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    this.screenshotPreview.set(null);
+  }
+
+  /** Throw away the pending preview without downloading. */
+  discardScreenshot(): void {
+    this.screenshotPreview.set(null);
   }
 
   private makeScreenshotFilename(w: number, h: number): string {
