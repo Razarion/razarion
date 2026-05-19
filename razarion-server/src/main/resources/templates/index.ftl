@@ -2,23 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Razarion - Open World Browser RTS Game powered by WebAssembly</title>
+    <title>Razarion – Open-World Browser RTS powered by WebAssembly</title>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Open world browser RTS game powered by WebAssembly, inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. Open-source and community-driven.">
+    <meta name="description" content="Open-world browser RTS inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. No download — runs in your browser via WebAssembly. Open-source and community-driven.">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/augmented-ui@2/augmented-ui.min.css">
 
     <!-- Open Graph Tags -->
-    <meta property="og:title" content="Razarion - Open World Browser RTS Game powered by WebAssembly">
-    <meta property="og:description" content="Open world browser RTS game powered by WebAssembly, inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. Open-source and community-driven.">
+    <meta property="og:title" content="Razarion – Open-World Browser RTS powered by WebAssembly">
+    <meta property="og:description" content="Open-world browser RTS inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. No download — runs in your browser via WebAssembly. Open-source and community-driven.">
     <meta property="og:image" content="https://razarion.com/card.jpg">
     <meta property="og:url" content="https://razarion.com">
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Razarion">
 
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Razarion - Open World Browser RTS Game powered by WebAssembly">
-    <meta name="twitter:description" content="Open world browser RTS game powered by WebAssembly, inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. Open-source and community-driven.">
+    <meta name="twitter:site" content="@AloRtsDev">
+    <meta name="twitter:title" content="Razarion – Open-World Browser RTS powered by WebAssembly">
+    <meta name="twitter:description" content="Open-world browser RTS inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. No download — runs in your browser via WebAssembly. Open-source and community-driven.">
     <meta name="twitter:image" content="https://razarion.com/card.jpg">
 
     <style>
@@ -26,40 +29,80 @@
         html,body{height:100%;overflow:hidden}
         body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#0a0a12;color:#e0e0e0;line-height:1.6}
 
-        .landing{height:100vh;background:linear-gradient(180deg,rgba(10,10,18,0.2) 0%,rgba(10,10,18,0.5) 50%,rgba(10,10,18,0.8) 100%),url('/razarion-bg.webp') center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem}
+        .landing{height:100vh;background:linear-gradient(180deg,rgba(10,10,18,0) 0%,rgba(10,10,18,0) 35%,rgba(10,10,18,0.55) 65%,rgba(10,10,18,0.88) 100%),url('/razarion-bg.webp') center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:2rem 2rem 18vh}
 
-        .logo{font-size:clamp(2.5rem,8vw,4.5rem);font-weight:800;color:#fff;text-shadow:0 0 40px rgba(255,119,51,0.5),0 0 80px rgba(255,119,51,0.3);margin-bottom:0.5rem;animation:glow 3s ease-in-out infinite alternate}
-        @keyframes glow{from{text-shadow:0 0 40px rgba(255,119,51,0.5),0 0 80px rgba(255,119,51,0.3)}to{text-shadow:0 0 60px rgba(255,119,51,0.7),0 0 100px rgba(255,119,51,0.4)}}
+        @keyframes panelGlow{0%,100%{filter:drop-shadow(0 0 28px rgba(255,119,51,0.45)) drop-shadow(0 0 60px rgba(80,200,255,0.12))}50%{filter:drop-shadow(0 0 55px rgba(255,140,60,0.85)) drop-shadow(0 0 100px rgba(80,200,255,0.35))}}
+        @keyframes chevPulse{0%,100%{color:#f73;text-shadow:0 0 6px rgba(255,140,60,0.7)}50%{color:#fc6;text-shadow:0 0 14px rgba(255,180,80,1),0 0 4px #fff}}
+        @keyframes titleShimmer{0%,100%{text-shadow:0 0 14px rgba(255,140,60,0.9),0 0 4px rgba(255,255,255,0.4)}50%{text-shadow:0 0 22px rgba(255,180,80,1),0 0 8px rgba(255,255,255,0.7),0 0 40px rgba(255,140,60,0.6)}}
+        @keyframes btnShine{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
-        .tagline{font-size:clamp(1rem,3vw,1.4rem);color:#ddd;margin-bottom:2rem;max-width:550px}
+        /* augmented-ui shape config — tweak these to experiment.
+           Try other shapes: tl-2-clip-x, tr-rect, br-round, bl-scoop, t-clip-x (notch), etc.
+           See augmented-ui.com builder for live preview. */
+        .info-panel{
+            --aug-border-all:1px;
+            --aug-border-bg:linear-gradient(180deg,#f85 0%,#f73 35%,rgba(80,200,255,0.55) 75%,#5cf 100%);
+            --aug-inlay-bg:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(255,255,255,0.03) 3px,rgba(255,255,255,0.03) 4px),repeating-linear-gradient(90deg,transparent 0,transparent 24px,rgba(255,119,51,0.04) 24px,rgba(255,119,51,0.04) 25px),linear-gradient(180deg,rgba(18,28,42,0.92) 0%,rgba(5,10,16,0.96) 100%);
+            --aug-tl:14px;
+            --aug-tr:36px;
+            --aug-br:14px;
+            --aug-bl:36px;
+            position:relative;
+            padding:2rem 2.5rem;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            max-width:640px;
+            animation:panelGlow 3.5s ease-in-out infinite
+        }
 
-        @keyframes pulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,119,85,0.7)}70%{transform:scale(1.05);box-shadow:0 0 10px 10px rgba(255,119,85,0)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,119,85,0)}}
-        .button{all:unset;cursor:pointer;background:linear-gradient(180deg,#f75 0%,#a41 100%);border:1px solid #931;padding:10px 25px;color:#fff;font-size:larger;font-weight:900;text-align:center;border-radius:4px;transition:transform 0.2s ease,box-shadow 0.2s ease;animation:pulse 2s infinite}
-        .button:hover{transform:scale(1.1);box-shadow:0 0 10px #f75}
+        .tagline{position:relative;z-index:1;font-size:clamp(1rem,2.8vw,1.35rem);color:#fff;margin-bottom:1.2rem;padding-bottom:1rem;width:100%;text-transform:uppercase;letter-spacing:0.22em;font-weight:800;border-bottom:1px solid rgba(255,119,51,0.5);animation:titleShimmer 2.8s ease-in-out infinite}
 
-        .features{list-style:none;margin-top:2rem;text-align:left;display:inline-block;background-color:#0000004f;padding:1rem 1.5rem;border-radius:8px}
-        .features li{padding:0.4rem 0;padding-left:1.5rem;position:relative;color:#ccc;font-size:1.05rem}
-        .features li::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:8px;height:8px;background:#f73;border-radius:50%}
+        @keyframes pulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,119,85,0.8),0 0 0 0 rgba(80,200,255,0.4)}70%{transform:scale(1.07);box-shadow:0 0 12px 16px rgba(255,119,85,0),0 0 18px 24px rgba(80,200,255,0)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,119,85,0),0 0 0 0 rgba(80,200,255,0)}}
+        .button{all:unset;position:relative;z-index:1;cursor:pointer;background:linear-gradient(110deg,#f85 0%,#f73 40%,#fc6 50%,#f73 60%,#a41 100%);background-size:250% 100%;border:1px solid #c52;padding:14px 44px;color:#fff;font-size:1.3rem;font-weight:900;text-align:center;clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%);transition:transform 0.2s ease,filter 0.2s ease;animation:pulse 1.8s infinite,btnShine 3s linear infinite;letter-spacing:0.18em;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.8),0 0 14px rgba(255,180,80,0.7)}
+        .button:hover{transform:scale(1.12);filter:brightness(1.25) drop-shadow(0 0 18px #f85) drop-shadow(0 0 28px rgba(80,200,255,0.5))}
 
-        .social-links{margin-top:2rem;display:flex;gap:1.5rem;justify-content:center}
-        .social-links a{color:#aaa;text-decoration:none;font-size:0.95rem;transition:color 0.3s}
+        .features{position:relative;z-index:1;list-style:none;margin-top:1.5rem;text-align:left;display:inline-block;padding:0}
+        .features li{padding:0.35rem 0;padding-left:1.7rem;position:relative;color:#e8e8e8;font-size:1rem}
+        .features li::before{content:'\25B8';position:absolute;left:0.1rem;top:0.32rem;color:#f73;font-size:1.05rem;line-height:1;animation:chevPulse 2.5s ease-in-out infinite}
+        .features li:nth-child(2)::before{animation-delay:0.3s}
+        .features li:nth-child(3)::before{animation-delay:0.6s}
+        .features li:nth-child(4)::before{animation-delay:0.9s}
+        .features li:nth-child(5)::before{animation-delay:1.2s}
+        .features li:nth-child(6)::before{animation-delay:1.5s}
+
+        .social-links{margin-top:1.5rem;display:flex;gap:1.5rem;justify-content:center}
+        .social-links a{color:#ddd;text-decoration:none;font-size:0.95rem;transition:color 0.3s;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
         .social-links a:hover{color:#f73}
         .social-links svg{width:20px;height:20px;vertical-align:middle;margin-right:0.4rem;fill:currentColor}
+
+        @media (max-height:700px){
+            .features{display:none}
+            .landing{padding-bottom:8vh}
+            .info-panel{padding:1rem 1.5rem}
+        }
+        @media (max-width:480px){
+            .features li{font-size:0.92rem}
+            .landing{background-position:center top}
+            .info-panel{padding:1.25rem 1.25rem}
+        }
     </style>
 </head>
 <body>
     <section class="landing">
-        <h1 class="logo">RAZARION</h1>
-        <p class="tagline">Open world browser RTS game</p>
-        <button class="button" onclick="location.href='/game${qs}'">Play Now</button>
-        <ul class="features">
-            <li>RTS mechanics like Command & Conquer and StarCraft</li>
-            <li>Persistent world - always online</li>
-            <li>Massive shared map with all players</li>
-            <li>Quests, levels, and unlockable units</li>
-            <li>No download - plays in your browser via WebAssembly</li>
-            <li>Open-source, nonprofit, and community-driven</li>
-        </ul>
+        <h1 class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0">RAZARION</h1>
+        <div class="info-panel" data-augmented-ui="tl-clip tr-clip br-clip bl-clip both">
+            <p class="tagline">Open-world browser RTS</p>
+            <button class="button" onclick="location.href='/game${qs}'">Play Now</button>
+            <ul class="features">
+                <li>RTS mechanics like Command & Conquer and StarCraft</li>
+                <li>Persistent world - always online</li>
+                <li>Massive shared map with all players</li>
+                <li>Quests, levels, and unlockable units</li>
+                <li>No download - plays in your browser via WebAssembly</li>
+                <li>Open-source, nonprofit, and community-driven</li>
+            </ul>
+        </div>
         <div class="social-links">
             <a href="https://github.com/Razarion/razarion" target="_blank" rel="noopener">
                 <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>

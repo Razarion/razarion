@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild, inject, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {
+  AbstractMesh,
   ArcRotateCamera,
   Color3,
   Color4,
@@ -8,6 +9,7 @@ import {
   GizmoManager,
   Mesh,
   PointerEventTypes,
+  Ray,
   Scene,
   ShadowGenerator,
   Tools,
@@ -16,6 +18,7 @@ import {
 } from '@babylonjs/core';
 import {StudioSceneSummary} from '../../../../../src/app/generated/razarion-share';
 import {BabylonModelService} from '../../../../../src/app/game/renderer/babylon-model.service';
+import {BabylonBuildupEffect} from '../../../../../src/app/game/renderer/babylon-buildup-effect';
 import {BabylonExplosion} from '../../../../../src/app/game/renderer/babylon-explosion';
 import {BabylonHarvestingBeam} from '../../../../../src/app/game/renderer/babylon-harvesting-beam';
 import {BabylonImpact} from '../../../../../src/app/game/renderer/babylon-impact';
@@ -24,7 +27,7 @@ import {BabylonMuzzleFlash} from '../../../../../src/app/game/renderer/babylon-m
 import {BabylonResourceDecal} from '../../../../../src/app/game/renderer/babylon-resource-decal';
 import {BabylonResourceSparkle} from '../../../../../src/app/game/renderer/babylon-resource-sparkle';
 import {BabylonWreckage} from '../../../../../src/app/game/renderer/babylon-wreckage';
-import {BabylonRenderServiceAccessImpl} from '../../../../../src/app/game/renderer/babylon-render-service-access-impl.service';
+import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from '../../../../../src/app/game/renderer/babylon-render-service-access-impl.service';
 import {RenderObject} from '../../../../../src/app/game/renderer/render-object';
 import {Diplomacy} from '../../../../../src/app/gwtangular/GwtAngularFacade';
 import {ObjectNameId} from '../../../../../src/app/generated/razarion-share';
@@ -269,6 +272,38 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
                 <div class="prop-row">
                   <button (click)="toggleHarvest(it.id)">
                     {{ isHarvesting(it.id) ? 'Stop harvest' : 'Start harvest' }}
+                  </button>
+                </div>
+              }
+              <div class="prop-row">
+                <span class="prop-label">Build target</span>
+                <select [ngModel]="it.buildTargetId ?? ''" (ngModelChange)="updateProp('buildTargetId', $event)">
+                  <option value="">— none —</option>
+                  @for (b of buildTargets(it.id); track b.id) {
+                    <option [value]="b.id">{{ libraryLabel(b) }} #{{ b.id }}</option>
+                  }
+                </select>
+              </div>
+              @if (it.buildTargetId != null) {
+                <div class="prop-row">
+                  <button (click)="toggleBuild(it.id)">
+                    {{ isBuilding(it.id) ? 'Stop build' : 'Start build' }}
+                  </button>
+                </div>
+              }
+              <div class="prop-row">
+                <span class="prop-label">Fabricate type</span>
+                <select [ngModel]="it.fabricateTypeId ?? ''" (ngModelChange)="updateProp('fabricateTypeId', $event)">
+                  <option value="">— none —</option>
+                  @for (t of fabricateTypes(); track t.id) {
+                    <option [value]="t.id">{{ t.internalName }}</option>
+                  }
+                </select>
+              </div>
+              @if (it.fabricateTypeId != null) {
+                <div class="prop-row">
+                  <button (click)="toggleFabricate(it.id)">
+                    {{ isFabricating(it.id) ? 'Stop fabricate' : 'Start fabricate' }}
                   </button>
                 </div>
               }
@@ -714,6 +749,32 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   /** Last spawned radius per resource — used to detect scale changes in
    *  applyToNode so position-only updates don't restart the sparkle particles. */
   private readonly resourceRadii = new Map<number, number>();
+  /** Active build effects keyed by builder item id. Each entry owns two
+   *  BabylonBuildupEffects (one for the target's scan ring + grid hologram,
+   *  one for the builder's beam) and the interval that drives the buildup
+   *  progress 0→1 loop. Volatile — never persisted; a saved scene loads idle. */
+  private readonly buildEffects = new Map<number, {
+    builderEffect: BabylonBuildupEffect;
+    targetEffect: BabylonBuildupEffect;
+    intervalHandle: ReturnType<typeof setInterval>;
+    targetId: number;
+  }>();
+  private readonly buildTick = signal(0);
+  /** Active factory fabrication effects keyed by factory item id. Each entry
+   *  owns the scan plate, the cloned preview unit, the preview buildup effect,
+   *  and the interval driving the progress loop. Volatile — never persisted. */
+  private readonly fabricateEffects = new Map<number, {
+    scanEffect: BabylonBuildupEffect;
+    previewBuildupEffect: BabylonBuildupEffect;
+    previewRenderObject: RenderObject;
+    intervalHandle: ReturnType<typeof setInterval>;
+    /** Set to true after the factory's intro animation finishes — the progress
+     *  loop only ticks while this is true so the columns finish lowering before
+     *  we start scrubbing them back up. */
+    inProgressPhase: boolean;
+    progressStartTime: number;
+  }>();
+  private readonly fabricateTick = signal(0);
 
   async ngOnInit(): Promise<void> {
     if (!this.hasToken()) return;
@@ -815,6 +876,19 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
    *  the source of the BabylonHarvestingBeam's crystals. */
   harvestTargets(excludeId: number): SceneItem[] {
     return (this.content()?.items ?? []).filter(i => i.id !== excludeId && i.kind === 'resource');
+  }
+
+  /** Base items in the scene, excluding the given id. Used by the
+   *  build-target dropdown — only base-kind items receive a BabylonBuildupEffect
+   *  scan ring + grid hologram during construction. */
+  buildTargets(excludeId: number): SceneItem[] {
+    return (this.content()?.items ?? []).filter(i => i.id !== excludeId && i.kind === 'base');
+  }
+
+  /** All base-kind items in the thumbnail library that have a model3D — these
+   *  are the unit types a factory can fabricate. */
+  fabricateTypes(): ThumbnailItem[] {
+    return this.thumbStorage.items().filter(i => i.kind === 'base' && i.model3DId != null);
   }
 
   // ===== Attack VFX =====
@@ -948,6 +1022,247 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     beam.dispose();
     this.harvestingBeams.delete(id);
     this.harvestTick.update(n => n + 1);
+  }
+
+  // ===== Build VFX (builder → building under construction) =====
+
+  isBuilding(id: number): boolean {
+    // Read buildTick so the template re-evaluates when toggleBuild runs.
+    this.buildTick();
+    return this.buildEffects.has(id);
+  }
+
+  /** Start or stop the construction beam + buildup hologram for the given
+   *  item. Mirrors the production setBuildingPosition() flow: target gets a
+   *  scan ring + grid material on its upper meshes, builder fires a beam at
+   *  the scan ring, builder's intro/loop AnimationGroups play.
+   *
+   *  The buildup progress cycles 0→1 over 10s indefinitely so the user has a
+   *  wide window to screenshot at any point in the construction. */
+  toggleBuild(id: number): void {
+    if (this.buildEffects.has(id)) {
+      this.stopBuild(id);
+      return;
+    }
+    const item = this.content()?.items.find(i => i.id === id);
+    if (!item || item.buildTargetId == null) return;
+    const target = this.content()?.items.find(i => i.id === item.buildTargetId);
+    if (!target) return;
+    const renderObject = this.renderObjects.get(id);
+    const builderNode = this.nodes.get(id);
+    const targetNode = this.nodes.get(target.id);
+    if (!renderObject || !builderNode || !targetNode) return;
+
+    const scene = this.babylonRender.getScene();
+
+    // Target effect: scan ring + grid material on the building's meshes.
+    // BabylonBuildupEffect.init() captures the meshes' current materials so we
+    // can restore them on stop; createRing() builds the holographic plate +
+    // sparks under the building.
+    const targetRadius = this.estimateNodeRadius(targetNode);
+    const targetEffect = new BabylonBuildupEffect(
+      scene, targetNode as unknown as Mesh,
+      BabylonRenderServiceAccessImpl.color4Diplomacy(target.diplomacy as Diplomacy),
+      targetRadius,
+    );
+    targetEffect.init();
+    targetEffect.createRing();
+    // Initial paint so the very first frame already shows grid material —
+    // otherwise init() left meshes invisible until the first interval tick.
+    targetEffect.updateVisibility(0);
+
+    // Builder effect: only used to hold the construction beam, no scan ring.
+    const builderEffect = new BabylonBuildupEffect(
+      scene, builderNode as unknown as Mesh,
+      BabylonRenderServiceAccessImpl.color4Diplomacy(item.diplomacy as Diplomacy),
+      this.estimateNodeRadius(builderNode),
+    );
+
+    // The beam starts AFTER the builder's intro animation finishes (e.g. the
+    // arm rises into position). For units without an intro phase the callback
+    // fires synchronously.
+    renderObject.setBuildAnimationActive(true, () => {
+      // Defensive: stopBuild may have fired between toggleBuild and intro end.
+      if (!this.buildEffects.has(id)) return;
+      builderEffect.startBuildingBeam(
+        targetNode.position.clone(),
+        {
+          getBeamOrigin: () => renderObject.getBeamOrigin(),
+          getContainerPosition: () => renderObject.getModel3D().getAbsolutePosition().clone(),
+        },
+        (_target) => {
+          // Resolve the beam endpoint each frame from the target effect's
+          // scan-line absolute position — tracks live if the user drags
+          // either item with the gizmo.
+          if (targetEffect.scanLine) {
+            targetEffect.scanLine.computeWorldMatrix(true);
+            return targetEffect.scanLine.getAbsolutePosition().clone();
+          }
+          return null;
+        }
+      );
+    });
+
+    // Animate buildup 0→1 over 10s, loop. Looping (rather than holding at 1)
+    // keeps grid material visible for screenshots regardless of when the user
+    // hits Capture.
+    const cycleMs = 10000;
+    const startTime = Date.now();
+    const intervalHandle = setInterval(() => {
+      const elapsed = (Date.now() - startTime) % cycleMs;
+      targetEffect.updateVisibility(elapsed / cycleMs);
+    }, 50);
+
+    this.buildEffects.set(id, {builderEffect, targetEffect, intervalHandle, targetId: target.id});
+    this.buildTick.update(n => n + 1);
+  }
+
+  private stopBuild(id: number): void {
+    const eff = this.buildEffects.get(id);
+    if (!eff) return;
+    clearInterval(eff.intervalHandle);
+    eff.builderEffect.cleanup();
+    eff.targetEffect.cleanup();
+    this.renderObjects.get(id)?.setBuildAnimationActive(false);
+    this.buildEffects.delete(id);
+    this.buildTick.update(n => n + 1);
+  }
+
+  /** Half the larger of the local XZ bounding-box extents across all visible
+   *  child meshes. Used as the BabylonBuildupEffect radius for items where we
+   *  don't have access to the production PhysicalAreaConfig. */
+  private estimateNodeRadius(node: TransformNode): number {
+    node.computeWorldMatrix(true);
+    let radius = 1;
+    for (const child of node.getChildMeshes()) {
+      if (!child.isVisible || child.getTotalVertices() === 0) continue;
+      const bb = child.getBoundingInfo().boundingBox;
+      const dx = bb.maximumWorld.x - bb.minimumWorld.x;
+      const dz = bb.maximumWorld.z - bb.minimumWorld.z;
+      radius = Math.max(radius, Math.max(dx, dz) / 2);
+    }
+    return radius;
+  }
+
+  // ===== Fabricate VFX (factory building a unit) =====
+
+  isFabricating(id: number): boolean {
+    // Read fabricateTick so the template re-evaluates when toggleFabricate runs.
+    this.fabricateTick();
+    return this.fabricateEffects.has(id);
+  }
+
+  /** Start or stop the factory's fabrication animation. Mirrors the production
+   *  setConstructing() flow: factory plays intro (columns lower), then loops
+   *  progress 0→1 (columns rise, scan plate tracks them, preview unit is
+   *  assembled with grid material clipping above the scan plate).
+   *
+   *  Requires the factory's RenderObject to have progress AnimationGroups —
+   *  no-op with a console warn otherwise. */
+  toggleFabricate(id: number): void {
+    if (this.fabricateEffects.has(id)) {
+      this.stopFabricate(id);
+      return;
+    }
+    const item = this.content()?.items.find(i => i.id === id);
+    if (!item || item.fabricateTypeId == null) return;
+    const renderObject = this.renderObjects.get(id);
+    const factoryNode = this.nodes.get(id);
+    if (!renderObject || !factoryNode) return;
+
+    if (!renderObject.hasProgressAnimation()) {
+      console.warn('[Studio] item', id, 'has no progress animation — not a factory model');
+      return;
+    }
+    const footprint = renderObject.getProgressAnimationFootprintExtents();
+    if (!footprint) {
+      console.warn('[Studio] factory has no footprint extents');
+      return;
+    }
+    const unitLib = this.thumbStorage.items().find(l => l.kind === 'base' && l.id === item.fabricateTypeId);
+    if (!unitLib || unitLib.model3DId == null) {
+      console.warn('[Studio] fabricate type', item.fabricateTypeId, 'has no model3D');
+      return;
+    }
+
+    const scene = this.babylonRender.getScene();
+
+    // Holographic build preview cloned inside the factory container so the
+    // model rises with the column animation (the preview's mesh visibility is
+    // clipped above the scan plate via the buildup effect).
+    const previewRenderObject = this.babylonModel.cloneModel3D(unitLib.model3DId, factoryNode, item.diplomacy as Diplomacy);
+    previewRenderObject.setPositionXZ(footprint.centerX, footprint.centerZ);
+
+    // Rectangular scan plate sized to the factory's rising-column footprint.
+    const scanEffect = new BabylonBuildupEffect(
+      scene, factoryNode as unknown as Mesh,
+      BabylonRenderServiceAccessImpl.color4Diplomacy(item.diplomacy as Diplomacy),
+      Math.min(footprint.width, footprint.depth) / 2,
+    );
+    scanEffect.createRectangularScan(footprint.width, footprint.depth);
+    if (scanEffect.scanLine) {
+      scanEffect.scanLine.position.x = footprint.centerX;
+      scanEffect.scanLine.position.z = footprint.centerZ;
+    }
+
+    // Preview buildup: drives the clip line so meshes below the scan plate use
+    // the unit's normal material and meshes above use the grid hologram. We
+    // skip createRing() — the factory has its own scan plate.
+    const previewMesh = previewRenderObject.getModel3D() as Mesh;
+    const previewBuildupEffect = new BabylonBuildupEffect(
+      scene, previewMesh,
+      BabylonRenderServiceAccessImpl.color4Diplomacy(item.diplomacy as Diplomacy),
+      1, // unused: createRing is not called
+    );
+    previewBuildupEffect.init();
+
+    const state = {
+      scanEffect, previewBuildupEffect, previewRenderObject,
+      intervalHandle: null as any,
+      inProgressPhase: false,
+      progressStartTime: 0,
+    };
+
+    renderObject.setBuildAnimationActive(true, () => {
+      // Defensive: stopFabricate may have fired before the intro ended.
+      if (!this.fabricateEffects.has(id)) return;
+      state.inProgressPhase = true;
+      state.progressStartTime = Date.now();
+    });
+
+    // Animate progress 0→1 over 8s, loop. Each tick scrubs the column
+    // animation, repositions the scan plate, and updates the preview clip.
+    const cycleMs = 8000;
+    state.intervalHandle = setInterval(() => {
+      if (!state.inProgressPhase) return;
+      const elapsed = (Date.now() - state.progressStartTime) % cycleMs;
+      const progress = elapsed / cycleMs;
+      renderObject.setProgressAnimationValue(progress);
+      const yRange = renderObject.getProgressAnimationLocalYRange();
+      if (yRange) {
+        const localY = yRange.min + progress * (yRange.max - yRange.min);
+        if (state.scanEffect.scanLine) {
+          state.scanEffect.scanLine.position.y = localY;
+        }
+        const worldScanY = factoryNode.position.y + localY;
+        state.previewBuildupEffect.applyMeshVisibilityAtWorldY(worldScanY);
+      }
+    }, 33);
+
+    this.fabricateEffects.set(id, state);
+    this.fabricateTick.update(n => n + 1);
+  }
+
+  private stopFabricate(id: number): void {
+    const eff = this.fabricateEffects.get(id);
+    if (!eff) return;
+    clearInterval(eff.intervalHandle);
+    eff.scanEffect.cleanupRing();
+    eff.previewBuildupEffect.cleanup();
+    eff.previewRenderObject.dispose();
+    this.renderObjects.get(id)?.setBuildAnimationActive(false);
+    this.fabricateEffects.delete(id);
+    this.fabricateTick.update(n => n + 1);
   }
 
   // ===== Resource VFX (decal + sparkle) =====
@@ -1174,13 +1489,17 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   spawnFromLibrary(libItem: ThumbnailItem): void {
     if (libItem.model3DId == null) return;
     // Spawn at what the camera is looking at, so the new item lands in the
-    // viewport's centre instead of always at world origin.
+    // viewport's centre instead of always at world origin. Snap Y to the
+    // terrain height under that XZ so units don't float / sink into the
+    // ground — useful when populating a background-shot with many items
+    // without manually fixing every Y in the gizmo afterwards.
     const t = this.camera?.target ?? Vector3.Zero();
+    const groundY = this.pickTerrainHeight(t.x, t.z);
     const item: SceneItem = {
       id: this.nextItemId++,
       kind: libItem.kind,
       itemTypeId: libItem.id,
-      position: [t.x, t.y, t.z],
+      position: [t.x, groundY ?? t.y, t.z],
       rotationY: 0,
       scale: 1,
       diplomacy: 'OWN'
@@ -1189,6 +1508,22 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     this.spawnNode(item);
     this.selectedItemId.set(item.id);
     this.attachGizmoToSelection();
+  }
+
+  /** Raycast straight down through the loaded terrain meshes at (x, z) and
+   *  return the Y of the first hit, or null if there's no terrain there
+   *  (scene without a planet, or the XZ is outside the loaded tiles). Mirrors
+   *  the picker BabylonResourceDecal uses for its decal placement. */
+  private pickTerrainHeight(x: number, z: number): number | null {
+    if (!this.rendererReady()) return null;
+    const scene = this.babylonRender.getScene();
+    const ray = new Ray(new Vector3(x, 1000, z), new Vector3(0, -1, 0), 2000);
+    const pick = scene.pickWithRay(ray, (mesh: AbstractMesh) => {
+      const meta = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
+      if (!meta) return false;
+      return meta.type === RazarionMetadataType.GROUND || meta.type === RazarionMetadataType.BOT_GROUND;
+    });
+    return pick?.pickedPoint?.y ?? null;
   }
 
   /** Persist + reload terrain when the user picks a different planet. */
@@ -1219,7 +1554,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     this.gizmoManager?.attachToMesh(null);
   }
 
-  updateProp(field: 'px' | 'py' | 'pz' | 'ry' | 's' | 'diplomacy' | 'attackTargetId' | 'explodeTargetOnFire' | 'harvestTargetId', value: number | string | boolean): void {
+  updateProp(field: 'px' | 'py' | 'pz' | 'ry' | 's' | 'diplomacy' | 'attackTargetId' | 'explodeTargetOnFire' | 'harvestTargetId' | 'buildTargetId' | 'fabricateTypeId', value: number | string | boolean): void {
     const id = this.selectedItemId();
     if (id == null) return;
     this.content.update(c => {
@@ -1249,6 +1584,20 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
             // target (if any) requires a fresh toggle so the user sees the
             // change deliberately, not silently rebuilt against a new rock.
             this.stopHarvest(id);
+            break;
+          }
+          case 'buildTargetId': {
+            const v = String(value);
+            next.buildTargetId = v === '' ? null : parseInt(v, 10);
+            // Same idea as harvest: a target swap requires a fresh toggle so
+            // the previous target's grid materials get restored cleanly.
+            this.stopBuild(id);
+            break;
+          }
+          case 'fabricateTypeId': {
+            const v = String(value);
+            next.fabricateTypeId = v === '' ? null : parseInt(v, 10);
+            this.stopFabricate(id);
             break;
           }
         }
@@ -1575,6 +1924,14 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   private disposeItem(id: number): void {
     this.stopAttackLoop(id);
     this.stopHarvest(id);
+    this.stopBuild(id);
+    this.stopFabricate(id);
+    // If this item was someone else's build target, that builder's targetEffect
+    // is about to reference disposed meshes — stop those builds first so their
+    // cleanup() runs while the meshes are still alive.
+    for (const [builderId, eff] of this.buildEffects) {
+      if (eff.targetId === id) this.stopBuild(builderId);
+    }
     this.disposeResourceVfx(id);
     const ro = this.renderObjects.get(id);
     if (ro) ro.dispose();

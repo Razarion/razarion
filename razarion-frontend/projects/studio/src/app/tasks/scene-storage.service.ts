@@ -51,6 +51,14 @@ export interface SceneItem {
    *  BabylonHarvestingBeam (red beam + spiraling crystals). Only meaningful
    *  when the target's kind === 'resource'. */
   harvestTargetId?: number | null;
+  /** Another item in the scene this one is building (a base item under
+   *  construction). Drives the BabylonBuildupEffect on the target (scan ring
+   *  + grid hologram) and a construction beam from this item. */
+  buildTargetId?: number | null;
+  /** Base ItemType id this item is fabricating inside itself (factories only).
+   *  Drives the factory's progress animation, the rectangular scan plate, and
+   *  the holographic build preview of the unit being assembled. */
+  fabricateTypeId?: number | null;
 }
 
 export interface SceneParticle {
