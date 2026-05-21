@@ -50,7 +50,7 @@ public class MoveTest extends BaseBasicTest {
         permSlave.tickPlanetServiceBaseServiceActive();
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         getCommandService().move(builder, new DecimalPosition(175, 72));
-        showDisplay();
+        // showDisplay();
         tickPlanetServiceBaseServiceActive();
         permSlave.tickPlanetServiceBaseServiceActive();
         TestHelper.assertDecimalPosition(null, new DecimalPosition(55, 20), builder.getAbstractSyncPhysical().getPosition(), 0.5);

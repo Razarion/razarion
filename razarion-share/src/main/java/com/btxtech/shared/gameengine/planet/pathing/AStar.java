@@ -2,7 +2,12 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -129,5 +134,35 @@ public class AStar {
 
     public int getCloseListSize() {
         return closedList.size();
+    }
+
+    public boolean isPathFound() {
+        return pathFound;
+    }
+
+    /**
+     * The reachable node closest to the destination — equals destinationNode when
+     * pathFound, otherwise the best A* candidate before openList was exhausted.
+     */
+    public PathingNodeWrapper getReachedNode() {
+        if (pathFound) {
+            return destinationNode.getPathingNodeWrapper();
+        }
+        if (bestFitNode != null) {
+            return bestFitNode.getPathingNodeWrapper();
+        }
+        return startNode;
+    }
+
+    public Collection<PathingNodeWrapper> getClosedListNodes() {
+        return closedList.keySet();
+    }
+
+    public PathingNodeWrapper getStartNode() {
+        return startNode;
+    }
+
+    public PathingNodeWrapper getDestinationNode() {
+        return destinationNode.getPathingNodeWrapper();
     }
 }

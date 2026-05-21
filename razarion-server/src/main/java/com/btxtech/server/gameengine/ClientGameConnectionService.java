@@ -1,5 +1,7 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.server.service.tracking.PageRequestService;
+import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -42,13 +44,19 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
     private final Provider<ClientGameConnection> provider;
     private final Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter;
     private final UserService userService;
+    private final PageRequestService pageRequestService;
+    private final RedditConversionService redditConversionService;
 
     public ClientGameConnectionService(Provider<ClientGameConnection> provider,
                                        Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter,
-                                       UserService userService) {
+                                       UserService userService,
+                                       PageRequestService pageRequestService,
+                                       RedditConversionService redditConversionService) {
         this.provider = provider;
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
         this.userService = userService;
+        this.pageRequestService = pageRequestService;
+        this.redditConversionService = redditConversionService;
     }
 
     @Override
@@ -65,6 +73,11 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
             gameConnections.put(userId, clientGameConnection);
         }
         clientGameConnection.sendInitialSlaveSyncInfo(clientGameConnection.getUserId());
+        String rdtCid = pageRequestService.findRdtCidByHttpSessionId(httpSessionId);
+        if (rdtCid != null) {
+            redditConversionService.registerUser(userId, rdtCid);
+            redditConversionService.sendClientStartupEvent(rdtCid);
+        }
         // TODO connectionTrackingPersistence.onGameConnectionOpened(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
 
@@ -87,6 +100,7 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
             gameConnections.remove(clientGameConnection.getUserId());
             logger.info("Websocket clientGameConnection closed {}", clientGameConnection);
         }
+        redditConversionService.unregisterUser(clientGameConnection.getUserId());
     }
 
     public void onBaseCreated(PlayerBaseFull playerBase) {

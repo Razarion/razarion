@@ -109,6 +109,7 @@ public class PathingService {
 
         AStar aStar = new AStar(startNode, correctedDestinationNode, aStarContext);
         aStar.expandAllNodes();
+        com.btxtech.shared.system.debugtool.DebugHelperStatic.setLastAStar(aStar);
         for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
             positions.add(pathingNodeWrapper.getCenter());
         }
@@ -116,7 +117,16 @@ public class PathingService {
         if (additionPathElement != null) {
             positions.add(additionPathElement);
         }
-        positions.add(destination);
+        // Append the actually-reachable end-of-path, not the raw destination — if the
+        // original sits inside an obstacle's radius+grow clearance (DestinationFinder
+        // corrected it) or A* gave up before reaching it (pathFound=false, bestFitNode
+        // used), pointing the unit at the original makes it chase a point it cannot
+        // stand on and orbit forever.
+        if (aStar.isPathFound() && correctedDestinationNode.equals(destinationNode)) {
+            positions.add(destination);
+        } else {
+            positions.add(aStar.getReachedNode().getCenter());
+        }
         path.setWayPositions(positions);
         return path;
     }

@@ -17,7 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
-import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
+import com.btxtech.shared.gameengine.planet.gui.TestDisplay;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -104,7 +104,7 @@ public class AbstractDaggerIntegrationTest {
     }
 
     public ItemTypeService getItemTypeService() {
-        return getWeldBean(ItemTypeService.class);
+        return testShareDagger.itemTypeService();
     }
 
     public EnergyService getEnergyService() {
@@ -342,7 +342,7 @@ public class AbstractDaggerIntegrationTest {
     }
 
     public void showDisplay(Object... userObject) {
-        WeldDisplay.show(userObject, testShareDagger);
+        TestDisplay.show(userObject, testShareDagger);
     }
 
     public void exportTriangles(String director, Index... terrainTileIndices) {

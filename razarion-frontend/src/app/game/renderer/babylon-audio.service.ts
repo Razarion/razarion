@@ -50,9 +50,27 @@ export class BabylonAudioService {
     if (typeof speechSynthesis === 'undefined') {
       return;
     }
+    // Browsers expose many voices flagged en-US whose underlying TTS engine has
+    // a French/German/etc. accent (e.g. Microsoft Henri). Prefer known-clean
+    // native English voices by name, then fall back to en-* while excluding
+    // names that signal a non-English origin.
+    const PREFERRED_VOICE_NAMES = [
+      'Google US English',
+      'Microsoft Aria',
+      'Microsoft Jenny',
+      'Microsoft Guy',
+      'Microsoft Davis',
+      'Microsoft Zira',
+      'Microsoft David',
+      'Microsoft Mark',
+    ];
+    const NON_ENGLISH_NAME = /\b(fr|french|de|german|es|spanish|it|italian|pt|portuguese|ru|russian|zh|chinese|ja|japanese|ko|korean|ar|arabic|hi|hindi)\b/i;
     const pickVoice = () => {
       const voices = speechSynthesis.getVoices();
       this.englishVoice =
+        voices.find(v => PREFERRED_VOICE_NAMES.some(p => v.name.includes(p))) ??
+        voices.find(v => v.lang === 'en-US' && !NON_ENGLISH_NAME.test(v.name)) ??
+        voices.find(v => v.lang.startsWith('en') && !NON_ENGLISH_NAME.test(v.name)) ??
         voices.find(v => v.lang === 'en-US') ??
         voices.find(v => v.lang.startsWith('en')) ??
         null;
@@ -75,15 +93,20 @@ export class BabylonAudioService {
     if (typeof speechSynthesis === 'undefined') {
       return;
     }
+    // Skip if no English voice is installed (e.g. Selenium-driven Chrome on a
+    // German Windows system has only de-DE OneCore voices). Without an English
+    // voice, Chrome falls back to its built-in eSpeak engine which produces a
+    // grating French-sounding accent — worse than silence.
+    if (!this.englishVoice) {
+      return;
+    }
     speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
     utterance.rate = 1.1;
     utterance.pitch = 0.9;
     utterance.volume = 0.8;
-    if (this.englishVoice) {
-      utterance.voice = this.englishVoice;
-    }
+    utterance.voice = this.englishVoice;
     speechSynthesis.speak(utterance);
   }
 

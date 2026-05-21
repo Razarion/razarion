@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.shared.gameengine.planet.gui.TestController">
+    <center>
+        <AnchorPane fx:id="anchorPanel" BorderPane.alignment="CENTER">
+            <Canvas fx:id="canvas" height="600.0" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" onScroll="#onScroll" width="800.0"/>
+        </AnchorPane>
+    </center>
+    <top>
+        <ToolBar BorderPane.alignment="CENTER">
+            <Slider fx:id="zoomSlider" majorTickUnit="10.0" max="30.0" min="-10.0" minorTickCount="1" prefWidth="120.0" showTickLabels="true" showTickMarks="true"/>
+            <Button mnemonicParsing="false" onAction="#onZoomResetButton" text="1:1"/>
+            <TextField fx:id="scaleField" editable="false" prefWidth="60.0"/>
+            <Label text="Mouse:"/>
+            <TextField fx:id="mouseLabel" editable="false" prefWidth="120.0"/>
+            <Separator orientation="VERTICAL"/>
+            <Label text="Z min"/>
+            <TextField fx:id="zMinField" onAction="#onMinZChanged" prefWidth="50.0" text="-2"/>
+            <Label text="Z max"/>
+            <TextField fx:id="zMaxField" onAction="#onMaxZChanged" prefWidth="50.0" text="0.5"/>
+            <Separator orientation="VERTICAL"/>
+            <Button mnemonicParsing="false" onAction="#onTestGenerationButton" text="gen Test"/>
+        </ToolBar>
+    </top>
+    <right>
+        <Accordion>
+            <panes>
+                <TitledPane animated="false" expanded="true" text="Terrain">
+                    <VBox spacing="3.0">
+                        <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </padding>
+                        <CheckBox fx:id="shapeTerrainTypeCheck" mnemonicParsing="false" text="Terrain type (LAND/WATER/BLOCKED)"/>
+                        <CheckBox fx:id="shapeTerrainHeightCheck" mnemonicParsing="false" text="Terrain height (grayscale)"/>
+                        <CheckBox fx:id="shapeTerrainObjectCheck" mnemonicParsing="false" text="Terrain objects"/>
+                    </VBox>
+                </TitledPane>
+                <TitledPane animated="false" expanded="true" text="Game engine">
+                    <VBox spacing="5.0">
+                        <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </padding>
+                        <HBox spacing="5.0">
+                            <Button mnemonicParsing="false" onAction="#onTickButton" text="Tick once"/>
+                            <Label text="Tick:"/>
+                            <Label fx:id="tickCountLabel" text="0"/>
+                        </HBox>
+                        <HBox spacing="5.0">
+                            <ToggleButton fx:id="autoTickToggle" mnemonicParsing="false" text="Auto tick"/>
+                            <Label text="Speed (Hz):"/>
+                            <Slider fx:id="autoTickSpeedSlider" majorTickUnit="20.0" max="100.0" min="1.0" prefWidth="120.0" showTickLabels="true" showTickMarks="true" value="10.0"/>
+                        </HBox>
+                        <CheckBox fx:id="syncItemsCheck" mnemonicParsing="false" text="Sync items"/>
+                        <CheckBox fx:id="trailCheck" mnemonicParsing="false" text="Unit position trail"/>
+                        <CheckBox fx:id="aStarClosedListCheck" mnemonicParsing="false" text="A* closed list (last path)"/>
+                        <Button mnemonicParsing="false" onAction="#onClearTrailButton" text="Clear trail"/>
+                    </VBox>
+                </TitledPane>
+                <TitledPane animated="false" text="Tools">
+                    <VBox spacing="3.0">
+                        <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </padding>
+                        <HBox alignment="CENTER_LEFT" spacing="5.0">
+                            <CheckBox mnemonicParsing="false" onAction="#onPolygonDumpCheck" text="Polygon mode"/>
+                            <Button mnemonicParsing="false" onAction="#onPolygonDumpButton" text="Dump"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="5.0">
+                            <CheckBox mnemonicParsing="false" onAction="#onPositionsDumpCheck" text="Position mode"/>
+                            <Button mnemonicParsing="false" onAction="#onPositionsDumpButton" text="Dump"/>
+                        </HBox>
+                    </VBox>
+                </TitledPane>
+            </panes>
+        </Accordion>
+    </right>
+</BorderPane>

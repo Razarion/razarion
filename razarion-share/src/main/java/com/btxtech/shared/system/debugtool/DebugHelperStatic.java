@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.pathing.AStar;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +25,15 @@ public class DebugHelperStatic {
     private static Integer TO_TICK;
     private static Integer currentTick;
     private static String printOnTickMessage;
+    private static AStar lastAStar;
+
+    public static void setLastAStar(AStar aStar) {
+        lastAStar = aStar;
+    }
+
+    public static AStar getLastAStar() {
+        return lastAStar;
+    }
 
     public static void addPolygonPosition(DecimalPosition position) {
         if (polygon == null) {

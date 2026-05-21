@@ -10,7 +10,6 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.DaggerSlaveEmulator;
-import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.terrain.DaggerTerrainServiceTestBase;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import org.junit.Assert;
@@ -74,20 +73,7 @@ public class ScenarioBaseTest extends DaggerTerrainServiceTestBase {
             compareScenario(expectedTicks, actualTicks, scenario);
         } catch (Throwable t) {
             t.printStackTrace();
-            // showDisplay(scenario, actualTicks, expectedTicks);
             throw new RuntimeException(t);
-        }
-        // showDisplay(scenario, actualTicks, expectedTicks);
-    }
-
-    private void showDisplay(Scenario scenario, ScenarioTicks actualTicks, ScenarioTicks expectedTicks) {
-        try {
-            showDisplay(new ScenarioPlayback()
-                    .scenario(scenario)
-                    .actualSyncBaseItemInfo(actualTicks)
-                    .expectedSyncBaseItemInfo(expectedTicks));
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

@@ -5,6 +5,7 @@ import com.btxtech.server.service.engine.PlanetBackupService;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
+import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
@@ -59,6 +60,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private final BoxService boxService;
     private final PlanetBackupService planetBackupService;
     private final UserActivityService userActivityService;
+    private final RedditConversionService redditConversionService;
     // @Inject
     // TODOprivate ServerInventoryService serverInventoryService;
     private boolean running;
@@ -77,7 +79,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                                    BaseItemService baseItemService,
                                    BotService botService,
                                    ResourceService resourceService, PlanetBackupService planetBackupService,
-                                   UserActivityService userActivityService) {
+                                   UserActivityService userActivityService,
+                                   RedditConversionService redditConversionService) {
         this.initializeService = initializeService;
         this.planetService = planetService;
         this.boxService = boxService;
@@ -94,6 +97,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         this.resourceService = resourceService;
         this.planetBackupService = planetBackupService;
         this.userActivityService = userActivityService;
+        this.redditConversionService = redditConversionService;
     }
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
@@ -233,6 +237,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         clientGameConnectionService.onBaseCreated(playerBase);
         if (playerBase.getUserId() != null) {
             this.userActivityService.onBaseCreated(playerBase.getUserId(), playerBase.getBaseId());
+            redditConversionService.sendBuilderDeployedEvent(playerBase.getUserId());
         }
     }
 

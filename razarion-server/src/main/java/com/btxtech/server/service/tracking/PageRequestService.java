@@ -4,6 +4,7 @@ import com.btxtech.server.model.tracking.PageRequest;
 import com.btxtech.server.model.tracking.PageRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -49,6 +50,24 @@ public class PageRequestService {
             mongoTemplate.save(pageRequest, PAGE_REQUEST);
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
+        }
+    }
+
+    public String findRdtCidByHttpSessionId(String httpSessionId) {
+        if (httpSessionId == null) {
+            return null;
+        }
+        try {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("httpSessionId").is(httpSessionId)
+                    .and("rdtCid").ne(null));
+            query.with(Sort.by(Sort.Direction.DESC, "serverTime"));
+            query.limit(1);
+            PageRequest pageRequest = mongoTemplate.findOne(query, PageRequest.class, PAGE_REQUEST);
+            return pageRequest != null ? pageRequest.getRdtCid() : null;
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            return null;
         }
     }
 

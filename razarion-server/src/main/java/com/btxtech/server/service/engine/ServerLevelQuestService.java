@@ -5,6 +5,7 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.quest.QuestBackendInfo;
+import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.server.service.ui.GameUiContextService;
 import com.btxtech.server.user.UserService;
@@ -36,6 +37,7 @@ public class ServerLevelQuestService implements QuestListener {
     private final ServerUnlockService serverUnlockService;
     private final QuestConfigService questConfigService;
     private final UserActivityService userActivityService;
+    private final RedditConversionService redditConversionService;
 
     public ServerLevelQuestService(Provider<GameUiContextService> gameUiControlConfigPersistence,
                                    QuestService questService,
@@ -46,7 +48,8 @@ public class ServerLevelQuestService implements QuestListener {
                                    Provider<ServerGameEngineControl> serverGameEngineControlInstance,
                                    ServerUnlockService serverUnlockService,
                                    QuestConfigService questConfigService,
-                                   UserActivityService userActivityService) {
+                                   UserActivityService userActivityService,
+                                   RedditConversionService redditConversionService) {
         this.gameUiControlConfigPersistence = gameUiControlConfigPersistence;
         this.questService = questService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
@@ -57,6 +60,7 @@ public class ServerLevelQuestService implements QuestListener {
         this.serverUnlockService = serverUnlockService;
         this.questConfigService = questConfigService;
         this.userActivityService = userActivityService;
+        this.redditConversionService = redditConversionService;
         questService.addQuestListener(this);
     }
 
@@ -106,12 +110,14 @@ public class ServerLevelQuestService implements QuestListener {
         int newXp = userContext.getXp() + questConfig.getXp();
         LevelEntity currentLevel = levelCrudPersistence.getEntity(userContext.getLevelId());
         userActivityService.onQuestPassed(userId, questConfig.getId(), currentLevel.getNumber());
+        redditConversionService.sendQuestPassedEvent(userId, questConfig.getId(), currentLevel.getNumber());
         if (newXp >= currentLevel.getXp2LevelUp()) {
             LevelEntity newLevel = levelCrudPersistence.getNextLevel(currentLevel);
             if (newLevel != null) {
                 userContext.levelId(newLevel.getId());
                 userContext.xp(0);
                 userActivityService.onLevelUp(userId, newLevel.getNumber());
+                redditConversionService.sendLevelUpEvent(userId, newLevel.getNumber());
                 clientSystemConnectionService.onLevelUp(userId,
                         userContext,
                         serverUnlockService.hasAvailableUnlocks(userContext));

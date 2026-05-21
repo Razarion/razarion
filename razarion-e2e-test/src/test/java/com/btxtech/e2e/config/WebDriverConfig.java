@@ -9,7 +9,8 @@ import java.time.Duration;
 
 public class WebDriverConfig {
 
-    private static final String DEFAULT_BASE_URL = "http://localhost:8080";
+//    private static final String DEFAULT_BASE_URL = "http://localhost:8080";
+    private static final String DEFAULT_BASE_URL = "http://localhost:4200";
 
     public static WebDriver createDriver() {
         WebDriverManager.chromedriver().setup();

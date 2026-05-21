@@ -63,10 +63,11 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
         if (groundHeightMap == null) {
             throw new IllegalStateException("groundHeightMap == null");
         }
-        if (index < 0 || index >= groundHeightMap.length) {
-            throw new IllegalArgumentException("index out of bounds: " + index + ", length: " + groundHeightMap.length);
-        }
-        return groundHeightMap[index];
+        // Test planets (e.g. ScenarioBaseTest's 5120x512) are larger than the bundled
+        // CompressedHeightMap.bin (4 tiles). Wrap the index so any planet position
+        // produces a valid LAND-ish height rather than an out-of-bounds crash.
+        int wrapped = ((index % groundHeightMap.length) + groundHeightMap.length) % groundHeightMap.length;
+        return groundHeightMap[wrapped];
     }
 
     public void setPlanetConfig(PlanetConfig planetConfig) {

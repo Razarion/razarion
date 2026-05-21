@@ -78,16 +78,23 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
             // Calculate angle difference between current facing and desired direction
             double deltaAngle = MathHelper.getAngle(getAngle(), desiredMoveAngle);
 
-            // Fix velocity
             double originalSpeed = velocity != null ? velocity.magnitude() : 0;
-            double desiredSpeed;
-            if (deltaAngle > Math.PI / 4) {
-                // Large angle difference: decelerate
-                desiredSpeed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
-            } else {
-                // Small angle difference: accelerate normally
-                desiredSpeed = originalSpeed + acceleration * PlanetService.TICK_FACTOR;
+
+            // Decide whether to brake. Brake on large turn OR when within braking distance
+            // of the final waypoint — d_brake = v²/(2a). The latter prevents an abrupt
+            // stop at full speed when the unit reaches its destination.
+            boolean brake = deltaAngle > Math.PI / 4;
+            if (!brake && path.isLastWayPoint()) {
+                double distanceToWaypoint = getPosition().getDistance(path.getCurrentWayPoint());
+                double brakingDistance = (originalSpeed * originalSpeed) / (2 * acceleration);
+                if (distanceToWaypoint <= brakingDistance) {
+                    brake = true;
+                }
             }
+
+            double desiredSpeed = brake
+                    ? originalSpeed - acceleration * PlanetService.TICK_FACTOR
+                    : originalSpeed + acceleration * PlanetService.TICK_FACTOR;
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
             // Move in current facing direction, not desired direction
             preferredVelocity = DecimalPosition.createVector(getAngle(), speed);
@@ -143,10 +150,13 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
             return;
         }
 
-        // Use circle check: vehicle moves in facing direction which may not pass exactly through waypoint
+        // Use circle check: vehicle moves in facing direction which may not pass exactly
+        // through the waypoint. Stop wherever the vehicle is now — no teleport to the
+        // exact waypoint (that caused the visible "jump"). With the braking distance
+        // logic in setupPreferredVelocity, speed is low enough here that stopping in
+        // place looks natural.
         Circle2D destinationCircle = new Circle2D(path.getCurrentWayPoint(), STOP_DETECTION_DISTANCE);
         if (destinationCircle.doesLineCut(new Line(oldPosition, getPosition()))) {
-            setPosition2d(path.getCurrentWayPoint(), false);
             stop();
         }
     }

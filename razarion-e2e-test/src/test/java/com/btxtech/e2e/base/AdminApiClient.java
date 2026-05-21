@@ -22,7 +22,11 @@ public class AdminApiClient {
 
     public AdminApiClient() {
         this.baseUrl = WebDriverConfig.getBaseUrl();
-        this.httpClient = HttpClient.newHttpClient();
+        // Force HTTP/1.1: when running against the Angular dev server proxy
+        // (e2e.baseUrl=http://localhost:4200), Java's default HTTP/2 upgrade
+        // handshake makes the proxy drop the connection ("header parser
+        // received no bytes"). HTTP/1.1 works against both 4200 and 8080.
+        this.httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
     }
 
     private void authenticate() {
