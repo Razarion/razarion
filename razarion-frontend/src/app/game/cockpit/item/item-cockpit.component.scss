@@ -41,9 +41,18 @@
   top: 0;
   left: 0;
   width: 60px;
-  height: vpx;
+  height: 60px;
   z-index: 3;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(180, 30, 30, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: white;
+    font-size: 1.8rem;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+  }
 }
 
 .item-cockpit-buildup-limit-label {

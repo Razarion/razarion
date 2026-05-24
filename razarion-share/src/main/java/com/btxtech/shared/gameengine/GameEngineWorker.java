@@ -227,9 +227,23 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             commandService.move(syncBaseItemIds, destination);
             sendToClient(GameEngineControlPackage.Command.COMMAND_MOVE_ACK);
         } catch (Throwable t) {
-            logger.log(Level.SEVERE, "GameEngineWorker.commandMove() failed", t);
+            logger.log(Level.SEVERE, "GameEngineWorker.commandMove() failed"
+                    + " ids=" + idsToString(syncBaseItemIds)
+                    + " destination=" + destination
+                    + " | " + ExceptionUtil.setupStackTrace(null, t), t);
             sendToClient(GameEngineControlPackage.Command.COMMAND_MOVE_ACK);
         }
+    }
+
+    private static String idsToString(IdsDto idsDto) {
+        if (idsDto == null) {
+            return "null";
+        }
+        List<Integer> ids = idsDto.getIds();
+        if (ids == null) {
+            return "[null]";
+        }
+        return ids.toString();
     }
 
     private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, String gameSessionUuid) {

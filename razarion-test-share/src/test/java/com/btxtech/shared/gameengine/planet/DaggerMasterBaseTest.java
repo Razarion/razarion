@@ -44,6 +44,10 @@ public class DaggerMasterBaseTest extends AbstractDaggerIntegrationTest {
         return getTestShareDagger().pathingService();
     }
 
+    protected com.btxtech.shared.gameengine.planet.pathing.PassabilityGrid getPassabilityGrid() {
+        return getTestShareDagger().passabilityGrid();
+    }
+
     @Deprecated // Use getBotBase(int botId)
     protected PlayerBase getBotBase(String botName) {
         for (PlayerBaseInfo playerBaseInfo : getBaseItemService().getPlayerBaseInfos()) {

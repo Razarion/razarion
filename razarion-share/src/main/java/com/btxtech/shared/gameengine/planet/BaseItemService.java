@@ -784,7 +784,14 @@ public class BaseItemService {
 //        }
         while (!pendingReceivedTickInfos.isEmpty() && pendingReceivedTickInfos.peek().getTickCount() <= tickCount) {
             TickInfo tickInfo = pendingReceivedTickInfos.remove();
-            tickInfo.getSyncBaseItemInfos().forEach(this::onSlaveSyncBaseItemChanged);
+            tickInfo.getSyncBaseItemInfos().forEach(info -> {
+                try {
+                    onSlaveSyncBaseItemChanged(info);
+                } catch (Throwable t) {
+                    logger.log(Level.SEVERE, "onSlaveSyncBaseItemChanged failed for syncBaseItemInfo id="
+                            + (info != null ? info.getId() : "null"), t);
+                }
+            });
         }
     }
 

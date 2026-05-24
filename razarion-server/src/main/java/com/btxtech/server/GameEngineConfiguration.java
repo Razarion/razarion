@@ -37,6 +37,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.model.SyncWeapon;
+import com.btxtech.shared.gameengine.planet.pathing.PassabilityGrid;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.quest.BaseItemCountComparison;
@@ -502,9 +503,15 @@ public class GameEngineConfiguration {
     }
 
     @Bean
+    public PassabilityGrid passabilityGrid(TerrainService terrainService) {
+        return new PassabilityGrid(terrainService);
+    }
+
+    @Bean
     public PathingService pathingService(TerrainService terrainService,
-                                         SyncItemContainerServiceImpl syncItemContainerService) {
-        return new PathingService(terrainService, syncItemContainerService);
+                                         SyncItemContainerServiceImpl syncItemContainerService,
+                                         PassabilityGrid passabilityGrid) {
+        return new PathingService(terrainService, syncItemContainerService, passabilityGrid);
     }
 
     @Bean

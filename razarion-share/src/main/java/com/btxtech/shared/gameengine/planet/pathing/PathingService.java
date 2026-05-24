@@ -32,12 +32,14 @@ public class PathingService {
     private final Logger logger = Logger.getLogger(PathingService.class.getName());
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private final TerrainService terrainService;
+    private final PassabilityGrid passabilityGrid;
     private final PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
 
     @Inject
-    public PathingService(TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService) {
+    public PathingService(TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService, PassabilityGrid passabilityGrid) {
         this.terrainService = terrainService;
         this.syncItemContainerService = syncItemContainerService;
+        this.passabilityGrid = passabilityGrid;
     }
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
@@ -63,9 +65,7 @@ public class PathingService {
     }
 
     public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType terrainType, TerrainType targetTerrainType, DecimalPosition destination, double totalRangeOtherTerrain) {
-        // long time = System.currentTimeMillis();
-        // Attention due to performance!! isInSight() surface data (Obstacle-Model) is not based on the AStar surface data -> AStar model must overlap Obstacle-Model
-        double correctedRadius = radius + RADIUS_GROW;
+        double correctedRadius = PassabilityGrid.bucketRadius(radius + RADIUS_GROW);
         SimplePath path = new SimplePath();
         List<DecimalPosition> positions = new ArrayList<>();
         PathingNodeWrapper startNode = terrainService.getTerrainAnalyzer().getPathingNodeWrapper(position);
@@ -73,15 +73,13 @@ public class PathingService {
         if (startNode.equals(destinationNode)) {
             positions.add(destination);
             path.setWayPositions(positions);
-            // LOGGER.severe("Time for Pathing in same node: " + (System.currentTimeMillis() - time));
             return path;
         }
         if (!destinationNode.isFree(targetTerrainType)) {
             throw new PathFindingNotFreeException("Destination tile is not free: " + destination);
         }
-        List<Index> scopeNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) NODE_SIZE);
         PathingNodeWrapper correctedDestinationNode;
-        AStarContext aStarContext;
+        AStarContext aStarContext = new AStarContext(terrainType);
         DecimalPosition additionPathElement = null;
         if (TerrainDestinationFinderUtil.differentTerrain(terrainType, targetTerrainType)) {
             TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(destination, totalRangeOtherTerrain, radius + 2, terrainType, terrainService.getTerrainAnalyzer());
@@ -89,19 +87,15 @@ public class PathingService {
             correctedDestinationNode = terrainDestinationFinder.getReachableNode();
             if (correctedDestinationNode != null) {
                 additionPathElement = correctedDestinationNode.getCenter();
-                aStarContext = new AStarContext(terrainType, scopeNodeIndices);
             } else {
                 return new SimplePath().destinationUnreachable(findNearestPosition(destination, terrainType, position, radius));
             }
         } else {
-//            DestinationFinder destinationFinder = new DestinationFinder(position, destination, destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), scopeNodeIndices, terrainService.getPathingAccess());
-//            destinationFinder.find();
-//            correctedDestinationNode = terrainService.getPathingAccess().getPathingNodeWrapper(destinationFinder.getCorrectedDestination());;
-//            destination = destinationFinder.getCorrectedDestination();
+            List<Index> scopeNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) NODE_SIZE);
             DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainType, scopeNodeIndices, terrainService.getTerrainAnalyzer());
             correctedDestinationNode = destinationFinder.find();
-            aStarContext = new AStarContext(terrainType, scopeNodeIndices);
         }
+        aStarContext.setPassabilityGrid(passabilityGrid.getOrBuild(terrainType, correctedRadius));
         aStarContext.setStartStuck(startNode.isStuck(aStarContext));
         aStarContext.setStartPosition(position);
         aStarContext.setMaxStuckDistance(correctedRadius);
@@ -113,7 +107,6 @@ public class PathingService {
         for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
             positions.add(pathingNodeWrapper.getCenter());
         }
-        // LOGGER.severe("Time for Pathing: " + (System.currentTimeMillis() - time) + " CloseListSize: " + aStar.getCloseListSize());
         if (additionPathElement != null) {
             positions.add(additionPathElement);
         }

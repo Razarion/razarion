@@ -43,7 +43,7 @@ public class ProvideSouthSuccessors extends DaggerTerrainServiceTestBase {
         NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
         nodeHandlerHelper.addExpectedSubNode2(new DecimalPosition(40, 69));
         nodeHandlerHelper.addExpectedSubNode2(new DecimalPosition(41, 69));
-        pathingNodeWrapper.provideSouthSuccessors(new AStarContext(TerrainType.LAND, Collections.emptyList()), nodeHandlerHelper::addActual);
+        pathingNodeWrapper.provideSouthSuccessors(new AStarContext(TerrainType.LAND), nodeHandlerHelper::addActual);
 
         nodeHandlerHelper.doAssert();
     }
@@ -63,7 +63,7 @@ public class ProvideSouthSuccessors extends DaggerTerrainServiceTestBase {
     }
 
     private void calculateSubSuccessors(PathingNodeWrapper pathingNodeWrapper, PositionMarker positionMarker) {
-        pathingNodeWrapper.provideEastSuccessors(new AStarContext(TerrainType.LAND, Collections.emptyList()), pathingNodeWrapperSuccessor -> {
+        pathingNodeWrapper.provideEastSuccessors(new AStarContext(TerrainType.LAND), pathingNodeWrapperSuccessor -> {
             displayPathingNodeWrapper(pathingNodeWrapperSuccessor, positionMarker, Color.BLUE);
         });
     }

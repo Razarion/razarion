@@ -1,13 +1,11 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,16 +14,23 @@ import java.util.Map;
  */
 public class AStarContext {
     private final TerrainType terrainType;
-    private final List<Index> scopeNodeIndices;
     private boolean startStuck;
     private final Map<PathingNodeWrapper, Collection<PathingNodeWrapper>> cache = new HashMap<>();
     private DecimalPosition startPosition;
     private DecimalPosition destination;
     private double maxStuckDistance;
+    private PassabilityGrid.Grid passabilityGrid;
 
-    public AStarContext(TerrainType terrainType, List<Index> scopeNodeIndices) {
+    public AStarContext(TerrainType terrainType) {
         this.terrainType = terrainType;
-        this.scopeNodeIndices = scopeNodeIndices;
+    }
+
+    public PassabilityGrid.Grid getPassabilityGrid() {
+        return passabilityGrid;
+    }
+
+    public void setPassabilityGrid(PassabilityGrid.Grid passabilityGrid) {
+        this.passabilityGrid = passabilityGrid;
     }
 
     public boolean isStartStuck() {
@@ -42,14 +47,6 @@ public class AStarContext {
 
     public boolean isAllowed(TerrainType terrainType) {
         return TerrainType.isAllowed(this.terrainType, terrainType);
-    }
-
-    public List<Index> getScopeNodeIndices() {
-        return scopeNodeIndices;
-    }
-
-    public boolean hasScope() {
-        return scopeNodeIndices != null;
     }
 
     public Collection<PathingNodeWrapper> getFromCache(PathingNodeWrapper key) {

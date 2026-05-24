@@ -8,13 +8,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 28.01.2017.
  */
 public class AStar {
-    private static final int MAX_CLOSED_LIST_SIZE = 20000;
+    private static final Logger LOGGER = Logger.getLogger(AStar.class.getName());
+    private static final int MAX_CLOSED_LIST_SIZE = 100000;
     private final Map<PathingNodeWrapper, AStarNode> closedList = new HashMap<>();
     private final AStarOpenList openList = new AStarOpenList();
     private final PathingNodeWrapper startNode;
@@ -37,6 +40,17 @@ public class AStar {
                 // Path not found
                 return;
             }
+            // Destination likely unreachable for this unit's radius (a smaller unit might
+            // fit through gaps this one cannot). Stop expanding and let the caller fall
+            // back to bestFitNode via PathingService's orbit-fix branch.
+            if (closedList.size() > MAX_CLOSED_LIST_SIZE) {
+                LOGGER.log(Level.WARNING, "AStar closed list limit reached, falling back to bestFitNode."
+                        + " destination=" + aStarContext.getDestination()
+                        + " startNode=" + startNode
+                        + " destinationTile=" + destinationNode.getPathingNodeWrapper()
+                        + " bestFitNode=" + (bestFitNode != null ? bestFitNode.getPathingNodeWrapper() : "null"));
+                return;
+            }
             AStarNode current = openList.removeFirst();
             if (current.equals(destinationNode)) {
                 pathFound = true;
@@ -50,9 +64,6 @@ public class AStar {
     private void expandNode(AStarNode current) {
         handleAllSuccessorNodes(current);
         closedList.put(current.getPathingNodeWrapper(), current);
-        if (closedList.size() > MAX_CLOSED_LIST_SIZE) {
-            throw new IllegalStateException("AStar max closed list size reached. Destination: " + aStarContext.getDestination() + " startNode: " + startNode + " destinationTile: " + destinationNode.getPathingNodeWrapper());
-        }
     }
 
     private void handleAllSuccessorNodes(AStarNode current) {

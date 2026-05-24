@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.TestSyncService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.gui.DaggerTestRenderer;
+import com.btxtech.shared.gameengine.planet.pathing.PassabilityGrid;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.mock.TestNativeTerrainShapeAccess;
@@ -39,6 +40,8 @@ public interface TestShareDagger {
     SyncItemContainerServiceImpl syncItemContainerService();
 
     PathingService pathingService();
+
+    PassabilityGrid passabilityGrid();
 
     DaggerTestRenderer daggerTestRenderer();
 

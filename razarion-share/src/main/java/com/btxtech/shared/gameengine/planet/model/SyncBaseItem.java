@@ -192,6 +192,17 @@ public class SyncBaseItem extends SyncItem {
     }
 
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) throws ItemDoesNotExistException {
+        // TeaVM WASM-GC traps on null-deref instead of throwing Java NPE — bypasses any
+        // try/catch in the caller. Convert to explicit Java exceptions with context so
+        // the caller's exception handling fires.
+        if (getAbstractSyncPhysical() == null) {
+            throw new IllegalStateException("SyncBaseItem.synchronize: abstractSyncPhysical is null for id=" + getId()
+                    + " itemTypeId=" + getBaseItemType().getId());
+        }
+        if (syncBaseItemInfo.getSyncPhysicalAreaInfo() == null) {
+            throw new IllegalStateException("SyncBaseItem.synchronize: syncBaseItemInfo.syncPhysicalAreaInfo is null for id=" + getId()
+                    + " itemTypeId=" + getBaseItemType().getId());
+        }
         health = syncBaseItemInfo.getHealth();
         spawnProgress = syncBaseItemInfo.getSpawnProgress();
         setBuildup(syncBaseItemInfo.getBuildup());
@@ -713,12 +724,23 @@ public class SyncBaseItem extends SyncItem {
     }
 
     public NativeSyncBaseItemTickInfo createNativeSyncBaseItemTickInfo(TerrainAnalyzer terrainAnalyzer) {
+        // TeaVM WASM-GC traps on null-deref instead of throwing Java NPE — bypasses the
+        // try/catch in GameEngineWorker.buildNativeTickInfo. Convert to explicit Java
+        // exceptions with context so the caller's handler fires and the worker survives.
+        if (base == null) {
+            throw new IllegalStateException("createNativeSyncBaseItemTickInfo: base is null for id=" + getId()
+                    + " itemTypeId=" + getBaseItemType().getId());
+        }
         NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo = new NativeSyncBaseItemTickInfo();
         nativeSyncBaseItemTickInfo.id = getId();
         nativeSyncBaseItemTickInfo.itemTypeId = getBaseItemType().getId();
         nativeSyncBaseItemTickInfo.baseId = base.getBaseId();
         nativeSyncBaseItemTickInfo.idle = isIdle();
         if (containedIn == null) {
+            if (getAbstractSyncPhysical() == null) {
+                throw new IllegalStateException("createNativeSyncBaseItemTickInfo: abstractSyncPhysical is null for id=" + getId()
+                        + " itemTypeId=" + getBaseItemType().getId() + " baseId=" + base.getBaseId());
+            }
             if (syncWeapon != null && syncWeapon.getWeaponType().getTurretAngleVelocity() != null) {
                 nativeSyncBaseItemTickInfo.turretAngle = syncWeapon.getTurretAngle();
             }

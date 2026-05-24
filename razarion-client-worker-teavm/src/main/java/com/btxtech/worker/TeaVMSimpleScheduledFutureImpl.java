@@ -26,6 +26,7 @@ public class TeaVMSimpleScheduledFutureImpl implements SimpleScheduledFuture {
     private Runnable runnable;
     private double expected;
     private int overrunCount;
+    private int executionOverrunCount;
 
     @Inject
     public TeaVMSimpleScheduledFutureImpl(PerfmonService perfmonService) {
@@ -80,11 +81,22 @@ public class TeaVMSimpleScheduledFutureImpl implements SimpleScheduledFuture {
             long executionTime = System.currentTimeMillis() - startExecutionTime;
 
             if (repeating && executionTime > milliSDelay) {
-                JsConsole.error("TeaVMSimpleScheduledFutureImpl: Payload execution took longer than delay. "
-                        + " timerId=" + timerId
-                        + " execution time=" + executionTime
-                        + " delay=" + milliSDelay
-                        + " perfmonEnum=" + perfmonEnum.orElse(null));
+                // A long A* search or pathing tick can routinely push the engine over its
+                // 100 ms budget. Log the first overrun immediately so the signal isn't
+                // lost, then throttle to one warn per MAX_OVERRUN_COUNT consecutive
+                // overruns — the counter in the message disambiguates transient spike
+                // (single "1 consecutive overruns" line) from sustained overload.
+                executionOverrunCount++;
+                if (executionOverrunCount == 1 || executionOverrunCount % MAX_OVERRUN_COUNT == 0) {
+                    JsConsole.warn("TeaVMSimpleScheduledFutureImpl: Payload execution took longer than delay ("
+                            + executionOverrunCount + " consecutive overruns)."
+                            + " timerId=" + timerId
+                            + " execution time=" + executionTime
+                            + " delay=" + milliSDelay
+                            + " perfmonEnum=" + perfmonEnum.orElse(null));
+                }
+            } else {
+                executionOverrunCount = 0;
             }
         } catch (Throwable t) {
             JsConsole.warn("TeaVMSimpleScheduledFutureImpl callback error: " + t.getMessage());

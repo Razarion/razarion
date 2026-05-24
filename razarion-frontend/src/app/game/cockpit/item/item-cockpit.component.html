@@ -67,6 +67,13 @@
                   [disabled]="!buildupItem.enabled">
                   @if (!buildupItem.enabled) {
                     <div class='item-cockpit-buildup-disabled'>
+                      @if (buildupItem.buildLimitReached) {
+                        <i class="pi pi-ban"></i>
+                      } @else if (buildupItem.buildHouseSpaceReached) {
+                        <i class="pi pi-home"></i>
+                      } @else if (buildupItem.buildNoMoney) {
+                        <i class="pi pi-dollar"></i>
+                      }
                     </div>
                   }
                   <img src="{{buildupItem.imageUrl}}"

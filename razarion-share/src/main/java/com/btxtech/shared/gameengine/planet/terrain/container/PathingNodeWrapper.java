@@ -81,20 +81,12 @@ public class PathingNodeWrapper {
     }
 
     public boolean isStuck(AStarContext aStarContext) {
-        if (aStarContext.hasScope()) {
-            for (Index scopeNodeIndex : aStarContext.getScopeNodeIndices()) {
-                Index scanNodeIndex = nodeIndex.add(scopeNodeIndex);
-                if (!terrainAnalyzer.isNodeInBoundary(scanNodeIndex)) {
-                    return true;
-                }
-                if (!aStarContext.isAllowed(terrainAnalyzer.getTerrainType(scanNodeIndex))) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return !aStarContext.isAllowed(terrainType);
+        if (aStarContext.getPassabilityGrid() != null) {
+            return !aStarContext.getPassabilityGrid().isPassable(nodeIndex);
         }
+        // No grid (DestinationFinder mode) → cell-only check, footprint scope is the
+        // grid's concern.
+        return !aStarContext.isAllowed(terrainType);
     }
 
     @Override
