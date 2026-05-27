@@ -19,6 +19,8 @@ public class BotItemConfigEntity extends BaseEntity {
     private boolean noSpawn;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PlaceConfigEntity place;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private PlaceConfigEntity spreadPlace;
     private double angle;
     private boolean moveRealmIfIdle;
     private Integer idleTtl;
@@ -33,6 +35,9 @@ public class BotItemConfigEntity extends BaseEntity {
         if (place != null) {
             botItemConfig.place(place.toPlaceConfig());
         }
+        if (spreadPlace != null) {
+            botItemConfig.spreadPlace(spreadPlace.toPlaceConfig());
+        }
         return botItemConfig;
     }
 
@@ -46,6 +51,12 @@ public class BotItemConfigEntity extends BaseEntity {
             place.fromPlaceConfig(botItemConfig.getPlace());
         } else {
             place = null;
+        }
+        if (botItemConfig.getSpreadPlace() != null) {
+            spreadPlace = new PlaceConfigEntity();
+            spreadPlace.fromPlaceConfig(botItemConfig.getSpreadPlace());
+        } else {
+            spreadPlace = null;
         }
         angle = botItemConfig.getAngle();
         moveRealmIfIdle = botItemConfig.isMoveRealmIfIdle();

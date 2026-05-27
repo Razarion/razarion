@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
+import com.btxtech.shared.gameengine.datatypes.exception.PositionCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
@@ -251,8 +252,12 @@ public class BoxService {
     private void dropRegionBoxes(BoxRegion boxRegion) {
         BoxItemType boxItemType = itemTypeService.getBoxItemType(boxRegion.getBoxRegionConfig().getBoxItemTypeId());
         for (int i = 0; i < boxRegion.getBoxRegionConfig().getCount(); i++) {
-            DecimalPosition position = syncItemContainerService.getFreeRandomPosition(boxItemType.getTerrainType(), boxItemType.getRadius() + boxRegion.getBoxRegionConfig().getMinDistanceToItems(), true, boxRegion.getBoxRegionConfig().getRegion());
-            dropBox(boxItemType.getId(), position, MathHelper.getRandomAngle());
+            try {
+                DecimalPosition position = syncItemContainerService.getFreeRandomPosition(boxItemType.getTerrainType(), boxItemType.getRadius() + boxRegion.getBoxRegionConfig().getMinDistanceToItems(), true, boxRegion.getBoxRegionConfig().getRegion());
+                dropBox(boxItemType.getId(), position, MathHelper.getRandomAngle());
+            } catch (PositionCanNotBeFoundException e) {
+                logger.warning("Can not find free place for box item type " + boxItemType.getId() + " in region: " + e.getMessage());
+            }
         }
     }
 

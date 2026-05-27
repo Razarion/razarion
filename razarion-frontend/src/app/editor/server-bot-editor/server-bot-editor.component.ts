@@ -146,6 +146,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
       noRebuild: false,
       noSpawn: false,
       place: null,
+      spreadPlace: null,
       rePopTime: 0
     })
   }

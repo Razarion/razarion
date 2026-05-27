@@ -789,6 +789,7 @@ public class JsonDeserializer {
         r.setCreateDirectly(json.getBoolean("createDirectly"));
         r.setNoSpawn(json.getBoolean("noSpawn"));
         r.setPlace(deserializePlaceConfig(obj(json, "place")));
+        r.setSpreadPlace(deserializePlaceConfig(obj(json, "spreadPlace")));
         r.setAngle(json.getDouble("angle"));
         r.setMoveRealmIfIdle(json.getBoolean("moveRealmIfIdle"));
         r.setIdleTtl(json.getNullableInt("idleTtl"));

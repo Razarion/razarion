@@ -17,6 +17,7 @@ public class BotItemConfig {
     private boolean createDirectly;
     private boolean noSpawn;
     private PlaceConfig place;
+    private PlaceConfig spreadPlace;
     private double angle;
     private boolean moveRealmIfIdle;
     private Integer idleTtl;
@@ -61,6 +62,14 @@ public class BotItemConfig {
 
     public void setPlace(@Nullable PlaceConfig place) {
         this.place = place;
+    }
+
+    public @Nullable PlaceConfig getSpreadPlace() {
+        return spreadPlace;
+    }
+
+    public void setSpreadPlace(@Nullable PlaceConfig spreadPlace) {
+        this.spreadPlace = spreadPlace;
     }
 
     public double getAngle() {
@@ -125,6 +134,11 @@ public class BotItemConfig {
 
     public BotItemConfig place(PlaceConfig place) {
         setPlace(place);
+        return this;
+    }
+
+    public BotItemConfig spreadPlace(PlaceConfig spreadPlace) {
+        setSpreadPlace(spreadPlace);
         return this;
     }
 

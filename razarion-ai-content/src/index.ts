@@ -256,7 +256,7 @@ server.tool(
   "update_bot_configs",
   `Update ALL bot configs for a server game engine. Replaces the entire list.
 BotConfig fields: id, internalName, auxiliaryId, npc, actionDelay, realm (PlaceConfig), name, autoAttack, minInactiveMs, maxInactiveMs, minActiveMs, maxActiveMs, botEnragementStateConfigs (array of {name, botItems, enrageUpKills}).
-BotItemConfig fields: baseItemTypeId, count, createDirectly, noSpawn, place, angle, moveRealmIfIdle, idleTtl, noRebuild, rePopTime.`,
+BotItemConfig fields: baseItemTypeId, count, createDirectly, noSpawn, place, spreadPlace (optional PlaceConfig; vehicles only - movable units get a one-time move to a random position within this region right after spawn/factory build; null for buildings or no spread), angle, moveRealmIfIdle, idleTtl, noRebuild, rePopTime.`,
   {
     serverGameEngineConfigId: z.number().describe("Server game engine config ID"),
     botConfigs: z.array(z.record(z.unknown())).describe("Array of BotConfig objects"),

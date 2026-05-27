@@ -23,7 +23,6 @@ import {
   AbstractMesh,
   ActionManager,
   Color3,
-  Constants,
   DirectionalLight,
   Engine,
   EngineInstrumentation,
@@ -69,6 +68,7 @@ import {TerrainObjectPosition} from "../../generated/razarion-share";
 import earcut from 'earcut';
 import {ViewField, ViewFieldListener} from './view-field';
 import {PlaceConfigComponent} from '../../editor/common/place-config/place-config.component';
+import {buildQuestPlaceVisualizationMaterial} from './quest-place-visualization-material';
 
 
 export interface RazarionMetadata {
@@ -107,6 +107,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private viewField?: ViewField;
   private outOfViewPlane?: Mesh;
   private placeMarkerMesh?: Mesh;
+  private placeMarkerMaterial?: NodeMaterial;
   baseItemPlacerActive = false;
   public terrainObjectActionManager!: ActionManager;
   private editorTerrainTileContainer: BabylonTerrainTileImpl[] = [];
@@ -606,6 +607,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.placeMarkerMesh.dispose();
         this.placeMarkerMesh = undefined;
       }
+      if (this.placeMarkerMaterial) {
+        this.placeMarkerMaterial.dispose();
+        this.placeMarkerMaterial = undefined;
+      }
     } else {
       if (this.placeMarkerMesh) {
         return;
@@ -618,12 +623,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         console.warn("Place marker has invalid place config");
         return;
       }
-      let nodeMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(markerConfig.placeNodesMaterialId!);
-      nodeMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
-      // nodeMaterial.material.depthFunction = Constants.ALWAYS;
-      this.placeMarkerMesh.material = nodeMaterial;
-      this.placeMarkerMesh.material.disableDepthWrite = true;
-      this.placeMarkerMesh.material.depthFunction = Constants.ALWAYS;
+      this.placeMarkerMaterial = buildQuestPlaceVisualizationMaterial(this.scene);
+      this.placeMarkerMesh.material = this.placeMarkerMaterial;
     }
   }
 

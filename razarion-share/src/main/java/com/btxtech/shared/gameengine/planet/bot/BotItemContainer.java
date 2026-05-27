@@ -252,7 +252,10 @@ public class BotItemContainer {
                 }
 
                 BotItemConfig botItemConfig = botSyncBaseItem.getBotItemConfig();
-                if (botItemConfig.isMoveRealmIfIdle() && botSyncBaseItem.canMove() && !realm.checkInside(botSyncBaseItem.getPosition())) {
+                if (botSyncBaseItem.isNeedsSpread()) {
+                    botSyncBaseItem.clearNeedsSpread();
+                    botSyncBaseItem.move(botItemConfig.getSpreadPlace());
+                } else if (botItemConfig.isMoveRealmIfIdle() && botSyncBaseItem.canMove() && !realm.checkInside(botSyncBaseItem.getPosition())) {
                     botSyncBaseItem.move(realm);
                 } else if (botItemConfig.getIdleTtl() != null && botSyncBaseItem.getIdleTimeStamp() + botItemConfig.getIdleTtl() < System.currentTimeMillis()) {
                     botSyncBaseItem.kill();

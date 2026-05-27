@@ -45,6 +45,7 @@ public class BotSyncBaseItem {
     private BotItemConfig botItemConfig;
     private boolean idle;
     private long idleTimeStamp;
+    private boolean needsSpread;
 
     @Inject
     public BotSyncBaseItem(TerrainService terrainService,
@@ -60,7 +61,16 @@ public class BotSyncBaseItem {
     public void init(SyncBaseItem syncBaseItem, BotItemConfig botItemConfig) {
         this.syncBaseItem = syncBaseItem;
         this.botItemConfig = botItemConfig;
+        needsSpread = botItemConfig.getSpreadPlace() != null && canMove();
         setIdle();
+    }
+
+    public boolean isNeedsSpread() {
+        return needsSpread;
+    }
+
+    public void clearNeedsSpread() {
+        needsSpread = false;
     }
 
     public BotItemConfig getBotItemConfig() {

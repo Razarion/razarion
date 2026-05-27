@@ -341,7 +341,8 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     private boolean hasItemsInRange(DecimalPosition position, double radius) {
-        return iterateOverItems(false, false, false, syncItem -> syncItem.getAbstractSyncPhysical().overlap(position, radius));
+        return iterateOverItems(false, false, false, syncItem ->
+                syncItem.getAbstractSyncPhysical().overlap(position, radius) ? Boolean.TRUE : null);
     }
 
     public Collection<SyncBaseItem> findBaseItemsOverlapping(DecimalPosition position, double radius, SyncBaseItem ignore) {
