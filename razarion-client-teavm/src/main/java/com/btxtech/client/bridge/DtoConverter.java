@@ -440,6 +440,7 @@ public class DtoConverter {
         setGetterObj(obj, "getModel3DId", () -> convertNullableInt(type.getModel3DId()));
         setGetterObj(obj, "getThumbnail", () -> convertNullableInt(type.getThumbnail()));
         setGetterDouble(obj, "getRadius", type::getRadius);
+        setGetterBool(obj, "isFixVerticalNorm", type::isFixVerticalNorm);
         return obj;
     }
 
@@ -466,6 +467,7 @@ public class DtoConverter {
         setGetterString(obj, "getTerrainType", () ->
                 type.getPhysicalAreaConfig().getTerrainType() != null ? type.getPhysicalAreaConfig().getTerrainType().name() : null);
         setGetterBool(obj, "fulfilledMovable", () -> type.getPhysicalAreaConfig().fulfilledMovable());
+        setGetterBool(obj, "isFixVerticalNorm", () -> type.getPhysicalAreaConfig().isFixVerticalNorm());
         return obj;
     }
 

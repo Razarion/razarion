@@ -307,6 +307,11 @@ export function buildQuestPlaceVisualizationMaterial(scene: Scene): NodeMaterial
   mat.alphaMode = 2; // ALPHA_COMBINE
   mat.backFaceCulling = false;
   mat.disableDepthWrite = true;
+  // Depth bias toward the camera so the ground-draped marker is not occluded by
+  // the terrain it conforms to (same trick as the resource decal). The bias is
+  // small relative to scene depth, so terrain objects (palms) and units still
+  // occlude the marker via the normal depth test.
+  mat.zOffset = -4;
 
   return mat;
 }

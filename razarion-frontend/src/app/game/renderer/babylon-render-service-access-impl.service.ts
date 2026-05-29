@@ -42,11 +42,11 @@ import {
   Scene,
   SceneInstrumentation,
   ShadowGenerator,
-  Tools,
   TransformNode,
   Vector2,
   Vector3,
-  VertexBuffer
+  VertexBuffer,
+  VertexData
 } from "@babylonjs/core";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
@@ -130,6 +130,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private terrainShadowsEnabled = true;
   public static readonly SCROLL_SPEED = 0.2;
   public static readonly SCROLL_SPEED_CAMERA_HEIGHT_FACTOR = 0.03;
+  // Place marker draping: subdivide marker triangles down to this edge length (m)
+  // so the mesh follows terrain slopes, clamped to a max recursion depth. Kept
+  // small so the flat triangles between sampled vertices don't undershoot the
+  // curved terrain on hills/mountains (a coarse mesh sinks below ridges).
+  private static readonly MARKER_TARGET_EDGE = 2;
+  private static readonly MARKER_MAX_SUBDIV = 5;
+  // Lift the draped marker slightly above terrain/water to avoid z-fighting.
+  private static readonly MARKER_GROUND_OFFSET = 0.15;
 
   constructor(private gwtAngularService: GwtAngularService,
               private babylonModelService: BabylonModelService,
@@ -631,61 +639,92 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private createPlacePolygonMarker(placeConfig: PlaceConfig): Mesh {
     const positions2d = placeConfig.getPolygon2D()?.toCornersAngular()!;
     const polygon = PlaceConfigComponent.toVertex2ArrayAngular(positions2d);
-    let polygonTriangulation = new PolygonMeshBuilder("Place marker", polygon, this.scene, earcut);
-    const polygonMesh = polygonTriangulation.build();
-
-    let booleanWater = false;
-    let highest: null | number = null;
-    positions2d.forEach(position2d => {
-      const heightFromTerrain = LocationVisualization.getHeightFromTerrain(position2d.getX(), position2d.getY(), this);
-      if (heightFromTerrain < BabylonTerrainTileImpl.WATER_LEVEL) {
-        booleanWater = true;
-      }
-      if (highest === null || highest < heightFromTerrain) {
-        highest = heightFromTerrain;
-      }
-    });
-    if (booleanWater) {
-      polygonMesh.position.y = BabylonTerrainTileImpl.WATER_LEVEL;
-    } else {
-      polygonMesh.position.y = 0.1 + (highest === null ? 0 : highest);
-    }
-
-    polygonMesh.isPickable = false;
-    const boundingBox = polygonMesh.getBoundingInfo().boundingBox;
-    const width = boundingBox.maximum.x - boundingBox.minimum.x;
-    const height = boundingBox.maximum.z - boundingBox.minimum.z;
-    const meshUv = polygonMesh.getVerticesData(VertexBuffer.UVKind);
-    if (meshUv) {
-      for (let i = 0; i < meshUv.length; i += 2) {
-        meshUv[i] *= width;
-        meshUv[i + 1] *= height;
-      }
-      polygonMesh.setVerticesData(VertexBuffer.UVKind, meshUv);
-    }
-    return polygonMesh;
+    return this.createDrapedMarkerMesh(polygon);
   }
 
   private createPlaceDiscMarker(placeConfig: PlaceConfig): Mesh {
-    let radius = placeConfig.toRadiusAngular() || 1;
-    let heightFromTerrain = LocationVisualization.getHeightFromTerrain(placeConfig.getPosition()?.getX()!, placeConfig.getPosition()?.getY()!, this);
-    if (heightFromTerrain < BabylonTerrainTileImpl.WATER_LEVEL) {
-      heightFromTerrain = BabylonTerrainTileImpl.WATER_LEVEL;
+    const radius = placeConfig.toRadiusAngular() || 1;
+    const centerX = placeConfig.getPosition()?.getX()!;
+    const centerZ = placeConfig.getPosition()?.getY()!;
+    // Approximate the disc by a regular polygon so it runs through the same
+    // terrain-draping path as the polygon marker.
+    const segments = 48;
+    const polygon: Vector2[] = [];
+    for (let i = 0; i < segments; i++) {
+      const a = (i / segments) * 2 * Math.PI;
+      polygon.push(new Vector2(centerX + radius * Math.cos(a), centerZ + radius * Math.sin(a)));
     }
-    const diskMesh = MeshBuilder.CreateDisc("Place marker", {radius: radius}, this.scene);
-    diskMesh.position.x = placeConfig.getPosition()?.getX()!;
-    diskMesh.position.y = 0.01 + heightFromTerrain;
-    diskMesh.position.z = placeConfig.getPosition()?.getY()!;
-    diskMesh.rotation.x = Tools.ToRadians(90);
-    diskMesh.isPickable = false;
-    const discUv = diskMesh.getVerticesData(VertexBuffer.UVKind);
-    if (discUv) {
-      for (let i = 0; i < discUv.length; i++) {
-        discUv[i] *= 2 * radius;
+    return this.createDrapedMarkerMesh(polygon);
+  }
+
+  // Builds a place-marker mesh that drapes over the terrain: the polygon is
+  // triangulated, subdivided down to MARKER_TARGET_EDGE so it follows slopes,
+  // and every vertex is lifted onto the terrain surface (clamped to water
+  // level). A flat plane at a single height would otherwise clip into hills
+  // and beaches inside the region — visible as the marker sitting "under" the
+  // terrain even though it floats correctly over the water.
+  private createDrapedMarkerMesh(contour: Vector2[]): Mesh {
+    const builder = new PolygonMeshBuilder("Place marker", contour, this.scene, earcut);
+    const base = builder.build();
+    const basePositions = base.getVerticesData(VertexBuffer.PositionKind)!;
+    const baseIndices = base.getIndices()!;
+    base.dispose();
+
+    // PolygonMeshBuilder lays the mesh out in the XZ plane (Vector2.x -> x,
+    // Vector2.y -> z), so local x/z already equal world x/z.
+    const tris: Vector2[][] = [];
+    for (let i = 0; i < baseIndices.length; i += 3) {
+      const p = (k: number) => new Vector2(basePositions[baseIndices[i + k] * 3], basePositions[baseIndices[i + k] * 3 + 2]);
+      this.subdivideMarkerTriangle(p(0), p(1), p(2), 0, tris);
+    }
+
+    // Cache terrain heights per quantized position — subdivision shares many
+    // midpoints, and each lookup is a downward ray pick.
+    const heightCache = new Map<string, number>();
+    const drapeHeight = (x: number, z: number): number => {
+      const key = `${x.toFixed(2)}_${z.toFixed(2)}`;
+      let h = heightCache.get(key);
+      if (h === undefined) {
+        h = Math.max(LocationVisualization.getHeightFromTerrain(x, z, this), BabylonTerrainTileImpl.WATER_LEVEL)
+          + BabylonRenderServiceAccessImpl.MARKER_GROUND_OFFSET;
+        heightCache.set(key, h);
       }
-      diskMesh.setVerticesData(VertexBuffer.UVKind, discUv);
+      return h;
+    };
+
+    const positions: number[] = [];
+    const uvs: number[] = [];
+    const indices: number[] = [];
+    tris.forEach(tri => tri.forEach(point => {
+      indices.push(positions.length / 3);
+      positions.push(point.x, drapeHeight(point.x, point.y), point.y);
+      // World-meter UVs: the hex/foam material expects vUv in meters.
+      uvs.push(point.x, point.y);
+    }));
+
+    const mesh = new Mesh("Place marker", this.scene);
+    const vertexData = new VertexData();
+    vertexData.positions = positions;
+    vertexData.indices = indices;
+    vertexData.uvs = uvs;
+    vertexData.applyToMesh(mesh);
+    mesh.isPickable = false;
+    return mesh;
+  }
+
+  private subdivideMarkerTriangle(a: Vector2, b: Vector2, c: Vector2, depth: number, out: Vector2[][]): void {
+    const maxEdge = Math.max(Vector2.Distance(a, b), Vector2.Distance(b, c), Vector2.Distance(c, a));
+    if (depth >= BabylonRenderServiceAccessImpl.MARKER_MAX_SUBDIV || maxEdge <= BabylonRenderServiceAccessImpl.MARKER_TARGET_EDGE) {
+      out.push([a, b, c]);
+      return;
     }
-    return diskMesh;
+    const ab = Vector2.Center(a, b);
+    const bc = Vector2.Center(b, c);
+    const ca = Vector2.Center(c, a);
+    this.subdivideMarkerTriangle(a, ab, ca, depth + 1, out);
+    this.subdivideMarkerTriangle(ab, b, bc, depth + 1, out);
+    this.subdivideMarkerTriangle(ca, bc, c, depth + 1, out);
+    this.subdivideMarkerTriangle(ab, bc, ca, depth + 1, out);
   }
 
   public onViewFieldChanged() {

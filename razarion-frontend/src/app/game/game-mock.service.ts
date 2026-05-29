@@ -155,6 +155,7 @@ export class GameMockService {
               getRadius(): number { return 1.5; }
               getTerrainType(): TerrainType { return TerrainType.LAND; }
               fulfilledMovable(): boolean { return true; }
+              isFixVerticalNorm(): boolean { return false; }
             };
           }
           getThumbnail(): number | null { return null; }
@@ -181,6 +182,7 @@ export class GameMockService {
               getRadius(): number { return 1.3; }
               getTerrainType(): TerrainType { return TerrainType.LAND; }
               fulfilledMovable(): boolean { return false; }
+              isFixVerticalNorm(): boolean { return false; }
             };
           }
           getThumbnail(): number | null { return null; }
@@ -316,6 +318,10 @@ export class GameMockService {
 
           getRadius(): number {
             return 2;
+          }
+
+          isFixVerticalNorm(): boolean {
+            return false;
           }
 
           getInternalName(): string {
@@ -790,6 +796,10 @@ export class GameMockService {
               fulfilledMovable(): boolean {
                 return true;
               }
+
+              isFixVerticalNorm(): boolean {
+                return false;
+              }
             };
           }
 
@@ -847,6 +857,10 @@ export class GameMockService {
 
           getRadius(): number {
             return 0;
+          }
+
+          isFixVerticalNorm(): boolean {
+            return false;
           }
 
           getThumbnail(): number | null {

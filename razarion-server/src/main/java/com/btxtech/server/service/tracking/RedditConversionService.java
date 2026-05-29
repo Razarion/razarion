@@ -82,6 +82,10 @@ public class RedditConversionService {
     }
 
     private void sendEvent(String customEventName, String rdtCid) {
+        if (rdtCid == null || rdtCid.isEmpty()) {
+            logger.debug("Reddit conversion event '{}' skipped (no rdtCid)", customEventName);
+            return;
+        }
         if (!enabled) {
             logger.info("Reddit conversion event '{}' [MOCK — not sent, missing config] rdtCid={}", customEventName, rdtCid);
             return;
@@ -91,10 +95,7 @@ public class RedditConversionService {
             event.put("event_at", System.currentTimeMillis());
             event.put("action_source", "WEBSITE");
             event.put("type", Map.of("tracking_type", "CUSTOM", "custom_event_name", customEventName));
-
-            if (rdtCid != null && !rdtCid.isEmpty()) {
-                event.put("click_id", rdtCid);
-            }
+            event.put("click_id", rdtCid);
 
             Map<String, Object> body = Map.of("data", Map.of("events", List.of(event)));
 

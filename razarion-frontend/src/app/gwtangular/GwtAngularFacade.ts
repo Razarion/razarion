@@ -346,10 +346,14 @@ export interface BaseItemType extends ItemType {
 
 export interface ResourceItemType extends ItemType {
   getRadius(): number;
+
+  isFixVerticalNorm(): boolean;
 }
 
 export interface BoxItemType extends ItemType {
   getRadius(): number;
+
+  isFixVerticalNorm(): boolean;
 }
 
 export interface PhysicalAreaConfig {
@@ -358,6 +362,8 @@ export interface PhysicalAreaConfig {
   getTerrainType(): TerrainType;
 
   fulfilledMovable(): boolean;
+
+  isFixVerticalNorm(): boolean;
 }
 
 export interface BuilderType {

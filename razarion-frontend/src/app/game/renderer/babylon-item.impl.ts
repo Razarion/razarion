@@ -205,8 +205,9 @@ export class BabylonItemImpl implements BabylonItem {
       }
       // Rotation
       let normal: Vector3;
-      // Water units use flat normal (0, 1, 0) instead of terrain normal
-      if (this.isWaterUnit()) {
+      // Water units and fixed-vertical items (e.g. buildings) use a flat normal
+      // (0, 1, 0) so they stand upright instead of tilting to the terrain slope.
+      if (this.isWaterUnit() || this.isFixVerticalNorm()) {
         normal = new Vector3(0, 1, 0);
       } else {
         let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(position.getX(), position.getY()));
@@ -237,6 +238,20 @@ export class BabylonItemImpl implements BabylonItem {
     if ((<BaseItemType>this.itemType).getPhysicalAreaConfig !== undefined) {
       const terrainType = (<BaseItemType>this.itemType).getPhysicalAreaConfig().getTerrainType();
       return GwtHelper.gwtIssueStringEnum(terrainType, TerrainType) === TerrainType.WATER;
+    }
+    return false;
+  }
+
+  // Items flagged fixVerticalNorm (buildings, resources, boxes) stand upright on the
+  // vertical axis instead of tilting to the terrain normal like vehicles do.
+  protected isFixVerticalNorm(): boolean {
+    const baseItemType = <BaseItemType>this.itemType;
+    if (baseItemType.getPhysicalAreaConfig !== undefined) {
+      return baseItemType.getPhysicalAreaConfig().isFixVerticalNorm();
+    }
+    const flaggedItemType = <ResourceItemType | BoxItemType>this.itemType;
+    if (flaggedItemType.isFixVerticalNorm !== undefined) {
+      return flaggedItemType.isFixVerticalNorm();
     }
     return false;
   }
