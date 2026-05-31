@@ -203,6 +203,8 @@ Quests are grouped by level range. Each group introduces mechanics appropriate f
 
 ## 4. Phase 2: Semi-Noob Frontier
 
+> **Operational plan:** See [`phase-2-plan.md`](phase-2-plan.md) for the detailed, production-grounded level/crystal/box/bot/quest configuration (real unit IDs).
+
 ### 4.1 Concept
 
 Players leave the safety of Noob Island and enter a larger, more challenging territory. The key mechanic difference: **buildings and vehicles are unlocked by finding Crystal items in boxes**, not just by leveling up. This encourages exploration and creates a treasure-hunt element.

@@ -142,6 +142,11 @@ public class PlanetService implements Runnable { // Only available in worker. On
             planetServiceTracker.afterQuestService();
             pathingService.tick(synchronizationSendingContext);
             planetServiceTracker.afterPathingService();
+            if (gameEngineMode == GameEngineMode.MASTER) {
+                // Server-authoritative replan of units ORCA cannot free. The new path propagates to
+                // clients via TickInfo (notifySendSyncBaseItem); SLAVE clients never replan locally.
+                pathingService.replanStuckItems(syncService::notifySendSyncBaseItem);
+            }
             baseItemService.tick();
             planetServiceTracker.afterBaseItemService();
             projectileService.tick();

@@ -20,6 +20,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,6 +97,7 @@ public class PathingService {
             correctedDestinationNode = destinationFinder.find();
         }
         aStarContext.setPassabilityGrid(passabilityGrid.getOrBuild(terrainType, correctedRadius));
+        aStarContext.setBuildingBlockedNodes(BuildingBlockerOverlay.compute(collectBuildings(), position, destination, radius));
         aStarContext.setStartStuck(startNode.isStuck(aStarContext));
         aStarContext.setStartPosition(position);
         aStarContext.setMaxStuckDistance(correctedRadius);
@@ -122,6 +124,23 @@ public class PathingService {
         }
         path.setWayPositions(positions);
         return path;
+    }
+
+    /** All immovable items (buildings) as footprint blockers for the A* overlay. Movable units are
+     * excluded — they are handled by ORCA, not A*. */
+    private List<BuildingBlockerOverlay.Blocker> collectBuildings() {
+        List<BuildingBlockerOverlay.Blocker> buildings = new ArrayList<>();
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
+            AbstractSyncPhysical physical = syncBaseItem.getAbstractSyncPhysical();
+            if (physical.canMove() || !physical.hasPosition()) {
+                return;
+            }
+            DecimalPosition buildingPosition = physical.getPosition();
+            if (buildingPosition != null) {
+                buildings.add(new BuildingBlockerOverlay.Blocker(buildingPosition, physical.getRadius()));
+            }
+        });
+        return buildings;
     }
 
     public DecimalPosition findNearestPosition(DecimalPosition start, TerrainType terrainType, DecimalPosition destination, double radius) {
@@ -167,6 +186,51 @@ public class PathingService {
         } catch (Throwable t) {
             logger.log(Level.SEVERE, t.getMessage(), t);
         }
+    }
+
+    /**
+     * MASTER-only: detect units that ORCA cannot free (crowded with no progress) and replan a fresh,
+     * building-aware A* path for them. The new path is pushed to clients through {@code notifier}
+     * (→ {@code SyncService.notifySendSyncBaseItem}) so it rides the normal TickInfo channel; clients
+     * never replan themselves, which keeps server and prediction in sync.
+     *
+     * <p>Must be called after {@link #tick} so this tick's movement and crowded-state are settled.
+     */
+    public void replanStuckItems(Consumer<SyncBaseItem> notifier) {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
+            AbstractSyncPhysical physical = syncBaseItem.getAbstractSyncPhysical();
+            if (!physical.canMove()) {
+                return;
+            }
+            SyncPhysicalMovable movable = (SyncPhysicalMovable) physical;
+            if (!movable.detectStuck()) {
+                return;
+            }
+            if (movable.isReplanBudgetExhausted()) {
+                // Goal unreachable after repeated tries — stop instead of thrashing A* forever.
+                movable.stop();
+                notifier.accept(syncBaseItem);
+                return;
+            }
+            DecimalPosition destination = movable.getFinalDestination();
+            if (destination == null) {
+                return;
+            }
+            try {
+                SimplePath newPath = setupPathToDestination(movable.getPosition(),
+                        physical.getRadius(),
+                        physical.getTerrainType(),
+                        physical.getTerrainType(),
+                        destination,
+                        0);
+                movable.setReplanPath(newPath);
+                notifier.accept(syncBaseItem);
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "Stuck replan failed for item " + syncBaseItem.getId() + ": " + t.getMessage(), t);
+                movable.stop();
+                notifier.accept(syncBaseItem);
+            }
+        });
     }
 
     private void calculateItemVelocity() {

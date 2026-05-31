@@ -95,7 +95,9 @@ public class OrcaTest {
         physicalAreas.add(GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(20, 24), new DecimalPosition(30, -5).normalize(10), null));
         physicalAreas.add(GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(20, 16), new DecimalPosition(30, 5).normalize(10), null));
 
-        runTest(protagonist, physicalAreas, null, new DecimalPosition(0.0, 0));
+        // Was (0,0) = hard freeze. The two others also head +x (only mildly converging), so the
+        // dense RVO2 fallback now keeps the protagonist moving forward instead of dead-stopping.
+        runTest(protagonist, physicalAreas, null, new DecimalPosition(10.0, 0));
     }
 
     @Test
@@ -220,7 +222,9 @@ public class OrcaTest {
         physicalAreas.add(GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(20, 16.1), new DecimalPosition(10, 0), null));
         physicalAreas.add(GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(20, 23.9), new DecimalPosition(10, 0), null));
 
-        runTest(protagonist, physicalAreas, null, new DecimalPosition(0.0, 0.0));
+        // Was (0,0) = hard freeze when symmetrically sandwiched. The dense RVO2 fallback now backs
+        // the protagonist out (-x) to resolve the overlap instead of freezing in place.
+        runTest(protagonist, physicalAreas, null, new DecimalPosition(-10.0, 0.0));
     }
 
     @Test
@@ -229,7 +233,9 @@ public class OrcaTest {
         List<AbstractSyncPhysical> physicalAreas = new ArrayList<>();
         physicalAreas.add(GameTestHelper.createAbstractSyncPhysical(3.0, TerrainType.LAND, new DecimalPosition(24.5927935691167, 25.56605099410689)));
 
-        runTest(protagonist, physicalAreas, null, new DecimalPosition(-0.18463990822690954, -0.07686419380933122));
+        // Static obstacle now gets the FULL avoidance correction (reciprocal 1.0 instead of 0.5),
+        // so the escape velocity shifts slightly: was (-0.18464, -0.07686).
+        runTest(protagonist, physicalAreas, null, new DecimalPosition(-0.1859965830880178, -0.07352054868934314));
     }
 
     @Test
@@ -316,6 +322,47 @@ public class OrcaTest {
                 new DecimalPosition(20, 25)
         );
         runTest(protagonist, null, obstacles, new DecimalPosition(2.0, 16.882));
+    }
+
+    @Test
+    public void overConstrainedStaysWithinSpeed() {
+        // A unit tightly surrounded on all sides is over-constrained: no feasible velocity exists.
+        // The dense RVO2 fallback must still return a velocity inside the speed circle (never a
+        // runaway). It used to return (0,0); now it minimises penetration but must not overspeed.
+        double speed = 10;
+        SyncPhysicalMovable protagonist = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(20, 20), new DecimalPosition(speed, 0), null);
+        List<AbstractSyncPhysical> physicalAreas = new ArrayList<>();
+        for (int deg = 0; deg < 360; deg += 60) {
+            DecimalPosition offset = DecimalPosition.createVector(Math.toRadians(deg), 3.5);
+            physicalAreas.add(GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(20, 20).add(offset), new DecimalPosition(-speed, 0).normalize(speed), null));
+        }
+        Orca orca = new Orca(protagonist);
+        physicalAreas.forEach(orca::add);
+        orca.solve();
+        double resultSpeed = orca.getNewVelocity().magnitude();
+        org.junit.Assert.assertTrue("Fallback velocity must not exceed speed, was " + resultSpeed, resultSpeed <= speed + 0.001);
+    }
+
+    @Test
+    public void staticObstacleDeflectsMoreThanMoving() {
+        // Same geometry, two cases: a STATIC obstacle (reciprocal 1.0 — unit takes full
+        // correction) vs a MOVING obstacle standing still (reciprocal 0.5 — shared correction).
+        // The static case must pull the resulting velocity further from the preferred velocity.
+        DecimalPosition preferred = new DecimalPosition(10, 0);
+        DecimalPosition obstaclePos = new DecimalPosition(24, 20.5);
+
+        Orca staticOrca = new Orca(GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(20, 20), preferred, null));
+        staticOrca.add(GameTestHelper.createAbstractSyncPhysical(2.0, TerrainType.LAND, obstaclePos));
+        staticOrca.solve();
+
+        Orca movingOrca = new Orca(GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(20, 20), preferred, null));
+        movingOrca.add(GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, obstaclePos, new DecimalPosition(0, 0), null));
+        movingOrca.solve();
+
+        double staticCorrection = staticOrca.getNewVelocity().getDistance(preferred);
+        double movingCorrection = movingOrca.getNewVelocity().getDistance(preferred);
+        org.junit.Assert.assertTrue("Static obstacle must deflect at least as much as moving: static="
+                + staticCorrection + " moving=" + movingCorrection, staticCorrection >= movingCorrection - 0.0001);
     }
 
     private void runTest(SyncPhysicalMovable protagonist, List<AbstractSyncPhysical> physicalAreas, List<ObstacleSlope> obstacles, DecimalPosition expected) {

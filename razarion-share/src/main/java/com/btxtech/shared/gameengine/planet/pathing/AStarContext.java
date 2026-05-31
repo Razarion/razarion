@@ -1,12 +1,15 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Beat
@@ -20,9 +23,20 @@ public class AStarContext {
     private DecimalPosition destination;
     private double maxStuckDistance;
     private PassabilityGrid.Grid passabilityGrid;
+    private Set<Index> buildingBlockedNodes = Collections.emptySet();
 
     public AStarContext(TerrainType terrainType) {
         this.terrainType = terrainType;
+    }
+
+    /** Nodes covered by a building footprint (see {@link BuildingBlockerOverlay}). Empty by default
+     * → zero behaviour change when no buildings are in the way. */
+    public void setBuildingBlockedNodes(Set<Index> buildingBlockedNodes) {
+        this.buildingBlockedNodes = buildingBlockedNodes;
+    }
+
+    public boolean isBuildingBlocked(Index nodeIndex) {
+        return buildingBlockedNodes.contains(nodeIndex);
     }
 
     public PassabilityGrid.Grid getPassabilityGrid() {

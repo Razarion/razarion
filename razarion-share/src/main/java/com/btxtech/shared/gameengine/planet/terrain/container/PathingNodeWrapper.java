@@ -81,6 +81,11 @@ public class PathingNodeWrapper {
     }
 
     public boolean isStuck(AStarContext aStarContext) {
+        // Buildings are not in the (terrain-only) PassabilityGrid; they are overlaid here so A*
+        // routes around them instead of leaving units stuck for ORCA to resolve.
+        if (aStarContext.isBuildingBlocked(nodeIndex)) {
+            return true;
+        }
         if (aStarContext.getPassabilityGrid() != null) {
             return !aStarContext.getPassabilityGrid().isPassable(nodeIndex);
         }

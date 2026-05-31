@@ -23,9 +23,12 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
+import com.btxtech.shared.gameengine.planet.pathing.StuckDetector;
 import com.btxtech.shared.utils.MathHelper;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
+
+import java.util.List;
 
 /**
  * User: beat
@@ -38,6 +41,11 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
     private static final double STOP_DETECTION_DISTANCE = 0.5;
     private static final double STOP_DETECTION_OTHER_UNITS_RADIOS = 20;
+    // Stuck detection (server / MASTER only): a crowded unit that moves less than this per tick is
+    // counted as making no progress; after STUCK_TICK_THRESHOLD such ticks a replan is triggered.
+    private static final double STUCK_PROGRESS_DISTANCE = 0.05; // meters per tick
+    private static final int STUCK_TICK_THRESHOLD = 15;         // 1.5s at 100ms ticks
+    private static final int MAX_REPLANS = 3;                   // give up (stop) after this many replans
     // Angle slow-down removed: caused server/client desync when re-issuing commands during movement.
     // Units still rotate via angularVelocity in finalization().
     // private Logger logger = Logger.getLogger(SyncPhysicalMovable.class.getName());
@@ -52,6 +60,7 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private DecimalPosition oldPosition;
     private boolean crowded;
     private double desiredMoveAngle;
+    private final StuckDetector stuckDetector = new StuckDetector(STUCK_TICK_THRESHOLD, MAX_REPLANS);
 
     @Inject
     public SyncPhysicalMovable(SyncItemContainerServiceImpl syncItemContainerService, Provider<Path> instancePath) {
@@ -173,6 +182,42 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     public void setPath(SimplePath path) {
         this.path = instancePath.get();
         this.path.init(path);
+        stuckDetector.onFreshCommand();
+    }
+
+    /** Replace the path mid-movement after a stuck replan (MASTER only). Unlike {@link #setPath} this
+     * consumes one replan from the budget rather than refilling it. */
+    public void setReplanPath(SimplePath path) {
+        this.path = instancePath.get();
+        this.path.init(path);
+        stuckDetector.onReplan();
+    }
+
+    /**
+     * Server-side stuck detection. Call once per tick after movement has been applied.
+     *
+     * @return true when a replan is due (crowded + no progress for STUCK_TICK_THRESHOLD ticks).
+     */
+    public boolean detectStuck() {
+        boolean madeProgress = oldPosition != null
+                && oldPosition.getDistance(getPosition()) >= STUCK_PROGRESS_DISTANCE;
+        return stuckDetector.onTick(path != null, crowded, madeProgress);
+    }
+
+    public boolean isReplanBudgetExhausted() {
+        return stuckDetector.replanBudgetExhausted();
+    }
+
+    /** The final destination of the current path (its last way position), or null if not moving. */
+    public DecimalPosition getFinalDestination() {
+        if (path == null) {
+            return null;
+        }
+        List<DecimalPosition> wayPositions = path.getWayPositions();
+        if (wayPositions == null || wayPositions.isEmpty()) {
+            return null;
+        }
+        return wayPositions.get(wayPositions.size() - 1);
     }
 
     @Override
@@ -185,6 +230,7 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         velocity = null;
         path = null;
         preferredVelocity = null;
+        stuckDetector.onFreshCommand();
     }
 
     public boolean isMoving() {

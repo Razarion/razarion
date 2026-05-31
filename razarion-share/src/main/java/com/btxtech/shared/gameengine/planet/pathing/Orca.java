@@ -86,6 +86,11 @@ public class Orca {
         double combinedRadius = radius + otherRadius;
         double combinedRadiusSq = combinedRadius * combinedRadius;
 
+        // A static obstacle (building, terrain object) will not move out of the way, so the moving
+        // unit must take the FULL avoidance correction rather than the reciprocal half it would
+        // share with another moving agent. otherVelocity == null is the static discriminator.
+        double reciprocalFactor = otherVelocity == null ? 1.0 : RECIPROCAL_FACTOR;
+
         try {
             OrcaLine orcaLine;
             if (distanceSq >= combinedRadiusSq) {
@@ -121,13 +126,13 @@ public class Orca {
                     double dotProduct2 = relativeVelocity.dotProduct(direction);
                     u = direction.multiply(dotProduct2).sub(relativeVelocity);
                 }
-                DecimalPosition point = preferredVelocity.add(RECIPROCAL_FACTOR, u);
+                DecimalPosition point = preferredVelocity.add(reciprocalFactor, u);
                 orcaLine = new OrcaLine(point, direction);
             } else {
                 // Collision
                 double overlapDistance = combinedRadius - relativePosition.magnitude();
                 DecimalPosition overlapCorrection = position.sub(otherPosition).normalize(overlapDistance / TICK_FACTOR); // Make sure the collision is eliminated next tick
-                DecimalPosition point = preferredVelocity.add(overlapCorrection.sub(relativeVelocity).multiply(RECIPROCAL_FACTOR));
+                DecimalPosition point = preferredVelocity.add(overlapCorrection.sub(relativeVelocity).multiply(reciprocalFactor));
                 point = point.normalize(Math.min(speed, point.magnitude()));
                 DecimalPosition direction = new DecimalPosition(-relativePosition.getY(), relativePosition.getX()).normalize();
                 orcaLine = new OrcaLine(point, direction);
@@ -441,7 +446,149 @@ public class Orca {
             return DecimalPosition.getNearestPoint(preferredVelocity, possibleVelocities);
         }
 
-        return DecimalPosition.NULL;
+        // 4) Over-constrained: no velocity within the speed circle satisfies every OrcaLine.
+        // The bespoke search above gave up. Instead of a hard stop (returning NULL = zero
+        // velocity), fall back to the canonical RVO2 dense solver, which yields the velocity
+        // that minimises the maximum penetration into the half-planes (obstacle/building lines
+        // treated as hard). This lets a wedged unit creep out of the jam instead of freezing.
+        // Deterministic (List-ordered, no randomness) → safe over the network.
+        return linearProgramDense();
+    }
+
+    /**
+     * Canonical RVO2 fallback (van den Berg et al., http://gamma.cs.unc.edu/ORCA/).
+     * Obstacle ORCA lines are listed first and treated as hard constraints (numObstLines),
+     * item/building lines follow. Returns the least-penetrating feasible velocity.
+     */
+    private DecimalPosition linearProgramDense() {
+        List<OrcaLine> lines = new ArrayList<>(obstacleOrcaLines);
+        lines.addAll(itemOrcaLines);
+        int numObstLines = obstacleOrcaLines.size();
+        DecimalPosition[] result = new DecimalPosition[]{preferredVelocity};
+        int failLine = linearProgram2(lines, speed, preferredVelocity, false, result);
+        if (failLine < lines.size()) {
+            linearProgram3(lines, numObstLines, failLine, speed, result);
+        }
+        return result[0];
+    }
+
+    // RVO2 linearProgram1: optimise along the speed circle constrained to half-plane lineNo,
+    // bounded by all previously processed lines. Returns false if infeasible.
+    private boolean linearProgram1(List<OrcaLine> lines, int lineNo, double radius, DecimalPosition optVelocity, boolean directionOpt, DecimalPosition[] result) {
+        OrcaLine line = lines.get(lineNo);
+        DecimalPosition point = line.getPoint();
+        DecimalPosition direction = line.getDirection();
+        double dotProduct = point.dotProduct(direction);
+        double discriminant = dotProduct * dotProduct + radius * radius - point.magnitudeSq();
+        if (discriminant < 0.0) {
+            // Max speed circle fully invalidates line lineNo.
+            return false;
+        }
+        double sqrtDiscriminant = Math.sqrt(discriminant);
+        double tLeft = -dotProduct - sqrtDiscriminant;
+        double tRight = -dotProduct + sqrtDiscriminant;
+        for (int i = 0; i < lineNo; i++) {
+            OrcaLine lineI = lines.get(i);
+            double denominator = direction.determinant(lineI.getDirection());
+            double numerator = lineI.getDirection().determinant(point.sub(lineI.getPoint()));
+            if (Math.abs(denominator) <= EPSILON) {
+                // Lines lineNo and i are (nearly) parallel.
+                if (numerator < 0.0) {
+                    return false;
+                }
+                continue;
+            }
+            double t = numerator / denominator;
+            if (denominator >= 0.0) {
+                tRight = Math.min(tRight, t);
+            } else {
+                tLeft = Math.max(tLeft, t);
+            }
+            if (tLeft > tRight) {
+                return false;
+            }
+        }
+        if (directionOpt) {
+            if (optVelocity.dotProduct(direction) > 0.0) {
+                result[0] = point.add(tRight, direction);
+            } else {
+                result[0] = point.add(tLeft, direction);
+            }
+        } else {
+            double t = direction.dotProduct(optVelocity.sub(point));
+            if (t < tLeft) {
+                result[0] = point.add(tLeft, direction);
+            } else if (t > tRight) {
+                result[0] = point.add(tRight, direction);
+            } else {
+                result[0] = point.add(t, direction);
+            }
+        }
+        return true;
+    }
+
+    // RVO2 linearProgram2: incrementally satisfy all lines. Returns lines.size() on success,
+    // otherwise the index of the first line that could not be satisfied.
+    private int linearProgram2(List<OrcaLine> lines, double radius, DecimalPosition optVelocity, boolean directionOpt, DecimalPosition[] result) {
+        if (directionOpt) {
+            result[0] = optVelocity.multiply(radius);
+        } else if (optVelocity.magnitudeSq() > radius * radius) {
+            result[0] = optVelocity.normalize(radius);
+        } else {
+            result[0] = optVelocity;
+        }
+        for (int i = 0; i < lines.size(); i++) {
+            OrcaLine line = lines.get(i);
+            if (line.getDirection().determinant(line.getPoint().sub(result[0])) > 0.0) {
+                // result does not satisfy constraint i.
+                DecimalPosition temp = result[0];
+                if (!linearProgram1(lines, i, radius, optVelocity, directionOpt, result)) {
+                    result[0] = temp;
+                    return i;
+                }
+            }
+        }
+        return lines.size();
+    }
+
+    // RVO2 linearProgram3: dense fallback when LP2 fails. Minimises the maximum penetration,
+    // keeping obstacle lines [0, numObstLines) as hard constraints.
+    private void linearProgram3(List<OrcaLine> lines, int numObstLines, int beginLine, double radius, DecimalPosition[] result) {
+        double distance = 0.0;
+        for (int i = beginLine; i < lines.size(); i++) {
+            OrcaLine lineI = lines.get(i);
+            if (lineI.getDirection().determinant(lineI.getPoint().sub(result[0])) > distance) {
+                // result does not satisfy constraint of line i.
+                List<OrcaLine> projLines = new ArrayList<>(lines.subList(0, numObstLines));
+                for (int j = numObstLines; j < i; j++) {
+                    OrcaLine lineJ = lines.get(j);
+                    double determinant = lineI.getDirection().determinant(lineJ.getDirection());
+                    DecimalPosition point;
+                    if (Math.abs(determinant) <= EPSILON) {
+                        // Line i and line j are parallel.
+                        if (lineI.getDirection().dotProduct(lineJ.getDirection()) > 0.0) {
+                            // Same direction.
+                            continue;
+                        }
+                        // Opposite direction.
+                        point = lineI.getPoint().add(lineJ.getPoint()).multiply(0.5);
+                    } else {
+                        double s = lineJ.getDirection().determinant(lineI.getPoint().sub(lineJ.getPoint())) / determinant;
+                        point = lineI.getPoint().add(s, lineI.getDirection());
+                    }
+                    DecimalPosition projDirection = lineJ.getDirection().sub(lineI.getDirection()).normalize();
+                    projLines.add(new OrcaLine(point, projDirection));
+                }
+                DecimalPosition temp = result[0];
+                DecimalPosition optDirection = new DecimalPosition(-lineI.getDirection().getY(), lineI.getDirection().getX());
+                if (linearProgram2(projLines, radius, optDirection, true, result) < projLines.size()) {
+                    // Should in principle not happen — the result satisfies all constraints up
+                    // to line i already. Keep the previous result on numerical edge cases.
+                    result[0] = temp;
+                }
+                distance = lineI.getDirection().determinant(lineI.getPoint().sub(result[0]));
+            }
+        }
     }
 
     private boolean isVelocityAllowed(DecimalPosition velocity, OrcaLine... ignoredLines) {

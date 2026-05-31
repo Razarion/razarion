@@ -9,7 +9,7 @@
 (function() {
     'use strict';
 
-    window.RAZ_startTime = performance.now();
+    window.RAZ_startTime = Date.now();
 
     console.log('[TeaVM Client] Starting WebAssembly GC client bootstrap...');
 
