@@ -20,53 +20,56 @@ This document defines the game flow, progression, and content design for Razario
 
 The planet is divided into **four geographic phases**. Each phase has its own gameplay identity, bot behavior, unlock mechanics, and difficulty. Players progress from Phase 1 to Phase 4 by leveling up. The phases are physically separated areas on the map.
 
-```
-Planet: 5120 x 5120 m (32 x 32 tiles)
-Origin (0,0) = bottom-left corner, Y increases upward
+All four phases over the live planet minimap (5120 × 5120 m, origin bottom-left, Y up) — **Phase 1** as the terrain-derived polygon (corners in "Phase 1 boundary" below), **Phase 2–4** as their rectangle / L-shape regions:
 
-Y
-5120 ┌──────────────────────┬──────────────────────────────┐
-     │                      │                              │
-     │                      │                              │
-     │    PHASE 4: Alliance Warzone                        │
-     │    (PvP, guild warfare, bot alliances)              │
-     │    [OPEN DESIGN]                                    │
-     │                      │                              │
-2500 ├──────────────────────┤                              │
-     │                      │                              │
-     │  P2: Semi-Noob       │                              │
-     │  Frontier             │                              │
-     │  (Crystal boxes,     │  PHASE 3: The Siege          │
-     │   unlock buildings   │  (Aggressive bots,           │
-     │   & vehicles)        │   survival & defense)        │
- 800 ├────────┐             │                              │
-     │ P1:    │             │                              │
-     │ Noob   │             │                              │
-     │ Island │             │                              │
-   0 └────────┴─────────────┴──────────────────────────────┘
-     0       820          2000                           5120  X
-```
+![All four phases over the live planet minimap](assets/phase1-boundary.svg)
 
-### Phase Coordinates (PlaceConfig regions)
+*(If the SVG doesn't render inline, open [`assets/phase1-boundary.svg`](assets/phase1-boundary.svg) directly — it embeds the minimap + the phase regions.)*
 
-| Phase | X Range | Y Range | Size | Area |
-|-------|---------|---------|------|------|
-| 1 - Noob Island | 0 – 820 | 0 – 800 | 820 x 800 m | 0.66 km² |
-| 2 - Semi-Noob Frontier | 0 – 2000 x 0 – 2000 (minus P1) | — | ~2000 x 2000 m | ~3.34 km² |
-| 3 - The Siege | 2000 – 5120 | 0 – 2500 | 3120 x 2500 m | 7.80 km² |
-| 4 - Alliance Warzone | 0 – 5120 x 2500 – 5120 + 0 – 2000 x 2000 – 2500 (L-shape) | — | L-shaped | ~14.42 km² |
+### Phase Coordinates
 
-**Phase boundary logic:**
-1. If X < 820 and Y < 800 → **Phase 1**
-2. If X < 2000 and Y < 2000 (and not Phase 1) → **Phase 2**
-3. If X ≥ 2000 and Y < 2500 → **Phase 3**
+| Phase | Region (game coords, origin bottom-left, Y up) | Area |
+|-------|------------------------------------------------|------|
+| 1 — Noob Island | **terrain polygon**, 7 corners (see "Phase 1 boundary" below) | ~0.43 km² |
+| 2 — Semi-Noob Frontier | X, Y < 2000, **minus** Phase 1 | ~3.6 km² |
+| 3 — The Siege | X 2000–5120, Y < 2500 | 7.80 km² |
+| 4 — Alliance Warzone | the remaining **L-shape** (everything above P2/P3) | ~14.4 km² |
+
+**Phase boundary logic** (evaluated in order):
+1. Inside the **Phase-1 terrain polygon** (corners below) → **Phase 1**
+2. X < 2000 and Y < 2000 → **Phase 2**
+3. X ≥ 2000 and Y < 2500 → **Phase 3**
 4. Everything else → **Phase 4**
+
+### Phase-1 boundary from the live minimap (terrain-derived)
+
+Read from the live planet minimap (`PlanetEntity.miniMapImage`, planet 117, served at `GET /rest/image/minimap/117`). Saved here: [`assets/planet1-minimap.png`](assets/planet1-minimap.png) — 1000×1000 px over the 5120 m planet → **5.12 m/px**. The actual Phase-1 zone is walled in by terrain, not a clean rectangle:
+
+- **North:** the mountain massif (x ≈ 0–520, south edge y ≈ 790–840) walls Phase 1 off.
+- **East:** the Phase-1 lake's far shore — ~810 m at the bottom (y≈0), narrowing to a **waist ~630 m at y≈350**, then curving back in toward the mountain. The naval bot (RazCore Platform, ~(402, 282)) sits in this lake.
+- **West / South:** the planet edges (x = 0, y = 0).
+
+**Terrain-derived Phase-1 boundary (game coords, origin bottom-left, Y up):**
+
+| # | X | Y |
+|---|-----|-----|
+| 1 | 0 | 0 |
+| 2 | 810 | 0 |
+| 3 | 804 | 162 |
+| 4 | 630 | 350 |
+| 5 | 402 | 589 |
+| 6 | 117 | 740 |
+| 7 | 0 | 756 |
+
+The boundary is drawn over the minimap in the map at the top of this section (the yellow **P1** polygon). The **NE corner is cut off** vs. a square — the `(820, 800)` corner is not Phase-1 land but Phase-2 water across the lake; that square corner was the *"spike of Phase 1 reaching into Phase 2"*, removed by following the lake + mountain.
+
+> Derived by sampling the minimap at 5.12 m/px; coordinates are approximate (±~15 m). This is **documentation only** — the server start regions (121/122) are not changed.
 
 ### Phase Transition
 
 Players transition between phases by reaching a required level. The transition is **not automatic** — the player must actively choose to leave.
 
-**Phase 1 → Phase 2:** At Level 9, the player unlocks the **Transporter** — a special unit that carries a Razaworker from Noob Island across the terrain barrier to the Phase 2 region. This is a one-way trip: the Transporter delivers the Razaworker to the new territory, where the player starts building a new base from scratch. A final quest then asks the player to **sell their old base** on Noob Island — this gives them Razarion as starting capital for Phase 2 and frees up the island space for new players. This creates a clean "leaving home" moment with a tangible reward.
+**Phase 1 → Phase 2:** at **Level 8** the player unlocks the **Transporter** to ferry a Builder across the water to the Phase 2 region; at **Level 9** a sequence of quests sells the old base and repositions the economy into Phase 2 (starting capital + frees the island for new players) — a clean "leaving home" moment. Mechanics live in [`phase-1-plan.md`](phase-1-plan.md) §5.
 
 **Later transitions** (Phase 2→3, 3→4): Mechanism TBD (may also use Transporters or other gating mechanics).
 
@@ -81,202 +84,17 @@ Players transition between phases by reaching a required level. The transition i
 
 ## 3. Phase 1: Noob Island
 
-> **Operational plan:** See [`phase-1-plan.md`](phase-1-plan.md) for detailed level/quest/bot configuration.
+> **Full spec → [`phase-1-plan.md`](phase-1-plan.md)** (the live localhost config: units, economy, levels, bots, quests, map). Phase 1 is built and playable.
 
-### 3.1 Concept
-
-A safe, isolated area where new players learn the game over **9 levels**. Bots are passive and won't attack unless provoked. Resources are abundant. Quests guide the player through all basic mechanics. The extended level range allows gradual introduction of units, buildings, and increasingly complex bot encounters — all within a safe environment.
-
-### 3.2 Available Units & Buildings
-
-| Name | Role | Cost (Razarion) | Health | Unlocked At | Notes |
-|------|------|-----------------|--------|-------------|-------|
-| **Razaworker** | Construction & harvest bot | 30 | 50 | Level 1 (start) | Start unit, can harvest and build |
-| **Razascout** | Fast recon drone | 20 | 30 | Level 1 | Cheap, fast, weak weapon |
-| **Razabot** | Basic combat bot | 40 | 80 | Level 1 | Backbone of early army |
-| **Command Center** | Main building | — | 500 | Level 1 (start) | One per player, spawns with base |
-| **Supply Depot** | Provides +5 house space | 50 | 200 | Level 1 | Required to grow army |
-| **Bot Factory** | Produces light units (Razascout, Razabot) | 100 | 300 | Level 1 | |
-| **Tower** | Static defense turret | 80 | 250 | Level 3 | First defensive structure |
-| **Razatron** | Heavy combat bot | 60 | 120 | Level 5 | Tougher than Razabot |
-| **Advanced Bot Factory** | Produces heavy units (Razatron) | 150 | 350 | Level 5 | |
-| **Refinery** | Boosts harvest efficiency | 100 | 300 | Level 7 | Economic advantage for late Phase 1 |
-| **Transporter** | Carries a Razaworker to Phase 2 | 200 | 150 | Level 9 | One-way trip off the island, single use |
-
-### 3.3 Economy
-
-| Parameter | Value |
-|-----------|-------|
-| Start Razarion | 200 |
-| Start Units | 1 Razaworker |
-| Resource nodes | Abundant, close to start zones |
-| Harvest rate | ~10 Razarion per trip |
-
-### 3.4 Bots
-
-**Raider Patrol (Trivial)** — Target for Level 1-2
-- Composition: 2 Razascouts
-- Behavior: **Passive** — does NOT attack players, only fights back when attacked
-- Respawn: Very slow (rePopTime: 150s)
-- Enragement: None
-- Purpose: First combat encounter, nearly zero risk
-
-**Raider Camp (Easy)** — Target for Level 3-4
-- Composition: 3 Razascouts, 2 Razabots
-- Behavior: **Passive** — fights back when attacked but does not pursue
-- Respawn: Slow (rePopTime: 120s)
-- Enragement: None
-- Purpose: Teaches combat with mixed unit types
-
-**Raider Outpost (Easy+)** — Target for Level 5-6
-- Composition: 4 Razabots, 1 Tower
-- Behavior: **Passive** — defends position but does not pursue
-- Respawn: Slow (rePopTime: 100s)
-- Enragement: None
-- Purpose: Teaches attacking fortified positions, requires Tower or Razatron
-
-**Raider Fortress (Moderate)** — Target for Level 7-9
-- Composition: 3 Razabots, 2 Razatrons, 2 Towers
-- Behavior: **Passive** — strong static defense, does not pursue
-- Respawn: Medium (rePopTime: 90s)
-- Enragement: After 3 kills → adds 1 Razabot
-- Purpose: Final Phase 1 challenge, prepares player for Phase 2 difficulty
-
-### 3.5 Quests
-
-Quests are grouped by level range. Each group introduces mechanics appropriate for that stage.
-
-**Level 1-2: Tutorial Basics**
-
-| # | Quest Name | Objective | Condition | Reward |
-|---|-----------|-----------|-----------|--------|
-| 1 | First Steps | Build a Supply Depot | SYNC_ITEM_CREATED: Supply Depot x1 | 30 XP, 50 Razarion |
-| 2 | Harvest Time | Harvest 50 Razarion | HARVEST: 50 | 30 XP |
-| 3 | Deploy Bots | Build 2 Razabots | SYNC_ITEM_CREATED: Razabot x2 | 40 XP, 30 Razarion |
-| 4 | First Contact | Kill 2 enemy Razascouts | SYNC_ITEM_KILLED: x2 (botId: Raider Patrol) | 50 XP |
-
-**Level 3-4: Combat Fundamentals**
-
-| # | Quest Name | Objective | Condition | Reward |
-|---|-----------|-----------|-----------|--------|
-| 5 | Fortify | Build a Tower | SYNC_ITEM_CREATED: Tower x1 | 80 XP, 80 Razarion |
-| 6 | Scouting Party | Build 3 Razascouts | SYNC_ITEM_CREATED: Razascout x3 | 60 XP |
-| 7 | Clear the Camp | Destroy a Raider Camp | BASE_KILLED: x1 (botId: Raider Camp) | 120 XP, 100 Razarion |
-| 8 | Growing Force | Have 6 combat units | SYNC_ITEM_CREATED: x6 (includeExisting) | 100 XP |
-
-**Level 5-6: Advanced Units**
-
-| # | Quest Name | Objective | Condition | Reward |
-|---|-----------|-----------|-----------|--------|
-| 9 | Heavy Metal | Build an Advanced Bot Factory | SYNC_ITEM_CREATED: Advanced Bot Factory x1 | 150 XP, 120 Razarion |
-| 10 | Iron Guard | Build 2 Razatrons | SYNC_ITEM_CREATED: Razatron x2 | 150 XP |
-| 11 | Outpost Assault | Destroy a Raider Outpost | BASE_KILLED: x1 (botId: Raider Outpost) | 200 XP, 150 Razarion |
-| 12 | Harvest Master | Harvest 500 Razarion total | HARVEST: 500 | 180 XP |
-
-**Level 7-9: Mastery & Preparation**
-
-| # | Quest Name | Objective | Condition | Reward |
-|---|-----------|-----------|-----------|--------|
-| 13 | Efficiency | Build a Refinery | SYNC_ITEM_CREATED: Refinery x1 | 200 XP, 150 Razarion |
-| 14 | Full Army | Have 12 combat units | SYNC_ITEM_CREATED: x12 (includeExisting) | 200 XP |
-| 15 | Fortress Breaker | Destroy a Raider Fortress | BASE_KILLED: x1 (botId: Raider Fortress) | 350 XP, 250 Razarion |
-| 16 | Island Champion | Destroy 3 bot bases total | BASE_KILLED: x3 | 400 XP, 300 Razarion |
-| 17 | Build the Transporter | Build a Transporter | SYNC_ITEM_CREATED: Transporter x1 | 500 XP |
-| 18 | Leave the Island | Transport a Razaworker to Phase 2 | SYNC_ITEM_POSITION: Razaworker in Phase 2 region | 600 XP |
-| 19 | Sell the Old Base | Sell all remaining buildings on Noob Island | SELL: all buildings in Phase 1 region | 500 Razarion |
-
-### 3.6 Map Layout
-
-- **Region:** Bottom-left corner (X: 0–820, Y: 0–800), ~0.66 km²
-- The lake with its island forms a natural boundary — water surrounds the play area
-- Multiple start zones so new players don't overlap too much
-- Resource nodes within short walking distance of every start zone
-- Bot difficulty increases with distance from start zones:
-  - Near start: 3-4 Raider Patrols (Level 1-2 targets)
-  - Mid island: 2-3 Raider Camps (Level 3-4 targets)
-  - Far from start: 2 Raider Outposts (Level 5-6 targets)
-  - Island edges: 1-2 Raider Fortresses (Level 7-9 targets)
-- The lake edge forms the boundary to Phase 2 — the Transporter crosses the water to reach P2
-- **Transporter launch zone** near lake edge: designated area where the Transporter departs
+A safe, isolated tutorial area where new players learn the game over **9 levels (L1–L9)**. Bots are mostly passive (two are aggressive within their realm), resources are abundant, and quests guide the player through every basic mechanic — harvest, build, fight — and finally ferry a Builder across the water to Phase 2. All unit/level/quest/bot/map detail lives in the plan doc; this overview only places Phase 1 in the overall arc (see §2 and the difficulty curve in §10).
 
 ---
 
 ## 4. Phase 2: Semi-Noob Frontier
 
-> **Operational plan:** See [`phase-2-plan.md`](phase-2-plan.md) for the detailed, production-grounded level/crystal/box/bot/quest configuration (real unit IDs).
+> **Full spec → [`phase-2-plan.md`](phase-2-plan.md)** (production-grounded config with real unit IDs: Crystal unlocks, boxes, bots, quests, levels, map).
 
-### 4.1 Concept
-
-Players leave the safety of Noob Island and enter a larger, more challenging territory. The key mechanic difference: **buildings and vehicles are unlocked by finding Crystal items in boxes**, not just by leveling up. This encourages exploration and creates a treasure-hunt element.
-
-Bot outposts are more complex (multiple unit types, defensive structures) and guard the areas where valuable boxes spawn.
-
-### 4.2 Crystal Unlock Mechanic
-
-Boxes in Phase 2 contain **Crystals**. Crystals are a special currency used exclusively to unlock new unit and building types.
-
-| Unlock | Crystal Cost | Found In |
-|--------|-------------|----------|
-| Vehicle Factory | 3 Crystals | Boxes near outposts |
-| Tank | 2 Crystals | Boxes near outposts |
-| Razacannon | 4 Crystals | Boxes near Armored Outposts |
-
-This means two players at the same level may have different unlocks depending on which boxes they've found. This creates variety and incentivizes exploration over pure grinding. Note: Razatron and Refinery are already available from Phase 1 (Level 5 and 7).
-
-### 4.3 New Units & Buildings (unlocked via Crystals)
-
-| Name | Role | Crystal Cost | Razarion Cost | Health | Notes |
-|------|------|-------------|---------------|--------|-------|
-| **Tank** | Armored vehicle | 2 Crystals | 120 | 200 | Strong but slow |
-| **Vehicle Factory** | Produces vehicles | 3 Crystals | 200 | 400 | Required for Tank |
-| **Razacannon** | Mobile artillery bot | 4 Crystals | 180 | 80 | Long range, fragile, Phase 2 exclusive |
-
-### 4.4 Bots
-
-**Frontier Outpost (Medium)**
-- Composition: 3 Razatrons, 2 Razabots, 1 Tower
-- Behavior: **Defensive** — patrols territory, attacks players who enter their realm, but does NOT leave realm to pursue
-- Respawn: Medium (rePopTime: 90s)
-- Enragement: After 5 kills → adds 2 Razabots
-- Purpose: Guards crystal box regions, requires tactical approach
-
-**Armored Outpost (Medium+)**
-- Composition: 2 Razatrons, 2 Tanks, 2 Towers
-- Behavior: **Defensive** — stronger static defense
-- Respawn: Medium (rePopTime: 80s)
-- Enragement: After 4 kills → adds 1 Tank
-- Purpose: Guards high-value box areas, requires vehicles to defeat efficiently
-
-### 4.5 Boxes & Crystal Distribution
-
-| Box Type | Contents | Spawn Location | Spawn Interval | Count |
-|----------|---------|----------------|----------------|-------|
-| Crystal Box | 1 Crystal | Near Frontier Outposts | 180-300s | 3 |
-| Rich Crystal Box | 2 Crystals | Near Armored Outposts (guarded) | 300-600s | 2 |
-| Resource Box | 100 Razarion | Scattered across phase | 120-240s | 4 |
-| XP Box | 50 XP | Scattered across phase | 150-300s | 3 |
-
-### 4.6 Quests
-
-| # | Quest Name | Objective | Condition | Reward |
-|---|-----------|-----------|-----------|--------|
-| 1 | New Horizons | Build a Command Center in Phase 2 | SYNC_ITEM_CREATED: Command Center x1 (in Phase 2 region) | 60 XP |
-| 2 | Crystal Hunter | Pick up your first box | BOX_PICKED: x1 | 50 XP, 50 Razarion |
-| 3 | Mechanized | Build a Vehicle Factory | SYNC_ITEM_CREATED: Vehicle Factory x1 | 120 XP |
-| 4 | Tank Commander | Build 2 Tanks | SYNC_ITEM_CREATED: Tank x2 | 150 XP, 100 Razarion |
-| 5 | Outpost Buster | Destroy a Frontier Outpost | BASE_KILLED: x1 (botId: Frontier Outpost) | 200 XP, 150 Razarion |
-| 6 | Crystal Collector | Collect 5 Crystals total | BOX_PICKED: x5 (crystal type) | 150 XP, 2 Crystals |
-| 7 | Armored Assault | Destroy an Armored Outpost | BASE_KILLED: x1 (botId: Armored Outpost) | 300 XP, 200 Razarion |
-
-### 4.7 Map Layout
-
-- **Region:** X: 0–2000, Y: 0–2000 (minus Phase 1 area), ~3.34 km²
-- Wraps around Phase 1 (the lake) on the top and right side
-- Includes the elevated ring/hill terrain feature (~X: 900–1800, Y: 1200–2100)
-- Terrain is more varied (chokepoints, elevated areas, open plains)
-- Bot outposts guard the approaches to valuable box spawn areas
-- Resource nodes are more spread out than Phase 1 (longer supply lines)
-- Transition to Phase 3 is across the eastern boundary (X=2000), transition to Phase 4 across the northern boundary (Y=2000)
+Players leave Noob Island for a larger, more dangerous frontier. The headline mechanic: **buildings and the stronger combat unit are unlocked by spending Crystals found in boxes**, not by leveling — turning Phase 2 into a treasure hunt where two players at the same level can field different rosters. Defensive bots on visible bot-ground patches guard the best crystals; killing bot units can also drop crystals. All unit/crystal/box/bot/quest/map detail lives in the plan doc.
 
 ---
 
@@ -406,41 +224,30 @@ The endgame phase where the game transitions from PvE to PvP. Key ideas:
 
 ---
 
-## 7. Units & Buildings Summary (All Phases)
+## 7. Units & Buildings (Phase 3+ design)
 
-### 7.1 Buildings
+> Phase 1 and Phase 2 rosters live in their plan docs ([`phase-1-plan.md`](phase-1-plan.md) §2, [`phase-2-plan.md`](phase-2-plan.md) §2) — those are the live/real units. The tables below are the **design-stage** roster for the not-yet-built Phase 3 (and Phase 4); names and values are placeholders pending a Phase-3 plan.
 
-| Name | Role | Phase | Unlock Method | Cost (Razarion) | Health |
-|------|------|-------|--------------|-----------------|--------|
-| Command Center | Main building | 1 | Start | — | 500 |
-| Supply Depot | +5 house space | 1 | Start | 50 | 200 |
-| Bot Factory | Produces light units | 1 | Start | 100 | 300 |
-| Tower | Static defense | 1 | Level 3 | 80 | 250 |
-| Advanced Bot Factory | Produces heavy units | 1 | Level 5 | 150 | 350 |
-| Refinery | Harvest efficiency | 1 | Level 7 | 100 | 300 |
-| Transporter | Carries Razaworker to Phase 2 | 1 | Level 9 | 200 | 150 |
-| Vehicle Factory | Produces vehicles | 2 | Crystals | 200 | 400 |
-| Fortified Tower | Heavy defense | 3 | Level 18 | 120 | 400 |
-| Repair Station | Area heal | 3 | Level 21 | 100 | 200 |
+### 7.1 Buildings (Phase 3, design)
 
-### 7.2 Units
+| Name | Role | Unlock Method | Cost (Razarion) | Health |
+|------|------|--------------|-----------------|--------|
+| Fortified Tower | Heavy defense | Level 18 | 120 | 400 |
+| Repair Station | Area heal | Level 21 | 100 | 200 |
 
-| Name | Role | Phase | Unlock Method | Cost | Health | Speed | Weapon |
-|------|------|-------|--------------|------|--------|-------|--------|
-| Razaworker | Construction & harvest bot | 1 | Start | 30 | 50 | Medium | None |
-| Razascout | Fast recon drone | 1 | Start | 20 | 30 | Fast | Weak |
-| Razabot | Basic combat bot | 1 | Start | 40 | 80 | Medium | Medium |
-| Razatron | Heavy combat bot | 1 | Level 5 | 60 | 120 | Medium | Medium+ |
-| Tank | Armored vehicle | 2 | Crystals | 120 | 200 | Slow | Strong |
-| Artillery | Long-range siege | 3 | Level 18 | 150 | 100 | Very slow | Very strong |
+### 7.2 Units (Phase 3, design)
 
-### 7.3 Balance Philosophy
+| Name | Role | Unlock Method | Cost | Health | Speed | Weapon |
+|------|------|--------------|------|--------|-------|--------|
+| Artillery | Long-range siege | Level 18 | 150 | 100 | Very slow | Very strong |
 
-- Phase 1 units are cheap and fast but individually weak
-- Phase 2 introduces specialization through crystal unlocks — not everyone has the same army
-- Phase 3 requires balanced army composition (pure offense fails against waves)
-- No single unit should dominate; counters exist (Razascouts counter Artillery, Tanks counter Razabots)
-- Buildings should be affordable enough that losing a base is recoverable
+### 7.3 Balance Philosophy (cross-phase)
+
+- Phase 1 units are cheap and fast but individually weak (detail in phase-1-plan).
+- Phase 2 introduces specialization through crystal unlocks — not everyone has the same army.
+- Phase 3 requires balanced army composition (pure offense fails against waves).
+- No single unit should dominate; hard counters should exist between roles (fast vs. artillery, armor vs. light).
+- Buildings should be affordable enough that losing a base is recoverable.
 
 ---
 
@@ -450,74 +257,42 @@ The endgame phase where the game transitions from PvE to PvP. Key ideas:
 
 | Resource | How Obtained | Used For |
 |----------|-------------|----------|
-| Razarion | Harvested from resource nodes by Razaworkers | Construction, unit production |
+| Razarion | Harvested from resource nodes by harvester units | Construction, unit production |
 | Crystals | Found in boxes (Phase 2+) | Unlocking new unit/building types |
 
 ### 8.2 Cost Scaling by Phase
 
 | Phase | Unit/Building Costs | Resource Availability |
 |-------|--------------------|--------------------|
-| 1 - Noob Island | 20-100 Razarion | Abundant, close to base |
-| 2 - Semi-Noob | 60-200 Razarion + Crystals for unlocks | Spread out, some guarded |
-| 3 - The Siege | 100-200 Razarion | Exposed, requires defense |
+| 1 - Noob Island | see [`phase-1-plan.md`](phase-1-plan.md) §2.2 | Abundant, close to base |
+| 2 - Semi-Noob | see [`phase-2-plan.md`](phase-2-plan.md) §2.2 (+ Crystals for unlocks) | Spread out, some guarded |
+| 3 - The Siege | 100-200 Razarion (design) | Exposed, requires defense |
 | 4 - Alliance Warzone | TBD | Contested between factions |
 
 ---
 
 ## 9. Level Progression & Unlocks
 
-### 9.1 Level Table
+Strategic level→phase map only. Per-level XP, item limits, and unlocks are in the plan docs — Phase 1: [`phase-1-plan.md`](phase-1-plan.md) §3 (live), Phase 2: [`phase-2-plan.md`](phase-2-plan.md) §3 (unlock spine) / §7.3 (limits).
 
-| Level | XP to Next | Cumulative XP | Phase | Key Unlocks |
-|-------|-----------|---------------|-------|-------------|
-| 1 | 50 | 0 | Phase 1 | Razaworker, Razascout, Razabot, Supply Depot, Bot Factory |
-| 2 | 80 | 50 | Phase 1 | Higher item limits |
-| 3 | 120 | 130 | Phase 1 | Tower |
-| 4 | 180 | 250 | Phase 1 | Higher item limits |
-| 5 | 250 | 430 | Phase 1 | Razatron, Advanced Bot Factory |
-| 6 | 350 | 680 | Phase 1 | Higher item limits |
-| 7 | 500 | 1030 | Phase 1 | Refinery |
-| 8 | 700 | 1530 | Phase 1 | Higher item limits |
-| 9 | 1000 | 2230 | Phase 1 | Higher item limits; ready for Phase 2 |
-| 10 | 1500 | 3230 | Phase 2 | Access to Phase 2; Crystal unlocks available |
-| 11-17 | ... | ... | Phase 2 | Gradual unlocks via Crystals + levels |
-| 18 | ... | ... | Phase 3 | Access to Phase 3; Artillery, Fortified Tower |
-| 19-24 | ... | ... | Phase 3 | Repair Station, higher item limits |
-| 25 | — | ... | Phase 4 | Access to Phase 4; Alliance system |
+| Levels | Phase | Where the detail lives |
+|-------|-------|------------------------|
+| L1–L9 | Phase 1 | phase-1-plan.md §3 — live XP (10→80), limits, quests |
+| L10–L19 | Phase 2 | phase-2-plan.md §3 (Crystal unlock spine) / §7.3 (level limits) |
+| L18–L24 | Phase 3 | design only — Artillery, Fortified Tower (L18), Repair Station (L21) |
+| L25+ | Phase 4 | design only — Alliance system |
 
-### 9.2 Item Limits Per Level (Phase 1)
-
-| Level | Max Razaworkers | Max Combat Units | Max Buildings |
-|-------|-------------|-----------------|---------------|
-| 1 | 1 | 3 | 2 |
-| 2 | 2 | 5 | 3 |
-| 3 | 2 | 6 | 4 |
-| 4 | 3 | 8 | 5 |
-| 5 | 3 | 10 | 6 |
-| 6 | 4 | 12 | 7 |
-| 7 | 4 | 14 | 8 |
-| 8 | 5 | 16 | 9 |
-| 9 | 5 | 18 | 10 |
+> **Phase 2/3 boundary is unresolved:** phase-2-plan.md extends Phase 2 to **L19**, while the Phase-3 design here starts at **L18** — overlap to be reconciled (see phase-2-plan.md §8).
 
 ---
 
 ## 10. Difficulty Curve Summary
 
 ```
-Phase 1 (Level 1-9): SAFE — Learn basics, passive bots, guided quests, gradual unlocks
-    Level 1-2: "I'm learning how to play"
-    Level 3-4: "I can fight and defend"
-    Level 5-6: "I have heavy units now"
-    Level 7-9: "I've mastered the island"
-
-Phase 2 (Level 10-17): EXPLORATORY — Find crystals, unlock new tech, fight defensive bots
-    "I'm discovering what's possible"
-
-Phase 3 (Level 18-24): INTENSE — Survive bot attacks, build defenses, manage under pressure
-    "I need to fight to survive"
-
-Phase 4 (Level 25+): POLITICAL — Choose alliances, guild warfare, player conflict
-    "I'm competing with other players"
+Phase 1 (L1-L9):   SAFE        — Learn basics, mostly-passive bots, guided quests   ("from safety to confidence")
+Phase 2 (L10-L19): EXPLORATORY — Find crystals, unlock new tech, fight defensive bots ("discovering what's possible")
+Phase 3 (L18-L24): INTENSE     — Survive bot attack waves, build defenses             ("I need to fight to survive")
+Phase 4 (L25+):    POLITICAL   — Choose alliances, guild warfare, player conflict      ("competing with other players")
 ```
 
 The emotional arc:

@@ -13,7 +13,7 @@ export function createStatistics(trackingContainerAnalyzer: TrackingContainerAna
     new ProgressStatistic("User created", userCreated, gameCount),
     new ProgressStatistic("Engine init", engineInit, userCreated),
     new ProgressStatistic("Engine started", engineStartups, engineInit),
-    new ProgressStatistic("Base created", baseCreated, engineStartups),
+    new ProgressStatistic("Initial Base created", baseCreated, engineStartups),
   ];
   progressStatistics.push(...trackingContainerAnalyzer.generateLevelQuestStatistics(baseCreated));
   return progressStatistics;

@@ -431,6 +431,21 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
         }
     }
 
+    public DecimalPosition getFreeNearestPositionToCenter(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig) {
+        if (placeConfig.getPosition() != null && placeConfig.getRadius() != null) {
+            return GeometricUtil.findFreeNearestPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition -> {
+                if (excludeBotRealm) {
+                    return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealm(decimalPosition);
+                } else {
+                    return isFree(terrainType, decimalPosition, radius);
+                }
+            });
+        } else {
+            // no center+radius to search around -> fall back to the existing random/position logic
+            return getFreeRandomPosition(terrainType, radius, excludeBotRealm, placeConfig);
+        }
+    }
+
     private boolean isFree(TerrainType terrainType, DecimalPosition position, double radius) {
         return terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, position, radius) && !hasItemsInRange(position, radius);
     }

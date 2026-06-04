@@ -59,11 +59,18 @@ export class TrackingContainerAnalyzer {
   }
 
   getBaseCreated() {
+    const seenUserIds = new Set<string>();
     let baseCreated: UserActivity[] = []
     this.getGamePageRequests().forEach(pageRequest => {
       const userActivities = this.getUserCreatedByHttpSessionId(pageRequest.httpSessionId);
       if (userActivities != null && userActivities.length > 0) {
-        if (this.getBaseCreatedByUserId(userActivities[0].userId)) {
+        const userId = userActivities[0].userId;
+        if (seenUserIds.has(userId)) {
+          // Count only the initial base per user (a user who lost and re-created a base must not be counted again)
+          return;
+        }
+        if (this.getBaseCreatedByUserId(userId).length > 0) {
+          seenUserIds.add(userId);
           baseCreated.push(userActivities[0]);
         }
       }

@@ -788,6 +788,7 @@ public class JsonDeserializer {
         r.setCount(json.getInt("count"));
         r.setCreateDirectly(json.getBoolean("createDirectly"));
         r.setNoSpawn(json.getBoolean("noSpawn"));
+        r.setPlaceNearCenter(json.getBoolean("placeNearCenter"));
         r.setPlace(deserializePlaceConfig(obj(json, "place")));
         r.setSpreadPlace(deserializePlaceConfig(obj(json, "spreadPlace")));
         r.setAngle(json.getDouble("angle"));

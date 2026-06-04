@@ -17,6 +17,7 @@ public class BotItemConfigEntity extends BaseEntity {
     private int count;
     private boolean createDirectly;
     private boolean noSpawn;
+    private boolean placeNearCenter;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PlaceConfigEntity place;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -28,7 +29,7 @@ public class BotItemConfigEntity extends BaseEntity {
     private Integer rePopTime;
 
     public BotItemConfig toBotItemConfig() {
-        BotItemConfig botItemConfig = new BotItemConfig().count(count).createDirectly(createDirectly).angle(angle).moveRealmIfIdle(moveRealmIfIdle).idleTtl(idleTtl).noRebuild(noRebuild).rePopTime(rePopTime).noSpawn(noSpawn);
+        BotItemConfig botItemConfig = new BotItemConfig().count(count).createDirectly(createDirectly).angle(angle).moveRealmIfIdle(moveRealmIfIdle).idleTtl(idleTtl).noRebuild(noRebuild).rePopTime(rePopTime).noSpawn(noSpawn).placeNearCenter(placeNearCenter);
         if (baseItemTypeEntity != null) {
             botItemConfig.baseItemTypeId(baseItemTypeEntity.getId());
         }
@@ -46,6 +47,7 @@ public class BotItemConfigEntity extends BaseEntity {
         count = botItemConfig.getCount();
         createDirectly = botItemConfig.isCreateDirectly();
         noSpawn = botItemConfig.isNoSpawn();
+        placeNearCenter = botItemConfig.isPlaceNearCenter();
         if (botItemConfig.getPlace() != null) {
             place = new PlaceConfigEntity();
             place.fromPlaceConfig(botItemConfig.getPlace());

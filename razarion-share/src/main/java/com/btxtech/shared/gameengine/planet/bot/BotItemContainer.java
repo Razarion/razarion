@@ -201,7 +201,7 @@ public class BotItemContainer {
     private void createItem(BotItemConfig botItemConfig, PlayerBaseFull playerBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
         BaseItemType toBeBuilt = itemTypeService.getBaseItemType(botItemConfig.getBaseItemTypeId());
         if (botItemConfig.isCreateDirectly()) {
-            DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt);
+            DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt, botItemConfig.isPlaceNearCenter());
             SyncBaseItem spawnItem = baseItemService.spawnSyncBaseItem(toBeBuilt, position, botItemConfig.getAngle(), playerBase, botItemConfig.isNoSpawn());
             insertBotItem(spawnItem, botItemConfig);
         } else {
@@ -214,7 +214,7 @@ public class BotItemContainer {
                 botSyncBuilder.buildUnit(toBeBuilt);
             } else {
                 // botSyncBuilder is builder unit
-                DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt);
+                DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt, botItemConfig.isPlaceNearCenter());
                 try {
                     botSyncBuilder.buildBuilding(position, toBeBuilt);
                 } catch (Exception e) {
@@ -225,9 +225,11 @@ public class BotItemContainer {
         }
     }
 
-    private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt) {
+    private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt, boolean nearCenter) {
         if (placeConfig == null) {
             return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, realm);
+        } else if (nearCenter) {
+            return syncItemContainerService.getFreeNearestPositionToCenter(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig);
         } else {
             return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig);
         }

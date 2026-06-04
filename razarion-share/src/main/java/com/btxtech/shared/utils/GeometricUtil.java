@@ -268,6 +268,28 @@ public class GeometricUtil {
         throw new PositionCanNotBeFoundException();
     }
 
+    /**
+     * Finds the free position as close as possible to the given center, searching outward in
+     * concentric rings. Returns the first free position found (= nearest to the center).
+     */
+    public static DecimalPosition findFreeNearestPosition(DecimalPosition center, double radius, Function<DecimalPosition, Boolean> freeCallback) {
+        if (freeCallback == null || freeCallback.apply(center)) {
+            return center;
+        }
+        double ringStep = Math.max(1.0, radius / 20.0);
+        for (double r = ringStep; r <= radius; r += ringStep) {
+            int samples = Math.max(8, (int) (2.0 * Math.PI * r / ringStep));
+            double angleStep = 2.0 * Math.PI / samples;
+            for (int i = 0; i < samples; i++) {
+                DecimalPosition candidate = center.getPointWithDistance(i * angleStep, r);
+                if (freeCallback == null || freeCallback.apply(candidate)) {
+                    return candidate;
+                }
+            }
+        }
+        throw new PositionCanNotBeFoundException();
+    }
+
     public static DecimalPosition findFreeRandomPosition(PlaceConfig placeConfig) {
         if (placeConfig.getPolygon2D() != null) {
             return GeometricUtil.findFreeRandomPosition(placeConfig.getPolygon2D(), null);

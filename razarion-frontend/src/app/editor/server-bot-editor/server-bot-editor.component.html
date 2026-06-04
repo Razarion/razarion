@@ -265,6 +265,12 @@
                                                 </div>
                                               </div>
                                               <div class="grid grid-cols-12 gap-4">
+                                                <span class="col-span-3">Spawn near center</span>
+                                                <div class="col-span-9">
+                                                  <p-checkbox [(ngModel)]="botItem.placeNearCenter" [binary]="true"></p-checkbox>
+                                                </div>
+                                              </div>
+                                              <div class="grid grid-cols-12 gap-4">
                                                 <span class="col-span-3">Spread place</span>
                                                 <div class="col-span-9">
                                                   <place-config [(placeConfig)]="botItem.spreadPlace"></place-config>

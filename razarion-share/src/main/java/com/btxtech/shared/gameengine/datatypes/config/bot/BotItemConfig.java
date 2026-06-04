@@ -16,6 +16,7 @@ public class BotItemConfig {
     private int count;
     private boolean createDirectly;
     private boolean noSpawn;
+    private boolean placeNearCenter;
     private PlaceConfig place;
     private PlaceConfig spreadPlace;
     private double angle;
@@ -54,6 +55,14 @@ public class BotItemConfig {
 
     public void setNoSpawn(boolean noSpawn) {
         this.noSpawn = noSpawn;
+    }
+
+    public boolean isPlaceNearCenter() {
+        return placeNearCenter;
+    }
+
+    public void setPlaceNearCenter(boolean placeNearCenter) {
+        this.placeNearCenter = placeNearCenter;
     }
 
     public @Nullable PlaceConfig getPlace() {
@@ -129,6 +138,11 @@ public class BotItemConfig {
 
     public BotItemConfig noSpawn(boolean noSpawn) {
         setNoSpawn(noSpawn);
+        return this;
+    }
+
+    public BotItemConfig placeNearCenter(boolean placeNearCenter) {
+        setPlaceNearCenter(placeNearCenter);
         return this;
     }
 

@@ -41,7 +41,11 @@ public class ServerBoxRegionConfigEntity extends BaseEntity implements ObjectNam
 
     public ServerBoxRegionConfigEntity fromBoxRegionConfig(BoxRegionConfig boxRegionConfig) {
         setInternalName(boxRegionConfig.getInternalName());
-        boxItemTypeId = (BoxItemTypeEntity) new BoxItemTypeEntity().id(boxRegionConfig.getBoxItemTypeId());
+        if (boxRegionConfig.getBoxItemTypeId() != null) {
+            boxItemTypeId = (BoxItemTypeEntity) new BoxItemTypeEntity().id(boxRegionConfig.getBoxItemTypeId());
+        } else {
+            boxItemTypeId = null;
+        }
         minInterval = boxRegionConfig.getMinInterval();
         maxInterval = boxRegionConfig.getMaxInterval();
         count = boxRegionConfig.getCount();

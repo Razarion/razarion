@@ -55,7 +55,7 @@ export class BoxRegionComponent extends EditorPanel implements OnInit {
   }
 
   onCreate() {
-    this.serverGameEngineConfigEntity!.boxRegionConfigs.push({
+    const newBoxRegionConfig: BoxRegionConfig = {
       id: null,
       internalName: "New",
       boxItemTypeId: null,
@@ -64,7 +64,9 @@ export class BoxRegionComponent extends EditorPanel implements OnInit {
       count: 1,
       minDistanceToItems: 1,
       region: null,
-    });
+    };
+    this.serverGameEngineConfigEntity!.boxRegionConfigs.push(newBoxRegionConfig);
+    this.selectedBoxRegionConfig = newBoxRegionConfig;
   }
 
   onDelete() {

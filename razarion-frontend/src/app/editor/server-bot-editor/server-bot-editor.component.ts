@@ -145,6 +145,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
       moveRealmIfIdle: false,
       noRebuild: false,
       noSpawn: false,
+      placeNearCenter: false,
       place: null,
       spreadPlace: null,
       rePopTime: 0
