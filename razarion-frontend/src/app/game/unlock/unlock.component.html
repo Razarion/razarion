@@ -4,33 +4,28 @@
     <span class="text-lg">Crystals: {{ crystals }}</span>
   </div>
 
-  <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500">
-    <p-dataView [value]="levelUnlockConfigs" [layout]="'grid'" [emptyMessage]="'Nothing to unlock'">
-      <ng-template #grid>
-        <div class="grid grid-nogutter">
-          @for (levelUnlockConfig of levelUnlockConfigs; track levelUnlockConfig) {
-            <div class="col-12 sm:col-6 md:col-4 xl:col-6 p-2">
-              <div class="p-4 bg-surface-700 border-round flex flex-column">
-                <div class="product-list-item">
-                  <img [src]="getImageUrl(levelUnlockConfig?.thumbnail)"/>
-                  <div class="product-list-detail">
-                    <div
-                      class="product-name"> {{ gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(levelUnlockConfig?.baseItemType!).getName() }}
-                      +{{ levelUnlockConfig.baseItemTypeCount }}
-                    </div>
-                    <div class="product-name">Crystals {{ levelUnlockConfig.crystalCost }}</div>
-                  </div>
-                  <div class="product-list-action">
-                    <p-button icon="pi pi-unlock" label="Unlock" (onClick)="onUse(levelUnlockConfig)"
-                    [disabled]="crystals !== undefined && levelUnlockConfig.crystalCost > crystals"></p-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          }
+  <div class="flex flex-wrap gap-3 bg-surface-800 p-3 rounded-xl border border-surface-500">
+    @for (levelUnlockConfig of levelUnlockConfigs; track levelUnlockConfig.id) {
+      <div class="flex flex-col gap-2 p-3 bg-surface-700 rounded-lg border border-surface-600">
+        <span class="font-semibold whitespace-nowrap text-center px-2 py-1 rounded-md border border-surface-500 bg-surface-900">
+          {{ gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(levelUnlockConfig?.baseItemType!).getName() }}
+          +{{ levelUnlockConfig.baseItemTypeCount }}
+        </span>
+        <div class="flex items-center gap-3">
+          <img class="w-20 h-20 object-contain rounded-md border border-surface-500 bg-surface-900 p-1 shrink-0"
+               [src]="getImageUrl(levelUnlockConfig?.thumbnail)" alt="thumbnail"/>
+          <div class="flex flex-col gap-2">
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-surface-900 font-semibold">
+              <i class="pi pi-gem text-cyan-400"></i>
+              Crystals {{ levelUnlockConfig.crystalCost }}
+            </span>
+            <p-button icon="pi pi-unlock" label="Unlock" size="small" (onClick)="onUse(levelUnlockConfig)"
+                      [disabled]="crystals !== undefined && levelUnlockConfig.crystalCost > crystals"></p-button>
+          </div>
         </div>
-      </ng-template>
-    </p-dataView>
+      </div>
+    } @empty {
+      <span class="text-surface-300 p-2">Nothing to unlock</span>
+    }
   </div>
 </div>
-

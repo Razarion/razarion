@@ -12,6 +12,7 @@ import {ButtonModule} from 'primeng/button';
 import {Select} from 'primeng/select';
 import {MessageService} from 'primeng/api';
 import {ScrollPanelModule} from 'primeng/scrollpanel';
+import {Checkbox} from 'primeng/checkbox';
 
 @Component({
   selector: 'server-resource-region',
@@ -23,7 +24,8 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     Divider,
     ButtonModule,
     Select,
-    ScrollPanelModule
+    ScrollPanelModule,
+    Checkbox
 ],
   templateUrl: './server-resource-region.component.html'
 })
@@ -63,7 +65,8 @@ export class ServerResourceRegionComponent extends EditorPanel implements OnInit
       internalName: "New",
       minDistanceToItems: 0,
       region: null,
-      resourceItemTypeId: null
+      resourceItemTypeId: null,
+      evenlyDistributed: false
     });
   }
 

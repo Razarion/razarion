@@ -8,6 +8,7 @@ import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.SetNameError;
 import com.btxtech.server.model.SetNameResult;
 import com.btxtech.server.model.UserEntity;
+import com.btxtech.server.model.engine.InventoryItemEntity;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.LevelUnlockEntity;
 import com.btxtech.server.model.engine.quest.QuestConfigEntity;
@@ -341,6 +342,20 @@ public class UserService implements UserDetailsService {
     public void persistCrystals(String userId, int crystals) {
         UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
         userEntity.setCrystals(crystals);
+        userRepository.save(userEntity);
+    }
+
+    @Transactional
+    public void persistAddCrystals(String userId, int crystals) {
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
+        userEntity.addCrystals(crystals);
+        userRepository.save(userEntity);
+    }
+
+    @Transactional
+    public void persistAddInventoryItem(String userId, InventoryItemEntity inventoryItemEntity) {
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
+        userEntity.addInventoryItem(inventoryItemEntity);
         userRepository.save(userEntity);
     }
 

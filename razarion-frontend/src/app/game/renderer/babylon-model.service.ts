@@ -271,7 +271,12 @@ export class BabylonModelService {
       throw new Error(`Node withe name "${model3DEntity.gltfName}" from model3DId '${model3DId}' not found'`);
     }
 
-    const sourceMap = new Map<string, Mesh>();
+    // Keyed by Babylon uniqueId (guaranteed unique), NOT node.id: the glTF loader derives `id` from
+    // the node name, so two nodes with the same name (e.g. a mesh "Crystal_3_Particle" and a child
+    // transform also named "Crystal_3_Particle" holding its particles) collide on `id`. With an id
+    // key the later node overwrites the mesh entry, so sibling InstancedMeshes resolve their source
+    // to the wrong (non-mesh) node and come through material-less / dropped from the graph.
+    const sourceMap = new Map<number, Mesh>();
     const nodeByName = new Map<string, Node>();
     const renderObject = new RenderObject(this.renderer);
     let transformNode = this.deepCloneNode(node, parent, sourceMap, nodeByName, gltfHelper, allowedLegacyAnimationUniqueIds, renderObject, diplomacy);
@@ -285,8 +290,8 @@ export class BabylonModelService {
         if (!originalTarget) {
           return originalTarget;
         }
-        if (originalTarget.id !== undefined) {
-          const clonedById = sourceMap.get(originalTarget.id);
+        if (originalTarget.uniqueId !== undefined) {
+          const clonedById = sourceMap.get(originalTarget.uniqueId);
           if (clonedById) return clonedById;
         }
         if (originalTarget.name) {
@@ -313,7 +318,7 @@ export class BabylonModelService {
 
   private deepCloneNode(root: Node,
                         parent: Node | null,
-                        sourceMap: Map<string, Mesh>,
+                        sourceMap: Map<number, Mesh>,
                         nodeByName: Map<string, Node>,
                         gltfHelper: GltfHelper,
                         allowedAnimationUniqueIds: Set<number>,
@@ -324,7 +329,7 @@ export class BabylonModelService {
       return root as TransformNode;
     }
     clonedRoot.metadata = {};
-    sourceMap.set(root.id, <Mesh>clonedRoot);
+    sourceMap.set(root.uniqueId, <Mesh>clonedRoot);
     if (root.name) {
       nodeByName.set(root.name, clonedRoot);
     }
@@ -348,7 +353,7 @@ export class BabylonModelService {
     root.getChildren().forEach((child) => {
       if (child instanceof InstancedMesh) {
         const instancedMesh = <InstancedMesh>child;
-        const clonedSource = sourceMap.get(instancedMesh.sourceMesh.id);
+        const clonedSource = sourceMap.get(instancedMesh.sourceMesh.uniqueId);
         if (clonedSource) {
           const clonedMesh = clonedSource.clone(instancedMesh.name, null, true); // doNotCloneChildren — children are handled by recursive deepCloneNode below
           clonedMesh.metadata = {};

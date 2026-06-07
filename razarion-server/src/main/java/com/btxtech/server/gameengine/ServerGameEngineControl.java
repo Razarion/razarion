@@ -4,6 +4,7 @@ import com.btxtech.server.model.engine.BackupPlanetOverview;
 import com.btxtech.server.service.engine.PlanetBackupService;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
+import com.btxtech.server.service.engine.ServerInventoryService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
 import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.UserActivityService;
@@ -61,8 +62,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private final PlanetBackupService planetBackupService;
     private final UserActivityService userActivityService;
     private final RedditConversionService redditConversionService;
-    // @Inject
-    // TODOprivate ServerInventoryService serverInventoryService;
+    private final ServerInventoryService serverInventoryService;
     private boolean running;
 
     public ServerGameEngineControl(InitializeService initializeService,
@@ -80,7 +80,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                                    BotService botService,
                                    ResourceService resourceService, PlanetBackupService planetBackupService,
                                    UserActivityService userActivityService,
-                                   RedditConversionService redditConversionService) {
+                                   RedditConversionService redditConversionService,
+                                   ServerInventoryService serverInventoryService) {
         this.initializeService = initializeService;
         this.planetService = planetService;
         this.boxService = boxService;
@@ -98,6 +99,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         this.planetBackupService = planetBackupService;
         this.userActivityService = userActivityService;
         this.redditConversionService = redditConversionService;
+        this.serverInventoryService = serverInventoryService;
     }
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
@@ -316,8 +318,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     @Override
     public void onBoxPicked(String userId, BoxContent boxContent) {
-        // TODO serverInventoryService.onBoxPicked(userId, boxContent);
-        // TODO systemConnectionService.onBoxPicked(userId, boxContent);
+        serverInventoryService.onBoxPicked(userId, boxContent);
+        systemConnectionService.onBoxPicked(userId, boxContent);
     }
 
     @Override

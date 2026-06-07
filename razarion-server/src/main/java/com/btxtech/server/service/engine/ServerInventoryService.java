@@ -20,11 +20,11 @@ public class ServerInventoryService {
     private BaseItemService baseItemService;
 
     public void onBoxPicked(String userId, BoxContent boxContent) {
-        throw new UnsupportedOperationException("... TODO ...");
-//        if (boxContent.getCrystals() > 0) {
-//            userService.persistAddCrystals(userId, boxContent.getCrystals());
-//        }
-//        boxContent.getInventoryItems().forEach(inventoryItem -> userService.persistAddInventoryItem(userId, inventoryPersistence.getEntity(inventoryItem.getId())));
+        if (boxContent.getCrystals() > 0) {
+            userService.persistAddCrystals(userId, boxContent.getCrystals());
+        }
+        boxContent.getInventoryItems().forEach(inventoryItem ->
+                userService.persistAddInventoryItem(userId, inventoryPersistence.getEntity(inventoryItem.getId())));
         // TODO historyPersistence.onBoxPicked(userId, boxContent);
     }
 

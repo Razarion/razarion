@@ -2,6 +2,9 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { gunzipSync, deflateSync } from "node:zlib";
+import { writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 // --- Configuration ---
 const BASE_URL = process.env.RAZARION_BASE_URL || "http://localhost:8080";
@@ -287,7 +290,7 @@ ComparisonConfig: count, typeCount, includeExisting, timeSeconds, placeConfig, s
 server.tool(
   "update_resource_regions",
   `Update ALL resource region configs for a server game engine. Replaces the entire list.
-ResourceRegionConfig fields: id, internalName, count, minDistanceToItems, resourceItemTypeId, region (PlaceConfig).`,
+ResourceRegionConfig fields: id, internalName, count, minDistanceToItems, resourceItemTypeId, region (PlaceConfig), evenlyDistributed (boolean; when true the spots are placed on a hexagonal grid over the region's free land and respawn at the same slot, instead of randomly).`,
   {
     serverGameEngineConfigId: z.number().describe("Server game engine config ID"),
     resourceRegions: z.array(z.record(z.unknown())).describe("Array of ResourceRegionConfig objects"),
@@ -736,6 +739,321 @@ Returns the image as base64-encoded PNG.`,
         },
       ],
     };
+  }
+);
+
+// ============================================================
+// REGION MAP (config overlay: resource/start/box/bot/quest regions)
+// ============================================================
+
+type RegionFeature = {
+  kind: string;
+  id: number | string;
+  name: string;
+  char: string;
+  color: [number, number, number];
+  stats: string;
+  polygons: Array<Array<[number, number]>>;
+  points: Array<[number, number]>;
+  area: number; // total polygon area in game-units²; 0 for point-only places. Smaller area = higher draw priority (drawn on top).
+};
+
+function polygonArea(poly: Array<[number, number]>): number {
+  let a = 0;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    a += (poly[j][0] + poly[i][0]) * (poly[j][1] - poly[i][1]);
+  }
+  return Math.abs(a / 2);
+}
+
+// For a point in game space, return the highest-priority (smallest-area) feature containing it, or null.
+function topFeatureAt(feats: RegionFeature[], gx: number, gy: number): RegionFeature | null {
+  let best: RegionFeature | null = null;
+  for (const f of feats) {
+    if (best && f.area >= best.area) continue;
+    for (const poly of f.polygons) {
+      if (pointInPolygon(poly, gx, gy)) { best = f; break; }
+    }
+  }
+  return best;
+}
+
+// Point-in-polygon raycast — identical to Polygon2D.isInside (corners only).
+function pointInPolygon(poly: Array<[number, number]>, px: number, py: number): boolean {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const sx = poly[i][0], sy = poly[i][1];
+    const ex = poly[j][0], ey = poly[j][1];
+    if (((sy > py) !== (ey > py)) && (px < ((ex - sx) * (py - sy)) / (ey - sy) + sx)) c = !c;
+  }
+  return c;
+}
+
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r = 0, g = 0, b = 0;
+  if (h < 60) { r = c; g = x; }
+  else if (h < 120) { r = x; g = c; }
+  else if (h < 180) { g = c; b = x; }
+  else if (h < 240) { g = x; b = c; }
+  else if (h < 300) { r = x; b = c; }
+  else { r = c; b = x; }
+  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+}
+
+function cornersToPoly(corners: any): Array<[number, number]> | null {
+  if (!Array.isArray(corners) || corners.length < 3) return null;
+  return corners.map((c: any) => [c.x, c.y] as [number, number]);
+}
+
+const REGION_CHAR_POOL = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+function collectRegionFeatures(cfg: any, layers: Set<string>): RegionFeature[] {
+  const feats: RegionFeature[] = [];
+  let ci = 0;
+  const nextChar = () => REGION_CHAR_POOL[Math.min(ci++, REGION_CHAR_POOL.length - 1)];
+
+  const addPlace = (kind: string, id: any, name: string, stats: string, place: any) => {
+    if (!place) return;
+    const polygons: Array<Array<[number, number]>> = [];
+    const points: Array<[number, number]> = [];
+    const poly = cornersToPoly(place?.polygon2D?.corners);
+    if (poly) polygons.push(poly);
+    else if (place?.position && typeof place.position.x === "number") points.push([place.position.x, place.position.y]);
+    if (!polygons.length && !points.length) return;
+    const area = polygons.reduce((sum, p) => sum + polygonArea(p), 0);
+    feats.push({ kind, id, name: name || "", char: nextChar(), color: [0, 0, 0], stats, polygons, points, area });
+  };
+
+  if (layers.has("resource"))
+    for (const r of cfg.resourceRegionConfigs ?? [])
+      addPlace("resource", r.id, r.internalName, `count=${r.count} resType=${r.resourceItemTypeId} minDist=${r.minDistanceToItems}`, r.region);
+  if (layers.has("start"))
+    for (const s of cfg.startRegionConfigs ?? [])
+      addPlace("start", s.id, s.internalName, `minLevelId=${s.minimalLevelId}`, s.region);
+  if (layers.has("box"))
+    for (const b of cfg.boxRegionConfigs ?? [])
+      addPlace("box", b.id, b.internalName, `boxItemTypeId=${b.boxItemTypeId} count=${b.count}`, b.region);
+  if (layers.has("bot"))
+    for (const bot of cfg.botConfigs ?? [])
+      addPlace("bot", bot.id, bot.internalName, `npc=${bot.npc}`, bot.realm);
+  if (layers.has("quest"))
+    for (const grp of cfg.serverLevelQuestConfigs ?? [])
+      for (const q of grp.questConfigs ?? []) {
+        const pc = q?.conditionConfig?.comparisonConfig?.placeConfig;
+        if (pc) addPlace("quest", q.id, q.internalName || `quest ${q.id}`, `trigger=${q?.conditionConfig?.conditionTrigger}`, pc);
+      }
+
+  feats.forEach((f, i) => { f.color = hslToRgb((i * 360) / Math.max(1, feats.length), 0.65, 0.55); });
+  return feats;
+}
+
+function computeRegionBounds(feats: RegionFeature[]): { x1: number; y1: number; x2: number; y2: number } {
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  const acc = (x: number, y: number) => { x1 = Math.min(x1, x); y1 = Math.min(y1, y); x2 = Math.max(x2, x); y2 = Math.max(y2, y); };
+  for (const f of feats) {
+    for (const poly of f.polygons) for (const [x, y] of poly) acc(x, y);
+    for (const [x, y] of f.points) acc(x, y);
+  }
+  if (!isFinite(x1)) return { x1: 0, y1: 0, x2: 1, y2: 1 };
+  const padX = (x2 - x1) * 0.05 + 1, padY = (y2 - y1) * 0.05 + 1;
+  return { x1: x1 - padX, y1: y1 - padY, x2: x2 + padX, y2: y2 + padY };
+}
+
+function regionLegend(feats: RegionFeature[], withChar: boolean): string {
+  const byKind: Record<string, RegionFeature[]> = {};
+  for (const f of feats) (byKind[f.kind] ??= []).push(f);
+  let out = "";
+  for (const kind of Object.keys(byKind)) {
+    out += `  [${kind}]\n`;
+    for (const f of byKind[kind]) {
+      const tag = withChar ? `${f.char} = ` : `rgb(${f.color.join(",")}) `;
+      out += `    ${tag}id=${f.id} '${f.name}' ${f.stats}\n`;
+    }
+  }
+  return out;
+}
+
+const REGION_LAYER_ENUM = z.enum(["resource", "start", "box", "bot", "quest"]);
+const DEFAULT_REGION_LAYERS = ["resource", "start", "box", "bot"];
+
+// Static phase boundaries for planet 117 in game coords (origin bottom-left, Y up), from docs/game-design/progression.md §1.
+// Phase logic: inside P1 polygon -> P1; else X<2000 & Y<2000 -> P2; else X>=2000 & Y<2500 -> P3; else P4.
+const PHASE_BOUNDARIES: Array<{ name: string; color: [number, number, number]; poly: Array<[number, number]> }> = [
+  { name: "Phase 1 (Noob Island)", color: [255, 70, 70], poly: [[0, 0], [810, 0], [804, 162], [630, 350], [402, 589], [117, 740], [0, 756]] },
+  { name: "Phase 2 (Frontier)", color: [255, 235, 59], poly: [[0, 0], [2000, 0], [2000, 2000], [0, 2000]] },
+  { name: "Phase 3 (Siege)", color: [80, 220, 255], poly: [[2000, 0], [5120, 0], [5120, 2500], [2000, 2500]] },
+  { name: "Phase 4 (Warzone)", color: [255, 120, 255], poly: [[0, 2000], [2000, 2000], [2000, 2500], [5120, 2500], [5120, 5120], [0, 5120]] },
+];
+
+// Bresenham line into an RGB buffer, with square thickness.
+function drawLinePx(rgb: Uint8Array, w: number, h: number, x0: number, y0: number, x1: number, y1: number, color: [number, number, number], thick: number): void {
+  const dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
+  const sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+  const half = Math.floor(thick / 2);
+  let err = dx - dy, x = x0, y = y0;
+  for (;;) {
+    for (let oy = -half; oy <= half; oy++) for (let ox = -half; ox <= half; ox++) {
+      const px = x + ox, py = y + oy;
+      if (px >= 0 && px < w && py >= 0 && py < h) { const i = (py * w + px) * 3; rgb[i] = color[0]; rgb[i + 1] = color[1]; rgb[i + 2] = color[2]; }
+    }
+    if (x === x1 && y === y1) break;
+    const e2 = 2 * err;
+    if (e2 > -dy) { err -= dy; x += sx; }
+    if (e2 < dx) { err += dx; y += sy; }
+  }
+}
+
+server.tool(
+  "region_map",
+  `ASCII overview map of all config regions for a server game engine (resource/start/box/bot-realm/quest places) over a game-coordinate grid.
+Each region gets a unique character; the legend maps characters to id/name/stats. '*' marks cells covered by 2+ regions, '.' is empty.
+Useful to inspect resource-region placement, gaps and overlaps. Terrain is NOT shown (heightmap decode pending). Y axis points north (up).`,
+  {
+    serverGameEngineConfigId: z.number().describe("Server game engine config ID (e.g. 3)"),
+    width: z.number().optional().describe("Output width in characters (default 100, max 200)"),
+    layers: z.array(REGION_LAYER_ENUM).optional().describe("Layers to include (default: resource, start, box, bot)"),
+    bounds: z.object({ x1: z.number(), y1: z.number(), x2: z.number(), y2: z.number() }).optional().describe("Game-coordinate bounds; default auto-fit to all features"),
+  },
+  async ({ serverGameEngineConfigId, width, layers, bounds }) => {
+    const cfg = (await apiGet(`/rest/editor/server-game-engine/read/${serverGameEngineConfigId}`)) as any;
+    const feats = collectRegionFeatures(cfg, new Set(layers ?? DEFAULT_REGION_LAYERS));
+    if (!feats.length) return msg("No region features found for the selected layers.");
+    const b = bounds ?? computeRegionBounds(feats);
+    const cols = Math.min(Math.max(width ?? 100, 20), 200);
+    const spanX = b.x2 - b.x1, spanY = b.y2 - b.y1;
+    const cellW = spanX / cols;
+    const rows = Math.max(1, Math.round(spanY / cellW / 2)); // terminal chars ~2x tall
+    const cellH = spanY / rows;
+
+    const grid: string[][] = [];
+    for (let ry = 0; ry < rows; ry++) {
+      const gy = b.y2 - (ry + 0.5) * cellH; // top row = high Y (north up)
+      const row: string[] = [];
+      for (let rx = 0; rx < cols; rx++) {
+        const gx = b.x1 + (rx + 0.5) * cellW;
+        const top = topFeatureAt(feats, gx, gy); // smallest-area region wins → big background layers don't mask small ones
+        row.push(top ? top.char : ".");
+      }
+      grid.push(row);
+    }
+    for (const f of feats) for (const [x, y] of f.points) {
+      const rx = Math.floor((x - b.x1) / cellW), ry = Math.floor((b.y2 - y) / cellH);
+      if (rx >= 0 && rx < cols && ry >= 0 && ry < rows) grid[ry][rx] = f.char;
+    }
+
+    let out = `Region Map - server-game-engine ${serverGameEngineConfigId}\n`;
+    out += `Bounds: X ${b.x1.toFixed(0)}..${b.x2.toFixed(0)}  Y ${b.y1.toFixed(0)}..${b.y2.toFixed(0)}  |  grid ${cols}x${rows}  |  cell ${cellW.toFixed(0)}x${cellH.toFixed(0)} game-units  |  Y up = north\n`;
+    out += `Overlapping regions: the smaller-area region is shown on top (e.g. resource/bot over a map-wide box field).\n\n`;
+    out += grid.map((r) => r.join("")).join("\n");
+    out += "\n\nLegend (char = region, sorted): \n";
+    out += regionLegend(feats, true);
+    out += `  . = empty   |  ${feats.length} region(s)\n`;
+    return msg(out);
+  }
+);
+
+server.tool(
+  "region_map_image",
+  `PNG overview map of all config regions for a server game engine (resource/start/box/bot-realm/quest places): colored filled polygons over a neutral background, Y up = north. The colour->region legend is returned as text. Terrain is NOT shown (heightmap decode pending).`,
+  {
+    serverGameEngineConfigId: z.number().describe("Server game engine config ID (e.g. 3)"),
+    width: z.number().optional().describe("Output image width in pixels (default 700, max 1200)"),
+    layers: z.array(REGION_LAYER_ENUM).optional().describe("Layers to include (default: resource, start, box, bot)"),
+    bounds: z.object({ x1: z.number(), y1: z.number(), x2: z.number(), y2: z.number() }).optional().describe("Game-coordinate bounds; default auto-fit to all features"),
+    phases: z.boolean().optional().describe("Overlay the four phase boundaries (P1 polygon, P2/P3/P4 zones) as coloured outlines. Default false."),
+    terrain: z.boolean().optional().describe("Render the terrain (water/land/mountain colours) as the background, with region fills blended on top. Lets you see where land actually is. Default false (neutral dark background). planetId 117 is assumed (the only planet)."),
+    outputPath: z.string().optional().describe("Absolute file path to write the PNG to. Defaults to <os-temp>/razarion-region-map-<id>.png. The MCP server runs locally, so this lands on your machine — open it with Invoke-Item."),
+  },
+  async ({ serverGameEngineConfigId, width, layers, bounds, phases, terrain, outputPath }) => {
+    const cfg = (await apiGet(`/rest/editor/server-game-engine/read/${serverGameEngineConfigId}`)) as any;
+    const feats = collectRegionFeatures(cfg, new Set(layers ?? DEFAULT_REGION_LAYERS));
+    if (!feats.length) return msg("No region features found for the selected layers.");
+    const b = bounds ?? computeRegionBounds(feats);
+    const spanX = b.x2 - b.x1, spanY = b.y2 - b.y1;
+    const outW = Math.min(Math.max(width ?? 700, 128), 1200);
+    const outH = Math.max(1, Math.round((outW * spanY) / spanX));
+
+    // Optional terrain background. Game coords == metres == heightmap node index (1 unit = 1 node).
+    let heightMap: Uint16Array | null = null;
+    let tileXCount = 0, totalXNodes = 0, totalYNodes = 0;
+    if (terrain) {
+      const planetId = cfg.planetConfigId ?? 117;
+      const shape = (await publicFetchJson(`/rest/terrainshape/${planetId}`)) as { nativeTerrainShapeTiles?: unknown[][] };
+      if (shape.nativeTerrainShapeTiles?.length) {
+        tileXCount = shape.nativeTerrainShapeTiles.length;
+        const tileYCount = shape.nativeTerrainShapeTiles[0].length;
+        totalXNodes = tileXCount * NODE_X_COUNT;
+        totalYNodes = tileYCount * NODE_Y_COUNT;
+        const bytes = new Uint8Array(await publicFetchBinary(`/rest/terrainHeightMap/${planetId}`));
+        const len = Math.floor(bytes.length / 2);
+        heightMap = new Uint16Array(len);
+        for (let i = 0; i < len; i++) heightMap[i] = bytes[i * 2] + (bytes[i * 2 + 1] << 8);
+      }
+    }
+    const baseColorAt = (gx: number, gy: number): [number, number, number] => {
+      if (!heightMap) return [22, 24, 28];
+      const nodeX = Math.round(gx), nodeY = Math.round(gy);
+      if (nodeX < 0 || nodeY < 0 || nodeX >= totalXNodes || nodeY >= totalYNodes) return [12, 14, 18];
+      const idx = TILE_NODE_SIZE * (Math.floor(nodeY / NODE_Y_COUNT) * tileXCount + Math.floor(nodeX / NODE_X_COUNT)) + (nodeY % NODE_Y_COUNT) * NODE_X_COUNT + (nodeX % NODE_X_COUNT);
+      return idx < heightMap.length ? heightToColor(uint16ToHeight(heightMap[idx])) : [12, 14, 18];
+    };
+
+    const rgb = new Uint8Array(outW * outH * 3);
+    for (let py = 0; py < outH; py++) {
+      const gy = b.y2 - ((py + 0.5) / outH) * spanY; // top = north
+      for (let px = 0; px < outW; px++) {
+        const gx = b.x1 + ((px + 0.5) / outW) * spanX;
+        let [r, g, bl] = baseColorAt(gx, gy);
+        const top = topFeatureAt(feats, gx, gy); // smallest-area region wins
+        if (top) { const a = heightMap ? 0.5 : 1; r = top.color[0] * a + r * (1 - a); g = top.color[1] * a + g * (1 - a); bl = top.color[2] * a + bl * (1 - a); }
+        const i = (py * outW + px) * 3; rgb[i] = r; rgb[i + 1] = g; rgb[i + 2] = bl;
+      }
+    }
+    // point markers (location-type places) as small filled squares
+    for (const f of feats) for (const [x, y] of f.points) {
+      const cx = Math.round(((x - b.x1) / spanX) * outW), cy = Math.round(((b.y2 - y) / spanY) * outH);
+      for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) {
+        const xx = cx + dx, yy = cy + dy;
+        if (xx >= 0 && xx < outW && yy >= 0 && yy < outH) { const i = (yy * outW + xx) * 3; rgb[i] = f.color[0]; rgb[i + 1] = f.color[1]; rgb[i + 2] = f.color[2]; }
+      }
+    }
+
+    // phase boundary outlines (drawn on top so the regions stay readable underneath)
+    if (phases) {
+      const gx2px = (gx: number) => Math.round(((gx - b.x1) / spanX) * outW);
+      const gy2px = (gy: number) => Math.round(((b.y2 - gy) / spanY) * outH);
+      const thick = Math.max(2, Math.round(outW / 350));
+      for (const ph of PHASE_BOUNDARIES)
+        for (let i = 0; i < ph.poly.length; i++) {
+          const a = ph.poly[i], c = ph.poly[(i + 1) % ph.poly.length];
+          drawLinePx(rgb, outW, outH, gx2px(a[0]), gy2px(a[1]), gx2px(c[0]), gy2px(c[1]), ph.color, thick);
+        }
+    }
+
+    const png = encodePNG(outW, outH, rgb);
+    const base64 = Buffer.from(png).toString("base64");
+
+    const filePath = outputPath ?? join(tmpdir(), `razarion-region-map-${serverGameEngineConfigId}.png`);
+    let savedNote = "";
+    try {
+      writeFileSync(filePath, png);
+      savedNote = `Saved PNG to: ${filePath}\n(open it with:  Invoke-Item '${filePath}' )\n\n`;
+    } catch (e: any) {
+      savedNote = `Could not write PNG to ${filePath}: ${e?.message ?? e}\n\n`;
+    }
+
+    let legend = `Region Map Image - server-game-engine ${serverGameEngineConfigId}\n`;
+    legend += `Bounds: X ${b.x1.toFixed(0)}..${b.x2.toFixed(0)}  Y ${b.y1.toFixed(0)}..${b.y2.toFixed(0)}  |  ${outW}x${outH}px  |  Y up = north\n\n`;
+    legend += savedNote;
+    legend += "Legend (colour = region):\n" + regionLegend(feats, false);
+    if (phases) {
+      legend += "  [phase outlines]\n";
+      for (const ph of PHASE_BOUNDARIES) legend += `    rgb(${ph.color.join(",")}) ${ph.name}\n`;
+    }
+    return { content: [{ type: "image" as const, data: base64, mimeType: "image/png" }, { type: "text" as const, text: legend }] };
   }
 );
 

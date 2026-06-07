@@ -17,6 +17,7 @@ import static com.btxtech.server.service.PersistenceUtil.fromConfig;
 public class ServerResourceRegionConfigEntity extends BaseEntity {
     private int count;
     private double minDistanceToItems;
+    private boolean evenlyDistributed;
     @OneToOne(fetch = FetchType.LAZY)
     private ResourceItemTypeEntity resourceItemType;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -28,6 +29,7 @@ public class ServerResourceRegionConfigEntity extends BaseEntity {
                 .internalName(getInternalName())
                 .count(count)
                 .minDistanceToItems(minDistanceToItems)
+                .evenlyDistributed(evenlyDistributed)
                 .region(toPlaceConfig(region))
                 .resourceItemTypeId(extractId(resourceItemType, ResourceItemTypeEntity::getId));
     }
@@ -36,6 +38,7 @@ public class ServerResourceRegionConfigEntity extends BaseEntity {
         setInternalName(resourceRegionConfig.getInternalName());
         count = resourceRegionConfig.getCount();
         minDistanceToItems = resourceRegionConfig.getMinDistanceToItems();
+        evenlyDistributed = resourceRegionConfig.isEvenlyDistributed();
         if (resourceRegionConfig.getResourceItemTypeId() != null) {
             resourceItemType = (ResourceItemTypeEntity) new ResourceItemTypeEntity().id(resourceRegionConfig.getResourceItemTypeId());
         } else {

@@ -7,15 +7,13 @@ import { InventoryControllerClient, InventoryItem, LevelUnlockConfig, UnlockCont
 import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 import { GameComponent } from '../game.component';
 import {Button} from 'primeng/button';
-import {DataViewModule} from 'primeng/dataview';
 
 
 @Component({
   selector: 'unlock',
   templateUrl: './unlock.component.html',
   imports: [
-    Button,
-    DataViewModule
+    Button
 ],
   styleUrls: ['./unlock.component.scss']
 })

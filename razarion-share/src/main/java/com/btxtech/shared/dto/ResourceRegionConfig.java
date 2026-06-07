@@ -31,6 +31,7 @@ public class ResourceRegionConfig {
     private double minDistanceToItems;
     private Integer resourceItemTypeId;
     private PlaceConfig region;
+    private boolean evenlyDistributed;
 
     public @Nullable Integer getId() {
         return id;
@@ -107,6 +108,19 @@ public class ResourceRegionConfig {
 
     public ResourceRegionConfig region(PlaceConfig region) {
         setRegion(region);
+        return this;
+    }
+
+    public boolean isEvenlyDistributed() {
+        return evenlyDistributed;
+    }
+
+    public void setEvenlyDistributed(boolean evenlyDistributed) {
+        this.evenlyDistributed = evenlyDistributed;
+    }
+
+    public ResourceRegionConfig evenlyDistributed(boolean evenlyDistributed) {
+        setEvenlyDistributed(evenlyDistributed);
         return this;
     }
 }

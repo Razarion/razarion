@@ -12,6 +12,7 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
@@ -160,6 +161,16 @@ public class ServerLevelQuestService implements QuestListener {
     public void activateNextPossibleQuest(String userId) {
         QuestConfig newQuest = userService.getAndSaveNewQuest(userId);
         if (newQuest != null) {
+            // An UNLOCKED quest is event based: it only completes when an unlock actually
+            // happens after activation (ServerUnlockService.unlockViaCrystals -> onUnlock).
+            // If the player has already unlocked everything reachable at the current level
+            // there is no unlock left to trigger it, so the quest would soft-lock the player
+            // forever. Auto-complete it in that case instead of activating it.
+            if (isUnfulfillableUnlockQuest(userId, newQuest)) {
+                logger.info("Auto-completing unlock quest {} for user {}: no available unlocks left", newQuest.getId(), userId);
+                onQuestPassed(userId, newQuest);
+                return;
+            }
             // TODO historyPersistence.get().onQuest(userId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
             resolveStartRegionIfNeeded(newQuest);
             clientSystemConnectionService.onQuestActivated(userId, newQuest);
@@ -168,6 +179,18 @@ public class ServerLevelQuestService implements QuestListener {
         } else {
             clientSystemConnectionService.onAllQuestsCompleted(userId);
         }
+    }
+
+    private boolean isUnfulfillableUnlockQuest(String userId, QuestConfig questConfig) {
+        if (questConfig.getConditionConfig() == null
+                || questConfig.getConditionConfig().getConditionTrigger() != ConditionTrigger.UNLOCKED) {
+            return false;
+        }
+        // getUserContextTransactional (not getUserContext): toUserContext() reads LAZY relations
+        // (levelUnlockEntities, level). This runs from the quest-listener / planet-tick path where
+        // no transaction is open (onQuestPassed is @Transactional but registered as the raw bean),
+        // so the non-transactional variant would throw LazyInitializationException.
+        return !serverUnlockService.hasAvailableUnlocks(userService.getUserContextTransactional(userId));
     }
 
     public List<QuestConfig> readOpenQuestForDialog(UserContext userContext) {

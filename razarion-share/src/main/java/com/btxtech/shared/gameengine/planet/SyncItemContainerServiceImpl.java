@@ -455,6 +455,13 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
         return isFree(baseItemType.getPhysicalAreaConfig().getTerrainType(), position, radius);
     }
 
+    public boolean isFreePosition(TerrainType terrainType, DecimalPosition position, double radius, boolean excludeBotRealm) {
+        if (excludeBotRealm && botServices.get().isInRealm(position)) {
+            return false;
+        }
+        return isFree(terrainType, position, radius);
+    }
+
     public Collection<SyncResourceItem> findResourceItemWithPlace(int resourceItemTypeId, PlaceConfig resourceSelection) {
         Collection<SyncResourceItem> result = new ArrayList<>();
         iterateOverResourceItems(null, syncResourceItem -> {

@@ -9,6 +9,8 @@
 >
 > *Update 2026-06-04:* **L10 is now a real level (id 279)** with three quests (HARVEST, kill the (Bot2) Spire, BOX_PICKED), and the **first box region "Phase 2 Crystal Field"** is live (box id 2 renamed "Box", ttl 600 s, covering all of Phase 2). See §4 and §7.1. Box regions are no longer pending.
 >
+> *Update 2026-06-05:* **L10 is complete.** Quest group 26 is finalised — 3 quests summing to the full **100 XP**: HARVEST 30 (20 XP) · kill the (Bot2) Spire (item 17, 40 XP) · BOX_PICKED ×1 (40 XP). The **rich resource is built** (item type **id 3 "Rich Razarion"**, `amount` 250 = 5×) and both the **resource region "Phase 2 Rich Razarion"** (count 100) and the **box region "Phase 2 Crystal Field"** (count 5, 600 s) were **confined to the spawn region** (start region 122) — so the freshly-landed L10/11 player finds Razarion and the first box near base instead of driving across all of Phase 2. The far ~70 % of Phase 2 (toward Phase 3) is intentionally left for **L12+**, to be split into **~3 resource/box blocks** on the frontier land (§2.3 / §4). New engine option: resource regions carry an opt-in **`evenlyDistributed`** flag (hex-grid placement on free land + fixed-slot respawn; takes effect once the server build implementing it is deployed). See §2.3, §4, §7.
+>
 > **Bot naming convention:** **`(Bot1) X`** = the existing Phase-1 bot units (drop-free); **`(Bot2) X`** = the new drop-enabled Phase-2 variants (§4.1). Production internalNames are still **`(Bot) X`** today — rename `(Bot) X` → `(Bot1) X` is a pending cosmetic step bundled with the Phase-2 build (IDs unchanged; bot configs reference by ID).
 
 ---
@@ -17,7 +19,7 @@
 
 **Phase 2 region:** Semi-Noob Frontier — wraps around Noob Island (Phase 1) on the top and right.
 - Coordinates: X 0–2000, Y 0–2000, **minus** the Phase 1 terrain zone (boundary in [`progression.md`](progression.md) §2). ~3.6 km².
-- Live anchor: **start region 122 "Beginner"** (bbox X 32–1191, Y 7–1200) and **resource region 158 "Beginner"** (count 100). See §6 / §7.
+- Live anchor: **start region 122 "Beginner"** (bbox X 32–1191, Y 7–1200) and the **rich resource region "Phase 2 Rich Razarion"** (resource #3, count 100), confined to that same spawn region. See §6 / §7.
 - The player arrives here from Phase 1 by ferrying a Builder across the water (Phase 1 Q-transition, already live) and rebuilding a base from scratch in region 122.
 - **Early combat capacity comes from a crystal unlock, not a free squad.** The Transporter only carries the Builder (`itemContainerType.ableToContain` = [1], maxCount 1). At **L11** the player unlocks **+3 Viper capacity** with the crystal found at the end of L10 — but can only build ~2 until a House is up (the house-space wall, §3). This is the opening beat of the Phase-2 gating loop.
 
@@ -125,9 +127,11 @@ Phase 2's longer supply lines (§6) are paid for by a new, richer resource node 
 | Resource | `amount` (content per node) | × basic | Status |
 |---|---|---|---|
 | "Noob" / Razarion (id 2, live) | 50 | 1.0 | ✅ exists |
-| **Frontier Razarion** *(new)* | **250** | 5.0 | ❌ new resource item type (+ model) |
+| **"Rich Razarion"** *(live, id 3)* | **250** | 5.0 | ✅ resource item type built (the design name was "Frontier Razarion") |
 
-Each rich node holds five times the Razarion, so a single deposit fuels a long mining run — the right shape for a frontier where nodes sit far from base and often inside contested ground. Rich nodes are placed in **dedicated rich resource regions**, several of them next to / inside the bot grounds (§5), making the best economy a risk/reward push rather than a safe backyard.
+Each rich node holds five times the Razarion, so a single deposit fuels a long mining run. **Live (L10/L11):** the rich node fills one region **"Phase 2 Rich Razarion"** (count 100) **confined to the spawn region** (start region 122) so the freshly-landed player has Razarion near base. The rest of Phase 2 — the empty ~70 % toward Phase 3 — is left for **L12+**, to be split into **~3 rich-resource blocks** placed next to / inside the bot grounds (§5), making the best economy a risk/reward push rather than a safe backyard.
+
+**Even distribution (engine option):** a resource region carries an opt-in **`evenlyDistributed`** flag. When set, spots are laid on a hexagonally-offset grid over the region's free **LAND** (spacing from area ÷ count) instead of random scatter, and an exhausted spot **respawns at the same slot** — keeping density uniform and stable over time. (The default `false` keeps the original random placement; respawn there picks a fresh random free position over the whole region, which thins out exactly where players harvest hardest.) The live Phase-2 / Noob resource regions have this enabled; it becomes active once the server build implementing it is deployed.
 
 Harvested by the **normal Harvester** (id 2) — there is **no dedicated/advanced harvester in Phase 2**. The rich resource is plain world content (not a crystal unlock); it just means richer nodes in contested spots.
 
@@ -200,16 +204,16 @@ This mirrors the land +Viper / +combat capacity unlocks: the player has *some* n
 
 | Box | Contents | Status | Spawn | Count | Interval |
 |---|---|---|---|---|---|
-| Crystal Box | 1 Crystal | ✅ **live** (id 2 "Box", ttl 600 s) | region **"Phase 2 Crystal Field"** — all of Phase 2 | 10 | 30 s |
+| Crystal Box | 1 Crystal | ✅ **live** (id 2 "Box", ttl 600 s) | region **"Phase 2 Crystal Field"** — **spawn region (122)** | 5 | 600 s |
 | Rich Crystal Box | 2–3 Crystals | ❌ new box type | Near outposts (guarded by bots) | 2 | 300–600 s |
 
 Phase 2 boxes carry **only crystals**. A dedicated **resource (Razarion) box is deferred** — we'll add it later.
 
 **Notes:**
-- The **"Box"** type (id 2, 1 crystal) is the workhorse. **Live as of 2026-06-04:** deployed in a single Phase-2-wide region **"Phase 2 Crystal Field"** — the 0–2000 square minus the Phase-1 polygon (9-corner cut-out following the Phase-1 boundary; see [`progression.md`](progression.md) §2), `count` 10, 30 s respawn, `minDistanceToItems` 1. Boxes spawn anywhere on Phase-2 land. A finer split into scattered low-risk vs. guarded regions can come later.
+- The **"Box"** type (id 2, 1 crystal) is the workhorse. **Live (2026-06-05):** region **"Phase 2 Crystal Field"** is **confined to the spawn region** (start region 122 polygon), `count` 5, **600 s** interval, `minDistanceToItems` 1 — so the **first box** spawns near the player's base, not anywhere across Phase 2 (boxes auto-despawn via ttl if not picked). *(It was initially deployed Phase-2-wide at count 10 / 30 s; narrowed on 2026-06-05.)* Coverage of the rest of Phase 2 — scattered low-risk vs. guarded regions near outposts — comes with the L12+ build.
 - The Rich Crystal Box sits inside bot realms / next to bot ground — the player must beat or bait the defensive bot to claim it. This is the risk/reward core of the phase.
 - `boxItemTypePossibilities` supports weighted tables (`possibility`) and `inventoryItemId`, so boxes can also carry inventory items / Razarion later — Phase 2 keeps it to crystals only.
-- **First box region is live** — **"Phase 2 Crystal Field"** (box type 2, covering all of Phase 2). This was the first concrete Phase-2 build step. Remaining box work: the Rich Crystal Box type + guarded regions, and bot drops (§4.1).
+- **First box region is live and L10-tuned** — **"Phase 2 Crystal Field"** (box type 2) in the spawn region, count 5 / 600 s. Remaining box work: the Rich Crystal Box type + guarded regions (L12+), and bot drops (§4.1).
 
 ### 4.1 Bot drops — a second crystal source (Phase 2 only)
 
@@ -306,7 +310,7 @@ flowchart TB
         end
         subgraph Entry["Entry (from Phase 1 across the water)"]
             S["Start region 122 'Beginner'<br/>X 32-1191, Y 7-1200"]
-            R["Resource region 158 'Beginner' (count 100)"]
+            R["Rich resource 'Phase 2 Rich Razarion' (count 100)<br/>+ box 'Phase 2 Crystal Field' (count 5) — both in spawn region"]
         end
     end
     Entry -.distance.-> Mid -.distance.-> High
@@ -318,7 +322,7 @@ flowchart TB
     style Entry fill:#d4edda
 ```
 
-- The player lands from Phase 1 into **start region 122** and rebuilds. Resources are abundant nearby (**region 158**, count 100) but spread out — longer supply lines than Phase 1.
+- The player lands from Phase 1 into **start region 122** and rebuilds. For L10/L11 the rich resource (**"Phase 2 Rich Razarion"**, count 100) and the first box (**"Phase 2 Crystal Field"**, count 5) are **confined to that spawn region**, so the economy and first crystal are reachable near base. As the player pushes outward at L12+, additional rich-resource / box blocks on the frontier introduce the longer supply lines and risk/reward described below.
 - Difficulty rises with distance: the Frontier Outpost (~700, 770) is the first push; the Armored Outpost (~180, 1040, "Mountain") is the late-phase wall guarding the best crystals.
 - The **water zone** along the lake edge holds the **Naval Outpost** (§5.3) and a water Crystal Box — reachable only with a Hydra fleet, so the navy is a real second front, not decoration.
 - Crystal boxes are scattered between the outposts; Rich Crystal Boxes sit inside the bot grounds.
@@ -340,9 +344,10 @@ Status legend: ✅ exists & usable · ⚠️ exists but needs change · ❌ miss
 | Element | Production state | Status |
 |---|---|---|
 | Start region | **122 "Beginner"**, bbox X 32–1191 / Y 7–1200 (10 corners) | ✅ |
-| Resource region | **158 "Beginner"**, resource #2, count 100, minDist 0, bbox X 4–1581 / Y 20–1479 | ✅ |
+| Resource region | **"Phase 2 Rich Razarion"** — resource **#3**, count 100, `evenlyDistributed`, = **spawn region 122 polygon**; plus two Phase-1 **"Noob"** regions (resource #2). | ✅ |
 | Basic resource node | **resource item type id 2 "Noob"** — `amount` 50, LAND, radius 1 | ✅ (the 5× rich node scales off this) |
-| Crystal box type | **box id 2 "Box"** (renamed from "Noob"; player name "Box") — drops **1 crystal**, ttl 600 s, LAND, radius 0.8 | ✅ **deployed** — region "Phase 2 Crystal Field" (§4) |
+| Rich resource node | **resource item type id 3 "Rich Razarion"** — `amount` 250 (5×), LAND, radius 1 | ✅ **built & live** (region "Phase 2 Rich Razarion") |
+| Crystal box type | **box id 2 "Box"** (renamed from "Noob"; player name "Box") — drops **1 crystal**, ttl 600 s, LAND, radius 0.8 | ✅ **deployed** — region "Phase 2 Crystal Field", confined to spawn region, count 5 / 600 s (§4) |
 | Bot landing seed | **bot 782 "Beginner"** ~(700,770), `autoAttack=true`, 1× (Bot1) Builder | ⚠️ stub → anchor 1 of the 5 Frontier Outposts |
 | Bot far seed | **bot 783 "Mountain"** ~(180,1040), empty realm | ⚠️ stub → anchor 1 of the 3 Armored Outposts |
 | House building | **id 23** — HP 300 / cost 300, `space` +5, buildable by Builder | ⚠️ rebalance (→25/50 ✅ done on localhost) + gate via a L12 `levelUnlockEntities` entry |
@@ -354,24 +359,24 @@ Status legend: ✅ exists & usable · ⚠️ exists but needs change · ❌ miss
 
 | Element | Status | Notes |
 |---|---|---|
-| **Levels L11–L19** | ❌ | **L10 (id 279) is now a real level** (`xp2LevelUp` 100) with quest group 26. **L11–L19 do not exist** — the rest of the ladder is still to build. |
-| **L10 unlock + XP** | ⚠️ | `xp2LevelUp` is set (100), but item limits are still the **L9 set** and no House/Tesla/Heavy added to `itemTypeLimitation` yet. L10 carries no crystal unlock (it's the rebuild + first-box level). |
+| **Levels L11–L19** | ❌ | **L10 (id 279) is complete** (`xp2LevelUp` 100, quest group 26 = 3 quests summing to 100 XP, resources + first box confined to the spawn region). **L11–L19 do not exist** — the rest of the ladder is still to build. |
+| **L10 unlock + XP** | ✅ | `xp2LevelUp` 100; item limits are the **L9 set** (no House/Tesla/Heavy yet — those arrive with the L12+ crystal unlocks) and `levelUnlockEntities` is empty by design: L10 is the **rebuild + first-box** level. Quest XP (20+40+40) sums exactly to 100. |
 | **Crystal unlocks** (`levelUnlockEntities`) | ❌ | All levels carry empty `levelUnlockEntities`. Add one `LevelUnlockConfig {baseItemType, baseItemTypeCount, crystalCost}` per unlock (§3). From-scratch types (House/Tesla/Heavy) also need base `itemTypeLimitation` 0. |
 | **Capacity unlocks** (`levelUnlockEntities`) | ❌ | The §3 spine: +3 Viper (L11), +Heavy (L14), House #2 (L15), +Tesla (L17), +1 Powerplant (L17), +combat (L18), House #3 (L19); plus the naval track +Hydra (L14, L18). None exist; levels carry empty `levelUnlockEntities`. |
-| **Box regions** | ✅ | **Live (2026-06-04):** one region **"Phase 2 Crystal Field"** (box type 2, all of Phase 2, count 10, 30 s respawn). Finer/guarded regions still optional (§4). |
+| **Box regions** | ✅ | **Live:** **"Phase 2 Crystal Field"** (box type 2) **confined to the spawn region** (122), count 5, 600 s. Scattered/guarded regions across the rest of Phase 2 come with L12+ (§4). |
 | **Rich Crystal Box type** | ❌ | Only the 1-crystal **"Box"** type (id 2) exists; a 2–3 crystal box is new. |
 | **Bot ground** | ❌ | Only ground config **252 "Sandy ground"** exists. The bot-territory marker is new content. |
 | **Player Tesla** | ❌ | New `baseItemType` cloning (Bot1) Tesla (id 5): same model3D 48 + LIGHTNING config; set player economy fields. Gated via a L16 `levelUnlockEntities` entry (count 1, cost 2) + base `itemTypeLimitation` 0. |
 | **Stronger combat unit** | ❌ | No player heavy land unit exists; needs a new `baseItemType` (+ model). Built by extending Factory (4) `ableToBuildIds`. |
 | **+1 Powerplant (power)** | ❌ | Capacity unlock raising Powerplant (id 7) cap to 2 at L17 (`levelUnlockEntities`). Meaningful only if the player Tesla consumes power (§2 / §8). No new building. |
-| **Rich resource ("Frontier Razarion")** | ❌ | New resource item type, `amount` 250 (5× the live node's 50), + model; placed in new rich resource regions near the bots. Harvested by the normal Harvester (no dedicated harvester). |
+| **Rich resource ("Rich Razarion")** | ✅ | **Built:** resource item type **id 3 "Rich Razarion"**, `amount` 250 (5×), + region **"Phase 2 Rich Razarion"** (count 100, `evenlyDistributed`) in the spawn region. Harvested by the normal Harvester. **Remaining:** the additional rich regions on the frontier near the bots (the L12+ "rest", ~3 blocks). |
 | **Bot roster (~10 instances)** | ❌ | §5: **5 Frontier + 2 Naval + 3 Armored**. 2 live stubs (782, 783) anchor one Frontier + one Armored; the other **8 are new bots** — build out compositions, realms, bot grounds, and stagger by distance (§6). |
 | **Naval Outpost bots (×2)** | ❌ | New water bots (§5.3) on the lake edge: each (Bot1) Dockyard (9) + (Bot2) Hydra ×4–5 + (Bot1) Builder, guarding a water Crystal Box. Production has no Phase-2 naval bot. |
 | **Phase-2 bot-unit variants (drop-enabled)** | ❌ | §4.1: new `baseItemType` clones of the Phase-1 bot combat units — **(Bot2) Viper / Hydra / Tesla / Badger** — with `dropBoxItemTypeId` set (+ optionally tougher). The Phase-2 bots field these; Phase-1 bot units stay `dropBoxItemTypeId = null` so the Noob Island never drops. |
 | **Bot drop config** | ❌ | Set `dropBoxItemTypeId` + `dropBoxPossibility` on the (Bot2) variants (Viper/Hydra/Tesla ~0.10–0.12 → Crystal Box; boss ~0.5 → Rich Crystal Box). |
 | **Rename (Bot) → (Bot1)** | ❌ | Cosmetic: rename the 12 existing bot `baseItemType` internalNames `(Bot) X` → `(Bot1) X` so the live editor matches the (Bot1)/(Bot2) convention. IDs unchanged; bot configs reference by ID, so no functional impact. |
 | **Water Crystal Box region** | ❌ | A box region on water (`terrainType` WATER) inside the Naval Outpost's realm. The **"Box"** type (id 2) is LAND-only — may need a WATER box variant. |
-| **Phase-2 quest groups** | ⚠️ | **Quest group 26 now targets L10** (3 quests: HARVEST 30 · kill the (Bot2) Spire · BOX_PICKED — the "Find a Box" beat). L11–L19 quest groups still to build. |
+| **Phase-2 quest groups** | ⚠️ | **Quest group 26 = complete L10** (3 quests, 100 XP total: HARVEST 30 → 20 XP · kill the (Bot2) Spire (item 17) → 40 XP · BOX_PICKED ×1 → 40 XP). L11–L19 quest groups still to build. |
 | **Crystal resource node?** | n/a | Crystals come from boxes, not harvest nodes — no resource-item change needed (the single resource type #2 "Noob"/Razarion is sufficient). |
 
 ### 7.3 Level Limits (proposed, L10–L19)
@@ -399,11 +404,13 @@ Item limits stop being the binding constraint here — **house space does**, gat
 
 Implements the §3 gating-loop spine, with the parallel **naval (N#, §2.4/§5.3)** and **economy/harvest (E#, §2.3 — cumulative Razarion)** tracks woven in. **One table, ordered by level.** Each land unlock is preceded by a box/crystal beat and (for combat) followed by a house-space wall; the late Tesla grid hits the power wall. Rewards are XP + occasional Razarion/Crystal.
 
+> **L10 (group 26) is built — the rows below are the live values; the L11–L19 rows remain the proposal to build.** L10's three quests sum to the level's `xp2LevelUp` of **100 XP**, with no Razarion/Crystal rewards (the +1 Crystal "find a box" beat moved into the mechanic itself).
+
 | # | Quest | Lvl | Track | Trigger            | Target                                             | Reward | Beat |
 |---|---|---|---|--------------------|----------------------------------------------------|---|---|
-| E1 | First Yield | L10 | eco | HARVEST            | 250 total                                          | 80 XP | bootstrap the economy |
-| 1 | First Blood | L10 | land | SYNC_ITEM_KILLED   | 2 units (botId: Frontier Outpost)                  | 100 XP | first combat — take out Frontier bots |
-| 2 | Find a Box | L10 (end) | land | BOX_PICKED         | ×1 box                                             | 50 XP, +1 Crystal | preps the L11 Viper unlock |
+| E1 | First Yield (live) | L10 | eco | HARVEST            | 30                                                 | 20 XP | bootstrap the economy |
+| 1 | First Blood (live) | L10 | land | SYNC_ITEM_KILLED   | (Bot2) Spire (item 17) ×1                          | 40 XP | first combat — kill the Spire |
+| 2 | Find a Box (live) | L10 (end) | land | BOX_PICKED         | ×1 box                                             | 40 XP | preps the L11 Viper unlock |
 | 3 | Reinforcements | L11 | land | UNLOCKED           | +3 Viper capacity                                  | 100 XP | **wall:** only ~2 buildable (house full) |
 | 4 | Crystal Cache | L11 | land | BOX_PICKED         | ×3 total                                           | 80 XP, +Crystals | preps the House unlock |
 | 5 | Room to Grow | L12 | land | UNLOCKED           | House                                              | 100 XP | relieves → build held-back Viper(s) |
@@ -470,7 +477,7 @@ Phase 2 is greenfield, so the order is **build, not migrate**. The layers follow
 2. **Combat + economy (L13–L14)**
    - Create the **stronger combat unit** (model + base item type + anchors §2.1); extend **Factory (4)** `ableToBuildIds` to build it. Gate via a **L13** `levelUnlockEntities` entry (count 1, cost 2) + base `itemTypeLimitation` 0.
    - Author the **+Heavy capacity** unlock (**L14**, `levelUnlockEntities`) — runs into the house wall again.
-   - Create the **rich resource** ("Frontier Razarion", `amount` 250) + **rich resource regions** near the bot grounds (§2.3) — harvested by the normal Harvester, no dedicated harvester. Create the **Rich Crystal Box** type, deploy guarded.
+   - ~~Create the **rich resource** (`amount` 250)~~ — **done** (id 3 "Rich Razarion", + the spawn-region region, §2.3). Remaining: add the **frontier rich-resource regions** near the bot grounds (the L12+ "rest", ~3 blocks) — harvested by the normal Harvester, no dedicated harvester. Create the **Rich Crystal Box** type, deploy guarded.
    - **Naval:** build the **2 Naval Outposts** (§5.3) in the lake-edge water zones + water markers, a **water Crystal Box** region in each realm, and the **+Hydra** capacity unlock (**L14**). (Dockyard/Hydra are carried over, no new types.)
    - Create levels L13–L14. Quests **Q7–Q8** (Heavy Metal, War Machines) + naval **N1–N2** (Set Sail, Naval Force) + harvest **E2** (Rich Seams).
 
