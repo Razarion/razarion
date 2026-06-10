@@ -54,7 +54,6 @@ import {BotConfig} from 'src/app/generated/razarion-share';
 export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy {
   wireframe: boolean = false;
   showTerrainType: boolean = false;
-  showTerrainTypeWorker: boolean = false;
   showMaterialIndex: boolean = false;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private planetConfig: PlanetConfig;
@@ -101,7 +100,6 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
       this.editorTerrainTiles[y] = [];
       for (let x = 0; x < this.xTileCount; x++) {
         this.editorTerrainTiles[y][x] = new EditorTerrainTile(renderService,
-          gwtAngularService.gwtAngularFacade.inputService,
           gwtAngularService.gwtAngularFacade.terrainUiService,
           GwtInstance.newIndex(x, y));
       }
@@ -184,20 +182,6 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
             this.editorTerrainTiles[y][x].showTerrainType();
           } else {
             this.editorTerrainTiles[y][x].hideTerrainType();
-          }
-        }
-      }
-    }
-  }
-
-  onShowTerrainTypeWorkerChanged(): void {
-    for (let x = 0; x < this.xTileCount; x++) {
-      for (let y = 0; y < this.yTileCount; y++) {
-        if (this.editorTerrainTiles[y][x].hasPositions()) {
-          if (this.showTerrainTypeWorker) {
-            this.editorTerrainTiles[y][x].showTerrainTypeWorker();
-          } else {
-            this.editorTerrainTiles[y][x].hideTerrainTypeWorker();
           }
         }
       }

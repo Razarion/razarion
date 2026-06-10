@@ -65,6 +65,9 @@ public class AngularProxyFactory {
     private static native void setMethod2DObj(JSObject obj, String name, TwoDoubleToJSObjectCallback fn);
 
     @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
+    private static native void setMethod2DObjVoid(JSObject obj, String name, TwoDoubleObjVoidCallback fn);
+
+    @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
     private static native void setMethodBoolVoid(JSObject obj, String name, VoidWithBooleanCallback fn);
 
     @JSBody(params = {"obj", "name", "fn"}, script = "obj[name] = fn;")
@@ -138,6 +141,11 @@ public class AngularProxyFactory {
     @JSFunctor
     public interface TwoDoubleToJSObjectCallback extends JSObject {
         JSObject call(double x, double y);
+    }
+
+    @JSFunctor
+    public interface TwoDoubleObjVoidCallback extends JSObject {
+        void call(double x, double y, JSObject callback);
     }
 
     @JSFunctor
@@ -305,6 +313,12 @@ public class AngularProxyFactory {
         setMethod2DObj(proxy, "getTerrainType", (x, y) ->
                 DtoConverter.convertTerrainType(service.getTerrainType(
                         new com.btxtech.shared.datatypes.DecimalPosition(x, y))));
+        // requestTerrainTypeOrdinals(tileX, tileY, callback): on-demand worker computation for the
+        // editor terrain-type overlay; the JS callback fires once the ordinals have arrived.
+        setMethod2DObjVoid(proxy, "requestTerrainTypeOrdinals", (tileX, tileY, callback) ->
+                service.requestTerrainTypeOrdinals(
+                        new com.btxtech.shared.datatypes.Index((int) tileX, (int) tileY),
+                        () -> callJsFunction(callback)));
         return proxy;
     }
 

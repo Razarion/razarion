@@ -13,6 +13,10 @@ public class TerrainTile {
     private Uint16ArrayEmu groundHeightMap;
     private BabylonDecal[] babylonDecals;
     private BotGround[] botGrounds;
+    // Per-node TerrainType ordinals (row-major, NODE_Y_COUNT * NODE_X_COUNT), computed in the worker
+    // where the full TerrainShapeManager is available (blocking terrain objects + cross-tile edge heights).
+    // Null when not computed (e.g. mock server); consumers must fall back to local analysis.
+    private int[] terrainTypeOrdinals;
 
     public Index getIndex() {
         return index;
@@ -76,5 +80,13 @@ public class TerrainTile {
 
     public void setBotGrounds(BotGround[] botGrounds) {
         this.botGrounds = botGrounds;
+    }
+
+    public int[] getTerrainTypeOrdinals() {
+        return terrainTypeOrdinals;
+    }
+
+    public void setTerrainTypeOrdinals(int[] terrainTypeOrdinals) {
+        this.terrainTypeOrdinals = terrainTypeOrdinals;
     }
 }

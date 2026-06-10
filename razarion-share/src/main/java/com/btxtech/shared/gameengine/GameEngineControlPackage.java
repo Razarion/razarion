@@ -67,10 +67,11 @@ public class GameEngineControlPackage {
         PROJECTILE_FIRED,
         PROJECTILE_DETONATION,
         // Terrain
-        GET_TERRAIN_TYPE,
-        GET_TERRAIN_TYPE_ANSWER,
         TERRAIN_TILE_REQUEST,
         TERRAIN_TILE_RESPONSE,
+        // Editor terrain-type overlay: on-demand per-tile passability ordinals
+        TERRAIN_TYPE_ORDINALS_REQUEST,
+        TERRAIN_TYPE_ORDINALS_RESPONSE,
         // Cockpit
         SELL_ITEMS
     }

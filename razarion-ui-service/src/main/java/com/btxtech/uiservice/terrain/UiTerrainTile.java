@@ -92,6 +92,12 @@ public class UiTerrainTile {
         return terrainTile;
     }
 
+    public void setTerrainTypeOrdinals(int[] terrainTypeOrdinals) {
+        if (terrainTile != null) {
+            terrainTile.setTerrainTypeOrdinals(terrainTypeOrdinals);
+        }
+    }
+
     public void dispose() {
         // TODO check for three.js resource which must be released
     }
@@ -105,6 +111,17 @@ public class UiTerrainTile {
         Index tileIndex = terrainPositionToTileIndex(terrainPosition);
         Index nodeTileIndex = tileIndexToNodeIndex(tileIndex);
         Index analyzeIndex = nodeIndex.sub(nodeTileIndex);
+
+        // Prefer the worker-computed terrain types shipped with the tile: they account for blocking
+        // terrain objects and read heights across tile borders (the local analyzer has neither the
+        // TerrainShapeManager nor neighbour tiles, which makes it report BLOCKED along tile edges).
+        int[] terrainTypeOrdinals = terrainTile != null ? terrainTile.getTerrainTypeOrdinals() : null;
+        if (terrainTypeOrdinals != null
+                && analyzeIndex.getX() >= 0 && analyzeIndex.getX() < TerrainUtil.NODE_X_COUNT
+                && analyzeIndex.getY() >= 0 && analyzeIndex.getY() < TerrainUtil.NODE_Y_COUNT) {
+            int ordinal = terrainTypeOrdinals[analyzeIndex.getY() * TerrainUtil.NODE_X_COUNT + analyzeIndex.getX()];
+            return TerrainType.values()[ordinal];
+        }
 
         return terrainAnalyzer.getTerrainType(analyzeIndex);
     }

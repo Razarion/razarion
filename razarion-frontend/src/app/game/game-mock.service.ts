@@ -615,10 +615,6 @@ export class GameMockService {
   };
 
   inputService: InputService = new class implements InputService {
-    getTerrainTypeOnTerrain(nodeIndex: Index): Promise<any> {
-      throw new Error("Method not implemented.");
-    }
-
     onViewFieldChanged(bottomLeftX: number, bottomLeftY: number, bottomRightX: number, bottomRightY: number, topRightX: number, topRightY: number, topLeftX: number, topLeftY: number): void {
       // console.info("onViewFieldChanged()");
     }

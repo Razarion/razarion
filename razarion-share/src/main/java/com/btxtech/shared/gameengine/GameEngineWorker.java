@@ -214,8 +214,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case SELL_ITEMS:
                 sellItems((IdsDto) controlPackage.getData(0));
                 break;
-            case GET_TERRAIN_TYPE:
-                getTerrainType((Index) controlPackage.getData(0));
+            case TERRAIN_TYPE_ORDINALS_REQUEST:
+                getTerrainTypeOrdinals((Index) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -703,15 +703,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
 
-    private void getTerrainType(Index nodeIndex) {
+    private void getTerrainTypeOrdinals(Index terrainTileIndex) {
         try {
-            sendToClient(GameEngineControlPackage.Command.GET_TERRAIN_TYPE_ANSWER,
-                    nodeIndex,
-                    terrainService.getTerrainAnalyzer().getTerrainType(nodeIndex));
+            sendToClient(GameEngineControlPackage.Command.TERRAIN_TYPE_ORDINALS_RESPONSE,
+                    terrainTileIndex,
+                    terrainService.generateTerrainTypeOrdinals(terrainTileIndex));
         } catch (Throwable t) {
-            logger.log(Level.SEVERE, "GameEngineWorker.getTerrainType() failed", t);
-            sendToClient(GameEngineControlPackage.Command.GET_TERRAIN_TYPE_ANSWER, nodeIndex, TerrainType.BLOCKED);
-
+            logger.log(Level.SEVERE, "GameEngineWorker.getTerrainTypeOrdinals() failed", t);
         }
     }
 

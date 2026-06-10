@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 public class TerrainUiService {
     private final Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
     private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
+    private final Map<Index, Runnable> terrainTypeOrdinalsCallbacks = new HashMap<>();
     // private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
     private final Provider<GameEngineControl> gameEngineControl;
     private final Provider<UiTerrainTile> uiTerrainTileInstance;
@@ -167,5 +168,29 @@ public class TerrainUiService {
 
     public void onTerrainTileResponse(TerrainTile terrainTile) {
         terrainTileConsumers.remove(terrainTile.getIndex()).accept(terrainTile);
+    }
+
+    /**
+     * Requests the authoritative per-node TerrainType ordinals for a tile from the worker (on demand,
+     * editor terrain-type overlay only). {@code onReady} is invoked once the ordinals have arrived and
+     * been stored on the cached tile, so the caller can (re)draw the overlay reading {@link #getTerrainType}.
+     */
+    public void requestTerrainTypeOrdinals(Index terrainTileIndex, Runnable onReady) {
+        terrainTypeOrdinalsCallbacks.put(terrainTileIndex, onReady);
+        gameEngineControl.get().requestTerrainTypeOrdinals(terrainTileIndex);
+    }
+
+    public void onTerrainTypeOrdinalsResponse(Index terrainTileIndex, int[] terrainTypeOrdinals) {
+        UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTileIndex);
+        if (uiTerrainTile == null) {
+            uiTerrainTile = cacheTerrainTiles.get(terrainTileIndex);
+        }
+        if (uiTerrainTile != null) {
+            uiTerrainTile.setTerrainTypeOrdinals(terrainTypeOrdinals);
+        }
+        Runnable onReady = terrainTypeOrdinalsCallbacks.remove(terrainTileIndex);
+        if (onReady != null) {
+            onReady.run();
+        }
     }
 }

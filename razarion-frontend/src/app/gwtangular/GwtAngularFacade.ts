@@ -160,8 +160,6 @@ export interface InputService {
     bottomRightX: number, bottomRightY: number,
     topRightX: number, topRightY: number,
     topLeftX: number, topLeftY: number): void;
-
-  getTerrainTypeOnTerrain(nodeIndex: Index): Promise<any>;
 }
 
 export interface GameCommandService {
@@ -770,6 +768,8 @@ export interface InventoryUiService {
 export interface TerrainUiService {
 
   getTerrainType(x: number, y: number): TerrainType
+
+  requestTerrainTypeOrdinals(tileX: number, tileY: number, callback: () => void): void
 }
 
 // ---------- ResourceUiService ----------

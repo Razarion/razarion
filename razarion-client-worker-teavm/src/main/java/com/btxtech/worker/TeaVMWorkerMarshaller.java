@@ -148,7 +148,6 @@ public final class TeaVMWorkerMarshaller {
             case INITIAL_SLAVE_SYNCHRONIZED:
                 setArrayString(array, DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
-            case GET_TERRAIN_TYPE:
             case BASE_CREATED:
             case BASE_DELETED:
             case BASE_UPDATED:
@@ -166,7 +165,6 @@ public final class TeaVMWorkerMarshaller {
             case COMMAND_UNLOAD_CONTAINER:
             case PROJECTILE_DETONATION:
             case ENERGY_CHANGED:
-            case GET_TERRAIN_TYPE_ANSWER:
                 setArrayString(array, DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 setArrayString(array, DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
@@ -213,6 +211,12 @@ public final class TeaVMWorkerMarshaller {
             // Native marshal terrain buffers
             case TERRAIN_TILE_RESPONSE:
                 array.set(DATA_OFFSET_0, marshallTerrainTile((TerrainTile) controlPackage.getData(0)));
+                break;
+
+            // Editor terrain-type overlay: Index (JSON) + per-node ordinals (Uint8Array)
+            case TERRAIN_TYPE_ORDINALS_RESPONSE:
+                setArrayString(array, DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.set(DATA_OFFSET_1, marshallTerrainTypeOrdinals((int[]) controlPackage.getData(1)));
                 break;
 
             // NativeTickInfo - encode as flat TypedArrays for performance
@@ -378,14 +382,9 @@ public final class TeaVMWorkerMarshaller {
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_1), DecimalPosition.class));
                 break;
 
-            case GET_TERRAIN_TYPE:
             case TERRAIN_TILE_REQUEST:
+            case TERRAIN_TYPE_ORDINALS_REQUEST:
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_0), Index.class));
-                break;
-
-            case GET_TERRAIN_TYPE_ANSWER:
-                data.add(fromJson(getArrayString(array, DATA_OFFSET_0), Index.class));
-                data.add(fromJson(getArrayString(array, DATA_OFFSET_1), TerrainType.class));
                 break;
 
             case TERRAIN_TILE_RESPONSE:
@@ -609,6 +608,17 @@ public final class TeaVMWorkerMarshaller {
         array.push(marshallBotGrounds(terrainTile.getBotGrounds()));
 
         return array;
+    }
+
+    private static JSObject marshallTerrainTypeOrdinals(int[] terrainTypeOrdinals) {
+        if (terrainTypeOrdinals == null) {
+            return null;
+        }
+        JSObject typedArray = createUint8Array(terrainTypeOrdinals.length);
+        for (int i = 0; i < terrainTypeOrdinals.length; i++) {
+            setUint8(typedArray, i, terrainTypeOrdinals[i]);
+        }
+        return typedArray;
     }
 
     private static JSObject marshallBabylonDecals(BabylonDecal[] babylonDecals) {

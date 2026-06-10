@@ -280,6 +280,10 @@ import java.util.logging.Logger;
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST, terrainTileIndex);
     }
 
+    public void requestTerrainTypeOrdinals(Index terrainTileIndex) {
+        sendToWorker(GameEngineControlPackage.Command.TERRAIN_TYPE_ORDINALS_REQUEST, terrainTileIndex);
+    }
+
     protected void onTickUpdate(NativeTickInfo nativeTickInfo) {
         perfmonService.onEntered(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
         try {
@@ -327,10 +331,6 @@ import java.util.logging.Logger;
             stopCallback.run();
             stopCallback = null;
         }
-    }
-
-    public void getTerrainType(Index nodePosition) {
-        sendToWorker(GameEngineControlPackage.Command.GET_TERRAIN_TYPE, nodePosition);
     }
 
     protected void dispatch(GameEngineControlPackage controlPackage) {
@@ -398,6 +398,9 @@ import java.util.logging.Logger;
             case TERRAIN_TILE_RESPONSE:
                 terrainUiService.onTerrainTileResponse((TerrainTile) controlPackage.getData(0));
                 break;
+            case TERRAIN_TYPE_ORDINALS_RESPONSE:
+                terrainUiService.onTerrainTypeOrdinalsResponse((Index) controlPackage.getData(0), (int[]) controlPackage.getData(1));
+                break;
             case STOP_RESPONSE:
                 onStopped();
                 break;
@@ -412,9 +415,6 @@ import java.util.logging.Logger;
                 break;
             case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE: // Marshaller can not handle null value
                 gameUiControl.onInitialSlaveSynchronized(null);
-                break;
-            case GET_TERRAIN_TYPE_ANSWER:
-                inputServices.get().onGetTerrainTypeAnswer((Index) controlPackage.getData(0), (TerrainType) controlPackage.getData(1));
                 break;
             case COMMAND_MOVE_ACK:
                 inputServices.get().onMoveCommandAck();

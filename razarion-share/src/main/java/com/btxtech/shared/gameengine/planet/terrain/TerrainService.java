@@ -54,6 +54,26 @@ public class TerrainService {
         return terrainTileFactory.generateTerrainTile(terrainTileIndex, terrainShape, planetConfig);
     }
 
+    /**
+     * Computes the per-node {@link com.btxtech.shared.gameengine.planet.terrain.container.TerrainType}
+     * ordinals for a whole tile (row-major NODE_Y_COUNT * NODE_X_COUNT). This is the authoritative
+     * passability (it accounts for blocking terrain objects and reads heights across tile borders) and
+     * is requested on demand by the editor terrain-type overlay - it is NOT computed during normal tile
+     * generation, so regular gameplay pays no cost.
+     */
+    public int[] generateTerrainTypeOrdinals(Index terrainTileIndex) {
+        Index nodeBase = TerrainUtil.tileIndexToNodeIndex(terrainTileIndex);
+        TerrainAnalyzer terrainAnalyzer = terrainShape.getTerrainAnalyzer();
+        int[] ordinals = new int[TerrainUtil.NODE_X_COUNT * TerrainUtil.NODE_Y_COUNT];
+        for (int ly = 0; ly < TerrainUtil.NODE_Y_COUNT; ly++) {
+            for (int lx = 0; lx < TerrainUtil.NODE_X_COUNT; lx++) {
+                ordinals[ly * TerrainUtil.NODE_X_COUNT + lx] =
+                        terrainAnalyzer.getTerrainType(nodeBase.add(lx, ly)).ordinal();
+            }
+        }
+        return ordinals;
+    }
+
     public TerrainAnalyzer getTerrainAnalyzer() {
         return terrainShape.getTerrainAnalyzer();
     }

@@ -109,7 +109,7 @@ public class TeaVMClientMarshaller {
             case SELL_ITEMS:
             case USE_INVENTORY_ITEM:
             case TERRAIN_TILE_REQUEST:
-            case GET_TERRAIN_TYPE:
+            case TERRAIN_TYPE_ORDINALS_REQUEST:
                 setArrayString(array, DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
 
@@ -268,9 +268,9 @@ public class TeaVMClientMarshaller {
                 data.add(fromJson(getArrayStringDirect(javaScriptObject, DATA_OFFSET_0), DecimalPosition.class));
                 break;
 
-            case GET_TERRAIN_TYPE_ANSWER:
+            case TERRAIN_TYPE_ORDINALS_RESPONSE:
                 data.add(fromJson(getArrayStringDirect(javaScriptObject, DATA_OFFSET_0), Index.class));
-                data.add(fromJson(getArrayStringDirect(javaScriptObject, DATA_OFFSET_1), TerrainType.class));
+                data.add(demarshallTerrainTypeOrdinals(getArrayElementDirect(javaScriptObject, DATA_OFFSET_1)));
                 break;
 
             case START:
@@ -611,6 +611,18 @@ public class TeaVMClientMarshaller {
         terrainTile.setBotGrounds(demarshallBotGrounds(getArrayElementDirect(array, 5)));
 
         return terrainTile;
+    }
+
+    private static int[] demarshallTerrainTypeOrdinals(JSObject data) {
+        if (isNullOrUndefined(data)) {
+            return null;
+        }
+        int length = getArrayLength(data);
+        int[] ordinals = new int[length];
+        for (int i = 0; i < length; i++) {
+            ordinals[i] = getArrayIntDirect(data, i);
+        }
+        return ordinals;
     }
 
     private static BabylonDecal[] demarshallBabylonDecals(Object data) {

@@ -1,9 +1,8 @@
-import {Index, InputService, TerrainType, TerrainUiService} from "../../gwtangular/GwtAngularFacade";
+import {Index, TerrainType, TerrainUiService} from "../../gwtangular/GwtAngularFacade";
 import {Color3, Mesh, MeshBuilder, MultiMaterial, StandardMaterial, SubMesh, Texture, Vector3, VertexBuffer, VertexData} from "@babylonjs/core";
 import {BabylonTerrainTileImpl} from 'src/app/game/renderer/babylon-terrain-tile.impl';
 import {AbstractBrush, BrushContext} from "./brushes/abstract-brush";
 import {BabylonRenderServiceAccessImpl} from "src/app/game/renderer/babylon-render-service-access-impl.service";
-import {GwtInstance} from "src/app/gwtangular/GwtInstance";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 
 export class EditorTerrainTile {
@@ -11,13 +10,12 @@ export class EditorTerrainTile {
   private positions?: Vector3[];
   private babylonTerrainTileImpl: BabylonTerrainTileImpl | null = null;
   private decalMesh: Mesh | null = null;
-  private decalMeshWorker: Mesh | null = null;
+  private terrainTypeVisible: boolean = false;
   private materialIndexDecalMesh: Mesh | null = null;
   private pendingTextureUpdate: number[] | null = null;
   private textureUpdateScheduled: boolean = false;
 
   constructor(private renderService: BabylonRenderServiceAccessImpl,
-              private inputService: InputService,
               private terrainUiService: TerrainUiService,
               private index: Index) {
   }
@@ -156,28 +154,22 @@ export class EditorTerrainTile {
 
   public showTerrainType() {
     this.hideTerrainType();
-    this.decalMesh = this.createTerrainTypeDecal();
+    this.terrainTypeVisible = true;
+    // Ordinals are computed on demand in the worker (not shipped with every tile). Request them and
+    // draw once they have arrived and been stored on the cached tile (read via getTerrainType).
+    this.terrainUiService.requestTerrainTypeOrdinals(this.index.getX(), this.index.getY(), () => {
+      if (this.terrainTypeVisible) {
+        this.decalMesh = this.createTerrainTypeDecal();
+      }
+    });
   }
 
   public hideTerrainType() {
+    this.terrainTypeVisible = false;
     if (this.decalMesh) {
       this.decalMesh.dispose();
     }
     this.decalMesh = null;
-  }
-
-  public showTerrainTypeWorker() {
-    if (this.decalMeshWorker) {
-      this.decalMeshWorker.setEnabled(true);
-      return;
-    }
-    this.decalMeshWorker = this.createTerrainTypeDecalWorker()
-  }
-
-  public hideTerrainTypeWorker() {
-    if (this.decalMeshWorker) {
-      this.decalMeshWorker.setEnabled(false);
-    }
   }
 
   public showMaterialIndex() {
@@ -455,71 +447,6 @@ export class EditorTerrainTile {
       }
     }
 
-  }
-
-  private createTerrainTypeDecalWorker(): Mesh {
-    let xOffset = BabylonTerrainTileImpl.NODE_X_COUNT / 2 + this.index.getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
-    let yOffset = BabylonTerrainTileImpl.NODE_Y_COUNT / 2 + this.index.getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
-    var decalSize = new Vector3(BabylonTerrainTileImpl.NODE_X_COUNT, BabylonTerrainTileImpl.NODE_Y_COUNT, 100);
-    var decal = MeshBuilder.CreateDecal("Terrain type", this.babylonTerrainTileImpl!.getGroundMesh(), {
-      position: new Vector3(xOffset, 0.5, yOffset), normal: new Vector3(0, 1, 0), size: decalSize
-    });
-    var decalMaterial = new StandardMaterial("decalMat", this.renderService.getScene());
-    decalMaterial.disableLighting = true;
-    this.createDynamicTextureGameEngine(decalMaterial);
-    decal.material = decalMaterial;
-    decal.isPickable = false;
-    return decal
-  }
-
-  private createDynamicTextureGameEngine(decalMaterial: StandardMaterial) {
-    const factor = 10;
-    const border = 0.3;
-    const effectiveBorder = factor * border;
-    const canvas = document.createElement('canvas');
-    canvas.width = BabylonTerrainTileImpl.NODE_X_COUNT * factor;
-    canvas.height = BabylonTerrainTileImpl.NODE_Y_COUNT * factor;
-    const context = canvas.getContext('2d')!;
-
-    let xCount = BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE;
-    let yCount = BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE;
-
-    const xNodeOffest = this.index.getX() * xCount;
-    const yNodeOffest = this.index.getY() * yCount;
-
-    let remaining = xCount * yCount;
-
-    for (let y = 0; y < yCount; y++) {
-      for (let x = 0; x < xCount; x++) {
-        this.inputService.getTerrainTypeOnTerrain(GwtInstance.newIndex(x + xNodeOffest, y + yNodeOffest))
-          .then(terrainType => {
-            const terrainTypeString = terrainType.toString();
-
-            if (TerrainType.WATER == terrainTypeString) {
-              context.fillStyle = "rgba(0, 0, 255, 0.5)";
-            } else if (TerrainType.LAND == terrainTypeString) {
-              context.fillStyle = "rgba(0, 255, 0, 0.5)";
-            } else {
-              context.fillStyle = "rgba(255, 0, 0, 0.5)";
-            }
-            context.fillRect(
-              (y + 1) * factor - effectiveBorder * 2,
-              (x + 1) * factor - effectiveBorder * 2,
-              factor - effectiveBorder * 2,
-              factor - effectiveBorder * 2);
-
-            remaining--;
-            if (remaining === 0) {
-              const dynamicTexture = new Texture(canvas.toDataURL(), this.renderService.getScene());
-              dynamicTexture.hasAlpha = true;
-              decalMaterial.emissiveTexture = dynamicTexture;
-              decalMaterial.opacityTexture = dynamicTexture;
-            }
-
-          })
-          .catch(error => console.warn(error));
-      }
-    }
   }
 
 }

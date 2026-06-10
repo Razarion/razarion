@@ -160,7 +160,12 @@ export class BabylonModelService {
     const renderObject = this.cloneModel3D(model3DId, this.staticTemplatesParent);
     const root = renderObject.getModel3D();
     const sourceMeshes: Mesh[] = [];
-    root.getChildMeshes(false).forEach(mesh => {
+    // getChildMeshes() only returns DESCENDANTS, not the root node itself. Single-mesh models
+    // (e.g. rocks) carry their geometry on the named root node, so the root must be included too —
+    // otherwise its geometry is never zeroed (it renders once at the template's origin, the
+    // map's lower-left corner) and never instanced (invisible at every real placement).
+    const templateMeshes: Node[] = [root, ...root.getChildMeshes(false)];
+    templateMeshes.forEach(mesh => {
       if (mesh instanceof Mesh && (mesh as Mesh).getTotalVertices() > 0) {
         const m = mesh as Mesh;
         // The source mesh must stay isVisible=true and unculled so the ShadowGenerator

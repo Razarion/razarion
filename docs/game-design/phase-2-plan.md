@@ -11,6 +11,8 @@
 >
 > *Update 2026-06-05:* **L10 is complete.** Quest group 26 is finalised — 3 quests summing to the full **100 XP**: HARVEST 30 (20 XP) · kill the (Bot2) Spire (item 17, 40 XP) · BOX_PICKED ×1 (40 XP). The **rich resource is built** (item type **id 3 "Rich Razarion"**, `amount` 250 = 5×) and both the **resource region "Phase 2 Rich Razarion"** (count 100) and the **box region "Phase 2 Crystal Field"** (count 5, 600 s) were **confined to the spawn region** (start region 122) — so the freshly-landed L10/11 player finds Razarion and the first box near base instead of driving across all of Phase 2. The far ~70 % of Phase 2 (toward Phase 3) is intentionally left for **L12+**, to be split into **~3 resource/box blocks** on the frontier land (§2.3 / §4). New engine option: resource regions carry an opt-in **`evenlyDistributed`** flag (hex-grid placement on free land + fixed-slot respawn; takes effect once the server build implementing it is deployed). See §2.3, §4, §7.
 >
+> *Update 2026-06-07:* **L11 is built and L12 is started in production.** **L11 (id 280, quest group 27)** is live with `xp2LevelUp` **120** and the **first crystal unlock — +3 Viper** (`levelUnlockEntities` {baseItemType 3, count 3, **crystalCost 1**}). Its three quests are each **40 XP** (= 120 total): **UNLOCKED ×1** · **SYNC_ITEM_KILLED ×3** (any unit) · **BOX_PICKED ×1**. **L12 (id 281)** now exists with `xp2LevelUp` **120** and the **House unlock** (`levelUnlockEntities` {baseItemType 23 House, count 1, **crystalCost 1**}) — but **its quest group is not built yet**. As-built crystal costs are placeholder **1** (tune in playtest). The as-built L11 arc differs from the §7.4 proposal (uniform 40-XP quests, a kill-3 beat instead of a cumulative box-count beat). See §7.2 and §7.4.
+>
 > **Bot naming convention:** **`(Bot1) X`** = the existing Phase-1 bot units (drop-free); **`(Bot2) X`** = the new drop-enabled Phase-2 variants (§4.1). Production internalNames are still **`(Bot) X`** today — rename `(Bot) X` → `(Bot1) X` is a pending cosmetic step bundled with the Phase-2 build (IDs unchanged; bot configs reference by ID).
 
 ---
@@ -100,12 +102,12 @@ Phase 2 keeps the **Phase 1 anchors** (Viper = 10 Razarion, 10 HP, DPS 5) and sc
 
 ### 2.2 Crystal Budget
 
-The unlocks run on the fixed spine from §3 (the quests enforce the order). **All** unlocks — including the "type" ones — are `levelUnlockEntities` entries `{baseItemType, baseItemTypeCount, crystalCost}` (§3); from-scratch types just set base `itemTypeLimitation` 0 and a count-1 unlock. **Proposed crystal costs — tune in playtest:**
+The unlocks run on the fixed spine from §3 (the quests enforce the order). **All** unlocks — including the "type" ones — are `levelUnlockEntities` entries `{baseItemType, baseItemTypeCount, crystalCost}` (§3); from-scratch types just set base `itemTypeLimitation` 0 and a count-1 unlock. **L11 + L12 are live; the rest are proposed costs — tune in playtest.** As-built crystal costs are a placeholder **1** (✅ = live in prod):
 
 | Unlock | Level | Kind | Crystals |
 |---|---|---|---|
-| +3 Viper capacity | L11 | capacity | 1 |
-| House | L12 | type | 2 |
+| +3 Viper capacity | L11 | capacity | **1** ✅ |
+| House | L12 | type | **1** ✅ |
 | Heavy unit | L13 | type | 2 |
 | +Heavy capacity (more combat) | L14 | capacity | 1 |
 | House #2 | L15 | capacity | 2 |
@@ -116,9 +118,9 @@ The unlocks run on the fixed spine from §3 (the quests enforce the order). **Al
 | House #3 | L19 | capacity | 2 |
 | +Hydra capacity *(parallel naval track, §2.4)* | L14 | capacity | 1 |
 | +Hydra capacity *(parallel naval track)* | L18 | capacity | 1 |
-| **Total full kit** | | | **18 Crystals** |
+| **Total full kit** | | | **17 Crystals** |
 
-At 1–3 crystals per box (§4) that's ~**10–14 box pickups** across the 10 levels — exploration is mandatory but not a grind. The spine order is enforced by the quests; the only real *choice* is when to grab the parallel naval track (+Hydra) versus pushing the land combat spine faster. (The rich resource, §2.3, is plain world content — no crystal unlock.)
+At 1 crystal per box today (the only built box type is "Box" id 2 = 1 crystal; the 2–3 crystal Rich Crystal Box, §4, is not built yet) that's **~17 box pickups** across the 10 levels — exploration is mandatory. Once the Rich Crystal Box lands (1–3 per box) it drops to ~**10–14 pickups**. The spine order is enforced by the quests; the only real *choice* is when to grab the parallel naval track (+Hydra) versus pushing the land combat spine faster. (The rich resource, §2.3, is plain world content — no crystal unlock.)
 
 ### 2.3 Economy: rich resource
 
@@ -163,9 +165,9 @@ This mirrors the land +Viper / +combat capacity unlocks: the player has *some* n
 - **Box → crystals:** `boxItemType.boxItemTypePossibilities[].crystals` grants crystals on pickup. The live **"Box" (id 2)** grants **1 crystal**.
 - **Quest hooks:** `QuestConfig.crystal` rewards crystals; triggers **`BOX_PICKED`** and **`UNLOCKED`** drive the quest arc (§7.4).
 
-**What must be configured (none of it live yet) — all via `levelUnlockEntities` on the levels:**
-1. From-scratch unlocks (base `itemTypeLimitation` 0 + a `LevelUnlockConfig` count 1): **House** (L12, cost 2), **Tesla** (L16, cost 2), **Heavy unit** (L13, cost 2).
-2. Capacity bumps (`LevelUnlockConfig` with the extra count): **+3 Viper** (L11), **+Heavy** (L14), **House #2** (L15), **+Tesla** (L17), **+1 Powerplant** (L17), **+combat** (L18), **House #3** (L19), naval **+Hydra** (L14, L18).
+**What must be configured (L11 + L12 unlocks are live; the rest pending) — all via `levelUnlockEntities` on the levels:**
+1. From-scratch unlocks (base `itemTypeLimitation` 0 + a `LevelUnlockConfig` count 1): **House** (L12, **cost 1 — live ✅**), **Tesla** (L16, cost 2), **Heavy unit** (L13, cost 2).
+2. Capacity bumps (`LevelUnlockConfig` with the extra count): **+3 Viper** (L11, **cost 1 — live ✅**), **+Heavy** (L14), **House #2** (L15), **+Tesla** (L17), **+1 Powerplant** (L17), **+combat** (L18), **House #3** (L19), naval **+Hydra** (L14, L18).
 3. Deploy box regions so crystals actually spawn (§4).
 4. Optionally add a richer box type for guarded high-value drops (§4).
 
@@ -359,10 +361,12 @@ Status legend: ✅ exists & usable · ⚠️ exists but needs change · ❌ miss
 
 | Element | Status | Notes |
 |---|---|---|
-| **Levels L11–L19** | ❌ | **L10 (id 279) is complete** (`xp2LevelUp` 100, quest group 26 = 3 quests summing to 100 XP, resources + first box confined to the spawn region). **L11–L19 do not exist** — the rest of the ladder is still to build. |
+| **Levels L11–L19** | ⚠️ | **L10 (id 279), L11 (id 280), and L12 (id 281) exist.** L10 + L11 are complete (quest groups 26 + 27); L12 has its level + House unlock but **no quest group yet**. **L13–L19 do not exist** — the rest of the ladder is still to build. |
 | **L10 unlock + XP** | ✅ | `xp2LevelUp` 100; item limits are the **L9 set** (no House/Tesla/Heavy yet — those arrive with the L12+ crystal unlocks) and `levelUnlockEntities` is empty by design: L10 is the **rebuild + first-box** level. Quest XP (20+40+40) sums exactly to 100. |
-| **Crystal unlocks** (`levelUnlockEntities`) | ❌ | All levels carry empty `levelUnlockEntities`. Add one `LevelUnlockConfig {baseItemType, baseItemTypeCount, crystalCost}` per unlock (§3). From-scratch types (House/Tesla/Heavy) also need base `itemTypeLimitation` 0. |
-| **Capacity unlocks** (`levelUnlockEntities`) | ❌ | The §3 spine: +3 Viper (L11), +Heavy (L14), House #2 (L15), +Tesla (L17), +1 Powerplant (L17), +combat (L18), House #3 (L19); plus the naval track +Hydra (L14, L18). None exist; levels carry empty `levelUnlockEntities`. |
+| **L11 unlock + XP** | ✅ | **L11 (id 280) live:** `xp2LevelUp` **120**; `levelUnlockEntities` = **+3 Viper** (item 3, count 3, crystalCost 1). Quest group 27 = 3 quests × 40 XP = 120 (UNLOCKED ×1 · SYNC_ITEM_KILLED ×3 · BOX_PICKED ×1). Item limits still the L9 set (the +3 Viper rides on the unlock). |
+| **L12 unlock + XP** | ⚠️ | **L12 (id 281) partial:** `xp2LevelUp` **120**; `levelUnlockEntities` = **House** (item 23, count 1, crystalCost 1). **Quest group not built** — needs a quest set summing to 120 XP (proposal Q5/Q6, §7.4). |
+| **Crystal unlocks** (`levelUnlockEntities`) | ⚠️ | **Live:** +3 Viper (L11), House (L12) — both at **crystalCost 1** (placeholder). **Remaining:** L13+ (Heavy, House #2, Tesla, +1 Powerplant, …). Add one `LevelUnlockConfig {baseItemType, baseItemTypeCount, crystalCost}` per unlock (§3). From-scratch types (Tesla/Heavy) also need base `itemTypeLimitation` 0. |
+| **Capacity unlocks** (`levelUnlockEntities`) | ⚠️ | The §3 spine: **+3 Viper (L11) ✅ + House (L12) ✅ built;** still to build: +Heavy (L14), House #2 (L15), +Tesla (L17), +1 Powerplant (L17), +combat (L18), House #3 (L19); plus the naval track +Hydra (L14, L18). |
 | **Box regions** | ✅ | **Live:** **"Phase 2 Crystal Field"** (box type 2) **confined to the spawn region** (122), count 5, 600 s. Scattered/guarded regions across the rest of Phase 2 come with L12+ (§4). |
 | **Rich Crystal Box type** | ❌ | Only the 1-crystal **"Box"** type (id 2) exists; a 2–3 crystal box is new. |
 | **Bot ground** | ❌ | Only ground config **252 "Sandy ground"** exists. The bot-territory marker is new content. |
@@ -376,18 +380,20 @@ Status legend: ✅ exists & usable · ⚠️ exists but needs change · ❌ miss
 | **Bot drop config** | ❌ | Set `dropBoxItemTypeId` + `dropBoxPossibility` on the (Bot2) variants (Viper/Hydra/Tesla ~0.10–0.12 → Crystal Box; boss ~0.5 → Rich Crystal Box). |
 | **Rename (Bot) → (Bot1)** | ❌ | Cosmetic: rename the 12 existing bot `baseItemType` internalNames `(Bot) X` → `(Bot1) X` so the live editor matches the (Bot1)/(Bot2) convention. IDs unchanged; bot configs reference by ID, so no functional impact. |
 | **Water Crystal Box region** | ❌ | A box region on water (`terrainType` WATER) inside the Naval Outpost's realm. The **"Box"** type (id 2) is LAND-only — may need a WATER box variant. |
-| **Phase-2 quest groups** | ⚠️ | **Quest group 26 = complete L10** (3 quests, 100 XP total: HARVEST 30 → 20 XP · kill the (Bot2) Spire (item 17) → 40 XP · BOX_PICKED ×1 → 40 XP). L11–L19 quest groups still to build. |
+| **Phase-2 quest groups** | ⚠️ | **Group 26 = complete L10** (3 quests, 100 XP: HARVEST 30 → 20 XP · kill the (Bot2) Spire (item 17) → 40 XP · BOX_PICKED ×1 → 40 XP). **Group 27 = complete L11** (3 quests × 40 XP = 120: UNLOCKED ×1 · SYNC_ITEM_KILLED ×3 · BOX_PICKED ×1). **L12 (id 281) has no quest group yet**; L13–L19 quest groups still to build. |
 | **Crystal resource node?** | n/a | Crystals come from boxes, not harvest nodes — no resource-item change needed (the single resource type #2 "Noob"/Razarion is sufficient). |
 
 ### 7.3 Level Limits (proposed, L10–L19)
 
-Building on the frozen L9 set {Builder 1, Harvester 1, Viper 6, Factory 1, Radar 1, Powerplant 1, Dockyard 1, Hydra 3, Transporter 1}. New columns: House (23), Tesla (new), Heavy unit (new); the **Powerpl.** column is the existing Powerplant (id 7, unlocked +1 at L17) and **Hydra** is carried over (base cap 3) with crystal +capacity unlocks at L14/L18 (§2.4). The numbers are the **full cap after unlocks**; a "–" means locked until the crystal unlock at that level. **Proposal — tune in playtest:**
+Building on the frozen L9 set {Builder 1, Harvester 1, Viper 6, Factory 1, Radar 1, Powerplant 1, Dockyard 1, Hydra 3, Transporter 1}. New columns: House (23), Tesla (new), Heavy unit (new); the **Powerpl.** column is the existing Powerplant (id 7, unlocked +1 at L17) and **Hydra** is carried over (base cap 3) with crystal +capacity unlocks at L14/L18 (§2.4). The numbers are the **full cap after unlocks**; a "–" means locked until the crystal unlock at that level.
+
+**Live (✅ rows): L10–L12 keep the L9 base set unchanged** — `itemTypeLimitation` is identical for all three (Builder 1, Harvester 1, Viper 6, Factory 1, Radar 1, Powerplant 1, Dockyard 1, Hydra 3, Transporter 1); the only deltas are the crystal unlocks (+3 Viper → cap 9 at L11; House 1 at L12). The **Builder / Harvester / Factory raises in the L13–L19 rows are still proposals — tune in playtest:**
 
 | Level | xp2Next | Builder | Harvester | Viper | Factory | House | Tesla | Heavy | Powerpl. | Hydra | unlock at this level |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| L10 | 1500 | 2 | 3 | 6 | 2 | – | – | – | 1 | 3 | — (rebuild; keep carried-over army; **end: find box**) |
-| L11 | 2000 | 2 | 3 | **9** | 2 | – | – | – | 1 | 3 | **+3 Viper** (only ~2 buildable — house wall) |
-| L12 | 2700 | 2 | 4 | 9 | 2 | 1 | – | – | 1 | 3 | **House** (relieves wall) |
+| L10 | **100** ✅ | 1 | 1 | 6 | 1 | – | – | – | 1 | 3 | — (rebuild; keep carried-over army; **end: find box**) |
+| L11 | **120** ✅ | 1 | 1 | **9** | 1 | – | – | – | 1 | 3 | **+3 Viper** (crystalCost 1; only ~2 buildable — house wall) |
+| L12 | **120** ✅ | 1 | 1 | 9 | 1 | **1** | – | – | 1 | 3 | **House** (crystalCost 1; relieves wall) |
 | L13 | 3600 | 2 | 4 | 10 | 2 | 1 | – | **2** | 1 | 3 | **Heavy unit** *(new combat unit)* → house wall |
 | L14 | 4800 | 3 | 4 | 12 | 3 | 1 | – | **4** | 1 | **5** | **more combat** (+Heavy) + **+Hydra** (navy) → house wall harder |
 | L15 | 6400 | 3 | 5 | 12 | 3 | **2** | – | 5 | 1 | 5 | **House #2** (relieves) |
@@ -404,17 +410,18 @@ Item limits stop being the binding constraint here — **house space does**, gat
 
 Implements the §3 gating-loop spine, with the parallel **naval (N#, §2.4/§5.3)** and **economy/harvest (E#, §2.3 — cumulative Razarion)** tracks woven in. **One table, ordered by level.** Each land unlock is preceded by a box/crystal beat and (for combat) followed by a house-space wall; the late Tesla grid hits the power wall. Rewards are XP + occasional Razarion/Crystal.
 
-> **L10 (group 26) is built — the rows below are the live values; the L11–L19 rows remain the proposal to build.** L10's three quests sum to the level's `xp2LevelUp` of **100 XP**, with no Razarion/Crystal rewards (the +1 Crystal "find a box" beat moved into the mechanic itself).
+> **L10 (group 26) and L11 (group 27) are built — their rows below are the live values; L12's rows and the L13–L19 rows remain the proposal to build.** L10's three quests sum to its `xp2LevelUp` of **100 XP**; L11's three sum to its `xp2LevelUp` of **120 XP** (uniform 40 XP each). The as-built L11 differs from the original proposal (a kill-3 beat replaced the cumulative box-count "Crystal Cache"). L12's level + House unlock exist but **its quest group is not built yet**.
 
 | # | Quest | Lvl | Track | Trigger            | Target                                             | Reward | Beat |
 |---|---|---|---|--------------------|----------------------------------------------------|---|---|
 | E1 | First Yield (live) | L10 | eco | HARVEST            | 30                                                 | 20 XP | bootstrap the economy |
 | 1 | First Blood (live) | L10 | land | SYNC_ITEM_KILLED   | (Bot2) Spire (item 17) ×1                          | 40 XP | first combat — kill the Spire |
 | 2 | Find a Box (live) | L10 (end) | land | BOX_PICKED         | ×1 box                                             | 40 XP | preps the L11 Viper unlock |
-| 3 | Reinforcements | L11 | land | UNLOCKED           | +3 Viper capacity                                  | 100 XP | **wall:** only ~2 buildable (house full) |
-| 4 | Crystal Cache | L11 | land | BOX_PICKED         | ×3 total                                           | 80 XP, +Crystals | preps the House unlock |
-| 5 | Room to Grow | L12 | land | UNLOCKED           | House                                              | 100 XP | relieves → build held-back Viper(s) |
-| 6 | Raze the Outpost | L12 | land | SYNC_ITEM_KILLED   | (Bot1) Factory (15) ×1 (botId: Frontier Outpost)   | 200 XP, 150 Razarion, 2 Crystals | bot-only building → crack the outpost |
+| 3 | Reinforcements (live) | L11 | land | UNLOCKED           | +3 Viper capacity (crystalCost 1)                  | 40 XP | unlock the first crystal upgrade |
+| 3b | Skirmish (live) | L11 | land | SYNC_ITEM_KILLED   | ×3 units (any)                                     | 40 XP | put the new Vipers to work |
+| 4 | Crystal Cache (live) | L11 | land | BOX_PICKED         | ×1 box                                             | 40 XP | preps the L12 House unlock |
+| 5 | Room to Grow *(to build)* | L12 | land | UNLOCKED           | House (crystalCost 1)                              | proposed → sum to 120 XP | relieves → build held-back Viper(s) |
+| 6 | Raze the Outpost *(to build)* | L12 | land | SYNC_ITEM_KILLED   | (Bot1) Factory (15) ×1 (botId: Frontier Outpost)   | proposed (XP + Razarion + Crystals) | bot-only building → crack the outpost |
 | 7 | Heavy Metal | L13 | land | UNLOCKED           | Heavy unit *(new combat unit)*                     | 150 XP | **wall:** big units, house fills again |
 | N1 | Set Sail | L13 | naval | SYNC_ITEM_CREATED  | Dockyard ×1                                        | 100 XP | re-establish water tech (carried over) |
 | 8 | War Machines | L14 | land | UNLOCKED           | +Heavy capacity (more combat)                      | 150 XP | **wall harder** |
@@ -450,7 +457,7 @@ Implements the §3 gating-loop spine, with the parallel **naval (N#, §2.4/§5.3
 3. **Bot ground — what is it technically?** A new `groundConfig`, a terrain-object decal, or a colored diplomacy overlay on the bot realm? Affects how it's authored. See [Bot Ground Visual Ideas] in project memory.
 4. **Player Tesla cloning:** the static defense is a new unit cloning (Bot1) Tesla (id 5) — same model3D 48 + LIGHTNING config (DPS 3 / range 15), so no weapon rebalance is needed. Confirm the clone can be a *buildable player building* (consumes house space? friendly-fire? placement rules) and that reusing model3D 48 on a player unit renders correctly. The old player Tower (id 21) is dropped — decide whether to delete it or leave it reserved.
 5. **Bot behavior:** Phase-2 bots are "defensive" (engage in realm, don't pursue). Production's seed bots 782 run `autoAttack=true` — does that already mean realm-bound aggression, or do they chase? Verify the realm-clamping behavior.
-6. **Crystal economy tuning:** ~18 crystals for the full spine (§2.2) vs. ~10–15 box pickups across 10 levels — too generous or too grindy? Needs playtest; adjust box `count`/`interval` and per-box crystal counts.
+6. **Crystal economy tuning:** ~17 crystals for the full spine (§2.2) vs. box pickups across 10 levels (~17 at the live 1-crystal box; ~10–14 once the Rich Crystal Box lands) — too generous or too grindy? Needs playtest; adjust box `count`/`interval` and per-box crystal counts.
 7. **L10 boundary:** L10 is currently a terminal cap. Does promoting it to a real level interfere with anything reading "max level reached" off id 279? Check before editing.
 8. **Phase boundary L17 vs L19:** this plan extends Phase 2 to **L10–L19** (10 levels), but [`progression.md`](progression.md) §2/§9 defines Phase 2 as L10–L17 and Phase 3 ("The Siege") starting at **L18**. Decide: shift the Phase-3 start to L20 (and renumber the whole back half), or keep Phase 3 at L18 and treat L18–L19 here as a transition overlap. Update progression.md once decided.
 9. **Phase-2 → 3/4 transitions:** mechanism TBD (level gate? another transporter?). Out of scope for this doc; tracked in progression.md §4.7.
@@ -466,12 +473,12 @@ Phase 2 is greenfield, so the order is **build, not migrate**. The layers follow
 
 1. **Foundation — the crystal + House loop (L10–L12)**
    - Promote L10 (id 279): real `xp2LevelUp`, raised item limits. **L10 carries no unlock** — it's the rebuild + first-crystal level (Find a Box at L10's end preps the L11 Viper unlock).
-   - Author the **+3 Viper** capacity unlock at **L11** (`levelUnlockEntities`) and tune the L11 house space tight (§8.10) so only ~2 are buildable until the House.
-   - Rebalance **House** (HP 25 / cost 50 ✅ done). Gate House via a `levelUnlockEntities` entry on **L12** (count 1, cost 2) + base `itemTypeLimitation` 0.
+   - ~~Author the **+3 Viper** capacity unlock at **L11**~~ — **done** (L11 id 280: `xp2LevelUp` 120, unlock +3 Viper crystalCost 1, quest group 27). Still to tune the L11 house space tight (§8.10) so only ~2 are buildable until the House.
+   - Rebalance **House** (HP 25 / cost 50 ✅ done). ~~Gate House via a `levelUnlockEntities` entry on **L12**~~ — **done** (L12 id 281: `xp2LevelUp` 120, unlock House count 1, crystalCost 1; base `itemTypeLimitation` 0). **Remaining:** build L12's quest group (none yet).
    - Deploy **Crystal Box regions** (existing box id 2) scattered in region 122's reachable area.
    - Create the **drop-enabled (Bot2) unit variants** (Viper/Hydra/Tesla/Badger clones with `dropBoxItemTypeId`, §4.1) — the Phase-2 bots field these; Phase-1 bot units stay untouched.
    - Build the **5 Frontier Outposts** (§5.1) from the (Bot2) variants + bot grounds, staggered across the mid frontier (anchor one on live bot **782 "Beginner"**) — needed for Q1 (kill 2 Frontier bot units) and Q6 (kill the (Bot1) Factory).
-   - Create levels L11–L12. Quests **Q1–Q6** (First Blood → Find a Box → Reinforcements → Crystal Cache → Room to Grow → Raze the Outpost) + harvest **E1** (First Yield).
+   - ~~Create levels L11–L12~~ — **both exist** (L11 id 280 complete with quest group 27; L12 id 281 has its level + House unlock but **no quest group yet**). L10–L11 quests **Q1–Q4 + E1** are live (the as-built L11 uses a kill-3 beat in place of the cumulative "Crystal Cache"). **Remaining:** build L12's quest group (**Q5 Room to Grow → Q6 Raze the Outpost**).
    - Warm-restart, test the find→unlock→wall→find loop end-to-end.
 
 2. **Combat + economy (L13–L14)**
