@@ -211,6 +211,7 @@ public final class TeaVMWorkerMarshaller {
             // Native marshal terrain buffers
             case TERRAIN_TILE_RESPONSE:
                 array.set(DATA_OFFSET_0, marshallTerrainTile((TerrainTile) controlPackage.getData(0)));
+                setArrayString(array, DATA_OFFSET_1, toJson(controlPackage.getData(1))); // worker generation time (ms)
                 break;
 
             // Editor terrain-type overlay: Index (JSON) + per-node ordinals (Uint8Array)

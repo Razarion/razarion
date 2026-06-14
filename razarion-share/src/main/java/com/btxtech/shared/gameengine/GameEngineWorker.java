@@ -600,8 +600,11 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void getTerrainTile(Index terrainTileIndex) {
         long time = System.currentTimeMillis();
         TerrainTile terrainTile = terrainService.generateTerrainTile(terrainTileIndex);
-        sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile);
-        perfmonService.onTerrainTile(terrainTileIndex, System.currentTimeMillis() - time);
+        long generationMs = System.currentTimeMillis() - time;
+        // Forward the worker generation time alongside the tile so the F8 perf overlay can show it
+        // next to the client-side mesh-build time.
+        sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile, (double) generationMs);
+        perfmonService.onTerrainTile(terrainTileIndex, generationMs);
     }
 
     private void sellItems(IdsDto items) {

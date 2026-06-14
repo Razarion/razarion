@@ -9,14 +9,27 @@ import {HeightMapCursor} from './height-map-cursor';
 import {BrushType, BrushValues} from './fix-height-brush.component';
 
 export class RaiseBrushValues {
-  type: BrushType = BrushType.SQUARE;
-  heightIncrement: number = 0.5;
-  size: number = 10;
-  maxSlopeWidth: number = 5;
-  minHeight: number = -20;
-  maxHeight: number = 50;
+  type: BrushType = BrushType.ROUND;
+  strength: number = 0.5;    // height added at the brush center per application [m] (negative lowers)
+  size: number = 40;         // brush diameter [m]; the falloff reaches zero at size/2
+  falloff: number = 0.8;     // 0 = hard flat disc, 1 = fully smooth dome (smooth radial falloff)
+  minHeight: number = -50;
+  maxHeight: number = 200;
 }
 
+/**
+ * Sculpt brush (raise / lower). Modelled on the Unreal/Unity landscape "Sculpt" tool: instead of
+ * stamping a flat-topped disc, each application adds `strength` metres at the center and tapers to
+ * zero at the edge along a SMOOTH radial falloff curve. So a single dab is a rounded bump and
+ * holding / dragging the cursor naturally builds up smooth hills and mountains (the center is hit by
+ * more overlapping dabs than the rim, so it domes up by itself) — you sculpt by eye with live
+ * feedback rather than dialing in a parametric shape.
+ *
+ * `falloff` (0..1) is the single shape control: 0 keeps a hard flat disc (old behaviour), 1 is a
+ * fully smooth dome with no flat top. Negative `strength` lowers the terrain with the same curve.
+ *
+ * Applies continuously on drag (not stamp mode), once per pointer sample.
+ */
 @Component({
   selector: 'raise-height-brush',
   imports: [
@@ -46,18 +59,18 @@ export class RaiseBrushValues {
     </div>
 
     <div class="grid grid-cols-12 gap-1 p-1">
-      <span class="col-span-5">Height increment [m]</span>
+      <span class="col-span-5">Strength [m]</span>
       <div class="col-span-7">
-        <input type="number" [(ngModel)]="brushValues.heightIncrement" [step]="0.01" class="w-full"/>
-        <p-slider [(ngModel)]="brushValues.heightIncrement" [step]="0.01" [min]="-5" [max]="5"></p-slider>
+        <input type="number" [(ngModel)]="brushValues.strength" [step]="0.05" class="w-full"/>
+        <p-slider [(ngModel)]="brushValues.strength" [step]="0.05" [min]="-5" [max]="5"></p-slider>
       </div>
     </div>
 
     <div class="grid grid-cols-12 gap-1 p-1">
-      <span class="col-span-5">Max slope width [m]</span>
+      <span class="col-span-5">Falloff</span>
       <div class="col-span-7">
-        <input type="number" [(ngModel)]="brushValues.maxSlopeWidth" class="w-full"/>
-        <p-slider [(ngModel)]="brushValues.maxSlopeWidth" [step]="1" [min]="0" [max]="250"></p-slider>
+        <input type="number" [(ngModel)]="brushValues.falloff" [step]="0.05" class="w-full"/>
+        <p-slider [(ngModel)]="brushValues.falloff" [step]="0.05" [min]="0" [max]="1"></p-slider>
       </div>
     </div>
 
@@ -73,7 +86,7 @@ export class RaiseBrushValues {
       <span class="col-span-5">Max height [m]</span>
       <div class="col-span-7">
         <input type="number" [(ngModel)]="brushValues.maxHeight" class="w-full"/>
-        <p-slider [(ngModel)]="brushValues.maxHeight" [step]="1" [min]="0" [max]="100"></p-slider>
+        <p-slider [(ngModel)]="brushValues.maxHeight" [step]="1" [min]="0" [max]="200"></p-slider>
       </div>
     </div>
   `
@@ -111,109 +124,81 @@ export class RaiseHeightBrushComponent extends AbstractBrush implements OnInit, 
   }
 
   override getEffectiveRadius(): number {
-    return this.brushValues.size / 2 + this.brushValues.maxSlopeWidth;
+    return this.brushValues.size / 2;
   }
 
   override calculateHeight(mousePosition: Vector3, oldPosition: Vector3): number | null {
-    const currentHeight = oldPosition.y;
-    return this.calculateRaisedHeight(mousePosition, oldPosition, currentHeight);
-  }
-
-  private calculateRaisedHeight(centerPosition: Vector3, position: Vector3, currentHeight: number): number | null {
-    switch (this.brushValues.type) {
-      case BrushType.ROUND:
-        return this.calculateHeightRound(centerPosition, position, currentHeight);
-      case BrushType.SQUARE:
-        return this.calculateHeightSquare(centerPosition, position, currentHeight);
-    }
-  }
-
-  private calculateHeightRound(centerPosition: Vector3, position: Vector3, currentHeight: number): number | null {
     const radius = this.brushValues.size / 2.0;
-    const distance = Vector2.Distance(new Vector2(position.x, position.z), new Vector2(centerPosition.x, centerPosition.z));
-
-    if (distance < (radius + this.brushValues.maxSlopeWidth)) {
-      let increment = this.brushValues.heightIncrement;
-
-      if (distance > radius) {
-        // Apply slope falloff
-        const slopeDistance = distance - radius;
-        const falloff = 1 - (slopeDistance / this.brushValues.maxSlopeWidth);
-        increment *= falloff;
-      }
-
-      const newHeight = currentHeight + increment;
-      return this.clampHeight(newHeight);
+    if (radius <= 0) {
+      return null;
     }
 
-    return null;
-  }
-
-  private calculateHeightSquare(centerPosition: Vector3, position: Vector3, currentHeight: number): number | null {
-    const distanceX = Math.abs(centerPosition.x - position.x);
-    const distanceZ = Math.abs(centerPosition.z - position.z);
-    const halfSize = this.brushValues.size / 2.0;
-
-    if (distanceX <= halfSize && distanceZ <= halfSize) {
-      // Inside the main square area - full increment
-      const newHeight = currentHeight + this.brushValues.heightIncrement;
-      return this.clampHeight(newHeight);
-    } else if (distanceX <= halfSize + this.brushValues.maxSlopeWidth &&
-      distanceZ <= halfSize + this.brushValues.maxSlopeWidth) {
-      // In the slope area
-      const maxDistance = Math.max(distanceX, distanceZ);
-      const slopeDistance = maxDistance - halfSize;
-      const falloff = 1 - (slopeDistance / this.brushValues.maxSlopeWidth);
-      const increment = this.brushValues.heightIncrement * falloff;
-
-      const newHeight = currentHeight + increment;
-      return this.clampHeight(newHeight);
+    // Normalized distance 0 (center) .. 1 (edge), round or square.
+    let t: number;
+    if (this.brushValues.type === BrushType.SQUARE) {
+      const dx = Math.abs(oldPosition.x - mousePosition.x);
+      const dz = Math.abs(oldPosition.z - mousePosition.z);
+      t = Math.max(dx, dz) / radius;
+    } else {
+      t = Vector2.Distance(new Vector2(oldPosition.x, oldPosition.z),
+        new Vector2(mousePosition.x, mousePosition.z)) / radius;
     }
 
-    return null;
+    const weight = this.falloffWeight(t);
+    if (weight <= 0) {
+      return null;
+    }
+
+    const newHeight = oldPosition.y + this.brushValues.strength * weight;
+    return Math.max(this.brushValues.minHeight, Math.min(this.brushValues.maxHeight, newHeight));
   }
 
-  private clampHeight(height: number): number {
-    return Math.max(this.brushValues.minHeight, Math.min(this.brushValues.maxHeight, height));
+  /**
+   * Smooth radial falloff in [0,1]. An inner plateau of ratio (1 - falloff) stays at full weight,
+   * then a smoothstep curve eases to zero at the edge. falloff=0 -> hard flat disc;
+   * falloff=1 -> smooth dome peaking only at the exact center.
+   */
+  private falloffWeight(t: number): number {
+    if (t >= 1) {
+      return 0;
+    }
+    if (t <= 0) {
+      return 1;
+    }
+    const plateau = 1 - this.brushValues.falloff;
+    if (t <= plateau) {
+      return 1;
+    }
+    const u = (t - plateau) / (1 - plateau); // 0..1 across the falloff band
+    return 1 - u * u * (3 - 2 * u);          // smoothstep, 1 -> 0
   }
 
   private initEditorCursor() {
     const scene = this.renderService.getScene();
-    // Create a BrushValues compatible object for the cursor
-    const cursorBrushValues: BrushValues = {
-      type: this.brushValues.type,
-      height: 0,
-      size: this.brushValues.size,
-      maxSlopeWidth: this.brushValues.maxSlopeWidth,
-      random: 0
-    };
-    this.heightMapCursor = new HeightMapCursor(scene, cursorBrushValues);
+    this.heightMapCursor = new HeightMapCursor(scene, this.cursorValues());
 
     scene.onPointerObservable.add((pointerInfo) => {
-      switch (pointerInfo.type) {
-        case PointerEventTypes.POINTERMOVE: {
-          const pickingInfo = this.renderService.setupTerrainPickPoint();
-          if (this.heightMapCursor) {
-            const cursorBrushValues: BrushValues = {
-              type: this.brushValues.type,
-              height: 0,
-              size: this.brushValues.size,
-              maxSlopeWidth: this.brushValues.maxSlopeWidth,
-              random: 0
-            };
-            if (pickingInfo.hit) {
-              this.heightMapCursor.update(pickingInfo.pickedPoint!, cursorBrushValues);
-            } else {
-              // Fallback: use ground position at y=0 when terrain pick fails
-              const fallbackPosition = this.renderService.setupPointerZeroLevelPosition();
-              if (fallbackPosition && isFinite(fallbackPosition.x) && isFinite(fallbackPosition.z)) {
-                this.heightMapCursor.update(fallbackPosition, cursorBrushValues);
-              }
-            }
+      if (pointerInfo.type === PointerEventTypes.POINTERMOVE && this.heightMapCursor) {
+        const pickingInfo = this.renderService.setupTerrainPickPoint();
+        if (pickingInfo.hit) {
+          this.heightMapCursor.update(pickingInfo.pickedPoint!, this.cursorValues());
+        } else {
+          const fallbackPosition = this.renderService.setupPointerZeroLevelPosition();
+          if (fallbackPosition && isFinite(fallbackPosition.x) && isFinite(fallbackPosition.z)) {
+            this.heightMapCursor.update(fallbackPosition, this.cursorValues());
           }
-          break;
         }
       }
     });
+  }
+
+  private cursorValues(): BrushValues {
+    return {
+      type: this.brushValues.type,
+      height: 0,
+      size: this.brushValues.size,
+      maxSlopeWidth: 0,
+      random: 0
+    };
   }
 }

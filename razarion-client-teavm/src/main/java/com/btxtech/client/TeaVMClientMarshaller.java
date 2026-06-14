@@ -258,6 +258,7 @@ public class TeaVMClientMarshaller {
 
             case TERRAIN_TILE_RESPONSE:
                 data.add(demarshallTerrainTile(getArrayElementDirect(javaScriptObject, DATA_OFFSET_0)));
+                data.add(fromJson(getArrayStringDirect(javaScriptObject, DATA_OFFSET_1), Double.class)); // worker generation time (ms)
                 break;
 
             case QUEST_PROGRESS:

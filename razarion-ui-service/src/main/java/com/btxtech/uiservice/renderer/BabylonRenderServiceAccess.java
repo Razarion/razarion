@@ -26,4 +26,19 @@ public interface BabylonRenderServiceAccess {
     void showPlaceMarker(PlaceConfig placeConfig, MarkerConfig markerConfig);
 
     void disposeOutOfViewItem(int id);
+
+    /**
+     * Notifies the renderer that a game-engine simulation tick was applied (fires every tick,
+     * ~100ms, even when nothing moved). Feeds the F8 perf overlay's authoritative tick-rate curve.
+     *
+     * @param clientTickMs main-thread time (ms) spent applying this tick
+     */
+    void onGameEngineTick(double clientTickMs);
+
+    /**
+     * Reports terrain-tile timing to the F8 perf overlay: how long the worker took to generate the
+     * tile, and how long the main thread took to build its Babylon mesh (the part that can stutter
+     * while scrolling into new terrain).
+     */
+    void onTerrainTileBuilt(double workerMs, double clientMs);
 }

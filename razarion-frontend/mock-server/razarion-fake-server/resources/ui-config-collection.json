@@ -391,6 +391,12 @@
       "internalName": "Tesla",
       "gltfName": "Tesla",
       "gltfEntityId": 1
+    },
+    {
+      "id": 200,
+      "internalName": "Badger",
+      "gltfName": "Badger",
+      "gltfEntityId": 1
     }
   ],
   "particleSystemEntities": [

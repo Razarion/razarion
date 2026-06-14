@@ -285,6 +285,7 @@ import java.util.logging.Logger;
     }
 
     protected void onTickUpdate(NativeTickInfo nativeTickInfo) {
+        long tickApplyStart = System.currentTimeMillis();
         perfmonService.onEntered(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
         try {
             if (nativeTickInfo.killedSyncBaseItems != null) {
@@ -299,6 +300,8 @@ import java.util.logging.Logger;
             sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
         }
         perfmonService.onLeft(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
+        // Authoritative per-tick heartbeat for the F8 perf overlay (fires every tick, even idle).
+        babylonRendererService.onGameEngineTick(System.currentTimeMillis() - tickApplyStart);
     }
 
     private void onTickUpdateFailed() {
@@ -395,9 +398,15 @@ import java.util.logging.Logger;
             case PERFMON_RESPONSE:
                 onPerfmonResponse((Collection<PerfmonStatistic>) controlPackage.getData(0));
                 break;
-            case TERRAIN_TILE_RESPONSE:
+            case TERRAIN_TILE_RESPONSE: {
+                Double workerMs = (Double) controlPackage.getData(1);
+                long clientStart = System.currentTimeMillis();
+                // Synchronously builds the Babylon tile mesh (Phase-1 vertex data) on the main thread —
+                // this is the part that can stutter while scrolling into new terrain.
                 terrainUiService.onTerrainTileResponse((TerrainTile) controlPackage.getData(0));
+                babylonRendererService.onTerrainTileBuilt(workerMs != null ? workerMs : 0.0, System.currentTimeMillis() - clientStart);
                 break;
+            }
             case TERRAIN_TYPE_ORDINALS_RESPONSE:
                 terrainUiService.onTerrainTypeOrdinalsResponse((Index) controlPackage.getData(0), (int[]) controlPackage.getData(1));
                 break;

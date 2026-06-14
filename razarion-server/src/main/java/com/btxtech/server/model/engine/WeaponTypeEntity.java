@@ -8,6 +8,7 @@ import com.btxtech.server.service.ui.ParticleSystemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.AudioItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponKind;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -61,7 +62,11 @@ public class WeaponTypeEntity extends BaseEntity {
     @JoinColumn
     private ParticleSystemEntity trailParticleSystem;
     private Double turretAngleVelocity;
+    // Explicit length: without it Hibernate sizes an @Enumerated(STRING) column to the longest enum
+    // constant AT CREATION TIME. Prod was created as VARCHAR(10) (PROJECTILE), so adding the 11-char
+    // ENERGY_BEAM truncated. ddl-auto=update never widens existing columns — fresh DBs need this.
     @Enumerated(EnumType.STRING)
+    @Column(length = 255)
     private WeaponKind weaponKind = WeaponKind.PROJECTILE;
     private Integer lightningDurationMs;
 

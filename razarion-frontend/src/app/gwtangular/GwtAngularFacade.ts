@@ -398,7 +398,7 @@ export interface AudioItemConfig {
   getVolumeMax(): number;
 }
 
-export type WeaponKind = "PROJECTILE" | "LIGHTNING";
+export type WeaponKind = "PROJECTILE" | "LIGHTNING" | "ENERGY_BEAM";
 
 export interface WeaponType {
   getImpactParticleSystemId(): number | null;
@@ -498,6 +498,14 @@ export interface BabylonRenderServiceAccess {
   showPlaceMarker(placeConfig: PlaceConfig | null, markerConfig: MarkerConfig | null): void;
 
   disposeOutOfViewItem(id: number): void;
+
+  /** Called by the game engine once per simulation tick (~100ms). Feeds the F8 perf overlay's
+   *  authoritative tick-rate curve. clientTickMs = main-thread time spent applying the tick. */
+  onGameEngineTick(clientTickMs: number): void;
+
+  /** Reports terrain-tile timing to the F8 perf overlay: workerMs = worker generation time,
+   *  clientMs = main-thread Babylon mesh-build time (the scroll-stutter source). */
+  onTerrainTileBuilt(workerMs: number, clientMs: number): void;
 }
 
 export interface TerrainTile {

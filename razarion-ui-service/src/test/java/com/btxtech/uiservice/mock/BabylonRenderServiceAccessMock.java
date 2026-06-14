@@ -118,6 +118,16 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
 
     }
 
+    @Override
+    public void onGameEngineTick(double clientTickMs) {
+
+    }
+
+    @Override
+    public void onTerrainTileBuilt(double workerMs, double clientMs) {
+
+    }
+
     public MarkerConfig getShowOutOfViewMarkerConfig() {
         return showOutOfViewMarkerConfig;
     }

@@ -2,7 +2,6 @@ import {
   BabylonDecal,
   BabylonTerrainTile,
   BotGround,
-  DecimalPosition,
   TerrainObjectConfig,
   TerrainObjectModel,
   TerrainTile,
@@ -41,7 +40,6 @@ import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-re
 import {Nullable} from "@babylonjs/core/types";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import {GroundUtil} from './ground-util';
-import {GwtInstance} from '../../gwtangular/GwtInstance';
 
 enum MaterialIndex {
   GROUND = 0,
@@ -76,9 +74,24 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private groundHeights: number[] = [];
   private tileXOffset: number = 0;
   private tileYOffset: number = 0;
+  // Boot/scroll-freeze fix: bot-ground and decal geometry are Java proxies — every getX()/getY()/xPos
+  // access crosses the WASM↔JS bridge. Reading them once per sprite (2500/tile) dominated the boot
+  // profile (insideBotGround ~814ms, javaObjectToJS ~590ms). We materialise them ONCE per tile into
+  // flat [minX,minY,maxX,maxY,...] arrays so the sprite hot-loop is pure JS with zero bridge crossings.
+  private botGroundBoxes: Float64Array | null = null;
+  private decalBoxes: Float64Array | null = null;
 
+  /**
+   * Canonical terrain-type classification. Mirrors the authoritative game-engine rule in
+   * TerrainAnalyzer.analyze() (razarion-share): avg of the 4 quad corners < WATER_LEVEL => WATER;
+   * corner height delta < WALL_HEIGHT_DIFF (0.5 m over a 1 m node) => LAND (passable, grass);
+   * else => BLOCKED (cliff, rendered as rock via GroundUtil). Single source of truth used by the
+   * renderer, GroundUtil and the editor terrain-type overlay so the editor never disagrees with
+   * gameplay/rendering.
+   */
   public static setupTerrainType(bLHeight: number, bRHeight: number, tRHeight: number, tLHeight: number): TerrainType {
-    if (bLHeight <= 0.0 && bRHeight <= 0.0 && tRHeight <= 0.0 && tLHeight <= 0.0) {
+    const avgHeight = (bLHeight + bRHeight + tRHeight + tLHeight) / 4.0;
+    if (avgHeight < BabylonTerrainTileImpl.WATER_LEVEL) {
       return TerrainType.WATER;
     }
     const maxHeight = Math.max(bLHeight, bRHeight, tRHeight, tLHeight);
@@ -96,6 +109,42 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       requestIdleCallback(() => callback(), { timeout: 100 });
     } else {
       setTimeout(callback, 4);
+    }
+  }
+
+  // Building a tile's ground NodeMaterial costs ~90-100ms (shader graph build + compile). When many
+  // tiles appear at once (boot, scrolling), requestIdleCallback would run several builds back-to-back
+  // in a single slice → multi-second "browser hängt" freezes. This global queue serializes the heavy
+  // builds to AT MOST ONE per animation frame, so the render loop runs in between and the game stays
+  // responsive (occasional single-build hitches instead of one long lock).
+  private static buildQueue: (() => void)[] = [];
+  private static buildQueueScheduled = false;
+
+  private static enqueueHeavyBuild(task: () => void): void {
+    BabylonTerrainTileImpl.buildQueue.push(task);
+    BabylonTerrainTileImpl.drainBuildQueue();
+  }
+
+  private static drainBuildQueue(): void {
+    if (BabylonTerrainTileImpl.buildQueueScheduled) {
+      return;
+    }
+    BabylonTerrainTileImpl.buildQueueScheduled = true;
+    const runNext = () => {
+      BabylonTerrainTileImpl.buildQueueScheduled = false;
+      const task = BabylonTerrainTileImpl.buildQueue.shift();
+      if (task) {
+        task(); // one heavy build this frame
+      }
+      if (BabylonTerrainTileImpl.buildQueue.length > 0) {
+        BabylonTerrainTileImpl.drainBuildQueue();
+      }
+    };
+    // Wait a full frame between builds so the render loop (and input) get a turn.
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => runNext());
+    } else {
+      setTimeout(runNext, 16);
     }
   }
 
@@ -167,7 +216,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const groundUv2 = computeShoreDistance(shoreSegments, this.groundHeights, xCount, yCount);
     this.groundMesh.setVerticesData(VertexBuffer.UV2Kind, groundUv2);
 
-    BabylonTerrainTileImpl.scheduleIdle(() => this.buildPhase3_Material());
+    // Phase 3 builds the heavy ground NodeMaterial — route it through the serialized queue so a burst
+    // of tiles can't compile all their shaders in one frame.
+    BabylonTerrainTileImpl.enqueueHeavyBuild(() => this.buildPhase3_Material());
   }
 
   private buildPhase3_Material(): void {
@@ -511,59 +562,90 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       && y < babylonDecal.ySize + babylonDecal.yPos;
   }
 
-  private insideBotGround(x: number, y: number) {
-    if (!this.terrainTile.getBotGrounds()) {
-      return false;
+  // Same bridge-avoidance as bot grounds: cache decal extents once per tile as a flat
+  // [minX,minY,maxX,maxY,...] array so the sprite loop never reads Java decal proxies per sprite.
+  private getDecalBoxes(): Float64Array {
+    if (this.decalBoxes !== null) {
+      return this.decalBoxes;
     }
-
-    let found = false;
-
-    this.terrainTile.getBotGrounds().forEach(botGround => {
-      if (botGround.positions) {
-        botGround.positions.forEach(position => {
-          // Skip invalid positions
-          if (!position || typeof position.getX !== 'function' || typeof position.getY !== 'function') {
-            return;
-          }
-          const posX = position.getX();
-          const posY = position.getY();
-          if (typeof posX !== 'number' || typeof posY !== 'number' || isNaN(posX) || isNaN(posY)) {
-            return;
-          }
-          if (this.insideBotGroundPosition(position, x, y)) {
-            found = true;
-          }
-        });
-      }
-    });
-
-    if (found) {
-      return true;
+    const coords: number[] = [];
+    const decals = this.terrainTile.getBabylonDecals();
+    if (decals) {
+      decals.forEach(decal => {
+        coords.push(decal.xPos, decal.yPos, decal.xPos + decal.xSize, decal.yPos + decal.ySize);
+      });
     }
-
-    this.terrainTile.getBotGrounds().forEach(botGround => {
-      if (botGround.botGroundSlopeBoxes) {
-        botGround.botGroundSlopeBoxes.forEach(groundSlopeBox => {
-          // Skip invalid slope boxes
-          if (!groundSlopeBox || typeof groundSlopeBox.xPos !== 'number' || typeof groundSlopeBox.yPos !== 'number' ||
-              isNaN(groundSlopeBox.xPos) || isNaN(groundSlopeBox.yPos)) {
-            return;
-          }
-          if (this.insideBotGroundPosition(GwtInstance.newDecimalPosition(groundSlopeBox.xPos, groundSlopeBox.yPos), x, y)) {
-            found = true;
-          }
-        });
-      }
-    });
-
-    return found;
+    this.decalBoxes = new Float64Array(coords);
+    return this.decalBoxes;
   }
 
-  private insideBotGroundPosition(position: DecimalPosition, x: number, y: number) {
-    return position.getX() - BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 <= x
-      && position.getY() - BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 <= y
-      && position.getX() + BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 > x
-      && position.getY() + BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2 > y;
+  // Pure-JS point-in-decal test against the cached flat array (matches insideDecal semantics).
+  private insideAnyDecal(x: number, y: number): boolean {
+    const boxes = this.decalBoxes ?? this.getDecalBoxes();
+    for (let i = 0; i < boxes.length; i += 4) {
+      if (x >= boxes[i] && x < boxes[i + 2] && y >= boxes[i + 1] && y < boxes[i + 3]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Materialise every bot-ground box (positions + slope boxes) into a flat [minX,minY,maxX,maxY,...]
+   * array. This is the ONLY place that crosses the WASM↔JS bridge for bot grounds; it runs once per
+   * tile (lazily, on the first sprite). Each box is BOT_BOX_LENGTH wide, centred on its position —
+   * preserving the exact test that insideBotGroundPosition used to do per access.
+   */
+  private getBotGroundBoxes(): Float64Array {
+    if (this.botGroundBoxes !== null) {
+      return this.botGroundBoxes;
+    }
+    const half = BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2;
+    const coords: number[] = [];
+    const botGrounds = this.terrainTile.getBotGrounds();
+    if (botGrounds) {
+      botGrounds.forEach(botGround => {
+        if (botGround.positions) {
+          botGround.positions.forEach(position => {
+            // Skip invalid positions
+            if (!position || typeof position.getX !== 'function' || typeof position.getY !== 'function') {
+              return;
+            }
+            const posX = position.getX();
+            const posY = position.getY();
+            if (typeof posX !== 'number' || typeof posY !== 'number' || isNaN(posX) || isNaN(posY)) {
+              return;
+            }
+            coords.push(posX - half, posY - half, posX + half, posY + half);
+          });
+        }
+        if (botGround.botGroundSlopeBoxes) {
+          botGround.botGroundSlopeBoxes.forEach(groundSlopeBox => {
+            // Skip invalid slope boxes
+            if (!groundSlopeBox || typeof groundSlopeBox.xPos !== 'number' || typeof groundSlopeBox.yPos !== 'number' ||
+                isNaN(groundSlopeBox.xPos) || isNaN(groundSlopeBox.yPos)) {
+              return;
+            }
+            coords.push(groundSlopeBox.xPos - half, groundSlopeBox.yPos - half,
+              groundSlopeBox.xPos + half, groundSlopeBox.yPos + half);
+          });
+        }
+      });
+    }
+    this.botGroundBoxes = new Float64Array(coords);
+    return this.botGroundBoxes;
+  }
+
+  // Pure-JS point-in-box test against the cached flat array — no bridge crossings in the hot loop.
+  // Box semantics match the original insideBotGroundPosition: minX <= x < maxX, minY <= y < maxY.
+  private insideBotGround(x: number, y: number): boolean {
+    const boxes = this.botGroundBoxes ?? this.getBotGroundBoxes();
+    for (let i = 0; i < boxes.length; i += 4) {
+      if (x >= boxes[i] && x < boxes[i + 2] && y >= boxes[i + 1] && y < boxes[i + 3]) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -805,17 +887,23 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   private placeSprites(count: number, spriteManagers: Record<TerrainZone, SpriteManager>) {
+    // Tile bounds are constant for the tile — read them once (tileXOffset/Yoffset already cache the
+    // bridge call) instead of getIndex().getX()/getY() four times per sprite.
+    const minX = this.tileXOffset;
+    const maxX = this.tileXOffset + BabylonTerrainTileImpl.NODE_X_COUNT;
+    const minZ = this.tileYOffset;
+    const maxZ = this.tileYOffset + BabylonTerrainTileImpl.NODE_Y_COUNT;
+
     for (let i = 0; i < BabylonTerrainTileImpl.SPRITES_PER_BATCH; i++) {
       if (count <= 0) {
         return;
       }
       count--;
 
-      const x = Scalar.RandomRange(this.terrainTile.getIndex().getX() * BabylonTerrainTileImpl.NODE_X_COUNT, (this.terrainTile.getIndex().getX() + 1) * BabylonTerrainTileImpl.NODE_X_COUNT);
-      const z = Scalar.RandomRange(this.terrainTile.getIndex().getY() * BabylonTerrainTileImpl.NODE_Y_COUNT, (this.terrainTile.getIndex().getY() + 1) * BabylonTerrainTileImpl.NODE_Y_COUNT);
+      const x = Scalar.RandomRange(minX, maxX);
+      const z = Scalar.RandomRange(minZ, maxZ);
 
-      const decal = this.findDecal(this.terrainTile.getBabylonDecals(), x, z);
-      if (decal) {
+      if (this.insideAnyDecal(x, z)) {
         continue;
       }
 

@@ -168,6 +168,48 @@ for (const p of ['razarion.glb', 'razarion_post.glb']) {
 
 Both files must report identical `RAZ_:` and `withUV:` counts.
 
+> **Symptom → cause (grey / untextured models).** If units, buildings or vehicles render **flat grey
+> / untextured** in-game even though the editor still shows the correct material name on the node,
+> `optimize` damaged the file. Razarion assigns diplomacy (faction-colour) materials at **runtime**
+> (`gltf-helper.ts`), swapping each mesh's material by glTF **name** and pulling the GLB's textures
+> into a NodeMaterial. `optimize`'s heuristic passes (`prune`, **`prune-attributes`**, `dedup`)
+> cannot see this runtime usage, so they strip vertex attributes (e.g. `TEXCOORD_0`) or merge
+> materials that *look* unused — and the runtime material swap then renders untextured/grey.
+>
+> **Isolation test:** a plain read→write round-trip with gltf-transform (no transforms at all)
+> renders **correctly**. That proves the serialization is fine and the damage comes from a specific
+> *transform* — not from gltf-transform itself.
+>
+> ```javascript
+> // node roundtrip.mjs in.glb out.glb   (deps: @gltf-transform/core, @gltf-transform/extensions)
+> import { NodeIO } from '@gltf-transform/core';
+> import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
+> const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
+> await io.write(process.argv[3], await io.read(process.argv[2]));
+> ```
+
+### Step 1b (recommended): texture-only compression
+
+Razarion models are **texture-heavy and geometry-light** — the full bundle is ~30 MB of textures over
+only a few hundred KB of meshes. So the safest and simplest win is to compress **only the textures**
+and never run the geometry/material transforms that cause grey models. Use the dedicated texture
+commands — **not** `optimize`, which always runs `prune`/`dedup` even when other steps are disabled:
+
+```bash
+npx -y @gltf-transform/cli resize razarion.glb tmp.glb --width 1024 --height 1024
+npx -y @gltf-transform/cli webp   tmp.glb razarion_post.glb --quality 85
+```
+
+Typical result: **~30 MB → ~11 MB**. Geometry and material structure stay byte-identical to the
+source (`extensionsUsed` gains only `EXT_texture_webp`; no `EXT_meshopt_compression`,
+`KHR_mesh_quantization`, no pruned attributes), so vehicles/buildings keep their materials. WebP is
+supported by the runtime (used elsewhere, e.g. the explosion sheet). **Prefer this over `optimize`**
+unless you specifically need geometry compression — for Razarion's tiny meshes it isn't worth the risk.
+
+History: the `optimize` recipe above (with `--prune-attributes false`) is the geometry-compressing
+alternative; in practice it is easy to get grey models by forgetting one of the disabled flags, which
+is why the texture-only recipe is the default recommendation.
+
 ### Step 2: Upload via GLTF Editor
 
 1. Open the admin editor at `/editor`

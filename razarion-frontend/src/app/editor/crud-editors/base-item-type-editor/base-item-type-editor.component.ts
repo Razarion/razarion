@@ -62,8 +62,10 @@ export class BaseItemTypeEditorComponent implements CrudContainerChild<BaseItemT
   weaponKindOptions: { label: string, value: WeaponKind }[] = [
     {label: "Projectile", value: WeaponKind.PROJECTILE},
     {label: "Lightning", value: WeaponKind.LIGHTNING},
+    {label: "Energy beam", value: WeaponKind.ENERGY_BEAM},
   ];
   readonly LIGHTNING: WeaponKind = WeaponKind.LIGHTNING;
+  readonly ENERGY_BEAM: WeaponKind = WeaponKind.ENERGY_BEAM;
 
   init(baseItemType: BaseItemType): void {
     this.baseItemType = baseItemType;

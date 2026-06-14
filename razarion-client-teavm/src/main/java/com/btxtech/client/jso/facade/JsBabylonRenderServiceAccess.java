@@ -174,6 +174,16 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
         callMethod1I(js, "disposeOutOfViewItem", id);
     }
 
+    @Override
+    public void onGameEngineTick(double clientTickMs) {
+        callMethod1D(js, "onGameEngineTick", clientTickMs);
+    }
+
+    @Override
+    public void onTerrainTileBuilt(double workerMs, double clientMs) {
+        callMethod2D(js, "onTerrainTileBuilt", workerMs, clientMs);
+    }
+
     private static class JsBabylonTerrainTile implements BabylonTerrainTile {
         private final JSObject js;
 

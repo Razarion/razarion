@@ -29,6 +29,7 @@ import {AdvancedDynamicTexture, TextBlock} from '@babylonjs/gui';
 
 import {Nullable} from '@babylonjs/core/types';
 import {BabylonLightning} from "./babylon-lightning";
+import {BabylonEnergyBeam} from "./babylon-energy-beam";
 import {BabylonMuzzleFlash} from "./babylon-muzzle-flash";
 import {BabylonBuildupEffect} from "./babylon-buildup-effect";
 import {BabylonHarvestingBeam} from "./babylon-harvesting-beam";
@@ -709,15 +710,41 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     const renderObject = this.getRenderObject();
     let startPosition: Vector3 = renderObject.getBeamOrigin() ?? renderObject.getModel3D().getAbsolutePosition();
 
-    // Procedural muzzle flash particle systems
-    BabylonMuzzleFlash.fire(this.rendererService.getScene(), startPosition, this.getContainer().forward.clone());
+    const weaponKind = this.baseItemType.getWeaponType()?.getWeaponKind();
+
+    // Procedural muzzle flash particle systems. Skipped for ENERGY_BEAM — that effect draws its
+    // own energy-coloured muzzle flash, and the ballistic powder/smoke burst would look wrong on it.
+    if (weaponKind !== "ENERGY_BEAM") {
+      BabylonMuzzleFlash.fire(this.rendererService.getScene(), startPosition, this.getContainer().forward.clone());
+    }
 
     const targetPos = targetBaseItem.getContainer().position.clone();
     // Raise impact point above the target so the effect is visible, not hidden inside the mesh
     const targetRadius = targetBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius();
     targetPos.y += targetRadius * 0.8;
 
-    if (this.baseItemType.getWeaponType()?.getWeaponKind() === "LIGHTNING") {
+    if (weaponKind === "ENERGY_BEAM") {
+      const scene = this.rendererService.getScene();
+      // Event-driven, one shot per fire (like LIGHTNING): open the sustained beam, then dispose it
+      // after a short on-time. Origin is re-read each frame so it tracks the muzzle/turret.
+      const containerPosition = this.getContainer().position;
+      const beam = new BabylonEnergyBeam(
+        scene,
+        () => renderObject.getBeamOrigin(),
+        () => containerPosition.clone()
+      );
+      beam.start(targetPos);
+      const durationMs = this.baseItemType.getWeaponType()?.getLightningDurationMs() ?? 350;
+      setTimeout(() => beam.dispose(), durationMs);
+      BabylonImpact.detonate(scene, targetPos);
+      const impactAudioConfig = this.baseItemType.getWeaponType()?.getImpactAudioConfig();
+      if (impactAudioConfig != null) {
+        this.rendererService.babylonAudioService.playAudioAtPositionWithConfig(impactAudioConfig, targetPos);
+      }
+      return;
+    }
+
+    if (weaponKind === "LIGHTNING") {
       const scene = this.rendererService.getScene();
       const durationMs = this.baseItemType.getWeaponType()?.getLightningDurationMs() ?? undefined;
       BabylonLightning.fire(scene, startPosition, targetPos, durationMs);

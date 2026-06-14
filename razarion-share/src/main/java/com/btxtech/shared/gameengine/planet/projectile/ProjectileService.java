@@ -49,9 +49,9 @@ public class ProjectileService {
         WeaponType weaponType = actor.getSyncWeapon().getWeaponType();
         DecimalPosition targetPos = target.getAbstractSyncPhysical().getPosition();
 
-        if (weaponType.getWeaponKind() == WeaponKind.LIGHTNING) {
-            // Instant hit: damage applied this tick. Both events fire so the client
-            // can render bolt + impact in sync. Visual duration lives on the client.
+        if (weaponType.getWeaponKind() == WeaponKind.LIGHTNING || weaponType.getWeaponKind() == WeaponKind.ENERGY_BEAM) {
+            // Instant hit (LIGHTNING and ENERGY_BEAM): damage applied this tick. Both events fire so
+            // the client can render bolt/beam + impact in sync. Visual duration lives on the client.
             gameLogicService.onProjectileFired(actor, target.getId(), targetPos);
             gameLogicService.onProjectileDetonation(actor, targetPos);
             applyDamage(actor, targetPos);

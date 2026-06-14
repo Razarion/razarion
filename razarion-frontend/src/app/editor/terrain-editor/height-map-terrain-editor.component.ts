@@ -25,7 +25,9 @@ import {AbstractBrush, BrushContext} from "./brushes/abstract-brush";
 import {FixHeightBrushComponent} from './brushes/fix-height-brush.component';
 import {FlattenBrushComponent} from "./brushes/flattem-brush.component";
 import {RaiseHeightBrushComponent} from './brushes/raise-height-brush.component';
+import {MountainStampComponent} from './brushes/mountain-stamp-brush.component';
 import {SmoothBrushComponent} from './brushes/smooth-brush.component';
+import {TerraceBrushComponent} from './brushes/terrace-brush.component';
 import {NoiseBrushComponent} from './brushes/noise-brush.component';
 import {ErosionBrushComponent} from './brushes/erosion-brush.component';
 import {FixBoundaryBrushComponent} from './brushes/fix-boundary-brush.component';
@@ -74,8 +76,10 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   brushOptions = [
     {label: 'Fix height', value: FixHeightBrushComponent},
     {label: 'Flatten', value: FlattenBrushComponent},
-    {label: 'Raise height', value: RaiseHeightBrushComponent},
+    {label: 'Sculpt', value: RaiseHeightBrushComponent},
+    {label: 'Stamp', value: MountainStampComponent},
     {label: 'Smooth', value: SmoothBrushComponent},
+    {label: 'Terrace', value: TerraceBrushComponent},
     {label: 'Noise', value: NoiseBrushComponent},
     {label: 'Erosion', value: ErosionBrushComponent},
     {label: 'Fix boundary', value: FixBoundaryBrushComponent},
@@ -84,6 +88,9 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   selectedBrush?: Type<AbstractBrush>;
 
   private currentBrush?: AbstractBrush
+  // Last applied stroke position; used to interpolate evenly-spaced brush dabs along a drag so the
+  // build-up is smooth and independent of mouse speed (pattern from heightmap-generator's strokeTo).
+  private lastStrokePosition: Vector3 | null = null;
 
   constructor(httpClient: HttpClient,
               public gwtAngularService: GwtAngularService,
@@ -209,10 +216,12 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
           let pickingInfo = this.renderService.setupTerrainPickPoint();
           if (pickingInfo && pickingInfo.pickedPoint) {
             this.modelTerrain(pickingInfo.pickedPoint);
+            this.lastStrokePosition = pickingInfo.pickedPoint.clone();
           }
           break;
         }
         case PointerEventTypes.POINTERUP: {
+          this.lastStrokePosition = null;
           break;
         }
         case PointerEventTypes.POINTERMOVE: {
@@ -221,8 +230,10 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
             if ((pointerInfo.event.buttons & 0x01) == 0x01) {
               // Stamp-mode brushes only apply on click, not on drag
               if (!this.currentBrush || !this.currentBrush.isStampMode()) {
-                this.modelTerrain(pickingInfo.pickedPoint);
+                this.strokeTo(pickingInfo.pickedPoint);
               }
+            } else {
+              this.lastStrokePosition = null;
             }
           }
           break;
@@ -244,6 +255,32 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
     if (this.showTerrainType) {
       this.editorTerrainTiles[index.getY()][index.getX()].showTerrainType();
     }
+  }
+
+  /**
+   * Applies the brush in evenly-spaced dabs interpolated from the last stroke position to `target`,
+   * so a drag builds up smoothly regardless of mouse speed (pattern from heightmap-generator's
+   * strokeTo). Spacing is tied to the brush radius; capped to avoid runaway work on fast drags.
+   */
+  private strokeTo(target: Vector3) {
+    const from = this.lastStrokePosition;
+    if (!from) {
+      this.modelTerrain(target);
+      this.lastStrokePosition = target.clone();
+      return;
+    }
+    const dx = target.x - from.x;
+    const dy = target.y - from.y;
+    const dz = target.z - from.z;
+    const dist = Math.sqrt(dx * dx + dz * dz);
+    const radius = Math.max(1, this.currentBrush!.getEffectiveRadius());
+    const spacing = Math.max(0.5, radius * 0.34);
+    const steps = Math.min(50, Math.max(1, Math.floor(dist / spacing)));
+    for (let i = 1; i <= steps; i++) {
+      const t = i / steps;
+      this.modelTerrain(new Vector3(from.x + dx * t, from.y + dy * t, from.z + dz * t));
+    }
+    this.lastStrokePosition = target.clone();
   }
 
   private modelTerrain(position: Vector3) {

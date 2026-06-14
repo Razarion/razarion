@@ -295,9 +295,9 @@
                     </p-select>
                   </div>
                 </div>
-                @if (baseItemType.weaponType.weaponKind === LIGHTNING) {
+                @if (baseItemType.weaponType.weaponKind === LIGHTNING || baseItemType.weaponType.weaponKind === ENERGY_BEAM) {
                   <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                    <span class="col-span-4">Lightning duration [ms]</span>
+                    <span class="col-span-4">Bolt/beam duration [ms]</span>
                     <div class="col-span-8">
                       <p-inputNumber [(ngModel)]="baseItemType.weaponType.lightningDurationMs"></p-inputNumber>
                     </div>

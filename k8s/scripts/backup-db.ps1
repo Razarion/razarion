@@ -72,8 +72,10 @@ try {
     #    (Linux-Filesystem -> kein PowerShell CRLF/Encoding/BOM Problem)
     #    'mariadb-dump' ist der Nachfolger von 'mysqldump' in MariaDB 10.5+
     Write-Host "Erstelle Dump via docker exec $DockerContainer mariadb-dump..." -ForegroundColor Cyan
+    #    --max-allowed-packet=1G: GLTF.glb rows are large binary blobs; the client must accept
+    #    packets bigger than its small default or the connection is dropped mid-row (error 2013).
     docker exec -e "MYSQL_PWD=$rootPw" $DockerContainer sh -c `
-        "mariadb-dump --hex-blob --single-transaction --quick -h host.docker.internal -P $LocalPort -u root razarion > /tmp/prod_dump.sql 2>/tmp/prod_dump.err"
+        "mariadb-dump --hex-blob --single-transaction --quick --max-allowed-packet=1G -h host.docker.internal -P $LocalPort -u root razarion > /tmp/prod_dump.sql 2>/tmp/prod_dump.err"
     $dumpExit = $LASTEXITCODE
     if ($dumpExit -ne 0) {
         $err = docker exec $DockerContainer cat /tmp/prod_dump.err

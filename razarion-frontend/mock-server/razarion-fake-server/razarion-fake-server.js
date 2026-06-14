@@ -473,7 +473,10 @@ server.on({
       "content-type": "application/octet-stream"
     },
     body: function loadAssetConfig(req) {
-      return fs.readFileSync("./resources/razarion.glb");
+      // razarion_post.glb is the artist's updated full-scene export: every existing node
+      // (Factory, Builder, Viper, Tesla, Hydra, ...) under the same names PLUS the new
+      // "Badger" vehicle (with a RAZ_MUZZLE hardpoint for the energy-beam weapon).
+      return fs.readFileSync("./resources/razarion_post.glb");
     }
   }
 });

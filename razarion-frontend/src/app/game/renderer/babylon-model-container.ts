@@ -30,6 +30,15 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
   private babylonModels: Map<number, B> = new Map();
   protected babylonModelService!: BabylonModelService;
   private loadingCount = 0;
+  // Boot-freeze fix: models used to load all at once, so dozens of glTF parses piled up on the
+  // main thread. We now queue them and keep at most maxConcurrentLoads() in flight, pumping the
+  // next one whenever a load finishes.
+  private pending: { entity: E; scene: Scene }[] = [];
+
+  /** Max models parsed concurrently. Kept low for heavy main-thread parsing (e.g. glTF). */
+  protected maxConcurrentLoads(): number {
+    return 4;
+  }
 
   load(entities: E[], babylonModelService: BabylonModelService, scene: Scene) {
     this.babylonModelService = babylonModelService;
@@ -40,13 +49,25 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
       return;
     }
 
-    this.loadingCount = entities.length
-
-    entities.forEach(entity => {
+    this.loadingCount = entities.length;
+    // Register all entities up front (getEntity must work before a model finishes loading),
+    // but only start a bounded number; the rest wait in the queue.
+    this.pending = entities.map(entity => {
       this.entities.set(entity.id, entity);
-      this.loadBabylonModel(entity, scene);
+      return {entity, scene};
     });
 
+    const initial = Math.min(this.maxConcurrentLoads(), this.pending.length);
+    for (let i = 0; i < initial; i++) {
+      this.pumpNext();
+    }
+  }
+
+  private pumpNext(): void {
+    const next = this.pending.shift();
+    if (next) {
+      this.loadBabylonModel(next.entity, next.scene);
+    }
   }
 
   isLoaded(): boolean {
@@ -72,6 +93,9 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
     if (this.loadingCount <= 0) {
       this.loaded = true;
       this.babylonModelService.handleLoaded();
+    } else {
+      // Keep the pipeline full: start the next queued model now that a slot freed up.
+      this.pumpNext();
     }
   }
 }
@@ -121,6 +145,34 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
     super();
   }
 
+  // glTF parsing (mesh build + animation channels) is the heaviest main-thread work at boot,
+  // so we keep only a couple in flight to leave the render loop room to breathe.
+  protected override maxConcurrentLoads(): number {
+    return 2;
+  }
+
+  // Coalesce progress-driven change-detection to at most one tick per animation frame: the loaders
+  // run outside the Angular zone (to avoid CD storms during parsing), so the progress bar needs an
+  // explicit, throttled re-entry to stay visible without reintroducing the boot freeze.
+  private progressFlushScheduled = false;
+
+  private scheduleProgressFlush(): void {
+    if (this.progressFlushScheduled) {
+      return;
+    }
+    this.progressFlushScheduled = true;
+    const flush = () => {
+      this.progressFlushScheduled = false;
+      // Empty zone.run triggers one change-detection cycle; the template reads the latest field.
+      this.zone.run(() => {});
+    };
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(flush);
+    } else {
+      setTimeout(flush, 16);
+    }
+  }
+
   public getGltfHelper(gltfEntityId: number) {
     return this.gltfHelpers.get(gltfEntityId);
   }
@@ -129,44 +181,51 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
     const url = `${URL_GLTF}/glb/${gltfEntity.id}`;
     const gltfHelper = new GltfHelper(gltfEntity, this.babylonModelService, this, this.babylonMaterialContainer);
     this.gltfHelpers.set(gltfEntity.id, gltfHelper);
-    try {
-      let hasError = false;
-      const result = SceneLoader.LoadAssetContainer(url, '', scene, assetContainer => {
-          try {
-            this.zone.run(() => {
-              this.babylonModelService.glbContainerProgress = undefined;
-            });
-            if (!hasError) {
-              this.setBabylonModel(gltfEntity, assetContainer);
-              this.assignGlbTextures(gltfEntity, assetContainer, gltfHelper);
-              this.handleBabylonModelLaded();
+    // Run the whole load outside the Angular zone: Babylon's glTF loader fires progress/parse
+    // callbacks synchronously while parsing, and each one used to trigger Angular change
+    // detection (the boot-freeze amplifier). We re-enter the zone only once, on completion.
+    this.zone.runOutsideAngular(() => {
+      try {
+        let hasError = false;
+        const result = SceneLoader.LoadAssetContainer(url, '', scene, assetContainer => {
+            try {
+              if (!hasError) {
+                this.setBabylonModel(gltfEntity, assetContainer);
+                this.assignGlbTextures(gltfEntity, assetContainer, gltfHelper);
+                // Single change-detection on completion: clear the progress UI and let Angular react.
+                this.zone.run(() => {
+                  this.babylonModelService.glbContainerProgress = undefined;
+                  this.handleBabylonModelLaded();
+                });
+              }
+            } catch (error) {
+              console.error(error);
             }
-          } catch (error) {
-            console.error(error);
-          }
-        },
-        (event: ISceneLoaderProgressEvent) => {
-          this.zone.run(() => {
+          },
+          (event: ISceneLoaderProgressEvent) => {
+            // Update the field cheaply outside the zone, then flush change-detection at most once
+            // per frame. Running zone.run on EVERY progress event was the original boot-freeze
+            // amplifier; never running it (the regression) left the "Loading models..." bar invisible.
             this.babylonModelService.glbContainerProgress = {
               loaded: event.loaded, total: event.total
-            }
-          });
-        },
-        (scene: Scene, message: string, exception?: any) => {
-          hasError = true;
-          console.error(`Error loading glTF/glb '${url}'. exception: '${exception}'`);
-          this.handleBabylonModelLaded();
-        }, ".glb")
-      if (result === null) {
+            };
+            this.scheduleProgressFlush();
+          },
+          (scene: Scene, message: string, exception?: any) => {
+            hasError = true;
+            console.error(`Error loading glTF/glb '${url}'. exception: '${exception}'`);
+            this.zone.run(() => this.handleBabylonModelLaded());
+          }, ".glb")
+        if (result === null) {
+          console.error(`Error loading glTF/glb '${url}'`);
+          this.zone.run(() => this.handleBabylonModelLaded());
+        }
+      } catch (e) {
         console.error(`Error loading glTF/glb '${url}'`);
-        this.handleBabylonModelLaded();
+        console.error(e);
+        this.zone.run(() => this.handleBabylonModelLaded());
       }
-    } catch (e) {
-      console.error(`Error loading glTF/glb '${url}'`);
-      console.error(e);
-      this.handleBabylonModelLaded();
-    }
-
+    });
   }
 
   private assignGlbTextures(gltf: GltfEntity, assetContainer: AssetContainer, gltfHelper: GltfHelper) {

@@ -59,7 +59,7 @@ import {TerrainEditorComponent} from '../editor/terrain-editor/terrain-editor.co
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
 import {BabylonBaseItemImpl} from './renderer/babylon-base-item.impl';
 import {BabylonImpact} from './renderer/babylon-impact';
-import {BabylonLightning} from './renderer/babylon-lightning';
+import {BabylonEnergyBeam} from './renderer/babylon-energy-beam';
 import {Vector3} from '@babylonjs/core';
 
 let staticGameConfigJson: any = {
@@ -137,9 +137,11 @@ export class GameMockService {
         //   }
         // }, 2);
 
-        const teslaType = new class implements BaseItemType {
-          getName(): string { return "Tesla Coil"; }
-          getDescription(): string { return "Static defense tower firing lightning bolts"; }
+        // Badger: new energy-beam vehicle. model3DId 200 -> "Badger" node in razarion_post.glb
+        // (carries a RAZ_MUZZLE hardpoint, so RenderObject.getBeamOrigin() yields the live muzzle).
+        const badgerType = new class implements BaseItemType {
+          getName(): string { return "Badger"; }
+          getDescription(): string { return "Energy-beam assault vehicle"; }
           getBuilderType(): BuilderType { return null as any; }
           getHarvesterType(): HarvesterType { return null as any; }
           getWeaponType(): WeaponType | null { return null; }
@@ -147,20 +149,20 @@ export class GameMockService {
           getFactoryType(): FactoryType | null { return null; }
           getExplosionParticleId(): number | null { return 5; }
           getExplosionAudioItemConfigId(): number | null { return null; }
-          getId(): number { return 50; }
-          getInternalName(): string { return "Tesla"; }
-          getModel3DId(): number | null { return 100; }
+          getId(): number { return 60; }
+          getInternalName(): string { return "Badger"; }
+          getModel3DId(): number | null { return 200; }
           getPhysicalAreaConfig(): PhysicalAreaConfig {
             return new class implements PhysicalAreaConfig {
-              getRadius(): number { return 1.5; }
+              getRadius(): number { return 1.8; }
               getTerrainType(): TerrainType { return TerrainType.LAND; }
               fulfilledMovable(): boolean { return true; }
               isFixVerticalNorm(): boolean { return false; }
             };
           }
           getThumbnail(): number | null { return null; }
-          getPrice(): number { return 200; }
-          getConsumingHouseSpace(): number { return 0; }
+          getPrice(): number { return 300; }
+          getConsumingHouseSpace(): number { return 2; }
           getSpawnAudioId(): number | null { return null; }
         };
 
@@ -192,15 +194,17 @@ export class GameMockService {
         };
 
         {
-          // Tesla coil shoots lightning at a Viper target every 3s.
-          const teslaWorldX = 65, teslaWorldY = 40, groundZ = 0.6;
+          // ----- Energy-beam weapon dev sandbox -----
+          // A Badger fires a sustained energy beam at a Viper target. Iterate on the beam look
+          // in babylon-energy-beam.ts; this block just wires the muzzle origin to the target.
+          const badgerWorldX = 65, badgerWorldY = 40, groundZ = 0.6;
           const viperWorldX = 80, viperWorldY = 40;
 
-          const teslaItem = <BabylonBaseItemImpl>this.babylonRenderServiceAccessImpl
-            .createBabylonBaseItem(999996, teslaType, 1, Diplomacy.OWN, "");
-          teslaItem.setPosition(GwtInstance.newVertex(teslaWorldX, teslaWorldY, groundZ));
-          teslaItem.setAngle(0);
-          teslaItem.setHealth(1);
+          const badgerItem = <BabylonBaseItemImpl>this.babylonRenderServiceAccessImpl
+            .createBabylonBaseItem(999996, badgerType, 1, Diplomacy.OWN, "");
+          badgerItem.setPosition(GwtInstance.newVertex(badgerWorldX, badgerWorldY, groundZ));
+          badgerItem.setAngle(0);
+          badgerItem.setHealth(1);
 
           const viperItem = <BabylonBaseItemImpl>this.babylonRenderServiceAccessImpl
             .createBabylonBaseItem(999997, viperType, 2, Diplomacy.ENEMY, "");
@@ -208,16 +212,26 @@ export class GameMockService {
           viperItem.setAngle(Math.PI);
           viperItem.setHealth(1);
 
-          // Babylon coords: world (x, y, z=height) → babylon (x, height, y)
-          const boltOrigin = new Vector3(teslaWorldX, groundZ + 4.0, teslaWorldY);
-          const boltTarget = new Vector3(viperWorldX, groundZ + 1.2, viperWorldY);
-          const fire = () => {
-            const scene = this.babylonRenderServiceAccessImpl.getScene();
-            BabylonLightning.fire(scene, boltOrigin, boltTarget);
-            BabylonImpact.detonate(scene, boltTarget);
+          // Babylon coords: world (x, y, z=height) → babylon (x, height, y).
+          const beamTarget = new Vector3(viperWorldX, groundZ + 1.2, viperWorldY);
+          const badgerRenderObject = badgerItem.getRenderObject();
+          const beam = new BabylonEnergyBeam(
+            this.babylonRenderServiceAccessImpl.getScene(),
+            () => badgerRenderObject.getBeamOrigin(),
+            () => new Vector3(badgerWorldX, groundZ + 1.0, badgerWorldY)
+          );
+
+          // Pulse the beam on/off (1.6s on, 0.7s off) so we can watch start/stop + impact behaviour.
+          const fireFor = 1600, idleFor = 700;
+          const cycle = () => {
+            beam.start(beamTarget);
+            BabylonImpact.detonate(this.babylonRenderServiceAccessImpl.getScene(), beamTarget);
+            setTimeout(() => {
+              beam.dispose();
+              setTimeout(cycle, idleFor);
+            }, fireFor);
           };
-          setTimeout(fire, 800);
-          setInterval(fire, 3000);
+          setTimeout(cycle, 800);
         }
         {
           // let botGround = this.babylonModelService.cloneModel3D(45, null, Diplomacy.OWN);

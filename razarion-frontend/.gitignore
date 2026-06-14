@@ -42,5 +42,6 @@ testem.log
 Thumbs.db
 /razarion-frontend.iml
 /mock-server/razarion-fake-server/resources/razarion.glb
+/mock-server/razarion-fake-server/resources/razarion_post.glb
 /mock-server/razarion-fake-server/resources/BabylonMaterials.zip
 /mock-server/razarion-fake-server/resources/ParticleSystems.zip

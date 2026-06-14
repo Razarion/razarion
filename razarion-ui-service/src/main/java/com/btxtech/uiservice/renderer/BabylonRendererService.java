@@ -75,4 +75,12 @@ public class BabylonRendererService {
     public void disposeOutOfViewItem(int id) {
         babylonRenderServiceAccess.disposeOutOfViewItem(id);
     }
+
+    public void onGameEngineTick(double clientTickMs) {
+        babylonRenderServiceAccess.onGameEngineTick(clientTickMs);
+    }
+
+    public void onTerrainTileBuilt(double workerMs, double clientMs) {
+        babylonRenderServiceAccess.onTerrainTileBuilt(workerMs, clientMs);
+    }
 }

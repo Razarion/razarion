@@ -37,7 +37,6 @@ import {
   Nullable,
   ParticleSystemSet,
   PolygonMeshBuilder,
-  Quaternion,
   Ray,
   Scene,
   SceneInstrumentation,
@@ -54,6 +53,7 @@ import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
 import {BabylonLightning} from "./babylon-lightning";
 import {BabylonImpact} from "./babylon-impact";
+import {BabylonPerfOverlay} from "./babylon-perf-overlay";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 import {SelectionFrame} from "./selection-frame";
 import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
@@ -120,10 +120,17 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private pendingSetViewFieldCenter: Vector2 | null = null;
   private overviewMode = false;
   private savedCameraState: { position: Vector3, rotation: Vector3 } | null = null;
+  // Mouse-wheel zoom expressed as the camera's vertical distance above the terrain at the CENTRE of
+  // the view (not an absolute height). updateCameraHeight() converts it into camera.position.y every
+  // frame, so panning over a mountain lifts the camera with the terrain and the zoom level stays
+  // measured against whatever the camera is looking at.
+  private cameraTerrainDistance = 30;
+  private savedCameraTerrainDistance: number | null = null;
   private perfDebugActive = false;
   private sceneInstrumentation: SceneInstrumentation | null = null;
   private engineInstrumentation: EngineInstrumentation | null = null;
   private perfStatsLogIntervalId: ReturnType<typeof setInterval> | null = null;
+  private perfOverlay: BabylonPerfOverlay | null = null;
   // Terrain objects (trees/rocks) cost ~1500 draw calls in the shadow pass but are core to
   // the visual feel — kept on by default. F11 toggles them off for perf comparisons.
   private loadedTerrainTiles: Set<BabylonTerrainTileImpl> = new Set();
@@ -187,13 +194,24 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   internalSetup() {
+    // Perf overlay (F8) is on by default: create it eagerly here (runs once, just before the
+    // render loop starts) so it records from the first frame. F8 only toggles it off/on now.
+    if (!this.perfOverlay) {
+      this.perfOverlay = new BabylonPerfOverlay();
+    }
+
     // ----- Keyboard -----
     const self = this;
     // Console fallback in case F9 is intercepted by the browser/IDE.
     (window as any).togglePerfDebug = () => self.togglePerfDebug();
+    (window as any).togglePerfOverlay = () => self.togglePerfOverlay();
     window.addEventListener("keydown", e => {
       if (!self.keyPressed.has(e.key)) {
         self.keyPressed.set(e.key, Date.now());
+      }
+      if (e.key === "F8") {
+        e.preventDefault();
+        self.togglePerfOverlay();
       }
       if (e.key === "F9") {
         e.preventDefault();
@@ -215,19 +233,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       self.keyPressed.delete(e.key);
     }, true);
     window.addEventListener('wheel', e => {
-      let delta = e.deltaY;
-      delta = delta * 0.08;
-      const cameraRotation = Quaternion.FromEulerAngles(self.camera.rotation.x, self.camera.rotation.y, self.camera.rotation.z);
-      let deltaVector = Vector3.Zero();
-      new Vector3(0, 0, -delta).rotateByQuaternionToRef(cameraRotation, deltaVector);
+      const delta = e.deltaY * 0.08;
       const maxHeight = self.overviewMode ? 1500 : 200;
-      if (self.camera.position.y + deltaVector.y > 5 && self.camera.position.y + deltaVector.y < maxHeight) {
-        this.camera.position.x += deltaVector.x;
-        this.camera.position.y += deltaVector.y;
-        this.camera.position.z += deltaVector.z;
-        this.ensureCameraViewOnMap();
-        this.onViewFieldChanged();
-      }
+      // Zoom adjusts the DISTANCE to the terrain at the view centre, not an absolute height;
+      // updateCameraHeight() turns it into camera.position.y each frame. Scroll down (deltaY > 0)
+      // increases the distance (zoom out), matching the previous direction.
+      self.cameraTerrainDistance = Math.min(maxHeight, Math.max(5, self.cameraTerrainDistance + delta));
+      self.onViewFieldChanged();
     }, true);
 
     // -----  Camera -----
@@ -355,6 +367,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       if (this.pendingSetViewFieldCenter) {
         this.setViewFieldCenter(this.pendingSetViewFieldCenter.x, this.pendingSetViewFieldCenter.y)
       }
+      this.updateCameraHeight();
       // Move shadow frustum to follow camera
       const groundTarget = this.setupCenterGroundPosition();
       this.directionalLight.position.set(
@@ -369,7 +382,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         if (!this.scene.activeCamera) {
           return;
         }
+        const perfActive = this.perfOverlay?.isActive() === true;
+        const renderStart = perfActive ? performance.now() : 0;
         this.scene.render();
+        if (perfActive) {
+          const renderEnd = performance.now();
+          this.perfOverlay!.record(renderEnd, renderEnd - renderStart, this.engine.getFps());
+          this.perfOverlay!.draw();
+        }
       } catch (e) {
         console.error("Render Engine crashed")
         console.log(e);
@@ -856,6 +876,42 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     );
   }
 
+  /**
+   * Drives the camera height so the mouse-wheel zoom (`cameraTerrainDistance`) is the vertical
+   * distance to the terrain at the CENTRE of the view. Run every frame.
+   *
+   * The view-centre ground point is found by projecting the camera's forward ray onto the ground
+   * using the FIXED camera pitch — deliberately NOT via the current camera.y. Deriving the centre
+   * from camera.y would create positive feedback on slopes (higher camera looks further uphill →
+   * higher target → higher camera → runaway); projecting with the fixed pitch makes the reference
+   * depend only on the panned x/z, so it's stable on any slope.
+   *
+   * A secondary clamp keeps the camera from clipping a peak sitting directly beneath it (which can
+   * be higher than the view-centre terrain), independent of zoom.
+   */
+  private updateCameraHeight(): void {
+    const MIN_CLEARANCE = 5;
+    const forward = this.camera.getDirection(Vector3.Forward());
+    let targetY: number;
+    if (forward.y < -0.05) {
+      // Horizontal distance from camera to where a ray at the fixed pitch, dropped cameraTerrainDistance
+      // in height, meets the ground: (distance / |forward.y|) along the forward direction.
+      const horizScale = this.cameraTerrainDistance / -forward.y;
+      const centerX = this.camera.position.x + forward.x * horizScale;
+      const centerZ = this.camera.position.z + forward.z * horizScale;
+      const centerTerrain = this.getTerrainHeightAt(centerX, centerZ);
+      targetY = (centerTerrain ?? 0) + this.cameraTerrainDistance;
+    } else {
+      // Camera looking (near-)horizontal — no meaningful view-centre ground point.
+      targetY = this.cameraTerrainDistance;
+    }
+    const underCamera = this.getTerrainHeightAt(this.camera.position.x, this.camera.position.z);
+    if (underCamera !== null) {
+      targetY = Math.max(targetY, underCamera + MIN_CLEARANCE);
+    }
+    this.camera.position.y = targetY;
+  }
+
   public getTerrainHeightAt(x: number, z: number): number | null {
     const ray = new Ray(new Vector3(x, 100, z), new Vector3(0, -1, 0), 1000);
     const pickInfo = this.scene.pickWithRay(ray,
@@ -1060,6 +1116,29 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.interpolationListeners.forEach(interpolationListener => interpolationListener.interpolate(date));
   }
 
+  private togglePerfOverlay(): void {
+    if (!this.perfOverlay) {
+      this.perfOverlay = new BabylonPerfOverlay();
+    }
+    this.perfOverlay.toggle();
+  }
+
+  /**
+   * Called by the game engine (Java) once per simulation tick. Authoritative tick signal for the
+   * perf overlay — fires every tick regardless of whether anything moved.
+   */
+  onGameEngineTick(clientTickMs: number): void {
+    if (this.perfOverlay?.isActive()) {
+      this.perfOverlay.onTickArrived(clientTickMs);
+    }
+  }
+
+  onTerrainTileBuilt(workerMs: number, clientMs: number): void {
+    if (this.perfOverlay?.isActive()) {
+      this.perfOverlay.onTerrainTileBuilt(workerMs, clientMs);
+    }
+  }
+
   public createParticleSystem(particleSystemEntityId: number | null, imageId: number | null): Promise<ParticleSystemSet> | null {
     if (!particleSystemEntityId && particleSystemEntityId !== 0) {
       console.warn("createParticleSystem: particleSystemEntityId not set");
@@ -1124,6 +1203,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         position: this.camera.position.clone(),
         rotation: this.camera.rotation.clone()
       };
+      this.savedCameraTerrainDistance = this.cameraTerrainDistance;
       this.camera.rotation.x = Math.PI / 2;
       this.camera.rotation.y = 0;
       this.camera.rotation.z = 0;
@@ -1133,6 +1213,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.camera.position.copyFrom(this.savedCameraState.position);
         this.camera.rotation.copyFrom(this.savedCameraState.rotation);
         this.savedCameraState = null;
+      }
+      if (this.savedCameraTerrainDistance !== null) {
+        this.cameraTerrainDistance = this.savedCameraTerrainDistance;
+        this.savedCameraTerrainDistance = null;
       }
       this.camera.maxZ = 800;
     }

@@ -5,5 +5,6 @@ import jsinterop.annotations.JsType;
 @JsType
 public enum WeaponKind {
     PROJECTILE,
-    LIGHTNING
+    LIGHTNING,
+    ENERGY_BEAM
 }

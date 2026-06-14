@@ -11,6 +11,7 @@ export class EditorTerrainTile {
   private babylonTerrainTileImpl: BabylonTerrainTileImpl | null = null;
   private decalMesh: Mesh | null = null;
   private terrainTypeVisible: boolean = false;
+  private terrainTypeRefreshScheduled: boolean = false;
   private materialIndexDecalMesh: Mesh | null = null;
   private pendingTextureUpdate: number[] | null = null;
   private textureUpdateScheduled: boolean = false;
@@ -105,6 +106,7 @@ export class EditorTerrainTile {
       this.babylonTerrainTileImpl!.getGroundMesh().createNormals(true);
       this.babylonTerrainTileImpl!.getGroundMesh().refreshBoundingInfo();
       this.scheduleTextureUpdate(changedPosition);
+      this.scheduleTerrainTypeRefresh();
     }
   }
 
@@ -155,21 +157,42 @@ export class EditorTerrainTile {
   public showTerrainType() {
     this.hideTerrainType();
     this.terrainTypeVisible = true;
-    // Ordinals are computed on demand in the worker (not shipped with every tile). Request them and
-    // draw once they have arrived and been stored on the cached tile (read via getTerrainType).
-    this.terrainUiService.requestTerrainTypeOrdinals(this.index.getX(), this.index.getY(), () => {
-      if (this.terrainTypeVisible) {
-        this.decalMesh = this.createTerrainTypeDecal();
-      }
-    });
+    // Computed locally from the in-memory vertex heights using the canonical engine rule, so the
+    // overlay reflects edits live (no worker round-trip). The worker ordinals remain the
+    // authoritative check that also accounts for terrain-object blocking, used elsewhere.
+    if (this.positions && this.babylonTerrainTileImpl) {
+      this.decalMesh = this.createTerrainTypeDecal();
+    }
   }
 
   public hideTerrainType() {
     this.terrainTypeVisible = false;
     if (this.decalMesh) {
-      this.decalMesh.dispose();
+      // dispose(doNotRecurse=false, disposeMaterialAndTextures=true) — also frees the decal
+      // material and its (re-generated) emissive/opacity textures.
+      this.decalMesh.dispose(false, true);
     }
     this.decalMesh = null;
+  }
+
+  /**
+   * Re-projects the terrain-type decal onto the (now deformed) ground mesh with a freshly
+   * classified texture. Throttled so dragging a brush does not rebuild the decal every event.
+   */
+  private scheduleTerrainTypeRefresh(): void {
+    if (!this.terrainTypeVisible || this.terrainTypeRefreshScheduled) {
+      return;
+    }
+    this.terrainTypeRefreshScheduled = true;
+    setTimeout(() => {
+      this.terrainTypeRefreshScheduled = false;
+      if (this.terrainTypeVisible && this.positions && this.babylonTerrainTileImpl) {
+        if (this.decalMesh) {
+          this.decalMesh.dispose(false, true);
+        }
+        this.decalMesh = this.createTerrainTypeDecal();
+      }
+    }, EditorTerrainTile.TEXTURE_UPDATE_THROTTLE_MS);
   }
 
   public showMaterialIndex() {
@@ -297,7 +320,7 @@ export class EditorTerrainTile {
     context.rotate(Math.PI / 2);
     context.translate(-centerX, -centerY);
 
-    this.drawMiniMap(
+    this.drawTerrainTypeLocal(
       context,
       true,
       factor,
@@ -306,6 +329,41 @@ export class EditorTerrainTile {
       "rgba(0, 255, 0, 0.5)",
       "rgba(255, 0, 0, 0.5)");
     return new Texture(canvas.toDataURL(), this.renderService.getScene());
+  }
+
+  /**
+   * Classifies each 1 m node quad from the in-memory vertex heights (canonical engine rule) and
+   * paints WATER/LAND/BLOCKED cells. Mirrors {@link drawMiniMap} but reads local heights instead
+   * of the worker terrain-type service, so the overlay tracks edits live.
+   */
+  drawTerrainTypeLocal(context: CanvasRenderingContext2D, flipY: boolean, factor: number, effectiveBorder: number, waterColor: string, landColor: string, blockedColor: string) {
+    const yCount = BabylonTerrainTileImpl.NODE_Y_COUNT + 1;
+    for (let x = 0; x < BabylonTerrainTileImpl.NODE_X_COUNT; x++) {
+      for (let y = 0; y < BabylonTerrainTileImpl.NODE_Y_COUNT; y++) {
+        const bl = this.getHeightAtNode(x, y);
+        const br = this.getHeightAtNode(x + 1, y);
+        const tr = this.getHeightAtNode(x + 1, y + 1);
+        const tl = this.getHeightAtNode(x, y + 1);
+        switch (BabylonTerrainTileImpl.setupTerrainType(bl, br, tr, tl)) {
+          case TerrainType.WATER:
+            context.fillStyle = waterColor;
+            break;
+          case TerrainType.LAND:
+            context.fillStyle = landColor;
+            break;
+          case TerrainType.BLOCKED:
+            context.fillStyle = blockedColor;
+            break;
+          default:
+            context.fillStyle = "rgba(1, 1, 1, 1)";
+        }
+        context.fillRect(
+          (x + 1) * factor - effectiveBorder * 2,
+          (flipY ? (yCount - y - 1) : (y + 1)) * factor - effectiveBorder * 2,
+          factor - effectiveBorder * 2,
+          factor - effectiveBorder * 2);
+      }
+    }
   }
 
   drawMiniMap(context: CanvasRenderingContext2D, flipY: boolean, factor: number, effectiveBorder: number, waterColor: string, landColor: string, blockedColor: string) {
@@ -431,22 +489,9 @@ export class EditorTerrainTile {
     return BabylonTerrainTileImpl.HEIGHT_DEFAULT;
   }
 
+  /** Delegates to the canonical engine-rule classifier so the editor matches gameplay/rendering. */
   public static setupTerrainType(blHeight: number, brHeight: number, trHeight: number, tlHeight: number): TerrainType {
-    const avgHeight = (blHeight + brHeight + trHeight + tlHeight) / 4.0;
-
-    if (avgHeight < BabylonTerrainTileImpl.WATER_LEVEL) {
-      return TerrainType.WATER;
-    } else {
-      const maxHeight = Math.max(blHeight, brHeight, trHeight, tlHeight);
-      const minHeight = Math.min(blHeight, brHeight, trHeight, tlHeight);
-      // if (Math.abs(maxHeight - minHeight) < 0.6999998) {
-      if (Math.abs(maxHeight - minHeight) < 0.7) {
-        return TerrainType.LAND;
-      } else {
-        return TerrainType.BLOCKED;
-      }
-    }
-
+    return BabylonTerrainTileImpl.setupTerrainType(blHeight, brHeight, trHeight, tlHeight);
   }
 
 }
