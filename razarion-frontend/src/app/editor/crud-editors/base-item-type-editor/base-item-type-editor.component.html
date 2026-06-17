@@ -152,6 +152,12 @@
               <p-inputNumber [(ngModel)]="baseItemType.consumingHouseSpace"></p-inputNumber>
             </div>
           </div>
+          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+            <span class="col-span-4">Box pickup range [m]</span>
+            <div class="col-span-8">
+              <p-inputNumber [(ngModel)]="baseItemType.boxPickupRange" [minFractionDigits]="2"></p-inputNumber>
+            </div>
+          </div>
 
           <p-divider align="left">
             <div class="inline-flex items-center">

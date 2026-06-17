@@ -1957,6 +1957,11 @@ public final class TeaVMWorkerMarshaller {
         type.setThumbnail(obj.getNullableInt("thumbnail"));
         type.setRadius(obj.getDouble("radius"));
         type.setAmount(obj.getInt("amount"));
+        // terrainType + fixVerticalNorm were missing: a null terrainType made the worker treat a
+        // LAND harvester vs a LAND resource as "different terrain", collapsing the harvest approach
+        // path to unreachable → move-to-centre → orbit. The resource never got harvested.
+        type.setTerrainType(convertTerrainTypeEnum(obj.getString("terrainType")));
+        type.setFixVerticalNorm(obj.getBoolean("fixVerticalNorm"));
         return type;
     }
 
@@ -1980,6 +1985,11 @@ public final class TeaVMWorkerMarshaller {
         type.setThumbnail(obj.getNullableInt("thumbnail"));
         type.setRadius(obj.getDouble("radius"));
         type.setTtl(obj.getNullableInt("ttl"));
+        // Same gap as convertResourceItemType: a null terrainType made the worker treat a LAND
+        // picker vs a LAND box as "different terrain", collapsing the pickup approach path to
+        // unreachable -> move-to-centre -> orbit. The box never got picked up.
+        type.setTerrainType(convertTerrainTypeEnum(obj.getString("terrainType")));
+        type.setFixVerticalNorm(obj.getBoolean("fixVerticalNorm"));
         JSObject possibilitiesArr = obj.get("boxItemTypePossibilities");
         if (!JsUtils.isNullOrUndefined(possibilitiesArr)) {
             type.setBoxItemTypePossibilities(convertBoxItemTypePossibilityList(possibilitiesArr));

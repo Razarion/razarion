@@ -160,7 +160,8 @@ public class BaseItemUiService {
                     continue;
                 }
                 if ((viewFieldAabb == null) || !viewFieldAabb.adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
-                    if (syncBaseItemSetPositionMonitor != null && isMyEnemy(nativeSyncBaseItemTickInfo)) {
+                    if (syncBaseItemSetPositionMonitor != null && isMyEnemy(nativeSyncBaseItemTickInfo)
+                            && syncBaseItemSetPositionMonitor.isBotIdAllowed(botIdOfBase(nativeSyncBaseItemTickInfo.baseId))) {
                         syncBaseItemSetPositionMonitor.setInvisibleSyncBaseItemTickInfo(position2d, baseItemType, viewFiledCenter);
                     }
                     continue;
@@ -181,7 +182,8 @@ public class BaseItemUiService {
                     babylonBaseItems.put(nativeSyncBaseItemTickInfo.id, babylonBaseItem);
                     babylonBaseItem.setPosition(position3d);
                     babylonBaseItem.setAngle(nativeSyncBaseItemTickInfo.angle);
-                    if (syncBaseItemSetPositionMonitor != null && isMyEnemy(nativeSyncBaseItemTickInfo)) {
+                    if (syncBaseItemSetPositionMonitor != null && isMyEnemy(nativeSyncBaseItemTickInfo)
+                            && syncBaseItemSetPositionMonitor.isBotIdAllowed(botIdOfBase(nativeSyncBaseItemTickInfo.baseId))) {
                         syncBaseItemSetPositionMonitor.addVisible(babylonBaseItem);
                     }
                 }
@@ -370,6 +372,14 @@ public class BaseItemUiService {
         }
     }
 
+    private Integer botIdOfBase(int baseId) {
+        try {
+            return getBase(baseId).getBotId();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public PlayerBaseDto getBase(SyncBaseItemSimpleDto syncBaseItem) {
         return getBase(syncBaseItem.getBaseId());
     }
@@ -440,7 +450,8 @@ public class BaseItemUiService {
         }
         syncBaseItemSetPositionMonitor = new SyncBaseItemSetPositionMonitor(babylonRendererService, markerConfig, itemTypeFilter, botIdFilter, () -> syncBaseItemSetPositionMonitor = null);
         babylonBaseItems.values().forEach(babylonBaseItem -> {
-            if (isMyEnemy(babylonBaseItem)) {
+            if (isMyEnemy(babylonBaseItem)
+                    && syncBaseItemSetPositionMonitor.isBotIdAllowed(botIdOfBase(babylonBaseItem.getBaseId()))) {
                 syncBaseItemSetPositionMonitor.addVisible(babylonBaseItem);
             }
         });

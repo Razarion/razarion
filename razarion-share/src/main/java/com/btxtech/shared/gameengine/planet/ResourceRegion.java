@@ -24,6 +24,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.utils.MathHelper;
 
 import jakarta.inject.Inject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,8 +45,10 @@ public class ResourceRegion {
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private final ResourceService resourceService;
     private final Set<Integer> syncResourceItems = new HashSet<>();
-    // For evenly-distributed regions: maps each live resource's sync-item id to its fixed grid slot,
-    // so an exhausted spot respawns at the same position and the even pattern stays stable over time.
+    // For evenly-distributed regions: all grid slots that were placeable at init form a fixed pool.
+    // evenSlotById maps each live resource's sync-item id to the slot it currently occupies; an exhausted
+    // resource respawns at a random *free* slot from the pool, so the even pattern stays but the spot wanders.
+    private final List<DecimalPosition> evenSlots = new ArrayList<>();
     private final Map<Integer, DecimalPosition> evenSlotById = new HashMap<>();
     private ResourceRegionConfig resourceRegionConfig;
     private ResourceItemType resourceItemType;
@@ -89,8 +92,9 @@ public class ResourceRegion {
 
     /**
      * Places up to {@code count} resources on a hexagonally-offset grid covering the region polygon, keeping only the
-     * grid points that lie inside the polygon and on free land. Slot positions are remembered so exhausted spots
-     * respawn at the same place (see {@link #onResourceItemRemoved}). Falls back to random placement for non-polygon regions.
+     * grid points that lie inside the polygon and on free land. The placeable grid points form a fixed slot pool so
+     * exhausted resources respawn at a random free slot (see {@link #onResourceItemRemoved}), keeping the even pattern
+     * while letting positions wander. Falls back to random placement for non-polygon regions.
      */
     private void generateEvenResources(int count) {
         PlaceConfig region = resourceRegionConfig.getRegion();
@@ -126,6 +130,7 @@ public class ResourceRegion {
                 if (!syncItemContainerService.isFreePosition(resourceItemType.getTerrainType(), position, radius, true)) {
                     continue;
                 }
+                evenSlots.add(position);
                 placeEvenResource(position);
                 placed++;
             }
@@ -143,6 +148,29 @@ public class ResourceRegion {
         evenSlotById.put(syncResourceItem.getId(), position);
     }
 
+    /**
+     * Respawns one resource at a random free slot from the even-grid pool. Free = not currently occupied by another
+     * resource and on free land. Tries free slots in random order; if none is usable, falls back to random placement.
+     */
+    private void respawnEvenResource() {
+        Set<DecimalPosition> occupied = new HashSet<>(evenSlotById.values());
+        List<DecimalPosition> freeSlots = new ArrayList<>();
+        for (DecimalPosition slot : evenSlots) {
+            if (!occupied.contains(slot)) {
+                freeSlots.add(slot);
+            }
+        }
+        double radius = resourceItemType.getRadius() + resourceRegionConfig.getMinDistanceToItems();
+        while (!freeSlots.isEmpty()) {
+            DecimalPosition slot = freeSlots.remove((int) (Math.random() * freeSlots.size()));
+            if (syncItemContainerService.isFreePosition(resourceItemType.getTerrainType(), slot, radius, true)) {
+                placeEvenResource(slot);
+                return;
+            }
+        }
+        generateResource(); // no even slot free (e.g. all blocked) → keep the count up with a random position
+    }
+
     private static double polygonArea(Polygon2D polygon) {
         List<DecimalPosition> corners = polygon.getCorners();
         double area = 0;
@@ -157,7 +185,7 @@ public class ResourceRegion {
             if (syncResourceItems.remove(syncResourceItem.getId())) {
                 DecimalPosition slot = evenSlotById.remove(syncResourceItem.getId());
                 if (slot != null) {
-                    placeEvenResource(slot); // evenly distributed: respawn at the same slot to keep the pattern
+                    respawnEvenResource(); // evenly distributed: respawn at a random free slot so the pattern stays but the spot wanders
                 } else {
                     generateResource();
                 }
@@ -177,6 +205,7 @@ public class ResourceRegion {
             });
             syncResourceItems.clear();
             evenSlotById.clear();
+            evenSlots.clear();
         }
     }
 }

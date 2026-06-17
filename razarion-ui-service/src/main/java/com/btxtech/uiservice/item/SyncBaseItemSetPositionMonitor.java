@@ -32,6 +32,22 @@ public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionM
         super.addVisible(babylonBaseItem);
     }
 
+    /**
+     * Mirrors {@link com.btxtech.shared.gameengine.planet.quest.AbstractBaseItemComparison#isBotIdAllowed}:
+     * a kill quest restricted to specific bots must only visualize units of those bots. Without this the
+     * marker was placed on every enemy of the matching type (all bots), not just the quest's target bots.
+     * No filter (null) means any base qualifies.
+     */
+    public boolean isBotIdAllowed(Integer botId) {
+        if (botIdFilter == null) {
+            return true;
+        }
+        if (botId == null) {
+            return false;
+        }
+        return botIdFilter.contains(botId);
+    }
+
     public void setItemTypeFilter(Set<Integer> itemTypeFilter) {
         this.itemTypeFilter = itemTypeFilter;
         if(itemTypeFilter != null) {
