@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
-import {Diplomacy} from '../gwtangular/GwtAngularFacade';
+import {BaseItemType, Diplomacy} from '../gwtangular/GwtAngularFacade';
 import {BabylonRenderServiceAccessImpl} from './renderer/babylon-render-service-access-impl.service';
 import {SelectionService} from './selection.service';
 import {GwtAngularService} from '../gwtangular/GwtAngularService';
 
-export type SelectionShortcutCategory = 'builder' | 'factory' | 'harvester' | 'viper';
+// 'other' is the catch-all: every own item not covered by the typed groups above (buildings and any
+// unit without a builder/factory/harvester role or a weapon), so the navigation can still reach them.
+export type SelectionShortcutCategory = 'builder' | 'factory' | 'harvester' | 'attack' | 'other';
 
 interface OwnItemRecord {
   category: SelectionShortcutCategory;
@@ -22,17 +24,19 @@ export class SelectionShortcutsService {
     builder: null,
     factory: null,
     harvester: null,
-    viper: null
+    attack: null,
+    other: null
   };
   // BaseItemType ids we've ever seen as own units. Grows monotonically: entries are NOT removed
   // when units are view-culled, so getMyItemCount() returns correct server-side totals even when
   // most units of a type are no longer in babylonBaseItems (e.g. after the camera jumps to one
-  // viper, all the others elsewhere on the map disappear from babylonBaseItems).
+  // attack unit, all the others elsewhere on the map disappear from babylonBaseItems).
   private knownTypeIds: Record<SelectionShortcutCategory, Set<number>> = {
     builder: new Set(),
     factory: new Set(),
     harvester: new Set(),
-    viper: new Set()
+    attack: new Set(),
+    other: new Set()
   };
   // Last known position per own unit id. Lets cycle() reach off-screen units that are no longer
   // in babylonBaseItems — without this the cycle gets stuck on the few units in the current
@@ -84,12 +88,39 @@ export class SelectionShortcutsService {
     }
     allTypes.forEach(type => {
       const typeId = type.getId();
-      if (type.getBuilderType() != null) this.knownTypeIds.builder.add(typeId);
-      if (type.getFactoryType() != null) this.knownTypeIds.factory.add(typeId);
-      if (type.getHarvesterType() != null) this.knownTypeIds.harvester.add(typeId);
-      if (type.getInternalName() === 'Viper') this.knownTypeIds.viper.add(typeId);
+      const isBuilder = type.getBuilderType() != null;
+      const isFactory = type.getFactoryType() != null;
+      const isHarvester = type.getHarvesterType() != null;
+      const isAttack = this.isAttackType(type);
+      if (isBuilder) this.knownTypeIds.builder.add(typeId);
+      if (isFactory) this.knownTypeIds.factory.add(typeId);
+      if (isHarvester) this.knownTypeIds.harvester.add(typeId);
+      if (isAttack) this.knownTypeIds.attack.add(typeId);
+      if (!isBuilder && !isFactory && !isHarvester && !isAttack) this.knownTypeIds.other.add(typeId);
     });
     this.allTypesPopulated = true;
+  }
+
+  // The attack group covers every mobile armed unit (Viper, attack ships, ...). Mirrors how the
+  // factory group matches any FactoryType (covering both Factory and the Dockyard/harbor): match by
+  // capability — a movable unit carrying a weapon — instead of a single hard-coded internal name.
+  // The movable check keeps stationary armed defences out of the navigation cycle.
+  private isAttackType(type: BaseItemType): boolean {
+    return type.getWeaponType() != null && type.getPhysicalAreaConfig().fulfilledMovable();
+  }
+
+  // True when anything (own units or another player's item) is currently selected — used to enable
+  // the deselect button.
+  hasSelection(): boolean {
+    return this.selectionService.hasOwnSelection() || this.selectionService.getSelectedOtherId() !== null;
+  }
+
+  deselect(): void {
+    if (this.pendingSelectionTimeout !== null) {
+      clearTimeout(this.pendingSelectionTimeout);
+      this.pendingSelectionTimeout = null;
+    }
+    this.selectionService.clearSelection();
   }
 
   cycle(category: SelectionShortcutCategory): void {
@@ -150,20 +181,17 @@ export class SelectionShortcutsService {
     const own = this.rendererService.getBabylonBaseItemsByDiplomacy(Diplomacy.OWN);
     own.forEach(item => {
       const type = item.getBaseItemType();
-      let category: SelectionShortcutCategory | null = null;
+      let category: SelectionShortcutCategory;
       if (type.getBuilderType() != null) {
         category = 'builder';
       } else if (type.getFactoryType() != null) {
         category = 'factory';
       } else if (type.getHarvesterType() != null) {
         category = 'harvester';
-      } else if (type.getInternalName() === 'Viper') {
-        // Viper is a specific combat unit — there is no typed getter for it on BaseItemType,
-        // so we match by internal name. Adjust the literal if the unit gets renamed.
-        category = 'viper';
-      }
-      if (!category) {
-        return;
+      } else if (this.isAttackType(type)) {
+        category = 'attack';
+      } else {
+        category = 'other';
       }
       const typeId = type.getId();
       this.knownTypeIds[category].add(typeId);

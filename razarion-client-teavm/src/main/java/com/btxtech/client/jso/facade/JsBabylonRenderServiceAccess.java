@@ -98,6 +98,9 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
     @JSBody(params = {"obj", "prop"}, script = "return obj[prop];")
     private static native boolean getBooleanProp(JSObject obj, String prop);
 
+    @JSBody(params = {"obj", "method"}, script = "return obj[method]();")
+    private static native boolean callMethod0ReturnBool(JSObject obj, String method);
+
     // --- Inner adapter classes for return types ---
 
     @Override
@@ -287,7 +290,11 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
 
         @Override
         public boolean isEnemy() {
-            return getBooleanProp(js, "isEnemy");
+            // isEnemy is a JS method on the renderer's BabylonBaseItem, not a plain property.
+            // Reading it as a property (obj["isEnemy"]) returns the function reference, which
+            // coerces to a truthy boolean -> every unit looked like an enemy, so activating a
+            // kill quest live marked all units (own + others). Must invoke the method.
+            return callMethod0ReturnBool(js, "isEnemy");
         }
 
         @Override

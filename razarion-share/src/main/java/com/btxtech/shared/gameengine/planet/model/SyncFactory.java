@@ -75,6 +75,16 @@ public class SyncFactory extends SyncBaseAbility {
      */
     private int cooldownTicksRemaining = -1;
     private DecimalPosition rallyPoint;
+    /**
+     * Throttle counter for the per-tick progress sync. A building factory used to mark itself dirty
+     * EVERY tick (warmup/build/cooldown), sending a full SyncBaseItemInfo 10x/s just to convey the
+     * changing buildup float — the dominant gameConnection traffic when several factories build at
+     * once. The slave runs this same tick() locally and advances buildup itself (the buildup/cooldown
+     * branches below have no MASTER guard), so these syncs are only corrections and can be throttled
+     * to every SYNC_THROTTLE_TICKS tick without making the build animation step.
+     */
+    private static final int SYNC_THROTTLE_TICKS = 5;
+    private int sendThrottleCounter;
 
     @Inject
     public SyncFactory(CommandService commandService,
@@ -120,6 +130,18 @@ public class SyncFactory extends SyncBaseAbility {
         return rallyPoint;
     }
 
+    /**
+     * Send the factory's progress to the slaves, but at most every {@link #SYNC_THROTTLE_TICKS}
+     * ticks — the slave interpolates locally between corrections. Pass {@code force=true} for events
+     * the slave must not miss promptly (e.g. buildup reaching 1.0). No-op on slaves (notify guards).
+     */
+    private void throttledNotify(boolean force) {
+        if (force || ++sendThrottleCounter >= SYNC_THROTTLE_TICKS) {
+            sendThrottleCounter = 0;
+            syncService.notifySendSyncBaseItem(getSyncBaseItem());
+        }
+    }
+
     public boolean tick() {
         // Warmup phase: wait for intro animation before advancing progress.
         // On master, warmupTicksRemaining counts down each tick. On slave, this branch never fires
@@ -128,10 +150,10 @@ public class SyncFactory extends SyncBaseAbility {
         if (warmupTicksRemaining > 0) {
             warmupTicksRemaining--;
             gameLogicService.onSyncFactoryProgress(getSyncBaseItem());
-            // Mark dirty so the master pushes the warmup state to slaves every tick. Without this
-            // the SyncService dirty-list dedup means slaves only see the very first -1 and stay
-            // stuck in warmup state forever (until something else marks the item dirty).
-            syncService.notifySendSyncBaseItem(getSyncBaseItem());
+            // No keep-alive during warmup: progress is the constant -1 sentinel, already delivered to
+            // the slave by BaseItemService.executeCommand's sync. The slave holds its warmup state
+            // until the first non-negative buildup arrives (forced on the warmup->build transition
+            // below), so re-sending the unchanged -1 every few ticks is pure waste.
             return true;
         }
         // Just exited warmup countdown. Clear flag and fall through so the FIRST post-warmup tick
@@ -140,6 +162,9 @@ public class SyncFactory extends SyncBaseAbility {
         if (warmupTicksRemaining == 0) {
             warmupTicksRemaining = -1;
             inWarmup = false;
+            // Force the first build tick to sync so the slave promptly leaves its (held) warmup state
+            // instead of waiting up to SYNC_THROTTLE_TICKS for the next throttled correction.
+            sendThrottleCounter = SYNC_THROTTLE_TICKS;
         }
         // Slave: stay passive while master reports warmup. Don't advance buildup independently.
         if (inWarmup) {
@@ -158,9 +183,10 @@ public class SyncFactory extends SyncBaseAbility {
             }
             buildup += buildFactor;
             gameLogicService.onSyncFactoryProgress(getSyncBaseItem());
-            // Mark dirty so the buildup increments are pushed to slaves every tick (otherwise
-            // slaves only see the initial sync and stay at buildup=0 visually).
-            syncService.notifySendSyncBaseItem(getSyncBaseItem());
+            // Throttled correction — the slave advances buildup with the same formula each tick.
+            // Force a send the moment buildup completes so the slave's cooldown starts in lock-step
+            // with the master's (which decides when the produced unit actually spawns).
+            throttledNotify(buildup >= 1.0);
         }
         if (buildup >= 1.0) {
             // Cooldown phase: delay unit creation so the client can play the exit animation
@@ -176,7 +202,10 @@ public class SyncFactory extends SyncBaseAbility {
             }
             if (cooldownTicksRemaining > 0) {
                 cooldownTicksRemaining--;
-                syncService.notifySendSyncBaseItem(getSyncBaseItem());
+                // No keep-alive during cooldown: progress is the constant buildup=1.0 (already sent on
+                // the forced build-complete tick), the client runs the exit animation on a timer
+                // (outroSeconds), and the slave counts its own cooldown down deterministically. The
+                // factory's final progress=0 is synced when the unit spawns (stop() + idle path).
                 return true;
             }
             // Cooldown done (or no cooldown configured) — create the unit

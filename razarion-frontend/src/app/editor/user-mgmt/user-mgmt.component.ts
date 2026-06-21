@@ -98,6 +98,25 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
       }));
   }
 
+  onSetLevelResetQuests(userBackendInfo: UserBackendInfo): void {
+    this.userMgmtControllerClient.setLevelResetQuests(userBackendInfo.userId, userBackendInfo.levelId)
+      .then(() => {
+        this.messageService.add({
+          severity: 'success',
+          summary: `Level set & quests reset`,
+          detail: `All quests before the level are passed, the first quest of the level is active.`
+        });
+        this.loadUsers();
+      })
+      .catch(err =>
+        this.messageService.add({
+          severity: 'error',
+          summary: `Can not set level & reset quests`,
+          detail: err.message,
+          sticky: true
+        }));
+  }
+
   onSaveCrystals(userBackendInfo: UserBackendInfo): void {
     this.userMgmtControllerClient.setCrystals(userBackendInfo.userId, userBackendInfo.crystals).catch(err =>
       this.messageService.add({

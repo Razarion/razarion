@@ -50,7 +50,11 @@ export class HeightMapCursor {
       this.setupMesh(brushValues);
     }
     this.mesh!.position.x = position.x;
-    this.mesh!.position.y = position.y;
+    // Anchor the cursor at the absolute target height: the dome's plateau is built at local y = height,
+    // so positioning at y = 0 places it exactly on the world height the brush will flatten the terrain to.
+    // Previously this used position.y (the terrain pick point), which floated the plateau at terrain+height
+    // and made the brush's actual target height impossible to read.
+    this.mesh!.position.y = 0;
     this.mesh!.position.z = position.z;
   }
 

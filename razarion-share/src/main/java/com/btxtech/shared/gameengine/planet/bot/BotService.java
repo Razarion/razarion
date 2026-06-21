@@ -108,6 +108,22 @@ public class BotService {
         return false;
     }
 
+    /**
+     * A position is blocked for resource/box spawning if it lies within any bot's realm OR within
+     * any bot's visible ground footprint. Resource units sitting on a bot's ground plateau look
+     * wrong, so the ground is excluded in addition to the realm.
+     */
+    public boolean isInRealmOrGround(DecimalPosition position) {
+        synchronized (botRunners) {
+            for (BotRunner botRunner : botRunners) {
+                if (botRunner.isInRealm(position) || botRunner.isInGround(position)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void executeCommands(List<? extends AbstractBotCommandConfig> botCommandConfigs) {
         for (AbstractBotCommandConfig botCommandConfig : botCommandConfigs) {
             try {

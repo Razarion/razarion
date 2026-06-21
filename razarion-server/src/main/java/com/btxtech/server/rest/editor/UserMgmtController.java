@@ -47,7 +47,13 @@ public class UserMgmtController {
         serverLevelQuestService.setUserLevel(userId, levelId);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')") 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping(value = "set-level-reset-quests/{userId}/{levelId}")
+    public void setLevelResetQuests(@PathVariable("userId") String userId, @PathVariable("levelId") int levelId) {
+        serverLevelQuestService.prepareUserAtLevel(userId, levelId);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "set-crystals/{userId}/{crystals}")
     public void setCrystals(@PathVariable("userId") String userId, @PathVariable("crystals") int crystals) {
         userService.persistCrystals(userId, crystals);

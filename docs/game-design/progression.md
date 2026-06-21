@@ -96,6 +96,35 @@ A safe, isolated tutorial area where new players learn the game over **9 levels 
 
 Players leave Noob Island for a larger, more dangerous frontier. The headline mechanic: **buildings and the stronger combat unit are unlocked by spending Crystals found in boxes**, not by leveling — turning Phase 2 into a treasure hunt where two players at the same level can field different rosters. Defensive bots on visible bot-ground patches guard the best crystals; killing bot units can also drop crystals. All unit/crystal/box/bot/quest/map detail lives in the plan doc.
 
+### 4.1 Phase 2 Sub-Regions
+
+Phase 2 is divided into **four progression sub-regions**, built out over time. Only **Sub-region 1** is defined now; **Sub-regions 2–4** are future content (L14+) and will be added later as simple axis-aligned rectangles (AABBs) in the remaining Phase-2 area.
+
+**Sub-region 1 — "Bridgehead" (L10–L13).** The arrival zone: the player always crosses from Phase 1 (Noob Island) into Sub-region 1, which wraps the island on its north and east. It holds the entire current L10–L13 content (Beginner spawn, crystal boxes, Razarion fields, the Spire and Badger bots). Because it must exclude the island, it is **not an AABB**.
+
+- **Outer rectangle:** X 0–850, Y 0–1150 (top-left (0,1150), bottom-right (850,0))
+- **Minus** the Noob Island polygon (Phase 1) → non-AABB
+- **Area:** ~0.55 km² (0.98 km² rectangle − 0.43 km² island)
+- **Polygon** (game coords, origin bottom-left, Y up, CCW):
+
+  | # | X | Y | note |
+  |---|-----|------|------|
+  | 1 | 810 | 0    | island leaves the south edge |
+  | 2 | 850 | 0    | rectangle SE |
+  | 3 | 850 | 1150 | rectangle NE |
+  | 4 | 0   | 1150 | rectangle NW |
+  | 5 | 0   | 756  | island reaches the west edge |
+  | 6 | 117 | 740  | island boundary … |
+  | 7 | 402 | 589  | |
+  | 8 | 630 | 350  | |
+  | 9 | 804 | 162  | back toward corner 1 |
+
+> **Content rescope (follow-up):** the resource (id 218), box (id 11) and Beginner-start (id 122) regions currently span x≈0–1191 / y≈0–1200 — **wider than Sub-region 1**. They must be clipped to the Sub-region 1 polygon so L10–L13 content spawns only inside it.
+
+**Graphic representation:** each sub-region is surfaced as a **ground-colour tint** (see [terrain-rendering.md](../architecture/terrain-rendering.md)). The tint is derived in `ground-material.ts` from world XZ and multiplied over `diffuseFinal` before the light block — keeping the sandy base and only shifting hue. Sub-region 1 ("Bridgehead") uses a warm welcoming green `(1.00, 1.03, 0.93)`; Sub-regions 2–4 get their tints when defined. The non-rectangular island edge of Sub-region 1 needs a small zone mask (the later AABB sub-regions can be done analytically).
+
+These sub-regions are mirrored in the razarion-ai-content MCP server (`P2_SUBREGIONS` in `src/index.ts`) and can be overlaid on the live map with `region_map_image(subregions: true)` for verification.
+
 ---
 
 ## 5. Phase 3: The Siege

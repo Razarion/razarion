@@ -888,6 +888,19 @@ const PHASE_BOUNDARIES: Array<{ name: string; color: [number, number, number]; p
   { name: "Phase 4 (Warzone)", color: [255, 120, 255], poly: [[0, 2000], [2000, 2000], [2000, 2500], [5120, 2500], [5120, 5120], [0, 5120]] },
 ];
 
+// Phase 2 sub-regions, from docs/game-design/progression.md §4.1.
+// Phase 2 is divided into 4 progression sub-regions, built out over time. Only Sub-region 1 is defined now;
+// 2-4 are future content (L14+), added later as simple AABBs in the remaining Phase-2 area.
+// Sub-region 1 ("Bridgehead", L10-L13) is the arrival zone: the player always crosses from Phase 1 (Noob Island)
+// into it. Outer rect X 0-850 / Y 0-1150 minus the Noob Island polygon => non-AABB (wraps the island N + E).
+const P2_SUBREGIONS: Array<{ name: string; levels: string; color: [number, number, number]; poly: Array<[number, number]> }> = [
+  {
+    name: "Sub-region 1 — Bridgehead (L10–L13)", levels: "10-13", color: [120, 220, 90],
+    poly: [[810, 0], [850, 0], [850, 1150], [0, 1150], [0, 756], [117, 740], [402, 589], [630, 350], [804, 162]],
+  },
+  // Sub-regions 2-4 (L14+): TBD — simple AABBs in the remaining Phase-2 area (x 850-2000 ∪ y 1150-2000).
+];
+
 // Bresenham line into an RGB buffer, with square thickness.
 function drawLinePx(rgb: Uint8Array, w: number, h: number, x0: number, y0: number, x1: number, y1: number, color: [number, number, number], thick: number): void {
   const dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
@@ -964,10 +977,11 @@ server.tool(
     layers: z.array(REGION_LAYER_ENUM).optional().describe("Layers to include (default: resource, start, box, bot)"),
     bounds: z.object({ x1: z.number(), y1: z.number(), x2: z.number(), y2: z.number() }).optional().describe("Game-coordinate bounds; default auto-fit to all features"),
     phases: z.boolean().optional().describe("Overlay the four phase boundaries (P1 polygon, P2/P3/P4 zones) as coloured outlines. Default false."),
+    subregions: z.boolean().optional().describe("Overlay the Phase 2 sub-regions (currently only Sub-region 1 'Bridgehead' L10–L13) as coloured outlines. Default false."),
     terrain: z.boolean().optional().describe("Render the terrain (water/land/mountain colours) as the background, with region fills blended on top. Lets you see where land actually is. Default false (neutral dark background). planetId 117 is assumed (the only planet)."),
     outputPath: z.string().optional().describe("Absolute file path to write the PNG to. Defaults to <os-temp>/razarion-region-map-<id>.png. The MCP server runs locally, so this lands on your machine — open it with Invoke-Item."),
   },
-  async ({ serverGameEngineConfigId, width, layers, bounds, phases, terrain, outputPath }) => {
+  async ({ serverGameEngineConfigId, width, layers, bounds, phases, subregions, terrain, outputPath }) => {
     const cfg = (await apiGet(`/rest/editor/server-game-engine/read/${serverGameEngineConfigId}`)) as any;
     const feats = collectRegionFeatures(cfg, new Set(layers ?? DEFAULT_REGION_LAYERS));
     if (!feats.length) return msg("No region features found for the selected layers.");
@@ -1021,12 +1035,15 @@ server.tool(
       }
     }
 
-    // phase boundary outlines (drawn on top so the regions stay readable underneath)
-    if (phases) {
+    // phase boundary + Phase-2 sub-region outlines (drawn on top so the regions stay readable underneath)
+    if (phases || subregions) {
       const gx2px = (gx: number) => Math.round(((gx - b.x1) / spanX) * outW);
       const gy2px = (gy: number) => Math.round(((b.y2 - gy) / spanY) * outH);
       const thick = Math.max(2, Math.round(outW / 350));
-      for (const ph of PHASE_BOUNDARIES)
+      const polys: Array<{ color: [number, number, number]; poly: Array<[number, number]> }> = [];
+      if (phases) polys.push(...PHASE_BOUNDARIES);
+      if (subregions) polys.push(...P2_SUBREGIONS);
+      for (const ph of polys)
         for (let i = 0; i < ph.poly.length; i++) {
           const a = ph.poly[i], c = ph.poly[(i + 1) % ph.poly.length];
           drawLinePx(rgb, outW, outH, gx2px(a[0]), gy2px(a[1]), gx2px(c[0]), gy2px(c[1]), ph.color, thick);
@@ -1052,6 +1069,10 @@ server.tool(
     if (phases) {
       legend += "  [phase outlines]\n";
       for (const ph of PHASE_BOUNDARIES) legend += `    rgb(${ph.color.join(",")}) ${ph.name}\n`;
+    }
+    if (subregions) {
+      legend += "  [phase 2 sub-regions]\n";
+      for (const q of P2_SUBREGIONS) legend += `    rgb(${q.color.join(",")}) ${q.name}\n`;
     }
     return { content: [{ type: "image" as const, data: base64, mimeType: "image/png" }, { type: "text" as const, text: legend }] };
   }

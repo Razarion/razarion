@@ -1,13 +1,13 @@
-import {Nullable, PointerEventTypes, Scene, Vector2, Vector3} from "@babylonjs/core";
+import {PointerEventTypes, Scene, Vector2} from "@babylonjs/core";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {ActionService} from "../action.service";
 import {Observer} from '@babylonjs/core/Misc/observable';
 import type {PointerInfo} from '@babylonjs/core/Events/pointerEvents';
 
 export class SelectionFrame {
-  private static readonly MIN_DISTANCE = 0.5;
+  // Minimum drag in screen pixels before it counts as a marquee (smaller = treated as a click).
+  private static readonly MIN_PIXEL_DISTANCE = 5;
   private mousePos0: Vector2 | undefined;
-  private startTerrainPosition: Nullable<Vector3> = null;
   private observer: Observer<PointerInfo> | null = null;
   private overlay: HTMLDivElement | null = null;
 
@@ -40,10 +40,6 @@ export class SelectionFrame {
 
   private onPointerDown(x: number, y: number) {
     this.mousePos0 = new Vector2(x, y);
-    let pickingInfo = this.renderService.setupTerrainPickPoint();
-    if (pickingInfo.hit) {
-      this.startTerrainPosition = pickingInfo.pickedPoint;
-    }
   }
 
   private onPointerMove(x: number, y: number) {
@@ -55,31 +51,27 @@ export class SelectionFrame {
 
   private onPointerUp() {
     this.hideOverlay();
-    const start = this.startTerrainPosition;
+    const start = this.mousePos0;
     this.mousePos0 = undefined;
-    this.startTerrainPosition = null;
 
     if (!start) {
-      console.warn("No startTerrainPosition in SelectionFrame");
       return;
     }
-    let pickingInfo = this.renderService.setupTerrainPickPoint();
-    if (!pickingInfo.hit) {
-      console.warn("No pickingInfo in SelectionFrame");
-      return;
-    }
-    const end = pickingInfo.pickedPoint!;
+    const endX = this.scene.pointerX;
+    const endY = this.scene.pointerY;
 
-    if (Math.abs(start.x - end.x) < SelectionFrame.MIN_DISTANCE &&
-      Math.abs(start.z - end.z) < SelectionFrame.MIN_DISTANCE) {
+    // Below the threshold it's a click, not a marquee — let the per-item pick handlers deal with it.
+    if (Math.abs(start.x - endX) < SelectionFrame.MIN_PIXEL_DISTANCE &&
+      Math.abs(start.y - endY) < SelectionFrame.MIN_PIXEL_DISTANCE) {
       return;
     }
 
-    this.actionService.selectRectangle(
-      Math.min(start.x, end.x),
-      Math.min(start.z, end.z),
-      Math.abs(start.x - end.x),
-      Math.abs(start.z - end.z),
+    // Screen-pixel rectangle — same space as the green overlay the user drew.
+    this.actionService.selectScreenRectangle(
+      Math.min(start.x, endX),
+      Math.min(start.y, endY),
+      Math.max(start.x, endX),
+      Math.max(start.y, endY),
     );
   }
 

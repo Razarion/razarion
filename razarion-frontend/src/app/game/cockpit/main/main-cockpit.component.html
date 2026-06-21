@@ -47,15 +47,22 @@
     </p-button>
   </div>
 
-  <div class="grid grid-cols-[auto_auto] justify-start gap-x-1 gap-y-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
+  <div class="grid grid-cols-3 gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
     @for (cat of shortcutCategories; track cat.id) {
-      <p-button [icon]="cat.icon"
+      <p-button class="w-full" styleClass="!w-full !h-10"
+                [icon]="cat.icon"
                 [pTooltip]="cat.tooltip"
                 [disabled]="selectionShortcuts.getCount(cat.id) === 0"
                 [badge]="shortcutBadge(cat.id)"
                 (onClick)="selectionShortcuts.cycle(cat.id)">
       </p-button>
     }
+    <p-button class="w-full" styleClass="!w-full !h-10"
+              icon="pi pi-times"
+              pTooltip="Deselect"
+              [disabled]="!selectionShortcuts.hasSelection()"
+              (onClick)="selectionShortcuts.deselect()">
+    </p-button>
   </div>
 
   @if (radarState == WORKING || radarState == NO_POWER) {

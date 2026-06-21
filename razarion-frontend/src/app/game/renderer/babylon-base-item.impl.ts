@@ -406,6 +406,16 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     // Factory build animation: intro (platform goes down) then progress-scrubbed (platform rises).
     // progress < 0 is the master's warmup sentinel (see SyncFactory.fillSyncItemInfo).
     if (renderObject.hasProgressAnimation()) {
+      // Resume mid-build after a recreate: the item was culled out of view while building and the
+      // camera scrolled back, so a fresh instance starts in 'idle' and never receives the progress<0
+      // warmup sentinel that normally drives idle->intro->progress. Promote it straight into the
+      // progress phase (skipping the intro platform-descend) so the progress branch below restores
+      // the scan plate, build preview and platform height instead of the unit popping in abruptly.
+      if (progress > 0 && this.factoryBuildPhase === 'idle') {
+        this.factoryBuildPhase = 'progress';
+        renderObject.resumeBuildAnimation();
+      }
+
       if (progress < 0 && this.factoryBuildPhase === 'idle') {
         // Warmup phase: play intro animation (platform goes down)
         this.factoryBuildPhase = 'intro';

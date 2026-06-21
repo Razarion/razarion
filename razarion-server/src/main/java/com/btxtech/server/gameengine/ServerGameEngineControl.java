@@ -113,9 +113,13 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             }
             planetService.start();
             planetService.addTickListener(this);
+            // Start bots BEFORE resources/boxes so their realm and ground footprints are registered
+            // when getFreeRandomPosition/isFreePosition run the bot-realm/ground exclusion. Otherwise
+            // the botRunners list is still empty at placement time and resources spawn inside the
+            // bot realm and on the bot ground plateau.
+            botService.startBots(serverGameEngineConfig.getBotConfigs());
             resourceService.startResourceRegions();
             boxService.startBoxRegions(serverGameEngineService.readBoxRegionConfigs());
-            botService.startBots(serverGameEngineConfig.getBotConfigs());
             planetService.enableTracking(false);
         }, failText -> logger.error("TerrainSetup failed: " + failText));
         if (activateQuests) {

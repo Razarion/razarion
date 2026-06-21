@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -54,6 +55,7 @@ public class BotRunner {
     private IntervalState intervalState;
     private SimpleScheduledFuture botTimerFuture;
     private SimpleScheduledFuture botTickerFuture;
+    private Polygon2D groundPolygon; // lazily built cache of the bot's visible ground footprint
 
     @Inject
     public BotRunner(SimpleExecutorService simpleExecutorService,
@@ -99,6 +101,7 @@ public class BotRunner {
 
     public void start(BotConfig botConfig) {
         this.botConfig = botConfig;
+        this.groundPolygon = null;
         if (botConfig.intervalBot()) {
             if (botConfig.intervalValid()) {
                 intervalState = IntervalState.INACTIVE;
@@ -159,6 +162,23 @@ public class BotRunner {
 
     boolean isInRealm(DecimalPosition position) {
         return botConfig.getRealm() != null && botConfig.getRealm().checkInside(position);
+    }
+
+    boolean isInGround(DecimalPosition position) {
+        Polygon2D polygon = getGroundPolygon();
+        return polygon != null && polygon.isInside(position);
+    }
+
+    private Polygon2D getGroundPolygon() {
+        if (groundPolygon == null) {
+            if (!botConfig.isGroundBoxEnabled()
+                    || botConfig.getGroundBoxPositions() == null
+                    || botConfig.getGroundBoxPositions().size() < 3) {
+                return null;
+            }
+            groundPolygon = new Polygon2D(botConfig.getGroundBoxPositions());
+        }
+        return groundPolygon;
     }
 
     void enrageOnKill(SyncBaseItem syncBaseItem, PlayerBase actor) {

@@ -223,77 +223,56 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit, On
 
   private static calculateHeightRound(centerPosition: Vector3, position: Vector3, terrainHeight: number | null, brushValues: BrushValues): number | null {
     const radius = brushValues.size / 2.0;
-    let distance = Vector2.Distance(new Vector2(position.x, position.z), new Vector2(centerPosition.x, centerPosition.z));
-    if (distance < (radius + brushValues.maxSlopeWidth)) {
-      let newHeight: number | null = null;
-      if (distance <= radius) {
-        newHeight = brushValues.height;
-      } else {
-        let slopeDistance = distance - radius;
-        let deltaHeight = brushValues.height * slopeDistance / brushValues.maxSlopeWidth;
-        if (terrainHeight !== null) {
-          let direction = brushValues.height - terrainHeight;
-          let random = (brushValues.random * (Math.random() - 0.5) * 2.0)
-          let calculatedHeight = brushValues.height + random - deltaHeight;
-          if (direction > 0) {
-            // up
-            if (calculatedHeight > terrainHeight) {
-              newHeight = calculatedHeight;
-            }
-          } else if (direction < 0) {
-            // down
-            if (calculatedHeight < terrainHeight) {
-              newHeight = calculatedHeight;
-            }
-          }
-        } else {
-          let random = (brushValues.random * (Math.random() - 0.5) * 2.0)
-          newHeight = brushValues.height + random - deltaHeight;
-        }
-      }
-      return newHeight
-    } else {
+    const distance = Vector2.Distance(new Vector2(position.x, position.z), new Vector2(centerPosition.x, centerPosition.z));
+    if (distance >= radius + brushValues.maxSlopeWidth) {
       return null;
     }
+    if (distance <= radius) {
+      return brushValues.height;
+    }
+    return FixHeightBrushComponent.slopeHeight(distance - radius, terrainHeight, brushValues);
   }
 
   private static calculateHeightSquare(centerPosition: Vector3, position: Vector3, terrainHeight: number | null, brushValues: BrushValues): number | null {
     const distanceX = Math.abs(centerPosition.x - position.x);
     const distanceZ = Math.abs(centerPosition.z - position.z);
+    const half = brushValues.size / 2.0;
 
-    if ((distanceX <= brushValues.size / 2.0)
-      && (distanceZ <= brushValues.size / 2.0)) {
-      return brushValues.height;
-    } else if ((distanceX <= brushValues.size / 2.0 + brushValues.maxSlopeWidth)
-      && (distanceZ <= brushValues.size / 2.0 + brushValues.maxSlopeWidth)) {
-      let newHeight: number | null = null;
-
-      let distance = Math.max(distanceX, distanceZ);
-      let slopeDistance = distance - brushValues.size / 2.0;
-      let deltaHeight = brushValues.height * slopeDistance / brushValues.maxSlopeWidth;
-      if (terrainHeight !== null) {
-        let direction = brushValues.height - position.y;
-        let random = (brushValues.random * (Math.random() - 0.5) * 2.0)
-        let calculatedHeight = brushValues.height + random - deltaHeight;
-        if (direction > 0) {
-          // up
-          if (calculatedHeight > terrainHeight) {
-            newHeight = calculatedHeight;
-          }
-        } else if (direction < 0) {
-          // down
-          if (calculatedHeight < terrainHeight) {
-            newHeight = calculatedHeight;
-          }
-        }
-      } else {
-        let random = (brushValues.random * (Math.random() - 0.5) * 2.0)
-        newHeight = brushValues.height + random - deltaHeight;
-      }
-      return newHeight;
-    } else {
+    if (distanceX > half + brushValues.maxSlopeWidth || distanceZ > half + brushValues.maxSlopeWidth) {
       return null;
     }
+    if (distanceX <= half && distanceZ <= half) {
+      return brushValues.height;
+    }
+    return FixHeightBrushComponent.slopeHeight(Math.max(distanceX, distanceZ) - half, terrainHeight, brushValues);
+  }
+
+  /**
+   * Height inside the slope band. Blends linearly from the brush height (slopeDistance 0) to the
+   * surrounding terrain height (slopeDistance == maxSlopeWidth) — NOT to absolute 0, which previously
+   * caused steep cliffs / "extreme depths" when sculpting on elevated terrain. With terrainHeight null
+   * (cursor preview) it falls back to 0 as the reference so the cursor shows a self-contained dome.
+   */
+  private static slopeHeight(slopeDistance: number, terrainHeight: number | null, brushValues: BrushValues): number | null {
+    if (brushValues.maxSlopeWidth <= 0) {
+      return null;
+    }
+    const ref = terrainHeight !== null ? terrainHeight : 0;
+    const t = Math.min(1, slopeDistance / brushValues.maxSlopeWidth);
+    const random = brushValues.random * (Math.random() - 0.5) * 2.0;
+    const calculatedHeight = brushValues.height + (ref - brushValues.height) * t + random;
+
+    if (terrainHeight === null) {
+      return calculatedHeight;
+    }
+    const direction = brushValues.height - terrainHeight;
+    if (direction > 0) {
+      return calculatedHeight > terrainHeight ? calculatedHeight : null;   // up: never dip below terrain
+    }
+    if (direction < 0) {
+      return calculatedHeight < terrainHeight ? calculatedHeight : null;   // down: never rise above terrain
+    }
+    return null;
   }
 
   onCreateBrush() {

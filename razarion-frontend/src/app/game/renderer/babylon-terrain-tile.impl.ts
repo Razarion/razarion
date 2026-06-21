@@ -872,6 +872,22 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     return this.groundHeights[localX + localY * xCount] ?? BabylonTerrainTileImpl.HEIGHT_DEFAULT;
   }
 
+  /**
+   * O(1) world-space ground-height lookup from the cached heightmap (no raycast).
+   * Returns null when (worldX, worldZ) lies outside this tile so the caller can
+   * try the next loaded tile. Used by the quest place-marker draping, which would
+   * otherwise need one scene.pickWithRay per vertex and freeze the browser.
+   */
+  public tryGetGroundHeight(worldX: number, worldZ: number): number | null {
+    const localX = Math.floor(worldX - this.tileXOffset);
+    const localY = Math.floor(worldZ - this.tileYOffset);
+    const xCount = BabylonTerrainTileImpl.NODE_X_COUNT + 1;
+    if (localX < 0 || localX >= xCount || localY < 0 || localY >= BabylonTerrainTileImpl.NODE_Y_COUNT + 1) {
+      return null;
+    }
+    return this.groundHeights[localX + localY * xCount] ?? null;
+  }
+
   private setupSprites() {
     const scene = this.rendererService.getScene();
     const spriteManagers: Record<TerrainZone, SpriteManager> = {

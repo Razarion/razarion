@@ -466,7 +466,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   setViewFieldCenter(x: number, y: number): void {
-    let currentViewFieldCenter = this.setupCenterGroundPosition();
+    // Reference the screen-centre ground point at the TARGET's terrain height, not at zero level.
+    // The camera is tilted forward-down, so a unit standing on elevated terrain projects higher on
+    // screen than its zero-level footprint. Centering on the zero-level point would push such a unit
+    // toward the top edge. Using the terrain height at (x, y) centres the unit where it's drawn.
+    const terrainHeight = this.getTerrainHeightAt(x, y) ?? 0;
+    this.camera.getViewMatrix();
+    const invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
+    let currentViewFieldCenter = this.setupTerrainLevelPosition(0, 0, invertCameraViewProj, terrainHeight);
     if (!this.isValidVector3(currentViewFieldCenter)) {
       this.pendingSetViewFieldCenter = new Vector2(x, y);
       return;
@@ -677,6 +684,22 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.createDrapedMarkerMesh(polygon);
   }
 
+  // O(1) ground-height lookup across the loaded terrain tiles, reading their
+  // cached heightmaps directly. Replaces the per-vertex scene.pickWithRay the
+  // marker draping used to do — a large region subdivides into tens of thousands
+  // of vertices, and one full-scene ray pick each froze the whole browser for
+  // seconds. Returns null when no loaded tile covers the point (off-screen area),
+  // letting the caller fall back to water level.
+  private resolveLoadedTerrainHeight(x: number, z: number): number | null {
+    for (const tile of this.loadedTerrainTiles) {
+      const h = tile.tryGetGroundHeight(x, z);
+      if (h !== null) {
+        return h;
+      }
+    }
+    return null;
+  }
+
   // Builds a place-marker mesh that drapes over the terrain: the polygon is
   // triangulated, subdivided down to MARKER_TARGET_EDGE so it follows slopes,
   // and every vertex is lifted onto the terrain surface (clamped to water
@@ -699,13 +722,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
 
     // Cache terrain heights per quantized position — subdivision shares many
-    // midpoints, and each lookup is a downward ray pick.
+    // midpoints. The lookup itself is now an O(1) heightmap read per point.
     const heightCache = new Map<string, number>();
     const drapeHeight = (x: number, z: number): number => {
       const key = `${x.toFixed(2)}_${z.toFixed(2)}`;
       let h = heightCache.get(key);
       if (h === undefined) {
-        h = Math.max(LocationVisualization.getHeightFromTerrain(x, z, this), BabylonTerrainTileImpl.WATER_LEVEL)
+        const terrainHeight = this.resolveLoadedTerrainHeight(x, z) ?? BabylonTerrainTileImpl.WATER_LEVEL;
+        h = Math.max(terrainHeight, BabylonTerrainTileImpl.WATER_LEVEL)
           + BabylonRenderServiceAccessImpl.MARKER_GROUND_OFFSET;
         heightCache.set(key, h);
       }
@@ -969,6 +993,30 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     const y = (1 - ndcY) / 2 * this.engine.getRenderHeight();
 
     return this.scene.pick(x, y);
+  }
+
+  /**
+   * Project a ground (game) position to screen pixel coordinates using the live camera transform.
+   * Returns null if the point is behind the camera. Used by marquee selection so the picked set
+   * matches the on-screen rectangle exactly: a world-space box built from the two drag corners
+   * drifts under the tilted perspective camera (a screen rectangle maps to a ground trapezoid), so
+   * units near the view edges fall outside it even though they look inside the drawn box.
+   *
+   * @param gameX game X (= Babylon world X)
+   * @param gameY game Y (= Babylon world Z, ground plane)
+   * @param gameZ game Z (= Babylon world Y, height)
+   */
+  public projectGroundPositionToScreen(gameX: number, gameY: number, gameZ: number): Vector2 | null {
+    const world = new Vector3(gameX, gameZ, gameY);
+    // getViewMatrix() also refreshes the cached transformation matrix used just below.
+    const viewPosition = Vector3.TransformCoordinates(world, this.camera.getViewMatrix());
+    if (viewPosition.z <= 0) {
+      return null; // behind the camera — the perspective divide below would mirror it on-screen
+    }
+    const ndc = Vector3.TransformCoordinates(world, this.camera.getTransformationMatrix());
+    const screenX = (ndc.x + 1) / 2 * this.engine.getRenderWidth();
+    const screenY = (1 - ndc.y) / 2 * this.engine.getRenderHeight();
+    return new Vector2(screenX, screenY);
   }
 
   showInspector() {

@@ -158,6 +158,33 @@ public class ServerLevelQuestService implements QuestListener {
         }
     }
 
+    /**
+     * Puts a user at the given level for testing: every quest in the levels
+     * <em>before</em> the target level is marked as passed, every quest from the
+     * target level onward is left open, and the first open quest of the target
+     * level is activated. Mirrors {@code complete-quests-to-level.ps1} but as a
+     * single atomic backend operation that also activates the next quest.
+     */
+    @Transactional
+    public void prepareUserAtLevel(String userId, int levelId) {
+        LevelEntity targetLevel = levelCrudPersistence.getEntity(levelId);
+        if (targetLevel == null) {
+            throw new IllegalArgumentException("No level for id: " + levelId);
+        }
+        int targetLevelNumber = targetLevel.getNumber();
+        // Completed = all quests of the levels strictly before the target level.
+        List<Integer> completedQuestIds = questConfigService.readQuestBackendInfos().stream()
+                .filter(info -> info.getLevelNumber() >= 0 && info.getLevelNumber() < targetLevelNumber)
+                .map(QuestBackendInfo::getId)
+                .toList();
+        userService.setCompletedQuest(userId, completedQuestIds);
+        // Move to the target level (persists level, resets xp, notifies client + engine).
+        setUserLevel(userId, levelId);
+        // Drop any active quest, then activate the first open quest of the target level.
+        deactivateQuest(userId);
+        activateNextPossibleQuest(userId);
+    }
+
     public void activateNextPossibleQuest(String userId) {
         QuestConfig newQuest = userService.getAndSaveNewQuest(userId);
         if (newQuest != null) {

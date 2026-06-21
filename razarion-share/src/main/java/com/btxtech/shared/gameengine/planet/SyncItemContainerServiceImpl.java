@@ -409,7 +409,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
         if (placeConfig.getPolygon2D() != null) {
             return GeometricUtil.findFreeRandomPosition(placeConfig.getPolygon2D(), decimalPosition -> {
                 if (excludeBotRealm) {
-                    return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealm(decimalPosition);
+                    return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealmOrGround(decimalPosition);
                 } else {
                     return isFree(terrainType, decimalPosition, radius);
                 }
@@ -418,7 +418,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
             if (placeConfig.getRadius() != null) {
                 return GeometricUtil.findFreeRandomPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition -> {
                     if (excludeBotRealm) {
-                        return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealm(decimalPosition);
+                        return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealmOrGround(decimalPosition);
                     } else {
                         return isFree(terrainType, decimalPosition, radius);
                     }
@@ -435,7 +435,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
         if (placeConfig.getPosition() != null && placeConfig.getRadius() != null) {
             return GeometricUtil.findFreeNearestPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition -> {
                 if (excludeBotRealm) {
-                    return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealm(decimalPosition);
+                    return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealmOrGround(decimalPosition);
                 } else {
                     return isFree(terrainType, decimalPosition, radius);
                 }
@@ -456,7 +456,7 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     public boolean isFreePosition(TerrainType terrainType, DecimalPosition position, double radius, boolean excludeBotRealm) {
-        if (excludeBotRealm && botServices.get().isInRealm(position)) {
+        if (excludeBotRealm && botServices.get().isInRealmOrGround(position)) {
             return false;
         }
         return isFree(terrainType, position, radius);

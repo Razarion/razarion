@@ -124,6 +124,22 @@ export class RenderObject {
     }
   }
 
+  /**
+   * Resumes the build animation mid-progress WITHOUT replaying the intro phase. Used when a factory
+   * comes back into view after being culled while building: the warmup/intro window has already
+   * elapsed on the server, so we jump straight into the loop + progress-scrubbed state. The platform
+   * height is then driven by setProgressAnimationValue() (called by the caller right after).
+   */
+  resumeBuildAnimation() {
+    if (this.buildAnimationActive) {
+      return;
+    }
+    this.buildAnimationActive = true;
+    this.onBuildAnimationActiveChanged.notifyObservers(true);
+    this.stopAllPhasedGroups();
+    this.startLoopGroups();
+  }
+
   isBuildAnimationActive(): boolean {
     return this.buildAnimationActive;
   }

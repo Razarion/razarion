@@ -11,6 +11,9 @@
  *  - render CPU time (ms in scene.render())
  *  - tick interval (ms between game-engine tick arrivals, derived on the main thread)
  *
+ * The readout also shows "worker N/s": the worker game-engine ticks counted over the last
+ * second (target 10/s) — a drop below that means the worker simulation is falling behind.
+ *
  * Reading it: a spike on BOTH frame interval and tick interval = the main thread stalled
  * (GC / message processing / shader compile). A spike on tick interval ALONE (frames keep
  * flowing) = the worker / game engine hitched. A frame spike with a big render time = the
@@ -42,6 +45,9 @@ export class BabylonPerfOverlay {
   private lastFrameTime: number | null = null;
   private lastTickTime: number | null = null;   // performance.now() of the last game-engine tick
   private currentTickInterval = 0;
+  // Sliding 1s window of tick-arrival timestamps → worker ticks per second (target is 10/s).
+  private readonly tickTimes: number[] = [];
+  private ticksPerSecond = 0;
   private lastClientTickMs = 0;                  // main-thread ms spent applying the last tick
   private lastSpikeLogTime = 0;
   private fps = 0;
@@ -75,6 +81,8 @@ export class BabylonPerfOverlay {
       this.lastFrameTime = null;
       this.lastTickTime = null;
       this.currentTickInterval = 0;
+      this.tickTimes.length = 0;
+      this.ticksPerSecond = 0;
       this.frameMs.length = 0;
       this.renderMs.length = 0;
       this.tickMs.length = 0;
@@ -98,6 +106,14 @@ export class BabylonPerfOverlay {
     }
     this.lastTickTime = now;
     this.lastClientTickMs = clientTickMs;
+
+    // Count the ticks that arrived in the last second = worker ticks per second.
+    this.tickTimes.push(now);
+    const windowStart = now - 1000;
+    while (this.tickTimes.length > 0 && this.tickTimes[0] < windowStart) {
+      this.tickTimes.shift();
+    }
+    this.ticksPerSecond = this.tickTimes.length;
   }
 
   /**
@@ -204,6 +220,8 @@ export class BabylonPerfOverlay {
     ctx.fillText(`${this.fps.toFixed(0)} fps`, 300, 4);
     ctx.fillStyle = "rgba(255,150,40,1)";
     ctx.fillText(`tile w${this.lastTileWorkerMs.toFixed(0)}/c${this.lastTileClientMs.toFixed(0)}ms`, 6, 17);
+    ctx.fillStyle = "rgba(230,120,255,1)";
+    ctx.fillText(`worker ${this.ticksPerSecond}/s`, 175, 17);
     ctx.fillStyle = "rgba(200,200,200,0.8)";
     ctx.fillText(`${scaleMs}ms / ${fpsScale}fps`, 300, 17);
   }

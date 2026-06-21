@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BabylonItem, ItemType, Diplomacy, GameCommandService } from '../gwtangular/GwtAngularFacade';
+import { BabylonItem, ItemType, Diplomacy, GameCommandService, Vertex } from '../gwtangular/GwtAngularFacade';
 import { GwtAngularService } from '../gwtangular/GwtAngularService';
 import { BabylonAudioService } from './renderer/babylon-audio.service';
 import { SelectionService as TsSelectionService } from './selection.service';
@@ -110,23 +110,28 @@ export class ActionService {
     return selectionInfo;
   }
 
-  selectRectangle(xStart: number, yStart: number, width: number, height: number): void {
+  /**
+   * Select everything inside the on-screen marquee. Bounds are in canvas pixel coordinates (the same
+   * space as the green selection overlay). Each candidate's ground position is projected to screen
+   * and tested against the pixel rectangle — this matches what the user drew exactly. (The previous
+   * world-space box test, built from only the two drag corners, drifted under the tilted perspective
+   * camera and dropped units near the view edges.)
+   */
+  selectScreenRectangle(xStart: number, yStart: number, xEnd: number, yEnd: number): void {
     if (!this.rendererService) return;
+    const rendererService = this.rendererService;
 
-    const xEnd = xStart + width;
-    const yEnd = yStart + height;
+    const inRect = (item: { getPosition(): Vertex | null }): boolean => {
+      const pos = item.getPosition();
+      if (!pos) return false;
+      const screen = rendererService.projectGroundPositionToScreen(pos.getX(), pos.getY(), pos.getZ());
+      if (!screen) return false;
+      return screen.x >= xStart && screen.x <= xEnd && screen.y >= yStart && screen.y <= yEnd;
+    };
 
-    // Find own base items in rectangle
-    // Rectangle coords are in Babylon space (X/Z = ground plane)
-    // Item positions are Razarion Vertex (X/Y = ground plane, Z = height)
+    // Find own base items in the rectangle
     const ownItems = this.rendererService.getBabylonBaseItemsByDiplomacy(Diplomacy.OWN)
-      .filter(item => {
-        const pos = item.getPosition();
-        if (!pos) return false;
-        const x = pos.getX();
-        const y = pos.getY();
-        return x >= xStart && x <= xEnd && y >= yStart && y <= yEnd;
-      });
+      .filter(inRect);
 
     if (ownItems.length > 0) {
       this.tsSelectionService.selectOwnItems(ownItems);
@@ -135,13 +140,7 @@ export class ActionService {
 
     // No own items — check resources
     const resources = this.rendererService.getBabylonResourceItemImpls()
-      .filter(item => {
-        const pos = item.getPosition();
-        if (!pos) return false;
-        const x = pos.getX();
-        const y = pos.getY();
-        return x >= xStart && x <= xEnd && y >= yStart && y <= yEnd;
-      });
+      .filter(inRect);
 
     if (resources.length > 0) {
       this.tsSelectionService.selectOther(resources[0].getId(), Diplomacy.RESOURCE, resources[0].itemType.getId(), undefined, resources[0], resources[0].itemType.getName());

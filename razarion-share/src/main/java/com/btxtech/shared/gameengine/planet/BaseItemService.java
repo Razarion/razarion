@@ -287,6 +287,15 @@ public class BaseItemService {
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, angle, base);
         syncBaseItem.setSpawnProgress(1.0);
         syncBaseItem.setBuildup(1.0);
+        // Sync the finished unit in THIS tick — the same tick (and thus the same TickInfo) that
+        // carries the factory's progress=0 "stopped" signal. Without this, createSyncBaseItem() only
+        // adds the unit to activeItemQueue, so it is first synced a tick later via the idle path in
+        // tick() (line ~597), landing in a SEPARATE, later TickInfo. The client disposes the build
+        // preview when it sees factory progress=0 (after a 300ms grace), but the real unit arrives in
+        // that later TickInfo — and if the worker is lagging, its arrival can slip well past the 300ms,
+        // leaving a visible gap where no unit is shown. Bundling both into one TickInfo makes the
+        // preview->real handoff atomic on the client (mirrors spawnSyncBaseItem()).
+        syncService.notifySendSyncBaseItem(syncBaseItem);
         gameLogicService.onFactorySyncItem(syncBaseItem, createdBy);
         return syncBaseItem;
     }

@@ -15,17 +15,14 @@ import java.util.Optional;
 public interface ServerGameEngineConfigRepository extends JpaRepository<ServerGameEngineConfigEntity, Integer> {
 
     @Query("""
-            SELECT q
-            FROM QuestConfigEntity q
-            WHERE q.id IN (
-                SELECT e.quest.id
-                FROM ServerGameEngineConfigEntity sg
-                JOIN sg.serverLevelQuestEntities s
-                JOIN s.serverLevelQuestEntryEntities e
-                WHERE sg.id = :serverGameEngineConfigEntityId
-                  AND s.minimalLevel.number <= :levelNumber
-            )
-            AND (:ignoreQuestIds IS NULL OR q.id NOT IN :ignoreQuestIds)
+            SELECT e.quest
+            FROM ServerGameEngineConfigEntity sg
+            JOIN sg.serverLevelQuestEntities s
+            JOIN s.serverLevelQuestEntryEntities e
+            WHERE sg.id = :serverGameEngineConfigEntityId
+              AND s.minimalLevel.number <= :levelNumber
+              AND (:ignoreQuestIds IS NULL OR e.quest.id NOT IN :ignoreQuestIds)
+            ORDER BY s.minimalLevel.number, e.orderColumn
             """)
     List<QuestConfigEntity> getQuests4Level(@Param("levelNumber") int levelNumber,
                                             @Param("serverGameEngineConfigEntityId") int serverGameEngineConfigEntityId,
