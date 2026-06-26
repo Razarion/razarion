@@ -228,7 +228,9 @@
                                             <p-accordion-header>
                                               <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId"
                                               [readOnly]="true"></base-item-type>
-                                              <div class="col-span-1">
+                                              <div class="col-span-1 flex flex-row gap-1">
+                                                <p-button type="button" icon="pi pi-copy" styleClass="p-button-sm"
+                                                (onClick)="onCopyBotItem(botItem, botEnragementStateConfig)"></p-button>
                                                 <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
                                                 (onClick)="onDeleteBotItem(botItem, botEnragementStateConfig)"></p-button>
                                               </div>

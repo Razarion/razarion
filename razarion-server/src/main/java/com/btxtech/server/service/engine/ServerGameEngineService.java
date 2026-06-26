@@ -149,9 +149,14 @@ public class ServerGameEngineService extends AbstractConfigCrudService<ServerGam
     @Transactional
     public void updateStartRegionConfig(int serverGameEngineConfigId, List<StartRegionConfig> startRegionConfigs) {
         var serverGameEngineConfig = getBaseEntity(serverGameEngineConfigId);
-        serverGameEngineConfig.setStartRegionConfigs(startRegionConfigs.stream()
-                .map(c -> new StartRegionConfigEntity().fromStartRegionConfig(c))
-                .toList());
+        // Id-preserving update: existing start regions keep their id so a quest FK
+        // (QUEST_COMPARISON.startRegionId) is not broken by a delete+recreate.
+        PersistenceUtil.fromConfigsNoClear(serverGameEngineConfig.getStartRegionConfigs(),
+                startRegionConfigs,
+                StartRegionConfigEntity::new,
+                StartRegionConfigEntity::fromStartRegionConfig,
+                StartRegionConfig::getId,
+                BaseEntity::getId);
         updateBaseEntity(serverGameEngineConfig);
     }
 

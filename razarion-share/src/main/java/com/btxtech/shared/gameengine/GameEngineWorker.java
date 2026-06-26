@@ -214,6 +214,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case SELL_ITEMS:
                 sellItems((IdsDto) controlPackage.getData(0));
                 break;
+            case SURRENDER_BASE:
+                surrenderBase();
+                break;
             case TERRAIN_TYPE_ORDINALS_REQUEST:
                 getTerrainTypeOrdinals((Index) controlPackage.getData(0));
                 break;
@@ -616,6 +619,18 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             }
         } else {
             throw new IllegalStateException("GameEngineWorker.sellItems() illegal gameEngineMode: " + gameEngineMode);
+        }
+    }
+
+    private void surrenderBase() {
+        if (gameEngineMode == GameEngineMode.MASTER) {
+            baseItemService.surrenderHumanBase(userContext.getUserId());
+        } else if (gameEngineMode == GameEngineMode.SLAVE) {
+            if (serverConnection != null) {
+                serverConnection.surrenderBase();
+            }
+        } else {
+            throw new IllegalStateException("GameEngineWorker.surrenderBase() illegal gameEngineMode: " + gameEngineMode);
         }
     }
 

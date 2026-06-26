@@ -110,6 +110,9 @@ public class ClientGameConnection {
             case SELL_ITEMS:
                 baseItemService.sellItems(((IdsDto) param).getIds(), getPlayerBase());
                 break;
+            case SURRENDER_BASE:
+                baseItemService.surrenderHumanBase(userId);
+                break;
             case USE_INVENTORY_ITEM:
                 // TODO serverInventoryService.useInventoryItem((UseInventoryItem) param, getPlayerSession(), getPlayerBaseFull());
                 break;

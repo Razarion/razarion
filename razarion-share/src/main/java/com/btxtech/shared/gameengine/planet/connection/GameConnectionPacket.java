@@ -47,6 +47,7 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     PICK_BOX_COMMAND(PickupBoxCommand.class),
     // Cockpit
     SELL_ITEMS(IdsDto.class),
+    SURRENDER_BASE(Void.class),
     USE_INVENTORY_ITEM(UseInventoryItem.class);
 
     private final Class<?> theClass;

@@ -152,6 +152,12 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
     })
   }
 
+  onCopyBotItem(botItem: BotItemConfig, botEnragementStateConfig: BotEnragementStateConfig) {
+    const index = botEnragementStateConfig.botItems.findIndex(b => b === botItem);
+    const copy: BotItemConfig = structuredClone(botItem);
+    botEnragementStateConfig.botItems.splice(index + 1, 0, copy);
+  }
+
   onDeleteBotItem(botItem: BotItemConfig, botEnragementStateConfig: BotEnragementStateConfig) {
     botEnragementStateConfig.botItems.splice(botEnragementStateConfig.botItems.findIndex(b => b === botItem), 1);
   }

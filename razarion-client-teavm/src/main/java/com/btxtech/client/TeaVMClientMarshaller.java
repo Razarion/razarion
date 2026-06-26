@@ -71,6 +71,7 @@ public class TeaVMClientMarshaller {
             case STOP_REQUEST:
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
+            case SURRENDER_BASE:
                 break;
 
             case INITIALIZE:

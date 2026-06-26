@@ -73,7 +73,8 @@ public class GameEngineControlPackage {
         TERRAIN_TYPE_ORDINALS_REQUEST,
         TERRAIN_TYPE_ORDINALS_RESPONSE,
         // Cockpit
-        SELL_ITEMS
+        SELL_ITEMS,
+        SURRENDER_BASE
     }
 
     private final Command command;

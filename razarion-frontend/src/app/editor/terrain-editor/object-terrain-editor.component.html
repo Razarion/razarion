@@ -1,87 +1,291 @@
 <p-divider align="left">
   <div class="inline-flex items-center">
-    <i class="pi pi-plus-circle mr-2"></i>
-    <b>New</b>
+    <i class="pi pi-pencil mr-2"></i>
+    <b>Mode</b>
   </div>
 </p-divider>
+<div class="p-1">
+  <p-selectButton [options]="brushModeOptions" [(ngModel)]="brushMode" (onChange)="onBrushModeChange()"
+                  optionLabel="label" optionValue="value"></p-selectButton>
+</div>
+
 <div class="grid grid-cols-12 gap-1 p-1">
-  <span class="col-span-5">Terrain Object</span>
+  <span class="col-span-5">Object</span>
   <div class="col-span-7">
     <p-select [appendTo]="'body'" [options]="terrainObjectConfigs" [(ngModel)]="newTerrainObjectConfig"
     optionLabel="name"></p-select>
   </div>
 </div>
-<div class="grid grid-cols-12 gap-1 p-1">
-  <span class="col-span-5">Mouse</span>
-  <div class="col-span-7">
-    <p-selectButton [options]="onOffOptions" [(ngModel)]="newTerrainObjectMode" optionLabel="label"
-    optionValue="value"></p-selectButton>
-  </div>
-</div>
 
-<p-divider align="left">
-  <div class="inline-flex items-center">
-    <i class="pi pi-cog mr-2"></i>
-    <b>Edit</b>
+@if (brushMode === 'EDIT') {
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-plus-circle mr-2"></i>
+      <b>New</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Mouse</span>
+    <div class="col-span-7">
+      <p-selectButton [options]="onOffOptions" [(ngModel)]="newTerrainObjectMode" optionLabel="label"
+      optionValue="value"></p-selectButton>
+    </div>
   </div>
-</p-divider>
-<div class="grid grid-cols-12 gap-1 p-1">
-  <span class="col-span-5">TerrainObject</span>
-  <div class="col-span-7">
-    @if (selectedTerrainObject) {
-      <span>{{ selectedTerrainObject.getInternalName() }}
-        '{{ selectedTerrainObject.getId() }}
-      '</span>
-    }
-  </div>
-</div>
-<div class="grid grid-cols-12 gap-1 p-1">
-  <span class="col-span-5">Show Radius</span>
-  <div class="col-span-7">
-    <p-selectButton [options]="onOffOptions" [(ngModel)]="selectedRadiusShow" (onChange)="showHideRadius()"
-    optionLabel="label" optionValue="value"></p-selectButton>
-  </div>
-</div>
-<div class="grid grid-cols-12 gap-1 p-1">
-  <span class="col-span-5">Radius</span>
-  <div class="col-span-7">
-    <p-inputNumber [(ngModel)]="selectedRadius" (onInput)="onSelectedRadiusChange($event.value)" [size]="'small'"
-      [step]=0.1
-      [minFractionDigits]="1" [maxFractionDigits]="6" [incrementButtonClass]="'p-button-text'"
-    [decrementButtonClass]="'p-button-text'" [showButtons]="true"></p-inputNumber>
-    <p-button icon="pi pi-save" (onClick)="saveRadius()"></p-button>
-  </div>
-</div>
-<div class="grid grid-cols-12 gap-1 p-1">
-  <span class="col-span-5">Position</span>
-  <div class="col-span-7">
-    @if (gizmoManager) {
-      <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.positionGizmoEnabled"
-      optionLabel="label" optionValue="value"></p-selectButton>
-    }
-  </div>
-</div>
-<div class="grid grid-cols-12 gap-1 p-1">
-  <span class="col-span-5">Rotation</span>
-  <div class="col-span-7">
-    @if (gizmoManager) {
-      <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.rotationGizmoEnabled"
-      optionLabel="label" optionValue="value"></p-selectButton>
-    }
-  </div>
-</div>
-<div class="grid grid-cols-12 gap-1 p-1">
-  <span class="col-span-5">Scale</span>
-  <div class="col-span-7">
-    @if (gizmoManager) {
-      <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.scaleGizmoEnabled"
-      optionLabel="label" optionValue="value"></p-selectButton>
-    }
-  </div>
-</div>
-<terrain-object-position #terrainObjectPosition></terrain-object-position>
 
-<terrain-object-generator #terrainObjectGenerator></terrain-object-generator>
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-cog mr-2"></i>
+      <b>Edit</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">TerrainObject</span>
+    <div class="col-span-7">
+      @if (selectedTerrainObject) {
+        <span>{{ selectedTerrainObject.getInternalName() }}
+          '{{ selectedTerrainObject.getId() }}
+        '</span>
+      }
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Show Radius</span>
+    <div class="col-span-7">
+      <p-selectButton [options]="onOffOptions" [(ngModel)]="selectedRadiusShow" (onChange)="showHideRadius()"
+      optionLabel="label" optionValue="value"></p-selectButton>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Radius</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="selectedRadius" (onInput)="onSelectedRadiusChange($event.value)" [size]="'small'"
+        [step]=0.1
+        [minFractionDigits]="1" [maxFractionDigits]="6" [incrementButtonClass]="'p-button-text'"
+      [decrementButtonClass]="'p-button-text'" [showButtons]="true"></p-inputNumber>
+      <p-button icon="pi pi-save" (onClick)="saveRadius()"></p-button>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Rotation</span>
+    <div class="col-span-7">
+      @if (gizmoManager) {
+        <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.rotationGizmoEnabled"
+        optionLabel="label" optionValue="value"></p-selectButton>
+      }
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Scale</span>
+    <div class="col-span-7">
+      @if (gizmoManager) {
+        <p-selectButton [options]="onOffOptions" [(ngModel)]="gizmoManager.scaleGizmoEnabled"
+        optionLabel="label" optionValue="value"></p-selectButton>
+      }
+    </div>
+  </div>
+  <terrain-object-position #terrainObjectPosition></terrain-object-position>
+}
+
+@if (brushMode === 'DELETE') {
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-trash mr-2"></i>
+      <b>Delete brush</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Radius [m]</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="deleteBrush.radius" [min]="1" [max]="500" [step]="1" [showButtons]="true"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Only selected type</span>
+    <div class="col-span-7">
+      <p-checkbox [(ngModel)]="deleteBrush.onlySelectedType" [binary]="true"></p-checkbox>
+    </div>
+  </div>
+}
+
+@if (brushMode === 'SCATTER') {
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-bookmark mr-2"></i>
+      <b>Preset</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <div class="col-span-9">
+      <p-select [appendTo]="'body'" [options]="scatterPresets" [(ngModel)]="activeScatterPreset"
+                (onChange)="onScatterPresetChange()" optionLabel="name" placeholder="No preset"
+                [style]="{ width: '100%' }"></p-select>
+    </div>
+    <div class="col-span-1">
+      <p-button type="button" icon="pi pi-plus"
+                styleClass="p-button-rounded p-button-text p-button-sm p-button-success"
+                (onClick)="onCreateScatterPreset()"></p-button>
+    </div>
+    <div class="col-span-1">
+      <p-button type="button" icon="pi pi-save"
+                styleClass="p-button-rounded p-button-text p-button-sm"
+                (onClick)="onSaveScatterPreset()"></p-button>
+    </div>
+    <div class="col-span-1">
+      <p-button type="button" icon="pi pi-trash"
+                styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+                (onClick)="onDeleteScatterPreset()"></p-button>
+    </div>
+  </div>
+  @if (activeScatterPreset) {
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Name</span>
+      <div class="col-span-7">
+        <input [(ngModel)]="activeScatterPreset.value.internalName" type="text"
+               class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+      </div>
+    </div>
+  }
+
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-box mr-2"></i>
+      <b>Objects</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <div class="col-span-12">
+      <p-multiSelect [appendTo]="'body'" [options]="terrainObjectConfigs" [(ngModel)]="selectedScatterConfigs"
+                     optionLabel="name" placeholder="Falls leer: 'Object' oben" [filter]="true"
+                     styleClass="w-full"></p-multiSelect>
+    </div>
+  </div>
+
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-sparkles mr-2"></i>
+      <b>Brush</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Radius [m]</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="scatterBrush.radius" [min]="1" [max]="500" [step]="1" [showButtons]="true"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Count / dab</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="scatterBrush.countPerDab" [min]="1" [max]="100" [step]="1" [showButtons]="true"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Min distance [m]</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="scatterBrush.minDistance" [min]="0" [max]="100" [step]="0.5"
+                     [minFractionDigits]="1" [showButtons]="true"></p-inputNumber>
+    </div>
+  </div>
+
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-sliders-h mr-2"></i>
+      <b>Variation</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Scale min</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="scatterBrush.minScale" [min]="0.01" [max]="100" [step]="0.1"
+                     [minFractionDigits]="2" [showButtons]="true"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Scale max</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="scatterBrush.maxScale" [min]="0.01" [max]="100" [step]="0.1"
+                     [minFractionDigits]="2" [showButtons]="true"></p-inputNumber>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Yaw jitter [°]</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="scatterBrush.yawJitterDeg" [min]="0" [max]="180" [step]="5" [showButtons]="true"></p-inputNumber>
+    </div>
+  </div>
+
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-chart-line mr-2"></i>
+      <b>Slope filter</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Enabled</span>
+    <div class="col-span-7">
+      <p-selectButton [options]="onOffOptions" [(ngModel)]="scatterBrush.slopeFilterEnabled" optionLabel="label"
+                      optionValue="value"></p-selectButton>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Place</span>
+    <div class="col-span-7">
+      <p-selectButton [options]="slopeAboveOptions" [(ngModel)]="scatterBrush.slopeAbove" optionLabel="label"
+                      optionValue="value" [disabled]="!scatterBrush.slopeFilterEnabled"></p-selectButton>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Slope threshold [m/m]</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="scatterBrush.slopeThreshold" [min]="0" [max]="10" [step]="0.05"
+                     [minFractionDigits]="2" [showButtons]="true"
+                     [disabled]="!scatterBrush.slopeFilterEnabled"></p-inputNumber>
+    </div>
+  </div>
+
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-cloud mr-2"></i>
+      <b>Water filter</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Enabled</span>
+    <div class="col-span-7">
+      <p-selectButton [options]="onOffOptions" [(ngModel)]="scatterBrush.waterFilterEnabled" optionLabel="label"
+                      optionValue="value"></p-selectButton>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Place</span>
+    <div class="col-span-7">
+      <p-selectButton [options]="waterAboveOptions" [(ngModel)]="scatterBrush.waterAbove" optionLabel="label"
+                      optionValue="value" [disabled]="!scatterBrush.waterFilterEnabled"></p-selectButton>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Water level [m]</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="scatterBrush.waterLevel" [min]="-100" [max]="100" [step]="0.5"
+                     [minFractionDigits]="1" [showButtons]="true"
+                     [disabled]="!scatterBrush.waterFilterEnabled"></p-inputNumber>
+    </div>
+  </div>
+}
+
+@if (brushMode === 'PUSH') {
+  <p-divider align="left">
+    <div class="inline-flex items-center">
+      <i class="pi pi-arrows-h mr-2"></i>
+      <b>Push brush</b>
+    </div>
+  </p-divider>
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Radius [m]</span>
+    <div class="col-span-7">
+      <p-inputNumber [(ngModel)]="pushBrush.radius" [min]="1" [max]="500" [step]="1" [showButtons]="true"></p-inputNumber>
+    </div>
+  </div>
+}
 
 <p-divider align="left">
   <div class="inline-flex items-center">

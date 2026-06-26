@@ -27,7 +27,11 @@ export class BrushValues {
   type: BrushType = BrushType.SQUARE;
   height: number = 1;
   size: number = 10;
+  /** Maximum horizontal reach of the slope band (hard cutoff). The slope steepness is set by maxSlopeAngle. */
   maxSlopeWidth: number = 10;
+  /** Slope steepness in degrees (1..89). The band descends at this angle until it meets the terrain or
+   *  hits maxSlopeWidth. Optional so unrelated brushes that build a BrushValues literal need not set it. */
+  maxSlopeAngle?: number = 45;
   random: number = 0;
 }
 
@@ -114,7 +118,16 @@ export class BrushValues {
     </div>
 
     <div class="grid grid-cols-12 gap-1 p-1">
-      <span class="col-span-5">Max slope width [m]</span>
+      <span class="col-span-5">Max slope angle [°]</span>
+      <div class="col-span-7">
+        <input type="number" [(ngModel)]="activeBrush.value.brushValues.maxSlopeAngle" class="w-full"/>
+        <p-slider [(ngModel)]="activeBrush.value.brushValues.maxSlopeAngle" [step]="1" [min]="1"
+                  [max]="89"></p-slider>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Max slope reach [m]</span>
       <div class="col-span-7">
         <input type="number" [(ngModel)]="activeBrush.value.brushValues.maxSlopeWidth" class="w-full"/>
         <p-slider [(ngModel)]="activeBrush.value.brushValues.maxSlopeWidth" [step]="1" [min]="0"
@@ -177,10 +190,9 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit, On
       .then(brushConfigEntity => {
         this.brushes = [];
         brushConfigEntity.forEach(brushConfig => {
-          let brushValues = JSON.parse(brushConfig.brushJson);
-          if (!brushValues) {
-            brushValues = new BrushValues();
-          }
+          // Merge over defaults so presets saved before a field existed (e.g. maxSlopeAngle) get it.
+          const parsed = JSON.parse(brushConfig.brushJson);
+          const brushValues: BrushValues = {...new BrushValues(), ...(parsed ?? {})};
           let brush = {
             name: `${brushConfig.internalName} (${brushConfig.id})`,
             value: new Brush(brushConfig.id, brushConfig.internalName, brushValues),
@@ -248,19 +260,25 @@ export class FixHeightBrushComponent extends AbstractBrush implements OnInit, On
   }
 
   /**
-   * Height inside the slope band. Blends linearly from the brush height (slopeDistance 0) to the
-   * surrounding terrain height (slopeDistance == maxSlopeWidth) — NOT to absolute 0, which previously
-   * caused steep cliffs / "extreme depths" when sculpting on elevated terrain. With terrainHeight null
-   * (cursor preview) it falls back to 0 as the reference so the cursor shows a self-contained dome.
+   * Height inside the slope band. The terrain descends from the brush height toward the surrounding
+   * terrain height at a fixed angle (maxSlopeAngle, degrees), clamped so it never overshoots the
+   * reference — NOT to absolute 0, which previously caused steep cliffs / "extreme depths" when
+   * sculpting on elevated terrain. maxSlopeWidth caps how far the band may reach (the caller cuts off
+   * beyond it), so on a small angle the slope is limited to that reach. With terrainHeight null (cursor
+   * preview) it falls back to 0 as the reference so the cursor shows a self-contained dome.
    */
   private static slopeHeight(slopeDistance: number, terrainHeight: number | null, brushValues: BrushValues): number | null {
     if (brushValues.maxSlopeWidth <= 0) {
       return null;
     }
     const ref = terrainHeight !== null ? terrainHeight : 0;
-    const t = Math.min(1, slopeDistance / brushValues.maxSlopeWidth);
+    const angleDeg = brushValues.maxSlopeAngle ?? 45;
+    const drop = slopeDistance * Math.tan(angleDeg * Math.PI / 180);
     const random = brushValues.random * (Math.random() - 0.5) * 2.0;
-    const calculatedHeight = brushValues.height + (ref - brushValues.height) * t + random;
+    // Descend from the brush height toward the reference at the fixed angle, never past the reference.
+    const calculatedHeight = (brushValues.height >= ref
+      ? Math.max(ref, brushValues.height - drop)
+      : Math.min(ref, brushValues.height + drop)) + random;
 
     if (terrainHeight === null) {
       return calculatedHeight;

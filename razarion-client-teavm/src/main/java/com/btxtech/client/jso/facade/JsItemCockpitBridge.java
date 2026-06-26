@@ -82,6 +82,15 @@ public class JsItemCockpitBridge {
             }
         });
 
+        // surrenderBase()
+        setVoid(proxy, "surrenderBase", () -> {
+            try {
+                gameEngineControl.surrenderBase();
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "surrenderBase failed", t);
+            }
+        });
+
         // requestUnload(containerId: number)
         setIntVoid(proxy, "requestUnload", (containerId) -> {
             try {

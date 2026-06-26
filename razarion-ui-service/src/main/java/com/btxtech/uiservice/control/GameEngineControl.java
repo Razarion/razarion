@@ -251,6 +251,10 @@ import java.util.logging.Logger;
         sendToWorker(GameEngineControlPackage.Command.SELL_ITEMS, intArrayToIdsDto(itemIds));
     }
 
+    public void surrenderBase() {
+        sendToWorker(GameEngineControlPackage.Command.SURRENDER_BASE);
+    }
+
     private IdsDto intArrayToIdsDto(int[] ids) {
         java.util.List<Integer> list = new java.util.ArrayList<>(ids.length);
         for (int id : ids) {

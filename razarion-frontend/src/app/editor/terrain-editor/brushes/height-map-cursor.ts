@@ -22,6 +22,7 @@ export class HeightMapCursor {
       size: brushValues.size,
       height: brushValues.height,
       maxSlopeWidth: brushValues.maxSlopeWidth,
+      maxSlopeAngle: brushValues.maxSlopeAngle,
       random: brushValues.random,
     }
     let vertexData = this.createVertexData();
@@ -46,6 +47,7 @@ export class HeightMapCursor {
       this.currentBrush.size !== brushValues.size ||
       this.currentBrush.height !== brushValues.height ||
       this.currentBrush.maxSlopeWidth !== brushValues.maxSlopeWidth ||
+      this.currentBrush.maxSlopeAngle !== brushValues.maxSlopeAngle ||
       this.currentBrush.random !== brushValues.random) {
       this.setupMesh(brushValues);
     }

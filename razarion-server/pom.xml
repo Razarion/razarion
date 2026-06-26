@@ -133,7 +133,7 @@
                         <class>com.btxtech.server.rest.ui.ParticleSystemController</class>
                         <class>com.btxtech.server.rest.ui.AudioController</class>
                         <class>com.btxtech.server.rest.editor.BrushConfigController</class>
-                        <class>com.btxtech.server.rest.editor.TerrainObjectGeneratorController</class>
+                        <class>com.btxtech.server.rest.editor.ScatterBrushController</class>
                         <class>com.btxtech.server.rest.ui.UiConfigCollectionController</class>
                         <class>com.btxtech.server.rest.ui.ImageController</class>
                         <class>com.btxtech.server.rest.editor.DbPropertiesEditorController</class>

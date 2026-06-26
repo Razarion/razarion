@@ -18,7 +18,8 @@ import {
 import {
   BaseItemTypeEditorControllerClient,
   BoxItemTypeEditorControllerClient,
-  ResourceItemTypeEditorControllerClient
+  ResourceItemTypeEditorControllerClient,
+  TerrainObjectEditorControllerClient
 } from '../../../../../src/app/generated/razarion-share';
 import {TypescriptGenerator} from '../../../../../src/app/backend/typescript-generator';
 import {BabylonModelService} from '../../../../../src/app/game/renderer/babylon-model.service';
@@ -29,7 +30,7 @@ import {Diplomacy} from '../../../../../src/app/gwtangular/GwtAngularFacade';
 /** Height of the radius disc above the ground; the model is seated just above it. */
 const DISC_Y = 0.01;
 
-type ItemKind = 'base' | 'box' | 'resource';
+type ItemKind = 'base' | 'box' | 'resource' | 'terrainObject';
 
 /** Per-kind wiring: which editor client backs the list/save and where the radius lives
  *  (BaseItemType keeps it under physicalAreaConfig, Box/Resource have it top-level). */
@@ -59,6 +60,7 @@ interface KindConfig {
           <button [class.active]="kind() === 'base'" (click)="selectKind('base')">Base</button>
           <button [class.active]="kind() === 'box'" (click)="selectKind('box')">Box</button>
           <button [class.active]="kind() === 'resource'" (click)="selectKind('resource')">Resource</button>
+          <button [class.active]="kind() === 'terrainObject'" (click)="selectKind('terrainObject')">Terrain</button>
         </div>
         <header>
           <h3>{{ kinds[kind()].label }}</h3>
@@ -172,6 +174,7 @@ export class RadiusTaskComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly baseClient = new BaseItemTypeEditorControllerClient(this.adapter);
   private readonly boxClient = new BoxItemTypeEditorControllerClient(this.adapter);
   private readonly resourceClient = new ResourceItemTypeEditorControllerClient(this.adapter);
+  private readonly terrainObjectClient = new TerrainObjectEditorControllerClient(this.adapter);
 
   readonly kinds: Record<ItemKind, KindConfig> = {
     base: {
@@ -186,6 +189,11 @@ export class RadiusTaskComponent implements OnInit, AfterViewInit, OnDestroy {
     },
     resource: {
       label: 'Resources', client: this.resourceClient,
+      getRadius: it => it.radius,
+      setRadius: (it, r) => { it.radius = r; }
+    },
+    terrainObject: {
+      label: 'Terrain objects', client: this.terrainObjectClient,
       getRadius: it => it.radius,
       setRadius: (it, r) => { it.radius = r; }
     }
@@ -398,24 +406,37 @@ export class RadiusTaskComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private centerOnDisc(renderObject: RenderObject, holder: TransformNode): void {
     const root = renderObject.getModel3D();
-    const meshes = root.getChildMeshes(false);
-    if (root instanceof Mesh) {
-      meshes.push(root);
-    }
+    const candidates = [root, ...root.getChildMeshes(false)];
+
     holder.position.set(0, 0, 0);
     holder.computeWorldMatrix(true);
     root.computeWorldMatrix(true);
-    meshes.forEach(m => {
-      m.computeWorldMatrix(true);
-      m.refreshBoundingInfo({});
+
+    // Accumulate the world AABB over REAL geometry only. Babylon's getHierarchyBoundingVectors
+    // also counts marker/helper meshes that carry zero vertices — their bounding box collapses to
+    // a point at the node origin (0,0,0), which pins minY to 0. A rock whose geometry sits above
+    // its origin (e.g. "Rock1 grup2", ~0.5m up) then never gets seated and floats. Filtering to
+    // getTotalVertices() > 0 — the same test the static-model path uses — yields the true visible
+    // footprint, so the rock's actual bottom lands on the disc.
+    let minX = Infinity, minY = Infinity, minZ = Infinity;
+    let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+    candidates.forEach(n => {
+      if (!(n instanceof Mesh) || n.getTotalVertices() === 0) {
+        return;
+      }
+      n.computeWorldMatrix(true);
+      n.refreshBoundingInfo({});
+      const bb = n.getBoundingInfo().boundingBox;
+      minX = Math.min(minX, bb.minimumWorld.x); maxX = Math.max(maxX, bb.maximumWorld.x);
+      minY = Math.min(minY, bb.minimumWorld.y); maxY = Math.max(maxY, bb.maximumWorld.y);
+      minZ = Math.min(minZ, bb.minimumWorld.z); maxZ = Math.max(maxZ, bb.maximumWorld.z);
     });
-    const {min, max} = root.getHierarchyBoundingVectors(true);
-    if (!isFinite(min.x) || !isFinite(max.x)) {
+    if (!isFinite(minX) || !isFinite(minY)) {
       return;
     }
-    holder.position.x = -(min.x + max.x) / 2;
-    holder.position.z = -(min.z + max.z) / 2;
-    holder.position.y = DISC_Y + 0.01 - min.y;
+    holder.position.x = -(minX + maxX) / 2;
+    holder.position.z = -(minZ + maxZ) / 2;
+    holder.position.y = DISC_Y + 0.01 - minY;
   }
 
   private applyDiscRadius(): void {

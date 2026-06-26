@@ -47,7 +47,10 @@ export class TerrainObjectPositionComponent {
     this.terrainObjectPosition = terrainObjectPosition;
     this.rotation = transformNode.rotation;
     const terrainObjectPositionComponent = this;
+    // configurable: true so re-selecting the same node (now common: every click-to-drag re-selects)
+    // can redefine the property instead of throwing "Cannot redefine property: rotation".
     Object.defineProperty(transformNode, "rotation", {
+      configurable: true,
       get: function () {
         return this._rotation;
       },

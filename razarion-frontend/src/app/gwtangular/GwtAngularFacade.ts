@@ -185,6 +185,8 @@ export interface ItemCockpitBridge {
 
   sellItems(itemIds: number[]): void;
 
+  surrenderBase(): void;
+
   requestUnload(containerId: number): void;
 
   setCockpitStateCallback(callback: () => void): void;

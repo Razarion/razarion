@@ -51,7 +51,25 @@ import {BotConfig} from 'src/app/generated/razarion-share';
     SelectButton,
     FileUpload
   ],
-  templateUrl: './height-map-terrain-editor.component.html'
+  templateUrl: './height-map-terrain-editor.component.html',
+  styles: [`
+    /* The brush selector holds 10 options. PrimeNG's .p-selectbutton root is display:inline-flex and
+       not width-constrained, so flex-wrap never triggers and the single row overflows the tab panel,
+       clipping the rest of the editor. NOTE: SelectButton forwards its [styleClass] to the inner
+       ToggleButtons, NOT to the root — so we target the root .p-selectbutton directly (scoped to this
+       component's host; it is the only selectButton here). Fill the panel width and wrap onto multiple
+       rows; the buttons keep their natural (readable) width and simply flow to the next line. */
+    :host ::ng-deep .p-selectbutton {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    /* PrimeNG drops the left border on all but the first button (neighbours share an edge). Once the
+       row wraps, the first button of each new row would lose its left edge — give every button one. */
+    :host ::ng-deep .p-selectbutton .p-togglebutton {
+      border-left-width: 1px;
+    }
+  `]
 })
 export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy {
   wireframe: boolean = false;

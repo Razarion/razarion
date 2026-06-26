@@ -1,15 +1,23 @@
 import {Component} from '@angular/core';
 import {Checkbox} from 'primeng/checkbox';
 import {FormsModule} from '@angular/forms';
+import {Dialog} from 'primeng/dialog';
+import {Button} from 'primeng/button';
 import {UiSettingsService} from '../../ui-settings.service';
+import {GwtAngularService} from '../../../gwtangular/GwtAngularService';
+import {CockpitDisplayService} from '../cockpit-display.service';
 
 @Component({
   selector: 'settings',
   templateUrl: 'settings.component.html',
-  imports: [Checkbox, FormsModule],
+  imports: [Checkbox, FormsModule, Dialog, Button],
 })
 export class SettingsComponent {
-  constructor(public uiSettingsService: UiSettingsService) {}
+  showSurrenderWarning = false;
+
+  constructor(public uiSettingsService: UiSettingsService,
+              private gwtAngularService: GwtAngularService,
+              private cockpitDisplayService: CockpitDisplayService) {}
 
   get showUnitNames(): boolean {
     return this.uiSettingsService.unitNamesVisible;
@@ -17,5 +25,11 @@ export class SettingsComponent {
 
   set showUnitNames(value: boolean) {
     this.uiSettingsService.unitNamesVisible = value;
+  }
+
+  surrenderBase(): void {
+    this.showSurrenderWarning = false;
+    this.cockpitDisplayService.showSettingsDialog = false;
+    this.gwtAngularService.gwtAngularFacade.itemCockpitBridge.surrenderBase();
   }
 }

@@ -123,6 +123,7 @@ public final class TeaVMWorkerMarshaller {
             case TICK_UPDATE_RESPONSE_FAIL:
             case CONNECTION_LOST:
             case COMMAND_MOVE_ACK:
+            case SURRENDER_BASE:
                 break;
             case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE:
                 break;
@@ -260,6 +261,7 @@ public final class TeaVMWorkerMarshaller {
             case CONNECTION_LOST:
             case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE:
             case COMMAND_MOVE_ACK:
+            case SURRENDER_BASE:
                 break;
 
             case INITIALIZE:

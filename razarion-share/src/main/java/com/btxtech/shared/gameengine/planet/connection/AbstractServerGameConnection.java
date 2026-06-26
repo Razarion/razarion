@@ -64,6 +64,10 @@ public abstract class AbstractServerGameConnection {
         sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SELL_ITEMS, toJson(items)));
     }
 
+    public void surrenderBase() {
+        sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SURRENDER_BASE, null));
+    }
+
     public void useInventoryItem(UseInventoryItem useInventoryItem) {
         sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.USE_INVENTORY_ITEM, toJson(useInventoryItem)));
     }

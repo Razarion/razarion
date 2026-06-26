@@ -169,7 +169,7 @@ public class BaseItemService {
         return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, unlockedItemLimit, userId, null);
     }
 
-    private void surrenderHumanBase(String userId) {
+    public void surrenderHumanBase(String userId) {
         PlayerBaseFull playerBase = getPlayerBaseFull4UserId(userId);
         if (playerBase != null) {
             gameLogicService.onSurrenderBase(playerBase);
