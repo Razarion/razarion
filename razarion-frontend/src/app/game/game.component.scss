@@ -36,3 +36,35 @@
   color: white;
   pointer-events: none;
 }
+
+/* Director recording badge — DOM overlay, not captured into the WebM. */
+.rec-indicator {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font: 600 14px/1 sans-serif;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+}
+
+.rec-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff2d2d;
+  box-shadow: 0 0 8px #ff2d2d;
+  animation: rec-blink 1s steps(1, end) infinite;
+}
+
+@keyframes rec-blink {
+  50% { opacity: 0.15; }
+}

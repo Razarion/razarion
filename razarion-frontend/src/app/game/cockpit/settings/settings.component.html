@@ -4,6 +4,16 @@
     <label for="showUnitNames">Show unit names</label>
   </div>
 
+  <div class="flex items-center gap-2">
+    <p-checkbox [(ngModel)]="showTips" [binary]="true" inputId="showTips"></p-checkbox>
+    <label for="showTips">Show tips</label>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <p-checkbox [(ngModel)]="showQuestVisualization" [binary]="true" inputId="showQuestVisualization"></p-checkbox>
+    <label for="showQuestVisualization">Show quest area</label>
+  </div>
+
   <hr class="border-surface-600 my-1">
 
   <p-button label="Give up base"

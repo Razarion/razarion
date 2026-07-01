@@ -29,7 +29,11 @@ public class BotConfig implements Config {
     private List<BotGroundSlopeBox> botGroundSlopeBoxes;
 
     public int getId() {
-        return id;
+        // id is null for a not-yet-persisted (new) BotConfig. The Config contract
+        // forces a primitive return, so map "no id" to 0 instead of unboxing null
+        // (NPE). 0 matches no persisted entity, so id-preserving updates
+        // (fromConfigsNoClear) correctly treat it as a new bot.
+        return id == null ? 0 : id;
     }
 
     public void setId(Integer id) {

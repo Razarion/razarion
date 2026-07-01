@@ -19,6 +19,7 @@ import {Button} from 'primeng/button';
 import {Accordion, AccordionModule} from 'primeng/accordion';
 import {LevelComponent} from '../common/level/level.component';
 import {StartRegionComponent} from '../common/start-region/start-region.component';
+import {BotIdsComponent} from '../common/bot-ids/bot-ids.component';
 
 import {TipComponent} from './tip/tip.component';
 import {MessageService} from 'primeng/api';
@@ -40,7 +41,8 @@ import {ScrollPanelModule} from 'primeng/scrollpanel';
     LevelComponent,
     TipComponent,
     ScrollPanelModule,
-    StartRegionComponent
+    StartRegionComponent,
+    BotIdsComponent
   ],
   templateUrl: './server-quest-editor.component.html'
 })

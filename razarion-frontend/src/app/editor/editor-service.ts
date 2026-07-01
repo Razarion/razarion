@@ -208,6 +208,20 @@ export class EditorService {
     });
   }
 
+  readBotObjectNameIds(): Promise<ObjectNameId[]> {
+    return new Promise((resolve) => {
+      this.readServerGameEngineConfig().then(serverGameEngineConfig => {
+        const objectNameIds: ObjectNameId[] = serverGameEngineConfig.botConfigs
+          .filter(config => config.id !== null)
+          .map(config => ({
+            id: config.id!,
+            internalName: config.internalName
+          }));
+        resolve(objectNameIds);
+      });
+    });
+  }
+
   readGroundObjectNameIds(): Promise<ObjectNameId[]> {
     return this.readObjectNameIds(GROUND_EDITOR_PATH);
   }

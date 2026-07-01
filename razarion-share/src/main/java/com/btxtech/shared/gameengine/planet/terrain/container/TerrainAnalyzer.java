@@ -170,6 +170,27 @@ public class TerrainAnalyzer {
 
     }
 
+    /**
+     * Returns true if the node covering the given position is raised onto a flat bot-ground
+     * (plateau) box. Mirrors the bot-ground branch of {@link #getHeightNodeAt(Index)} so callers can
+     * predict whether something placed here will sit at the raised plateau height instead of the low
+     * terrain height. Slope (ramp) boxes are intentionally excluded — only the flat top counts.
+     */
+    public boolean isBotGround(DecimalPosition position) {
+        if (terrainShapeManager == null) {
+            return false;
+        }
+        Index terrainNodeIndex = terrainPositionToNodeIndex(position);
+        TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(nodeIndexToTileIndex(terrainNodeIndex));
+        if (terrainShapeTile == null || terrainShapeTile.getNativeBotGrounds() == null) {
+            return false;
+        }
+        DecimalPosition nodePosition = nodeIndexToTerrainPosition(terrainNodeIndex);
+        return Arrays.stream(terrainShapeTile.getNativeBotGrounds())
+                .anyMatch(nativeBotGround -> Arrays.stream(nativeBotGround.positions)
+                        .anyMatch(boxPosition -> Rectangle2D.generateRectangleFromMiddlePoint(NativeUtil.toDecimalPosition(boxPosition), BOT_BOX_LENGTH, BOT_BOX_LENGTH).containsExclusive(nodePosition)));
+    }
+
     private int getUInt16GroundHeightAt(Index terrainNodeIndex) {
         Index terrainTileIndex = nodeIndexToTileIndex(terrainNodeIndex);
 

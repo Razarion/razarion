@@ -32,6 +32,8 @@ public class BotEnragementState {
     private BotItemContainer botItemContainer;
     private PlaceConfig realm;
     private String botName;
+    private String botInternalName;
+    private boolean groundBoxEnabled;
     private final Map<PlayerBase, Integer> killsPerBase = new HashMap<>();
     private Listener listener;
 
@@ -40,10 +42,12 @@ public class BotEnragementState {
         this.containerInstance = containerInstance;
     }
 
-    public void init(List<BotEnragementStateConfig> botEnragementStateConfigs, PlaceConfig realm, String botName, Listener listener) {
+    public void init(List<BotEnragementStateConfig> botEnragementStateConfigs, PlaceConfig realm, String botName, String botInternalName, boolean groundBoxEnabled, Listener listener) {
         this.botEnragementStateConfigs = botEnragementStateConfigs;
         this.realm = realm;
         this.botName = botName;
+        this.botInternalName = botInternalName;
+        this.groundBoxEnabled = groundBoxEnabled;
         this.listener = listener;
         if (botEnragementStateConfigs.isEmpty()) {
             throw new IllegalArgumentException("Bot must have at least one enragement state configured: " + botName);
@@ -73,7 +77,7 @@ public class BotEnragementState {
         }
         currentBotEnragementStateConfig = botEnragementStateConfig;
         botItemContainer = containerInstance.get();
-        botItemContainer.init(botEnragementStateConfig.getBotItems(), realm, botName);
+        botItemContainer.init(botEnragementStateConfig.getBotItems(), realm, botName, botInternalName, groundBoxEnabled);
         killsPerBase.clear();
         isEnragementActive = currentBotEnragementStateConfig.getEnrageUpKills() != null && botEnragementStateConfigs.indexOf(currentBotEnragementStateConfig) + 1 < botEnragementStateConfigs.size();
     }

@@ -25,6 +25,7 @@ const LAST_EMAIL_KEY = 'razarion.studio.lastLoginEmail';
         <a routerLink="/thumbnails" routerLinkActive="active">Thumbnails</a>
         <a routerLink="/scenes" routerLinkActive="active">Scenes</a>
         <a routerLink="/radius" routerLinkActive="active">Radius</a>
+        <a routerLink="/director" routerLinkActive="active">Director</a>
       </nav>
       <div class="auth">
         @if (storage.needsLogin()) {

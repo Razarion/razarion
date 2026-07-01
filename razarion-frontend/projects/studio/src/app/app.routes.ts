@@ -3,6 +3,7 @@ import {ShellComponent} from './shell/shell.component';
 import {ThumbnailsTaskComponent} from './tasks/thumbnails-task.component';
 import {SceneComposerTaskComponent} from './tasks/scene-composer-task.component';
 import {RadiusTaskComponent} from './tasks/radius-task.component';
+import {DirectorTaskComponent} from './tasks/director-task.component';
 
 export const routes: Routes = [
   {
@@ -12,6 +13,7 @@ export const routes: Routes = [
       {path: 'thumbnails', component: ThumbnailsTaskComponent},
       {path: 'scenes', component: SceneComposerTaskComponent},
       {path: 'radius', component: RadiusTaskComponent},
+      {path: 'director', component: DirectorTaskComponent},
       {path: '', redirectTo: 'thumbnails', pathMatch: 'full'}
     ]
   },

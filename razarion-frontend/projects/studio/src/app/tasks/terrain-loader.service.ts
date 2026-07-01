@@ -99,8 +99,19 @@ export class TerrainLoaderService {
   /**
    * Dispose any previously-loaded terrain and build the tiles for `planetId`.
    * No-op if planetId is null/0.
+   *
+   * `region` (game-plane coords {x, y, w, h}, in world units) clips the build
+   * to the tiles overlapping that box. Without it the FULL planet is built —
+   * for a 5120×5120 planet that's 32×32 = 1024 tiles, each a 160×160 ground
+   * mesh + water + objects + sprites, all rendered every frame (plus the
+   * shadow pass). That's the studio's choppiness/slow-start cause; the game
+   * never does this (its worker streams only tiles near the camera). Callers
+   * should always pass a region; null is an explicit "load everything" escape.
    */
-  async loadTerrain(planetId: number | null): Promise<void> {
+  async loadTerrain(
+    planetId: number | null,
+    region?: {x: number; y: number; w: number; h: number} | null
+  ): Promise<void> {
     this.disposeTerrain();
     if (!planetId) return;
 
@@ -128,9 +139,25 @@ export class TerrainLoaderService {
     const sampleZ = (worldX: number, worldY: number) =>
       sampleHeightAt(worldX, worldY, heightMap, tileXCount, tileYCount);
 
-    for (let x = 0; x < tileXCount; x++) {
-      for (let y = 0; y < tileYCount; y++) {
-        const tileData = tileMatrix[x][y];
+    // Clip the build to the tiles overlapping `region`. Tiles are
+    // NODE_X_COUNT × NODE_Y_COUNT world units (NODE_SIZE == 1), so a world
+    // coord maps to a tile index by integer-dividing by the node count.
+    const TILE_X = BabylonTerrainTileImpl.NODE_X_COUNT;
+    const TILE_Y = BabylonTerrainTileImpl.NODE_Y_COUNT;
+    let minTX = 0, maxTX = tileXCount - 1, minTY = 0, maxTY = tileYCount - 1;
+    if (region) {
+      minTX = Math.max(0, Math.floor(region.x / TILE_X));
+      maxTX = Math.min(tileXCount - 1, Math.floor((region.x + region.w) / TILE_X));
+      minTY = Math.max(0, Math.floor(region.y / TILE_Y));
+      maxTY = Math.min(tileYCount - 1, Math.floor((region.y + region.h) / TILE_Y));
+    }
+    const built = Math.max(0, maxTX - minTX + 1) * Math.max(0, maxTY - minTY + 1);
+    console.log(`[Studio] terrain: building ${built} of ${tileXCount * tileYCount} tiles`
+      + (region ? ` (region ${region.x},${region.y} ${region.w}×${region.h})` : ' (full map)'));
+
+    for (let x = minTX; x <= maxTX; x++) {
+      for (let y = minTY; y <= maxTY; y++) {
+        const tileData = tileMatrix[x]?.[y];
         if (!tileData) continue;
         const tileHeightMap = sliceTileHeightMap(heightMap, x, y, tileXCount, tileYCount);
         const tile = buildTerrainTile(x, y, tileHeightMap, groundConfigId, tileData, sampleZ);

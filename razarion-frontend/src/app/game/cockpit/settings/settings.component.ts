@@ -27,6 +27,22 @@ export class SettingsComponent {
     this.uiSettingsService.unitNamesVisible = value;
   }
 
+  get showTips(): boolean {
+    return this.uiSettingsService.tipsVisible;
+  }
+
+  set showTips(value: boolean) {
+    this.uiSettingsService.tipsVisible = value;
+  }
+
+  get showQuestVisualization(): boolean {
+    return this.uiSettingsService.questVisualizationVisible;
+  }
+
+  set showQuestVisualization(value: boolean) {
+    this.uiSettingsService.questVisualizationVisible = value;
+  }
+
   surrenderBase(): void {
     this.showSurrenderWarning = false;
     this.cockpitDisplayService.showSettingsDialog = false;

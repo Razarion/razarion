@@ -15,8 +15,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class WeaponTypeEntity extends BaseEntity {
     private int damage;
     private double detonationRadius;
     private double reloadTime;
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES",
             joinColumns = @JoinColumn(name = "weapon"),
             inverseJoinColumns = @JoinColumn(name = "baseItemType"))

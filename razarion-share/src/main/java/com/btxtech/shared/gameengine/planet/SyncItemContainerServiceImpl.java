@@ -23,6 +23,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
@@ -406,23 +407,23 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     public DecimalPosition getFreeRandomPosition(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig) {
+        return getFreeRandomPosition(terrainType, radius, excludeBotRealm, placeConfig, false);
+    }
+
+    /**
+     * @param requireBotGround if true, the position (including the item footprint given by radius)
+     *                         must sit on a raised bot-ground plateau box. Used so a ground-box bot
+     *                         does not build structures on the low terrain beside/below the plateau,
+     *                         where they would render sunken (only the top poking above the ground).
+     */
+    public DecimalPosition getFreeRandomPosition(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig, boolean requireBotGround) {
         if (placeConfig.getPolygon2D() != null) {
-            return GeometricUtil.findFreeRandomPosition(placeConfig.getPolygon2D(), decimalPosition -> {
-                if (excludeBotRealm) {
-                    return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealmOrGround(decimalPosition);
-                } else {
-                    return isFree(terrainType, decimalPosition, radius);
-                }
-            });
+            return GeometricUtil.findFreeRandomPosition(placeConfig.getPolygon2D(), decimalPosition ->
+                    isFreeForBot(terrainType, decimalPosition, radius, excludeBotRealm, requireBotGround));
         } else if (placeConfig.getPosition() != null) {
             if (placeConfig.getRadius() != null) {
-                return GeometricUtil.findFreeRandomPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition -> {
-                    if (excludeBotRealm) {
-                        return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealmOrGround(decimalPosition);
-                    } else {
-                        return isFree(terrainType, decimalPosition, radius);
-                    }
-                });
+                return GeometricUtil.findFreeRandomPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition ->
+                        isFreeForBot(terrainType, decimalPosition, radius, excludeBotRealm, requireBotGround));
             } else {
                 return placeConfig.getPosition();
             }
@@ -432,18 +433,41 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     public DecimalPosition getFreeNearestPositionToCenter(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig) {
+        return getFreeNearestPositionToCenter(terrainType, radius, excludeBotRealm, placeConfig, false);
+    }
+
+    public DecimalPosition getFreeNearestPositionToCenter(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig, boolean requireBotGround) {
         if (placeConfig.getPosition() != null && placeConfig.getRadius() != null) {
-            return GeometricUtil.findFreeNearestPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition -> {
-                if (excludeBotRealm) {
-                    return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealmOrGround(decimalPosition);
-                } else {
-                    return isFree(terrainType, decimalPosition, radius);
-                }
-            });
+            return GeometricUtil.findFreeNearestPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition ->
+                    isFreeForBot(terrainType, decimalPosition, radius, excludeBotRealm, requireBotGround));
         } else {
             // no center+radius to search around -> fall back to the existing random/position logic
-            return getFreeRandomPosition(terrainType, radius, excludeBotRealm, placeConfig);
+            return getFreeRandomPosition(terrainType, radius, excludeBotRealm, placeConfig, requireBotGround);
         }
+    }
+
+    private boolean isFreeForBot(TerrainType terrainType, DecimalPosition position, double radius, boolean excludeBotRealm, boolean requireBotGround) {
+        if (!isFree(terrainType, position, radius)) {
+            return false;
+        }
+        if (excludeBotRealm && botServices.get().isInRealmOrGround(position)) {
+            return false;
+        }
+        return !requireBotGround || isOnBotGround(position, radius);
+    }
+
+    /**
+     * True if the whole item footprint (center + the four cardinal points at distance radius) sits on
+     * a raised bot-ground plateau box, so it neither overhangs the plateau edge nor renders at the
+     * low terrain height.
+     */
+    private boolean isOnBotGround(DecimalPosition position, double radius) {
+        TerrainAnalyzer terrainAnalyzer = terrainService.getTerrainAnalyzer();
+        return terrainAnalyzer.isBotGround(position)
+                && terrainAnalyzer.isBotGround(position.add(radius, 0))
+                && terrainAnalyzer.isBotGround(position.add(-radius, 0))
+                && terrainAnalyzer.isBotGround(position.add(0, radius))
+                && terrainAnalyzer.isBotGround(position.add(0, -radius));
     }
 
     private boolean isFree(TerrainType terrainType, DecimalPosition position, double radius) {

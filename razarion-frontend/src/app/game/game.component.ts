@@ -1,5 +1,7 @@
 ﻿import {Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {environment} from 'src/environments/environment';
+import {DirectorService} from './director/director.service';
 
 import {ScreenCoverComponent} from "./screen-cover/screen-cover.component";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
@@ -69,6 +71,8 @@ export class GameComponent implements OnInit {
               private gameMockService: GameMockService,
               private actionService: ActionService,
               private userService: UserService,
+              private directorService: DirectorService,
+              private route: ActivatedRoute,
               private zone: NgZone) {
     this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, cockpitDisplayService);
   }
@@ -98,6 +102,13 @@ export class GameComponent implements OnInit {
       this.gameMockService.startGame(true, this);
     } else {
       this.startGame();
+    }
+
+    // Director mode (/director route): film the live world for social clips.
+    // The game boots exactly as normal; this only hands camera control to the
+    // DirectorService and starts it polling the studio command channel.
+    if (this.route.snapshot.data['director']) {
+      this.directorService.activate(this.babylonRenderServiceAccessImpl);
     }
   }
 
@@ -132,6 +143,11 @@ export class GameComponent implements OnInit {
 
   getGameComponent(): GameComponent {
     return this;
+  }
+
+  /** True while a director recording is running — drives the REC badge. */
+  protected get recording(): boolean {
+    return this.directorService.recording();
   }
 
   openInventory() {

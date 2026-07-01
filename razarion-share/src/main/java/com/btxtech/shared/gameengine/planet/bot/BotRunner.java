@@ -220,7 +220,7 @@ public class BotRunner {
     private void startBot() {
         synchronized (syncObject) {
             botEnragementState = enragementStateInstance.get();
-            botEnragementState.init(botConfig.getBotEnragementStateConfigs(), botConfig.getRealm(), botConfig.getName(), getEnragementStateListener());
+            botEnragementState.init(botConfig.getBotEnragementStateConfigs(), botConfig.getRealm(), botConfig.getName(), botConfig.getInternalName(), botConfig.isGroundBoxEnabled(), getEnragementStateListener());
             if (botConfig.isAutoAttack()) {
                 intruderHandler = intruderHandlerInstance.get();
                 intruderHandler.init(botEnragementState, botConfig.getRealm());

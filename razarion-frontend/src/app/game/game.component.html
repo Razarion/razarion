@@ -1,6 +1,12 @@
 ﻿<div [style]="{height:'100%', width:'100%'}" class="game-main">
   <screen-cover #loadingComponent [style]="{height:'100%'}"></screen-cover>
 
+  @if (recording) {
+    <div class="rec-indicator">
+      <span class="rec-dot"></span> REC
+    </div>
+  }
+
   <div [style]="{height:'100%'}" class="flex card-container overflow-hidden align-items-stretch">
     <div #canvasDiv [style]="{width: '100%', height:'100%'}">
       <canvas #canvas class="canvas" [style]="{width: '100%', height:'100%'}"></canvas>

@@ -1,0 +1,17 @@
+@if (!readOnly) {
+  <p-multiSelect
+    [appendTo]="'body'"
+    [options]="botOptions"
+    [(ngModel)]="botIds"
+    (onChange)="onChange()"
+    optionLabel="label"
+    optionValue="botId"
+    [filter]="true"
+    placeholder="..."
+    [showClear]="true"
+    styleClass="w-full">
+  </p-multiSelect>
+}
+@if (readOnly) {
+  <span>{{getCurrentNames()}}</span>
+}

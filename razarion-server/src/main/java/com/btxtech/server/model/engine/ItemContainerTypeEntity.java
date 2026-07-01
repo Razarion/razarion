@@ -7,7 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class ItemContainerTypeEntity extends BaseEntity {
 
     private int maxCount;
     private double itemRange;
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "BASE_ITEM_ITEM_CONTAINER_TYPE_ABLE_TO_CONTAIN",
             joinColumns = @JoinColumn(name = "container"),
             inverseJoinColumns = @JoinColumn(name = "baseItemType"))

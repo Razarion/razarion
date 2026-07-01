@@ -204,6 +204,10 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
         this.botConfigs.addAll(botConfigs);
     }
 
+    public List<BotConfigEntity> getBotConfigs() {
+        return botConfigs;
+    }
+
     public List<ServerLevelQuestEntity> getServerLevelQuestEntities() {
         return serverLevelQuestEntities;
     }

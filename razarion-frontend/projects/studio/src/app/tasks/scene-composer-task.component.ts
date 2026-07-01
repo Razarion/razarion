@@ -128,6 +128,32 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
                 }
               </select>
             </div>
+            @if (content()?.terrain?.planetId) {
+              <div class="prop-row">
+                <span class="prop-label">Terrain area</span>
+                <select (change)="onRegionModeChange($event)" [disabled]="busy()">
+                  <option value="auto" [selected]="regionMode() === 'auto'">Around camera (fast)</option>
+                  <option value="custom" [selected]="regionMode() === 'custom'">Custom region</option>
+                  <option value="full" [selected]="regionMode() === 'full'">Full map (slow)</option>
+                </select>
+              </div>
+              @if (content()?.terrain?.region; as r) {
+                <div class="prop-row">
+                  <span class="prop-label">X / Y</span>
+                  <input type="number" step="10" [ngModel]="r.x" (ngModelChange)="updateRegion('x', $event)">
+                  <input type="number" step="10" [ngModel]="r.y" (ngModelChange)="updateRegion('y', $event)">
+                </div>
+                <div class="prop-row">
+                  <span class="prop-label">W / H</span>
+                  <input type="number" step="10" min="10" [ngModel]="r.w" (ngModelChange)="updateRegion('w', $event)">
+                  <input type="number" step="10" min="10" [ngModel]="r.h" (ngModelChange)="updateRegion('h', $event)">
+                </div>
+                <div class="prop-row">
+                  <button (click)="reloadTerrain()" [disabled]="busy()">Apply region</button>
+                  <button class="ghost" (click)="centerRegionOnCamera()" [disabled]="busy()">Center on camera</button>
+                </div>
+              }
+            }
           </div>
 
           <div class="divider"></div>
@@ -702,6 +728,14 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   readonly planets = signal<ObjectNameId[]>([]);
   currentName = '';
   libraryFilter = '';
+
+  /** Side length (world units) of the default terrain window loaded around the
+   *  camera target when a scene has no explicit region. 960 = 6 tiles → 36
+   *  tiles instead of the full planet's 1024. */
+  private static readonly DEFAULT_REGION_SIZE = 960;
+  /** When true, load the whole planet (slow) instead of a clipped region.
+   *  Transient debug escape — never persisted with the scene. */
+  readonly loadFullMap = signal(false);
 
   readonly screenshotPresets: ReadonlyArray<{label: string; w: number; h: number}> = [
     {label: '1920 × 1080 (FHD landscape)', w: 1920, h: 1080},
@@ -1404,6 +1438,11 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       await this.ensureRenderer();
       this.babylonRender.getScene().getEngine().resize();
 
+      // Apply the saved camera BEFORE terrain so regionToLoad() clips around
+      // the real target (otherwise the camera is still at its default origin
+      // and we'd load the wrong corner of the map).
+      this.applyCamera(content);
+
       // Recompute next id from loaded content so re-saves don't clash.
       this.nextItemId = content.items.reduce((m, i) => Math.max(m, i.id), 0) + 1;
       for (const item of content.items) {
@@ -1415,14 +1454,14 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
         if (item.attackTargetId != null) this.aimTurret(item.id);
       }
       // Terrain — fired after items so terrain build progress isn't blocking
-      // the item display. Errors are logged but don't abort scene open.
+      // the item display. Clipped to a region (see regionToLoad) so we don't
+      // build the whole planet. Errors are logged but don't abort scene open.
       if (content.terrain?.planetId) {
         this.rendererStatus.set('Loading terrain…');
-        await this.terrainLoader.loadTerrain(content.terrain.planetId).catch(e => {
+        await this.terrainLoader.loadTerrain(content.terrain.planetId, this.regionToLoad()).catch(e => {
           console.warn('[Studio] terrain load failed', e);
         });
       }
-      this.applyCamera(content);
       this.rendererStatus.set('');
     } catch (e) {
       console.warn('[Studio] scene open failed', e);
@@ -1537,12 +1576,88 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     });
     this.rendererStatus.set('Loading terrain…');
     try {
-      await this.terrainLoader.loadTerrain(planetId);
+      await this.terrainLoader.loadTerrain(planetId, this.regionToLoad());
     } catch (e) {
       console.warn('[Studio] terrain load failed', e);
     } finally {
       this.rendererStatus.set('');
     }
+  }
+
+  // ===== Terrain region (clip the planet so the studio stays fast) =====
+
+  /** The {x, y, w, h} box (game-plane world units) to clip the terrain build
+   *  to. Explicit scene region wins; otherwise a default-sized box centred on
+   *  the current camera target. null only when "Full map" is selected. */
+  private regionToLoad(): {x: number; y: number; w: number; h: number} | null {
+    if (this.loadFullMap()) return null;
+    const region = this.content()?.terrain?.region;
+    if (region) return region;
+    const t = this.camera?.target ?? Vector3.Zero();
+    const s = SceneComposerTaskComponent.DEFAULT_REGION_SIZE;
+    return {x: t.x - s / 2, y: t.z - s / 2, w: s, h: s};
+  }
+
+  /** Re-build the terrain with the current region settings. */
+  async reloadTerrain(): Promise<void> {
+    const planetId = this.content()?.terrain?.planetId;
+    if (!planetId) {
+      this.terrainLoader.disposeTerrain();
+      return;
+    }
+    this.rendererStatus.set('Loading terrain…');
+    try {
+      await this.terrainLoader.loadTerrain(planetId, this.regionToLoad());
+    } catch (e) {
+      console.warn('[Studio] terrain load failed', e);
+    } finally {
+      this.rendererStatus.set('');
+    }
+  }
+
+  regionMode(): 'auto' | 'custom' | 'full' {
+    if (this.loadFullMap()) return 'full';
+    return this.content()?.terrain?.region ? 'custom' : 'auto';
+  }
+
+  onRegionModeChange(event: Event): void {
+    const mode = (event.target as HTMLSelectElement).value as 'auto' | 'custom' | 'full';
+    if (mode === 'full') {
+      this.loadFullMap.set(true);
+      this.content.update(c => (c?.terrain ? {...c, terrain: {...c.terrain, region: null}} : c));
+    } else if (mode === 'auto') {
+      this.loadFullMap.set(false);
+      this.content.update(c => (c?.terrain ? {...c, terrain: {...c.terrain, region: null}} : c));
+    } else {
+      // custom: seed an explicit box from the current default so the inputs
+      // start populated, then let the user edit + Apply.
+      this.loadFullMap.set(false);
+      const seed = this.regionToLoad() ?? {x: 0, y: 0, w: SceneComposerTaskComponent.DEFAULT_REGION_SIZE, h: SceneComposerTaskComponent.DEFAULT_REGION_SIZE};
+      this.content.update(c => (c?.terrain ? {...c, terrain: {...c.terrain, region: {...seed}}} : c));
+    }
+    this.reloadTerrain();
+  }
+
+  /** Edit one field of the custom region (no reload — user hits Apply). */
+  updateRegion(field: 'x' | 'y' | 'w' | 'h', value: number): void {
+    this.content.update(c => {
+      if (!c?.terrain?.region) return c;
+      const region = {...c.terrain.region, [field]: +value};
+      return {...c, terrain: {...c.terrain, region}};
+    });
+  }
+
+  /** Recentre the custom region on the current camera target (keeps w/h). */
+  centerRegionOnCamera(): void {
+    const t = this.camera?.target ?? Vector3.Zero();
+    this.content.update(c => {
+      if (!c?.terrain) return c;
+      const cur = c.terrain.region;
+      const w = cur?.w ?? SceneComposerTaskComponent.DEFAULT_REGION_SIZE;
+      const h = cur?.h ?? SceneComposerTaskComponent.DEFAULT_REGION_SIZE;
+      return {...c, terrain: {...c.terrain, region: {x: t.x - w / 2, y: t.z - h / 2, w, h}}};
+    });
+    this.reloadTerrain();
   }
 
   deleteSelected(): void {
@@ -1633,7 +1748,10 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     dirLight.specular = new Color3(1, 1, 1);
     dirLight.shadowEnabled = true;
     this.babylonRender.directionalLight = dirLight;
-    const shadowGenerator = new ShadowGenerator(2048, dirLight);
+    // 1024 (not 2048): the shadow map is re-rendered every frame for all
+    // shadow casters, so it scales with terrain size. 1024 halves that cost
+    // with no visible quality loss at studio framing distances.
+    const shadowGenerator = new ShadowGenerator(1024, dirLight);
     shadowGenerator.useExponentialShadowMap = true;
     shadowGenerator.darkness = 0.6;
     this.babylonRender.shadowGenerator = shadowGenerator;

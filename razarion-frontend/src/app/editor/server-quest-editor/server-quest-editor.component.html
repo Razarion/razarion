@@ -120,6 +120,12 @@
                       </div>
                     </div>
                     <div class="grid grid-cols-12 gap-4">
+                      <span class="col-span-3">Bots</span>
+                      <div class="col-span-9">
+                        <bot-ids [(botIds)]="questConfig.conditionConfig.comparisonConfig.botIds"></bot-ids>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-4">
                       <span class="col-span-3">Place</span>
                       <div class="col-span-9">
                         <place-config [(placeConfig)]="questConfig.conditionConfig.comparisonConfig.placeConfig"></place-config>

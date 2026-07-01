@@ -7,6 +7,7 @@ import {ItemCockpitComponent} from '../cockpit/item/item-cockpit.component';
 import {ViewField, ViewFieldListener} from '../renderer/view-field';
 import {GwtAngularService} from '../../gwtangular/GwtAngularService';
 import {SelectionService} from '../selection.service';
+import {UiSettingsService} from '../ui-settings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,9 +32,16 @@ export class TipService implements ViewFieldListener {
   constructor(
     public readonly renderService: BabylonRenderServiceAccessImpl,
     private readonly gwtAngularService: GwtAngularService,
-    public readonly selectionService: SelectionService
+    public readonly selectionService: SelectionService,
+    private readonly uiSettingsService: UiSettingsService
   ) {
     this.renderService.addViewFieldListener(this);
+    // Turning tips off (e.g. for clean director footage) clears any active tip.
+    this.uiSettingsService.tipsVisible$.subscribe(visible => {
+      if (!visible) {
+        this.deactivate();
+      }
+    });
   }
 
   get gwtAngularFacade(): GwtAngularFacade {
@@ -80,6 +88,9 @@ export class TipService implements ViewFieldListener {
 
   public activate(questConfig: QuestConfig): void {
     this.deactivate();
+    if (!this.uiSettingsService.tipsVisible) {
+      return; // tips disabled (e.g. director/filming mode)
+    }
 
     this.tipTaskContainer = TipTaskFactory.create(questConfig, this);
     if (this.tipTaskContainer) {

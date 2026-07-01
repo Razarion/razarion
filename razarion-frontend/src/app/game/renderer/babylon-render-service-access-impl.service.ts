@@ -96,6 +96,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   public shadowGenerator!: ShadowGenerator;
   public directionalLight!: DirectionalLight
   private camera!: FreeCamera;
+  /** Director mode (filming the live world): when active, the render loop hands
+   *  full camera control to {@link directorCameraTick} and skips RTS scroll +
+   *  auto-height so user input and the height follower don't fight the flight
+   *  path. Set by DirectorService once a plan is loaded. */
+  public directorActive = false;
+  public directorCameraTick: ((deltaMs: number) => void) | null = null;
   private keyPressed: Map<string, number> = new Map();
   private canvas!: HTMLCanvasElement;
   public baseItemContainer!: TransformNode;
@@ -155,6 +161,18 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
               private tsSelectionService: TsSelectionService,
               public uiSettingsService: UiSettingsService) {
     this.babylonModelService.renderer = this;
+    // Dispose the quest area marker immediately when the setting is turned off.
+    this.uiSettingsService.questVisualizationVisible$.subscribe(visible => {
+      if (!visible) {
+        this.showPlaceMarker(null, null);
+      }
+    });
+    // Same for the out-of-view direction arrow (a "tip").
+    this.uiSettingsService.tipsVisible$.subscribe(visible => {
+      if (!visible && this.scene) {
+        this.showOutOfViewMarker(null, 0);
+      }
+    });
   }
 
   public static color4Diplomacy(diplomacy: Diplomacy): Color3 {
@@ -363,11 +381,16 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.scene.onBeforeRenderObservable.add(() => {
       const date = Date.now();
       this.interpolateItemPositions(date);
-      this.scrollCamera();
-      if (this.pendingSetViewFieldCenter) {
-        this.setViewFieldCenter(this.pendingSetViewFieldCenter.x, this.pendingSetViewFieldCenter.y)
+      if (this.directorActive && this.directorCameraTick) {
+        // Director drives the camera fully along the flight path.
+        this.directorCameraTick(this.engine.getDeltaTime());
+      } else {
+        this.scrollCamera();
+        if (this.pendingSetViewFieldCenter) {
+          this.setViewFieldCenter(this.pendingSetViewFieldCenter.x, this.pendingSetViewFieldCenter.y)
+        }
+        this.updateCameraHeight();
       }
-      this.updateCameraHeight();
       // Move shadow frustum to follow camera
       const groundTarget = this.setupCenterGroundPosition();
       this.directionalLight.position.set(
@@ -600,7 +623,22 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.scene;
   }
 
+  /** The live game camera (FreeCamera). Used by DirectorService to fly it
+   *  along a planned path. May be undefined until runRenderer() has run. */
+  getCamera(): FreeCamera {
+    return this.camera;
+  }
+
+  getEngine(): Engine {
+    return this.engine;
+  }
+
   showOutOfViewMarker(markerConfig: MarkerConfig | null, angle: number): void {
+    // Out-of-view direction arrows are a "tip" — some tip tasks call this
+    // directly (bypassing TipService), so gate it here for clean footage.
+    if (!this.uiSettingsService.tipsVisible) {
+      markerConfig = null;
+    }
     if (markerConfig) {
       if (!markerConfig.outOfViewNodesMaterialId) {
         console.warn("No outOfViewNodesMaterialId set");
@@ -637,6 +675,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   showPlaceMarker(placeConfig: PlaceConfig | null, markerConfig: MarkerConfig | null): void {
+    // Quest area visualization can be turned off (e.g. for clean director footage).
+    if (!this.uiSettingsService.questVisualizationVisible) {
+      placeConfig = null;
+      markerConfig = null;
+    }
     if (!placeConfig || !markerConfig) {
       if (this.placeMarkerMesh) {
         this.placeMarkerMesh.dispose();

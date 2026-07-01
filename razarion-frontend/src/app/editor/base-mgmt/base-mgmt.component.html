@@ -10,6 +10,11 @@
             </th>
             <th style="white-space: nowrap">Character</th>
             <th>Id</th>
+            <th style="white-space: nowrap">
+                Money
+                <input type="number" step="10000" [(ngModel)]="moneyAmount"
+                       style="width: 110px; margin-left: 6px;" title="Amount added per click">
+            </th>
             <th> </th>
         </tr>
     </ng-template>
@@ -23,6 +28,11 @@
             </td>
             <td>
                 {{base.getBaseId()}}
+            </td>
+            <td>
+                <p-button label="Add money" icon="pi pi-dollar" styleClass="p-button-text p-button-sm"
+                    title="Add Razarion to this base" (onClick)="addMoney(base)">
+                </p-button>
             </td>
             <td>
                 <p-button icon="pi pi-times" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"

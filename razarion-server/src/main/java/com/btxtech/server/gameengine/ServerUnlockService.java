@@ -61,11 +61,10 @@ public class ServerUnlockService {
     }
 
     public void updateUnlocked(String userId, List<Integer> unlockedIds) {
-        throw new UnsupportedOperationException("... TODO ...");
-//   TODO     userService.setUnlocked(userId, unlockedIds);
-//        UserContext userContext = userService.readUserContext(userId);
-//        sessionService.updateUserContext(userId, userContext);
-//        baseItemService.updateUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
-//        systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit(), hasAvailableUnlocks(userContext));
+        userService.setUnlocked(userId, unlockedIds);
+        UserContext userContext = userService.getUserContext(userId);
+        baseItemService.updateUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
+        systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit(), hasAvailableUnlocks(userContext));
+        questService.onUnlock(userId);
     }
 }

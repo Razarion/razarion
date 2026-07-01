@@ -23,6 +23,13 @@ public class AngularForwardController {
         return "forward:/game/index.html";
     }
 
+    // Director mode (film the live world). Deep-link fallback so /game/director
+    // serves the SPA shell, which then routes client-side to the director view.
+    @GetMapping(value = {"/game/director", "/game/director/"}, produces = "text/html")
+    public String forwardGameDirector(HttpServletRequest request) {
+        return "forward:/game/index.html";
+    }
+
     @GetMapping(value = {"/studio/", "/studio"}, produces = "text/html")
     public String forwardStudio(HttpServletRequest request) {
         return "forward:/studio/index.html";

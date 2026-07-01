@@ -67,7 +67,9 @@ public class BotItemContainer {
     private final CurrentItemBuildup currentItemBuildup = new CurrentItemBuildup();
     private Need need;
     private String botName;
+    private String botInternalName;
     private PlaceConfig realm;
+    private boolean groundBoxEnabled;
 
     @Inject
     public BotItemContainer(Provider<BotSyncBaseItem> baseItemInstance,
@@ -82,10 +84,16 @@ public class BotItemContainer {
         this.itemTypeService = itemTypeService;
     }
 
-    public void init(Collection<BotItemConfig> botItems, PlaceConfig realm, String botName) {
+    public void init(Collection<BotItemConfig> botItems, PlaceConfig realm, String botName, String botInternalName, boolean groundBoxEnabled) {
         this.realm = realm;
         this.botName = botName;
+        this.botInternalName = botInternalName;
+        this.groundBoxEnabled = groundBoxEnabled;
         need = new Need(botItems);
+    }
+
+    private String botLogId() {
+        return botName + " (" + botInternalName + ")";
     }
 
     public void work(PlayerBaseFull playerBase) {
@@ -101,7 +109,7 @@ public class BotItemContainer {
         try {
             internalKillAllItems(playerBase);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "bot killAllItems failed " + botName, e);
+            logger.log(Level.SEVERE, "bot killAllItems failed " + botLogId(), e);
         }
     }
 
@@ -190,9 +198,9 @@ public class BotItemContainer {
                 try {
                     createItem(entry.getKey(), playerBase);
                 } catch (PositionCanNotBeFoundException t) {
-                    logger.warning("Can not find free place for BaseItemTypeId: " + entry.getKey().getBaseItemTypeId() + ". Bot: " + botName + ". Exception: " + t);
+                    logger.warning("Can not find free place for BaseItemTypeId: " + entry.getKey().getBaseItemTypeId() + ". Bot: " + botLogId() + ". Exception: " + t);
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE, botName, e);
+                    logger.log(Level.SEVERE, botLogId(), e);
                 }
             }
         }
@@ -201,7 +209,7 @@ public class BotItemContainer {
     private void createItem(BotItemConfig botItemConfig, PlayerBaseFull playerBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
         BaseItemType toBeBuilt = itemTypeService.getBaseItemType(botItemConfig.getBaseItemTypeId());
         if (botItemConfig.isCreateDirectly()) {
-            DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt, botItemConfig.isPlaceNearCenter());
+            DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt, botItemConfig.isPlaceNearCenter(), false);
             SyncBaseItem spawnItem = baseItemService.spawnSyncBaseItem(toBeBuilt, position, botItemConfig.getAngle(), playerBase, botItemConfig.isNoSpawn());
             insertBotItem(spawnItem, botItemConfig);
         } else {
@@ -213,8 +221,9 @@ public class BotItemContainer {
                 // botSyncBuilder is factory unit
                 botSyncBuilder.buildUnit(toBeBuilt);
             } else {
-                // botSyncBuilder is builder unit
-                DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt, botItemConfig.isPlaceNearCenter());
+                // botSyncBuilder is builder unit. For a ground-box bot the structure must land on the
+                // raised plateau, otherwise it renders sunken on the low terrain below the bot ground.
+                DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt, botItemConfig.isPlaceNearCenter(), groundBoxEnabled);
                 try {
                     botSyncBuilder.buildBuilding(position, toBeBuilt);
                 } catch (Exception e) {
@@ -225,13 +234,13 @@ public class BotItemContainer {
         }
     }
 
-    private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt, boolean nearCenter) {
+    private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt, boolean nearCenter, boolean requireBotGround) {
         if (placeConfig == null) {
-            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, realm);
+            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, realm, requireBotGround);
         } else if (nearCenter) {
-            return syncItemContainerService.getFreeNearestPositionToCenter(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig);
+            return syncItemContainerService.getFreeNearestPositionToCenter(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig, requireBotGround);
         } else {
-            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig);
+            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig, requireBotGround);
         }
     }
 

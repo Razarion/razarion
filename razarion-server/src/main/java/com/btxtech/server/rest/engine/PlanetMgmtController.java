@@ -9,6 +9,7 @@ import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -114,8 +116,22 @@ public class PlanetMgmtController {
         restartPlanet(LifecyclePacket.Type.PLANET_RESTART_COLD);
     }
 
+    @PostMapping("addResources/{baseId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void addResources(@PathVariable int baseId, @RequestParam("amount") int amount) {
+        synchronized (reloadLook) {
+            PlayerBase base = baseItemService.getPlayerBase4BaseId(baseId);
+            if (base == null) {
+                throw new IllegalStateException("Base not found: " + baseId);
+            }
+            base.addResource(amount);
+            // Push the new balance to the owning client so its money counter updates.
+            serverGameEngineControl.onResourcesBalanceChanged(base, (int) base.getResources());
+        }
+    }
+
     @DeleteMapping("delete/{baseId}")
-    @PreAuthorize("hasAuthority('ADMIN')") 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteBase(@PathVariable int baseId) {
         try {
             baseItemService.deleteBase(baseId);

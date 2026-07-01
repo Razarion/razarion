@@ -163,10 +163,14 @@ public class ServerGameEngineService extends AbstractConfigCrudService<ServerGam
     @Transactional
     public void updateBotConfig(int serverGameEngineConfigId, List<BotConfig> botConfigs) {
         var serverGameEngineConfig = getBaseEntity(serverGameEngineConfigId);
-        serverGameEngineConfig.setBotConfigs(botConfigs.stream()
-                .map(c -> new BotConfigEntity().fromBotConfig(c))
-                .toList());
-
+        // Id-preserving update: existing bots keep their id so a quest FK
+        // (QUEST_COMPARISON_BOT.botConfig) is not broken by a delete+recreate.
+        PersistenceUtil.fromConfigsNoClear(serverGameEngineConfig.getBotConfigs(),
+                botConfigs,
+                BotConfigEntity::new,
+                BotConfigEntity::fromBotConfig,
+                BotConfig::getId,
+                BaseEntity::getId);
         updateBaseEntity(serverGameEngineConfig);
     }
 

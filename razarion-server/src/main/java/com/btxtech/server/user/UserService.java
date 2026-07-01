@@ -373,6 +373,19 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public void setUnlocked(String userId, List<Integer> unlockedIds) {
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
+        userEntity.setLevelUnlockEntities(unlockedIds.stream().map(unlockedId -> {
+            LevelUnlockEntity levelUnlockEntity = levelCrudPersistence.readLevelUnlockEntity(unlockedId);
+            if (levelUnlockEntity == null) {
+                throw new IllegalArgumentException("No LevelUnlockEntity for id: " + unlockedId);
+            }
+            return levelUnlockEntity;
+        }).collect(Collectors.toList()));
+        userRepository.save(userEntity);
+    }
+
+    @Transactional
     public InventoryInfo readInventoryInfo(String userId) {
         return userRepository.findByUserId(userId).orElseThrow().toInventoryInfo();
     }

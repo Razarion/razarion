@@ -7,7 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class FactoryTypeEntity extends BaseEntity {
     private double animationOutroSeconds;
     private double rallyOffsetX;
     private double rallyOffsetY;
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD",
             joinColumns = @JoinColumn(name = "factory"),
             inverseJoinColumns = @JoinColumn(name = "baseItemType"))
