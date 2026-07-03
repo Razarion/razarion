@@ -39,6 +39,11 @@ public class SyncBaseItemInfo {
      */
     private Boolean builderBuilding;
     private Double factoryBuildupProgress;
+    /**
+     * Type ids of the units waiting in the factory's build queue (behind the one currently building,
+     * conveyed by toBeBuiltTypeId). Null/empty when the factory has nothing queued. Master-authoritative.
+     */
+    private List<Integer> factoryBuildQueue;
     private Integer target;
     private double health;
     private double buildup;
@@ -124,6 +129,14 @@ public class SyncBaseItemInfo {
 
     public void setFactoryBuildupProgress(Double factoryBuildupProgress) {
         this.factoryBuildupProgress = factoryBuildupProgress;
+    }
+
+    public List<Integer> getFactoryBuildQueue() {
+        return factoryBuildQueue;
+    }
+
+    public void setFactoryBuildQueue(List<Integer> factoryBuildQueue) {
+        this.factoryBuildQueue = factoryBuildQueue;
     }
 
     public Integer getTarget() {
@@ -280,6 +293,11 @@ public class SyncBaseItemInfo {
 
     public SyncBaseItemInfo factoryBuildupProgress(Double factoryBuildupProgress) {
         setFactoryBuildupProgress(factoryBuildupProgress);
+        return this;
+    }
+
+    public SyncBaseItemInfo factoryBuildQueue(List<Integer> factoryBuildQueue) {
+        setFactoryBuildQueue(factoryBuildQueue);
         return this;
     }
 

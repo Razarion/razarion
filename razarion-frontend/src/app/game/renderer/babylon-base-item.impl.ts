@@ -406,6 +406,31 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     // Factory build animation: intro (platform goes down) then progress-scrubbed (platform rises).
     // progress < 0 is the master's warmup sentinel (see SyncFactory.fillSyncItemInfo).
     if (renderObject.hasProgressAnimation()) {
+      // Build-queue transition: with a queue, the server jumps the factory straight from a finished
+      // unit (progress reached 1.0 -> 'exiting') into the next unit's cycle (warmup progress < 0, or a
+      // fresh low progress) WITHOUT the progress===0 stop that ends a single build. Without this reset
+      // the state machine would stay stuck in 'exiting' and every unit after the first would build
+      // invisibly. Reset to 'idle' so the branches below replay intro/progress for the next unit.
+      if (this.factoryBuildPhase === 'exiting' && progress < 1.0) {
+        this.factoryBuildPhase = 'idle';
+        renderObject.setBuildAnimationActive(false);
+        this.disposeFactoryScanEffect();
+        this.stopFactoryExitAnimation();
+        // Hand off the just-finished unit's preview: it already slid to the rally point and the real
+        // unit is arriving on a separate sync. Capture its refs (the next unit will repopulate these
+        // fields with a fresh preview) and dispose shortly after so the real unit takes over without
+        // a blink.
+        const prevPreviewEffect = this.factoryBuildPreviewBuildupEffect;
+        const prevPreviewRenderObject = this.factoryBuildPreviewRenderObject;
+        this.factoryBuildPreviewBuildupEffect = null;
+        this.factoryBuildPreviewRenderObject = null;
+        this.factoryBuildPreviewTypeId = 0;
+        setTimeout(() => {
+          prevPreviewEffect?.cleanup();
+          prevPreviewRenderObject?.dispose();
+        }, 300);
+      }
+
       // Resume mid-build after a recreate: the item was culled out of view while building and the
       // camera scrolled back, so a fresh instance starts in 'idle' and never receives the progress<0
       // warmup sentinel that normally drives idle->intro->progress. Promote it straight into the

@@ -16,6 +16,17 @@ import {ReflectionTextureBaseBlock} from '@babylonjs/core/Materials/Node/Blocks/
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {buildWhitecapMaterial} from "./whitecap-material";
 
+/**
+ * Per-tile water resources plus a dispose() that releases only the PER-TILE parts
+ * (whitecap material + reflection CubeTexture). The water NodeMaterial itself is a shared
+ * model material fetched from BabylonModelService and must NOT be disposed here; the water and
+ * whitecap MESHES are children of the tile container and are disposed by the container.
+ */
+export interface WaterTileResources {
+  waterMesh: Mesh;
+  dispose(): void;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -23,7 +34,7 @@ export class BabylonWaterRenderService {
   constructor(private babylonModelService: BabylonModelService) {
   }
 
-  public setup(index: Index, groundConfig: GroundConfig, container: TransformNode, uv2GroundHeightMap: FloatArray, rendererService: BabylonRenderServiceAccessImpl): Mesh {
+  public setup(index: Index, groundConfig: GroundConfig, container: TransformNode, uv2GroundHeightMap: FloatArray, rendererService: BabylonRenderServiceAccessImpl): WaterTileResources {
     const water = MeshBuilder.CreateGround("Water", {
       width: BabylonTerrainTileImpl.NODE_X_COUNT,
       height: BabylonTerrainTileImpl.NODE_Y_COUNT,
@@ -31,8 +42,10 @@ export class BabylonWaterRenderService {
     });
 
     water.material = this.babylonModelService.getBabylonMaterial(groundConfig.getWaterBabylonMaterialId());
-    (<NodeMaterial>water.material).ignoreAlpha = false; // Can not be saved in the NodeEditor
-    (<ReflectionTextureBaseBlock>(<NodeMaterial>water.material).getBlockByName("Reflection")).texture = CubeTexture.CreateFromImages([
+    const sharedWaterMaterial = <NodeMaterial>water.material;
+    sharedWaterMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
+    const reflectionBlock = <ReflectionTextureBaseBlock>sharedWaterMaterial.getBlockByName("Reflection");
+    const reflectionCubeTexture = CubeTexture.CreateFromImages([
       "renderer/env/clouds.jpg", // +X
       "renderer/env/clouds.jpg", // +Y
       "renderer/env/clouds.jpg", // +Z
@@ -40,6 +53,7 @@ export class BabylonWaterRenderService {
       "renderer/env/clouds.jpg", // -Y
       "renderer/env/clouds.jpg", // -Z
     ], rendererService.getScene());
+    reflectionBlock.texture = reflectionCubeTexture;
 
     // Reduce water texture tiling — default Ground Scale of 15 is too repetitive
     const waterMat = water.material as NodeMaterial;
@@ -76,7 +90,25 @@ export class BabylonWaterRenderService {
     whitecaps.isPickable = false;
     container.getChildren().push(whitecaps);
 
-    return water;
+    const whitecapMaterial = whitecaps.material;
+
+    return {
+      waterMesh: water,
+      dispose: () => {
+        // Whitecap material is built fresh per tile (buildWhitecapMaterial) — dispose it and its
+        // textures; its onDispose hook removes the per-frame whitecap animation observer.
+        if (whitecapMaterial) {
+          whitecapMaterial.dispose(false, true);
+        }
+        // The reflection CubeTexture is created per tile but assigned onto the SHARED water
+        // material's Reflection block, so only the most recently created tile's texture is actually
+        // bound. Dispose ours unless it is still the bound one (that tile is currently visible, not
+        // being evicted); disposing the bound texture would blank every water surface.
+        if (reflectionCubeTexture && reflectionBlock.texture !== reflectionCubeTexture) {
+          reflectionCubeTexture.dispose();
+        }
+      }
+    };
   }
 
   public static updateWaterUV2(waterMesh: Mesh, positions: number[]): void {

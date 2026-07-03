@@ -25,6 +25,7 @@ public class NativeSyncBaseItemTickInfo {
     public NativeDecimalPosition buildingPosition;
     public NativeDecimalPosition factoryRallyPoint;
     public int[] containingItemTypeIds;
+    public int[] factoryBuildQueue;
     public double maxContainingRadius;
     public boolean contained;
     public boolean idle;

@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
+import com.btxtech.shared.gameengine.datatypes.command.FactoryCancelQueueCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
@@ -151,6 +152,16 @@ public class CommandService {
         factoryCommand.updateTimeStamp();
         factoryCommand.setToBeBuiltId(itemTypeToBuild.getId());
         executeCommand(factoryCommand);
+    }
+
+    public void cancelFactoryQueue(int factoryId, int queueIndex) {
+        SyncBaseItem factory = syncItemContainerService.getSyncBaseItemSave(factoryId);
+        checkSyncBaseItem(factory);
+        FactoryCancelQueueCommand command = new FactoryCancelQueueCommand();
+        command.setId(factory.getId());
+        command.updateTimeStamp();
+        command.setQueueIndex(queueIndex);
+        executeCommand(command);
     }
 
     public void harvest(IdsDto harvesterIds, int resourceId) {

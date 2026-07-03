@@ -18,7 +18,6 @@ import {Button} from 'primeng/button';
   styleUrls: ['./unlock.component.scss']
 })
 export class UnlockComponent implements OnInit {
-  getImageUrl = getImageUrl;
   levelUnlockConfigs: LevelUnlockConfig[] = [];
   crystals?: number;
   private unlockControllerClient: UnlockControllerClient;
@@ -56,6 +55,15 @@ export class UnlockComponent implements OnInit {
         sticky: true
       });
     });
+  }
+
+  getThumbnailUrl(levelUnlockConfig: LevelUnlockConfig): string {
+    let thumbnailId = levelUnlockConfig.thumbnail;
+    if (thumbnailId == null && levelUnlockConfig.baseItemType != null) {
+      thumbnailId = this.gwtAngularService.gwtAngularFacade.itemTypeService
+        .getBaseItemTypeAngular(levelUnlockConfig.baseItemType).getThumbnail();
+    }
+    return thumbnailId != null ? getImageUrl(thumbnailId) : '';
   }
 
   onUse(levelUnlockConfig: LevelUnlockConfig): void {

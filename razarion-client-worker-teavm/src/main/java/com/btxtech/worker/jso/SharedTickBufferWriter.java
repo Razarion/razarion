@@ -70,8 +70,12 @@ public class SharedTickBufferWriter {
             JSObject containingView = createInt32View(sharedArrayBuffer,
                     bufferByteOffset + SharedTickBufferLayout.CONTAINING_OFFSET,
                     SharedTickBufferLayout.MAX_CONTAINING_INTS);
+            JSObject factoryQueueView = createInt32View(sharedArrayBuffer,
+                    bufferByteOffset + SharedTickBufferLayout.FACTORY_QUEUE_OFFSET,
+                    SharedTickBufferLayout.MAX_FACTORY_QUEUE_INTS);
 
             int containingOffset = 0;
+            int factoryQueueOffset = 0;
             for (int i = 0; i < itemCount; i++) {
                 NativeSyncBaseItemTickInfo item = items[i];
                 int dOff = i * SharedTickBufferLayout.DOUBLES_PER_ITEM;
@@ -121,6 +125,7 @@ public class SharedTickBufferWriter {
                 if (item.contained) flags |= 1;
                 if (item.idle) flags |= 2;
                 if (item.containingItemTypeIds != null && item.containingItemTypeIds.length > 0) flags |= 4;
+                if (item.factoryBuildQueue != null && item.factoryBuildQueue.length > 0) flags |= 8;
                 setUint8(itemFlags, i, flags);
 
                 // Containing IDs (prefix-length encoding)
@@ -130,6 +135,19 @@ public class SharedTickBufferWriter {
                         for (int cid : item.containingItemTypeIds) {
                             setInt32(containingView, containingOffset++, cid);
                         }
+                    }
+                }
+
+                // Factory build queue (prefix-length encoding, same scheme as containing)
+                if (item.factoryBuildQueue != null && item.factoryBuildQueue.length > 0) {
+                    if (factoryQueueOffset + 1 + item.factoryBuildQueue.length <= SharedTickBufferLayout.MAX_FACTORY_QUEUE_INTS) {
+                        setInt32(factoryQueueView, factoryQueueOffset++, item.factoryBuildQueue.length);
+                        for (int qid : item.factoryBuildQueue) {
+                            setInt32(factoryQueueView, factoryQueueOffset++, qid);
+                        }
+                    } else {
+                        // Section full: clear the flag so the reader doesn't misparse this item.
+                        setUint8(itemFlags, i, flags & ~8);
                     }
                 }
             }

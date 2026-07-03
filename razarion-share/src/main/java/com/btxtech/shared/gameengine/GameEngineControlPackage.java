@@ -31,6 +31,7 @@ public class GameEngineControlPackage {
         COMMAND_FINALIZE_BUILD,
         COMMAND_BUILD,
         COMMAND_FABRICATE,
+        COMMAND_CANCEL_FACTORY_QUEUE,
         COMMAND_HARVEST,
         COMMAND_MOVE,
         COMMAND_MOVE_ACK,

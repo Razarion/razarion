@@ -203,6 +203,11 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
         public void removeFromScene() {
             callMethod0(js, "removeFromScene");
         }
+
+        @Override
+        public void dispose() {
+            callMethod0(js, "dispose");
+        }
     }
 
     private static class JsBabylonItemBase {

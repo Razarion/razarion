@@ -50,7 +50,7 @@
       </div>
     }
     @if (ownItemCockpit.buildupItems && ownItemCockpit.buildupProgress == null) {
-      <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500">
+      <div class="flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
         <p-popover #tipPopover [dismissable]="false">
           <div class="blinking-popover">
             <p>Click to build</p>
@@ -64,7 +64,7 @@
                 <button class='item-cockpit-buildup-button'
                   (mousedown)="onBuildClick(buildupItem)"
                   [title]="buildTooltip(buildupItem)"
-                  [disabled]="!buildupItem.enabled">
+                  [disabled]="!buildupItem.enabled || ownItemCockpit.factoryQueueFull">
                   @if (!buildupItem.enabled) {
                     <div class='item-cockpit-buildup-disabled'>
                       @if (buildupItem.buildLimitReached) {
@@ -90,6 +90,29 @@
               </div>
             </ng-template>
           </p-carousel>
+          @if (ownItemCockpit.factoryId != null) {
+            <!-- Always reserved (fixed one-row height, no wrap) so the panel height stays constant
+                 when the queue goes from empty to populated — avoids the menu jumping. -->
+            <div class="flex flex-row flex-nowrap gap-1 h-6 overflow-x-auto">
+              @for (entry of ownItemCockpit.factoryQueue || []; track $index) {
+                <div class="relative w-6 h-6 shrink-0 bg-surface-600 rounded overflow-hidden"
+                  [class.cursor-pointer]="entry.queueIndex != null"
+                  [title]="entry.queueIndex != null ? 'Click to cancel' : 'Building'"
+                  (mousedown)="entry.queueIndex != null && itemCockpitService.onCancelQueue(entry.queueIndex)">
+                  <img src="{{entry.imageUrl}}" class="w-6 h-6 object-cover" alt="queued item">
+                  @if (entry.progress != null) {
+                    <p-progressbar [value]="entry.progress * 100" [style]="{ height: '0.2rem' }"
+                      [showValue]="false" class="absolute bottom-0 left-0 w-full" />
+                  }
+                  @if (entry.queueIndex != null) {
+                    <span class="absolute top-0 right-0 bg-black/60 text-red-400 leading-none px-0.5">
+                      <i class="pi pi-times" style="font-size: 0.5rem"></i>
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+          }
         </div>
       }
       @if (ownItemCockpit.containerCount != null) {

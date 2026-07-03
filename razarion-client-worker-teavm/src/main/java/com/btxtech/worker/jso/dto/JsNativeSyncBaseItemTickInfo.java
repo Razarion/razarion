@@ -118,6 +118,12 @@ public interface JsNativeSyncBaseItemTickInfo extends JSObject {
     void setContainingItemTypeIds(int[] ids);
 
     @JSProperty
+    int[] getFactoryBuildQueue();
+
+    @JSProperty
+    void setFactoryBuildQueue(int[] ids);
+
+    @JSProperty
     double getMaxContainingRadius();
 
     @JSProperty

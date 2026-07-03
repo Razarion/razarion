@@ -3,6 +3,10 @@
     <tr>
       <th style="white-space: nowrap">Base item Type</th>
       <th>Count</th>
+      @if (unlockBaseItemTypeCount) {
+        <th style="white-space: nowrap"
+            title="Total buildable: level limitation + all accumulated unlocks (this and previous levels)">Total</th>
+      }
       @if (previousBaseItemTypeCount) {
         <th>
           <p-button icon="pi pi-file-import"
@@ -24,14 +28,22 @@
   <ng-template pTemplate="body" let-typeCount>
     <tr>
       <td>
-        <base-item-type [(baseItemTypeId)]="typeCount.baseItemTypeId" (onChangeEmitter)="onChange()"></base-item-type>
+        <base-item-type [(baseItemTypeId)]="typeCount.baseItemTypeId" [readOnly]="typeCount.readonly"
+                        (onChangeEmitter)="onChange()"></base-item-type>
       </td>
       <td>
-        <input
-          [(ngModel)]="typeCount.count"
-          (input)="onChange()"
-          class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"/>
+        @if (typeCount.readonly) {
+          <span>{{ typeCount.count }}</span>
+        } @else {
+          <input
+            [(ngModel)]="typeCount.count"
+            (input)="onChange()"
+            class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"/>
+        }
         </td>
+        @if (unlockBaseItemTypeCount) {
+          <td>{{ getTotalCount(typeCount) }}</td>
+        }
         @if (previousBaseItemTypeCount) {
           <td>
             @if (typeCount.count > getPreviousCount(typeCount.baseItemTypeId)) {
@@ -47,10 +59,12 @@
           </td>
         }
         <td>
-          <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-            title="Delete"
-            (onClick)="onDelete(typeCount.baseItemTypeId)">
-          </p-button>
+          @if (!typeCount.readonly) {
+            <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
+              title="Delete"
+              (onClick)="onDelete(typeCount.baseItemTypeId)">
+            </p-button>
+          }
         </td>
       </tr>
     </ng-template>

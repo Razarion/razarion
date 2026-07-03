@@ -183,6 +183,8 @@ export interface ItemCockpitBridge {
 
   requestFabricate(factoryIds: number[], itemTypeId: number): void;
 
+  requestCancelFactoryQueue(factoryId: number, queueIndex: number): void;
+
   sellItems(itemIds: number[]): void;
 
   surrenderBase(): void;
@@ -194,6 +196,11 @@ export interface ItemCockpitBridge {
   watchContainerCount(containerId: number, callback: (count: number) => void): void;
 
   unwatchContainerCount(): void;
+
+  // snapshot = [activeTypeId (0 = idle), progressPermille (0..1000), ...waitingTypeIds]
+  watchFactoryQueue(factoryId: number, callback: (snapshot: number[]) => void): void;
+
+  unwatchFactoryQueue(): void;
 }
 
 export interface ItemTypeService {
@@ -600,6 +607,8 @@ export interface BabylonTerrainTile {
   addToScene(): void;
 
   removeFromScene(): void;
+
+  dispose(): void;
 }
 
 export interface BabylonItem {

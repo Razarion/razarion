@@ -5,4 +5,6 @@ public interface BabylonTerrainTile {
     void addToScene();
 
     void removeFromScene();
+
+    void dispose();
 }

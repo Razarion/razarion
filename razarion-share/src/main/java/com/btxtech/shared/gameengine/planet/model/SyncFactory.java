@@ -35,7 +35,9 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.MathHelper;
 
 import jakarta.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: beat
@@ -55,6 +57,18 @@ public class SyncFactory extends SyncBaseAbility {
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private FactoryType factoryType;
     private BaseItemType toBeBuiltType;
+    /**
+     * Units queued behind the one currently building ({@link #toBeBuiltType}). FIFO — the head is
+     * promoted to toBeBuiltType by {@link #startNext()} when the active unit finishes. Master-
+     * authoritative; synced to slaves via SyncBaseItemInfo.factoryBuildQueue so every client can
+     * display it. Empty when the factory builds a single unit (the pre-queue behaviour).
+     */
+    private final List<BaseItemType> buildQueue = new ArrayList<>();
+    /**
+     * Max units in flight per factory (active + waiting). Fixed for now; intended to become a
+     * per-player unlockable limit (like unlock-item) later.
+     */
+    private static final int MAX_BUILD_QUEUE = 10;
     private double buildup;
     /**
      * Master-only: sentinel -1 = not in warmup. >= 0 = ticks remaining before build progress
@@ -208,22 +222,45 @@ public class SyncFactory extends SyncBaseAbility {
                 // factory's final progress=0 is synced when the unit spawns (stop() + idle path).
                 return true;
             }
-            // Cooldown done (or no cooldown configured) — create the unit
-            if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
-                if (baseItemService.isLevelLimitation4ItemTypeExceeded(toBeBuiltType, 1, (PlayerBaseFull) getSyncBaseItem().getBase())) {
-                    gameLogicService.onFactoryLimitation4ItemTypeExceeded();
-                    return true;
-                }
-                if (baseItemService.isHouseSpaceExceeded((PlayerBaseFull) getSyncBaseItem().getBase(), toBeBuiltType, 1)) {
-                    gameLogicService.onFactoryHouseSpaceExceeded();
-                    return true;
-                }
+            // Cooldown done (or no cooldown configured) — create the unit.
+            //
+            // MASTER ONLY. The slave advances buildup/cooldown locally for a smooth animation, but it
+            // must NOT terminate the factory on its own local cooldown clock. The player who issued
+            // the FactoryCommand runs that local simulation ~RTT ahead of the master (executed the
+            // command locally without the round-trip). If the slave reached the old `return false`
+            // here, BaseItemService.tick() would call stop() on it, flipping the factory to inactive
+            // (constructing=0) — and the client would dispose the build preview ~RTT BEFORE the real
+            // unit's sync arrives, leaving a visible gap where no unit is shown. (Other players don't
+            // see it: their local sim is in lock-step with the master, so their local stop coincides
+            // with the real unit's TickInfo.) Worse, the master's still-in-flight buildup corrections
+            // then re-activate the factory and restart the whole build animation on the issuer.
+            //
+            // Instead the slave stays active at buildup=1.0 (the client holds its outro/'exiting'
+            // state, preview parked on the rally point) and lets the master's authoritative
+            // stop()+spawn — bundled into a single TickInfo (see BaseItemService.createSyncBaseItem4Factory)
+            // — drive termination. When that sync clears toBeBuiltType, isActive() goes false and the
+            // ability ends in lock-step with the real unit appearing: an atomic preview->real handoff.
+            if (baseItemService.getGameEngineMode() != GameEngineMode.MASTER) {
+                return true;
+            }
+            // Buildability (level limitation + house space) was already checked before this unit's
+            // build started (see executeCommand / startNext), so it normally spawns here. Re-check in
+            // case the limit filled up DURING the build (e.g. another factory produced the same type):
+            // drop the finished unit rather than spawning over-limit or holding forever at buildup=1.0.
+            if (canProduce(toBeBuiltType)) {
                 // Spawn the unit directly at the rally point — the client's outro animation already
                 // slid the build preview from the factory center to this area.
                 double angle = getSyncBaseItem().getAbstractSyncPhysical().getPosition().getAngle(rallyPoint);
                 baseItemService.createSyncBaseItem4Factory(toBeBuiltType, rallyPoint, angle, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
-                stop();
             }
+            // Advance the queue: startNext() promotes the next unit that can actually be produced
+            // (dropping any whose limit is exceeded) and force-syncs the transition — the spawned unit
+            // and the next-build state ride the same TickInfo (atomic preview->real handoff). If
+            // nothing buildable remains, stop the factory.
+            if (startNext()) {
+                return true;
+            }
+            stop();
             return false;
         }
         return true;
@@ -247,6 +284,12 @@ public class SyncFactory extends SyncBaseAbility {
             buildup = progress;
         }
         rallyPoint = syncBaseItemInfo.getRallyPoint();
+        buildQueue.clear();
+        if (syncBaseItemInfo.getFactoryBuildQueue() != null) {
+            for (Integer typeId : syncBaseItemInfo.getFactoryBuildQueue()) {
+                buildQueue.add(itemTypeService.getBaseItemType(typeId));
+            }
+        }
     }
 
     @Override
@@ -256,6 +299,13 @@ public class SyncFactory extends SyncBaseAbility {
         }
         syncBaseItemInfo.setFactoryBuildupProgress(inWarmup ? -1 : buildup);
         syncBaseItemInfo.setRallyPoint(rallyPoint);
+        if (!buildQueue.isEmpty()) {
+            List<Integer> queueIds = new ArrayList<>(buildQueue.size());
+            for (BaseItemType queued : buildQueue) {
+                queueIds.add(queued.getId());
+            }
+            syncBaseItemInfo.setFactoryBuildQueue(queueIds);
+        }
     }
 
     public boolean isInWarmup() {
@@ -268,6 +318,7 @@ public class SyncFactory extends SyncBaseAbility {
         warmupTicksRemaining = -1;
         cooldownTicksRemaining = -1;
         toBeBuiltType = null;
+        buildQueue.clear();
         gameLogicService.onSyncFactoryStopped(getSyncBaseItem());
     }
 
@@ -278,10 +329,83 @@ public class SyncFactory extends SyncBaseAbility {
         BaseItemType tmpToBeBuiltType = itemTypeService.getBaseItemType(factoryCommand.getToBeBuiltId());
 
         if (toBeBuiltType == null) {
-            toBeBuiltType = tmpToBeBuiltType;
+            // Start the first unit only if it can actually be produced (limit/house space). Otherwise
+            // drop it rather than building a unit that couldn't spawn. The client normally prevents
+            // this by disabling the button at the limit.
+            if (canProduce(tmpToBeBuiltType)) {
+                toBeBuiltType = tmpToBeBuiltType;
+                warmupTicksRemaining = computeWarmupTicks();
+                inWarmup = warmupTicksRemaining > 0;
+            }
+        } else if (buildQueue.size() + 1 < MAX_BUILD_QUEUE) {
+            // Factory busy: enqueue behind the active unit. The +1 accounts for the active
+            // toBeBuiltType, so active + waiting never exceeds MAX_BUILD_QUEUE. A command that would
+            // overflow the queue is silently ignored (the client also disables the button at the limit).
+            buildQueue.add(tmpToBeBuiltType);
+        }
+    }
+
+    /**
+     * Promote the head of the build queue to the active build. Master only (called at spawn). Resets
+     * build/warmup/cooldown for the new unit and force-syncs so the slave leaves its held buildup=1.0
+     * state and starts the next unit's animation in lock-step with the master.
+     */
+    private boolean startNext() {
+        while (!buildQueue.isEmpty()) {
+            BaseItemType next = buildQueue.remove(0);
+            // Only start units that can actually be produced right now. Checking BEFORE the build
+            // (instead of after it completes) means we never waste resources/time building a unit that
+            // then can't spawn because its level limitation or house space is exceeded — such queued
+            // units are dropped instead of stalling the factory forever at buildup=1.0.
+            if (!canProduce(next)) {
+                continue;
+            }
+            toBeBuiltType = next;
+            buildup = 0;
+            cooldownTicksRemaining = -1;
             warmupTicksRemaining = computeWarmupTicks();
             inWarmup = warmupTicksRemaining > 0;
+            // Force the first post-transition build tick to sync promptly (mirrors the warmup-exit path).
+            sendThrottleCounter = SYNC_THROTTLE_TICKS;
+            syncService.notifySendSyncBaseItem(getSyncBaseItem());
+            return true;
         }
+        return false;
+    }
+
+    /**
+     * Master-side check whether the given type can be produced right now: its level limitation and
+     * house space must both allow one more. Fires the corresponding game-logic notification on
+     * failure (so the player sees why). Called BEFORE a build starts, not after it completes.
+     */
+    private boolean canProduce(BaseItemType type) {
+        PlayerBaseFull base = (PlayerBaseFull) getSyncBaseItem().getBase();
+        if (baseItemService.isLevelLimitation4ItemTypeExceeded(type, 1, base)) {
+            gameLogicService.onFactoryLimitation4ItemTypeExceeded();
+            return false;
+        }
+        if (baseItemService.isHouseSpaceExceeded(base, type, 1)) {
+            gameLogicService.onFactoryHouseSpaceExceeded();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Remove a waiting unit from the build queue (master only). {@code index} is into the waiting
+     * queue only — the active {@link #toBeBuiltType} is not cancelable. Out-of-range indices are
+     * ignored. Force-syncs so the change reaches all slaves promptly.
+     */
+    public void cancelQueueEntry(int index) {
+        if (index < 0 || index >= buildQueue.size()) {
+            return;
+        }
+        buildQueue.remove(index);
+        syncService.notifySendSyncBaseItem(getSyncBaseItem());
+    }
+
+    public List<BaseItemType> getBuildQueue() {
+        return buildQueue;
     }
 
     private int computeWarmupTicks() {

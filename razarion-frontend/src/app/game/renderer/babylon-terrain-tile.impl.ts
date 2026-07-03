@@ -10,7 +10,7 @@ import {
 } from "src/app/gwtangular/GwtAngularFacade";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
-import {BabylonWaterRenderService} from "./babylon-water-render.service";
+import {BabylonWaterRenderService, WaterTileResources} from "./babylon-water-render.service";
 import {
   Color3,
   Mesh,
@@ -70,7 +70,16 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   public readonly container: TransformNode;
   private readonly groundMesh: Mesh;
   private waterMesh: Mesh | null = null;
+  private waterResources: WaterTileResources | null = null;
   private groundMaterial: NodeMaterial | null = null;
+  // The 4 per-zone sprite managers (each up to ~2500 sprites). Stored so removeFromScene can pull
+  // them out of scene.spriteManagers (they are scene-level, NOT children of the container) and
+  // dispose() can release them. Without this they rendered forever after scrolling out of view.
+  private spriteManagers: SpriteManager[] = [];
+  // Mirrors the Java-side active flag (addToScene/removeFromScene). Cached-but-hidden tiles are set
+  // inactive so their meshes and sprites cost nothing per frame while staying ready for fast re-show.
+  private active: boolean = false;
+  private disposed: boolean = false;
   private groundHeights: number[] = [];
   private tileXOffset: number = 0;
   private tileYOffset: number = 0;
@@ -208,6 +217,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private groundUtil: GroundUtil | null = null;
 
   private buildPhase2_ShoreAndMaterial(): void {
+    if (this.disposed) {
+      return;
+    }
     const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     const yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
 
@@ -222,6 +234,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   private buildPhase3_Material(): void {
+    if (this.disposed) {
+      return;
+    }
     const terrainTile = this.terrainTile;
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
     this.groundMaterial = buildGroundMaterial(this.rendererService.getScene());
@@ -257,10 +272,14 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   private buildPhase4_WaterAndObjects(): void {
+    if (this.disposed) {
+      return;
+    }
     const terrainTile = this.terrainTile;
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
 
-    this.waterMesh = this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container, this.uv2GroundHeightMap, this.rendererService);
+    this.waterResources = this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container, this.uv2GroundHeightMap, this.rendererService);
+    this.waterMesh = this.waterResources.waterMesh;
 
     if (terrainTile.getTerrainTileObjectLists()) {
       this.setupTerrainTileObjects(terrainTile.getTerrainTileObjectLists());
@@ -304,6 +323,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   private createTerrainObjectsBatched(pending: { config: TerrainObjectConfig, model: TerrainObjectModel }[], index: number): void {
+    if (this.disposed) {
+      return;
+    }
     const end = Math.min(index + BabylonTerrainTileImpl.TERRAIN_OBJECTS_PER_BATCH, pending.length);
     for (let i = index; i < end; i++) {
       const { config, model } = pending[i];
@@ -366,6 +388,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   addToScene(): void {
+    this.active = true;
+    this.applyActiveState();
     const included = this.rendererService.directionalLight.includedOnlyMeshes;
     if (!included.includes(this.groundMesh)) {
       included.push(this.groundMesh);
@@ -381,6 +405,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   removeFromScene(): void {
+    this.active = false;
+    this.applyActiveState();
     const included = this.rendererService.directionalLight.includedOnlyMeshes;
     const index = included.indexOf(this.groundMesh);
     if (index !== -1) {
@@ -389,12 +415,114 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.rendererService.removeTerrainTileFromScene(this);
   }
 
+  /**
+   * Applies the current active flag to everything the tile owns so a cached-but-hidden tile costs
+   * ~nothing per frame while staying instantly re-showable:
+   *  - container.setEnabled() disables/enables the whole mesh subtree (ground, water, whitecap,
+   *    bot-ground boxes, terrain-object instances).
+   *  - Sprite managers are scene-level (not container children), so they are explicitly removed
+   *    from / re-added to scene.spriteManagers — otherwise their up-to-2500 sprites keep rendering.
+   */
+  private applyActiveState(): void {
+    if (this.disposed) {
+      return;
+    }
+    this.container.setEnabled(this.active);
+    const managers = this.rendererService.getScene().spriteManagers;
+    if (managers) {
+      this.spriteManagers.forEach(spriteManager => {
+        const idx = managers.indexOf(spriteManager);
+        if (this.active && idx === -1) {
+          managers.push(spriteManager);
+        } else if (!this.active && idx !== -1) {
+          managers.splice(idx, 1);
+        }
+      });
+    }
+  }
+
+  /**
+   * Releases every GPU/scene resource this tile allocated. Called when a tile is evicted from the
+   * terrain cache (see TerrainUiService) or on planet teardown. Shared resources (asphalt & water
+   * NodeMaterials, static-model templates) are deliberately left untouched — only PER-TILE
+   * resources are freed. Idempotent.
+   */
+  dispose(): void {
+    if (this.disposed) {
+      return;
+    }
+    this.disposed = true;
+
+    // Detach meshes from the directional light so it never holds references to disposed meshes.
+    const included = this.rendererService.directionalLight.includedOnlyMeshes;
+    const removeFromIncluded = (mesh: Mesh) => {
+      const idx = included.indexOf(mesh);
+      if (idx !== -1) {
+        included.splice(idx, 1);
+      }
+    };
+    removeFromIncluded(this.groundMesh);
+    this.botGroundMeshes.forEach(removeFromIncluded);
+
+    // Sprite managers: pull out of scene.spriteManagers (if still in) and dispose (frees sprites +
+    // sprite-sheet texture).
+    const managers = this.rendererService.getScene().spriteManagers;
+    this.spriteManagers.forEach(spriteManager => {
+      if (managers) {
+        const idx = managers.indexOf(spriteManager);
+        if (idx !== -1) {
+          managers.splice(idx, 1);
+        }
+      }
+      spriteManager.dispose();
+    });
+    this.spriteManagers = [];
+
+    // Per-tile water resources: whitecap material + reflection cube texture (shared water material
+    // is left alone). The water/whitecap meshes are disposed with the container below.
+    if (this.waterResources) {
+      this.waterResources.dispose();
+      this.waterResources = null;
+    }
+    this.waterMesh = null;
+
+    // Per-tile ground NodeMaterial + all its textures (incl. the GroundUtility texture). Disposing
+    // it also removes the foam onBeforeRender observer via the material's onDispose hook.
+    if (this.groundMaterial) {
+      this.groundMaterial.dispose(false, true);
+      this.groundMaterial = null;
+    }
+
+    // The ground mesh's material wrapper. If the heavy build already ran it is the per-tile
+    // MultiMaterial (dispose the wrapper only — its ASPHALT sub-material is a shared model
+    // material). If the tile was disposed before the build finished it is still the placeholder
+    // StandardMaterial (per-tile, dispose fully).
+    const groundMeshMaterial = this.groundMesh.material;
+    if (groundMeshMaterial instanceof MultiMaterial) {
+      groundMeshMaterial.dispose(false, false, false);
+    } else if (groundMeshMaterial instanceof StandardMaterial) {
+      groundMeshMaterial.dispose();
+    }
+
+    // Dispose the whole subtree WITHOUT disposing materials/textures (handled selectively above or
+    // shared). This releases the ground mesh, water & whitecap meshes, bot-ground boxes and every
+    // hardware-instanced terrain object; the shared static-model templates stay alive.
+    this.container.dispose(false, false);
+
+    this.rendererService.onTerrainTileDisposed(this);
+
+    this.botGroundMeshes = [];
+    this.groundHeights = [];
+    this.botGroundBoxes = null;
+    this.decalBoxes = null;
+  }
+
   getGroundMesh(): Mesh {
     return this.groundMesh;
   }
 
   updateGroundTypeTexture(positions: number[]): void {
-    if (!this.groundMaterial) {
+    if (this.disposed || !this.groundMaterial) {
       return;
     }
 
@@ -889,6 +1017,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   private setupSprites() {
+    if (this.disposed) {
+      return;
+    }
     const scene = this.rendererService.getScene();
     const spriteManagers: Record<TerrainZone, SpriteManager> = {
       [TerrainZone.UPPER]: new SpriteManager("upperSprites", "sprites_upper_4x4.png", 2500, BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
@@ -897,12 +1028,22 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       [TerrainZone.UNDERWATER]: new SpriteManager("underwaterSprites", "sprites_underwater_4x4.png", 800, BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
     };
 
+    // Track for dispose / active-state toggling. Sprite managers auto-register in
+    // scene.spriteManagers on construction; if the tile is currently inactive (was scrolled out
+    // while its deferred build was still running) pull them straight back out.
+    this.spriteManagers = [TerrainZone.UPPER, TerrainZone.UNDER, TerrainZone.BEACH, TerrainZone.UNDERWATER]
+      .map(zone => spriteManagers[zone]);
+    this.applyActiveState();
+
     setTimeout(() => {
       this.placeSprites(BabylonTerrainTileImpl.SPRITES_PER_TILE, spriteManagers);
     }, BabylonTerrainTileImpl.SPRITE_BATCH_DELAY);
   }
 
   private placeSprites(count: number, spriteManagers: Record<TerrainZone, SpriteManager>) {
+    if (this.disposed) {
+      return;
+    }
     // Tile bounds are constant for the tile — read them once (tileXOffset/Yoffset already cache the
     // bridge call) instead of getIndex().getX()/getY() four times per sprite.
     const minX = this.tileXOffset;

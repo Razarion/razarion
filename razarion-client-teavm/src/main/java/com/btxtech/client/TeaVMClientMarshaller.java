@@ -118,6 +118,7 @@ public class TeaVMClientMarshaller {
             case COMMAND_ATTACK:
             case COMMAND_FINALIZE_BUILD:
             case COMMAND_FABRICATE:
+            case COMMAND_CANCEL_FACTORY_QUEUE:
             case COMMAND_HARVEST:
             case COMMAND_MOVE:
             case COMMAND_PICK_BOX:

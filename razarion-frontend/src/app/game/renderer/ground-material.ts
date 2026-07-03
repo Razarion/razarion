@@ -552,10 +552,15 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
   foamTime.value = 0;
   foamTime.isConstant = false;
   let accumulatedTime = 0;
-  scene.onBeforeRenderObservable.add(() => {
+  // Tie the per-frame foam animation observer to the material's lifetime. Ground materials are
+  // built once PER TILE; without this cleanup every tile ever scrolled into view left a live
+  // onBeforeRender callback running forever, so the frame cost grew the more the player scrolled
+  // (only a reload reset it). Disposing the material now removes the observer with it.
+  const foamObserver = scene.onBeforeRenderObservable.add(() => {
     accumulatedTime += scene.getEngine().getDeltaTime() / 1000;
     foamTime.value = accumulatedTime;
   });
+  mat.onDisposeObservable.add(() => scene.onBeforeRenderObservable.remove(foamObserver));
 
   // Foam band: visible where |distance| < threshold
   // Use abs(distance) via negate + max trick, or just smoothstep on both sides

@@ -26,6 +26,7 @@ public final class SharedTickBufferLayout {
     public static final int MAX_ITEMS = 512;
     public static final int MAX_KILLED = 64;
     public static final int MAX_CONTAINING_INTS = 2048;
+    public static final int MAX_FACTORY_QUEUE_INTS = 1024;
     public static final int MAX_REMOVE = 64;
 
     // --- Per-item sizes (matching TypedArray encoding) ---
@@ -78,8 +79,12 @@ public final class SharedTickBufferLayout {
     public static final int CONTAINING_OFFSET = ITEMS_FLAGS_OFFSET + ITEMS_FLAGS_BYTES;
     public static final int CONTAINING_BYTES = MAX_CONTAINING_INTS * 4;
 
+    // Factory build-queue section (Int32 prefix-length encoded), same scheme as containing
+    public static final int FACTORY_QUEUE_OFFSET = CONTAINING_OFFSET + CONTAINING_BYTES;
+    public static final int FACTORY_QUEUE_BYTES = MAX_FACTORY_QUEUE_INTS * 4;
+
     // Killed section: doubles, ints, flags
-    public static final int KILLED_DOUBLES_OFFSET = CONTAINING_OFFSET + CONTAINING_BYTES;
+    public static final int KILLED_DOUBLES_OFFSET = FACTORY_QUEUE_OFFSET + FACTORY_QUEUE_BYTES;
     public static final int KILLED_DOUBLES_BYTES = MAX_KILLED * KILLED_DOUBLES_PER_ITEM * 8;
 
     public static final int KILLED_INTS_OFFSET = KILLED_DOUBLES_OFFSET + KILLED_DOUBLES_BYTES;

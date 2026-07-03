@@ -94,6 +94,7 @@ public class ClientGameConnection {
                         (DecimalPosition) param);
                 break;
             case FACTORY_COMMAND:
+            case FACTORY_CANCEL_QUEUE_COMMAND:
             case UNLOAD_CONTAINER_COMMAND:
             case ATTACK_COMMAND:
             case BUILDER_COMMAND:

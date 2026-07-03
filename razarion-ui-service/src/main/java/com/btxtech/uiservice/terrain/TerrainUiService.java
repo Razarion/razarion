@@ -17,6 +17,8 @@ import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -27,7 +29,12 @@ import java.util.function.Consumer;
  */
 @Singleton
 public class TerrainUiService {
-    private final Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
+    // Off-screen tiles are kept here so scrolling back is instant. Bounded (LRU-ish via
+    // LinkedHashMap insertion order) and evicted+disposed once over the limit — an unbounded cache
+    // used to accumulate every visited tile's meshes/materials/sprites for the whole session,
+    // degrading FPS until a reload. ~48 covers generous back-and-forth scrolling around a viewport.
+    private static final int MAX_CACHED_TILES = 48;
+    private final Map<Index, UiTerrainTile> cacheTerrainTiles = new LinkedHashMap<>();
     private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
     private final Map<Index, Runnable> terrainTypeOrdinalsCallbacks = new HashMap<>();
     // private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
@@ -93,9 +100,19 @@ public class TerrainUiService {
         }
         for (Map.Entry<Index, UiTerrainTile> hidden : displayTerrainTiles.entrySet()) {
             hidden.getValue().setActive(false);
+            // Re-insert as newest: remove first so LinkedHashMap iteration order reflects recency.
+            cacheTerrainTiles.remove(hidden.getKey());
             cacheTerrainTiles.put(hidden.getKey(), hidden.getValue());
         }
         displayTerrainTiles = newDisplayTerrainTiles;
+
+        // Bound the cache: dispose the least-recently-hidden tiles beyond the limit.
+        Iterator<Map.Entry<Index, UiTerrainTile>> cacheIterator = cacheTerrainTiles.entrySet().iterator();
+        while (cacheTerrainTiles.size() > MAX_CACHED_TILES && cacheIterator.hasNext()) {
+            Map.Entry<Index, UiTerrainTile> eldest = cacheIterator.next();
+            cacheIterator.remove();
+            eldest.getValue().dispose();
+        }
     }
 
     public double calculateLandWaterProportion() {

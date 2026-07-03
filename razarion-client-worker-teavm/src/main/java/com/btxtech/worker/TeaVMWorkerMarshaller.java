@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
+import com.btxtech.shared.gameengine.datatypes.command.FactoryCancelQueueCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
@@ -159,6 +160,7 @@ public final class TeaVMWorkerMarshaller {
             case COMMAND_ATTACK:
             case COMMAND_FINALIZE_BUILD:
             case COMMAND_FABRICATE:
+            case COMMAND_CANCEL_FACTORY_QUEUE:
             case COMMAND_HARVEST:
             case COMMAND_MOVE:
             case COMMAND_PICK_BOX:
@@ -321,6 +323,7 @@ public final class TeaVMWorkerMarshaller {
                 break;
 
             case COMMAND_FABRICATE:
+            case COMMAND_CANCEL_FACTORY_QUEUE:
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_0), Integer.class));
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_1), Integer.class));
                 break;
@@ -1068,6 +1071,9 @@ public final class TeaVMWorkerMarshaller {
         if (type == FactoryCommand.class) {
             return (T) convertFactoryCommand(obj);
         }
+        if (type == FactoryCancelQueueCommand.class) {
+            return (T) convertFactoryCancelQueueCommand(obj);
+        }
         if (type == LoadContainerCommand.class) {
             return (T) convertLoadContainerCommand(obj);
         }
@@ -1289,6 +1295,10 @@ public final class TeaVMWorkerMarshaller {
         JSObject containedItemsArr = obj.get("containedItems");
         if (!JsUtils.isNullOrUndefined(containedItemsArr)) {
             info.setContainedItems(convertIntegerList(containedItemsArr));
+        }
+        JSObject factoryBuildQueueArr = obj.get("factoryBuildQueue");
+        if (!JsUtils.isNullOrUndefined(factoryBuildQueueArr)) {
+            info.setFactoryBuildQueue(convertIntegerList(factoryBuildQueueArr));
         }
         info.setTargetContainer(obj.getNullableInt("targetContainer"));
         info.setContainedIn(obj.getNullableInt("containedIn"));
@@ -1512,6 +1522,13 @@ public final class TeaVMWorkerMarshaller {
         FactoryCommand cmd = new FactoryCommand();
         populateBaseCommand(cmd, obj);
         cmd.setToBeBuiltId(obj.getInt("toBeBuiltId"));
+        return cmd;
+    }
+
+    private static FactoryCancelQueueCommand convertFactoryCancelQueueCommand(JsObject obj) {
+        FactoryCancelQueueCommand cmd = new FactoryCancelQueueCommand();
+        populateBaseCommand(cmd, obj);
+        cmd.setQueueIndex(obj.getInt("queueIndex"));
         return cmd;
     }
 
@@ -2255,6 +2272,13 @@ public final class TeaVMWorkerMarshaller {
                 result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
             }
             result.set("toBeBuiltId", cmd.getToBeBuiltId());
+        } else if (obj instanceof FactoryCancelQueueCommand) {
+            FactoryCancelQueueCommand cmd = (FactoryCancelQueueCommand) obj;
+            result.set("id", cmd.getId());
+            if (cmd.getTimeStamp() != null) {
+                result.set("timeStamp", (double) cmd.getTimeStamp().getTime());
+            }
+            result.set("queueIndex", cmd.getQueueIndex());
         } else if (obj instanceof BuilderFinalizeCommand) {
             BuilderFinalizeCommand cmd = (BuilderFinalizeCommand) obj;
             result.set("id", cmd.getId());
@@ -2330,6 +2354,7 @@ public final class TeaVMWorkerMarshaller {
     private static final int TICK_KILLED_INTS = 11;
     private static final int TICK_KILLED_FLAGS = 12;
     private static final int TICK_REMOVE_IDS = 13;
+    private static final int TICK_FACTORY_QUEUE_IDS = 14;
 
     /**
      * Encode NativeTickInfo as flat TypedArrays instead of individual JS objects.
@@ -2369,7 +2394,18 @@ public final class TeaVMWorkerMarshaller {
             }
             JSObject containingIds = createInt32Array(containingTotalSize);
 
+            // First pass: count factoryBuildQueue total size (prefix-length encoded, like containing)
+            int factoryQueueTotalSize = 0;
+            for (int i = 0; i < itemCount; i++) {
+                NativeSyncBaseItemTickInfo item = items[i];
+                if (item.factoryBuildQueue != null && item.factoryBuildQueue.length > 0) {
+                    factoryQueueTotalSize += 1 + item.factoryBuildQueue.length; // count + ids
+                }
+            }
+            JSObject factoryQueueIds = createInt32Array(factoryQueueTotalSize);
+
             int containingOffset = 0;
+            int factoryQueueOffset = 0;
             for (int i = 0; i < itemCount; i++) {
                 NativeSyncBaseItemTickInfo item = items[i];
                 int dOff = i * DOUBLES_PER_ITEM;
@@ -2420,6 +2456,7 @@ public final class TeaVMWorkerMarshaller {
                 if (item.contained) flags |= 1;
                 if (item.idle) flags |= 2;
                 if (item.containingItemTypeIds != null && item.containingItemTypeIds.length > 0) flags |= 4;
+                if (item.factoryBuildQueue != null && item.factoryBuildQueue.length > 0) flags |= 8;
                 setUint8(tickFlags, i, flags);
 
                 // ContainingIds: prefix-length encoding
@@ -2429,12 +2466,21 @@ public final class TeaVMWorkerMarshaller {
                         setInt32(containingIds, containingOffset++, cid);
                     }
                 }
+
+                // FactoryBuildQueue: prefix-length encoding
+                if (item.factoryBuildQueue != null && item.factoryBuildQueue.length > 0) {
+                    setInt32(factoryQueueIds, factoryQueueOffset++, item.factoryBuildQueue.length);
+                    for (int qid : item.factoryBuildQueue) {
+                        setInt32(factoryQueueIds, factoryQueueOffset++, qid);
+                    }
+                }
             }
 
             array.set(TICK_DOUBLES, tickDoubles);
             array.set(TICK_INTS, tickInts);
             array.set(TICK_FLAGS, tickFlags);
             array.set(TICK_CONTAINING_IDS, containingIds);
+            array.set(TICK_FACTORY_QUEUE_IDS, factoryQueueIds);
         }
 
         // Encode killed items
@@ -2528,6 +2574,7 @@ public final class TeaVMWorkerMarshaller {
         if (item.contained) flags |= 1;
         if (item.idle) flags |= 2;
         if (item.containingItemTypeIds != null && item.containingItemTypeIds.length > 0) flags |= 4;
+        if (item.factoryBuildQueue != null && item.factoryBuildQueue.length > 0) flags |= 8;
         setUint8(tickFlags, 0, flags);
 
         array.set(TICK_DOUBLES, tickDoubles);
@@ -2543,6 +2590,17 @@ public final class TeaVMWorkerMarshaller {
                 setInt32(containingIds, i + 1, item.containingItemTypeIds[i]);
             }
             array.set(TICK_CONTAINING_IDS, containingIds);
+        }
+
+        // FactoryBuildQueue
+        if (item.factoryBuildQueue != null && item.factoryBuildQueue.length > 0) {
+            int totalSize = 1 + item.factoryBuildQueue.length;
+            JSObject factoryQueueIds = createInt32Array(totalSize);
+            setInt32(factoryQueueIds, 0, item.factoryBuildQueue.length);
+            for (int i = 0; i < item.factoryBuildQueue.length; i++) {
+                setInt32(factoryQueueIds, i + 1, item.factoryBuildQueue[i]);
+            }
+            array.set(TICK_FACTORY_QUEUE_IDS, factoryQueueIds);
         }
     }
 
@@ -2642,6 +2700,9 @@ public final class TeaVMWorkerMarshaller {
 
         if (info.containingItemTypeIds != null) {
             jsInfo.setContainingItemTypeIds(info.containingItemTypeIds);
+        }
+        if (info.factoryBuildQueue != null) {
+            jsInfo.setFactoryBuildQueue(info.factoryBuildQueue);
         }
         jsInfo.setMaxContainingRadius(info.maxContainingRadius);
         jsInfo.setContained(info.contained);

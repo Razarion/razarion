@@ -36,6 +36,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import jakarta.inject.Inject;
@@ -235,6 +236,11 @@ public class BotItemContainer {
     }
 
     private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt, boolean nearCenter, boolean requireBotGround) {
+        // The bot-ground plateau is a raised LAND box. Water structures (e.g. the Dockyard) sit on the
+        // water surface and can never overlap a land plateau, so gating them on bot ground would make
+        // getFreeRandomPosition never find a spot (PositionCanNotBeFoundException). Only require bot
+        // ground for land-based items.
+        requireBotGround = requireBotGround && isLandTerrainType(toBeBuilt.getPhysicalAreaConfig().getTerrainType());
         if (placeConfig == null) {
             return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, realm, requireBotGround);
         } else if (nearCenter) {
@@ -242,6 +248,11 @@ public class BotItemContainer {
         } else {
             return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig, requireBotGround);
         }
+    }
+
+    private static boolean isLandTerrainType(TerrainType terrainType) {
+        // A null terrain type defaults to LAND (see TerrainType.getNullTerrainType()).
+        return terrainType == null || terrainType == TerrainType.LAND || terrainType == TerrainType.LAND_COAST;
     }
 
     private BotSyncBaseItem getFirstIdleBuilder(BaseItemType toBeBuilt) {

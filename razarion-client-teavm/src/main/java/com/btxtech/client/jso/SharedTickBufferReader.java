@@ -64,9 +64,13 @@ public class SharedTickBufferReader {
             JSObject containingView = createInt32View(sharedArrayBuffer,
                     bufferByteOffset + SharedTickBufferLayout.CONTAINING_OFFSET,
                     SharedTickBufferLayout.MAX_CONTAINING_INTS);
+            JSObject factoryQueueView = createInt32View(sharedArrayBuffer,
+                    bufferByteOffset + SharedTickBufferLayout.FACTORY_QUEUE_OFFSET,
+                    SharedTickBufferLayout.MAX_FACTORY_QUEUE_INTS);
 
             result.updatedNativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[itemCount];
             int containingOffset = 0;
+            int factoryQueueOffset = 0;
 
             for (int i = 0; i < itemCount; i++) {
                 NativeSyncBaseItemTickInfo info = new NativeSyncBaseItemTickInfo();
@@ -115,6 +119,7 @@ public class SharedTickBufferReader {
                 info.contained = (flags & 1) != 0;
                 info.idle = (flags & 2) != 0;
                 boolean hasContaining = (flags & 4) != 0;
+                boolean hasFactoryQueue = (flags & 8) != 0;
 
                 // ContainingItemTypeIds
                 if (hasContaining) {
@@ -122,6 +127,15 @@ public class SharedTickBufferReader {
                     info.containingItemTypeIds = new int[count];
                     for (int c = 0; c < count; c++) {
                         info.containingItemTypeIds[c] = getInt32(containingView, containingOffset++);
+                    }
+                }
+
+                // Factory build queue
+                if (hasFactoryQueue) {
+                    int count = getInt32(factoryQueueView, factoryQueueOffset++);
+                    info.factoryBuildQueue = new int[count];
+                    for (int c = 0; c < count; c++) {
+                        info.factoryBuildQueue[c] = getInt32(factoryQueueView, factoryQueueOffset++);
                     }
                 }
 

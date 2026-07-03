@@ -201,6 +201,7 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     private static final int TICK_KILLED_INTS = 11;
     private static final int TICK_KILLED_FLAGS = 12;
     private static final int TICK_REMOVE_IDS = 13;
+    private static final int TICK_FACTORY_QUEUE_IDS = 14;
 
     @Override
     protected NativeTickInfo castToNativeTickInfo(Object javaScriptObject) {
@@ -218,9 +219,11 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
             JSObject tickInts = jsArrayGet(array, TICK_INTS);
             JSObject tickFlags = jsArrayGet(array, TICK_FLAGS);
             JSObject containingIds = jsArrayGet(array, TICK_CONTAINING_IDS);
+            JSObject factoryQueueIds = jsArrayGet(array, TICK_FACTORY_QUEUE_IDS);
 
             result.updatedNativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[itemCount];
             int containingOffset = 0;
+            int factoryQueueOffset = 0;
 
             for (int i = 0; i < itemCount; i++) {
                 NativeSyncBaseItemTickInfo info = new NativeSyncBaseItemTickInfo();
@@ -270,6 +273,7 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
                 info.contained = (flags & 1) != 0;
                 info.idle = (flags & 2) != 0;
                 boolean hasContaining = (flags & 4) != 0;
+                boolean hasFactoryQueue = (flags & 8) != 0;
 
                 // ContainingItemTypeIds (prefix-length encoding)
                 if (hasContaining && !jsIsNullOrUndefined(containingIds)) {
@@ -277,6 +281,15 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
                     info.containingItemTypeIds = new int[count];
                     for (int c = 0; c < count; c++) {
                         info.containingItemTypeIds[c] = getInt32(containingIds, containingOffset++);
+                    }
+                }
+
+                // FactoryBuildQueue (prefix-length encoding)
+                if (hasFactoryQueue && !jsIsNullOrUndefined(factoryQueueIds)) {
+                    int count = getInt32(factoryQueueIds, factoryQueueOffset++);
+                    info.factoryBuildQueue = new int[count];
+                    for (int c = 0; c < count; c++) {
+                        info.factoryBuildQueue[c] = getInt32(factoryQueueIds, factoryQueueOffset++);
                     }
                 }
 
@@ -366,6 +379,7 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
         info.contained = (flags & 1) != 0;
         info.idle = (flags & 2) != 0;
         boolean hasContaining = (flags & 4) != 0;
+        boolean hasFactoryQueue = (flags & 8) != 0;
 
         if (hasContaining) {
             JSObject containingIds = jsArrayGet(array, TICK_CONTAINING_IDS);
@@ -374,6 +388,17 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
                 info.containingItemTypeIds = new int[count];
                 for (int c = 0; c < count; c++) {
                     info.containingItemTypeIds[c] = getInt32(containingIds, c + 1);
+                }
+            }
+        }
+
+        if (hasFactoryQueue) {
+            JSObject factoryQueueIds = jsArrayGet(array, TICK_FACTORY_QUEUE_IDS);
+            if (!jsIsNullOrUndefined(factoryQueueIds)) {
+                int count = getInt32(factoryQueueIds, 0);
+                info.factoryBuildQueue = new int[count];
+                for (int c = 0; c < count; c++) {
+                    info.factoryBuildQueue[c] = getInt32(factoryQueueIds, c + 1);
                 }
             }
         }

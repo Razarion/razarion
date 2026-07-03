@@ -25,6 +25,8 @@ public class JsItemCockpitBridge {
 
     private static JSObject cockpitStateCallback;
     private static SyncBaseItemMonitor watchedContainerMonitor;
+    private static SyncBaseItemMonitor watchedFactoryMonitor;
+    private static JSObject watchedFactoryCallback;
 
     public static JSObject createProxy(GameEngineControl gameEngineControl,
                                        BaseItemPlacerService baseItemPlacerService,
@@ -46,29 +48,47 @@ public class JsItemCockpitBridge {
         });
 
         // requestFabricate(factoryIds: number[], itemTypeId: number)
+        // Factories queue, so instead of skipping busy ones we pick the factory with the fewest
+        // pending units (active + waiting) to load-balance the order across the selection.
         setArrayIntVoid(proxy, "requestFabricate", (jsFactoryIds, itemTypeId) -> {
             try {
                 int[] factoryIds = jsArrayToIntArray(jsFactoryIds);
-                // Find first idle factory (one that is not currently constructing)
+                int bestFactoryId = -1;
+                int bestPending = Integer.MAX_VALUE;
                 for (int factoryId : factoryIds) {
                     try {
                         SyncBaseItemMonitor monitor = baseItemUiService.monitorSyncItem(factoryId);
-                        if (monitor.getConstructingBaseItemTypeId() == null) {
-                            monitor.release();
-                            gameEngineControl.fabricateCmdIds(factoryId, itemTypeId);
-                            return;
+                        int pending = monitor.getConstructingBaseItemTypeId() != null ? 1 : 0;
+                        int[] queue = monitor.getFactoryBuildQueue();
+                        if (queue != null) {
+                            pending += queue.length;
                         }
                         monitor.release();
+                        if (pending < bestPending) {
+                            bestPending = pending;
+                            bestFactoryId = factoryId;
+                        }
                     } catch (Exception e) {
                         // Skip if monitor not found
                     }
                 }
-                // All busy - use the first one
-                if (factoryIds.length > 0) {
+                if (bestFactoryId >= 0) {
+                    gameEngineControl.fabricateCmdIds(bestFactoryId, itemTypeId);
+                } else if (factoryIds.length > 0) {
                     gameEngineControl.fabricateCmdIds(factoryIds[0], itemTypeId);
                 }
             } catch (Throwable t) {
                 logger.log(Level.WARNING, "requestFabricate failed", t);
+            }
+        });
+
+        // requestCancelFactoryQueue(factoryId: number, queueIndex: number)
+        // queueIndex is into the waiting queue only (the active unit is not cancelable).
+        setIntIntVoid(proxy, "requestCancelFactoryQueue", (factoryId, queueIndex) -> {
+            try {
+                gameEngineControl.cancelFactoryQueueCmdIds(factoryId, queueIndex);
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "requestCancelFactoryQueue failed", t);
             }
         });
 
@@ -139,6 +159,26 @@ public class JsItemCockpitBridge {
             unwatchContainerMonitor();
         });
 
+        // watchFactoryQueue(factoryId: number, callback: (snapshot: number[]) => void)
+        // snapshot = [activeTypeId (0 = idle), progressPermille (0..1000), ...waitingTypeIds]
+        setIntCallbackVoid(proxy, "watchFactoryQueue", (factoryId, callback) -> {
+            try {
+                unwatchFactoryQueueMonitor();
+                watchedFactoryMonitor = baseItemUiService.monitorSyncItem(factoryId);
+                watchedFactoryCallback = callback;
+                pushFactoryQueueSnapshot();
+                watchedFactoryMonitor.setFactoryQueueChangeListener(monitor -> pushFactoryQueueSnapshot());
+                watchedFactoryMonitor.setConstructingChangeListener(monitor -> pushFactoryQueueSnapshot());
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "watchFactoryQueue failed", t);
+            }
+        });
+
+        // unwatchFactoryQueue()
+        setVoid(proxy, "unwatchFactoryQueue", () -> {
+            unwatchFactoryQueueMonitor();
+        });
+
         return proxy;
     }
 
@@ -148,6 +188,35 @@ public class JsItemCockpitBridge {
             watchedContainerMonitor.release();
             watchedContainerMonitor = null;
         }
+    }
+
+    private static void unwatchFactoryQueueMonitor() {
+        if (watchedFactoryMonitor != null) {
+            watchedFactoryMonitor.setFactoryQueueChangeListener(null);
+            watchedFactoryMonitor.setConstructingChangeListener(null);
+            watchedFactoryMonitor.release();
+            watchedFactoryMonitor = null;
+        }
+        watchedFactoryCallback = null;
+    }
+
+    private static void pushFactoryQueueSnapshot() {
+        if (watchedFactoryMonitor == null || watchedFactoryCallback == null) {
+            return;
+        }
+        JSObject snapshot = newJsArray();
+        Integer activeTypeId = watchedFactoryMonitor.getConstructingBaseItemTypeId();
+        double constructing = watchedFactoryMonitor.getConstructing();
+        jsArrayPush(snapshot, activeTypeId != null ? activeTypeId : 0);
+        // Warmup reports the -1 sentinel via getConstructing(); clamp negatives to 0.
+        jsArrayPush(snapshot, constructing > 0 ? (int) Math.round(constructing * 1000) : 0);
+        int[] queue = watchedFactoryMonitor.getFactoryBuildQueue();
+        if (queue != null) {
+            for (int typeId : queue) {
+                jsArrayPush(snapshot, typeId);
+            }
+        }
+        callJsFunctionWithArray(watchedFactoryCallback, snapshot);
     }
 
     /**
@@ -230,4 +299,13 @@ public class JsItemCockpitBridge {
 
     @JSBody(params = {"fn", "value"}, script = "fn(value);")
     private static native void callJsFunctionWithInt(JSObject fn, int value);
+
+    @JSBody(params = {}, script = "return [];")
+    private static native JSObject newJsArray();
+
+    @JSBody(params = {"arr", "value"}, script = "arr.push(value);")
+    private static native void jsArrayPush(JSObject arr, int value);
+
+    @JSBody(params = {"fn", "arr"}, script = "fn(arr);")
+    private static native void callJsFunctionWithArray(JSObject fn, JSObject arr);
 }

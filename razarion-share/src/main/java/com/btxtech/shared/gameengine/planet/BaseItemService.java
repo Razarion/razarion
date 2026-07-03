@@ -14,6 +14,8 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.command.FactoryCancelQueueCommand;
+import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistException;
@@ -637,7 +639,13 @@ public class BaseItemService {
     private void executeCommand(BaseCommand baseCommand) {
         try {
             SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(baseCommand.getId());
-            syncBaseItem.stop(false);
+            // Factory commands are additive (enqueue / cancel a queue entry) — they must NOT reset the
+            // factory's current build + queue. All other commands replace the item's current action, so
+            // they stop it first. Without this guard, every fabricate would run syncFactory.stop() and
+            // wipe the queue, so at most one unit could ever be queued.
+            if (!(baseCommand instanceof FactoryCommand) && !(baseCommand instanceof FactoryCancelQueueCommand)) {
+                syncBaseItem.stop(false);
+            }
             syncBaseItem.executeCommand(baseCommand);
             addToActiveItemQueue(syncBaseItem);
             guardingItemService.remove(syncBaseItem);

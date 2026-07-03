@@ -68,6 +68,22 @@ export class LevelEditorComponent extends EditorPanel {
     levelEntity.levelUnlockEntities.splice(levelEntity.levelUnlockEntities.indexOf(levelUnlockEntity), 1);
   }
 
+  // Accumulated unlock count per baseItemType up to (and including) the given level.
+  // Unlocks persist across levels, so this sums the unlocks of this level and all previous ones.
+  unlockCounts(levelEntity: LevelEntity): { [index: string]: number } {
+    const result: { [index: string]: number } = {};
+    this.levelEntities
+      .filter(level => level.number <= levelEntity.number)
+      .forEach(level => {
+        (level.levelUnlockEntities || []).forEach(unlock => {
+          if (unlock.baseItemType != null) {
+            result[unlock.baseItemType] = (result[unlock.baseItemType] ?? 0) + unlock.baseItemTypeCount;
+          }
+        });
+      });
+    return result;
+  }
+
   onSave() {
     this.levelEntities.forEach(levelConfig => {
       this.levelEditorControllerClient.update(levelConfig);

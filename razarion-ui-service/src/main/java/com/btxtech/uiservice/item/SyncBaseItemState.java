@@ -3,6 +3,7 @@ package com.btxtech.uiservice.item;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -13,6 +14,7 @@ public class SyncBaseItemState extends SyncItemState {
     private double constructing;
     private boolean contained;
     private int[] containingItemTypeIds;
+    private int[] factoryBuildQueue;
     private Integer constructingBaseItemTypeId;
     private NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo;
 
@@ -25,6 +27,7 @@ public class SyncBaseItemState extends SyncItemState {
         }
         contained = nativeSyncBaseItemTickInfo.contained;
         this.containingItemTypeIds = nativeSyncBaseItemTickInfo.containingItemTypeIds;
+        this.factoryBuildQueue = nativeSyncBaseItemTickInfo.factoryBuildQueue;
         this.nativeSyncBaseItemTickInfo = nativeSyncBaseItemTickInfo;
     }
 
@@ -55,6 +58,14 @@ public class SyncBaseItemState extends SyncItemState {
 
     public int[] getContainingItemTypeIds() {
         return containingItemTypeIds;
+    }
+
+    /**
+     * Type ids of the units waiting in this factory's build queue (behind the actively built one,
+     * exposed via {@link #getConstructingBaseItemTypeId()}). Null/empty when nothing is queued.
+     */
+    public int[] getFactoryBuildQueue() {
+        return factoryBuildQueue;
     }
 
     @Override
@@ -98,6 +109,14 @@ public class SyncBaseItemState extends SyncItemState {
             containingItemTypeIds = nativeSyncBaseItemTickInfo.containingItemTypeIds;
             for (SyncItemMonitor monitor : getMonitors()) {
                 ((SyncBaseItemMonitor) monitor).onContainingChanged();
+            }
+        }
+
+        // Ordered comparison: the queue is FIFO, so display order matters (unlike contained items).
+        if (!Arrays.equals(factoryBuildQueue, nativeSyncBaseItemTickInfo.factoryBuildQueue)) {
+            factoryBuildQueue = nativeSyncBaseItemTickInfo.factoryBuildQueue;
+            for (SyncItemMonitor monitor : getMonitors()) {
+                ((SyncBaseItemMonitor) monitor).onFactoryQueueChanged();
             }
         }
 

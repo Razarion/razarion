@@ -11,6 +11,7 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
     private Consumer<SyncItemMonitor> constructingChangeListener;
     private Consumer<SyncItemMonitor> containedChangeListener;
     private Consumer<SyncItemMonitor> containingChangeListener;
+    private Consumer<SyncItemMonitor> factoryQueueChangeListener;
 
     public SyncBaseItemMonitor(SyncBaseItemState syncBaseItemState) {
         super(syncBaseItemState);
@@ -26,6 +27,10 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
 
     public Integer getConstructingBaseItemTypeId() {
         return ((SyncBaseItemState) getSyncItemState()).getConstructingBaseItemTypeId();
+    }
+
+    public int[] getFactoryBuildQueue() {
+        return ((SyncBaseItemState) getSyncItemState()).getFactoryBuildQueue();
     }
 
     public boolean checkConstructing() {
@@ -46,6 +51,10 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
 
     public void setContainingChangeListener(Consumer<SyncItemMonitor> containingChangeListener) {
         this.containingChangeListener = containingChangeListener;
+    }
+
+    public void setFactoryQueueChangeListener(Consumer<SyncItemMonitor> factoryQueueChangeListener) {
+        this.factoryQueueChangeListener = factoryQueueChangeListener;
     }
 
     public void onHealthChanged() {
@@ -69,6 +78,12 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
     public void onContainingChanged() {
         if (containingChangeListener != null) {
             containingChangeListener.accept(this);
+        }
+    }
+
+    public void onFactoryQueueChanged() {
+        if (factoryQueueChangeListener != null) {
+            factoryQueueChangeListener.accept(this);
         }
     }
 

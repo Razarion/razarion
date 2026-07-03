@@ -27,7 +27,22 @@ export interface OwnItemCockpitModel {
   canSell: boolean;
   buildupProgress: number | null;
   health: number;
+  factoryId: number | null;
+  factoryQueue: FactoryQueueEntryModel[] | null;
+  factoryQueueFull: boolean;
 }
+
+export interface FactoryQueueEntryModel {
+  imageUrl: string;
+  itemTypeId: number;
+  /** 0..1 for the actively built (first) entry, null for waiting entries. */
+  progress: number | null;
+  /** Index into the waiting queue for cancellation; null for the active entry (not cancelable). */
+  queueIndex: number | null;
+}
+
+/** Max units in flight per factory (active + waiting). Mirrors SyncFactory.MAX_BUILD_QUEUE. */
+const MAX_BUILD_QUEUE = 10;
 
 export interface BuildupItemModel {
   imageUrl: string;
@@ -115,6 +130,7 @@ export class ItemCockpitService {
     }
     // Unwatch from previous selection
     this.itemCockpitBridge.unwatchContainerCount();
+    this.itemCockpitBridge.unwatchFactoryQueue();
     this.unwatchBuildup();
     this.unwatchHealth();
 
@@ -183,7 +199,10 @@ export class ItemCockpitService {
       containerId: null,
       canSell,
       buildupProgress: currentBuildup < 1.0 ? currentBuildup : null,
-      health: firstItem.getHealth()
+      health: firstItem.getHealth(),
+      factoryId: null,
+      factoryQueue: null,
+      factoryQueueFull: false
     };
 
     // Container info
@@ -198,7 +217,54 @@ export class ItemCockpitService {
       });
     }
 
+    // Factory build queue (single selected factory only)
+    if (baseItemType.getFactoryType() != null && items.length === 1) {
+      const factoryId = items[0].getId();
+      model.factoryId = factoryId;
+      this.itemCockpitBridge.watchFactoryQueue(factoryId, (snapshot: number[]) => {
+        this.zone.run(() => {
+          this.applyFactoryQueueSnapshot(model, snapshot);
+        });
+      });
+    }
+
     return model;
+  }
+
+  /**
+   * snapshot = [activeTypeId (0 = idle), progressPermille (0..1000), ...waitingTypeIds].
+   * Builds the queue strip: entry 0 is the actively built unit (with progress), the rest are waiting.
+   */
+  private applyFactoryQueueSnapshot(model: OwnItemCockpitModel, snapshot: number[]): void {
+    const activeTypeId = snapshot.length > 0 ? snapshot[0] : 0;
+    const progressPermille = snapshot.length > 1 ? snapshot[1] : 0;
+    const waitingIds = snapshot.slice(2);
+
+    const entries: FactoryQueueEntryModel[] = [];
+    if (activeTypeId > 0) {
+      entries.push({
+        imageUrl: this.thumbnailUrlForType(activeTypeId),
+        itemTypeId: activeTypeId,
+        progress: progressPermille / 1000,
+        queueIndex: null
+      });
+    }
+    waitingIds.forEach((typeId, index) => {
+      entries.push({
+        imageUrl: this.thumbnailUrlForType(typeId),
+        itemTypeId: typeId,
+        progress: null,
+        queueIndex: index
+      });
+    });
+
+    model.factoryQueue = entries.length > 0 ? entries : null;
+    const pending = (activeTypeId > 0 ? 1 : 0) + waitingIds.length;
+    model.factoryQueueFull = pending >= MAX_BUILD_QUEUE;
+  }
+
+  private thumbnailUrlForType(itemTypeId: number): string {
+    return getImageServiceUrl(this.itemTypeService.getBaseItemTypeAngular(itemTypeId).getThumbnail());
   }
 
   private createBuildupItems(baseItemType: BaseItemType): BuildupItemModel[] | null {
@@ -289,7 +355,10 @@ export class ItemCockpitService {
           containerId: null,
           canSell,
           buildupProgress: null,
-          health: 1.0
+          health: 1.0,
+          factoryId: null,
+          factoryQueue: null,
+          factoryQueueFull: false
         },
         count: items.length,
         baseItemTypeId: typeId
@@ -490,6 +559,12 @@ export class ItemCockpitService {
       const toBuildType = this.itemTypeService.getBaseItemTypeAngular(itemTypeId);
       this.babylonAudioService.speakCommand(`Producing ${toBuildType.getName()}`);
       this.itemCockpitBridge.requestFabricate(selectedIds, itemTypeId);
+    }
+  }
+
+  onCancelQueue(queueIndex: number): void {
+    if (this.ownItemCockpit?.factoryId != null) {
+      this.itemCockpitBridge.requestCancelFactoryQueue(this.ownItemCockpit.factoryId, queueIndex);
     }
   }
 

@@ -247,6 +247,10 @@ import java.util.logging.Logger;
         sendToWorker(GameEngineControlPackage.Command.COMMAND_FABRICATE, factoryId, toBeBuildTypeId);
     }
 
+    public void cancelFactoryQueueCmdIds(int factoryId, int queueIndex) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_CANCEL_FACTORY_QUEUE, factoryId, queueIndex);
+    }
+
     public void sellItemIds(int[] itemIds) {
         sendToWorker(GameEngineControlPackage.Command.SELL_ITEMS, intArrayToIdsDto(itemIds));
     }

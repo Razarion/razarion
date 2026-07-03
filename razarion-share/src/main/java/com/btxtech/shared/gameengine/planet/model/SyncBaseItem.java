@@ -22,6 +22,7 @@ import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
+import com.btxtech.shared.gameengine.datatypes.command.FactoryCancelQueueCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
@@ -436,6 +437,11 @@ public class SyncBaseItem extends SyncItem {
             return;
         }
 
+        if (baseCommand instanceof FactoryCancelQueueCommand) {
+            getSyncFactory().cancelQueueEntry(((FactoryCancelQueueCommand) baseCommand).getQueueIndex());
+            return;
+        }
+
         if (baseCommand instanceof LoadContainerCommand) {
             executeLoadContainerCommand((LoadContainerCommand) baseCommand);
             return;
@@ -779,6 +785,12 @@ public class SyncBaseItem extends SyncItem {
                 }
                 if (syncFactory.getRallyPoint() != null) {
                     nativeSyncBaseItemTickInfo.factoryRallyPoint = toNativeDecimalPosition(syncFactory.getRallyPoint());
+                }
+                if (!syncFactory.getBuildQueue().isEmpty()) {
+                    nativeSyncBaseItemTickInfo.factoryBuildQueue = syncFactory.getBuildQueue()
+                            .stream()
+                            .mapToInt(queued -> queued.getId())
+                            .toArray();
                 }
             }
             nativeSyncBaseItemTickInfo.contained = false;

@@ -37,6 +37,7 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     PROJECTILE_FIRED(ProjectileFiredInfo.class),
     // Commands
     FACTORY_COMMAND(FactoryCommand.class),
+    FACTORY_CANCEL_QUEUE_COMMAND(FactoryCancelQueueCommand.class),
     UNLOAD_CONTAINER_COMMAND(UnloadContainerCommand.class),
     ATTACK_COMMAND(AttackCommand.class),
     BUILDER_COMMAND(BuilderCommand.class),

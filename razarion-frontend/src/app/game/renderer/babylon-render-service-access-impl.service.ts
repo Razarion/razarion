@@ -619,6 +619,19 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.loadedTerrainTiles.delete(terrainTile);
   }
 
+  /**
+   * Bookkeeping cleanup when a terrain tile is disposed (evicted from the terrain cache or on
+   * teardown). Removes it from the two accumulators that otherwise grew unbounded for the lifetime
+   * of the session: the loaded-tiles set and the editor tile container.
+   */
+  onTerrainTileDisposed(terrainTile: BabylonTerrainTileImpl): void {
+    this.loadedTerrainTiles.delete(terrainTile);
+    const idx = this.editorTerrainTileContainer.indexOf(terrainTile);
+    if (idx !== -1) {
+      this.editorTerrainTileContainer.splice(idx, 1);
+    }
+  }
+
   getScene(): Scene {
     return this.scene;
   }

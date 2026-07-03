@@ -99,7 +99,10 @@ public class UiTerrainTile {
     }
 
     public void dispose() {
-        // TODO check for three.js resource which must be released
+        if (babylonTerrainTile != null) {
+            babylonTerrainTile.dispose();
+            babylonTerrainTile = null;
+        }
     }
 
     public boolean isTerrainTypeAllowed(TerrainType terrainType, DecimalPosition position) {

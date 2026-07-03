@@ -24,9 +24,12 @@ export class BaseItemTypeCountComponent implements OnInit {
   baseItemTypeCount?: { [index: string]: number };
   @Input("previousBaseItemTypeCount")
   previousBaseItemTypeCount?: { [index: string]: number };
+  // Aggregated max count buildable via unlock per baseItemTypeId. Read-only, only shown when set.
+  @Input("unlockBaseItemTypeCount")
+  unlockBaseItemTypeCount?: { [index: string]: number };
   @Output()
   baseItemTypeCountChange = new EventEmitter<{ [index: string]: number }>();
-  baseItemTypeCountArray: { baseItemTypeId: number, count: number }[] = [];
+  baseItemTypeCountArray: { baseItemTypeId: number, count: number, readonly: boolean }[] = [];
 
   constructor(private messageService: MessageService) {
   }
@@ -35,14 +38,18 @@ export class BaseItemTypeCountComponent implements OnInit {
     this.baseItemTypeCountArray = [];
     if (this.baseItemTypeCount) {
       Object.keys(this.baseItemTypeCount).forEach(id => {
-        this.baseItemTypeCountArray.push({baseItemTypeId: parseInt(id), count: this.baseItemTypeCount![id]});
+        this.baseItemTypeCountArray.push({baseItemTypeId: parseInt(id), count: this.baseItemTypeCount![id], readonly: false});
       })
     }
+    this.appendUnlockOnlyRows();
   }
 
   onChange() {
     let baseItemTypeCountChange: { [index: string]: number } = {};
     this.baseItemTypeCountArray.forEach(value => {
+      if (value.readonly) {
+        return;
+      }
       let intValue = value.count;
       if (isNaN(intValue)) {
         this.messageService.add({
@@ -65,7 +72,7 @@ export class BaseItemTypeCountComponent implements OnInit {
   }
 
   onCreate() {
-    this.baseItemTypeCountArray.push({baseItemTypeId: NaN, count: 1})
+    this.baseItemTypeCountArray.push({baseItemTypeId: NaN, count: 1, readonly: false})
     this.onChange();
   }
 
@@ -73,10 +80,41 @@ export class BaseItemTypeCountComponent implements OnInit {
     const merged = {...this.baseItemTypeCount, ...this.previousBaseItemTypeCount};
     this.baseItemTypeCountArray = Object.keys(merged).map(id => ({
       baseItemTypeId: parseInt(id, 10),
-      count: merged[id]
+      count: merged[id],
+      readonly: false
     }));
+    this.appendUnlockOnlyRows();
 
     this.onChange();
+  }
+
+  // Adds read-only rows for baseItemTypes that are only reachable via unlock and have no
+  // editable itemTypeLimitation entry yet, so their unlock-buildable count is still visible.
+  private appendUnlockOnlyRows() {
+    if (!this.unlockBaseItemTypeCount) {
+      return;
+    }
+    const existing = new Set(
+      this.baseItemTypeCountArray.filter(e => !e.readonly).map(e => e.baseItemTypeId));
+    Object.keys(this.unlockBaseItemTypeCount).forEach(id => {
+      const baseItemTypeId = parseInt(id, 10);
+      if (!existing.has(baseItemTypeId)) {
+        this.baseItemTypeCountArray.push({baseItemTypeId, count: 0, readonly: true});
+      }
+    });
+  }
+
+  getUnlockCount(baseItemTypeId: number): number {
+    if (!this.unlockBaseItemTypeCount) {
+      return 0;
+    }
+    return this.unlockBaseItemTypeCount[baseItemTypeId] ?? 0;
+  }
+
+  // Total units buildable at this level: the level limitation plus all accumulated unlocks.
+  getTotalCount(typeCount: { baseItemTypeId: number, count: number }): number {
+    const limitation = Number(typeCount.count) || 0;
+    return limitation + this.getUnlockCount(typeCount.baseItemTypeId);
   }
 
   getPreviousCount(baseItemTypeId: number): number {

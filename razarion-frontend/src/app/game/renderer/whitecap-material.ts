@@ -51,10 +51,13 @@ export function buildWhitecapMaterial(scene: Scene): NodeMaterial {
   time.value = 0;
   time.isConstant = false;
   let accumulatedTime = 0;
-  scene.onBeforeRenderObservable.add(() => {
+  // Per-tile whitecap material: bind the animation observer to the material lifetime so disposing
+  // the tile's whitecap material also removes this per-frame callback (see ground-material.ts).
+  const timeObserver = scene.onBeforeRenderObservable.add(() => {
     accumulatedTime += scene.getEngine().getDeltaTime() / 1000;
     time.value = accumulatedTime;
   });
+  mat.onDisposeObservable.add(() => scene.onBeforeRenderObservable.remove(timeObserver));
 
   // ========== Vertex shader ==========
   const worldPos = new TransformBlock("WorldPos");

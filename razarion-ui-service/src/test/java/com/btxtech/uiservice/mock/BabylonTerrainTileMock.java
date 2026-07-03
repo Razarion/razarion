@@ -20,6 +20,11 @@ public class BabylonTerrainTileMock implements BabylonTerrainTile {
 
     }
 
+    @Override
+    public void dispose() {
+
+    }
+
     public TerrainTile getTerrainTile() {
         return terrainTile;
     }
