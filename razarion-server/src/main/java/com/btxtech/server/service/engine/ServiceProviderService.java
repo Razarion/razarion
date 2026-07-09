@@ -14,15 +14,17 @@ public class ServiceProviderService {
     private final ParticleSystemService particleSystemCrudPersistence;
     private final BoxItemTypeCrudService boxItemTypeCrudPersistence;
     private final InventoryItemService inventoryItemCrudPersistence;
+    private final InventoryArtifactService inventoryArtifactCrudPersistence;
     private final BaseItemTypeService baseItemTypeCrudPersistence;
 
-    public ServiceProviderService(Model3DService model3DCrudPersistence, ImageService imageService, AudioService audioPersistence, ParticleSystemService particleSystemCrudPersistence, BoxItemTypeCrudService boxItemTypeCrudPersistence, InventoryItemService inventoryItemCrudPersistence, BaseItemTypeService baseItemTypeCrudPersistence) {
+    public ServiceProviderService(Model3DService model3DCrudPersistence, ImageService imageService, AudioService audioPersistence, ParticleSystemService particleSystemCrudPersistence, BoxItemTypeCrudService boxItemTypeCrudPersistence, InventoryItemService inventoryItemCrudPersistence, InventoryArtifactService inventoryArtifactCrudPersistence, BaseItemTypeService baseItemTypeCrudPersistence) {
         this.model3DCrudPersistence = model3DCrudPersistence;
         this.imageService = imageService;
         this.audioPersistence = audioPersistence;
         this.particleSystemCrudPersistence = particleSystemCrudPersistence;
         this.boxItemTypeCrudPersistence = boxItemTypeCrudPersistence;
         this.inventoryItemCrudPersistence = inventoryItemCrudPersistence;
+        this.inventoryArtifactCrudPersistence = inventoryArtifactCrudPersistence;
         this.baseItemTypeCrudPersistence = baseItemTypeCrudPersistence;
     }
 
@@ -48,6 +50,10 @@ public class ServiceProviderService {
 
     public InventoryItemService getInventoryItemCrudPersistence() {
         return inventoryItemCrudPersistence;
+    }
+
+    public InventoryArtifactService getInventoryArtifactCrudPersistence() {
+        return inventoryArtifactCrudPersistence;
     }
 
     public BaseItemTypeService getBaseItemTypeCrudPersistence() {

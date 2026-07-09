@@ -9,9 +9,12 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
+import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.InventoryArtifact;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.Rareness;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
@@ -372,6 +375,19 @@ public class TeaVMClientMarshaller {
             }
             return result;
         }
+        if (obj instanceof UseInventoryItem) {
+            UseInventoryItem useInventoryItem = (UseInventoryItem) obj;
+            JsObject result = JsObject.create();
+            result.set("inventoryId", useInventoryItem.getInventoryId());
+            if (useInventoryItem.getPositions() != null) {
+                JsArray<Object> arr = JsArray.create();
+                for (DecimalPosition pos : useInventoryItem.getPositions()) {
+                    arr.push(javaToJsObject(pos));
+                }
+                result.set("positions", arr);
+            }
+            return result;
+        }
         if (obj instanceof List) {
             return listToJsArray((List<?>) obj);
         }
@@ -560,6 +576,25 @@ public class TeaVMClientMarshaller {
                 items.add(item);
             }
             dto.setInventoryItems(items);
+        }
+        JSObject artifactsArr = obj.get("inventoryArtifacts");
+        if (!isNullOrUndefined(artifactsArr)) {
+            List<InventoryArtifact> artifacts = new ArrayList<>();
+            int length = getArrayLength(artifactsArr);
+            for (int i = 0; i < length; i++) {
+                JsObject artifactObj = JsObject.cast(getArrayElementDirect(artifactsArr, i));
+                InventoryArtifact artifact = new InventoryArtifact();
+                artifact.setId(artifactObj.getInt("id"));
+                artifact.setInternalName(artifactObj.getString("internalName"));
+                artifact.setImageId(artifactObj.getNullableInt("imageId"));
+                artifact.setCrystalCost(artifactObj.getNullableInt("crystalCost"));
+                String rarenessStr = artifactObj.getString("rareness");
+                if (rarenessStr != null) {
+                    artifact.setRareness(Rareness.valueOf(rarenessStr));
+                }
+                artifacts.add(artifact);
+            }
+            dto.setInventoryArtifacts(artifacts);
         }
         return dto;
     }

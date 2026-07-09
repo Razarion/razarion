@@ -194,11 +194,8 @@ public class BoxService {
             InventoryItem inventoryItem = inventoryTypeService.getInventoryItem(boxItemTypePossibility.getInventoryItemId());
             boxContent.addInventoryItem(inventoryItem);
 //            gameLogicService.onInventoryItemFromBox(userContext, syncBoxItem, boxItemTypePossibility);
-//        } else if (boxItemTypePossibility.getDbInventoryArtifact() != null) {
-//            userContext.addInventoryArtifact(boxItemTypePossibility.getDbInventoryArtifact().getId());
-//            serverConditionService.onArtifactItemAdded(userContext, true, boxItemTypePossibility.getDbInventoryArtifact().getId());
-//            historyService.addInventoryArtifactFromBox(userContext, boxItemTypePossibility.getDbInventoryArtifact().getName());
-//            builder.append("Artifact: ").append(boxItemTypePossibility.getDbInventoryArtifact().getName());
+        } else if (boxItemTypePossibility.getInventoryArtifactId() != null) {
+            boxContent.addInventoryArtifact(inventoryTypeService.getInventoryArtifact(boxItemTypePossibility.getInventoryArtifactId()));
         } else if (boxItemTypePossibility.getCrystals() != null) {
             boxContent.addCrystals(boxItemTypePossibility.getCrystals());
         } else {

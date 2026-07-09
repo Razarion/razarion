@@ -623,9 +623,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.factoryBuildPreviewRenderObject.setRotationY(-Math.atan2(roy, rox));
     }
 
-    // Set up the buildup effect so meshes above the scan line render with the grid material and
-    // meshes below render with the unit's normal materials. We deliberately skip createRing() —
-    // the factory has its own scan plate so the unit doesn't need its own ring.
+    // Set up the buildup effect so meshes above/intersecting the scan line render with the gray/grid
+    // build-up shader and meshes fully below render with the unit's normal materials. We deliberately
+    // skip createRing() — the factory has its own scan plate so the unit doesn't need its own ring.
     const previewMesh = this.factoryBuildPreviewRenderObject.getModel3D() as Mesh;
     this.factoryBuildPreviewBuildupEffect = new BabylonBuildupEffect(
       this.rendererService.getScene(),

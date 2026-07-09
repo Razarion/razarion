@@ -23,6 +23,8 @@ import {
   InGameQuestVisualizationService,
   FactoryType,
   InputService,
+  InventoryArtifact,
+  InventoryArtifactCount,
   InventoryItem,
   InventoryTypeService,
   ItemContainerType,
@@ -336,6 +338,10 @@ export class GameMockService {
 
           isFixVerticalNorm(): boolean {
             return false;
+          }
+
+          getAmount(): number {
+            return 0;
           }
 
           getInternalName(): string {
@@ -873,6 +879,10 @@ export class GameMockService {
             return false;
           }
 
+          getAmount(): number {
+            return 0;
+          }
+
           getThumbnail(): number | null {
             return null;
           }
@@ -886,36 +896,93 @@ export class GameMockService {
   }
 
   mockInventoryTypeService(): InventoryTypeService {
-    return new class implements InventoryTypeService {
-      getInventoryItem(id: number): InventoryItem {
-        return new class implements InventoryItem {
-          getI18nName(): I18nString {
-            return new class implements I18nString {
-              getString(): string {
-                return "Viper Pack";
-              }
-            }
-          }
-
-          getRazarion(): number | null {
-            return null;
-          }
-
-          getBaseItemTypeId(): number | null {
-            return 1;
-          }
-
-          getBaseItemTypeCount(): number {
-            return 2;
-          }
-
-          getImageId(): number | null {
-            return 36;
-          }
-
-        }
+    const mockI18n = (text: string): I18nString => new class implements I18nString {
+      getString(): string {
+        return text;
+      }
+    };
+    const mockInventoryItem = (id: number): InventoryItem => new class implements InventoryItem {
+      getId(): number {
+        return id;
       }
 
+      getInternalName(): string {
+        return "Viper Pack";
+      }
+
+      getI18nName(): I18nString {
+        return mockI18n("Viper Pack");
+      }
+
+      getRazarion(): number | null {
+        return null;
+      }
+
+      getBaseItemTypeId(): number | null {
+        return 1;
+      }
+
+      getBaseItemTypeCount(): number {
+        return 2;
+      }
+
+      getImageId(): number | null {
+        return 36;
+      }
+
+      getCrystalCost(): number | null {
+        return 5;
+      }
+
+      getInventoryArtifactCosts(): InventoryArtifactCount[] {
+        return [];
+      }
+    };
+    const mockInventoryArtifact = (id: number): InventoryArtifact => new class implements InventoryArtifact {
+      getId(): number {
+        return id;
+      }
+
+      getInternalName(): string {
+        return "Crystal Shard";
+      }
+
+      getI18nName(): I18nString {
+        return mockI18n("Crystal Shard");
+      }
+
+      getImageId(): number | null {
+        return 36;
+      }
+
+      getRareness(): string | null {
+        return "RARE";
+      }
+
+      getHtmlColor(): string {
+        return "#1273d2";
+      }
+
+      getCrystalCost(): number | null {
+        return 3;
+      }
+    };
+    return new class implements InventoryTypeService {
+      getInventoryItem(id: number): InventoryItem {
+        return mockInventoryItem(id);
+      }
+
+      getInventoryArtifact(id: number): InventoryArtifact {
+        return mockInventoryArtifact(id);
+      }
+
+      getInventoryItems(): InventoryItem[] {
+        return [mockInventoryItem(1)];
+      }
+
+      getInventoryArtifacts(): InventoryArtifact[] {
+        return [mockInventoryArtifact(1)];
+      }
     }
   };
 

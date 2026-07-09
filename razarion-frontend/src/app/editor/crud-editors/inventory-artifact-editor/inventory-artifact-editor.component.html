@@ -1,0 +1,34 @@
+<div style="width: 40em">
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Id</span>
+        <div class="col-span-8">
+            <p-inputNumber [disabled]="true" [(ngModel)]="inventoryArtifact.id"></p-inputNumber>
+        </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Internal name</span>
+        <div class="col-span-8">
+            <input [(ngModel)]="inventoryArtifact.internalName" type="text"
+                class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+        </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Thumbnail</span>
+        <div class="col-span-8">
+            <image-item [(imageId)]="inventoryArtifact.imageId"></image-item>
+        </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Rareness</span>
+        <div class="col-span-8">
+            <p-select [options]="rarenessOptions" [(ngModel)]="inventoryArtifact.rareness"
+                optionLabel="label" optionValue="value"></p-select>
+        </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+        <span class="col-span-4">Crystal cost</span>
+        <div class="col-span-8">
+            <p-inputNumber [(ngModel)]="inventoryArtifact.crystalCost"></p-inputNumber>
+        </div>
+    </div>
+</div>

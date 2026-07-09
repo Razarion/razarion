@@ -16,6 +16,7 @@ import {Select} from 'primeng/select';
 import {ToolbarModule} from 'primeng/toolbar';
 import {CheckboxModule} from 'primeng/checkbox';
 import {RippleModule} from 'primeng/ripple';
+import {DialogModule} from 'primeng/dialog';
 
 @Component({
   selector: 'user-mgmt',
@@ -31,7 +32,8 @@ import {RippleModule} from 'primeng/ripple';
     CommonModule,
     ToolbarModule,
     CheckboxModule,
-    RippleModule
+    RippleModule,
+    DialogModule
 ],
   templateUrl: './user-mgmt.component.html'
 })
@@ -41,6 +43,8 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
   private userMgmtControllerClient: UserMgmtControllerClient;
   selectedUserIds = new Set<string>();
   minutes: number = 60;
+  showDeleteDialog = false;
+  userToDelete: UserBackendInfo | null = null;
 
 
   constructor(private messageService: MessageService,
@@ -190,6 +194,42 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
   deleteSelectedUsers() {
     this.userMgmtControllerClient.deleteUsersAndBases(Array.from(this.selectedUserIds))
       .then(() => this.loadUsers());
+  }
+
+  askDeleteUser(userBackendInfo: UserBackendInfo) {
+    this.userToDelete = userBackendInfo;
+    this.showDeleteDialog = true;
+  }
+
+  cancelDeleteUser() {
+    this.showDeleteDialog = false;
+    this.userToDelete = null;
+  }
+
+  confirmDeleteUser() {
+    if (!this.userToDelete) {
+      return;
+    }
+    const userId = this.userToDelete.userId;
+    this.userMgmtControllerClient.deleteUser(userId)
+      .then(() => {
+        this.messageService.add({
+          severity: 'success',
+          summary: `User deleted`,
+          detail: `User '${userId}' and its base were deleted.`
+        });
+        this.cancelDeleteUser();
+        this.loadUsers();
+      })
+      .catch(err => {
+        this.messageService.add({
+          severity: 'error',
+          summary: `Can not delete user`,
+          detail: err.message,
+          sticky: true
+        });
+        this.cancelDeleteUser();
+      });
   }
 
   selectUnregistered() {

@@ -32,6 +32,7 @@ public class CommonUrl {
     public static final String GAME_UI_CONTEXT_EDITOR_PATH = "editor/game-ui-context";
     public static final String MODEL_3D_CONTROLLER = "editor/model-3d";
     public static final String INVENTORY_ITEM_EDITOR_PATH = "editor/inventory-item";
+    public static final String INVENTORY_ARTIFACT_EDITOR_PATH = "editor/inventory-artifact";
     public static final String TERRAIN_SHAPE_CONTROLLER = "terrainshape";
     public static final String TERRAIN_HEIGHT_MAP_CONTROLLER = "terrainHeightMap";
     public static final String TRACKER_PATH = "tracker";

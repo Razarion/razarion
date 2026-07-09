@@ -1,0 +1,71 @@
+<div class="tech-tree">
+  @if (loading) {
+    <div class="tt-message">Loading tech tree…</div>
+  } @else if (loadFailed) {
+    <div class="tt-message">Could not load the tech tree.</div>
+  } @else if (rows.length === 0) {
+    <div class="tt-message">No unit data available yet.</div>
+  } @else {
+    <p class="tt-intro">
+      Every unit you will command — and how many — as you climb the levels.
+      A glimpse of the power that awaits.
+    </p>
+    <div class="tt-legend">
+      <span class="tt-legend-item"><span class="tt-count tt-count-demo">3</span> allowed at this level</span>
+      <span class="tt-legend-item"><span class="tt-unlock tt-unlock-demo"><i class="pi pi-sparkles"></i>2</span> extra, unlockable with crystals</span>
+    </div>
+    <div class="tt-scroll">
+      <table class="tt-table">
+        <thead>
+          <tr>
+            <th class="tt-corner">Unit</th>
+            @for (level of levels; track level.id) {
+              <th class="tt-level" [class.tt-current]="isCurrentLevel(level)">
+                <div class="tt-level-inner">
+                  <span class="tt-level-tag">LVL</span>
+                  <span class="tt-level-number">{{ level.number }}</span>
+                  @if (isCurrentLevel(level)) {
+                    <span class="tt-you">you</span>
+                  }
+                </div>
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows; track row.itemTypeId) {
+            <tr>
+              <th class="tt-unit">
+                @if (row.imageUrl) {
+                  <img class="tt-thumb" [src]="row.imageUrl" [alt]="row.name"/>
+                } @else {
+                  <span class="tt-thumb tt-thumb-empty"><i class="pi pi-question"></i></span>
+                }
+                <span class="tt-unit-name" [pTooltip]="row.name">{{ row.name }}</span>
+              </th>
+              @for (cell of row.counts; track $index) {
+                <td class="tt-cell"
+                    [class.tt-has]="cell.total > 0"
+                    [class.tt-current-col]="isCurrentLevel(levels[$index])">
+                  @if (cell.total > 0) {
+                    <div class="tt-cell-inner">
+                      <span class="tt-count">{{ cell.total }}</span>
+                      @if (cell.newUnlock > 0) {
+                        <span class="tt-unlock"
+                              [pTooltip]="cell.newUnlock + ' more of these become unlockable with crystals at this level'">
+                          <i class="pi pi-sparkles"></i>{{ cell.newUnlock }}
+                        </span>
+                      }
+                    </div>
+                  } @else {
+                    <span class="tt-none">·</span>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

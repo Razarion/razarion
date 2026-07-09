@@ -4,6 +4,7 @@ import com.btxtech.server.model.engine.BackupPlanetOverview;
 import com.btxtech.server.service.engine.PlanetBackupService;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
+import com.btxtech.server.service.engine.ServerLevelQuestService;
 import com.btxtech.server.service.engine.ServerInventoryService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
 import com.btxtech.server.service.tracking.RedditConversionService;
@@ -34,6 +35,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.inject.Provider;
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
@@ -63,6 +65,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private final UserActivityService userActivityService;
     private final RedditConversionService redditConversionService;
     private final ServerInventoryService serverInventoryService;
+    // Provider breaks the cycle: ServerLevelQuestService injects Provider<ServerGameEngineControl>.
+    private final Provider<ServerLevelQuestService> serverLevelQuestService;
     private boolean running;
 
     public ServerGameEngineControl(InitializeService initializeService,
@@ -81,7 +85,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                                    ResourceService resourceService, PlanetBackupService planetBackupService,
                                    UserActivityService userActivityService,
                                    RedditConversionService redditConversionService,
-                                   ServerInventoryService serverInventoryService) {
+                                   ServerInventoryService serverInventoryService,
+                                   Provider<ServerLevelQuestService> serverLevelQuestService) {
         this.initializeService = initializeService;
         this.planetService = planetService;
         this.boxService = boxService;
@@ -100,6 +105,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         this.userActivityService = userActivityService;
         this.redditConversionService = redditConversionService;
         this.serverInventoryService = serverInventoryService;
+        this.serverLevelQuestService = serverLevelQuestService;
     }
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
@@ -199,15 +205,10 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     private void activateQuests(BackupPlanetInfo backupPlanetInfo) {
-//  TODO      questService.clean();
-//        Collection<Integer> planetQuestId = serverGameEngineCrudPersistence.readAllQuestIds();
-//        if (planetQuestId == null || planetQuestId.isEmpty()) {
-//            return;
-//        }
-//        for (Map.Entry<Integer, QuestConfig> entry : userService.findActiveQuests4Users(planetQuestId).entrySet()) {
-//            questService.activateCondition(entry.getKey(), entry.getValue());
-//        }
-//        questService.restore(backupPlanetInfo);
+        // Re-register the in-memory quest-progress conditions for all users with a persisted active
+        // quest and restore their backed-up progress. Without this the quest stays "active" in the DB
+        // but never tracks progress after a restart, so it can never be fulfilled.
+        serverLevelQuestService.get().reactivatePersistedQuests(backupPlanetInfo);
     }
 
     public void stop() {

@@ -1,17 +1,37 @@
 import {
+  AddBlock,
+  ClampBlock,
   Color3,
   Color4,
+  DerivativeBlock,
+  DivideBlock,
+  DotBlock,
   GlowLayer,
+  InputBlock,
+  LerpBlock,
   Material,
+  MaxBlock,
   Mesh,
   MeshBuilder,
+  MultiplyBlock,
+  NodeMaterial,
+  NodeMaterialBlockConnectionPointTypes,
+  NodeMaterialSystemValues,
+  NormalizeBlock,
   ParticleSystem,
   RawTexture,
   StandardMaterial,
-  Vector3
+  StepBlock,
+  SubtractBlock,
+  TransformBlock,
+  TrigonometryBlock,
+  TrigonometryBlockOperations,
+  Vector3,
+  VectorSplitterBlock,
+  VertexOutputBlock,
+  FragmentOutputBlock
 } from "@babylonjs/core";
 import {Scene} from "@babylonjs/core/scene";
-import {GridMaterial} from "@babylonjs/materials/grid/gridMaterial";
 
 export interface BuildingBeamOriginProvider {
   getBeamOrigin(): Vector3 | null;
@@ -21,7 +41,8 @@ export interface BuildingBeamOriginProvider {
 export class BabylonBuildupEffect {
   private meshes: Mesh[] | null = null;
   private originalMaterials: Map<Mesh, Material | null> = new Map();
-  private material: GridMaterial | null = null;
+  private material: NodeMaterial | null = null;
+  private clipYInput: InputBlock | null = null;
   private initialized = false;
   private worldMinY = 0;
   private worldMaxY = 0;
@@ -81,21 +102,222 @@ export class BabylonBuildupEffect {
     this.worldMinY = minY;
     this.worldMaxY = maxY;
     this.meshes = meshes;
+
+    const built = BabylonBuildupEffect.createBuildupMaterial(this.scene, this.diplomacyColor);
+    this.material = built.material;
+    this.clipYInput = built.clipYInput;
+
+    // Remember the finished materials; hide the meshes until applyMeshVisibilityAtWorldY decides
+    // per mesh whether it shows its normal material (fully below the scan line) or the build-up
+    // material (above/intersecting the scan line).
     meshes.forEach(m => {
       this.originalMaterials.set(m, m.material);
       m.isVisible = false;
     });
-
-    const buildupMat = new GridMaterial("BuildupMat", this.scene);
-    buildupMat.mainColor = this.diplomacyColor.scale(0.05);
-    buildupMat.lineColor = this.diplomacyColor;
-    buildupMat.gridRatio = 0.15;
-    buildupMat.majorUnitFrequency = 5;
-    buildupMat.minorUnitVisibility = 0.6;
-    buildupMat.opacity = 1.0;
-    buildupMat.backFaceCulling = false;
-    this.material = buildupMat;
     return true;
+  }
+
+  /**
+   * Builds the build-up material as a NodeMaterial (instead of a raw GLSL ShaderMaterial) so it
+   * compiles to both WebGL and WebGPU shader languages — future-proofing the renderer for WebGPU.
+   *
+   * The graph reproduces the essentials of Babylon's GridMaterial for the part above the scan line:
+   * the grid is computed from the mesh LOCAL position (so it stays locked to the geometry and the
+   * UV/surface mapping matches), weighted per axis by the surface normal, and antialiased via
+   * screen-space derivatives. Below the scan line (world-Y &lt; uClipY) the surface renders as matte
+   * gray. The returned {@code clipYInput} is the uniform updated per tick with the current scan
+   * height.
+   */
+  private static createBuildupMaterial(scene: Scene, diplomacyColor: Color3): { material: NodeMaterial, clipYInput: InputBlock } {
+    const F = NodeMaterialBlockConnectionPointTypes.Float;
+    const V3 = NodeMaterialBlockConnectionPointTypes.Vector3;
+    const C3 = NodeMaterialBlockConnectionPointTypes.Color3;
+    const constF = (name: string, v: number) => {
+      const b = new InputBlock(name, undefined, F);
+      b.value = v;
+      b.isConstant = true;
+      return b;
+    };
+
+    const nm = new NodeMaterial("BuildupMat", scene);
+
+    // ---- Vertex ----
+    const position = new InputBlock("position");
+    position.setAsAttribute("position");
+    const normalAttr = new InputBlock("normal");
+    normalAttr.setAsAttribute("normal");
+    const world = new InputBlock("world");
+    world.setAsSystemValue(NodeMaterialSystemValues.World);
+    const wvp = new InputBlock("worldViewProjection");
+    wvp.setAsSystemValue(NodeMaterialSystemValues.WorldViewProjection);
+
+    const wvpT = new TransformBlock("wvpTransform");
+    position.output.connectTo(wvpT.vector);
+    wvp.output.connectTo(wvpT.transform);
+    const vertexOutput = new VertexOutputBlock("vertexOutput");
+    wvpT.output.connectTo(vertexOutput.vector);
+
+    const worldPosT = new TransformBlock("worldPos");
+    position.output.connectTo(worldPosT.vector);
+    world.output.connectTo(worldPosT.transform);
+
+    const worldNormT = new TransformBlock("worldNormal");
+    worldNormT.complementW = 0; // transform as direction (ignore translation)
+    normalAttr.output.connectTo(worldNormT.vector);
+    world.output.connectTo(worldNormT.transform);
+
+    // ---- Shared constants ----
+    const half = constF("half", 0.5);
+    const one = constF("one", 1.0);
+    const three = constF("three", 3.0);
+    const zero = constF("zero", 0.0);
+    const eps = constF("eps", 1e-5);
+    const kThick = constF("kThick", 1.5);
+    const gridRatio = constF("gridRatio", 0.15);
+    const ones = new InputBlock("ones", undefined, V3);
+    ones.value = new Vector3(1, 1, 1);
+    ones.isConstant = true;
+
+    // ---- Grid in local space ----
+    const gridPos = new DivideBlock("gridPos");
+    position.output.connectTo(gridPos.left);
+    gridRatio.output.connectTo(gridPos.right);
+
+    const deriv = new DerivativeBlock("deriv");
+    gridPos.output.connectTo(deriv.input);
+    const absDx = new TrigonometryBlock("absDx");
+    absDx.operation = TrigonometryBlockOperations.Abs;
+    deriv.dx.connectTo(absDx.input);
+    const absDy = new TrigonometryBlock("absDy");
+    absDy.operation = TrigonometryBlockOperations.Abs;
+    deriv.dy.connectTo(absDy.input);
+    const fwidth = new AddBlock("fwidth");
+    absDx.output.connectTo(fwidth.left);
+    absDy.output.connectTo(fwidth.right);
+    const edgeBase = new MultiplyBlock("edgeBase");
+    fwidth.output.connectTo(edgeBase.left);
+    kThick.output.connectTo(edgeBase.right);
+    const edge = new AddBlock("edge");
+    edgeBase.output.connectTo(edge.left);
+    eps.output.connectTo(edge.right);
+
+    const fpart = new TrigonometryBlock("fract");
+    fpart.operation = TrigonometryBlockOperations.Fract;
+    gridPos.output.connectTo(fpart.input);
+    const fMinusHalf = new SubtractBlock("fMinusHalf");
+    fpart.output.connectTo(fMinusHalf.left);
+    half.output.connectTo(fMinusHalf.right);
+    const absF = new TrigonometryBlock("absF");
+    absF.operation = TrigonometryBlockOperations.Abs;
+    fMinusHalf.output.connectTo(absF.input);
+    const distLine = new SubtractBlock("distLine");
+    half.output.connectTo(distLine.left);
+    absF.output.connectTo(distLine.right);
+
+    // lineMask = clamp(1 - distLine/edge, 0, 1): 1 on the line, linear AA falloff of width ~edge.
+    const ratio = new DivideBlock("ratio");
+    distLine.output.connectTo(ratio.left);
+    edge.output.connectTo(ratio.right);
+    const lineRaw = new SubtractBlock("lineRaw");
+    one.output.connectTo(lineRaw.left);
+    ratio.output.connectTo(lineRaw.right);
+    const lineMask = new ClampBlock("lineMask");
+    lineMask.minimum = 0;
+    lineMask.maximum = 1;
+    lineRaw.output.connectTo(lineMask.value);
+
+    // normalImpact = clamp(1 - 3*abs(n)^3, 0, 1): weights each axis so lines align to the surface.
+    const absN = new TrigonometryBlock("absN");
+    absN.operation = TrigonometryBlockOperations.Abs;
+    normalAttr.output.connectTo(absN.input);
+    const nSq = new MultiplyBlock("nSq");
+    absN.output.connectTo(nSq.left);
+    absN.output.connectTo(nSq.right);
+    const nCube = new MultiplyBlock("nCube");
+    nSq.output.connectTo(nCube.left);
+    absN.output.connectTo(nCube.right);
+    const n3 = new MultiplyBlock("n3");
+    nCube.output.connectTo(n3.left);
+    three.output.connectTo(n3.right);
+    const impRaw = new SubtractBlock("impRaw");
+    one.output.connectTo(impRaw.left);
+    n3.output.connectTo(impRaw.right);
+    const impact = new ClampBlock("impact");
+    impact.minimum = 0;
+    impact.maximum = 1;
+    impRaw.output.connectTo(impact.value);
+
+    const weighted = new MultiplyBlock("weighted");
+    lineMask.output.connectTo(weighted.left);
+    impact.output.connectTo(weighted.right);
+    const gridSum = new DotBlock("gridSum");
+    weighted.output.connectTo(gridSum.left);
+    ones.output.connectTo(gridSum.right);
+    const grid = new ClampBlock("grid");
+    grid.minimum = 0;
+    grid.maximum = 1;
+    gridSum.output.connectTo(grid.value);
+
+    // Diplomacy colors are uniforms (not baked constants) so every buildup material shares one
+    // compiled shader program regardless of team color.
+    const lineColor = new InputBlock("lineColor", undefined, C3);
+    lineColor.value = diplomacyColor.scale(0.6); // dial down the grid-line luminance
+
+    const mainColor = new InputBlock("mainColor", undefined, C3);
+    mainColor.value = diplomacyColor.scale(0.05);
+    const gridColor = new LerpBlock("gridColor");
+    mainColor.output.connectTo(gridColor.left);
+    lineColor.output.connectTo(gridColor.right);
+    grid.output.connectTo(gridColor.gradient);
+
+    // ---- Gray (below the scan line): matte gray with a soft lambert term ----
+    const nWorld = new NormalizeBlock("nWorld");
+    worldNormT.xyz.connectTo(nWorld.input);
+    const lightDir = new InputBlock("lightDir", undefined, V3);
+    lightDir.value = new Vector3(0.4, 1.0, 0.3).normalize();
+    lightDir.isConstant = true;
+    const dotNL = new DotBlock("dotNL");
+    nWorld.output.connectTo(dotNL.left);
+    lightDir.output.connectTo(dotNL.right);
+    const diff = new MaxBlock("diff");
+    dotNL.output.connectTo(diff.left);
+    zero.output.connectTo(diff.right);
+    const diffScaled = new MultiplyBlock("diffScaled");
+    diff.output.connectTo(diffScaled.left);
+    constF("k065", 0.65).output.connectTo(diffScaled.right);
+    const shade = new AddBlock("shade");
+    diffScaled.output.connectTo(shade.left);
+    constF("k035", 0.35).output.connectTo(shade.right);
+    const grayBase = new InputBlock("grayBase", undefined, C3);
+    grayBase.value = new Color3(0.5, 0.5, 0.52);
+    grayBase.isConstant = true;
+    const grayColor = new MultiplyBlock("grayColor");
+    grayBase.output.connectTo(grayColor.left);
+    shade.output.connectTo(grayColor.right);
+
+    // ---- Select gray vs grid by world-Y against the scan height uClipY ----
+    const clipYInput = new InputBlock("uClipY", undefined, F);
+    clipYInput.value = -1e6; // uniform, updated per tick with the scan height
+    const worldSplit = new VectorSplitterBlock("worldSplit");
+    worldPosT.output.connectTo(worldSplit.xyzw);
+    // step(edge=worldY, value=uClipY) = 1 when worldY <= uClipY (below the line) -> gray.
+    const belowFactor = new StepBlock("belowFactor");
+    clipYInput.output.connectTo(belowFactor.value);
+    worldSplit.y.connectTo(belowFactor.edge);
+    const finalColor = new LerpBlock("finalColor");
+    gridColor.output.connectTo(finalColor.left);
+    grayColor.output.connectTo(finalColor.right);
+    belowFactor.output.connectTo(finalColor.gradient);
+
+    const fragOut = new FragmentOutputBlock("fragmentOutput");
+    finalColor.output.connectTo(fragOut.rgb);
+
+    nm.addOutputNode(vertexOutput);
+    nm.addOutputNode(fragOut);
+    nm.build();
+    nm.backFaceCulling = false;
+
+    return {material: nm, clipYInput};
   }
 
   createRing(): void {
@@ -377,7 +599,6 @@ export class BabylonBuildupEffect {
   }
 
   updateVisibility(buildup: number): void {
-    const range = this.worldMaxY - this.worldMinY;
     // Use container Y (ground level) as base, not worldMinY which can be below ground
     const groundY = this.container.position.y;
     const minStartY = Math.max(this.worldMinY, groundY) + 0.2;
@@ -396,18 +617,23 @@ export class BabylonBuildupEffect {
    * one from the buildup percentage. Used by the factory's unit-build preview where the scan line
    * Y must stay in sync with the factory's column scan plate (which has its own coordinate system
    * unrelated to the unit's bounding box).
+   *
+   * Decision is per mesh: a mesh that lies entirely below the scan line shows its normal finished
+   * material; a mesh above or intersecting the scan line gets the build-up shader. The shader still
+   * receives the scan height via {@code uClipY} so that on an intersecting mesh the part below the
+   * line renders gray and the part above renders the blueprint grid.
    */
   applyMeshVisibilityAtWorldY(worldClipY: number): void {
+    if (this.clipYInput) {
+      this.clipYInput.value = worldClipY;
+    }
     if (this.meshes) {
       this.meshes.forEach(mesh => {
-        const bb = mesh.getBoundingInfo().boundingBox;
-        const meshMaxY = bb.maximumWorld.y;
-
+        const meshMaxY = mesh.getBoundingInfo().boundingBox.maximumWorld.y;
+        mesh.isVisible = true;
         if (meshMaxY <= worldClipY) {
-          mesh.isVisible = true;
           mesh.material = this.originalMaterials.get(mesh) ?? mesh.material;
         } else {
-          mesh.isVisible = true;
           mesh.material = this.material;
         }
       });
@@ -428,6 +654,7 @@ export class BabylonBuildupEffect {
       if (this.material) {
         this.material.dispose();
         this.material = null;
+        this.clipYInput = null;
       }
 
       this.initialized = false;
@@ -553,8 +780,6 @@ export class BabylonBuildupEffect {
 
     const dist = Vector3.Distance(startPos, endPos);
     const midPos = Vector3.Lerp(startPos, endPos, 0.5);
-    const dir = endPos.subtract(startPos).normalize();
-    const angle = Math.atan2(dir.x, dir.z);
 
     if (!this.buildingBeam) {
       this.buildingBeam = MeshBuilder.CreatePlane("BuildingBeam", {width: 1, height: 1}, this.scene);
@@ -562,9 +787,21 @@ export class BabylonBuildupEffect {
       this.buildingBeam.material = this.buildingBeamMaterial;
     }
 
-    this.buildingBeam.position = new Vector3(midPos.x, startPos.y, midPos.z);
+    // Render the beam as a true 3D camera-facing ribbon so its building-side end reaches the scan
+    // line height (endPos.y, which rises with build progress) instead of staying flat at the
+    // builder's height. Local Y = beam length (start -> end), local X = width facing the camera.
+    const up = endPos.subtract(startPos).normalize();
+    const camPos = this.scene.activeCamera?.position ?? startPos;
+    let side = Vector3.Cross(up, camPos.subtract(midPos));
+    if (side.lengthSquared() < 1e-6) {
+      side = Vector3.Cross(up, Vector3.Right());
+    }
+    side.normalize();
+    const forward = Vector3.Cross(side, up).normalize();
+
+    this.buildingBeam.position = midPos;
     this.buildingBeam.rotationQuaternion = null;
-    this.buildingBeam.rotation.set(Math.PI / 2, angle, 0);
+    this.buildingBeam.rotation = Vector3.RotationFromAxis(side, up, forward);
     this.buildingBeam.scaling.set(0.4, dist, 1);
 
     // Scroll texture along beam (energy flowing to building)

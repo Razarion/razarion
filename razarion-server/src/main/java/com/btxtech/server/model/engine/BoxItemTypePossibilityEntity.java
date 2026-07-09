@@ -1,6 +1,7 @@
 package com.btxtech.server.model.engine;
 
 import com.btxtech.server.model.BaseEntity;
+import com.btxtech.server.service.engine.InventoryArtifactService;
 import com.btxtech.server.service.engine.InventoryItemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import jakarta.persistence.Entity;
@@ -21,6 +22,9 @@ public class BoxItemTypePossibilityEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private InventoryItemEntity inventoryItem;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private InventoryArtifactEntity inventoryArtifact;
     private Integer crystals;
 
     public BoxItemTypePossibility toBoxItemTypePossibility() {
@@ -28,16 +32,21 @@ public class BoxItemTypePossibilityEntity extends BaseEntity {
         if (inventoryItem != null) {
             boxItemTypePossibility.setInventoryItemId(inventoryItem.getId());
         }
+        if (inventoryArtifact != null) {
+            boxItemTypePossibility.setInventoryArtifactId(inventoryArtifact.getId());
+        }
         return boxItemTypePossibility;
     }
 
-    public void fromBoxItemTypePossibility(BoxItemTypePossibility boxItemTypePossibility, InventoryItemService inventoryItemService) {
+    public void fromBoxItemTypePossibility(BoxItemTypePossibility boxItemTypePossibility, InventoryItemService inventoryItemService, InventoryArtifactService inventoryArtifactService) {
         possibility = boxItemTypePossibility.getPossibility();
         crystals = boxItemTypePossibility.getCrystals();
-        if (inventoryItem != null) {
-            boxItemTypePossibility.setInventoryItemId(inventoryItem.getId());
-        }
-        inventoryItem = inventoryItemService.getEntity(boxItemTypePossibility.getInventoryItemId());
+        inventoryItem = boxItemTypePossibility.getInventoryItemId() != null
+                ? inventoryItemService.getEntity(boxItemTypePossibility.getInventoryItemId())
+                : null;
+        inventoryArtifact = boxItemTypePossibility.getInventoryArtifactId() != null
+                ? inventoryArtifactService.getEntity(boxItemTypePossibility.getInventoryArtifactId())
+                : null;
     }
 
     @Override

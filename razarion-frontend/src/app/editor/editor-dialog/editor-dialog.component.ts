@@ -18,6 +18,7 @@ import {PlanetEditorComponent} from "../crud-editors/planet-editor/planet-editor
 import {BaseMgmtComponent} from "../base-mgmt/base-mgmt.component";
 import {BoxItemTypeEditorComponent} from "../crud-editors/box-item-type-editor/box-item-type-editor.component";
 import {InventoryItemEditorComponent} from "../crud-editors/inventory-item-editor/inventory-item-editor.component";
+import {InventoryArtifactEditorComponent} from "../crud-editors/inventory-artifact-editor/inventory-artifact-editor.component";
 import {BoxRegionComponent} from "../box-region/box-region.component";
 import {UserMgmtComponent} from "../user-mgmt/user-mgmt.component";
 import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component";
@@ -186,6 +187,11 @@ export class EditorDialogComponent {
   openInventoryItemEditor() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("Inventory item editor", GeneratedCrudContainerComponent, InventoryItemEditorComponent));
+  }
+
+  openInventoryArtifactEditor() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Inventory artifact editor", GeneratedCrudContainerComponent, InventoryArtifactEditorComponent));
   }
 
   openPlanetEditor() {

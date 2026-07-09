@@ -12,6 +12,7 @@ public class StaticGameConfigService {
     private final BoxItemTypeCrudService boxItemTypeCrudPersistence;
     private final LevelCrudService levelCrudPersistence;
     private final InventoryItemService inventoryItemCrudPersistence;
+    private final InventoryArtifactService inventoryArtifactCrudPersistence;
 
     public StaticGameConfigService(TerrainObjectService terrainObjectService,
                                    GroundCrudService groundCrudPersistence,
@@ -19,7 +20,8 @@ public class StaticGameConfigService {
                                    ResourceItemTypeService resourceItemTypeCrudPersistence,
                                    BoxItemTypeCrudService boxItemTypeCrudPersistence,
                                    LevelCrudService levelCrudPersistence,
-                                   InventoryItemService inventoryItemCrudPersistence) {
+                                   InventoryItemService inventoryItemCrudPersistence,
+                                   InventoryArtifactService inventoryArtifactCrudPersistence) {
         this.terrainObjectService = terrainObjectService;
         this.groundCrudPersistence = groundCrudPersistence;
         this.baseItemTypeCrudPersistence = baseItemTypeCrudPersistence;
@@ -27,6 +29,7 @@ public class StaticGameConfigService {
         this.boxItemTypeCrudPersistence = boxItemTypeCrudPersistence;
         this.levelCrudPersistence = levelCrudPersistence;
         this.inventoryItemCrudPersistence = inventoryItemCrudPersistence;
+        this.inventoryArtifactCrudPersistence = inventoryArtifactCrudPersistence;
     }
 
     public StaticGameConfig loadStaticGameConfig() {
@@ -38,6 +41,7 @@ public class StaticGameConfigService {
         staticGameConfig.setBoxItemTypes(boxItemTypeCrudPersistence.read());
         staticGameConfig.setLevelConfigs(levelCrudPersistence.read());
         staticGameConfig.setInventoryItems(inventoryItemCrudPersistence.read());
+        staticGameConfig.setInventoryArtifacts(inventoryArtifactCrudPersistence.read());
         return staticGameConfig;
     }
 }

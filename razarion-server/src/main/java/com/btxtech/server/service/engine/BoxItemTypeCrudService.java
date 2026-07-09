@@ -19,7 +19,7 @@ public class BoxItemTypeCrudService extends AbstractConfigCrudService<BoxItemTyp
 
     @Override
     protected void fromConfig(BoxItemType boxItemType, BoxItemTypeEntity boxItemTypeEntity) {
-        boxItemTypeEntity.fromBoxItemType(boxItemType, getServiceProviderService().getInventoryItemCrudPersistence());
+        boxItemTypeEntity.fromBoxItemType(boxItemType, getServiceProviderService().getInventoryItemCrudPersistence(), getServiceProviderService().getInventoryArtifactCrudPersistence());
         boxItemTypeEntity.setModel3DEntity(getServiceProviderService().getModel3DCrudPersistence().getEntity(boxItemType.getModel3DId()));
         boxItemTypeEntity.setThumbnail(getServiceProviderService().getImagePersistence().getImageLibraryEntity(boxItemType.getThumbnail()));
     }

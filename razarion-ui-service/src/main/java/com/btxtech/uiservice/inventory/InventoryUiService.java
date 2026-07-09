@@ -3,6 +3,7 @@ package com.btxtech.uiservice.inventory;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -28,6 +29,7 @@ import java.util.logging.Logger;
 public class InventoryUiService {
     private final Logger logger = Logger.getLogger(InventoryUiService.class.getName());
     private final ItemTypeService itemTypeService;
+    private final InventoryTypeService inventoryTypeService;
     private final GameUiControl gameUiControl;
     private final ModalDialogManager modalDialogManager;
     private final BaseItemPlacerService baseItemPlacerService;
@@ -44,7 +46,8 @@ public class InventoryUiService {
                               BaseItemPlacerService baseItemPlacerService,
                               ModalDialogManager modalDialogManager,
                               GameUiControl gameUiControl,
-                              ItemTypeService itemTypeService) {
+                              ItemTypeService itemTypeService,
+                              InventoryTypeService inventoryTypeService) {
         this.dialogManager = dialogManager;
         this.gameEngineControl = gameEngineControl;
         this.baseItemUiService = baseItemUiService;
@@ -52,6 +55,15 @@ public class InventoryUiService {
         this.modalDialogManager = modalDialogManager;
         this.gameUiControl = gameUiControl;
         this.itemTypeService = itemTypeService;
+        this.inventoryTypeService = inventoryTypeService;
+    }
+
+    /**
+     * Place an owned inventory item (by id) on the map. Convenience entry point for the Angular
+     * bridge so the JS side only has to pass the id instead of a whole JS proxy object.
+     */
+    public void useItemById(int inventoryItemId) {
+        useItem(inventoryTypeService.getInventoryItem(inventoryItemId));
     }
 
     @Deprecated // Done in angular

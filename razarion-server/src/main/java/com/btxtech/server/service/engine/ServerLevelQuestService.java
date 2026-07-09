@@ -11,6 +11,7 @@ import com.btxtech.server.service.ui.GameUiContextService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveQuestInfo;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ServerLevelQuestService implements QuestListener {
@@ -259,6 +261,28 @@ public class ServerLevelQuestService implements QuestListener {
 
     public List<QuestBackendInfo> getQuestBackendInfos() {
         return questConfigService.readQuestBackendInfos();
+    }
+
+    /**
+     * Re-registers the live quest-progress condition for every user with a persisted active quest and
+     * then restores the backed-up progress counters. Must run on planet (re)start/restore: the active
+     * quest identity survives in the DB and the progress counter in the planet backup, but
+     * {@link QuestService}'s progressMap is in-memory only and is empty after a fresh start. Without
+     * this, every progress trigger silently no-ops and the quest can never be fulfilled.
+     * The activateCondition-then-restore order is required: {@link QuestService#restore} looks up the
+     * already re-registered progress and skips it otherwise.
+     */
+    public void reactivatePersistedQuests(BackupPlanetInfo backupPlanetInfo) {
+        Map<String, QuestConfig> activeQuests = userService.findActiveQuests4Users();
+        activeQuests.forEach((userId, questConfig) -> {
+            try {
+                resolveStartRegionIfNeeded(questConfig);
+                questService.activateCondition(userId, questConfig);
+            } catch (Throwable t) {
+                logger.error("Could not reactivate persisted quest {} for user {}", questConfig.getId(), userId, t);
+            }
+        });
+        questService.restore(backupPlanetInfo);
     }
 
     private void deactivateQuest(String userId) {

@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine;
 
+import com.btxtech.shared.gameengine.datatypes.InventoryArtifact;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import jsinterop.annotations.JsType;
@@ -18,6 +19,7 @@ import java.util.List;
 @JsType
 public class InventoryTypeService {
     private final HashMap<Integer, InventoryItem> inventoryItems = new HashMap<>();
+    private final HashMap<Integer, InventoryArtifact> inventoryArtifacts = new HashMap<>();
 
     @Inject
     public InventoryTypeService(InitializeService initializeService) {
@@ -26,6 +28,7 @@ public class InventoryTypeService {
 
     public void init(StaticGameConfig staticGameConfig) {
         setInventoryItems(staticGameConfig.getInventoryItems());
+        setInventoryArtifacts(staticGameConfig.getInventoryArtifacts());
     }
 
     private void setInventoryItems(List<InventoryItem> inventoryItems) {
@@ -33,6 +36,15 @@ public class InventoryTypeService {
         if (inventoryItems != null) {
             for (InventoryItem inventoryItem : inventoryItems) {
                 this.inventoryItems.put(inventoryItem.getId(), inventoryItem);
+            }
+        }
+    }
+
+    private void setInventoryArtifacts(List<InventoryArtifact> inventoryArtifacts) {
+        this.inventoryArtifacts.clear();
+        if (inventoryArtifacts != null) {
+            for (InventoryArtifact inventoryArtifact : inventoryArtifacts) {
+                this.inventoryArtifacts.put(inventoryArtifact.getId(), inventoryArtifact);
             }
         }
     }
@@ -47,6 +59,18 @@ public class InventoryTypeService {
 
     public Collection<InventoryItem> getInventoryItems() {
         return inventoryItems.values();
+    }
+
+    public InventoryArtifact getInventoryArtifact(int id) {
+        InventoryArtifact inventoryArtifact = inventoryArtifacts.get(id);
+        if (inventoryArtifact == null) {
+            throw new IllegalArgumentException("No InventoryArtifact for id: " + id);
+        }
+        return inventoryArtifact;
+    }
+
+    public Collection<InventoryArtifact> getInventoryArtifacts() {
+        return inventoryArtifacts.values();
     }
 
 }

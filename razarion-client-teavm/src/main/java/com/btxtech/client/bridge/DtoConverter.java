@@ -3,8 +3,12 @@ package com.btxtech.client.bridge;
 import com.btxtech.client.jso.JsArray;
 import com.btxtech.client.jso.JsObject;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AudioConfig;
+import com.btxtech.shared.gameengine.datatypes.InventoryArtifact;
+import com.btxtech.shared.gameengine.datatypes.InventoryArtifactCount;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
@@ -155,6 +159,7 @@ public class DtoConverter {
             return errorText != null ? errorText : "";
         });
         setGetterObj(obj, "getModel3DId", () -> convertNullableInt(placer.getModel3DId()));
+        setGetterObj(obj, "getRelativeItemPositions", () -> convertDecimalPositions(placer.getRelativeItemPositions()));
         setGetterObj(obj, "getSpawnAudioId", () -> convertNullableInt(placer.getSpawnAudioId()));
         setGetterBool(obj, "isPlayBuildSound", () -> placer.isPlayBuildSound());
         setGetterBool(obj, "isCanBeCanceled", () -> placer.isCanBeCanceled());
@@ -441,6 +446,7 @@ public class DtoConverter {
         setGetterObj(obj, "getThumbnail", () -> convertNullableInt(type.getThumbnail()));
         setGetterDouble(obj, "getRadius", type::getRadius);
         setGetterBool(obj, "isFixVerticalNorm", type::isFixVerticalNorm);
+        setGetterInt(obj, "getAmount", type::getAmount);
         return obj;
     }
 
@@ -669,6 +675,15 @@ public class DtoConverter {
         return arr;
     }
 
+    private static JSObject convertDecimalPositions(java.util.Collection<DecimalPosition> positions) {
+        if (positions == null) return null;
+        JsArray<JSObject> arr = JsArray.create();
+        for (DecimalPosition pos : positions) {
+            arr.push(convertDecimalPosition(pos));
+        }
+        return arr;
+    }
+
     private static JSObject convertBotGroundSlopeBoxes(BotGroundSlopeBox[] boxes) {
         if (boxes == null) return null;
         JsArray<JSObject> arr = JsArray.create();
@@ -697,6 +712,85 @@ public class DtoConverter {
 
     @JSBody(params = {"value"}, script = "return value;")
     static native JSObject toJsDouble(double value);
+
+    public static JSObject convertI18nString(I18nString i18nString) {
+        if (i18nString == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterString(obj, "getString", () -> i18nString.getString() != null ? i18nString.getString() : "");
+        return obj;
+    }
+
+    public static JSObject convertInventoryItem(InventoryItem item) {
+        if (item == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterInt(obj, "getId", item::getId);
+        setGetterString(obj, "getInternalName", item::getInternalName);
+        setGetterObj(obj, "getI18nName", () -> convertI18nString(item.getI18nName()));
+        setGetterObj(obj, "getRazarion", () -> convertNullableInt(item.getRazarion()));
+        setGetterObj(obj, "getBaseItemTypeId", () -> convertNullableInt(item.getBaseItemTypeId()));
+        setGetterInt(obj, "getBaseItemTypeCount", item::getBaseItemTypeCount);
+        setGetterObj(obj, "getImageId", () -> convertNullableInt(item.getImageId()));
+        setGetterObj(obj, "getCrystalCost", () -> convertNullableInt(item.getCrystalCost()));
+        setGetterObj(obj, "getInventoryArtifactCosts", () -> convertInventoryArtifactCounts(item.getInventoryArtifactCosts()));
+        return obj;
+    }
+
+    public static JSObject convertInventoryItems(java.util.Collection<InventoryItem> items) {
+        if (items == null) return null;
+        JsArray<JSObject> arr = JsArray.create();
+        for (InventoryItem item : items) {
+            arr.push(convertInventoryItem(item));
+        }
+        return arr;
+    }
+
+    public static JSObject convertBoxContent(com.btxtech.shared.gameengine.datatypes.BoxContent boxContent) {
+        if (boxContent == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterInt(obj, "getCrystals", boxContent::getCrystals);
+        setGetterObj(obj, "toInventoryItemArray", () -> convertInventoryItems(boxContent.getInventoryItems()));
+        setGetterObj(obj, "toInventoryArtifactArray", () -> convertInventoryArtifacts(boxContent.getInventoryArtifacts()));
+        return obj;
+    }
+
+    public static JSObject convertInventoryArtifact(InventoryArtifact artifact) {
+        if (artifact == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterInt(obj, "getId", artifact::getId);
+        setGetterString(obj, "getInternalName", artifact::getInternalName);
+        setGetterObj(obj, "getI18nName", () -> convertI18nString(artifact.getI18nName()));
+        setGetterObj(obj, "getImageId", () -> convertNullableInt(artifact.getImageId()));
+        setGetterString(obj, "getRareness", () -> artifact.getRareness() != null ? artifact.getRareness().name() : null);
+        setGetterString(obj, "getHtmlColor", () -> artifact.getRareness() != null ? artifact.getRareness().getHtmlColor() : "");
+        setGetterObj(obj, "getCrystalCost", () -> convertNullableInt(artifact.getCrystalCost()));
+        return obj;
+    }
+
+    public static JSObject convertInventoryArtifacts(java.util.Collection<InventoryArtifact> artifacts) {
+        if (artifacts == null) return null;
+        JsArray<JSObject> arr = JsArray.create();
+        for (InventoryArtifact artifact : artifacts) {
+            arr.push(convertInventoryArtifact(artifact));
+        }
+        return arr;
+    }
+
+    public static JSObject convertInventoryArtifactCount(InventoryArtifactCount count) {
+        if (count == null) return null;
+        JsObject obj = JsObject.create();
+        setGetterObj(obj, "getInventoryArtifactId", () -> convertNullableInt(count.getInventoryArtifactId()));
+        setGetterInt(obj, "getCount", count::getCount);
+        return obj;
+    }
+
+    public static JSObject convertInventoryArtifactCounts(java.util.List<InventoryArtifactCount> counts) {
+        if (counts == null) return null;
+        JsArray<JSObject> arr = JsArray.create();
+        for (InventoryArtifactCount count : counts) {
+            arr.push(convertInventoryArtifactCount(count));
+        }
+        return arr;
+    }
 
     static JSObject convertNullableInt(Integer value) {
         if (value == null) return null;

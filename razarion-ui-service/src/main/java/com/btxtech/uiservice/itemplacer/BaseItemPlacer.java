@@ -115,6 +115,11 @@ public class BaseItemPlacer {
     }
 
     @SuppressWarnings("unused") // Called by Angular
+    public Collection<DecimalPosition> getRelativeItemPositions() {
+        return baseItemPlacerChecker.getRelativeItemPositions();
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
     public Integer getSpawnAudioId() {
         return baseItemType.getSpawnAudioId();
     }

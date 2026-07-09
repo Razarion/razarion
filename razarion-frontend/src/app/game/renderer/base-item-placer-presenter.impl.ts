@@ -29,7 +29,10 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private rallyDisc: Mesh | null = null;
   private rallyOffsetX = 0;
   private rallyOffsetZ = 0;
-  private renderObject: RenderObject | null = null;
+  // One ghost model per unit to be placed, with its offset relative to the cursor.
+  // DecimalPosition.x maps to world-X, DecimalPosition.y maps to world-Z.
+  private renderObjects: RenderObject[] = [];
+  private relativeOffsets: { x: number; z: number }[] = [];
   private uiTexture: AdvancedDynamicTexture | null = null;
   private pressMouseVisualization: PressMouseVisualization | null = null;
   private readonly material;
@@ -75,8 +78,20 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.material.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
     this.rallyMaterial.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
 
-    this.renderObject = this.babylonModelService.cloneModel3D(baseItemPlacer.getModel3DId()!, null, Diplomacy.OWN_PLACER);
-    this.renderObject.setRotationY(Tools.ToRadians(90));
+    this.relativeOffsets = [];
+    const relativePositions = baseItemPlacer.getRelativeItemPositions() || [];
+    if (relativePositions.length > 0) {
+      for (const relativePosition of relativePositions) {
+        this.relativeOffsets.push({x: relativePosition.getX(), z: relativePosition.getY()});
+      }
+    } else {
+      this.relativeOffsets.push({x: 0, z: 0});
+    }
+    for (let i = 0; i < this.relativeOffsets.length; i++) {
+      const renderObject = this.babylonModelService.cloneModel3D(baseItemPlacer.getModel3DId()!, null, Diplomacy.OWN_PLACER);
+      renderObject.setRotationY(Tools.ToRadians(90));
+      this.renderObjects.push(renderObject);
+    }
 
     this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI("Base item placer");
     this.uiTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
@@ -176,10 +191,11 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       this.rallyDisc.dispose();
       this.rallyDisc = null;
     }
-    if (this.renderObject) {
-      this.renderObject.dispose();
-      this.renderObject = null;
+    for (const renderObject of this.renderObjects) {
+      renderObject.dispose();
     }
+    this.renderObjects = [];
+    this.relativeOffsets = [];
     if (this.uiTexture) {
       this.uiTexture.dispose();
       this.uiTexture = null;
@@ -219,7 +235,10 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.material.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
     this.rallyMaterial.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
     this.pressMouseVisualization?.setPositionValid(positionValid);
-    this.renderObject?.setPosition(pickedPoint);
-    this.renderObject?.increaseHeight(0.01);
+    for (let i = 0; i < this.renderObjects.length; i++) {
+      const offset = this.relativeOffsets[i];
+      this.renderObjects[i].setPosition(new Vector3(pickedPoint.x + offset.x, pickedPoint.y, pickedPoint.z + offset.z));
+      this.renderObjects[i].increaseHeight(0.01);
+    }
   }
 }

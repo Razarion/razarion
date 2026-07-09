@@ -514,9 +514,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return !!this.pendingSetViewFieldCenter;
   }
 
-  private isValidVector3(v: Vector3) {
+  private isValidVector3(v: Vector3 | undefined | null) {
     return (
       typeof v === "object" &&
+      v !== null &&
       isFinite(v.x) &&
       isFinite(v.y) &&
       isFinite(v.z)
@@ -915,12 +916,16 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       screenCenter = this.setupZeroLevelPosition(0, 0, invertCameraViewProj);
     }
 
-    if (isNaN(bottomLeft.x) || isNaN(bottomLeft.x)
-      || isNaN(bottomRight.x) || isNaN(bottomRight.z)
-      || isNaN(topRight.x) || isNaN(topRight.z)
-      || isNaN(topLeft.x) || isNaN(topLeft.z)
-      || isNaN(screenCenter.x) || isNaN(screenCenter.z)) {
-      console.warn("setupViewField() has NaN");
+    if (![bottomLeft, bottomRight, topRight, topLeft, screenCenter].every(corner => this.isValidVector3(corner))) {
+      // A corner ray diverges when zooming out far enough that the top screen edge looks past the
+      // horizon: setupTerrainPosition misses the terrain and the zero-level fallback runs off to
+      // infinity/NaN. The old code answered with a 1x1 view field at the map origin, whose AABB
+      // culled every unit server-side -> all units briefly vanished while zooming. Keep the last
+      // good view field instead so a single bad frame never nukes visibility.
+      console.warn("setupViewField() produced a non-finite corner; keeping previous view field");
+      if (this.viewField) {
+        return this.viewField;
+      }
       return new ViewField(
         new Vector3(0, 0, 0),
         new Vector3(1, 0, 0),

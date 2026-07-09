@@ -509,6 +509,13 @@ public class BaseItemUiService {
     public NativeSyncBaseItemTickInfo[] getMyOwnSyncItemTickInfos() {
         List<NativeSyncBaseItemTickInfo> result = new ArrayList<>();
         for (NativeSyncBaseItemTickInfo info : nativeSyncBaseItemTickInfos) {
+            // Only selectable units: a unit that is still spawning or contained in a factory/container
+            // is never added to babylonBaseItems (see updateSyncBaseItems), so the cockpit navigation
+            // cycle could neither render nor select it — the camera would jump but nothing would get
+            // selected. Skip them here so badge count and cycle set match what is actually selectable.
+            if (info.spawning < 1.0 || info.contained) {
+                continue;
+            }
             if (isMyOwnProperty(info)) {
                 result.add(info);
             }

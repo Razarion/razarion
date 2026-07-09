@@ -13,7 +13,10 @@ import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.InventoryArtifact;
+import com.btxtech.shared.gameengine.datatypes.InventoryArtifactCount;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.Rareness;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
@@ -1592,6 +1595,10 @@ public final class TeaVMWorkerMarshaller {
         if (!JsUtils.isNullOrUndefined(inventoryItemsArr)) {
             config.setInventoryItems(convertInventoryItemList(inventoryItemsArr));
         }
+        JSObject inventoryArtifactsArr = obj.get("inventoryArtifacts");
+        if (!JsUtils.isNullOrUndefined(inventoryArtifactsArr)) {
+            config.setInventoryArtifacts(convertInventoryArtifactList(inventoryArtifactsArr));
+        }
         return config;
     }
 
@@ -2116,7 +2123,55 @@ public final class TeaVMWorkerMarshaller {
         if (!JsUtils.isNullOrUndefined(i18nNameObj)) {
             item.setI18nName(convertI18nString((JsObject) i18nNameObj));
         }
+        JSObject artifactCostsArr = obj.get("inventoryArtifactCosts");
+        if (!JsUtils.isNullOrUndefined(artifactCostsArr)) {
+            item.setInventoryArtifactCosts(convertInventoryArtifactCountList(artifactCostsArr));
+        }
         return item;
+    }
+
+    private static List<InventoryArtifact> convertInventoryArtifactList(JSObject arr) {
+        List<InventoryArtifact> result = new ArrayList<>();
+        JsArray<Object> jsArr = (JsArray<Object>) arr;
+        int len = jsArr.getLength();
+        for (int i = 0; i < len; i++) {
+            result.add(convertInventoryArtifact((JsObject) jsArr.get(i)));
+        }
+        return result;
+    }
+
+    private static InventoryArtifact convertInventoryArtifact(JsObject obj) {
+        InventoryArtifact artifact = new InventoryArtifact();
+        artifact.setId(obj.getInt("id"));
+        artifact.setInternalName(obj.getString("internalName"));
+        artifact.setImageId(obj.getNullableInt("imageId"));
+        artifact.setCrystalCost(obj.getNullableInt("crystalCost"));
+        String rarenessStr = obj.getString("rareness");
+        if (rarenessStr != null) {
+            artifact.setRareness(Rareness.valueOf(rarenessStr));
+        }
+        JSObject i18nNameObj = obj.get("i18nName");
+        if (!JsUtils.isNullOrUndefined(i18nNameObj)) {
+            artifact.setI18nName(convertI18nString((JsObject) i18nNameObj));
+        }
+        return artifact;
+    }
+
+    private static List<InventoryArtifactCount> convertInventoryArtifactCountList(JSObject arr) {
+        List<InventoryArtifactCount> result = new ArrayList<>();
+        JsArray<Object> jsArr = (JsArray<Object>) arr;
+        int len = jsArr.getLength();
+        for (int i = 0; i < len; i++) {
+            result.add(convertInventoryArtifactCount((JsObject) jsArr.get(i)));
+        }
+        return result;
+    }
+
+    private static InventoryArtifactCount convertInventoryArtifactCount(JsObject obj) {
+        InventoryArtifactCount count = new InventoryArtifactCount();
+        count.setInventoryArtifactId(obj.getNullableInt("inventoryArtifactId"));
+        count.setCount(obj.getInt("count"));
+        return count;
     }
 
     // ============ Java to JsObject converter ============
@@ -2206,6 +2261,16 @@ public final class TeaVMWorkerMarshaller {
             result.set("baseItemTypeCount", item.getBaseItemTypeCount());
             result.set("baseItemTypeFreeRange", item.getBaseItemTypeFreeRange());
             result.setNullableInt("imageId", item.getImageId());
+        } else if (obj instanceof UseInventoryItem) {
+            UseInventoryItem useInventoryItem = (UseInventoryItem) obj;
+            result.set("inventoryId", useInventoryItem.getInventoryId());
+            if (useInventoryItem.getPositions() != null) {
+                JsArray<Object> arr = JsArray.create();
+                for (DecimalPosition pos : useInventoryItem.getPositions()) {
+                    arr.push(javaToJsObject(pos));
+                }
+                result.set("positions", arr);
+            }
         } else if (obj instanceof SimplePath) {
             SimplePath path = (SimplePath) obj;
             result.set("destinationReachable", path.isDestinationReachable());

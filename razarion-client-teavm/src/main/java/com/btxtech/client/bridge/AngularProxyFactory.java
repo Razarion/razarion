@@ -300,11 +300,20 @@ public class AngularProxyFactory {
 
     public static JSObject createInventoryTypeServiceProxy(InventoryTypeService service) {
         JsObject proxy = JsObject.create();
+        setMethodIntObj(proxy, "getInventoryItem", id ->
+                DtoConverter.convertInventoryItem(service.getInventoryItem(id)));
+        setMethodIntObj(proxy, "getInventoryArtifact", id ->
+                DtoConverter.convertInventoryArtifact(service.getInventoryArtifact(id)));
+        setMethodRetObj(proxy, "getInventoryItems", () ->
+                DtoConverter.convertInventoryItems(service.getInventoryItems()));
+        setMethodRetObj(proxy, "getInventoryArtifacts", () ->
+                DtoConverter.convertInventoryArtifacts(service.getInventoryArtifacts()));
         return proxy;
     }
 
     public static JSObject createInventoryUiServiceProxy(InventoryUiService service) {
         JsObject proxy = JsObject.create();
+        setMethodInt(proxy, "useItemById", service::useItemById);
         return proxy;
     }
 

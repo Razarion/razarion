@@ -40,6 +40,8 @@
     </p-button>
     <p-button icon="pi pi-sliders-h" title="Settings" (onClick)="mainCockpitService.showSettingsDialog = true">
     </p-button>
+    <p-button icon="pi pi-sitemap" title="Tech Tree" (onClick)="mainCockpitService.showTechTreeDialog = true">
+    </p-button>
     <p-button icon="pi pi-briefcase" title="Inventory" (onClick)="onInventory()">
     </p-button>
     <p-button icon="pi pi-lock-open" title="Unlock" (onClick)="onUnlock()"
@@ -131,5 +133,12 @@
 <p-dialog header="Settings" [(visible)]="mainCockpitService.showSettingsDialog">
   @if (mainCockpitService.showSettingsDialog) {
     <settings></settings>
+  }
+</p-dialog>
+
+<p-dialog header="Tech Tree" [(visible)]="mainCockpitService.showTechTreeDialog"
+          [style]="{width: '85vw'}" [maximizable]="true">
+  @if (mainCockpitService.showTechTreeDialog) {
+    <tech-tree></tech-tree>
   }
 </p-dialog>

@@ -36,8 +36,7 @@ public class JsModelDialogPresenter implements ModelDialogPresenter {
 
     @Override
     public void showBoxPicked(BoxContent boxContent) {
-        // TODO: Convert BoxContent to JSObject via proxy factory
-        callShowBoxPicked(js, boxContent);
+        callShowBoxPicked(js, com.btxtech.client.bridge.DtoConverter.convertBoxContent(boxContent));
     }
 
     @Override
@@ -73,7 +72,7 @@ public class JsModelDialogPresenter implements ModelDialogPresenter {
     }
 
     @org.teavm.jso.JSBody(params = {"obj", "boxContent"}, script = "obj.showBoxPicked(boxContent);")
-    private static native void callShowBoxPicked(JSObject obj, Object boxContent);
+    private static native void callShowBoxPicked(JSObject obj, JSObject boxContent);
 
     @org.teavm.jso.JSBody(params = {"obj", "baseItemType"}, script = "obj.showUseInventoryItemLimitExceeded(baseItemType);")
     private static native void callShowUseInventoryItemLimitExceeded(JSObject obj, Object baseItemType);

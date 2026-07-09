@@ -73,6 +73,7 @@ export interface OtherItemCockpitModel {
   friend: boolean;
   bot: boolean;
   resource: boolean;
+  resourceAmount: number | null;
   box: boolean;
   health: number | null;
 }
@@ -380,6 +381,7 @@ export class ItemCockpitService {
     let friend = false;
     let bot = false;
     let resource = false;
+    let resourceAmount: number | null = null;
     let box = false;
 
     if (itemTypeId != null) {
@@ -389,6 +391,7 @@ export class ItemCockpitService {
         itemTypeName = resourceType.getName();
         itemTypeDescr = resourceType.getDescription();
         resource = true;
+        resourceAmount = resourceType.getAmount();
       } else if (diplomacy === Diplomacy.BOX) {
         // Box items don't have a specific TS type service method yet
         imageUrl = '';
@@ -439,6 +442,7 @@ export class ItemCockpitService {
       friend,
       bot,
       resource,
+      resourceAmount,
       box,
       health: otherBaseItem ? otherBaseItem.getHealth() : null
     };

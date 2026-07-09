@@ -35,7 +35,10 @@ import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.InventoryArtifact;
+import com.btxtech.shared.gameengine.datatypes.InventoryArtifactCount;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.Rareness;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
@@ -201,6 +204,7 @@ public class JsonDeserializer {
         r.setBoxItemTypes(list(json, "boxItemTypes", JsonDeserializer::deserializeBoxItemType));
         r.setLevelConfigs(list(json, "levelConfigs", JsonDeserializer::deserializeLevelConfig));
         r.setInventoryItems(list(json, "inventoryItems", JsonDeserializer::deserializeInventoryItem));
+        r.setInventoryArtifacts(list(json, "inventoryArtifacts", JsonDeserializer::deserializeInventoryArtifact));
         return r;
     }
 
@@ -359,6 +363,27 @@ public class JsonDeserializer {
         r.setBaseItemTypeFreeRange(json.getDouble("baseItemTypeFreeRange"));
         r.setImageId(json.getNullableInt("imageId"));
         r.setCrystalCost(json.getNullableInt("crystalCost"));
+        r.setInventoryArtifactCosts(list(json, "inventoryArtifactCosts", JsonDeserializer::deserializeInventoryArtifactCount));
+        return r;
+    }
+
+    public static InventoryArtifact deserializeInventoryArtifact(JsObject json) {
+        if (json == null) return null;
+        InventoryArtifact r = new InventoryArtifact();
+        r.setId(json.getInt("id"));
+        r.setI18nName(deserializeI18nString(obj(json, "i18nName")));
+        r.setInternalName(json.isNullOrUndefined("internalName") ? null : json.getString("internalName"));
+        r.setRareness(deserializeEnum(json, "rareness", Rareness.class));
+        r.setImageId(json.getNullableInt("imageId"));
+        r.setCrystalCost(json.getNullableInt("crystalCost"));
+        return r;
+    }
+
+    public static InventoryArtifactCount deserializeInventoryArtifactCount(JsObject json) {
+        if (json == null) return null;
+        InventoryArtifactCount r = new InventoryArtifactCount();
+        r.setInventoryArtifactId(json.getNullableInt("inventoryArtifactId"));
+        r.setCount(json.getInt("count"));
         return r;
     }
 
@@ -903,6 +928,7 @@ public class JsonDeserializer {
         BoxContent r = new BoxContent();
         r.setCrystals(json.getInt("crystals"));
         r.setInventoryItems(list(json, "inventoryItems", JsonDeserializer::deserializeInventoryItem));
+        r.setInventoryArtifacts(list(json, "inventoryArtifacts", JsonDeserializer::deserializeInventoryArtifact));
         return r;
     }
 

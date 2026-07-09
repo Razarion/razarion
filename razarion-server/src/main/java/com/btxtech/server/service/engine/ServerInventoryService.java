@@ -5,7 +5,10 @@ import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
+import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import jakarta.inject.Inject;
@@ -17,6 +20,8 @@ public class ServerInventoryService {
     @Inject
     private InventoryItemService inventoryPersistence;
     @Inject
+    private InventoryArtifactService inventoryArtifactPersistence;
+    @Inject
     private BaseItemService baseItemService;
 
     public void onBoxPicked(String userId, BoxContent boxContent) {
@@ -25,6 +30,8 @@ public class ServerInventoryService {
         }
         boxContent.getInventoryItems().forEach(inventoryItem ->
                 userService.persistAddInventoryItem(userId, inventoryPersistence.getEntity(inventoryItem.getId())));
+        boxContent.getInventoryArtifacts().forEach(inventoryArtifact ->
+                userService.persistAddInventoryArtifact(userId, inventoryArtifactPersistence.getEntity(inventoryArtifact.getId())));
         // TODO historyPersistence.onBoxPicked(userId, boxContent);
     }
 
@@ -36,14 +43,47 @@ public class ServerInventoryService {
         return userService.readCrystals(userId);
     }
 
-    public void useInventoryItem(UseInventoryItem useInventoryItem, PlayerBaseFull playerBaseFull) {
-        throw new UnsupportedOperationException("... TODO ...");
-//        InventoryInfo inventoryInfo = loadInventory(playerSession);
-//        if (inventoryInfo.getInventoryItemIds() == null || !inventoryInfo.getInventoryItemIds().contains(useInventoryItem.getInventoryId())) {
-//            throw new IllegalArgumentException("User does not have inventory. Inventory Id: " + useInventoryItem.getInventoryId() + ". HumanPlayerId: " + playerSession.getUserContext().getUserId());
-//        }
-//        userService.persistRemoveInventoryItem(playerSession.getUserContext().getUserId(), inventoryPersistence.getEntity(useInventoryItem.getInventoryId()));
-//        baseItemService.useInventoryItem(useInventoryItem, playerBaseFull);
-        // TODO historyPersistence.onInventoryItemUsed(playerSession.getUserContext().getUserId(), useInventoryItem.getInventoryId());
+    /**
+     * Place an owned inventory item on the map and consume it from the user's inventory.
+     */
+    @Transactional
+    public void useInventoryItem(UseInventoryItem useInventoryItem, String userId) {
+        InventoryInfo inventoryInfo = loadInventory(userId);
+        if (inventoryInfo.getInventoryItemIds() == null || !inventoryInfo.getInventoryItemIds().contains(useInventoryItem.getInventoryId())) {
+            throw new IllegalArgumentException("User does not own inventory item. Inventory Id: " + useInventoryItem.getInventoryId() + ". User: " + userId);
+        }
+        PlayerBaseFull playerBaseFull = baseItemService.getPlayerBaseFull4UserId(userId);
+        try {
+            baseItemService.useInventoryItem(useInventoryItem, playerBaseFull);
+        } catch (ItemLimitExceededException | HouseSpaceExceededException e) {
+            throw new RuntimeException(e);
+        }
+        userService.persistRemoveInventoryItem(userId, inventoryPersistence.getEntity(useInventoryItem.getInventoryId()));
+        // TODO historyPersistence.onInventoryItemUsed(userId, useInventoryItem.getInventoryId());
+    }
+
+    /**
+     * Buy an inventory item for crystals (trader). Returns false if too few crystals.
+     */
+    @Transactional
+    public boolean buyInventoryItem(String userId, int inventoryItemId) {
+        return userService.buyInventoryItem(userId, inventoryPersistence.getEntity(inventoryItemId));
+    }
+
+    /**
+     * Buy an artifact for crystals (trader). Returns false if too few crystals.
+     */
+    @Transactional
+    public boolean buyInventoryArtifact(String userId, int inventoryArtifactId) {
+        return userService.buyInventoryArtifact(userId, inventoryArtifactPersistence.getEntity(inventoryArtifactId));
+    }
+
+    /**
+     * Assemble an inventory item from owned artifacts (workshop). Returns false if the user
+     * does not own the required artifact set.
+     */
+    @Transactional
+    public boolean assembleInventoryItem(String userId, int inventoryItemId) {
+        return userService.assembleInventoryItem(userId, inventoryPersistence.getEntity(inventoryItemId));
     }
 }

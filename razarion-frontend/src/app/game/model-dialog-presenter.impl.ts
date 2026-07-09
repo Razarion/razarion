@@ -63,7 +63,7 @@ export class ModelDialogPresenterImpl implements ModelDialogPresenter {
       }
       if (boxContent.toInventoryItemArray() && boxContent.toInventoryItemArray().length > 0) {
         boxContent.toInventoryItemArray().map(inventoryItem => {
-          messgaeLine.push(`${inventoryItem.getI18nName().getString()}`);
+          messgaeLine.push(`${inventoryItem.getI18nName()?.getString() || inventoryItem.getInternalName()}`);
         });
       }
       this.post("Box picked", messgaeLine);

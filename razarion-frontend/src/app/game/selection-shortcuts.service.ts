@@ -59,17 +59,11 @@ export class SelectionShortcutsService {
   }
 
   getCount(category: SelectionShortcutCategory): number {
+    // Count from the exact same set cycle() walks (selectable own units only). Using
+    // getMyItemCount() here would inflate the badge with spawning/contained units that are never
+    // rendered, so the button would look active but a click could land on a non-selectable entry.
     this.ensureKnownTypesPopulated();
-    this.updateOwnItemCache();
-    const facade = this.gwtAngularService.gwtAngularFacade;
-    if (!facade?.baseItemUiService) {
-      return 0;
-    }
-    let total = 0;
-    this.knownTypeIds[category].forEach(typeId => {
-      total += facade.baseItemUiService.getMyItemCount(typeId);
-    });
-    return total;
+    return this.collectOwnEntriesForCategory(category).length;
   }
 
   private ensureKnownTypesPopulated(): void {
@@ -145,13 +139,26 @@ export class SelectionShortcutsService {
       this.pendingSelectionTimeout = null;
     }
     if (!this.trySelectById(next.id)) {
-      // The unit isn't in babylonBaseItems yet — give the server a moment to re-send it after the
-      // view-field change, then try once more.
-      this.pendingSelectionTimeout = setTimeout(() => {
-        this.pendingSelectionTimeout = null;
-        this.trySelectById(next.id);
-      }, 300);
+      // The unit isn't in babylonBaseItems yet — after the view-field change the worker has to
+      // re-send it and the renderer has to create it. A single retry can be too short on a big jump
+      // or under load, so retry a few times over a short window until the item shows up.
+      this.schedulePendingSelection(next.id, 0);
     }
+  }
+
+  private static readonly PENDING_SELECTION_MAX_ATTEMPTS = 8;
+  private static readonly PENDING_SELECTION_INTERVAL_MS = 150;
+
+  private schedulePendingSelection(id: number, attempt: number): void {
+    this.pendingSelectionTimeout = setTimeout(() => {
+      this.pendingSelectionTimeout = null;
+      if (this.trySelectById(id)) {
+        return;
+      }
+      if (attempt + 1 < SelectionShortcutsService.PENDING_SELECTION_MAX_ATTEMPTS) {
+        this.schedulePendingSelection(id, attempt + 1);
+      }
+    }, SelectionShortcutsService.PENDING_SELECTION_INTERVAL_MS);
   }
 
   // Fetches all own units from the server-aware API (not view-culled) and filters by category.

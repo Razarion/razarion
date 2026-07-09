@@ -10,6 +10,7 @@ import org.teavm.flavour.json.JsonPersistable;
 public class BoxItemTypePossibility {
     private double possibility;
     private Integer inventoryItemId;
+    private Integer inventoryArtifactId;
     private Integer crystals;
 
     public double getPossibility() {
@@ -27,6 +28,15 @@ public class BoxItemTypePossibility {
 
     public BoxItemTypePossibility setInventoryItemId(Integer inventoryItemId) {
         this.inventoryItemId = inventoryItemId;
+        return this;
+    }
+
+    public Integer getInventoryArtifactId() {
+        return inventoryArtifactId;
+    }
+
+    public BoxItemTypePossibility setInventoryArtifactId(Integer inventoryArtifactId) {
+        this.inventoryArtifactId = inventoryArtifactId;
         return this;
     }
 

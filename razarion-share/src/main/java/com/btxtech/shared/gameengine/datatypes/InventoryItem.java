@@ -9,6 +9,9 @@ import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 import org.teavm.flavour.json.JsonPersistable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Beat
  * 25.10.2016.
@@ -27,6 +30,7 @@ public class InventoryItem implements Config {
     @CollectionReference(CollectionReferenceType.IMAGE)
     private Integer imageId;
     private Integer crystalCost;
+    private List<InventoryArtifactCount> inventoryArtifactCosts = new ArrayList<>();
 
     @Override
     public int getId() {
@@ -148,6 +152,19 @@ public class InventoryItem implements Config {
 
     public InventoryItem crystalCost(@Nullable Integer crystalCost) {
         setCrystalCost(crystalCost);
+        return this;
+    }
+
+    public List<InventoryArtifactCount> getInventoryArtifactCosts() {
+        return inventoryArtifactCosts;
+    }
+
+    public void setInventoryArtifactCosts(List<InventoryArtifactCount> inventoryArtifactCosts) {
+        this.inventoryArtifactCosts = inventoryArtifactCosts;
+    }
+
+    public InventoryItem inventoryArtifactCosts(List<InventoryArtifactCount> inventoryArtifactCosts) {
+        setInventoryArtifactCosts(inventoryArtifactCosts);
         return this;
     }
 

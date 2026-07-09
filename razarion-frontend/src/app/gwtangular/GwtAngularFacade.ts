@@ -355,6 +355,8 @@ export interface ResourceItemType extends ItemType {
   getRadius(): number;
 
   isFixVerticalNorm(): boolean;
+
+  getAmount(): number;
 }
 
 export interface BoxItemType extends ItemType {
@@ -732,6 +734,8 @@ export interface BaseItemPlacerPresenter {
 export interface BaseItemPlacer {
   getModel3DId(): number;
 
+  getRelativeItemPositions(): DecimalPosition[];
+
   getSpawnAudioId(): number | null;
 
   isPositionValid(): boolean;
@@ -765,7 +769,11 @@ export interface BoxContent {
 }
 
 export interface InventoryItem {
-  getI18nName(): I18nString;
+  getId(): number;
+
+  getInternalName(): string;
+
+  getI18nName(): I18nString | null;
 
   getRazarion(): number | null;
 
@@ -774,14 +782,48 @@ export interface InventoryItem {
   getBaseItemTypeCount(): number;
 
   getImageId(): number | null;
+
+  getCrystalCost(): number | null;
+
+  getInventoryArtifactCosts(): InventoryArtifactCount[];
+}
+
+export interface InventoryArtifact {
+  getId(): number;
+
+  getInternalName(): string;
+
+  getI18nName(): I18nString | null;
+
+  getImageId(): number | null;
+
+  getRareness(): string | null;
+
+  getHtmlColor(): string;
+
+  getCrystalCost(): number | null;
+}
+
+export interface InventoryArtifactCount {
+  getInventoryArtifactId(): number | null;
+
+  getCount(): number;
 }
 
 export interface InventoryTypeService {
   getInventoryItem(id: number): InventoryItem
+
+  getInventoryArtifact(id: number): InventoryArtifact
+
+  getInventoryItems(): InventoryItem[]
+
+  getInventoryArtifacts(): InventoryArtifact[]
 }
 
 export interface InventoryUiService {
   useItem(inventoryItem: InventoryItem): void;
+
+  useItemById(inventoryItemId: number): void;
 }
 
 export interface TerrainUiService {

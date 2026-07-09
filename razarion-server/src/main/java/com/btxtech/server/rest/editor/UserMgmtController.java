@@ -99,7 +99,21 @@ public class UserMgmtController {
         });
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')") 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping(value = "delete-user/{userId}")
+    public void deleteUser(@PathVariable("userId") String userId) {
+        try {
+            var playerBase = baseItemService.getPlayerBase4UserId(userId);
+            if (playerBase != null) {
+                baseItemService.deleteBase(playerBase.getBaseId());
+            }
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+        userService.mgmtDeleteUser(userId);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "activate-quest/{userId}/{questId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public void activateQuest(@PathVariable("userId") String userId, @PathVariable("questId") Integer questId) {
         serverLevelQuestService.activateQuestBackend(userId, questId);

@@ -158,7 +158,11 @@
       <div class="flex flex-col">
         <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
           <div style="font-size: 1.2rem" class="text-surface-300">
-            <span>{{ otherItemCockpit.baseName }}</span>
+            @if (otherItemCockpit.resource && otherItemCockpit.resourceAmount != null) {
+              <span>Razarion: {{ otherItemCockpit.resourceAmount }}</span>
+            } @else {
+              <span>{{ otherItemCockpit.baseName }}</span>
+            }
             @if (isAdmin()) {
               <span>&nbsp;[{{ otherItemCockpit.baseId }}]</span>
             }

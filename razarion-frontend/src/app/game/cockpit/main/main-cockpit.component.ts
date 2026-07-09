@@ -23,6 +23,7 @@ import {CockpitDisplayService} from '../cockpit-display.service';
 import {SetNameComponent} from '../../../auth/set-name/set-name.component';
 import {SelectionShortcutCategory, SelectionShortcutsService} from '../../selection-shortcuts.service';
 import {SettingsComponent} from '../settings/settings.component';
+import {TechTreeComponent} from '../techtree/tech-tree.component';
 
 
 @Component({
@@ -46,7 +47,8 @@ import {SettingsComponent} from '../settings/settings.component';
     UserComponent,
     RegisterComponent,
     SetNameComponent,
-    SettingsComponent
+    SettingsComponent,
+    TechTreeComponent
   ],
   styleUrls: ['main-cockpit.component.scss']
 })
@@ -128,6 +130,7 @@ export class MainCockpitComponent implements MainCockpit {
   displayLevel(levelNumber: number): void {
     this.zone.run(() => {
       this.levelNumber = levelNumber;
+      this.cockpitDisplayService.currentLevelNumber = levelNumber;
     });
   }
 

@@ -1,8 +1,10 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.server.service.engine.ServerInventoryService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.workerdto.IdsDto;
@@ -33,6 +35,7 @@ public class ClientGameConnection {
     private final UserService userService;
     private final CommandService commandService;
     private final ClientGameConnectionService clientGameConnectionService;
+    private final ServerInventoryService serverInventoryService;
     private WebSocketSession wsSession;
     private String userId;
     private Date lastMessageSent;
@@ -43,12 +46,14 @@ public class ClientGameConnection {
                                 PlanetService planetService,
                                 UserService userService,
                                 CommandService commandService,
-                                ClientGameConnectionService clientGameConnectionService) {
+                                ClientGameConnectionService clientGameConnectionService,
+                                ServerInventoryService serverInventoryService) {
         this.baseItemService = baseItemService;
         this.planetService = planetService;
         this.userService = userService;
         this.commandService = commandService;
         this.clientGameConnectionService = clientGameConnectionService;
+        this.serverInventoryService = serverInventoryService;
     }
 
     public void init(WebSocketSession wsSession, String userId) {
@@ -115,7 +120,7 @@ public class ClientGameConnection {
                 baseItemService.surrenderHumanBase(userId);
                 break;
             case USE_INVENTORY_ITEM:
-                // TODO serverInventoryService.useInventoryItem((UseInventoryItem) param, getPlayerSession(), getPlayerBaseFull());
+                serverInventoryService.useInventoryItem((UseInventoryItem) param, userId);
                 break;
             case SET_GAME_SESSION_UUID:
                 gameSessionUuid = (String) param;

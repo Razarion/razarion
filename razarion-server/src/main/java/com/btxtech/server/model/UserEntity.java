@@ -1,6 +1,7 @@
 package com.btxtech.server.model;
 
 import com.btxtech.server.gameengine.ServerUnlockService;
+import com.btxtech.server.model.engine.InventoryArtifactEntity;
 import com.btxtech.server.model.engine.InventoryItemEntity;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.LevelUnlockEntity;
@@ -61,6 +62,11 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "razarion-user"),
             inverseJoinColumns = @JoinColumn(name = "inventory"))
     private List<InventoryItemEntity> inventory;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "USER_INVENTORY_ARTIFACT",
+            joinColumns = @JoinColumn(name = "razarion-user"),
+            inverseJoinColumns = @JoinColumn(name = "inventoryArtifact"))
+    private List<InventoryArtifactEntity> inventoryArtifacts;
     private int xp;
     private int crystals;
     @ManyToMany(fetch = FetchType.LAZY)
@@ -192,6 +198,24 @@ public class UserEntity {
         inventory.remove(inventoryItemEntity);
     }
 
+    public void addInventoryArtifact(InventoryArtifactEntity inventoryArtifactEntity) {
+        if (inventoryArtifacts == null) {
+            inventoryArtifacts = new ArrayList<>();
+        }
+        inventoryArtifacts.add(inventoryArtifactEntity);
+    }
+
+    public void removeInventoryArtifact(InventoryArtifactEntity inventoryArtifactEntity) {
+        if (inventoryArtifacts == null) {
+            return;
+        }
+        inventoryArtifacts.remove(inventoryArtifactEntity);
+    }
+
+    public List<InventoryArtifactEntity> getInventoryArtifacts() {
+        return inventoryArtifacts;
+    }
+
     public Date getVerificationStartedDate() {
         return verificationStartedDate;
     }
@@ -229,6 +253,9 @@ public class UserEntity {
         inventoryInfo.setCrystals(crystals);
         if (inventory != null) {
             inventoryInfo.setInventoryItemIds(inventory.stream().map(InventoryItemEntity::getId).collect(Collectors.toList()));
+        }
+        if (inventoryArtifacts != null) {
+            inventoryInfo.setInventoryArtifactIds(inventoryArtifacts.stream().map(InventoryArtifactEntity::getId).collect(Collectors.toList()));
         }
         return inventoryInfo;
     }

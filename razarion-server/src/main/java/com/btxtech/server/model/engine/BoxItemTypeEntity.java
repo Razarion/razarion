@@ -4,6 +4,7 @@ package com.btxtech.server.model.engine;
 import com.btxtech.server.model.BaseEntity;
 import com.btxtech.server.model.ui.ImageLibraryEntity;
 import com.btxtech.server.model.ui.Model3DEntity;
+import com.btxtech.server.service.engine.InventoryArtifactService;
 import com.btxtech.server.service.engine.InventoryItemService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
@@ -67,7 +68,7 @@ public class BoxItemTypeEntity extends BaseEntity {
         return boxItemType;
     }
 
-    public void fromBoxItemType(BoxItemType boxItemType, InventoryItemService inventoryItemService) {
+    public void fromBoxItemType(BoxItemType boxItemType, InventoryItemService inventoryItemService, InventoryArtifactService inventoryArtifactService) {
         setInternalName(boxItemType.getInternalName());
         radius = boxItemType.getRadius();
         fixVerticalNorm = boxItemType.isFixVerticalNorm();
@@ -80,7 +81,7 @@ public class BoxItemTypeEntity extends BaseEntity {
         if (boxItemType.getBoxItemTypePossibilities() != null) {
             for (BoxItemTypePossibility boxItemTypePossibility : boxItemType.getBoxItemTypePossibilities()) {
                 BoxItemTypePossibilityEntity boxItemTypePossibilityEntity = new BoxItemTypePossibilityEntity();
-                boxItemTypePossibilityEntity.fromBoxItemTypePossibility(boxItemTypePossibility, inventoryItemService);
+                boxItemTypePossibilityEntity.fromBoxItemTypePossibility(boxItemTypePossibility, inventoryItemService, inventoryArtifactService);
                 boxItemTypePossibilities.add(boxItemTypePossibilityEntity);
             }
         }

@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.gameengine.datatypes.InventoryArtifact;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -25,6 +26,7 @@ public class StaticGameConfig {
     private List<BoxItemType> boxItemTypes;
     private List<LevelConfig> levelConfigs;
     private List<InventoryItem> inventoryItems;
+    private List<InventoryArtifact> inventoryArtifacts;
 
     public List<GroundConfig> getGroundConfigs() {
         return groundConfigs;
@@ -114,6 +116,19 @@ public class StaticGameConfig {
 
     public StaticGameConfig inventoryItems(List<InventoryItem> inventoryItems) {
         setInventoryItems(inventoryItems);
+        return this;
+    }
+
+    public List<InventoryArtifact> getInventoryArtifacts() {
+        return inventoryArtifacts;
+    }
+
+    public void setInventoryArtifacts(List<InventoryArtifact> inventoryArtifacts) {
+        this.inventoryArtifacts = inventoryArtifacts;
+    }
+
+    public StaticGameConfig inventoryArtifacts(List<InventoryArtifact> inventoryArtifacts) {
+        setInventoryArtifacts(inventoryArtifacts);
         return this;
     }
 }

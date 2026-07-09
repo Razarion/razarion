@@ -19,7 +19,7 @@ public class InventoryItemService extends AbstractConfigCrudService<InventoryIte
 
     @Override
     protected void fromConfig(InventoryItem config, InventoryItemEntity entity) {
-        entity.fromInventoryItem(config);
+        entity.fromInventoryItem(config, getServiceProviderService().getInventoryArtifactCrudPersistence());
         entity.setImage(getServiceProviderService().getImagePersistence().getImageLibraryEntity(config.getImageId()));
         entity.setBaseItemType(getServiceProviderService().getBaseItemTypeCrudPersistence().getEntity(config.getBaseItemTypeId()));
     }

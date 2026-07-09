@@ -99,6 +99,10 @@ public class BaseItemPlacerChecker {
         return DecimalPosition.add(relativeItemPositions, position);
     }
 
+    public Collection<DecimalPosition> getRelativeItemPositions() {
+        return relativeItemPositions;
+    }
+
     public boolean hasRallyPoint() {
         return relativeRallyPosition != null;
     }

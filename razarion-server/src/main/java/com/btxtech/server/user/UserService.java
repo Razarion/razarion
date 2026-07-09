@@ -8,6 +8,8 @@ import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.SetNameError;
 import com.btxtech.server.model.SetNameResult;
 import com.btxtech.server.model.UserEntity;
+import com.btxtech.server.model.engine.InventoryArtifactCountEntity;
+import com.btxtech.server.model.engine.InventoryArtifactEntity;
 import com.btxtech.server.model.engine.InventoryItemEntity;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.LevelUnlockEntity;
@@ -319,6 +321,23 @@ public class UserService implements UserDetailsService {
         return null;
     }
 
+    /**
+     * All users that currently have a persisted active quest, mapped userId -> QuestConfig.
+     * Used on planet (re)start to re-register the live quest-progress conditions, which only live
+     * in-memory in {@code QuestService.progressMap} and are otherwise lost after a restart.
+     */
+    @Transactional
+    public Map<String, QuestConfig> findActiveQuests4Users() {
+        Map<String, QuestConfig> result = new HashMap<>();
+        userRepository.findAll().forEach(userEntity -> {
+            QuestConfigEntity activeQuest = userEntity.getActiveQuest();
+            if (activeQuest != null && userEntity.getUserId() != null) {
+                result.put(userEntity.getUserId(), activeQuest.toQuestConfig());
+            }
+        });
+        return result;
+    }
+
     @Transactional
     public void clearActiveQuest(String userId) {
         UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
@@ -357,6 +376,91 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
         userEntity.addInventoryItem(inventoryItemEntity);
         userRepository.save(userEntity);
+    }
+
+    @Transactional
+    public void persistRemoveInventoryItem(String userId, InventoryItemEntity inventoryItemEntity) {
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
+        userEntity.removeInventoryItem(inventoryItemEntity);
+        userRepository.save(userEntity);
+    }
+
+    @Transactional
+    public void persistAddInventoryArtifact(String userId, InventoryArtifactEntity inventoryArtifactEntity) {
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
+        userEntity.addInventoryArtifact(inventoryArtifactEntity);
+        userRepository.save(userEntity);
+    }
+
+    /**
+     * Buy an inventory item for crystals. Returns false if the user has too few crystals.
+     */
+    @Transactional
+    public boolean buyInventoryItem(String userId, InventoryItemEntity inventoryItemEntity) {
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
+        Integer crystalCost = inventoryItemEntity.getCrystalCost();
+        if (crystalCost == null || crystalCost > userEntity.getCrystals()) {
+            return false;
+        }
+        userEntity.removeCrystals(crystalCost);
+        userEntity.addInventoryItem(inventoryItemEntity);
+        userRepository.save(userEntity);
+        return true;
+    }
+
+    /**
+     * Buy an artifact for crystals. Returns false if the user has too few crystals.
+     */
+    @Transactional
+    public boolean buyInventoryArtifact(String userId, InventoryArtifactEntity inventoryArtifactEntity) {
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
+        Integer crystalCost = inventoryArtifactEntity.getCrystalCost();
+        if (crystalCost == null || crystalCost > userEntity.getCrystals()) {
+            return false;
+        }
+        userEntity.removeCrystals(crystalCost);
+        userEntity.addInventoryArtifact(inventoryArtifactEntity);
+        userRepository.save(userEntity);
+        return true;
+    }
+
+    /**
+     * Assemble an inventory item from the artifacts the user owns (workshop). Consumes the
+     * required artifacts and adds the item to the user's inventory. Returns false if the user
+     * does not own the required artifact set.
+     */
+    @Transactional
+    public boolean assembleInventoryItem(String userId, InventoryItemEntity inventoryItemEntity) {
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
+        List<InventoryArtifactCountEntity> costs = inventoryItemEntity.getInventoryArtifactCosts();
+        if (costs == null || costs.isEmpty()) {
+            return false;
+        }
+        List<InventoryArtifactEntity> owned = userEntity.getInventoryArtifacts();
+        if (owned == null) {
+            return false;
+        }
+        Map<Integer, Long> ownedCount = owned.stream()
+                .collect(Collectors.groupingBy(InventoryArtifactEntity::getId, Collectors.counting()));
+        for (InventoryArtifactCountEntity cost : costs) {
+            Integer artifactId = cost.getInventoryArtifact().getId();
+            if (ownedCount.getOrDefault(artifactId, 0L) < cost.getCount()) {
+                return false;
+            }
+        }
+        for (InventoryArtifactCountEntity cost : costs) {
+            Integer artifactId = cost.getInventoryArtifact().getId();
+            int toRemove = cost.getCount();
+            for (var it = owned.iterator(); toRemove > 0 && it.hasNext(); ) {
+                if (artifactId.equals(it.next().getId())) {
+                    it.remove();
+                    toRemove--;
+                }
+            }
+        }
+        userEntity.addInventoryItem(inventoryItemEntity);
+        userRepository.save(userEntity);
+        return true;
     }
 
     @Transactional
@@ -496,6 +600,14 @@ public class UserService implements UserDetailsService {
             if (userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED) {
                 userRepository.delete(userEntity);
             }
+        });
+    }
+
+    @Transactional
+    public void mgmtDeleteUser(String userId) {
+        userRepository.findByUserId(userId).ifPresent(userEntity -> {
+            logger.info("Mgmt deleting user: {}", userEntity);
+            userRepository.delete(userEntity);
         });
     }
 

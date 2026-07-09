@@ -21,6 +21,10 @@ export class CockpitDisplayService {
   infoDialogMode: InfoDialogMode = 'info';
 
   showSettingsDialog = false;
+  showTechTreeDialog = false;
+
+  /** Current player level number, pushed from MainCockpit; used to highlight the tech-tree column. */
+  currentLevelNumber?: number;
 
   openInfoDialog(mode: InfoDialogMode = 'info'): void {
     this.infoDialogMode = mode;

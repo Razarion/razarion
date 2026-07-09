@@ -14,6 +14,7 @@ import java.util.List;
 @JSONMapper
 public class BoxContent {
     private List<InventoryItem> inventoryItems = new ArrayList<>();
+    private List<InventoryArtifact> inventoryArtifacts = new ArrayList<>();
     private int crystals;
 
     public void addInventoryItem(InventoryItem inventoryItem) {
@@ -28,6 +29,24 @@ public class BoxContent {
     // Do not call this method get<something>, because it will be sent as json via websocket to the client
     public InventoryItem[] toInventoryItemArray() {
         return inventoryItems.toArray(new InventoryItem[0]);
+    }
+
+    public void addInventoryArtifact(InventoryArtifact inventoryArtifact) {
+        inventoryArtifacts.add(inventoryArtifact);
+    }
+
+    public List<InventoryArtifact> getInventoryArtifacts() {
+        return inventoryArtifacts;
+    }
+
+    public void setInventoryArtifacts(List<InventoryArtifact> inventoryArtifacts) {
+        this.inventoryArtifacts = inventoryArtifacts;
+    }
+
+    @SuppressWarnings("unused") // Used by angular
+    // Do not call this method get<something>, because it will be sent as json via websocket to the client
+    public InventoryArtifact[] toInventoryArtifactArray() {
+        return inventoryArtifacts.toArray(new InventoryArtifact[0]);
     }
 
     public void addCrystals(int crystals) {

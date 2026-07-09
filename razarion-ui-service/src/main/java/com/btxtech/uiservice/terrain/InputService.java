@@ -35,6 +35,14 @@ public class InputService {
 
     @SuppressWarnings("unused") // Called by Angular
     public void onViewFieldChanged(double bottomLeftX, double bottomLeftY, double bottomRightX, double bottomRightY, double topRightX, double topRightY, double topLeftX, double topLeftY) {
+        // Defense in depth against a degenerate view field from the client: a non-finite corner would
+        // produce a bogus AABB and cull every unit. Keep the previous view field/AABB in that case.
+        if (isNotFinite(bottomLeftX) || isNotFinite(bottomLeftY)
+                || isNotFinite(bottomRightX) || isNotFinite(bottomRightY)
+                || isNotFinite(topRightX) || isNotFinite(topRightY)
+                || isNotFinite(topLeftX) || isNotFinite(topLeftY)) {
+            return;
+        }
         ViewField viewField = new ViewField(0)
                 .bottomLeft(new DecimalPosition(bottomLeftX, bottomLeftY))
                 .bottomRight(new DecimalPosition(bottomRightX, bottomRightY))
@@ -56,5 +64,9 @@ public class InputService {
 
     public void setMoveCommandAckCallback(Runnable callback) {
         this.moveCommandAckCallback = callback;
+    }
+
+    private static boolean isNotFinite(double value) {
+        return Double.isNaN(value) || Double.isInfinite(value);
     }
 }
