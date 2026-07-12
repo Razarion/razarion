@@ -47,6 +47,9 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
   selectedBot?: BotConfig;
   showGroundEditor = false;
   slopeModeGroundEditor = false;
+  intervallPanelValue: string | null = null;
+  groundBoxPanelValue: string | null = null;
+  enragementPanelValue: number = 0;
 
   constructor(public editorService: EditorService,
               private messageService: MessageService,
@@ -84,6 +87,16 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
 
   protected readonly EditorService = EditorService;
 
+  onBotSelected() {
+    this.intervallPanelValue = this.hasIntervall() ? 'intervall' : null;
+  }
+
+  hasIntervall(): boolean {
+    const b = this.selectedBot;
+    return !!b && (b.minInactiveMs != null || b.maxInactiveMs != null
+      || b.minActiveMs != null || b.maxActiveMs != null);
+  }
+
   onCreate() {
     this.selectedBot = {
       id: <any>null,
@@ -105,6 +118,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
       botGroundSlopeBoxes: [],
     }
     this.serverGameEngineConfigEntity!.botConfigs.push(this.selectedBot)
+    this.onBotSelected();
   }
 
   onCopy() {

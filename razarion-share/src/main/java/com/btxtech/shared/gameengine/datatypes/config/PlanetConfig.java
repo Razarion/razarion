@@ -25,6 +25,7 @@ public class PlanetConfig implements Config {
     private Map<Integer, Integer> itemTypeLimitation;
     private int houseSpace;
     private int startRazarion;
+    private int maxRazarion;
     @CollectionReference(CollectionReferenceType.BASE_ITEM)
     private Integer startBaseItemTypeId;
     private Integer groundConfigId;
@@ -80,6 +81,17 @@ public class PlanetConfig implements Config {
         this.startRazarion = startRazarion;
     }
 
+    /**
+     * Maximum amount of Razarion a (human) player base can accumulate. 0 means unlimited.
+     */
+    public int getMaxRazarion() {
+        return maxRazarion;
+    }
+
+    public void setMaxRazarion(int maxRazarion) {
+        this.maxRazarion = maxRazarion;
+    }
+
     public @Nullable Integer getStartBaseItemTypeId() {
         return startBaseItemTypeId;
     }
@@ -132,6 +144,11 @@ public class PlanetConfig implements Config {
 
     public PlanetConfig startRazarion(int startRazarion) {
         setStartRazarion(startRazarion);
+        return this;
+    }
+
+    public PlanetConfig maxRazarion(int maxRazarion) {
+        setMaxRazarion(maxRazarion);
         return this;
     }
 

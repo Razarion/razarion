@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {DecimalPosition, PlaceConfig} from "../../../generated/razarion-share";
 import {DecimalPosition as DecimalPositionGwt} from "../../../gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "../../../game/renderer/babylon-render-service-access-impl.service";
@@ -31,8 +31,10 @@ enum Type {
   ],
   styleUrls: ['./place-config.component.scss']
 })
-export class PlaceConfigComponent implements OnInit, OnChanges {
+export class PlaceConfigComponent implements OnInit, OnChanges, OnDestroy {
   static readonly NEW_POLYGON_HALF_LENGTH = 4;
+  // Only one place-config may be in edit mode at a time.
+  private static activeEditor: PlaceConfigComponent | null = null;
   @Input("placeConfig")
   placeConfig: PlaceConfig | null = null;
   @Input()
@@ -95,6 +97,9 @@ export class PlaceConfigComponent implements OnInit, OnChanges {
       if (this.polygonVisualization) {
         this.polygonVisualization.editMode(false);
       }
+      if (PlaceConfigComponent.activeEditor === this) {
+        PlaceConfigComponent.activeEditor = null;
+      }
     }
 
   }
@@ -119,14 +124,45 @@ export class PlaceConfigComponent implements OnInit, OnChanges {
     if (this.polygonVisualization) {
       this.polygonVisualization.editMode(false);
     }
+    if (PlaceConfigComponent.activeEditor === this) {
+      PlaceConfigComponent.activeEditor = null;
+    }
   }
 
   onEditButton(active: any) {
+    if (active) {
+      // Leave edit mode on the previously active editor before taking over.
+      if (PlaceConfigComponent.activeEditor && PlaceConfigComponent.activeEditor !== this) {
+        PlaceConfigComponent.activeEditor.leaveEditMode();
+      }
+      PlaceConfigComponent.activeEditor = this;
+    } else if (PlaceConfigComponent.activeEditor === this) {
+      PlaceConfigComponent.activeEditor = null;
+    }
     if (this.locationVisualization) {
       this.locationVisualization.editMode(active);
     }
     if (this.polygonVisualization) {
       this.polygonVisualization.editMode(active);
+    }
+  }
+
+  private leaveEditMode() {
+    this.editable = false;
+    if (this.locationVisualization) {
+      this.locationVisualization.editMode(false);
+    }
+    if (this.polygonVisualization) {
+      this.polygonVisualization.editMode(false);
+    }
+    if (PlaceConfigComponent.activeEditor === this) {
+      PlaceConfigComponent.activeEditor = null;
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (PlaceConfigComponent.activeEditor === this) {
+      PlaceConfigComponent.activeEditor = null;
     }
   }
 

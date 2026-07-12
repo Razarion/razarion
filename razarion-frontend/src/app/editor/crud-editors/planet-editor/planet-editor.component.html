@@ -37,6 +37,13 @@
     </div>
   </div>
   <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <span class="col-span-4">Max razarion</span>
+    <div class="col-span-8">
+      <p-inputNumber [(ngModel)]="planetConfig.maxRazarion" [min]="0"></p-inputNumber>
+      <small class="text-color-secondary">Per-player Razarion cap (0 = unlimited)</small>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
     <span class="col-span-4">Start base item</span>
     <div class="col-span-8">
       <base-item-type [(baseItemTypeId)]="planetConfig.startBaseItemTypeId"></base-item-type>

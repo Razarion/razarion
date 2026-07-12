@@ -23,30 +23,28 @@ public class PageRequestService {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public void onHome(String sessionId, String utmCampaign, String utmSource, String rdtCid) {
-        try {
-            var pageRequest = new PageRequest()
-                    .pageRequestType(PageRequestType.HOME)
-                    .serverTime(new Date())
-                    .httpSessionId(sessionId)
-                    .utmCampaign(utmCampaign)
-                    .utmSource(utmSource)
-                    .rdtCid(rdtCid);
-            mongoTemplate.save(pageRequest, PAGE_REQUEST);
-        } catch (Exception e) {
-            logger.warn(e.getMessage(), e);
-        }
+    public void onHome(PageRequest pageRequest) {
+        save(pageRequest, PageRequestType.HOME);
     }
 
-    public void onGame(String sessionId, String utmCampaign, String utmSource, String rdtCid) {
+    public void onGame(PageRequest pageRequest) {
+        save(pageRequest, PageRequestType.GAME);
+    }
+
+    private void save(PageRequest pageRequest, PageRequestType pageRequestType) {
         try {
-            var pageRequest = new PageRequest()
-                    .pageRequestType(PageRequestType.GAME)
-                    .serverTime(new Date())
-                    .httpSessionId(sessionId)
-                    .utmCampaign(utmCampaign)
-                    .utmSource(utmSource)
-                    .rdtCid(rdtCid);
+            pageRequest
+                    .pageRequestType(pageRequestType)
+                    .serverTime(new Date());
+            logger.info("Page request {} tracked: utmCampaign={} utmSource={} utmMedium={} twclid={} rdtCid={} session={} query='{}'",
+                    pageRequestType,
+                    pageRequest.getUtmCampaign(),
+                    pageRequest.getUtmSource(),
+                    pageRequest.getUtmMedium(),
+                    pageRequest.getTwclid(),
+                    pageRequest.getRdtCid(),
+                    pageRequest.getHttpSessionId(),
+                    pageRequest.getRawQueryString());
             mongoTemplate.save(pageRequest, PAGE_REQUEST);
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
@@ -65,6 +63,24 @@ public class PageRequestService {
             query.limit(1);
             PageRequest pageRequest = mongoTemplate.findOne(query, PageRequest.class, PAGE_REQUEST);
             return pageRequest != null ? pageRequest.getRdtCid() : null;
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public String findTwclidByHttpSessionId(String httpSessionId) {
+        if (httpSessionId == null) {
+            return null;
+        }
+        try {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("httpSessionId").is(httpSessionId)
+                    .and("twclid").ne(null));
+            query.with(Sort.by(Sort.Direction.DESC, "serverTime"));
+            query.limit(1);
+            PageRequest pageRequest = mongoTemplate.findOne(query, PageRequest.class, PAGE_REQUEST);
+            return pageRequest != null ? pageRequest.getTwclid() : null;
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
             return null;

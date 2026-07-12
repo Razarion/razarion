@@ -1,9 +1,10 @@
-<p-scrollpanel [style]="{ width: '600px', height: '100%' }">
+<p-scrollpanel [style]="{ width: '100%', height: '100%' }">
   <div>
     <div class="flex flex-row gap-1 items-center p-1">
       <p-button type="button" icon="pi pi-save" styleClass="p-button-sm" (onClick)="onSave()"></p-button>
       <p-select [options]="serverGameEngineConfigEntity ? serverGameEngineConfigEntity!.botConfigs:[]"
         [(ngModel)]="selectedBot"
+        (onChange)="onBotSelected()"
       optionLabel="internalName"></p-select>
       <p-button type="button" icon="pi pi-plus-circle" styleClass="p-button-sm" (onClick)="onCreate()"></p-button>
       <p-button type="button" icon="pi pi-copy" styleClass="p-button-sm" (onClick)="onCopy()"
@@ -77,101 +78,123 @@
                 }
               </div>
             </div>
-            <p-divider align="left">
-              <div class="inline-flex items-center">
-                <i class="pi pi-clock mr-2"></i>
-                <b>Ground box</b>
-              </div>
-            </p-divider>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Enabled</span>
-              <div class="col-span-9">
-                @if (selectedBot) {
-                  <p-checkbox [(ngModel)]="selectedBot!.groundBoxEnabled" [binary]="true"></p-checkbox>
-                }
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Height</span>
-              <div class="col-span-9">
-                <p-inputNumber
-                  [(ngModel)]="selectedBot.groundBoxHeight"
-                  [maxFractionDigits]="3"
-                (onInput)="onHeightInput($event.value)"></p-inputNumber>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Generate</span>
-              <div class="col-span-9">
-                <p-button type="button"
-                  label="From Realm"
-                  icon="pi pi-map"
-                  styleClass="p-button-sm"
-                  [disabled]="!selectedBot!.realm"
-                  (onClick)="onGenerateGroundFromRealm()"></p-button>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-3">Editor</span>
-              <div class="col-span-9">
-                <div class="flex flex-row gap-1">
-                  <p-togglebutton onIcon="pi pi-pen-to-square"
-                    offIcon="pi pi-pen-to-square"
-                    size="small"
-                    onLabel="On"
-                    offLabel="Off"
-                    [(ngModel)]="showGroundEditor"
-                  (onChange)="onOpenGroundEditor()"></p-togglebutton>
-                  <p-togglebutton onIcon="pi pi-sort-up-fill"
-                    offIcon="pi pi-sort-up-fill"
-                    onLabel="Slope"
-                    offLabel="Slope"
-                    size="small"
-                    [(ngModel)]="slopeModeGroundEditor"
-                    (onChange)="onSlopeModeGroundEditor()"
-                  [disabled]="!showGroundEditor"></p-togglebutton>
-                  <p-button type="button"
-                    icon="pi pi-sync"
-                    styleClass="p-button-sm"
-                    [disabled]="!showGroundEditor"
-                  (onClick)="onRotationSlopeGroundEditor()"></p-button>
-                </div>
-              </div>
-            </div>
-            <p-divider align="left">
-              <div class="inline-flex items-center">
-                <i class="pi pi-clock mr-2"></i>
-                <b>Intervall</b>
-              </div>
-            </p-divider>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-5">Min inactive [ms]</span>
-              <div class="col-span-7">
-                <p-inputNumber [ngModel]="selectedBot&&selectedBot.minInactiveMs"
-                (ngModelChange)="selectedBot && (selectedBot.minInactiveMs = $event)"></p-inputNumber>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-5">Max inactive [ms]</span>
-              <div class="col-span-7">
-                <p-inputNumber [ngModel]="selectedBot&&selectedBot.maxInactiveMs"
-                (ngModelChange)="selectedBot && (selectedBot.maxInactiveMs = $event)"></p-inputNumber>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-5">Min active [ms]</span>
-              <div class="col-span-7">
-                <p-inputNumber [ngModel]="selectedBot&&selectedBot.minActiveMs"
-                (ngModelChange)="selectedBot && (selectedBot.minActiveMs = $event)"></p-inputNumber>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4">
-              <span class="col-span-5">Max active [ms]</span>
-              <div class="col-span-7">
-                <p-inputNumber [ngModel]="selectedBot&&selectedBot.maxActiveMs"
-                (ngModelChange)="selectedBot && (selectedBot.maxActiveMs = $event)"></p-inputNumber>
-              </div>
-            </div>
+            <p-accordion [(value)]="groundBoxPanelValue">
+              <p-accordion-panel value="groundBox">
+                <p-accordion-header>
+                  <div class="inline-flex items-center gap-2">
+                    <i class="pi pi-th-large"></i>
+                    <b>Ground box</b>
+                    @if (selectedBot.groundBoxEnabled) {
+                      <span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-600 text-white">active</span>
+                    } @else {
+                      <span class="text-xs font-semibold px-2 py-0.5 rounded bg-surface-500 text-white">off</span>
+                    }
+                  </div>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-3">Enabled</span>
+                    <div class="col-span-9">
+                      @if (selectedBot) {
+                        <p-checkbox [(ngModel)]="selectedBot!.groundBoxEnabled" [binary]="true"></p-checkbox>
+                      }
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-3">Height</span>
+                    <div class="col-span-9">
+                      <p-inputNumber
+                        [(ngModel)]="selectedBot.groundBoxHeight"
+                        [maxFractionDigits]="3"
+                      (onInput)="onHeightInput($event.value)"></p-inputNumber>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-3">Generate</span>
+                    <div class="col-span-9">
+                      <p-button type="button"
+                        label="From Realm"
+                        icon="pi pi-map"
+                        styleClass="p-button-sm"
+                        [disabled]="!selectedBot!.realm"
+                        (onClick)="onGenerateGroundFromRealm()"></p-button>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-3">Editor</span>
+                    <div class="col-span-9">
+                      <div class="flex flex-row gap-1">
+                        <p-togglebutton onIcon="pi pi-pen-to-square"
+                          offIcon="pi pi-pen-to-square"
+                          size="small"
+                          onLabel="On"
+                          offLabel="Off"
+                          [(ngModel)]="showGroundEditor"
+                        (onChange)="onOpenGroundEditor()"></p-togglebutton>
+                        <p-togglebutton onIcon="pi pi-sort-up-fill"
+                          offIcon="pi pi-sort-up-fill"
+                          onLabel="Slope"
+                          offLabel="Slope"
+                          size="small"
+                          [(ngModel)]="slopeModeGroundEditor"
+                          (onChange)="onSlopeModeGroundEditor()"
+                        [disabled]="!showGroundEditor"></p-togglebutton>
+                        <p-button type="button"
+                          icon="pi pi-sync"
+                          styleClass="p-button-sm"
+                          [disabled]="!showGroundEditor"
+                        (onClick)="onRotationSlopeGroundEditor()"></p-button>
+                      </div>
+                    </div>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+            </p-accordion>
+            <p-accordion [(value)]="intervallPanelValue">
+              <p-accordion-panel value="intervall">
+                <p-accordion-header>
+                  <div class="inline-flex items-center gap-2">
+                    <i class="pi pi-clock"></i>
+                    <b>Intervall</b>
+                    @if (hasIntervall()) {
+                      <span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-600 text-white">active</span>
+                    } @else {
+                      <span class="text-xs font-semibold px-2 py-0.5 rounded bg-surface-500 text-white">off</span>
+                    }
+                  </div>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-5">Min inactive [ms]</span>
+                    <div class="col-span-7">
+                      <p-inputNumber [ngModel]="selectedBot&&selectedBot.minInactiveMs"
+                      (ngModelChange)="selectedBot && (selectedBot.minInactiveMs = $event)"></p-inputNumber>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-5">Max inactive [ms]</span>
+                    <div class="col-span-7">
+                      <p-inputNumber [ngModel]="selectedBot&&selectedBot.maxInactiveMs"
+                      (ngModelChange)="selectedBot && (selectedBot.maxInactiveMs = $event)"></p-inputNumber>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-5">Min active [ms]</span>
+                    <div class="col-span-7">
+                      <p-inputNumber [ngModel]="selectedBot&&selectedBot.minActiveMs"
+                      (ngModelChange)="selectedBot && (selectedBot.minActiveMs = $event)"></p-inputNumber>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-4">
+                    <span class="col-span-5">Max active [ms]</span>
+                    <div class="col-span-7">
+                      <p-inputNumber [ngModel]="selectedBot&&selectedBot.maxActiveMs"
+                      (ngModelChange)="selectedBot && (selectedBot.maxActiveMs = $event)"></p-inputNumber>
+                    </div>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+            </p-accordion>
             @if (selectedBot) {
               <div
                 class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
@@ -185,7 +208,7 @@
                 <div class="grid grid-cols-12 gap-4">
                   <div class="col-span-12">
                     @if (selectedBot.botEnragementStateConfigs) {
-                      <p-accordion>
+                      <p-accordion [(value)]="enragementPanelValue">
                         @for (botEnragementStateConfig of selectedBot!.botEnragementStateConfigs; track botEnragementStateConfig; let i = $index) {
                           <p-accordion-panel
                             [value]="i">
@@ -221,67 +244,59 @@
                                 <div class="grid grid-cols-12 gap-4">
                                   <div class="col-span-12">
                                     @if (botEnragementStateConfig?.botItems) {
-                                      <p-accordion>
-                                        @for (botItem of botEnragementStateConfig!.botItems; track botItem; let i = $index) {
-                                          <p-accordion-panel
-                                            [value]="i">
-                                            <p-accordion-header>
-                                              <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId"
-                                              [readOnly]="true"></base-item-type>
-                                              <div class="col-span-1 flex flex-row gap-1">
-                                                <p-button type="button" icon="pi pi-copy" styleClass="p-button-sm"
-                                                (onClick)="onCopyBotItem(botItem, botEnragementStateConfig)"></p-button>
-                                                <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
-                                                (onClick)="onDeleteBotItem(botItem, botEnragementStateConfig)"></p-button>
-                                              </div>
-                                            </p-accordion-header>
-                                            <p-accordion-content>
-                                              <div class="grid grid-cols-12 gap-4">
-                                                <span class="col-span-3">Base Item</span>
-                                                <div class="col-span-9">
+                                      <div class="overflow-x-auto">
+                                        <table class="border-collapse text-sm w-max">
+                                          <thead>
+                                            <tr class="text-left text-xs text-muted-color">
+                                              <th class="p-1 font-semibold">Base Item</th>
+                                              <th class="p-1 font-semibold">Count</th>
+                                              <th class="p-1 font-semibold">Re pop [ms]</th>
+                                              <th class="p-1 font-semibold" title="Create directly">Direct</th>
+                                              <th class="p-1 font-semibold" title="Spawn near center">Center</th>
+                                              <th class="p-1 font-semibold">Spawn place</th>
+                                              <th class="p-1 font-semibold">Spread place</th>
+                                              <th class="p-1"></th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            @for (botItem of botEnragementStateConfig!.botItems; track botItem) {
+                                              <tr class="border-t border-surface-500 align-top odd:bg-white/5 even:bg-black/40 hover:!bg-primary-900/50">
+                                                <td class="p-1">
                                                   <base-item-type [(baseItemTypeId)]="botItem.baseItemTypeId"></base-item-type>
-                                                </div>
-                                              </div>
-                                              <div class="grid grid-cols-12 gap-4">
-                                                <span class="col-span-3">Count</span>
-                                                <div class="col-span-9">
-                                                  <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.count"></p-inputNumber>
-                                                </div>
-                                              </div>
-                                              <div class="grid grid-cols-12 gap-4">
-                                                <span class="col-span-3">Create directly</span>
-                                                <div class="col-span-9">
+                                                </td>
+                                                <td class="p-1">
+                                                  <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.count"
+                                                  inputStyleClass="!w-16"></p-inputNumber>
+                                                </td>
+                                                <td class="p-1">
+                                                  <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.rePopTime"
+                                                  inputStyleClass="!w-20"></p-inputNumber>
+                                                </td>
+                                                <td class="p-1 text-center">
                                                   <p-checkbox [(ngModel)]="botItem.createDirectly" [binary]="true"></p-checkbox>
-                                                </div>
-                                              </div>
-                                              <div class="grid grid-cols-12 gap-4">
-                                                <span class="col-span-3">Re pop time [ms]</span>
-                                                <div class="col-span-9">
-                                                  <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.rePopTime"></p-inputNumber>
-                                                </div>
-                                              </div>
-                                              <div class="grid grid-cols-12 gap-4">
-                                                <span class="col-span-3">Spawn place</span>
-                                                <div class="col-span-9">
-                                                  <place-config [(placeConfig)]="botItem.place"></place-config>
-                                                </div>
-                                              </div>
-                                              <div class="grid grid-cols-12 gap-4">
-                                                <span class="col-span-3">Spawn near center</span>
-                                                <div class="col-span-9">
+                                                </td>
+                                                <td class="p-1 text-center">
                                                   <p-checkbox [(ngModel)]="botItem.placeNearCenter" [binary]="true"></p-checkbox>
-                                                </div>
-                                              </div>
-                                              <div class="grid grid-cols-12 gap-4">
-                                                <span class="col-span-3">Spread place</span>
-                                                <div class="col-span-9">
+                                                </td>
+                                                <td class="p-1">
+                                                  <place-config [(placeConfig)]="botItem.place"></place-config>
+                                                </td>
+                                                <td class="p-1">
                                                   <place-config [(placeConfig)]="botItem.spreadPlace"></place-config>
-                                                </div>
-                                              </div>
-                                            </p-accordion-content>
-                                          </p-accordion-panel>
-                                        }
-                                      </p-accordion>
+                                                </td>
+                                                <td class="p-1">
+                                                  <div class="flex flex-row gap-1">
+                                                    <p-button type="button" icon="pi pi-copy" styleClass="p-button-sm"
+                                                    (onClick)="onCopyBotItem(botItem, botEnragementStateConfig)"></p-button>
+                                                    <p-button type="button" icon="pi pi-trash" styleClass="p-button-sm"
+                                                    (onClick)="onDeleteBotItem(botItem, botEnragementStateConfig)"></p-button>
+                                                  </div>
+                                                </td>
+                                              </tr>
+                                            }
+                                          </tbody>
+                                        </table>
+                                      </div>
                                     }
                                   </div>
                                 </div>

@@ -8,6 +8,7 @@ import com.btxtech.server.service.engine.ServerLevelQuestService;
 import com.btxtech.server.service.engine.ServerInventoryService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
 import com.btxtech.server.service.tracking.RedditConversionService;
+import com.btxtech.server.service.tracking.XConversionService;
 import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
@@ -64,6 +65,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private final PlanetBackupService planetBackupService;
     private final UserActivityService userActivityService;
     private final RedditConversionService redditConversionService;
+    private final XConversionService xConversionService;
     private final ServerInventoryService serverInventoryService;
     // Provider breaks the cycle: ServerLevelQuestService injects Provider<ServerGameEngineControl>.
     private final Provider<ServerLevelQuestService> serverLevelQuestService;
@@ -85,6 +87,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                                    ResourceService resourceService, PlanetBackupService planetBackupService,
                                    UserActivityService userActivityService,
                                    RedditConversionService redditConversionService,
+                                   XConversionService xConversionService,
                                    ServerInventoryService serverInventoryService,
                                    Provider<ServerLevelQuestService> serverLevelQuestService) {
         this.initializeService = initializeService;
@@ -104,6 +107,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         this.planetBackupService = planetBackupService;
         this.userActivityService = userActivityService;
         this.redditConversionService = redditConversionService;
+        this.xConversionService = xConversionService;
         this.serverInventoryService = serverInventoryService;
         this.serverLevelQuestService = serverLevelQuestService;
     }
@@ -245,6 +249,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         if (playerBase.getUserId() != null) {
             this.userActivityService.onBaseCreated(playerBase.getUserId(), playerBase.getBaseId());
             redditConversionService.sendBuilderDeployedEvent(playerBase.getUserId());
+            xConversionService.sendBuilderDeployedEvent(playerBase.getUserId());
         }
     }
 

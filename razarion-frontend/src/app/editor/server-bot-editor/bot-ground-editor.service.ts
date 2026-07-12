@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render-service-access-impl.service';
-import {Color3, Matrix, Mesh, MeshBuilder} from '@babylonjs/core';
+import {Color3, Color4, Matrix, Mesh, MeshBuilder, StandardMaterial} from '@babylonjs/core';
 import {BabylonTerrainTileImpl} from '../../game/renderer/babylon-terrain-tile.impl';
 import {BotConfig, BotGroundSlopeBox, DecimalPosition} from '../../generated/razarion-share';
-import {SimpleMaterial} from '@babylonjs/materials';
 import {Observer} from '@babylonjs/core/Misc/observable';
 import {Nullable} from '@babylonjs/core/types';
 import type {PointerInfo} from '@babylonjs/core/Events/pointerEvents';
@@ -19,6 +18,8 @@ export class BotGroundEditorService {
   private groundSlopeBoxes = new Map<BotGroundSlopeBox, Mesh>();
   private container: Nullable<TransformNode> = null;
   private cursor: Nullable<Mesh> = null;
+  private boxMaterial: Nullable<StandardMaterial> = null;
+  private cursorMaterial: Nullable<StandardMaterial> = null;
   private botConfig: BotConfig | null = null;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private slopeMode = false;
@@ -33,15 +34,27 @@ export class BotGroundEditorService {
     this.disposeBoxes();
     this.height = botConfig.groundBoxHeight === null ? 0 : botConfig.groundBoxHeight;
     this.container = new TransformNode("Bot ground editor");
+    // The scene's DirectionalLight uses includedOnlyMeshes (only terrain
+    // meshes are lit) and there is no other light, so any lit material on
+    // these editor markers renders black. Use emissive, lighting-disabled
+    // StandardMaterials so the color shows regardless of scene lights.
+    const scene = this.renderer.getScene();
+    this.boxMaterial = new StandardMaterial("Bot ground box", scene);
+    this.boxMaterial.emissiveColor = new Color3(0.15, 0.45, 0.75);
+    this.boxMaterial.disableLighting = true;
     this.setupBoxes(botConfig.groundBoxPositions);
     this.setupSlopeBoxes(botConfig.botGroundSlopeBoxes);
     this.botConfig = botConfig;
 
-    this.cursor = MeshBuilder.CreateBox("Cursor", {size: BabylonTerrainTileImpl.BOT_BOX_LENGTH}, this.renderer.getScene());
+    this.cursor = MeshBuilder.CreateBox("Cursor", {size: BabylonTerrainTileImpl.BOT_BOX_LENGTH}, scene);
     this.cursor.position.y = -BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2.0;
     this.cursor.bakeCurrentTransformIntoVertices();
     this.cursor.position.y = 0;
     this.cursor.parent = this.container;
+    this.cursorMaterial = new StandardMaterial("Bot ground cursor", scene);
+    this.cursorMaterial.emissiveColor = new Color3(0.8, 0.6, 0);
+    this.cursorMaterial.disableLighting = true;
+    this.cursor.material = this.cursorMaterial;
     this.pointerObservable = this.renderer.getScene().onPointerObservable.add((pointerInfo) => {
       let ray = this.renderer.getScene().createPickingRay(this.renderer.getScene().pointerX, this.renderer.getScene().pointerY, Matrix.Identity(), null);
       const t = (this.height - ray.origin.y) / ray.direction.y;
@@ -72,9 +85,6 @@ export class BotGroundEditorService {
         this.cursor!.position.z = terrainY;
         this.cursor!.rotation.z = 0;
       }
-
-      this.cursor!.material = new SimpleMaterial("Bot ground cursor");
-      (<SimpleMaterial>this.cursor!.material).diffuseColor = new Color3(0.8, 0.6, 0);
 
       const newDecimalPosition = {x: terrainX, y: terrainY};
       if (pointerInfo.event.buttons & 1) {
@@ -145,6 +155,14 @@ export class BotGroundEditorService {
       if (this.cursor) {
         this.cursor.dispose();
         this.cursor = null;
+      }
+      if (this.boxMaterial) {
+        this.boxMaterial.dispose();
+        this.boxMaterial = null;
+      }
+      if (this.cursorMaterial) {
+        this.cursorMaterial.dispose();
+        this.cursorMaterial = null;
       }
       if (this.pointerObservable) {
         this.pointerObservable.remove();
@@ -248,7 +266,17 @@ export class BotGroundEditorService {
     box.position.x = decimalPosition.x;
     box.position.y = this.height + BotGroundEditorService.EDITOR_BOX_Y;
     box.position.z = decimalPosition.y;
+    box.material = this.boxMaterial;
+    this.showBoxEdges(box);
     return box;
+  }
+
+  // Outline each box so adjacent, coplanar box tops stay visually separate
+  // (without edges the emissive faces merge into one flat blue plane).
+  private showBoxEdges(mesh: Mesh) {
+    mesh.enableEdgesRendering();
+    mesh.edgesWidth = 6.0;
+    mesh.edgesColor = new Color4(0.02, 0.08, 0.18, 1);
   }
 
   private setupSlopeBox(xPos: number,
@@ -267,6 +295,8 @@ export class BotGroundEditorService {
     slopeBox.position.z = yPos;
     slopeBox.rotation.y = yRot;
     slopeBox.rotation.z = zRot;
+    slopeBox.material = this.boxMaterial;
+    this.showBoxEdges(slopeBox);
     return slopeBox;
   }
 }

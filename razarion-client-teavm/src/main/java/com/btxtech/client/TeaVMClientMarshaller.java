@@ -428,6 +428,7 @@ public class TeaVMClientMarshaller {
         }
         result.set("houseSpace", config.getHouseSpace());
         result.set("startRazarion", config.getStartRazarion());
+        result.set("maxRazarion", config.getMaxRazarion());
         if (config.getStartBaseItemTypeId() != null) result.set("startBaseItemTypeId", config.getStartBaseItemTypeId().intValue());
         if (config.getGroundConfigId() != null) result.set("groundConfigId", config.getGroundConfigId().intValue());
         return result;

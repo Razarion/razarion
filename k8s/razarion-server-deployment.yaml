@@ -119,6 +119,18 @@ spec:
                 secretKeyRef:
                   name: reddit-ads-secrets
                   key: access-token
+            - name: X_ADS_PIXEL_ID
+              valueFrom:
+                secretKeyRef:
+                  name: x-ads-secrets
+                  key: pixel-id
+                  optional: true
+            - name: X_ADS_PIXEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: x-ads-secrets
+                  key: pixel-token
+                  optional: true
       volumes:
       - name: keystore
         secret:

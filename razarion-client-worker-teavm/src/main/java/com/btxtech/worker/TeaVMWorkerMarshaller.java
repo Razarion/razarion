@@ -1616,6 +1616,7 @@ public final class TeaVMWorkerMarshaller {
         }
         config.setHouseSpace(obj.getInt("houseSpace"));
         config.setStartRazarion(obj.getInt("startRazarion"));
+        config.setMaxRazarion(obj.getInt("maxRazarion"));
         config.setStartBaseItemTypeId(obj.getNullableInt("startBaseItemTypeId"));
         config.setGroundConfigId(obj.getNullableInt("groundConfigId"));
         return config;

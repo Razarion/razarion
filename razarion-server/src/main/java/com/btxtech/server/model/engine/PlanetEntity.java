@@ -36,6 +36,7 @@ public class PlanetEntity extends BaseEntity {
     private Map<BaseItemTypeEntity, Integer> itemTypeLimitation;
     private int houseSpace;
     private int startRazarion;
+    private int maxRazarion;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BaseItemTypeEntity startBaseItemType;
@@ -52,7 +53,8 @@ public class PlanetEntity extends BaseEntity {
                 .internalName(getInternalName())
                 .size(size)
                 .houseSpace(houseSpace)
-                .startRazarion(startRazarion);
+                .startRazarion(startRazarion)
+                .maxRazarion(maxRazarion);
         if (groundConfig != null) {
             planetConfig.setGroundConfigId(groundConfig.getId());
         }
@@ -68,6 +70,7 @@ public class PlanetEntity extends BaseEntity {
         this.groundConfig = groundConfig;
         houseSpace = planetConfig.getHouseSpace();
         startRazarion = planetConfig.getStartRazarion();
+        maxRazarion = planetConfig.getMaxRazarion();
         size = planetConfig.getSize();
         this.startBaseItemType = startBaseItemType;
         if (this.itemTypeLimitation == null) {

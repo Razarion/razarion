@@ -25,15 +25,17 @@ public class PlayerBase {
     private final Character character;
     private final Integer botId;
     private double resources;
+    private double maxRazarion;
     private String name;
     private String userId;
     private boolean abandoned;
 
-    public PlayerBase(int baseId, String name, Character character, double resources, String userId, Integer botId) {
+    public PlayerBase(int baseId, String name, Character character, double resources, double maxRazarion, String userId, Integer botId) {
         this.baseId = baseId;
         this.name = name;
         this.character = character;
         this.resources = resources;
+        this.maxRazarion = maxRazarion;
         this.userId = userId;
         this.botId = botId;
     }
@@ -82,8 +84,20 @@ public class PlayerBase {
         this.resources = resources;
     }
 
+    public double getMaxRazarion() {
+        return maxRazarion;
+    }
+
+    public void setMaxRazarion(double maxRazarion) {
+        this.maxRazarion = maxRazarion;
+    }
+
     public void addResource(double resources) {
         this.resources += resources;
+        // maxRazarion <= 0 means "unlimited"
+        if (maxRazarion > 0 && this.resources > maxRazarion) {
+            this.resources = maxRazarion;
+        }
     }
 
     public boolean withdrawalResource(double amount) {

@@ -224,11 +224,15 @@ public class BaseItemService {
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("createBaseMaster: Base with Id already exits: " + lastBaseItId);
             }
-            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, unlockedItemLimit, userId, botId);
+            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, getMaxRazarion(), levelId, unlockedItemLimit, userId, botId);
             bases.put(lastBaseItId, playerBase);
         }
         gameLogicService.onBaseCreated(playerBase);
         return playerBase;
+    }
+
+    private double getMaxRazarion() {
+        return planetConfig != null ? planetConfig.getMaxRazarion() : 0;
     }
 
     public void createBaseSlave(PlayerBaseInfo playerBaseInfo) {
@@ -240,6 +244,7 @@ public class BaseItemService {
                     playerBaseInfo.getName(),
                     playerBaseInfo.getCharacter(),
                     playerBaseInfo.getResources(),
+                    getMaxRazarion(),
                     playerBaseInfo.getUserId(),
                     playerBaseInfo.getBotId());
             bases.put(playerBaseInfo.getBaseId(), playerBase);
@@ -754,6 +759,7 @@ public class BaseItemService {
                             baseRestoreProvider.getName(playerBaseInfo),
                             playerBaseInfo.getCharacter(),
                             playerBaseInfo.getResources(),
+                            getMaxRazarion(),
                             baseRestoreProvider.getLevel(playerBaseInfo),
                             baseRestoreProvider.getUnlockedItemLimit(playerBaseInfo),
                             playerBaseInfo.getUserId(),

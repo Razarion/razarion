@@ -320,6 +320,7 @@ public class JsonDeserializer {
         r.setItemTypeLimitation(intIntMap(json, "itemTypeLimitation"));
         r.setHouseSpace(json.getInt("houseSpace"));
         r.setStartRazarion(json.getInt("startRazarion"));
+        r.setMaxRazarion(json.getInt("maxRazarion"));
         r.setStartBaseItemTypeId(json.getNullableInt("startBaseItemTypeId"));
         r.setGroundConfigId(json.getNullableInt("groundConfigId"));
         return r;

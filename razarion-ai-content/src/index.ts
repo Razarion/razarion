@@ -229,7 +229,7 @@ server.tool(
 
 server.tool(
   "read_planet",
-  "Read a specific planet config. Fields: size, itemTypeLimitation, houseSpace, startRazarion, startBaseItemTypeId, groundConfigId",
+  "Read a specific planet config. Fields: size, itemTypeLimitation, houseSpace, startRazarion, maxRazarion (per-player Razarion cap; 0 = unlimited), startBaseItemTypeId, groundConfigId",
   { id: z.number().describe("Planet config ID") },
   async ({ id }) => ok(await apiGet(`/rest/editor/planet/read/${id}`))
 );

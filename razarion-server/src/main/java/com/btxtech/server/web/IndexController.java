@@ -1,40 +1,30 @@
 package com.btxtech.server.web;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class IndexController {
     @GetMapping("/")
-    public String index(
-            @RequestParam(required = false) String utm_campaign,
-            @RequestParam(required = false) String utm_source,
-            @RequestParam(required = false) String rdt_cid,
-            Model model) {
-        StringBuilder qs = new StringBuilder();
-        if (utm_campaign != null) {
-            qs.append("utm_campaign=").append(utm_campaign);
-        }
-        if (utm_source != null) {
-            if (!qs.isEmpty()) {
-                qs.append("&");
-            }
-            qs.append("utm_source=").append(utm_source);
-        }
-        if (rdt_cid != null) {
-            if (!qs.isEmpty()) {
-                qs.append("&");
-            }
-            qs.append("rdt_cid=").append(rdt_cid);
-        }
-
-        if (!qs.isEmpty()) {
-            qs.insert(0, "?");
-        }
-
-        model.addAttribute("qs", qs.toString());
+    public String index(HttpServletRequest request, Model model) {
+        // Forward the complete raw query string (already URL-encoded) so that any campaign
+        // parameter (utm_*, rdt_cid, twclid, ...) is preserved and passed on to the tracking
+        // pixel (/t.gif) and the "Play Now" link (/game). RequestInfoLoggingFilter then logs them.
+        String queryString = request.getQueryString();
+        model.addAttribute("qs", sanitizeQueryString(queryString));
         return "index";
+    }
+
+    // qs is reflected into an HTML attribute and a JS string literal in index.ftl. A correctly
+    // percent-encoded query string never contains these characters unencoded, so stripping them
+    // does not corrupt legitimate values but prevents reflected-XSS breakout from crafted URLs.
+    private static String sanitizeQueryString(String queryString) {
+        if (queryString == null || queryString.isEmpty()) {
+            return "";
+        }
+        String cleaned = queryString.replaceAll("[\"'<>`\\s\\\\]", "");
+        return cleaned.isEmpty() ? "" : "?" + cleaned;
     }
 }
