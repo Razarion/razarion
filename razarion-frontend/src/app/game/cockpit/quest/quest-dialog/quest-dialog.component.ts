@@ -84,6 +84,15 @@ export class QuestDialogComponent implements OnInit {
   }
 
   private setupDescription(questConfig: QuestConfig): string {
+    let description = this.setupConditionDescription(questConfig);
+    const timeSeconds = questConfig.conditionConfig.comparisonConfig.timeSeconds;
+    if (timeSeconds) {
+      description += ` for ${timeSeconds} seconds`;
+    }
+    return description;
+  }
+
+  private setupConditionDescription(questConfig: QuestConfig): string {
     switch (questConfig.conditionConfig.conditionTrigger!) {
       case ConditionTrigger.SYNC_ITEM_KILLED: {
         return this.specificOrCount("units or buildings destroyed", "destroyed", questConfig);

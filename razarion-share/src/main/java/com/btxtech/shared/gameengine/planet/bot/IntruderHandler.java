@@ -38,15 +38,17 @@ public class IntruderHandler {
     private Map<SyncBaseItem, BotSyncBaseItem> intruders = new HashMap<>();
     private BotEnragementState botEnragementState;
     private PlaceConfig region;
+    private boolean autoAttack;
 
     @Inject
     public IntruderHandler(SyncItemContainerServiceImpl syncItemContainerService) {
         this.syncItemContainerService = syncItemContainerService;
     }
 
-    public void init(BotEnragementState botEnragementState, PlaceConfig region) {
+    public void init(BotEnragementState botEnragementState, PlaceConfig region, boolean autoAttack) {
         this.botEnragementState = botEnragementState;
         this.region = region;
+        this.autoAttack = autoAttack;
     }
 
     public PlaceConfig getRegion() {
@@ -54,26 +56,30 @@ public class IntruderHandler {
     }
 
     public void handleIntruders(PlayerBase playerBase) {
-        removeDeadAttackers();
         Collection<SyncBaseItem> items = syncItemContainerService.findEnemyItems(playerBase, region);
-        Map<SyncBaseItem, BotSyncBaseItem> oldIntruders = intruders;
-        intruders = new HashMap<>();
-        Collection<SyncBaseItem> newIntruders = new ArrayList<>();
-        for (SyncBaseItem intruder : items) {
-            BotSyncBaseItem attacker = oldIntruders.remove(intruder);
-            if (attacker != null) {
-                intruders.put(intruder, attacker);
-            } else {
-                newIntruders.add(intruder);
+        // Only auto-attack bots actively assign attackers to intruders. Passive bots skip this but still
+        // run the enragement handling below so they de-enrage back to normal once the realm is clear.
+        if (autoAttack) {
+            removeDeadAttackers();
+            Map<SyncBaseItem, BotSyncBaseItem> oldIntruders = intruders;
+            intruders = new HashMap<>();
+            Collection<SyncBaseItem> newIntruders = new ArrayList<>();
+            for (SyncBaseItem intruder : items) {
+                BotSyncBaseItem attacker = oldIntruders.remove(intruder);
+                if (attacker != null) {
+                    intruders.put(intruder, attacker);
+                } else {
+                    newIntruders.add(intruder);
+                }
             }
-        }
 
-        if (!newIntruders.isEmpty()) {
-            putAttackerToIntruders(newIntruders);
-        }
+            if (!newIntruders.isEmpty()) {
+                putAttackerToIntruders(newIntruders);
+            }
 
-        for (BotSyncBaseItem botSyncBaseItem : oldIntruders.values()) {
-            botSyncBaseItem.stop();
+            for (BotSyncBaseItem botSyncBaseItem : oldIntruders.values()) {
+                botSyncBaseItem.stop();
+            }
         }
         botEnragementState.handleIntruders(items, playerBase);
     }

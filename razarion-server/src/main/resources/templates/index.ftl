@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Razarion – Open-World Browser RTS powered by WebAssembly</title>
+    <title>Razarion – RTS meets MMO: One World That Never Stops</title>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Open-world browser RTS inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. No download — runs in your browser via WebAssembly. Open-source and community-driven.">
+    <meta name="description" content="RTS meets MMO: one shared world that never stops. Inspired by Command &amp; Conquer and StarCraft — persistent shared world, quests and levels. Play free in your browser via WebAssembly, no download. Open-source and community-driven.">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/augmented-ui@2/augmented-ui.min.css">
 
     <!-- Open Graph Tags -->
-    <meta property="og:title" content="Razarion – Open-World Browser RTS powered by WebAssembly">
-    <meta property="og:description" content="Open-world browser RTS inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. No download — runs in your browser via WebAssembly. Open-source and community-driven.">
+    <meta property="og:title" content="Razarion – RTS meets MMO: One World That Never Stops">
+    <meta property="og:description" content="RTS meets MMO: one shared world that never stops. Inspired by Command &amp; Conquer and StarCraft — persistent shared world, quests and levels. Play free in your browser via WebAssembly, no download. Open-source and community-driven.">
     <meta property="og:image" content="https://razarion.com/card.jpg">
     <meta property="og:url" content="https://razarion.com">
     <meta property="og:type" content="website">
@@ -20,8 +20,8 @@
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@AloRtsDev">
-    <meta name="twitter:title" content="Razarion – Open-World Browser RTS powered by WebAssembly">
-    <meta name="twitter:description" content="Open-world browser RTS inspired by Command &amp; Conquer and StarCraft. Persistent shared world, quests and levels. No download — runs in your browser via WebAssembly. Open-source and community-driven.">
+    <meta name="twitter:title" content="Razarion – RTS meets MMO: One World That Never Stops">
+    <meta name="twitter:description" content="RTS meets MMO: one shared world that never stops. Inspired by Command &amp; Conquer and StarCraft — persistent shared world, quests and levels. Play free in your browser via WebAssembly, no download. Open-source and community-driven.">
     <meta name="twitter:image" content="https://razarion.com/card.jpg">
 
     <style>
@@ -56,7 +56,9 @@
             animation:panelGlow 3.5s ease-in-out infinite
         }
 
-        .tagline{position:relative;z-index:1;font-size:clamp(1rem,2.8vw,1.35rem);color:#fff;margin-bottom:1.2rem;padding-bottom:1rem;width:100%;text-transform:uppercase;letter-spacing:0.22em;font-weight:800;border-bottom:1px solid rgba(255,119,51,0.5);animation:titleShimmer 2.8s ease-in-out infinite}
+        .tagline{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;color:#fff;margin-bottom:1.2rem;padding-bottom:1rem;width:100%;text-transform:uppercase;border-bottom:1px solid rgba(255,119,51,0.5);animation:titleShimmer 2.8s ease-in-out infinite}
+        .tagline-main{font-size:clamp(1.4rem,4vw,2rem);letter-spacing:0.22em;font-weight:800;line-height:1.1}
+        .tagline-sub{font-size:clamp(0.72rem,1.9vw,0.95rem);letter-spacing:0.16em;font-weight:600;margin-top:0.5rem;opacity:0.85}
 
         @keyframes pulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,119,85,0.8),0 0 0 0 rgba(80,200,255,0.4)}70%{transform:scale(1.07);box-shadow:0 0 12px 16px rgba(255,119,85,0),0 0 18px 24px rgba(80,200,255,0)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,119,85,0),0 0 0 0 rgba(80,200,255,0)}}
         .button{all:unset;position:relative;z-index:1;cursor:pointer;background:linear-gradient(110deg,#f85 0%,#f73 40%,#fc6 50%,#f73 60%,#a41 100%);background-size:250% 100%;border:1px solid #c52;padding:14px 44px;color:#fff;font-size:1.3rem;font-weight:900;text-align:center;clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%);transition:transform 0.2s ease,filter 0.2s ease;animation:pulse 1.8s infinite,btnShine 3s linear infinite;letter-spacing:0.18em;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.8),0 0 14px rgba(255,180,80,0.7)}
@@ -92,7 +94,7 @@
     <section class="landing">
         <h1 class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0">RAZARION</h1>
         <div class="info-panel" data-augmented-ui="tl-clip tr-clip br-clip bl-clip both">
-            <p class="tagline">Open-world browser RTS</p>
+            <p class="tagline"><span class="tagline-main">RTS meets MMO</span><span class="tagline-sub">One shared world that never stops</span></p>
             <button class="button" onclick="location.href='/game${qs}'">Play Now</button>
             <ul class="features">
                 <li>RTS mechanics like Command & Conquer and StarCraft</li>

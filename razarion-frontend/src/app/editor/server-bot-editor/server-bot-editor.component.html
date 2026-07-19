@@ -252,6 +252,11 @@
                                               <th class="p-1 font-semibold">Count</th>
                                               <th class="p-1 font-semibold">Re pop [ms]</th>
                                               <th class="p-1 font-semibold" title="Create directly">Direct</th>
+                                              <th class="p-1 font-semibold" title="Spawn without spawn animation">No spawn</th>
+                                              <th class="p-1 font-semibold" title="Move into the realm when idle and outside of it">Move realm</th>
+                                              <th class="p-1 font-semibold" title="Do not rebuild after the item was killed">No rebuild</th>
+                                              <th class="p-1 font-semibold" title="Destroy the item after being idle for this time">Idle TTL [ms]</th>
+                                              <th class="p-1 font-semibold" title="Spawn angle [rad]">Angle</th>
                                               <th class="p-1 font-semibold" title="Spawn near center">Center</th>
                                               <th class="p-1 font-semibold">Spawn place</th>
                                               <th class="p-1 font-semibold">Spread place</th>
@@ -274,6 +279,23 @@
                                                 </td>
                                                 <td class="p-1 text-center">
                                                   <p-checkbox [(ngModel)]="botItem.createDirectly" [binary]="true"></p-checkbox>
+                                                </td>
+                                                <td class="p-1 text-center">
+                                                  <p-checkbox [(ngModel)]="botItem.noSpawn" [binary]="true"></p-checkbox>
+                                                </td>
+                                                <td class="p-1 text-center">
+                                                  <p-checkbox [(ngModel)]="botItem.moveRealmIfIdle" [binary]="true"></p-checkbox>
+                                                </td>
+                                                <td class="p-1 text-center">
+                                                  <p-checkbox [(ngModel)]="botItem.noRebuild" [binary]="true"></p-checkbox>
+                                                </td>
+                                                <td class="p-1">
+                                                  <p-inputNumber inputId="integeronly" [(ngModel)]="botItem.idleTtl"
+                                                  inputStyleClass="!w-20"></p-inputNumber>
+                                                </td>
+                                                <td class="p-1">
+                                                  <p-inputNumber [(ngModel)]="botItem.angle" [maxFractionDigits]="3"
+                                                  inputStyleClass="!w-20"></p-inputNumber>
                                                 </td>
                                                 <td class="p-1 text-center">
                                                   <p-checkbox [(ngModel)]="botItem.placeNearCenter" [binary]="true"></p-checkbox>

@@ -75,6 +75,7 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
   wireframe: boolean = false;
   showTerrainType: boolean = false;
   showMaterialIndex: boolean = false;
+  showWater: boolean = true;
   private pointerObservable: Nullable<Observer<PointerInfo>> = null;
   private planetConfig: PlanetConfig;
   private editorTerrainTiles: EditorTerrainTile[][] = [];
@@ -225,6 +226,10 @@ export class HeightMapTerrainEditorComponent implements AfterViewInit, OnDestroy
         }
       }
     }
+  }
+
+  onShowWaterChanged(): void {
+    this.renderService.setWaterVisible(this.showWater);
   }
 
   private registerInputEvents() {

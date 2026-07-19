@@ -1,5 +1,5 @@
 <!-- GitAds-Verify: 9OIQBOZC2N87GYYK16MSJT88ZD9Q31GY -->
-# Razarion – Open-World RTS in the Browser, powered by WebAssembly
+# Razarion – RTS meets MMO: One shared world that never stops
 
 **Razarion** is a browser-based, open-source real-time strategy (RTS) game powered by WebAssembly where **all players share one persistent planet**.
 No registration. No installation. Just play.

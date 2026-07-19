@@ -221,9 +221,13 @@ public class BotRunner {
         synchronized (syncObject) {
             botEnragementState = enragementStateInstance.get();
             botEnragementState.init(botConfig.getBotEnragementStateConfigs(), botConfig.getRealm(), botConfig.getName(), botConfig.getInternalName(), botConfig.isGroundBoxEnabled(), getEnragementStateListener());
-            if (botConfig.isAutoAttack()) {
+            // The intruder handler is needed even for non-auto-attack bots: it is the only place that
+            // de-enrages the bot back to normal once its realm is clear of enemies. Enrage-up happens for
+            // every bot (BotService.onKill), so without this a passive bot would rage up and never return.
+            // The actual attacking of intruders stays gated behind autoAttack inside the handler.
+            if (botConfig.getRealm() != null) {
                 intruderHandler = intruderHandlerInstance.get();
-                intruderHandler.init(botEnragementState, botConfig.getRealm());
+                intruderHandler.init(botEnragementState, botConfig.getRealm(), botConfig.isAutoAttack());
             }
         }
         killBotThread();

@@ -9,15 +9,15 @@
                   optionLabel="label" optionValue="value"></p-selectButton>
 </div>
 
-<div class="grid grid-cols-12 gap-1 p-1">
-  <span class="col-span-5">Object</span>
-  <div class="col-span-7">
-    <p-select [appendTo]="'body'" [options]="terrainObjectConfigs" [(ngModel)]="newTerrainObjectConfig"
-    optionLabel="name"></p-select>
-  </div>
-</div>
-
 @if (brushMode === 'EDIT') {
+  <div class="grid grid-cols-12 gap-1 p-1">
+    <span class="col-span-5">Object</span>
+    <div class="col-span-7">
+      <p-select [appendTo]="'body'" [options]="terrainObjectConfigs" [(ngModel)]="newTerrainObjectConfig"
+      optionLabel="name"></p-select>
+    </div>
+  </div>
+
   <p-divider align="left">
     <div class="inline-flex items-center">
       <i class="pi pi-plus-circle mr-2"></i>
@@ -97,12 +97,6 @@
     <span class="col-span-5">Radius [m]</span>
     <div class="col-span-7">
       <p-inputNumber [(ngModel)]="deleteBrush.radius" [min]="1" [max]="500" [step]="1" [showButtons]="true"></p-inputNumber>
-    </div>
-  </div>
-  <div class="grid grid-cols-12 gap-1 p-1">
-    <span class="col-span-5">Only selected type</span>
-    <div class="col-span-7">
-      <p-checkbox [(ngModel)]="deleteBrush.onlySelectedType" [binary]="true"></p-checkbox>
     </div>
   </div>
 }

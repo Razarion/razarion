@@ -103,7 +103,7 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
     }
 
     @Test
-    @Ignore // TODO Quest time needs to be fixed
+    @Ignore // Integration harness hangs in tickPlanetServicePathingActive (units never settle); timer logic covered by PositionTimerUnitTest
     public void positionTime() {
         setup();
         // Create user

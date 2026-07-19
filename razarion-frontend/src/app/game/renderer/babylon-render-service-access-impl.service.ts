@@ -118,6 +118,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   public terrainObjectActionManager!: ActionManager;
   private editorTerrainTileContainer: BabylonTerrainTileImpl[] = [];
   private editorTerrainTileCreationCallback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined;
+  // Editor water toggle: applied to every existing tile and remembered so tiles streamed in later
+  // (createTerrainTile) inherit the current state.
+  private waterVisible: boolean = true;
   private interpolationListeners: BabylonBaseItemImpl[] = [];
   private babylonBaseItems: BabylonBaseItemImpl[] = [];
   private babylonResourceItems: BabylonResourceItemImpl[] = [];
@@ -446,6 +449,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.threeJsWaterRenderService);
       if (this.editorTerrainTileCreationCallback) {
         this.editorTerrainTileCreationCallback(babylonTerrainTileImpl);
+      }
+      if (!this.waterVisible) {
+        babylonTerrainTileImpl.setWaterVisible(false);
       }
       this.editorTerrainTileContainer.push(babylonTerrainTileImpl);
       return babylonTerrainTileImpl;
@@ -1263,6 +1269,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   getAllBabylonTerrainTile(): BabylonTerrainTileImpl[] {
     return this.editorTerrainTileContainer;
+  }
+
+  setWaterVisible(visible: boolean): void {
+    this.waterVisible = visible;
+    this.editorTerrainTileContainer.forEach(tile => tile.setWaterVisible(visible));
+  }
+
+  isWaterVisible(): boolean {
+    return this.waterVisible;
   }
 
   public getBabylonBaseItemById(syncBaseItemTypeId: number): BabylonBaseItemImpl | null {

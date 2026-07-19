@@ -70,7 +70,12 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   public readonly container: TransformNode;
   private readonly groundMesh: Mesh;
   private waterMesh: Mesh | null = null;
+  private whitecapMesh: Mesh | null = null;
   private waterResources: WaterTileResources | null = null;
+  // Editor toggle: when false the water + whitecap meshes are hidden so the terrain relief under the
+  // sea is visible. Stored on the tile because water is built lazily in phase 4 — tiles streamed in
+  // after the toggle was flipped must adopt the current state (applied in buildPhase4_WaterAndObjects).
+  private waterVisible: boolean = true;
   private groundMaterial: NodeMaterial | null = null;
   // The 4 per-zone sprite managers (each up to ~2500 sprites). Stored so removeFromScene can pull
   // them out of scene.spriteManagers (they are scene-level, NOT children of the container) and
@@ -280,6 +285,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     this.waterResources = this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container, this.uv2GroundHeightMap, this.rendererService);
     this.waterMesh = this.waterResources.waterMesh;
+    this.whitecapMesh = this.waterResources.whitecapMesh;
+    this.applyWaterVisibility();
 
     if (terrainTile.getTerrainTileObjectLists()) {
       this.setupTerrainTileObjects(terrainTile.getTerrainTileObjectLists());
@@ -519,6 +526,20 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
   getGroundMesh(): Mesh {
     return this.groundMesh;
+  }
+
+  setWaterVisible(visible: boolean): void {
+    this.waterVisible = visible;
+    this.applyWaterVisibility();
+  }
+
+  private applyWaterVisibility(): void {
+    if (this.waterMesh) {
+      this.waterMesh.setEnabled(this.waterVisible);
+    }
+    if (this.whitecapMesh) {
+      this.whitecapMesh.setEnabled(this.waterVisible);
+    }
   }
 
   updateGroundTypeTexture(positions: number[]): void {

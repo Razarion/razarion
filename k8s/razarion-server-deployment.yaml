@@ -131,6 +131,36 @@ spec:
                   name: x-ads-secrets
                   key: pixel-token
                   optional: true
+            - name: X_ADS_EVENT_PAGE_VISIT
+              valueFrom:
+                secretKeyRef:
+                  name: x-ads-secrets
+                  key: event-page-visit
+                  optional: true
+            - name: X_ADS_EVENT_CLIENT_STARTUP
+              valueFrom:
+                secretKeyRef:
+                  name: x-ads-secrets
+                  key: event-client-startup
+                  optional: true
+            - name: X_ADS_EVENT_BUILDER_DEPLOYED
+              valueFrom:
+                secretKeyRef:
+                  name: x-ads-secrets
+                  key: event-builder-deployed
+                  optional: true
+            - name: X_ADS_EVENT_QUEST_PASSED
+              valueFrom:
+                secretKeyRef:
+                  name: x-ads-secrets
+                  key: event-quest-passed
+                  optional: true
+            - name: X_ADS_EVENT_LEVEL_UP
+              valueFrom:
+                secretKeyRef:
+                  name: x-ads-secrets
+                  key: event-level-up
+                  optional: true
       volumes:
       - name: keystore
         secret:

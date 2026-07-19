@@ -38,7 +38,6 @@ import {Button} from 'primeng/button';
 import {Divider} from 'primeng/divider';
 import {SelectButton} from 'primeng/selectbutton';
 import {InputNumber} from 'primeng/inputnumber';
-import {Checkbox} from 'primeng/checkbox';
 import {FormsModule} from '@angular/forms';
 import {Select} from 'primeng/select';
 import {MultiSelect} from 'primeng/multiselect';
@@ -76,7 +75,6 @@ class ScatterPreset {
     SelectButton,
     TerrainObjectPositionComponent,
     InputNumber,
-    Checkbox,
     FormsModule,
     Select,
     MultiSelect

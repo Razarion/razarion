@@ -16,6 +16,8 @@ export class NoiseBrushValues {
   zoom: number = 50;
   octaves: number = 4;
   seed: number = 42;
+  minHeight: number = -20;
+  maxHeight: number = 50;
 }
 
 @Component({
@@ -75,6 +77,22 @@ export class NoiseBrushValues {
       <div class="col-span-7">
         <input type="number" [(ngModel)]="brushValues.seed" class="w-full"/>
         <p-slider [(ngModel)]="brushValues.seed" [step]="1" [min]="0" [max]="9999"></p-slider>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Min height [m]</span>
+      <div class="col-span-7">
+        <input type="number" [(ngModel)]="brushValues.minHeight" [step]="0.01" class="w-full"/>
+        <p-slider [(ngModel)]="brushValues.minHeight" [step]="0.01" [min]="-20" [max]="50"></p-slider>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-1 p-1">
+      <span class="col-span-5">Max height [m]</span>
+      <div class="col-span-7">
+        <input type="number" [(ngModel)]="brushValues.maxHeight" [step]="0.01" class="w-full"/>
+        <p-slider [(ngModel)]="brushValues.maxHeight" [step]="0.01" [min]="-20" [max]="50"></p-slider>
       </div>
     </div>
   `
@@ -144,7 +162,8 @@ export class NoiseBrushComponent extends AbstractBrush implements OnInit, OnDest
     const edgeFalloff = Math.max(0, 1 - distance / radius);
     const smoothFalloff = edgeFalloff * edgeFalloff * (3 - 2 * edgeFalloff); // smoothstep
 
-    return oldPosition.y + noiseValue * this.brushValues.amplitude * smoothFalloff;
+    const height = oldPosition.y + noiseValue * this.brushValues.amplitude * smoothFalloff;
+    return Math.min(this.brushValues.maxHeight, Math.max(this.brushValues.minHeight, height));
   }
 
   override showCursor() {

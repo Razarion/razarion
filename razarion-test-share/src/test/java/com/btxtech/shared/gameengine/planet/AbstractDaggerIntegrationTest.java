@@ -116,7 +116,7 @@ public class AbstractDaggerIntegrationTest {
     }
 
     public QuestService getQuestService() {
-        return getWeldBean(QuestService.class);
+        return testShareDagger.questService();
     }
 
     public BoxService getBoxService() {

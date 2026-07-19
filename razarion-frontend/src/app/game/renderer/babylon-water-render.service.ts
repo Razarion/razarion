@@ -24,6 +24,7 @@ import {buildWhitecapMaterial} from "./whitecap-material";
  */
 export interface WaterTileResources {
   waterMesh: Mesh;
+  whitecapMesh: Mesh;
   dispose(): void;
 }
 
@@ -94,6 +95,7 @@ export class BabylonWaterRenderService {
 
     return {
       waterMesh: water,
+      whitecapMesh: whitecaps,
       dispose: () => {
         // Whitecap material is built fresh per tile (buildWhitecapMaterial) — dispose it and its
         // textures; its onDispose hook removes the per-frame whitecap animation observer.
