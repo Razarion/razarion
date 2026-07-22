@@ -42,6 +42,9 @@ public class TeaVMLifecycleService {
     private final SimpleExecutorService simpleExecutorService;
     private final TeaVMGwtAngularService gwtAngularService;
     private boolean beforeUnload;
+    // True once the server announced a restart, so a following disconnect can be explained as
+    // "server is restarting" rather than a generic connection loss.
+    private boolean serverRestartAnnounced;
 
     @Inject
     public TeaVMLifecycleService(TeaVMGwtAngularService gwtAngularService,
@@ -104,6 +107,10 @@ public class TeaVMLifecycleService {
         switch (lifecyclePacket.getType()) {
             case HOLD:
                 clearAndHold(null);
+                if (lifecyclePacket.getDialog() == LifecyclePacket.Dialog.PLANET_RESTART) {
+                    // The planet restarts within seconds; tell the player instead of just freezing.
+                    gwtAngularService.onServerUnavailable(true);
+                }
                 break;
             case RESTART:
                 handleServerRestart();
@@ -115,8 +122,25 @@ public class TeaVMLifecycleService {
             case PLANET_RESTART_COLD:
                 JsWindow.reload();
                 break;
+            case SERVER_RESTART_ANNOUNCEMENT:
+                onServerRestartAnnouncement(lifecyclePacket.getRestartInSeconds());
+                break;
             default:
                 throw new IllegalArgumentException("TeaVMLifecycleService.onLifecyclePacket() Unknown type: " + lifecyclePacket.getType());
+        }
+    }
+
+    /**
+     * The server is going down in the given number of seconds. Nothing is stopped here on purpose:
+     * the player keeps playing until the connection actually drops.
+     */
+    private void onServerRestartAnnouncement(Integer restartInSeconds) {
+        if (restartInSeconds == null) {
+            serverRestartAnnounced = false;
+            gwtAngularService.onServerRestartCancelled();
+        } else {
+            serverRestartAnnounced = true;
+            gwtAngularService.onServerRestartAnnounced(restartInSeconds);
         }
     }
 
@@ -126,6 +150,7 @@ public class TeaVMLifecycleService {
         }
         clearAndHold(null);
         gameUiControl.closeConnection();
+        gwtAngularService.onServerUnavailable(true);
     }
 
     public void clearAndHold(DeferredStartup deferredStartup) {
@@ -142,8 +167,18 @@ public class TeaVMLifecycleService {
         terrainUiService.clear();
     }
 
+    /**
+     * Reached after the web socket wrapper gave up reconnecting. The game cannot continue without
+     * the server, so everything is stopped and Angular takes over: it shows a blocking overlay and
+     * reloads the page as soon as the server answers again. A crash and an unannounced restart look
+     * identical from here, which is fine — the recovery is the same.
+     */
     public void onConnectionLost(String websocketName) {
-        JsConsole.error("Connection lost on websocket: '" + websocketName + "'. Restarting browser");
-        // TODO: implement proper reconnection/restart logic
+        if (beforeUnload) {
+            return;
+        }
+        JsConsole.error("Connection lost on websocket: '" + websocketName + "'");
+        clearAndHold(null);
+        gwtAngularService.onServerUnavailable(serverRestartAnnounced);
     }
 }

@@ -64,6 +64,14 @@ public class BaseEnergy {
         }
         consuming = newConsuming;
         generating = newGenerating;
+        // Hard, all-or-nothing per base: every consumer operates only if the base generates
+        // at least as much as it consumes. Read by SyncBaseItem.tick() to gate abilities.
+        boolean operating = generating >= consuming;
+        synchronized (syncObject) {
+            for (SyncConsumer syncConsumer : syncConsumers) {
+                syncConsumer.setOperationState(operating);
+            }
+        }
         gameLogicService.onEnergyStateChanged(base, consuming, generating);
     }
 

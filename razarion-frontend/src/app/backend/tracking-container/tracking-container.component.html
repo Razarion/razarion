@@ -37,15 +37,28 @@
       <p-button icon="pi pi-sync"
                 (onClick)="load()"/>
     </div>
+    <div class="basis-3xs">Platform
+      <p-select
+        [options]="platformOptions"
+        [(ngModel)]="platform"
+        (onChange)="onPlatformChange()"
+        optionLabel="name"
+        optionValue="value"
+        class="w-full md:w-56"/>
+    </div>
   </div>
   <p-tabs value="0">
     <p-tablist>
       <p-tab value="0">
-        <i class="pi pi-reddit p-1"></i>
+        <i class="pi p-1" [ngClass]="platform === 'rdtCid' ? 'pi-reddit' : 'pi-twitter'"></i>
         <span>Statistics</span>
       </p-tab>
+      <p-tab value="4">
+        <i class="pi p-1" [ngClass]="platform === 'rdtCid' ? 'pi-reddit' : 'pi-twitter'"></i>
+        <span>Daily</span>
+      </p-tab>
       <p-tab value="1">
-        <i class="pi pi-reddit p-1"></i>
+        <i class="pi p-1" [ngClass]="platform === 'rdtCid' ? 'pi-reddit' : 'pi-twitter'"></i>
         <span>History</span>
       </p-tab>
       <p-tab value="2">Users</p-tab>
@@ -66,6 +79,43 @@
               <td>{{ progressStatistic.name }}</td>
               <td>{{ progressStatistic.count }}</td>
               <td>{{ progressStatistic.percent !== undefined ? progressStatistic.percent + "%" : "-" }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+      <p-tabpanel value="4">
+        <div class="flex flex-row items-center gap-2 pb-2">
+          <span>Last 10 days, only visitors carrying the selected platform's click id. Base and
+            levels are attributed over the whole history (click id &rarr; session &rarr; user), so a
+            player who clicked the ad weeks ago still counts towards that platform. Click a legend
+            entry to hide that stage &ndash; hiding Home rescales the axis and brings out the
+            deeper levels.</span>
+          <p-button icon="pi pi-sync" size="small" (onClick)="loadDailyProgress()"/>
+        </div>
+        <div class="daily-chart">
+          <p-chart type="bar" [data]="dailyChartData" [options]="chartOptions"></p-chart>
+        </div>
+        <p-table [value]="dailyProgresses">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Day</th>
+              <th>Home</th>
+              <th>Game</th>
+              <th>Initial Base created</th>
+              @for (level of dailyLevels; track level) {
+                <th>Level {{ level }}</th>
+              }
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-dailyProgress>
+            <tr>
+              <td>{{ dailyProgress.day }}</td>
+              <td>{{ dailyProgress.home }}</td>
+              <td>{{ dailyProgress.game }}</td>
+              <td>{{ dailyProgress.initialBaseCreated }}</td>
+              @for (level of dailyLevels; track level) {
+                <td>{{ levelUp(dailyProgress, level) }}</td>
+              }
             </tr>
           </ng-template>
         </p-table>

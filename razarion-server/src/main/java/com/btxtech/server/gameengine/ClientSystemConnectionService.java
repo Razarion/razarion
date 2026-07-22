@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,13 +42,17 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
     private final Provider<ClientSystemConnection> provider;
     private final Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter;
     private final UserService userService;
+    // ObjectProvider breaks the cycle: the announcement service sends through this service.
+    private final ObjectProvider<ServerRestartAnnouncementService> serverRestartAnnouncementService;
 
     public ClientSystemConnectionService(Provider<ClientSystemConnection> provider,
                                          Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter,
-                                         UserService userService) {
+                                         UserService userService,
+                                         ObjectProvider<ServerRestartAnnouncementService> serverRestartAnnouncementService) {
         this.provider = provider;
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
         this.userService = userService;
+        this.serverRestartAnnouncementService = serverRestartAnnouncementService;
     }
 
     @Override
@@ -66,6 +71,13 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
         }
 
         userService.onClientSystemConnectionOpened(userId);
+
+        // A player joining while a restart countdown is running must see it too.
+        try {
+            serverRestartAnnouncementService.getObject().onSystemConnectionOpened(userId);
+        } catch (Throwable throwable) {
+            logger.warn(throwable.getMessage(), throwable);
+        }
 
         // TODO connectionTrackingPersistence.onSystemConnectionOpened(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
@@ -126,6 +138,10 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
 
     public void sendLifecyclePacket(LifecyclePacket lifecyclePacket) {
         sendToClients(SystemConnectionPacket.LIFECYCLE_CONTROL, lifecyclePacket);
+    }
+
+    public void sendLifecyclePacket(String userId, LifecyclePacket lifecyclePacket) {
+        sendToClient(userId, SystemConnectionPacket.LIFECYCLE_CONTROL, lifecyclePacket);
     }
 
     public void sendChatMessage(ChatMessage chatMessage) {

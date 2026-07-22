@@ -1,0 +1,11 @@
+// No fixed height here on purpose: p-chart leaves the canvas without a resolved height, so the
+// chart sizes itself from its width via aspectRatio and the block grows with its content.
+.daily-chart {
+  padding-bottom: 1rem;
+}
+
+.chart-title {
+  color: var(--p-text-muted-color, #898781);
+  font-size: 0.875rem;
+  padding-bottom: 0.25rem;
+}

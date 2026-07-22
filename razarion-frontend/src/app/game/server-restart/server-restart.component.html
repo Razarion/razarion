@@ -1,0 +1,47 @@
+@if (secondsLeft !== undefined && !serverDown) {
+  <div class="restart-banner">
+    <i class="pi pi-exclamation-triangle restart-banner-icon"></i>
+    <div class="restart-banner-text">
+      <div class="restart-banner-title">Server restart in {{ countdownText }}</div>
+      <div class="restart-banner-subtitle">
+        @if (losesBase) {
+          <span class="restart-warning">
+            Unregistered players lose their base and have to start over from scratch.
+          </span>
+          <span>Register now to keep your base and continue where you left off.</span>
+        } @else {
+          Your game continues right where you left off.
+        }
+      </div>
+    </div>
+    @if (losesBase) {
+      <p-button label="Register now" size="small" (onClick)="onRegisterClicked()"></p-button>
+    }
+  </div>
+}
+
+@if (serverDown) {
+  <div class="restart-overlay">
+    <div class="restart-overlay-box">
+      <div class="restart-overlay-title">
+        {{ serverRestarting ? 'Server is restarting' : 'Connection lost' }}
+      </div>
+      <div class="restart-overlay-text">
+        @if (serverRestarting) {
+          <div>The game reconnects automatically as soon as the server is back.</div>
+        } @else {
+          <div>Trying to reach the server again...</div>
+        }
+        @if (losesBase) {
+          <div class="restart-warning">
+            You are not registered: your base is lost and you have to start over from
+            scratch. Register after the restart so this does not happen again.
+          </div>
+        }
+      </div>
+      <div class="restart-overlay-spinner">
+        <i class="pi pi-spin pi-spinner"></i>
+      </div>
+    </div>
+  </div>
+}

@@ -8,6 +8,7 @@ public class StartupTerminatedJson {
     private String gameSessionUuid;
     private Date serverTime;
     private String rdtCid;
+    private String twclid;
     private String utmCampaign;
     private String utmSource;
 
@@ -51,6 +52,14 @@ public class StartupTerminatedJson {
         this.rdtCid = rdtCid;
     }
 
+    public String getTwclid() {
+        return twclid;
+    }
+
+    public void setTwclid(String twclid) {
+        this.twclid = twclid;
+    }
+
     public String getUtmCampaign() {
         return utmCampaign;
     }
@@ -89,6 +98,11 @@ public class StartupTerminatedJson {
 
     public StartupTerminatedJson rdtCid(String rdtCid) {
         setRdtCid(rdtCid);
+        return this;
+    }
+
+    public StartupTerminatedJson twclid(String twclid) {
+        setTwclid(twclid);
         return this;
     }
 

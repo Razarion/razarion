@@ -34,6 +34,9 @@ public class SyncConsumer extends SyncBaseAbility {
 
     private final BaseItemService baseItemService;
     private ConsumerType consumerType;
+    // True if the base has enough power for this consumer. Set per-base by BaseEnergy.recalculate().
+    // Defaults to true so items work normally when no energy system is involved.
+    private boolean operationState = true;
 
     @Inject
     public SyncConsumer(BaseItemService baseItemService, EnergyService energyService) {
@@ -66,6 +69,14 @@ public class SyncConsumer extends SyncBaseAbility {
 
     public int getWattage() {
         return consumerType.getWattage();
+    }
+
+    public boolean isOperating() {
+        return operationState;
+    }
+
+    public void setOperationState(boolean operationState) {
+        this.operationState = operationState;
     }
 
 }

@@ -1,9 +1,19 @@
 # Razarion Deploy Script
 # Baut den Server inkl. Frontend, erstellt Docker-Image und deployt auf GKE
+#
+# Vor dem Rollout bekommen alle verbundenen Spieler eine Neustart-Ankuendigung
+# (Countdown-Banner im Client). Das ersetzt die manuelle Admin-Message der alten
+# GWT-Version. Voraussetzung sind die Env-Variablen RAZARION_ADMIN_USER und
+# RAZARION_ADMIN_PASSWORD; fehlen sie, wird die Ankuendigung uebersprungen und der
+# Deploy laeuft trotzdem durch.
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
 $StartTime = Get-Date
+
+# Vorwarnzeit in Sekunden zwischen Ankuendigung und Rollout.
+$RestartAnnounceSeconds = 180
+$ProdBaseUrl = "https://www.razarion.com"
 
 Write-Host "=== Razarion Deploy ===" -ForegroundColor Cyan
 
@@ -51,6 +61,34 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 Write-Host "Manifests applied!" -ForegroundColor Green
+
+# 4b. Spieler vorwarnen. Der laufende Server bekommt die Ankuendigung und schickt sie
+#     per SystemConnection an alle Clients, die einen Countdown anzeigen. Fehler hier
+#     duerfen den Deploy nicht abbrechen - schlimmstenfalls kommt der Neustart eben
+#     unangekuendigt, und der Client faengt das mit dem Reconnect-Overlay ab.
+Write-Host "`n[4b/6] Announcing server restart to players ($RestartAnnounceSeconds s)..." -ForegroundColor Yellow
+$announced = $false
+if (-not $env:RAZARION_ADMIN_USER -or -not $env:RAZARION_ADMIN_PASSWORD) {
+    Write-Host "RAZARION_ADMIN_USER / RAZARION_ADMIN_PASSWORD not set - skipping announcement." -ForegroundColor Yellow
+} else {
+    try {
+        $basic = [Convert]::ToBase64String(
+            [Text.Encoding]::UTF8.GetBytes("$($env:RAZARION_ADMIN_USER):$($env:RAZARION_ADMIN_PASSWORD)"))
+        $token = Invoke-RestMethod -Method Post -Uri "$ProdBaseUrl/rest/user/auth" `
+            -Headers @{ Authorization = "Basic $basic" } -ContentType "application/json"
+        Invoke-RestMethod -Method Post `
+            -Uri "$ProdBaseUrl/rest/planet-mgmt-controller/announceServerRestart?inSeconds=$RestartAnnounceSeconds" `
+            -Headers @{ Authorization = "Bearer $token"; "Content-Length" = "0" } | Out-Null
+        $announced = $true
+        Write-Host "Announcement sent. Waiting $RestartAnnounceSeconds s before the rollout..." -ForegroundColor Green
+        Start-Sleep -Seconds $RestartAnnounceSeconds
+    } catch {
+        Write-Host "Announcement failed (non-critical): $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+if (-not $announced) {
+    Write-Host "Continuing without announcement." -ForegroundColor Yellow
+}
 
 # 5. Rollout Restart
 Write-Host "`n[5/6] Restarting Kubernetes deployment..." -ForegroundColor Yellow

@@ -51,7 +51,9 @@ public class GameLogicService {
     }
 
     public void onItemDoesNotExistException(ItemDoesNotExistException e) {
-        logger.log(Level.SEVERE, "GameLogicService.onItemDoesNotExistException() ", e);
+        // Benign and frequent: a command (usually an attack) targets an item that was destroyed
+        // before the command executed on the tick. Log quietly, without a stack trace, to keep the prod log clean.
+        logger.log(Level.FINE, "GameLogicService.onItemDoesNotExistException() {0}", e.getMessage());
     }
 
     public void onMasterCommandSent(SyncBaseItem syncItem) {

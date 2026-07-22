@@ -733,7 +733,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   onProjectileFired(targetSyncBaseItemId: number, targetPosition: DecimalPosition): void {
     const targetBaseItem = this.rendererService.getBabylonBaseItemById(targetSyncBaseItemId);
     if (!targetBaseItem) {
-      console.warn("Target base item not found:", targetSyncBaseItemId);
+      // Benign race: the PROJECTILE_FIRED event references a target the client already removed
+      // (destroyed around the same tick). Use debug so it is not forwarded to the server log.
+      console.debug("Target base item not found:", targetSyncBaseItemId);
       return;
     }
 

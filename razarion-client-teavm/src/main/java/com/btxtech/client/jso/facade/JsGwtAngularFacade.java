@@ -77,6 +77,33 @@ public class JsGwtAngularFacade {
         callOnCrash(facade);
     }
 
+    // --- Server restart presenter (Java -> Angular) ---
+    // Guarded in JS: these can fire before GameComponent has assigned the presenter.
+
+    @JSBody(params = {"facade", "seconds"}, script =
+            "if (facade.serverRestartPresenter) { facade.serverRestartPresenter.onServerRestartAnnounced(seconds); }")
+    private static native void callOnServerRestartAnnounced(JSObject facade, int seconds);
+
+    @JSBody(params = {"facade"}, script =
+            "if (facade.serverRestartPresenter) { facade.serverRestartPresenter.onServerRestartCancelled(); }")
+    private static native void callOnServerRestartCancelled(JSObject facade);
+
+    @JSBody(params = {"facade", "serverRestarting"}, script =
+            "if (facade.serverRestartPresenter) { facade.serverRestartPresenter.onServerUnavailable(serverRestarting); }")
+    private static native void callOnServerUnavailable(JSObject facade, boolean serverRestarting);
+
+    public void onServerRestartAnnounced(int seconds) {
+        callOnServerRestartAnnounced(facade, seconds);
+    }
+
+    public void onServerRestartCancelled() {
+        callOnServerRestartCancelled(facade);
+    }
+
+    public void onServerUnavailable(boolean serverRestarting) {
+        callOnServerUnavailable(facade, serverRestarting);
+    }
+
     // --- Adapter creation for Angular-provided interfaces ---
 
     @JSFunctor

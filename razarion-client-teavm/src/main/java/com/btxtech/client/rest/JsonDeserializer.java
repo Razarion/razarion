@@ -913,6 +913,7 @@ public class JsonDeserializer {
         LifecyclePacket r = new LifecyclePacket();
         r.setType(deserializeEnum(json, "type", LifecyclePacket.Type.class));
         r.setDialog(deserializeEnum(json, "dialog", LifecyclePacket.Dialog.class));
+        r.setRestartInSeconds(json.getNullableInt("restartInSeconds"));
         return r;
     }
 

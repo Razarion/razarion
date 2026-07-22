@@ -51,6 +51,10 @@ public class GuardingItemService {
         }
         while (!attackers.isEmpty()) {
             SyncBaseItem item = attackers.remove(0);
+            // Skip while unpowered; item stays in guardingItems and resumes once power returns.
+            if (!item.isEnergyOperating()) {
+                continue;
+            }
             if (item.getSyncWeapon() != null) {
                 item.getSyncWeapon().tickReload();
             }
@@ -76,7 +80,7 @@ public class GuardingItemService {
                 return false;
             }
 
-            if (handleGuardingItemHasEnemiesInRange(syncBaseItem)) {
+            if (syncBaseItem.isEnergyOperating() && handleGuardingItemHasEnemiesInRange(syncBaseItem)) {
                 return true;
             }
 

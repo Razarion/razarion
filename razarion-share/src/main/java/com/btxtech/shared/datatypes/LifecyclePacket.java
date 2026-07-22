@@ -12,7 +12,10 @@ public class LifecyclePacket {
         HOLD,        // All timers, rest consumers, connection etc stop. Only SystemConnection open. Show dialog (blocking) to user (E.g. Server warm restarting)
         RESTART,    // Everything stopped. Show dialog (blocking) to user. (E.g. other connection opened)
         PLANET_RESTART_WARM, // Warm restart
-        PLANET_RESTART_COLD // Cold restart (reload)
+        PLANET_RESTART_COLD, // Cold restart (reload)
+        // The whole server (JVM) goes down in restartInSeconds. The game keeps running until then,
+        // the client only shows a countdown. Sent by the deploy script and by the shutdown hook.
+        SERVER_RESTART_ANNOUNCEMENT
     }
 
     public enum Dialog {
@@ -21,6 +24,8 @@ public class LifecyclePacket {
 
     private Type type;
     private Dialog dialog;
+    // Only set for SERVER_RESTART_ANNOUNCEMENT: seconds left until the server goes down.
+    private Integer restartInSeconds;
 
     public Type getType() {
         return type;
@@ -37,6 +42,15 @@ public class LifecyclePacket {
 
     public LifecyclePacket setDialog(Dialog dialog) {
         this.dialog = dialog;
+        return this;
+    }
+
+    public Integer getRestartInSeconds() {
+        return restartInSeconds;
+    }
+
+    public LifecyclePacket setRestartInSeconds(Integer restartInSeconds) {
+        this.restartInSeconds = restartInSeconds;
         return this;
     }
 }

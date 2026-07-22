@@ -322,6 +322,15 @@ public class SyncBaseItem extends SyncItem {
     }
 
     /**
+     * @return false if this item consumes power and its base is currently in a power deficit.
+     * Abilities (weapon/factory/builder/harvester) are then suspended; movement stays allowed.
+     * Items without a consumer are always operating.
+     */
+    public boolean isEnergyOperating() {
+        return syncConsumer == null || syncConsumer.isOperating();
+    }
+
+    /**
      * Ticks this sync item
      *
      * @return true if more tick are needed to fullfil the job
@@ -346,6 +355,11 @@ public class SyncBaseItem extends SyncItem {
 
         if (targetContainer != null) {
             return putInContainer();
+        }
+
+        // Power gate: an item whose base lacks power keeps all abilities suspended but may still move.
+        if (!isEnergyOperating()) {
+            return getAbstractSyncPhysical().hasDestination();
         }
 
         if (syncWeapon != null && syncWeapon.isActive()) {

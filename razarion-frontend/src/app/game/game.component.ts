@@ -25,6 +25,7 @@ import {UserService} from '../auth/user.service';
 import {ChatCockpitComponent} from './cockpit/chat/chat-cockpit.component';
 import {InfoDialogComponent} from './info-dialog/info-dialog.component';
 import {BabylonAudioService} from './renderer/babylon-audio.service';
+import {ServerRestartComponent} from './server-restart/server-restart.component';
 
 
 @Component({
@@ -41,7 +42,8 @@ import {BabylonAudioService} from './renderer/babylon-audio.service';
     InventoryComponent,
     UnlockComponent,
     ChatCockpitComponent,
-    InfoDialogComponent
+    InfoDialogComponent,
+    ServerRestartComponent
 ],
   styleUrls: ['game.component.scss']
 })
@@ -56,6 +58,8 @@ export class GameComponent implements OnInit {
   questCockpitContainer!: QuestCockpitComponent;
   @ViewChild('chatCockpitComponent', {static: true})
   chatCockpitComponent!: ChatCockpitComponent;
+  @ViewChild('serverRestartComponent', {static: true})
+  serverRestartComponent!: ServerRestartComponent;
   @HostBinding("style.--cursor")
   cursor: string = '';
 
@@ -95,6 +99,7 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.questCockpit = this.questCockpitContainer;
     this.gwtAngularService.gwtAngularFacade.chatCockpit = this.chatCockpitComponent;
+    this.gwtAngularService.gwtAngularFacade.serverRestartPresenter = this.serverRestartComponent;
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.babylonRenderServiceAccessImpl.createBaseItemPlacerPresenter();
     this.actionService.setRendererService(this.babylonRenderServiceAccessImpl);
 

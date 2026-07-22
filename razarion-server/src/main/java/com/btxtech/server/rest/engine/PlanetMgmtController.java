@@ -2,6 +2,7 @@ package com.btxtech.server.rest.engine;
 
 import com.btxtech.server.gameengine.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.gameengine.ServerRestartAnnouncementService;
 import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.engine.BackupPlanetOverview;
 import com.btxtech.server.service.engine.PlanetBackupService;
@@ -38,6 +39,7 @@ public class PlanetMgmtController {
     private final ServerGameEngineService serverGameEngineService;
     private final PlanetBackupService planetBackupService;
     private final BotService botService;
+    private final ServerRestartAnnouncementService serverRestartAnnouncementService;
     private final Object reloadLook = new Object();
 
     public PlanetMgmtController(BaseItemService baseItemService,
@@ -45,7 +47,9 @@ public class PlanetMgmtController {
                                 ServerTerrainShapeService serverTerrainShapeService,
                                 ClientSystemConnectionService clientSystemConnectionService,
                                 ServerGameEngineService serverGameEngineService,
-                                PlanetBackupService planetBackupService, BotService botService) {
+                                PlanetBackupService planetBackupService, BotService botService,
+                                ServerRestartAnnouncementService serverRestartAnnouncementService) {
+        this.serverRestartAnnouncementService = serverRestartAnnouncementService;
         this.baseItemService = baseItemService;
         this.serverGameEngineControl = serverGameEngineControl;
         this.serverTerrainShapeService = serverTerrainShapeService;
@@ -102,6 +106,25 @@ public class PlanetMgmtController {
             logger.warn(e.getMessage(), e);
             throw e;
         }
+    }
+
+    /**
+     * Warns all connected players that the server itself is going down. Called by deploy.ps1
+     * before the rollout; the game keeps running until the server actually stops.
+     */
+    @PostMapping("announceServerRestart")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void announceServerRestart(@RequestParam("inSeconds") int inSeconds) {
+        serverRestartAnnouncementService.announceRestart(inSeconds);
+    }
+
+    /**
+     * Withdraws an announcement, e.g. when the deployment was aborted after announcing.
+     */
+    @PostMapping("cancelServerRestart")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void cancelServerRestart() {
+        serverRestartAnnouncementService.cancelRestart();
     }
 
     @PostMapping("restartPlanetWarm")

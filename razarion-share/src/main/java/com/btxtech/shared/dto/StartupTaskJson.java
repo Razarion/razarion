@@ -10,6 +10,7 @@ public class StartupTaskJson {
     private int duration;
     private String error;
     private String rdtCid;
+    private String twclid;
     private String utmCampaign;
     private String utmSource;
 
@@ -69,6 +70,14 @@ public class StartupTaskJson {
         this.rdtCid = rdtCid;
     }
 
+    public String getTwclid() {
+        return twclid;
+    }
+
+    public void setTwclid(String twclid) {
+        this.twclid = twclid;
+    }
+
     public String getUtmCampaign() {
         return utmCampaign;
     }
@@ -120,6 +129,11 @@ public class StartupTaskJson {
         return this;
     }
 
+    public StartupTaskJson twclid(String twclid) {
+        setTwclid(twclid);
+        return this;
+    }
+
     public StartupTaskJson utmCampaign(String utmCampaign) {
         setUtmCampaign(utmCampaign);
         return this;
@@ -140,6 +154,7 @@ public class StartupTaskJson {
                 ", duration=" + duration +
                 ", error='" + error + '\'' +
                 ", rdtCid='" + rdtCid + '\'' +
+                ", twclid='" + twclid + '\'' +
                 ", utmCampaign='" + utmCampaign + '\'' +
                 ", utmSource='" + utmSource + '\'' +
                 '}';

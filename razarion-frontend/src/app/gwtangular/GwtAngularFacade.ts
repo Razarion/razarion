@@ -18,6 +18,7 @@ export abstract class GwtAngularFacade {
   itemTypeService!: ItemTypeService;
   baseItemUiService!: BaseItemUiService
   modelDialogPresenter!: ModelDialogPresenter;
+  serverRestartPresenter!: ServerRestartPresenter;
   inventoryTypeService!: InventoryTypeService;
   inventoryUiService!: InventoryUiService;
   terrainUiService!: TerrainUiService;
@@ -863,6 +864,24 @@ export interface ModelDialogPresenter {
   showRegisterDialog(): void;
 
   showSetUserNameDialog(): void;
+}
+
+/**
+ * Tells the player that the server itself (not just the planet) is restarting.
+ * The countdown is non-blocking — the game keeps running until the connection actually drops.
+ */
+export interface ServerRestartPresenter {
+  /** A restart was announced. Shows a countdown banner. */
+  onServerRestartAnnounced(seconds: number): void;
+
+  /** The announced restart is off again (e.g. aborted deployment). Hides the banner. */
+  onServerRestartCancelled(): void;
+
+  /**
+   * The connection is gone. Shows a blocking overlay and reloads once the server is back.
+   * @param serverRestarting true if a restart was announced beforehand
+   */
+  onServerUnavailable(serverRestarting: boolean): void;
 }
 
 export interface ObjectNameId {

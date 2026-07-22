@@ -7,15 +7,30 @@ import {
 } from '../../generated/razarion-share';
 import {ProgressStatistic} from './progress-statistic';
 
+/**
+ * The click-id field the funnel is correlated by. Reddit tags its links with rdt_cid (stored as
+ * rdtCid), X (Twitter) with twclid. Switching this recomputes the whole funnel for that platform.
+ */
+export type ClickIdField = 'rdtCid' | 'twclid';
+
 export class TrackingContainerAnalyzer {
   private trackingContainer!: TrackingContainer;
+  private clickIdField: ClickIdField = 'rdtCid';
 
   setTrackingContainer(trackingContainer: TrackingContainer) {
     this.trackingContainer = trackingContainer;
   }
 
+  setClickIdField(clickIdField: ClickIdField) {
+    this.clickIdField = clickIdField;
+  }
+
+  private clickId(pageRequest: PageRequest): string {
+    return pageRequest[this.clickIdField];
+  }
+
   getDistinctHomePageRequests(): PageRequest[] {
-    const seenRdtCids = new Set<string>();
+    const seenClickIds = new Set<string>();
     const result: PageRequest[] = [];
 
     for (const pageRequest of this.trackingContainer.pageRequests) {
@@ -23,11 +38,11 @@ export class TrackingContainerAnalyzer {
         continue;
       }
 
-      if (seenRdtCids.has(pageRequest.rdtCid)) {
+      if (seenClickIds.has(this.clickId(pageRequest))) {
         continue;
       }
 
-      seenRdtCids.add(pageRequest.rdtCid);
+      seenClickIds.add(this.clickId(pageRequest));
       result.push(pageRequest);
     }
 
@@ -42,16 +57,16 @@ export class TrackingContainerAnalyzer {
 
   getGames4Home(homePageRequest: PageRequest) {
     return this.trackingContainer.pageRequests.filter((pageRequest: PageRequest) => {
-      return pageRequest.pageRequestType === PageRequestType.GAME && pageRequest.rdtCid === homePageRequest.rdtCid;
+      return pageRequest.pageRequestType === PageRequestType.GAME && this.clickId(pageRequest) === this.clickId(homePageRequest);
     });
   }
 
   getGameEngineInits() {
-    return this.getGamePageRequests().filter(pageRequest => this.getStartupTaskJsonByRdtCid(pageRequest.rdtCid).length > 0)
+    return this.getGamePageRequests().filter(pageRequest => this.getStartupTaskJsonByClickId(this.clickId(pageRequest)).length > 0)
   }
 
   getStartupTerminatedJsons() {
-    return this.getGamePageRequests().filter(pageRequest => this.getStartupTerminatedJsonByRdtCid(pageRequest.rdtCid).length > 0)
+    return this.getGamePageRequests().filter(pageRequest => this.getStartupTerminatedJsonByClickId(this.clickId(pageRequest)).length > 0)
   }
 
   getUserCreated() {
@@ -143,12 +158,12 @@ export class TrackingContainerAnalyzer {
     return progressStatistics;
   }
 
-  private getStartupTaskJsonByRdtCid(rdtCid: string) {
-    return this.trackingContainer.startupTaskJsons.filter(startupTaskJson => startupTaskJson.rdtCid === rdtCid);
+  private getStartupTaskJsonByClickId(clickId: string) {
+    return this.trackingContainer.startupTaskJsons.filter(startupTaskJson => startupTaskJson[this.clickIdField] === clickId);
   }
 
-  private getStartupTerminatedJsonByRdtCid(rdtCid: string) {
-    return this.trackingContainer.startupTerminatedJson.filter(startupTerminatedJson => startupTerminatedJson.rdtCid === rdtCid);
+  private getStartupTerminatedJsonByClickId(clickId: string) {
+    return this.trackingContainer.startupTerminatedJson.filter(startupTerminatedJson => startupTerminatedJson[this.clickIdField] === clickId);
   }
 
   private getUserCreatedByHttpSessionId(httpSessionId: string) {

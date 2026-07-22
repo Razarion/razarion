@@ -20,6 +20,7 @@ import java.util.List;
 public class TeaVMClientTrackerService implements StartupProgressListener {
     private final Provider<Boot> boot;
     private String rdtCid;
+    private String twclid;
     private String utmCampaign;
     private String utmSource;
 
@@ -31,6 +32,7 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
             if (search != null && !search.isEmpty()) {
                 JsURLSearchParams params = JsURLSearchParams.create(search);
                 rdtCid = params.get("rdt_cid");
+                twclid = params.get("twclid");
                 utmCampaign = params.get("utm_campaign");
                 utmSource = params.get("utm_source");
             }
@@ -74,6 +76,9 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
             if (rdtCid != null) {
                 jsObj.set("rdtCid", rdtCid);
             }
+            if (twclid != null) {
+                jsObj.set("twclid", twclid);
+            }
             if (utmCampaign != null) {
                 jsObj.set("utmCampaign", utmCampaign);
             }
@@ -94,6 +99,9 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
             jsObj.set("totalTime", (int) totalTime);
             if (rdtCid != null) {
                 jsObj.set("rdtCid", rdtCid);
+            }
+            if (twclid != null) {
+                jsObj.set("twclid", twclid);
             }
             if (utmCampaign != null) {
                 jsObj.set("utmCampaign", utmCampaign);

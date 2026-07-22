@@ -44,7 +44,7 @@ public class AStar {
             // fit through gaps this one cannot). Stop expanding and let the caller fall
             // back to bestFitNode via PathingService's orbit-fix branch.
             if (closedList.size() > MAX_CLOSED_LIST_SIZE) {
-                LOGGER.log(Level.WARNING, "AStar closed list limit reached, falling back to bestFitNode."
+                LOGGER.log(Level.FINE, "AStar closed list limit reached, falling back to bestFitNode."
                         + " destination=" + aStarContext.getDestination()
                         + " startNode=" + startNode
                         + " destinationTile=" + destinationNode.getPathingNodeWrapper()

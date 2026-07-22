@@ -125,6 +125,38 @@ public class TeaVMGwtAngularService {
         facade.onCrash();
     }
 
+    /**
+     * The server announced it is going down in {@code seconds}. The game keeps running; Angular
+     * only shows a countdown so the player can finish what they are doing.
+     */
+    public void onServerRestartAnnounced(int seconds) {
+        if (facade == null) {
+            return;
+        }
+        facade.onServerRestartAnnounced(seconds);
+    }
+
+    public void onServerRestartCancelled() {
+        if (facade == null) {
+            return;
+        }
+        facade.onServerRestartCancelled();
+    }
+
+    /**
+     * The connection to the server is gone. Angular shows a blocking overlay and reloads as soon
+     * as the server answers again.
+     *
+     * @param serverRestarting true if a restart was announced, so the overlay can promise the game
+     *                         continues instead of just reporting a lost connection
+     */
+    public void onServerUnavailable(boolean serverRestarting) {
+        if (facade == null) {
+            return;
+        }
+        facade.onServerUnavailable(serverRestarting);
+    }
+
     public GwtAngularBoot getGwtAngularBoot() {
         return facade.getGwtAngularBootAdapter();
     }
