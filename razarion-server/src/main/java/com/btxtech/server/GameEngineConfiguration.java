@@ -82,11 +82,13 @@ public class GameEngineConfiguration {
     public BotRunner botRunner(SimpleExecutorService simpleExecutorService,
                                jakarta.inject.Provider<IntruderHandler> intruderHandlerInstance,
                                jakarta.inject.Provider<BotEnragementState> enragementStateInstance,
-                               BaseItemService baseItemService) {
+                               BaseItemService baseItemService,
+                               GameLogicService gameLogicService) {
         return new BotRunner(simpleExecutorService,
                 intruderHandlerInstance::get,
                 enragementStateInstance::get,
-                baseItemService);
+                baseItemService,
+                gameLogicService);
     }
 
     @Bean

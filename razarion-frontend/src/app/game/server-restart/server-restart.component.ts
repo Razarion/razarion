@@ -3,6 +3,7 @@ import {ButtonModule} from 'primeng/button';
 import {ServerRestartPresenter} from '../../gwtangular/GwtAngularFacade';
 import {CockpitDisplayService} from '../cockpit/cockpit-display.service';
 import {UserService} from '../../auth/user.service';
+import {RemoteLogging} from '../../backend/remote-logging';
 
 /**
  * Shows what the old GWT ServerRestartDialog did, but driven by the automated deployment instead
@@ -22,7 +23,9 @@ import {UserService} from '../../auth/user.service';
 })
 export class ServerRestartComponent implements ServerRestartPresenter, OnDestroy {
   private static readonly HEALTH_URL = '/actuator/health/readiness';
-  private static readonly HEALTH_POLL_MS = 5000;
+  private static readonly HEALTH_POLL_MS = 2000;
+  /** A poll that gets no answer must not block the next one — the load balancer can stall. */
+  private static readonly HEALTH_TIMEOUT_MS = 4000;
 
   /** Seconds until the restart, or undefined while no restart is announced. */
   secondsLeft?: number;
@@ -30,9 +33,15 @@ export class ServerRestartComponent implements ServerRestartPresenter, OnDestroy
   serverDown = false;
   /** True if the outage was announced, so we can promise the game continues. */
   serverRestarting = false;
+  /** Seconds the server has been unreachable — proves to the player that we keep trying. */
+  downSeconds = 0;
+  /** Number of finished health checks, so a stalled poll loop is visible instead of silent. */
+  healthChecks = 0;
 
   private countdownHandle?: any;
   private healthPollHandle?: any;
+  private downTimerHandle?: any;
+  private healthCheckInFlight = false;
 
   constructor(private zone: NgZone,
               private cockpitDisplayService: CockpitDisplayService,
@@ -64,6 +73,10 @@ export class ServerRestartComponent implements ServerRestartPresenter, OnDestroy
         return;
       }
       this.serverDown = true;
+      // Every console line would become a POST against the dead server, and those failures are
+      // logged again. That flood competes with the health poll that is supposed to get us back.
+      RemoteLogging.suspend();
+      this.startDownTimer();
       this.startHealthPolling();
     });
   }
@@ -71,6 +84,17 @@ export class ServerRestartComponent implements ServerRestartPresenter, OnDestroy
   ngOnDestroy(): void {
     this.stopCountdown();
     this.stopHealthPolling();
+    this.stopDownTimer();
+  }
+
+  onReloadClicked(): void {
+    window.location.reload();
+  }
+
+  get downText(): string {
+    const minutes = Math.floor(this.downSeconds / 60);
+    const seconds = this.downSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 
   /** Whether the base-loss warning and the register button apply to this player. */
@@ -118,15 +142,27 @@ export class ServerRestartComponent implements ServerRestartPresenter, OnDestroy
   private startHealthPolling(): void {
     this.stopHealthPolling();
     this.healthPollHandle = setInterval(() => {
-      fetch(ServerRestartComponent.HEALTH_URL, {cache: 'no-store'})
+      if (this.healthCheckInFlight) {
+        return;
+      }
+      this.healthCheckInFlight = true;
+      fetch(ServerRestartComponent.HEALTH_URL, {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(ServerRestartComponent.HEALTH_TIMEOUT_MS)
+      })
         .then(response => {
           if (response.ok) {
             this.stopHealthPolling();
+            this.stopDownTimer();
             window.location.reload();
           }
         })
         .catch(() => {
-          // Server still down — keep polling.
+          // Server still down (or the load balancer has no backend yet) — keep polling.
+        })
+        .finally(() => {
+          this.healthCheckInFlight = false;
+          this.zone.run(() => this.healthChecks++);
         });
     }, ServerRestartComponent.HEALTH_POLL_MS);
   }
@@ -135,6 +171,19 @@ export class ServerRestartComponent implements ServerRestartPresenter, OnDestroy
     if (this.healthPollHandle !== undefined) {
       clearInterval(this.healthPollHandle);
       this.healthPollHandle = undefined;
+    }
+  }
+
+  private startDownTimer(): void {
+    this.stopDownTimer();
+    this.downSeconds = 0;
+    this.downTimerHandle = setInterval(() => this.zone.run(() => this.downSeconds++), 1000);
+  }
+
+  private stopDownTimer(): void {
+    if (this.downTimerHandle !== undefined) {
+      clearInterval(this.downTimerHandle);
+      this.downTimerHandle = undefined;
     }
   }
 }

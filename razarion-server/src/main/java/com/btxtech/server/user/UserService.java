@@ -18,12 +18,14 @@ import com.btxtech.server.repository.UserRepository;
 import com.btxtech.server.service.engine.LevelCrudService;
 import com.btxtech.server.service.engine.QuestConfigService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
+import com.btxtech.server.service.history.HistoryService;
 import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -75,9 +77,13 @@ public class UserService implements UserDetailsService {
     private final RegisterService registerService;
     private final PasswordEncoder passwordEncoder;
     private final UserActivityService userActivityService;
+    private final HistoryService historyService;
     @Autowired
     @Lazy
     private BaseItemService baseItemService;
+    @Autowired
+    @Lazy
+    private QuestService questService;
     @Autowired
     @Lazy
     private ServerGameEngineControl serverGameEngineControl;
@@ -94,7 +100,8 @@ public class UserService implements UserDetailsService {
                        QuestConfigService questConfigService,
                        RegisterService registerService,
                        PasswordEncoder passwordEncoder,
-                       UserActivityService userActivityService) {
+                       UserActivityService userActivityService,
+                       HistoryService historyService) {
         this.levelCrudPersistence = levelCrudPersistence;
         this.userRepository = userRepository;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
@@ -102,6 +109,7 @@ public class UserService implements UserDetailsService {
         this.registerService = registerService;
         this.passwordEncoder = passwordEncoder;
         this.userActivityService = userActivityService;
+        this.historyService = historyService;
     }
 
     public static Authentication removeAnonymousAuthentication(Authentication authentication) {
@@ -147,6 +155,7 @@ public class UserService implements UserDetailsService {
         if (playerBase != null) {
             userBackendInfo.setBaseId(playerBase.getBaseId());
         }
+        userBackendInfo.gameHistoryEntries(historyService.loadGameHistoryEntries(userEntity.getUserId()));
         return userBackendInfo;
     }
 
@@ -188,6 +197,21 @@ public class UserService implements UserDetailsService {
             logger.warn(e.getMessage(), e);
             throw e;
         }
+    }
+
+    /**
+     * Current HTTP session id from the request bound to this thread, or {@code null} when there is
+     * no request context (e.g. game-engine thread). Does not create a session (getSession(false)).
+     */
+    private String currentHttpSessionId() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attr != null) {
+            HttpSession session = attr.getRequest().getSession(false);
+            if (session != null) {
+                return session.getId();
+            }
+        }
+        return null;
     }
 
     @Transactional
@@ -576,7 +600,7 @@ public class UserService implements UserDetailsService {
                     logger.warn("verifyEmail(email): {}. Unknown result: {}", email, setNameError);
             }
         }
-        // TODO historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
+        historyService.onUserLoggedIn(userEntity, currentHttpSessionId());
         userEntity.setEmail(email);
         userEntity.setPasswordHash(passwordEncoder.encode(password));
         registerService.startEmailVerifyingProcess(userEntity);
@@ -645,10 +669,33 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void deleteUser() {
         var userId = getOrCreateUserIdFromContext();
-        deleteBaseByUser(userId);
+        removeUserFromRunningPlanet(userId);
         userRepository.delete(userRepository.findByUserId(userId).orElseThrow());
         SecurityContextHolder.clearContext();
         logger.info("User deleted: {}", userId);
+    }
+
+    /**
+     * Detaches a user from the live game engine before the {@link UserEntity} is deleted: removes the
+     * base and the in-memory quest progress. Both only live in the planet (and its Mongo backup), not
+     * in the SQL DB. Without this the deleted user leaves an ownerless base and a quest-progress entry
+     * behind, which then fail on every planet restore ({@code UserService.getUserContext} -> no value
+     * present / {@code QuestService.restore() No AbstractConditionProgress for HumanPlayerId}).
+     */
+    private void removeUserFromRunningPlanet(String userId) {
+        if (userId == null) {
+            return;
+        }
+        try {
+            deleteBaseByUser(userId);
+        } catch (Throwable t) {
+            logger.warn("Could not delete base of user {}", userId, t);
+        }
+        try {
+            questService.deactivateActorCondition(userId);
+        } catch (Throwable t) {
+            logger.warn("Could not deactivate quest condition of user {}", userId, t);
+        }
     }
 
     @Transactional
@@ -674,6 +721,7 @@ public class UserService implements UserDetailsService {
 
         for (UserEntity user : oldUnverified) {
             logger.info("Deleting unverified user older than 24h: {}", user);
+            removeUserFromRunningPlanet(user.getUserId());
             userRepository.delete(user);
         }
     }

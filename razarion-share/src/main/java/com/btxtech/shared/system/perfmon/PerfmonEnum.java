@@ -32,7 +32,8 @@ public enum PerfmonEnum {
     RELOAD_CLIENT_WRONG_INTERFACE_VERSION(true),
     ESTABLISH_CONNECTION(true),
     WAIT_RESTART(true),
-    QUEST_PROGRESS_PANEL_TEXT_REFRESHER(true);
+    QUEST_PROGRESS_PANEL_TEXT_REFRESHER(true),
+    BOOT_TASK_TIMEOUT(true);
 
     private final boolean fps;
 

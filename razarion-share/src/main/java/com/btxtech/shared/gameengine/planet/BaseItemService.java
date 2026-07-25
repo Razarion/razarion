@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCancelQueueCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistException;
@@ -65,6 +66,8 @@ import java.util.stream.Collectors;
 @Singleton // Rename to BaseService
 public class BaseItemService {
     private static final double ITEM_SELL_FACTOR = 0.5;
+    // Search radius (m) for a free spawn position if the requested base spawn position is occupied
+    private static final double SPAWN_FREE_POSITION_SEARCH_RADIUS = 20;
     private final Logger logger = Logger.getLogger(BaseItemService.class.getName());
     private final GameLogicService gameLogicService;
     private final SyncItemContainerServiceImpl syncItemContainerService;
@@ -186,7 +189,8 @@ public class BaseItemService {
         PlayerBaseFull playerBase = null;
         try {
             playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, unlockedItemLimit, userId, name);
-            spawnSyncBaseItem(itemTypeService.getBaseItemType(planetConfig.getStartBaseItemTypeId()), position, 0, playerBase, false);
+            BaseItemType startBaseItemType = itemTypeService.getBaseItemType(planetConfig.getStartBaseItemTypeId());
+            spawnSyncBaseItem(startBaseItemType, freeSpawnPosition(startBaseItemType, position), 0, playerBase, false);
         } catch (Exception e) {
             if (playerBase != null) {
                 // If something went wrong with the base create.
@@ -197,6 +201,32 @@ public class BaseItemService {
             throw e;
         }
         return playerBase;
+    }
+
+    /**
+     * The client's item placer refuses an occupied spot, but the chosen position still travels to the
+     * master, and spawnSyncBaseItem() only validates the terrain type. Move the spawn to the nearest
+     * free position so the start builder can never end up on top of a resource or another item - e.g.
+     * when a resource respawned between the client's check and the master executing the spawn, or when
+     * the position comes from an outdated client. Keeps the given position if nothing free is nearby
+     * (better a slightly overlapping base than none at all).
+     */
+    private DecimalPosition freeSpawnPosition(BaseItemType baseItemType, DecimalPosition position) {
+        if (syncItemContainerService.isFree(position, baseItemType)) {
+            return position;
+        }
+        try {
+            DecimalPosition free = syncItemContainerService.getFreeNearestPositionToCenter(
+                    baseItemType.getPhysicalAreaConfig().getTerrainType(),
+                    baseItemType.getPhysicalAreaConfig().getRadius(),
+                    false,
+                    new PlaceConfig().position(position).radius(SPAWN_FREE_POSITION_SEARCH_RADIUS));
+            logger.warning("Base spawn position " + position + " is occupied. Spawning at " + free);
+            return free;
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "No free base spawn position near " + position, e);
+            return position;
+        }
     }
 
     public void updateLevel(String userId, int levelId) {
@@ -752,6 +782,7 @@ public class BaseItemService {
             lastBaseItId = 1;
             syncItemContainerService.clear();
             energyService.clean();
+            Set<Integer> failedBaseIds = new HashSet<>();
             backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
                 try {
                     lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
@@ -765,10 +796,22 @@ public class BaseItemService {
                             playerBaseInfo.getUserId(),
                             null));
                 } catch (Exception e) {
-                    logger.log(Level.WARNING, "BaseItemService.restore()", e);
+                    failedBaseIds.add(playerBaseInfo.getBaseId());
+                    logger.log(Level.WARNING, "BaseItemService.restore() base can not be restored. baseId: "
+                            + playerBaseInfo.getBaseId() + " userId: " + playerBaseInfo.getUserId(), e);
                 }
             });
-            Collection<SyncBaseItemInfo> syncBaseItemInfos = backupPlanetInfo.getSyncBaseItemInfos().stream().filter(syncBaseItemInfo -> !failedItems.contains(syncBaseItemInfo.getId())).collect(Collectors.toList());
+            // Items of a base that could not be restored (e.g. the owning user was deleted meanwhile) can
+            // never be restored either. Dropping them right away instead of letting them fail one by one
+            // avoids re-running the whole restore loop once per orphaned item.
+            Collection<SyncBaseItemInfo> syncBaseItemInfos = backupPlanetInfo.getSyncBaseItemInfos().stream()
+                    .filter(syncBaseItemInfo -> !failedItems.contains(syncBaseItemInfo.getId()))
+                    .filter(syncBaseItemInfo -> !failedBaseIds.contains(syncBaseItemInfo.getBaseId()))
+                    .collect(Collectors.toList());
+            if (!failedBaseIds.isEmpty()) {
+                logger.warning("BaseItemService.restore() skipping items of " + failedBaseIds.size()
+                        + " base(s) which could not be restored: " + failedBaseIds);
+            }
             Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
             for (SyncBaseItemInfo syncBaseItemInfo : syncBaseItemInfos) {
                 try {

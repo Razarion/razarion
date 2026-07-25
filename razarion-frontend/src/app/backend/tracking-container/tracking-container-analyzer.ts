@@ -61,16 +61,13 @@ export class TrackingContainerAnalyzer {
     });
   }
 
-  getGameEngineInits() {
-    return this.getGamePageRequests().filter(pageRequest => this.getStartupTaskJsonByClickId(this.clickId(pageRequest)).length > 0)
-  }
-
-  getStartupTerminatedJsons() {
-    return this.getGamePageRequests().filter(pageRequest => this.getStartupTerminatedJsonByClickId(this.clickId(pageRequest)).length > 0)
-  }
-
-  getUserCreated() {
-    return this.getGamePageRequests().filter(pageRequest => this.getUserCreatedByHttpSessionId(pageRequest.httpSessionId).length > 0)
+  /**
+   * The only startup stage worth a funnel row: the client booted through, so the engine runs and
+   * the player could play. The stages before it say nothing about that - a finished startup task
+   * only means the boot got going, and a terminated startup counts the failed boots too.
+   */
+  getGameStarted() {
+    return this.getGamePageRequests().filter(pageRequest => this.getSuccessfulStartupByClickId(this.clickId(pageRequest)).length > 0)
   }
 
   getBaseCreated() {
@@ -158,12 +155,8 @@ export class TrackingContainerAnalyzer {
     return progressStatistics;
   }
 
-  private getStartupTaskJsonByClickId(clickId: string) {
-    return this.trackingContainer.startupTaskJsons.filter(startupTaskJson => startupTaskJson[this.clickIdField] === clickId);
-  }
-
-  private getStartupTerminatedJsonByClickId(clickId: string) {
-    return this.trackingContainer.startupTerminatedJson.filter(startupTerminatedJson => startupTerminatedJson[this.clickIdField] === clickId);
+  private getSuccessfulStartupByClickId(clickId: string) {
+    return this.trackingContainer.startupTerminatedJson.filter(startupTerminatedJson => startupTerminatedJson.successful && startupTerminatedJson[this.clickIdField] === clickId);
   }
 
   private getUserCreatedByHttpSessionId(httpSessionId: string) {

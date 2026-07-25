@@ -115,6 +115,13 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
           let pickingInfo = this.rendererService.setupTerrainPickPoint();
           if (pickingInfo.hit) {
             this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
+            // Ignore clicks on an invalid spot (red preview): occupied by an item or a resource, wrong
+            // terrain, enemy too near or outside the allowed area. Without this the placement was sent
+            // anyway - the master silently dropped builder builds and let the start builder spawn on
+            // top of a resource.
+            if (!baseItemPlacer.isPositionValid()) {
+              break;
+            }
             if (this.baseItemPlacerCallback) {
               this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.PLACED);
             }

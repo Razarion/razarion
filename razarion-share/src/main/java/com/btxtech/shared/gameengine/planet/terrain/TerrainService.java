@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -18,7 +19,7 @@ import java.util.function.Consumer;
  */
 @Singleton
 public class TerrainService {
-    // private Logger logger = Logger.getLogger(TerrainService.class.getName());
+    private final Logger logger = Logger.getLogger(TerrainService.class.getName());
     private final TerrainTypeService terrainTypeService;
     private final TerrainTileFactory terrainTileFactory;
     private final Provider<NativeTerrainShapeAccess> nativeTerrainShapeAccess;
@@ -62,15 +63,9 @@ public class TerrainService {
      * generation, so regular gameplay pays no cost.
      */
     public int[] generateTerrainTypeOrdinals(Index terrainTileIndex) {
-        Index nodeBase = TerrainUtil.tileIndexToNodeIndex(terrainTileIndex);
-        TerrainAnalyzer terrainAnalyzer = terrainShape.getTerrainAnalyzer();
-        int[] ordinals = new int[TerrainUtil.NODE_X_COUNT * TerrainUtil.NODE_Y_COUNT];
-        for (int ly = 0; ly < TerrainUtil.NODE_Y_COUNT; ly++) {
-            for (int lx = 0; lx < TerrainUtil.NODE_X_COUNT; lx++) {
-                ordinals[ly * TerrainUtil.NODE_X_COUNT + lx] =
-                        terrainAnalyzer.getTerrainType(nodeBase.add(lx, ly)).ordinal();
-            }
-        }
+        long time = System.currentTimeMillis();
+        int[] ordinals = terrainShape.getTerrainAnalyzer().generateTerrainTypeOrdinals(terrainTileIndex);
+        logger.info("generateTerrainTypeOrdinals " + terrainTileIndex + ": " + (System.currentTimeMillis() - time) + "ms");
         return ordinals;
     }
 

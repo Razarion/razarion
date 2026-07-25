@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -51,7 +52,13 @@ public interface GameLogicListener {
     default void onBoxPicked(String userId, BoxContent boxContent) {
     }
 
-    default void onSyncBoxDeleted(SyncBoxItem box) {
+    default void onSyncBoxDeleted(SyncBoxItem box, BoxDeletionReason reason) {
+    }
+
+    default void onBotEnrageUp(String botName, BotEnragementStateConfig botEnragementStateConfig, PlayerBase actor) {
+    }
+
+    default void onBotEnrageNormal(String botName, BotEnragementStateConfig botEnragementStateConfig) {
     }
 
     default void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {

@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import jakarta.inject.Inject;
@@ -28,6 +29,7 @@ public class BaseItemPlacerChecker {
     private static final double SAFETY_DISTANCE = 0.2;
     private final TerrainUiService terrainUiService;
     private final BaseItemUiService baseItemUiService;
+    private final ResourceUiService resourceUiService;
     private final ItemTypeService itemTypeService;
     private Collection<DecimalPosition> relativeItemPositions;
     private boolean isAllowedAreaOk;
@@ -43,8 +45,9 @@ public class BaseItemPlacerChecker {
     private TerrainType rallyTerrainType;
 
     @Inject
-    public BaseItemPlacerChecker(BaseItemUiService baseItemUiService, TerrainUiService terrainUiService, ItemTypeService itemTypeService) {
+    public BaseItemPlacerChecker(BaseItemUiService baseItemUiService, ResourceUiService resourceUiService, TerrainUiService terrainUiService, ItemTypeService itemTypeService) {
         this.baseItemUiService = baseItemUiService;
+        this.resourceUiService = resourceUiService;
         this.terrainUiService = terrainUiService;
         this.itemTypeService = itemTypeService;
     }
@@ -65,7 +68,11 @@ public class BaseItemPlacerChecker {
         }
         isItemsOk = false;
         if (isEnemiesOk) {
-            isItemsOk = !baseItemUiService.hasItemsInRangeInViewField(absoluteItemPositions, baseItemType.getPhysicalAreaConfig().getRadius());
+            double radius = baseItemType.getPhysicalAreaConfig().getRadius();
+            // Resources count as occupied ground too: the master rejects a builder build over a resource
+            // (SyncItemContainerServiceImpl.isFree()), and a base spawned on a resource spot blocks it.
+            isItemsOk = !baseItemUiService.hasItemsInRangeInViewField(absoluteItemPositions, radius)
+                    && !resourceUiService.hasResourcesInRange(absoluteItemPositions, radius);
         }
         isTerrainOk = isItemsOk && terrainUiService.isTerrainFree(absoluteItemPositions, baseItemType);
         isRallyTerrainOk = !hasRallyPoint() || terrainUiService.isTerrainFree(getAbsoluteRallyPosition(position), rallyRadius, rallyTerrainType);

@@ -13,6 +13,20 @@ public class StartupTaskJson {
     private String twclid;
     private String utmCampaign;
     private String utmSource;
+    /**
+     * Only sent with the page's first task. The startups that never reach the engine are the
+     * ones worth naming a browser for - WebAssembly GC needs Chrome 119+, Firefox 120+ or
+     * Safari 18.2+, and anything older dies before a single engine task runs.
+     */
+    private String userAgent;
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
 
     public String getGameSessionUuid() {
         return gameSessionUuid;
@@ -141,6 +155,11 @@ public class StartupTaskJson {
 
     public StartupTaskJson utmSource(String utmSource) {
         setUtmSource(utmSource);
+        return this;
+    }
+
+    public StartupTaskJson userAgent(String userAgent) {
+        setUserAgent(userAgent);
         return this;
     }
 

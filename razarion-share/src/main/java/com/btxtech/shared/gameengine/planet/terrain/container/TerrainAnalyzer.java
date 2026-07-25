@@ -28,9 +28,19 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
 
 public class TerrainAnalyzer {
     // private final Logger log = Logger.getLogger(TerrainAnalyzer.class.getName());
+    private static final byte[] NO_BLOCKED_NODES = new byte[0];
     private final HeightMapAccess heightMapAccess;
     private final TerrainShapeManager terrainShapeManager;
     private final Map<Index, TerrainType> terrainTypeCache = new HashMap<>();
+    /**
+     * Per tile bitmask (one bit per node, row-major) of the nodes blocked by terrain objects.
+     * Built lazily per tile by stamping every blocking circle once, instead of scanning all
+     * objects of the tile for every single node - see {@link #buildBlockedNodeMask(Index)}.
+     */
+    private final Map<Index, byte[]> blockedNodeMasks = new HashMap<>();
+    private int lastMaskTileX = Integer.MIN_VALUE;
+    private int lastMaskTileY = Integer.MIN_VALUE;
+    private byte[] lastMask;
 
     public TerrainAnalyzer(HeightMapAccess heightMapAccess, TerrainShapeManager terrainShape) {
         this.heightMapAccess = heightMapAccess;
@@ -110,28 +120,108 @@ public class TerrainAnalyzer {
     }
 
     private boolean isBlockedByTerrainObject(Index terrainNodeIndex) {
-        DecimalPosition scanPosition = nodeIndexToMiddleTerrainPosition(terrainNodeIndex);
-        Index terrainTileIndex = nodeIndexToTileIndex(terrainNodeIndex);
+        // Same truncating division as TerrainUtil.nodeIndexToTileIndex(), but without allocating
+        // an Index - this runs once per analyzed node.
+        int tileX = (int) (terrainNodeIndex.getX() / (double) NODE_X_COUNT);
+        int tileY = (int) (terrainNodeIndex.getY() / (double) NODE_Y_COUNT);
+        int localX = terrainNodeIndex.getX() - tileX * NODE_X_COUNT;
+        int localY = terrainNodeIndex.getY() - tileY * NODE_Y_COUNT;
+        if (localX < 0 || localY < 0 || localX >= NODE_X_COUNT || localY >= NODE_Y_COUNT) {
+            // Only reachable for off-map (negative) node indices, where the truncating division
+            // above maps to tile 0. Nothing sensible to report there.
+            return false;
+        }
+        byte[] mask = getBlockedNodeMask(tileX, tileY);
+        if (mask.length == 0) {
+            return false;
+        }
+        int bit = localY * NODE_X_COUNT + localX;
+        return (mask[bit >> 3] & (1 << (bit & 7))) != 0;
+    }
+
+    private byte[] getBlockedNodeMask(int tileX, int tileY) {
+        if (tileX == lastMaskTileX && tileY == lastMaskTileY) {
+            return lastMask;
+        }
+        Index terrainTileIndex = new Index(tileX, tileY);
+        byte[] mask = blockedNodeMasks.get(terrainTileIndex);
+        if (mask == null) {
+            mask = buildBlockedNodeMask(terrainTileIndex);
+            blockedNodeMasks.put(terrainTileIndex, mask);
+        }
+        lastMaskTileX = tileX;
+        lastMaskTileY = tileY;
+        lastMask = mask;
+        return mask;
+    }
+
+    /**
+     * Stamps every blocking terrain object of the tile into a node bitmask. Cost is
+     * O(objects * covered nodes) instead of the O(nodes * objects) a per-node scan pays, which is
+     * what makes a whole-tile analysis affordable (see
+     * {@link #generateTerrainTypeOrdinals(Index)}).
+     *
+     * Only objects registered on THIS tile are considered - identical to the previous per-node
+     * scan. TerrainShapeManagerSetup files an object under the tile its centre falls into, so a
+     * blocking circle reaching across a tile border does not block on the other side. That quirk
+     * is shared with the pathing and deliberately left untouched here.
+     */
+    private byte[] buildBlockedNodeMask(Index terrainTileIndex) {
         TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(terrainTileIndex);
-        if (terrainShapeTile == null) {
-            return false;
+        if (terrainShapeTile == null || terrainShapeTile.getNativeTerrainShapeObjectLists() == null) {
+            return NO_BLOCKED_NODES;
         }
-        if (terrainShapeTile.getNativeTerrainShapeObjectLists() == null) {
-            return false;
-        }
+        Index nodeBase = tileIndexToNodeIndex(terrainTileIndex);
+        byte[] mask = null;
         for (NativeTerrainShapeObjectList nativeTerrainShapeObjectList : terrainShapeTile.getNativeTerrainShapeObjectLists()) {
             double radius = terrainShapeManager.getTerrainTypeService().getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
-            if (radius > 0.0) {
-                for (NativeTerrainShapeObjectPosition nativeTerrainShapeObjectPosition : nativeTerrainShapeObjectList.terrainShapeObjectPositions) {
-                    double distance = scanPosition.getDistance(nativeTerrainShapeObjectPosition.x, nativeTerrainShapeObjectPosition.y);
-                    if (distance - radius < 0) {
-                        return true;
+            if (radius <= 0.0) {
+                continue;
+            }
+            for (NativeTerrainShapeObjectPosition position : nativeTerrainShapeObjectList.terrainShapeObjectPositions) {
+                // A node blocks if its CENTRE (nodeIndex + NODE_SIZE / 2) is closer than radius.
+                double localCentreX = position.x - nodeBase.getX() - NODE_SIZE / 2.0;
+                double localCentreY = position.y - nodeBase.getY() - NODE_SIZE / 2.0;
+                int minX = Math.max(0, (int) Math.floor(localCentreX - radius));
+                int maxX = Math.min(NODE_X_COUNT - 1, (int) Math.ceil(localCentreX + radius));
+                int minY = Math.max(0, (int) Math.floor(localCentreY - radius));
+                int maxY = Math.min(NODE_Y_COUNT - 1, (int) Math.ceil(localCentreY + radius));
+                for (int localY = minY; localY <= maxY; localY++) {
+                    double deltaY = localY - localCentreY;
+                    for (int localX = minX; localX <= maxX; localX++) {
+                        double deltaX = localX - localCentreX;
+                        if (Math.sqrt(deltaX * deltaX + deltaY * deltaY) - radius < 0) {
+                            if (mask == null) {
+                                mask = new byte[(NODE_X_COUNT * NODE_Y_COUNT + 7) / 8];
+                            }
+                            int bit = localY * NODE_X_COUNT + localX;
+                            mask[bit >> 3] |= (byte) (1 << (bit & 7));
+                        }
                     }
                 }
             }
-
         }
-        return false;
+        return mask == null ? NO_BLOCKED_NODES : mask;
+    }
+
+    /**
+     * Computes the {@link TerrainType} ordinals of a whole tile (row-major
+     * NODE_Y_COUNT * NODE_X_COUNT).
+     *
+     * Calls {@link #analyze(Index)} rather than {@link #getTerrainType(Index)} on purpose: the
+     * result is the same, but the 25'600 nodes of a tile are not pushed into
+     * {@link #terrainTypeCache}. That cache serves the sparse node sets the pathing walks;
+     * filling it tile-wise would cost far more memory than the returned ordinal array.
+     */
+    public int[] generateTerrainTypeOrdinals(Index terrainTileIndex) {
+        Index nodeBase = tileIndexToNodeIndex(terrainTileIndex);
+        int[] ordinals = new int[NODE_X_COUNT * NODE_Y_COUNT];
+        for (int localY = 0; localY < NODE_Y_COUNT; localY++) {
+            for (int localX = 0; localX < NODE_X_COUNT; localX++) {
+                ordinals[localY * NODE_X_COUNT + localX] = analyze(nodeBase.add(localX, localY)).ordinal();
+            }
+        }
+        return ordinals;
     }
 
     public double getHeightNodeAt(Index terrainNodeIndex) {

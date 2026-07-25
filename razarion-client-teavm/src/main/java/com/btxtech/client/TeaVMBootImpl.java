@@ -1,6 +1,8 @@
 package com.btxtech.client;
 
+import com.btxtech.client.jso.JsWindow;
 import com.btxtech.client.system.boot.GameStartupSeq;
+import com.btxtech.client.system.boot.PageBootGlobals;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.alarm.AlarmService;
@@ -50,6 +52,29 @@ public class TeaVMBootImpl extends Boot {
     @Override
     protected StartupSeq getWarm() {
         return GameStartupSeq.WARM;
+    }
+
+    @Override
+    protected void scheduleDeferredTimeout(long delayMillis, Runnable runnable) {
+        simpleExecutorService.schedule(delayMillis, runnable, SimpleExecutorService.Type.BOOT_TASK_TIMEOUT);
+    }
+
+    /**
+     * The page already opened a session before the WebAssembly module was loaded and reported
+     * its first tasks under that id. Adopting it here keeps everything from the page load to the
+     * running engine in one session; without it the page-side tasks would look like an orphaned
+     * session that never booted.
+     * <p>
+     * Taken once and cleared: a warm restart is a new startup and gets a fresh id.
+     */
+    @Override
+    protected String createGameSessionUuid() {
+        String fromPage = JsWindow.getString(PageBootGlobals.SESSION_UUID);
+        if (fromPage == null || fromPage.isEmpty()) {
+            return super.createGameSessionUuid();
+        }
+        JsWindow.setString(PageBootGlobals.SESSION_UUID, null);
+        return fromPage;
     }
 
     @Override

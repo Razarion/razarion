@@ -1,25 +1,43 @@
 <p-chart #chart type="bar" [data]="data" [options]="options" height="600"></p-chart>
 
-<p-table [value]="startupTerminatedJsons" [scrollable]="true" scrollHeight="400px">
+<div class="flex items-center gap-4 my-3">
+  <p-select [options]="filterOptions"
+            [(ngModel)]="filter"
+            optionLabel="name"
+            optionValue="value"
+            (onChange)="onFilterChanged()">
+  </p-select>
+  <span>{{ filtered.length }} shown</span>
+  <span>Successful: {{ count(StartupOutcome.SUCCESSFUL) }}</span>
+  <span class="startup-failed">Failed: {{ count(StartupOutcome.FAILED) }}</span>
+  <span class="startup-failed">Aborted: {{ count(StartupOutcome.ABORTED) }}</span>
+</div>
+
+<p-table [value]="filtered" [scrollable]="true" scrollHeight="400px">
   <ng-template pTemplate="header">
     <tr>
       <th>Server time</th>
-      <th>Successful</th>
+      <th>Outcome</th>
       <th>Total Time</th>
+      <th>Last task</th>
       <th>Details</th>
     </tr>
   </ng-template>
 
   <ng-template pTemplate="body" let-startupTerminatedJson>
-    <tr>
+    <tr [class.startup-failed]="outcome(startupTerminatedJson) !== StartupOutcome.SUCCESSFUL">
       <td>
         {{ startupTerminatedJson.serverTime | date: 'dd.MM.yyyy HH:mm:ss' }}
       </td>
       <td>
-        {{ startupTerminatedJson.successful }}
+        {{ outcome(startupTerminatedJson) }}
       </td>
       <td>
-        {{ startupTerminatedJson.totalTime }}
+        <!-- Aborted: nobody ever reported an end, so there is no duration to show. -->
+        {{ startupTerminatedJson.totalTime ?? '-' }}
+      </td>
+      <td>
+        {{ startupTerminatedJson.lastTaskEnum ?? '-' }}
       </td>
       <td>
         <p-button
@@ -45,13 +63,15 @@
         <th>Task</th>
         <th>Duration</th>
         <th>Error</th>
+        <th>User agent</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-startupTaskJson>
-      <tr>
+      <tr [class.startup-failed]="startupTaskJson.error">
         <td>{{ startupTaskJson.taskEnum }}</td>
         <td>{{ startupTaskJson.duration }}</td>
         <td>{{ startupTaskJson.error }}</td>
+        <td>{{ startupTaskJson.userAgent }}</td>
       </tr>
     </ng-template>
   </p-table>

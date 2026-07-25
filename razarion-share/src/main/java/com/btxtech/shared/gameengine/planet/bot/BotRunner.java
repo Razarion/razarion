@@ -19,7 +19,9 @@ import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -44,6 +46,7 @@ public class BotRunner {
 
     private final Logger log = Logger.getLogger(BotRunner.class.getName());
     private final BaseItemService baseItemService;
+    private final GameLogicService gameLogicService;
     private final Provider<BotEnragementState> enragementStateInstance;
     private final Provider<IntruderHandler> intruderHandlerInstance;
     private final SimpleExecutorService simpleExecutorService;
@@ -61,11 +64,13 @@ public class BotRunner {
     public BotRunner(SimpleExecutorService simpleExecutorService,
                      Provider<IntruderHandler> intruderHandlerInstance,
                      Provider<BotEnragementState> enragementStateInstance,
-                     BaseItemService baseItemService) {
+                     BaseItemService baseItemService,
+                     GameLogicService gameLogicService) {
         this.simpleExecutorService = simpleExecutorService;
         this.intruderHandlerInstance = intruderHandlerInstance;
         this.enragementStateInstance = enragementStateInstance;
         this.baseItemService = baseItemService;
+        this.gameLogicService = gameLogicService;
     }
 
     private class BotTicker implements Runnable {
@@ -136,7 +141,17 @@ public class BotRunner {
     }
 
     private BotEnragementState.Listener getEnragementStateListener() {
-        return null;
+        return new BotEnragementState.Listener() {
+            @Override
+            public void onEnrageNormal(String botName, BotEnragementStateConfig botEnragementStateConfig) {
+                gameLogicService.onBotEnrageNormal(botName, botEnragementStateConfig);
+            }
+
+            @Override
+            public void onEnrageUp(String botName, BotEnragementStateConfig botEnragementStateConfig, PlayerBase actor) {
+                gameLogicService.onBotEnrageUp(botName, botEnragementStateConfig, actor);
+            }
+        };
     }
 
     void kill() {

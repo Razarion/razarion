@@ -6,9 +6,11 @@ import com.btxtech.client.jso.JsObject;
 import com.btxtech.client.jso.JsURLSearchParams;
 import com.btxtech.client.jso.JsWindow;
 import com.btxtech.client.rest.TeaVMRestAccess;
+import com.btxtech.client.system.boot.PageBootGlobals;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
+import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 
 import jakarta.inject.Inject;
@@ -41,6 +43,15 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
         }
     }
 
+    /**
+     * Published for the page's abort beacon: when the player leaves mid startup, the beacon
+     * reports this as the task the startup died on.
+     */
+    @Override
+    public void onNextTask(StartupTaskEnum taskEnum) {
+        JsWindow.setString(PageBootGlobals.CURRENT_TASK, taskEnum.name());
+    }
+
     @Override
     public void onTaskFinished(AbstractStartupTask task) {
         sendStartupTask(task, null);
@@ -50,6 +61,17 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
     public void onTaskFailed(AbstractStartupTask task, String error, Throwable t) {
         JsConsole.error("onTaskFailed: " + task + " error:" + error);
         sendStartupTask(task, error);
+    }
+
+    /**
+     * The task is still running, so this is an extra record rather than the task's own one. It
+     * makes a stuck startup visible even when it later completes - and when it does not, it is
+     * the last record of the session and names the task it hung on.
+     */
+    @Override
+    public void onTaskTimeout(AbstractStartupTask task, long waitedMillis) {
+        JsConsole.warn("onTaskTimeout: " + task + " waited:" + waitedMillis + "ms");
+        sendStartupTask(task, "TIMEOUT: still waiting after " + waitedMillis + "ms", (int) waitedMillis);
     }
 
     @Override
@@ -64,11 +86,15 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
     }
 
     private void sendStartupTask(AbstractStartupTask task, String error) {
+        sendStartupTask(task, error, (int) task.getDuration());
+    }
+
+    private void sendStartupTask(AbstractStartupTask task, String error, int duration) {
         try {
             JsObject jsObj = JsObject.create();
             jsObj.set("gameSessionUuid", boot.get().getGameSessionUuid());
             jsObj.set("startTime", (double) task.getStartTime());
-            jsObj.set("duration", (int) task.getDuration());
+            jsObj.set("duration", duration);
             jsObj.set("taskEnum", task.getTaskEnum().name());
             if (error != null) {
                 jsObj.set("error", error);
@@ -92,10 +118,14 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
     }
 
     private void sendStartupTerminated(long totalTime, boolean success) {
+        // The startup ended on its own, so leaving the page from here on is not an abandoned
+        // startup - silence the page's abort beacon.
+        JsWindow.setString(PageBootGlobals.TERMINATED, "true");
         try {
             JsObject jsObj = JsObject.create();
             jsObj.set("gameSessionUuid", boot.get().getGameSessionUuid());
             jsObj.set("successful", success);
+            jsObj.set("aborted", false);
             jsObj.set("totalTime", (int) totalTime);
             if (rdtCid != null) {
                 jsObj.set("rdtCid", rdtCid);

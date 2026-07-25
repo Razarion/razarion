@@ -25,4 +25,10 @@ public final class JsWindow {
 
     @JSBody(script = "return window.location.host;")
     public static native String getLocationHost();
+
+    @JSBody(params = {"key"}, script = "var v = window[key]; return (typeof v === 'string') ? v : null;")
+    public static native String getString(String key);
+
+    @JSBody(params = {"key", "value"}, script = "window[key] = value;")
+    public static native void setString(String key, String value);
 }

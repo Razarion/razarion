@@ -20,6 +20,14 @@ public interface StartupProgressListener {
     default void onTaskFailed(AbstractStartupTask task, String error, Throwable t) {
     }
 
+    /**
+     * A deferred task is still waiting for its callback after {@code waitedMillis}. The startup
+     * has not failed - the task may still complete - but it is stuck long enough to be worth
+     * reporting.
+     */
+    default void onTaskTimeout(AbstractStartupTask task, long waitedMillis) {
+    }
+
     default void onStartupFinished(List<StartupTaskInfo> taskInfo, long totalTime) {
     }
 

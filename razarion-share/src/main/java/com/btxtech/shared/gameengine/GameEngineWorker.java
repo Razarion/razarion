@@ -470,7 +470,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onSyncBoxDeleted(SyncBoxItem syncBoxItem) {
+    public void onSyncBoxDeleted(SyncBoxItem syncBoxItem, com.btxtech.shared.gameengine.planet.BoxDeletionReason reason) {
         sendToClient(GameEngineControlPackage.Command.BOX_DELETED, syncBoxItem.getId());
     }
 

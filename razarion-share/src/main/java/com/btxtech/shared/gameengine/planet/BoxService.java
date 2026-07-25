@@ -110,7 +110,7 @@ public class BoxService {
             Collection<SyncBoxItem> tmp = new ArrayList<>(boxes.values());
             tmp.forEach(syncBoxItem -> {
                 removeSyncBox(syncBoxItem);
-                gameLogicService.onBoxDeleted(syncBoxItem);
+                gameLogicService.onBoxDeleted(syncBoxItem, BoxDeletionReason.REGION_STOPPED);
             });
             boxes.clear();
         }
@@ -143,7 +143,7 @@ public class BoxService {
         }
 
         removeSyncBox(box);
-        gameLogicService.onBoxDeleted(box);
+        gameLogicService.onBoxDeleted(box, BoxDeletionReason.PICKED);
         if (picker.getBase().isAbandoned()) {
             return;
         }
@@ -177,7 +177,7 @@ public class BoxService {
 
     public void removeSyncBoxSlave(SyncBoxItem box) {
         removeSyncBox(box);
-        gameLogicService.onBoxDeleted(box);
+        gameLogicService.onBoxDeleted(box, BoxDeletionReason.SLAVE_REMOVED);
     }
 
 
@@ -227,7 +227,7 @@ public class BoxService {
             }
             boxesToRemove.forEach(syncBoxItem -> {
                 removeSyncBox(syncBoxItem);
-                gameLogicService.onBoxDeleted(syncBoxItem);
+                gameLogicService.onBoxDeleted(syncBoxItem, BoxDeletionReason.EXPIRED);
             });
             boxRegion.forEach(this::handleBoxRegion);
         } catch (Throwable t) {

@@ -5,6 +5,8 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.quest.QuestBackendInfo;
+import com.btxtech.server.model.history.GameHistoryType;
+import com.btxtech.server.service.history.HistoryService;
 import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.XConversionService;
 import com.btxtech.server.service.tracking.UserActivityService;
@@ -43,6 +45,7 @@ public class ServerLevelQuestService implements QuestListener {
     private final UserActivityService userActivityService;
     private final RedditConversionService redditConversionService;
     private final XConversionService xConversionService;
+    private final HistoryService historyService;
 
     public ServerLevelQuestService(Provider<GameUiContextService> gameUiControlConfigPersistence,
                                    QuestService questService,
@@ -55,7 +58,8 @@ public class ServerLevelQuestService implements QuestListener {
                                    QuestConfigService questConfigService,
                                    UserActivityService userActivityService,
                                    RedditConversionService redditConversionService,
-                                   XConversionService xConversionService) {
+                                   XConversionService xConversionService,
+                                   HistoryService historyService) {
         this.gameUiControlConfigPersistence = gameUiControlConfigPersistence;
         this.questService = questService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
@@ -68,6 +72,7 @@ public class ServerLevelQuestService implements QuestListener {
         this.userActivityService = userActivityService;
         this.redditConversionService = redditConversionService;
         this.xConversionService = xConversionService;
+        this.historyService = historyService;
         questService.addQuestListener(this);
     }
 
@@ -75,7 +80,7 @@ public class ServerLevelQuestService implements QuestListener {
     public void onClientLevelUpdate(String userId, int newLevelId) {
         LevelEntity newLevel = levelCrudPersistence.getEntity(newLevelId);
         UserContext userContext = userService.getUserContext(userId);
-        // TODO historyPersistence.get().onLevelUp(userContext.getUserId(), newLevel);
+        historyService.onLevelUp(userContext.getUserId(), newLevel);
 
         // Temporary: Only save the level if on multiplayer planet. Main reason, tutorial state und units are not saved.
         // This is only called from the client.
@@ -88,7 +93,7 @@ public class ServerLevelQuestService implements QuestListener {
                 newQuest = userService.getAndSaveNewQuest(userContext.getUserId());
             }
             if (newQuest != null) {
-                // TODO historyPersistence.get().onQuest(userContext.getUserId(), newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
+                historyService.onQuest(userContext.getUserId(), newQuest, GameHistoryType.QUEST_ACTIVATED);
                 resolveStartRegionIfNeeded(newQuest);
                 clientSystemConnectionService.onQuestActivated(userContext.getUserId(), newQuest);
                 questService.activateCondition(userContext.getUserId(), newQuest);
@@ -117,6 +122,7 @@ public class ServerLevelQuestService implements QuestListener {
         int newXp = userContext.getXp() + questConfig.getXp();
         LevelEntity currentLevel = levelCrudPersistence.getEntity(userContext.getLevelId());
         userActivityService.onQuestPassed(userId, questConfig.getId(), currentLevel.getNumber());
+        historyService.onQuestPassed(userId, questConfig.getId(), currentLevel.getNumber());
         redditConversionService.sendQuestPassedEvent(userId, questConfig.getId(), currentLevel.getNumber());
         xConversionService.sendQuestPassedEvent(userId, questConfig.getId(), currentLevel.getNumber());
         if (newXp >= currentLevel.getXp2LevelUp()) {
@@ -154,7 +160,7 @@ public class ServerLevelQuestService implements QuestListener {
         if (newLevel != null) {
             userContext.levelId(newLevel.getId());
             userContext.xp(0);
-            // TODO historyPersistence.get().onLevelUp(userId, newLevel);
+            historyService.onLevelUp(userId, newLevel);
             clientSystemConnectionService.onLevelUp(userId,
                     userContext,
                     serverUnlockService.hasAvailableUnlocks(userContext));
@@ -206,7 +212,7 @@ public class ServerLevelQuestService implements QuestListener {
                 onQuestPassed(userId, newQuest);
                 return;
             }
-            // TODO historyPersistence.get().onQuest(userId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
+            historyService.onQuest(userId, newQuest, GameHistoryType.QUEST_ACTIVATED);
             resolveStartRegionIfNeeded(newQuest);
             clientSystemConnectionService.onQuestActivated(userId, newQuest);
             questService.activateCondition(userId, newQuest);
@@ -258,7 +264,7 @@ public class ServerLevelQuestService implements QuestListener {
         }
 
         userService.setActiveQuest(userId, newQuest.getId());
-        // TODO historyPersistence.get().onQuest(userId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
+        historyService.onQuest(userId, newQuest, GameHistoryType.QUEST_ACTIVATED);
         resolveStartRegionIfNeeded(newQuest);
         clientSystemConnectionService.onQuestActivated(userId, newQuest);
         questService.activateCondition(userId, newQuest);
@@ -297,7 +303,7 @@ public class ServerLevelQuestService implements QuestListener {
             clientSystemConnectionService.onQuestActivated(userId, null);
             QuestConfig oldQuest = userService.getActiveQuest(userId);
             userService.clearActiveQuest(userId);
-            // TODO historyPersistence.get().onQuest(userId, oldQuest, QuestHistoryEntity.Type.QUEST_DEACTIVATED);
+            historyService.onQuest(userId, oldQuest, GameHistoryType.QUEST_DEACTIVATED);
         }
     }
 

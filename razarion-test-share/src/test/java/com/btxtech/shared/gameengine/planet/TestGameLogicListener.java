@@ -104,7 +104,7 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     @Override
-    public void onSyncBoxDeleted(SyncBoxItem box) {
+    public void onSyncBoxDeleted(SyncBoxItem box, com.btxtech.shared.gameengine.planet.BoxDeletionReason reason) {
         testWebSocket.onSyncItemRemoved(box, false);
     }
 

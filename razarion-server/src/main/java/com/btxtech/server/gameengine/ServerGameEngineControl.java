@@ -7,6 +7,7 @@ import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.ServerLevelQuestService;
 import com.btxtech.server.service.engine.ServerInventoryService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
+import com.btxtech.server.service.history.HistoryService;
 import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.XConversionService;
 import com.btxtech.server.service.tracking.UserActivityService;
@@ -67,6 +68,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private final RedditConversionService redditConversionService;
     private final XConversionService xConversionService;
     private final ServerInventoryService serverInventoryService;
+    private final HistoryService historyService;
     // Provider breaks the cycle: ServerLevelQuestService injects Provider<ServerGameEngineControl>.
     private final Provider<ServerLevelQuestService> serverLevelQuestService;
     private boolean running;
@@ -89,6 +91,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                                    RedditConversionService redditConversionService,
                                    XConversionService xConversionService,
                                    ServerInventoryService serverInventoryService,
+                                   HistoryService historyService,
                                    Provider<ServerLevelQuestService> serverLevelQuestService) {
         this.initializeService = initializeService;
         this.planetService = planetService;
@@ -109,6 +112,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         this.redditConversionService = redditConversionService;
         this.xConversionService = xConversionService;
         this.serverInventoryService = serverInventoryService;
+        this.historyService = historyService;
         this.serverLevelQuestService = serverLevelQuestService;
     }
 
@@ -246,6 +250,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Override
     public void onBaseCreated(PlayerBaseFull playerBase) {
         clientGameConnectionService.onBaseCreated(playerBase);
+        // History logs all bases (bots too, for debugging); tracking/conversion stays human-only.
+        historyService.onBaseCreated(playerBase);
         if (playerBase.getUserId() != null) {
             this.userActivityService.onBaseCreated(playerBase.getUserId(), playerBase.getBaseId());
             redditConversionService.sendBuilderDeployedEvent(playerBase.getUserId());
@@ -256,13 +262,14 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Override
     public void onBaseDeleted(PlayerBase playerBase, PlayerBase actor) {
         clientGameConnectionService.onBaseDeleted(playerBase);
-        // TODO itemTrackerPersistence.onBaseDeleted(playerBase, actor);
+        historyService.onBaseDefeated(playerBase, actor);
     }
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
         clientGameConnectionService.onSyncItemSpawnStart(syncBaseItem);
-        // TODO itemTrackerPersistence.onSpawnSyncItemStart(syncBaseItem);
+        // No history here on purpose: this is the spawn/build-progress start, not a finished unit.
+        // ITEM_CREATED is logged from the finished/created hooks (onFactorySyncItem/onBuildingSyncItem/onSpawnSyncItemNoSpan).
     }
 
     @Override
@@ -277,29 +284,30 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     @Override
     public void onSpawnSyncItemNoSpan(SyncBaseItem syncBaseItem) {
-        // TODO itemTrackerPersistence.onSpawnSyncItemNoSpan(syncBaseItem);
+        // Item spawned fully ready (no spawn animation) - a finished unit.
+        historyService.onItemCreated(syncBaseItem);
     }
 
     @Override
     public void onBuildingSyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
-        // TODO itemTrackerPersistence.onBuildingSyncItem(syncBaseItem, createdBy);
+        historyService.onItemCreated(syncBaseItem);
     }
 
     @Override
     public void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
-        // TODO itemTrackerPersistence.onFactorySyncItem(syncBaseItem, createdBy);
+        historyService.onItemCreated(syncBaseItem);
     }
 
     @Override
     public void onSyncBaseItemKilledMaster(SyncBaseItem syncBaseItem, SyncBaseItem actor) {
         clientGameConnectionService.onSyncItemRemoved(syncBaseItem, true);
-        // TODO itemTrackerPersistence.onSyncBaseItemKilled(syncBaseItem, actor);
+        historyService.onItemDestroyed(syncBaseItem, actor);
     }
 
     @Override
     public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
         clientGameConnectionService.onSyncItemRemoved(syncBaseItem, false);
-        // TODO itemTrackerPersistence.onSyncBaseItemRemoved(syncBaseItem);
+        historyService.onItemDestroyed(syncBaseItem, null);
     }
 
     @Override
@@ -317,13 +325,28 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Override
     public void onBoxCreated(SyncBoxItem syncBoxItem) {
         clientGameConnectionService.onSyncBoxCreated(syncBoxItem);
-        // TODO itemTrackerPersistence.onSyncBoxCreated(syncBoxItem);
+        historyService.onBoxDropped(syncBoxItem);
     }
 
     @Override
-    public void onSyncBoxDeleted(SyncBoxItem box) {
+    public void onSyncBoxDeleted(SyncBoxItem box, com.btxtech.shared.gameengine.planet.BoxDeletionReason reason) {
         clientGameConnectionService.onSyncItemRemoved(box, false);
-        // TODO itemTrackerPersistence.onSyncBoxDeleted(box);
+        if (reason == com.btxtech.shared.gameengine.planet.BoxDeletionReason.EXPIRED) {
+            historyService.onBoxExpired(box);
+        } else if (reason != com.btxtech.shared.gameengine.planet.BoxDeletionReason.PICKED) {
+            // PICKED is already covered by BOX_PICKED + the per-content events; avoid a duplicate row.
+            historyService.onBoxDeleted(box);
+        }
+    }
+
+    @Override
+    public void onBotEnrageUp(String botName, com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig botEnragementStateConfig, PlayerBase actor) {
+        historyService.onBotEnrageUp(botName, botEnragementStateConfig, actor);
+    }
+
+    @Override
+    public void onBotEnrageNormal(String botName, com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig botEnragementStateConfig) {
+        historyService.onBotEnrageNormal(botName, botEnragementStateConfig);
     }
 
     @Override

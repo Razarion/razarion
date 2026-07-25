@@ -42,6 +42,14 @@
       <div class="restart-overlay-spinner">
         <i class="pi pi-spin pi-spinner"></i>
       </div>
+      <div class="restart-overlay-status">
+        Waiting for {{ downText }} &middot; {{ healthChecks }} attempts
+      </div>
+      <div class="restart-overlay-hint">
+        A restart usually takes about two minutes. The page reloads by itself.
+      </div>
+      <p-button label="Reload now" size="small" severity="secondary"
+                (onClick)="onReloadClicked()"></p-button>
     </div>
   </div>
 }

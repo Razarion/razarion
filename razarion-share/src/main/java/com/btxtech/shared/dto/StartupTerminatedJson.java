@@ -4,13 +4,32 @@ import java.util.Date;
 
 public class StartupTerminatedJson {
     private boolean successful;
-    private int totalTime;
+    /**
+     * Null for an aborted startup: nobody ever reported a finish, so there is no duration to
+     * show. Only a startup that ran to its own end - successfully or with an error - has one.
+     */
+    private Integer totalTime;
     private String gameSessionUuid;
     private Date serverTime;
     private String rdtCid;
     private String twclid;
     private String utmCampaign;
     private String utmSource;
+    /**
+     * The startup never terminated by itself: the player left, or a task waited forever for a
+     * callback that never came. Such a session used to be invisible - it simply had no record
+     * at all - which is why the startup list looked almost failure-free while a third of the
+     * players never reached the game.
+     * <p>
+     * Set either by the client's pagehide beacon or, for everything the beacon cannot catch
+     * (browser killed, network gone), derived on the server from startup tasks without a
+     * matching terminated record.
+     */
+    private boolean aborted;
+    /**
+     * Last startup task seen for an aborted session - where it got stuck. Null otherwise.
+     */
+    private String lastTaskEnum;
 
     public boolean isSuccessful() {
         return successful;
@@ -20,12 +39,28 @@ public class StartupTerminatedJson {
         this.successful = successful;
     }
 
-    public int getTotalTime() {
+    public Integer getTotalTime() {
         return totalTime;
     }
 
-    public void setTotalTime(int totalTime) {
+    public void setTotalTime(Integer totalTime) {
         this.totalTime = totalTime;
+    }
+
+    public boolean isAborted() {
+        return aborted;
+    }
+
+    public void setAborted(boolean aborted) {
+        this.aborted = aborted;
+    }
+
+    public String getLastTaskEnum() {
+        return lastTaskEnum;
+    }
+
+    public void setLastTaskEnum(String lastTaskEnum) {
+        this.lastTaskEnum = lastTaskEnum;
     }
 
     public String getGameSessionUuid() {
@@ -81,8 +116,18 @@ public class StartupTerminatedJson {
         return this;
     }
 
-    public StartupTerminatedJson totalTime(int totalTime) {
+    public StartupTerminatedJson totalTime(Integer totalTime) {
         setTotalTime(totalTime);
+        return this;
+    }
+
+    public StartupTerminatedJson aborted(boolean aborted) {
+        setAborted(aborted);
+        return this;
+    }
+
+    public StartupTerminatedJson lastTaskEnum(String lastTaskEnum) {
+        setLastTaskEnum(lastTaskEnum);
         return this;
     }
 
@@ -120,6 +165,8 @@ public class StartupTerminatedJson {
     public String toString() {
         return "StartupTerminatedJson{" +
                 "successful=" + successful +
+                ", aborted=" + aborted +
+                ", lastTaskEnum='" + lastTaskEnum + '\'' +
                 ", totalTime=" + totalTime +
                 ", gameSessionUuid='" + gameSessionUuid + '\'' +
                 ", serverTime=" + serverTime +

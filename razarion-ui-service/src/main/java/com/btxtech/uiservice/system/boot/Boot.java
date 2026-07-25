@@ -17,6 +17,12 @@ import java.util.logging.Logger;
  * Time: 10:56:33
  */
 public abstract class Boot {
+    /**
+     * A deferred task waiting longer than this is reported as stuck. Chosen above the slowest
+     * healthy startups seen in tracking (99th percentile is around 50s, dominated by the model
+     * download) so a normal slow connection does not raise it.
+     */
+    private static final long DEFERRED_TASK_TIMEOUT_MILLIS = 60_000;
     private final Logger logger = Logger.getLogger(Boot.class.getName());
     private final Collection<StartupProgressListener> listeners = new ArrayList<>();
     private final List<AbstractStartupTask> startupList = new ArrayList<>();
@@ -45,7 +51,7 @@ public abstract class Boot {
     }
 
     public void start(StartupSeq startupSeq) {
-        gameSessionUuid = MathHelper.generateUuid();
+        gameSessionUuid = createGameSessionUuid();
         failed = false;
         for (StartupProgressListener listener : listeners) {
             listener.onStart(startupSeq);
@@ -103,6 +109,7 @@ public abstract class Boot {
                 onTaskFinished(task);
             } else {
                 deferredStartups.add(deferredStartup);
+                watchDeferredTask(task, deferredStartup);
             }
 
             if (deferredStartup.isBackground()) {
@@ -111,6 +118,48 @@ public abstract class Boot {
         } else {
             onTaskFinished(task);
         }
+    }
+
+    /**
+     * A deferred task hands control to a callback. If that callback never comes - a fetch that
+     * neither resolves nor rejects, a backgrounded tab - the whole startup stops silently: no
+     * error, no listener call, nothing sent. That is how the bulk of the abandoned startups used
+     * to disappear from tracking. This raises the alarm after {@link #DEFERRED_TASK_TIMEOUT_MILLIS}.
+     * <p>
+     * It reports and lets the task keep running instead of failing the startup. Killing a slow
+     * boot would turn a player who was still going to make it into one who never does; the
+     * missing terminated record marks the session as aborted anyway if it truly never finishes.
+     */
+    private void watchDeferredTask(AbstractStartupTask task, DeferredStartup deferredStartup) {
+        scheduleDeferredTimeout(DEFERRED_TASK_TIMEOUT_MILLIS, () -> {
+            if (failed || deferredStartup.isFinished()) {
+                return;
+            }
+            logger.warning("Boot: task still waiting after " + DEFERRED_TASK_TIMEOUT_MILLIS + "ms: " + task.getTaskEnum());
+            for (StartupProgressListener listener : listeners) {
+                try {
+                    listener.onTaskTimeout(task, DEFERRED_TASK_TIMEOUT_MILLIS);
+                } catch (Throwable t) {
+                    logger.log(Level.SEVERE, "Listener.onTaskTimeout() failed", t);
+                }
+            }
+        });
+    }
+
+    /**
+     * No scheduler down here - the client overrides this with its own executor. The default does
+     * nothing, which keeps the boot tests free of timers.
+     */
+    protected void scheduleDeferredTimeout(long delayMillis, Runnable runnable) {
+    }
+
+    /**
+     * Overridden on the client so a session started before the WebAssembly module was even
+     * loaded keeps its id: the page hands one over, and the tasks reported from the page and
+     * from the engine then belong to the same session.
+     */
+    protected String createGameSessionUuid() {
+        return MathHelper.generateUuid();
     }
 
     private void cleanup() {

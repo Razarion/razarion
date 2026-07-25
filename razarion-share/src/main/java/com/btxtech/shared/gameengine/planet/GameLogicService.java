@@ -183,8 +183,16 @@ public class GameLogicService {
         questServiceInstance.get().onSyncBoxItemPicked(userId);
     }
 
-    public void onBoxDeleted(SyncBoxItem box) {
-        gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeleted(box));
+    public void onBoxDeleted(SyncBoxItem box, BoxDeletionReason reason) {
+        gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeleted(box, reason));
+    }
+
+    public void onBotEnrageUp(String botName, com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig botEnragementStateConfig, PlayerBase actor) {
+        gameLogicListener.ifPresent(listener -> listener.onBotEnrageUp(botName, botEnragementStateConfig, actor));
+    }
+
+    public void onBotEnrageNormal(String botName, com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig botEnragementStateConfig) {
+        gameLogicListener.ifPresent(listener -> listener.onBotEnrageNormal(botName, botEnragementStateConfig));
     }
 
     public void onBuilderNoRazarion(SyncBaseItem syncBaseItem) {

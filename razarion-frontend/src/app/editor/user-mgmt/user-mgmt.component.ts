@@ -17,6 +17,9 @@ import {ToolbarModule} from 'primeng/toolbar';
 import {CheckboxModule} from 'primeng/checkbox';
 import {RippleModule} from 'primeng/ripple';
 import {DialogModule} from 'primeng/dialog';
+import {GwtAngularService} from 'src/app/gwtangular/GwtAngularService';
+import {GwtInstance} from 'src/app/gwtangular/GwtInstance';
+import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render-service-access-impl.service';
 
 @Component({
   selector: 'user-mgmt',
@@ -35,7 +38,12 @@ import {DialogModule} from 'primeng/dialog';
     RippleModule,
     DialogModule
 ],
-  templateUrl: './user-mgmt.component.html'
+  templateUrl: './user-mgmt.component.html',
+  styles: [`
+    /* Zebra-stripe the key/value rows of the expanded detail block for readability. */
+    .um-detail > div { padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .um-detail > div:nth-child(even) { background: rgba(255, 255, 255, 0.05); }
+  `]
 })
 export class UserMgmtComponent extends EditorPanel implements OnInit {
   userBackendInfos: UserBackendInfo[] = [];
@@ -45,9 +53,13 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
   minutes: number = 60;
   showDeleteDialog = false;
   userToDelete: UserBackendInfo | null = null;
+  // Per base: last unit id the camera jumped to, so a repeated "Move to" advances to the next unit.
+  private lastMovedToUnitId = new Map<number, number>();
 
 
   constructor(private messageService: MessageService,
+              private gwtAngularService: GwtAngularService,
+              private renderService: BabylonRenderServiceAccessImpl,
               httpClient: HttpClient) {
     super();
     this.userMgmtControllerClient = new UserMgmtControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
@@ -235,13 +247,72 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
   selectUnregistered() {
     const now = new Date();
     this.userBackendInfos.forEach((userBackendInfo) => {
-      if (!userBackendInfo.email) {
-        if (userBackendInfo.systemConnectionClosed
-          && UserMgmtComponent.isOlderThanMinutes(userBackendInfo.systemConnectionClosed, now, this.minutes)) {
+      // Only ever auto-select anonymous (unregistered) users.
+      if (userBackendInfo.email) {
+        return;
+      }
+      // Never touch a user that currently holds a live connection. The server persists
+      // systemConnectionOpened the moment a system connection opens (UserService.onClientSystemConnectionOpened),
+      // so anyone mid-connect already has that timestamp and is no longer a "grey" row — but we still
+      // guard on the live flags to be safe against a user who is about to build a connection.
+      if (userBackendInfo.systemConnectionOpen || userBackendInfo.gameConnectionOpen) {
+        return;
+      }
+      if (userBackendInfo.systemConnectionClosed) {
+        // Red row: was online and disconnected. Select once offline longer than the threshold.
+        if (UserMgmtComponent.isOlderThanMinutes(userBackendInfo.systemConnectionClosed, now, this.minutes)) {
+          this.selectedUserIds.add(userBackendInfo.userId);
+        }
+      } else if (!userBackendInfo.systemConnectionOpened && userBackendInfo.creationDate) {
+        // Grey row: never established a system connection at all. Guard by creation age so a freshly
+        // created account that might still be opening its connection is left alone.
+        if (UserMgmtComponent.isOlderThanMinutes(userBackendInfo.creationDate, now, this.minutes)) {
           this.selectedUserIds.add(userBackendInfo.userId);
         }
       }
     })
+  }
+
+  // True only while the game engine is running (in-game editor). Opened via the backend URL the WASM
+  // client never boots, so there is no camera to move — the "Move to" button stays disabled there.
+  gameAvailable(): boolean {
+    const facade = this.gwtAngularService.gwtAngularFacade;
+    return !!facade && !!facade.baseItemUiService && !!facade.gameUiControl;
+  }
+
+  // Scrolls the camera to a unit of the user's base. Repeated clicks cycle through that base's units.
+  moveToBase(userBackendInfo: UserBackendInfo): void {
+    const baseId = userBackendInfo.baseId;
+    if (baseId === null || baseId === undefined || !this.gameAvailable()) {
+      return;
+    }
+    const facade = this.gwtAngularService.gwtAngularFacade;
+    // Scan the whole planet: the worker simulates all bases, so the full item buffer is available
+    // regardless of what is currently on screen.
+    const size = facade.gameUiControl.getPlanetConfig().getSize();
+    const bottomLeft = GwtInstance.newDecimalPosition(0, 0);
+    const topRight = GwtInstance.newDecimalPosition(size.getX(), size.getY());
+    const units = facade.baseItemUiService.getVisibleNativeSyncBaseItemTickInfos(bottomLeft, topRight)
+      .filter(info => info.baseId === baseId)
+      // Stable order so cycling is deterministic across clicks even as units move.
+      .sort((a, b) => a.id - b.id);
+    if (units.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: `No units found`,
+        detail: `Base ${baseId} has no units on the planet.`
+      });
+      return;
+    }
+    const lastId = this.lastMovedToUnitId.get(baseId);
+    let nextIdx = 0;
+    if (lastId !== undefined) {
+      const lastIdx = units.findIndex(u => u.id === lastId);
+      nextIdx = lastIdx >= 0 ? (lastIdx + 1) % units.length : 0;
+    }
+    const next = units[nextIdx];
+    this.lastMovedToUnitId.set(baseId, next.id);
+    this.renderService.setViewFieldCenter(next.x, next.y);
   }
 
   public static isOlderThanMinutes(date: Date, now: Date, minutes: number): boolean {

@@ -75,11 +75,19 @@ public class TrackerControllerImpl implements TrackerController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('ADMIN')") 
     public TrackingContainer loadTrackingContainer(@RequestBody TrackingRequest trackingRequest) {
+        List<StartupTaskJson> startupTaskJsons = startupTrackingService
+                .loadStartupTaskJsons(trackingRequest.getFromDate(), trackingRequest.getToDate());
+        // Startups that never reported an end have no record of their own - resolveTerminated
+        // adds them so the list shows the abandoned sessions, not only the ones that finished.
+        List<StartupTerminatedJson> startupTerminatedJsons = startupTrackingService.resolveTerminated(
+                startupTaskJsons,
+                startupTrackingService.loadStartupTerminatedJson(trackingRequest.getFromDate(), trackingRequest.getToDate()));
+
         return new TrackingContainer()
                 .pageRequests(pageRequestService.loadPageRequests(trackingRequest.getFromDate(), trackingRequest.getToDate()))
                 .userActivities(userActivityService.loadUserActivities(trackingRequest.getFromDate(), trackingRequest.getToDate()))
-                .startupTaskJsons(startupTrackingService.loadStartupTaskJsons(trackingRequest.getFromDate(), trackingRequest.getToDate()))
-                .startupTerminatedJson(startupTrackingService.loadStartupTerminatedJson(trackingRequest.getFromDate(), trackingRequest.getToDate()));
+                .startupTaskJsons(startupTaskJsons)
+                .startupTerminatedJson(startupTerminatedJsons);
     }
 
     /**

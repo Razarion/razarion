@@ -93,6 +93,28 @@ public class ResourceUiService {
         return result;
     }
 
+    /**
+     * True if a resource item overlaps one of the given positions. Used by the item placer: an item must
+     * not be placed over a resource spot. The master enforces the same for builder builds
+     * (SyncItemContainerServiceImpl.isFree() covers all sync items), but not for the base spawn - so
+     * without this check a start builder could be spawned right on top of a resource.
+     * All resources are known to the client (not only the visible ones).
+     */
+    public boolean hasResourcesInRange(Collection<DecimalPosition> positions, double radius) {
+        synchronized (resources) {
+            for (SyncResourceItemSimpleDto resource : resources.values()) {
+                ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resource.getItemTypeId());
+                DecimalPosition resourcePosition = resource.getPosition().toXY();
+                for (DecimalPosition position : positions) {
+                    if (position.getDistance(resourcePosition) < radius + resourceItemType.getRadius()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private Collection<SyncResourceItemSimpleDto> findResourceItemWithPlace(int resourceTypeId, PlaceConfig resourceSelection) {
         Collection<SyncResourceItemSimpleDto> result = new ArrayList<>();
         synchronized (resources) {

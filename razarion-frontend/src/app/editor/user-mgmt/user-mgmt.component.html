@@ -26,7 +26,7 @@
       <p-table [value]="userBackendInfos"
         dataKey="userId"
         [scrollable]="true"
-        scrollHeight="800px">
+        scrollHeight="calc(100vh - 150px)">
         <ng-template pTemplate="header">
           <tr>
             <th></th>
@@ -104,6 +104,7 @@
           <ng-template pTemplate="expandedrow" let-userBackendInfo>
             <tr>
               <td colspan="5">
+                <div class="um-detail max-w-2xl flex flex-col">
                 <div class="grid grid-cols-12 gap-4">
                   <span class="col-span-5">User id</span>
                   <div class="col-span-7">
@@ -166,9 +167,9 @@
                     </p-button>
                   </div>
                 </div>
-                <div class="grid grid-cols-12 gap-4 w-xl">
+                <div class="grid grid-cols-12 gap-4">
                   <span class="col-span-5">Completed quest ids</span>
-                  <div class="col-span-7">
+                  <div class="col-span-7 flex flex-wrap items-center gap-1">
                     @for (questId of userBackendInfo.completedQuestIds; track questId) {
                       <p-chip
                         [label]="questId"
@@ -183,7 +184,7 @@
                 </div>
                 <div class="grid grid-cols-12 gap-4">
                   <span class="col-span-5">Unlocked</span>
-                  <div class="col-span-7">
+                  <div class="col-span-7 flex flex-wrap items-center gap-1">
                     @for (unlockedId of userBackendInfo.unlockedIds; track unlockedId) {
                       <p-chip
                         [label]="unlockedId"
@@ -198,7 +199,17 @@
                 </div>
                 <div class="grid grid-cols-12 gap-4">
                   <span class="col-span-5">Base id</span>
-                  <div class="col-span-7">{{ userBackendInfo.baseId }}</div>
+                  <div class="col-span-7">
+                    {{ userBackendInfo.baseId }}
+                    @if (userBackendInfo.baseId || userBackendInfo.baseId === 0) {
+                      <p-button icon="pi pi-map-marker" label="Move to"
+                        styleClass="p-button-rounded p-button-text p-button-sm"
+                        title="Scroll to a unit of this base; click again for the next unit"
+                        [disabled]="!gameAvailable()"
+                        (onClick)="moveToBase(userBackendInfo)">
+                      </p-button>
+                    }
+                  </div>
                 </div>
                 <div class="grid grid-cols-12 gap-4">
                   <span class="col-span-5">System connection open</span>
@@ -230,6 +241,20 @@
                   <span class="col-span-5">Last message sent</span>
                   <div class="col-span-7">{{ userBackendInfo.gameConnectionLastMessageSent | date:'HH:mm:ss dd.MM.yyyy ' }}
                   </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4">
+                  <span class="col-span-5">Game history</span>
+                  <div class="col-span-7 flex flex-col gap-1" style="max-height: 16rem; overflow-y: auto">
+                    @for (entry of userBackendInfo.gameHistoryEntries; track $index) {
+                      <div class="flex gap-2">
+                        <span class="text-xs opacity-70 whitespace-nowrap">{{ entry.date | date:'dd.MM.yyyy HH:mm:ss' }}</span>
+                        <span class="text-xs">{{ entry.description }}</span>
+                      </div>
+                    } @empty {
+                      <span class="text-xs opacity-70">-</span>
+                    }
+                  </div>
+                </div>
                 </div>
               </td>
             </tr>

@@ -14,6 +14,7 @@ import {
   PlaceConfig,
   ResourceItemType,
   TerrainTile,
+  TerrainType,
 } from "src/app/gwtangular/GwtAngularFacade";
 import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
@@ -21,12 +22,10 @@ import {BabylonModelService} from "./babylon-model.service";
 import {BabylonWaterRenderService} from "./babylon-water-render.service";
 import {
   AbstractMesh,
-  ActionManager,
   Color3,
   DirectionalLight,
   Engine,
   EngineInstrumentation,
-  ExecuteCodeAction,
   FreeCamera,
   InputBlock,
   Matrix,
@@ -90,6 +89,10 @@ export enum RazarionMetadataType {
 })
 export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAccess {
   private readonly SPAWN_PARTICLE_HEIGHT = 15;
+  private static readonly GO_CURSOR = 'url("cursors/go.png") 15 15, auto';
+  private static readonly GO_NO_CURSOR = 'url("cursors/go-no.png") 15 15, auto';
+  /** Upper bound for the ground pick behind the no-go cursor: ~16 evaluations per second. */
+  private static readonly TERRAIN_CURSOR_THROTTLE_MS = 60;
 
   private scene!: Scene;
   private engine!: Engine;
@@ -115,7 +118,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private placeMarkerMesh?: Mesh;
   private placeMarkerMaterial?: NodeMaterial;
   baseItemPlacerActive = false;
-  public terrainObjectActionManager!: ActionManager;
+  // ----- Terrain no-go cursor state (see updateTerrainCursor) -----
+  private moveCursorActive = false;
+  private terrainCursorNoGo: boolean | null = null;
+  private lastTerrainCursorCheck = 0;
+  private readonly ordinalTilesRequested = new Set<string>();
+  private readonly ordinalTilesReady = new Set<string>();
   private editorTerrainTileContainer: BabylonTerrainTileImpl[] = [];
   private editorTerrainTileCreationCallback: ((babylonTerrainTile: BabylonTerrainTileImpl) => undefined) | undefined;
   // Editor water toggle: applied to every existing tile and remembered so tiles streamed in later
@@ -339,6 +347,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     };
 
     this.scene.onPointerMove = () => {
+      this.updateTerrainCursor();
       if (!terrainDownPos) return;
       const dx = Math.abs(this.scene.pointerX - terrainDownPos.x);
       const dy = Math.abs(this.scene.pointerY - terrainDownPos.y);
@@ -362,21 +371,19 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       terrainDownPos = null;
     };
 
-    // ----- Terrain object ActionManager (no-go cursor for blocked objects) -----
-    this.terrainObjectActionManager = new ActionManager(this.scene);
-    this.terrainObjectActionManager.registerAction(
-      new ExecuteCodeAction(ActionManager.OnPickDownTrigger, () => {
-      })
-    );
-
     // ----- Terrain cursor (centralized) -----
     this.actionService.addCursorHandler((selectionInfo) => {
-      if (selectionInfo.hasOwnMovable) {
-        this.scene.defaultCursor = 'url("cursors/go.png") 15 15, auto';
-        this.terrainObjectActionManager.hoverCursor = 'url("cursors/go-no.png") 15 15, auto';
+      this.moveCursorActive = selectionInfo.hasOwnMovable;
+      this.terrainCursorNoGo = null;
+      if (this.moveCursorActive) {
+        this.applyTerrainCursor(false);
+        this.lastTerrainCursorCheck = 0;
+        this.updateTerrainCursor();
       } else {
         this.scene.defaultCursor = 'default';
-        this.terrainObjectActionManager.hoverCursor = 'default';
+        if (!this.scene.meshUnderPointer) {
+          this.canvas.style.cursor = 'default';
+        }
       }
     });
 
@@ -637,6 +644,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     if (idx !== -1) {
       this.editorTerrainTileContainer.splice(idx, 1);
     }
+    // The TerrainType ordinals live on the UiTerrainTile the worker answered for. Once that tile is
+    // evicted a later reload arrives without them, so the no-go cursor has to ask again instead of
+    // trusting a stale "ready" and reading the object-blind client-side fallback.
+    const tileIndex = terrainTile.terrainTile.getIndex();
+    const tileKey = `${GwtHelper.gwtIssueNumber(tileIndex.getX())}_${GwtHelper.gwtIssueNumber(tileIndex.getY())}`;
+    this.ordinalTilesRequested.delete(tileKey);
+    this.ordinalTilesReady.delete(tileKey);
   }
 
   getScene(): Scene {
@@ -1044,6 +1058,107 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
       return razarionMetadata.type == RazarionMetadataType.GROUND || razarionMetadata.type == RazarionMetadataType.BOT_GROUND;
     });
+  }
+
+  /**
+   * Switches the move cursor to its no-go variant while the pointer sits over terrain the selected
+   * units cannot enter - blocking terrain objects (trees, rocks) and walls/steep slopes.
+   *
+   * Deliberately NOT built on per-mesh ActionManagers: TerrainObjects are hardware instances, and
+   * Babylon's pointerMovePredicate admits every mesh carrying an ActionManager to the pick it runs
+   * on EVERY pointer move - with ~1500 tree instances that collapses the framerate on mouse motion,
+   * which is why the old hover cursor was dropped. Here the pick is throttled to
+   * {@link TERRAIN_CURSOR_THROTTLE_MS} instead of running per event, and the terrain verdict comes
+   * from the worker-computed TerrainType ordinals rather than from mesh geometry.
+   */
+  private updateTerrainCursor(): void {
+    if (!this.moveCursorActive) {
+      return;
+    }
+    const now = Date.now();
+    if (now - this.lastTerrainCursorCheck < BabylonRenderServiceAccessImpl.TERRAIN_CURSOR_THROTTLE_MS) {
+      return;
+    }
+    this.lastTerrainCursorCheck = now;
+    this.applyTerrainCursor(this.isTerrainUnderPointerBlocked());
+  }
+
+  private isTerrainUnderPointerBlocked(): boolean {
+    // Exactly the pick the click uses (scene.onPointerDown), so cursor and click can never
+    // disagree: picking the ground alone would report the terrain BEHIND a tree - free ground, on
+    // which the click is nevertheless swallowed because the topmost mesh is the tree.
+    const pickInfo = this.setupMeshPickPoint();
+    if (!pickInfo.hit || !pickInfo.pickedMesh || !pickInfo.pickedPoint) {
+      return false;
+    }
+    const metadataNode = BabylonRenderServiceAccessImpl.findRazarionMetadataNode(pickInfo.pickedMesh);
+    const metadata = metadataNode ? BabylonRenderServiceAccessImpl.getRazarionMetadata(metadataNode) : undefined;
+    if (!metadata) {
+      return false;
+    }
+    if (metadata.type === RazarionMetadataType.TERRAIN_OBJECT) {
+      return true;
+    }
+    if (metadata.type !== RazarionMetadataType.GROUND && metadata.type !== RazarionMetadataType.BOT_GROUND) {
+      // An item is hovered - its own ActionManager.hoverCursor (attack, collect, ...) owns the cursor.
+      return false;
+    }
+    // Absent in the mock facade (gwtMock / studio), which drives this same renderer.
+    if (!this.gwtAngularService.gwtAngularFacade.terrainUiService) {
+      return false;
+    }
+    const x = pickInfo.pickedPoint.x;
+    const y = pickInfo.pickedPoint.z;
+    const tileX = Math.floor(x / BabylonTerrainTileImpl.NODE_X_COUNT);
+    const tileY = Math.floor(y / BabylonTerrainTileImpl.NODE_Y_COUNT);
+    const tileKey = `${tileX}_${tileY}`;
+    if (!this.ordinalTilesReady.has(tileKey)) {
+      this.requestTerrainTypeOrdinals(tileX, tileY, tileKey);
+      // Until the worker ordinals arrive, getTerrainType() falls back to the client-side analyzer,
+      // which knows nothing about terrain objects and reports BLOCKED along tile borders. Never
+      // claim a no-go from that - show the plain go cursor instead.
+      return false;
+    }
+    const terrainType = GwtHelper.gwtIssueStringEnum(
+      this.gwtAngularService.gwtAngularFacade.terrainUiService.getTerrainType(x, y),
+      TerrainType);
+    // BLOCKED only. WATER is not a no-go by itself - whether it is depends on the locomotion of the
+    // selected units, which SelectionInfo does not carry.
+    return terrainType === TerrainType.BLOCKED;
+  }
+
+  /**
+   * Pulls the TerrainType ordinals of one tile from the worker, once. The pointer is only ever over
+   * a single tile, so this stays a handful of tiles per session instead of one request per loaded
+   * tile.
+   */
+  private requestTerrainTypeOrdinals(tileX: number, tileY: number, tileKey: string): void {
+    if (this.ordinalTilesRequested.has(tileKey)) {
+      return;
+    }
+    this.ordinalTilesRequested.add(tileKey);
+    this.gwtAngularService.gwtAngularFacade.terrainUiService.requestTerrainTypeOrdinals(tileX, tileY, () => {
+      this.ordinalTilesReady.add(tileKey);
+      // The pointer is most likely still over this tile - re-evaluate without waiting for the
+      // throttle window.
+      this.lastTerrainCursorCheck = 0;
+      this.updateTerrainCursor();
+    });
+  }
+
+  private applyTerrainCursor(noGo: boolean): void {
+    if (this.terrainCursorNoGo === noGo) {
+      return;
+    }
+    this.terrainCursorNoGo = noGo;
+    const cursor = noGo ? BabylonRenderServiceAccessImpl.GO_NO_CURSOR : BabylonRenderServiceAccessImpl.GO_CURSOR;
+    this.scene.defaultCursor = cursor;
+    // Babylon writes the canvas cursor BEFORE it invokes scene.onPointerMove, so updating only
+    // scene.defaultCursor would apply one pointer event late. Write the canvas too - but not while
+    // an item is hovered, where its own ActionManager.hoverCursor (attack, collect, ...) owns it.
+    if (!this.scene.meshUnderPointer) {
+      this.canvas.style.cursor = cursor;
+    }
   }
 
   public setupPointerZeroLevelPosition(): Vector3 {

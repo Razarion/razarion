@@ -5,6 +5,7 @@ import {MessageService} from 'primeng/api';
 import {LoggingControllerImplClient} from './generated/razarion-share';
 import {TypescriptGenerator} from './backend/typescript-generator';
 import {HttpClient} from '@angular/common/http';
+import {RemoteLogging} from './backend/remote-logging';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +27,9 @@ export class AppComponent {
     const originalWarn = console.warn;
     console.warn = function (...args) {
       originalWarn.apply(console, args);
+      if (!RemoteLogging.allow()) {
+        return;
+      }
       try {
         loggingController.angularJsonLogger({
           level: 'warn',
@@ -44,6 +48,9 @@ export class AppComponent {
     const originalError = console.error;
     console.error = function (...args) {
       originalError.apply(console, args);
+      if (!RemoteLogging.allow()) {
+        return;
+      }
       try {
         loggingController.angularJsonLogger({
           level: 'error',

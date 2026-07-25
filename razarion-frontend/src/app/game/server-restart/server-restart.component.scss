@@ -90,3 +90,15 @@
   font-size: 1.6em;
   color: var(--p-emerald-500, #10b981);
 }
+
+// Proof that the client is still polling: a frozen counter means the tab is stuck, not the server.
+.restart-overlay-status {
+  font-size: 0.9em;
+  font-variant-numeric: tabular-nums;
+  color: #999;
+}
+
+.restart-overlay-hint {
+  font-size: 0.8em;
+  color: #777;
+}

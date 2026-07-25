@@ -483,7 +483,7 @@ public class GamePage {
                 "var meshes = scene.meshes;" +
                 "for (var i = 0; i < meshes.length; i++) {" +
                 "  var mesh = meshes[i];" +
-                "  if (!mesh.actionManager) continue;" +
+                "  if (!mesh.isPickable || !mesh.isVisible) continue;" +
                 "  var node = mesh;" +
                 "  while (node) {" +
                 "    if (node.metadata && node.metadata.razarionMetadata && node.metadata.razarionMetadata.type === 1) {" +
@@ -1205,20 +1205,22 @@ public class GamePage {
     }
 
     /**
-     * Verifies cursor behavior: hovers empty terrain (go) and terrain object (go-no).
-     * Terrain object check is best-effort (async loading may delay it).
+     * Verifies cursor behavior: hovers empty terrain (go) and a terrain object (go-no).
+     * Finding a terrain object stays best-effort (they stream in asynchronously), but once one is
+     * hovered the no-go cursor is asserted - that is the regression this test exists for.
      */
     public void verifyCursors() {
         double[] emptyPos = hoverEmptyTerrain();
-        assertThat(emptyPos, "Empty terrain position");
-        double[] objPos = tryHoverTerrainObject();
-        // objPos may be null if terrain objects aren't loaded yet - that's OK
-    }
-
-    private void assertThat(double[] pos, String name) {
-        if (pos == null) {
-            // Soft check - don't fail
+        if (emptyPos == null) {
+            throw new AssertionError("No terrain position under the pointer after hovering empty terrain");
         }
+        double[] objPos = tryHoverTerrainObject();
+        if (objPos == null) {
+            // No terrain object visible/loaded yet - nothing to assert.
+            return;
+        }
+        // The cursor is throttled, so give it one window to catch up.
+        wait.until(d -> isNoGoCursor());
     }
 
     /**

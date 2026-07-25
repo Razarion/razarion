@@ -2,6 +2,7 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.model.engine.LevelUnlockEntity;
 import com.btxtech.server.service.engine.LevelCrudService;
+import com.btxtech.server.service.history.HistoryService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
@@ -27,6 +28,8 @@ public class ServerUnlockService {
     private LevelCrudService levelCrudService;
     @Inject
     private QuestService questService;
+    @Inject
+    private HistoryService historyService;
 
     public static Map<Integer, Integer> convertUnlockedItemLimit(Collection<LevelUnlockEntity> levelUnlockEntities) {
         Map<Integer, Integer> unlockedItemLimit = new HashMap<>();
@@ -49,7 +52,7 @@ public class ServerUnlockService {
         baseItemService.updateUnlockedItemLimit(userId, userContext.getUnlockedItemLimit());
         systemConnectionService.onUnlockedItemLimit(userId, userContext.getUnlockedItemLimit(), hasAvailableUnlocks(userContext));
         questService.onUnlock(userId);
-        // TODO historyPersistence.onLevelUnlockEntityUsedViaCrystals(userId, levelUnlockEntityId);
+        historyService.onLevelUnlockEntityUsedViaCrystals(userId, levelUnlockEntityId);
     }
 
     public boolean hasAvailableUnlocks(UserContext userContext) {

@@ -18,6 +18,98 @@
   <meta name="twitter:description" content="RTS meets MMO: one shared world that never stops. Inspired by Command &amp; Conquer and StarCraft — persistent shared world, quests and levels. Play free in your browser via WebAssembly, no download. Open-source and community-driven.">
   <meta name="twitter:image" content="https://razarion.com/card.jpg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    /*
+     * Startup tracking starts here, before anything else loads.
+     *
+     * The engine used to open the session, so a startup only became visible once the Angular
+     * bundle and the WebAssembly module had been downloaded and run. Everyone who left before
+     * that - by far the largest group of players who never reach the game - produced no record
+     * at all and the tracking showed a clean startup list. This opens the session at page load
+     * instead, and reports the player leaving while the startup is still running.
+     *
+     * The window globals below are shared with the client: see PageBootGlobals.java (which
+     * documents them) and client-bootstrap.js. Tracking must never break the game, so every
+     * step is wrapped and failures are swallowed.
+     */
+    (function () {
+      // The admin backend is not a game startup.
+      if (location.pathname.indexOf('/backend') >= 0) {
+        return;
+      }
+      var w = window;
+      w.RAZ_gameSessionUuid = 'PG' + Date.now().toString(36).toUpperCase()
+        + Math.random().toString(36).slice(2, 10).toUpperCase();
+      w.RAZ_currentTask = 'PAGE_LOADED';
+      w.RAZ_startupTerminated = null;
+
+      var params = new URLSearchParams(location.search);
+
+      function payload(extra) {
+        var body = {
+          gameSessionUuid: w.RAZ_gameSessionUuid,
+          rdtCid: params.get('rdt_cid'),
+          twclid: params.get('twclid'),
+          utmCampaign: params.get('utm_campaign'),
+          utmSource: params.get('utm_source')
+        };
+        for (var key in extra) {
+          body[key] = extra[key];
+        }
+        return body;
+      }
+
+      // sendBeacon survives the page going away, which a normal fetch does not. Shared with
+      // client-bootstrap.js so both halves report the same way.
+      w.RAZ_track = function (path, body) {
+        try {
+          var blob = new Blob([JSON.stringify(body)], {type: 'application/json'});
+          if (!navigator.sendBeacon || !navigator.sendBeacon(path, blob)) {
+            fetch(path, {method: 'POST', body: blob, keepalive: true}).catch(function () {
+            });
+          }
+        } catch (ignored) {
+        }
+      };
+      w.RAZ_trackPayload = payload;
+
+      // "A browser got this far." Anything that never reports it left during the page load.
+      w.RAZ_track('/rest/tracker/startupTask', payload({
+        taskEnum: 'PAGE_LOADED',
+        startTime: Date.now(),
+        duration: 0,
+        userAgent: navigator.userAgent,
+        error: (typeof WebAssembly === 'undefined') ? 'No WebAssembly support' : null
+      }));
+
+      // The player left while the startup was still running. Reported once; a startup that
+      // ended on its own sets RAZ_startupTerminated and is not an abort.
+      var reported = false;
+
+      function abort() {
+        if (reported || w.RAZ_startupTerminated) {
+          return;
+        }
+        reported = true;
+        w.RAZ_track('/rest/tracker/startupTerminated', payload({
+          successful: false,
+          aborted: true,
+          lastTaskEnum: w.RAZ_currentTask || 'PAGE_LOADED'
+        }));
+      }
+
+      addEventListener('pagehide', abort);
+      // Safari on iOS frequently kills a tab without ever firing pagehide; hidden is the only
+      // signal that survives there. It also fires on a plain tab switch, so a player who comes
+      // back and finishes still sends a real terminated record - the server drops the abort
+      // when a session has both.
+      addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') {
+          abort();
+        }
+      });
+    })();
+  </script>
 </head>
 <body style="height: 100%; width: 100%; position: absolute">
 <app-root></app-root>

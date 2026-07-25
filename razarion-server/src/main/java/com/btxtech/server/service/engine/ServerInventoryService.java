@@ -1,5 +1,6 @@
 package com.btxtech.server.service.engine;
 
+import com.btxtech.server.service.history.HistoryService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
@@ -23,16 +24,23 @@ public class ServerInventoryService {
     private InventoryArtifactService inventoryArtifactPersistence;
     @Inject
     private BaseItemService baseItemService;
+    @Inject
+    private HistoryService historyService;
 
     public void onBoxPicked(String userId, BoxContent boxContent) {
         if (boxContent.getCrystals() > 0) {
             userService.persistAddCrystals(userId, boxContent.getCrystals());
+            historyService.onCrystalsFromBox(userId, boxContent.getCrystals());
         }
-        boxContent.getInventoryItems().forEach(inventoryItem ->
-                userService.persistAddInventoryItem(userId, inventoryPersistence.getEntity(inventoryItem.getId())));
-        boxContent.getInventoryArtifacts().forEach(inventoryArtifact ->
-                userService.persistAddInventoryArtifact(userId, inventoryArtifactPersistence.getEntity(inventoryArtifact.getId())));
-        // TODO historyPersistence.onBoxPicked(userId, boxContent);
+        boxContent.getInventoryItems().forEach(inventoryItem -> {
+            userService.persistAddInventoryItem(userId, inventoryPersistence.getEntity(inventoryItem.getId()));
+            historyService.onInventoryItemFromBox(userId, inventoryItem.getId());
+        });
+        boxContent.getInventoryArtifacts().forEach(inventoryArtifact -> {
+            userService.persistAddInventoryArtifact(userId, inventoryArtifactPersistence.getEntity(inventoryArtifact.getId()));
+            historyService.onInventoryArtifactFromBox(userId, inventoryArtifact.getId());
+        });
+        historyService.onBoxPicked(userId, boxContent);
     }
 
     public InventoryInfo loadInventory(String userId) {
@@ -59,7 +67,7 @@ public class ServerInventoryService {
             throw new RuntimeException(e);
         }
         userService.persistRemoveInventoryItem(userId, inventoryPersistence.getEntity(useInventoryItem.getInventoryId()));
-        // TODO historyPersistence.onInventoryItemUsed(userId, useInventoryItem.getInventoryId());
+        historyService.onInventoryItemUsed(userId, useInventoryItem.getInventoryId());
     }
 
     /**
@@ -67,7 +75,12 @@ public class ServerInventoryService {
      */
     @Transactional
     public boolean buyInventoryItem(String userId, int inventoryItemId) {
-        return userService.buyInventoryItem(userId, inventoryPersistence.getEntity(inventoryItemId));
+        var entity = inventoryPersistence.getEntity(inventoryItemId);
+        boolean bought = userService.buyInventoryItem(userId, entity);
+        if (bought) {
+            historyService.onInventoryItemBought(userId, inventoryItemId, entity.getCrystalCost() != null ? entity.getCrystalCost() : 0);
+        }
+        return bought;
     }
 
     /**
@@ -75,7 +88,12 @@ public class ServerInventoryService {
      */
     @Transactional
     public boolean buyInventoryArtifact(String userId, int inventoryArtifactId) {
-        return userService.buyInventoryArtifact(userId, inventoryArtifactPersistence.getEntity(inventoryArtifactId));
+        var entity = inventoryArtifactPersistence.getEntity(inventoryArtifactId);
+        boolean bought = userService.buyInventoryArtifact(userId, entity);
+        if (bought) {
+            historyService.onInventoryArtifactBought(userId, inventoryArtifactId, entity.getCrystalCost() != null ? entity.getCrystalCost() : 0);
+        }
+        return bought;
     }
 
     /**
@@ -84,6 +102,10 @@ public class ServerInventoryService {
      */
     @Transactional
     public boolean assembleInventoryItem(String userId, int inventoryItemId) {
-        return userService.assembleInventoryItem(userId, inventoryPersistence.getEntity(inventoryItemId));
+        boolean assembled = userService.assembleInventoryItem(userId, inventoryPersistence.getEntity(inventoryItemId));
+        if (assembled) {
+            historyService.onInventoryItemAssembled(userId, inventoryItemId);
+        }
+        return assembled;
     }
 }
