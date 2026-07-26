@@ -3,6 +3,7 @@ package com.btxtech.shared.rest;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
+import com.btxtech.shared.dto.TipStallJson;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -20,4 +21,9 @@ public interface TrackerController {
     @Path("startupTerminated")
     @Consumes(MediaType.APPLICATION_JSON)
     void startupTerminated(StartupTerminatedJson startupTerminatedJson);
+
+    @POST
+    @Path("tipStall")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void tipStall(TipStallJson tipStallJson);
 }

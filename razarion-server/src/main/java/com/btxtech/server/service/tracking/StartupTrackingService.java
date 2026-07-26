@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -78,6 +79,12 @@ public class StartupTrackingService {
                 .collect(Collectors.toSet());
 
         List<StartupTerminatedJson> resolved = startupTerminatedJsons.stream()
+                // An abort that names no session belongs to nobody: it can neither be dropped when
+                // that session finished after all nor be told apart from the same startup
+                // reconstructed below, which is where the duplicated aborted rows came from. The
+                // session is reconstructed from its tasks anyway, so nothing is lost by ignoring it.
+                .filter(startupTerminatedJson -> !startupTerminatedJson.isAborted()
+                        || hasSession(startupTerminatedJson))
                 // A session that came back and finished is not an abort, whatever the beacon said.
                 .filter(startupTerminatedJson -> !startupTerminatedJson.isAborted()
                         || !endedUuids.contains(startupTerminatedJson.getGameSessionUuid()))
@@ -117,7 +124,17 @@ public class StartupTrackingService {
                         .utmSource(lastTask.getUtmSource()))
                 .forEach(resolved::add);
 
+        // The reconstructed aborts are appended at the end, so the list has to be put back into
+        // chronological order - the view shows it as is, in the table and on the curve.
+        resolved.sort(Comparator.comparing(StartupTerminatedJson::getServerTime,
+                Comparator.nullsLast(Comparator.naturalOrder())));
+
         return resolved;
+    }
+
+    private boolean hasSession(StartupTerminatedJson startupTerminatedJson) {
+        String uuid = startupTerminatedJson.getGameSessionUuid();
+        return uuid != null && !uuid.isEmpty();
     }
 
     private boolean isAfter(Date candidate, Date known) {

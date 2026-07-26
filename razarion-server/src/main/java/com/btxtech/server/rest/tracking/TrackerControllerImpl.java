@@ -8,9 +8,12 @@ import com.btxtech.server.model.tracking.TrackingRequest;
 import com.btxtech.server.service.tracking.DailyProgressService;
 import com.btxtech.server.service.tracking.PageRequestService;
 import com.btxtech.server.service.tracking.StartupTrackingService;
+import com.btxtech.server.service.tracking.TipStallService;
 import com.btxtech.server.service.tracking.UserActivityService;
+import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
+import com.btxtech.shared.dto.TipStallJson;
 import com.btxtech.shared.rest.TrackerController;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.MediaType;
@@ -47,15 +50,21 @@ public class TrackerControllerImpl implements TrackerController {
     private final PageRequestService pageRequestService;
     private final UserActivityService userActivityService;
     private final DailyProgressService dailyProgressService;
+    private final TipStallService tipStallService;
+    private final UserService userService;
 
     public TrackerControllerImpl(StartupTrackingService startupTrackingService,
                                  PageRequestService pageRequestService,
                                  UserActivityService userActivityService,
-                                 DailyProgressService dailyProgressService) {
+                                 DailyProgressService dailyProgressService,
+                                 TipStallService tipStallService,
+                                 UserService userService) {
         this.startupTrackingService = startupTrackingService;
         this.pageRequestService = pageRequestService;
         this.userActivityService = userActivityService;
         this.dailyProgressService = dailyProgressService;
+        this.tipStallService = tipStallService;
+        this.userService = userService;
     }
 
     @Override
@@ -68,6 +77,16 @@ public class TrackerControllerImpl implements TrackerController {
     @PostMapping(value = "startupTerminated", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void startupTerminated(@RequestBody StartupTerminatedJson startupTerminatedJson) {
         startupTrackingService.onStartupTerminated(startupTerminatedJson);
+    }
+
+    /**
+     * A tip that stopped guiding the player. Comes from the running game, so the user is known -
+     * that is what makes a stall comparable with the quest it belongs to.
+     */
+    @Override
+    @PostMapping(value = "tipStall", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void tipStall(@RequestBody TipStallJson tipStallJson) {
+        tipStallService.onTipStall(tipStallJson, userService.getOrCreateUserIdFromContext());
     }
 
     @PostMapping(value = "loadTrackingContainer",

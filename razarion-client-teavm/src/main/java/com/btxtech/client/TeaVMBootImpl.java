@@ -65,15 +65,22 @@ public class TeaVMBootImpl extends Boot {
      * running engine in one session; without it the page-side tasks would look like an orphaned
      * session that never booted.
      * <p>
-     * Taken once and cleared: a warm restart is a new startup and gets a fresh id.
+     * Adopted once - a warm restart is a new startup and gets a fresh id. The page global always
+     * names the session that is booting right now: clearing it would leave the abort beacon
+     * without a session, and an abort that names none can neither be dropped when the session
+     * comes back and finishes nor recognised as the session the tasks already describe. That
+     * showed up as two aborted rows for one abandoned startup.
      */
     @Override
     protected String createGameSessionUuid() {
         String fromPage = JsWindow.getString(PageBootGlobals.SESSION_UUID);
-        if (fromPage == null || fromPage.isEmpty()) {
-            return super.createGameSessionUuid();
+        boolean adopted = JsWindow.getString(PageBootGlobals.SESSION_UUID_ADOPTED) != null;
+        if (adopted || fromPage == null || fromPage.isEmpty()) {
+            String uuid = super.createGameSessionUuid();
+            JsWindow.setString(PageBootGlobals.SESSION_UUID, uuid);
+            return uuid;
         }
-        JsWindow.setString(PageBootGlobals.SESSION_UUID, null);
+        JsWindow.setString(PageBootGlobals.SESSION_UUID_ADOPTED, "true");
         return fromPage;
     }
 

@@ -90,7 +90,7 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
-        logger.warn("handleTransportError. Session: {}", session, exception);
+        WebSocketUtils.logTransportError(logger, session, exception);
     }
 
     @Override

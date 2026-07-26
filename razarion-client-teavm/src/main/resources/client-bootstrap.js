@@ -45,7 +45,16 @@
         try {
             console.log('[TeaVM Client] Runtime loaded, initializing WASM-GC module...');
 
+            /*
+             * noAutoImports: the loader would otherwise call WebAssembly.Module.imports() to
+             * resolve ES module globals. Safari/WebKit throws a TypeError there ("unable to
+             * produce import descriptors") because WasmGC ref types are not expressible in the
+             * JS type reflection API - even though the module itself compiled fine. Our module
+             * has no global imports at all (only teavmJso/teavmMath/teavmDate/teavm functions),
+             * so skipping that step costs nothing.
+             */
             var teavm = await TeaVM.wasmGC.load("/teavm-client/razarion-client.wasm", {
+                noAutoImports: true,
                 stackDeobfuscator: {
                     enabled: false
                 }

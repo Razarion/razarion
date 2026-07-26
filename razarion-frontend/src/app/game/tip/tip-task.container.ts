@@ -1,11 +1,16 @@
 import {AbstractTipTask, TipTaskContext} from './tiptask/abstract-tip-task';
+import {BabylonRenderServiceAccessImpl} from '../renderer/babylon-render-service-access-impl.service';
 
 export class TipTaskContainer {
   private abstractTipTasks: AbstractTipTask[] = [];
   private fallbackAbstractTipTasks: AbstractTipTask[] = [];
   private current: AbstractTipTask[] | null = this.abstractTipTasks;
   private currentTaskIndex = 0;
-  public readonly tipTaskContext: TipTaskContext = new TipTaskContext();
+  public readonly tipTaskContext: TipTaskContext;
+
+  constructor(renderService: BabylonRenderServiceAccessImpl) {
+    this.tipTaskContext = new TipTaskContext(renderService);
+  }
 
   public add(abstractTipTask: AbstractTipTask) {
     this.abstractTipTasks.push(abstractTipTask);

@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
 import java.util.function.Consumer;
 
 public class TeaVMWebSocketWrapper {
+    private static final int CLOSE_ABNORMAL = 1006;
     private static final int MAX_RETRIES = 5;
     private static final int MAX_ESTABLISH_CONNECTION_TIMEOUT = 5000;
 
@@ -106,6 +107,13 @@ public class TeaVMWebSocketWrapper {
                     webSocket = null;
                     if (closeEvent.getCode() == 1001) {
                         serverRestartCallback.run();
+                    } else if (closeEvent.getCode() == CLOSE_ABNORMAL) {
+                        // Closed without a close frame: leaving the page, network gone, phone asleep. We
+                        // reconnect right away, so this is not an error - and console.error is forwarded
+                        // into the server log (app.component.ts), where it would bury the real problems.
+                        // Giving up after MAX_RETRIES still reports through connectionLostCallback.
+                        JsConsole.info("TeaVMWebSocketWrapper: WebSocket closed abnormally (1006), reconnecting");
+                        createNewSocket();
                     } else {
                         JsConsole.error("TeaVMWebSocketWrapper: WebSocket Close. Code: " + closeEvent.getCode()
                                 + " Reason: " + closeEvent.getReason()

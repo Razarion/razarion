@@ -13,13 +13,25 @@
   <span class="startup-failed">Aborted: {{ count(StartupOutcome.ABORTED) }}</span>
 </div>
 
-<p-table [value]="filtered" [scrollable]="true" scrollHeight="400px">
+<p-table [value]="filtered"
+         [scrollable]="true"
+         scrollHeight="400px"
+         sortField="serverTime"
+         [sortOrder]="-1">
   <ng-template pTemplate="header">
     <tr>
-      <th>Server time</th>
-      <th>Outcome</th>
-      <th>Total Time</th>
-      <th>Last task</th>
+      <th pSortableColumn="serverTime">Server time
+        <p-sortIcon field="serverTime"></p-sortIcon>
+      </th>
+      <th pSortableColumn="successful">Outcome
+        <p-sortIcon field="successful"></p-sortIcon>
+      </th>
+      <th pSortableColumn="totalTime">Total Time
+        <p-sortIcon field="totalTime"></p-sortIcon>
+      </th>
+      <th pSortableColumn="lastTaskEnum">Last task
+        <p-sortIcon field="lastTaskEnum"></p-sortIcon>
+      </th>
       <th>Details</th>
     </tr>
   </ng-template>

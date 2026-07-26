@@ -19,6 +19,13 @@ public final class PageBootGlobals {
      */
     public static final String SESSION_UUID = "RAZ_gameSessionUuid";
     /**
+     * Set once the boot has taken over {@link #SESSION_UUID}, so a warm restart knows it has to
+     * make a fresh id instead of adopting the page's one again. The id itself must stay readable
+     * for the whole life of the page: the beacon reads it when it fires, and an abort that
+     * reports no session cannot be matched with anything.
+     */
+    public static final String SESSION_UUID_ADOPTED = "RAZ_gameSessionUuidAdopted";
+    /**
      * Name of the startup task currently running. Read by the abort beacon to report where the
      * player left.
      */

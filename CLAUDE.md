@@ -59,7 +59,7 @@ razarion/
 - **Backend**: Spring Boot 4.0.1, Java 21, MariaDB + MongoDB
 - **Frontend**: Angular 21, TypeScript 5.9, PrimeNG 21, Tailwind CSS 4
 - **3D Engine**: Babylon.js 8.45
-- **Game Client**: TeaVM 0.11.0 (Java compiled to WebAssembly via WASM-GC)
+- **Game Client**: TeaVM 0.15.0 (Java compiled to WebAssembly via WASM-GC)
 - **DI (client)**: Dagger 2.55
 
 ### TeaVM WASM-Angular Bridge

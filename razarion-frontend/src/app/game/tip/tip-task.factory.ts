@@ -1,4 +1,4 @@
-import {TipTaskContainer} from './tip-task.container';
+﻿import {TipTaskContainer} from './tip-task.container';
 import {SelectTipTask} from './tiptask/select-tip-task';
 import {TipService} from './tip.service';
 import {QuestConfig, Tip} from '../../gwtangular/GwtAngularFacade';
@@ -33,7 +33,7 @@ export class TipTaskFactory {
     let comparisonConfig = questConfig.getConditionConfig()?.getComparisonConfig();
     let toBeBuiltItemTypeId = GwtHelper.gwtIssueNumber(comparisonConfig?.toTypeCountAngular()[0][0])!;
     let placeConfig = comparisonConfig?.getPlaceConfig() ?? null;
-    let tipTaskContainer = new TipTaskContainer();
+    let tipTaskContainer = new TipTaskContainer(tipService.renderService);
     tipTaskContainer.add(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.add(new StartBuildPlacerTipTask(toBeBuiltItemTypeId, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.add(new SendBuildCommandTipTask(toBeBuiltItemTypeId, placeConfig, tipService, tipTaskContainer.tipTaskContext));
@@ -47,7 +47,7 @@ export class TipTaskFactory {
   private static createFabricate(questConfig: QuestConfig, tipService: TipService): TipTaskContainer {
     let tipConfig = questConfig.getTipConfig()!;
     let toBeBuiltItemTypeId = GwtHelper.gwtIssueNumber(questConfig.getConditionConfig()?.getComparisonConfig().toTypeCountAngular()[0][0])!;
-    let tipTaskContainer = new TipTaskContainer();
+    let tipTaskContainer = new TipTaskContainer(tipService.renderService);
     tipTaskContainer.add(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.add(new SendFabricateCommandTipTask(toBeBuiltItemTypeId, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new IdleItemTipTask(tipService, tipTaskContainer.tipTaskContext));
@@ -58,7 +58,7 @@ export class TipTaskFactory {
 
   private static createHarvest(questConfig: QuestConfig, tipService: TipService): TipTaskContainer {
     let tipConfig = questConfig.getTipConfig()!;
-    let tipTaskContainer = new TipTaskContainer();
+    let tipTaskContainer = new TipTaskContainer(tipService.renderService);
 
     tipTaskContainer.add(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.add(new SendHarvestCommandTipTask(tipService, tipTaskContainer.tipTaskContext));
@@ -75,7 +75,7 @@ export class TipTaskFactory {
     if (typeCount && typeCount.length > 0) {
       enemyItemTypeId = GwtHelper.gwtIssueNumber(typeCount[0][0]);
     }
-    let tipTaskContainer = new TipTaskContainer();
+    let tipTaskContainer = new TipTaskContainer(tipService.renderService);
 
     tipTaskContainer.add(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.add(new SendAttackCommandTipTask(enemyItemTypeId, tipService, tipTaskContainer.tipTaskContext));

@@ -74,6 +74,26 @@ class StartupTrackingServiceTest {
         assertTrue(resolved.get(0).isSuccessful());
     }
 
+    /**
+     * One abandoned startup used to show up as two aborted rows - once as reported by the beacon
+     * and once reconstructed from the tasks - because the beacon had lost the session id and the
+     * two could not be recognised as the same startup. The beacon keeps its id now; a record
+     * without one is left out rather than counted a second time.
+     */
+    @Test
+    void abortWithoutSessionDoesNotDuplicateTheReconstructedOne() {
+        List<StartupTaskJson> tasks = List.of(task("session-1", "INIT_WORKER", LONG_AGO));
+        StartupTerminatedJson sessionlessAbort = new StartupTerminatedJson()
+                .successful(false).aborted(true).lastTaskEnum("INIT_GAME_UI").serverTime(LONG_AGO);
+
+        List<StartupTerminatedJson> resolved = startupTrackingService
+                .resolveTerminated(tasks, List.of(sessionlessAbort));
+
+        assertEquals(1, resolved.size());
+        assertTrue(resolved.get(0).isAborted());
+        assertEquals("session-1", resolved.get(0).getGameSessionUuid());
+    }
+
     /** A failed startup reported itself, so it keeps its own record and its duration. */
     @Test
     void failedSessionKeepsItsRecord() {
@@ -86,6 +106,27 @@ class StartupTrackingServiceTest {
         assertEquals(1, resolved.size());
         assertFalse(resolved.get(0).isAborted());
         assertEquals(3000, resolved.get(0).getTotalTime());
+    }
+
+    /**
+     * The reconstructed aborts are found after the reported ones, but the view shows the list as
+     * it comes - so it has to leave here in server time order, not in discovery order.
+     */
+    @Test
+    void resolvedListIsSortedByServerTime() {
+        Date old = new Date(LONG_AGO.getTime() - 10 * MINUTE);
+        Date middle = new Date(LONG_AGO.getTime() - 5 * MINUTE);
+        List<StartupTaskJson> tasks = List.of(task("aborted-session", "LOAD_START_JS", middle));
+        StartupTerminatedJson older = new StartupTerminatedJson()
+                .gameSessionUuid("session-old").successful(true).totalTime(5000).serverTime(old);
+        StartupTerminatedJson newer = new StartupTerminatedJson()
+                .gameSessionUuid("session-new").successful(true).totalTime(5000).serverTime(LONG_AGO);
+
+        List<StartupTerminatedJson> resolved = startupTrackingService
+                .resolveTerminated(tasks, List.of(older, newer));
+
+        assertEquals(List.of("session-old", "aborted-session", "session-new"),
+                resolved.stream().map(StartupTerminatedJson::getGameSessionUuid).toList());
     }
 
     /** A startup that began seconds ago is probably still running, not abandoned. */

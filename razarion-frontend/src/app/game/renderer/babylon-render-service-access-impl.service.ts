@@ -132,6 +132,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private interpolationListeners: BabylonBaseItemImpl[] = [];
   private babylonBaseItems: BabylonBaseItemImpl[] = [];
   private babylonResourceItems: BabylonResourceItemImpl[] = [];
+  // Notified when a resource leaves the scene (harvested empty or streamed out). The harvest tip
+  // holds on to one specific resource and must re-target instead of pointing at a dead mesh.
+  private resourceRemovedListeners: ((babylonResourceItem: BabylonResourceItemImpl) => void)[] = [];
+  // Notified when a base item enters the scene. Scrolling away disposes an item and scrolling
+  // back creates a NEW instance for the same id, so anything holding callbacks on the old one
+  // (the quest tips do) has to put them on the new instance.
+  private baseItemCreatedListeners: ((babylonBaseItem: BabylonBaseItemImpl) => void)[] = [];
   private baseItemPlacerPresenterImpl!: BaseItemPlacerPresenterImpl;
   private baseItemPlacerCallback: ((event: BaseItemPlacerPresenterEvent) => void) | null = null;
   private pendingSetViewFieldCenter: Vector2 | null = null;
@@ -494,6 +501,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         });
       this.babylonBaseItems.push(item);
       this.tsSelectionService.tryReattachItem(item);
+      // After the reattach, so a listener sees the item in the state the player sees it in.
+      for (const listener of this.baseItemCreatedListeners) {
+        listener(item);
+      }
       return item;
     } catch (error) {
       console.error(error);
@@ -1228,6 +1239,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           } else {
             this.tsSelectionService.removeOther(item.getId());
           }
+          // After the filter above, so a listener picking a replacement cannot pick this one again
+          for (const listener of this.resourceRemovedListeners) {
+            listener(item);
+          }
         });
       this.babylonResourceItems.push(item);
       return item;
@@ -1395,6 +1410,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.waterVisible;
   }
 
+  /** The live instance for an id, or null while the item is out of view and not rendered. */
   public getBabylonBaseItemById(syncBaseItemTypeId: number): BabylonBaseItemImpl | null {
     return this.babylonBaseItems.find(item => {
       return item.getId() === syncBaseItemTypeId;
@@ -1409,6 +1425,22 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   public getBabylonResourceItemImpls(): BabylonResourceItemImpl[] {
     return this.babylonResourceItems;
+  }
+
+  public addBaseItemCreatedListener(listener: (babylonBaseItem: BabylonBaseItemImpl) => void): void {
+    this.baseItemCreatedListeners.push(listener);
+  }
+
+  public removeBaseItemCreatedListener(listener: (babylonBaseItem: BabylonBaseItemImpl) => void): void {
+    this.baseItemCreatedListeners = this.baseItemCreatedListeners.filter(l => l !== listener);
+  }
+
+  public addResourceRemovedListener(listener: (babylonResourceItem: BabylonResourceItemImpl) => void): void {
+    this.resourceRemovedListeners.push(listener);
+  }
+
+  public removeResourceRemovedListener(listener: (babylonResourceItem: BabylonResourceItemImpl) => void): void {
+    this.resourceRemovedListeners = this.resourceRemovedListeners.filter(l => l !== listener);
   }
 
   public getBabylonBaseItemsByDiplomacy(diplomacy: Diplomacy): BabylonBaseItemImpl[] {

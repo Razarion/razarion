@@ -59,6 +59,7 @@ export class BabylonItemImpl implements BabylonItem {
   private selectionCallback: ((active: boolean) => void) | null = null;
   private itemClickCallback: (() => void) | null = null;
   private selectTipTexture: AdvancedDynamicTexture | null = null;
+  private selectTipVisibilityObserver: Nullable<Observer<any>> = null;
 
   constructor(private id: number,
               public readonly itemType: ItemType,
@@ -185,6 +186,10 @@ export class BabylonItemImpl implements BabylonItem {
     if (this.disposeCallback) {
       this.disposeCallback(permanent);
     }
+    // The prompt lives in a fullscreen GUI texture of its own, linked to this item's node. Losing
+    // the item does not take the texture with it: the panel stayed on screen, stuck at the border
+    // where the link last put it, long after the thing it pointed at was gone.
+    this.hideSelectPromptVisualization();
     this.actionService.removeCursorHandler(this.itemCursorTypeHandler);
     if (this.buildStateObserver) {
       this.renderObject.onBuildAnimationActiveChanged.remove(this.buildStateObserver);
@@ -327,6 +332,9 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   showSelectPromptVisualization(text: string = "Click to select", labelWidth: string = "150px", containerWidth: string = "200px"): void {
+    // Overwriting the fields would leave the previous texture on screen with an observer nobody
+    // can reach any more - a second prompt that never goes away.
+    this.hideSelectPromptVisualization();
     this.selectTipTexture = AdvancedDynamicTexture.CreateFullscreenUI("Select tip");
     this.selectTipTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
     let pressMouseVisualization = new PressMouseVisualization(true, this.rendererService);
@@ -371,9 +379,50 @@ export class BabylonItemImpl implements BabylonItem {
     stackPanel.animations.push(xSlide);
 
     this.rendererService.getScene().beginAnimation(stackPanel, 0, 3 * frameRate, true, 4);
+    this.watchSelectPromptOnScreen(stackPanel);
+  }
+
+  /**
+   * A GUI control linked to a mesh does not disappear when the mesh leaves the screen - Babylon
+   * clamps it to the border. The prompt then sits at the bottom edge pointing at nothing, which
+   * looks like a stuck tip and outlives whatever it was talking about. Hide it instead; the tip
+   * tasks put an out-of-view marker on the target, and that is what should lead the way back.
+   */
+  private watchSelectPromptOnScreen(stackPanel: StackPanel): void {
+    const scene = this.rendererService.getScene();
+    this.selectTipVisibilityObserver = scene.onBeforeRenderObservable.add(() => {
+      const camera = scene.activeCamera;
+      if (!camera) {
+        return;
+      }
+      const projected = Vector3.Project(
+        this.getContainer().getAbsolutePosition(),
+        Matrix.Identity(),
+        scene.getTransformMatrix(),
+        camera.viewport.toGlobal(scene.getEngine().getRenderWidth(), scene.getEngine().getRenderHeight()));
+      const onScreen = projected.z > 0 && projected.z < 1
+        && projected.x >= 0 && projected.x <= scene.getEngine().getRenderWidth()
+        && projected.y >= 0 && projected.y <= scene.getEngine().getRenderHeight();
+      if (stackPanel.isVisible !== onScreen) {
+        stackPanel.isVisible = onScreen;
+      }
+    });
+  }
+
+  /**
+   * Whether this item currently carries a prompt. The tip tasks check it: the prompt dies with
+   * the item whenever it leaves the view, and an item that is back is not necessarily a new
+   * instance the task would recognise as one to put the prompt back on.
+   */
+  isSelectPromptVisible(): boolean {
+    return this.selectTipTexture !== null;
   }
 
   hideSelectPromptVisualization(): void {
+    if (this.selectTipVisibilityObserver) {
+      this.rendererService.getScene().onBeforeRenderObservable.remove(this.selectTipVisibilityObserver);
+      this.selectTipVisibilityObserver = null;
+    }
     if (this.selectTipTexture) {
       this.selectTipTexture.dispose();
       this.selectTipTexture = null;
@@ -405,6 +454,16 @@ export class BabylonItemImpl implements BabylonItem {
 
   isSelectOrHove(): boolean {
     return this.selectActive || this.hoverActive;
+  }
+
+  /**
+   * Selected, as opposed to merely under the mouse. What the item cockpit follows, and therefore
+   * the only thing a tip waiting for a cockpit button may go by - isSelectOrHove() answers true
+   * for a hover and had tips declaring "select the builder" done because the cursor happened to
+   * rest on it.
+   */
+  isSelected(): boolean {
+    return this.selectActive;
   }
 
   protected updateItemCursor() {

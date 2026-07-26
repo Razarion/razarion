@@ -72,6 +72,19 @@ public class TerrainShapeManagerSetup {
         logger.info("Generate Terrain Objects: " + (System.currentTimeMillis() - time));
     }
 
+    private String terrainObjectPositionIds(MapList<Integer, TerrainObjectPosition> terrainObjectGroup) {
+        StringBuilder ids = new StringBuilder();
+        for (List<TerrainObjectPosition> terrainObjectPositions : terrainObjectGroup.getMap().values()) {
+            for (TerrainObjectPosition terrainObjectPosition : terrainObjectPositions) {
+                if (ids.length() > 0) {
+                    ids.append(", ");
+                }
+                ids.append(terrainObjectPosition.getId());
+            }
+        }
+        return ids.toString();
+    }
+
     private double calculateScale(Vertex scale) {
         if (scale == null) {
             return 1;
@@ -118,7 +131,10 @@ public class TerrainShapeManagerSetup {
             try {
                 terrainShape.getOrCreateTerrainShapeTile(tileIndex).setNativeTerrainShapeObjectLists(nativeTerrainShapeObjectLists);
             } catch (Throwable t) {
-                logger.log(Level.WARNING, "Can not handle terrain object with id: " + nativeTerrainShapeObjectLists[0].terrainObjectConfigId, t);
+                // The whole tile is dropped, not a single object. Log the terrain object position ids:
+                // they are what one needs to find (and move or delete) the objects in the editor.
+                logger.log(Level.WARNING, "Can not handle terrain objects in tile: " + tileIndex
+                        + " terrain object position ids: " + terrainObjectPositionIds(terrainObjectGroup), t);
             }
         });
     }

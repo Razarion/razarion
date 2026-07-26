@@ -3,6 +3,7 @@ import {TipService} from '../tip.service';
 import {BabylonBaseItemImpl} from '../../renderer/babylon-base-item.impl';
 import {Diplomacy} from '../../../gwtangular/GwtAngularFacade';
 import {GwtInstance} from '../../../gwtangular/GwtInstance';
+import {TipStallReason, TipTaskName} from '../tip-stall';
 
 export class SendAttackCommandTipTask extends AbstractTipTask {
   private enemy: BabylonBaseItemImpl | null = null;
@@ -15,6 +16,10 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
 
   isFulfilled(): boolean {
     return false;
+  }
+
+  getTaskName(): string {
+    return TipTaskName.SEND_ATTACK_COMMAND;
   }
 
   start(): void {
@@ -31,6 +36,7 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
       const nearestEnemyPosition = this.findNearestEnemyPosition();
       if (nearestEnemyPosition) {
         // Enemy exists but is out of view - set OutOfView target and wait
+        this.stallReason = TipStallReason.ENEMY_OUT_OF_VIEW;
         this.tipService.setOutOfViewTarget(
           GwtInstance.newDecimalPosition(nearestEnemyPosition.x, nearestEnemyPosition.y)
         );
@@ -38,10 +44,12 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
       }
 
       // No enemy found at all - retry after delay (server may not be synchronized)
+      this.stallReason = TipStallReason.NO_ENEMY;
       this.retryTimeout = setTimeout(() => this.start(), 1000);
       return;
     }
 
+    this.stallReason = TipStallReason.AWAIT_ATTACK_CLICK;
     this.enemy.setItemClickCallback(() => {
       this.onSucceed();
     });
@@ -57,6 +65,7 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
   }
 
   cleanup(): void {
+    this.cancelSelectionLossGrace();
     if (this.retryTimeout !== null) {
       clearTimeout(this.retryTimeout);
       this.retryTimeout = null;
@@ -74,9 +83,9 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
   }
 
   private onSelectionChanged(): void {
-    // Check if own selection is still present
+    // A lost selection only fails the task if it is still lost after the grace period
     if (!this.tipService.selectionService.hasOwnSelection()) {
-      this.onFailed();
+      this.onSelectionLost(() => !this.tipService.selectionService.hasOwnSelection());
     }
   }
 

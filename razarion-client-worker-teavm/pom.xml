@@ -16,7 +16,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <teavm.version>0.11.0</teavm.version>
+        <teavm.version>0.15.0</teavm.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <!-- TeaVM build settings (defaults for development) -->

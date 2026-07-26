@@ -349,6 +349,16 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     return this.buildup ?? 1.0;
   }
 
+  /**
+   * Null until the engine has reported a buildup for this item. Most items never do and are
+   * simply finished, which is why getBuildup() defaults to 1.0 - but a construction site that
+   * was just placed has not reported yet either, and reading that as "done" makes it invisible
+   * to anything looking for something to finish.
+   */
+  getBuildupOrNull(): number | null {
+    return this.buildup;
+  }
+
   setBuildup(buildup: number): void {
     const previousBuildup = this.buildup;
     this.buildup = buildup;

@@ -85,8 +85,9 @@ export class StartupTrackingComponent implements OnChanges {
   }
 
   onFilterChanged() {
+    // A copy: the table sorts its value array in place, the chart must keep the server's order.
     this.filtered = this.filter === StartupTrackingComponent.FILTER_ALL
-      ? this.startupTerminatedJsons
+      ? [...this.startupTerminatedJsons]
       : this.startupTerminatedJsons.filter(startupTerminatedJson => this.outcome(startupTerminatedJson) === this.filter);
   }
 

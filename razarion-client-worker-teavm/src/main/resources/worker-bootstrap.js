@@ -19,7 +19,10 @@
             console.log('[TeaVM Worker] Runtime loaded, initializing WASM-GC module...');
 
             // Load the WASM-GC module using TeaVM's loader
+            // noAutoImports: skip WebAssembly.Module.imports(), which throws on Safari/WebKit
+            // for WasmGC ref types. No global imports here, so nothing is lost.
             let teavm = await TeaVM.wasmGC.load("razarion-worker.wasm", {
+                noAutoImports: true,
                 stackDeobfuscator: {
                     enabled: false  // Disable to avoid 404 for deobfuscator.wasm
                 }
