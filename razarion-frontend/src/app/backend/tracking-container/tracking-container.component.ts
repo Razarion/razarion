@@ -76,6 +76,11 @@ export class TrackingContainerComponent implements OnInit {
    */
   private static readonly ENTRY_COLORS = [
     '#008300', // green  - Home
+    // Blue, and inserted here rather than appended, because the stage belongs between Home and
+    // Game and every stage keeps the color it already had. Blue is the one hue that stays clear
+    // of the red-green axis this palette already spends, so it separates from all three under
+    // colour vision deficiency (validated light and dark).
+    '#1f6fd0', // blue   - Play clicked
     '#c98500', // yellow - Game
     '#e34948'  // red    - Initial Base created
   ];
@@ -135,6 +140,7 @@ export class TrackingContainerComponent implements OnInit {
 
     const entrySeries = [
       {label: 'Home', values: days.map(day => day.home)},
+      {label: 'Play clicked', values: days.map(day => day.playClicked)},
       {label: 'Game', values: days.map(day => day.game)},
       {label: 'Initial Base created', values: days.map(day => day.initialBaseCreated)}
     ];

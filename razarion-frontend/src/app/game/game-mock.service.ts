@@ -1024,6 +1024,11 @@ export class GameMockService {
 
           getCharacter(): Character {
             return Character.HUMAN
+          },
+
+          /** Two days old, so the age column in the base management shows something to look at. */
+          getCreatedMillis(): number {
+            return Date.now() - 2 * 24 * 60 * 60 * 1000;
           }
 
         }
@@ -1032,6 +1037,11 @@ export class GameMockService {
 
     getMyItemCount(itemTypeId: number): number {
       return 0;
+    }
+
+    /** Non-zero, so the unit column in the base management shows something to look at. */
+    getBaseItemCount(baseId: number): number {
+      return 7;
     }
 
     getResources(): number {

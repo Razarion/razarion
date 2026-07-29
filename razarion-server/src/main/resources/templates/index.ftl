@@ -95,7 +95,7 @@
         <h1 class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0">RAZARION</h1>
         <div class="info-panel" data-augmented-ui="tl-clip tr-clip br-clip bl-clip both">
             <p class="tagline"><span class="tagline-main">RTS meets MMO</span><span class="tagline-sub">One shared world that never stops</span></p>
-            <button class="button" onclick="location.href='/game${qs}'">Play Now</button>
+            <button class="button" id="playButton" onclick="location.href='/game${qs}'">Play Now</button>
             <ul class="features">
                 <li>RTS mechanics like Command & Conquer and StarCraft</li>
                 <li>Persistent world - always online</li>
@@ -116,6 +116,69 @@
             </a>
         </div>
     </section>
-    <#if qs?has_content><img src="/t.gif${qs}" width="1" height="1" alt="" style="position:absolute;opacity:0"></#if>
+    <#if qs?has_content><img src="/t.gif${qs}" width="1" height="1" alt="" style="position:absolute;opacity:0">
+    <script>
+        // Reports what happened on this page, for visitors carrying campaign parameters - the same
+        // population the pixel above counts, so the numbers can be put next to each other.
+        //
+        // The image tag says a visit happened; four out of five of those visits never reach the
+        // game, and from the visit alone there is no way to tell why. These two events split that
+        // group up: whether the button was pressed at all, and how long the page was looked at
+        // before it was left.
+        //
+        // Nothing here touches the button's own navigation. If any of this fails, "Play Now" still
+        // works exactly as it did - telemetry must never be able to break the one thing the page
+        // is for.
+        (function () {
+            // Already stripped of quotes, backslashes and whitespace by IndexController, and it
+            // starts with "?" - so appending parameters to it is safe here.
+            var query = '${qs}';
+            // Monotonic where available: a clock that the operating system adjusts mid-visit would
+            // otherwise produce negative or absurd durations.
+            var start = typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+            var playClicked = false;
+            var exitReported = false;
+
+            function send(params) {
+                var url = '/t.gif' + query + params;
+                // sendBeacon is queued by the browser and survives the page going away; an image
+                // request started at that moment would just be cancelled.
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon(url);
+                } else {
+                    new Image().src = url;
+                }
+            }
+
+            var button = document.getElementById('playButton');
+            if (button) {
+                button.addEventListener('click', function () {
+                    playClicked = true;
+                    send('&e=play');
+                });
+            }
+
+            function reportExit() {
+                if (exitReported) {
+                    return;
+                }
+                exitReported = true;
+                var now = typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+                send('&e=exit&d=' + Math.round(now - start) + (playClicked ? '&p=1' : ''));
+            }
+
+            addEventListener('pagehide', reportExit);
+            // Safari on iOS often discards a tab without ever firing pagehide; going hidden is the
+            // only signal that arrives there. Reporting at the first of the two means a visitor who
+            // switches away and comes back is measured up to the moment they switched - the
+            // question this answers is whether people leave at once or after reading, and for that
+            // the first departure is the honest number.
+            addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'hidden') {
+                    reportExit();
+                }
+            });
+        })();
+    </script></#if>
 </body>
 </html>

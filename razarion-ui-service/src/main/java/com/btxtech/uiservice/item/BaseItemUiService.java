@@ -505,6 +505,26 @@ public class BaseItemUiService {
         return count;
     }
 
+    /**
+     * How many items the given base owns, counted from the tick infos the worker last delivered.
+     * A slave receives every item of the planet and not only the ones in the view field, so this
+     * is the whole base rather than the visible part of it.
+     * <p>
+     * Counts buildings as well as units, and includes items that are still spawning or sitting
+     * inside a factory: the base management asks what a base consists of, not what could be
+     * clicked right now.
+     */
+    @SuppressWarnings("unused") // Called by Angular for the base management table
+    public int getBaseItemCount(int baseId) {
+        int count = 0;
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (nativeSyncBaseItemTickInfo.baseId == baseId) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     @SuppressWarnings("unused") // Called by Angular for the selection-cycle cockpit shortcuts
     public NativeSyncBaseItemTickInfo[] getMyOwnSyncItemTickInfos() {
         List<NativeSyncBaseItemTickInfo> result = new ArrayList<>();

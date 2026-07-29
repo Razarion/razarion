@@ -24,13 +24,22 @@ spec:
           image: mariadb:10.5
           ports:
             - containerPort: 3306
+          # mysqld lag mit ~447-518 MB RSS praktisch auf dem alten 512Mi-Limit und wurde
+          # deshalb regelmaessig cgroup-OOM-gekillt (14 Restarts, im Node-Log als
+          # "Memory cgroup out of memory: Killed process ... (mysqld) anon-rss:518024kB").
+          # Jeder Kill reisst auch die Spieler aus dem Spiel. 1Gi gibt echten Puffer.
+          #
+          # cpu 250m statt 100m nicht wegen Bedarf (Ist-Verbrauch ~1m), sondern weil
+          # Autopilot beim Standard-Compute-Class hoechstens 6.5 GiB Memory pro vCPU
+          # request erlaubt - 1Gi/100m waeren 10:1 und wuerden von Autopilot selbst
+          # hochgezogen. 250m ergibt 4:1 und ist zugleich das Autopilot-Minimum.
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "100m"
+              memory: "1Gi"
+              cpu: "250m"
             limits:
-              memory: "512Mi"
-              cpu: "100m"
+              memory: "1Gi"
+              cpu: "250m"
           env:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:

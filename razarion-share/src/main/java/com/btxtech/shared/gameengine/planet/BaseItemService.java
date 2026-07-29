@@ -254,7 +254,8 @@ public class BaseItemService {
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("createBaseMaster: Base with Id already exits: " + lastBaseItId);
             }
-            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, getMaxRazarion(), levelId, unlockedItemLimit, userId, botId);
+            // The only place a creation timestamp is ever taken. Everywhere else it is passed on.
+            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, getMaxRazarion(), levelId, unlockedItemLimit, userId, botId, System.currentTimeMillis());
             bases.put(lastBaseItId, playerBase);
         }
         gameLogicService.onBaseCreated(playerBase);
@@ -276,7 +277,8 @@ public class BaseItemService {
                     playerBaseInfo.getResources(),
                     getMaxRazarion(),
                     playerBaseInfo.getUserId(),
-                    playerBaseInfo.getBotId());
+                    playerBaseInfo.getBotId(),
+                    playerBaseInfo.getCreatedMillis());
             bases.put(playerBaseInfo.getBaseId(), playerBase);
             gameLogicService.onBaseSlaveCreated(playerBase);
         }
@@ -794,7 +796,11 @@ public class BaseItemService {
                             baseRestoreProvider.getLevel(playerBaseInfo),
                             baseRestoreProvider.getUnlockedItemLimit(playerBaseInfo),
                             playerBaseInfo.getUserId(),
-                            null));
+                            null,
+                            // Kept from the backup, not re-stamped: a restore is not a new base.
+                            // Bases backed up before this field existed restore as 0, which the
+                            // base management shows as "unknown" rather than as brand new.
+                            playerBaseInfo.getCreatedMillis()));
                 } catch (Exception e) {
                     failedBaseIds.add(playerBaseInfo.getBaseId());
                     logger.log(Level.WARNING, "BaseItemService.restore() base can not be restored. baseId: "

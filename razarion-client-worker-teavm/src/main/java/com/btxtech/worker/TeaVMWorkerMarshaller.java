@@ -1137,6 +1137,9 @@ public final class TeaVMWorkerMarshaller {
         }
         dto.setUserId(obj.getString("userId"));
         dto.setBotId(obj.getNullableInt("botId"));
+        // Read as a double because that is what a JS number is; epoch millis are far below 2^53,
+        // so the value is exact.
+        dto.setCreatedMillis((long) obj.getDouble("createdMillis"));
         return dto;
     }
 
@@ -1359,6 +1362,7 @@ public final class TeaVMWorkerMarshaller {
         info.setResources(obj.getDouble("resources"));
         info.setUserId(obj.getString("userId"));
         info.setBotId(obj.getNullableInt("botId"));
+        info.setCreatedMillis((long) obj.getDouble("createdMillis"));
         return info;
     }
 
@@ -2214,6 +2218,7 @@ public final class TeaVMWorkerMarshaller {
             }
             result.set("userId", dto.getUserId());
             result.setNullableInt("botId", dto.getBotId());
+            result.set("createdMillis", (double) dto.getCreatedMillis());
         } else if (obj instanceof SyncResourceItemSimpleDto) {
             SyncResourceItemSimpleDto dto = (SyncResourceItemSimpleDto) obj;
             result.set("id", dto.getId());

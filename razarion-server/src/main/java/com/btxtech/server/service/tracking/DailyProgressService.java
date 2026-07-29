@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Builds the per-day funnel shown in the backend statistics, for one ad platform.
+ * Builds the per-day funnel shown in the backend's <em>Daily</em> tab, for one ad platform.
  * <p>
  * The chain that ties a level-up back to an ad click is indirect: a page request carries the
  * click id and an http session, USER_CREATED ties that session to a user id, and everything
@@ -66,9 +66,11 @@ public class DailyProgressService {
         Date to = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
 
         Map<String, Set<String>> homeSessions = new HashMap<>();
+        Map<String, Set<String>> playClickedSessions = new HashMap<>();
         Map<String, Set<String>> gameSessions = new HashMap<>();
         Set<String> platformSessionIds = new HashSet<>();
-        collectPageRequests(platform, from, to, zone, homeSessions, gameSessions, platformSessionIds);
+        collectPageRequests(platform, from, to, zone, homeSessions, playClickedSessions, gameSessions,
+                platformSessionIds);
 
         // Null means "no platform filter": every user qualifies, so there is no id set to test
         // against and the collectors below take everyone.
@@ -91,6 +93,7 @@ public class DailyProgressService {
             result.add(new DailyProgress()
                     .day(day)
                     .home(homeSessions.getOrDefault(day, Set.of()).size())
+                    .playClicked(playClickedSessions.getOrDefault(day, Set.of()).size())
                     .game(gameSessions.getOrDefault(day, Set.of()).size())
                     .initialBaseCreated(initialBaseUsers.getOrDefault(day, Set.of()).size())
                     .levelUps(levelUps));
@@ -104,6 +107,7 @@ public class DailyProgressService {
      */
     private void collectPageRequests(TrackingPlatform platform, Date from, Date to, ZoneId zone,
                                      Map<String, Set<String>> homeSessions,
+                                     Map<String, Set<String>> playClickedSessions,
                                      Map<String, Set<String>> gameSessions,
                                      Set<String> platformSessionIds) {
         Query query = platform == null
@@ -124,9 +128,13 @@ public class DailyProgressService {
             String day = toDay(serverTime, zone);
             if (pageRequest.getPageRequestType() == PageRequestType.HOME) {
                 homeSessions.computeIfAbsent(day, key -> new HashSet<>()).add(httpSessionId);
+            } else if (pageRequest.getPageRequestType() == PageRequestType.HOME_PLAY_CLICKED) {
+                playClickedSessions.computeIfAbsent(day, key -> new HashSet<>()).add(httpSessionId);
             } else if (pageRequest.getPageRequestType() == PageRequestType.GAME) {
                 gameSessions.computeIfAbsent(day, key -> new HashSet<>()).add(httpSessionId);
             }
+            // HOME_EXIT carries the dwell time and is read per visit, not as a funnel step - a
+            // session that left is not a session that got further.
         }
     }
 

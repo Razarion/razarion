@@ -27,6 +27,14 @@ public class PageRequestService {
         save(pageRequest, PageRequestType.HOME);
     }
 
+    /**
+     * Every signal the landing page reports arrives through the same pixel URL, so which of them
+     * it is has already been decided by the caller.
+     */
+    public void onHomeEvent(PageRequest pageRequest, PageRequestType pageRequestType) {
+        save(pageRequest, pageRequestType);
+    }
+
     public void onGame(PageRequest pageRequest) {
         save(pageRequest, PageRequestType.GAME);
     }

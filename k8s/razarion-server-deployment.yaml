@@ -19,12 +19,31 @@ spec:
           image: us-central1-docker.pkg.dev/neural-passkey-426618-j3/razarion-repo/razarion-server:latest
           ports:
             - containerPort: 8080
+          # requests == limits (QoS class Guaranteed). Vorher stand hier request 1Gi
+          # gegen limit 2Gi, waehrend der Container im Normalbetrieb ~1.85 GB braucht.
+          # Autopilot dimensioniert und verrechnet den Node nach den *requests*, und
+          # das Kubelet wirft bei Node-Memory-Pressure zuerst den Pod raus, der ueber
+          # seinem request liegt - also immer diesen. Ergebnis waren Evictions alle
+          # 15-24 h ("node was low on resource: memory ... using 1903392Ki, request is
+          # 1Gi"), die jedes Mal saemtliche laufenden Spieler aus dem Spiel geworfen
+          # haben. Ein Guaranteed-Pod ist kein Eviction-Kandidat mehr.
+          #
+          # 3Gi statt 2Gi, weil 1.85 GB Ist-Verbrauch nur ~150 MB unter dem alten Limit
+          # lagen: der Pod waere sonst statt evicted einfach cgroup-OOM-gekillt worden.
+          # MaxRAMPercentage unten ist passend auf 60 gesenkt, damit die JVM den neuen
+          # Platz nicht sofort wieder ausfuellt (Xmx 1.8 GiB, erwarteter Peak ~2.2 GB,
+          # also ~800 MB Reserve statt bisher ~150 MB).
+          #
+          # cpu ebenfalls request == limit. Autopilot verlangt beim Standard-Compute-
+          # Class ein Verhaeltnis von hoechstens 6.5 GiB Memory pro vCPU *request* und
+          # wuerde den CPU-request bei 3Gi/300m sonst selbst hochziehen; 1000m ergibt
+          # 3:1 und bleibt damit dort, wo das Limit ohnehin schon stand.
           resources:
             requests:
-              memory: "1Gi"
-              cpu: "300m"
+              memory: "3Gi"
+              cpu: "1000m"
             limits:
-              memory: "2Gi"
+              memory: "3Gi"
               cpu: "1000m"
           livenessProbe:
             httpGet:
@@ -48,7 +67,10 @@ spec:
               readOnly: true
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:MaxRAMPercentage=75.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
+              # 60 % von 3Gi = 1.8 GiB Heap. Siehe Kommentar bei resources: bewusst
+              # niedriger als die frueheren 75 %, damit die groessere Box als Reserve
+              # ankommt und nicht als zusaetzlicher Heap.
+              value: "-XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
             - name: SPRING_PROFILES_ACTIVE
               value: prod
             - name: SPRING_DATASOURCE_URL

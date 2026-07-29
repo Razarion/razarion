@@ -817,6 +817,9 @@ public class DtoConverter {
         setGetterInt(obj, "getBaseId", () -> base.getBaseId());
         setGetterString(obj, "getName", () -> base.getName());
         setGetterObj(obj, "getCharacter", () -> convertCharacter(base.getCharacter()));
+        // Double, not int: epoch millis overflow a 32 bit int. JS has no integer type anyway and
+        // the value stays well below 2^53, so nothing is lost.
+        setGetterDouble(obj, "getCreatedMillis", () -> base.getCreatedMillis());
         return obj;
     }
 

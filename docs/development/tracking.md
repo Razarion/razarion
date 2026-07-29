@@ -8,8 +8,33 @@
 
 | Path | Method | Description |
 |------|--------|-------------|
-| `/t.gif` | `onHome()` | Landing page tracking pixel (loaded as invisible 1x1 image) |
+| `/t.gif` | `onHomeEvent()` | Landing page pixel and beacons — see *Landing page events* below |
 | `/game` or `/game/index.html` | `onGame()` | Game page visit |
+
+## Landing page events
+
+Four out of five landing page visits never reach the game, and the visit alone does not say why.
+All three signals arrive through the same `/t.gif` URL and are told apart by the `e` parameter,
+so they always carry the same campaign parameters and the same http session as the visit itself.
+
+| `e` | `PageRequestType` | Sent when |
+|-----|-------------------|-----------|
+| *(absent)* | `HOME` | the page rendered and the `<img>` pixel loaded |
+| `play` | `HOME_PLAY_CLICKED` | "Play Now" was pressed |
+| `exit` | `HOME_EXIT` | the page was left; `d` carries the milliseconds it was open, `p=1` that play had been pressed |
+
+`HOME_PLAY_CLICKED` is what splits the loss in two: everyone missing above it was not convinced by
+the page, everyone missing between it and `GAME` wanted to play and did not get there. Those two
+call for opposite fixes.
+
+The events are sent with `navigator.sendBeacon`, which POSTs — `TrackingPixelController` answers
+that POST so the static resource handler (GET only) does not reject it. The recording itself stays
+in `RequestInfoLoggingFilter` for both methods. The beacons only run when the landing page carries
+a query string, exactly like the pixel, so all the counts describe the same population.
+
+`userAgent` and `referer` are stored for every page request. Without them a visit that never
+continues cannot be told apart from a crawler or an ad network's click verification, both of which
+fetch the pixel just like a browser.
 
 ## Query Parameters
 
@@ -20,6 +45,8 @@
 | `utm_medium` | `utmMedium` | Campaign medium |
 | `rdt_cid` | `rdtCid` | Reddit click ID |
 | `twclid` | `twclid` | X (Twitter) click ID |
+| `e` | *(picks the `PageRequestType`)* | Landing page event, see below |
+| `d` | `dwellMillis` | Milliseconds the landing page was open, on the exit event only |
 | *(everything)* | `rawQueryString` | The complete raw query string, so any additional/unknown parameter is preserved |
 
 A session ID is also captured automatically via `HttpSession`.

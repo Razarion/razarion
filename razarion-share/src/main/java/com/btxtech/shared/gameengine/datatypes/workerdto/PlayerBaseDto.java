@@ -16,9 +16,19 @@ public class PlayerBaseDto {
     private Character character;
     private String userId;
     private Integer botId;
+    /** Epoch millis of when the base was built. 0 for bases created before this was tracked. */
+    private long createdMillis;
 
     public int getBaseId() {
         return baseId;
+    }
+
+    public long getCreatedMillis() {
+        return createdMillis;
+    }
+
+    public void setCreatedMillis(long createdMillis) {
+        this.createdMillis = createdMillis;
     }
 
     public void setBaseId(int baseId) {
@@ -80,6 +90,11 @@ public class PlayerBaseDto {
 
     public PlayerBaseDto botId(Integer botId) {
         setBotId(botId);
+        return this;
+    }
+
+    public PlayerBaseDto createdMillis(long createdMillis) {
+        setCreatedMillis(createdMillis);
         return this;
     }
 }

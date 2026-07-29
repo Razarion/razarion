@@ -535,6 +535,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         playerBaseDto.setCharacter(playerBase.getCharacter());
         playerBaseDto.setUserId(playerBase.getUserId());
         playerBaseDto.setBotId(playerBase.getBotId());
+        playerBaseDto.setCreatedMillis(playerBase.getCreatedMillis());
         sendToClient(cmd, playerBaseDto);
     }
 

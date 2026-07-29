@@ -275,6 +275,9 @@ public class AngularProxyFactory {
         // getMyItemCount(itemTypeId): number
         setMethodIntObj(proxy, "getMyItemCount", id -> DtoConverter.toJsInt(service.getMyItemCount(id)));
 
+        // getBaseItemCount(baseId): number
+        setMethodIntObj(proxy, "getBaseItemCount", baseId -> DtoConverter.toJsInt(service.getBaseItemCount(baseId)));
+
         // getMyOwnSyncItemTickInfos(): NativeSyncBaseItemTickInfo[]
         setMethodRetObj(proxy, "getMyOwnSyncItemTickInfos", () ->
                 DtoConverter.convertNativeSyncBaseItemTickInfos(service.getMyOwnSyncItemTickInfos()));

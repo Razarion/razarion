@@ -12,6 +12,19 @@ public class PageRequest {
     private String utmMedium;
     private String rawQueryString;
     private String httpSessionId;
+    /**
+     * Browser and device of the visitor, straight from the request header. Without it a landing
+     * page visit that never continues to the game is indistinguishable from a crawler or an ad
+     * network's click verification, which fetch the pixel just like a browser does.
+     */
+    private String userAgent;
+    /** Where the visitor came from, as far as the browser reveals it. */
+    private String referer;
+    /**
+     * How long the visitor had the landing page open, in milliseconds. Only set on
+     * {@link PageRequestType#HOME_EXIT}; null everywhere else.
+     */
+    private Integer dwellMillis;
 
     public PageRequestType getPageRequestType() {
         return pageRequestType;
@@ -85,6 +98,30 @@ public class PageRequest {
         this.httpSessionId = httpSessionId;
     }
 
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public String getReferer() {
+        return referer;
+    }
+
+    public void setReferer(String referer) {
+        this.referer = referer;
+    }
+
+    public Integer getDwellMillis() {
+        return dwellMillis;
+    }
+
+    public void setDwellMillis(Integer dwellMillis) {
+        this.dwellMillis = dwellMillis;
+    }
+
     public PageRequest pageRequestType(PageRequestType pageRequestType) {
         setPageRequestType(pageRequestType);
         return this;
@@ -127,6 +164,21 @@ public class PageRequest {
 
     public PageRequest httpSessionId(String httpSessionId) {
         setHttpSessionId(httpSessionId);
+        return this;
+    }
+
+    public PageRequest userAgent(String userAgent) {
+        setUserAgent(userAgent);
+        return this;
+    }
+
+    public PageRequest referer(String referer) {
+        setReferer(referer);
+        return this;
+    }
+
+    public PageRequest dwellMillis(Integer dwellMillis) {
+        setDwellMillis(dwellMillis);
         return this;
     }
 

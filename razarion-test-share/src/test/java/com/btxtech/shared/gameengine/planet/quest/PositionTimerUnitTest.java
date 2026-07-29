@@ -74,7 +74,7 @@ public class PositionTimerUnitTest {
     }
 
     private PlayerBaseFull createBase() {
-        return new PlayerBaseFull(1, "n", null, 0, 0, null, null, "u", null);
+        return new PlayerBaseFull(1, "n", null, 0, 0, null, null, "u", null, System.currentTimeMillis());
     }
 
     private CountPositionComparison createComparison(PlayerBaseFull playerBaseFull, int count, Integer timeSeconds) {

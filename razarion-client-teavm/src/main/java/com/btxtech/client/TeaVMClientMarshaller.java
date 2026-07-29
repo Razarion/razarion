@@ -529,6 +529,9 @@ public class TeaVMClientMarshaller {
         }
         dto.setUserId(obj.getString("userId"));
         dto.setBotId(obj.getNullableInt("botId"));
+        // Read as a double because that is what a JS number is; epoch millis are far below 2^53,
+        // so the value is exact.
+        dto.setCreatedMillis((long) obj.getDouble("createdMillis"));
         return dto;
     }
 

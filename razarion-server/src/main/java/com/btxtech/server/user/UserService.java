@@ -66,6 +66,12 @@ import static com.btxtech.server.service.PersistenceUtil.extractId;
 
 @Service
 public class UserService implements UserDetailsService {
+    /**
+     * How long an unregistered player keeps their base after disconnecting, see
+     * {@link #cleanupDisconnectedUnregisteredUsers()}. Long enough to survive a reload or a short
+     * interruption, short enough that the start region does not run out of spawn points.
+     */
+    private static final long UNREGISTERED_DISCONNECT_GRACE_MINUTES = 60;
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final Duration checkIntervalRegisteredUser = Duration.ofMinutes(30);
     private final LevelCrudService levelCrudPersistence;
@@ -698,18 +704,40 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    /**
+     * Drops unregistered players an hour after they disconnected, together with their base.
+     * <p>
+     * The start region has a fixed number of spawn points ({@code ServerGameEngineConfigEntity}
+     * builds a hardcoded path of 33), and a point only counts as free while at most
+     * {@code positionMaxItems} base items sit within {@code positionRadius} of it. Every base that
+     * stays behind occupies one for good, so the region silently fills up until
+     * {@link com.btxtech.server.service.engine.StartPositionFinderService} finds nothing at all -
+     * and a new player is then dropped at a random spot, possibly inside somebody else's base.
+     * <p>
+     * Until now the only thing that ever freed those points again was
+     * {@link #cleanupUnregisteredUsersStartup()}, which runs on server start. That used to happen
+     * daily because the pod was evicted for memory pressure; since the pod got its own memory
+     * request that restart is gone, and with it the accidental cleanup.
+     * <p>
+     * Registered players keep their base regardless - they are expected to come back.
+     */
     @Transactional
     @Scheduled(fixedRate = 60000)
     public void cleanupDisconnectedUnregisteredUsers() {
-//        var cutoff = LocalDateTime.now().minusMinutes(240);
-//        userRepository.findInactiveSince(cutoff)
-//                .stream()
-//                .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
-//                .forEach(userEntity -> {
-//                    logger.info("Removing user: {}", userEntity);
-//                    deleteBaseByUser(userEntity.getUserId());
-//                    userRepository.delete(userEntity);
-//                });
+        var cutoff = LocalDateTime.now().minusMinutes(UNREGISTERED_DISCONNECT_GRACE_MINUTES);
+        // Only users whose connection actually closed: onClientSystemConnectionOpened() resets the
+        // timestamp to null, so anyone currently playing is out of this query by construction.
+        for (UserEntity userEntity : userRepository.findInactiveSince(cutoff)) {
+            if (userEntity.createRegisterState() != UserContext.RegisterState.UNREGISTERED) {
+                continue;
+            }
+            logger.info("Removing unregistered user disconnected since {}: {}",
+                    userEntity.getSystemConnectionClosed(), userEntity);
+            // Not deleteBaseByUser(): the in-memory quest progress has to go as well, or the next
+            // planet restore trips over a progress entry whose user no longer exists.
+            removeUserFromRunningPlanet(userEntity.getUserId());
+            userRepository.delete(userEntity);
+        }
     }
 
 

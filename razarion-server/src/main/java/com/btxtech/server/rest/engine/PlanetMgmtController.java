@@ -10,7 +10,10 @@ import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
+import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,7 +29,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/rest/planet-mgmt-controller")
@@ -40,6 +45,7 @@ public class PlanetMgmtController {
     private final PlanetBackupService planetBackupService;
     private final BotService botService;
     private final ServerRestartAnnouncementService serverRestartAnnouncementService;
+    private final LevelService levelService;
     private final Object reloadLook = new Object();
 
     public PlanetMgmtController(BaseItemService baseItemService,
@@ -48,8 +54,10 @@ public class PlanetMgmtController {
                                 ClientSystemConnectionService clientSystemConnectionService,
                                 ServerGameEngineService serverGameEngineService,
                                 PlanetBackupService planetBackupService, BotService botService,
-                                ServerRestartAnnouncementService serverRestartAnnouncementService) {
+                                ServerRestartAnnouncementService serverRestartAnnouncementService,
+                                LevelService levelService) {
         this.serverRestartAnnouncementService = serverRestartAnnouncementService;
+        this.levelService = levelService;
         this.baseItemService = baseItemService;
         this.serverGameEngineControl = serverGameEngineControl;
         this.serverTerrainShapeService = serverTerrainShapeService;
@@ -151,6 +159,37 @@ public class PlanetMgmtController {
             // Push the new balance to the owning client so its money counter updates.
             serverGameEngineControl.onResourcesBalanceChanged(base, (int) base.getResources());
         }
+    }
+
+    /**
+     * The level of every base that has one, by base id. A client knows its own level and nothing
+     * about anybody else's - the level lives on the master - so the base management has to ask
+     * the server for the column.
+     * <p>
+     * Reported as the level number rather than its id, because that is what the game calls it
+     * everywhere else. Bases without a level, which is every bot, are left out instead of being
+     * reported as zero.
+     */
+    @GetMapping("baseLevels")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public Map<Integer, Integer> baseLevels() {
+        Map<Integer, Integer> levelNumbers = new HashMap<>();
+        for (PlayerBaseInfo playerBaseInfo : baseItemService.getPlayerBaseInfos()) {
+            PlayerBase playerBase = baseItemService.getPlayerBase4BaseId(playerBaseInfo.getBaseId());
+            if (!(playerBase instanceof PlayerBaseFull playerBaseFull) || playerBaseFull.getLevelId() == null) {
+                continue;
+            }
+            try {
+                levelNumbers.put(playerBaseFull.getBaseId(),
+                        levelService.getLevel(playerBaseFull.getLevelId()).getNumber());
+            } catch (IllegalArgumentException e) {
+                // A level that was deleted while a base still pointed at it must not take the
+                // whole table down - that base simply has no level to show.
+                logger.warn("Base {} refers to unknown level {}", playerBaseFull.getBaseId(),
+                        playerBaseFull.getLevelId());
+            }
+        }
+        return levelNumbers;
     }
 
     @DeleteMapping("delete/{baseId}")

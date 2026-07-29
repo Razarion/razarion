@@ -55,6 +55,22 @@ export class TrackingContainerAnalyzer {
     })
   }
 
+  /**
+   * Home visits whose visitor pressed "Play Now". Correlated by click id like every other stage
+   * here, so it describes the same population as the Home row it is measured against.
+   */
+  getPlayClickedPageRequests() {
+    return this.getDistinctHomePageRequests().filter(pageRequest => {
+      return this.getPlayClicks4Home(pageRequest).length > 0
+    })
+  }
+
+  getPlayClicks4Home(homePageRequest: PageRequest) {
+    return this.trackingContainer.pageRequests.filter((pageRequest: PageRequest) => {
+      return pageRequest.pageRequestType === PageRequestType.HOME_PLAY_CLICKED && this.clickId(pageRequest) === this.clickId(homePageRequest);
+    });
+  }
+
   getGames4Home(homePageRequest: PageRequest) {
     return this.trackingContainer.pageRequests.filter((pageRequest: PageRequest) => {
       return pageRequest.pageRequestType === PageRequestType.GAME && this.clickId(pageRequest) === this.clickId(homePageRequest);

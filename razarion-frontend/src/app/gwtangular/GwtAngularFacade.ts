@@ -238,6 +238,12 @@ export interface BaseItemUiService {
   getMyItemCount(itemTypeId: number): number;
 
   /**
+   * Number of items the given base owns - buildings included, and counted over the whole planet,
+   * not only over the view field.
+   */
+  getBaseItemCount(baseId: number): number;
+
+  /**
    * Returns id+itemTypeId+position for ALL of the player's own units (not just visible ones).
    * Used by the cockpit selection-cycle shortcuts to navigate the camera to off-screen units.
    */
@@ -264,6 +270,12 @@ export interface PlayerBaseDto {
   getName(): string;
 
   getCharacter(): Character;
+
+  /**
+   * When the base was built, as epoch millis, stamped by the server when it was created and kept
+   * across planet restores. 0 for bases that already existed before this was tracked.
+   */
+  getCreatedMillis(): number;
 }
 
 export enum Character {

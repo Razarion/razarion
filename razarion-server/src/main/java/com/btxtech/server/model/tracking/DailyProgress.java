@@ -3,9 +3,12 @@ package com.btxtech.server.model.tracking;
 import java.util.Map;
 
 /**
- * One row of the daily funnel table in the backend statistics: how far the players of a single
+ * One row of the funnel table in the backend's <em>Daily</em> tab: how far the players of a single
  * day got. Read a row horizontally for that day's funnel, read a column downwards to compare
  * the days with each other.
+ * <p>
+ * Not to be confused with the tab named <em>Funnel</em>, which reports the whole selected period
+ * at once rather than day by day.
  */
 public class DailyProgress {
     /**
@@ -16,6 +19,12 @@ public class DailyProgress {
      * Distinct http sessions that hit the home page that day.
      */
     private int home;
+    /**
+     * Distinct http sessions that pressed "Play Now" on the home page that day. Sits between home
+     * and game on purpose: the gap above it is people the page did not convince, the gap below it
+     * is people who wanted to play and did not get there.
+     */
+    private int playClicked;
     /**
      * Distinct http sessions that hit the game page that day.
      */
@@ -44,6 +53,14 @@ public class DailyProgress {
 
     public void setHome(int home) {
         this.home = home;
+    }
+
+    public int getPlayClicked() {
+        return playClicked;
+    }
+
+    public void setPlayClicked(int playClicked) {
+        this.playClicked = playClicked;
     }
 
     public int getGame() {
@@ -77,6 +94,11 @@ public class DailyProgress {
 
     public DailyProgress home(int home) {
         this.home = home;
+        return this;
+    }
+
+    public DailyProgress playClicked(int playClicked) {
+        setPlayClicked(playClicked);
         return this;
     }
 

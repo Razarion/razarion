@@ -112,6 +112,146 @@
   </script>
 </head>
 <body style="height: 100%; width: 100%; position: absolute">
+<!--
+  Boot splash. Everything below renders on the first paint, before the Angular bundle has even
+  been fetched - which is the whole point, so it has to stay inline. No external stylesheet, no
+  webfont, no framework.
+
+  Until this existed the body held nothing but <app-root>, so a player stared at an empty page
+  for the seconds it takes to download and start Angular. In the tracking that is the largest
+  single group of lost startups: sessions that report PAGE_LOADED and never reach WASM_BOOTSTRAP,
+  half of them gone within eight seconds - on current Chrome, so not a compatibility problem.
+  They left because nothing indicated that anything was happening.
+
+  The bar is deliberately indeterminate: at this stage nobody can say how far along the download
+  is, and a made-up number that crawls is worse than an honest "working on it". The real,
+  measured bar takes over in ScreenCoverComponent, which also removes this splash.
+-->
+<div id="raz-boot">
+  <div id="raz-boot-card">
+    <div id="raz-boot-title">Razarion &ndash; RTS meets MMO: One shared world that never stops</div>
+    <div id="raz-boot-box">
+      <div id="raz-boot-label">Loading&hellip;</div>
+      <div id="raz-boot-track">
+        <div id="raz-boot-fill"></div>
+      </div>
+    </div>
+    <ul id="raz-boot-tips">
+      <li>Arrow keys or WASD to scroll the map</li>
+      <li>Mouse to place and command units</li>
+      <li>Mouse wheel to zoom in and out</li>
+    </ul>
+  </div>
+</div>
+<style>
+  /* Mirrors screen-cover.component.scss so the handover to Angular is not a visible jump. */
+  #raz-boot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    background: linear-gradient(180deg, rgba(10, 10, 18, 0.2) 0%, rgba(10, 10, 18, 0.5) 50%, rgba(10, 10, 18, 0.8) 100%), url("/razarion-bg.webp") center/cover no-repeat;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #CCC;
+  }
+
+  #raz-boot-card {
+    position: absolute;
+    width: 40em;
+    max-width: calc(100% - 2em);
+    box-sizing: border-box;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: solid 1px #014737;
+    padding: 10px;
+    background-color: black;
+    box-shadow: 0 0 10px 0 black;
+  }
+
+  #raz-boot-title {
+    padding: 0.75rem 0.5rem 1rem;
+  }
+
+  #raz-boot-box {
+    border: 1px solid #57534e;
+    border-radius: 0.75rem;
+    padding: 0.25rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #raz-boot-label {
+    padding-left: 0.5rem;
+  }
+
+  /* 28em/1.1em are the dimensions of the p-progressbar this hands over to. */
+  #raz-boot-track {
+    position: relative;
+    width: 28em;
+    max-width: 60%;
+    height: 1.1em;
+    overflow: hidden;
+    background-color: #1c1917;
+    border-radius: 0.25rem;
+  }
+
+  #raz-boot-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 35%;
+    background-color: #10b981;
+    animation: raz-boot-sweep 1.6s ease-in-out infinite;
+  }
+
+  @keyframes raz-boot-sweep {
+    0% { left: -35%; }
+    100% { left: 100%; }
+  }
+
+  /* A sweeping bar is motion for its own sake to anyone who asked the system to stop animating. */
+  @media (prefers-reduced-motion: reduce) {
+    #raz-boot-fill {
+      animation: none;
+      left: 0;
+      width: 100%;
+      opacity: 0.35;
+    }
+  }
+
+  #raz-boot-tips {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem;
+  }
+
+  #raz-boot-tips li {
+    padding: 0.3rem 0;
+  }
+</style>
+<script>
+  /*
+   * The splash belongs to the game only. The backend and the auth pages are ordinary Angular
+   * views with no WebAssembly behind them, and covering them with a game loading screen would
+   * be wrong. Kept in sync with the route table in app.routes.ts.
+   */
+  (function () {
+    var path = location.pathname;
+    if (path.indexOf('/backend') >= 0
+      || path.indexOf('/invalid-token') >= 0
+      || path.indexOf('/verify-email') >= 0) {
+      var splash = document.getElementById('raz-boot');
+      if (splash) {
+        splash.parentNode.removeChild(splash);
+      }
+    }
+  })();
+</script>
 <app-root></app-root>
 </body>
 </html>

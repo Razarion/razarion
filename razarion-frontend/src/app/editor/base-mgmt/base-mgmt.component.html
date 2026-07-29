@@ -9,7 +9,10 @@
                 Base
             </th>
             <th style="white-space: nowrap">Character</th>
+            <th style="white-space: nowrap" title="Units and buildings the base owns">Units</th>
+            <th style="white-space: nowrap" title="Level of the base's player, bots have none">Level</th>
             <th>Id</th>
+            <th style="white-space: nowrap" title="Oldest first">Age</th>
             <th style="white-space: nowrap">
                 Money
                 <input type="number" step="10000" [(ngModel)]="moneyAmount"
@@ -27,7 +30,16 @@
                 {{base.getCharacter()}}
             </td>
             <td>
+                {{itemCount(base)}}
+            </td>
+            <td>
+                {{level(base)}}
+            </td>
+            <td>
                 {{base.getBaseId()}}
+            </td>
+            <td style="white-space: nowrap" [title]="createdAt(base)">
+                {{age(base)}}
             </td>
             <td>
                 <p-button label="Add money" icon="pi pi-dollar" styleClass="p-button-text p-button-sm"

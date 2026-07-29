@@ -24,13 +24,20 @@ public class PlayerBase {
     private final int baseId;
     private final Character character;
     private final Integer botId;
+    /**
+     * When this base was first built, as epoch millis. Set once on the master and then carried
+     * around unchanged - through the planet backup, through the restore and out to every slave -
+     * so that the age of a base survives a server restart. Taking a fresh timestamp anywhere but
+     * at creation would make every base look new again after the next restore.
+     */
+    private final long createdMillis;
     private double resources;
     private double maxRazarion;
     private String name;
     private String userId;
     private boolean abandoned;
 
-    public PlayerBase(int baseId, String name, Character character, double resources, double maxRazarion, String userId, Integer botId) {
+    public PlayerBase(int baseId, String name, Character character, double resources, double maxRazarion, String userId, Integer botId, long createdMillis) {
         this.baseId = baseId;
         this.name = name;
         this.character = character;
@@ -38,10 +45,15 @@ public class PlayerBase {
         this.maxRazarion = maxRazarion;
         this.userId = userId;
         this.botId = botId;
+        this.createdMillis = createdMillis;
     }
 
     public int getBaseId() {
         return baseId;
+    }
+
+    public long getCreatedMillis() {
+        return createdMillis;
     }
 
     public String getName() {
@@ -118,7 +130,8 @@ public class PlayerBase {
                 .name(name)
                 .userId(userId)
                 .botId(botId)
-                .resources(resources);
+                .resources(resources)
+                .createdMillis(createdMillis);
     }
 
     @Override
@@ -152,6 +165,7 @@ public class PlayerBase {
                 ", abandoned=" + abandoned +
                 ", userId=" + userId +
                 ", botId=" + botId +
+                ", createdMillis=" + createdMillis +
                 '}';
     }
 }

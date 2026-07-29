@@ -51,7 +51,7 @@
     <p-tablist>
       <p-tab value="0">
         <i class="pi p-1" [ngClass]="platform === 'rdtCid' ? 'pi-reddit' : 'pi-twitter'"></i>
-        <span>Statistics</span>
+        <span>Funnel</span>
       </p-tab>
       <p-tab value="4">
         <i class="pi p-1" [ngClass]="platform === 'rdtCid' ? 'pi-reddit' : 'pi-twitter'"></i>
@@ -100,6 +100,7 @@
             <tr>
               <th>Day</th>
               <th>Home</th>
+              <th title="Pressed &quot;Play Now&quot; on the home page">Play clicked</th>
               <th>Game</th>
               <th>Initial Base created</th>
               @for (level of dailyLevels; track level) {
@@ -111,6 +112,7 @@
             <tr>
               <td>{{ dailyProgress.day }}</td>
               <td>{{ dailyProgress.home }}</td>
+              <td>{{ dailyProgress.playClicked }}</td>
               <td>{{ dailyProgress.game }}</td>
               <td>{{ dailyProgress.initialBaseCreated }}</td>
               @for (level of dailyLevels; track level) {

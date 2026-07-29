@@ -15,9 +15,22 @@ public class PlayerBaseInfo {
     private double resources;
     private String userId;
     private Integer botId;
+    /**
+     * Epoch millis of when the base was built, see {@link com.btxtech.shared.gameengine.datatypes.PlayerBase}.
+     * Travels both ways: into the planet backup and out to the slaves.
+     */
+    private long createdMillis;
 
     public int getBaseId() {
         return baseId;
+    }
+
+    public long getCreatedMillis() {
+        return createdMillis;
+    }
+
+    public void setCreatedMillis(long createdMillis) {
+        this.createdMillis = createdMillis;
     }
 
     public void setBaseId(int baseId) {
@@ -94,6 +107,11 @@ public class PlayerBaseInfo {
         return this;
     }
 
+    public PlayerBaseInfo createdMillis(long createdMillis) {
+        setCreatedMillis(createdMillis);
+        return this;
+    }
+
     @Override
     public String toString() {
         return "PlayerBaseInfo{" +
@@ -103,6 +121,7 @@ public class PlayerBaseInfo {
                 ", resources=" + resources +
                 ", userId=" + userId +
                 ", botId=" + botId +
+                ", createdMillis=" + createdMillis +
                 '}';
     }
 }
