@@ -9,6 +9,11 @@ public class UserActivity {
     private String detail;
     private String detail2;
     private String httpSessionId;
+    /**
+     * Set on {@link UserActivityType#GAME_SESSION_STARTED} only - the startup session this user
+     * belongs to. See that constant for why the join matters.
+     */
+    private String gameSessionUuid;
 
     public Date getServerTime() {
         return serverTime;
@@ -56,6 +61,19 @@ public class UserActivity {
 
     public void setHttpSessionId(String httpSessionId) {
         this.httpSessionId = httpSessionId;
+    }
+
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
+    }
+
+    public void setGameSessionUuid(String gameSessionUuid) {
+        this.gameSessionUuid = gameSessionUuid;
+    }
+
+    public UserActivity gameSessionUuid(String gameSessionUuid) {
+        setGameSessionUuid(gameSessionUuid);
+        return this;
     }
 
     public UserActivity serverTime(Date serverTime) {

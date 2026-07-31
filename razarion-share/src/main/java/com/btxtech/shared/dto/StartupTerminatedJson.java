@@ -30,6 +30,13 @@ public class StartupTerminatedJson {
      * Last startup task seen for an aborted session - where it got stuck. Null otherwise.
      */
     private String lastTaskEnum;
+    /**
+     * The page went to the background rather than away: the player switched tabs while the game
+     * was still loading. Without this, tabbing away and giving up are the same record, and they
+     * call for opposite answers - one player is still reachable, the other is gone. Null for
+     * aborts the server derived itself, which cannot know which of the two happened.
+     */
+    private Boolean hidden;
 
     public boolean isSuccessful() {
         return successful;
@@ -61,6 +68,14 @@ public class StartupTerminatedJson {
 
     public void setLastTaskEnum(String lastTaskEnum) {
         this.lastTaskEnum = lastTaskEnum;
+    }
+
+    public Boolean getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
     }
 
     public String getGameSessionUuid() {
@@ -128,6 +143,11 @@ public class StartupTerminatedJson {
 
     public StartupTerminatedJson lastTaskEnum(String lastTaskEnum) {
         setLastTaskEnum(lastTaskEnum);
+        return this;
+    }
+
+    public StartupTerminatedJson hidden(Boolean hidden) {
+        setHidden(hidden);
         return this;
     }
 

@@ -1,18 +1,52 @@
-<p-table [value]="bases">
+<!-- Oldest first by default, because the reason to open this table is finding bases nobody came
+     back to. A base with no timestamp (createdMillis 0) predates the feature and is therefore
+     older than any base that has one, which is exactly where sorting 0 first puts it. -->
+<p-table [value]="rows" dataKey="baseId" sortField="createdMillis" [sortOrder]="1">
     <ng-template pTemplate="header">
         <tr>
-            <th style="white-space: nowrap"> 
-                <p-button icon="pi pi-refresh"
-                    styleClass="p-button-rounded p-button-text p-button-sm p-button-danger" title="Delete"
-                    (onClick)="loadBases()">
-                </p-button>
+            <th style="white-space: nowrap" pSortableColumn="name">
+                <span (click)="$event.stopPropagation()">
+                    <p-button icon="pi pi-refresh"
+                        styleClass="p-button-rounded p-button-text p-button-sm p-button-danger" title="Refresh"
+                        (onClick)="loadBases()">
+                    </p-button>
+                </span>
                 Base
+                <p-sortIcon field="name"></p-sortIcon>
             </th>
-            <th style="white-space: nowrap">Character</th>
-            <th style="white-space: nowrap" title="Units and buildings the base owns">Units</th>
-            <th style="white-space: nowrap" title="Level of the base's player, bots have none">Level</th>
-            <th>Id</th>
-            <th style="white-space: nowrap" title="Oldest first">Age</th>
+            <th style="white-space: nowrap" pSortableColumn="character">
+                Character
+                <p-sortIcon field="character"></p-sortIcon>
+                <span (click)="$event.stopPropagation()">
+                    <p-select [options]="characterOptions"
+                              [(ngModel)]="characterFilter"
+                              (onChange)="onCharacterFilterChange()"
+                              optionLabel="label"
+                              optionValue="value"
+                              placeholder="All"
+                              [showClear]="true"
+                              size="small"
+                              styleClass="ml-2"
+                              title="Show only bases of this character">
+                    </p-select>
+                </span>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="units" title="Units and buildings the base owns">
+                Units
+                <p-sortIcon field="units"></p-sortIcon>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="level" title="Level of the base's player, bots have none">
+                Level
+                <p-sortIcon field="level"></p-sortIcon>
+            </th>
+            <th pSortableColumn="baseId">
+                Id
+                <p-sortIcon field="baseId"></p-sortIcon>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="createdMillis" title="Oldest first">
+                Age
+                <p-sortIcon field="createdMillis"></p-sortIcon>
+            </th>
             <th style="white-space: nowrap">
                 Money
                 <input type="number" step="10000" [(ngModel)]="moneyAmount"
@@ -21,34 +55,34 @@
             <th> </th>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-base>
+    <ng-template pTemplate="body" let-row>
         <tr>
             <td>
-                {{base.getName()}}
+                {{row.name}}
             </td>
             <td>
-                {{base.getCharacter()}}
+                {{row.character}}
             </td>
             <td>
-                {{itemCount(base)}}
+                {{row.units}}
             </td>
             <td>
-                {{level(base)}}
+                {{row.levelText}}
             </td>
             <td>
-                {{base.getBaseId()}}
+                {{row.baseId}}
             </td>
-            <td style="white-space: nowrap" [title]="createdAt(base)">
-                {{age(base)}}
+            <td style="white-space: nowrap" [title]="row.createdAt">
+                {{row.age}}
             </td>
             <td>
                 <p-button label="Add money" icon="pi pi-dollar" styleClass="p-button-text p-button-sm"
-                    title="Add Razarion to this base" (onClick)="addMoney(base)">
+                    title="Add Razarion to this base" (onClick)="addMoney(row.base)">
                 </p-button>
             </td>
             <td>
                 <p-button icon="pi pi-times" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
-                    title="Delete" (onClick)="onBaseDelete(base)">
+                    title="Delete" (onClick)="onBaseDelete(row.base)">
                 </p-button>
             </td>
         </tr>

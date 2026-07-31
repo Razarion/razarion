@@ -1,0 +1,95 @@
+@if (attentionReport) {
+  <div class="flex flex-col gap-6">
+
+    <section>
+      <h3 class="font-bold">Left while still loading</h3>
+      <p class="attention-note pb-2">
+        Where the abandoned startups went. Tabbing away and closing the page arrive as the same
+        browser event, so they used to be one number &ndash; but only one of the two players is
+        still reachable. Reconstructed startups never sent a beacon and cannot say which happened.
+      </p>
+      <p-table [value]="abandonedRows">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Outcome</th>
+            <th>Count</th>
+            <th>Percent</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row>
+          <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.count }}</td>
+            <td>{{ row.percent !== undefined ? row.percent + '%' : '-' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <section>
+      <h3 class="font-bold">Looked away after the game was up</h3>
+      <p class="attention-note pb-2">
+        {{ attentionReport.timing.backgrounded }} of
+        {{ attentionReport.timing.successfulStartups }} successful startups
+        ({{ percent(attentionReport.timing.backgrounded, attentionReport.timing.successfulStartups) }})
+        went to the background at least once, median
+        {{ attentionReport.timing.medianSeconds ?? '-' }} s after the page loaded. Measured from the
+        page load, not from the moment the engine came up &ndash; a player who backgrounded the tab
+        before that never saw the game at all.
+      </p>
+      <p-table [value]="timingRows">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Backgrounded after</th>
+            <th>Count</th>
+            <th>Percent</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row>
+          <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.count }}</td>
+            <td>{{ row.percent !== undefined ? row.percent + '%' : '-' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <section>
+      <h3 class="font-bold">What became of them</h3>
+      <p class="attention-note pb-2">
+        The two groups read against the same activity list, so they compare directly. Looking away
+        covers closing the game too &ndash; a browser hides the page before it unloads it, so the
+        signal says the player stopped watching, not that they meant to come back. Both groups are
+        limited to the selected range: a player who built a base after the range ends is missing
+        here, which makes short ranges look worse than they are.
+        @if (attentionReport.unlinkedSessions > 0) {
+          <br>
+          {{ attentionReport.unlinkedSessions }} successful startups carry no user at all and are
+          in neither group &ndash; sessions from before the join was recorded.
+        }
+      </p>
+      <p-table [value]="cohorts">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Group</th>
+            <th>Startups</th>
+            <th>Players</th>
+            <th>Base created</th>
+            <th>Quest passed</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-cohort>
+          <tr>
+            <td>{{ cohort.name }}</td>
+            <td>{{ cohort.sessions }}</td>
+            <td>{{ cohort.users }}</td>
+            <td>{{ cohort.baseCreated }} ({{ percent(cohort.baseCreated, cohort.users) }})</td>
+            <td>{{ cohort.questPassed }} ({{ percent(cohort.questPassed, cohort.users) }})</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+  </div>
+}

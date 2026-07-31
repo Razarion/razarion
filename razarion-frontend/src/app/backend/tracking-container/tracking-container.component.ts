@@ -23,6 +23,8 @@ import {ChartModule} from 'primeng/chart';
 import {ClickIdField, TrackingContainerAnalyzer} from './tracking-container-analyzer';
 import {UserMgmtComponent} from '../../editor/user-mgmt/user-mgmt.component';
 import {StartupTrackingComponent} from '../startup-tracking/startup-tracking.component';
+import {AttentionTrackingComponent} from '../attention-tracking/attention-tracking.component';
+import {AttentionAnalyzer, AttentionReport} from './attention-analyzer';
 
 @Component({
   selector: 'tracking-container',
@@ -36,7 +38,8 @@ import {StartupTrackingComponent} from '../startup-tracking/startup-tracking.com
     TableModule,
     ChartModule,
     UserMgmtComponent,
-    StartupTrackingComponent],
+    StartupTrackingComponent,
+    AttentionTrackingComponent],
   templateUrl: './tracking-container.component.html',
   styleUrl: './tracking-container.component.scss'
 })
@@ -97,8 +100,10 @@ export class TrackingContainerComponent implements OnInit {
   ];
   startupTerminatedJsons: StartupTerminatedJson[] = [];
   startupTaskJsons: StartupTaskJson[] = [];
+  attentionReport?: AttentionReport;
   private trackerControllerImplClient!: TrackerControllerImplClient;
   private trackingContainerAnalyzer = new TrackingContainerAnalyzer();
+  private attentionAnalyzer = new AttentionAnalyzer();
 
   constructor(httpClient: HttpClient) {
     this.trackerControllerImplClient = new TrackerControllerImplClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
@@ -218,6 +223,9 @@ export class TrackingContainerComponent implements OnInit {
         this.progressStatistics.push(...createStatistics(this.trackingContainerAnalyzer));
         this.startupTerminatedJsons = trackingContainer.startupTerminatedJson || [];
         this.startupTaskJsons = trackingContainer.startupTaskJsons || [];
+        this.attentionAnalyzer.setTrackingContainer(trackingContainer);
+        // A fresh object every load: the attention view is driven by the input reference changing.
+        this.attentionReport = this.attentionAnalyzer.createReport();
         this.onFilterChanged();
       })
     } catch (e) {

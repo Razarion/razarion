@@ -1,6 +1,7 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.service.engine.ServerLevelQuestService;
+import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.SystemConnectionPacket;
@@ -23,6 +24,7 @@ public class ClientSystemConnection {
     private final Logger logger = LoggerFactory.getLogger(ClientSystemConnection.class);
     private final ServerLevelQuestService serverLevelQuestService;
     private final UserService userService;
+    private final UserActivityService userActivityService;
     private Date time;
     private String gameSessionUuid;
     private WebSocketSession wsSession;
@@ -30,9 +32,11 @@ public class ClientSystemConnection {
     private Date lastMessageSent;
     private Date lastMessageReceived;
 
-    public ClientSystemConnection(ServerLevelQuestService serverLevelQuestService, UserService userService) {
+    public ClientSystemConnection(ServerLevelQuestService serverLevelQuestService, UserService userService,
+                                  UserActivityService userActivityService) {
         this.serverLevelQuestService = serverLevelQuestService;
         this.userService = userService;
+        this.userActivityService = userActivityService;
     }
 
     public void init(WebSocketSession wsSession, String userId) {
@@ -60,7 +64,13 @@ public class ClientSystemConnection {
                 serverLevelQuestService.onClientLevelUpdate(userId, (int) param);
                 break;
             case SET_GAME_SESSION_UUID:
-                gameSessionUuid = (String) param;
+                String newGameSessionUuid = (String) param;
+                // A warm restart sends a fresh uuid on the same connection, which is a new session
+                // and deserves its own row. The same uuid twice is not.
+                if (newGameSessionUuid != null && !newGameSessionUuid.equals(gameSessionUuid)) {
+                    userActivityService.onGameSessionStarted(userId, newGameSessionUuid);
+                }
+                gameSessionUuid = newGameSessionUuid;
                 break;
             default:
                 throw new IllegalArgumentException("ClientSystemConnection Unknown Packet: " + packet);

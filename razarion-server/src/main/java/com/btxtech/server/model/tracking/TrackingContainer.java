@@ -2,6 +2,7 @@ package com.btxtech.server.model.tracking;
 
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
+import com.btxtech.shared.dto.TabHiddenJson;
 
 import java.util.List;
 
@@ -10,6 +11,12 @@ public class TrackingContainer {
     private List<StartupTaskJson> startupTaskJsons;
     private List<UserActivity> userActivities;
     private List<PageRequest> pageRequests;
+    /**
+     * Games that went to the background after they had started. Their own list rather than a flag
+     * on the startup records: one startup can be backgrounded more than once, and the two are
+     * counted against different populations.
+     */
+    private List<TabHiddenJson> tabHiddenJsons;
 
     public List<StartupTerminatedJson> getStartupTerminatedJson() {
         return startupTerminatedJson;
@@ -41,6 +48,19 @@ public class TrackingContainer {
 
     public void setPageRequests(List<PageRequest> pageRequests) {
         this.pageRequests = pageRequests;
+    }
+
+    public List<TabHiddenJson> getTabHiddenJsons() {
+        return tabHiddenJsons;
+    }
+
+    public void setTabHiddenJsons(List<TabHiddenJson> tabHiddenJsons) {
+        this.tabHiddenJsons = tabHiddenJsons;
+    }
+
+    public TrackingContainer tabHiddenJsons(List<TabHiddenJson> tabHiddenJsons) {
+        this.tabHiddenJsons = tabHiddenJsons;
+        return this;
     }
 
     public TrackingContainer startupTerminatedJson(List<StartupTerminatedJson> startupTerminatedJson) {

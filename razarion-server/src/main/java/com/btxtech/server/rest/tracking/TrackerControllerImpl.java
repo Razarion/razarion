@@ -13,6 +13,7 @@ import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
+import com.btxtech.shared.dto.TabHiddenJson;
 import com.btxtech.shared.dto.TipStallJson;
 import com.btxtech.shared.rest.TrackerController;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -80,6 +81,16 @@ public class TrackerControllerImpl implements TrackerController {
     }
 
     /**
+     * The running game went to the background. Sent by the page's beacon, so it arrives without
+     * a session context and carries only what the page knows.
+     */
+    @Override
+    @PostMapping(value = "tabHidden", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void tabHidden(@RequestBody TabHiddenJson tabHiddenJson) {
+        startupTrackingService.onTabHidden(tabHiddenJson);
+    }
+
+    /**
      * A tip that stopped guiding the player. Comes from the running game, so the user is known -
      * that is what makes a stall comparable with the quest it belongs to.
      */
@@ -106,7 +117,8 @@ public class TrackerControllerImpl implements TrackerController {
                 .pageRequests(pageRequestService.loadPageRequests(trackingRequest.getFromDate(), trackingRequest.getToDate()))
                 .userActivities(userActivityService.loadUserActivities(trackingRequest.getFromDate(), trackingRequest.getToDate()))
                 .startupTaskJsons(startupTaskJsons)
-                .startupTerminatedJson(startupTerminatedJsons);
+                .startupTerminatedJson(startupTerminatedJsons)
+                .tabHiddenJsons(startupTrackingService.loadTabHiddenJsons(trackingRequest.getFromDate(), trackingRequest.getToDate()));
     }
 
     /**

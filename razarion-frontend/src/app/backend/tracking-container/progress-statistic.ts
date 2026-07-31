@@ -28,9 +28,14 @@ export function createStatistics(trackingContainerAnalyzer: TrackingContainerAna
 export class ProgressStatistic {
   percent?: number;
 
-  constructor(public readonly name: String, public readonly count: number, lastCount?: number) {
-    if (lastCount !== undefined && lastCount > 0) {
-      this.percent = Math.round(count / lastCount * 100);
+  /**
+   * The reference is whatever population this row is a share of - usually the stage above it, but
+   * not always: the quest rows are shares of the level they belong to, because they are sorted by
+   * size and have no row above them in any meaningful sense.
+   */
+  constructor(public readonly name: String, public readonly count: number, reference?: number) {
+    if (reference !== undefined && reference > 0) {
+      this.percent = Math.round(count / reference * 100);
     }
   }
 }

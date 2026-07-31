@@ -76,6 +76,23 @@ public class UserActivityService {
         }
     }
 
+    /**
+     * Ties a startup session to the user it belongs to. Written when the client reports its
+     * game session uuid, which is the one moment where the server holds both ids at once.
+     */
+    public void onGameSessionStarted(String userId, String gameSessionUuid) {
+        try {
+            var userActivity = new UserActivity()
+                    .userActivityType(UserActivityType.GAME_SESSION_STARTED)
+                    .serverTime(new Date())
+                    .userId(userId)
+                    .gameSessionUuid(gameSessionUuid);
+            mongoTemplate.save(userActivity, USER_ACTIVITY);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
     public List<UserActivity> loadUserActivities(Date fromDate, Date toDate) {
         Query query = new Query();
         if (fromDate != null && toDate != null) {

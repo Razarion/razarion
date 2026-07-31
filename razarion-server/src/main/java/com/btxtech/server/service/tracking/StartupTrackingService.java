@@ -2,6 +2,7 @@ package com.btxtech.server.service.tracking;
 
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
+import com.btxtech.shared.dto.TabHiddenJson;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class StartupTrackingService {
     public static final String STARTUP_TASK_COLLECTION = "startup_task";
     public static final String STARTUP_TERMINATED_COLLECTION = "startup_terminated";
+    public static final String TAB_HIDDEN_COLLECTION = "tab_hidden";
     /**
      * A session whose last task is younger than this is not called aborted yet - it is probably
      * still booting. Generous on purpose: the slowest successful startups take about four
@@ -42,6 +44,15 @@ public class StartupTrackingService {
         mongoTemplate.save(startupTerminatedJson, STARTUP_TERMINATED_COLLECTION);
     }
 
+    /**
+     * The game started and then went to the background. Kept apart from the startup records on
+     * purpose - see {@link TabHiddenJson}.
+     */
+    public void onTabHidden(TabHiddenJson tabHiddenJson) {
+        tabHiddenJson.setServerTime(new Date());
+        mongoTemplate.save(tabHiddenJson, TAB_HIDDEN_COLLECTION);
+    }
+
     public List<StartupTaskJson> loadStartupTaskJsons(Date fromDate, Date toDate) {
         Query query = buildTimeRangeQuery(fromDate, toDate);
         return mongoTemplate.find(query, StartupTaskJson.class, STARTUP_TASK_COLLECTION);
@@ -50,6 +61,11 @@ public class StartupTrackingService {
     public List<StartupTerminatedJson> loadStartupTerminatedJson(Date fromDate, Date toDate) {
         Query query = buildTimeRangeQuery(fromDate, toDate);
         return mongoTemplate.find(query, StartupTerminatedJson.class, STARTUP_TERMINATED_COLLECTION);
+    }
+
+    public List<TabHiddenJson> loadTabHiddenJsons(Date fromDate, Date toDate) {
+        Query query = buildTimeRangeQuery(fromDate, toDate);
+        return mongoTemplate.find(query, TabHiddenJson.class, TAB_HIDDEN_COLLECTION);
     }
 
     /**

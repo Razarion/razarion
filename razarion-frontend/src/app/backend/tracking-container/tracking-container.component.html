@@ -63,6 +63,7 @@
       </p-tab>
       <p-tab value="2">Users</p-tab>
       <p-tab value="3">Startup</p-tab>
+      <p-tab value="5">Attention</p-tab>
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
@@ -168,6 +169,9 @@
     </p-tabpanel>
     <p-tabpanel value="3">
       <startup-tracking [startupTerminatedJsons]="startupTerminatedJsons" [startupTaskJsons]="startupTaskJsons"></startup-tracking>
+    </p-tabpanel>
+    <p-tabpanel value="5">
+      <attention-tracking [attentionReport]="attentionReport"></attention-tracking>
     </p-tabpanel>
   </p-tabs>
 </div>

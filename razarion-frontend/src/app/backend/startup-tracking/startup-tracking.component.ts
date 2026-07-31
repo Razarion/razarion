@@ -12,7 +12,13 @@ import {StartupTaskJson, StartupTerminatedJson} from '../../generated/razarion-s
 export enum StartupOutcome {
   SUCCESSFUL = 'Successful',
   FAILED = 'Failed',
-  ABORTED = 'Aborted'
+  ABORTED = 'Aborted',
+  /**
+   * Left mid startup, but only to the background - the tab may still be open. Split off from
+   * Aborted because the two call for opposite answers: this player can still be brought back by
+   * something the tab strip can show, the aborted one is gone and only a faster load reaches them.
+   */
+  TABBED_AWAY = 'Tabbed away'
 }
 
 @Component({
@@ -30,6 +36,12 @@ export enum StartupOutcome {
   styles: [`
     .startup-failed {
       color: var(--p-red-400, #e34948);
+    }
+
+    /* Not a failure - the startup was fine, the player was elsewhere. Amber keeps it apart from
+       the red rows without letting it read as a success. */
+    .startup-tabbed-away {
+      color: var(--p-amber-400, #c98500);
     }
   `]
 })
@@ -52,7 +64,8 @@ export class StartupTrackingComponent implements OnChanges {
     {name: StartupTrackingComponent.FILTER_ALL, value: StartupTrackingComponent.FILTER_ALL},
     {name: 'Successful', value: StartupOutcome.SUCCESSFUL},
     {name: 'Failed', value: StartupOutcome.FAILED},
-    {name: 'Aborted', value: StartupOutcome.ABORTED}
+    {name: 'Aborted', value: StartupOutcome.ABORTED},
+    {name: 'Tabbed away', value: StartupOutcome.TABBED_AWAY}
   ];
   filter: string = StartupTrackingComponent.FILTER_ALL;
   filtered: StartupTerminatedJson[] = [];
@@ -76,10 +89,15 @@ export class StartupTrackingComponent implements OnChanges {
   /**
    * An aborted startup never reported an end, so it has no duration - it is a row in the table
    * but not a point on the curve.
+   * <p>
+   * Only the browser can tell a tab switch from a page that went away, so a startup the server
+   * reconstructed carries no such flag and stays plain Aborted. The generated type says boolean;
+   * the field is nullable on the server, which is why this compares against true rather than
+   * testing for truthiness.
    */
   outcome(startupTerminatedJson: StartupTerminatedJson): StartupOutcome {
     if (startupTerminatedJson.aborted) {
-      return StartupOutcome.ABORTED;
+      return startupTerminatedJson.hidden === true ? StartupOutcome.TABBED_AWAY : StartupOutcome.ABORTED;
     }
     return startupTerminatedJson.successful ? StartupOutcome.SUCCESSFUL : StartupOutcome.FAILED;
   }

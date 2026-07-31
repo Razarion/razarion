@@ -3,6 +3,7 @@ package com.btxtech.shared.rest;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
+import com.btxtech.shared.dto.TabHiddenJson;
 import com.btxtech.shared.dto.TipStallJson;
 
 import javax.ws.rs.Consumes;
@@ -26,4 +27,9 @@ public interface TrackerController {
     @Path("tipStall")
     @Consumes(MediaType.APPLICATION_JSON)
     void tipStall(TipStallJson tipStallJson);
+
+    @POST
+    @Path("tabHidden")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void tabHidden(TabHiddenJson tabHiddenJson);
 }

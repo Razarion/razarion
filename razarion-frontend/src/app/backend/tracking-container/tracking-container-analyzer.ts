@@ -106,7 +106,21 @@ export class TrackingContainerAnalyzer {
     return baseCreated;
   }
 
-  generateLevelQuestStatistics(lastCount: number) {
+  /**
+   * The level and quest rows below the funnel.
+   * <p>
+   * Levels are a chain - nobody reaches level 3 without level 2 - so each level is measured
+   * against the one before it. The quests inside a level are not: a player passes them in their
+   * own order, and the rows are shown by size rather than by that order. Every quest is therefore
+   * measured against the players who reached its level, which is a fixed reference and reads the
+   * same however the rows are sorted.
+   * <p>
+   * They used to be chained to each other instead, in the order the quest ids happened to appear
+   * in the activity list, and then re-sorted by count for display - so a row's percentage referred
+   * to whichever quest came before it in the raw data, not to the row above it. A quest passed
+   * more often than its accidental predecessor showed over 100%.
+   */
+  generateLevelQuestStatistics(baseCreatedCount: number) {
     let levels: number[] = [];
     let levelQuests: Map<number, Map<number, number>> = new Map<number, Map<number, number>>()
     let maxLevelNumber = 0;
@@ -148,23 +162,27 @@ export class TrackingContainerAnalyzer {
     });
 
     let progressStatistics: ProgressStatistic[] = [];
+    // Level 1 emits no LEVEL_UP - it comes with the first base - so the players who reached it are
+    // the players who built one, and its quests are measured against that.
+    let levelReached = baseCreatedCount;
     for (let levelNumber = 1; levelNumber <= maxLevelNumber; levelNumber++) {
       const levelUpCount = levels[levelNumber];
       if (levelUpCount !== undefined) {
-        progressStatistics.push(new ProgressStatistic(`Level ${levelNumber}`, levelUpCount, lastCount));
-        lastCount = levelUpCount;
+        progressStatistics.push(new ProgressStatistic(`Level ${levelNumber}`, levelUpCount, levelReached));
+        levelReached = levelUpCount;
       }
       const levelQuestMap = levelQuests.get(levelNumber);
       if (levelQuestMap !== undefined) {
-        let tmpProgressStatistics: ProgressStatistic[] = []
+        let questProgressStatistics: ProgressStatistic[] = []
         levelQuestMap.forEach((count, questId) => {
           if (count !== undefined) {
-            tmpProgressStatistics.push(new ProgressStatistic(`Quest ${questId} (Level ${levelNumber})`, count, lastCount));
-            lastCount = count;
+            questProgressStatistics.push(
+              new ProgressStatistic(`Quest ${questId} (Level ${levelNumber})`, count, levelReached));
           }
         });
-        tmpProgressStatistics.sort((a, b) => b.count - a.count);
-        progressStatistics.push(...tmpProgressStatistics);
+        // Display order only - it no longer moves any percentage.
+        questProgressStatistics.sort((a, b) => b.count - a.count);
+        progressStatistics.push(...questProgressStatistics);
       }
     }
 

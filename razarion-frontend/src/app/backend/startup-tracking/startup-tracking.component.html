@@ -11,6 +11,9 @@
   <span>Successful: {{ count(StartupOutcome.SUCCESSFUL) }}</span>
   <span class="startup-failed">Failed: {{ count(StartupOutcome.FAILED) }}</span>
   <span class="startup-failed">Aborted: {{ count(StartupOutcome.ABORTED) }}</span>
+  <span class="startup-tabbed-away" title="Left mid startup, but only to the background">
+    Tabbed away: {{ count(StartupOutcome.TABBED_AWAY) }}
+  </span>
 </div>
 
 <p-table [value]="filtered"
@@ -37,7 +40,9 @@
   </ng-template>
 
   <ng-template pTemplate="body" let-startupTerminatedJson>
-    <tr [class.startup-failed]="outcome(startupTerminatedJson) !== StartupOutcome.SUCCESSFUL">
+    <tr [class.startup-failed]="outcome(startupTerminatedJson) === StartupOutcome.FAILED
+                                || outcome(startupTerminatedJson) === StartupOutcome.ABORTED"
+        [class.startup-tabbed-away]="outcome(startupTerminatedJson) === StartupOutcome.TABBED_AWAY">
       <td>
         {{ startupTerminatedJson.serverTime | date: 'dd.MM.yyyy HH:mm:ss' }}
       </td>

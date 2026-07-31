@@ -82,30 +82,55 @@
         error: (typeof WebAssembly === 'undefined') ? 'No WebAssembly support' : null
       }));
 
-      // The player left while the startup was still running. Reported once; a startup that
-      // ended on its own sets RAZ_startupTerminated and is not an abort.
-      var reported = false;
+      // The player stopped looking at the page. Reported once each for the two cases below.
+      var abortReported = false;
+      var tabHiddenReported = false;
+      var pageLoadedAt = Date.now();
 
-      function abort() {
-        if (reported || w.RAZ_startupTerminated) {
+      /*
+       * Two different events share one handler because the browser gives us one signal for both.
+       *
+       * While the startup runs, leaving is an abandoned startup - but switching tabs and closing
+       * the page are not the same abandonment: one player is still reachable and comes back to a
+       * finished game, the other is gone. That is what `hidden` records.
+       *
+       * Once the startup ended on its own (RAZ_startupTerminated), leaving is not an abort at
+       * all. Backgrounding the game is still worth knowing though: a startup that succeeded
+       * while nobody was watching is not a player, and the startup tracking alone cannot tell
+       * the difference. It goes to its own endpoint so it can never be mistaken for a failure.
+       */
+      function leaving(hidden) {
+        if (w.RAZ_startupTerminated) {
+          if (hidden && !tabHiddenReported) {
+            tabHiddenReported = true;
+            w.RAZ_track('/rest/tracker/tabHidden', payload({
+              millisSincePageLoad: Date.now() - pageLoadedAt
+            }));
+          }
           return;
         }
-        reported = true;
+        if (abortReported) {
+          return;
+        }
+        abortReported = true;
         w.RAZ_track('/rest/tracker/startupTerminated', payload({
           successful: false,
           aborted: true,
+          hidden: hidden,
           lastTaskEnum: w.RAZ_currentTask || 'PAGE_LOADED'
         }));
       }
 
-      addEventListener('pagehide', abort);
+      addEventListener('pagehide', function () {
+        leaving(false);
+      });
       // Safari on iOS frequently kills a tab without ever firing pagehide; hidden is the only
       // signal that survives there. It also fires on a plain tab switch, so a player who comes
       // back and finishes still sends a real terminated record - the server drops the abort
       // when a session has both.
       addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'hidden') {
-          abort();
+          leaving(true);
         }
       });
     })();

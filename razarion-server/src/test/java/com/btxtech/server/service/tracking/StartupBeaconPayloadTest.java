@@ -2,6 +2,7 @@ package com.btxtech.server.service.tracking;
 
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
+import com.btxtech.shared.dto.TabHiddenJson;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -56,20 +58,65 @@ class StartupBeaconPayloadTest {
                 objectMapper.readValue(body, StartupTaskJson.class).getError());
     }
 
-    /** What the pagehide beacon posts to /rest/tracker/startupTerminated. */
+    /** What the pagehide beacon posts to /rest/tracker/startupTerminated: the player is gone. */
     @Test
     void abortBeaconIsRead() throws IOException {
         String body = """
                 {"gameSessionUuid":"PGABC123","rdtCid":"rdt-42","twclid":null,"utmCampaign":null,
-                 "utmSource":"reddit","successful":false,"aborted":true,
+                 "utmSource":"reddit","successful":false,"aborted":true,"hidden":false,
                  "lastTaskEnum":"LOAD_THREE_JS_MODELS"}""";
 
         StartupTerminatedJson startupTerminatedJson = objectMapper.readValue(body, StartupTerminatedJson.class);
 
         assertTrue(startupTerminatedJson.isAborted());
         assertFalse(startupTerminatedJson.isSuccessful());
+        assertEquals(Boolean.FALSE, startupTerminatedJson.getHidden());
         assertEquals("LOAD_THREE_JS_MODELS", startupTerminatedJson.getLastTaskEnum());
         assertEquals("rdt-42", startupTerminatedJson.getRdtCid());
+    }
+
+    /**
+     * The same beacon on a tab switch. Told apart from the one above by a single field, and the
+     * difference decides what to do: this player is still reachable and will come back to a
+     * finished game, the one above is gone.
+     */
+    @Test
+    void tabSwitchDuringStartupIsMarkedHidden() throws IOException {
+        String body = """
+                {"gameSessionUuid":"PGABC123","successful":false,"aborted":true,"hidden":true,
+                 "lastTaskEnum":"INIT_GAME_UI"}""";
+
+        StartupTerminatedJson startupTerminatedJson = objectMapper.readValue(body, StartupTerminatedJson.class);
+
+        assertTrue(startupTerminatedJson.isAborted());
+        assertEquals(Boolean.TRUE, startupTerminatedJson.getHidden());
+    }
+
+    /**
+     * An abort the server derived itself never saw the browser, so it cannot claim either case.
+     * Null has to survive - false would count a vanished player as a tab switch.
+     */
+    @Test
+    void derivedAbortHasNoHiddenFlag() throws IOException {
+        String body = """
+                {"gameSessionUuid":"PGABC123","successful":false,"aborted":true}""";
+
+        assertNull(objectMapper.readValue(body, StartupTerminatedJson.class).getHidden());
+    }
+
+    /** What the beacon posts to /rest/tracker/tabHidden once the game is already running. */
+    @Test
+    void tabHiddenAfterStartupIsRead() throws IOException {
+        String body = """
+                {"gameSessionUuid":"PGABC123","rdtCid":null,"twclid":"tw-7","utmCampaign":"launch",
+                 "utmSource":"twitter","millisSincePageLoad":8421}""";
+
+        TabHiddenJson tabHiddenJson = objectMapper.readValue(body, TabHiddenJson.class);
+
+        assertEquals("PGABC123", tabHiddenJson.getGameSessionUuid());
+        assertEquals(Integer.valueOf(8421), tabHiddenJson.getMillisSincePageLoad());
+        assertEquals("tw-7", tabHiddenJson.getTwclid());
+        assertEquals("twitter", tabHiddenJson.getUtmSource());
     }
 
     /**

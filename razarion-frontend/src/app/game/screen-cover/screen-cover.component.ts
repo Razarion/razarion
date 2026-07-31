@@ -5,6 +5,7 @@ import {PrimeTemplate} from 'primeng/api';
 import {ProgressBarModule} from 'primeng/progressbar';
 import {ScreenCover} from '../../gwtangular/GwtAngularFacade';
 import {BabylonModelService} from '../renderer/babylon-model.service';
+import {announceReadyIfHidden} from './tab-ready-notice';
 
 @Component({
   selector: 'screen-cover',
@@ -38,6 +39,8 @@ export class ScreenCoverComponent implements ScreenCover, AfterViewInit {
   }
 
   removeLoadingCover(): void {
+    // The engine is up. If nobody is looking, say so in the tab strip.
+    announceReadyIfHidden();
     this.zone.run(() => {
       this.fadeOutCover = true;
       setTimeout(() => {
