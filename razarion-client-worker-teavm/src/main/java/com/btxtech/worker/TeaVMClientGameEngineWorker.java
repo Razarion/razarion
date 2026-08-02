@@ -15,7 +15,6 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.worker.jso.JsArray;
 import com.btxtech.worker.jso.JsConsole;
 import com.btxtech.worker.jso.JsMessageEvent;
@@ -35,13 +34,11 @@ import jakarta.inject.Singleton;
  */
 @Singleton
 public class TeaVMClientGameEngineWorker extends GameEngineWorker {
-    private final TeaVMClientPerformanceTrackerService clientPerformanceTrackerService;
     private SharedTickBufferWriter sharedTickBufferWriter;
 
     @Inject
     public TeaVMClientGameEngineWorker(Provider<AbstractServerGameConnection> connectionInstance,
                                        TerrainService terrainService,
-                                       PerfmonService perfmonService,
                                        GameLogicService logicService,
                                        CommandService commandService,
                                        BoxService boxService,
@@ -51,11 +48,9 @@ public class TeaVMClientGameEngineWorker extends GameEngineWorker {
                                        ResourceService resourceService,
                                        BotService botService,
                                        InitializeService initializeService,
-                                       PlanetService planetService,
-                                       TeaVMClientPerformanceTrackerService clientPerformanceTrackerService) {
+                                       PlanetService planetService) {
         super(connectionInstance,
                 terrainService,
-                perfmonService,
                 logicService,
                 commandService,
                 boxService,
@@ -66,7 +61,6 @@ public class TeaVMClientGameEngineWorker extends GameEngineWorker {
                 botService,
                 initializeService,
                 planetService);
-        this.clientPerformanceTrackerService = clientPerformanceTrackerService;
     }
 
     /**
@@ -74,6 +68,9 @@ public class TeaVMClientGameEngineWorker extends GameEngineWorker {
      */
     public void init() {
         JsConsole.log("[WORKER-WASM] Starting...");
+        // From here on the worker's warnings and errors also travel to the client, which is the
+        // only side whose console reaches the server log.
+        WorkerLogForwarder.install(message -> sendToClient(GameEngineControlPackage.Command.WORKER_LOG, message));
 
         WorkerGlobalScope workerScope = WorkerGlobalScope.current();
 
@@ -102,12 +99,10 @@ public class TeaVMClientGameEngineWorker extends GameEngineWorker {
     @Override
     public void start(String bearerToken) {
         super.start(bearerToken);
-        clientPerformanceTrackerService.start();
     }
 
     @Override
     public void stop() {
-        clientPerformanceTrackerService.stop();
         super.stop();
     }
 

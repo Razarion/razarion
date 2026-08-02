@@ -25,6 +25,7 @@
 
       <p-table [value]="userBackendInfos"
         dataKey="userId"
+        (onRowExpand)="onRowExpand($event.data)"
         [scrollable]="true"
         scrollHeight="calc(100vh - 150px)">
         <ng-template pTemplate="header">
@@ -245,13 +246,17 @@
                 <div class="grid grid-cols-12 gap-4">
                   <span class="col-span-5">Game history</span>
                   <div class="col-span-7 flex flex-col gap-1" style="max-height: 16rem; overflow-y: auto">
-                    @for (entry of userBackendInfo.gameHistoryEntries; track $index) {
-                      <div class="flex gap-2">
-                        <span class="text-xs opacity-70 whitespace-nowrap">{{ entry.date | date:'dd.MM.yyyy HH:mm:ss' }}</span>
-                        <span class="text-xs">{{ entry.description }}</span>
-                      </div>
-                    } @empty {
-                      <span class="text-xs opacity-70">-</span>
+                    @if (historyLoading(userBackendInfo)) {
+                      <span class="text-xs opacity-70">Loading...</span>
+                    } @else {
+                      @for (entry of userBackendInfo.gameHistoryEntries; track $index) {
+                        <div class="flex gap-2">
+                          <span class="text-xs opacity-70 whitespace-nowrap">{{ entry.date | date:'dd.MM.yyyy HH:mm:ss' }}</span>
+                          <span class="text-xs">{{ entry.description }}</span>
+                        </div>
+                      } @empty {
+                        <span class="text-xs opacity-70">-</span>
+                      }
                     }
                   </div>
                 </div>

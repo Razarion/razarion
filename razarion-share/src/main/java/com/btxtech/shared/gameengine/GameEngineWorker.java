@@ -56,7 +56,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
 
 import jakarta.inject.Provider;
@@ -85,7 +84,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private final QuestService questService;
     private final BoxService boxService;
     private final CommandService commandService;
-    private final PerfmonService perfmonService;
     private final TerrainService terrainService;
     private final Provider<AbstractServerGameConnection> connectionInstance;
     private UserContext userContext;
@@ -99,7 +97,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     public GameEngineWorker(Provider<AbstractServerGameConnection> connectionInstance,
                             TerrainService terrainService,
-                            PerfmonService perfmonService,
                             GameLogicService logicService,
                             CommandService commandService,
                             BoxService boxService,
@@ -112,7 +109,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                             PlanetService planetService) {
         this.connectionInstance = connectionInstance;
         this.terrainService = terrainService;
-        this.perfmonService = perfmonService;
         this.commandService = commandService;
         this.boxService = boxService;
         this.questService = questService;
@@ -207,9 +203,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 break;
             case UPDATE_LEVEL:
                 updateLevel((int) controlPackage.getData(0));
-                break;
-            case PERFMON_REQUEST:
-                onPerfmonRequest();
                 break;
             case TERRAIN_TILE_REQUEST:
                 getTerrainTile((Index) controlPackage.getData(0));
@@ -348,7 +341,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     public void start(String bearerToken) {
         planetService.enableTracking(false);
         planetService.start();
-        perfmonService.start(gameSessionUuid);
         if (gameEngineMode == GameEngineMode.SLAVE) {
             serverConnection = connectionInstance.get();
             serverConnection.init(bearerToken);
@@ -357,7 +349,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     public void stop() {
         try {
-            perfmonService.stop();
             botService.killAllBots();
             planetService.stop();
             userContext = null;
@@ -600,9 +591,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private void onPerfmonRequest() {
-        sendToClient(GameEngineControlPackage.Command.PERFMON_RESPONSE, perfmonService.peekClientPerfmonStatistics());
-    }
 
     private void getTerrainTile(Index terrainTileIndex) {
         long time = System.currentTimeMillis();
@@ -611,7 +599,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         // Forward the worker generation time alongside the tile so the F8 perf overlay can show it
         // next to the client-side mesh-build time.
         sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile, (double) generationMs);
-        perfmonService.onTerrainTile(terrainTileIndex, generationMs);
     }
 
     private void sellItems(IdsDto items) {

@@ -19,6 +19,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -52,6 +53,9 @@ public class UserEntity {
     private LevelEntity level;
     @ManyToOne(fetch = FetchType.LAZY)
     private QuestConfigEntity activeQuest;
+    // Batched because the backend user table walks every row and reads both collections: one select
+    // per user each, otherwise. The size covers the whole table in one round trip.
+    @BatchSize(size = 100)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "USER_COMPLETED_QUEST",
             joinColumns = @JoinColumn(name = "razarion-user"),
@@ -69,6 +73,7 @@ public class UserEntity {
     private List<InventoryArtifactEntity> inventoryArtifacts;
     private int xp;
     private int crystals;
+    @BatchSize(size = 100)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "USER_UNLOCKED",
             joinColumns = @JoinColumn(name = "razarion-user"),

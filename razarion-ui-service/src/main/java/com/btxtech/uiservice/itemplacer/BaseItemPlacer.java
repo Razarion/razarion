@@ -25,6 +25,7 @@ public class BaseItemPlacer {
     private Runnable cancelCallback;
     private BaseItemType baseItemType;
     private String errorText;
+    private String lastLoggedErrorText;
 
     @Inject
     public BaseItemPlacer(ItemTypeService itemTypeService, BaseItemPlacerChecker baseItemPlacerChecker) {
@@ -141,15 +142,53 @@ public class BaseItemPlacer {
         }
     }
 
+    /**
+     * Names the first failing check, in the order {@link BaseItemPlacerChecker#check} evaluates them -
+     * the later ones are false as a consequence of the earlier one, so the first is the actual cause.
+     * The rally check is independent and therefore reported last.
+     * <p>
+     * Shown to the player instead of the generic "move mouse to find free position". Without it a red
+     * placer gives no clue at all: on 2026-08-01 a player spent his last 11 minutes failing to rebuild
+     * a factory and neither he nor the logs could say which of the six conditions was blocking him.
+     */
     private void setupErrorText() {
-//        if (!baseItemPlacerChecker.isEnemiesOk()) {
-//            errorText = ClientI18nHelper.getConstants().enemyTooNear();
-//        } else if (!baseItemPlacerChecker.isItemsOk()) {
-//            errorText = ClientI18nHelper.getConstants().notPlaceOver();
-//        } else if (!baseItemPlacerChecker.isTerrainOk()) {
-//            errorText = ClientI18nHelper.getConstants().notPlaceHere();
-//        } else {
-//            errorText = null;
-//        }
+        if (!baseItemPlacerChecker.isAllowedAreaOk()) {
+            errorText = "Outside the allowed area";
+        } else if (!baseItemPlacerChecker.isEnemiesOk()) {
+            errorText = "Enemy too near";
+        } else if (!baseItemPlacerChecker.isItemsOk()) {
+            errorText = "Blocked by another item";
+        } else if (!baseItemPlacerChecker.isResourcesOk()) {
+            errorText = "Can not build on a razarion field";
+        } else if (!baseItemPlacerChecker.isTerrainOk()) {
+            errorText = "Terrain not suitable here";
+        } else if (!baseItemPlacerChecker.isRallyTerrainOk()) {
+            errorText = "Needs free ground to the east for the rally point";
+        } else {
+            errorText = null;
+        }
+    }
+
+    /**
+     * Called when the player clicks on a red position. The presenter swallows that click, so without
+     * this the attempt leaves no trace whatsoever - not in the UI and not in the remote log.
+     * <p>
+     * Logged at WARNING because that is the level the Angular console hook forwards to the server.
+     * Repeated clicks with an unchanged cause are dropped so a frustrated player does not flood the log.
+     */
+    @SuppressWarnings("unused") // Called by Angular
+    public void onInvalidPlaceAttempt() {
+        String reason = errorText != null ? errorText : "unknown";
+        if (reason.equals(lastLoggedErrorText)) {
+            return;
+        }
+        lastLoggedErrorText = reason;
+        logger.warning("BaseItemPlacer rejected " + baseItemType.getInternalName() + ": " + reason
+                + " [allowedArea=" + baseItemPlacerChecker.isAllowedAreaOk()
+                + " enemies=" + baseItemPlacerChecker.isEnemiesOk()
+                + " items=" + baseItemPlacerChecker.isItemsOk()
+                + " resources=" + baseItemPlacerChecker.isResourcesOk()
+                + " terrain=" + baseItemPlacerChecker.isTerrainOk()
+                + " rallyTerrain=" + baseItemPlacerChecker.isRallyTerrainOk() + "]");
     }
 }

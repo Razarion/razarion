@@ -16,7 +16,7 @@ public class ServerSimpleExecutorServiceImpl implements SimpleExecutorService {
     @Override
     public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {
         ServerSimpleScheduledFuture serverSimpleScheduledFuture = provider.get();
-        serverSimpleScheduledFuture.init(delayMilliS, false, type.getPerfmonEnum(), runnable);
+        serverSimpleScheduledFuture.init(delayMilliS, false, type, runnable);
         serverSimpleScheduledFuture.start();
         return serverSimpleScheduledFuture;
     }
@@ -24,7 +24,7 @@ public class ServerSimpleExecutorServiceImpl implements SimpleExecutorService {
     @Override
     public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable, Type type) {
         ServerSimpleScheduledFuture serverSimpleScheduledFuture = provider.get();
-        serverSimpleScheduledFuture.init(delayMilliS, true, type.getPerfmonEnum(), runnable);
+        serverSimpleScheduledFuture.init(delayMilliS, true, type, runnable);
         if (start) {
             serverSimpleScheduledFuture.start();
         }

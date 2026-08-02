@@ -2,11 +2,13 @@ package com.btxtech.server.rest.tracking;
 
 import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.tracking.DailyProgress;
+import com.btxtech.server.model.tracking.PlayerSessionInfo;
 import com.btxtech.server.model.tracking.TrackingContainer;
 import com.btxtech.server.model.tracking.TrackingPlatform;
 import com.btxtech.server.model.tracking.TrackingRequest;
 import com.btxtech.server.service.tracking.DailyProgressService;
 import com.btxtech.server.service.tracking.PageRequestService;
+import com.btxtech.server.service.tracking.PlayerSessionService;
 import com.btxtech.server.service.tracking.StartupTrackingService;
 import com.btxtech.server.service.tracking.TipStallService;
 import com.btxtech.server.service.tracking.UserActivityService;
@@ -16,6 +18,8 @@ import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.dto.TabHiddenJson;
 import com.btxtech.shared.dto.TipStallJson;
 import com.btxtech.shared.rest.TrackerController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +37,7 @@ import static com.btxtech.shared.CommonUrl.TRACKER_PATH;
 @RestController
 @RequestMapping(APPLICATION_PATH + "/" + TRACKER_PATH)
 public class TrackerControllerImpl implements TrackerController {
+    private final Logger logger = LoggerFactory.getLogger(TrackerControllerImpl.class);
     /**
      * Days shown in the daily funnel table.
      */
@@ -53,13 +58,16 @@ public class TrackerControllerImpl implements TrackerController {
     private final DailyProgressService dailyProgressService;
     private final TipStallService tipStallService;
     private final UserService userService;
+    private final PlayerSessionService playerSessionService;
 
     public TrackerControllerImpl(StartupTrackingService startupTrackingService,
                                  PageRequestService pageRequestService,
                                  UserActivityService userActivityService,
                                  DailyProgressService dailyProgressService,
                                  TipStallService tipStallService,
-                                 UserService userService) {
+                                 UserService userService,
+                                 PlayerSessionService playerSessionService) {
+        this.playerSessionService = playerSessionService;
         this.startupTrackingService = startupTrackingService;
         this.pageRequestService = pageRequestService;
         this.userActivityService = userActivityService;
@@ -71,13 +79,33 @@ public class TrackerControllerImpl implements TrackerController {
     @Override
     @PostMapping(value = "startupTask", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void startupTask(@RequestBody StartupTaskJson startupTaskJson) {
+        startupTaskJson.setUserId(currentUserId());
+        startupTaskJson.setHttpSessionId(userService.currentHttpSessionId());
         startupTrackingService.onStartupTask(startupTaskJson);
     }
 
     @Override
     @PostMapping(value = "startupTerminated", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void startupTerminated(@RequestBody StartupTerminatedJson startupTerminatedJson) {
+        startupTerminatedJson.setUserId(currentUserId());
+        startupTerminatedJson.setHttpSessionId(userService.currentHttpSessionId());
         startupTrackingService.onStartupTerminated(startupTerminatedJson);
+    }
+
+    /**
+     * Who is starting up here. The request comes from the game page, where a user exists (or is
+     * about to) either way, so this attributes the startup rather than inventing anybody.
+     * <p>
+     * Never let it break the tracking call: a startup record without a user is still worth having,
+     * and a failed POST would be reported as a broken startup.
+     */
+    private String currentUserId() {
+        try {
+            return userService.getOrCreateUserIdFromContext();
+        } catch (Exception e) {
+            logger.warn("Could not determine the user of a startup record: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -119,6 +147,21 @@ public class TrackerControllerImpl implements TrackerController {
                 .startupTaskJsons(startupTaskJsons)
                 .startupTerminatedJson(startupTerminatedJsons)
                 .tabHiddenJsons(startupTrackingService.loadTabHiddenJsons(trackingRequest.getFromDate(), trackingRequest.getToDate()));
+    }
+
+    /**
+     * The history view: one row per attempt to start the game in the range, newest first.
+     * <p>
+     * Assembled on the server because the join needs the running planet and the user table. The
+     * per-player game history is deliberately not in here - that is one Mongo query per player and
+     * has its own lazy call.
+     */
+    @PostMapping(value = "loadPlayerSessions",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<PlayerSessionInfo> loadPlayerSessions(@RequestBody TrackingRequest trackingRequest) {
+        return playerSessionService.load(trackingRequest.getFromDate(), trackingRequest.getToDate());
     }
 
     /**

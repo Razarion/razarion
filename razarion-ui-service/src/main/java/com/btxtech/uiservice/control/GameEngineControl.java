@@ -28,9 +28,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmRaisedException;
-import com.btxtech.shared.system.perfmon.PerfmonEnum;
-import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
@@ -45,7 +42,6 @@ import com.btxtech.uiservice.user.UserUiService;
 import jakarta.inject.Provider;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,15 +59,14 @@ import java.util.logging.Logger;
     private final InventoryUiService inventoryUiService;
     private final TerrainUiService terrainUiService;
     private final Provider<Boot> boot;
-    private final PerfmonService perfmonService;
     private final Provider<InputService> inputServices;
     private final BabylonRendererService babylonRendererService;
-    private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
+    private boolean tickUpdateInProgress;
+    private boolean tickUpdateBrokenReported;
     private DeferredStartup deferredStartup;
     private Runnable stopCallback;
 
     public GameEngineControl(Provider<InputService> inputServices,
-                             PerfmonService perfmonService,
                              Provider<Boot> boot,
                              TerrainUiService terrainUiService,
                              InventoryUiService inventoryUiService,
@@ -82,7 +77,6 @@ import java.util.logging.Logger;
                              BaseItemUiService baseItemUiService,
                              BabylonRendererService babylonRendererService) {
         this.inputServices = inputServices;
-        this.perfmonService = perfmonService;
         this.boot = boot;
         this.terrainUiService = terrainUiService;
         this.inventoryUiService = inventoryUiService;
@@ -121,7 +115,6 @@ import java.util.logging.Logger;
     }
 
     public void stop(Runnable stopCallback) {
-        perfmonConsumer = null;
         this.stopCallback = stopCallback;
         sendToWorker(GameEngineControlPackage.Command.STOP_REQUEST);
     }
@@ -279,11 +272,6 @@ import java.util.logging.Logger;
         sendToWorker(GameEngineControlPackage.Command.UPDATE_LEVEL, levelId);
     }
 
-    public void perfmonRequest(Consumer<Collection<PerfmonStatistic>> perfmonConsumer) {
-        this.perfmonConsumer = perfmonConsumer;
-        sendToWorker(GameEngineControlPackage.Command.PERFMON_REQUEST);
-    }
-
     public void requestTerrainTile(Index terrainTileIndex) {
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST, terrainTileIndex);
     }
@@ -294,7 +282,20 @@ import java.util.logging.Logger;
 
     protected void onTickUpdate(NativeTickInfo nativeTickInfo) {
         long tickApplyStart = System.currentTimeMillis();
-        perfmonService.onEntered(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
+        // A tick that never reaches the end of this method leaves the flag set, and the next one
+        // says so. This used to be reported by accident, through PerfmonService complaining that
+        // onEntered had been called twice - which is how the WASM traps of 2026-08-01 became
+        // visible in the first place. Kept deliberately now that perfmon is gone. Logged once per
+        // run of broken ticks, because the condition repeats on every tick until it recovers.
+        if (tickUpdateInProgress) {
+            if (!tickUpdateBrokenReported) {
+                tickUpdateBrokenReported = true;
+                logger.severe("onTickUpdate did not complete - the previous tick died between start and end");
+            }
+        } else {
+            tickUpdateBrokenReported = false;
+        }
+        tickUpdateInProgress = true;
         try {
             if (nativeTickInfo.killedSyncBaseItems != null) {
                 baseItemUiService.onSyncBaseItemsExplode(nativeTickInfo.killedSyncBaseItems);
@@ -307,7 +308,7 @@ import java.util.logging.Logger;
         if (!isSharedBufferMode()) {
             sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
         }
-        perfmonService.onLeft(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
+        tickUpdateInProgress = false;
         // Authoritative per-tick heartbeat for the F8 perf overlay (fires every tick, even idle).
         babylonRendererService.onGameEngineTick(System.currentTimeMillis() - tickApplyStart);
     }
@@ -316,12 +317,6 @@ import java.util.logging.Logger;
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
     }
 
-    private void onPerfmonResponse(Collection<PerfmonStatistic> statisticEntries) {
-        if (perfmonConsumer != null) {
-            perfmonConsumer.accept(statisticEntries);
-            perfmonConsumer = null;
-        }
-    }
 
     private void onInitialized() {
         if (deferredStartup != null) {
@@ -334,6 +329,24 @@ import java.util.logging.Logger;
         if (deferredStartup != null) {
             deferredStartup.failed(new AlarmRaisedException(Alarm.Type.FAIL_START_GAME_ENGINE, errorText));
             deferredStartup = null;
+        }
+    }
+
+    /**
+     * A line the worker wrote to its own console, which nobody reads. Repeating it here puts it in
+     * front of the Angular console hook and from there into the server log, with the origin kept
+     * visible so it cannot be mistaken for something the main thread did.
+     */
+    private void onWorkerLog(String message) {
+        if (message == null) {
+            return;
+        }
+        if (message.startsWith("ERROR ")) {
+            logger.severe("[WORKER] " + message.substring("ERROR ".length()));
+        } else if (message.startsWith("WARN ")) {
+            logger.warning("[WORKER] " + message.substring("WARN ".length()));
+        } else {
+            logger.warning("[WORKER] " + message);
         }
     }
 
@@ -403,9 +416,6 @@ import java.util.logging.Logger;
             case PROJECTILE_DETONATION:
                 //effectVisualizationService.onProjectileDetonation((int) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
                 break;
-            case PERFMON_RESPONSE:
-                onPerfmonResponse((Collection<PerfmonStatistic>) controlPackage.getData(0));
-                break;
             case TERRAIN_TILE_RESPONSE: {
                 Double workerMs = (Double) controlPackage.getData(1);
                 long clientStart = System.currentTimeMillis();
@@ -435,6 +445,9 @@ import java.util.logging.Logger;
                 break;
             case COMMAND_MOVE_ACK:
                 inputServices.get().onMoveCommandAck();
+                break;
+            case WORKER_LOG:
+                onWorkerLog((String) controlPackage.getSingleData());
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

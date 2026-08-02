@@ -1,0 +1,114 @@
+<!-- Longest-connected first: the rows worth a second look are the ones that have been sitting
+     there, not the one that just arrived. -->
+<p-table [value]="rows" dataKey="userId" sortField="openedMillis" [sortOrder]="1">
+    <ng-template pTemplate="caption">
+        <div class="flex items-center gap-3" style="flex-wrap: wrap">
+            <p-button icon="pi pi-refresh" styleClass="p-button-rounded p-button-text p-button-sm"
+                      title="Refresh" [loading]="loading" (onClick)="load()"></p-button>
+            <span><b>{{rows.length}}</b> open</span>
+            <span title="System socket open, game socket not - a client still starting up, or one that never got there">
+                {{systemOnlyCount}} without game connection
+            </span>
+            <span title="Game socket open, system socket not - unusual, the system connection is opened first">
+                {{gameOnlyCount}} without system connection
+            </span>
+            <span class="inline-flex items-center gap-2" style="margin-left:auto">
+                <p-toggleswitch [(ngModel)]="autoRefresh" (ngModelChange)="onAutoRefreshChange()"
+                                title="Reload every 5 seconds"></p-toggleswitch>
+                Auto refresh
+            </span>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="white-space: nowrap" pSortableColumn="name">
+                Name
+                <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="userId">
+                User id
+                <p-sortIcon field="userId"></p-sortIcon>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="itemCount"
+                title="Base name and the number of units and buildings it owns">
+                Base
+                <p-sortIcon field="itemCount"></p-sortIcon>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="level" title="Bots and fresh players have none">
+                Level
+                <p-sortIcon field="level"></p-sortIcon>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="system" title="System socket: quests, levels, chat, lifecycle">
+                System
+                <p-sortIcon field="system"></p-sortIcon>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="game" title="Game socket: the simulation">
+                Game
+                <p-sortIcon field="game"></p-sortIcon>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="openedMillis" title="Since the first of the two sockets opened">
+                Connected
+                <p-sortIcon field="openedMillis"></p-sortIcon>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="idleSeconds"
+                title="Since the last message in either direction on either socket">
+                Idle
+                <p-sortIcon field="idleSeconds"></p-sortIcon>
+            </th>
+            <th> </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row>
+        <tr>
+            <td>
+                @if (row.name) {
+                    {{row.name}}
+                } @else {
+                    <span style="opacity:0.4" title="This player never set a name">—</span>
+                }
+            </td>
+            <td style="font-family: monospace">
+                {{row.userId}}
+            </td>
+            <td style="white-space: nowrap" [title]="row.baseTitle">
+                @if (row.baseId !== null) {
+                    {{row.baseText}}
+                } @else {
+                    <span style="opacity:0.4">none</span>
+                }
+            </td>
+            <td>
+                {{row.levelText}}
+            </td>
+            <td>
+                @if (row.system) {
+                    <i class="pi pi-check" title="open"></i>
+                } @else {
+                    <i class="pi pi-minus" style="opacity:0.4" title="not open"></i>
+                }
+            </td>
+            <td>
+                @if (row.game) {
+                    <i class="pi pi-check" title="open"></i>
+                } @else {
+                    <i class="pi pi-minus" style="opacity:0.4" title="not open"></i>
+                }
+            </td>
+            <td style="white-space: nowrap" [title]="row.openedTitle">
+                {{row.openedText}}
+            </td>
+            <td style="white-space: nowrap" [title]="row.idleTitle">
+                {{row.idleText}}
+            </td>
+            <td [title]="scrollToTitle(row)">
+                <p-button icon="pi pi-map-marker" styleClass="p-button-rounded p-button-text p-button-sm"
+                          [disabled]="!canScrollTo(row)" (onClick)="scrollTo(row)"></p-button>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="9">Nobody is connected.</td>
+        </tr>
+    </ng-template>
+</p-table>

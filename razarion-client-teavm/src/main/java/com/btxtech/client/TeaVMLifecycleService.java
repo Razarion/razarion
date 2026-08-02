@@ -7,11 +7,9 @@ import com.btxtech.client.system.boot.AngularStartupListener;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.SimpleExecutorService;
-import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.effects.TrailService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
@@ -30,12 +28,10 @@ import java.util.List;
 public class TeaVMLifecycleService {
     private final Boot boot;
     private final TeaVMClientTrackerService clientTrackerService;
-    private final PerfmonService perfmonService;
     private final Provider<GameEngineControl> gameEngineControl;
     private final BaseItemUiService baseItemUiService;
     private final BoxUiService boxUiService;
     private final ResourceUiService resourceUiService;
-    private final TrailService trailService;
     private final TerrainUiService terrainUiService;
     private final Provider<ScreenCover> screenCover;
     private final GameUiControl gameUiControl;
@@ -52,12 +48,10 @@ public class TeaVMLifecycleService {
                                  GameUiControl gameUiControl,
                                  Provider<ScreenCover> screenCover,
                                  TerrainUiService terrainUiService,
-                                 TrailService trailService,
                                  ResourceUiService resourceUiService,
                                  BoxUiService boxUiService,
                                  BaseItemUiService baseItemUiService,
                                  Provider<GameEngineControl> gameEngineControl,
-                                 PerfmonService perfmonService,
                                  TeaVMClientTrackerService clientTrackerService,
                                  Boot boot) {
         this.gwtAngularService = gwtAngularService;
@@ -65,12 +59,10 @@ public class TeaVMLifecycleService {
         this.gameUiControl = gameUiControl;
         this.screenCover = screenCover;
         this.terrainUiService = terrainUiService;
-        this.trailService = trailService;
         this.resourceUiService = resourceUiService;
         this.boxUiService = boxUiService;
         this.baseItemUiService = baseItemUiService;
         this.gameEngineControl = gameEngineControl;
-        this.perfmonService = perfmonService;
         this.clientTrackerService = clientTrackerService;
         this.boot = boot;
 
@@ -162,8 +154,6 @@ public class TeaVMLifecycleService {
                 deferredStartup.finished();
             }
         });
-        perfmonService.stop();
-        trailService.clear();
         terrainUiService.clear();
     }
 

@@ -37,6 +37,44 @@ public class StartupTerminatedJson {
      * aborts the server derived itself, which cannot know which of the two happened.
      */
     private Boolean hidden;
+    /**
+     * Who was starting up. Stamped by the server from the request, never sent by the client.
+     * <p>
+     * Startup tracking is keyed on the game session uuid, everything a player then does on the
+     * user id, and the only bridge between them - GAME_SESSION_STARTED - is written when the
+     * system connection opens, which is the seventh of nine boot tasks. Every startup that died
+     * before that was unattributable, and those are exactly the ones worth looking at. The
+     * request carries the session, so the server can simply say who it was.
+     */
+    private String userId;
+    /** The browser session, which is how a startup finds its landing page visit and its click id. */
+    private String httpSessionId;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getHttpSessionId() {
+        return httpSessionId;
+    }
+
+    public void setHttpSessionId(String httpSessionId) {
+        this.httpSessionId = httpSessionId;
+    }
+
+    public StartupTerminatedJson userId(String userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public StartupTerminatedJson httpSessionId(String httpSessionId) {
+        this.httpSessionId = httpSessionId;
+        return this;
+    }
 
     public boolean isSuccessful() {
         return successful;

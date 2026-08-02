@@ -21,6 +21,7 @@ import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.history.HistoryService;
 import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.GameHistoryEntry;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -76,7 +77,11 @@ public class UserService implements UserDetailsService {
     private final Duration checkIntervalRegisteredUser = Duration.ofMinutes(30);
     private final LevelCrudService levelCrudPersistence;
     private final Map<String, Instant> lastCheckedRegisteredUsers = new ConcurrentHashMap<>();
-    private final Map<String, String> anonymousMap = new HashMap<>();
+    /**
+     * httpSessionId -&gt; userId of anonymous (unregistered) players. Concurrent because it is written
+     * from websocket/request threads and now also pruned from the cleanup scheduler.
+     */
+    private final Map<String, String> anonymousMap = new ConcurrentHashMap<>();
     private final UserRepository userRepository;
     private final ServerGameEngineService serverGameEngineCrudPersistence;
     private final QuestConfigService questConfigService;
@@ -161,7 +166,8 @@ public class UserService implements UserDetailsService {
         if (playerBase != null) {
             userBackendInfo.setBaseId(playerBase.getBaseId());
         }
-        userBackendInfo.gameHistoryEntries(historyService.loadGameHistoryEntries(userEntity.getUserId()));
+        // No game history here: it is one Mongo query per user, and the table shows it only in the
+        // expanded row. The panel asks for it when a row is opened.
         return userBackendInfo;
     }
 
@@ -209,7 +215,7 @@ public class UserService implements UserDetailsService {
      * Current HTTP session id from the request bound to this thread, or {@code null} when there is
      * no request context (e.g. game-engine thread). Does not create a session (getSession(false)).
      */
-    private String currentHttpSessionId() {
+    public String currentHttpSessionId() {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attr != null) {
             HttpSession session = attr.getRequest().getSession(false);
@@ -244,14 +250,34 @@ public class UserService implements UserDetailsService {
         auth = removeAnonymousAuthentication(auth);
         if (auth != null) {
             return getUserIdByEmail(auth.getName());
-        } else {
-            String userId = anonymousMap.get(httpSessionId);
-            if (userId != null) {
+        }
+        String userId = anonymousMap.get(httpSessionId);
+        if (userId != null) {
+            if (userRepository.findByUserId(userId).isPresent()) {
                 return userId;
             }
-            String anonymousUserId = createAnonymousUser(httpSessionId);
-            anonymousMap.put(httpSessionId, anonymousUserId);
-            return anonymousUserId;
+            // The user is gone but the HTTP session outlived it - cleanupDisconnectedUnregisteredUsers()
+            // deletes an unregistered player 60 minutes after his connection closed, while the browser
+            // tab stays open. Handing the dead id out anyway is what produced the reconnect storm of
+            // 2026-08-01: onClientSystemConnectionOpened() threw, the socket closed with 1011, the
+            // client reconnected at once and the whole thing repeated 9373 times from a single tab.
+            // Recovering here rather than at the call sites covers every way a user can disappear.
+            logger.info("Anonymous user {} no longer exists, issuing a new one for the http session", userId);
+            anonymousMap.remove(httpSessionId);
+        }
+        String anonymousUserId = createAnonymousUser(httpSessionId);
+        anonymousMap.put(httpSessionId, anonymousUserId);
+        return anonymousUserId;
+    }
+
+    /**
+     * Drops the http-session mappings pointing at a deleted user. {@link #getOrCreateUserId} would
+     * recover without this, but the map is never otherwise pruned - it held one entry per http session
+     * ever seen, which only stayed bounded as long as the pod was evicted daily.
+     */
+    private void forgetAnonymousSessions(String userId) {
+        if (userId != null) {
+            anonymousMap.values().removeIf(userId::equals);
         }
     }
 
@@ -540,12 +566,53 @@ public class UserService implements UserDetailsService {
         userEntity.removeCrystals(levelUnlockEntity.getCrystalCost());
     }
 
+    /**
+     * userId to display name, for the ids given. One query instead of one per id, and ids without
+     * a user - or without a name, which is most of them - simply do not appear in the result.
+     */
+    @Transactional
+    public Map<String, String> getUserNames(Collection<String> userIds) {
+        if (userIds.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, String> names = new HashMap<>();
+        userRepository.findByUserIdIn(userIds).forEach(userEntity -> {
+            if (userEntity.getName() != null) {
+                names.put(userEntity.getUserId(), userEntity.getName());
+            }
+        });
+        return names;
+    }
+
+    /**
+     * userId to level number, for the ids given. Only for users that still exist - the history view
+     * falls back to the LEVEL_UP trail, which also covers the ones already cleaned up.
+     */
+    @Transactional
+    public Map<String, Integer> getUserLevelNumbers(Collection<String> userIds) {
+        if (userIds.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, Integer> levels = new HashMap<>();
+        userRepository.findByUserIdIn(userIds).forEach(userEntity -> {
+            if (userEntity.getLevel() != null) {
+                levels.put(userEntity.getUserId(), userEntity.getLevel().getNumber());
+            }
+        });
+        return levels;
+    }
+
     @Transactional
     public List<UserBackendInfo> getUserBackendInfos() {
-        return userRepository.findAll()
+        return userRepository.findAllForBackendInfo()
                 .stream()
                 .map(this::userEntity2UserBackendInfo)
                 .collect(Collectors.toList());
+    }
+
+    /** The history of a single user, asked for when its row in the user table is expanded. */
+    public List<GameHistoryEntry> getGameHistoryEntries(String userId) {
+        return historyService.loadGameHistoryEntries(userId);
     }
 
     public boolean shouldCheckRegisteredUser(String email) {
@@ -563,7 +630,15 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void onClientSystemConnectionOpened(String userId) {
-        var userEntity = userRepository.findByUserId(userId).orElseThrow();
+        var userEntity = userRepository.findByUserId(userId).orElse(null);
+        if (userEntity == null) {
+            // getOrCreateUserId() has just made sure the user exists, so only a delete racing the
+            // handshake gets here. Never throw: this runs inside afterConnectionEstablished(), and an
+            // exception there closes the fresh socket with 1011 - which the client answers with an
+            // immediate reconnect, at one attempt per second for as long as the tab is open.
+            logger.warn("System connection opened for unknown user {} - deleted during the handshake?", userId);
+            return;
+        }
         userEntity.setSystemConnectionOpened(LocalDateTime.now());
         userEntity.setSystemConnectionClosed(null);
         userRepository.save(userEntity);
@@ -628,6 +703,7 @@ public class UserService implements UserDetailsService {
     public void mgmtDeleteUnregisteredUser(String userId) {
         userRepository.findByUserId(userId).ifPresent(userEntity -> {
             if (userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED) {
+                forgetAnonymousSessions(userEntity.getUserId());
                 userRepository.delete(userEntity);
             }
         });
@@ -637,6 +713,7 @@ public class UserService implements UserDetailsService {
     public void mgmtDeleteUser(String userId) {
         userRepository.findByUserId(userId).ifPresent(userEntity -> {
             logger.info("Mgmt deleting user: {}", userEntity);
+            forgetAnonymousSessions(userEntity.getUserId());
             userRepository.delete(userEntity);
         });
     }
@@ -648,6 +725,7 @@ public class UserService implements UserDetailsService {
                 .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
                 .forEach(userEntity -> {
                     logger.info("Removing unregistered user startup: {}", userEntity);
+                    forgetAnonymousSessions(userEntity.getUserId());
                     userRepository.delete(userEntity);
                 });
     }
@@ -676,6 +754,7 @@ public class UserService implements UserDetailsService {
     public void deleteUser() {
         var userId = getOrCreateUserIdFromContext();
         removeUserFromRunningPlanet(userId);
+        forgetAnonymousSessions(userId);
         userRepository.delete(userRepository.findByUserId(userId).orElseThrow());
         SecurityContextHolder.clearContext();
         logger.info("User deleted: {}", userId);
@@ -736,6 +815,7 @@ public class UserService implements UserDetailsService {
             // Not deleteBaseByUser(): the in-memory quest progress has to go as well, or the next
             // planet restore trips over a progress entry whose user no longer exists.
             removeUserFromRunningPlanet(userEntity.getUserId());
+            forgetAnonymousSessions(userEntity.getUserId());
             userRepository.delete(userEntity);
         }
     }
@@ -750,6 +830,7 @@ public class UserService implements UserDetailsService {
         for (UserEntity user : oldUnverified) {
             logger.info("Deleting unverified user older than 24h: {}", user);
             removeUserFromRunningPlanet(user.getUserId());
+            forgetAnonymousSessions(user.getUserId());
             userRepository.delete(user);
         }
     }

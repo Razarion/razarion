@@ -121,7 +121,6 @@ public final class TeaVMWorkerMarshaller {
             case STOP_REQUEST:
             case STOP_RESPONSE:
             case QUEST_PASSED:
-            case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
             case INITIALIZED:
             case TICK_UPDATE_RESPONSE_FAIL:
@@ -144,7 +143,6 @@ public final class TeaVMWorkerMarshaller {
             case BOX_PICKED:
             case ACTIVATE_QUEST:
             case UPDATE_LEVEL:
-            case PERFMON_RESPONSE:
             case INITIALISING_FAILED:
             case TERRAIN_TILE_REQUEST:
             case QUEST_PROGRESS:
@@ -241,6 +239,12 @@ public final class TeaVMWorkerMarshaller {
                 setArrayString(array, DATA_OFFSET_0, (String) controlPackage.getData(0));
                 break;
 
+            // Raw string, deliberately not routed through toJson(): this path carries the report of
+            // a failure and must not depend on the machinery that may have caused it.
+            case WORKER_LOG:
+                setArrayString(array, DATA_OFFSET_0, (String) controlPackage.getData(0));
+                break;
+
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
         }
@@ -259,7 +263,6 @@ public final class TeaVMWorkerMarshaller {
             case STOP_REQUEST:
             case STOP_RESPONSE:
             case QUEST_PASSED:
-            case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
             case INITIALIZED:
             case TICK_UPDATE_RESPONSE_FAIL:
@@ -292,7 +295,6 @@ public final class TeaVMWorkerMarshaller {
             case EXECUTE_BOT_COMMANDS:
             case CREATE_RESOURCES:
             case CREATE_BOXES:
-            case PERFMON_RESPONSE:
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_0), List.class));
                 break;
 

@@ -11,7 +11,19 @@
 
     window.RAZ_startTime = Date.now();
 
-    console.log('[TeaVM Client] Starting WebAssembly GC client bootstrap...');
+    /*
+     * Build stamp, substituted by Maven (see razarion.build in the pom). This file itself is
+     * always fetched fresh - game.component.ts appends a timestamp - so the stamp below is always
+     * the one from the running deployment. Everything it is appended to may therefore be cached
+     * indefinitely: a deploy changes the URL, nothing else does.
+     *
+     * Without it both files kept their fixed names, the browser held on to them for an hour, and
+     * a returning player ran the freshly deployed TypeScript against the previous WASM - with the
+     * whole Java/JS bridge contract sitting on that seam.
+     */
+    var BUILD = '${razarion.build}';
+
+    console.log('[TeaVM Client] Starting WebAssembly GC client bootstrap, build ' + BUILD);
 
     var wasmStart = Date.now();
 
@@ -40,7 +52,7 @@
     track('WASM_BOOTSTRAP');
 
     var script = document.createElement('script');
-    script.src = '/teavm-client/classes.wasm-runtime.js';
+    script.src = '/teavm-client/classes.wasm-runtime.js?v=' + BUILD;
     script.onload = async function() {
         try {
             console.log('[TeaVM Client] Runtime loaded, initializing WASM-GC module...');
@@ -53,7 +65,7 @@
              * has no global imports at all (only teavmJso/teavmMath/teavmDate/teavm functions),
              * so skipping that step costs nothing.
              */
-            var teavm = await TeaVM.wasmGC.load("/teavm-client/razarion-client.wasm", {
+            var teavm = await TeaVM.wasmGC.load("/teavm-client/razarion-client.wasm?v=" + BUILD, {
                 noAutoImports: true,
                 stackDeobfuscator: {
                     enabled: false

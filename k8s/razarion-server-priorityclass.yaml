@@ -1,0 +1,22 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: razarion-server-high
+# Ohne priorityClassName laeuft der Pod mit Prioritaet 0. Am 02.08.2026 hat Autopilot
+# beim Konsolidieren eines Nodes (Taints defrag-candidate / ToBeDeletedByClusterAutoscaler)
+# genau diesen Pod verdraengt: "Preempted by pod 97b85606-... on node ...-8453f837-6blp".
+# Alle GKE-Systempods liegen bei 1000000000 bis 2000001000, unserer war mit 3Gi das
+# groesste und billigste Opfer auf dem Node. Ergebnis: 1 min 53 s Totalausfall und
+# saemtliche Spieler aus dem laufenden Spiel geworfen.
+#
+# Das PodDisruptionBudget schuetzt hier nicht: eine Eviction scheitert daran, eine
+# Preemption beruecksichtigt es nur "best effort" und laeuft trotzdem durch.
+#
+# 900000000 liegt bewusst unter der niedrigsten System-Klasse (gmp-critical,
+# 1000000000). Die Systempods sollen weiterhin gewinnen - sie brauchen Kilobytes,
+# nicht 3 GiB. Gegenueber allem anderen auf dem Node ist der Spielserver damit kein
+# lohnendes Opfer mehr.
+value: 900000000
+# Gilt nur fuer Pods, die die Klasse ausdruecklich anfordern.
+globalDefault: false
+description: "Razarion Spielserver - haelt den Weltzustand im RAM, jede Verdraengung wirft alle Spieler raus."

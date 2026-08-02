@@ -24,6 +24,15 @@
         <teavm.debugInfo>true</teavm.debugInfo>
         <teavm.sourceMaps>true</teavm.sourceMaps>
         <teavm.optimizationLevel>SIMPLE</teavm.optimizationLevel>
+        <!--
+          Cache buster for the WASM module and the TeaVM runtime script. Both have fixed file
+          names, so without this the browser keeps whatever it downloaded before - for a returning
+          player that meant new TypeScript against the WASM from before the deploy, and for a
+          developer it meant a rebuild that a plain F5 never picked up. The bootstrap appends this
+          to both URLs; the server may then cache them forever, because a deploy changes the URL.
+        -->
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+        <razarion.build>${maven.build.timestamp}</razarion.build>
         <!-- TeaVM build settings (defaults for production) -->
 <!--        <teavm.minifying>true</teavm.minifying>-->
 <!--        <teavm.debugInfo>false</teavm.debugInfo>-->
@@ -153,6 +162,8 @@
                                     <includes>
                                         <include>worker-bootstrap.js</include>
                                     </includes>
+                                    <!-- Substitutes ${razarion.build} - see the property. -->
+                                    <filtering>true</filtering>
                                 </resource>
                             </resources>
                         </configuration>

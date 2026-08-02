@@ -3,6 +3,9 @@ package com.btxtech.server.service.tracking;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.dto.TabHiddenJson;
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -28,10 +31,21 @@ public class StartupTrackingService {
      * minutes, dominated by the model download.
      */
     private static final long ABORT_GRACE_MILLIS = 5 * 60 * 1000L;
+    private final Logger logger = LoggerFactory.getLogger(StartupTrackingService.class);
     private final MongoTemplate mongoTemplate;
 
     public StartupTrackingService(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
+    }
+
+    /**
+     * Every read of these collections is a time range, and none of them had an index for it: the
+     * backend loaded a range by scanning all of them end to end, and they grow without a TTL.
+     */
+    @PostConstruct
+    public void ensureIndexes() {
+        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger,
+                STARTUP_TASK_COLLECTION, STARTUP_TERMINATED_COLLECTION, TAB_HIDDEN_COLLECTION);
     }
 
     public void onStartupTask(StartupTaskJson startupTaskJson) {
@@ -137,7 +151,11 @@ public class StartupTrackingService {
                         .rdtCid(lastTask.getRdtCid())
                         .twclid(lastTask.getTwclid())
                         .utmCampaign(lastTask.getUtmCampaign())
-                        .utmSource(lastTask.getUtmSource()))
+                        .utmSource(lastTask.getUtmSource())
+                        // Likewise for who it was: an abandoned startup is the row where that
+                        // matters most, and it has no record of its own to carry it.
+                        .userId(lastTask.getUserId())
+                        .httpSessionId(lastTask.getHttpSessionId()))
                 .forEach(resolved::add);
 
         // The reconstructed aborts are appended at the end, so the list has to be put back into

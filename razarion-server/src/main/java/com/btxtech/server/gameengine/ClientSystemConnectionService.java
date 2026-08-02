@@ -217,4 +217,14 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
         return systemConnections.get(userId);
     }
 
+    /**
+     * A copy, taken under the same lock the senders use. Callers get a stable list to work with
+     * instead of a view that a closing connection could pull out from under them.
+     */
+    public Map<String, ClientSystemConnection> getOpenConnections() {
+        synchronized (systemConnections) {
+            return new TreeMap<>(systemConnections);
+        }
+    }
+
 }

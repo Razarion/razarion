@@ -4,8 +4,10 @@ import com.btxtech.server.model.tracking.PageRequest;
 import com.btxtech.server.model.tracking.PageRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jakarta.annotation.PostConstruct;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,20 @@ public class PageRequestService {
 
     public PageRequestService(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
+    }
+
+    /**
+     * serverTime for the range reads, httpSessionId for the per-session lookups that resolve a
+     * visitor's click id. Neither had an index; both scanned the whole collection.
+     */
+    @PostConstruct
+    public void ensureIndexes() {
+        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, PAGE_REQUEST);
+        try {
+            mongoTemplate.indexOps(PAGE_REQUEST).ensureIndex(new Index().on("httpSessionId", Sort.Direction.ASC));
+        } catch (Exception e) {
+            logger.warn("Could not ensure the httpSessionId index on {}: {}", PAGE_REQUEST, e.getMessage());
+        }
     }
 
     public void onHome(PageRequest pageRequest) {

@@ -120,6 +120,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
             // anyway - the master silently dropped builder builds and let the start builder spawn on
             // top of a resource.
             if (!baseItemPlacer.isPositionValid()) {
+              baseItemPlacer.onInvalidPlaceAttempt();
               break;
             }
             if (this.baseItemPlacerCallback) {
@@ -241,7 +242,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     const positionValid = baseItemPlacer.isPositionValid();
     this.material.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
     this.rallyMaterial.emissiveColor = positionValid ? Color3.Green() : Color3.Red();
-    this.pressMouseVisualization?.setPositionValid(positionValid);
+    this.pressMouseVisualization?.setPositionValid(positionValid, baseItemPlacer.getErrorText());
     for (let i = 0; i < this.renderObjects.length; i++) {
       const offset = this.relativeOffsets[i];
       this.renderObjects[i].setPosition(new Vector3(pickedPoint.x + offset.x, pickedPoint.y, pickedPoint.z + offset.z));

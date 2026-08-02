@@ -19,6 +19,27 @@ public class StartupTaskJson {
      * Safari 18.2+, and anything older dies before a single engine task runs.
      */
     private String userAgent;
+    /**
+     * Stamped by the server, not sent by the client - see StartupTerminatedJson#userId.
+     */
+    private String userId;
+    private String httpSessionId;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getHttpSessionId() {
+        return httpSessionId;
+    }
+
+    public void setHttpSessionId(String httpSessionId) {
+        this.httpSessionId = httpSessionId;
+    }
 
     public String getUserAgent() {
         return userAgent;

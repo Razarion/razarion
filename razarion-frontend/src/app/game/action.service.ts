@@ -22,6 +22,15 @@ export class ActionService {
   private hasPendingMoveCommand = false;
   private queuedMoveCommand: { movableIds: number[], x: number, y: number } | null = null;
   private moveAckCallbackRegistered = false;
+  private moveAckTimeout: ReturnType<typeof setTimeout> | null = null;
+  /**
+   * Only one move command is in flight at a time, so a click storm does not queue up an A* search
+   * per click. The gate opens again when the game engine acknowledges. If that acknowledgement
+   * never arrives the gate used to stay shut for the rest of the session: every later click was
+   * silently parked in queuedMoveCommand and nothing ever moved again. This is how long we wait
+   * before assuming the acknowledgement is lost and opening the gate ourselves.
+   */
+  private static readonly MOVE_ACK_TIMEOUT_MS = 2000;
 
   constructor(private gwtAngularService: GwtAngularService,
               private babylonAudioService: BabylonAudioService,
@@ -86,9 +95,29 @@ export class ActionService {
     if (this.hasPendingMoveCommand) {
       this.queuedMoveCommand = { movableIds, x: xTerrainPosition, y: yTerrainPosition };
     } else {
-      this.gameCommandService.moveCmd(movableIds, xTerrainPosition, yTerrainPosition);
+      this.sendMoveCommand(movableIds, xTerrainPosition, yTerrainPosition);
     }
+  }
+
+  private sendMoveCommand(movableIds: number[], x: number, y: number): void {
+    this.gameCommandService.moveCmd(movableIds, x, y);
     this.hasPendingMoveCommand = true;
+    if (this.moveAckTimeout) {
+      clearTimeout(this.moveAckTimeout);
+    }
+    this.moveAckTimeout = setTimeout(() => {
+      this.moveAckTimeout = null;
+      // Worth a line: the engine acknowledges even when the command failed, so reaching this means
+      // the command or its acknowledgement was lost on the way - a defect, not a slow tick.
+      console.warn('Move command was not acknowledged within '
+        + ActionService.MOVE_ACK_TIMEOUT_MS + ' ms - releasing the gate so the next click works');
+      this.hasPendingMoveCommand = false;
+      const queued = this.queuedMoveCommand;
+      this.queuedMoveCommand = null;
+      if (queued) {
+        this.sendMoveCommand(queued.movableIds, queued.x, queued.y);
+      }
+    }, ActionService.MOVE_ACK_TIMEOUT_MS);
   }
 
   addCursorHandler(cursorTypeHandler: (selectionInfo: SelectionInfo) => void) {
@@ -233,18 +262,19 @@ export class ActionService {
   }
 
   private onMoveCommandAck(): void {
+    if (this.moveAckTimeout) {
+      clearTimeout(this.moveAckTimeout);
+      this.moveAckTimeout = null;
+    }
     if (!this.hasPendingMoveCommand) {
       return;
     }
-    if (this.queuedMoveCommand != null) {
-      this.gameCommandService.moveCmd(
-        this.queuedMoveCommand.movableIds,
-        this.queuedMoveCommand.x,
-        this.queuedMoveCommand.y
-      );
+    const queued = this.queuedMoveCommand;
+    this.queuedMoveCommand = null;
+    if (queued != null) {
+      this.sendMoveCommand(queued.movableIds, queued.x, queued.y);
     } else {
       this.hasPendingMoveCommand = false;
     }
-    this.queuedMoveCommand = null;
   }
 }

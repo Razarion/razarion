@@ -6,7 +6,6 @@ import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.inventory.InventoryUiService;
@@ -37,7 +36,6 @@ public class TestGameEngineControl extends GameEngineControl {
 
     @Inject
     public TestGameEngineControl(Provider<InputService> inputServices,
-                                 PerfmonService perfmonService,
                                  Provider<Boot> boot,
                                  TerrainUiService terrainUiService,
                                  InventoryUiService inventoryUiService,
@@ -48,7 +46,6 @@ public class TestGameEngineControl extends GameEngineControl {
                                  BaseItemUiService baseItemUiService,
                                  BabylonRendererService babylonRendererService) {
         super(inputServices,
-                perfmonService,
                 boot,
                 terrainUiService,
                 inventoryUiService,

@@ -154,6 +154,7 @@
                         <class>com.btxtech.server.rest.editor.GroundEditorController</class>
                         <class>com.btxtech.server.rest.editor.TerrainObjectEditorController</class>
                         <class>com.btxtech.server.rest.editor.PlanetEditorController</class>
+                        <class>com.btxtech.server.rest.editor.ConnectionMgmtController</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../razarion-frontend/src/app/generated/razarion-share.ts</outputFile>

@@ -10,7 +10,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseIte
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SharedTickBufferLayout;
-import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.inventory.InventoryUiService;
@@ -42,7 +41,6 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
 
     @Inject
     public TeaVMClientGameEngineControl(Provider<InputService> inputServices,
-                                        PerfmonService perfmonService,
                                         Provider<Boot> boot,
                                         TerrainUiService terrainUiService,
                                         InventoryUiService inventoryUiService,
@@ -54,7 +52,6 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
                                         Provider<TeaVMLifecycleService> lifecycleService,
                                         BabylonRendererService babylonRendererService) {
         super(inputServices,
-                perfmonService,
                 boot,
                 terrainUiService,
                 inventoryUiService,
@@ -86,7 +83,11 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
                 dispatch(controlPackage);
             }));
             worker.setOnError(evt -> {
-                JsConsole.error("TeaVMClientGameEngineControl: worker error");
+                // The ErrorEvent carries message/filename/lineno and often the Error with its stack.
+                // Logging only the bare sentence turned every uncaught exception in the game engine
+                // into an anonymous one: 111 of these in a single session on 2026-08-01, none of them
+                // diagnosable afterwards.
+                JsConsole.error("TeaVMClientGameEngineControl: worker error: " + describeErrorEvent(evt));
             });
         } catch (Throwable t) {
             this.deferredStartup.failed(t);
@@ -407,6 +408,18 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     }
 
     // ============ JS interop helpers ============
+
+    /**
+     * Flattens a worker {@code ErrorEvent} into one line. The stack is capped because this string
+     * travels to the server through the remote logger, one POST per occurrence.
+     */
+    @JSBody(params = {"event"}, script =
+            "if (!event) { return 'no event'; }\n" +
+            "var msg = event.message || (event.error && event.error.message) || event.type || 'unknown';\n" +
+            "var where = event.filename ? (' at ' + event.filename + ':' + event.lineno + ':' + event.colno) : '';\n" +
+            "var stack = (event.error && event.error.stack) ? (' stack=' + String(event.error.stack).substring(0, 600)) : '';\n" +
+            "return msg + where + stack;")
+    private static native String describeErrorEvent(JSObject event);
 
     @JSBody(params = {"worker", "message"}, script = "worker.postMessage(message);")
     private static native void postMessage(JsWorker worker, JSObject message);

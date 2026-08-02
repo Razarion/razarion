@@ -35,6 +35,7 @@ public class BaseItemPlacerChecker {
     private boolean isAllowedAreaOk;
     private boolean isTerrainOk;
     private boolean isItemsOk;
+    private boolean isResourcesOk;
     private boolean isEnemiesOk;
     private boolean isRallyTerrainOk;
     private BaseItemType baseItemType;
@@ -60,21 +61,30 @@ public class BaseItemPlacerChecker {
     }
 
     public void check(DecimalPosition position) {
+        // Reset everything up front: the checks below short-circuit, and on an exception a flag that
+        // kept its value from the previous cursor position would silently decide isPositionValid().
+        isAllowedAreaOk = false;
+        isEnemiesOk = false;
+        isItemsOk = false;
+        isResourcesOk = false;
+        isTerrainOk = false;
+        isRallyTerrainOk = false;
+
         Collection<DecimalPosition> absoluteItemPositions = setupAbsolutePositions(position);
         isAllowedAreaOk = allowedArea == null || allowedArea.checkInside(absoluteItemPositions);
-        isEnemiesOk = false;
         if (isAllowedAreaOk) {
             isEnemiesOk = !baseItemUiService.hasEnemyForSpawn(position, enemyFreeRadius);
         }
-        isItemsOk = false;
         if (isEnemiesOk) {
             double radius = baseItemType.getPhysicalAreaConfig().getRadius();
+            isItemsOk = !baseItemUiService.hasItemsInRangeInViewField(absoluteItemPositions, radius);
             // Resources count as occupied ground too: the master rejects a builder build over a resource
             // (SyncItemContainerServiceImpl.isFree()), and a base spawned on a resource spot blocks it.
-            isItemsOk = !baseItemUiService.hasItemsInRangeInViewField(absoluteItemPositions, radius)
-                    && !resourceUiService.hasResourcesInRange(absoluteItemPositions, radius);
+            // Kept apart from isItemsOk so the player is told which of the two it is - "there is a
+            // razarion field here" is not something the ghost model shows.
+            isResourcesOk = isItemsOk && !resourceUiService.hasResourcesInRange(absoluteItemPositions, radius);
         }
-        isTerrainOk = isItemsOk && terrainUiService.isTerrainFree(absoluteItemPositions, baseItemType);
+        isTerrainOk = isResourcesOk && terrainUiService.isTerrainFree(absoluteItemPositions, baseItemType);
         isRallyTerrainOk = !hasRallyPoint() || terrainUiService.isTerrainFree(getAbsoluteRallyPosition(position), rallyRadius, rallyTerrainType);
     }
 
@@ -90,12 +100,20 @@ public class BaseItemPlacerChecker {
         return isItemsOk;
     }
 
+    public boolean isResourcesOk() {
+        return isResourcesOk;
+    }
+
     public boolean isEnemiesOk() {
         return isEnemiesOk;
     }
 
+    public boolean isRallyTerrainOk() {
+        return isRallyTerrainOk;
+    }
+
     public boolean isPositionValid() {
-        return isAllowedAreaOk && isItemsOk && isEnemiesOk && isTerrainOk && isRallyTerrainOk;
+        return isAllowedAreaOk && isItemsOk && isResourcesOk && isEnemiesOk && isTerrainOk && isRallyTerrainOk;
     }
 
     public double getEnemyFreeRadius() {

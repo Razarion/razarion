@@ -1,8 +1,7 @@
 package com.btxtech.worker;
 
 import com.btxtech.shared.system.SimpleScheduledFuture;
-import com.btxtech.shared.system.perfmon.PerfmonEnum;
-import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.worker.jso.JsConsole;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
@@ -17,26 +16,36 @@ import java.util.Optional;
  */
 public class TeaVMSimpleScheduledFutureImpl implements SimpleScheduledFuture {
     private static final int MAX_OVERRUN_COUNT = 100;
+    /**
+     * Beyond this much lateness the missed runs are dropped instead of replayed. Fixed-rate
+     * scheduling keeps the average rate honest against setTimeout's slop, which is worth having for
+     * small drifts. But a dedicated worker is throttled together with its tab, and returning with
+     * `expected` minutes in the past used to pin every following callback at the 10 ms floor until
+     * the whole backlog had run - for the 100 ms engine tick that is a burst of hundreds of
+     * simulation steps at once. Replaying them buys nothing: the client resynchronises with the
+     * server anyway, and until it does, the burst is what freezes the tab.
+     */
+    private static final double MAX_CATCH_UP_MILLIS = 1000;
+    private static final long OVERRUN_LOG_INTERVAL_MS = 10_000;
 
-    private final PerfmonService perfmonService;
     private Integer timerId;
     private double milliSDelay;
     private boolean repeating;
-    private Optional<PerfmonEnum> perfmonEnum;
+    private Optional<SimpleExecutorService.Type> type;
     private Runnable runnable;
     private double expected;
     private int overrunCount;
     private int executionOverrunCount;
+    private long lastOverrunLogTime;
 
     @Inject
-    public TeaVMSimpleScheduledFutureImpl(PerfmonService perfmonService) {
-        this.perfmonService = perfmonService;
+    public TeaVMSimpleScheduledFutureImpl() {
     }
 
-    public void init(double milliSDelay, boolean repeating, PerfmonEnum perfmonEnum, Runnable runnable) {
+    public void init(double milliSDelay, boolean repeating, SimpleExecutorService.Type type, Runnable runnable) {
         this.milliSDelay = milliSDelay;
         this.repeating = repeating;
-        this.perfmonEnum = Optional.ofNullable(perfmonEnum);
+        this.type = Optional.ofNullable(type);
         this.runnable = runnable;
     }
 
@@ -65,7 +74,7 @@ public class TeaVMSimpleScheduledFutureImpl implements SimpleScheduledFuture {
                                 + "timeDrift=" + timeDrift
                                 + " expected=" + expected
                                 + " timerId=" + timerId
-                                + " perfmonEnum=" + perfmonEnum.orElse(null));
+                                + " type=" + type.orElse(null));
                         overrunCount = 0;
                     }
                 } else {
@@ -75,40 +84,52 @@ public class TeaVMSimpleScheduledFutureImpl implements SimpleScheduledFuture {
                 timerId = null;
             }
 
-            perfmonEnum.ifPresent(perfmonService::onEntered);
             long startExecutionTime = System.currentTimeMillis();
             runnable.run();
             long executionTime = System.currentTimeMillis() - startExecutionTime;
 
             if (repeating && executionTime > milliSDelay) {
-                // A long A* search or pathing tick can routinely push the engine over its
-                // 100 ms budget. Log the first overrun immediately so the signal isn't
-                // lost, then throttle to one warn per MAX_OVERRUN_COUNT consecutive
-                // overruns — the counter in the message disambiguates transient spike
-                // (single "1 consecutive overruns" line) from sustained overload.
+                // A long A* search or pathing tick can routinely push the engine over its 100 ms
+                // budget. Throttled by time, not by a run of consecutive overruns: an engine that
+                // overruns every second tick never has a run longer than one, so counting runs
+                // would report every single time. First overrun goes out immediately, then at most
+                // one line per interval, carrying how many happened in between.
                 executionOverrunCount++;
-                if (executionOverrunCount == 1 || executionOverrunCount % MAX_OVERRUN_COUNT == 0) {
+                long now = System.currentTimeMillis();
+                if (lastOverrunLogTime == 0 || now - lastOverrunLogTime >= OVERRUN_LOG_INTERVAL_MS) {
                     JsConsole.warn("TeaVMSimpleScheduledFutureImpl: Payload execution took longer than delay ("
-                            + executionOverrunCount + " consecutive overruns)."
+                            + executionOverrunCount + " overruns since the last of these lines)."
                             + " timerId=" + timerId
                             + " execution time=" + executionTime
                             + " delay=" + milliSDelay
-                            + " perfmonEnum=" + perfmonEnum.orElse(null));
+                            + " type=" + type.orElse(null));
+                    lastOverrunLogTime = now;
+                    executionOverrunCount = 0;
                 }
-            } else {
-                executionOverrunCount = 0;
             }
         } catch (Throwable t) {
             JsConsole.warn("TeaVMSimpleScheduledFutureImpl callback error: " + t.getMessage());
         } finally {
-            perfmonEnum.ifPresent(perfmonService::onLeft);
         }
 
         if (repeating && timerId != null) {
-            expected += milliSDelay;
-            int nextDelay = Math.max(10, (int) (milliSDelay - timeDrift));
-            scheduleNext(nextDelay);
+            if (timeDrift > MAX_CATCH_UP_MILLIS) {
+                JsConsole.warn("TeaVMSimpleScheduledFutureImpl: dropped " + missedRuns(timeDrift)
+                        + " missed runs after a stall of " + (long) timeDrift + " ms, starting over from now."
+                        + " delay=" + milliSDelay
+                        + " type=" + type.orElse(null));
+                expected = System.currentTimeMillis() + milliSDelay;
+                scheduleNext((int) milliSDelay);
+            } else {
+                expected += milliSDelay;
+                int nextDelay = Math.max(10, (int) (milliSDelay - timeDrift));
+                scheduleNext(nextDelay);
+            }
         }
+    }
+
+    private long missedRuns(double timeDrift) {
+        return (long) (timeDrift / Math.max(1, milliSDelay));
     }
 
     @Override

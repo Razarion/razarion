@@ -9,10 +9,18 @@
 (function() {
     'use strict';
 
-    console.log('[TeaVM Worker] Starting WebAssembly GC worker bootstrap...');
+    /*
+     * Build stamp, substituted by Maven (see razarion.build in the pom). This file is always
+     * fetched fresh - CommonUrl.getWorkerScriptUrl() appends a timestamp - but a relative URL
+     * inside a worker does NOT inherit that query, so both files below need the stamp of their
+     * own. Without it they kept their fixed names and the browser served the previous build.
+     */
+    var BUILD = '${razarion.build}';
+
+    console.log('[TeaVM Worker] Starting WebAssembly GC worker bootstrap, build ' + BUILD);
 
     // Load the TeaVM WASM-GC runtime (fixed filename from TeaVM)
-    importScripts('classes.wasm-runtime.js');
+    importScripts('classes.wasm-runtime.js?v=' + BUILD);
 
     async function initializeWasmGC() {
         try {
@@ -21,7 +29,7 @@
             // Load the WASM-GC module using TeaVM's loader
             // noAutoImports: skip WebAssembly.Module.imports(), which throws on Safari/WebKit
             // for WasmGC ref types. No global imports here, so nothing is lost.
-            let teavm = await TeaVM.wasmGC.load("razarion-worker.wasm", {
+            let teavm = await TeaVM.wasmGC.load("razarion-worker.wasm?v=" + BUILD, {
                 noAutoImports: true,
                 stackDeobfuscator: {
                     enabled: false  // Disable to avoid 404 for deobfuscator.wasm

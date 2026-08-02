@@ -27,15 +27,33 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/", "classpath:/generated/")
                 .setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic());
 
-        // TeaVM Worker files - cache for 1 hour (worker files may update more frequently)
+        // The WASM modules and the TeaVM runtime carry a build stamp in the query (?v=), appended by
+        // client-bootstrap.js / worker-bootstrap.js, so a deploy is a new URL and the old one can be
+        // kept forever. They used to be cached for an hour under fixed names, which meant a returning
+        // player ran the freshly deployed TypeScript against the WASM from before the deploy - and a
+        // developer's rebuild was invisible to anything short of a hard reload.
+        // Registered before the catch-all handlers below, because the registry resolves in order.
+        //
+        // Every pattern needs a wildcard in its last segment. Spring resolves a request by taking
+        // the part of the path that matched the wildcard and looking that up inside the location -
+        // an exact pattern leaves nothing to look up, and the request 404s with a JSON error body
+        // that the browser then refuses to execute as a script.
+        CacheControl versioned = CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable();
+        registry.addResourceHandler("/teavm-worker/*.wasm", "/teavm-worker/*.wasm-runtime.js")
+                .addResourceLocations("classpath:/generated/teavm-worker/")
+                .setCacheControl(versioned);
+        registry.addResourceHandler("/teavm-client/*.wasm", "/teavm-client/*.wasm-runtime.js")
+                .addResourceLocations("classpath:/generated/teavm-client/")
+                .setCacheControl(versioned);
+
+        // The bootstraps themselves, plus source maps and anything else in those folders. These are
+        // small and carry the build stamp for everything else, so they must never go stale.
         registry.addResourceHandler("/teavm-worker/**")
                 .addResourceLocations("classpath:/generated/teavm-worker/")
-                .setCacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic());
-
-        // TeaVM Client files - cache for 1 hour
+                .setCacheControl(CacheControl.noCache());
         registry.addResourceHandler("/teavm-client/**")
                 .addResourceLocations("classpath:/generated/teavm-client/")
-                .setCacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic());
+                .setCacheControl(CacheControl.noCache());
 
         // Angular apps. index.html points at the current hashes, so it must never be cached -
         // otherwise a deployed client keeps asking for chunks that no longer exist. Registered

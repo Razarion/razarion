@@ -753,6 +753,9 @@ export interface BaseItemPlacer {
 
   isPositionValid(): boolean;
 
+  /** Why the position is invalid, empty string if it is valid. Shown instead of the generic hint. */
+  getErrorText(): string;
+
   isPlayBuildSound(): boolean;
 
   getEnemyFreeRadius(): number;
@@ -760,6 +763,9 @@ export interface BaseItemPlacer {
   onMove(xTerrainPosition: number, yTerrainPosition: number): void;
 
   onPlace(xTerrainPosition: number, yTerrainPosition: number): void;
+
+  /** Report a click on a red position - the click is swallowed, this is the only trace it leaves. */
+  onInvalidPlaceAttempt(): void;
 
   isCanBeCanceled(): boolean;
 

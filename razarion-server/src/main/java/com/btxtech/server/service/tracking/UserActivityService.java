@@ -3,6 +3,7 @@ package com.btxtech.server.service.tracking;
 import com.btxtech.server.model.tracking.PageRequest;
 import com.btxtech.server.model.tracking.UserActivity;
 import com.btxtech.server.model.tracking.UserActivityType;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -21,6 +22,11 @@ public class UserActivityService {
 
     public UserActivityService(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
+    }
+
+    @PostConstruct
+    public void ensureIndexes() {
+        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, USER_ACTIVITY);
     }
 
     public void onBaseCreated(String userId, int baseId) {

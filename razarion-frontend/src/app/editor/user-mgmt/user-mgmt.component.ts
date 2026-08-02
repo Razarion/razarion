@@ -55,6 +55,8 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
   userToDelete: UserBackendInfo | null = null;
   // Per base: last unit id the camera jumped to, so a repeated "Move to" advances to the next unit.
   private lastMovedToUnitId = new Map<number, number>();
+  // Rows whose game history is in flight, so a second expand does not fire a second query.
+  private loadingHistoryUserIds = new Set<string>();
 
 
   constructor(private messageService: MessageService,
@@ -102,6 +104,35 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
         detail: err.message,
         sticky: true
       }));
+  }
+
+  /**
+   * The history is one Mongo query per user, so the list arrives without it and a row fetches its
+   * own when it is opened. Kept once fetched: reopening the same row should not query again.
+   */
+  onRowExpand(userBackendInfo: UserBackendInfo): void {
+    if (userBackendInfo.gameHistoryEntries || this.loadingHistoryUserIds.has(userBackendInfo.userId)) {
+      return;
+    }
+    this.loadingHistoryUserIds.add(userBackendInfo.userId);
+    this.userMgmtControllerClient.getGameHistory(userBackendInfo.userId)
+      .then(gameHistoryEntries => {
+        userBackendInfo.gameHistoryEntries = gameHistoryEntries;
+        this.loadingHistoryUserIds.delete(userBackendInfo.userId);
+      })
+      .catch(err => {
+        this.loadingHistoryUserIds.delete(userBackendInfo.userId);
+        this.messageService.add({
+          severity: 'error',
+          summary: `Can not load game history`,
+          detail: err.message,
+          sticky: true
+        });
+      });
+  }
+
+  historyLoading(userBackendInfo: UserBackendInfo): boolean {
+    return this.loadingHistoryUserIds.has(userBackendInfo.userId);
   }
 
   onSaveLevel(userBackendInfo: UserBackendInfo): void {

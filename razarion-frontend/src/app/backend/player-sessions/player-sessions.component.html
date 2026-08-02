@@ -1,0 +1,125 @@
+<div class="flex flex-row items-center gap-4 pb-3" style="flex-wrap: wrap">
+  <p-button icon="pi pi-refresh" size="small" [loading]="loading" (onClick)="load()" title="Reload"/>
+  <span><b>{{ summary.attempts }}</b> start attempts</span>
+  <span title="The startup reported its own successful end">{{ summary.successful }} started</span>
+  <span title="Nobody ever reported an end - the player left or a task never returned">{{ summary.aborted }} abandoned</span>
+  <span title="The game page was opened and not a single startup task arrived">{{ summary.noStartup }} without any startup</span>
+  <span><b>{{ summary.players }}</b> players</span>
+  <span title="Created a base in this range, or owns one right now">{{ summary.withBase }} with a base</span>
+  <span class="inline-flex items-center gap-2" style="margin-left:auto">
+    <p-toggleswitch [(ngModel)]="failuresOnly" title="Hide everything that started fine"/>
+    Failures only
+  </span>
+</div>
+
+<p-table [value]="rows" dataKey="rowId" [scrollable]="true" scrollHeight="calc(100vh - 260px)">
+  <ng-template pTemplate="header">
+    <tr>
+      <th></th>
+      <th>Time</th>
+      <th>Player</th>
+      <th title="Which ad click brought this session in; organic means no click id anywhere on it">Source</th>
+      <th>Outcome</th>
+      <th title="Highest level in this range; falls back to the current level of players that still exist">Level</th>
+      <th title="Created a base in this range / owns one right now">Base</th>
+      <th>Quests</th>
+      <th title="WebAssembly GC needs Chrome 119+, Firefox 120+ or Safari 18.2+">Device</th>
+      <th title="How long the startup took, when it reported an end">Startup</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-session let-expanded="expanded">
+    <tr>
+      <td>
+        <button type="button" pRipple [pRowToggler]="session"
+                class="p-button p-button-text p-button-rounded p-button-plain">
+          <i [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+        </button>
+      </td>
+      <td style="white-space: nowrap">{{ session.startTime | date:'dd.MM. HH:mm:ss' }}</td>
+      <td style="white-space: nowrap" [title]="playerTitle(session)">
+        {{ player(session) }}
+        @if (session.attemptNumber > 1) {
+          <span style="opacity:0.6" title="This player had already started before in this range">
+            · {{ session.attemptNumber }}. attempt
+          </span>
+        }
+      </td>
+      <td>{{ sourceLabel(session) }}</td>
+      <td style="white-space: nowrap" [title]="outcomeTitle(session)">
+        <span [style.color]="outcomeColor(session)">&#9679;</span>
+        {{ outcomeLabel(session) }}
+        @if (session.lastTaskEnum) {
+          <span style="opacity:0.6"> at {{ session.lastTaskEnum }}</span>
+        }
+      </td>
+      <td>{{ session.levelNumber !== null && session.levelNumber !== undefined ? session.levelNumber : '—' }}</td>
+      <td style="white-space: nowrap">
+        @if (session.baseCreated) {
+          <span title="Created a base during this attempt">created</span>
+        } @else if (session.baseAlive) {
+          <span style="opacity:0.7" title="Owns a base right now, created earlier">has one</span>
+        } @else {
+          <span style="opacity:0.4" title="No base">—</span>
+        }
+      </td>
+      <td>{{ session.questsPassed ? session.questsPassed : '—' }}</td>
+      <td style="white-space: nowrap">{{ device(session) }}</td>
+      <td style="white-space: nowrap">{{ duration(session.totalTime) }}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="expandedrow" let-session>
+    <tr>
+      <td colspan="10">
+        <div class="grid grid-cols-12 gap-6 p-4">
+          <div class="col-span-7">
+            <b>Startup tasks</b>
+            @if (session.tasks?.length) {
+              <table style="width:100%">
+                <tr>
+                  <th style="text-align:left">Task</th>
+                  <th style="text-align:right">Duration</th>
+                  <th style="text-align:left">&nbsp;&nbsp;Error</th>
+                </tr>
+                @for (task of session.tasks; track $index) {
+                  <tr>
+                    <td>{{ task.taskEnum }}</td>
+                    <td style="text-align:right">{{ duration(task.duration) }}</td>
+                    <td style="color:#ff7f8a">&nbsp;&nbsp;{{ task.error }}</td>
+                  </tr>
+                }
+              </table>
+            } @else {
+              <div style="opacity:0.7">
+                Not a single task was reported. The startup tracking only begins once the first task
+                runs, so this browser died before that.
+              </div>
+            }
+          </div>
+          <div class="col-span-5">
+            <b>What the player did</b>
+            @if (session.events?.length) {
+              @for (event of session.events; track $index) {
+                <div class="flex gap-2">
+                  <span class="text-xs opacity-70 whitespace-nowrap">{{ event.serverTime | date:'HH:mm:ss' }}</span>
+                  <span class="text-xs">{{ event.type }}{{ event.detail ? ' ' + event.detail : '' }}</span>
+                </div>
+              }
+            } @else {
+              <div style="opacity:0.7">Nothing - this attempt never got as far as playing.</div>
+            }
+            <div class="pt-3 text-xs" style="opacity:0.6; word-break: break-all">
+              <div>User: {{ session.userId ? session.userId : 'unknown' }}</div>
+              <div>Session: {{ session.gameSessionUuid ? session.gameSessionUuid : '—' }}</div>
+              <div>{{ session.userAgent }}</div>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="10">Nobody tried to start the game in this range.</td>
+    </tr>
+  </ng-template>
+</p-table>

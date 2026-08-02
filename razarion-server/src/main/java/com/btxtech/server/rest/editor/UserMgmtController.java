@@ -5,6 +5,7 @@ import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.engine.quest.QuestBackendInfo;
 import com.btxtech.server.service.engine.ServerLevelQuestService;
 import com.btxtech.server.user.UserService;
+import com.btxtech.shared.dto.GameHistoryEntry;
 import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -77,7 +78,18 @@ public class UserMgmtController {
         return userService.getUserBackendInfos();
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')") 
+    /**
+     * The game history of one user. Its own call because it is a Mongo query per user and the table
+     * shows it only in the expanded row - asking for all of them up front made the list load take
+     * seconds.
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping(value = "get-game-history/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<GameHistoryEntry> getGameHistory(@PathVariable("userId") String userId) {
+        return userService.getGameHistoryEntries(userId);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "get-quest-backend-infos", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<QuestBackendInfo> getQuestBackendInfos() {
         return serverLevelQuestService.getQuestBackendInfos();

@@ -54,6 +54,8 @@ export class PressMouseVisualization {
     this.label.height = "40px";
     this.label.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
     this.label.paddingLeft = "10px";
+    // The concrete placer reasons are longer than the two generic hints and would be cut off.
+    this.label.textWrapping = true;
     stackPanel.addControl(this.label);
 
     this.container.addControl(stackPanel);
@@ -61,7 +63,11 @@ export class PressMouseVisualization {
     this.setPositionValid(positionValid);
   }
 
-  setPositionValid(positionValid: boolean) {
+  /**
+   * @param errorText concrete reason from the placer, shown instead of the generic hint when the
+   *                  position is invalid. Falls back to the generic text when empty.
+   */
+  setPositionValid(positionValid: boolean, errorText?: string) {
     if (positionValid) {
       this.container.background = "green";
       this.label.text = PressMouseVisualization.POSITION_VALID_TEXT;
@@ -71,7 +77,7 @@ export class PressMouseVisualization {
       this.rendererService.getScene().stopAnimation(this.mouse);
     } else {
       this.container.background = "red";
-      this.label.text = PressMouseVisualization.POSITION_IN_VALID_TEXT;
+      this.label.text = errorText ? errorText : PressMouseVisualization.POSITION_IN_VALID_TEXT;
       this.setupMouseMoveAnimation();
       this.mouseLeftButton.animations = [];
       this.mouseLeftButton.alpha = 0;

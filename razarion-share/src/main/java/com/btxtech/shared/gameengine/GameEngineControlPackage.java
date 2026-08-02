@@ -18,8 +18,6 @@ public class GameEngineControlPackage {
         TICK_UPDATE_REQUEST,
         TICK_UPDATE_RESPONSE,
         TICK_UPDATE_RESPONSE_FAIL,
-        PERFMON_REQUEST,
-        PERFMON_RESPONSE,
         CONNECTION_LOST,
         INITIAL_SLAVE_SYNCHRONIZED,
         INITIAL_SLAVE_SYNCHRONIZED_NO_BASE, // Marshaller can not handle null value
@@ -75,7 +73,10 @@ public class GameEngineControlPackage {
         TERRAIN_TYPE_ORDINALS_RESPONSE,
         // Cockpit
         SELL_ITEMS,
-        SURRENDER_BASE
+        SURRENDER_BASE,
+        // Diagnostics: the worker has its own console, which no one ever sees. Warnings and errors
+        // are forwarded to the client, which does have a console that reaches the server log.
+        WORKER_LOG
     }
 
     private final Command command;

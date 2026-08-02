@@ -58,6 +58,8 @@ public class HistoryService {
     private static final int MAX_ENTRIES = 100;
     /** Bounded write queue: history must never OOM the server under the tick-thread item/box firehose. */
     private static final int QUEUE_CAPACITY = 50_000;
+    /** How long shutdown waits for the write queue to drain before it gives up on the rest. */
+    private static final int SHUTDOWN_DRAIN_SECONDS = 5;
     /** Retention for the high-volume engine/bot debug firehose (base/item/box lifecycle). */
     private static final Duration SHORT_RETENTION = Duration.ofDays(7);
     /** Retention for meaningful per-user interactions (login, level, quest, economy, unlock). */
@@ -94,8 +96,19 @@ public class HistoryService {
     public void ensureTtlIndex() {
         try {
             mongoTemplate.indexOps(GAME_HISTORY).ensureIndex(new Index().on("expireAt", Sort.Direction.ASC).expire(Duration.ZERO));
+            // The only read of this collection is loadGameHistoryEntries(): the two arms of its $or,
+            // each already in the order it asks for. Without them every lookup scanned the whole
+            // collection and sorted the result in memory to return a handful of rows.
+            // Two single-field-plus-sort indexes rather than one compound: an $or is planned as a
+            // union of its arms, so each arm needs its own.
+            mongoTemplate.indexOps(GAME_HISTORY).ensureIndex(new Index()
+                    .on("userId", Sort.Direction.ASC)
+                    .on("serverTime", Sort.Direction.DESC));
+            mongoTemplate.indexOps(GAME_HISTORY).ensureIndex(new Index()
+                    .on("targetUserId", Sort.Direction.ASC)
+                    .on("serverTime", Sort.Direction.DESC));
         } catch (Exception e) {
-            logger.warn("Could not ensure game_history TTL index: " + e.getMessage(), e);
+            logger.warn("Could not ensure game_history indexes: " + e.getMessage(), e);
         }
     }
 
@@ -403,9 +416,30 @@ public class HistoryService {
         };
     }
 
+    /**
+     * Let the queue run dry while the driver is still there. shutdown() alone only stops new
+     * submissions and returns at once, so the writer kept working while Spring closed the Mongo
+     * client under it - every entry still queued then failed with "state should be: server session
+     * pool is open", and a normal restart ended in a salvo of stack traces that reads like a crash.
+     * <p>
+     * Bean destruction runs dependents before their dependencies, so this method is called while
+     * the client is open. The wait is bounded: a full queue against a remote Mongo would take
+     * longer than any shutdown grace period, and a preempted pod has about 30 seconds in total.
+     * Whatever is left after that is history nobody will miss.
+     */
     @PreDestroy
     public void shutdown() {
         writeExecutor.shutdown();
+        try {
+            if (!writeExecutor.awaitTermination(SHUTDOWN_DRAIN_SECONDS, TimeUnit.SECONDS)) {
+                logger.warn("Game history writer did not drain within {} s; dropping the rest.",
+                        SHUTDOWN_DRAIN_SECONDS);
+                writeExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            writeExecutor.shutdownNow();
+        }
     }
 
     // ---------------------------------------------------------------- read / render

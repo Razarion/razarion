@@ -72,7 +72,6 @@ public class TeaVMClientMarshaller {
         switch (controlPackage.getCommand()) {
             // No data
             case STOP_REQUEST:
-            case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
             case SURRENDER_BASE:
                 break;
@@ -256,10 +255,6 @@ public class TeaVMClientMarshaller {
                 data.add(fromJson(getArrayStringDirect(javaScriptObject, DATA_OFFSET_1), DecimalPosition.class));
                 break;
 
-            case PERFMON_RESPONSE:
-                // Pass through as raw data for now
-                data.add(new ArrayList<>());
-                break;
 
             case TERRAIN_TILE_RESPONSE:
                 data.add(demarshallTerrainTile(getArrayElementDirect(javaScriptObject, DATA_OFFSET_0)));
@@ -280,6 +275,7 @@ public class TeaVMClientMarshaller {
                 break;
 
             case START:
+            case WORKER_LOG:
                 data.add(getArrayStringDirect(javaScriptObject, DATA_OFFSET_0));
                 break;
 

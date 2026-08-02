@@ -21,6 +21,7 @@ import {InventoryItemEditorComponent} from "../crud-editors/inventory-item-edito
 import {InventoryArtifactEditorComponent} from "../crud-editors/inventory-artifact-editor/inventory-artifact-editor.component";
 import {BoxRegionComponent} from "../box-region/box-region.component";
 import {UserMgmtComponent} from "../user-mgmt/user-mgmt.component";
+import {OpenConnectionsComponent} from "../open-connections/open-connections.component";
 import {TerrainEditorComponent} from "../terrain-editor/terrain-editor.component";
 import {ParticleSystemEditorComponent} from "../crud-editors/particle-system-editor/particle-system-editor.component";
 import {AudioEditorComponent} from "../crud-editors/audio-editor/audio-editor.component";
@@ -207,5 +208,10 @@ export class EditorDialogComponent {
   openUserMgmt() {
     this.mainCockpitComponent.editorDialog = false;
     this.gameComponent.addEditorModel(new EditorModel("User management", UserMgmtComponent));
+  }
+
+  openConnections() {
+    this.mainCockpitComponent.editorDialog = false;
+    this.gameComponent.addEditorModel(new EditorModel("Open connections", OpenConnectionsComponent));
   }
 }

@@ -164,6 +164,7 @@ public class DtoConverter {
         setGetterBool(obj, "isPlayBuildSound", () -> placer.isPlayBuildSound());
         setGetterBool(obj, "isCanBeCanceled", () -> placer.isCanBeCanceled());
         setMethodVoid(obj, "cancel", placer::cancel);
+        setMethodVoid(obj, "onInvalidPlaceAttempt", placer::onInvalidPlaceAttempt);
         setGetterBool(obj, "hasRallyPoint", () -> placer.hasRallyPoint());
         setGetterDouble(obj, "getRallyOffsetX", () -> placer.getRallyOffsetX());
         setGetterDouble(obj, "getRallyOffsetY", () -> placer.getRallyOffsetY());

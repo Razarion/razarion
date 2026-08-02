@@ -1,3 +1,15 @@
+# Social unfurl bots need the card image, not just the landing page. They do not index,
+# so they get everything - a blanket Disallow left the X card with a grey placeholder
+# because the crawler refused to fetch /card.jpg.
+User-agent: Twitterbot
+Disallow:
+
+User-agent: facebookexternalhit
+Disallow:
+
+# Search engines still see only the landing page and its card image; the game, the studio
+# and the editor stay out of the index.
 User-agent: *
-Disallow: /
 Allow: /$
+Allow: /card.jpg
+Disallow: /

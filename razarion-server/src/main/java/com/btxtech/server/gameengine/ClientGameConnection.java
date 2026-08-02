@@ -38,6 +38,8 @@ public class ClientGameConnection {
     private final ServerInventoryService serverInventoryService;
     private WebSocketSession wsSession;
     private String userId;
+    /** When this connection was opened - the only thing that says how long a client has been here. */
+    private Date time;
     private Date lastMessageSent;
     private Date lastMessageReceived;
     private String gameSessionUuid; // TODO
@@ -59,6 +61,11 @@ public class ClientGameConnection {
     public void init(WebSocketSession wsSession, String userId) {
         this.wsSession = wsSession;
         this.userId = userId;
+        time = new Date();
+    }
+
+    public Date getTime() {
+        return time;
     }
 
     public void handleMessage(WebSocketMessage<?> message) {

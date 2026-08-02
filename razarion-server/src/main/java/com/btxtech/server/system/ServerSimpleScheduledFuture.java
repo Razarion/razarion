@@ -1,7 +1,7 @@
 package com.btxtech.server.system;
 
+import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
-import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -22,7 +22,7 @@ public class ServerSimpleScheduledFuture implements SimpleScheduledFuture {
     private ScheduledFuture<?> scheduledFuture;
     private boolean repeating;
 
-    public void init(long milliSDelay, boolean repeating, PerfmonEnum perfmonEnum, Runnable runnable) {
+    public void init(long milliSDelay, boolean repeating, SimpleExecutorService.Type type, Runnable runnable) {
         this.milliSDelay = milliSDelay;
         this.repeating = repeating;
         this.runnable = runnable;

@@ -7,7 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="RTS meets MMO: one shared world that never stops. Inspired by Command &amp; Conquer and StarCraft — persistent shared world, quests and levels. Play free in your browser via WebAssembly, no download. Open-source and community-driven.">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/augmented-ui@2/augmented-ui.min.css">
+    <!-- The panel frame used to come from augmented-ui on a public CDN. A stylesheet in the head
+         blocks the first paint, and a third-party one costs a DNS lookup, a TCP connection and a
+         TLS handshake before the browser is allowed to draw anything at all. Most visitors arrive
+         from a link inside an app, where that cache is cold every single time - and half of them
+         are gone in under two seconds. The frame is drawn with clip-path below instead: same
+         shape, no request, painted with the first frame. -->
+    <link rel="preload" as="image" href="/razarion-bg.webp" fetchpriority="high">
 
     <!-- Open Graph Tags -->
     <meta property="og:title" content="Razarion – RTS meets MMO: One World That Never Stops">
@@ -26,34 +32,56 @@
 
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        html,body{height:100%;overflow:hidden}
+        html,body{height:100%}
         body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#0a0a12;color:#e0e0e0;line-height:1.6}
 
-        .landing{height:100vh;background:linear-gradient(180deg,rgba(10,10,18,0) 0%,rgba(10,10,18,0) 35%,rgba(10,10,18,0.55) 65%,rgba(10,10,18,0.88) 100%),url('/razarion-bg.webp') center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:2rem 2rem 18vh}
+        /* svh is the viewport with the browser's own bars showing, which is what a phone actually
+           displays when the page opens - vh is the taller one it only reaches after a scroll. The
+           page used to be exactly 100vh with overflow hidden, so on a phone the lower part of the
+           panel sat behind the address bar with no way to scroll to it. min-height rather than
+           height, and no overflow rule, so nothing here can ever be out of reach. */
+        .landing{min-height:100vh;min-height:100svh;background:linear-gradient(180deg,rgba(10,10,18,0) 0%,rgba(10,10,18,0) 35%,rgba(10,10,18,0.55) 65%,rgba(10,10,18,0.88) 100%),url('/razarion-bg.webp') center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:2rem 2rem 18vh}
 
         @keyframes panelGlow{0%,100%{filter:drop-shadow(0 0 28px rgba(255,119,51,0.45)) drop-shadow(0 0 60px rgba(80,200,255,0.12))}50%{filter:drop-shadow(0 0 55px rgba(255,140,60,0.85)) drop-shadow(0 0 100px rgba(80,200,255,0.35))}}
         @keyframes chevPulse{0%,100%{color:#f73;text-shadow:0 0 6px rgba(255,140,60,0.7)}50%{color:#fc6;text-shadow:0 0 14px rgba(255,180,80,1),0 0 4px #fff}}
         @keyframes titleShimmer{0%,100%{text-shadow:0 0 14px rgba(255,140,60,0.9),0 0 4px rgba(255,255,255,0.4)}50%{text-shadow:0 0 22px rgba(255,180,80,1),0 0 8px rgba(255,255,255,0.7),0 0 40px rgba(255,140,60,0.6)}}
         @keyframes btnShine{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
-        /* augmented-ui shape config — tweak these to experiment.
-           Try other shapes: tl-2-clip-x, tr-rect, br-round, bl-scoop, t-clip-x (notch), etc.
-           See augmented-ui.com builder for live preview. */
+        /* Panel frame. The element itself carries the gradient and is cut to the notched shape;
+           ::before is the same shape inset by one pixel and holds the fill, so what shows through
+           along the edge is a 1px gradient border. Corner sizes are the four variables - clockwise
+           from the top left, same as the shape this replaces. */
         .info-panel{
-            --aug-border-all:1px;
-            --aug-border-bg:linear-gradient(180deg,#f85 0%,#f73 35%,rgba(80,200,255,0.55) 75%,#5cf 100%);
-            --aug-inlay-bg:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(255,255,255,0.03) 3px,rgba(255,255,255,0.03) 4px),repeating-linear-gradient(90deg,transparent 0,transparent 24px,rgba(255,119,51,0.04) 24px,rgba(255,119,51,0.04) 25px),linear-gradient(180deg,rgba(18,28,42,0.92) 0%,rgba(5,10,16,0.96) 100%);
-            --aug-tl:14px;
-            --aug-tr:36px;
-            --aug-br:14px;
-            --aug-bl:36px;
+            --corner-tl:14px;
+            --corner-tr:36px;
+            --corner-br:14px;
+            --corner-bl:36px;
+            --panel-shape:polygon(
+                var(--corner-tl) 0,
+                calc(100% - var(--corner-tr)) 0,
+                100% var(--corner-tr),
+                100% calc(100% - var(--corner-br)),
+                calc(100% - var(--corner-br)) 100%,
+                var(--corner-bl) 100%,
+                0 calc(100% - var(--corner-bl)),
+                0 var(--corner-tl)
+            );
             position:relative;
             padding:2rem 2.5rem;
             display:flex;
             flex-direction:column;
             align-items:center;
             max-width:640px;
+            background:linear-gradient(180deg,#f85 0%,#f73 35%,rgba(80,200,255,0.55) 75%,#5cf 100%);
+            clip-path:var(--panel-shape);
             animation:panelGlow 3.5s ease-in-out infinite
+        }
+        .info-panel::before{
+            content:'';
+            position:absolute;
+            inset:1px;
+            clip-path:var(--panel-shape);
+            background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(255,255,255,0.03) 3px,rgba(255,255,255,0.03) 4px),repeating-linear-gradient(90deg,transparent 0,transparent 24px,rgba(255,119,51,0.04) 24px,rgba(255,119,51,0.04) 25px),linear-gradient(180deg,rgba(18,28,42,0.92) 0%,rgba(5,10,16,0.96) 100%)
         }
 
         .tagline{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;color:#fff;margin-bottom:1.2rem;padding-bottom:1rem;width:100%;text-transform:uppercase;border-bottom:1px solid rgba(255,119,51,0.5);animation:titleShimmer 2.8s ease-in-out infinite}
@@ -62,7 +90,12 @@
 
         @keyframes pulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,119,85,0.8),0 0 0 0 rgba(80,200,255,0.4)}70%{transform:scale(1.07);box-shadow:0 0 12px 16px rgba(255,119,85,0),0 0 18px 24px rgba(80,200,255,0)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,119,85,0),0 0 0 0 rgba(80,200,255,0)}}
         .button{all:unset;position:relative;z-index:1;cursor:pointer;background:linear-gradient(110deg,#f85 0%,#f73 40%,#fc6 50%,#f73 60%,#a41 100%);background-size:250% 100%;border:1px solid #c52;padding:14px 44px;color:#fff;font-size:1.3rem;font-weight:900;text-align:center;clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%);transition:transform 0.2s ease,filter 0.2s ease;animation:pulse 1.8s infinite,btnShine 3s linear infinite;letter-spacing:0.18em;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.8),0 0 14px rgba(255,180,80,0.7)}
-        .button:hover{transform:scale(1.12);filter:brightness(1.25) drop-shadow(0 0 18px #f85) drop-shadow(0 0 28px rgba(80,200,255,0.5))}
+        /* Only where hovering is a thing. A touch browser applies :hover on tap and leaves it
+           applied, so the button stayed blown up and glowing after it had been pressed. */
+        @media (hover:hover){
+            .button:hover{transform:scale(1.12);filter:brightness(1.25) drop-shadow(0 0 18px #f85) drop-shadow(0 0 28px rgba(80,200,255,0.5))}
+        }
+        .button:active{transform:scale(0.97);filter:brightness(1.15)}
 
         .features{position:relative;z-index:1;list-style:none;margin-top:1.5rem;text-align:left;display:inline-block;padding:0}
         .features li{padding:0.35rem 0;padding-left:1.7rem;position:relative;color:#e8e8e8;font-size:1rem}
@@ -87,13 +120,25 @@
             .features li{font-size:0.92rem}
             .landing{background-position:center top}
             .info-panel{padding:1.25rem 1.25rem}
+            /* panelGlow animates two drop-shadows, which means re-rasterising the whole panel and
+               its blur every frame. On a phone that is the most expensive thing on the page and it
+               competes with the paint we are trying to make fast. The glow stays, it just stops
+               breathing. */
+            .info-panel{animation:none;filter:drop-shadow(0 0 28px rgba(255,119,51,0.45))}
+        }
+
+        /* Six pulsing chevrons, a shimmering title, a pulsing button and a breathing panel is a
+           lot to ask of someone who has told their system they do not want it. */
+        @media (prefers-reduced-motion:reduce){
+            .info-panel,.tagline,.button,.features li::before{animation:none}
+            .info-panel{filter:drop-shadow(0 0 28px rgba(255,119,51,0.45))}
         }
     </style>
 </head>
 <body>
     <section class="landing">
         <h1 class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0">RAZARION</h1>
-        <div class="info-panel" data-augmented-ui="tl-clip tr-clip br-clip bl-clip both">
+        <div class="info-panel">
             <p class="tagline"><span class="tagline-main">RTS meets MMO</span><span class="tagline-sub">One shared world that never stops</span></p>
             <button class="button" id="playButton" onclick="location.href='/game${qs}'">Play Now</button>
             <ul class="features">

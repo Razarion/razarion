@@ -19,6 +19,10 @@ public class UserBackendInfo {
     private int xp;
     private int crystals;
     private List<Integer> unlockedIds;
+    /**
+     * Left empty by the list endpoint - it is one Mongo query per user. The panel fills it in when
+     * a row is expanded, from get-game-history/{userId}.
+     */
     private List<GameHistoryEntry> gameHistoryEntries;
     private Integer baseId;
     private Date systemConnectionOpened;

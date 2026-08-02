@@ -23,7 +23,7 @@ public class TeaVMSimpleExecutorServiceImpl implements SimpleExecutorService {
     @Override
     public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {
         TeaVMSimpleScheduledFutureImpl scheduledFuture = instance.get();
-        scheduledFuture.init(delayMilliS, false, type.getPerfmonEnum(), runnable);
+        scheduledFuture.init(delayMilliS, false, type, runnable);
         scheduledFuture.start();
         return scheduledFuture;
     }
@@ -31,7 +31,7 @@ public class TeaVMSimpleExecutorServiceImpl implements SimpleExecutorService {
     @Override
     public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable, Type type) {
         TeaVMSimpleScheduledFutureImpl scheduledFuture = instance.get();
-        scheduledFuture.init(delayMilliS, true, type.getPerfmonEnum(), runnable);
+        scheduledFuture.init(delayMilliS, true, type, runnable);
         if (start) {
             scheduledFuture.start();
         }
