@@ -53,8 +53,7 @@ public class SharedTickBufferWriter {
         setInt32(headerView, 1, killedCount);
         setInt32(headerView, 2, removeCount);
         setInt32(headerView, 3, tickInfo.resources);
-        setInt32(headerView, 4, tickInfo.xpFromKills);
-        setInt32(headerView, 5, tickInfo.houseSpace);
+        setInt32(headerView, 4, tickInfo.houseSpace);
 
         // Write items
         if (itemCount > 0) {

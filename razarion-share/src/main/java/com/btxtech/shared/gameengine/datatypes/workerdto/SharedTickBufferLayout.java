@@ -11,7 +11,7 @@ package com.btxtech.shared.gameengine.datatypes.workerdto;
  *
  * Per-buffer layout:
  *   Header:   3 ints (12 bytes) = itemCount, killedCount, removeCount
- *   Scalars:  3 ints (12 bytes) = resources, xpFromKills, houseSpace
+ *   Scalars:  2 ints (8 bytes) = resources, houseSpace, plus 4 bytes padding (see HEADER_BYTES)
  *   Items:    MAX_ITEMS * BYTES_PER_ITEM
  *   Containing: MAX_CONTAINING_INTS * 4
  *   Killed:   MAX_KILLED * BYTES_PER_KILLED
@@ -58,9 +58,11 @@ public final class SharedTickBufferLayout {
     public static final int HDR_KILLED_COUNT = 4;      // Int32
     public static final int HDR_REMOVE_COUNT = 8;      // Int32
     public static final int HDR_RESOURCES = 12;         // Int32
-    public static final int HDR_XP_FROM_KILLS = 16;     // Int32
-    public static final int HDR_HOUSE_SPACE = 20;       // Int32
-    public static final int HEADER_BYTES = 24;          // 6 x Int32
+    public static final int HDR_HOUSE_SPACE = 16;       // Int32
+    // [20..23] unused. The header is 5 ints of payload, but the items section starts right after it
+    // and is read as a Float64Array, whose byte offset must be a multiple of 8. Buffers start at
+    // CONTROL_BYTES (16), so a 24-byte header keeps that alignment and a 20-byte one would break it.
+    public static final int HEADER_BYTES = 24;          // 5 x Int32 + 4 bytes alignment padding
 
     // --- Section offsets within a buffer (relative to buffer start) ---
     // Items section: starts right after header

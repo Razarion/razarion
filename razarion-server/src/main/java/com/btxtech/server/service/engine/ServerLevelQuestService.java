@@ -10,12 +10,10 @@ import com.btxtech.server.service.history.HistoryService;
 import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.XConversionService;
 import com.btxtech.server.service.tracking.UserActivityService;
-import com.btxtech.server.service.ui.GameUiContextService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
-import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -33,7 +31,6 @@ import java.util.Map;
 @Service
 public class ServerLevelQuestService implements QuestListener {
     private final Logger logger = LoggerFactory.getLogger(ServerLevelQuestService.class);
-    private final Provider<GameUiContextService> gameUiControlConfigPersistence;
     private final QuestService questService;
     private final ServerGameEngineService serverGameEngineCrudPersistence;
     private final LevelCrudService levelCrudPersistence;
@@ -47,8 +44,7 @@ public class ServerLevelQuestService implements QuestListener {
     private final XConversionService xConversionService;
     private final HistoryService historyService;
 
-    public ServerLevelQuestService(Provider<GameUiContextService> gameUiControlConfigPersistence,
-                                   QuestService questService,
+    public ServerLevelQuestService(QuestService questService,
                                    ServerGameEngineService serverGameEngineCrudPersistence,
                                    LevelCrudService levelCrudPersistence,
                                    UserService userService,
@@ -60,7 +56,6 @@ public class ServerLevelQuestService implements QuestListener {
                                    RedditConversionService redditConversionService,
                                    XConversionService xConversionService,
                                    HistoryService historyService) {
-        this.gameUiControlConfigPersistence = gameUiControlConfigPersistence;
         this.questService = questService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
         this.levelCrudPersistence = levelCrudPersistence;
@@ -74,32 +69,6 @@ public class ServerLevelQuestService implements QuestListener {
         this.xConversionService = xConversionService;
         this.historyService = historyService;
         questService.addQuestListener(this);
-    }
-
-    @Transactional
-    public void onClientLevelUpdate(String userId, int newLevelId) {
-        LevelEntity newLevel = levelCrudPersistence.getEntity(newLevelId);
-        UserContext userContext = userService.getUserContext(userId);
-        historyService.onLevelUp(userContext.getUserId(), newLevel);
-
-        // Temporary: Only save the level if on multiplayer planet. Main reason, tutorial state und units are not saved.
-        // This is only called from the client.
-        if (gameUiControlConfigPersistence.get().load4Level(newLevelId).getGameEngineMode() == GameEngineMode.SLAVE) {
-            boolean activeQuest = questService.hasActiveQuest(userContext.getUserId());
-            userContext.levelId(newLevelId);
-            QuestConfig newQuest = null;
-            userService.persistLevel(userContext.getUserId(), newLevel);
-            if (!activeQuest) {
-                newQuest = userService.getAndSaveNewQuest(userContext.getUserId());
-            }
-            if (newQuest != null) {
-                historyService.onQuest(userContext.getUserId(), newQuest, GameHistoryType.QUEST_ACTIVATED);
-                resolveStartRegionIfNeeded(newQuest);
-                clientSystemConnectionService.onQuestActivated(userContext.getUserId(), newQuest);
-                questService.activateCondition(userContext.getUserId(), newQuest);
-                clientSystemConnectionService.onQuestProgressInfo(userContext.getUserId(), questService.getQuestProgressInfo(userContext.getUserId()));
-            }
-        }
     }
 
     public SlaveQuestInfo getSlaveQuestInfo(String userId) {
@@ -131,6 +100,7 @@ public class ServerLevelQuestService implements QuestListener {
                 userContext.levelId(newLevel.getId());
                 userContext.xp(0);
                 userActivityService.onLevelUp(userId, newLevel.getNumber());
+                historyService.onLevelUp(userId, newLevel);
                 redditConversionService.sendLevelUpEvent(userId, newLevel.getNumber());
                 xConversionService.sendLevelUpEvent(userId, newLevel.getNumber());
                 clientSystemConnectionService.onLevelUp(userId,

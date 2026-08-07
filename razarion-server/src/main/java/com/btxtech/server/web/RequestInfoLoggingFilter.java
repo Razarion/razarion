@@ -58,7 +58,9 @@ public class RequestInfoLoggingFilter implements Filter {
             String queryString = httpRequest.getQueryString();
             var hasQueryString = queryString != null && !queryString.isEmpty();
 
-            if (requestURI.equals("/t.gif") && hasQueryString) {
+            if (requestURI.equals("/") && isLandingWorthRecording(httpRequest, hasQueryString)) {
+                pageRequestService.onLanding(toPageRequest(httpRequest, queryString));
+            } else if (requestURI.equals("/t.gif") && hasQueryString) {
                 pageRequestService.onHomeEvent(toPageRequest(httpRequest, queryString),
                         homeEventType(httpRequest));
             } else if ((requestURI.equals("/game") || requestURI.equals("/game/index.html")) && hasQueryString) {
@@ -68,6 +70,18 @@ public class RequestInfoLoggingFilter implements Filter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    /**
+     * Whether the landing page request has anything to say. It is recorded for its Referer header,
+     * so a request without one and without campaign parameters carries nothing that is not already
+     * known - and "/" is also what every crawler asks for first, which is not worth a row each.
+     * <p>
+     * Only GET: this is a page view, and it must never be a POST that happens to land here.
+     */
+    private boolean isLandingWorthRecording(HttpServletRequest httpRequest, boolean hasQueryString) {
+        return "GET".equals(httpRequest.getMethod())
+                && (hasQueryString || httpRequest.getHeader("Referer") != null);
     }
 
     /**

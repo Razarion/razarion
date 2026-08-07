@@ -8,8 +8,28 @@
 
 | Path | Method | Description |
 |------|--------|-------------|
+| `/` | `onLanding()` | The landing page itself — recorded for its `Referer`, see *Where a visitor came from* |
 | `/t.gif` | `onHomeEvent()` | Landing page pixel and beacons — see *Landing page events* below |
 | `/game` or `/game/index.html` | `onGame()` | Game page visit |
+
+## Where a visitor came from
+
+`LANDING` is the only record that holds the origin, and the reason is worth stating once: the pixel
+is a subresource of the landing page, so its `Referer` is that page, and "Play Now" is a navigation
+to `/game`, so from there on `document.referrer` is that page too. Everything except the landing
+page request itself answers `razarion.com` — which is what the history reported for 130 of 139
+sessions before this existed, for visitors who had all come from X.
+
+It is also the only record an organic visitor produces at all: the pixel and the beacons need a
+query string, and someone arriving without campaign parameters has none.
+
+Unlike the pixel it is recorded whether or not campaign parameters are present, so it must never be
+counted as a funnel step — it describes a wider population than `HOME` does. `DailyProgressService`
+skips it for exactly that reason.
+
+`PlayerSessionService.origin()` reads it, and ignores any referrer pointing at razarion.com itself:
+a page of ours is the step before, not an origin. The client's own `document.referrer` is kept as
+the fallback for someone who opened `/game` directly, where it is the real thing.
 
 ## Landing page events
 
@@ -72,8 +92,10 @@ http://localhost:8080/?utm_campaign=x_launch&utm_source=x&utm_medium=cpc&twclid=
    <img src="/t.gif${qs}" width="1" height="1" alt="" style="position:absolute;opacity:0">
    ```
 3. When the user clicks "Play Now", the query string is forwarded to `/game`.
-4. `RequestInfoLoggingFilter` intercepts `/t.gif` and `/game`, extracts the named parameters
+4. `RequestInfoLoggingFilter` intercepts `/`, `/t.gif` and `/game`, extracts the named parameters
    plus the raw query string, and stores a `PageRequest` document via `PageRequestService`.
+   `/` is recorded only when it carries a `Referer` or a query string — it is what every crawler
+   asks for first, and without either there is nothing to learn from it.
 
 ## Key Files
 

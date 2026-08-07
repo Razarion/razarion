@@ -2416,18 +2416,17 @@ public final class TeaVMWorkerMarshaller {
     // Wire-format slot indices (after command ordinal at [0])
     private static final int TICK_ITEM_COUNT = 1;
     private static final int TICK_RESOURCES = 2;
-    private static final int TICK_XP_FROM_KILLS = 3;
-    private static final int TICK_HOUSE_SPACE = 4;
-    private static final int TICK_DOUBLES = 5;
-    private static final int TICK_INTS = 6;
-    private static final int TICK_FLAGS = 7;
-    private static final int TICK_CONTAINING_IDS = 8;
-    private static final int TICK_KILLED_COUNT = 9;
-    private static final int TICK_KILLED_DOUBLES = 10;
-    private static final int TICK_KILLED_INTS = 11;
-    private static final int TICK_KILLED_FLAGS = 12;
-    private static final int TICK_REMOVE_IDS = 13;
-    private static final int TICK_FACTORY_QUEUE_IDS = 14;
+    private static final int TICK_HOUSE_SPACE = 3;
+    private static final int TICK_DOUBLES = 4;
+    private static final int TICK_INTS = 5;
+    private static final int TICK_FLAGS = 6;
+    private static final int TICK_CONTAINING_IDS = 7;
+    private static final int TICK_KILLED_COUNT = 8;
+    private static final int TICK_KILLED_DOUBLES = 9;
+    private static final int TICK_KILLED_INTS = 10;
+    private static final int TICK_KILLED_FLAGS = 11;
+    private static final int TICK_REMOVE_IDS = 12;
+    private static final int TICK_FACTORY_QUEUE_IDS = 13;
 
     /**
      * Encode NativeTickInfo as flat TypedArrays instead of individual JS objects.
@@ -2437,7 +2436,6 @@ public final class TeaVMWorkerMarshaller {
         if (tickInfo == null) {
             setArrayInt(array, TICK_ITEM_COUNT, 0);
             setArrayInt(array, TICK_RESOURCES, 0);
-            setArrayInt(array, TICK_XP_FROM_KILLS, 0);
             setArrayInt(array, TICK_HOUSE_SPACE, 0);
             return;
         }
@@ -2448,7 +2446,6 @@ public final class TeaVMWorkerMarshaller {
         // Header scalars
         setArrayInt(array, TICK_ITEM_COUNT, itemCount);
         setArrayInt(array, TICK_RESOURCES, tickInfo.resources);
-        setArrayInt(array, TICK_XP_FROM_KILLS, tickInfo.xpFromKills);
         setArrayInt(array, TICK_HOUSE_SPACE, tickInfo.houseSpace);
 
         // Encode updated items into TypedArrays
@@ -2706,7 +2703,6 @@ public final class TeaVMWorkerMarshaller {
 
         JsNativeTickInfo jsTickInfo = JsNativeTickInfo.create();
         jsTickInfo.setResources(nativeTickInfo.resources);
-        jsTickInfo.setXpFromKills(nativeTickInfo.xpFromKills);
         jsTickInfo.setHouseSpace(nativeTickInfo.houseSpace);
 
         // Convert updatedNativeSyncBaseItemTickInfos

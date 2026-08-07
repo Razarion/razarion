@@ -39,6 +39,12 @@ class RequestInfoLoggingFilterTest {
                     saved.add(pageRequest);
                     savedTypes.add(PageRequestType.GAME);
                 }
+
+                @Override
+                public void onLanding(PageRequest pageRequest) {
+                    saved.add(pageRequest);
+                    savedTypes.add(PageRequestType.LANDING);
+                }
             },
             mock(RedditConversionService.class),
             mock(XConversionService.class));
@@ -139,6 +145,44 @@ class RequestInfoLoggingFilterTest {
     @Test
     void requestWithoutQueryStringIsNotTracked() throws Exception {
         call("/t.gif", null);
+
+        assertEquals(List.of(), savedTypes);
+    }
+
+    /**
+     * The landing page request is the only one that ever sees where a visitor came from: the pixel
+     * is a subresource of this page and the game is the page after it, so both report razarion.com.
+     */
+    @Test
+    void landingPageIsRecordedForItsReferer() throws Exception {
+        MockHttpServletRequest request = request("/", null);
+        request.addHeader("Referer", "https://x.com/AloRtsDev/status/2084534615864496500");
+
+        filter.doFilter(request, new MockHttpServletResponse(), mock(FilterChain.class));
+
+        assertEquals(List.of(PageRequestType.LANDING), savedTypes);
+        assertEquals("https://x.com/AloRtsDev/status/2084534615864496500", saved.get(0).getReferer());
+    }
+
+    /**
+     * Campaign visitors are recorded whether or not a referrer arrived - the click id is the point
+     * for them, and it ties the visit to the game session that follows.
+     */
+    @Test
+    void landingPageWithCampaignButNoRefererIsRecorded() throws Exception {
+        call("/", "twclid=abc");
+
+        assertEquals(List.of(PageRequestType.LANDING), savedTypes);
+        assertEquals("abc", saved.get(0).getTwclid());
+    }
+
+    /**
+     * Nothing to say, no row: "/" is what every crawler asks for first, and a request with neither
+     * a referrer nor a campaign carries nothing that is not already known.
+     */
+    @Test
+    void landingPageWithoutRefererOrCampaignIsNotRecorded() throws Exception {
+        call("/", null);
 
         assertEquals(List.of(), savedTypes);
     }

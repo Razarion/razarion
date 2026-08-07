@@ -3,6 +3,7 @@ import { BabylonItem, ItemType, Diplomacy, GameCommandService, Vertex } from '..
 import { GwtAngularService } from '../gwtangular/GwtAngularService';
 import { BabylonAudioService } from './renderer/babylon-audio.service';
 import { SelectionService as TsSelectionService } from './selection.service';
+import { FirstInteractionTrackerService } from './tracking/first-interaction-tracker.service';
 import { BabylonRenderServiceAccessImpl } from './renderer/babylon-render-service-access-impl.service';
 
 
@@ -34,7 +35,8 @@ export class ActionService {
 
   constructor(private gwtAngularService: GwtAngularService,
               private babylonAudioService: BabylonAudioService,
-              private tsSelectionService: TsSelectionService) {
+              private tsSelectionService: TsSelectionService,
+              private firstInteractionTrackerService: FirstInteractionTrackerService) {
     // Listen for TS selection changes to update cursors
     this.tsSelectionService.addSelectionListener(() => this.onSelectionChanged());
   }
@@ -99,7 +101,17 @@ export class ActionService {
     }
   }
 
+  /**
+   * An order actually left the client. Reported at the six places that issue one rather than from
+   * the click handlers around them: those all have branches that select instead of commanding, and
+   * a player who can select but never command is a different defect from one who never selects.
+   */
+  private reportCommand(): void {
+    this.firstInteractionTrackerService.report('COMMAND');
+  }
+
   private sendMoveCommand(movableIds: number[], x: number, y: number): void {
+    this.reportCommand();
     this.gameCommandService.moveCmd(movableIds, x, y);
     this.hasPendingMoveCommand = true;
     if (this.moveAckTimeout) {
@@ -194,6 +206,7 @@ export class ActionService {
         if (containableIds.length > 0) {
       
           this.babylonAudioService.speakCommand('Loading up');
+          this.reportCommand();
           this.gameCommandService.loadContainerCmd(containableIds, id);
           return;
         }
@@ -205,6 +218,7 @@ export class ActionService {
         if (builderIds.length > 0) {
       
           this.babylonAudioService.speakCommand('Completing construction');
+          this.reportCommand();
           this.gameCommandService.finalizeBuildCmd(builderIds, id);
           return;
         }
@@ -230,6 +244,7 @@ export class ActionService {
       const attackerIds = this.tsSelectionService.getAttackerIds(item.getBaseItemType().getId());
       if (attackerIds.length > 0) {
         this.babylonAudioService.speakCommand('Engaging target');
+        this.reportCommand();
         this.gameCommandService.attackCmd(attackerIds, id);
         return;
       }
@@ -242,6 +257,7 @@ export class ActionService {
       const harvesterIds = this.tsSelectionService.getHarvesterIds();
       if (harvesterIds.length > 0) {
         this.babylonAudioService.speakCommand('Harvesting');
+        this.reportCommand();
         this.gameCommandService.harvestCmd(harvesterIds, id);
         return;
       }
@@ -254,6 +270,7 @@ export class ActionService {
       const movableIds = this.tsSelectionService.getMovableIds();
       if (movableIds.length > 0) {
         this.babylonAudioService.speakCommand('Picking up');
+        this.reportCommand();
         this.gameCommandService.pickBoxCmd(movableIds, id);
         return;
       }

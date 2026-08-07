@@ -152,6 +152,7 @@ public class StartupTrackingService {
                         .twclid(lastTask.getTwclid())
                         .utmCampaign(lastTask.getUtmCampaign())
                         .utmSource(lastTask.getUtmSource())
+                        .referrer(lastTask.getReferrer())
                         // Likewise for who it was: an abandoned startup is the row where that
                         // matters most, and it has no record of its own to carry it.
                         .userId(lastTask.getUserId())

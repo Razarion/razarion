@@ -1,5 +1,6 @@
 import {
   AbstractMesh,
+  ActionEvent,
   ActionManager,
   Animation,
   Color3,
@@ -88,14 +89,61 @@ export class BabylonItemImpl implements BabylonItem {
     }
 
     let actionManager = new ActionManager(rendererService.getScene());
+    const fireItemClick = () => {
+      if (this.itemClickCallback) {
+        this.itemClickCallback();
+      }
+      actionService.onItemClicked(itemType, id, diplomacy, this);
+    };
+    const isTouch = (event: ActionEvent) => (event?.sourceEvent as PointerEvent)?.pointerType === 'touch';
+    /**
+     * Babylon does not only dispatch the pick-up trigger from a release: it was measured firing
+     * with a pointermove as its source event, 5ms after the press and 750ms before the finger
+     * actually lifted. Requiring the real event is what makes the gesture check below meaningful,
+     * because at that bogus moment no gesture has happened yet and every flag still reads false.
+     */
+    const isTouchRelease = (event: ActionEvent) => {
+      const source = event?.sourceEvent as PointerEvent;
+      return source?.pointerType === 'touch' && source.type === 'pointerup';
+    };
     actionManager.registerAction(
       new ExecuteCodeAction(
         ActionManager.OnPickDownTrigger,
-        () => {
-          if (this.itemClickCallback) {
-            this.itemClickCallback();
+        event => {
+          // A finger that starts a pan has to start it somewhere, and on a crowded screen that is
+          // usually on top of something. Acting on the press would select that unit before the
+          // player has moved a pixel - or, with a selection already made, fire the command that
+          // this handler turns a click into: attack the enemy touched, harvest the resource,
+          // load units into the container. Touch therefore waits for the release.
+          if (isTouch(event)) {
+            return;
           }
-          actionService.onItemClicked(itemType, id, diplomacy, this);
+          fireItemClick();
+        }
+      )
+    );
+    actionManager.registerAction(
+      new ExecuteCodeAction(
+        // OnPickUpTrigger, deliberately not OnPickTrigger. OnPickTrigger looks like the right one -
+        // "down and up on the same mesh, no swipe" - but Babylon dispatches it from the delayed
+        // click timer that guards its double-click window, so it was measured firing 266ms after
+        // the press, before the finger had lifted or moved at all. That is the same defect this
+        // whole change is about: a press that lingers becomes a click. OnPickUpTrigger has no such
+        // timer - it needs the source-event check below because Babylon reaches it from stray
+        // events, but never on a clock.
+        ActionManager.OnPickUpTrigger,
+        event => {
+          if (!isTouchRelease(event)) {
+            return;
+          }
+          // The release runs before TouchCameraControl's own pointerup listener, and the flag is
+          // only cleared by the next pointerdown - so a pan that ends here still reads as a
+          // gesture. Do not rely on Babylon's swipe suppression instead: its _isSwiping stayed
+          // false across a measured 160px drag.
+          if (rendererService.touchCameraControl?.isGesturing()) {
+            return;
+          }
+          fireItemClick();
         }
       )
     );

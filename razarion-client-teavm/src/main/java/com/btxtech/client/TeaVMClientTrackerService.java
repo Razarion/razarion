@@ -25,6 +25,8 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
     private String twclid;
     private String utmCampaign;
     private String utmSource;
+    /** Read once at construction: a later navigation inside the game would report itself. */
+    private String referrer;
 
     @Inject
     public TeaVMClientTrackerService(Provider<Boot> boot) {
@@ -37,6 +39,10 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
                 twclid = params.get("twclid");
                 utmCampaign = params.get("utm_campaign");
                 utmSource = params.get("utm_source");
+            }
+            String documentReferrer = JsWindow.getDocumentReferrer();
+            if (documentReferrer != null && !documentReferrer.isEmpty()) {
+                referrer = documentReferrer;
             }
         } catch (Throwable t) {
             JsConsole.warn("TeaVMClientTrackerService: failed to read URL params: " + t.getMessage());
@@ -111,6 +117,9 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
             if (utmSource != null) {
                 jsObj.set("utmSource", utmSource);
             }
+            if (referrer != null) {
+                jsObj.set("referrer", referrer);
+            }
             TeaVMRestAccess.post("/rest/tracker/startupTask", JsJson.stringify(jsObj), null, null);
         } catch (Throwable t) {
             JsConsole.error("sendStartupTask failed: " + t.getMessage());
@@ -138,6 +147,9 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
             }
             if (utmSource != null) {
                 jsObj.set("utmSource", utmSource);
+            }
+            if (referrer != null) {
+                jsObj.set("referrer", referrer);
             }
             TeaVMRestAccess.post("/rest/tracker/startupTerminated", JsJson.stringify(jsObj), null, null);
         } catch (Throwable t) {

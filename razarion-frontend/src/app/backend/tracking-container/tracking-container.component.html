@@ -35,7 +35,8 @@
                 icon="pi pi-sync"
                 (onClick)="load1m()"/>
       <p-button icon="pi pi-sync"
-                (onClick)="load()"/>
+                title="Reload: same span, ending now"
+                (onClick)="refresh()"/>
     </div>
     <div class="basis-3xs">Platform
       <p-select

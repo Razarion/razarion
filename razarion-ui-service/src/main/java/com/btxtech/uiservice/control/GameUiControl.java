@@ -13,7 +13,6 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
@@ -232,9 +231,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public void setGameInfo(NativeTickInfo nativeTickInfo) {
         baseItemUiService.updateGameInfo(nativeTickInfo);
-        if (nativeTickInfo.xpFromKills > 0) {
-            userUiService.get().increaseXp(nativeTickInfo.xpFromKills);
-        }
     }
 
     public int getMyLimitation4ItemType(int itemTypeId) {
@@ -282,10 +278,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         sceneConfigs.add(new SceneConfig().internalName("Multiplayer wait for base created").waitForBaseCreated(true).startPointPlacerConfig(baseItemPlacerConfig));
         sceneConfigs.add(new SceneConfig().internalName("script: Process Server Quests").processServerQuests(true));
         return sceneConfigs;
-    }
-
-    public void onLevelUpdate(LevelConfig newLevelConfig) {
-        abstractServerSystemConnection.onLevelChanged(newLevelConfig);
     }
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo, boolean fromServer) {

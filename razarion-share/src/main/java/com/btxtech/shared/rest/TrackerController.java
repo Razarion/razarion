@@ -1,6 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.dto.FirstInteractionJson;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.dto.TabHiddenJson;
@@ -32,4 +33,9 @@ public interface TrackerController {
     @Path("tabHidden")
     @Consumes(MediaType.APPLICATION_JSON)
     void tabHidden(TabHiddenJson tabHiddenJson);
+
+    @POST
+    @Path("firstInteraction")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void firstInteraction(FirstInteractionJson firstInteractionJson);
 }

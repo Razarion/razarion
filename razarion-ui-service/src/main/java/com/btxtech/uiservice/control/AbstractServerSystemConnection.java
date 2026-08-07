@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
@@ -47,10 +46,6 @@ public abstract class AbstractServerSystemConnection {
 
     public void sendGameSessionUuid() {
         sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.SET_GAME_SESSION_UUID, toJson(boot.getGameSessionUuid())));
-    }
-
-    public void onLevelChanged(LevelConfig levelConfig) {
-        sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.LEVEL_UPDATE_CLIENT, toJson(levelConfig.getId())));
     }
 
     public void handleMessage(String text) {

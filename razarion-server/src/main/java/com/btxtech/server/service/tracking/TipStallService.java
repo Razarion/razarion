@@ -1,6 +1,7 @@
 package com.btxtech.server.service.tracking;
 
 import com.btxtech.shared.dto.TipStallJson;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -28,6 +29,15 @@ public class TipStallService {
 
     public TipStallService(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
+    }
+
+    /**
+     * This was the one tracking collection without an index, so every read of a date range scanned
+     * all of it - including markResolved below, which runs on stallUuid while the player waits.
+     */
+    @PostConstruct
+    public void ensureIndexes() {
+        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, TIP_STALL_COLLECTION);
     }
 
     /**

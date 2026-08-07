@@ -11,6 +11,11 @@
 .cover-panel-center {
   position: absolute;
   width: 40em;
+  /* Mirrors #raz-boot-card in index.html. That card already caps itself; this one did not, so the
+     handover from the boot splash to Angular jumped from a card that fits the phone to one 662px
+     wide (40em plus padding, content-box) on a 412px screen. */
+  max-width: calc(100% - 2em);
+  box-sizing: border-box;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -35,6 +40,25 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
+}
+
+/* Were inline width/height style objects on the p-progressbar elements. A flex item with a fixed
+   width and the default min-width:auto cannot shrink, so the bar pushed the card wider than the
+   screen no matter what the card allowed. Basis instead of width, and the same 60% cap as
+   #raz-boot-track in index.html so the bar does not change size at the handover either. */
+.progress-bar-track {
+  flex: 0 1 28em;
+  min-width: 0;
+  max-width: 60%;
+  height: 1.1em;
+}
+
+.progress-bar-track-thin {
+  flex: 0 1 26em;
+  min-width: 0;
+  max-width: 60%;
+  height: 0.6em;
 }
 
 .info-font {

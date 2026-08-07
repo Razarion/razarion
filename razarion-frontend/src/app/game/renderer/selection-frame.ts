@@ -15,6 +15,14 @@ export class SelectionFrame {
               private renderService: BabylonRenderServiceAccessImpl,
               private actionService: ActionService) {
     this.observer = this.scene.onPointerObservable.add((pointerInfo) => {
+      // A marquee is a mouse gesture. On a touch screen the same drag moves the camera, and there
+      // is no second button to tell the two apart - so the finger pans and a tap selects the one
+      // item under it. Drawing a box here as well would select whatever the pan swept across.
+      if (SelectionFrame.isTouch(pointerInfo)) {
+        this.mousePos0 = undefined;
+        this.hideOverlay();
+        return;
+      }
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
           if (renderService.baseItemPlacerActive) {
@@ -36,6 +44,14 @@ export class SelectionFrame {
         }
       }
     });
+  }
+
+  /**
+   * Whether this pointer is a finger. Babylon forwards the original browser event, so the pointer
+   * type survives; a pen counts as a mouse here because it can hover and drag precisely.
+   */
+  private static isTouch(pointerInfo: PointerInfo): boolean {
+    return (pointerInfo.event as PointerEvent)?.pointerType === 'touch';
   }
 
   private onPointerDown(x: number, y: number) {

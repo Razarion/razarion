@@ -93,22 +93,40 @@ public class HistoryService {
      * expireAt are never deleted by the index.
      */
     @PostConstruct
-    public void ensureTtlIndex() {
+    public void ensureIndexes() {
+        // One try per index, never one around all of them: Atlas creates indexes on its own and names
+        // them "<keys>_autocreated", and ensureIndex over an existing key under a different name fails
+        // with error 85. Sharing a try meant that first conflict took every later ensureIndex with it -
+        // which is how targetUserId ended up missing in production while this code looked like it
+        // created it, and the read below kept scanning the whole collection.
+        ensureIndex(new Index().on("expireAt", Sort.Direction.ASC).expire(Duration.ZERO), "expireAt (TTL)");
+        // The only read of this collection is loadGameHistoryEntries(): the two arms of its $or,
+        // each already in the order it asks for. Without them every lookup scanned the whole
+        // collection and sorted the result in memory to return a handful of rows.
+        // Two single-field-plus-sort indexes rather than one compound: an $or is planned as a
+        // union of its arms, so each arm needs its own.
+        ensureIndex(new Index()
+                .on("userId", Sort.Direction.ASC)
+                .on("serverTime", Sort.Direction.DESC), "userId/serverTime");
+        ensureIndex(new Index()
+                .on("targetUserId", Sort.Direction.ASC)
+                .on("serverTime", Sort.Direction.DESC), "targetUserId/serverTime");
+    }
+
+    /**
+     * An index that already exists over the same keys serves the same queries whatever it is called,
+     * so a name conflict is worth a line but not a warning. Everything else is a real problem: it
+     * leaves the collection unindexed for that access path.
+     */
+    private void ensureIndex(Index index, String description) {
         try {
-            mongoTemplate.indexOps(GAME_HISTORY).ensureIndex(new Index().on("expireAt", Sort.Direction.ASC).expire(Duration.ZERO));
-            // The only read of this collection is loadGameHistoryEntries(): the two arms of its $or,
-            // each already in the order it asks for. Without them every lookup scanned the whole
-            // collection and sorted the result in memory to return a handful of rows.
-            // Two single-field-plus-sort indexes rather than one compound: an $or is planned as a
-            // union of its arms, so each arm needs its own.
-            mongoTemplate.indexOps(GAME_HISTORY).ensureIndex(new Index()
-                    .on("userId", Sort.Direction.ASC)
-                    .on("serverTime", Sort.Direction.DESC));
-            mongoTemplate.indexOps(GAME_HISTORY).ensureIndex(new Index()
-                    .on("targetUserId", Sort.Direction.ASC)
-                    .on("serverTime", Sort.Direction.DESC));
+            mongoTemplate.indexOps(GAME_HISTORY).ensureIndex(index);
         } catch (Exception e) {
-            logger.warn("Could not ensure game_history indexes: " + e.getMessage(), e);
+            if (e.getMessage() != null && e.getMessage().contains("already exists with a different name")) {
+                logger.info("game_history index {} already exists under another name; keeping that one.", description);
+            } else {
+                logger.warn("Could not ensure game_history index " + description + ": " + e.getMessage(), e);
+            }
         }
     }
 

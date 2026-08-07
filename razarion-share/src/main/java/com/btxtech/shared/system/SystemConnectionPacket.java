@@ -19,7 +19,6 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     SET_GAME_SESSION_UUID(String.class),
     LIFECYCLE_CONTROL(LifecyclePacket.class),
     // Levels
-    LEVEL_UPDATE_CLIENT(Integer.class),
     LEVEL_UPDATE_SERVER(LevelUpPacket.class),
     // Quest
     QUEST_ACTIVATED(QuestConfig.class),

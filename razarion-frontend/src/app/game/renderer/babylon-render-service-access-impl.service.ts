@@ -55,10 +55,12 @@ import {BabylonImpact} from "./babylon-impact";
 import {BabylonPerfOverlay} from "./babylon-perf-overlay";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 import {SelectionFrame} from "./selection-frame";
+import {TouchCameraControl} from "./touch-camera-control";
 import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
 import {ActionService} from "../action.service";
 import {SelectionService as TsSelectionService} from "../selection.service";
+import {FirstInteractionTrackerService, InteractionKind} from "../tracking/first-interaction-tracker.service";
 import {BaseItemPlacerPresenterEvent, BaseItemPlacerPresenterImpl} from "./base-item-placer-presenter.impl";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {UiSettingsService} from "../ui-settings.service";
@@ -112,6 +114,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   public boxItemContainer!: TransformNode;
   public projectileMaterial!: SimpleMaterial;
   private selectionFrame!: SelectionFrame;
+  /**
+   * Touch camera gestures. Public because everything else that reacts to pointers has to know when
+   * the fingers currently down belong to the camera - see {@link TouchCameraControl#isGesturing}.
+   */
+  public touchCameraControl!: TouchCameraControl;
   private viewFieldListeners: ViewFieldListener[] = [];
   private viewField?: ViewField;
   private outOfViewPlane?: Mesh;
@@ -177,6 +184,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
               private actionService: ActionService,
               public babylonAudioService: BabylonAudioService,
               private tsSelectionService: TsSelectionService,
+              private firstInteractionTrackerService: FirstInteractionTrackerService,
               public uiSettingsService: UiSettingsService) {
     this.babylonModelService.renderer = this;
     // Dispose the quest area marker immediately when the setting is turned off.
@@ -276,6 +284,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       // increases the distance (zoom out), matching the previous direction.
       self.cameraTerrainDistance = Math.min(maxHeight, Math.max(5, self.cameraTerrainDistance + delta));
       self.onViewFieldChanged();
+      self.reportFirstInteraction('CAMERA_WHEEL');
     }, true);
 
     // -----  Camera -----
@@ -319,6 +328,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }).observe(this.canvas);
 
     this.selectionFrame = new SelectionFrame(this.scene, this, this.actionService);
+    this.touchCameraControl = new TouchCameraControl(this.canvas, this);
 
     // ----- Terrain click handler (short delay to distinguish click from drag) -----
     let terrainDownPos: { x: number, y: number } | null = null;
@@ -338,10 +348,18 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
     };
 
-    this.scene.onPointerDown = (_evt, pickResult) => {
+    const isTouchEvent = (evt: any) => (evt as PointerEvent)?.pointerType === 'touch';
+
+    this.scene.onPointerDown = (evt, pickResult) => {
       if (this.baseItemPlacerActive) return;
       terrainDownPos = { x: this.scene.pointerX, y: this.scene.pointerY };
       terrainDragDetected = false;
+
+      // A finger is slower off the mark than a mouse and commonly rests for longer than CLICK_DELAY
+      // before the pan gets going. On the timer that reads as a click, so the selected units would
+      // be sent marching to the spot the player only meant to take hold of. On touch the command
+      // waits for the release instead, the same rule the item placer follows.
+      if (isTouchEvent(evt)) return;
 
       // Fire after short delay if no drag detected
       const savedPickResult = pickResult;
@@ -367,15 +385,32 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
     };
 
-    this.scene.onPointerUp = (_evt, pickResult) => {
+    this.scene.onPointerUp = (evt, pickResult) => {
       if (this.baseItemPlacerActive) return;
+      // Babylon reaches this callback from events that are not a release - it was measured being
+      // called with a pointermove while the finger was still down. Such a call is neither a click
+      // nor the end of one, and clearing terrainDownPos on it would make the real release look
+      // like a press that never happened.
+      if ((evt as PointerEvent)?.type !== 'pointerup') return;
+
+      const wasDown = terrainDownPos !== null;
+      terrainDownPos = null;
+
+      if (isTouchEvent(evt)) {
+        // No timer was ever started for this press, so the tap is decided here: it counts only if
+        // the finger stayed put and moved no camera.
+        if (wasDown && !terrainDragDetected && !this.touchCameraControl?.isGesturing()) {
+          fireTerrainClick(pickResult);
+        }
+        return;
+      }
+
       // If timer still pending and no drag → fire immediately (fast click)
       if (terrainClickTimer && !terrainDragDetected) {
         clearTimeout(terrainClickTimer);
         terrainClickTimer = null;
         fireTerrainClick(pickResult);
       }
-      terrainDownPos = null;
     };
 
     // ----- Terrain cursor (centralized) -----
@@ -606,11 +641,61 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     if (hasChanged) {
       this.ensureCameraViewOnMap();
       this.onViewFieldChanged();
+      this.reportFirstInteraction('CAMERA_KEYBOARD');
     }
+  }
+
+  /**
+   * Records that the player used one of the controls for the first time. Lives here because the
+   * renderer is what {@link TouchCameraControl} already holds; the service behind it reports each
+   * kind once per session.
+   */
+  public reportFirstInteraction(kind: InteractionKind): void {
+    this.firstInteractionTrackerService.report(kind);
   }
 
   private checkKeyDown(key1: string, key2: string, key3: string): boolean {
     return !!this.keyPressed.get(key1) || !!this.keyPressed.get(key2) || !!this.keyPressed.get(key3);
+  }
+
+  /**
+   * Move the camera so the ground under the first point ends up under the second. Both points are
+   * normalized device coordinates. Used by {@link TouchCameraControl} to drag the world under a
+   * finger; the keyboard scroll above moves at a fixed speed instead and needs none of this.
+   */
+  public panByNdc(fromNdcX: number, fromNdcY: number, toNdcX: number, toNdcY: number): void {
+    // Forces the view matrix to be recalculated, so the projection below sees where the camera
+    // actually is rather than where it was at the start of the frame.
+    this.camera.getViewMatrix();
+    const invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
+    // Both points are projected onto ONE horizontal plane, the one under the view centre. Giving
+    // each point the terrain height beneath it would change the pan distance as the finger crosses
+    // a slope, and the ground would slide out from under the finger on any hill.
+    const viewCentre = this.setupCenterGroundPosition();
+    const terrainHeight = this.isValidVector3(viewCentre)
+      ? (this.getTerrainHeightAt(viewCentre.x, viewCentre.z) ?? 0)
+      : 0;
+    const from = this.setupTerrainLevelPosition(fromNdcX, fromNdcY, invertCameraViewProj, terrainHeight);
+    const to = this.setupTerrainLevelPosition(toNdcX, toNdcY, invertCameraViewProj, terrainHeight);
+    if (!this.isValidVector3(from) || !this.isValidVector3(to)) {
+      return;
+    }
+    this.camera.position.x += from.x - to.x;
+    this.camera.position.z += from.z - to.z;
+    this.ensureCameraViewOnMap();
+    this.onViewFieldChanged();
+  }
+
+  /** The zoom distance a pinch measures against, so the gesture stays absolute instead of drifting. */
+  public getCameraTerrainDistance(): number {
+    return this.cameraTerrainDistance;
+  }
+
+  /** Zoom, clamped exactly as the mouse wheel clamps it. */
+  public setCameraTerrainDistance(cameraTerrainDistance: number): void {
+    const maxHeight = this.overviewMode ? 1500 : 200;
+    this.cameraTerrainDistance = Math.min(maxHeight, Math.max(5, cameraTerrainDistance));
+    this.onViewFieldChanged();
   }
 
   private ensureCameraViewOnMap() {

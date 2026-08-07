@@ -1,6 +1,5 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.service.engine.ServerLevelQuestService;
 import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.system.ConnectionMarshaller;
@@ -22,7 +21,6 @@ import java.util.Date;
 public class ClientSystemConnection {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(ClientSystemConnection.class);
-    private final ServerLevelQuestService serverLevelQuestService;
     private final UserService userService;
     private final UserActivityService userActivityService;
     private Date time;
@@ -32,9 +30,8 @@ public class ClientSystemConnection {
     private Date lastMessageSent;
     private Date lastMessageReceived;
 
-    public ClientSystemConnection(ServerLevelQuestService serverLevelQuestService, UserService userService,
+    public ClientSystemConnection(UserService userService,
                                   UserActivityService userActivityService) {
-        this.serverLevelQuestService = serverLevelQuestService;
         this.userService = userService;
         this.userActivityService = userActivityService;
     }
@@ -60,9 +57,6 @@ public class ClientSystemConnection {
 
     private void onPackageReceived(SystemConnectionPacket packet, Object param) {
         switch (packet) {
-            case LEVEL_UPDATE_CLIENT:
-                serverLevelQuestService.onClientLevelUpdate(userId, (int) param);
-                break;
             case SET_GAME_SESSION_UUID:
                 String newGameSessionUuid = (String) param;
                 // A warm restart sends a fresh uuid on the same connection, which is a new session

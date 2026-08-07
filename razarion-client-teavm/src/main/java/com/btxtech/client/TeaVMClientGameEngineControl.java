@@ -191,18 +191,17 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     // Wire-format slot indices (matching worker encoding)
     private static final int TICK_ITEM_COUNT = 1;
     private static final int TICK_RESOURCES = 2;
-    private static final int TICK_XP_FROM_KILLS = 3;
-    private static final int TICK_HOUSE_SPACE = 4;
-    private static final int TICK_DOUBLES = 5;
-    private static final int TICK_INTS = 6;
-    private static final int TICK_FLAGS = 7;
-    private static final int TICK_CONTAINING_IDS = 8;
-    private static final int TICK_KILLED_COUNT = 9;
-    private static final int TICK_KILLED_DOUBLES = 10;
-    private static final int TICK_KILLED_INTS = 11;
-    private static final int TICK_KILLED_FLAGS = 12;
-    private static final int TICK_REMOVE_IDS = 13;
-    private static final int TICK_FACTORY_QUEUE_IDS = 14;
+    private static final int TICK_HOUSE_SPACE = 3;
+    private static final int TICK_DOUBLES = 4;
+    private static final int TICK_INTS = 5;
+    private static final int TICK_FLAGS = 6;
+    private static final int TICK_CONTAINING_IDS = 7;
+    private static final int TICK_KILLED_COUNT = 8;
+    private static final int TICK_KILLED_DOUBLES = 9;
+    private static final int TICK_KILLED_INTS = 10;
+    private static final int TICK_KILLED_FLAGS = 11;
+    private static final int TICK_REMOVE_IDS = 12;
+    private static final int TICK_FACTORY_QUEUE_IDS = 13;
 
     @Override
     protected NativeTickInfo castToNativeTickInfo(Object javaScriptObject) {
@@ -211,7 +210,6 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
 
         int itemCount = jsArrayGetInt(array, TICK_ITEM_COUNT);
         result.resources = jsArrayGetInt(array, TICK_RESOURCES);
-        result.xpFromKills = jsArrayGetInt(array, TICK_XP_FROM_KILLS);
         result.houseSpace = jsArrayGetInt(array, TICK_HOUSE_SPACE);
 
         // Decode updated items from TypedArrays

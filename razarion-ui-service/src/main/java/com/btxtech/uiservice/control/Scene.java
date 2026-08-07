@@ -15,7 +15,6 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.BabylonRendererService;
-import com.btxtech.uiservice.user.UserUiService;
 
 import jakarta.inject.Inject;
 import java.util.Optional;
@@ -39,7 +38,6 @@ public class Scene {
     private final ModalDialogManager modalDialogManager;
     private final SimpleExecutorService simpleExecutorService;
     private final GameEngineControl gameEngineControl;
-    private final UserUiService userUiService;
     private final InGameQuestVisualizationService inGameQuestVisualizationService;
     private final ServerQuestProvider serverQuestProvider;
     private SceneConfig sceneConfig;
@@ -48,10 +46,9 @@ public class Scene {
     private boolean scrollBouncePrevention = true;
 
     @Inject
-    public Scene(ServerQuestProvider serverQuestProvider, InGameQuestVisualizationService inGameQuestVisualizationService, UserUiService userUiService, GameEngineControl gameEngineControl, SimpleExecutorService simpleExecutorService, ModalDialogManager modalDialogManager, BaseItemPlacerService baseItemPlacerService, QuestCockpitService questCockpitService, GameUiControl gameUiControl, BabylonRendererService threeJsRendererService, ScreenCover screenCover) {
+    public Scene(ServerQuestProvider serverQuestProvider, InGameQuestVisualizationService inGameQuestVisualizationService, GameEngineControl gameEngineControl, SimpleExecutorService simpleExecutorService, ModalDialogManager modalDialogManager, BaseItemPlacerService baseItemPlacerService, QuestCockpitService questCockpitService, GameUiControl gameUiControl, BabylonRendererService threeJsRendererService, ScreenCover screenCover) {
         this.serverQuestProvider = serverQuestProvider;
         this.inGameQuestVisualizationService = inGameQuestVisualizationService;
-        this.userUiService = userUiService;
         this.gameEngineControl = gameEngineControl;
         this.simpleExecutorService = simpleExecutorService;
         this.modalDialogManager = modalDialogManager;
@@ -230,16 +227,16 @@ public class Scene {
         inGameQuestVisualizationService.stop();
     }
 
+    // Scene quests used to award their XP here, in the browser. XP is the server's business since the
+    // client stopped running the engine itself; the quest XP arrives via ServerLevelQuestService.
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
             questCockpitService.showQuestSideBar(null, false);
             onComplete();
-            userUiService.increaseXp(sceneConfig.getQuestConfig().getXp());
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             questCockpitService.showQuestSideBar(null, false);
             onComplete();
-            userUiService.increaseXp(sceneConfig.getScrollUiQuest().getXp());
         }
         inGameQuestVisualizationService.stop();
     }

@@ -9,7 +9,6 @@ import jsinterop.annotations.JsType;
 @JsType(name = "NativeTickInfo", isNative = true, namespace = "com.btxtech.shared.nativejs.workerdto")
 public class NativeTickInfo {
     public int resources;
-    public int xpFromKills;
     public int houseSpace;
     public NativeSyncBaseItemTickInfo[] updatedNativeSyncBaseItemTickInfos;
     public NativeSimpleSyncBaseItemTickInfo[] killedSyncBaseItems;

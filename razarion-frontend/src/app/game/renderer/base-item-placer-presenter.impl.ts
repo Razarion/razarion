@@ -110,31 +110,32 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.rendererService.baseItemPlacerActive = true;
 
     this.pointerObservable = this.rendererService.getScene().onPointerObservable.add((pointerInfo) => {
+      const touch = (pointerInfo.event as PointerEvent)?.pointerType === 'touch';
       switch (pointerInfo.type) {
         case PointerEventTypes.POINTERDOWN: {
-          let pickingInfo = this.rendererService.setupTerrainPickPoint();
-          if (pickingInfo.hit) {
-            this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
-            // Ignore clicks on an invalid spot (red preview): occupied by an item or a resource, wrong
-            // terrain, enemy too near or outside the allowed area. Without this the placement was sent
-            // anyway - the master silently dropped builder builds and let the start builder spawn on
-            // top of a resource.
-            if (!baseItemPlacer.isPositionValid()) {
-              baseItemPlacer.onInvalidPlaceAttempt();
-              break;
-            }
-            if (this.baseItemPlacerCallback) {
-              this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.PLACED);
-            }
-
-            if (baseItemPlacer.isPlayBuildSound()) {
-              this.babylonAudioService.speakCommand('Building');
-            }
-            baseItemPlacer.onPlace(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
+          // A finger going down is the start of a gesture that may well be a pan - the player has
+          // to be able to look around before choosing a spot, and that is the whole reason touch
+          // panning exists. So on touch the building is placed when the finger lifts without having
+          // travelled, and the mouse keeps placing on the press as before.
+          if (touch) {
+            break;
+          }
+          this.place(baseItemPlacer);
+          break;
+        }
+        case PointerEventTypes.POINTERUP: {
+          if (touch && !this.rendererService.touchCameraControl?.isGesturing()) {
+            this.place(baseItemPlacer);
           }
           break;
         }
         case PointerEventTypes.POINTERMOVE: {
+          // While fingers drag the camera the ghost stays where it is in the world and the ground
+          // slides beneath it. Following the finger instead would drag the building along with the
+          // view and the player could never move away from it.
+          if (touch) {
+            break;
+          }
           let pickingInfo = this.rendererService.setupTerrainPickPoint();
           if (pickingInfo.hit) {
             this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
@@ -154,6 +155,33 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     if (this.baseItemPlacerCallback) {
       this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.ACTIVATED);
     }
+  }
+
+  /**
+   * Put the ghost where the pointer is and build there if the spot allows it. Shared by the mouse
+   * press and the touch tap so both routes apply the same validity rule.
+   */
+  private place(baseItemPlacer: BaseItemPlacer): void {
+    const pickingInfo = this.rendererService.setupTerrainPickPoint();
+    if (!pickingInfo.hit) {
+      return;
+    }
+    this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
+    // Ignore clicks on an invalid spot (red preview): occupied by an item or a resource, wrong
+    // terrain, enemy too near or outside the allowed area. Without this the placement was sent
+    // anyway - the master silently dropped builder builds and let the start builder spawn on
+    // top of a resource.
+    if (!baseItemPlacer.isPositionValid()) {
+      baseItemPlacer.onInvalidPlaceAttempt();
+      return;
+    }
+    if (this.baseItemPlacerCallback) {
+      this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.PLACED);
+    }
+    if (baseItemPlacer.isPlayBuildSound()) {
+      this.babylonAudioService.speakCommand('Building');
+    }
+    baseItemPlacer.onPlace(pickingInfo.pickedPoint!.x, pickingInfo.pickedPoint!.z);
   }
 
   private setupPickedPoint(): Vector3 | null {

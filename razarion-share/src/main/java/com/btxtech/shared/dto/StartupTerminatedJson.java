@@ -37,6 +37,8 @@ public class StartupTerminatedJson {
      * aborts the server derived itself, which cannot know which of the two happened.
      */
     private Boolean hidden;
+    /** Where the browser says it came from; see StartupTaskJson#referrer. */
+    private String referrer;
     /**
      * Who was starting up. Stamped by the server from the request, never sent by the client.
      * <p>
@@ -216,6 +218,19 @@ public class StartupTerminatedJson {
 
     public StartupTerminatedJson utmSource(String utmSource) {
         setUtmSource(utmSource);
+        return this;
+    }
+
+    public String getReferrer() {
+        return referrer;
+    }
+
+    public void setReferrer(String referrer) {
+        this.referrer = referrer;
+    }
+
+    public StartupTerminatedJson referrer(String referrer) {
+        setReferrer(referrer);
         return this;
     }
 

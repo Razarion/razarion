@@ -47,8 +47,7 @@ public class SharedTickBufferReader {
 
         NativeTickInfo result = new NativeTickInfo();
         result.resources = getInt32(headerView, 3);
-        result.xpFromKills = getInt32(headerView, 4);
-        result.houseSpace = getInt32(headerView, 5);
+        result.houseSpace = getInt32(headerView, 4);
 
         // Read updated items
         if (itemCount > 0) {

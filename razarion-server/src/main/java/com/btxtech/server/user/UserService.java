@@ -226,6 +226,50 @@ public class UserService implements UserDetailsService {
         return null;
     }
 
+    /**
+     * The HTTP session id, creating the session when the request has none. For callers that need
+     * something to join on later without wanting a player invented for them - see
+     * {@link #getUserIdFromContextOrNull()}.
+     */
+    public String getOrCreateHttpSessionId() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attr == null) {
+            return null;
+        }
+        HttpSession session = attr.getRequest().getSession(true);
+        return session != null ? session.getId() : null;
+    }
+
+    /**
+     * Who this request belongs to, or {@code null} when nobody is known yet. The counterpart of
+     * {@link #getOrCreateUserIdFromContext()} for callers that only observe: tracking.
+     * <p>
+     * Creating a player for an observation invents one. The game page reports its first startup
+     * task from the plain page script, before the Angular app has attached the login token, so
+     * that request looks like a first-time visitor even when a registered player is starting - and
+     * the server answered it with a brand new anonymous user. The history then showed the attempt
+     * under that throwaway id: no name, level 1, no base, no quests, for a player who had all four.
+     */
+    @Transactional
+    public String getUserIdFromContextOrNull() {
+        Authentication authentication = removeAnonymousAuthentication(
+                SecurityContextHolder.getContext().getAuthentication());
+        if (authentication != null) {
+            try {
+                return getUserIdByEmail(authentication.getName());
+            } catch (UsernameNotFoundException e) {
+                return null;
+            }
+        }
+        String httpSessionId = currentHttpSessionId();
+        if (httpSessionId == null) {
+            return null;
+        }
+        String userId = anonymousMap.get(httpSessionId);
+        // A dead id says less than nothing here - the row would name a player that no longer exists.
+        return userId != null && userRepository.findByUserId(userId).isPresent() ? userId : null;
+    }
+
     @Transactional
     public String getOrCreateUserIdFromContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

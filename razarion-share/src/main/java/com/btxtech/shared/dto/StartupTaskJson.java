@@ -20,10 +20,34 @@ public class StartupTaskJson {
      */
     private String userAgent;
     /**
+     * Where the browser says it came from, straight from document.referrer.
+     * <p>
+     * Worth something only for a visitor who opened the game directly. "Play Now" is a navigation
+     * from the landing page to /game, so for everyone who came that way this reads razarion.com -
+     * the page before, not the origin. The origin of those sessions is taken from the landing page
+     * request instead; see PageRequestType.LANDING.
+     * <p>
+     * Empty for a direct open - typed url, bookmark, or a referrer the browser withholds.
+     */
+    private String referrer;
+    /**
      * Stamped by the server, not sent by the client - see StartupTerminatedJson#userId.
      */
     private String userId;
     private String httpSessionId;
+
+    public String getReferrer() {
+        return referrer;
+    }
+
+    public void setReferrer(String referrer) {
+        this.referrer = referrer;
+    }
+
+    public StartupTaskJson referrer(String referrer) {
+        setReferrer(referrer);
+        return this;
+    }
 
     public String getUserId() {
         return userId;

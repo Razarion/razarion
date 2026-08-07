@@ -21,29 +21,81 @@
     }
   </div>
 
-  <div class="cockpit-border"
-    [style.visibility]="cockpitDisplayService.showMainCockpit ? 'visible' : 'hidden'"
-    [style]="{position: 'absolute', left: 0, top: 0}">
+  <!-- The four panels never leave the DOM: they are registered with the GWT facade in ngOnInit
+       (@ViewChild static), so an @if would tear the bridge down. Showing and hiding is CSS only.
+       Position lives in the stylesheet rather than in an inline style object, so the compact
+       media query can move them without fighting inline specificity. -->
+  <div class="cockpit-border panel-main"
+    [class.compact-panel]="compactLayout.compact()"
+    [style.visibility]="isPanelVisible('main') ? 'visible' : 'hidden'">
     <main-cockpit #mainCockpit></main-cockpit>
   </div>
 
-  <div class="cockpit-border"
-    [style.visibility]="cockpitDisplayService.showItemCockpit ? 'visible' : 'hidden'"
-    [style]="{position: 'absolute', bottom: 0, left: 0}">
+  <div class="cockpit-border panel-item"
+    [class.compact-panel]="compactLayout.compact()"
+    [style.visibility]="isPanelVisible('item') ? 'visible' : 'hidden'">
     <item-cockpit #itemCockpitContainer></item-cockpit>
   </div>
 
-  <div class="cockpit-border"
-    [style.visibility]="cockpitDisplayService.showQuestCockpit ? 'visible' : 'hidden'"
-    [style]="{position: 'absolute', right: 0, top: 0}">
+  <div class="cockpit-border panel-quest"
+    [class.compact-panel]="compactLayout.compact()"
+    [style.visibility]="isPanelVisible('quest') ? 'visible' : 'hidden'">
     <quest-cockpit #questCockpitContainer></quest-cockpit>
   </div>
 
-  <div class="cockpit-border"
-    [style.visibility]="cockpitDisplayService.showChatCockpit ? 'visible' : 'hidden'"
-    [style]="{position: 'absolute', right: 0, bottom: 0}">
+  <div class="cockpit-border panel-chat"
+    [class.compact-panel]="compactLayout.compact()"
+    [style.visibility]="isPanelVisible('chat') ? 'visible' : 'hidden'">
     <chat-cockpit #chatCockpitComponent></chat-cockpit>
   </div>
+
+  @if (compactLayout.compact()) {
+    <!-- Status strip: the three numbers a player needs while looking at the field. Read straight
+         off the main cockpit component so there is one source for them, not a second copy that
+         can drift. -->
+    <div class="compact-status">
+      <span class="compact-status-level">L{{ mainCockpit.levelNumber }}</span>
+      <span><i class="pi pi-sparkles"></i> {{ mainCockpit.resources }}</span>
+      <span><i class="pi pi-home"></i> {{ mainCockpit.displayHouseSpace }}</span>
+      <span class="compact-status-spacer"></span>
+      <button type="button" class="compact-icon"
+              [class.compact-icon-open]="compactLayout.isOpen('main')"
+              [disabled]="!cockpitDisplayService.showMainCockpit"
+              (click)="compactLayout.toggle('main')"
+              aria-label="Cockpit">
+        <i class="pi pi-bars"></i>
+      </button>
+    </div>
+
+    <!-- Icon bar: one tap opens a panel, the same tap closes it again. An icon whose panel has
+         nothing to show is disabled rather than hidden, so the row does not jump around. -->
+    <div class="compact-bar">
+      <button type="button" class="compact-icon"
+              [class.compact-icon-open]="compactLayout.isOpen('item')"
+              [class.compact-icon-ready]="cockpitDisplayService.showItemCockpit && !compactLayout.isOpen('item')"
+              [disabled]="!cockpitDisplayService.showItemCockpit"
+              (click)="compactLayout.toggle('item')"
+              aria-label="Build">
+        <i class="pi pi-wrench"></i>
+      </button>
+      <button type="button" class="compact-icon"
+              [class.compact-icon-open]="compactLayout.isOpen('quest')"
+              [class.compact-icon-ready]="cockpitDisplayService.showQuestCockpit && !compactLayout.isOpen('quest')"
+              [disabled]="!cockpitDisplayService.showQuestCockpit"
+              (click)="compactLayout.toggle('quest')"
+              aria-label="Quest">
+        <i class="pi pi-flag"></i>
+      </button>
+      <span class="compact-bar-spacer"></span>
+      <button type="button" class="compact-icon"
+              [class.compact-icon-open]="compactLayout.isOpen('chat')"
+              [disabled]="!cockpitDisplayService.showChatCockpit"
+              (click)="compactLayout.toggle('chat')"
+              aria-label="Chat">
+        <i class="pi pi-comments"></i>
+      </button>
+    </div>
+  }
 
   <server-restart #serverRestartComponent></server-restart>
 

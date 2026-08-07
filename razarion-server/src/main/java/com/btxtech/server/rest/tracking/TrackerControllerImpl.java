@@ -7,12 +7,14 @@ import com.btxtech.server.model.tracking.TrackingContainer;
 import com.btxtech.server.model.tracking.TrackingPlatform;
 import com.btxtech.server.model.tracking.TrackingRequest;
 import com.btxtech.server.service.tracking.DailyProgressService;
+import com.btxtech.server.service.tracking.FirstInteractionService;
 import com.btxtech.server.service.tracking.PageRequestService;
 import com.btxtech.server.service.tracking.PlayerSessionService;
 import com.btxtech.server.service.tracking.StartupTrackingService;
 import com.btxtech.server.service.tracking.TipStallService;
 import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.server.user.UserService;
+import com.btxtech.shared.dto.FirstInteractionJson;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.dto.TabHiddenJson;
@@ -57,6 +59,7 @@ public class TrackerControllerImpl implements TrackerController {
     private final UserActivityService userActivityService;
     private final DailyProgressService dailyProgressService;
     private final TipStallService tipStallService;
+    private final FirstInteractionService firstInteractionService;
     private final UserService userService;
     private final PlayerSessionService playerSessionService;
 
@@ -65,6 +68,7 @@ public class TrackerControllerImpl implements TrackerController {
                                  UserActivityService userActivityService,
                                  DailyProgressService dailyProgressService,
                                  TipStallService tipStallService,
+                                 FirstInteractionService firstInteractionService,
                                  UserService userService,
                                  PlayerSessionService playerSessionService) {
         this.playerSessionService = playerSessionService;
@@ -73,35 +77,44 @@ public class TrackerControllerImpl implements TrackerController {
         this.userActivityService = userActivityService;
         this.dailyProgressService = dailyProgressService;
         this.tipStallService = tipStallService;
+        this.firstInteractionService = firstInteractionService;
         this.userService = userService;
     }
 
     @Override
     @PostMapping(value = "startupTask", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void startupTask(@RequestBody StartupTaskJson startupTaskJson) {
+        // The session first: it is what every later join runs on, and it must exist even for the
+        // very first task, which arrives before anything else has asked for one.
+        startupTaskJson.setHttpSessionId(userService.getOrCreateHttpSessionId());
         startupTaskJson.setUserId(currentUserId());
-        startupTaskJson.setHttpSessionId(userService.currentHttpSessionId());
         startupTrackingService.onStartupTask(startupTaskJson);
     }
 
     @Override
     @PostMapping(value = "startupTerminated", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void startupTerminated(@RequestBody StartupTerminatedJson startupTerminatedJson) {
+        startupTerminatedJson.setHttpSessionId(userService.getOrCreateHttpSessionId());
         startupTerminatedJson.setUserId(currentUserId());
-        startupTerminatedJson.setHttpSessionId(userService.currentHttpSessionId());
         startupTrackingService.onStartupTerminated(startupTerminatedJson);
     }
 
     /**
-     * Who is starting up here. The request comes from the game page, where a user exists (or is
-     * about to) either way, so this attributes the startup rather than inventing anybody.
+     * Who is starting up here, as far as it is already known. Never a player created for the
+     * occasion: tracking watches a startup, it does not begin one.
+     * <p>
+     * The first task is reported by the page itself, before the Angular app has attached the login
+     * token, so a request from a logged-in player is indistinguishable from a first-time visitor at
+     * that moment. Answering it with a new anonymous user wrote a throwaway player into the
+     * database on every start and made the history show the attempt under that id - unnamed, level
+     * one, baseless. Null instead: the tasks that follow carry whoever it really is.
      * <p>
      * Never let it break the tracking call: a startup record without a user is still worth having,
      * and a failed POST would be reported as a broken startup.
      */
     private String currentUserId() {
         try {
-            return userService.getOrCreateUserIdFromContext();
+            return userService.getUserIdFromContextOrNull();
         } catch (Exception e) {
             logger.warn("Could not determine the user of a startup record: {}", e.getMessage());
             return null;
@@ -126,6 +139,17 @@ public class TrackerControllerImpl implements TrackerController {
     @PostMapping(value = "tipStall", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void tipStall(@RequestBody TipStallJson tipStallJson) {
         tipStallService.onTipStall(tipStallJson, userService.getOrCreateUserIdFromContext());
+    }
+
+    /**
+     * The player used one of the controls for the first time this session. Comes from the running
+     * game like tipStall does, so the user is known.
+     */
+    @Override
+    @PostMapping(value = "firstInteraction", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void firstInteraction(@RequestBody FirstInteractionJson firstInteractionJson) {
+        firstInteractionService.onFirstInteraction(firstInteractionJson,
+                userService.getOrCreateUserIdFromContext());
     }
 
     @PostMapping(value = "loadTrackingContainer",

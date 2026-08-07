@@ -1,5 +1,7 @@
 <div class="flex flex-row items-center gap-4 pb-3" style="flex-wrap: wrap">
-  <p-button icon="pi pi-refresh" size="small" [loading]="loading" (onClick)="load()" title="Reload"/>
+  @if (loading) {
+    <i class="pi pi-spin pi-spinner" title="Loading"></i>
+  }
   <span><b>{{ summary.attempts }}</b> start attempts</span>
   <span title="The startup reported its own successful end">{{ summary.successful }} started</span>
   <span title="Nobody ever reported an end - the player left or a task never returned">{{ summary.aborted }} abandoned</span>
@@ -44,7 +46,12 @@
           </span>
         }
       </td>
-      <td>{{ sourceLabel(session) }}</td>
+      <td [title]="originTitle(session)">
+        {{ sourceLabel(session) }}
+        @if (session.origin) {
+          <span style="opacity:0.6"> · {{ originLabel(session) }}</span>
+        }
+      </td>
       <td style="white-space: nowrap" [title]="outcomeTitle(session)">
         <span [style.color]="outcomeColor(session)">&#9679;</span>
         {{ outcomeLabel(session) }}

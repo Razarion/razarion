@@ -51,7 +51,10 @@
           rdtCid: params.get('rdt_cid'),
           twclid: params.get('twclid'),
           utmCampaign: params.get('utm_campaign'),
-          utmSource: params.get('utm_source')
+          utmSource: params.get('utm_source'),
+          // The only origin signal left for a visitor who arrives without any parameter at all.
+          // Empty string for a direct open, which is worth storing as "nothing" rather than as ''.
+          referrer: document.referrer || null
         };
         for (var key in extra) {
           body[key] = extra[key];
@@ -86,6 +89,9 @@
       var abortReported = false;
       var tabHiddenReported = false;
       var pageLoadedAt = Date.now();
+      // Exported so the Angular side can date its own records from the same instant. The moment a
+      // player first moves the camera and the moment they give up are only comparable on one clock.
+      w.RAZ_pageLoadedAt = pageLoadedAt;
 
       /*
        * Two different events share one handler because the browser gives us one signal for both.

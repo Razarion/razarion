@@ -44,6 +44,14 @@ public class PageRequestService {
     }
 
     /**
+     * The landing page was requested. Recorded for the referer it carries; see
+     * {@link PageRequestType#LANDING}.
+     */
+    public void onLanding(PageRequest pageRequest) {
+        save(pageRequest, PageRequestType.LANDING);
+    }
+
+    /**
      * Every signal the landing page reports arrives through the same pixel URL, so which of them
      * it is has already been decided by the caller.
      */

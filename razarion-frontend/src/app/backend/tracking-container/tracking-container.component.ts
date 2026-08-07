@@ -199,6 +199,24 @@ export class TrackingContainerComponent implements OnInit {
     return dailyProgress.levelUps?.[level] ?? 0;
   }
 
+  /**
+   * Refresh: the same span of time, ending now.
+   * <p>
+   * Not load(). The range ends when the page was opened, so asking for it again can only return
+   * what is already on screen - the refresh looked broken because it was, and reopening the page
+   * was the only way to see anything that had happened since. Moving the end also hands the tabs
+   * that fetch their own data a new date reference, which is what makes them reload.
+   * <p>
+   * A range picked by hand is slid forward too. Re-running one of those is what the date pickers
+   * are for: they reload on every change, including setting the same value again.
+   */
+  refresh() {
+    this.loadTime(this.toDate.getTime() - this.fromDate.getTime());
+    // Aggregated server side over its own window, so it does not come with the range above and was
+    // left standing by every refresh - only opening the page reloaded it.
+    this.loadDailyProgress();
+  }
+
   load() {
     try {
       this.trackerControllerImplClient.loadTrackingContainer({

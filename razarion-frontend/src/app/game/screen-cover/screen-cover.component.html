@@ -6,23 +6,18 @@
         <div class="bg-surface-800 p-1 rounded-xl border border-surface-500 bg-surface-100">
           <div class="progress-bar-container">
             <div class="info-font">Loading...</div>
-            <div>
-              @if (loadingProgress === null) {
-                <!-- The engine has not reported a task yet, so there is no honest number to show. -->
-                <p-progressbar mode="indeterminate"
-                [style]="{ width: '28em', height: '1.1em' }"></p-progressbar>
-              } @else {
-                <p-progressbar [value]="loadingProgress"
-                [style]="{ width: '28em', height: '1.1em' }"></p-progressbar>
-              }
-            </div>
+            @if (loadingProgress === null) {
+              <!-- The engine has not reported a task yet, so there is no honest number to show. -->
+              <p-progressbar mode="indeterminate" class="progress-bar-track"></p-progressbar>
+            } @else {
+              <p-progressbar [value]="loadingProgress" class="progress-bar-track"></p-progressbar>
+            }
           </div>
           @if (babylonModelService.glbContainerProgress) {
             <div class="progress-bar-container">
               <div class="info-font">Loading models...</div>
-              <p-progressbar class="progressbar-yellow"
-                [value]="Math.min(100, Math.floor((babylonModelService.glbContainerProgress.loaded / babylonModelService.glbContainerProgress.total) * 100))"
-              [style]="{ width: '26em', height: '0.6em' }"></p-progressbar>
+              <p-progressbar class="progressbar-yellow progress-bar-track-thin"
+                [value]="Math.min(100, Math.floor((babylonModelService.glbContainerProgress.loaded / babylonModelService.glbContainerProgress.total) * 100))"></p-progressbar>
             </div>
           }
         </div>

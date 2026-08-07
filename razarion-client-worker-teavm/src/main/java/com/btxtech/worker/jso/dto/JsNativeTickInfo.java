@@ -22,12 +22,6 @@ public interface JsNativeTickInfo extends JSObject {
     void setResources(int resources);
 
     @JSProperty
-    int getXpFromKills();
-
-    @JSProperty
-    void setXpFromKills(int xpFromKills);
-
-    @JSProperty
     int getHouseSpace();
 
     @JSProperty

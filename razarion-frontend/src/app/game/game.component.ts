@@ -19,6 +19,7 @@ import {Dialog} from 'primeng/dialog';
 import {EditorDialogComponent} from '../editor/editor-dialog/editor-dialog.component';
 import {DrawerModule} from 'primeng/drawer';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
+import {CompactLayoutService, CompactPanel} from './cockpit/compact-layout.service';
 import {InventoryComponent} from './inventory/inventory.component';
 import {UnlockComponent} from './unlock/unlock.component';
 import {UserService} from '../auth/user.service';
@@ -70,6 +71,7 @@ export class GameComponent implements OnInit {
 
   constructor(private gwtAngularService: GwtAngularService,
               public cockpitDisplayService: CockpitDisplayService,
+              public compactLayout: CompactLayoutService,
               private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
               private babylonAudioService: BabylonAudioService,
               private gameMockService: GameMockService,
@@ -148,6 +150,34 @@ export class GameComponent implements OnInit {
 
   getGameComponent(): GameComponent {
     return this;
+  }
+
+  /**
+   * Whether a cockpit panel is on screen right now.
+   * <p>
+   * Two conditions, and both have to hold in compact mode: the game says the panel has something to
+   * show, and the player has opened it. On the desktop only the first applies - there every panel
+   * has its own corner and none of them is in the way.
+   */
+  protected isPanelVisible(panel: CompactPanel): boolean {
+    const available = this.isPanelAvailable(panel);
+    if (!this.compactLayout.compact()) {
+      return available;
+    }
+    return available && this.compactLayout.isOpen(panel);
+  }
+
+  private isPanelAvailable(panel: CompactPanel): boolean {
+    switch (panel) {
+      case 'main':
+        return this.cockpitDisplayService.showMainCockpit;
+      case 'item':
+        return this.cockpitDisplayService.showItemCockpit;
+      case 'quest':
+        return this.cockpitDisplayService.showQuestCockpit;
+      case 'chat':
+        return this.cockpitDisplayService.showChatCockpit;
+    }
   }
 
   /** True while a director recording is running — drives the REC badge. */

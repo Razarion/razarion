@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BabylonItem, BaseItemType, Diplomacy } from '../gwtangular/GwtAngularFacade';
 import { BabylonBaseItemImpl } from './renderer/babylon-base-item.impl';
 import { BabylonAudioService } from './renderer/babylon-audio.service';
+import { FirstInteractionTrackerService } from './tracking/first-interaction-tracker.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +18,23 @@ export class SelectionService {
   private selectedOtherItem: BabylonItem | null = null;
   private selectionListeners: (() => void)[] = [];
 
-  constructor(private babylonAudioService: BabylonAudioService) {
+  constructor(private babylonAudioService: BabylonAudioService,
+              private firstInteractionTrackerService: FirstInteractionTrackerService) {
+  }
+
+  /**
+   * Reported from the two methods that actually put something into the selection, not from
+   * fireSelectionChanged(): that also runs on clearSelection(), on a disposed unit and on
+   * keepOnlyOfType(), so it would count losing a selection as making one.
+   */
+  private reportSelected(): void {
+    this.firstInteractionTrackerService.report('SELECT');
   }
 
   selectOwnItems(items: BabylonBaseItemImpl[]): void {
+    if (items.length) {
+      this.reportSelected();
+    }
     this.deselectCurrent();
     this.selectedOwnItems = [...items];
     this.selectedOwnItemIds.clear();
@@ -39,6 +53,7 @@ export class SelectionService {
   }
 
   selectOther(id: number, diplomacy: Diplomacy, itemTypeId?: number, baseId?: number, item?: BabylonItem, itemTypeName?: string): void {
+    this.reportSelected();
     this.deselectCurrent();
     this.selectedOwnItems = [];
     this.selectedOwnItemIds.clear();

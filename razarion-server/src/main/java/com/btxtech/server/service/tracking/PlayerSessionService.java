@@ -16,6 +16,7 @@ import com.btxtech.shared.dto.TabHiddenJson;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -95,7 +96,7 @@ public class PlayerSessionService {
                                          boolean tabbedAway,
                                          List<UserActivity> userActivities,
                                          List<PageRequest> pageRequests) {
-        String userId = firstUserId(tasks, terminatedJson, sessionUuid, userActivities);
+        String userId = userIdOfAttempt(tasks, terminatedJson, sessionUuid, userActivities);
         String httpSessionId = firstHttpSessionId(tasks, terminatedJson);
         PlayerSessionInfo row = new PlayerSessionInfo()
                 .rowId(sessionUuid)
@@ -104,6 +105,7 @@ public class PlayerSessionService {
                 .userId(userId)
                 .userAgent(userAgent(tasks, httpSessionId, pageRequests))
                 .source(source(tasks, terminatedJson, httpSessionId, pageRequests))
+                .origin(origin(tasks, terminatedJson, httpSessionId, pageRequests))
                 .outcome(outcome(terminatedJson))
                 .tasks(tasks.stream()
                         .map(task -> new PlayerSessionTask()
@@ -263,6 +265,27 @@ public class PlayerSessionService {
                                     StartupTerminatedJson terminatedJson,
                                     String httpSessionId,
                                     List<PageRequest> pageRequests) {
+        TrackingPlatform clickIdPlatform = clickIdPlatform(tasks, terminatedJson, httpSessionId, pageRequests);
+        if (clickIdPlatform != null) {
+            return clickIdPlatform;
+        }
+        // Only when no click id was found anywhere: the campaign the visit names itself.
+        TrackingPlatform utmPlatform = platformOfUtmSource(utmSource(tasks, terminatedJson, httpSessionId, pageRequests));
+        if (utmPlatform != null) {
+            return utmPlatform;
+        }
+        // And last the site the visitor came from, which needs no parameter to have survived at all.
+        return platformOfOrigin(origin(tasks, terminatedJson, httpSessionId, pageRequests));
+    }
+
+    /**
+     * The platform a click id names. Kept apart from the rest of {@link #source} because the origin
+     * needs it too, and the origin cannot ask for the source itself - the source asks the origin.
+     */
+    private TrackingPlatform clickIdPlatform(List<StartupTaskJson> tasks,
+                                             StartupTerminatedJson terminatedJson,
+                                             String httpSessionId,
+                                             List<PageRequest> pageRequests) {
         for (StartupTaskJson task : tasks) {
             TrackingPlatform platform = platform(task.getRdtCid(), task.getTwclid());
             if (platform != null) {
@@ -275,14 +298,13 @@ public class PlayerSessionService {
                 return platform;
             }
         }
-        if (httpSessionId == null) {
-            return null;
-        }
-        for (PageRequest pageRequest : pageRequests) {
-            if (httpSessionId.equals(pageRequest.getHttpSessionId())) {
-                TrackingPlatform platform = platform(pageRequest.getRdtCid(), pageRequest.getTwclid());
-                if (platform != null) {
-                    return platform;
+        if (httpSessionId != null) {
+            for (PageRequest pageRequest : pageRequests) {
+                if (httpSessionId.equals(pageRequest.getHttpSessionId())) {
+                    TrackingPlatform platform = platform(pageRequest.getRdtCid(), pageRequest.getTwclid());
+                    if (platform != null) {
+                        return platform;
+                    }
                 }
             }
         }
@@ -297,6 +319,182 @@ public class PlayerSessionService {
             return TrackingPlatform.X;
         }
         return null;
+    }
+
+    /**
+     * The campaign a visitor names, for the ones whose click id did not survive the trip.
+     * <p>
+     * A click id is lost easily - a reload without it, a link passed on, an in-app browser that
+     * strips the parameter - and every one of those used to count as organic although the visit
+     * still says where it came from. Over two weeks that was 155 sessions, more than a third of
+     * everything the history called organic.
+     */
+    private static TrackingPlatform platformOfUtmSource(String utmSource) {
+        if (utmSource == null) {
+            return null;
+        }
+        String normalized = utmSource.toLowerCase();
+        if (normalized.contains("reddit")) {
+            return TrackingPlatform.REDDIT;
+        }
+        if (normalized.contains("twitter") || normalized.equals("x")) {
+            return TrackingPlatform.X;
+        }
+        return null;
+    }
+
+    /**
+     * The platform a referring site belongs to, for a visit that carries no parameter at all.
+     * <p>
+     * A link shared onward keeps nothing but its referrer: t.co is X's own shortener, and a session
+     * arriving from it is X traffic that the history called organic because it looked for click ids
+     * and campaign names and found neither.
+     * <p>
+     * Only the two platforms that are advertised on are mapped. A visit from a search engine is
+     * genuinely organic, and saying so while the origin column names the search engine is the
+     * honest answer - not a third platform invented to fill the cell.
+     */
+    static TrackingPlatform platformOfOrigin(String origin) {
+        String host = host(origin != null ? origin : "");
+        if (isHost(host, "t.co") || isHost(host, "x.com") || isHost(host, "twitter.com")) {
+            return TrackingPlatform.X;
+        }
+        if (isHost(host, "reddit.com") || isHost(host, "redd.it")) {
+            return TrackingPlatform.REDDIT;
+        }
+        return null;
+    }
+
+    /** The domain itself or a subdomain of it, never a host that merely ends in the same letters. */
+    private static boolean isHost(String host, String domain) {
+        return host.equals(domain) || host.endsWith("." + domain);
+    }
+
+    /**
+     * Where the visit came from, and only ever a place that is not us: the referrer of the landing
+     * page request, then what the client itself read, then the utm source. Shown next to the
+     * platform, and the only thing there is to show for a session no platform can be derived for.
+     * <p>
+     * The landing page comes first because it is the only request that sees the truth. Pressing
+     * "Play Now" is a navigation to /game, so from there on every referrer the browser reports is
+     * razarion.com - which is how this column came to answer "razarion.com" for 130 of 139
+     * sessions, its own site, for visitors who had all come from X.
+     */
+    private String origin(List<StartupTaskJson> tasks,
+                          StartupTerminatedJson terminatedJson,
+                          String httpSessionId,
+                          List<PageRequest> pageRequests) {
+        String landingReferer = landingReferer(httpSessionId, pageRequests);
+        if (landingReferer != null) {
+            return landingReferer;
+        }
+        // No landing page in this session: the game was opened directly, and then what the client
+        // read is a real origin rather than the page before it.
+        for (StartupTaskJson task : tasks) {
+            if (isForeign(task.getReferrer())) {
+                return task.getReferrer();
+            }
+        }
+        if (terminatedJson != null && isForeign(terminatedJson.getReferrer())) {
+            return terminatedJson.getReferrer();
+        }
+        if (httpSessionId != null) {
+            for (PageRequest pageRequest : pageRequests) {
+                if (httpSessionId.equals(pageRequest.getHttpSessionId()) && isForeign(pageRequest.getReferer())) {
+                    return pageRequest.getReferer();
+                }
+            }
+        }
+        String utmSource = utmSource(tasks, terminatedJson, httpSessionId, pageRequests);
+        if (saysNothingBeyondThePlatform(utmSource,
+                clickIdPlatform(tasks, terminatedJson, httpSessionId, pageRequests))) {
+            return null;
+        }
+        return utmSource;
+    }
+
+    /**
+     * Whether naming the utm source would only repeat the platform column next to it.
+     * <p>
+     * "X · twitter" says one thing twice. The utm source is worth showing when it carries something
+     * the platform does not - a campaign named "newsletter" - and worth dropping when it is just
+     * the platform's own name written differently.
+     * <p>
+     * A source that contradicts the click id is kept: two answers that disagree is information, and
+     * quietly hiding one of them would leave the row looking settled when it is not.
+     */
+    static boolean saysNothingBeyondThePlatform(String utmSource, TrackingPlatform clickIdPlatform) {
+        TrackingPlatform utmPlatform = platformOfUtmSource(utmSource);
+        return utmPlatform != null && (clickIdPlatform == null || clickIdPlatform == utmPlatform);
+    }
+
+    private String landingReferer(String httpSessionId, List<PageRequest> pageRequests) {
+        if (httpSessionId == null) {
+            return null;
+        }
+        for (PageRequest pageRequest : pageRequests) {
+            if (pageRequest.getPageRequestType() == PageRequestType.LANDING
+                    && httpSessionId.equals(pageRequest.getHttpSessionId())
+                    && isForeign(pageRequest.getReferer())) {
+                return pageRequest.getReferer();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Whether a referrer names somewhere other than this site. A page of our own is not an origin:
+     * it is the step before, and reporting it as the origin hides the one thing the column is for.
+     * <p>
+     * Anything that does not parse counts as foreign. It is not a page of ours - ours are written
+     * by us - and showing an odd value beats silently dropping it.
+     */
+    static boolean isForeign(String referrer) {
+        if (!notEmpty(referrer)) {
+            return false;
+        }
+        String host = host(referrer);
+        return !isOwnHost(host) && !host.equals("localhost");
+    }
+
+    /** The site itself and any subdomain of it - but not a host that merely ends in the same name. */
+    private static boolean isOwnHost(String host) {
+        return host.equals("razarion.com") || host.endsWith(".razarion.com");
+    }
+
+    private static String host(String url) {
+        try {
+            String host = URI.create(url).getHost();
+            return host != null ? host.toLowerCase() : "";
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private String utmSource(List<StartupTaskJson> tasks,
+                             StartupTerminatedJson terminatedJson,
+                             String httpSessionId,
+                             List<PageRequest> pageRequests) {
+        for (StartupTaskJson task : tasks) {
+            if (notEmpty(task.getUtmSource())) {
+                return task.getUtmSource();
+            }
+        }
+        if (terminatedJson != null && notEmpty(terminatedJson.getUtmSource())) {
+            return terminatedJson.getUtmSource();
+        }
+        if (httpSessionId != null) {
+            for (PageRequest pageRequest : pageRequests) {
+                if (httpSessionId.equals(pageRequest.getHttpSessionId()) && notEmpty(pageRequest.getUtmSource())) {
+                    return pageRequest.getUtmSource();
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean notEmpty(String value) {
+        return value != null && !value.isEmpty();
     }
 
     /** Only the first task carries it; a page visit answers for everything that has no task at all. */
@@ -318,29 +516,43 @@ public class PlayerSessionService {
     }
 
     /**
-     * The player behind the attempt. The stamped id is the reliable answer; GAME_SESSION_STARTED is
-     * the fallback for records written before the stamp existed, and it only covers startups that
-     * got as far as opening the system connection.
+     * The player behind the attempt.
+     * <p>
+     * GAME_SESSION_STARTED is asked first because the game itself writes it, when the session
+     * opens and the player is beyond doubt. The ids stamped on the startup records answer for
+     * everything that never got that far - as a vote rather than as a first hit: the first task is
+     * reported before the page has attached its login token, and the server used to answer that
+     * request with a fresh anonymous user. Taking the first id then named that throwaway player,
+     * and the row showed level 1 without a base for someone who had been playing for weeks. The
+     * vote also repairs the records already written that way.
      */
-    private String firstUserId(List<StartupTaskJson> tasks,
-                               StartupTerminatedJson terminatedJson,
-                               String sessionUuid,
-                               List<UserActivity> userActivities) {
-        for (StartupTaskJson task : tasks) {
-            if (task.getUserId() != null) {
-                return task.getUserId();
-            }
-        }
-        if (terminatedJson != null && terminatedJson.getUserId() != null) {
-            return terminatedJson.getUserId();
-        }
+    static String userIdOfAttempt(List<StartupTaskJson> tasks,
+                                  StartupTerminatedJson terminatedJson,
+                                  String sessionUuid,
+                                  List<UserActivity> userActivities) {
         for (UserActivity userActivity : userActivities) {
             if (userActivity.getUserActivityType() == UserActivityType.GAME_SESSION_STARTED
-                    && sessionUuid.equals(userActivity.getGameSessionUuid())) {
+                    && sessionUuid.equals(userActivity.getGameSessionUuid())
+                    && userActivity.getUserId() != null) {
                 return userActivity.getUserId();
             }
         }
-        return null;
+        Map<String, Integer> votes = new LinkedHashMap<>();
+        tasks.forEach(task -> countUserId(votes, task.getUserId()));
+        if (terminatedJson != null) {
+            countUserId(votes, terminatedJson.getUserId());
+        }
+        // Ties go to the earliest, which is the order the ids were seen in.
+        return votes.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
+
+    private static void countUserId(Map<String, Integer> votes, String userId) {
+        if (userId != null) {
+            votes.merge(userId, 1, Integer::sum);
+        }
     }
 
     private String firstHttpSessionId(List<StartupTaskJson> tasks, StartupTerminatedJson terminatedJson) {

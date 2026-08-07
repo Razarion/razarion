@@ -5,7 +5,6 @@ com = {
                 workerdto: {
                     NativeTickInfo: function () {
                         this.resources = 0;
-                        this.xpFromKills = 0;
                         this.houseSpace = 0;
                         this.updatedNativeSyncBaseItemTickInfos = null;
                         this.killedSyncBaseItems = null;

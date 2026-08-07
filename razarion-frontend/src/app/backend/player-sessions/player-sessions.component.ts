@@ -3,7 +3,6 @@ import {HttpClient} from '@angular/common/http';
 import {CommonModule, DatePipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {TableModule} from 'primeng/table';
-import {ButtonModule} from 'primeng/button';
 import {ToggleSwitch} from 'primeng/toggleswitch';
 import {RippleModule} from 'primeng/ripple';
 import {
@@ -37,7 +36,7 @@ interface SessionSummary {
  */
 @Component({
   selector: 'player-sessions',
-  imports: [CommonModule, DatePipe, FormsModule, TableModule, ButtonModule, ToggleSwitch, RippleModule],
+  imports: [CommonModule, DatePipe, FormsModule, TableModule, ToggleSwitch, RippleModule],
   templateUrl: './player-sessions.component.html'
 })
 export class PlayerSessionsComponent implements OnChanges {
@@ -125,6 +124,37 @@ export class PlayerSessionsComponent implements OnChanges {
       case PlayerSessionOutcome.NO_STARTUP:
         return 'The game page was opened and not a single startup task arrived - the browser died before the first one could report';
     }
+  }
+
+  /**
+   * The origin next to the platform, shortened to its host. A referrer is a full url and would
+   * push the rest of the row off the screen; which site it was is the part that answers anything.
+   * The full value stays in the cell's tooltip.
+   */
+  originLabel(session: PlayerSessionInfo): string {
+    const origin = session.origin;
+    if (!origin) {
+      return '';
+    }
+    try {
+      return new URL(origin).host;
+    } catch {
+      return origin;   // A utm source rather than a url.
+    }
+  }
+
+  /**
+   * An empty origin has two meanings and they must not be told apart wrongly: nobody referred this
+   * visitor, or the campaign named nothing the platform label does not already say.
+   */
+  originTitle(session: PlayerSessionInfo): string {
+    if (session.origin) {
+      return session.origin;
+    }
+    if (session.source) {
+      return 'Came through a campaign - no referrer beyond what the source says';
+    }
+    return 'No referrer and no campaign - opened directly';
   }
 
   sourceLabel(session: PlayerSessionInfo): string {

@@ -13,7 +13,6 @@ public interface SimpleExecutorService {
         DETAILED_TRACKING,
         COVER_FADE,
         DRAW_MINI_MAP,
-        PLAYBACK,
         SCENE_RUNNER,
         SCENE_WAIT,
         SCROLL,

@@ -121,6 +121,13 @@ public class DailyProgressService {
                     || (platform != null && clickId(pageRequest, platform) == null)) {
                 continue;
             }
+            // The landing page record is kept for its referer, not as a funnel step. It reaches
+            // further than the pixel does - it does not need a campaign parameter or a loaded
+            // image - so counting it here would move the funnel's population without anything
+            // about the visitors having changed. See PageRequestType.LANDING.
+            if (pageRequest.getPageRequestType() == PageRequestType.LANDING) {
+                continue;
+            }
             platformSessionIds.add(httpSessionId);
             if (serverTime.before(from) || !serverTime.before(to)) {
                 continue;

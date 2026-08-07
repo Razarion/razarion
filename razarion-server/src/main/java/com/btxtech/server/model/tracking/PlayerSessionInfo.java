@@ -36,8 +36,15 @@ public class PlayerSessionInfo {
      * the tracking trail rather than from the user table for exactly that reason.
      */
     private String name;
-    /** Null means organic: no click id anywhere on this attempt. */
+    /** Null means organic: neither a click id nor a campaign anywhere on this attempt. */
     private TrackingPlatform source;
+    /**
+     * Where the visit came from before it reached this site - the referrer of the landing page
+     * request, or the utm source when the browser sent none. Never a page of ours: the game is
+     * always reached from the landing page, so its own referrer says nothing. Null for a direct
+     * open, which is all there is to know about it.
+     */
+    private String origin;
     private String userAgent;
     private PlayerSessionOutcome outcome;
     /** Where an aborted startup got stuck. Null for anything that ran to its end. */
@@ -111,6 +118,15 @@ public class PlayerSessionInfo {
 
     public PlayerSessionInfo source(TrackingPlatform source) {
         this.source = source;
+        return this;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public PlayerSessionInfo origin(String origin) {
+        this.origin = origin;
         return this;
     }
 

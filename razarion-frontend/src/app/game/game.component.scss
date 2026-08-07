@@ -2,6 +2,14 @@
   width: 100%;
   height: 100%;
   cursor: var(--cursor);
+  /* The camera consumes drags and pinches itself (TouchCameraControl). Without this the browser
+     claims them first for page scrolling and pinch-zoom, and the pointermove events that would
+     have panned the map never arrive. */
+  touch-action: none;
+  /* A long press on the canvas otherwise pops up the text-selection/callout menu mid-gesture. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .cockpit-border {
@@ -9,6 +17,121 @@
   padding: 10px;
   background-color: black;
   box-shadow: 0 0 10px 0 black;
+}
+
+/* Desktop corners. Previously inline style objects on the elements; moved here so the compact
+   rules below can override them without an inline-specificity fight. Values unchanged. */
+.panel-main  { position: absolute; left: 0; top: 0; }
+.panel-item  { position: absolute; left: 0; bottom: 0; }
+.panel-quest { position: absolute; right: 0; top: 0; }
+.panel-chat  { position: absolute; right: 0; bottom: 0; }
+
+/* ---------------------------------------------------------------- compact (phone) layout
+   Kept in one media query with the same test as CompactLayoutService.QUERY - the service decides
+   what is rendered, this decides where it sits, and the two must agree on when. Height is part of
+   the test because a phone held sideways is wide but only ~412px tall. */
+@media (max-width: 640px), (max-height: 540px) {
+  /* On .game-main rather than :root - Angular's view encapsulation scopes this stylesheet, and a
+     :root rule here would be rewritten into a selector that never matches. The panels and bars are
+     all descendants, so they inherit. */
+  .game-main {
+    --compact-status-h: 40px;
+    --compact-bar-h: 56px;
+  }
+
+  /* An open panel spans the width and takes whatever height is left between the two bars, rather
+     than its natural size - the chat alone is 502px wide and would otherwise run off screen. */
+  .compact-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: var(--compact-bar-h);
+    max-height: calc(100dvh - var(--compact-status-h) - var(--compact-bar-h) - 8px);
+    overflow: auto;
+    border-radius: 12px 12px 0 0;
+    padding: 8px;
+  }
+
+  .compact-status,
+  .compact-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    background-color: rgba(0, 0, 0, 0.72);
+    border: solid 1px var(--p-emerald-900);
+    color: #fff;
+    /* Above the panels: these are the only way to close an open one. */
+    z-index: 20;
+  }
+
+  .compact-status {
+    top: 0;
+    height: var(--compact-status-h);
+    font: 600 14px/1 sans-serif;
+    border-width: 0 0 1px 0;
+  }
+
+  .compact-status i {
+    margin-right: 4px;
+    opacity: 0.75;
+  }
+
+  .compact-status-level {
+    color: var(--p-amber-400, #fbbf24);
+  }
+
+  .compact-status-spacer,
+  .compact-bar-spacer {
+    flex: 1 1 auto;
+  }
+
+  .compact-bar {
+    bottom: 0;
+    height: var(--compact-bar-h);
+    border-width: 1px 0 0 0;
+  }
+
+  /* 44px is the smallest target a finger hits reliably; the icons are the only way into the
+     panels, so they are not the place to save space. */
+  .compact-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border: solid 1px var(--p-emerald-900);
+    border-radius: 10px;
+    background-color: rgba(16, 16, 16, 0.9);
+    color: var(--p-emerald-400, #34d399);
+    font-size: 18px;
+  }
+
+  .compact-icon:disabled {
+    opacity: 0.35;
+  }
+
+  .compact-icon-open {
+    background-color: var(--p-emerald-700, #047857);
+    color: #fff;
+  }
+
+  /* A panel that has something new to show says so, instead of opening itself and covering the
+     field the player is looking at. */
+  .compact-icon-ready {
+    box-shadow: 0 0 0 2px var(--p-emerald-500, #10b981);
+  }
+
+  /* Desktop-only furniture: the position readout is a developer aid and the REC badge belongs to
+     director mode, neither is worth a line of a phone screen. */
+  .rec-indicator {
+    top: calc(var(--compact-status-h) + 6px);
+  }
 }
 
 .splash {

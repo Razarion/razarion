@@ -88,7 +88,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private final Provider<AbstractServerGameConnection> connectionInstance;
     private UserContext userContext;
     private PlayerBase playerBase;
-    private int xpFromKills;
     private boolean sendTickUpdate;
     private boolean initialSyncComplete;
     private AbstractServerGameConnection serverConnection;
@@ -355,7 +354,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             playerBase = null;
             killedSyncBaseItems.clear();
             removedSyncBaseItemIds.clear();
-            xpFromKills = 0;
             sendTickUpdate = false;
             if (serverConnection != null) {
                 serverConnection.close();
@@ -418,10 +416,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             return null;
         });
         nativeTickInfo.updatedNativeSyncBaseItemTickInfos = tmp.stream().toArray(value -> new NativeSyncBaseItemTickInfo[tmp.size()]);
-        if (gameEngineMode == GameEngineMode.SLAVE) {
-            nativeTickInfo.xpFromKills = xpFromKills;
-        }
-        xpFromKills = 0;
         nativeTickInfo.killedSyncBaseItems = convertAndClearKilled();
         nativeTickInfo.removeSyncBaseItemIds = convertAndClearRemoved();
         if (playerBase != null) {
@@ -552,9 +546,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onSyncBaseItemKilledMaster(SyncBaseItem target, SyncBaseItem actor) {
         killedSyncBaseItems.add(target);
-        if (actor.getBase().getUserId() != null && actor.getBase().getUserId().equals(userContext.getUserId())) {
-            xpFromKills += target.getBaseItemType().getXpOnKilling();
-        }
     }
 
     @Override
