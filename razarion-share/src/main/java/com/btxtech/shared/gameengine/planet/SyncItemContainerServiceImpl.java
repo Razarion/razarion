@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.gameengine.datatypes.exception.PositionCanNotBeFoundException;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -344,6 +345,43 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     private boolean hasItemsInRange(DecimalPosition position, double radius) {
         return iterateOverItems(false, false, false, syncItem ->
                 syncItem.getAbstractSyncPhysical().overlap(position, radius) ? Boolean.TRUE : null);
+    }
+
+    /**
+     * Like {@link #hasItemsInRange} but only for things that will never move away: buildings,
+     * resources, boxes, anything with canMove() false.
+     * <p>
+     * The distinction matters when correcting a move destination. A spot covered by a building is
+     * a spot no unit can ever stand on, so the order has to be redirected. A spot covered by
+     * another unit is temporary and is already handled by the crowd logic in
+     * SyncPhysicalMovable.stopIfDestinationReached - redirecting for that would re-target every
+     * group move whose destination happens to have someone standing on it.
+     */
+    public boolean hasImmovableItemsInRange(DecimalPosition position, double radius) {
+        return iterateOverItems(false, false, false, syncItem -> {
+            AbstractSyncPhysical physical = syncItem.getAbstractSyncPhysical();
+            return !physical.canMove() && physical.overlap(position, radius) ? Boolean.TRUE : null;
+        });
+    }
+
+    /**
+     * The closest position to {@code destination} that is terrain-legal for {@code terrainType} and
+     * not covered by an immovable item, searched outwards up to {@code searchRadius}.
+     *
+     * @return the corrected position, or {@code destination} itself when nothing free was found -
+     * the caller then keeps the original order and the movement layer's give-up handles it.
+     */
+    public DecimalPosition correctDestinationBlockedByImmovable(TerrainType terrainType,
+                                                                DecimalPosition destination,
+                                                                double radius,
+                                                                double searchRadius) {
+        try {
+            return GeometricUtil.findFreeNearestPosition(destination, searchRadius, position ->
+                    terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, position, radius)
+                            && !hasImmovableItemsInRange(position, radius));
+        } catch (PositionCanNotBeFoundException e) {
+            return destination;
+        }
     }
 
     public Collection<SyncBaseItem> findBaseItemsOverlapping(DecimalPosition position, double radius, SyncBaseItem ignore) {

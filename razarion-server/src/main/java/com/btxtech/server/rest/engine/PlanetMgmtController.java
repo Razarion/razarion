@@ -162,34 +162,51 @@ public class PlanetMgmtController {
     }
 
     /**
-     * The level of every base that has one, by base id. A client knows its own level and nothing
-     * about anybody else's - the level lives on the master - so the base management has to ask
-     * the server for the column.
+     * Everything about a base that a client cannot see, by base id: level, balance, house space,
+     * item count. A client knows its own numbers and nothing about anybody else's - those live on
+     * the master - so the base management has to ask the server for them.
      * <p>
-     * Reported as the level number rather than its id, because that is what the game calls it
-     * everywhere else. Bases without a level, which is every bot, are left out instead of being
-     * reported as zero.
+     * The level is reported as its number rather than its id, because that is what the game calls
+     * it everywhere else, and stays null for bases that have none, which is every bot. Balance and
+     * house space are what this endpoint was widened for: a base at zero Razarion cannot build and
+     * a base at its cap cannot earn, and from the outside both look like "nothing happens".
      */
-    @GetMapping("baseLevels")
+    @GetMapping("baseDetails")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Map<Integer, Integer> baseLevels() {
-        Map<Integer, Integer> levelNumbers = new HashMap<>();
+    public Map<Integer, BaseDetail> baseDetails() {
+        Map<Integer, BaseDetail> details = new HashMap<>();
         for (PlayerBaseInfo playerBaseInfo : baseItemService.getPlayerBaseInfos()) {
             PlayerBase playerBase = baseItemService.getPlayerBase4BaseId(playerBaseInfo.getBaseId());
-            if (!(playerBase instanceof PlayerBaseFull playerBaseFull) || playerBaseFull.getLevelId() == null) {
+            if (playerBase == null) {
                 continue;
             }
-            try {
-                levelNumbers.put(playerBaseFull.getBaseId(),
-                        levelService.getLevel(playerBaseFull.getLevelId()).getNumber());
-            } catch (IllegalArgumentException e) {
-                // A level that was deleted while a base still pointed at it must not take the
-                // whole table down - that base simply has no level to show.
-                logger.warn("Base {} refers to unknown level {}", playerBaseFull.getBaseId(),
-                        playerBaseFull.getLevelId());
+            BaseDetail detail = new BaseDetail()
+                    .resources((int) playerBase.getResources())
+                    .maxRazarion((int) playerBase.getMaxRazarion());
+            if (playerBase instanceof PlayerBaseFull playerBaseFull) {
+                detail.usedHouseSpace(playerBaseFull.getUsedHouseSpace())
+                        .houseSpace(playerBaseFull.getHouseSpace())
+                        .itemCount(playerBaseFull.getItemCount())
+                        .levelNumber(levelNumber(playerBaseFull));
             }
+            details.put(playerBase.getBaseId(), detail);
         }
-        return levelNumbers;
+        return details;
+    }
+
+    private Integer levelNumber(PlayerBaseFull playerBaseFull) {
+        if (playerBaseFull.getLevelId() == null) {
+            return null;
+        }
+        try {
+            return levelService.getLevel(playerBaseFull.getLevelId()).getNumber();
+        } catch (IllegalArgumentException e) {
+            // A level that was deleted while a base still pointed at it must not take the whole
+            // table down - that base simply has no level to show.
+            logger.warn("Base {} refers to unknown level {}", playerBaseFull.getBaseId(),
+                    playerBaseFull.getLevelId());
+            return null;
+        }
     }
 
     @DeleteMapping("delete/{baseId}")

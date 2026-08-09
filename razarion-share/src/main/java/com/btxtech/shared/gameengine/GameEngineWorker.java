@@ -72,6 +72,22 @@ import java.util.logging.Logger;
  */
 public abstract class GameEngineWorker implements PlanetTickListener, QuestListener, GameLogicListener {
 
+    /**
+     * Diagnostic for the engine tick budget. Makes {@link com.btxtech.shared.gameengine.planet.PlanetServiceTracker}
+     * dump a per-phase breakdown (quest / pathing / baseItem / projectile / energy / box / tickListener)
+     * every 100 ticks, roughly every 11 s, to the worker console - from where WorkerLogForwarder
+     * carries it into the server log.
+     * <p>
+     * That path deliberately needs no DevTools. An attached debugger parses the WASM module and
+     * runs it in a slower, debuggable tier, so every measurement taken with the console open is a
+     * measurement of the debugger rather than of the engine. Reading the numbers out of the server
+     * log is the only way to time the tick under the conditions a player actually has.
+     * <p>
+     * Set back to false once the tick budget question is settled: deploy.ps1 builds from the
+     * working tree, so a forgotten true ships one log line per 11 s and player.
+     */
+    private static final boolean TRACK_TICK_PHASES = true;
+
     private final Logger logger = Logger.getLogger(GameEngineWorker.class.getName());
     private final List<SyncBaseItem> killedSyncBaseItems = new ArrayList<>();
     private final List<Integer> removedSyncBaseItemIds = new ArrayList<>();
@@ -338,7 +354,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     public void start(String bearerToken) {
-        planetService.enableTracking(false);
+        planetService.enableTracking(TRACK_TICK_PHASES);
         planetService.start();
         if (gameEngineMode == GameEngineMode.SLAVE) {
             serverConnection = connectionInstance.get();

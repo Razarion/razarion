@@ -24,6 +24,7 @@ import {SetNameComponent} from '../../../auth/set-name/set-name.component';
 import {SelectionShortcutCategory, SelectionShortcutsService} from '../../selection-shortcuts.service';
 import {SettingsComponent} from '../settings/settings.component';
 import {TechTreeComponent} from '../techtree/tech-tree.component';
+import {GwtAngularService} from '../../../gwtangular/GwtAngularService';
 
 
 @Component({
@@ -59,6 +60,26 @@ export class MainCockpitComponent implements MainCockpit {
   private mouseObservable: Nullable<Observer<PointerInfo>> = null;
   levelNumber!: number;
   resources: number = 0;
+  /**
+   * Why the Razarion counter is worth looking at right now. EMPTY and FULL are the two states in
+   * which the game stops responding to the player without saying so: broke, and the factories
+   * quietly stop building; at the cap, and the harvesters bring in nothing. Both look the same
+   * from the outside - the number does not move - which is how a player ends up staring at an
+   * idle base wondering what is broken.
+   */
+  razarionState: 'OK' | 'EMPTY' | 'FULL' = 'OK';
+  /**
+   * Null until the first balance arrives, which suppresses the splash for that first update. A
+   * player who joins already broke has not just run out of anything - the red field states it
+   * without a splash claiming an event that did not happen. It also keeps the cockpit quiet
+   * during startup, where the balance is 0 until a base exists.
+   */
+  private lastRazarionState: 'OK' | 'EMPTY' | 'FULL' | null = null;
+  /**
+   * The cap, read once from the planet config. 0 means unlimited, so FULL can never trigger.
+   * Null until the config is available, which keeps the very first update from claiming FULL.
+   */
+  private maxRazarion: number | null = null;
   displayHouseSpace = "";
   displayEnergyString = "";
   displayXp2LevelUp = "";
@@ -83,6 +104,7 @@ export class MainCockpitComponent implements MainCockpit {
               private cockpitDisplayService: CockpitDisplayService,
               private gameComponent: GameComponent,
               private renderService: BabylonRenderServiceAccessImpl,
+              private gwtAngularService: GwtAngularService,
               public userService: UserService,
               public selectionShortcuts: SelectionShortcutsService) {
   }
@@ -137,7 +159,69 @@ export class MainCockpitComponent implements MainCockpit {
   displayResources(resources: number): void {
     this.zone.run(() => {
       this.resources = resources;
+      this.readMaxRazarion();
+      this.razarionState = this.toRazarionState(resources);
+      // Only the edge is announced, and never the first one. The state itself is on screen for as
+      // long as it lasts, in the colour of the field; a splash on every update would be one per
+      // tick.
+      const firstUpdate = this.lastRazarionState === null;
+      if (this.razarionState !== this.lastRazarionState) {
+        this.lastRazarionState = this.razarionState;
+        if (firstUpdate) {
+          // Nothing to announce yet - this is the state the player arrived in, not a change.
+        } else if (this.razarionState === 'EMPTY') {
+          this.gameComponent.modelDialogPresenter.post("Out of Razarion",
+            ["Harvest more before building"]);
+        } else if (this.razarionState === 'FULL') {
+          this.gameComponent.modelDialogPresenter.post("Razarion full",
+            ["Harvesting earns nothing until you spend"]);
+        }
+      }
     });
+  }
+
+  razarionTooltip(): string {
+    switch (this.razarionState) {
+      case 'EMPTY':
+        return 'Out of Razarion - factories and builders have stopped. Send a harvester to a Razarion field.';
+      case 'FULL':
+        return 'Razarion at the maximum - harvesting brings in nothing until you spend some.';
+      default:
+        return 'Razarion';
+    }
+  }
+
+  private toRazarionState(resources: number): 'OK' | 'EMPTY' | 'FULL' {
+    if (resources <= 0) {
+      return 'EMPTY';
+    }
+    if (this.maxRazarion === null) {
+      // Cap not known yet - saying FULL here would be a guess, and the wrong one at game start.
+      return 'OK';
+    }
+    // 0 means unlimited, as PlayerBase.addResource reads it.
+    if (this.maxRazarion > 0 && resources >= this.maxRazarion) {
+      return 'FULL';
+    }
+    return 'OK';
+  }
+
+  /**
+   * The cap lives in the planet config, which only exists once the engine has started - the
+   * cockpit is built before that is true, so this is read on first use instead of in the
+   * constructor. Failing to read it leaves maxRazarion null, and a null cap simply means no FULL
+   * warning: the safe way to be wrong here.
+   */
+  private readMaxRazarion(): void {
+    if (this.maxRazarion !== null) {
+      return;
+    }
+    try {
+      this.maxRazarion = this.gwtAngularService.gwtAngularFacade
+        .gameUiControl.getPlanetConfig().getMaxRazarion();
+    } catch (e) {
+      // Engine not up yet. Tried again on the next resource update.
+    }
   }
 
   displayXps(xp: number, xp2LevelUp: number): void {

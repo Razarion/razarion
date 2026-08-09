@@ -34,6 +34,11 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class CommandService {
+    /**
+     * How far from a blocked move destination to look for a free one. Generous enough to clear a
+     * large building, small enough that the unit still ends up where the player pointed.
+     */
+    private static final double DESTINATION_CORRECTION_SEARCH_RADIUS = 20;
     // Is part of the Base service
     private final Logger logger = Logger.getLogger(CommandService.class.getName());
     private final PathingService pathingService;
@@ -79,8 +84,33 @@ public class CommandService {
         MoveCommand moveCommand = new MoveCommand();
         moveCommand.setId(syncBaseItem.getId());
         moveCommand.updateTimeStamp();
-        moveCommand.setSimplePath(pathingService.setupPathToDestination(syncBaseItem, destination));
+        moveCommand.setSimplePath(pathingService.setupPathToDestination(syncBaseItem,
+                correctDestination(syncBaseItem, destination)));
         executeCommand(moveCommand);
+    }
+
+    /**
+     * Moves a destination out from under an immovable item.
+     * <p>
+     * Pathing only ever asked the terrain whether a position is usable, and terrain does not know
+     * that a building is standing on it. A click next to a building often lands on ground the
+     * building covers: terrain type LAND, node walkable, every check green, and no unit can ever
+     * occupy it. The unit then drove in, could not arrive, and circled the spot.
+     * <p>
+     * Only immovable items count. Another unit standing on the destination is temporary and is
+     * already handled by the crowd logic when the mover arrives; redirecting for that would
+     * re-target every group move whose destination someone happens to be standing on.
+     */
+    private DecimalPosition correctDestination(SyncBaseItem syncBaseItem, DecimalPosition destination) {
+        double radius = syncBaseItem.getAbstractSyncPhysical().getRadius();
+        if (!syncItemContainerService.hasImmovableItemsInRange(destination, radius)) {
+            return destination;
+        }
+        return syncItemContainerService.correctDestinationBlockedByImmovable(
+                syncBaseItem.getAbstractSyncPhysical().getTerrainType(),
+                destination,
+                radius,
+                DESTINATION_CORRECTION_SEARCH_RADIUS);
     }
 
     public void build(int builderId, DecimalPosition positionToBeBuild, int itemTypeIdToBuild) {

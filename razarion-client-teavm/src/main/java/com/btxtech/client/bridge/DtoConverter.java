@@ -179,6 +179,9 @@ public class DtoConverter {
         setGetterInt(obj, "getId", config::getId);
         setGetterObj(obj, "getSize", () -> convertDecimalPosition(config.getSize()));
         setGetterInt(obj, "getHouseSpace", config::getHouseSpace);
+        // The cockpit needs the cap to tell "you have no money" from "you cannot hold any more".
+        // 0 means unlimited, the way PlayerBase.addResource reads it.
+        setGetterInt(obj, "getMaxRazarion", config::getMaxRazarion);
         setMethodIntReturn(obj, "imitation4ItemType", config::imitation4ItemType);
         return obj;
     }

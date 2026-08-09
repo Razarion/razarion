@@ -35,3 +35,34 @@
   padding: 0.1rem 0.3rem;
   font-size: 0.75rem;
 }
+
+/*
+ * Razarion counter states. A player whose base has stopped building sees an idle base and no
+ * explanation, because running out of money looks exactly like everything working - which is what
+ * made this necessary. The field itself carries the state: red while it is empty, amber while it
+ * is at the cap and harvesting earns nothing.
+ *
+ * ::ng-deep is needed because the addon and the input are PrimeNG's own elements inside the group,
+ * out of reach of this component's emulated encapsulation. The selectors stay scoped to the
+ * razarion-* classes so nothing else in the cockpit is touched.
+ */
+:host ::ng-deep .razarion-EMPTY {
+  .p-inputgroupaddon, input.p-inputtext {
+    background-color: #7f1d1d;
+    color: #fee2e2;
+    border-color: #b91c1c;
+  }
+
+  /* Slow enough to read as a warning rather than as a fault in the display. */
+  .p-inputgroupaddon {
+    animation: blink 1.6s infinite;
+  }
+}
+
+:host ::ng-deep .razarion-FULL {
+  .p-inputgroupaddon, input.p-inputtext {
+    background-color: #78350f;
+    color: #fef3c7;
+    border-color: #b45309;
+  }
+}

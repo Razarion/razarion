@@ -70,7 +70,11 @@ export class ModelDialogPresenterImpl implements ModelDialogPresenter {
     });
   }
 
-  private post(title: string, messageLines?: string[]): void {
+  /**
+   * Public because the cockpit posts its own splashes - the Razarion warnings are decided in
+   * Angular from the balance the cockpit already receives, not signalled by the engine.
+   */
+  post(title: string, messageLines?: string[]): void {
     if (this.title) {
       this.queue.push({title: title, messageLines: messageLines});
     } else {

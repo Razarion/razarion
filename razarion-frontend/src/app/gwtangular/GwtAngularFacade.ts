@@ -293,6 +293,9 @@ export interface PlanetConfig {
 
   getHouseSpace(): number;
 
+  /** Razarion a base can hold at most. 0 means unlimited, as PlayerBase.addResource reads it. */
+  getMaxRazarion(): number;
+
   imitation4ItemType(itemTypeId: number): number;
 }
 

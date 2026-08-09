@@ -4,6 +4,7 @@
 <p-table [value]="rows" dataKey="baseId" sortField="createdMillis" [sortOrder]="1">
     <ng-template pTemplate="header">
         <tr>
+            <th style="width: 3rem"></th>
             <th style="white-space: nowrap" pSortableColumn="name">
                 <span (click)="$event.stopPropagation()">
                     <p-button icon="pi pi-refresh"
@@ -55,9 +56,22 @@
             <th> </th>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-row>
+    <ng-template pTemplate="body" let-row let-expanded="expanded">
         <tr>
             <td>
+                <p-button type="button" [pRowToggler]="row" styleClass="p-button-text p-button-rounded p-button-sm"
+                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                    title="Balance, house space and level of this base">
+                </p-button>
+            </td>
+            <td>
+                <!-- The warning marker sits in the always-visible row on purpose: the reason to
+                     scan this table is finding the base that is stuck, and that must not require
+                     opening every row. -->
+                @if (row.moneyWarning) {
+                    <i class="pi pi-exclamation-triangle" style="color: var(--p-orange-500); margin-right: 4px"
+                       [title]="row.moneyWarning"></i>
+                }
                 {{row.name}}
             </td>
             <td>
@@ -84,6 +98,45 @@
                 <p-button icon="pi pi-times" styleClass="p-button-rounded p-button-text p-button-sm p-button-danger"
                     title="Delete" (onClick)="onBaseDelete(row.base)">
                 </p-button>
+            </td>
+        </tr>
+    </ng-template>
+    <!-- "expandedrow", not "rowexpansion": PrimeNG 21 only knows the former, and an unknown
+         template name is silently ignored rather than reported. -->
+    <ng-template pTemplate="expandedrow" let-row>
+        <tr>
+            <td colspan="9">
+                @if (row.detail) {
+                    <div class="flex flex-col gap-2 p-3">
+                        @if (row.moneyWarning) {
+                            <p-message severity="warn" [text]="row.moneyWarning"></p-message>
+                        }
+                        <div class="flex flex-row flex-wrap gap-6">
+                            <div>
+                                <div class="text-sm opacity-70">Razarion</div>
+                                <div>{{ razarionText(row.detail) }}</div>
+                            </div>
+                            <div>
+                                <div class="text-sm opacity-70">House space (used / available)</div>
+                                <div>{{ houseSpaceText(row.detail) }}</div>
+                            </div>
+                            <div>
+                                <div class="text-sm opacity-70">Items</div>
+                                <div>{{ row.detail.itemCount }}</div>
+                            </div>
+                            <div>
+                                <div class="text-sm opacity-70">Level</div>
+                                <div>{{ row.levelText }}</div>
+                            </div>
+                            <div>
+                                <div class="text-sm opacity-70">Created</div>
+                                <div>{{ row.createdAt }}</div>
+                            </div>
+                        </div>
+                    </div>
+                } @else {
+                    <div class="p-3 opacity-70">No details for this base - the server did not report it.</div>
+                }
             </td>
         </tr>
     </ng-template>

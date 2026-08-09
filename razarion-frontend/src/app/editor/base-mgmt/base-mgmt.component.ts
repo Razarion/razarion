@@ -10,7 +10,8 @@ import { MessageService } from "primeng/api";
 import {Button} from 'primeng/button';
 import {TableModule} from 'primeng/table';
 import {Select} from 'primeng/select';
-import {PlanetMgmtControllerClient} from '../../generated/razarion-share';
+import {Message} from 'primeng/message';
+import {BaseDetail, PlanetMgmtControllerClient} from '../../generated/razarion-share';
 
 /**
  * One table row. The bases themselves are JS proxies carrying getter methods, not plain objects
@@ -33,6 +34,16 @@ interface BaseRow {
   createdMillis: number;
   age: string;
   createdAt: string;
+  /**
+   * Everything the master knows and the client does not. Arrives after the rows are on screen,
+   * so it stays null until the details request comes back.
+   */
+  detail: BaseDetail | null;
+  /**
+   * Why this base might be stuck, or null when it is not. Answers the question the table exists
+   * for without making the reader compare two numbers.
+   */
+  moneyWarning: string | null;
 }
 
 @Component({
@@ -41,7 +52,8 @@ interface BaseRow {
     Button,
     TableModule,
     Select,
-    FormsModule
+    FormsModule,
+    Message
   ],
   templateUrl: './base-mgmt.component.html'
 })
@@ -105,14 +117,14 @@ export class BaseMgmtComponent extends EditorPanel implements OnInit {
     // from the template, which would repeat that scan on every change detection run.
     this.allRows = bases.map(base => this.toRow(base, baseItemUiService.getBaseItemCount(base.getBaseId())));
     this.applyCharacterFilter();
-    // Levels are the one column that cannot come from the client: a client knows its own level and
-    // nothing about anybody else's. They arrive after the rows are already on screen, so the rows
-    // get patched instead of built with them.
-    this.planetMgmtControllerClient.baseLevels()
-      .then(levels => this.applyLevels(levels))
+    // Level, balance and house space cannot come from the client: a client knows its own numbers
+    // and nothing about anybody else's. They arrive after the rows are already on screen, so the
+    // rows get patched instead of built with them.
+    this.planetMgmtControllerClient.baseDetails()
+      .then(details => this.applyDetails(details))
       .catch((reason: any) => this.messageService.add({
         severity: 'error',
-        summary: 'Failed to load base levels',
+        summary: 'Failed to load base details',
         detail: reason
       }));
   }
@@ -127,12 +139,50 @@ export class BaseMgmtComponent extends EditorPanel implements OnInit {
       : this.allRows.filter(row => row.character === this.characterFilter);
   }
 
-  private applyLevels(levels: { [baseId: string]: number }): void {
+  private applyDetails(details: { [baseId: string]: BaseDetail }): void {
     for (const row of this.allRows) {
-      const level = levels[row.baseId];
-      row.level = level !== undefined ? level : null;
-      row.levelText = level !== undefined ? String(level) : '—';
+      const detail = details[row.baseId];
+      row.detail = detail ?? null;
+      // The generator types levelNumber as number because it cannot see that the server leaves it
+      // out for bots; ?? covers both the missing and the null case.
+      row.level = detail?.levelNumber ?? null;
+      row.levelText = row.level !== null ? String(row.level) : '—';
+      row.moneyWarning = BaseMgmtComponent.moneyWarning(detail, row.character);
     }
+  }
+
+  /**
+   * The two states in which a base looks broken to its owner while nothing is actually wrong with
+   * it. Broke, and the factories stop building. At the cap, and the harvesters bring in nothing.
+   * Both show up as "the number does not move", which is why they are spelled out here rather
+   * than left for the reader to spot by comparing resources against maxRazarion.
+   * <p>
+   * Only for human bases. A bot does not run out of anything a player could fix, and it does not
+   * get stuck the way a player does - flagging every bot as broke would bury the one row this
+   * column exists to find.
+   */
+  private static moneyWarning(detail: BaseDetail | undefined, character: Character): string | null {
+    if (!detail || character !== Character.HUMAN) {
+      return null;
+    }
+    if (detail.resources <= 0) {
+      return 'Out of Razarion - nothing can be built or produced';
+    }
+    // maxRazarion 0 means unlimited, the way PlayerBase.addResource reads it.
+    if (detail.maxRazarion > 0 && detail.resources >= detail.maxRazarion) {
+      return 'Razarion at the cap - harvesting earns nothing';
+    }
+    return null;
+  }
+
+  houseSpaceText(detail: BaseDetail): string {
+    return `${detail.usedHouseSpace} / ${detail.houseSpace}`;
+  }
+
+  razarionText(detail: BaseDetail): string {
+    return detail.maxRazarion > 0
+      ? `${detail.resources} / ${detail.maxRazarion}`
+      : `${detail.resources} (no cap)`;
   }
 
   private toRow(base: PlayerBaseDto, units: number): BaseRow {
@@ -148,6 +198,8 @@ export class BaseMgmtComponent extends EditorPanel implements OnInit {
       createdMillis,
       age: BaseMgmtComponent.age(createdMillis),
       createdAt: createdMillis ? new Date(createdMillis).toLocaleString() : 'Created before base ages were recorded',
+      detail: null,
+      moneyWarning: null,
     };
   }
 

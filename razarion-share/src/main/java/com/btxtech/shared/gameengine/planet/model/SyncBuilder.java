@@ -102,6 +102,12 @@ public class SyncBuilder extends SyncBaseAbility {
             if (!getAbstractSyncPhysical().canMove()) {
                 throw new IllegalStateException("SyncBuilder out of range from build position and getSyncPhysicalArea can not move: " + getSyncBaseItem());
             }
+            if (getSyncPhysicalMovable().isDestinationUnreachable()) {
+                // The movement layer gave up: the build position cannot be reached at all. Ending
+                // the job is the honest outcome - retrying would orbit forever.
+                stop();
+                return false;
+            }
             if (!getSyncPhysicalMovable().hasDestination()) {
                 throw new IllegalStateException("SyncBuilder out of range from build position and SyncPhysicalMovable does not have a destination: " + getSyncBaseItem());
             }

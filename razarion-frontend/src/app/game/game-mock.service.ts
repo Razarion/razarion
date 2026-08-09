@@ -619,6 +619,10 @@ export class GameMockService {
           return 10;
         }
 
+        getMaxRazarion(): number {
+          return 100000;
+        }
+
         imitation4ItemType(itemTypeId: number): number {
           return 5;
         }

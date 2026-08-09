@@ -23,9 +23,15 @@ Write-Host "`n[0/5] Setting JDK 21 environment..." -ForegroundColor Yellow
 Write-Host "JAVA_HOME: $env:JAVA_HOME" -ForegroundColor Gray
 
 # 1. Full Maven Build (inkl. Frontend) - erster Durchlauf
+# -Pprod aktiviert das TeaVM-Profil der beiden WASM-Module (minifying,
+# optimizationLevel=FULL, kein debugInfo/sourceMaps). Ohne den Schalter lief die Engine
+# auf PROD als Debug-Build: Worker-Tick im Schnitt 179 ms statt der 100 ms, die er hat,
+# und die Module zusammen 2,6 statt 1,3 MB. Das Profil gibt es nur in
+# razarion-client-teavm und razarion-client-worker-teavm - fuer den Jib-Schritt unten
+# ist es deshalb weder noetig noch gueltig.
 Write-Host "`n[1/6] Building project with Maven (1st pass)..." -ForegroundColor Yellow
 Set-Location $ProjectRoot
-mvn clean install -DskipTests
+mvn clean install -DskipTests -Pprod
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Maven build (1st pass) failed!" -ForegroundColor Red
     exit 1
@@ -34,7 +40,7 @@ Write-Host "Build (1st pass) successful!" -ForegroundColor Green
 
 # 2. Full Maven Build - zweiter Durchlauf
 Write-Host "`n[2/6] Building project with Maven (2nd pass)..." -ForegroundColor Yellow
-mvn clean install -DskipTests
+mvn clean install -DskipTests -Pprod
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Maven build (2nd pass) failed!" -ForegroundColor Red
     exit 1

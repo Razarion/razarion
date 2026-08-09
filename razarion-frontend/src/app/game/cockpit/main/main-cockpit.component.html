@@ -15,7 +15,10 @@
       </p-inputgroup-addon>
       <input pInputText [ngModel]="displayEnergyString" readonly="readonly"/>
     </p-inputgroup>
-    <p-inputgroup pTooltip="Razarion">
+    <!-- The colour is the standing signal: the splash says it once, this keeps saying it for as
+         long as it is true. Empty and full are both states in which the base stops responding
+         without telling anyone. -->
+    <p-inputgroup [pTooltip]="razarionTooltip()" [ngClass]="'razarion-' + razarionState">
       <p-inputgroup-addon>
         <i class="pi pi-sparkles"></i>
       </p-inputgroup-addon>

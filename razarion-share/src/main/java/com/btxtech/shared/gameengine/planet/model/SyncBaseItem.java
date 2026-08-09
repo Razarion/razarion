@@ -665,6 +665,12 @@ public class SyncBaseItem extends SyncItem {
             if (!getAbstractSyncPhysical().canMove()) {
                 throw new IllegalStateException("SyncBaseItem out of range from Box and getSyncPhysicalArea can not move");
             }
+            if (getSyncPhysicalMovable().isDestinationUnreachable()) {
+                // The movement layer gave up: the box cannot be reached. See the same branch in
+                // SyncHarvester for why only this case ends the job.
+                stop(true);
+                return false;
+            }
             if (!getSyncPhysicalMovable().hasDestination()) {
                 throw new IllegalStateException("SyncBaseItem out of range from Box and SyncPhysicalMovable does not have a destination");
             }

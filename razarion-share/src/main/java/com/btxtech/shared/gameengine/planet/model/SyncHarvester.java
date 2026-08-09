@@ -68,6 +68,17 @@ public class SyncHarvester extends SyncBaseAbility {
         }
         if (!isInRange(resource)) {
             harvesting = false;
+            if (getSyncPhysicalMovable().isDestinationUnreachable()) {
+                // The movement layer gave up: the resource cannot be reached (see
+                // SyncPhysicalMovable.trackApproachAndGiveUp). Ending the harvest job is the honest
+                // outcome - the alternative is circling the field forever.
+                //
+                // Only this case. "No destination" on its own also happens when the harvester
+                // arrived, cleared the path itself and then drifted out of range, and ending the
+                // job for that would abandon work that is about to succeed.
+                stop();
+                return false;
+            }
             if (!getSyncPhysicalMovable().hasDestination()) {
                 throw new IllegalStateException("Harvester out of range from Resource and SyncPhysicalMovable does not have a position");
             }
