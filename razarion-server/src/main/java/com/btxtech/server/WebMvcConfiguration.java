@@ -12,10 +12,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Tracking pixel - no caching
-        registry.addResourceHandler("/t.gif")
-                .addResourceLocations("classpath:/homepage/")
-                .setCacheControl(CacheControl.noStore());
+        // The tracking pixel is NOT registered here. TrackingPixelController maps /t.gif for POST,
+        // and a controller mapping claims its URL for every method - a resource handler for the same
+        // path can never be reached, the GET is refused as a wrong method instead. The controller
+        // serves the image itself.
 
         // Static assets from homepage folder (images, etc.) - cache for 7 days
         registry.addResourceHandler("/*.jpg", "/*.png", "/*.webp", "/*.ico")

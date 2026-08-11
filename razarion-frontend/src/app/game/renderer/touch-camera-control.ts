@@ -29,6 +29,8 @@ export class TouchCameraControl {
   private gesturing = false;
   private pinchStartGap = 0;
   private pinchStartTerrainDistance = 0;
+  private panClaim: ((x: number, y: number) => boolean) | null = null;
+  private claimedPointerId: number | null = null;
 
   private readonly onPointerDown = (event: PointerEvent) => this.pointerDown(event);
   private readonly onPointerMove = (event: PointerEvent) => this.pointerMove(event);
@@ -58,6 +60,21 @@ export class TouchCameraControl {
     return this.gesturing;
   }
 
+  /**
+   * Lets a feature keep a finger for itself: the claim is asked once, where the first finger of an
+   * interaction goes down, and while it answers yes that finger never pans.
+   * <p>
+   * The item placer uses it to let the player drag the building. Without it the ghost and the camera
+   * would both follow the same finger, and the building could never be moved relative to the ground
+   * it is being placed on.
+   */
+  setPanClaim(panClaim: ((x: number, y: number) => boolean) | null) {
+    this.panClaim = panClaim;
+    if (!panClaim) {
+      this.claimedPointerId = null;
+    }
+  }
+
   private pointerDown(event: PointerEvent) {
     if (event.pointerType !== 'touch') {
       return;
@@ -67,6 +84,9 @@ export class TouchCameraControl {
       this.gesturing = false;
     }
     const position = this.canvasPosition(event);
+    if (this.pointers.size === 0 && this.panClaim?.(position.x, position.y)) {
+      this.claimedPointerId = event.pointerId;
+    }
     this.pointers.set(event.pointerId, {startX: position.x, startY: position.y, x: position.x, y: position.y});
     if (this.pointers.size === 2) {
       this.startPinch();
@@ -91,6 +111,10 @@ export class TouchCameraControl {
       this.updatePinch();
       return;
     }
+    if (this.claimedPointerId === event.pointerId) {
+      // Somebody else is dragging with this finger - see setPanClaim().
+      return;
+    }
     if (!this.panning) {
       const travelled = Math.hypot(position.x - pointer.startX, position.y - pointer.startY);
       if (travelled < TouchCameraControl.DRAG_THRESHOLD) {
@@ -113,6 +137,9 @@ export class TouchCameraControl {
       return;
     }
     this.pointers.delete(event.pointerId);
+    if (this.claimedPointerId === event.pointerId) {
+      this.claimedPointerId = null;
+    }
     if (this.pointers.size < 2) {
       this.pinching = false;
     }
@@ -190,5 +217,6 @@ export class TouchCameraControl {
     this.panning = false;
     this.pinching = false;
     this.gesturing = false;
+    this.claimedPointerId = null;
   }
 }

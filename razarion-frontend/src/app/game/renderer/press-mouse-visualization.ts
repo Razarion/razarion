@@ -1,4 +1,4 @@
-import {Control, Rectangle, StackPanel, TextBlock} from '@babylonjs/gui';
+import {Button, Control, Rectangle, StackPanel, TextBlock} from '@babylonjs/gui';
 import {Image} from '@babylonjs/gui/2D/controls/image';
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 import {Animation} from '@babylonjs/core/Animations/animation';
@@ -6,10 +6,19 @@ import {Animation} from '@babylonjs/core/Animations/animation';
 export class PressMouseVisualization {
   static readonly POSITION_VALID_TEXT = "Click left mouse button to deploy";
   static readonly POSITION_IN_VALID_TEXT = "Move mouse to find free position";
+  /** A finger has no button to press and no cursor to follow, so the hint names the two gestures. */
+  static readonly TOUCH_POSITION_VALID_TEXT = "Drag the building or tap a spot";
+  static readonly TOUCH_POSITION_IN_VALID_TEXT = "Drag the building to a free spot";
   public readonly container: Rectangle;
   public readonly label: TextBlock;
   private readonly mouse: Image;
   private readonly mouseLeftButton: Image;
+  private readonly mouseContainer: Rectangle;
+  private readonly stackPanel: StackPanel;
+  private deployButton: Button | null = null;
+  private deployCallback: (() => void) | null = null;
+  private touchMode = false;
+  private positionValid = true;
 
   constructor(positionValid: boolean,
               protected readonly rendererService: BabylonRenderServiceAccessImpl) {
@@ -21,7 +30,8 @@ export class PressMouseVisualization {
     this.container.thickness = 4;
     this.container.background = "green";
 
-    let mouseContainer = new Rectangle();
+    const mouseContainer = new Rectangle();
+    this.mouseContainer = mouseContainer;
     mouseContainer.width = "40px";
     mouseContainer.height = "40px";
     mouseContainer.cornerRadius = 0;
@@ -44,7 +54,8 @@ export class PressMouseVisualization {
     this.mouseLeftButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT
     mouseContainer.addControl(this.mouseLeftButton);
 
-    let stackPanel = new StackPanel();
+    const stackPanel = new StackPanel();
+    this.stackPanel = stackPanel;
     stackPanel.isVertical = false;
     stackPanel.addControl(mouseContainer);
 
@@ -68,6 +79,15 @@ export class PressMouseVisualization {
    *                  position is invalid. Falls back to the generic text when empty.
    */
   setPositionValid(positionValid: boolean, errorText?: string) {
+    this.positionValid = positionValid;
+    if (this.touchMode) {
+      this.container.background = positionValid ? "green" : "red";
+      this.label.text = positionValid
+        ? PressMouseVisualization.TOUCH_POSITION_VALID_TEXT
+        : (errorText ? errorText : PressMouseVisualization.TOUCH_POSITION_IN_VALID_TEXT);
+      this.updateDeployButton();
+      return;
+    }
     if (positionValid) {
       this.container.background = "green";
       this.label.text = PressMouseVisualization.POSITION_VALID_TEXT;
@@ -83,6 +103,63 @@ export class PressMouseVisualization {
       this.mouseLeftButton.alpha = 0;
       this.rendererService.getScene().stopAnimation(this.mouseLeftButton);
     }
+  }
+
+  /**
+   * Swaps the mouse hint for a deploy button. A finger has no left button to press, and with the
+   * tap moving the building instead of building it there has to be something to press at the end.
+   */
+  setTouchMode(deployCallback: () => void) {
+    this.deployCallback = deployCallback;
+    if (this.touchMode) {
+      return;
+    }
+    this.touchMode = true;
+
+    const scene = this.rendererService.getScene();
+    scene.stopAnimation(this.mouse);
+    scene.stopAnimation(this.mouseLeftButton);
+    this.mouse.animations = [];
+    this.mouseLeftButton.animations = [];
+    this.mouseContainer.isVisible = false;
+    this.mouseContainer.width = "0px";
+
+    this.container.width = "360px";
+    this.container.height = "76px";
+    this.label.width = "190px";
+    this.label.height = "60px";
+    this.label.fontSize = 18;
+    this.stackPanel.spacing = 8;
+
+    const deployButton = Button.CreateSimpleButton("Base Item Placer Deploy", "DEPLOY");
+    deployButton.width = "140px";
+    deployButton.height = "56px";
+    deployButton.cornerRadius = 12;
+    deployButton.thickness = 3;
+    deployButton.color = "white";
+    deployButton.fontSize = 22;
+    deployButton.fontWeight = "bold";
+    // Kept tappable while the spot is red: the placer answers a press on a red spot with its own
+    // explanation, and a dead button would leave the player guessing why nothing happens.
+    deployButton.onPointerClickObservable.add(() => this.deployCallback?.());
+    this.deployButton = deployButton;
+    this.stackPanel.addControl(deployButton);
+
+    this.updateDeployButton();
+    // Re-run the current verdict through the touch branch so the hint text matches the new controls.
+    this.setPositionValid(this.positionValid);
+  }
+
+  isTouchMode(): boolean {
+    return this.touchMode;
+  }
+
+  private updateDeployButton() {
+    if (!this.deployButton) {
+      return;
+    }
+    this.deployButton.background = this.positionValid ? "#2e7d32" : "#555555";
+    this.deployButton.alpha = this.positionValid ? 1 : 0.6;
   }
 
   getContainer() {

@@ -170,7 +170,8 @@ public class TrackerControllerImpl implements TrackerController {
                 .userActivities(userActivityService.loadUserActivities(trackingRequest.getFromDate(), trackingRequest.getToDate()))
                 .startupTaskJsons(startupTaskJsons)
                 .startupTerminatedJson(startupTerminatedJsons)
-                .tabHiddenJsons(startupTrackingService.loadTabHiddenJsons(trackingRequest.getFromDate(), trackingRequest.getToDate()));
+                .tabHiddenJsons(startupTrackingService.loadTabHiddenJsons(trackingRequest.getFromDate(), trackingRequest.getToDate()))
+                .firstInteractionJsons(firstInteractionService.loadFirstInteractions(trackingRequest.getFromDate(), trackingRequest.getToDate()));
     }
 
     /**

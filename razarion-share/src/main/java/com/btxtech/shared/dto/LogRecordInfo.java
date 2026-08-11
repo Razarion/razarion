@@ -14,6 +14,9 @@ public class LogRecordInfo {
     private String loggerName;
     private String gwtStrongName;
     private String gwtModuleName;
+    private String userAgent;
+    private Integer hardwareConcurrency;
+    private Double deviceMemory;
 
     public String getLevel() {
         return level;
@@ -69,6 +72,43 @@ public class LogRecordInfo {
 
     public void setGwtModuleName(@Nullable String gwtModuleName) {
         this.gwtModuleName = gwtModuleName;
+    }
+
+    /**
+     * Which device wrote this line. Nothing else in the forwarded client log says whether it came
+     * from a phone or a desktop, which makes a report like "the tick times are bad" impossible to
+     * attribute - the only hint left was the locale in a Date.toString().
+     * <p>
+     * Deliberately kept in the message body rather than promoted to a Loki label: the user agent is
+     * as good as unique per client, and a label that varies per client blows up the index.
+     */
+    public @Nullable String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(@Nullable String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    /**
+     * navigator.hardwareConcurrency - the core count, and the closest thing to "how fast is this
+     * device" that a browser volunteers.
+     */
+    public @Nullable Integer getHardwareConcurrency() {
+        return hardwareConcurrency;
+    }
+
+    public void setHardwareConcurrency(@Nullable Integer hardwareConcurrency) {
+        this.hardwareConcurrency = hardwareConcurrency;
+    }
+
+    /** navigator.deviceMemory in GiB, coarse by design and absent outside Chromium. */
+    public @Nullable Double getDeviceMemory() {
+        return deviceMemory;
+    }
+
+    public void setDeviceMemory(@Nullable Double deviceMemory) {
+        this.deviceMemory = deviceMemory;
     }
 
     @Override

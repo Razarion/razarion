@@ -61,6 +61,12 @@ export class BabylonItemImpl implements BabylonItem {
   private itemClickCallback: (() => void) | null = null;
   private selectTipTexture: AdvancedDynamicTexture | null = null;
   private selectTipVisibilityObserver: Nullable<Observer<any>> = null;
+  /**
+   * The same dispatch the mesh's own pick triggers use. Kept reachable so a click that landed on
+   * the ground inside this item's footprint can be routed here instead of becoming a move onto a
+   * spot the item is standing on. Assigned in the constructor.
+   */
+  private fireItemClick!: () => void;
 
   constructor(private id: number,
               public readonly itemType: ItemType,
@@ -95,6 +101,7 @@ export class BabylonItemImpl implements BabylonItem {
       }
       actionService.onItemClicked(itemType, id, diplomacy, this);
     };
+    this.fireItemClick = fireItemClick;
     const isTouch = (event: ActionEvent) => (event?.sourceEvent as PointerEvent)?.pointerType === 'touch';
     /**
      * Babylon does not only dispatch the pick-up trigger from a release: it was measured firing
@@ -627,7 +634,15 @@ export class BabylonItemImpl implements BabylonItem {
     this.highlightActive = null;
   }
 
-  private getRadius(): number {
+  /**
+   * Acts as if the player had hit this item's mesh. Used by the terrain click path when the click
+   * landed on the ground this item is standing on.
+   */
+  triggerClick(): void {
+    this.fireItemClick();
+  }
+
+  getRadius(): number {
     if ((<BaseItemType>this.itemType).getPhysicalAreaConfig !== undefined) {
       return (<BaseItemType>this.itemType).getPhysicalAreaConfig().getRadius();
     } else if ((<ResourceItemType>this.itemType).getRadius !== undefined) {

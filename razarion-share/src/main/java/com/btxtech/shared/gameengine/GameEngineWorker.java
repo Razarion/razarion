@@ -78,13 +78,17 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
      * every 100 ticks, roughly every 11 s, to the worker console - from where WorkerLogForwarder
      * carries it into the server log.
      * <p>
+     * The same switch drives {@link com.btxtech.shared.gameengine.planet.pathing.PathingServiceTracker},
+     * which breaks the pathing phase down further. Without it the diagnostic answers "where does the
+     * tick go?" with "pathing, ~90% of it" and stops there. Costs a second line per dump.
+     * <p>
      * That path deliberately needs no DevTools. An attached debugger parses the WASM module and
      * runs it in a slower, debuggable tier, so every measurement taken with the console open is a
      * measurement of the debugger rather than of the engine. Reading the numbers out of the server
      * log is the only way to time the tick under the conditions a player actually has.
      * <p>
      * Set back to false once the tick budget question is settled: deploy.ps1 builds from the
-     * working tree, so a forgotten true ships one log line per 11 s and player.
+     * working tree, so a forgotten true ships two log lines per 11 s and player.
      */
     private static final boolean TRACK_TICK_PHASES = true;
 

@@ -1,5 +1,6 @@
 package com.btxtech.server.model.tracking;
 
+import com.btxtech.shared.dto.FirstInteractionJson;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.dto.TabHiddenJson;
@@ -17,6 +18,13 @@ public class TrackingContainer {
      * counted against different populations.
      */
     private List<TabHiddenJson> tabHiddenJsons;
+    /**
+     * The first use of each control per game session. Shipped with the rest rather than through an
+     * endpoint of its own because the analysis is a join: the device is only known from the
+     * userAgent on the PAGE_LOADED startup task, and whether it led anywhere only from the user
+     * activities. Both are already in here.
+     */
+    private List<FirstInteractionJson> firstInteractionJsons;
 
     public List<StartupTerminatedJson> getStartupTerminatedJson() {
         return startupTerminatedJson;
@@ -56,6 +64,19 @@ public class TrackingContainer {
 
     public void setTabHiddenJsons(List<TabHiddenJson> tabHiddenJsons) {
         this.tabHiddenJsons = tabHiddenJsons;
+    }
+
+    public List<FirstInteractionJson> getFirstInteractionJsons() {
+        return firstInteractionJsons;
+    }
+
+    public void setFirstInteractionJsons(List<FirstInteractionJson> firstInteractionJsons) {
+        this.firstInteractionJsons = firstInteractionJsons;
+    }
+
+    public TrackingContainer firstInteractionJsons(List<FirstInteractionJson> firstInteractionJsons) {
+        this.firstInteractionJsons = firstInteractionJsons;
+        return this;
     }
 
     public TrackingContainer tabHiddenJsons(List<TabHiddenJson> tabHiddenJsons) {

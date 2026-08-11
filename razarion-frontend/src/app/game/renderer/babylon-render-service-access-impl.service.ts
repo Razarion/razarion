@@ -57,6 +57,7 @@ import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 import {SelectionFrame} from "./selection-frame";
 import {TouchCameraControl} from "./touch-camera-control";
 import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
+import {BabylonItemImpl} from "./babylon-item.impl";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
 import {ActionService} from "../action.service";
 import {SelectionService as TsSelectionService} from "../selection.service";
@@ -93,6 +94,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private readonly SPAWN_PARTICLE_HEIGHT = 15;
   private static readonly GO_CURSOR = 'url("cursors/go.png") 15 15, auto';
   private static readonly GO_NO_CURSOR = 'url("cursors/go-no.png") 15 15, auto';
+  // The same images the items' own ActionManager.hoverCursor uses, so hovering the mesh and
+  // hovering the ground it stands on look identical - which they now also behave identically on.
+  private static readonly COLLECT_CURSOR = 'url("cursors/collect.png") 15 15, auto';
+  private static readonly PICK_CURSOR = 'url("cursors/pick.png") 15 15, auto';
+  private static readonly FINALIZE_BUILD_CURSOR = 'url("cursors/finalize-build.png") 15 15, auto';
+  private static readonly LOAD_CURSOR = 'url("cursors/load.png") 15 15, auto';
   /** Upper bound for the ground pick behind the no-go cursor: ~16 evaluations per second. */
   private static readonly TERRAIN_CURSOR_THROTTLE_MS = 60;
 
@@ -127,7 +134,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   baseItemPlacerActive = false;
   // ----- Terrain no-go cursor state (see updateTerrainCursor) -----
   private moveCursorActive = false;
-  private terrainCursorNoGo: boolean | null = null;
+  /** Whether the current selection can harvest at all - no harvester, no collect cursor. */
+  private harvesterSelected = false;
+  private terrainCursor: string | null = null;
   private lastTerrainCursorCheck = 0;
   private readonly ordinalTilesRequested = new Set<string>();
   private readonly ordinalTilesReady = new Set<string>();
@@ -139,6 +148,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private interpolationListeners: BabylonBaseItemImpl[] = [];
   private babylonBaseItems: BabylonBaseItemImpl[] = [];
   private babylonResourceItems: BabylonResourceItemImpl[] = [];
+  // Boxes are looked up by footprint for the same reason resources are: a click on the ground a box
+  // stands on has to become a pick, not a move onto a spot the box occupies.
+  private babylonBoxItems: BabylonBoxItemImpl[] = [];
   // Notified when a resource leaves the scene (harvested empty or streamed out). The harvest tip
   // holds on to one specific resource and must re-target instead of pointing at a dead mesh.
   private resourceRemovedListeners: ((babylonResourceItem: BabylonResourceItemImpl) => void)[] = [];
@@ -344,6 +356,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       const metadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(metadataNode);
       if (!metadata) return;
       if (metadata.type === RazarionMetadataType.GROUND || metadata.type === RazarionMetadataType.BOT_GROUND) {
+        // The ground inside a resource's or box's footprint belongs to that item. Routing the click
+        // there sends harvest or pick, the same as hitting the mesh - and matches the cursor the
+        // player was just shown.
+        const actionable = this.findActionableItemUnderGroundPoint(pickResult.pickedPoint.x, pickResult.pickedPoint.z);
+        if (actionable && this.actionCursorFor(actionable)) {
+          actionable.triggerClick();
+          return;
+        }
         this.actionService.onTerrainClicked(pickResult.pickedPoint.x, pickResult.pickedPoint.z);
       }
     };
@@ -416,9 +436,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // ----- Terrain cursor (centralized) -----
     this.actionService.addCursorHandler((selectionInfo) => {
       this.moveCursorActive = selectionInfo.hasOwnMovable;
-      this.terrainCursorNoGo = null;
+      this.harvesterSelected = selectionInfo.hasHarvesters;
+      this.terrainCursor = null;
       if (this.moveCursorActive) {
-        this.applyTerrainCursor(false);
+        this.applyTerrainCursor(BabylonRenderServiceAccessImpl.GO_CURSOR);
         this.lastTerrainCursorCheck = 0;
         this.updateTerrainCursor();
       } else {
@@ -1167,6 +1188,73 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
    * {@link TERRAIN_CURSOR_THROTTLE_MS} instead of running per event, and the terrain verdict comes
    * from the worker-computed TerrainType ordinals rather than from mesh geometry.
    */
+  /**
+   * The resource, box or base item whose footprint covers this ground point, nearest first, or null.
+   * <p>
+   * Items and terrain are picked by two independent mechanisms - an item reacts through its own
+   * ActionManager, the ground through the scene handler - and nothing arbitrates between them. A
+   * ray that slips past a resource's silhouette lands on the ground underneath it, which is ground
+   * the resource occupies. Asking geometrically instead of relying on the ray is what lets the
+   * ground inside a footprint behave like the item standing on it.
+   * <p>
+   * Linear scans are deliberate: both lists hold only what is streamed into the scene, tens of
+   * entries, and this runs once per click and at most once per cursor throttle window.
+   */
+  private findActionableItemUnderGroundPoint(x: number, z: number): BabylonItemImpl | null {
+    let best: BabylonItemImpl | null = null;
+    let bestDistanceSq = Number.POSITIVE_INFINITY;
+    const consider = (item: BabylonItemImpl) => {
+      const position = item.getPosition();
+      if (!position) {
+        return;
+      }
+      const radius = item.getRadius();
+      const dx = position.getX() - x;
+      const dz = position.getY() - z;
+      const distanceSq = dx * dx + dz * dz;
+      // Nearest wins, so overlapping footprints resolve to the one actually clicked rather than to
+      // whichever happens to sit earlier in the list.
+      if (distanceSq <= radius * radius && distanceSq < bestDistanceSq) {
+        bestDistanceSq = distanceSq;
+        best = item;
+      }
+    };
+    this.babylonResourceItems.forEach(consider);
+    this.babylonBoxItems.forEach(consider);
+    this.babylonBaseItems.forEach(consider);
+    return best;
+  }
+
+  /**
+   * The cursor this item deserves given the current selection, or null when the selection cannot
+   * act on it. Deliberately the same questions, in the same order, that the item's own
+   * itemCursorTypeHandler asks when setting ActionManager.hoverCursor - the ground inside a
+   * footprint has to promise exactly what the mesh promises, or the OR would be a lie.
+   * <p>
+   * Selecting is not an action. An own item the selection can neither load nor finalize returns
+   * null, so clicking the ground beside your own buildings still moves there instead of quietly
+   * re-selecting the building.
+   */
+  private actionCursorFor(item: BabylonItemImpl): string | null {
+    const diplomacy = GwtHelper.gwtIssueStringEnum(item.diplomacy, Diplomacy);
+    if (diplomacy === Diplomacy.OWN) {
+      if (this.tsSelectionService.canContain(item as any)) {
+        return BabylonRenderServiceAccessImpl.LOAD_CURSOR;
+      }
+      if (this.tsSelectionService.canBeFinalizeBuild(item as any)) {
+        return BabylonRenderServiceAccessImpl.FINALIZE_BUILD_CURSOR;
+      }
+      return null;
+    }
+    if (diplomacy === Diplomacy.RESOURCE) {
+      return this.harvesterSelected ? BabylonRenderServiceAccessImpl.COLLECT_CURSOR : null;
+    }
+    if (diplomacy === Diplomacy.BOX) {
+      return this.moveCursorActive ? BabylonRenderServiceAccessImpl.PICK_CURSOR : null;
+    }
+    return null;
+  }
+
   private updateTerrainCursor(): void {
     if (!this.moveCursorActive) {
       return;
@@ -1176,35 +1264,72 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       return;
     }
     this.lastTerrainCursorCheck = now;
-    this.applyTerrainCursor(this.isTerrainUnderPointerBlocked());
+    const cursor = this.terrainCursorUnderPointer();
+    if (cursor === null) {
+      // An item mesh is hovered and its own ActionManager.hoverCursor owns the cursor. Writing
+      // anything here - even the value it already has - can land on top of it, because
+      // applyTerrainCursor's meshUnderPointer guard only holds once Babylon has resolved the new
+      // mesh, and on a 60 ms throttle this check regularly fires inside that gap.
+      return;
+    }
+    this.applyTerrainCursor(cursor);
   }
 
-  private isTerrainUnderPointerBlocked(): boolean {
+  /**
+   * Which cursor the ground under the pointer deserves, or null for "not mine - an item owns it".
+   * <p>
+   * The two halves are an OR, not a replacement. Hovering an item's mesh keeps that item's own
+   * hoverCursor; hovering the ground inside its footprint shows the same action here. Both then
+   * mean the same thing to the player, and both do the same thing on click.
+   * <p>
+   * One pick for the whole decision. This path already costs a scene pick plus Babylon's own hover
+   * resolution on every pointer move; a second pick for the footprint test would raise that by half
+   * for nothing, since the same PickingInfo answers both questions.
+   */
+  private terrainCursorUnderPointer(): string | null {
     // Exactly the pick the click uses (scene.onPointerDown), so cursor and click can never
     // disagree: picking the ground alone would report the terrain BEHIND a tree - free ground, on
     // which the click is nevertheless swallowed because the topmost mesh is the tree.
     const pickInfo = this.setupMeshPickPoint();
     if (!pickInfo.hit || !pickInfo.pickedMesh || !pickInfo.pickedPoint) {
-      return false;
+      return BabylonRenderServiceAccessImpl.GO_CURSOR;
     }
     const metadataNode = BabylonRenderServiceAccessImpl.findRazarionMetadataNode(pickInfo.pickedMesh);
     const metadata = metadataNode ? BabylonRenderServiceAccessImpl.getRazarionMetadata(metadataNode) : undefined;
     if (!metadata) {
-      return false;
+      // Items carry no Razarion metadata - only the ground and terrain objects do. Measured: the
+      // meshes of a unit or building all report NONE. So "no metadata" IS the item case, and the
+      // item's own ActionManager.hoverCursor (finalize-build, load, attack, collect) owns the
+      // cursor. Hands off entirely; see the null branch in updateTerrainCursor.
+      //
+      // The type check below used to carry this, which made it dead code: it can only be reached
+      // with a metadata object in hand, and an item never has one.
+      return null;
     }
     if (metadata.type === RazarionMetadataType.TERRAIN_OBJECT) {
-      return true;
+      return BabylonRenderServiceAccessImpl.GO_NO_CURSOR;
     }
     if (metadata.type !== RazarionMetadataType.GROUND && metadata.type !== RazarionMetadataType.BOT_GROUND) {
-      // An item is hovered - its own ActionManager.hoverCursor (attack, collect, ...) owns the cursor.
-      return false;
+      return null;
     }
+    const actionable = this.findActionableItemUnderGroundPoint(pickInfo.pickedPoint.x, pickInfo.pickedPoint.z);
+    const actionCursor = actionable ? this.actionCursorFor(actionable) : null;
+    if (actionCursor) {
+      return actionCursor;
+    }
+    return this.isGroundPointBlocked(pickInfo.pickedPoint.x, pickInfo.pickedPoint.z)
+      ? BabylonRenderServiceAccessImpl.GO_NO_CURSOR
+      : BabylonRenderServiceAccessImpl.GO_CURSOR;
+  }
+
+  /** Whether the terrain itself refuses this ground point. The caller has already resolved the pick. */
+  private isGroundPointBlocked(pickedX: number, pickedZ: number): boolean {
     // Absent in the mock facade (gwtMock / studio), which drives this same renderer.
     if (!this.gwtAngularService.gwtAngularFacade.terrainUiService) {
       return false;
     }
-    const x = pickInfo.pickedPoint.x;
-    const y = pickInfo.pickedPoint.z;
+    const x = pickedX;
+    const y = pickedZ;
     const tileX = Math.floor(x / BabylonTerrainTileImpl.NODE_X_COUNT);
     const tileY = Math.floor(y / BabylonTerrainTileImpl.NODE_Y_COUNT);
     const tileKey = `${tileX}_${tileY}`;
@@ -1242,12 +1367,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     });
   }
 
-  private applyTerrainCursor(noGo: boolean): void {
-    if (this.terrainCursorNoGo === noGo) {
+  private applyTerrainCursor(cursor: string): void {
+    if (this.terrainCursor === cursor) {
       return;
     }
-    this.terrainCursorNoGo = noGo;
-    const cursor = noGo ? BabylonRenderServiceAccessImpl.GO_NO_CURSOR : BabylonRenderServiceAccessImpl.GO_CURSOR;
+    this.terrainCursor = cursor;
     this.scene.defaultCursor = cursor;
     // Babylon writes the canvas cursor BEFORE it invokes scene.onPointerMove, so updating only
     // scene.defaultCursor would apply one pointer event late. Write the canvas too - but not while
@@ -1357,7 +1481,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   createBabylonBoxItem(id: number, boxItemType: BoxItemType): BabylonBoxItem {
     try {
-      return new BabylonBoxItemImpl(id,
+      const item = new BabylonBoxItemImpl(id,
         boxItemType,
         this,
         this.actionService,
@@ -1365,12 +1489,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.babylonModelService,
         this.uiConfigCollectionService,
         (permanent: boolean) => {
+          this.babylonBoxItems = this.babylonBoxItems.filter(i => i !== item);
           if (permanent) {
             this.tsSelectionService.disposeOther(id);
           } else {
             this.tsSelectionService.removeOther(id);
           }
         });
+      this.babylonBoxItems.push(item);
+      return item;
     } catch (error) {
       console.error(error);
       return BabylonBoxItemImpl.createDummy(id);

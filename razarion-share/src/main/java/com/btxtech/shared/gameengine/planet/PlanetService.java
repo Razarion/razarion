@@ -212,6 +212,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
     public void enableTracking(boolean track) {
         planetServiceTracker.setRunning(track);
+        pathingService.enableTracking(track);
     }
 
     public void initialSlaveSyncItemInfo(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {

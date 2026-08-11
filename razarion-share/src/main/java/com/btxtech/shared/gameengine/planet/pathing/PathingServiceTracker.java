@@ -17,18 +17,20 @@ public class PathingServiceTracker {
     private int tickCount = PlanetServiceTracker.TICKS_FOR_DUMP;
     private int totalTickTime;
     private int preparationTime;
-    private int findContactsTime;
     private int solveVelocityTime;
     private int implementPositionTime;
-    private int solvePositionTime;
     private int checkDestinationTime;
     private int finalizationTime;
-    private int updateListenerTime;
     private int syncItemContainerServiceTime;
-    private final boolean running;
+    private boolean running;
 
-    public PathingServiceTracker(boolean running) {
+    /**
+     * Switching on also starts a fresh period, so the first dump is a real 100-tick sample rather
+     * than one measured from whenever the tracker happened to be enabled.
+     */
+    public void setRunning(boolean running) {
         this.running = running;
+        clear();
     }
 
     public void clear() {
@@ -39,13 +41,10 @@ public class PathingServiceTracker {
         tickCount = 0;
         totalTickTime = 0;
         preparationTime = 0;
-        findContactsTime = 0;
         solveVelocityTime = 0;
         implementPositionTime = 0;
-        solvePositionTime = 0;
         checkDestinationTime = 0;
         finalizationTime = 0;
-        updateListenerTime = 0;
         syncItemContainerServiceTime = 0;
     }
 
@@ -66,13 +65,6 @@ public class PathingServiceTracker {
     }
 
 
-    public void afterFindContacts() {
-        if (!running) {
-            return;
-        }
-        findContactsTime += calculateDifAndReload();
-    }
-
     public void afterSolveVelocity() {
         if (!running) {
             return;
@@ -87,13 +79,6 @@ public class PathingServiceTracker {
         implementPositionTime += calculateDifAndReload();
     }
 
-    public void afterSolvePosition() {
-        if (!running) {
-            return;
-        }
-        solvePositionTime += calculateDifAndReload();
-    }
-
     public void afterCheckDestination() {
         if (!running) {
             return;
@@ -106,13 +91,6 @@ public class PathingServiceTracker {
             return;
         }
         finalizationTime += calculateDifAndReload();
-    }
-
-    public void afterUpdateListener() {
-        if (!running) {
-            return;
-        }
-        updateListenerTime += calculateDifAndReload();
     }
 
     public void afterSyncItemContainerService() {
@@ -140,6 +118,11 @@ public class PathingServiceTracker {
         return delta;
     }
 
+    /**
+     * The phases listed here are exactly the ones {@link PathingService#tick} measures, and together
+     * they account for the whole tick. Phases the tick does not call have no line: a diagnostic that
+     * prints "0.0s" for something it never timed reads as "this is free".
+     */
     private void dump() {
         double periodTime = (System.currentTimeMillis() - startPeriodTimeStamp) / 1000.0;
         double ticksPerSecond = tickCount / periodTime;
@@ -151,14 +134,11 @@ public class PathingServiceTracker {
                 "ticksPerSecond: " + ticksPerSecond + "\n" +
                 "totalTickTime: " + totalTickTime * factor + "s\n" +
                 "preparationTime: " + preparationTime * factor + "s\n" +
-                "findContactsTime: " + findContactsTime * factor + "s\n" +
                 "solveVelocityTime: " + solveVelocityTime * factor + "s\n" +
                 "implementPositionTime: " + implementPositionTime * factor + "s\n" +
-                "solvePositionTime: " + solvePositionTime * factor + "s\n" +
                 "checkDestinationTime: " + checkDestinationTime * factor + "s\n" +
-                "finalizationTime: " + finalizationTime * factor + "s\n" +
-                "updateListenerTime: " + updateListenerTime * factor + "s\n" +
                 "syncItemContainerServiceTime: " + syncItemContainerServiceTime * factor + "s\n" +
+                "finalizationTime: " + finalizationTime * factor + "s\n" +
                 "-------------------------------------------------");
     }
 }

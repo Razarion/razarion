@@ -22,6 +22,19 @@ public class TeaVMSimpleScheduledFutureImpl implements SimpleScheduledFuture {
      * have produced is stale by the time it arrives.
      */
     private static final double MAX_CATCH_UP_MILLIS = 1000;
+    /**
+     * Smallest gap left between two runs while catching up, as a fraction of the delay.
+     * <p>
+     * A payload that overruns leaves `timeDrift` bigger than the delay, so `milliSDelay - timeDrift`
+     * goes negative and the next run used to be scheduled at the 10 ms floor - straight back onto a
+     * thread that had just proven it needs longer than the budget, and here that thread also has to
+     * paint. The runs then chain, the drift grows instead of shrinking, and the catch-up ends in the
+     * MAX_CATCH_UP_MILLIS branch dropping the backlog.
+     * <p>
+     * Leaving 30% of the delay idle costs a little rate accuracy while behind and lets the frame in
+     * between actually render. Kept identical to the worker copy on purpose.
+     */
+    private static final double MIN_CATCH_UP_GAP_FACTOR = 0.3;
     private static final long OVERRUN_LOG_INTERVAL_MS = 10_000;
 
     private Integer timerId;
@@ -117,10 +130,14 @@ public class TeaVMSimpleScheduledFutureImpl implements SimpleScheduledFuture {
                 scheduleNext((int) milliSDelay);
             } else {
                 expected += milliSDelay;
-                int nextDelay = Math.max(10, (int) (milliSDelay - timeDrift));
-                scheduleNext(nextDelay);
+                scheduleNext(nextDelay(timeDrift));
             }
         }
+    }
+
+    private int nextDelay(double timeDrift) {
+        int minGap = Math.max(10, (int) Math.ceil(milliSDelay * MIN_CATCH_UP_GAP_FACTOR));
+        return Math.max(minGap, (int) (milliSDelay - timeDrift));
     }
 
     private long missedRuns(double timeDrift) {

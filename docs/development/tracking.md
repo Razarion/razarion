@@ -105,6 +105,50 @@ http://localhost:8080/?utm_campaign=x_launch&utm_source=x&utm_medium=cpc&twclid=
 - `razarion-server/.../model/tracking/PageRequest.java` - MongoDB document (`page_request` collection)
 - `razarion-server/src/main/resources/templates/index.ftl` - Landing page template
 
+# First Interaction — the Controls tab
+
+`first_interaction` records the first time a player used each control in a game session
+(`CAMERA_PAN_TOUCH`, `CAMERA_PINCH`, `CAMERA_KEYBOARD`, `CAMERA_WHEEL`, `SELECT`, `COMMAND`).
+Reported once per session and kind by `FirstInteractionTrackerService`, stored by
+`FirstInteractionService` with a 180-day TTL — the only tracking collection that expires.
+
+**Absence is the signal.** The funnel counts how many stop before the first quest but cannot say
+whether they could steer at all. A session that never reports `CAMERA_PAN_TOUCH` never found the
+gesture. Every share is therefore measured against the sessions that reached `RUN_GAME`, not
+against the sessions that reported something — measuring the reporters against themselves hides
+exactly the players the collection exists to find.
+
+The **Controls** tab in the backend view shows, per device class:
+
+- one row per control: sessions, share of the running games, median time to first use;
+- a nested funnel: game running → touched anything → selected → gave an order → passed a quest.
+
+## Why the funnel nests and why the camera is not a step
+
+Read as independent shares, the rows produce percentages over 100% against real data: more sessions
+select than move the camera (tapping a unit needs no panning), and more users pass a quest than were
+seen giving an order (a quest is recorded per user and needs no interaction record). Each step
+therefore counts only the sessions of the step above it. The unconditional counts stay in the
+per-control table, so nesting loses nothing.
+
+"Moved the camera" is deliberately not a step: nothing later requires it, and whether the gesture
+was found is what the per-control table already answers.
+
+## Device classification
+
+Taken from the `userAgent` on the `PAGE_LOADED` startup task, joined by `gameSessionUuid` — which is
+why the record carries the session and not only a user. Tablet is tested before mobile (an Android
+tablet carries `Android` too). Samsung and the desktop-site setting send a desktop userAgent from a
+phone, so Mobile is undercounted; the tab reports how many desktop-userAgent sessions produced a
+touch gesture rather than silently reclassifying them, because the correction would be a guess.
+
+## Key files
+
+- `razarion-frontend/.../game/tracking/first-interaction-tracker.service.ts` — reports, once per kind
+- `razarion-server/.../service/tracking/FirstInteractionService.java` — stores (`first_interaction`)
+- `razarion-frontend/.../backend/tracking-container/first-interaction-analyzer.ts` — the analysis
+- `razarion-frontend/.../backend/first-interaction/` — the Controls tab
+
 # Ad-Network Conversion Tracking (Server-Side)
 
 Beyond storing page requests, the server sends **server-to-server conversion events** to ad

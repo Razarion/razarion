@@ -1,0 +1,79 @@
+@if (firstInteractionReport) {
+  <div class="flex flex-col gap-6">
+
+    <p class="interaction-note">
+      Every share is against the sessions whose game came up, not against the sessions that reported
+      something &ndash; a player who never touched anything is exactly what this view is looking for,
+      and measuring the reporters against themselves would hide them. A control the device has no way
+      of producing reads 0% and should: that is what tells a keyboard apart from a phone.
+      <br>
+      The funnel below nests its steps &ndash; each row counts only the sessions of the row above it,
+      so the chain reads downwards and no row can exceed 100%. Whether the camera was found is not a
+      step there, because nothing later requires it: the table above already answers that.
+      @if (firstInteractionReport.touchOnDesktopUserAgent > 0) {
+        <br>
+        {{ firstInteractionReport.touchOnDesktopUserAgent }} sessions with a desktop userAgent
+        reported a touch gesture &ndash; Samsung and the desktop-site setting send a desktop
+        userAgent from a phone, so Mobile is undercounted by up to that many.
+      }
+      @if (firstInteractionReport.unlinkedInteractions > 0) {
+        <br>
+        {{ firstInteractionReport.unlinkedInteractions }} interactions belong to sessions with no
+        page load in this range and are counted nowhere &ndash; sessions that started before it began.
+      }
+    </p>
+
+    @if (devices.length === 0) {
+      <p class="interaction-note">No session reached a running game in this range.</p>
+    }
+
+    @for (device of devices; track device.device) {
+      <section>
+        <h3 class="font-bold">
+          {{ device.device }} &ndash; {{ device.started }} sessions with a running game
+        </h3>
+        <p class="interaction-note pb-2">
+          {{ device.silent }} of them
+          ({{ percent(device.silent, device.started) }}) never reported a single interaction.
+        </p>
+
+        <p-table [value]="device.rows">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Control</th>
+              <th>Sessions</th>
+              <th>Percent</th>
+              <th>Median time to first use</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-row>
+            <tr>
+              <td>{{ row.kind }}</td>
+              <td>{{ row.sessions }}</td>
+              <td>{{ row.percent !== null ? row.percent + '%' : '-' }}</td>
+              <td>{{ seconds(row.medianSeconds) }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+        <p-table [value]="steps(device)" class="pt-4">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Step</th>
+              <th>Sessions</th>
+              <th>Of the step before</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-step>
+            <tr>
+              <td>{{ step.name }}</td>
+              <td>{{ step.count }}</td>
+              <td>{{ percent(step.count, step.ofCount) }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </section>
+    }
+
+  </div>
+}

@@ -34,7 +34,7 @@ public class PathingService {
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private final TerrainService terrainService;
     private final PassabilityGrid passabilityGrid;
-    private final PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
+    private final PathingServiceTracker pathingServiceTracker = new PathingServiceTracker();
 
     @Inject
     public PathingService(TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService, PassabilityGrid passabilityGrid) {
@@ -163,6 +163,16 @@ public class PathingService {
 
         }
         throw new IllegalArgumentException("TerrainDestinationFinder.findNearestPosition(): no reachable terrain destination found. start: " + start + " destination: " + destination + " radius: " + radius + " terrainType: " + terrainType);
+    }
+
+    /**
+     * Driven from {@link com.btxtech.shared.gameengine.planet.PlanetService#enableTracking(boolean)},
+     * so the pathing breakdown appears exactly when the planet-level breakdown does. Pathing is where
+     * the tick budget goes - the production dumps put it at ~90% of the total tick time - and the
+     * planet tracker only reports that one number.
+     */
+    public void enableTracking(boolean track) {
+        pathingServiceTracker.setRunning(track);
     }
 
     public void tick(SynchronizationSendingContext synchronizationSendingContext) {

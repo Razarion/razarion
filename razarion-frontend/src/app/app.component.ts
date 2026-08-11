@@ -24,46 +24,46 @@ export class AppComponent {
     (window as any).__e2eAppRef = appRef;
     const loggingController = new LoggingControllerImplClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
 
-    const originalWarn = console.warn;
-    console.warn = function (...args) {
-      originalWarn.apply(console, args);
+    // Read once: navigator does not change while the tab lives, and a console hook must not do
+    // more work per line than it has to.
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    const userAgent = nav.userAgent ?? null;
+    const hardwareConcurrency = nav.hardwareConcurrency ?? null;
+    // Chromium only, and rounded to a power of two there. Absent everywhere else, hence the null.
+    const deviceMemory = nav.deviceMemory ?? null;
+
+    const forward = (level: string, args: any[]) => {
       if (!RemoteLogging.allow()) {
         return;
       }
       try {
         loggingController.angularJsonLogger({
-          level: 'warn',
+          level: level,
           message: args.map(arg => (typeof arg === 'string' ? arg : JSON.stringify(arg))).join(' '),
           millis: Date.now().toString(),
           thrown: null,
           loggerName: 'console',
           gwtStrongName: null,
-          gwtModuleName: null
+          gwtModuleName: null,
+          userAgent: userAgent,
+          hardwareConcurrency: hardwareConcurrency,
+          deviceMemory: deviceMemory
         }).catch(() => {
         });
       } catch (e) {
       }
     };
 
+    const originalWarn = console.warn;
+    console.warn = function (...args) {
+      originalWarn.apply(console, args);
+      forward('warn', args);
+    };
+
     const originalError = console.error;
     console.error = function (...args) {
       originalError.apply(console, args);
-      if (!RemoteLogging.allow()) {
-        return;
-      }
-      try {
-        loggingController.angularJsonLogger({
-          level: 'error',
-          message: args.map(arg => (typeof arg === 'string' ? arg : JSON.stringify(arg))).join(' '),
-          millis: Date.now().toString(),
-          thrown: null,
-          loggerName: 'console',
-          gwtStrongName: null,
-          gwtModuleName: null
-        }).catch(() => {
-        });
-      } catch (e) {
-      }
+      forward('error', args);
     };
   }
 }

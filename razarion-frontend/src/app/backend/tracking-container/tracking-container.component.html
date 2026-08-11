@@ -63,6 +63,7 @@
       <p-tab value="6">Connections</p-tab>
       <p-tab value="3">Startup</p-tab>
       <p-tab value="5">Attention</p-tab>
+      <p-tab value="7">Controls</p-tab>
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
@@ -137,6 +138,9 @@
     </p-tabpanel>
     <p-tabpanel value="5">
       <attention-tracking [attentionReport]="attentionReport"></attention-tracking>
+    </p-tabpanel>
+    <p-tabpanel value="7">
+      <first-interaction [firstInteractionReport]="firstInteractionReport"></first-interaction>
     </p-tabpanel>
   </p-tabs>
 </div>

@@ -26,6 +26,22 @@ public class TeaVMSimpleScheduledFutureImpl implements SimpleScheduledFuture {
      * server anyway, and until it does, the burst is what freezes the tab.
      */
     private static final double MAX_CATCH_UP_MILLIS = 1000;
+    /**
+     * Smallest gap left between two runs while catching up, as a fraction of the delay.
+     * <p>
+     * A tick that overruns leaves `timeDrift` bigger than the delay, so `milliSDelay - timeDrift`
+     * goes negative and the next run used to be scheduled at the 10 ms floor - a second full tick
+     * on a worker that had just proven it needs longer than the budget. With heavy pathing the
+     * ticks then run back to back, the drift grows instead of shrinking, and the catch-up ends in
+     * the MAX_CATCH_UP_MILLIS branch dropping ten ticks at once. Production showed that as one
+     * ~1 s stall roughly every 85 s on a mobile client, with single ticks up to 464 ms.
+     * <p>
+     * Leaving 30% of the delay idle costs a little rate accuracy while behind and gives the worker
+     * room to finish the message posting and GC the tick just produced. A run that cannot be
+     * recovered still ends in the drop branch, which is the honest outcome: the client resyncs
+     * with the server rather than freezing through a burst.
+     */
+    private static final double MIN_CATCH_UP_GAP_FACTOR = 0.3;
     private static final long OVERRUN_LOG_INTERVAL_MS = 10_000;
 
     private Integer timerId;
@@ -122,10 +138,14 @@ public class TeaVMSimpleScheduledFutureImpl implements SimpleScheduledFuture {
                 scheduleNext((int) milliSDelay);
             } else {
                 expected += milliSDelay;
-                int nextDelay = Math.max(10, (int) (milliSDelay - timeDrift));
-                scheduleNext(nextDelay);
+                scheduleNext(nextDelay(timeDrift));
             }
         }
+    }
+
+    private int nextDelay(double timeDrift) {
+        int minGap = Math.max(10, (int) Math.ceil(milliSDelay * MIN_CATCH_UP_GAP_FACTOR));
+        return Math.max(minGap, (int) (milliSDelay - timeDrift));
     }
 
     private long missedRuns(double timeDrift) {

@@ -48,7 +48,22 @@ public class LoggingControllerImpl implements LoggingController {
         s += "\n - Level: " + logRecordInfo.getLevel();
         s += "\n - Millis: " + logRecordInfo.getMillis();
         s += "\n - Logger name: " + logRecordInfo.getLoggerName();
+        s += "\n - Device: " + device(logRecordInfo);
         logger.warn(s);
+    }
+
+    /**
+     * One grep-able line per record. Every forwarded client line carries it, so a Loki query can
+     * group tick timings, stalls and errors by device instead of guessing from the locale.
+     */
+    private String device(LogRecordInfo logRecordInfo) {
+        return "cores=" + orUnknown(logRecordInfo.getHardwareConcurrency())
+                + " memGB=" + orUnknown(logRecordInfo.getDeviceMemory())
+                + " ua=" + orUnknown(logRecordInfo.getUserAgent());
+    }
+
+    private String orUnknown(Object value) {
+        return value != null ? value.toString() : "?";
     }
 
     private String thrownToString(Throwable throwable) {

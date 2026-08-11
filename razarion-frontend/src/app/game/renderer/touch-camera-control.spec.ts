@@ -15,11 +15,13 @@ describe('TouchCameraControl', () => {
   let control: TouchCameraControl;
   let pans: { fromX: number, fromY: number, toX: number, toY: number }[];
   let zooms: number[];
+  let firstInteractions: string[];
   let terrainDistance: number;
 
   beforeEach(() => {
     pans = [];
     zooms = [];
+    firstInteractions = [];
     terrainDistance = 30;
 
     canvas = document.createElement('canvas');
@@ -35,7 +37,8 @@ describe('TouchCameraControl', () => {
       setCameraTerrainDistance: (distance: number) => {
         terrainDistance = distance;
         zooms.push(distance);
-      }
+      },
+      reportFirstInteraction: (kind: string) => firstInteractions.push(kind)
     } as unknown as BabylonRenderServiceAccessImpl;
 
     control = new TouchCameraControl(canvas, renderService);
@@ -137,6 +140,51 @@ describe('TouchCameraControl', () => {
     expect(pans.length).toBe(1);
     expect(pans[0].fromX).toBeCloseTo(-0.25, 5);  // x=300, where the finger actually was
     expect(pans[0].toX).toBeCloseTo(-0.2, 5);     // x=320
+  });
+
+  it('leaves the camera alone while a claimed finger drags', () => {
+    // The item placer claims the area around the building it is placing.
+    control.setPanClaim((x, y) => Math.hypot(x - 400, y - 300) < 60);
+
+    fire('pointerdown', 410, 300);
+    fire('pointermove', 600, 300);
+    fire('pointerup', 600, 300);
+
+    expect(pans.length).toBe(0);
+    // Nothing was gestured either - the placer decides itself what that drag meant.
+    expect(control.isGesturing()).toBeFalse();
+  });
+
+  it('still pans when the finger goes down outside the claim', () => {
+    control.setPanClaim((x, y) => Math.hypot(x - 400, y - 300) < 60);
+
+    fire('pointerdown', 100, 300);
+    fire('pointermove', 300, 300);
+
+    expect(pans.length).toBe(1);
+  });
+
+  it('judges the claim where the finger went down, not where it is now', () => {
+    control.setPanClaim((x, y) => Math.hypot(x - 400, y - 300) < 60);
+
+    // Starts outside the claim and is dragged straight through it: still a pan all the way.
+    fire('pointerdown', 100, 300);
+    fire('pointermove', 400, 300);
+    fire('pointermove', 700, 300);
+
+    expect(pans.length).toBe(2);
+  });
+
+  it('frees the finger again when the claim is dropped', () => {
+    control.setPanClaim(() => true);
+    fire('pointerdown', 400, 300);
+    fire('pointermove', 600, 300);
+    expect(pans.length).toBe(0);
+
+    control.setPanClaim(null);
+    fire('pointermove', 700, 300);
+
+    expect(pans.length).toBe(1);
   });
 
   it('ignores the mouse so the desktop marquee keeps working', () => {

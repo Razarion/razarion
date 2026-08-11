@@ -24,6 +24,8 @@ import {PlayerSessionsComponent} from '../player-sessions/player-sessions.compon
 import {StartupTrackingComponent} from '../startup-tracking/startup-tracking.component';
 import {AttentionTrackingComponent} from '../attention-tracking/attention-tracking.component';
 import {AttentionAnalyzer, AttentionReport} from './attention-analyzer';
+import {FirstInteractionComponent} from '../first-interaction/first-interaction.component';
+import {FirstInteractionAnalyzer, FirstInteractionReport} from './first-interaction-analyzer';
 
 @Component({
   selector: 'tracking-container',
@@ -40,7 +42,8 @@ import {AttentionAnalyzer, AttentionReport} from './attention-analyzer';
     OpenConnectionsComponent,
     PlayerSessionsComponent,
     StartupTrackingComponent,
-    AttentionTrackingComponent],
+    AttentionTrackingComponent,
+    FirstInteractionComponent],
   templateUrl: './tracking-container.component.html',
   styleUrl: './tracking-container.component.scss'
 })
@@ -94,9 +97,11 @@ export class TrackingContainerComponent implements OnInit {
   startupTerminatedJsons: StartupTerminatedJson[] = [];
   startupTaskJsons: StartupTaskJson[] = [];
   attentionReport?: AttentionReport;
+  firstInteractionReport?: FirstInteractionReport;
   private trackerControllerImplClient!: TrackerControllerImplClient;
   private trackingContainerAnalyzer = new TrackingContainerAnalyzer();
   private attentionAnalyzer = new AttentionAnalyzer();
+  private firstInteractionAnalyzer = new FirstInteractionAnalyzer();
 
   constructor(httpClient: HttpClient) {
     this.trackerControllerImplClient = new TrackerControllerImplClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
@@ -232,6 +237,8 @@ export class TrackingContainerComponent implements OnInit {
         this.attentionAnalyzer.setTrackingContainer(trackingContainer);
         // A fresh object every load: the attention view is driven by the input reference changing.
         this.attentionReport = this.attentionAnalyzer.createReport();
+        this.firstInteractionAnalyzer.setTrackingContainer(trackingContainer);
+        this.firstInteractionReport = this.firstInteractionAnalyzer.createReport();
       })
     } catch (e) {
       console.log(e);
