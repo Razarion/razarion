@@ -54,6 +54,11 @@ export const TipStallReason = {
   FACTORY_QUEUE_FULL: 'FACTORY_QUEUE_FULL',
   /** In the cockpit model but no DOM element carries it - carousel page not materialised. */
   BUTTON_NOT_RENDERED: 'BUTTON_NOT_RENDERED',
+  /**
+   * Compact layout only: the button is there and clickable, but the item panel is collapsed, so
+   * nobody can see it. The tip points at the icon that opens the panel instead of at the button.
+   */
+  ITEM_PANEL_CLOSED: 'ITEM_PANEL_CLOSED',
   AWAIT_PLACER: 'AWAIT_PLACER',
   AWAIT_PLACEMENT: 'AWAIT_PLACEMENT',
   /** Placed, waiting for the server to put the construction site into the world. */

@@ -1,16 +1,16 @@
 @if (itemCockpitService.ownItemCockpit; as ownItemCockpit) {
   <div class="flex flex-col gap-1">
-    <div class="flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
+    <div class="item-panel flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
       <div class="flex">
-        <div class="w-[100px] flex-none">
+        <div class="item-cockpit-image-col flex-none">
           <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
         </div>
         <div class="grow">
           <div class="flex flex-col">
-            <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
+            <div class="item-cockpit-title" [style]="{color: '#64B5F6'}">
               {{ ownItemCockpit.itemTypeName }}
             </div>
-            <div>
+            <div class="item-cockpit-descr">
               {{ ownItemCockpit.itemTypeDescr }}
             </div>
             <div>
@@ -23,24 +23,33 @@
           </div>
         </div>
         @if (ownItemCockpit.canSell) {
-          <div class="w-8 flex-none">
-            <p-button label="$" [style]="{padding: '0.1rem 0.4rem'}" (mousedown)="itemCockpitService.onSell()"></p-button>
+          <!-- Two steps, because selling is not undoable and this button sits in the corner where a
+               phone user reaches for "close". The armed state disarms itself after a few seconds. -->
+          <div class="flex-none">
+            <p-button [label]="sellArmed ? 'Sell?' : '$'"
+                      [severity]="sellArmed ? 'danger' : 'primary'"
+                      [style]="{padding: '0.1rem 0.4rem'}"
+                      [title]="sellArmed ? 'Tap again to sell' : 'Sell'"
+                      (click)="onSellClick()"></p-button>
           </div>
         }
       </div>
-      <div class="flex items-center gap-2">
-        <i class="pi pi-heart flex-none" [style.color]="ownItemCockpit.health > 0.5 ? '#4ade80' : ownItemCockpit.health > 0.25 ? '#fb923c' : '#ef4444'" style="font-size: 0.9rem"></i>
-        <span class="text-sm flex-none" [style.color]="ownItemCockpit.health > 0.5 ? '#4ade80' : ownItemCockpit.health > 0.25 ? '#fb923c' : '#ef4444'">
-          {{ ownItemCockpit.health * 100 | number:'1.0-0' }}%
-        </span>
-        <p-progressbar class="grow" [value]="ownItemCockpit.health * 100"
-          [style]="{ height: '0.8rem' }"
-          [showValue]="false"
-          [styleClass]="ownItemCockpit.health > 0.5 ? 'health-bar-green' : ownItemCockpit.health > 0.25 ? 'health-bar-orange' : 'health-bar-red'" />
-      </div>
+      <!-- Undamaged is the normal case and says nothing; on a phone that row is a sixth of the panel. -->
+      @if (!compactLayout.compact() || ownItemCockpit.health < 0.999) {
+        <div class="flex items-center gap-2">
+          <i class="pi pi-heart flex-none" [style.color]="ownItemCockpit.health > 0.5 ? '#4ade80' : ownItemCockpit.health > 0.25 ? '#fb923c' : '#ef4444'" style="font-size: 0.9rem"></i>
+          <span class="text-sm flex-none" [style.color]="ownItemCockpit.health > 0.5 ? '#4ade80' : ownItemCockpit.health > 0.25 ? '#fb923c' : '#ef4444'">
+            {{ ownItemCockpit.health * 100 | number:'1.0-0' }}%
+          </span>
+          <p-progressbar class="grow" [value]="ownItemCockpit.health * 100"
+            [style]="{ height: '0.8rem' }"
+            [showValue]="false"
+            [styleClass]="ownItemCockpit.health > 0.5 ? 'health-bar-green' : ownItemCockpit.health > 0.25 ? 'health-bar-orange' : 'health-bar-red'" />
+        </div>
+      }
     </div>
     @if (ownItemCockpit.buildupProgress != null) {
-      <div class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500">
+      <div class="item-panel flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500">
         <div class="flex items-center gap-2">
           <i class="pi pi-wrench text-yellow-400" style="font-size: 0.9rem"></i>
           <span class="text-yellow-400 text-sm">Under Construction {{ ownItemCockpit.buildupProgress * 100 | number:'1.0-0' }}%</span>
@@ -50,16 +59,21 @@
       </div>
     }
     @if (ownItemCockpit.buildupItems && ownItemCockpit.buildupProgress == null) {
-      <div class="flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
+      <div class="item-panel flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
         <p-carousel #buildupCarousel [value]="ownItemCockpit.buildupItems" [numVisible]="5" [numScroll]="5"
           styleClass="buildup-carousel">
           <ng-template pTemplate="item" let-buildupItem>
-            <div class="flex flex-col bg-surface-600" [style]="{margin: '0 2px 0 2px'}">
+            <!-- The tile hugs the button instead of filling the carousel slot: the slot is wider than
+                 the button, and a stretched background left a grey bar beside every image. -->
+            <div class="item-cockpit-buildup-tile flex flex-col bg-surface-600">
               <div #buildupItemDiv [attr.data-item-type-id]="buildupItem.itemTypeId">
+                <!-- Not [disabled]: a disabled button swallows the tap, and the reason it cannot be
+                     pressed lives in the tooltip, which a finger never opens. It stays pressable and
+                     answers with the reason instead. -->
                 <button class='item-cockpit-buildup-button'
                   (mousedown)="onBuildClick(buildupItem)"
                   [title]="buildTooltip(buildupItem)"
-                  [disabled]="!buildupItem.enabled || ownItemCockpit.factoryQueueFull">
+                  [attr.aria-disabled]="!isBuildable(buildupItem)">
                   @if (!buildupItem.enabled) {
                     <div class='item-cockpit-buildup-disabled'>
                       @if (buildupItem.buildLimitReached) {
@@ -71,20 +85,22 @@
                       }
                     </div>
                   }
-                  <img src="{{buildupItem.imageUrl}}"
-                    style="position: absolute;top: 0; left: 0; width: 60px; height: 60px"
+                  <img src="{{buildupItem.imageUrl}}" class="item-cockpit-buildup-image"
                     alt="buildupItem.imageUrl">
                     <span class="item-cockpit-buildup-limit-label">
                       {{ buildupItem.itemCount }}/{{ buildupItem.itemLimit }}
                     </span>
                   </button>
                 </div>
-                <div>
-                  {{ buildupItem.price }}
+                <div class="item-cockpit-price">
+                  <i class="pi pi-sparkles"></i>{{ buildupItem.price }}
                 </div>
               </div>
             </ng-template>
           </p-carousel>
+          @if (buildBlockedMessage) {
+            <div class="item-cockpit-blocked-msg">{{ buildBlockedMessage }}</div>
+          }
           @if (ownItemCockpit.factoryId != null) {
             <!-- Always reserved (fixed one-row height, no wrap) so the panel height stays constant
                  when the queue goes from empty to populated — avoids the menu jumping. -->
@@ -112,7 +128,7 @@
       }
       @if (ownItemCockpit.containerCount != null) {
         <div
-          class="flex flex-row  items-center  gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
+          class="item-panel flex flex-row  items-center  gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
           <span>{{ `Containing items: ${ownItemCockpit.containerCount}` }}</span>
           <p-button icon="pi pi-upload"
             label="Unload"
@@ -125,18 +141,18 @@
   }
 
   @if (itemCockpitService.ownMultipleItems; as ownMultipleItems) {
-    <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
-      <p class="text-surface-300">Click to select units by type</p>
+    <div class="item-panel flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
+      <p class="item-cockpit-descr text-surface-300">{{ touch ? 'Tap to select units by type' : 'Click to select units by type' }}</p>
       <p-carousel [value]="ownMultipleItems" [numVisible]="5" [numScroll]="5"
         styleClass="multiple-item-carousel">
         <ng-template pTemplate="item" let-ownMultipleItem>
-          <div class="flex flex-col" [style]="{margin: '0 2px 0 2px'}">
+          <div class="item-cockpit-buildup-tile flex flex-col">
             <div class="flex">
               <button class="item-cockpit-multiple-button"
                 (click)="itemCockpitService.keepOnlyOfType(ownMultipleItem.baseItemTypeId)"
                 title="Select all of this type">
                 <img src="{{ownMultipleItem.ownItemCockpit.imageUrl}}"
-                  style="width: 60px; height: 60px"
+                  class="item-cockpit-multiple-image"
                   alt="{{ownMultipleItem.ownItemCockpit.imageUrl}}">
                 </button>
               </div>
@@ -151,8 +167,8 @@
 
     @if (itemCockpitService.otherItemCockpit; as otherItemCockpit) {
       <div class="flex flex-col">
-        <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
-          <div style="font-size: 1.2rem" class="text-surface-300">
+        <div class="item-panel flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 gap-1">
+          <div class="item-cockpit-title text-surface-300">
             @if (otherItemCockpit.resource && otherItemCockpit.resourceAmount != null) {
               <span>Razarion: {{ otherItemCockpit.resourceAmount }}</span>
             } @else {
@@ -163,18 +179,18 @@
             }
           </div>
           <div class="flex">
-            <div class="w-[100px] flex-none">
+            <div class="item-cockpit-image-col flex-none">
               <img src="{{otherItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{otherItemCockpit.itemTypeName}}">
             </div>
             <div class="grow">
               <div class="flex flex-col">
-                <div [style]="{fontSize: 'larger', color: '#64B5F6'}">
+                <div class="item-cockpit-title" [style]="{color: '#64B5F6'}">
                   <span>{{ otherItemCockpit.itemTypeName }}</span>
                   @if (isAdmin()) {
                     <span>&nbsp;[{{ otherItemCockpit.id }}]</span>
                   }
                 </div>
-                <div class="text-surface-300">
+                <div class="item-cockpit-descr text-surface-300">
                   {{ otherItemCockpit.itemTypeDescr }}
                 </div>
               </div>
@@ -234,12 +250,21 @@
            not be what catches the click. -->
       <div class="build-tip" [style.left.px]="tip.x" [style.top.px]="tip.y">
         <div class="build-tip-bounce">
-          <div class="build-tip-box">
-            <span class="build-tip-mouse">
-              <img src="babylon-gui/mouse.svg" alt="">
-              <img class="build-tip-mouse-button" src="babylon-gui/mouse-left-button.svg" alt="">
-            </span>
-            <span>Click to build</span>
+          <!-- Shifted sideways on its own so it stays on screen while the arrow keeps pointing at
+               the button: both anchors sit near the left edge of a phone, and a box centred on
+               them ran off it. -->
+          <div class="build-tip-box" #buildTipBox [style.transform]="'translateX(' + buildTipShift + 'px)'">
+            @if (touch) {
+              <!-- The mouse with its blinking left button is the wrong instrument on a phone, and
+                   the box is nowrap on a screen that has no width to spare. -->
+              <i class="pi pi-wrench build-tip-icon"></i>
+            } @else {
+              <span class="build-tip-mouse">
+                <img src="babylon-gui/mouse.svg" alt="">
+                <img class="build-tip-mouse-button" src="babylon-gui/mouse-left-button.svg" alt="">
+              </span>
+            }
+            <span>{{ tip.mode === 'open-menu' ? 'Tap here to build' : (touch ? 'Tap to build' : 'Click to build') }}</span>
           </div>
           <img class="build-tip-arrow" src="babylon-gui/arrow-down.svg" alt="">
         </div>

@@ -1,11 +1,23 @@
+/* The twin of #raz-boot in index.html. That splash paints before Angular exists and this one
+   replaces it mid-startup, so any difference between the two is a visible flash. Background,
+   gradient and the portrait swap below have to stay identical in both files. */
 .cover-panel {
+  --hero: url("/razarion-bg.webp");
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, rgba(10,10,18,0.2) 0%, rgba(10,10,18,0.5) 50%, rgba(10,10,18,0.8) 100%), url("/razarion-bg.webp") center/cover no-repeat;
+  background: linear-gradient(180deg, rgba(10,10,18,0.2) 0%, rgba(10,10,18,0.5) 50%, rgba(10,10,18,0.8) 100%), var(--hero) center/cover no-repeat;
   z-index: 9999;
+}
+
+/* The 16:9 hero laid over a portrait frame by center/cover shows 27% of its width - a gear
+   fragment over empty beach. Same treatment as the landing page: a picture cut for the shape. */
+@media (max-aspect-ratio: 3/4) {
+  .cover-panel {
+    --hero: url("/razarion-bg-portrait.webp");
+  }
 }
 
 .cover-panel-center {

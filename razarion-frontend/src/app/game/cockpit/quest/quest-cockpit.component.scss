@@ -2,3 +2,46 @@
   display: block;
   background-color: black;
 }
+
+/* 20em is a desktop sidebar width. In the compact overlay the panel already spans the screen, and
+   a fixed inner width only leaves a dead strip beside the text. */
+.quest-panel {
+  width: 20em;
+}
+
+.quest-title {
+  font-size: 1.875rem;
+  line-height: 1.2;
+}
+
+/* ---------------------------------------------------------------- compact (phone) layout
+   Same test as CompactLayoutService.QUERY and the other two cockpits. The quest is the one panel
+   the player needs while looking at the field, so it has to cost as little of it as possible. */
+@media (max-width: 640px), (max-height: 540px) {
+  .quest-panel {
+    width: auto;
+  }
+
+  .quest-box {
+    padding: 6px;
+    border-radius: 8px;
+  }
+
+  /* A 30px headline for a two-word title ate a fifth of the panel. */
+  .quest-title {
+    font-size: 1rem;
+  }
+
+  .quest-row {
+    font-size: 0.85rem;
+    line-height: 1.3;
+  }
+
+  .quest-row .p-1 {
+    padding: 0 4px 0 0;
+  }
+
+  .quest-switch-label {
+    font-size: 0.8rem;
+  }
+}

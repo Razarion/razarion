@@ -39,8 +39,27 @@ export class CompactLayoutService {
     this.openPanel.update(current => (current === panel ? null : panel));
   }
 
+  /**
+   * Opens a panel without the player tapping its icon. Only for a panel the player just asked for
+   * by acting in the game - selecting a builder is a request to build, and answering it with a
+   * green ring on an icon made the build menu unreachable on a phone unless you already knew it
+   * was there. A no-op outside compact mode, where every panel has its own corner anyway.
+   */
+  open(panel: CompactPanel): void {
+    if (this.compact()) {
+      this.openPanel.set(panel);
+    }
+  }
+
   close(): void {
     this.openPanel.set(null);
+  }
+
+  /** Closes the given panel, leaving another open one alone. */
+  closeIfOpen(panel: CompactPanel): void {
+    if (this.openPanel() === panel) {
+      this.openPanel.set(null);
+    }
   }
 
   isOpen(panel: CompactPanel): boolean {

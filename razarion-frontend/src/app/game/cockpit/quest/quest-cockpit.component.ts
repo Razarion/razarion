@@ -18,6 +18,7 @@ import {FormsModule} from '@angular/forms';
 import {CockpitDisplayService} from '../cockpit-display.service';
 import {TipService} from '../../tip/tip.service';
 import {BabylonAudioService} from '../../renderer/babylon-audio.service';
+import {CompactLayoutService} from '../compact-layout.service';
 
 @Component({
   selector: 'quest-cockpit',
@@ -46,7 +47,22 @@ export class QuestCockpitComponent implements QuestCockpit {
               public cockpitDisplayService: CockpitDisplayService,
               private tipService: TipService,
               private babylonAudioService: BabylonAudioService,
+              private compactLayout: CompactLayoutService,
               private zone: NgZone) {
+  }
+
+  /** The quest list dialog. 30vw is a desktop measure; on a phone it is narrower than its header. */
+  get dialogWidth(): string {
+    return this.compactLayout.compact() ? '96vw' : '30vw';
+  }
+
+  /**
+   * The single line the compact status bar shows: the step the player is on. The first unfinished
+   * row, or the last one when everything is done and the quest is about to close.
+   */
+  get currentProgressText(): string {
+    const open = this.progressRows.find(row => !row.done);
+    return (open ?? this.progressRows[this.progressRows.length - 1])?.text ?? '';
   }
 
   showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, showQuestSelectionButton: boolean): void {

@@ -13,7 +13,13 @@
          from a link inside an app, where that cache is cold every single time - and half of them
          are gone in under two seconds. The frame is drawn with clip-path below instead: same
          shape, no request, painted with the first frame. -->
-    <link rel="preload" as="image" href="/razarion-bg.webp" fetchpriority="high">
+    <!-- One hero per shape, and each viewport fetches only its own. The two media queries are exact
+         complements - "not all and (max-aspect-ratio: 3/4)" rather than a min- counterpart, which
+         would overlap at exactly 3/4 and make a portrait tablet download both. -->
+    <link rel="preload" as="image" href="/razarion-bg.webp" fetchpriority="high"
+          media="not all and (max-aspect-ratio: 3/4)">
+    <link rel="preload" as="image" href="/razarion-bg-portrait.webp" fetchpriority="high"
+          media="(max-aspect-ratio: 3/4)">
 
     <!-- Open Graph Tags -->
     <meta property="og:title" content="Razarion – RTS meets MMO: One World That Never Stops">
@@ -40,7 +46,11 @@
            page used to be exactly 100vh with overflow hidden, so on a phone the lower part of the
            panel sat behind the address bar with no way to scroll to it. min-height rather than
            height, and no overflow rule, so nothing here can ever be out of reach. */
-        .landing{min-height:100vh;min-height:100svh;background:linear-gradient(180deg,rgba(10,10,18,0) 0%,rgba(10,10,18,0) 35%,rgba(10,10,18,0.55) 65%,rgba(10,10,18,0.88) 100%),url('/razarion-bg.webp') center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:2rem 2rem 18vh}
+        /* Off screen, read aloud. The portrait rules below give it a body. */
+        .brand{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+        .landing{position:relative;--hero:url('/razarion-bg.webp');min-height:100vh;min-height:100svh;background:linear-gradient(180deg,rgba(10,10,18,0) 0%,rgba(10,10,18,0) 35%,rgba(10,10,18,0.55) 65%,rgba(10,10,18,0.88) 100%),var(--hero) center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:2rem 2rem 18vh}
+
 
         @keyframes panelGlow{0%,100%{filter:drop-shadow(0 0 28px rgba(255,119,51,0.45)) drop-shadow(0 0 60px rgba(80,200,255,0.12))}50%{filter:drop-shadow(0 0 55px rgba(255,140,60,0.85)) drop-shadow(0 0 100px rgba(80,200,255,0.35))}}
         @keyframes chevPulse{0%,100%{color:#f73;text-shadow:0 0 6px rgba(255,140,60,0.7)}50%{color:#fc6;text-shadow:0 0 14px rgba(255,180,80,1),0 0 4px #fff}}
@@ -127,6 +137,42 @@
             .info-panel{animation:none;filter:drop-shadow(0 0 28px rgba(255,119,51,0.45))}
         }
 
+        /* Portrait. Two things happen here and they belong together.
+
+           Art direction, not a resize: the 16:9 hero laid over a 0.45 frame by center/cover shows
+           27% of its width - a gear fragment reading "ZAR" over empty beach. The brand name is
+           unreadable and everything that says "real-time strategy" in half a second is outside the
+           crop. The portrait cut carries that content itself. Only the image swaps, which is why
+           the hero is a variable: the gradient over it stays the same.
+
+           And the panel gets out of the way. At 412x915 it was 494px - 54% of the screen - and at
+           360x740 it was 79% and overflowed the document by 57px. It sat exactly over the base, the
+           factory and the tesla coil, so swapping the picture alone only moved the problem. Three
+           of the six lines carry the message; the rest stay for the desktop and for crawlers.
+
+           After the max-width:480 block on purpose: both set .info-panel padding, and this one has
+           to win. */
+        @media (max-aspect-ratio:3/4){
+            .landing{--hero:url('/razarion-bg-portrait.webp')}
+
+            /* Out of the flow, so it cannot push the panel around; the panel keeps the bottom of
+               the screen and this keeps the top. pointer-events off - it sits over the picture and
+               must not eat a tap meant for the page. */
+            .brand{position:absolute;top:1rem;left:0;right:0;width:auto;height:auto;margin:0;padding:0;
+                   overflow:visible;clip:auto;z-index:1;pointer-events:none;
+                   display:flex;align-items:center;justify-content:center;gap:0.55rem}
+            .brand-mark{width:44px;height:auto;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.7))}
+            .brand-name{font-size:1.3rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;
+                        color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.85),0 0 16px rgba(80,200,255,0.4)}
+
+            .info-panel{padding:1rem 1.1rem}
+            .tagline{margin-bottom:0.8rem;padding-bottom:0.7rem}
+            .features{margin-top:1rem}
+            .features li{padding:0.2rem 0;padding-left:1.5rem;line-height:1.35}
+            .features li::before{top:0.18rem}
+            .features .secondary{display:none}
+        }
+
         /* Six pulsing chevrons, a shimmering title, a pulsing button and a breathing panel is a
            lot to ask of someone who has told their system they do not want it. */
         @media (prefers-reduced-motion:reduce){
@@ -137,17 +183,28 @@
 </head>
 <body>
     <section class="landing">
-        <h1 class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0">RAZARION</h1>
+        <!-- One heading, two appearances. On the desktop hero the logo is part of the picture, so
+             this stays off-screen for screen readers only. In portrait the picture has no logo -
+             burning one in would not survive the crop - so the same heading becomes the visible
+             brand: the gear cut out of the logo art, and the name as text, which stays crisp at any
+             pixel density and costs no bytes. -->
+        <h1 class="brand">
+            <img class="brand-mark" src="/razarion-mark.webp" width="44" height="44" alt="" aria-hidden="true">
+            <span class="brand-name">Razarion</span>
+        </h1>
         <div class="info-panel">
             <p class="tagline"><span class="tagline-main">RTS meets MMO</span><span class="tagline-sub">One shared world that never stops</span></p>
             <button class="button" id="playButton" onclick="location.href='/game${qs}'">Play Now</button>
             <ul class="features">
+                <!-- The three without "secondary" are the ones a phone keeps: what it is, what is
+                     different about it, and what it costs to try. The others are true, but they can
+                     be read after the click. -->
                 <li>RTS mechanics like Command & Conquer and StarCraft</li>
                 <li>Persistent world - always online</li>
-                <li>Massive shared map with all players</li>
-                <li>Quests, levels, and unlockable units</li>
+                <li class="secondary">Massive shared map with all players</li>
+                <li class="secondary">Quests, levels, and unlockable units</li>
                 <li>No download - plays in your browser via WebAssembly</li>
-                <li>Open-source, nonprofit, and community-driven</li>
+                <li class="secondary">Open-source, nonprofit, and community-driven</li>
             </ul>
         </div>
         <div class="social-links">

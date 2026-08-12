@@ -22,6 +22,8 @@ public class PathingServiceTracker {
     private int checkDestinationTime;
     private int finalizationTime;
     private int syncItemContainerServiceTime;
+    private int maxTotalTickTime;
+    private int maxPreparationTime;
     private boolean running;
 
     /**
@@ -46,6 +48,8 @@ public class PathingServiceTracker {
         checkDestinationTime = 0;
         finalizationTime = 0;
         syncItemContainerServiceTime = 0;
+        maxTotalTickTime = 0;
+        maxPreparationTime = 0;
     }
 
     public void startTick() {
@@ -61,7 +65,9 @@ public class PathingServiceTracker {
         if (!running) {
             return;
         }
-        preparationTime += calculateDifAndReload();
+        int delta = calculateDifAndReload();
+        preparationTime += delta;
+        maxPreparationTime = Math.max(maxPreparationTime, delta);
     }
 
 
@@ -104,7 +110,9 @@ public class PathingServiceTracker {
         if (!running) {
             return;
         }
-        totalTickTime += (System.currentTimeMillis() - startTickTimeStamp);
+        int tickTime = (int) (System.currentTimeMillis() - startTickTimeStamp);
+        totalTickTime += tickTime;
+        maxTotalTickTime = Math.max(maxTotalTickTime, tickTime);
         if (tickCount >= PlanetServiceTracker.TICKS_FOR_DUMP) {
             dump();
             clear();
@@ -139,6 +147,8 @@ public class PathingServiceTracker {
                 "checkDestinationTime: " + checkDestinationTime * factor + "s\n" +
                 "syncItemContainerServiceTime: " + syncItemContainerServiceTime * factor + "s\n" +
                 "finalizationTime: " + finalizationTime * factor + "s\n" +
+                "maxTotalTickTime: " + maxTotalTickTime / 1000.0 + "s\n" +
+                "maxPreparationTime: " + maxPreparationTime / 1000.0 + "s\n" +
                 "-------------------------------------------------");
     }
 }

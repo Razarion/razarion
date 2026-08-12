@@ -175,17 +175,28 @@
   </div>
 </div>
 <style>
-  /* Mirrors screen-cover.component.scss so the handover to Angular is not a visible jump. */
+  /* Mirrors screen-cover.component.scss so the handover to Angular is not a visible jump. Both
+     files carry the same background and the same portrait swap below; changing one alone shows up
+     as a flash the moment Angular takes over. */
   #raz-boot {
+    --hero: url("/razarion-bg.webp");
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 10000;
-    background: linear-gradient(180deg, rgba(10, 10, 18, 0.2) 0%, rgba(10, 10, 18, 0.5) 50%, rgba(10, 10, 18, 0.8) 100%), url("/razarion-bg.webp") center/cover no-repeat;
+    background: linear-gradient(180deg, rgba(10, 10, 18, 0.2) 0%, rgba(10, 10, 18, 0.5) 50%, rgba(10, 10, 18, 0.8) 100%), var(--hero) center/cover no-repeat;
     font-family: Arial, Helvetica, sans-serif;
     color: #CCC;
+  }
+
+  /* The 16:9 hero laid over a portrait frame by center/cover shows 27% of its width - a gear
+     fragment over empty beach. Same treatment as the landing page: a picture cut for the shape. */
+  @media (max-aspect-ratio: 3/4) {
+    #raz-boot {
+      --hero: url("/razarion-bg-portrait.webp");
+    }
   }
 
   #raz-boot-card {

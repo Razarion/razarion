@@ -12,7 +12,11 @@ const PROXY_CONFIG = [
       "/gz",
       "/systemconnection",
       "/gameconnection",
-      "/razarion-bg.webp"
+      // The boot splash and the loading cover paint these. They live in the server's homepage
+      // folder, not in the frontend's public/, so without these entries the dev server answers
+      // index.html with 200 and both screens come up without a background.
+      "/razarion-bg.webp",
+      "/razarion-bg-portrait.webp"
     ],
     target: "http://127.0.0.1:8080",
     secure: false,

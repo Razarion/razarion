@@ -14,6 +14,7 @@ import {SelectionService} from '../../selection.service';
 import {CockpitDisplayService} from '../cockpit-display.service';
 import {BabylonAudioService} from '../../renderer/babylon-audio.service';
 import {BabylonBaseItemImpl} from '../../renderer/babylon-base-item.impl';
+import {CompactLayoutService} from '../compact-layout.service';
 
 // --- View-Model Interfaces ---
 
@@ -97,6 +98,7 @@ export class ItemCockpitService {
     private gwtAngularService: GwtAngularService,
     private cockpitDisplayService: CockpitDisplayService,
     private babylonAudioService: BabylonAudioService,
+    private compactLayout: CompactLayoutService,
     private zone: NgZone
   ) {
     selectionService.addSelectionListener(() => this.onSelectionChanged());
@@ -167,6 +169,14 @@ export class ItemCockpitService {
         this.count = selectedItems.length;
       }
       this.cockpitDisplayService.showItemCockpit = true;
+      // On a phone the panel is a collapsed overlay, and selecting something that can build is the
+      // player asking for the build menu - so hand it over instead of only ringing the icon. Only
+      // for a selection that has buildup buttons: opening the overlay for a harvester would cover
+      // the field with a readout nobody asked to see. Closing it again stays the player's call -
+      // this fires on selection changes only, so a panel they tapped shut stays shut.
+      if (this.ownItemCockpit?.buildupItems && this.ownItemCockpit.buildupProgress == null) {
+        this.compactLayout.open('item');
+      }
     } else if (this.selectionService.getSelectedOtherId() != null) {
       // Other selection
       this.ownItemCockpit = null;
@@ -182,6 +192,10 @@ export class ItemCockpitService {
       this.otherItemCockpit = null;
       this.count = 0;
       this.cockpitDisplayService.showItemCockpit = false;
+      // Nothing selected, nothing to show: an overlay left standing open would keep the icon lit
+      // and steal the bottom of the screen for an empty panel - and it is in the way exactly when
+      // it matters, since clicking a buildup button drops the selection and starts the placer.
+      this.compactLayout.closeIfOpen('item');
     }
   }
 

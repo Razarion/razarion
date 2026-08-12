@@ -37,6 +37,55 @@
   .game-main {
     --compact-status-h: 40px;
     --compact-bar-h: 56px;
+    --compact-quest-h: 26px;
+  }
+
+  /* Directly under the status strip and always on screen, because the quest panel itself is one of
+     four overlays of which only one may be open. */
+  .compact-quest {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--compact-status-h);
+    height: var(--compact-quest-h);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    background-color: rgba(0, 0, 0, 0.72);
+    border: solid 1px var(--p-emerald-900);
+    border-width: 0 0 1px 0;
+    color: #fff;
+    font: 500 12px/1 sans-serif;
+    text-align: left;
+    z-index: 20;
+  }
+
+  .compact-quest i {
+    flex: 0 0 auto;
+    font-size: 12px;
+    color: var(--p-emerald-400, #34d399);
+  }
+
+  .compact-quest-title {
+    flex: 0 0 auto;
+    color: var(--p-amber-400, #fbbf24);
+    font-weight: 700;
+  }
+
+  /* The step the player is on. It is the first thing to give up room - the title alone still says
+     what kind of quest is running. */
+  .compact-quest-progress {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0.85;
+  }
+
+  .compact-quest-open {
+    background-color: var(--p-emerald-700, #047857);
   }
 
   /* An open panel spans the width and takes whatever height is left between the two bars, rather
@@ -47,7 +96,7 @@
     right: 0;
     top: auto;
     bottom: var(--compact-bar-h);
-    max-height: calc(100dvh - var(--compact-status-h) - var(--compact-bar-h) - 8px);
+    max-height: calc(100dvh - var(--compact-status-h) - var(--compact-quest-h) - var(--compact-bar-h) - 8px);
     overflow: auto;
     border-radius: 12px 12px 0 0;
     padding: 8px;
@@ -130,7 +179,7 @@
   /* Desktop-only furniture: the position readout is a developer aid and the REC badge belongs to
      director mode, neither is worth a line of a phone screen. */
   .rec-indicator {
-    top: calc(var(--compact-status-h) + 6px);
+    top: calc(var(--compact-status-h) + var(--compact-quest-h) + 6px);
   }
 }
 

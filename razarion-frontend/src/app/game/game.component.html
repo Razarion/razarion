@@ -67,10 +67,26 @@
       </button>
     </div>
 
+    <!-- The current quest, always on screen. Only one overlay may be open at a time, so a quest
+         that lives behind the flag icon is invisible for as long as the player has the build menu
+         up - which is exactly when they need to know what they are building towards. One line
+         costs 26px; tapping it opens the full panel. -->
+    @if (cockpitDisplayService.showQuestCockpit && questCockpitContainer.title) {
+      <button type="button" class="compact-quest"
+              [class.compact-quest-open]="compactLayout.isOpen('quest')"
+              (click)="compactLayout.toggle('quest')">
+        <i class="pi pi-flag"></i>
+        <span class="compact-quest-title">{{ questCockpitContainer.title }}</span>
+        <span class="compact-quest-progress">{{ questCockpitContainer.currentProgressText }}</span>
+      </button>
+    }
+
     <!-- Icon bar: one tap opens a panel, the same tap closes it again. An icon whose panel has
          nothing to show is disabled rather than hidden, so the row does not jump around. -->
     <div class="compact-bar">
-      <button type="button" class="compact-icon"
+      <!-- id, not a class: the build tip anchors to this button when the item panel is collapsed,
+           and it looks it up in the document because the tip is drawn by the item cockpit. -->
+      <button type="button" class="compact-icon" id="compact-build-icon"
               [class.compact-icon-open]="compactLayout.isOpen('item')"
               [class.compact-icon-ready]="cockpitDisplayService.showItemCockpit && !compactLayout.isOpen('item')"
               [disabled]="!cockpitDisplayService.showItemCockpit"
