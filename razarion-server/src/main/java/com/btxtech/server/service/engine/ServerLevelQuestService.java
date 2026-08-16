@@ -97,18 +97,10 @@ public class ServerLevelQuestService implements QuestListener {
         if (newXp >= currentLevel.getXp2LevelUp()) {
             LevelEntity newLevel = levelCrudPersistence.getNextLevel(currentLevel);
             if (newLevel != null) {
-                userContext.levelId(newLevel.getId());
-                userContext.xp(0);
                 userActivityService.onLevelUp(userId, newLevel.getNumber());
-                historyService.onLevelUp(userId, newLevel);
                 redditConversionService.sendLevelUpEvent(userId, newLevel.getNumber());
                 xConversionService.sendLevelUpEvent(userId, newLevel.getNumber());
-                clientSystemConnectionService.onLevelUp(userId,
-                        userContext,
-                        serverUnlockService.hasAvailableUnlocks(userContext));
-                serverGameEngineControlInstance.get().onLevelChanged(userId, newLevel.getId());
-                userService.persistLevel(userId, newLevel);
-                userService.persistXp(userId, 0);
+                applyLevelUp(userId, userContext, newLevel);
             } else {
                 logger.warn("No next level found for: {}", currentLevel);
             }
@@ -125,21 +117,32 @@ public class ServerLevelQuestService implements QuestListener {
     @Transactional
     public void setUserLevel(String userId, int levelId) {
         UserContext userContext = userService.getUserContext(userId);
-        LevelEntity currentLevel = levelCrudPersistence.getEntity(userContext.getLevelId());
         LevelEntity newLevel = levelCrudPersistence.getEntity(levelId);
         if (newLevel != null) {
-            userContext.levelId(newLevel.getId());
-            userContext.xp(0);
-            historyService.onLevelUp(userId, newLevel);
-            clientSystemConnectionService.onLevelUp(userId,
-                    userContext,
-                    serverUnlockService.hasAvailableUnlocks(userContext));
-            serverGameEngineControlInstance.get().onLevelChanged(userId, newLevel.getId());
-            userService.persistLevel(userId, newLevel);
-            userService.persistXp(userId, 0);
+            applyLevelUp(userId, userContext, newLevel);
         } else {
-            logger.warn("No next level found for: {}", currentLevel);
+            logger.warn("No level found for id {}, user {} stays on level {}", levelId, userId, userContext.getLevelId());
         }
+    }
+
+    /**
+     * Moves the user onto the given level: resets xp, tells client and game engine, then persists.
+     * Shared by the xp path, the backend override and the dead-end safety net.
+     * <p>
+     * The {@link UserContext} comes from the caller because how it must be read depends on the thread:
+     * {@link UserService#getUserContextTransactional} on the quest-listener path where no transaction is
+     * open, the plain read behind the transactional backend entry points.
+     */
+    private void applyLevelUp(String userId, UserContext userContext, LevelEntity newLevel) {
+        userContext.levelId(newLevel.getId());
+        userContext.xp(0);
+        historyService.onLevelUp(userId, newLevel);
+        clientSystemConnectionService.onLevelUp(userId,
+                userContext,
+                serverUnlockService.hasAvailableUnlocks(userContext));
+        serverGameEngineControlInstance.get().onLevelChanged(userId, newLevel.getId());
+        userService.persistLevel(userId, newLevel);
+        userService.persistXp(userId, 0);
     }
 
     /**
@@ -171,6 +174,9 @@ public class ServerLevelQuestService implements QuestListener {
 
     public void activateNextPossibleQuest(String userId) {
         QuestConfig newQuest = userService.getAndSaveNewQuest(userId);
+        while (newQuest == null && levelUpOutOfQuestDeadEnd(userId)) {
+            newQuest = userService.getAndSaveNewQuest(userId);
+        }
         if (newQuest != null) {
             // An UNLOCKED quest is event based: it only completes when an unlock actually
             // happens after activation (ServerUnlockService.unlockViaCrystals -> onUnlock).
@@ -190,6 +196,42 @@ public class ServerLevelQuestService implements QuestListener {
         } else {
             clientSystemConnectionService.onAllQuestsCompleted(userId);
         }
+    }
+
+    /**
+     * Breaks a player out of a quest dead end by handing him the next level, or reports that there is
+     * none left to hand out.
+     * <p>
+     * Quests are the only source of xp, and only quests up to the player's own level are reachable. A
+     * player who has passed every one of them without collecting enough xp for the next level is stuck
+     * for good: no quest, so no xp, so no level, so no quest. Nothing he can do in the game gets him out
+     * of it. That is not supposed to happen - every level hands out exactly its {@code xp2LevelUp} worth
+     * of quests - but it did on 2026-08-14, when a lost update took a player's level-up away and the
+     * quest xp that should have replaced it was spent climbing the same level twice. He ended at 20/40 xp
+     * with an empty quest list. Rather than trust that no future bug or config gap reproduces that, treat
+     * an empty quest list below the top level as the dead end it is and level him up.
+     * <p>
+     * Logged as a warning: this firing at all means something upstream went wrong and wants looking at.
+     *
+     * @return true when the player was moved up a level and it is worth asking for a quest again
+     */
+    private boolean levelUpOutOfQuestDeadEnd(String userId) {
+        // getAndSaveNewQuest also answers null while a quest is still running. That is the normal case
+        // (the client asks on every reconnect), not a dead end - leave it alone.
+        if (userService.findActiveQuestConfig4CurrentUser(userId) != null) {
+            return false;
+        }
+        UserContext userContext = userService.getUserContextTransactional(userId);
+        LevelEntity currentLevel = levelCrudPersistence.getEntity(userContext.getLevelId());
+        LevelEntity nextLevel = levelCrudPersistence.getNextLevel(currentLevel);
+        if (nextLevel == null) {
+            // Top level: he really has played through everything there is.
+            return false;
+        }
+        logger.warn("User {} ran out of quests on level {} with {} of {} xp - levelling him up to {} to break the dead end",
+                userId, currentLevel.getNumber(), userContext.getXp(), currentLevel.getXp2LevelUp(), nextLevel.getNumber());
+        applyLevelUp(userId, userContext, nextLevel);
+        return true;
     }
 
     private boolean isUnfulfillableUnlockQuest(String userId, QuestConfig questConfig) {

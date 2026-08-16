@@ -131,7 +131,8 @@
       <user-mgmt class="col-span-4"></user-mgmt>
     </p-tabpanel>
     <p-tabpanel value="6">
-      <app-open-connections class="col-span-4"></app-open-connections>
+      <app-open-connections class="col-span-4" [events]="connectionEvents"
+                            (clearEvents)="clearConnectionEvents()"></app-open-connections>
     </p-tabpanel>
     <p-tabpanel value="3">
       <startup-tracking [startupTerminatedJsons]="startupTerminatedJsons" [startupTaskJsons]="startupTaskJsons"></startup-tracking>

@@ -87,6 +87,20 @@ export enum RazarionMetadataType {
   BOT_GROUND
 }
 
+/** A drag asked for by the input handlers, collected until the next frame renders it. */
+interface PendingPan {
+  fromNdcX: number;
+  fromNdcY: number;
+  toNdcX: number;
+  toNdcY: number;
+}
+
+/** The screen point a pending zoom has to keep still. */
+interface PendingZoomAnchor {
+  ndcX: number;
+  ndcY: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -169,6 +183,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   // measured against whatever the camera is looking at.
   private cameraTerrainDistance = 30;
   private savedCameraTerrainDistance: number | null = null;
+  // Camera moves asked for by mouse wheel and touch, applied once per frame - see panByNdc(),
+  // setCameraTerrainDistanceAt() and applyCameraGestures().
+  private pendingPan: PendingPan | null = null;
+  private pendingZoomAnchor: PendingZoomAnchor | null = null;
+  // Terrain height under the view centre, as of the last updateCameraHeight(). Null until the first
+  // frame has run. Shared with the gesture code so it does not pick the same ray a second time.
+  private centerTerrainHeight: number | null = null;
   private perfDebugActive = false;
   private sceneInstrumentation: SceneInstrumentation | null = null;
   private engineInstrumentation: EngineInstrumentation | null = null;
@@ -290,12 +311,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }, true);
     window.addEventListener('wheel', e => {
       const delta = e.deltaY * 0.08;
-      const maxHeight = self.overviewMode ? 1500 : 200;
       // Zoom adjusts the DISTANCE to the terrain at the view centre, not an absolute height;
       // updateCameraHeight() turns it into camera.position.y each frame. Scroll down (deltaY > 0)
       // increases the distance (zoom out), matching the previous direction.
-      self.cameraTerrainDistance = Math.min(maxHeight, Math.max(5, self.cameraTerrainDistance + delta));
-      self.onViewFieldChanged();
+      // Anchored on the centre of the screen (0,0), so the map no longer slides away under the
+      // cursor while wheeling - see setCameraTerrainDistanceAt().
+      self.setCameraTerrainDistanceAt(self.cameraTerrainDistance + delta, 0, 0);
       self.reportFirstInteraction('CAMERA_WHEEL');
     }, true);
 
@@ -462,7 +483,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         if (this.pendingSetViewFieldCenter) {
           this.setViewFieldCenter(this.pendingSetViewFieldCenter.x, this.pendingSetViewFieldCenter.y)
         }
-        this.updateCameraHeight();
+        this.applyCameraGestures();
       }
       // Move shadow frustum to follow camera
       const groundTarget = this.setupCenterGroundPosition();
@@ -680,11 +701,76 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   /**
-   * Move the camera so the ground under the first point ends up under the second. Both points are
-   * normalized device coordinates. Used by {@link TouchCameraControl} to drag the world under a
-   * finger; the keyboard scroll above moves at a fixed speed instead and needs none of this.
+   * Ask for the ground under the first point to end up under the second. Both points are normalized
+   * device coordinates. Used by {@link TouchCameraControl} to drag the world under a finger; the
+   * keyboard scroll above moves at a fixed speed instead and needs none of this.
+   * <p>
+   * The move is not performed here but once in the next frame - see {@link applyCameraGestures}. A
+   * finger produces pointermove events far faster than frames, and the work behind a camera move
+   * (terrain ray picks and a view-field update across the WASM bridge) costs about ten milliseconds.
+   * Several requests inside one frame collapse into one: the first point of the frame is kept and
+   * only the destination is extended, which is exactly the same move.
    */
   public panByNdc(fromNdcX: number, fromNdcY: number, toNdcX: number, toNdcY: number): void {
+    if (this.pendingPan) {
+      this.pendingPan.toNdcX = toNdcX;
+      this.pendingPan.toNdcY = toNdcY;
+    } else {
+      this.pendingPan = {fromNdcX, fromNdcY, toNdcX, toNdcY};
+    }
+  }
+
+  /**
+   * The horizontal plane every screen-to-world projection in this class works on: the terrain height
+   * under the view centre. One plane for all points, because giving each point the height beneath it
+   * changes distances across a slope and makes the ground slide under the finger.
+   * <p>
+   * Answers from what {@link updateCameraHeight} measured for this frame - the same quantity, and it
+   * has to look it up anyway. Picking a ray against the terrain again here cost another 1.7ms per
+   * gesture event. Only before the first frame is there nothing to reuse.
+   */
+  private groundPlaneHeight(): number {
+    if (this.centerTerrainHeight !== null) {
+      return this.centerTerrainHeight;
+    }
+    const viewCentre = this.setupCenterGroundPosition();
+    return this.isValidVector3(viewCentre)
+      ? (this.getTerrainHeightAt(viewCentre.x, viewCentre.z) ?? 0)
+      : 0;
+  }
+
+  /**
+   * Performs the camera gestures asked for since the last frame, and keeps the camera at its zoom
+   * height. Runs once per frame from the render loop.
+   * <p>
+   * Everything that costs real time is in here rather than in the input handlers, and runs at most
+   * once per frame however many events arrived: the terrain ray picks and, above all,
+   * {@link onViewFieldChanged}, which projects five screen corners onto the terrain and hands the
+   * result to the game engine over the WASM bridge - about eight milliseconds, half a frame.
+   */
+  private applyCameraGestures(): void {
+    const pan = this.pendingPan;
+    const zoom = this.pendingZoomAnchor;
+    this.pendingPan = null;
+    this.pendingZoomAnchor = null;
+    if (!pan && !zoom) {
+      this.updateCameraHeight();
+      return;
+    }
+    const terrainHeight = this.groundPlaneHeight();
+    if (pan) {
+      this.applyPan(pan, terrainHeight);
+    }
+    if (zoom) {
+      this.applyZoomAnchor(zoom, terrainHeight);
+    } else {
+      this.updateCameraHeight();
+    }
+    this.ensureCameraViewOnMap();
+    this.onViewFieldChanged();
+  }
+
+  private applyPan(pan: PendingPan, terrainHeight: number): void {
     // Forces the view matrix to be recalculated, so the projection below sees where the camera
     // actually is rather than where it was at the start of the frame.
     this.camera.getViewMatrix();
@@ -692,19 +778,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // Both points are projected onto ONE horizontal plane, the one under the view centre. Giving
     // each point the terrain height beneath it would change the pan distance as the finger crosses
     // a slope, and the ground would slide out from under the finger on any hill.
-    const viewCentre = this.setupCenterGroundPosition();
-    const terrainHeight = this.isValidVector3(viewCentre)
-      ? (this.getTerrainHeightAt(viewCentre.x, viewCentre.z) ?? 0)
-      : 0;
-    const from = this.setupTerrainLevelPosition(fromNdcX, fromNdcY, invertCameraViewProj, terrainHeight);
-    const to = this.setupTerrainLevelPosition(toNdcX, toNdcY, invertCameraViewProj, terrainHeight);
+    const from = this.setupTerrainLevelPosition(pan.fromNdcX, pan.fromNdcY, invertCameraViewProj, terrainHeight);
+    const to = this.setupTerrainLevelPosition(pan.toNdcX, pan.toNdcY, invertCameraViewProj, terrainHeight);
     if (!this.isValidVector3(from) || !this.isValidVector3(to)) {
       return;
     }
     this.camera.position.x += from.x - to.x;
     this.camera.position.z += from.z - to.z;
-    this.ensureCameraViewOnMap();
-    this.onViewFieldChanged();
   }
 
   /** The zoom distance a pinch measures against, so the gesture stays absolute instead of drifting. */
@@ -714,9 +794,64 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   /** Zoom, clamped exactly as the mouse wheel clamps it. */
   public setCameraTerrainDistance(cameraTerrainDistance: number): void {
-    const maxHeight = this.overviewMode ? 1500 : 200;
-    this.cameraTerrainDistance = Math.min(maxHeight, Math.max(5, cameraTerrainDistance));
+    this.cameraTerrainDistance = this.clampCameraTerrainDistance(cameraTerrainDistance);
     this.onViewFieldChanged();
+  }
+
+  private clampCameraTerrainDistance(cameraTerrainDistance: number): number {
+    const maxHeight = this.overviewMode ? 1500 : 200;
+    return Math.min(maxHeight, Math.max(5, cameraTerrainDistance));
+  }
+
+  /**
+   * Ask to zoom while the ground under one screen point stays where it is. Applied in the next frame
+   * by {@link applyCameraGestures}; the new distance itself takes effect at once, so several notches
+   * inside one frame add up.
+   */
+  public setCameraTerrainDistanceAt(cameraTerrainDistance: number, ndcX: number, ndcY: number): void {
+    this.cameraTerrainDistance = this.clampCameraTerrainDistance(cameraTerrainDistance);
+    this.pendingZoomAnchor = {ndcX, ndcY};
+  }
+
+  /**
+   * Moves the camera so the ground under the anchor stays where it is while the zoom changes.
+   *
+   * The camera keeps a fixed pitch and only its height follows the zoom, so changing the distance
+   * alone slides the whole world across the screen: the view centre sits where the forward ray meets
+   * the ground, and that intersection walks forward by height/|forward.y| as the camera rises. On a
+   * phone that made a pinch feel like it dragged the map away - the terrain under the fingers ran off
+   * while they were still holding it. Here the world point under the anchor is measured before and
+   * after the zoom and the camera is shifted horizontally by the difference, so it stays put. Measured
+   * on the live map, one wheel notch moved the ground under the cursor by about 17 world units before
+   * and by less than a hundredth of one after.
+   */
+  private applyZoomAnchor(zoom: PendingZoomAnchor, terrainHeight: number): void {
+    // Every measurement uses the plane from before the zoom. Re-deriving it in between would compare
+    // two different planes and the difference would no longer be the drift alone.
+    const anchor = this.anchorAtNdc(zoom.ndcX, zoom.ndcY, terrainHeight);
+    if (!this.isValidVector3(anchor)) {
+      this.updateCameraHeight();
+      return;
+    }
+    // Two passes. The first cancels the drift the new distance introduces (~17 world units for one
+    // wheel notch). Correcting leaves the camera over different ground, so its height re-derives to
+    // something slightly different and the anchor drifts again - an order of magnitude less, but
+    // still visible while pinching. The second pass takes that out too; a third changes nothing.
+    for (let pass = 0; pass < 2; pass++) {
+      this.updateCameraHeight();
+      const current = this.anchorAtNdc(zoom.ndcX, zoom.ndcY, terrainHeight);
+      if (!this.isValidVector3(current)) {
+        break;
+      }
+      this.camera.position.x += anchor.x - current.x;
+      this.camera.position.z += anchor.z - current.z;
+    }
+  }
+
+  private anchorAtNdc(ndcX: number, ndcY: number, terrainHeight: number): Vector3 {
+    this.camera.getViewMatrix();
+    return this.setupTerrainLevelPosition(
+      ndcX, ndcY, Matrix.Invert(this.camera.getTransformationMatrix()), terrainHeight);
   }
 
   private ensureCameraViewOnMap() {
@@ -1122,7 +1257,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       const centerX = this.camera.position.x + forward.x * horizScale;
       const centerZ = this.camera.position.z + forward.z * horizScale;
       const centerTerrain = this.getTerrainHeightAt(centerX, centerZ);
-      targetY = (centerTerrain ?? 0) + this.cameraTerrainDistance;
+      this.centerTerrainHeight = centerTerrain ?? 0;
+      targetY = this.centerTerrainHeight + this.cameraTerrainDistance;
     } else {
       // Camera looking (near-)horizontal — no meaningful view-centre ground point.
       targetY = this.cameraTerrainDistance;

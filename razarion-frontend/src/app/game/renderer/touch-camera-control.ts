@@ -29,6 +29,8 @@ export class TouchCameraControl {
   private gesturing = false;
   private pinchStartGap = 0;
   private pinchStartTerrainDistance = 0;
+  private pinchCentreX = 0;
+  private pinchCentreY = 0;
   private panClaim: ((x: number, y: number) => boolean) | null = null;
   private claimedPointerId: number | null = null;
 
@@ -161,14 +163,25 @@ export class TouchCameraControl {
     if (gap < TouchCameraControl.MIN_PINCH_DISTANCE) {
       return;
     }
+    const centre = this.pinchCentre();
     this.pinching = true;
     this.gesturing = true;
     this.panning = false;
     this.pinchStartGap = gap;
     this.pinchStartTerrainDistance = this.renderService.getCameraTerrainDistance();
+    this.pinchCentreX = centre.x;
+    this.pinchCentreY = centre.y;
     this.renderService.reportFirstInteraction('CAMERA_PINCH');
   }
 
+  /**
+   * A pinch is a pan and a zoom at once, both measured from the point between the fingers: whatever
+   * the player grabbed there stays under their hand while the gesture runs.
+   * <p>
+   * Doing only the zoom - and doing it around the screen centre - was what made the map look like it
+   * ran away during a pinch: two fingers that travel while they spread moved the view not at all, and
+   * the zoom itself dragged the world across the screen (see setCameraTerrainDistanceAt).
+   */
   private updatePinch() {
     if (!this.pinching) {
       // The fingers started too close together to give a ratio; take the first gap that is wide
@@ -180,8 +193,20 @@ export class TouchCameraControl {
     if (gap < TouchCameraControl.MIN_PINCH_DISTANCE) {
       return;
     }
+    const centre = this.pinchCentre();
+    // Pan first: bring the ground that was between the fingers to where they are now...
+    if (centre.x !== this.pinchCentreX || centre.y !== this.pinchCentreY) {
+      this.renderService.panByNdc(
+        this.ndcX(this.pinchCentreX), this.ndcY(this.pinchCentreY),
+        this.ndcX(centre.x), this.ndcY(centre.y));
+      this.pinchCentreX = centre.x;
+      this.pinchCentreY = centre.y;
+    }
+    // ...then zoom about that same point, so it does not move again.
     // Fingers moving apart (gap grows) pulls the camera closer, which is zooming in.
-    this.renderService.setCameraTerrainDistance(this.pinchStartTerrainDistance * (this.pinchStartGap / gap));
+    this.renderService.setCameraTerrainDistanceAt(
+      this.pinchStartTerrainDistance * (this.pinchStartGap / gap),
+      this.ndcX(centre.x), this.ndcY(centre.y));
   }
 
   private pinchGap(): number {
@@ -190,6 +215,14 @@ export class TouchCameraControl {
       return 0;
     }
     return Math.hypot(first.x - second.x, first.y - second.y);
+  }
+
+  private pinchCentre(): { x: number, y: number } {
+    const [first, second] = Array.from(this.pointers.values());
+    if (!first || !second) {
+      return {x: 0, y: 0};
+    }
+    return {x: (first.x + second.x) / 2, y: (first.y + second.y) / 2};
   }
 
   private canvasPosition(event: PointerEvent): { x: number, y: number } {

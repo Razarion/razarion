@@ -1,3 +1,26 @@
+<!-- What changed, above what is. Only shows up once something has happened, so the panel is no
+     taller than it needs to be on a quiet planet. Arrivals point up and departures point down:
+     the direction has to survive without the colour, which red and green cannot promise. -->
+@if (events.length > 0) {
+    <div class="flex items-center gap-3" style="padding: .5rem .25rem">
+        <b>Comings and goings</b>
+        <span style="opacity:.7">{{events.length}}</span>
+        <p-button label="Clear" icon="pi pi-times" styleClass="p-button-text p-button-sm"
+                  title="Empty the list - the table below is unaffected"
+                  class="ml-auto" (onClick)="clearEvents.emit()"></p-button>
+    </div>
+    <!-- Bounded: a page left open all day must not push the table off the screen. -->
+    <div style="max-height: 9rem; overflow-y: auto; margin-bottom: .75rem">
+        @for (event of events; track $index) {
+            <div class="flex items-center gap-3" style="padding: .1rem .25rem">
+                <span style="opacity:.7; font-variant-numeric: tabular-nums">{{event.timeText}}</span>
+                <span [style.color]="event.joined ? '#63dba9' : '#ff7f8a'">
+                    {{event.joined ? '▲' : '▼'}} {{event.label}}
+                </span>
+            </div>
+        }
+    </div>
+}
 <!-- Longest-connected first: the rows worth a second look are the ones that have been sitting
      there, not the one that just arrived. -->
 <p-table [value]="rows" dataKey="userId" sortField="openedMillis" [sortOrder]="1">
@@ -37,6 +60,11 @@
             <th style="white-space: nowrap" pSortableColumn="level" title="Bots and fresh players have none">
                 Level
                 <p-sortIcon field="level"></p-sortIcon>
+            </th>
+            <th style="white-space: nowrap" pSortableColumn="deviceText"
+                title="Browser and form factor, taken from the handshake - WebAssembly GC needs Chrome 119+, Firefox 120+ or Safari 18.2+">
+                Device
+                <p-sortIcon field="deviceText"></p-sortIcon>
             </th>
             <th style="white-space: nowrap" pSortableColumn="system" title="System socket: quests, levels, chat, lifecycle">
                 System
@@ -79,6 +107,9 @@
             </td>
             <td>
                 {{row.levelText}}
+            </td>
+            <td style="white-space: nowrap" [title]="row.deviceTitle">
+                {{row.deviceText}}
             </td>
             <td>
                 @if (row.system) {

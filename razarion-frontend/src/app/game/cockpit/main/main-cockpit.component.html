@@ -1,4 +1,95 @@
-﻿<div class="flex flex-col gap-1">
+<!-- Two bodies, one component. The bridge to the game engine is registered on this component in
+     GameComponent.ngOnInit, so there must be exactly one of it; what differs between desktop and
+     phone is only what it draws. -->
+@if (compactLayout.compact()) {
+  <!-- The phone menu. Everything used while playing has left this panel by now - the numbers are in
+       the status strip, the unit navigation is a column on the field, the map sits in the corner -
+       so what remains is a menu proper: things you open, read, and close again. Labelled rows
+       rather than a grid of bare icons, because an icon you have to guess at is worth less than the
+       space it costs. Each row closes the panel, since what it opens is a dialog that would
+       otherwise sit on top of it. -->
+  <div class="menu-list">
+    <div class="menu-readout">
+      <i class="pi pi-crown"></i>
+      <span class="menu-label">Experience</span>
+      <span class="menu-value">{{ displayXp2LevelUp }}</span>
+    </div>
+    <div class="menu-readout">
+      <i class="pi pi-bolt"></i>
+      <span class="menu-label">Energy</span>
+      <span class="menu-value">{{ displayEnergyString }}</span>
+    </div>
+    <!-- A state, not a control. On a phone the working radar is a corner map, so this is the only
+         place left that can say why the map is missing. -->
+    @if (radarState == NO_POWER) {
+      <div class="menu-readout menu-readout-warn">
+        <i class="pi pi-compass"></i>
+        <span class="menu-label">Radar</span>
+        <span class="menu-value">No power</span>
+      </div>
+    }
+
+    @if (isLoggedIn()) {
+      <button type="button" class="menu-row"
+              (click)="mainCockpitService.showUserDialog = true; compactLayout.close()">
+        <i class="pi pi-user-edit"></i>
+        <span class="menu-label">Account</span>
+        <i class="pi pi-angle-right menu-chevron"></i>
+      </button>
+    } @else {
+      <button type="button" class="menu-row"
+              (click)="mainCockpitService.showLoginDialog = true; compactLayout.close()">
+        <i class="pi pi-user"></i>
+        <span class="menu-label">Sign in</span>
+        <i class="pi pi-angle-right menu-chevron"></i>
+      </button>
+    }
+    <button type="button" class="menu-row" [ngClass]="{'blinking-button': blinkUnlockEnabled}"
+            (click)="onUnlock(); compactLayout.close()">
+      <i class="pi pi-lock-open"></i>
+      <span class="menu-label">Unlock units</span>
+      <i class="pi pi-angle-right menu-chevron"></i>
+    </button>
+    <button type="button" class="menu-row" (click)="onInventory(); compactLayout.close()">
+      <i class="pi pi-briefcase"></i>
+      <span class="menu-label">Inventory</span>
+      <i class="pi pi-angle-right menu-chevron"></i>
+    </button>
+    <button type="button" class="menu-row"
+            (click)="mainCockpitService.showTechTreeDialog = true; compactLayout.close()">
+      <i class="pi pi-sitemap"></i>
+      <span class="menu-label">Tech tree</span>
+      <i class="pi pi-angle-right menu-chevron"></i>
+    </button>
+    <button type="button" class="menu-row"
+            (click)="mainCockpitService.showSettingsDialog = true; compactLayout.close()">
+      <i class="pi pi-sliders-h"></i>
+      <span class="menu-label">Settings</span>
+      <i class="pi pi-angle-right menu-chevron"></i>
+    </button>
+    <button type="button" class="menu-row" (click)="onInfo(); compactLayout.close()">
+      <i class="pi pi-info-circle"></i>
+      <span class="menu-label">About</span>
+      <i class="pi pi-angle-right menu-chevron"></i>
+    </button>
+
+    @if (isAdmin()) {
+      <button type="button" class="menu-row" (click)="editorDialog = true; compactLayout.close()">
+        <i class="pi pi-cog"></i>
+        <span class="menu-label">Editor</span>
+        <i class="pi pi-angle-right menu-chevron"></i>
+      </button>
+      <!-- The readout replaces the label once it is on, so the row says the position rather than
+           just that it is showing one. -->
+      <button type="button" class="menu-row" (click)="onToggleCursorPosition()">
+        <i class="pi pi-map-marker"></i>
+        <span class="menu-label">{{ cursorPosition ? cursorPosition : 'Show position' }}</span>
+        <span class="menu-value">{{ showCursorPosition ? 'on' : 'off' }}</span>
+      </button>
+    }
+  </div>
+} @else {
+<div class="flex flex-col gap-1">
   <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 items-center bg-surface-100">
     <p-badge [value]="'Level: ' + levelNumber" severity="warn" size="large"></p-badge>
   </div>
@@ -53,7 +144,7 @@
   </div>
 
   <div class="grid grid-cols-3 gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-    @for (cat of shortcutCategories; track cat.id) {
+    @for (cat of selectionShortcuts.categories; track cat.id) {
       <p-button class="w-full" styleClass="!w-full !h-10"
                 [icon]="cat.icon"
                 [pTooltip]="cat.tooltip"
@@ -98,48 +189,55 @@
     </div>
   }
 </div>
+}
 
-<p-dialog header="Login" [(visible)]="mainCockpitService.showLoginDialog">
+<!-- appendTo="body" on all of these, and it is load-bearing rather than cosmetic. They are declared
+     inside this component but they are not part of the panel: on a phone the panel is hidden with
+     visibility:hidden while it is closed, and visibility inherits - a dialog opened from a menu row
+     that closes the panel would render into a hidden subtree and only appear once the player opened
+     the menu again. The panel also scrolls (overflow:auto), which would clip them. Rendering them on
+     the body puts them outside both. -->
+<p-dialog header="Login" appendTo="body" [(visible)]="mainCockpitService.showLoginDialog">
   @if (mainCockpitService.showLoginDialog) {
     <login [showRegister]="userService.showRegisterButton()"></login>
   }
 </p-dialog>
 
-<p-dialog header="User account" [(visible)]="mainCockpitService.showUserDialog">
+<p-dialog header="User account" appendTo="body" [(visible)]="mainCockpitService.showUserDialog">
   @if (mainCockpitService.showUserDialog) {
     <user></user>
   }
 </p-dialog>
 
-<p-dialog header="Register" [(visible)]="mainCockpitService.showRegisterDialog">
+<p-dialog header="Register" appendTo="body" [(visible)]="mainCockpitService.showRegisterDialog">
   @if (mainCockpitService.showRegisterDialog) {
     <register></register>
   }
 </p-dialog>
 
-<p-dialog header="Your registration was successful" [(visible)]="mainCockpitService.showRegisteredDialog">
+<p-dialog header="Your registration was successful" appendTo="body" [(visible)]="mainCockpitService.showRegisteredDialog">
   @if (mainCockpitService.showRegisteredDialog) {
     <div>
-      <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 w-md">
+      <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 w-md max-w-full">
         <span>An email with the activation link has been sent. Please check your inbox or spam folder.</span>
       </div>
     </div>
   }
 </p-dialog>
 
-<p-dialog header="Set name" [(visible)]="mainCockpitService.showSetUserNameDialog">
+<p-dialog header="Set name" appendTo="body" [(visible)]="mainCockpitService.showSetUserNameDialog">
   @if (mainCockpitService.showSetUserNameDialog) {
     <set-name></set-name>
   }
 </p-dialog>
 
-<p-dialog header="Settings" [(visible)]="mainCockpitService.showSettingsDialog">
+<p-dialog header="Settings" appendTo="body" [(visible)]="mainCockpitService.showSettingsDialog">
   @if (mainCockpitService.showSettingsDialog) {
     <settings></settings>
   }
 </p-dialog>
 
-<p-dialog header="Tech Tree" [(visible)]="mainCockpitService.showTechTreeDialog"
+<p-dialog header="Tech Tree" appendTo="body" [(visible)]="mainCockpitService.showTechTreeDialog"
           [style]="{width: '85vw'}" [maximizable]="true">
   @if (mainCockpitService.showTechTreeDialog) {
     <tech-tree></tech-tree>

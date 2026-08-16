@@ -30,6 +30,22 @@ export abstract class AbstractMiniMap {
         this.zoom = zoom;
     }
 
+    /**
+     * Changes the drawing surface without touching what is drawn on it. The phone radar sits in the
+     * corner at about a hundred pixels and grows to most of the screen when the player expands it -
+     * as one component, not two. Two instances would each hold their own view field listener and
+     * item updater, and MiniTerrain would fetch the planet image a second time (its URL carries a
+     * cache-busting timestamp, so the browser cache does not spare that download).
+     * <p>
+     * The canvas is cleared by the assignment; the caller redraws.
+     */
+    public resize(width: number, height: number): void {
+        this.canvasElement.width = width;
+        this.canvasElement.height = height;
+        this.width = width;
+        this.height = height;
+    }
+
     public update(): void {
         this.clearCanvas();
 

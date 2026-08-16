@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
@@ -42,6 +43,8 @@ public class ClientGameConnection {
     private Date time;
     private Date lastMessageSent;
     private Date lastMessageReceived;
+    /** Taken once at the handshake; see ClientSystemConnection, this is the same header. */
+    private String userAgent;
     private String gameSessionUuid; // TODO
 
     public ClientGameConnection(BaseItemService baseItemService,
@@ -62,10 +65,15 @@ public class ClientGameConnection {
         this.wsSession = wsSession;
         this.userId = userId;
         time = new Date();
+        userAgent = wsSession.getHandshakeHeaders().getFirst(HttpHeaders.USER_AGENT);
     }
 
     public Date getTime() {
         return time;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
     }
 
     public void handleMessage(WebSocketMessage<?> message) {

@@ -1,6 +1,5 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.model.UserEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.BodyPart;
@@ -21,6 +20,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Properties;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,13 +33,10 @@ public class RegisterServiceIT {
     private RegisterService registerService;
 
     @Test
-    public void startEmailVerifyingProcess() throws Exception {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setEmail("test@localhost");
+    public void sendEmailVerifyEmail() throws Exception {
+        String verificationId = UUID.randomUUID().toString().toUpperCase();
 
-        registerService.startEmailVerifyingProcess(userEntity);
-        assertThat(userEntity.getVerificationId()).isNotNull();
-        assertThat(userEntity.getVerificationId()).isNotNull();
+        registerService.sendEmailVerifyEmail("test@localhost", verificationId);
 
         Thread.sleep(1000);
 
@@ -50,7 +47,7 @@ public class RegisterServiceIT {
 
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo("test@localhost");
         assertThat(message.getSubject()).contains("verify");
-        assertThat(extractTextFromMessage(message)).contains("https://www.razarion.com/verify-email/" + userEntity.getVerificationId());
+        assertThat(extractTextFromMessage(message)).contains("https://www.razarion.com/verify-email/" + verificationId);
     }
 
 

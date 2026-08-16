@@ -3,6 +3,7 @@
     <canvas #miniItemViewElement style="position: absolute; top: 0; left: 0"></canvas>
     <canvas #miniViewFieldElement style="position: absolute; top: 0; left: 0"></canvas>
 </div>
+@if (showZoomControls) {
 <div class="radar-zoom-controls">
     <p-button icon="pi pi-search-minus" styleClass="p-button-text p-button-sm" title="Zoom out"
         (onClick)="zoomOuButtonClick()">
@@ -12,3 +13,4 @@
         (onClick)="zoomInButtonClick()">
     </p-button>
 </div>
+}

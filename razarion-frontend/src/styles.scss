@@ -1,3 +1,32 @@
 @use "tailwindcss";
 @use "primeicons/primeicons.css";
 @plugin "tailwindcss-primeui";
+
+/*
+ * Dialogs on a phone.
+ *
+ * PrimeNG dialogs size themselves from their content or from a width given per dialog, and those
+ * widths were all chosen on a desktop: the settings panel asks for 28rem (448px) on a 412px screen,
+ * and the inventory and unlock dialogs ask for 50vw, which is 206px - too wide and too narrow
+ * respectively, and neither is a decision worth repeating in every dialog.
+ *
+ * On a phone a dialog is a sheet: it takes the screen minus a margin, whatever it asked for. The
+ * !important is unavoidable because those per-dialog widths are inline styles; maximized dialogs
+ * are left alone, since PrimeNG drives that size itself.
+ *
+ * Same media query as CompactLayoutService.QUERY and the cockpit layout - all three have to agree
+ * on what counts as a phone.
+ */
+@media (max-width: 640px), (max-height: 540px) {
+  .p-dialog:not(.p-dialog-maximized) {
+    width: calc(100vw - 16px) !important;
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+  }
+
+  /* Content laid out at a fixed width (Tailwind w-md and friends) would otherwise push the dialog
+     into a horizontal scroll instead of wrapping. */
+  .p-dialog:not(.p-dialog-maximized) .p-dialog-content > * {
+    max-width: 100%;
+  }
+}

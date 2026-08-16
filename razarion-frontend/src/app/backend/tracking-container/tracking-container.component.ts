@@ -1,7 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {
+  ConnectionMgmtControllerClient,
   DailyProgress,
+  OpenConnectionInfo,
   StartupTaskJson,
   StartupTerminatedJson,
   TrackerControllerImplClient,
@@ -19,13 +21,14 @@ import {TableModule} from 'primeng/table';
 import {ChartModule} from 'primeng/chart';
 import {ClickIdField, TrackingContainerAnalyzer} from './tracking-container-analyzer';
 import {UserMgmtComponent} from '../../editor/user-mgmt/user-mgmt.component';
-import {OpenConnectionsComponent} from '../../editor/open-connections/open-connections.component';
+import {ConnectionEvent, OpenConnectionsComponent} from '../../editor/open-connections/open-connections.component';
 import {PlayerSessionsComponent} from '../player-sessions/player-sessions.component';
 import {StartupTrackingComponent} from '../startup-tracking/startup-tracking.component';
 import {AttentionTrackingComponent} from '../attention-tracking/attention-tracking.component';
 import {AttentionAnalyzer, AttentionReport} from './attention-analyzer';
 import {FirstInteractionComponent} from '../first-interaction/first-interaction.component';
 import {FirstInteractionAnalyzer, FirstInteractionReport} from './first-interaction-analyzer';
+import {announceConnectionChange, clearConnectionTabNotice} from './connection-tab-notice';
 
 @Component({
   selector: 'tracking-container',
@@ -47,7 +50,7 @@ import {FirstInteractionAnalyzer, FirstInteractionReport} from './first-interact
   templateUrl: './tracking-container.component.html',
   styleUrl: './tracking-container.component.scss'
 })
-export class TrackingContainerComponent implements OnInit {
+export class TrackingContainerComponent implements OnInit, OnDestroy {
   toDate = new Date();
   fromDate = new Date(this.toDate.getTime() - 24 * 60 * 60 * 1000);
   platformOptions = [{name: "Reddit", value: 'rdtCid' as ClickIdField},
@@ -98,18 +101,132 @@ export class TrackingContainerComponent implements OnInit {
   startupTaskJsons: StartupTaskJson[] = [];
   attentionReport?: AttentionReport;
   firstInteractionReport?: FirstInteractionReport;
+  /**
+   * Every arrival and departure since the page was opened, newest first, for the connections panel
+   * to show. Kept here rather than in the panel because the watch that notices them lives here, and
+   * because it must keep filling while some other tab is the one on screen.
+   */
+  connectionEvents: ConnectionEvent[] = [];
+  /** Same interval the connections table refreshes at; the request is the same one. */
+  private static readonly CONNECTION_POLL_MILLIS = 5000;
+  /** A day at the desk is a long list; past this the oldest fall off the end. */
+  private static readonly MAX_CONNECTION_EVENTS = 200;
   private trackerControllerImplClient!: TrackerControllerImplClient;
+  private connectionMgmtControllerClient: ConnectionMgmtControllerClient;
+  private connectionTimer: ReturnType<typeof setInterval> | null = null;
+  /**
+   * Who was connected at the previous poll, user id to display label. Null means there is nothing
+   * to compare against yet, which is not the same as nobody being connected.
+   */
+  private knownConnections: Map<string, string> | null = null;
   private trackingContainerAnalyzer = new TrackingContainerAnalyzer();
   private attentionAnalyzer = new AttentionAnalyzer();
   private firstInteractionAnalyzer = new FirstInteractionAnalyzer();
 
   constructor(httpClient: HttpClient) {
     this.trackerControllerImplClient = new TrackerControllerImplClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
+    this.connectionMgmtControllerClient =
+      new ConnectionMgmtControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
 
   ngOnInit(): void {
     this.load();
     this.loadDailyProgress();
+    this.startConnectionWatch();
+  }
+
+  ngOnDestroy(): void {
+    this.stopConnectionWatch();
+  }
+
+  /**
+   * Watches who is connected for as long as this page is open, and reports every arrival and
+   * departure in the browser's tab strip.
+   *
+   * It sits here rather than in the history panel below because what is left open is the page, not
+   * one of its tabs - tying it to a tab meant the watch only ran while that tab happened to be the
+   * chosen one, which is not how the page is used.
+   */
+  private startConnectionWatch(): void {
+    if (this.connectionTimer !== null) {
+      return;
+    }
+    this.pollConnections();
+    this.connectionTimer = setInterval(() => this.pollConnections(),
+      TrackingContainerComponent.CONNECTION_POLL_MILLIS);
+  }
+
+  private stopConnectionWatch(): void {
+    if (this.connectionTimer !== null) {
+      clearInterval(this.connectionTimer);
+      this.connectionTimer = null;
+    }
+    this.knownConnections = null;
+    clearConnectionTabNotice();
+  }
+
+  private pollConnections(): void {
+    this.connectionMgmtControllerClient.openConnections()
+      .then(infos => this.reportConnectionChanges(infos))
+      // A failed poll leaves the last picture standing on purpose: a server hiccup read as an empty
+      // list would announce every player leaving at once, and their return a minute later.
+      .catch(reason => console.error(reason));
+  }
+
+  /**
+   * One entry per connected player, the same unit the connections table shows: a player counts as
+   * connected as soon as either of the two sockets is open, so a game socket joining a system
+   * socket that is already there is not an arrival.
+   */
+  private reportConnectionChanges(infos: OpenConnectionInfo[]): void {
+    const current = new Map<string, string>();
+    infos.forEach(info => current.set(info.userId, TrackingContainerComponent.connectionLabel(info)));
+    const previous = this.knownConnections;
+    this.knownConnections = current;
+    if (previous === null) {
+      return;   // The first poll only establishes what was already there.
+    }
+    const joined: string[] = [];
+    current.forEach((label, userId) => {
+      if (!previous.has(userId)) {
+        joined.push(label);
+      }
+    });
+    const left: string[] = [];
+    previous.forEach((label, userId) => {
+      if (!current.has(userId)) {
+        left.push(label);
+      }
+    });
+    this.recordConnectionEvents(joined, left);
+    announceConnectionChange(joined, left);
+  }
+
+  /**
+   * Writes the changes down, newest first. This happens whether or not anyone is looking - the list
+   * is the answer to "what did I miss", which is a question you can only ask afterwards.
+   */
+  private recordConnectionEvents(joined: string[], left: string[]): void {
+    if (joined.length === 0 && left.length === 0) {
+      return;
+    }
+    const timeText = new Date().toLocaleTimeString();
+    // Departures first, so that within one poll the arrivals end up above them.
+    const fresh = [
+      ...left.map(label => ({timeText, label, joined: false})),
+      ...joined.map(label => ({timeText, label, joined: true}))
+    ];
+    this.connectionEvents = [...fresh.reverse(), ...this.connectionEvents]
+      .slice(0, TrackingContainerComponent.MAX_CONNECTION_EVENTS);
+  }
+
+  clearConnectionEvents(): void {
+    this.connectionEvents = [];
+  }
+
+  /** The name if there is one; a uuid says nothing at tab width, so it is cut to its head. */
+  private static connectionLabel(info: OpenConnectionInfo): string {
+    return info.name ? info.name : info.userId.substring(0, 8);
   }
 
   loadDailyProgress() {

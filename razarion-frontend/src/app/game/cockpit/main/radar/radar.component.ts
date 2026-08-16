@@ -1,4 +1,15 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import { MiniViewField } from './mini-view-field';
 import { GameUiControl } from 'src/app/gwtangular/GwtAngularFacade';
 import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
@@ -20,7 +31,7 @@ import {ViewField, ViewFieldListener} from '../../../renderer/view-field';
   ],
   styleUrls: ['./radar.component.scss']
 })
-export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
+export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnDestroy {
   public static readonly WIDTH = 200;
   public static readonly HEIGHT = 200;
   public static readonly DEFAULT_ZOOM = 13;
@@ -28,6 +39,20 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
   public static readonly MINI_MAP_IMAGE_WIDTH = 1000;
   public static readonly MINI_MAP_IMAGE_HEIGHT = 1000;
   private static readonly ZOOM_ANIMATION_DURATION_MS = 2000;
+  /**
+   * Edge length of the map in pixels. The cockpit leaves it at the desktop's 200; the phone corner
+   * runs it far smaller and swaps the value when the player expands the map, which is why this is
+   * an input the component follows rather than a constant.
+   */
+  @Input() size = RadarComponent.WIDTH;
+  /**
+   * Zoom buttons and slider. They are a row of desktop-sized controls under the map - on a corner
+   * map barely wider than they are they would take more room than the map itself, and there is
+   * nothing to aim them at until the map is expanded.
+   */
+  @Input() showZoomControls = true;
+  /** A tap that moved the camera. The phone layout closes the expanded map on it. */
+  @Output() mapClicked = new EventEmitter<void>();
   zoom = 1;
   readonly maxZoom = RadarComponent.MAX_ZOOM;
   private miniViewField: MiniViewField;
@@ -52,12 +77,11 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.zoom = 1;
-    this.miniTerrain.init(this.miniTerrainElement.nativeElement, RadarComponent.WIDTH, RadarComponent.HEIGHT, this.zoom);
-    this.miniViewField.init(this.miniViewFieldElement.nativeElement, RadarComponent.WIDTH, RadarComponent.HEIGHT, this.zoom);
-    this.miniItemView.init(this.miniItemViewElement.nativeElement, RadarComponent.WIDTH, RadarComponent.HEIGHT, this.zoom);
+    this.miniTerrain.init(this.miniTerrainElement.nativeElement, this.size, this.size, this.zoom);
+    this.miniViewField.init(this.miniViewFieldElement.nativeElement, this.size, this.size, this.zoom);
+    this.miniItemView.init(this.miniItemViewElement.nativeElement, this.size, this.size, this.zoom);
 
-    this.miniMapElement.nativeElement.style.setProperty("width", RadarComponent.WIDTH + "px");
-    this.miniMapElement.nativeElement.style.setProperty("height", RadarComponent.HEIGHT + "px");
+    this.applyElementSize();
     this.renderService.addViewFieldListener(this);
 
     this.miniTerrain.show(() => {
@@ -65,6 +89,22 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
       this.animateZoomIn();
     });
     this.miniItemView.startUpdater();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // The first change arrives before ngOnInit, which does the sizing itself.
+    if (changes['size'] && !changes['size'].firstChange) {
+      this.miniTerrain.resize(this.size, this.size);
+      this.miniViewField.resize(this.size, this.size);
+      this.miniItemView.resize(this.size, this.size);
+      this.applyElementSize();
+      this.updateMiniMap();
+    }
+  }
+
+  private applyElementSize(): void {
+    this.miniMapElement.nativeElement.style.setProperty("width", this.size + "px");
+    this.miniMapElement.nativeElement.style.setProperty("height", this.size + "px");
   }
 
   ngOnDestroy(): void {
@@ -76,6 +116,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnDestroy {
   onMapClicke(pointerEvent: MouseEvent) {
     let real = this.miniViewField.canvasToReal(pointerEvent.offsetX, pointerEvent.offsetY)
     this.renderService.setViewFieldCenter(real.getX(), real.getY());
+    this.mapClicked.emit();
   }
 
   onViewFieldChanged(viewField: ViewField): void {

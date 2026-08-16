@@ -20,16 +20,29 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * The one row several threads write at once: request threads persist account data (email, verification,
+ * connection timestamps), the game-engine thread persists progression (level, xp, active quest, crystals).
+ * <p>
+ * &#64;DynamicUpdate is what keeps those from overwriting each other. Without it Hibernate writes every
+ * column of the entity on any change, so a request that loaded the user, did something slow and then saved
+ * carried its whole stale snapshot back into the database - level and xp included. That is how the player
+ * of 2026-08-14 lost a level-up: he registered while the engine was passing his quest, and the
+ * registration commit put level 3 / xp 20 back over the engine's level 4 / xp 0. He then spent the next
+ * quest's xp climbing to level 4 a second time, ran out of quests at 20/40 xp and was stuck for good.
+ * With dynamic update each writer only touches the columns it actually changed.
+ */
 @Entity
 @Table(name = "RAZARION_USER")
+@DynamicUpdate
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -285,12 +298,6 @@ public class UserEntity {
         }
         this.levelUnlockEntities.clear();
         this.levelUnlockEntities.addAll(levelUnlockEntities);
-    }
-
-    public void startVerification() {
-        verificationStartedDate = new Date();
-        verificationDoneDate = null;
-        verificationId = UUID.randomUUID().toString().toUpperCase();
     }
 
     public void setVerifiedDone() {

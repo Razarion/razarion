@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
@@ -29,6 +30,11 @@ public class ClientSystemConnection {
     private String userId;
     private Date lastMessageSent;
     private Date lastMessageReceived;
+    /**
+     * Taken once at the handshake rather than read from the session later: a closing connection is
+     * exactly when this is most worth having, and by then the session may no longer say.
+     */
+    private String userAgent;
 
     public ClientSystemConnection(UserService userService,
                                   UserActivityService userActivityService) {
@@ -40,6 +46,7 @@ public class ClientSystemConnection {
         this.wsSession = wsSession;
         time = new Date();
         this.userId = userId;
+        userAgent = wsSession.getHandshakeHeaders().getFirst(HttpHeaders.USER_AGENT);
     }
 
     public void handleMessage(WebSocketMessage<?> message) {
@@ -94,6 +101,10 @@ public class ClientSystemConnection {
 
     public Date getLastMessageReceived() {
         return lastMessageReceived;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
     }
 
     @Override

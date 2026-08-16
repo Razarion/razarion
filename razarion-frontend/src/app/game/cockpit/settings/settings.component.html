@@ -1,4 +1,7 @@
-<div class="flex flex-col gap-3 w-md">
+<!-- w-md is a desktop width (448px) and wider than a phone screen; max-w-full lets it give way. The
+     dialog-level rule in styles.scss only reaches the direct children of the dialog content, and
+     this sits one level deeper, inside the component element. -->
+<div class="flex flex-col gap-3 w-md max-w-full">
   <div class="flex items-center gap-2">
     <p-checkbox [(ngModel)]="showUnitNames" [binary]="true" inputId="showUnitNames"></p-checkbox>
     <label for="showUnitNames">Show unit names</label>

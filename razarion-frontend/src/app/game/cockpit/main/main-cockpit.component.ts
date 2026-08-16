@@ -25,6 +25,7 @@ import {SelectionShortcutCategory, SelectionShortcutsService} from '../../select
 import {SettingsComponent} from '../settings/settings.component';
 import {TechTreeComponent} from '../techtree/tech-tree.component';
 import {GwtAngularService} from '../../../gwtangular/GwtAngularService';
+import {CompactLayoutService} from '../compact-layout.service';
 
 
 @Component({
@@ -87,17 +88,6 @@ export class MainCockpitComponent implements MainCockpit {
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
   blinkUnlockEnabled = false;
-  // Order matters: the grid fills row-major into 3 columns, so
-  //   row 1: builder | factory | building(other)
-  //   row 2: harvester | attack | deselect
-  // The deselect button is rendered separately as the 6th cell after this list.
-  shortcutCategories: { id: SelectionShortcutCategory, icon: string, tooltip: string }[] = [
-    {id: 'builder', icon: 'pi pi-wrench', tooltip: 'Next builder'},
-    {id: 'factory', icon: 'pi pi-cog', tooltip: 'Next factory'},
-    {id: 'other', icon: 'pi pi-building', tooltip: 'Next building / other'},
-    {id: 'harvester', icon: 'pi pi-truck', tooltip: 'Next harvester'},
-    {id: 'attack', icon: 'pi pi-bolt', tooltip: 'Next attack unit'},
-  ];
 
   constructor(public mainCockpitService: CockpitDisplayService,
               private zone: NgZone,
@@ -105,6 +95,7 @@ export class MainCockpitComponent implements MainCockpit {
               private gameComponent: GameComponent,
               private renderService: BabylonRenderServiceAccessImpl,
               private gwtAngularService: GwtAngularService,
+              public compactLayout: CompactLayoutService,
               public userService: UserService,
               public selectionShortcuts: SelectionShortcutsService) {
   }
@@ -254,6 +245,12 @@ export class MainCockpitComponent implements MainCockpit {
 
   isAdmin(): boolean {
     return this.userService.isAdmin();
+  }
+
+  /** The phone menu has a row instead of a checkbox, so the row itself does the flipping. */
+  onToggleCursorPosition(): void {
+    this.showCursorPosition = !this.showCursorPosition;
+    this.onShowCursorPosition();
   }
 
   onShowCursorPosition(): void {

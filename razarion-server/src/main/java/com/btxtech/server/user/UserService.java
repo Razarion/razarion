@@ -699,7 +699,18 @@ public class UserService implements UserDetailsService {
         userRepository.save(userEntity);
     }
 
-    @Transactional
+    /**
+     * Not one transaction, on purpose. Sending the verification mail is a blocking SMTP round trip and
+     * used to sit inside the transaction, between reading the user and saving him: the snapshot loaded
+     * before the mail went out was written back seconds later, reverting everything the game-engine
+     * thread had persisted for that row meanwhile. On 2026-08-14 it cost a player his level-up - the
+     * engine wrote level 4 / xp 0, this commit put level 3 / xp 20 back, and the next quest's xp was
+     * spent climbing to level 4 a second time. He ran out of quests at 20/40 xp with no way forward.
+     * <p>
+     * So the mail goes out first and the account data lands in one targeted update afterwards
+     * ({@link UserRepository#applyRegistration}), which touches no progression column at all. A mail
+     * that cannot be sent still leaves the player unregistered, as before.
+     */
     public RegisterResult registerByEmail(String email, String password) {
         if (email == null || email.isEmpty()) {
             return RegisterResult.INVALID_EMAIL;
@@ -725,11 +736,19 @@ public class UserService implements UserDetailsService {
                     logger.warn("verifyEmail(email): {}. Unknown result: {}", email, setNameError);
             }
         }
+        String verificationId = UUID.randomUUID().toString().toUpperCase();
+        try {
+            registerService.sendEmailVerifyEmail(email, verificationId);
+        } catch (Exception e) {
+            logger.error("Could not send the verification email to {}", email, e);
+            return RegisterResult.UNKNOWN_ERROR;
+        }
         historyService.onUserLoggedIn(userEntity, currentHttpSessionId());
-        userEntity.setEmail(email);
-        userEntity.setPasswordHash(passwordEncoder.encode(password));
-        registerService.startEmailVerifyingProcess(userEntity);
-        userRepository.save(userEntity);
+        userRepository.applyRegistration(userId,
+                email,
+                passwordEncoder.encode(password),
+                verificationId,
+                new Date());
         return RegisterResult.OK;
     }
 

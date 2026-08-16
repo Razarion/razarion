@@ -15,8 +15,31 @@ interface OwnItemRecord {
   y: number;
 }
 
+/** How a category presents itself. Icon and wording included, so the two layouts cannot drift. */
+export interface SelectionShortcutCategoryInfo {
+  id: SelectionShortcutCategory;
+  icon: string;
+  tooltip: string;
+}
+
 @Injectable({providedIn: 'root'})
 export class SelectionShortcutsService {
+  /**
+   * The categories in display order, shared by the desktop cockpit grid and the phone's navigation
+   * column. The desktop grid fills row-major into three columns:
+   *   row 1: builder | factory | building(other)
+   *   row 2: harvester | attack | deselect
+   * where the deselect button is rendered separately as the sixth cell. The phone stacks the same
+   * five entries into a column and keeps deselect in the icon bar.
+   */
+  readonly categories: readonly SelectionShortcutCategoryInfo[] = [
+    {id: 'builder', icon: 'pi pi-wrench', tooltip: 'Next builder'},
+    {id: 'factory', icon: 'pi pi-cog', tooltip: 'Next factory'},
+    {id: 'other', icon: 'pi pi-building', tooltip: 'Next building / other'},
+    {id: 'harvester', icon: 'pi pi-truck', tooltip: 'Next harvester'},
+    {id: 'attack', icon: 'pi pi-bolt', tooltip: 'Next attack unit'},
+  ];
+
   // Last unit id cycled per category so the next click advances to a stable "next". Tracking by
   // id (not index) keeps cycling consistent when units are produced, destroyed, or move in/out
   // of the rendered set between clicks.

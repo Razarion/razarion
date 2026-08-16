@@ -26,6 +26,80 @@
   animation: blink 1s infinite;
 }
 
+/*
+ * The phone menu: rows, not widgets.
+ *
+ * What used to be here on a phone was the desktop cockpit squeezed into an overlay - read-only text
+ * inputs used as number displays, and a row of six unlabelled icon buttons. Both are desktop
+ * shapes: the inputs invite an edit that does nothing, and the icons rely on a tooltip that a
+ * finger cannot trigger. A list says what each entry is and gives every one of them a 48px target.
+ */
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+}
+
+.menu-row,
+.menu-readout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: solid 1px var(--p-emerald-900);
+  border-radius: 10px;
+  background-color: rgba(16, 16, 16, 0.9);
+  color: #fff;
+  font: 500 15px/1.2 sans-serif;
+  text-align: left;
+}
+
+.menu-row i:first-child,
+.menu-readout i:first-child {
+  flex: 0 0 auto;
+  width: 20px;
+  color: var(--p-emerald-400, #34d399);
+  font-size: 17px;
+}
+
+.menu-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Values are the point of a readout row, so they carry the colour the label does not. */
+.menu-value {
+  flex: 0 0 auto;
+  color: var(--p-amber-400, #fbbf24);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A readout is not tappable and should not look it. */
+.menu-readout {
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.menu-readout-warn {
+  border-color: #b45309;
+
+  i:first-child, .menu-value {
+    color: #fbbf24;
+  }
+}
+
+/* The chevron is what separates a row that opens something from one that only shows a number. */
+.menu-chevron {
+  flex: 0 0 auto;
+  color: var(--p-emerald-700, #047857);
+  font-size: 14px;
+}
+
 ::ng-deep .p-inputgroup input.p-inputtext {
   padding: 0.1rem;
   font-size: 0.90rem;

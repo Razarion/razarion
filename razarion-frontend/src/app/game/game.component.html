@@ -52,19 +52,17 @@
   @if (compactLayout.compact()) {
     <!-- Status strip: the three numbers a player needs while looking at the field. Read straight
          off the main cockpit component so there is one source for them, not a second copy that
-         can drift. -->
+         can drift. Numbers only - the menu button that used to sit here has moved down to the icon
+         bar, out of the corner a thumb reaches worst and in with the other buttons. -->
     <div class="compact-status">
       <span class="compact-status-level">L{{ mainCockpit.levelNumber }}</span>
-      <span><i class="pi pi-sparkles"></i> {{ mainCockpit.resources }}</span>
+      <!-- Empty and full are the two states in which the base stops responding without saying so.
+           On the desktop the cockpit field carries that colour; here the strip is the only place
+           the number appears at all, so it carries it. -->
+      <span [ngClass]="'compact-status-razarion razarion-' + mainCockpit.razarionState">
+        <i class="pi pi-sparkles"></i> {{ mainCockpit.resources }}
+      </span>
       <span><i class="pi pi-home"></i> {{ mainCockpit.displayHouseSpace }}</span>
-      <span class="compact-status-spacer"></span>
-      <button type="button" class="compact-icon"
-              [class.compact-icon-open]="compactLayout.isOpen('main')"
-              [disabled]="!cockpitDisplayService.showMainCockpit"
-              (click)="compactLayout.toggle('main')"
-              aria-label="Cockpit">
-        <i class="pi pi-bars"></i>
-      </button>
     </div>
 
     <!-- The current quest, always on screen. Only one overlay may be open at a time, so a quest
@@ -79,6 +77,57 @@
         <span class="compact-quest-title">{{ questCockpitContainer.title }}</span>
         <span class="compact-quest-progress">{{ questCockpitContainer.currentProgressText }}</span>
       </button>
+    }
+
+    <!-- Unit navigation: one chip per category, stacked up the left edge opposite the minimap.
+         This is how a player reaches their own units at all on a phone - there is no keyboard and
+         nothing to double-click - so it is on screen rather than inside the cockpit overlay. The
+         count is on the chip because "how many harvesters do I have" is the question that sends
+         players looking for the panel in the first place.
+         All five stay in place, dimmed at zero: a column that reorders itself as units are built
+         and lost would move the button out from under the thumb that is aiming at it. -->
+    @if (cockpitDisplayService.showMainCockpit) {
+      <div class="compact-nav" [style.visibility]="compactLayout.openPanel() ? 'hidden' : 'visible'">
+        @for (cat of selectionShortcuts.categories; track cat.id) {
+          <button type="button" class="compact-nav-chip"
+                  [disabled]="selectionShortcuts.getCount(cat.id) === 0"
+                  (click)="selectionShortcuts.cycle(cat.id)"
+                  [attr.aria-label]="cat.tooltip">
+            <i [ngClass]="cat.icon"></i>
+            <span class="compact-nav-count">{{ selectionShortcuts.getCount(cat.id) }}</span>
+          </button>
+        }
+        <!-- Deselect closes the column: it is what you reach for right after the chip above it put
+             something in your hands, so it sits at the bottom, nearest the thumb, and looks like
+             the rest of the column. No count - it is an action, not a category. -->
+        <button type="button" class="compact-nav-chip"
+                [disabled]="!selectionShortcuts.hasSelection()"
+                (click)="selectionShortcuts.deselect()"
+                aria-label="Deselect">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+    }
+
+    <!-- The minimap, permanently on screen in the corner the way it is on the desktop. A phone has
+         no keys and no screen edges to scroll against, so tapping the map is the only quick way to
+         move the camera at all - which is why it may not sit behind the burger icon at the bottom
+         of a scrolling overlay. It is hidden, not destroyed, while a panel is open: recreating it
+         would download the planet image again on every open. -->
+    @if (cockpitDisplayService.showMainCockpit && mainCockpit.radarState === WORKING) {
+      <div class="compact-radar"
+           [class.compact-radar-expanded]="radarExpanded"
+           [style.visibility]="compactLayout.openPanel() ? 'hidden' : 'visible'">
+        <radar [size]="radarExpanded ? expandedRadarSize : compactRadarSize"
+               [showZoomControls]="radarExpanded"
+               (mapClicked)="radarExpanded = false"></radar>
+        <!-- A sibling of the map, not a child: its taps must not also land on the map underneath. -->
+        <button type="button" class="compact-radar-toggle"
+                (click)="radarExpanded = !radarExpanded"
+                [attr.aria-label]="radarExpanded ? 'Shrink map' : 'Enlarge map'">
+          <i class="pi" [ngClass]="radarExpanded ? 'pi-window-minimize' : 'pi-window-maximize'"></i>
+        </button>
+      </div>
     }
 
     <!-- Icon bar: one tap opens a panel, the same tap closes it again. An icon whose panel has
@@ -109,6 +158,13 @@
               (click)="compactLayout.toggle('chat')"
               aria-label="Chat">
         <i class="pi pi-comments"></i>
+      </button>
+      <button type="button" class="compact-icon"
+              [class.compact-icon-open]="compactLayout.isOpen('main')"
+              [disabled]="!cockpitDisplayService.showMainCockpit"
+              (click)="compactLayout.toggle('main')"
+              aria-label="Menu">
+        <i class="pi pi-bars"></i>
       </button>
     </div>
   }

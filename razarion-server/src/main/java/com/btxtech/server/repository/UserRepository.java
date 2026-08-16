@@ -1,14 +1,17 @@
 package com.btxtech.server.repository;
 
 import com.btxtech.server.model.UserEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,5 +49,28 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     @Query("SELECT u FROM UserEntity u WHERE u.verificationId = :verificationId " +
             "AND u.verificationDoneDate IS NULL ")
     List<UserEntity> findPendingVerificationUsers(@Param("verificationId") String verificationId);
+
+    /**
+     * Turns an anonymous player into a registered one, writing only the columns registration owns.
+     * Deliberately not a save() of the loaded entity: registration reads the user, sends a mail and
+     * only then writes, while the game-engine thread persists level and xp for the same row - see
+     * {@link com.btxtech.server.user.UserService#registerByEmail}.
+     */
+    @Modifying
+    @Transactional
+    @Query("""
+            UPDATE UserEntity u
+               SET u.email = :email,
+                   u.passwordHash = :passwordHash,
+                   u.verificationId = :verificationId,
+                   u.verificationStartedDate = :verificationStartedDate,
+                   u.verificationDoneDate = NULL
+             WHERE u.userId = :userId
+            """)
+    int applyRegistration(@Param("userId") String userId,
+                          @Param("email") String email,
+                          @Param("passwordHash") String passwordHash,
+                          @Param("verificationId") String verificationId,
+                          @Param("verificationStartedDate") Date verificationStartedDate);
 
 }

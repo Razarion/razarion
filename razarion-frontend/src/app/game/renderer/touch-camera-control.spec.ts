@@ -14,7 +14,7 @@ describe('TouchCameraControl', () => {
   let canvas: HTMLCanvasElement;
   let control: TouchCameraControl;
   let pans: { fromX: number, fromY: number, toX: number, toY: number }[];
-  let zooms: number[];
+  let zooms: { distance: number, ndcX: number, ndcY: number }[];
   let firstInteractions: string[];
   let terrainDistance: number;
 
@@ -34,9 +34,9 @@ describe('TouchCameraControl', () => {
     const renderService = {
       panByNdc: (fromX: number, fromY: number, toX: number, toY: number) => pans.push({fromX, fromY, toX, toY}),
       getCameraTerrainDistance: () => terrainDistance,
-      setCameraTerrainDistance: (distance: number) => {
+      setCameraTerrainDistanceAt: (distance: number, ndcX: number, ndcY: number) => {
         terrainDistance = distance;
-        zooms.push(distance);
+        zooms.push({distance, ndcX, ndcY});
       },
       reportFirstInteraction: (kind: string) => firstInteractions.push(kind)
     } as unknown as BabylonRenderServiceAccessImpl;
@@ -109,7 +109,7 @@ describe('TouchCameraControl', () => {
 
     expect(zooms.length).toBe(1);
     // Twice the gap halves the distance to the ground: closer in.
-    expect(zooms[0]).toBeCloseTo(15, 5);
+    expect(zooms[0].distance).toBeCloseTo(15, 5);
     expect(control.isGesturing()).toBeTrue();
   });
 
@@ -118,15 +118,40 @@ describe('TouchCameraControl', () => {
     fire('pointerdown', 400, 300, 2);   // gap 200
     fire('pointermove', 300, 300, 2);   // gap 100
 
-    expect(zooms[0]).toBeCloseTo(60, 5);
+    expect(zooms[0].distance).toBeCloseTo(60, 5);
   });
 
-  it('does not pan while two fingers are pinching', () => {
-    fire('pointerdown', 300, 300, 1);
-    fire('pointerdown', 400, 300, 2);
-    fire('pointermove', 500, 300, 2);
+  it('zooms about the point between the fingers, not about the screen centre', () => {
+    // Both fingers in the left half; whatever is between them must stay put, and that is not (0,0).
+    fire('pointerdown', 100, 150, 1);
+    fire('pointerdown', 200, 150, 2);
+    fire('pointermove', 300, 150, 2);   // centre now x=200, y=150
 
-    expect(pans.length).toBe(0);
+    expect(zooms.length).toBe(1);
+    expect(zooms[0].ndcX).toBeCloseTo(-0.5, 5);
+    expect(zooms[0].ndcY).toBeCloseTo(0.5, 5);
+  });
+
+  it('pans by the point between the fingers while pinching', () => {
+    fire('pointerdown', 300, 300, 1);
+    fire('pointerdown', 400, 300, 2);   // centre x=350
+    fire('pointermove', 500, 300, 2);   // centre x=400
+
+    // Two fingers that spread also travel; the ground they hold has to travel with them.
+    expect(pans.length).toBe(1);
+    expect(pans[0].fromX).toBeCloseTo(-0.125, 5);  // x=350
+    expect(pans[0].toX).toBeCloseTo(0, 5);         // x=400
+  });
+
+  it('does not pan while two fingers spread symmetrically', () => {
+    fire('pointerdown', 300, 300, 1);
+    fire('pointerdown', 500, 300, 2);   // centre x=400
+    fire('pointermove', 200, 300, 1);   // centre x=350
+    fire('pointermove', 600, 300, 2);   // centre x=400 again
+
+    // The centre wandered and came back; a pure spread about a fixed point ends where it started.
+    expect(pans.length).toBe(2);
+    expect(pans[1].toX).toBeCloseTo(pans[0].fromX, 5);
   });
 
   it('does not jump when one finger of a pinch lifts', () => {
@@ -137,9 +162,9 @@ describe('TouchCameraControl', () => {
     // The remaining finger keeps moving; it must pan from where it is, not from where it started.
     fire('pointermove', 320, 300, 1);
 
-    expect(pans.length).toBe(1);
-    expect(pans[0].fromX).toBeCloseTo(-0.25, 5);  // x=300, where the finger actually was
-    expect(pans[0].toX).toBeCloseTo(-0.2, 5);     // x=320
+    const last = pans[pans.length - 1];
+    expect(last.fromX).toBeCloseTo(-0.25, 5);  // x=300, where the finger actually was
+    expect(last.toX).toBeCloseTo(-0.2, 5);     // x=320
   });
 
   it('leaves the camera alone while a claimed finger drags', () => {

@@ -23,7 +23,9 @@
   </div>
 </div>
 
-<p-dialog header="You have no name" [(visible)]="showUnregisteredDialog">
+<!-- On the body for the same reason as the quest dialog: the compact chat panel scrolls and is
+     hidden when closed, and a dialog inside it inherits both. -->
+<p-dialog header="You have no name" appendTo="body" [(visible)]="showUnregisteredDialog">
   <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 w-120 items-center justify-center gap-3">
     <p>
       You must be registered and have chosen a name before sending chat messages

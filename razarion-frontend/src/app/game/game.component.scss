@@ -38,6 +38,10 @@
     --compact-status-h: 40px;
     --compact-bar-h: 56px;
     --compact-quest-h: 26px;
+    /* 44px is the smallest target a finger hits reliably; the short-screen block at the end of this
+       file trades some of that away when six chips plus both bars no longer fit. */
+    --compact-nav-chip: 44px;
+    --compact-nav-gap: 6px;
   }
 
   /* Directly under the status strip and always on screen, because the quest panel itself is one of
@@ -134,9 +138,19 @@
     color: var(--p-amber-400, #fbbf24);
   }
 
-  .compact-status-spacer,
   .compact-bar-spacer {
     flex: 1 1 auto;
+  }
+
+  /* Out of Razarion: the factories and builders have stopped, and nothing else on a phone screen
+     says so. Full: harvesting brings in nothing until the player spends some. */
+  .compact-status-razarion.razarion-EMPTY {
+    color: #fca5a5;
+    font-weight: 700;
+  }
+
+  .compact-status-razarion.razarion-FULL {
+    color: var(--p-amber-400, #fbbf24);
   }
 
   .compact-bar {
@@ -176,10 +190,113 @@
     box-shadow: 0 0 0 2px var(--p-emerald-500, #10b981);
   }
 
+  /* Unit navigation up the left edge, opposite the minimap: find your units on the left, move the
+     camera on the right, and the middle of the screen stays the game. Bottom-anchored because that
+     is where the thumb is - the top of the column is the least reachable part of a phone. */
+  .compact-nav {
+    position: absolute;
+    left: 6px;
+    bottom: calc(var(--compact-bar-h) + 6px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--compact-nav-gap);
+    z-index: 15;
+  }
+
+  .compact-nav-chip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--compact-nav-chip);
+    height: var(--compact-nav-chip);
+    border: solid 1px var(--p-emerald-900);
+    border-radius: 10px;
+    background-color: rgba(16, 16, 16, 0.9);
+    color: var(--p-emerald-400, #34d399);
+    font-size: 18px;
+  }
+
+  /* Dimmed rather than removed - see the column comment in game.component.html. */
+  .compact-nav-chip:disabled {
+    opacity: 0.35;
+  }
+
+  /* The count sits on the chip, not beside it: there is no room for a label, and the number is
+     half the reason to look at the column. */
+  .compact-nav-count {
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+    min-width: 17px;
+    padding: 0 3px;
+    border-radius: 9px;
+    background-color: var(--p-emerald-700, #047857);
+    color: #fff;
+    font: 700 11px/17px sans-serif;
+    text-align: center;
+  }
+
+  /* The minimap, in the corner an RTS player looks for it. Above the icon bar rather than beside
+     it, so it never sits where a thumb reaches for the build button. Its size comes from the
+     component (the canvases are sized in pixels), so there is no width here to keep in step. */
+  .compact-radar {
+    position: absolute;
+    right: 6px;
+    bottom: calc(var(--compact-bar-h) + 6px);
+    padding: 3px;
+    background-color: rgba(0, 0, 0, 0.72);
+    border: solid 1px var(--p-emerald-900);
+    border-radius: 8px;
+    /* Below the bars (z-index 20): those are the only way to close an open panel, and the map must
+       not grow over them. */
+    z-index: 15;
+    line-height: 0;
+  }
+
+  /* Expanded it is centred rather than pinned to the corner - a map big enough to aim at is big
+     enough to be in the way of the thumb that opened it. */
+  .compact-radar-expanded {
+    right: auto;
+    bottom: auto;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 19;
+  }
+
+  .compact-radar-toggle {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: solid 1px var(--p-emerald-900);
+    border-radius: 6px 0 6px 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    color: var(--p-emerald-400, #34d399);
+    font-size: 12px;
+  }
+
   /* Desktop-only furniture: the position readout is a developer aid and the REC badge belongs to
      director mode, neither is worth a line of a phone screen. */
   .rec-indicator {
     top: calc(var(--compact-status-h) + var(--compact-quest-h) + 6px);
+  }
+}
+
+/* A phone held sideways is about 412px tall. Six navigation chips at 44px plus both bars and the
+   quest line come to 422 - ten pixels more than the screen has, and since the column is anchored to
+   the bottom it is the top chip that disappears under the quest line. Shrinking the chips keeps all
+   six reachable; they stay above the 38px that is still a usable target. Must come after the block
+   above, which sets the portrait defaults. */
+@media (max-height: 540px) {
+  .game-main {
+    --compact-nav-chip: 38px;
+    --compact-nav-gap: 4px;
   }
 }
 

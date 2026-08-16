@@ -12,6 +12,7 @@ import {
   TrackingPlatform
 } from '../../generated/razarion-share';
 import {TypescriptGenerator} from '../typescript-generator';
+import {deviceText} from '../device-text';
 
 /**
  * What the range contains, for the line above the table. Answering "what went on in the last 24
@@ -168,25 +169,9 @@ export class PlayerSessionsComponent implements OnChanges {
     }
   }
 
-  /**
-   * Browser and form factor, which is what a failed startup is usually about - WebAssembly GC
-   * needs Chrome 119+, Firefox 120+ or Safari 18.2+. The full string is in the expanded row.
-   */
+  /** The full string is in the expanded row; this is the part that fits in a column. */
   device(session: PlayerSessionInfo): string {
-    const userAgent = session.userAgent;
-    if (!userAgent) {
-      return '—';
-    }
-    const mobile = /Mobile|Android|iPhone|iPad/.test(userAgent);
-    // Order matters: Edge and Chrome both claim Chrome, Chrome claims Safari.
-    const browser = /Edg\//.test(userAgent) ? 'Edge'
-      : /OPR\//.test(userAgent) ? 'Opera'
-        : /Chrome\//.test(userAgent) ? 'Chrome'
-          : /Firefox\//.test(userAgent) ? 'Firefox'
-            : /Safari\//.test(userAgent) ? 'Safari'
-              : 'other';
-    const version = PlayerSessionsComponent.version(userAgent, browser);
-    return `${browser}${version ? ' ' + version : ''}${mobile ? ' mobile' : ''}`;
+    return deviceText(session.userAgent);
   }
 
   player(session: PlayerSessionInfo): string {
@@ -212,17 +197,6 @@ export class PlayerSessionsComponent implements OnChanges {
       return '—';
     }
     return millis < 1000 ? `${millis} ms` : `${(millis / 1000).toFixed(1)} s`;
-  }
-
-  private static version(userAgent: string, browser: string): string {
-    const pattern = browser === 'Edge' ? /Edg\/(\d+)/
-      : browser === 'Opera' ? /OPR\/(\d+)/
-        : browser === 'Chrome' ? /Chrome\/(\d+)/
-          : browser === 'Firefox' ? /Firefox\/(\d+)/
-            : browser === 'Safari' ? /Version\/(\d+)/
-              : null;
-    const match = pattern ? userAgent.match(pattern) : null;
-    return match ? match[1] : '';
   }
 
   private static summarize(sessions: PlayerSessionInfo[]): SessionSummary {

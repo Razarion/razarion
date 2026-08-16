@@ -1,4 +1,5 @@
-﻿import {Component, ElementRef, HostBinding, NgZone, OnInit, ViewChild} from '@angular/core';
+﻿import {Component, effect, ElementRef, HostBinding, HostListener, NgZone, OnInit, ViewChild} from '@angular/core';
+import {NgClass} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import {environment} from 'src/environments/environment';
 import {DirectorService} from './director/director.service';
@@ -27,6 +28,9 @@ import {ChatCockpitComponent} from './cockpit/chat/chat-cockpit.component';
 import {InfoDialogComponent} from './info-dialog/info-dialog.component';
 import {BabylonAudioService} from './renderer/babylon-audio.service';
 import {ServerRestartComponent} from './server-restart/server-restart.component';
+import {RadarComponent} from './cockpit/main/radar/radar.component';
+import {SelectionShortcutsService} from './selection-shortcuts.service';
+import {RadarState} from '../gwtangular/GwtAngularFacade';
 
 
 @Component({
@@ -44,7 +48,9 @@ import {ServerRestartComponent} from './server-restart/server-restart.component'
     UnlockComponent,
     ChatCockpitComponent,
     InfoDialogComponent,
-    ServerRestartComponent
+    ServerRestartComponent,
+    RadarComponent,
+    NgClass
 ],
   styleUrls: ['game.component.scss']
 })
@@ -69,6 +75,16 @@ export class GameComponent implements OnInit {
   showInventory = false;
   showUnlock = false;
 
+  /**
+   * The corner minimap on a phone. Large enough that the view field rectangle and the coloured item
+   * dots (drawn at 0.4 * zoom pixels, so ~5px at the default zoom) can be told apart, small enough
+   * to leave the playfield readable next to the icon bar.
+   */
+  protected readonly compactRadarSize = 104;
+  protected expandedRadarSize = GameComponent.calculateExpandedRadarSize();
+  protected radarExpanded = false;
+  protected readonly WORKING = RadarState.WORKING;
+
   constructor(private gwtAngularService: GwtAngularService,
               public cockpitDisplayService: CockpitDisplayService,
               public compactLayout: CompactLayoutService,
@@ -76,11 +92,37 @@ export class GameComponent implements OnInit {
               private babylonAudioService: BabylonAudioService,
               private gameMockService: GameMockService,
               private actionService: ActionService,
+              public selectionShortcuts: SelectionShortcutsService,
               private userService: UserService,
               private directorService: DirectorService,
               private route: ActivatedRoute,
               private zone: NgZone) {
     this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, cockpitDisplayService);
+    // An expanded map covers the screen, and so does an opening panel. Leaving it expanded would
+    // mean closing the panel uncovers a full-screen map the player did not ask for again.
+    effect(() => {
+      if (this.compactLayout.openPanel()) {
+        this.radarExpanded = false;
+      }
+    });
+  }
+
+  /**
+   * The expanded map is a square, so the short side of the screen decides. The margin keeps the
+   * status strip, the quest line and the icon bar clear of it; the lower bound stops a very small
+   * screen from expanding to something no bigger than the corner map.
+   */
+  private static calculateExpandedRadarSize(): number {
+    if (typeof window === 'undefined') {
+      return RadarComponent.WIDTH;
+    }
+    const short = Math.min(window.innerWidth, window.innerHeight);
+    return Math.max(180, Math.min(short - 96, 420));
+  }
+
+  @HostListener('window:resize')
+  protected onWindowResize(): void {
+    this.expandedRadarSize = GameComponent.calculateExpandedRadarSize();
   }
 
   ngOnInit(): void {

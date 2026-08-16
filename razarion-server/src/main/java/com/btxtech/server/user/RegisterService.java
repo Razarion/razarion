@@ -1,6 +1,5 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.model.UserEntity;
 import com.btxtech.shared.CommonUrl;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -30,25 +29,26 @@ public class RegisterService {
         this.freemarkerConfig = freemarkerConfig;
     }
 
-    public void startEmailVerifyingProcess(UserEntity userEntity) {
-        userEntity.startVerification();
-        sendEmailVerifyEmail(userEntity);
-    }
-
-    public void sendEmailVerifyEmail(UserEntity userEntity) {
+    /**
+     * Mails out the verification link for a freshly minted verification id. Takes the plain values
+     * instead of the {@link com.btxtech.server.model.UserEntity}: the mail is sent before the
+     * registration is written, so there is nothing persistent to hand over yet - see
+     * {@link com.btxtech.server.user.UserService#registerByEmail} for why that order matters.
+     */
+    public void sendEmailVerifyEmail(String email, String verificationId) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
 
             helper.setFrom(new InternetAddress(NO_REPLY_EMAIL, PERSONAL_NAME));
-            helper.setTo(userEntity.getEmail());
+            helper.setTo(email);
 
             helper.setSubject("Please verify your Razarion account");
 
             Map<String, Object> model = new HashMap<>();
             model.put("greeting", "Hello,");
             model.put("main", "Please confirm your email address by clicking the link below:");
-            model.put("link", CommonUrl.generateVerificationLink(userEntity.getVerificationId()));
+            model.put("link", CommonUrl.generateVerificationLink(verificationId));
             model.put("closing", "Thank you for registering!");
             model.put("razarionTeam", "The Razarion Team");
 

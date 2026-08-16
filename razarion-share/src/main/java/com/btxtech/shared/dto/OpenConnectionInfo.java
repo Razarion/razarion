@@ -34,6 +34,11 @@ public class OpenConnectionInfo {
     /** Where to send the camera. Null when the base has no items left to look at. */
     private Double baseX;
     private Double baseY;
+    /**
+     * What the browser called itself when it opened the socket, verbatim. Null for a connection
+     * whose handshake carried no such header, which no browser omits but a script can.
+     */
+    private String userAgent;
 
     public String getUserId() {
         return userId;
@@ -149,6 +154,15 @@ public class OpenConnectionInfo {
 
     public OpenConnectionInfo baseX(Double baseX) {
         this.baseX = baseX;
+        return this;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public OpenConnectionInfo userAgent(String userAgent) {
+        this.userAgent = userAgent;
         return this;
     }
 

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {MessageService} from 'primeng/api';
 import {Button} from 'primeng/button';
@@ -8,6 +8,7 @@ import {ToggleSwitch} from 'primeng/toggleswitch';
 import {EditorPanel} from '../editor-model';
 import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
 import {ConnectionMgmtControllerClient, OpenConnectionInfo} from '../../generated/razarion-share';
+import {deviceText} from '../../backend/device-text';
 import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render-service-access-impl.service';
 import {GwtAngularService} from 'src/app/gwtangular/GwtAngularService';
 import {GwtInstance} from 'src/app/gwtangular/GwtInstance';
@@ -32,6 +33,10 @@ interface ConnectionRow {
   /** Sortable level; -1 for bases without one, which is every bot and every fresh player. */
   level: number;
   levelText: string;
+  /** Browser and form factor, the same two words the history table shows. */
+  deviceText: string;
+  /** The user agent in full, for the tooltip - the cell has room for the summary only. */
+  deviceTitle: string;
   /** Somewhere to send the camera, null when the base has no items left to look at. */
   baseX: number | null;
   baseY: number | null;
@@ -45,6 +50,20 @@ interface ConnectionRow {
   idleTitle: string;
 }
 
+/**
+ * One arrival or departure, the moment it was noticed.
+ *
+ * The table says who is there; this says what changed. Watching the table cannot answer that - a
+ * row that quietly vanished between two glances leaves nothing behind to see.
+ */
+export interface ConnectionEvent {
+  /** Preformatted: the list only ever shows the time of day, and nothing sorts on it. */
+  timeText: string;
+  label: string;
+  /** True for an arrival, false for a departure. */
+  joined: boolean;
+}
+
 @Component({
   selector: 'app-open-connections',
   imports: [
@@ -56,12 +75,24 @@ interface ConnectionRow {
   templateUrl: './open-connections.component.html'
 })
 export class OpenConnectionsComponent extends EditorPanel implements OnInit, OnDestroy {
+  /**
+   * Comings and goings, newest first, kept by whoever is watching for them - this panel only shows
+   * what it is handed. Empty means nothing has happened since the page was opened, and the block
+   * stays out of the way until it has something to say.
+   */
+  @Input() events: ConnectionEvent[] = [];
+  /** The list is not this panel's to empty; the owner does it and hands back a fresh one. */
+  @Output() clearEvents = new EventEmitter<void>();
+
   rows: ConnectionRow[] = [];
   systemOnlyCount = 0;
   gameOnlyCount = 0;
   loading = false;
-  /** Off by default: a table that moves under the cursor is hard to read. */
-  autoRefresh = false;
+  /**
+   * On by default: this panel is watched rather than read once, and a table that quietly went stale
+   * is worse than one that moves - the switch is there for the moments you need it to hold still.
+   */
+  autoRefresh = true;
   private readonly connectionMgmtControllerClient: ConnectionMgmtControllerClient;
   private refreshTimer: ReturnType<typeof setInterval> | null = null;
   // Per base: last unit id the camera jumped to, so a repeated click advances to the next unit.
@@ -78,6 +109,8 @@ export class OpenConnectionsComponent extends EditorPanel implements OnInit, OnD
 
   ngOnInit(): void {
     this.load();
+    // Whatever the default above says, said once here rather than duplicated as a second timer.
+    this.onAutoRefreshChange();
   }
 
   ngOnDestroy(): void {
@@ -151,10 +184,10 @@ export class OpenConnectionsComponent extends EditorPanel implements OnInit, OnD
   }
 
   onAutoRefreshChange(): void {
+    // Always from a clean slate, so a second call can never leave a timer running unreferenced.
+    this.stopAutoRefresh();
     if (this.autoRefresh) {
       this.refreshTimer = setInterval(() => this.load(), 5000);
-    } else {
-      this.stopAutoRefresh();
     }
   }
 
@@ -207,6 +240,8 @@ export class OpenConnectionsComponent extends EditorPanel implements OnInit, OnD
       itemCount: hasBase ? info.itemCount : -1,
       level: info.levelNumber !== null && info.levelNumber !== undefined ? info.levelNumber : -1,
       levelText: info.levelNumber !== null && info.levelNumber !== undefined ? String(info.levelNumber) : '—',
+      deviceText: deviceText(info.userAgent),
+      deviceTitle: info.userAgent ? info.userAgent : 'The handshake carried no user agent',
       baseX: info.baseX !== null && info.baseX !== undefined ? info.baseX : null,
       baseY: info.baseY !== null && info.baseY !== undefined ? info.baseY : null,
       openedMillis: opened === null ? 0 : opened,

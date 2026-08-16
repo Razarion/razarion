@@ -43,7 +43,10 @@
 </div>
 
 <!-- 30vw is 124px on a phone - narrower than its own header. -->
-<p-dialog header="Quests" [(visible)]="cockpitDisplayService.showQuestDialog"
+<!-- On the body, not in the panel: in compact mode this panel is an overlay that scrolls
+     (overflow:auto) and is hidden with visibility:hidden when closed - either would swallow a
+     dialog rendered inside it. -->
+<p-dialog header="Quests" appendTo="body" [(visible)]="cockpitDisplayService.showQuestDialog"
           [style]="{width: dialogWidth}">
   @if (cockpitDisplayService.showQuestDialog) {
     <quest-dialog></quest-dialog>

@@ -73,13 +73,19 @@ public class ConnectionMgmtController {
             if (systemConnection != null) {
                 info.systemConnectionOpened(systemConnection.getTime())
                         .systemLastMessageSent(systemConnection.getLastMessageSent())
-                        .systemLastMessageReceived(systemConnection.getLastMessageReceived());
+                        .systemLastMessageReceived(systemConnection.getLastMessageReceived())
+                        .userAgent(systemConnection.getUserAgent());
             }
             ClientGameConnection gameConnection = gameConnections.get(userId);
             if (gameConnection != null) {
                 info.gameConnectionOpened(gameConnection.getTime())
                         .gameLastMessageSent(gameConnection.getLastMessageSent())
                         .gameLastMessageReceived(gameConnection.getLastMessageReceived());
+                // The system socket opens first and is the one to believe; the game socket answers
+                // for the rows where it is the only one left.
+                if (info.getUserAgent() == null) {
+                    info.userAgent(gameConnection.getUserAgent());
+                }
             }
             addBase(info, userId);
             result.add(info);
