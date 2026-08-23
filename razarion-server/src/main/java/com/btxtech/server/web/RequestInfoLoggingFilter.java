@@ -28,6 +28,20 @@ public class RequestInfoLoggingFilter implements Filter {
     /** Milliseconds the landing page was open, sent along with the exit event. */
     private static final String DWELL_PARAMETER = "d";
     /**
+     * The rest of what the exit event carries. Short names because they ride on a URL that already
+     * carries the visitor's whole campaign query string; what each one means is documented on the
+     * field it fills in {@link PageRequest}.
+     */
+    private static final String VISIBLE_AT_START_PARAMETER = "v";
+    private static final String PRERENDERED_PARAMETER = "pr";
+    private static final String LOAD_MILLIS_PARAMETER = "l";
+    private static final String FIRST_PAINT_MILLIS_PARAMETER = "fp";
+    private static final String HERO_MILLIS_PARAMETER = "hb";
+    private static final String INTERACTED_PARAMETER = "i";
+    private static final String EXIT_REASON_PARAMETER = "r";
+    private static final String EXIT_REASON_HIDDEN = "h";
+    private static final String EXIT_REASON_PAGEHIDE = "u";
+    /**
      * A user agent is worth storing to tell browsers and bots apart, but it is attacker-controlled
      * and unbounded, so it does not go into the database at arbitrary length.
      */
@@ -111,21 +125,65 @@ public class RequestInfoLoggingFilter implements Filter {
                 .twclid(httpRequest.getParameter("twclid"))
                 .userAgent(trim(httpRequest.getHeader("User-Agent")))
                 .referer(trim(httpRequest.getHeader("Referer")))
-                .dwellMillis(dwellMillis(httpRequest))
+                .dwellMillis(millis(httpRequest, DWELL_PARAMETER))
+                .visibleAtStart(flag(httpRequest, VISIBLE_AT_START_PARAMETER))
+                .prerendered(presentFlag(httpRequest, PRERENDERED_PARAMETER))
+                .loadMillis(millis(httpRequest, LOAD_MILLIS_PARAMETER))
+                .firstPaintMillis(millis(httpRequest, FIRST_PAINT_MILLIS_PARAMETER))
+                .heroLoadedMillis(millis(httpRequest, HERO_MILLIS_PARAMETER))
+                .interacted(presentFlag(httpRequest, INTERACTED_PARAMETER))
+                .exitReason(exitReason(httpRequest))
                 .rawQueryString(queryString);
     }
 
-    private Integer dwellMillis(HttpServletRequest httpRequest) {
-        String dwell = httpRequest.getParameter(DWELL_PARAMETER);
-        if (dwell == null) {
+    /**
+     * A duration reported by the page. Everything here comes from a URL anyone can craft, so a
+     * value that is not a plain number inside a plausible range is dropped rather than stored -
+     * one manipulated visit must not be able to move a median.
+     */
+    private Integer millis(HttpServletRequest httpRequest, String parameter) {
+        String value = httpRequest.getParameter(parameter);
+        if (value == null) {
             return null;
         }
         try {
-            int millis = Integer.parseInt(dwell);
+            int millis = Integer.parseInt(value);
             return millis >= 0 && millis <= MAX_DWELL_MILLIS ? millis : null;
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /** A parameter sent as "1" or "0". Absent stays absent - it is not the same as false. */
+    private Boolean flag(HttpServletRequest httpRequest, String parameter) {
+        String value = httpRequest.getParameter(parameter);
+        if (value == null) {
+            return null;
+        }
+        return "1".equals(value) ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    /**
+     * A parameter the page only appends when it is true, to keep the URL short. Absent therefore
+     * means false rather than unknown - but only on an exit event, which is the only thing that
+     * sends these at all.
+     */
+    private Boolean presentFlag(HttpServletRequest httpRequest, String parameter) {
+        if (!EVENT_EXIT.equals(httpRequest.getParameter(EVENT_PARAMETER))) {
+            return null;
+        }
+        return "1".equals(httpRequest.getParameter(parameter));
+    }
+
+    private String exitReason(HttpServletRequest httpRequest) {
+        String reason = httpRequest.getParameter(EXIT_REASON_PARAMETER);
+        if (EXIT_REASON_HIDDEN.equals(reason)) {
+            return "hidden";
+        }
+        if (EXIT_REASON_PAGEHIDE.equals(reason)) {
+            return "pagehide";
+        }
+        return null;
     }
 
     private String trim(String header) {

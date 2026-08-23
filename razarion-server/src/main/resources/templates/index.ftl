@@ -239,6 +239,13 @@
         // group up: whether the button was pressed at all, and how long the page was looked at
         // before it was left.
         //
+        // The dwell time alone still cannot say WHY a visit was short, and on a phone most of them
+        // are: half the paid arrivals are gone inside a second. A second of nothing looks the same
+        // whether the page was never on screen, whether it had not painted yet, or whether someone
+        // looked and turned away. The remaining fields separate those three: was anyone looking at
+        // all, how long the page took to arrive and to paint, and whether the visitor ever touched
+        // it.
+        //
         // Nothing here touches the button's own navigation. If any of this fails, "Play Now" still
         // works exactly as it did - telemetry must never be able to break the one thing the page
         // is for.
@@ -246,11 +253,20 @@
             // Already stripped of quotes, backslashes and whitespace by IndexController, and it
             // starts with "?" - so appending parameters to it is safe here.
             var query = '${qs}';
+            var timing = typeof performance !== 'undefined' && !!performance.now;
             // Monotonic where available: a clock that the operating system adjusts mid-visit would
-            // otherwise produce negative or absurd durations.
-            var start = typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+            // otherwise produce negative or absurd durations. This is also the time the document
+            // took to reach its last line, measured from the navigation - the part of the wait the
+            // server cannot see.
+            var start = timing ? performance.now() : Date.now();
             var playClicked = false;
             var exitReported = false;
+            var interacted = false;
+            // A tap on an ad that opens the page behind the app, and a browser that loaded it on
+            // spec, both produce a visit with a dwell time - and in neither case did a person see
+            // anything. Read once, at the start: later the answer would always be "hidden".
+            var visibleAtStart = document.visibilityState === 'visible';
+            var prerendering = document.prerendering === true;
 
             function send(params) {
                 var url = '/t.gif' + query + params;
@@ -271,24 +287,90 @@
                 });
             }
 
-            function reportExit() {
+            // Any sign of a hand: a finger down, a key, a scroll. Not "did they click Play" - the
+            // question is whether the page was ever addressed at all, which is what separates a
+            // visitor who looked and declined from one who never arrived in front of it. Passive
+            // and once, so this cannot cost a frame or block a scroll.
+            function markInteracted() {
+                interacted = true;
+            }
+
+            ['pointerdown', 'touchstart', 'keydown', 'wheel', 'scroll'].forEach(function (type) {
+                addEventListener(type, markInteracted, {once: true, passive: true, capture: true});
+            });
+
+            // When the browser first put something on the screen. Absent on browsers without paint
+            // timing, and absent when the visit ended before the first frame - which is itself the
+            // answer to "did they see anything".
+            function paintMillis() {
+                try {
+                    var entries = performance.getEntriesByType('paint');
+                    for (var i = 0; i < entries.length; i++) {
+                        if (entries[i].name === 'first-contentful-paint') {
+                            return Math.round(entries[i].startTime);
+                        }
+                    }
+                } catch (e) {
+                    // Paint timing is optional; a visit is still worth reporting without it.
+                }
+                return null;
+            }
+
+            // When the hero picture was fully there. It is the heaviest thing on the page by far,
+            // and until it lands the panel sits on an empty background - so "was it loaded before
+            // they left" is the one question that says whether the picture is worth its bytes.
+            function heroMillis() {
+                try {
+                    var entries = performance.getEntriesByType('resource');
+                    for (var i = 0; i < entries.length; i++) {
+                        if (entries[i].name.indexOf('razarion-bg') >= 0 && entries[i].responseEnd > 0) {
+                            return Math.round(entries[i].responseEnd);
+                        }
+                    }
+                } catch (e) {
+                    // Same as above - resource timing is a bonus, not a precondition.
+                }
+                return null;
+            }
+
+            function reportExit(reason) {
                 if (exitReported) {
                     return;
                 }
                 exitReported = true;
-                var now = typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
-                send('&e=exit&d=' + Math.round(now - start) + (playClicked ? '&p=1' : ''));
+                var now = timing ? performance.now() : Date.now();
+                var params = '&e=exit&d=' + Math.round(now - start)
+                    + '&r=' + reason
+                    + '&v=' + (visibleAtStart ? '1' : '0')
+                    + (interacted ? '&i=1' : '')
+                    + (prerendering ? '&pr=1' : '')
+                    + (playClicked ? '&p=1' : '');
+                if (timing) {
+                    params += '&l=' + Math.round(start);
+                }
+                var painted = paintMillis();
+                if (painted !== null) {
+                    params += '&fp=' + painted;
+                }
+                var hero = heroMillis();
+                if (hero !== null) {
+                    params += '&hb=' + hero;
+                }
+                send(params);
             }
 
-            addEventListener('pagehide', reportExit);
+            addEventListener('pagehide', function () {
+                reportExit('u');
+            });
             // Safari on iOS often discards a tab without ever firing pagehide; going hidden is the
             // only signal that arrives there. Reporting at the first of the two means a visitor who
             // switches away and comes back is measured up to the moment they switched - the
             // question this answers is whether people leave at once or after reading, and for that
-            // the first departure is the honest number.
+            // the first departure is the honest number. Which of the two fired is sent along: a tab
+            // switched away and a page navigated off are the same duration and not the same event.
             addEventListener('visibilitychange', function () {
                 if (document.visibilityState === 'hidden') {
-                    reportExit();
+                    reportExit('h');
                 }
             });
         })();

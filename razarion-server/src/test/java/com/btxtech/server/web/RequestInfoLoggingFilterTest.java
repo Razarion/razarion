@@ -91,6 +91,69 @@ class RequestInfoLoggingFilterTest {
     }
 
     /**
+     * The duration alone cannot say why a visit was short. These fields are what separates a page
+     * nobody ever saw from one that was looked at and turned down, so an exit has to carry all of
+     * them through.
+     */
+    @Test
+    void exitEventCarriesWhatHappenedDuringTheVisit() throws Exception {
+        call("/t.gif", "rdt_cid=abc&e=exit&d=4200&r=h&v=1&i=1&l=850&fp=1100&hb=2300");
+
+        PageRequest pageRequest = saved.get(0);
+        assertEquals("hidden", pageRequest.getExitReason());
+        assertEquals(Boolean.TRUE, pageRequest.getVisibleAtStart());
+        assertEquals(Boolean.TRUE, pageRequest.getInteracted());
+        assertEquals(Boolean.FALSE, pageRequest.getPrerendered());
+        assertEquals(850, pageRequest.getLoadMillis());
+        assertEquals(1100, pageRequest.getFirstPaintMillis());
+        assertEquals(2300, pageRequest.getHeroLoadedMillis());
+    }
+
+    /**
+     * A visit that arrived behind the app it came from, painted nothing and was never touched -
+     * the case this was built to find. What is absent has to stay absent: a hero time of zero
+     * would read as "arrived instantly" instead of "never arrived".
+     */
+    @Test
+    void exitOfAVisitNobodySawIsRecordedAsSuch() throws Exception {
+        call("/t.gif", "rdt_cid=abc&e=exit&d=180&r=u&v=0");
+
+        PageRequest pageRequest = saved.get(0);
+        assertEquals("pagehide", pageRequest.getExitReason());
+        assertEquals(Boolean.FALSE, pageRequest.getVisibleAtStart());
+        assertEquals(Boolean.FALSE, pageRequest.getInteracted());
+        assertNull(pageRequest.getFirstPaintMillis());
+        assertNull(pageRequest.getHeroLoadedMillis());
+    }
+
+    /**
+     * Only the exit event reports these. On a page view "not interacted" would be a statement
+     * about a visit that is still running, which is no statement at all.
+     */
+    @Test
+    void pageViewMakesNoClaimAboutWhatHappened() throws Exception {
+        call("/t.gif", "rdt_cid=abc");
+
+        PageRequest pageRequest = saved.get(0);
+        assertNull(pageRequest.getInteracted());
+        assertNull(pageRequest.getPrerendered());
+        assertNull(pageRequest.getVisibleAtStart());
+        assertNull(pageRequest.getExitReason());
+    }
+
+    @Test
+    void implausibleOrGarbledMeasurementsAreDropped() throws Exception {
+        call("/t.gif", "rdt_cid=abc&e=exit&d=4200&l=-5&fp=soon&hb=999999999&r=sideways");
+
+        PageRequest pageRequest = saved.get(0);
+        assertNull(pageRequest.getLoadMillis());
+        assertNull(pageRequest.getFirstPaintMillis());
+        assertNull(pageRequest.getHeroLoadedMillis());
+        assertNull(pageRequest.getExitReason());
+        assertEquals(4200, pageRequest.getDwellMillis());
+    }
+
+    /**
      * Counting an unknown event as a page view keeps a future or garbled parameter from making
      * the visit disappear altogether.
      */

@@ -25,6 +25,42 @@ public class PageRequest {
      * {@link PageRequestType#HOME_EXIT}; null everywhere else.
      */
     private Integer dwellMillis;
+    /**
+     * The fields below turn a dwell time into an explanation. All of them are reported by the
+     * landing page on {@link PageRequestType#HOME_EXIT} and are null everywhere else - and null
+     * within an exit too, on browsers that do not offer the underlying measurement.
+     * <p>
+     * Whether the page was on screen when it arrived. False is a visit nobody saw: a tap that put
+     * the page behind the app it came from, or a browser loading it on spec. Those are counted as
+     * visitors today and are indistinguishable from someone who looked away at once.
+     */
+    private Boolean visibleAtStart;
+    /** The browser loaded this page speculatively before anyone asked for it. */
+    private Boolean prerendered;
+    /**
+     * Milliseconds from the navigation until the document had been read to its last line. The
+     * server only sees when its own response left; this is the part of the wait that happens at
+     * the visitor's end.
+     */
+    private Integer loadMillis;
+    /** Milliseconds until the browser first painted content. Null if the visit ended before that. */
+    private Integer firstPaintMillis;
+    /**
+     * Milliseconds until the hero image had fully arrived - the heaviest asset on the page. Null
+     * means it never got there, which is the interesting case.
+     */
+    private Integer heroLoadedMillis;
+    /**
+     * Whether the visitor ever touched the page - a finger, a key, a scroll. Not the same as
+     * pressing Play: this separates someone who looked and declined from someone who was never in
+     * front of it.
+     */
+    private Boolean interacted;
+    /**
+     * How the visit ended: {@code hidden} when the page was switched away from, {@code pagehide}
+     * when it was navigated off or closed. The same duration means different things under the two.
+     */
+    private String exitReason;
 
     public PageRequestType getPageRequestType() {
         return pageRequestType;
@@ -122,6 +158,62 @@ public class PageRequest {
         this.dwellMillis = dwellMillis;
     }
 
+    public Boolean getVisibleAtStart() {
+        return visibleAtStart;
+    }
+
+    public void setVisibleAtStart(Boolean visibleAtStart) {
+        this.visibleAtStart = visibleAtStart;
+    }
+
+    public Boolean getPrerendered() {
+        return prerendered;
+    }
+
+    public void setPrerendered(Boolean prerendered) {
+        this.prerendered = prerendered;
+    }
+
+    public Integer getLoadMillis() {
+        return loadMillis;
+    }
+
+    public void setLoadMillis(Integer loadMillis) {
+        this.loadMillis = loadMillis;
+    }
+
+    public Integer getFirstPaintMillis() {
+        return firstPaintMillis;
+    }
+
+    public void setFirstPaintMillis(Integer firstPaintMillis) {
+        this.firstPaintMillis = firstPaintMillis;
+    }
+
+    public Integer getHeroLoadedMillis() {
+        return heroLoadedMillis;
+    }
+
+    public void setHeroLoadedMillis(Integer heroLoadedMillis) {
+        this.heroLoadedMillis = heroLoadedMillis;
+    }
+
+    public Boolean getInteracted() {
+        return interacted;
+    }
+
+    public void setInteracted(Boolean interacted) {
+        this.interacted = interacted;
+    }
+
+    public String getExitReason() {
+        return exitReason;
+    }
+
+    public void setExitReason(String exitReason) {
+        this.exitReason = exitReason;
+    }
+
     public PageRequest pageRequestType(PageRequestType pageRequestType) {
         setPageRequestType(pageRequestType);
         return this;
@@ -179,6 +271,41 @@ public class PageRequest {
 
     public PageRequest dwellMillis(Integer dwellMillis) {
         setDwellMillis(dwellMillis);
+        return this;
+    }
+
+    public PageRequest visibleAtStart(Boolean visibleAtStart) {
+        setVisibleAtStart(visibleAtStart);
+        return this;
+    }
+
+    public PageRequest prerendered(Boolean prerendered) {
+        setPrerendered(prerendered);
+        return this;
+    }
+
+    public PageRequest loadMillis(Integer loadMillis) {
+        setLoadMillis(loadMillis);
+        return this;
+    }
+
+    public PageRequest firstPaintMillis(Integer firstPaintMillis) {
+        setFirstPaintMillis(firstPaintMillis);
+        return this;
+    }
+
+    public PageRequest heroLoadedMillis(Integer heroLoadedMillis) {
+        setHeroLoadedMillis(heroLoadedMillis);
+        return this;
+    }
+
+    public PageRequest interacted(Boolean interacted) {
+        setInteracted(interacted);
+        return this;
+    }
+
+    public PageRequest exitReason(String exitReason) {
+        setExitReason(exitReason);
         return this;
     }
 
