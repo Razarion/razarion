@@ -11,7 +11,13 @@ Material for introducing Razarion to the Babylon.js community.
 
 **Title suggestion:**
 
-> Razarion – an open-source browser RTS on one persistent shared world (Babylon.js + Java compiled to WASM)
+> Razarion – open-source multiplayer browser RTS on one persistent shared world (Babylon.js + Java/WASM)
+
+Alternatives, if the above runs too long in the topic list:
+
+> Razarion – a multiplayer browser RTS where everyone shares one persistent world (Babylon.js + WASM)
+
+> Razarion – open-source multiplayer RTS in the browser: one shared planet, Babylon.js + Java/WASM
 
 **Body:**
 
@@ -112,14 +118,14 @@ Thanks for a great engine! :heart:
 
 ## 2. Short blurb (community showcase / listing)
 
-**Razarion — open-source browser RTS on a persistent shared world**
+**Razarion — open-source multiplayer browser RTS on a persistent shared world**
 
-Razarion is a real-time strategy game that runs entirely in the browser: all players share one
-persistent planet, with no download and no registration. Babylon.js renders the world —
+Razarion is a multiplayer real-time strategy game that runs entirely in the browser: all players
+share one persistent planet, with no download and no registration. Babylon.js renders the world —
 node-material terrain that blends land, beach and underwater in a single shader, reflective
 water with whitecaps and ship wakes, and glTF units — while the game engine is Java compiled to
 WebAssembly via TeaVM, so client and server run identical simulation code. LGPL, alpha, feedback
 very welcome. https://www.razarion.com
 
-**One-liner:** Browser RTS on one shared persistent planet — Babylon.js rendering, Java/WASM
+**One-liner:** Multiplayer browser RTS on one shared persistent planet — Babylon.js rendering, Java/WASM
 game engine, open source.
