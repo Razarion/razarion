@@ -20,7 +20,7 @@ persistent planet — no matches, no lobbies, no download, no registration. It i
 expect rough edges.
 
 :video_game: **Play:** https://www.razarion.com (desktop browsers)
-:movie_camera: **Gameplay video:** <YOUTUBE-LINK>
+:movie_camera: **Gameplay video:** https://www.youtube.com/watch?v=yqbN2bLHJyI&t=92s
 :computer: **Source (LGPL):** https://github.com/Razarion/razarion
 
 Babylon.js does all the rendering. The game engine is Java compiled to WebAssembly with TeaVM
@@ -48,7 +48,6 @@ close zoom, is very welcome.
 
 ### Before posting — checklist
 
-- [ ] Replace `<YOUTUBE-LINK>` with the gameplay video URL.
 - [ ] Add 3–5 screenshots (Discourse embeds them inline; a demo post without pictures gets far
       less traction). Good candidates: shoreline close-up, a battle, the terrain editor with the
       Node Material Editor open.
