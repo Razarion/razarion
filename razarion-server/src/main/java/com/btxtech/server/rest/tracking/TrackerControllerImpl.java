@@ -4,6 +4,7 @@ import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.tracking.DailyProgress;
 import com.btxtech.server.model.tracking.PlayerSessionInfo;
 import com.btxtech.server.model.tracking.TrackingContainer;
+import com.btxtech.server.model.tracking.TrackingDevice;
 import com.btxtech.server.model.tracking.TrackingPlatform;
 import com.btxtech.server.model.tracking.TrackingRequest;
 import com.btxtech.server.service.tracking.DailyProgressService;
@@ -41,7 +42,8 @@ import static com.btxtech.shared.CommonUrl.TRACKER_PATH;
 public class TrackerControllerImpl implements TrackerController {
     private final Logger logger = LoggerFactory.getLogger(TrackerControllerImpl.class);
     /**
-     * Days shown in the daily funnel table.
+     * Days shown in the daily funnel table when the caller does not say. The table lets it be
+     * changed; this is what it opens on.
      */
     private static final int DAILY_PROGRESS_DAYS = 10;
     /**
@@ -193,17 +195,21 @@ public class TrackerControllerImpl implements TrackerController {
      * Per-day funnel, independent of the date range picker above it. The UI always uses the
      * default window; the days parameter exists to look further back by hand.
      *
-     * @param platform restrict to visitors carrying this platform's click id. Optional on
-     *                 purpose: without it every visitor counts, including organic. That also
-     *                 keeps a stale cached frontend working instead of failing the request.
+     * @param platform restrict to the visitors this platform brought. Optional on purpose: without
+     *                 it every visitor counts, including organic. That also keeps a stale cached
+     *                 frontend working instead of failing the request.
+     * @param device   restrict to one device class, same reasoning.
+     * @param days     how far back to report, today included. The table sets it; the default is
+     *                 what it opens on.
      */
     @GetMapping(value = "loadDailyProgress", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<DailyProgress> loadDailyProgress(
             @RequestParam(value = "platform", required = false) TrackingPlatform platform,
+            @RequestParam(value = "device", required = false) TrackingDevice device,
             @RequestParam(value = "days", defaultValue = "" + DAILY_PROGRESS_DAYS) int days) {
         return dailyProgressService.loadDailyProgress(days, DAILY_PROGRESS_MIN_LEVEL,
-                DAILY_PROGRESS_MAX_LEVEL, platform);
+                DAILY_PROGRESS_MAX_LEVEL, platform, device);
     }
 
 }

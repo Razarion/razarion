@@ -2,6 +2,7 @@ import {Injectable} from "@angular/core";
 import {
   BabylonBaseItem,
   BabylonBoxItem,
+  BabylonItem,
   BabylonRenderServiceAccess,
   BabylonResourceItem,
   BabylonTerrainTile,
@@ -53,9 +54,12 @@ import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
 import {BabylonLightning} from "./babylon-lightning";
 import {BabylonImpact} from "./babylon-impact";
 import {BabylonPerfOverlay} from "./babylon-perf-overlay";
+import {RenderTelemetry, RenderTelemetrySceneStats} from "./render-telemetry";
+import {ParkedMeshFilter} from "./parked-mesh-filter";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 import {SelectionFrame} from "./selection-frame";
 import {TouchCameraControl} from "./touch-camera-control";
+import {TouchSelectionModeService} from "./touch-selection-mode.service";
 import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
 import {BabylonItemImpl} from "./babylon-item.impl";
 import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
@@ -71,6 +75,7 @@ import earcut from 'earcut';
 import {ViewField, ViewFieldListener} from './view-field';
 import {PlaceConfigComponent} from '../../editor/common/place-config/place-config.component';
 import {buildQuestPlaceVisualizationMaterial} from './quest-place-visualization-material';
+import {CommandTargetKind, CommandTargetMarker} from './command-target-marker';
 
 
 export interface RazarionMetadata {
@@ -145,6 +150,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private outOfViewPlane?: Mesh;
   private placeMarkerMesh?: Mesh;
   private placeMarkerMaterial?: NodeMaterial;
+  /** Live acknowledgement pulses on attack/harvest targets. They remove themselves when done. */
+  private commandTargetMarkers: CommandTargetMarker[] = [];
   baseItemPlacerActive = false;
   // ----- Terrain no-go cursor state (see updateTerrainCursor) -----
   private moveCursorActive = false;
@@ -195,6 +202,21 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private engineInstrumentation: EngineInstrumentation | null = null;
   private perfStatsLogIntervalId: ReturnType<typeof setInterval> | null = null;
   private perfOverlay: BabylonPerfOverlay | null = null;
+  // The overlay's server-side counterpart: same measurements, but summarised and shipped, because
+  // the overlay only ever exists on the machine that is not the one reporting the lag.
+  private renderTelemetry: RenderTelemetry | null = null;
+  // Keeps the parked terrain-tile cache out of Babylon's per-frame walks — the fix for the PROD
+  // finding that the frame time follows scene.meshes rather than what is drawn.
+  private readonly parkedMeshFilter = new ParkedMeshFilter();
+  // Enough buckets to see the shape of scene.meshes without turning the log line into a paragraph.
+  private static readonly MESH_CENSUS_BUCKETS = 6;
+  private static readonly MESH_CENSUS_NAME_CHARS = 24;
+  // raw mesh name -> census bucket, so the normalisation regexes run once per distinct name and
+  // not once per mesh. Names mostly repeat per model, but a creator that embeds a unique id in
+  // every mesh name would grow this forever, so it is dropped wholesale past a cap rather than
+  // becoming a leak of its own in the code that exists to find one.
+  private readonly meshCensusKeys = new Map<string, string>();
+  private static readonly MESH_CENSUS_KEY_CACHE_MAX = 20_000;
   // Terrain objects (trees/rocks) cost ~1500 draw calls in the shadow pass but are core to
   // the visual feel — kept on by default. F11 toggles them off for perf comparisons.
   private loadedTerrainTiles: Set<BabylonTerrainTileImpl> = new Set();
@@ -218,7 +240,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
               public babylonAudioService: BabylonAudioService,
               private tsSelectionService: TsSelectionService,
               private firstInteractionTrackerService: FirstInteractionTrackerService,
-              public uiSettingsService: UiSettingsService) {
+              public uiSettingsService: UiSettingsService,
+              public touchSelectionMode: TouchSelectionModeService) {
     this.babylonModelService.renderer = this;
     // Dispose the quest area marker immediately when the setting is turned off.
     this.uiSettingsService.questVisualizationVisible$.subscribe(visible => {
@@ -276,6 +299,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     if (!this.perfOverlay) {
       this.perfOverlay = new BabylonPerfOverlay();
     }
+    if (RenderTelemetry.ENABLED && !this.renderTelemetry) {
+      this.renderTelemetry = new RenderTelemetry(() => this.collectSceneStats());
+    }
 
     // ----- Keyboard -----
     const self = this;
@@ -285,6 +311,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     window.addEventListener("keydown", e => {
       if (!self.keyPressed.has(e.key)) {
         self.keyPressed.set(e.key, Date.now());
+      }
+      if (e.key === "F7") {
+        e.preventDefault();
+        const enabled = !self.parkedMeshFilter.isEnabled();
+        self.parkedMeshFilter.setEnabled(enabled);
+        console.log(`[PerfDebug] parked-mesh filter ${enabled ? "ON" : "OFF"} — off = the old behaviour, `
+          + `same picture, Babylon walks the cached terrain tiles again. Compare renderP50 in the telemetry line.`);
       }
       if (e.key === "F8") {
         e.preventDefault();
@@ -344,6 +377,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.shadowGenerator.useExponentialShadowMap = true;
     this.shadowGenerator.darkness = 0.6;
 
+    // Must come after the shadow generator: the filter hooks both per-frame walks over the mesh
+    // array, and the second one is the shadow map's render list. F7 bypasses it for an A/B.
+    this.parkedMeshFilter.install(this.scene, this.shadowGenerator.getShadowMap());
+
     // Pre-fire hidden warmup VFX at Y=-1000 so the first user-visible Tesla shot's bolt and
     // impact don't render blank while Babylon compiles shaders / uploads textures on demand.
     BabylonLightning.preWarm(this.scene);
@@ -360,8 +397,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
     }).observe(this.canvas);
 
-    this.selectionFrame = new SelectionFrame(this.scene, this, this.actionService);
-    this.touchCameraControl = new TouchCameraControl(this.canvas, this);
+    this.selectionFrame = new SelectionFrame(this.scene, this, this.actionService, this.touchSelectionMode);
+    this.touchCameraControl = new TouchCameraControl(this.canvas, this, this.touchSelectionMode);
 
     // ----- Terrain click handler (short delay to distinguish click from drag) -----
     let terrainDownPos: { x: number, y: number } | null = null;
@@ -500,12 +537,18 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           return;
         }
         const perfActive = this.perfOverlay?.isActive() === true;
-        const renderStart = perfActive ? performance.now() : 0;
+        // Telemetry needs the same two timestamps the overlay needs, so take them once for both.
+        const measure = perfActive || this.renderTelemetry !== null;
+        const renderStart = measure ? performance.now() : 0;
         this.scene.render();
-        if (perfActive) {
+        if (measure) {
           const renderEnd = performance.now();
-          this.perfOverlay!.record(renderEnd, renderEnd - renderStart, this.engine.getFps());
-          this.perfOverlay!.draw();
+          const renderMs = renderEnd - renderStart;
+          this.renderTelemetry?.recordFrame(renderEnd, renderMs);
+          if (perfActive) {
+            this.perfOverlay!.record(renderEnd, renderMs, this.engine.getFps());
+            this.perfOverlay!.draw();
+          }
         }
       } catch (e) {
         console.error("Render Engine crashed")
@@ -960,6 +1003,28 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
   }
 
+  /**
+   * Acknowledge an attack or harvest order on the thing it was aimed at. Which of the units under
+   * the cursor got the order is otherwise only visible once it starts moving, which can be
+   * seconds later.
+   */
+  showCommandTargetMarker(target: BabylonItem, kind: CommandTargetKind): void {
+    // Dummy items (the placer's stand-ins) are not real render objects and have nothing to mark.
+    if (!(target instanceof BabylonItemImpl)) {
+      return;
+    }
+    this.commandTargetMarkers = this.commandTargetMarkers.filter(marker => {
+      // Clicking the same target again restarts its pulse instead of stacking a second one on it.
+      if (marker.isDisposed() || marker.getTarget() === target.getContainer()) {
+        marker.dispose();
+        return false;
+      }
+      return true;
+    });
+    this.commandTargetMarkers.push(
+      new CommandTargetMarker(this.scene, target.getContainer(), target.getRadius(), kind));
+  }
+
   showPlaceMarker(placeConfig: PlaceConfig | null, markerConfig: MarkerConfig | null): void {
     // Quest area visualization can be turned off (e.g. for clean director footage).
     if (!this.uiSettingsService.questVisualizationVisible) {
@@ -1303,8 +1368,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     );
   }
 
-  public setupTerrainPickPoint(): PickingInfo {
-    return this.scene.pick(this.scene.pointerX, this.scene.pointerY, (mesh: AbstractMesh) => {
+  /**
+   * The ground under a canvas point, by default the one the pointer is on. The item placer asks for
+   * another point while a building is being dragged: what has to stay under the finger is the
+   * building, and the finger may be holding it by its hint bubble a hundred pixels away.
+   */
+  public setupTerrainPickPoint(canvasX: number = this.scene.pointerX,
+                               canvasY: number = this.scene.pointerY): PickingInfo {
+    return this.scene.pick(canvasX, canvasY, (mesh: AbstractMesh) => {
       let razarionMetadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh);
       if (!razarionMetadata) {
         return false;
@@ -1721,9 +1792,92 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
    * perf overlay — fires every tick regardless of whether anything moved.
    */
   onGameEngineTick(clientTickMs: number): void {
+    this.renderTelemetry?.recordTick(clientTickMs);
     if (this.perfOverlay?.isActive()) {
       this.perfOverlay.onTickArrived(clientTickMs);
     }
+  }
+
+  /**
+   * Scene size as the telemetry period sees it. All of these are counters Babylon already keeps
+   * for the frame just rendered, so reading them costs nothing; instrumentation that would have
+   * to hook the engine (draw calls, GPU time) is deliberately left to F9, because turning it on
+   * for every player would change the number being measured.
+   */
+  private collectSceneStats(): RenderTelemetrySceneStats {
+    const glInfo = this.engine.getGlInfo();
+    const census = this.censusMeshes();
+    return {
+      meshes: this.scene.meshes.length,
+      activeMeshes: this.scene.getActiveMeshes().length,
+      activeIndices: this.scene.getActiveIndices(),
+      materials: this.scene.materials.length,
+      disabledMeshes: census.disabled,
+      instancedMeshes: census.instanced,
+      shadowCasters: this.shadowGenerator?.getShadowMap()?.renderList?.length ?? -1,
+      meshTop: census.top,
+      parkedMeshes: this.parkedMeshFilter.getParkedCount(),
+      parkingFilter: this.parkedMeshFilter.isEnabled(),
+      renderWidth: this.engine.getRenderWidth(),
+      renderHeight: this.engine.getRenderHeight(),
+      hardwareScaling: this.engine.getHardwareScalingLevel(),
+      gpu: glInfo?.renderer ?? null
+    };
+  }
+
+  /**
+   * Who the entries in scene.meshes actually belong to, once per telemetry period.
+   *
+   * The PROD numbers say the frame time follows scene.meshes.length and ignores what is drawn,
+   * so the open question is no longer "how many" but "which" — the fix for tens of thousands of
+   * cached terrain-object instances is a different fix from tens of thousands of leaked item
+   * models. One pass over the array every 10 s answers it; it is deliberately not done per frame.
+   *
+   * The pass still runs inside the render loop, so the name normalisation is memoised: thousands
+   * of placements share a handful of distinct raw names, and the regexes must not be paid per mesh.
+   */
+  private censusMeshes(): { disabled: number, instanced: number, top: string } {
+    const meshes = this.scene.meshes;
+    const counts = new Map<string, number>();
+    let disabled = 0;
+    let instanced = 0;
+    for (let i = 0; i < meshes.length; i++) {
+      const mesh = meshes[i];
+      if (!mesh.isEnabled()) {
+        disabled++;
+      }
+      if (mesh.isAnInstance) {
+        instanced++;
+      }
+      let key = this.meshCensusKeys.get(mesh.name);
+      if (key === undefined) {
+        key = BabylonRenderServiceAccessImpl.meshCensusKey(mesh.name);
+        if (this.meshCensusKeys.size >= BabylonRenderServiceAccessImpl.MESH_CENSUS_KEY_CACHE_MAX) {
+          this.meshCensusKeys.clear();
+        }
+        this.meshCensusKeys.set(mesh.name, key);
+      }
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    const top = [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, BabylonRenderServiceAccessImpl.MESH_CENSUS_BUCKETS)
+      .map(([name, count]) => `${name}:${count}`)
+      .join(",");
+    return {disabled, instanced, top};
+  }
+
+  /**
+   * Collapses a mesh name to the model it came from: one bucket per model rather than one per
+   * placement. "Rock_03#inst" and "Rock_11#inst" are the same answer to the question being asked.
+   */
+  private static meshCensusKey(name: string): string {
+    const key = name
+      .replace(/#inst$/, "")
+      .replace(/\(.*?\)|'.*?'|\[.*?]/g, "")   // ids the creators embed: "TerrainObject 'palm (7)'"
+      .replace(/[_.\-]?\d+$/, "")             // trailing placement index: "Rock_03"
+      .trim();
+    return key.length === 0 ? "unnamed" : key.substring(0, BabylonRenderServiceAccessImpl.MESH_CENSUS_NAME_CHARS);
   }
 
   onTerrainTileBuilt(workerMs: number, clientMs: number): void {

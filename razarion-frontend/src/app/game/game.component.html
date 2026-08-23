@@ -112,12 +112,16 @@
     <!-- The minimap, permanently on screen in the corner the way it is on the desktop. A phone has
          no keys and no screen edges to scroll against, so tapping the map is the only quick way to
          move the camera at all - which is why it may not sit behind the burger icon at the bottom
-         of a scrolling overlay. It is hidden, not destroyed, while a panel is open: recreating it
-         would download the planet image again on every open. -->
+         of a scrolling overlay. It is hidden, not destroyed, while a panel hides it: recreating it
+         would download the planet image again on every open.
+         Over the build menu and the quest it does not hide at all any more - it docks under the
+         status strip instead. Selecting a builder opens the build menu by itself, so a player who
+         had just finished a radar station never saw the map they had unlocked. -->
     @if (cockpitDisplayService.showMainCockpit && mainCockpit.radarState === WORKING) {
       <div class="compact-radar"
            [class.compact-radar-expanded]="radarExpanded"
-           [style.visibility]="compactLayout.openPanel() ? 'hidden' : 'visible'">
+           [class.compact-radar-docked]="isRadarDocked()"
+           [style.visibility]="isRadarHidden() ? 'hidden' : 'visible'">
         <radar [size]="radarExpanded ? expandedRadarSize : compactRadarSize"
                [showZoomControls]="radarExpanded"
                (mapClicked)="radarExpanded = false"></radar>
@@ -128,6 +132,13 @@
           <i class="pi" [ngClass]="radarExpanded ? 'pi-window-minimize' : 'pi-window-maximize'"></i>
         </button>
       </div>
+    }
+
+    <!-- Said out loud because an armed mode that changes what the next drag does is the kind of
+         state a player has to be told about: without this the field simply stops scrolling. Above
+         the bar and out of the way of the thumb that just armed it. -->
+    @if (touchSelectionMode.armed() && !compactLayout.openPanel()) {
+      <div class="compact-select-hint">Drag a box around your units</div>
     }
 
     <!-- Icon bar: one tap opens a panel, the same tap closes it again. An icon whose panel has
@@ -151,14 +162,42 @@
               aria-label="Quest">
         <i class="pi pi-flag"></i>
       </button>
-      <span class="compact-bar-spacer"></span>
+      <!-- Group selection. The marquee a mouse draws by dragging has no equivalent gesture here -
+           one finger is all a phone has and the camera already owns it - so the box is armed with
+           a button, drawn with the next drag, and gone again as soon as that drag ends. Without it
+           a mobile player can only ever select the single unit under their finger, and an army
+           cannot be moved one tap at a time. An action rather than a panel, so it sits next to the
+           panel icons instead of among them. -->
       <button type="button" class="compact-icon"
-              [class.compact-icon-open]="compactLayout.isOpen('chat')"
-              [disabled]="!cockpitDisplayService.showChatCockpit"
-              (click)="compactLayout.toggle('chat')"
-              aria-label="Chat">
-        <i class="pi pi-comments"></i>
+              [class.compact-icon-open]="touchSelectionMode.armed()"
+              (click)="touchSelectionMode.toggle()"
+              [attr.aria-pressed]="touchSelectionMode.armed()"
+              aria-label="Select a group of units">
+        <!-- Drawn rather than taken from the icon set: none of its glyphs is a marquee, and the
+             nearest ones already mean something else (two squares is copy, a square is stop). This
+             one shows what the button asks for - a dashed frame around a few units, the same shape
+             the finger is about to draw on the field. -->
+        <svg class="compact-icon-glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <rect x="2.6" y="4.6" width="18.8" height="14.8" rx="1.6"
+                fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3.2 2.6"/>
+          <circle cx="8.2" cy="10.2" r="1.9"/>
+          <circle cx="15.2" cy="9.4" r="1.9"/>
+          <circle cx="11.8" cy="15.1" r="1.9"/>
+        </svg>
       </button>
+      <span class="compact-bar-spacer"></span>
+      <!-- Gone rather than greyed out when the player switched the chat off in the settings: a
+           disabled button still says "there is a chat here", which is the thing they asked to be
+           rid of. Greyed out stays for the other case, a chat the game has not offered yet. -->
+      @if (uiSettingsService.chatVisible) {
+        <button type="button" class="compact-icon"
+                [class.compact-icon-open]="compactLayout.isOpen('chat')"
+                [disabled]="!cockpitDisplayService.showChatCockpit"
+                (click)="compactLayout.toggle('chat')"
+                aria-label="Chat">
+          <i class="pi pi-comments"></i>
+        </button>
+      }
       <button type="button" class="compact-icon"
               [class.compact-icon-open]="compactLayout.isOpen('main')"
               [disabled]="!cockpitDisplayService.showMainCockpit"
@@ -189,14 +228,14 @@
   }
 </div>
 
-<p-dialog header="Inventory" [(visible)]="showInventory" [style]="{width: '50vw'}">
-  @if (showInventory) {
+<p-dialog header="Inventory" [(visible)]="cockpitDisplayService.showInventory" [style]="{width: '50vw'}">
+  @if (cockpitDisplayService.showInventory) {
     <inventory style="width: 100em;"></inventory>
   }
 </p-dialog>
 
-<p-dialog header="Unlock Units" [(visible)]="showUnlock" [style]="{width: '50vw'}">
-  @if (showUnlock) {
+<p-dialog header="Unlock Units" [(visible)]="cockpitDisplayService.showUnlock" [style]="{width: '50vw'}">
+  @if (cockpitDisplayService.showUnlock) {
     <unlock style="width: 100%;"></unlock>
   }
 </p-dialog>

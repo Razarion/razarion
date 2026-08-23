@@ -10,6 +10,11 @@ export class UiSettingsService {
   tipsVisible$ = new BehaviorSubject<boolean>(true);
   /** In-world quest area/place marker (the glowing ground zone). */
   questVisualizationVisible$ = new BehaviorSubject<boolean>(true);
+  /**
+   * The chat panel. Independent of CockpitDisplayService.showChatCockpit, which says whether the
+   * game offers a chat at all — this says whether the player wants to see the one that is offered.
+   */
+  chatVisible$ = new BehaviorSubject<boolean>(true);
 
   get unitNamesVisible(): boolean {
     return this.unitNamesVisible$.value;
@@ -38,6 +43,16 @@ export class UiSettingsService {
   set questVisualizationVisible(value: boolean) {
     if (this.questVisualizationVisible$.value !== value) {
       this.questVisualizationVisible$.next(value);
+    }
+  }
+
+  get chatVisible(): boolean {
+    return this.chatVisible$.value;
+  }
+
+  set chatVisible(value: boolean) {
+    if (this.chatVisible$.value !== value) {
+      this.chatVisible$.next(value);
     }
   }
 }

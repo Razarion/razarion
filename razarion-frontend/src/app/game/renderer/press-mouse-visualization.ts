@@ -123,16 +123,26 @@ export class PressMouseVisualization {
     this.mouseLeftButton.animations = [];
     this.mouseContainer.isVisible = false;
     this.mouseContainer.width = "0px";
+    // Height too, now that the panel stacks downwards: an invisible child is skipped by the layout,
+    // but nothing else guarantees it stays that way.
+    this.mouseContainer.height = "0px";
 
-    this.container.width = "360px";
-    this.container.height = "76px";
-    this.label.width = "190px";
-    this.label.height = "60px";
+    // Stacked rather than side by side: what the bubble says applies to the button under it, and
+    // read that way round the eye arrives at the button having just been told what it does. It also
+    // takes 60px off the width, which on a phone held upright is a seventh of the screen.
+    this.stackPanel.isVertical = true;
+    this.container.width = "300px";
+    this.container.height = "132px";
+    this.label.width = "280px";
+    this.label.height = "56px";
     this.label.fontSize = 18;
+    // Centred over the button rather than ranged left, which only made sense beside the mouse icon.
+    this.label.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+    this.label.paddingLeft = "0px";
     this.stackPanel.spacing = 8;
 
     const deployButton = Button.CreateSimpleButton("Base Item Placer Deploy", "DEPLOY");
-    deployButton.width = "140px";
+    deployButton.width = "200px";
     deployButton.height = "56px";
     deployButton.cornerRadius = 12;
     deployButton.thickness = 3;
@@ -152,6 +162,27 @@ export class PressMouseVisualization {
 
   isTouchMode(): boolean {
     return this.touchMode;
+  }
+
+  /**
+   * Whether this point lies on the hint bubble itself, and so counts as a grip on the building it
+   * belongs to. Coordinates are the ones the fullscreen GUI measures itself in.
+   * <p>
+   * The bubble floats a hundred pixels above the building and is wider than a thumb is long, so on
+   * a phone it is the part of the placer a finger lands on first. Without this it swallowed the
+   * drag and the player was left pressing the instructions that told them to drag.
+   * <p>
+   * The deploy button is cut out of the grip: it is the one thing in here that is pressed, not
+   * dragged.
+   */
+  containsGrip(x: number, y: number): boolean {
+    if (!this.touchMode || !this.container.isVisible) {
+      return false;
+    }
+    if (this.deployButton?.contains(x, y)) {
+      return false;
+    }
+    return this.container.contains(x, y);
   }
 
   private updateDeployButton() {

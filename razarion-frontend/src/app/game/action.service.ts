@@ -244,6 +244,7 @@ export class ActionService {
       const attackerIds = this.tsSelectionService.getAttackerIds(item.getBaseItemType().getId());
       if (attackerIds.length > 0) {
         this.babylonAudioService.speakCommand('Engaging target');
+        this.rendererService?.showCommandTargetMarker(babylonItem, 'attack');
         this.reportCommand();
         this.gameCommandService.attackCmd(attackerIds, id);
         return;
@@ -257,6 +258,7 @@ export class ActionService {
       const harvesterIds = this.tsSelectionService.getHarvesterIds();
       if (harvesterIds.length > 0) {
         this.babylonAudioService.speakCommand('Harvesting');
+        this.rendererService?.showCommandTargetMarker(babylonItem, 'harvest');
         this.reportCommand();
         this.gameCommandService.harvestCmd(harvesterIds, id);
         return;

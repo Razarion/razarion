@@ -1,5 +1,6 @@
 import {TouchCameraControl} from './touch-camera-control';
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
+import {TouchSelectionModeService} from './touch-selection-mode.service';
 
 /**
  * The gesture machine decides three things that are easy to get wrong and impossible to notice on a
@@ -17,12 +18,16 @@ describe('TouchCameraControl', () => {
   let zooms: { distance: number, ndcX: number, ndcY: number }[];
   let firstInteractions: string[];
   let terrainDistance: number;
+  let armed: boolean;
+  let placerActive: boolean;
 
   beforeEach(() => {
     pans = [];
     zooms = [];
     firstInteractions = [];
     terrainDistance = 30;
+    armed = false;
+    placerActive = false;
 
     canvas = document.createElement('canvas');
     // The control reads the laid-out size; a detached canvas reports zeros without this.
@@ -38,10 +43,17 @@ describe('TouchCameraControl', () => {
         terrainDistance = distance;
         zooms.push({distance, ndcX, ndcY});
       },
-      reportFirstInteraction: (kind: string) => firstInteractions.push(kind)
+      reportFirstInteraction: (kind: string) => firstInteractions.push(kind),
+      get baseItemPlacerActive() {
+        return placerActive;
+      }
     } as unknown as BabylonRenderServiceAccessImpl;
 
-    control = new TouchCameraControl(canvas, renderService);
+    const touchSelectionMode = {
+      armed: () => armed
+    } as unknown as TouchSelectionModeService;
+
+    control = new TouchCameraControl(canvas, renderService, touchSelectionMode);
   });
 
   afterEach(() => control.disable());
@@ -209,6 +221,60 @@ describe('TouchCameraControl', () => {
     control.setPanClaim(null);
     fire('pointermove', 700, 300);
 
+    expect(pans.length).toBe(1);
+  });
+
+  it('leaves the camera alone while the selection box is armed', () => {
+    armed = true;
+
+    fire('pointerdown', 400, 300);
+    fire('pointermove', 600, 300);
+
+    // The drag is drawing a box (SelectionFrame); moving the ground under it would drag the units
+    // out of the box being drawn.
+    expect(pans.length).toBe(0);
+  });
+
+  it('counts an armed touch as a gesture from the moment it goes down', () => {
+    armed = true;
+    fire('pointerdown', 400, 300);
+
+    // Everything that turns a touch into a command asks this on the release. A box that was armed
+    // and then barely moved is still not the tap that sends the units marching.
+    expect(control.isGesturing()).toBeTrue();
+  });
+
+  it('pans again once the box has been drawn and the mode is spent', () => {
+    armed = true;
+    fire('pointerdown', 400, 300);
+    fire('pointermove', 600, 300);
+    fire('pointerup', 600, 300);
+    armed = false;   // SelectionFrame disarms on the release
+
+    fire('pointerdown', 400, 300);
+    fire('pointermove', 600, 300);
+
+    expect(pans.length).toBe(1);
+  });
+
+  it('still pinches while the selection box is armed', () => {
+    armed = true;
+    fire('pointerdown', 300, 300, 1);
+    fire('pointerdown', 400, 300, 2);
+    fire('pointermove', 500, 300, 2);
+
+    // Two fingers are never a box; the camera must stay reachable while the mode is on.
+    expect(zooms.length).toBe(1);
+  });
+
+  it('pans while the placer is up, armed or not', () => {
+    armed = true;
+    placerActive = true;
+
+    fire('pointerdown', 100, 300);
+    fire('pointermove', 300, 300);
+
+    // No box is drawn under the placer, so suppressing the pan would only stop the camera dead.
     expect(pans.length).toBe(1);
   });
 

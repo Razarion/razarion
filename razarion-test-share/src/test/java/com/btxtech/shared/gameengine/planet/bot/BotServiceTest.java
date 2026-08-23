@@ -8,6 +8,8 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -114,5 +116,114 @@ public class BotServiceTest extends BaseBotServiceTest {
         }
 
         Assert.assertTrue(getTestGameLogicListener().getSyncBaseItemKilled().isEmpty());
+    }
+
+    /**
+     * The camper case. An enemy parks inside the bot's realm and kills the same item over and over,
+     * and the bot rebuilds it for ever - which is how a single ship left behind by an offline player
+     * starved the water bot for a week and took a level 7 quest with it.
+     *
+     * The rage state is what is supposed to end that, and this pins the two conditions it needs: the
+     * kills have to be counted against the attacker's base, and they must survive the ticks in
+     * between. Note what is NOT required - the bot's base is never defeated here. Enrage counts
+     * individual item kills, not base deaths.
+     */
+    @Test
+    public void testEnrageUpOnRepeatedKills() {
+        setup();
+
+        List<BotConfig> botConfigs = new ArrayList<>();
+        botConfigs.add(camperBotConfig(enragingStates()));
+        startBots(botConfigs);
+        tickBotRunner();
+
+        Assert.assertEquals(1, countBotItems(FallbackConfig.FACTORY_ITEM_TYPE_ID));
+        Assert.assertEquals(0, countBotItems(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
+
+        // The intruder has to stay inside the realm: handleIntruders() drops the kill count of every
+        // base that has no item in there, so a hit-and-run attacker never builds anything up.
+        PlayerBaseFull camper = createHumanBaseWithBaseItem(new DecimalPosition(60, 60), createLevel1UserContext());
+
+        killBotItemOnce(camper);
+        killBotItemOnce(camper);
+        Assert.assertEquals("Two of three kills - still the normal roster", 1, countBotItems(FallbackConfig.FACTORY_ITEM_TYPE_ID));
+
+        killBotItemOnce(camper);
+        Assert.assertEquals("Third kill hits the threshold, the normal roster goes", 0, countBotItems(FallbackConfig.FACTORY_ITEM_TYPE_ID));
+        Assert.assertEquals("...and the rage roster takes over", 3, countBotItems(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
+    }
+
+    /**
+     * The shape (Bot1) Water was actually in: a single enragement state. isEnragementActive is then
+     * false whatever enrageUpKills says, so the kills are counted nowhere and the loop never ends.
+     * A config check cannot tell this apart from a bot that is meant to have no rage - which is
+     * exactly why it went unnoticed - so it is pinned here instead.
+     */
+    @Test
+    public void testSingleEnragementStateNeverRages() {
+        setup();
+
+        List<BotEnragementStateConfig> singleState = new ArrayList<>();
+        // enrageUpKills is set, as it is on the real (Bot1) Water, and means nothing without a successor.
+        singleState.add(new BotEnragementStateConfig().name("Normal").enrageUpKills(3).botItems(normalItems()));
+
+        List<BotConfig> botConfigs = new ArrayList<>();
+        botConfigs.add(camperBotConfig(singleState));
+        startBots(botConfigs);
+        tickBotRunner();
+
+        PlayerBaseFull camper = createHumanBaseWithBaseItem(new DecimalPosition(60, 60), createLevel1UserContext());
+
+        for (int kill = 0; kill < 10; kill++) {
+            killBotItemOnce(camper);
+        }
+
+        Assert.assertEquals("Rebuilds for ever", 1, countBotItems(FallbackConfig.FACTORY_ITEM_TYPE_ID));
+        Assert.assertEquals("Nothing ever fights back", 0, countBotItems(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
+    }
+
+    private List<BotEnragementStateConfig> enragingStates() {
+        List<BotItemConfig> rageItems = new ArrayList<>();
+        // createDirectly, or the rage roster would need the builder the camper is killing too.
+        rageItems.add(new BotItemConfig().baseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).count(3).createDirectly(true)
+                .place(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(30, 30, 20, 20))));
+
+        List<BotEnragementStateConfig> states = new ArrayList<>();
+        states.add(new BotEnragementStateConfig().name("Normal").enrageUpKills(3).botItems(normalItems()));
+        states.add(new BotEnragementStateConfig().name("Rage 1").botItems(rageItems));
+        return states;
+    }
+
+    private List<BotItemConfig> normalItems() {
+        List<BotItemConfig> normalItems = new ArrayList<>();
+        normalItems.add(new BotItemConfig().baseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).count(1).createDirectly(true)
+                .place(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(30, 30, 20, 20))));
+        return normalItems;
+    }
+
+    private BotConfig camperBotConfig(List<BotEnragementStateConfig> states) {
+        return new BotConfig().id(1).actionDelay(1).name("Kenny").npc(false)
+                .realm(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(20, 20, 100, 100)))
+                .botEnragementStateConfigs(states);
+    }
+
+    /**
+     * One turn of the loop: the camper kills the bot's item, and the bot ticks - which is where it
+     * rebuilds and where the intruder handling runs.
+     */
+    private void killBotItemOnce(PlayerBaseFull camper) {
+        SyncBaseItem victim = findFirstBotItemHighestId(1, FallbackConfig.FACTORY_ITEM_TYPE_ID);
+        getBotService().onKill(victim, camper);
+        tickBotRunner();
+    }
+
+    private int countBotItems(int baseItemTypeId) {
+        int count = 0;
+        for (SyncBaseItem syncBaseItem : ((PlayerBaseFull) getBotBase(1)).getItems()) {
+            if (syncBaseItem.getBaseItemType().getId() == baseItemTypeId) {
+                count++;
+            }
+        }
+        return count;
     }
 }

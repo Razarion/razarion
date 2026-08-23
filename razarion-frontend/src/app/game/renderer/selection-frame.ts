@@ -1,6 +1,7 @@
 import {PointerEventTypes, Scene, Vector2} from "@babylonjs/core";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {ActionService} from "../action.service";
+import {TouchSelectionModeService} from "./touch-selection-mode.service";
 import {Observer} from '@babylonjs/core/Misc/observable';
 import type {PointerInfo} from '@babylonjs/core/Events/pointerEvents';
 
@@ -10,17 +11,21 @@ export class SelectionFrame {
   private mousePos0: Vector2 | undefined;
   private observer: Observer<PointerInfo> | null = null;
   private overlay: HTMLDivElement | null = null;
+  /** The finger that is drawing the box, if one is. */
+  private marqueePointerId: number | null = null;
 
   constructor(private scene: Scene,
               private renderService: BabylonRenderServiceAccessImpl,
-              private actionService: ActionService) {
+              private actionService: ActionService,
+              private touchSelectionMode: TouchSelectionModeService) {
     this.observer = this.scene.onPointerObservable.add((pointerInfo) => {
       // A marquee is a mouse gesture. On a touch screen the same drag moves the camera, and there
-      // is no second button to tell the two apart - so the finger pans and a tap selects the one
-      // item under it. Drawing a box here as well would select whatever the pan swept across.
+      // is no second button to tell the two apart - so by default the finger pans and a tap selects
+      // the one item under it. Drawing a box as well would select whatever the pan swept across.
+      // The box therefore has a mode of its own; while it is armed the camera lets this finger
+      // through (see TouchCameraControl) and the drag draws instead of panning.
       if (SelectionFrame.isTouch(pointerInfo)) {
-        this.mousePos0 = undefined;
-        this.hideOverlay();
+        this.onTouch(pointerInfo);
         return;
       }
       switch (pointerInfo.type) {
@@ -54,6 +59,67 @@ export class SelectionFrame {
     return (pointerInfo.event as PointerEvent)?.pointerType === 'touch';
   }
 
+  /**
+   * The box on a touch screen: one armed finger draws it, and releasing it both selects and spends
+   * the mode.
+   * <p>
+   * A second finger cancels the box rather than fighting it - two fingers are a pinch, and the
+   * player who put them down is zooming, not selecting. The mode survives that, so the box is still
+   * one drag away afterwards.
+   */
+  private onTouch(pointerInfo: PointerInfo): void {
+    const event = pointerInfo.event as PointerEvent;
+    // The placer owns the screen while it is up; the mode is disarmed when it opens, and this keeps
+    // a box from being drawn across it should that ever be armed again underneath.
+    const armed = this.touchSelectionMode.armed() && !this.renderService.baseItemPlacerActive;
+    if (!armed) {
+      this.cancelMarquee();
+      return;
+    }
+    switch (pointerInfo.type) {
+      case PointerEventTypes.POINTERDOWN: {
+        // isPrimary rather than a count of the fingers we have seen: a touch that is cancelled
+        // instead of released does not always arrive here, and a finger this class still believes
+        // is down would block every box after it. The browser knows better - a pointer is primary
+        // exactly when no other one is active, so a second finger says so about itself.
+        if (!event.isPrimary) {
+          this.cancelMarquee();
+          return;
+        }
+        this.marqueePointerId = event.pointerId;
+        this.onPointerDown(this.scene.pointerX, this.scene.pointerY);
+        break;
+      }
+      case PointerEventTypes.POINTERMOVE: {
+        if (this.marqueePointerId !== event.pointerId) {
+          return;
+        }
+        this.onPointerMove(this.scene.pointerX, this.scene.pointerY);
+        break;
+      }
+      case PointerEventTypes.POINTERUP: {
+        if (this.marqueePointerId !== event.pointerId) {
+          return;
+        }
+        this.marqueePointerId = null;
+        // Only a box that was actually drawn spends the mode. A finger that went down and came
+        // straight back up selected nothing, and disarming on it would cost the player the mode
+        // for a touch that did nothing at all.
+        if (this.onPointerUp()) {
+          this.touchSelectionMode.disarm();
+        }
+        break;
+      }
+    }
+  }
+
+  /** Drops the box being drawn. The mode itself survives - only a finished box spends it. */
+  private cancelMarquee(): void {
+    this.marqueePointerId = null;
+    this.mousePos0 = undefined;
+    this.hideOverlay();
+  }
+
   private onPointerDown(x: number, y: number) {
     this.mousePos0 = new Vector2(x, y);
   }
@@ -65,13 +131,14 @@ export class SelectionFrame {
     this.updateOverlay(x, y);
   }
 
-  private onPointerUp() {
+  /** Whether a marquee was drawn and its selection sent - false when the press was just a click. */
+  private onPointerUp(): boolean {
     this.hideOverlay();
     const start = this.mousePos0;
     this.mousePos0 = undefined;
 
     if (!start) {
-      return;
+      return false;
     }
     const endX = this.scene.pointerX;
     const endY = this.scene.pointerY;
@@ -79,7 +146,7 @@ export class SelectionFrame {
     // Below the threshold it's a click, not a marquee — let the per-item pick handlers deal with it.
     if (Math.abs(start.x - endX) < SelectionFrame.MIN_PIXEL_DISTANCE &&
       Math.abs(start.y - endY) < SelectionFrame.MIN_PIXEL_DISTANCE) {
-      return;
+      return false;
     }
 
     // Screen-pixel rectangle — same space as the green overlay the user drew.
@@ -89,6 +156,7 @@ export class SelectionFrame {
       Math.max(start.x, endX),
       Math.max(start.y, endY),
     );
+    return true;
   }
 
   private updateOverlay(x: number, y: number) {
@@ -139,6 +207,7 @@ export class SelectionFrame {
   }
 
   disable() {
+    this.cancelMarquee();
     if (this.observer) {
       this.observer.remove();
       this.observer = null;

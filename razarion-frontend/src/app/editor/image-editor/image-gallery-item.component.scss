@@ -1,0 +1,17 @@
+/* A real stylesheet rather than an inline styles[] entry, because of the url() below. The two
+   builders disagree about where an inline component style lives: esbuild (ng build) resolves its
+   url() against the workspace root, the Karma builder against the .ts file. A path cannot be both,
+   and the one that suited production made Karma fail to load anything importing this component -
+   which is most of the app. A .scss file on disk has one unambiguous location, so both agree. */
+.image-gallery-descr {
+  width: 50px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.image-gallery-img {
+  width: 100px;
+  height: 100px;
+  background: url('../../../../public/transparentBg.png');
+}

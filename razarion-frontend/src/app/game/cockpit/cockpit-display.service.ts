@@ -22,6 +22,14 @@ export class CockpitDisplayService {
 
   showSettingsDialog = false;
   showTechTreeDialog = false;
+  /**
+   * These two used to be fields on GameComponent, which the inventory and unlock dialogs reached
+   * into to close themselves - and that import back into the page component closed a module cycle
+   * webpack cannot initialise, so no spec that reached GameComponent could load. They belong here
+   * anyway, next to every other dialog flag.
+   */
+  showInventory = false;
+  showUnlock = false;
 
   /** Current player level number, pushed from MainCockpit; used to highlight the tech-tree column. */
   currentLevelNumber?: number;

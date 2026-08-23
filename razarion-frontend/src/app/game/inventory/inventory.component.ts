@@ -6,7 +6,7 @@ import { getImageUrl } from 'src/app/common';
 import { InventoryControllerClient } from 'src/app/generated/razarion-share';
 import { InventoryArtifact, InventoryItem } from 'src/app/gwtangular/GwtAngularFacade';
 import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
-import { GameComponent } from '../game.component';
+import { CockpitDisplayService } from '../cockpit/cockpit-display.service';
 import { Button } from 'primeng/button';
 
 type Tab = 'inventory' | 'workshop' | 'trader';
@@ -35,7 +35,7 @@ export class InventoryComponent implements OnInit {
   constructor(httpClient: HttpClient,
     public gwtAngularService: GwtAngularService,
     private messageService: MessageService,
-    private gameComponent: GameComponent) {
+    private cockpitDisplayService: CockpitDisplayService) {
     this.inventoryControllerClient = new InventoryControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
 
@@ -135,7 +135,7 @@ export class InventoryComponent implements OnInit {
   }
 
   onUse(inventoryItem: InventoryItem): void {
-    this.gameComponent.showInventory = false;
+    this.cockpitDisplayService.showInventory = false;
     this.gwtAngularService.gwtAngularFacade.inventoryUiService.useItemById(inventoryItem.getId());
   }
 

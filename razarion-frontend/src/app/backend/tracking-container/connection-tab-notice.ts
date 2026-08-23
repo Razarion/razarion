@@ -6,25 +6,40 @@
  * reaches you there whether or not the page is the one in front of you, so that is where the
  * message goes - the title, and the icon next to it.
  *
- * It only ever speaks to a tab nobody is looking at, and it steps back the moment you look - and on
- * its own once nothing has happened for a while, so a page left open overnight does not still shout
- * about someone who came and went hours ago. Whoever has the page in front of them is served by the
- * connections table instead, which says the same thing in more detail and keeps itself current.
+ * It only ever speaks to a tab nobody is looking at, and it stays up until somebody does. There is
+ * no timeout: a notice that took itself down after a while would drop exactly the arrival you were
+ * away for, which is the one it exists to report. Looking at the tab is what clears it, and that is
+ * also the moment the connections table below takes over and says the same thing in more detail.
+ *
+ * The icon pulses while it waits, because a tab strip is scanned rather than read and a still icon
+ * that changed ten minutes ago looks the same as one that was always like that.
  *
  * The same shape as the game's tab-ready-notice, and for the same reason: cosmetics must never take
  * the view down, so everything is guarded and failure is silent.
  */
 
-/** How long the announcement stays up after the last change it reported. */
-const HOLD_MILLIS = 15000;
+/**
+ * How long each phase of the pulse lasts.
+ *
+ * A hidden tab is exactly where a browser throttles timers, and one second is the floor Chrome
+ * allows a background page - asking for less only gets rounded up to this. Once the page has been
+ * hidden for five minutes it drops further, to roughly once a minute, and a page cannot honestly
+ * talk its way out of that. Which is why both frames below are unmistakably a notice: whichever one
+ * the pulse happens to be resting on, it still reads as "something happened", so the throttling
+ * costs liveliness and never the message.
+ */
+const BLINK_MILLIS = 1000;
 
 /** Long names would push the rest of the title out of a tab that is only so wide. */
 const MAX_NAME_LENGTH = 14;
 
-/** Kept so the title can be handed back exactly as it was found. */
+/** Kept so the title and the icon can be handed back exactly as they were found. */
 let originalTitle: string | null = null;
 let originalIcon: string | null = null;
-let restoreTimer: ReturnType<typeof setTimeout> | null = null;
+/** The two icons the pulse alternates between, bright first. Null while nothing is announced. */
+let blinkFrames: [string, string] | null = null;
+let blinkTimer: ReturnType<typeof setInterval> | null = null;
+let blinkPhase = 0;
 let listening = false;
 
 /**
@@ -37,7 +52,7 @@ export function announceConnectionChange(joined: string[], left: string[]): void
   }
   try {
     // Nothing to announce to someone who is already looking at the page: the table below has it,
-    // and a title they can read anyway would only sit there until the hold runs out.
+    // and a title they can read anyway would only sit there.
     if (!document.hidden) {
       return;
     }
@@ -49,18 +64,21 @@ export function announceConnectionChange(joined: string[], left: string[]): void
     document.title = `${headline(joined, left)} – ${originalTitle}`;
 
     const link = iconLink();
-    const badged = badgedIcon(joined.length > 0, left.length > 0);
-    if (link && badged) {
+    const bright = badgedIcon(joined.length > 0, left.length > 0, true);
+    const dim = badgedIcon(joined.length > 0, left.length > 0, false);
+    if (link && bright && dim) {
       if (originalIcon === null) {
         originalIcon = link.getAttribute('href');
       }
-      link.setAttribute('href', badged);
+      // A later change re-aims the pulse rather than starting a second one of its own, and puts it
+      // back on the bright frame so the new news shows in the same instant it is reported.
+      blinkFrames = [bright, dim];
+      blinkPhase = 0;
+      link.setAttribute('href', bright);
+      if (blinkTimer === null) {
+        blinkTimer = setInterval(pulse, BLINK_MILLIS);
+      }
     }
-
-    if (restoreTimer !== null) {
-      clearTimeout(restoreTimer);
-    }
-    restoreTimer = setTimeout(clearConnectionTabNotice, HOLD_MILLIS);
 
     // Looking at the tab is reading the message; it has no business outliving that.
     if (!listening) {
@@ -71,18 +89,39 @@ export function announceConnectionChange(joined: string[], left: string[]): void
   }
 }
 
+/**
+ * One step of the pulse. Guarded like everything else here - a timer that throws every second would
+ * fill the console of a page whose whole job is to be left alone.
+ */
+function pulse(): void {
+  try {
+    const link = iconLink();
+    if (link === null || blinkFrames === null) {
+      return;
+    }
+    blinkPhase = 1 - blinkPhase;
+    link.setAttribute('href', blinkFrames[blinkPhase]);
+  } catch (ignored) {
+  }
+}
+
 function restoreWhenVisible(): void {
   if (!document.hidden) {
     clearConnectionTabNotice();
   }
 }
 
-/** Takes the announcement back at once - when you look at the tab, and when the hold time is up. */
+/**
+ * Takes the announcement back. Reached when somebody looks at the tab, and when the page watching
+ * the connections goes away - nothing else ends a notice.
+ */
 export function clearConnectionTabNotice(): void {
-  if (restoreTimer !== null) {
-    clearTimeout(restoreTimer);
-    restoreTimer = null;
+  if (blinkTimer !== null) {
+    clearInterval(blinkTimer);
+    blinkTimer = null;
   }
+  blinkFrames = null;
+  blinkPhase = 0;
   if (listening) {
     document.removeEventListener('visibilitychange', restoreWhenVisible);
     listening = false;
@@ -128,8 +167,13 @@ function iconLink(): HTMLLinkElement | null {
  * Arrivals point up and departures point down, so the direction reads at icon size where a colour
  * alone would not - green and red are the one pair that half of red-green colour vision deficiency
  * cannot tell apart. Drawn rather than shipped as a file so it cannot go missing from a build.
+ *
+ * Two brightnesses of one drawing, which is what the pulse alternates between. Blinking the badge
+ * against the plain favicon was the obvious other option and is the wrong one: a throttled pulse
+ * can rest on a frame for a minute, and for that minute a tab showing the plain icon is a tab
+ * saying nothing happened.
  */
-function badgedIcon(joined: boolean, left: boolean): string | null {
+function badgedIcon(joined: boolean, left: boolean, bright: boolean): string | null {
   const canvas = document.createElement('canvas');
   canvas.width = 32;
   canvas.height = 32;
@@ -137,16 +181,18 @@ function badgedIcon(joined: boolean, left: boolean): string | null {
   if (!context) {
     return null;
   }
+  const green = bright ? '#22c55e' : '#15803d';
+  const red = bright ? '#ef4444' : '#991b1b';
   context.fillStyle = '#0f172a';
   context.fillRect(0, 0, 32, 32);
   if (joined && left) {
     // Both happened: two half-height marks, arrivals on top.
-    triangle(context, '#22c55e', 4, 15, true);
-    triangle(context, '#ef4444', 17, 28, false);
+    triangle(context, green, 4, 15, true);
+    triangle(context, red, 17, 28, false);
   } else if (joined) {
-    triangle(context, '#22c55e', 5, 27, true);
+    triangle(context, green, 5, 27, true);
   } else {
-    triangle(context, '#ef4444', 5, 27, false);
+    triangle(context, red, 5, 27, false);
   }
   return canvas.toDataURL('image/png');
 }

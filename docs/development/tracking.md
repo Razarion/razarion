@@ -27,6 +27,31 @@ Unlike the pixel it is recorded whether or not campaign parameters are present, 
 counted as a funnel step — it describes a wider population than `HOME` does. `DailyProgressService`
 skips it for exactly that reason.
 
+That is also why the backend funnel's table has two halves. Everything above `Game (total)` rests
+on the pixel; from there down it also holds the visitors who arrived over a plain link and fired
+none. `Game (from Home)` counts the ones in both, so the landing page's own conversion is measured
+on a single population and no row below is a share of a number it could never reach. The *All*
+view's landing count is shown as context, never as a percentage base.
+
+A visitor who arrives without parameters is invisible above that line twice over: no pixel, and no
+`GAME` record either, since `/game` is only recorded when it carries a query string. Their game
+visit is known from the startup records alone — which is why the funnel reads those too.
+
+Both tables can be split by device. The funnel classifies in the browser (`classifyDevice()`, shared
+with the Controls tab), *Daily* on the server (`TrackingDevice.of()`); the two are kept in step so
+they answer the same question the same way. `UNKNOWN` is a value of its own rather than a bucket
+folded into the desktops: it means the records carry no user agent at all.
+
+*Daily* answers the platform question with the same three steps
+(`TrackingPlatforms`, shared with the history), counts a game visit from the startup records as the
+funnel does, and reports as many days back as the table asks for — 10 by default, 90 at most.
+
+Both tables count **visitors**, not http sessions (`VisitorGroups` on the server,
+`HandleGroups` in `tracking-container-analyzer.ts`). Records are the same visitor when they share a
+click id, a game session or an http session, chains included. A browser that keeps no cookies is
+handed a fresh session per request, so one boot arrives as a dozen sessions of one beacon each —
+counted per session it reads as a dozen people who all stopped at the first step.
+
 `PlayerSessionService.origin()` reads it, and ignores any referrer pointing at razarion.com itself:
 a page of ours is the step before, not an origin. The client's own `document.referrer` is kept as
 the fallback for someone who opened `/game` directly, where it is the real thing.

@@ -155,6 +155,17 @@
         @media (max-aspect-ratio:3/4){
             .landing{--hero:url('/razarion-bg-portrait.webp')}
 
+            /* And the panel goes to the floor. It used to hang 18vh above it - 165px on a 915px
+               screen - and what it covered was the tesla coil and the explosion, the one moment in
+               the picture that reads as real-time strategy in half a second. Dropping it to the
+               bottom edge hands that back without touching the panel itself.
+
+               No safe-area inset needed: without viewport-fit=cover the viewport already ends above
+               the gesture bar, so env() would resolve to zero and only look like it did something. */
+            .landing{padding-bottom:0.75rem}
+            .social-links{margin-top:0.7rem;gap:1.1rem}
+            .social-links a{font-size:0.85rem}
+
             /* Out of the flow, so it cannot push the panel around; the panel keeps the bottom of
                the screen and this keeps the top. pointer-events off - it sits over the picture and
                must not eat a tap meant for the page. */

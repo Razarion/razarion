@@ -40,6 +40,7 @@ import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-re
 import {Nullable} from "@babylonjs/core/types";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import {GroundUtil} from './ground-util';
+import {ParkedMeshFilter} from "./parked-mesh-filter";
 
 enum MaterialIndex {
   GROUND = 0,
@@ -337,7 +338,13 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     for (let i = index; i < end; i++) {
       const { config, model } = pending[i];
       try {
-        BabylonTerrainTileImpl.createTerrainObject(model, config, this.babylonModelService, this.container);
+        const terrainObject = BabylonTerrainTileImpl.createTerrainObject(model, config, this.babylonModelService, this.container);
+        if (!this.active) {
+          // A tile can be scrolled away again while its objects are still streaming in. Those
+          // instances would otherwise be born unparked and keep costing per-frame work until the
+          // tile is next shown and hidden.
+          ParkedMeshFilter.parkAll(terrainObject.getChildMeshes(false), true);
+        }
         // Shadow casting is handled centrally on the source-mesh template in
         // BabylonModelService — instances are auto-included by the ShadowGenerator.
         // No per-instance ActionManager is attached: with ~1500 hardware instances each
@@ -429,12 +436,19 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
    *    bot-ground boxes, terrain-object instances).
    *  - Sprite managers are scene-level (not container children), so they are explicitly removed
    *    from / re-added to scene.spriteManagers — otherwise their up-to-2500 sprites keep rendering.
+   *  - Every mesh the tile owns is parked (see {@link ParkedMeshFilter}), which is what actually
+   *    makes "costs ~nothing per frame" true: setEnabled alone leaves the meshes in scene.meshes,
+   *    and PROD telemetry showed the frame time following that array rather than what is drawn.
+   *
+   * The mesh list is read from the container on every call rather than cached, because terrain
+   * objects are still being created in batches while a tile can already be scrolled away again.
    */
   private applyActiveState(): void {
     if (this.disposed) {
       return;
     }
     this.container.setEnabled(this.active);
+    ParkedMeshFilter.parkAll(this.container.getChildMeshes(false), !this.active);
     const managers = this.rendererService.getScene().spriteManagers;
     if (managers) {
       this.spriteManagers.forEach(spriteManager => {

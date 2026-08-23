@@ -3,9 +3,12 @@ package com.btxtech.server.service.tracking;
 import com.btxtech.server.model.tracking.DailyProgress;
 import com.btxtech.server.model.tracking.PageRequest;
 import com.btxtech.server.model.tracking.PageRequestType;
+import com.btxtech.server.model.tracking.TrackingDevice;
 import com.btxtech.server.model.tracking.TrackingPlatform;
 import com.btxtech.server.model.tracking.UserActivity;
 import com.btxtech.server.model.tracking.UserActivityType;
+import com.btxtech.shared.dto.StartupTaskJson;
+import com.btxtech.shared.dto.StartupTerminatedJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -26,16 +29,22 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Builds the per-day funnel shown in the backend's <em>Daily</em> tab, for one ad platform.
+ * Builds the per-day funnel shown in the backend's <em>Daily</em> tab, for one ad platform and one
+ * device.
  * <p>
- * The chain that ties a level-up back to an ad click is indirect: a page request carries the
- * click id and an http session, USER_CREATED ties that session to a user id, and everything
- * after that (base, levels) is recorded against the user id only. So attribution runs
- * click id -&gt; session -&gt; user, and the counts are then filtered to those users.
+ * The chain that ties a level-up back to a visit is indirect: a page request carries the campaign
+ * parameters and an http session, USER_CREATED ties that session to a user id, and everything after
+ * that (base, levels) is recorded against the user id only. So attribution runs
+ * visit -&gt; session -&gt; user, and the counts are then filtered to those users.
  * <p>
  * Attribution reads the whole page-request history, not just the reported window: a player who
- * clicked the ad three weeks ago and levels up today still belongs to that platform. Only the
- * counting is windowed.
+ * arrived three weeks ago and levels up today still belongs to that platform. Only the counting is
+ * windowed.
+ * <p>
+ * Which platform a visit came from is answered by {@link TrackingPlatforms} - the same three steps
+ * the history and the funnel use, so the three tabs describe the same population. Asking for the
+ * click id alone, as this did, meant every visitor from an organic post was missing: they are never
+ * tagged with one.
  * <p>
  * Aggregated on the server on purpose - shipping the raw page requests and user activities to
  * the browser just to count them would be wasteful.
@@ -43,44 +52,58 @@ import java.util.TreeMap;
 @Service
 public class DailyProgressService {
     private static final DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    /** Longest history the daily table will report. Past this it is a data export, not a trend. */
+    private static final int MAX_DAYS = 90;
     private final Logger logger = LoggerFactory.getLogger(DailyProgressService.class);
     private final MongoTemplate mongoTemplate;
+    private final StartupTrackingService startupTrackingService;
 
-    public DailyProgressService(MongoTemplate mongoTemplate) {
+    public DailyProgressService(MongoTemplate mongoTemplate, StartupTrackingService startupTrackingService) {
         this.mongoTemplate = mongoTemplate;
+        this.startupTrackingService = startupTrackingService;
     }
 
     /**
      * @param days     number of days to report, today included
      * @param minLevel lowest level number to report a column for
      * @param maxLevel highest level number to report a column for
-     * @param platform ad platform to report; only visitors carrying its click id are counted.
-     *                 Null counts every visitor, organic included.
+     * @param platform ad platform to report, or null for every visitor, organic included
+     * @param device   device to report, or null for every device
      * @return one entry per day, newest first; days without any traffic are included as zero rows
      */
-    public List<DailyProgress> loadDailyProgress(int days, int minLevel, int maxLevel, TrackingPlatform platform) {
+    public List<DailyProgress> loadDailyProgress(int days, int minLevel, int maxLevel,
+                                                 TrackingPlatform platform, TrackingDevice device) {
+        int reportedDays = Math.max(1, Math.min(days, MAX_DAYS));
         ZoneId zone = ZoneId.systemDefault();
         LocalDate today = LocalDate.now(zone);
-        LocalDate firstDay = today.minusDays(days - 1L);
+        LocalDate firstDay = today.minusDays(reportedDays - 1L);
         Date from = Date.from(firstDay.atStartOfDay(zone).toInstant());
         Date to = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
+        boolean filtered = platform != null || device != null;
 
-        Map<String, Set<String>> homeSessions = new HashMap<>();
-        Map<String, Set<String>> playClickedSessions = new HashMap<>();
-        Map<String, Set<String>> gameSessions = new HashMap<>();
-        Set<String> platformSessionIds = new HashSet<>();
-        collectPageRequests(platform, from, to, zone, homeSessions, playClickedSessions, gameSessions,
-                platformSessionIds);
+        // Without a filter there is nothing to attribute, and the window is all that is read.
+        List<PageRequest> pageRequests = mongoTemplate.find(filtered
+                ? new Query()
+                : new Query(Criteria.where("serverTime").gte(from).lt(to)), PageRequest.class,
+                PageRequestService.PAGE_REQUEST);
+        List<StartupTaskJson> startupTasks = startupTrackingService.loadStartupTaskJsons(from, to);
+        List<StartupTerminatedJson> terminated = startupTrackingService.loadStartupTerminatedJson(from, to);
 
-        // Null means "no platform filter": every user qualifies, so there is no id set to test
-        // against and the collectors below take everyone.
-        Set<String> platformUserIds = platform == null ? null : collectPlatformUserIds(platformSessionIds);
-        Map<String, Set<String>> initialBaseUsers = collectInitialBaseCreated(firstDay, zone, platformUserIds);
+        Map<String, Visitor> sessionVisitors = new HashMap<>();
+        pageRequests.forEach(pageRequest -> attribute(sessionVisitors, signal(pageRequest)));
+        startupTasks.forEach(task -> attribute(sessionVisitors, signal(task)));
+        terminated.forEach(terminatedJson -> attribute(sessionVisitors, signal(terminatedJson)));
+
+        DailyCounts counts = countWindow(pageRequests, startupTasks, terminated, from, to, zone,
+                sessionVisitors, platform, device);
+        Set<String> attributedUserIds = filtered
+                ? attributedUserIds(sessionVisitors, platform, device) : null;
+        Map<String, Set<String>> initialBaseUsers = collectInitialBaseCreated(firstDay, zone, attributedUserIds);
         Map<String, Map<Integer, Set<String>>> levelUpUsers =
-                collectLevelUps(from, to, zone, minLevel, maxLevel, platformUserIds);
+                collectLevelUps(from, to, zone, minLevel, maxLevel, attributedUserIds);
 
         List<DailyProgress> result = new ArrayList<>();
-        for (int i = 0; i < days; i++) {
+        for (int i = 0; i < reportedDays; i++) {
             LocalDate date = today.minusDays(i);
             String day = date.format(DAY_FORMAT);
 
@@ -92,75 +115,217 @@ public class DailyProgressService {
 
             result.add(new DailyProgress()
                     .day(day)
-                    .home(homeSessions.getOrDefault(day, Set.of()).size())
-                    .playClicked(playClickedSessions.getOrDefault(day, Set.of()).size())
-                    .game(gameSessions.getOrDefault(day, Set.of()).size())
+                    .home(counts.home.getOrDefault(day, Set.of()).size())
+                    .playClicked(counts.playClicked.getOrDefault(day, Set.of()).size())
+                    .game(counts.game.getOrDefault(day, Set.of()).size())
                     .initialBaseCreated(initialBaseUsers.getOrDefault(day, Set.of()).size())
                     .levelUps(levelUps));
         }
         return result;
     }
 
-    /**
-     * One pass over every page request that carries the platform's click id: the sessions inside
-     * the window become the Home/Game counts, all of them together become the attribution set.
-     */
-    private void collectPageRequests(TrackingPlatform platform, Date from, Date to, ZoneId zone,
-                                     Map<String, Set<String>> homeSessions,
-                                     Map<String, Set<String>> playClickedSessions,
-                                     Map<String, Set<String>> gameSessions,
-                                     Set<String> platformSessionIds) {
-        Query query = platform == null
-                // No filter: only the window is needed, there is nothing to attribute.
-                ? new Query(Criteria.where("serverTime").gte(from).lt(to))
-                : new Query(Criteria.where(clickIdField(platform)).ne(null));
-        for (PageRequest pageRequest : mongoTemplate.find(query, PageRequest.class, PageRequestService.PAGE_REQUEST)) {
-            String httpSessionId = pageRequest.getHttpSessionId();
-            Date serverTime = pageRequest.getServerTime();
-            if (httpSessionId == null || serverTime == null
-                    || (platform != null && clickId(pageRequest, platform) == null)) {
-                continue;
-            }
-            // The landing page record is kept for its referer, not as a funnel step. It reaches
-            // further than the pixel does - it does not need a campaign parameter or a loaded
-            // image - so counting it here would move the funnel's population without anything
-            // about the visitors having changed. See PageRequestType.LANDING.
-            if (pageRequest.getPageRequestType() == PageRequestType.LANDING) {
-                continue;
-            }
-            platformSessionIds.add(httpSessionId);
-            if (serverTime.before(from) || !serverTime.before(to)) {
-                continue;
-            }
-            String day = toDay(serverTime, zone);
-            if (pageRequest.getPageRequestType() == PageRequestType.HOME) {
-                homeSessions.computeIfAbsent(day, key -> new HashSet<>()).add(httpSessionId);
-            } else if (pageRequest.getPageRequestType() == PageRequestType.HOME_PLAY_CLICKED) {
-                playClickedSessions.computeIfAbsent(day, key -> new HashSet<>()).add(httpSessionId);
-            } else if (pageRequest.getPageRequestType() == PageRequestType.GAME) {
-                gameSessions.computeIfAbsent(day, key -> new HashSet<>()).add(httpSessionId);
-            }
-            // HOME_EXIT carries the dwell time and is read per visit, not as a funnel step - a
-            // session that left is not a session that got further.
+    /** One day's visitors per stage, each counted once however many records they left. */
+    private static class DailyCounts {
+        private final Map<String, Set<String>> home = new HashMap<>();
+        private final Map<String, Set<String>> playClicked = new HashMap<>();
+        private final Map<String, Set<String>> game = new HashMap<>();
+
+        private void add(Map<String, Set<String>> stage, String day, String visitorKey) {
+            stage.computeIfAbsent(day, key -> new HashSet<>()).add(visitorKey);
         }
     }
 
     /**
-     * USER_CREATED is the only activity carrying the http session, so it is the sole bridge from
-     * a click id to a user id.
+     * The funnel stages of the reported window, one entry per visitor and day.
+     * <p>
+     * Counted per visitor rather than per http session, because the two are not the same thing for
+     * a browser that keeps no cookies - see {@link VisitorGroups}.
      */
-    private Set<String> collectPlatformUserIds(Set<String> platformSessionIds) {
-        if (platformSessionIds.isEmpty()) {
-            return Set.of();
+    private DailyCounts countWindow(List<PageRequest> pageRequests,
+                                    List<StartupTaskJson> startupTasks,
+                                    List<StartupTerminatedJson> terminated,
+                                    Date from, Date to, ZoneId zone,
+                                    Map<String, Visitor> sessionVisitors,
+                                    TrackingPlatform platform, TrackingDevice device) {
+        List<Signal> windowSignals = new ArrayList<>();
+        for (PageRequest pageRequest : pageRequests) {
+            // The landing page record is kept for its referer, not as a funnel step. It reaches
+            // further than the pixel does - it does not need a campaign parameter or a loaded
+            // image - so counting it here would move the funnel's population without anything
+            // about the visitors having changed. See PageRequestType.LANDING.
+            if (inWindow(pageRequest.getServerTime(), from, to)
+                    && pageRequest.getPageRequestType() != PageRequestType.LANDING) {
+                windowSignals.add(signal(pageRequest));
+            }
         }
+        startupTasks.forEach(task -> windowSignals.add(signal(task)));
+        terminated.forEach(terminatedJson -> windowSignals.add(signal(terminatedJson)));
+
+        VisitorGroups groups = new VisitorGroups();
+        windowSignals.forEach(signal -> groups.join(signal.handles()));
+
+        DailyCounts counts = new DailyCounts();
+        for (Signal signal : windowSignals) {
+            String visitorKey = groups.keyOf(signal.handles());
+            if (visitorKey == null || signal.serverTime == null
+                    || !matches(visitorOf(sessionVisitors, signal), platform, device)) {
+                continue;
+            }
+            String day = toDay(signal.serverTime, zone);
+            if (signal.pageRequestType == PageRequestType.HOME) {
+                counts.add(counts.home, day, visitorKey);
+            } else if (signal.pageRequestType == PageRequestType.HOME_PLAY_CLICKED) {
+                counts.add(counts.playClicked, day, visitorKey);
+            } else if (signal.pageRequestType == PageRequestType.GAME || signal.startup) {
+                // A startup record proves the game was opened as surely as the page request does,
+                // and it is the only proof for a visitor who arrived without a query string:
+                // /game is recorded only when it carries one (RequestInfoLoggingFilter).
+                counts.add(counts.game, day, visitorKey);
+            }
+            // HOME_EXIT carries the dwell time and is read per visit, not as a funnel step - a
+            // session that left is not a session that got further.
+        }
+        return counts;
+    }
+
+    /**
+     * The users behind the visits of this platform and device.
+     * <p>
+     * USER_CREATED is the only activity carrying the http session, so it is the sole bridge from a
+     * visit to a user id.
+     */
+    private Set<String> attributedUserIds(Map<String, Visitor> sessionVisitors,
+                                          TrackingPlatform platform, TrackingDevice device) {
         Query query = new Query(Criteria.where("userActivityType").is(UserActivityType.USER_CREATED));
         Set<String> userIds = new HashSet<>();
         for (UserActivity userActivity : mongoTemplate.find(query, UserActivity.class, UserActivityService.USER_ACTIVITY)) {
-            if (userActivity.getUserId() != null && platformSessionIds.contains(userActivity.getHttpSessionId())) {
+            Visitor visitor = sessionVisitors.get(userActivity.getHttpSessionId());
+            if (userActivity.getUserId() != null && visitor != null && matches(visitor, platform, device)) {
                 userIds.add(userActivity.getUserId());
             }
         }
         return userIds;
+    }
+
+    private boolean matches(Visitor visitor, TrackingPlatform platform, TrackingDevice device) {
+        if (visitor == null) {
+            // Nothing is known about this visit, so it belongs to no platform and no device. Only
+            // the unfiltered report counts it - a filter that took it would be answering a question
+            // the data cannot answer.
+            return platform == null && device == null;
+        }
+        return (platform == null || visitor.platform() == platform)
+                && (device == null || visitor.device() == device);
+    }
+
+    private Visitor visitorOf(Map<String, Visitor> sessionVisitors, Signal signal) {
+        return signal.httpSessionId != null ? sessionVisitors.get(signal.httpSessionId) : null;
+    }
+
+    private void attribute(Map<String, Visitor> sessionVisitors, Signal signal) {
+        if (signal.httpSessionId == null) {
+            return;
+        }
+        sessionVisitors.computeIfAbsent(signal.httpSessionId, key -> new Visitor()).add(signal);
+    }
+
+    /**
+     * What is known about the visitor behind one http session: where they came from and what they
+     * were holding. Accumulated over every record of that session, because no single record has to
+     * carry all of it - the referrer is only on the landing page request, the click id may be gone
+     * by the time the game url is reached.
+     */
+    private static class Visitor {
+        private TrackingPlatform clickIdPlatform;
+        private TrackingPlatform utmPlatform;
+        private TrackingPlatform originPlatform;
+        private TrackingDevice device;
+
+        private void add(Signal signal) {
+            if (clickIdPlatform == null) {
+                clickIdPlatform = TrackingPlatforms.ofClickIds(signal.rdtCid, signal.twclid);
+            }
+            if (utmPlatform == null) {
+                utmPlatform = TrackingPlatforms.ofUtmSource(signal.utmSource);
+            }
+            if (originPlatform == null && signal.landingReferer != null) {
+                originPlatform = TrackingPlatforms.ofOrigin(signal.landingReferer);
+            }
+            if (device == null || device == TrackingDevice.UNKNOWN) {
+                // The later beacons of a cookie-less browser carry no user agent; the visit is
+                // still the device that sent the first one.
+                device = TrackingDevice.of(signal.userAgent);
+            }
+        }
+
+        /** The three steps of TrackingPlatforms, in their order. Null means organic. */
+        private TrackingPlatform platform() {
+            if (clickIdPlatform != null) {
+                return clickIdPlatform;
+            }
+            return utmPlatform != null ? utmPlatform : originPlatform;
+        }
+
+        private TrackingDevice device() {
+            return device != null ? device : TrackingDevice.UNKNOWN;
+        }
+    }
+
+    /**
+     * What one record says about the visitor behind it, whichever collection it came from. The
+     * three collections carry the same campaign fields, which is what lets one visitor be followed
+     * from the landing page into the game.
+     */
+    private record Signal(String httpSessionId, String gameSessionUuid, String rdtCid, String twclid,
+                          String utmSource, String landingReferer, String userAgent,
+                          PageRequestType pageRequestType, boolean startup, Date serverTime) {
+        private List<String> handles() {
+            List<String> handles = new ArrayList<>(3);
+            if (notEmpty(rdtCid)) {
+                handles.add("rdtCid:" + rdtCid);
+            }
+            if (notEmpty(twclid)) {
+                handles.add("twclid:" + twclid);
+            }
+            if (notEmpty(gameSessionUuid)) {
+                handles.add("game:" + gameSessionUuid);
+            }
+            if (notEmpty(httpSessionId)) {
+                handles.add("session:" + httpSessionId);
+            }
+            return handles;
+        }
+
+        private static boolean notEmpty(String value) {
+            return value != null && !value.isEmpty();
+        }
+    }
+
+    private static Signal signal(PageRequest pageRequest) {
+        return new Signal(pageRequest.getHttpSessionId(), null, pageRequest.getRdtCid(),
+                pageRequest.getTwclid(), pageRequest.getUtmSource(),
+                // Only the landing page sees where the visitor came from: the pixel is a subresource
+                // of it and "Play Now" is a navigation to /game, so every referrer after it is ours.
+                pageRequest.getPageRequestType() == PageRequestType.LANDING ? pageRequest.getReferer() : null,
+                pageRequest.getUserAgent(), pageRequest.getPageRequestType(), false,
+                pageRequest.getServerTime());
+    }
+
+    private static Signal signal(StartupTaskJson task) {
+        return new Signal(task.getHttpSessionId(), task.getGameSessionUuid(), task.getRdtCid(),
+                task.getTwclid(), task.getUtmSource(), null, task.getUserAgent(), null, true,
+                task.getServerTime());
+    }
+
+    /** The terminated record carries no user agent; its tasks do. */
+    private static Signal signal(StartupTerminatedJson terminatedJson) {
+        return new Signal(terminatedJson.getHttpSessionId(), terminatedJson.getGameSessionUuid(),
+                terminatedJson.getRdtCid(), terminatedJson.getTwclid(), terminatedJson.getUtmSource(),
+                null, null, null, true, terminatedJson.getServerTime());
+    }
+
+    private static boolean inWindow(Date serverTime, Date from, Date to) {
+        return serverTime != null && !serverTime.before(from) && serverTime.before(to);
     }
 
     /**
@@ -169,16 +334,16 @@ public class DailyProgressService {
      * that fall into the reported window end up in the result.
      */
     private Map<String, Set<String>> collectInitialBaseCreated(LocalDate firstDay, ZoneId zone,
-                                                               Set<String> platformUserIds) {
+                                                               Set<String> attributedUserIds) {
         Map<String, Set<String>> result = new HashMap<>();
-        if (platformUserIds != null && platformUserIds.isEmpty()) {
+        if (attributedUserIds != null && attributedUserIds.isEmpty()) {
             return result;
         }
         Query query = new Query(Criteria.where("userActivityType").is(UserActivityType.BASE_CREATED));
         Map<String, Date> firstByUser = new HashMap<>();
         for (UserActivity userActivity : mongoTemplate.find(query, UserActivity.class, UserActivityService.USER_ACTIVITY)) {
             if (userActivity.getUserId() == null || userActivity.getServerTime() == null
-                    || (platformUserIds != null && !platformUserIds.contains(userActivity.getUserId()))) {
+                    || (attributedUserIds != null && !attributedUserIds.contains(userActivity.getUserId()))) {
                 continue;
             }
             firstByUser.merge(userActivity.getUserId(), userActivity.getServerTime(),
@@ -197,16 +362,16 @@ public class DailyProgressService {
 
     private Map<String, Map<Integer, Set<String>>> collectLevelUps(Date from, Date to, ZoneId zone,
                                                                    int minLevel, int maxLevel,
-                                                                   Set<String> platformUserIds) {
+                                                                   Set<String> attributedUserIds) {
         Map<String, Map<Integer, Set<String>>> result = new HashMap<>();
-        if (platformUserIds != null && platformUserIds.isEmpty()) {
+        if (attributedUserIds != null && attributedUserIds.isEmpty()) {
             return result;
         }
         Query query = new Query(Criteria.where("userActivityType").is(UserActivityType.LEVEL_UP)
                 .and("serverTime").gte(from).lt(to));
         for (UserActivity userActivity : mongoTemplate.find(query, UserActivity.class, UserActivityService.USER_ACTIVITY)) {
             if (userActivity.getUserId() == null || userActivity.getServerTime() == null
-                    || (platformUserIds != null && !platformUserIds.contains(userActivity.getUserId()))) {
+                    || (attributedUserIds != null && !attributedUserIds.contains(userActivity.getUserId()))) {
                 continue;
             }
             Integer level = parseLevel(userActivity.getDetail());
@@ -218,14 +383,6 @@ public class DailyProgressService {
                     .add(userActivity.getUserId());
         }
         return result;
-    }
-
-    private String clickIdField(TrackingPlatform platform) {
-        return platform == TrackingPlatform.REDDIT ? "rdtCid" : "twclid";
-    }
-
-    private String clickId(PageRequest pageRequest, TrackingPlatform platform) {
-        return platform == TrackingPlatform.REDDIT ? pageRequest.getRdtCid() : pageRequest.getTwclid();
     }
 
     private Integer parseLevel(String detail) {

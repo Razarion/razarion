@@ -1,4 +1,5 @@
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
+import {TouchSelectionModeService} from "./touch-selection-mode.service";
 
 /**
  * Camera control for touch devices: one finger drags the ground, two fingers pinch to zoom.
@@ -39,7 +40,8 @@ export class TouchCameraControl {
   private readonly onPointerEnd = (event: PointerEvent) => this.pointerEnd(event);
 
   constructor(private canvas: HTMLCanvasElement,
-              private renderService: BabylonRenderServiceAccessImpl) {
+              private renderService: BabylonRenderServiceAccessImpl,
+              private touchSelectionMode: TouchSelectionModeService) {
     // Listeners sit on the canvas rather than on the window: the cockpit panels are DOM siblings
     // laid over the canvas, and dragging on a panel must scroll the panel, not the world.
     this.canvas.addEventListener('pointerdown', this.onPointerDown);
@@ -63,6 +65,17 @@ export class TouchCameraControl {
   }
 
   /**
+   * Whether the single finger on the field is drawing a selection box rather than moving the view.
+   * <p>
+   * The placer is part of the question because it owns the whole screen while it is up: box mode
+   * armed underneath it would stop the pan without anybody drawing a box, and the camera would
+   * simply stop answering.
+   */
+  private marqueeArmed(): boolean {
+    return this.touchSelectionMode.armed() && !this.renderService.baseItemPlacerActive;
+  }
+
+  /**
    * Lets a feature keep a finger for itself: the claim is asked once, where the first finger of an
    * interaction goes down, and while it answers yes that finger never pans.
    * <p>
@@ -83,7 +96,13 @@ export class TouchCameraControl {
     }
     if (this.pointers.size === 0) {
       // First finger of a new interaction - only here is the previous verdict stale.
-      this.gesturing = false;
+      //
+      // With the box armed the verdict is known before the finger has moved: this interaction is
+      // going to draw a box, so it is not a tap. Said here rather than when the box grows past the
+      // drag threshold, because everything that reads this flag reads it on the release, and a
+      // finger that armed the box and then barely moved must still not command the units it had
+      // selected a moment ago.
+      this.gesturing = this.marqueeArmed();
     }
     const position = this.canvasPosition(event);
     if (this.pointers.size === 0 && this.panClaim?.(position.x, position.y)) {
@@ -115,6 +134,12 @@ export class TouchCameraControl {
     }
     if (this.claimedPointerId === event.pointerId) {
       // Somebody else is dragging with this finger - see setPanClaim().
+      return;
+    }
+    if (this.marqueeArmed()) {
+      // The finger is drawing a selection box (SelectionFrame). Panning underneath it would drag
+      // the units out of the box while it is being drawn. Checked after the pinch branch above:
+      // two fingers still move and zoom the view, so the camera stays reachable while armed.
       return;
     }
     if (!this.panning) {

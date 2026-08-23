@@ -43,6 +43,14 @@ export class SettingsComponent {
     this.uiSettingsService.questVisualizationVisible = value;
   }
 
+  get showChat(): boolean {
+    return this.uiSettingsService.chatVisible;
+  }
+
+  set showChat(value: boolean) {
+    this.uiSettingsService.chatVisible = value;
+  }
+
   surrenderBase(): void {
     this.showSurrenderWarning = false;
     this.cockpitDisplayService.showSettingsDialog = false;

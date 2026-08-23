@@ -179,6 +179,14 @@
     opacity: 0.35;
   }
 
+  /* Sized to sit level with the icon-font glyphs beside it, and coloured through currentColor so it
+     turns white with the rest of the button when the mode is armed. */
+  .compact-icon-glyph {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+
   .compact-icon-open {
     background-color: var(--p-emerald-700, #047857);
     color: #fff;
@@ -188,6 +196,24 @@
      field the player is looking at. */
   .compact-icon-ready {
     box-shadow: 0 0 0 2px var(--p-emerald-500, #10b981);
+  }
+
+  /* One line, centred over the icon bar, for as long as the selection box is armed. It never takes
+     a touch: the drag it is asking for starts on the field right underneath it. */
+  .compact-select-hint {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--compact-bar-h) + 8px);
+    transform: translateX(-50%);
+    padding: 4px 10px;
+    border: solid 1px var(--p-emerald-700, #047857);
+    border-radius: 999px;
+    background-color: rgba(0, 0, 0, 0.78);
+    color: var(--p-emerald-400, #34d399);
+    font: 600 12px/1.2 sans-serif;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 19;
   }
 
   /* Unit navigation up the left edge, opposite the minimap: find your units on the left, move the
@@ -265,6 +291,19 @@
     z-index: 19;
   }
 
+  /* Docked: same corner, top of the screen instead of the bottom, for the two panels the map does
+     not hide behind (see GameComponent.isRadarDocked). The strip under the status line and the
+     quest line is the one piece of a portrait screen an open panel does not reach - the panels are
+     anchored to the icon bar and grow upwards, and the build menu and the quest are the short ones.
+     Same offset as .rec-indicator so it clears both lines whether or not the quest line is there.
+     No z-index of its own: .compact-radar already sits at 15 and the panels create no stacking
+     level, so the map is over the panel and takes its own taps.
+     The :not keeps the expanded map centred - it sets top itself, and this rule comes after it. */
+  .compact-radar-docked:not(.compact-radar-expanded) {
+    top: calc(var(--compact-status-h) + var(--compact-quest-h) + 6px);
+    bottom: auto;
+  }
+
   .compact-radar-toggle {
     position: absolute;
     left: 3px;
@@ -297,6 +336,13 @@
   .game-main {
     --compact-nav-chip: 38px;
     --compact-nav-gap: 4px;
+  }
+
+  /* A phone held sideways has no free strip to dock the map to: with 412px of height the panels
+     reach up to 74px from the top and the docked map would start at 72. Hidden while a panel is
+     open here, the way it used to be everywhere. */
+  .compact-radar-docked {
+    display: none;
   }
 }
 

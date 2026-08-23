@@ -5,7 +5,7 @@ import { TypescriptGenerator } from 'src/app/backend/typescript-generator';
 import { getImageUrl } from 'src/app/common';
 import { InventoryControllerClient, InventoryItem, LevelUnlockConfig, UnlockControllerClient } from 'src/app/generated/razarion-share';
 import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
-import { GameComponent } from '../game.component';
+import { CockpitDisplayService } from '../cockpit/cockpit-display.service';
 import {Button} from 'primeng/button';
 
 
@@ -26,7 +26,7 @@ export class UnlockComponent implements OnInit {
   constructor(httpClient: HttpClient,
     public gwtAngularService: GwtAngularService,
     private messageService: MessageService,
-    private gameComponent: GameComponent) {
+    private cockpitDisplayService: CockpitDisplayService) {
     this.unlockControllerClient = new UnlockControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
     this.inventoryControllerClient = new InventoryControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
@@ -75,7 +75,7 @@ export class UnlockComponent implements OnInit {
           sticky: true
         });
       } else {
-        this.gameComponent.showUnlock = false;
+        this.cockpitDisplayService.showUnlock = false;
       }
     }).catch((reason: any) => {
       this.messageService.add({

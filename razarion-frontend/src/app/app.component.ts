@@ -6,6 +6,7 @@ import {LoggingControllerImplClient} from './generated/razarion-share';
 import {TypescriptGenerator} from './backend/typescript-generator';
 import {HttpClient} from '@angular/common/http';
 import {RemoteLogging} from './backend/remote-logging';
+import {formatLogArgs} from './common/log-format';
 
 @Component({
   selector: 'app-root',
@@ -39,7 +40,9 @@ export class AppComponent {
       try {
         loggingController.angularJsonLogger({
           level: level,
-          message: args.map(arg => (typeof arg === 'string' ? arg : JSON.stringify(arg))).join(' '),
+          // Not JSON.stringify: an Error stringifies to {} and a circular argument throws, which
+          // the catch below used to turn into a dropped record. See formatLogArgs.
+          message: formatLogArgs(args),
           millis: Date.now().toString(),
           thrown: null,
           loggerName: 'console',

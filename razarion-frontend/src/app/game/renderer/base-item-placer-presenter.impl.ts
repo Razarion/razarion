@@ -19,7 +19,6 @@ import {BabylonAudioService} from "./babylon-audio.service";
 import {AdvancedDynamicTexture} from "@babylonjs/gui";
 import {RenderObject} from './render-object';
 import {PressMouseVisualization} from './press-mouse-visualization';
-import {GwtInstance} from '../../gwtangular/GwtInstance';
 
 export enum BaseItemPlacerPresenterEvent {
   ACTIVATED,
@@ -38,10 +37,17 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private static readonly MAX_GRAB_RADIUS_PX = 160;
   /** Same tap tolerance the camera control and the terrain click use. */
   private static readonly TAP_THRESHOLD_PX = 5;
-  /** Hint bubble: how far above the building it hangs, and where it goes when there is no room. */
-  private static readonly HINT_ABOVE_OFFSET_PX = -100;
-  private static readonly HINT_BELOW_OFFSET_PX = 110;
-  private static readonly HINT_ABOVE_MIN_Y_PX = 150;
+  /**
+   * Hint bubble: how far above the building it hangs, and where it goes when there is no room.
+   * <p>
+   * These are offsets to its centre, so they carry its height: the bubble stacks its text over the
+   * deploy button and is 132px tall, and each was moved by half the 56px it grew by. Keeping the
+   * old numbers would have brought its lower edge down onto the building it is describing.
+   */
+  private static readonly HINT_ABOVE_OFFSET_PX = -128;
+  private static readonly HINT_BELOW_OFFSET_PX = 138;
+  /** Below this the bubble would hang off the top of the screen, so it moves under the building. */
+  private static readonly HINT_ABOVE_MIN_Y_PX = 200;
 
   private disc: Mesh | null = null;
   private rallyDisc: Mesh | null = null;
@@ -65,8 +71,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private discRadius = 0;
   private touchDragPointerId: number | null = null;
   private touchDownScreen: { x: number, y: number } | null = null;
-  /** Ghost centre minus the ground point under the finger, held for the length of a drag. */
-  private touchDragOffset: { x: number, z: number } = {x: 0, z: 0};
+  /** Ghost centre minus the finger, in canvas pixels, held for the length of a drag. */
+  private touchDragOffset: { x: number, y: number } = {x: 0, y: 0};
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService,
@@ -141,7 +147,11 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
     this.rendererService.baseItemPlacerActive = true;
 
-    this.rendererService.touchCameraControl?.setPanClaim((x, y) => this.isOnGhost(x, y));
+    // Placing is not selecting: an armed selection box would sit under the placer and take the
+    // finger that is supposed to drag the building.
+    this.rendererService.touchSelectionMode.disarm();
+
+    this.rendererService.touchCameraControl?.setPanClaim((x, y) => this.isGrip(x, y));
 
     this.pointerObservable = this.rendererService.getScene().onPointerObservable.add((pointerInfo) => {
       const event = pointerInfo.event as PointerEvent;
@@ -161,9 +171,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
             // otherwise leave the building stuck to the next finger with the same id.
             const secondFinger = this.touchDragPointerId !== null && this.touchDragPointerId !== event.pointerId;
             this.touchDragPointerId = null;
-            if (!secondFinger && this.isOnGhost(this.touchDownScreen.x, this.touchDownScreen.y)) {
+            if (!secondFinger && this.isGrip(this.touchDownScreen.x, this.touchDownScreen.y)
+              && this.startDragOffset()) {
               this.touchDragPointerId = event.pointerId;
-              this.startDragOffset();
             }
             break;
           }
@@ -231,36 +241,45 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   }
 
   /**
-   * Remember where the building was grabbed. Dragging keeps that grip, so the building does not
-   * jump its centre under the finger the moment it is touched, and a thumb on the edge of the disc
-   * does not cover the very thing being judged green or red.
+   * Remember where the building was grabbed, as the distance in screen pixels from the finger to
+   * the building. Dragging keeps that distance, so the building does not jump its centre under the
+   * finger the moment it is touched, and a thumb on the edge of the disc does not cover the very
+   * thing being judged green or red.
+   * <p>
+   * Screen pixels, not world units. The two are not the same thing under a tilted camera: a world
+   * offset held constant covers fewer and fewer pixels as the building is dragged away from the
+   * viewer, so whatever the finger was holding slides out from under it. On the building itself
+   * that is a pixel or two; the hint bubble is grabbed 128px above the building, and there the
+   * drift was plain to see.
    */
-  private startDragOffset(): void {
-    this.touchDragOffset = {x: 0, z: 0};
-    const position = this.currentPosition;
-    const pickingInfo = this.rendererService.setupTerrainPickPoint();
-    if (!position || !pickingInfo.hit) {
-      return;
+  private startDragOffset(): boolean {
+    this.touchDragOffset = {x: 0, y: 0};
+    const ghost = this.projectGhost();
+    if (!ghost) {
+      return false;
     }
-    this.touchDragOffset = {
-      x: position.x - pickingInfo.pickedPoint!.x,
-      z: position.z - pickingInfo.pickedPoint!.z
-    };
+    const scene = this.rendererService.getScene();
+    this.touchDragOffset = {x: ghost.x - scene.pointerX, y: ghost.y - scene.pointerY};
+    return true;
   }
 
-  /** Carry the ghost with the finger, holding the grip taken in {@link startDragOffset}. */
+  /**
+   * Carry the ghost with the finger, holding the grip taken in {@link startDragOffset}: the ground
+   * is picked where the building is meant to be, not where the finger is, so the building lands on
+   * real ground with the height that belongs to it.
+   */
   private dragToPointer(baseItemPlacer: BaseItemPlacer): void {
-    const pickingInfo = this.rendererService.setupTerrainPickPoint();
+    const scene = this.rendererService.getScene();
+    const pickingInfo = this.rendererService.setupTerrainPickPoint(
+      scene.pointerX + this.touchDragOffset.x,
+      scene.pointerY + this.touchDragOffset.y);
     if (!pickingInfo.hit) {
+      // The building would be off the map or above the horizon. It stays where it is rather than
+      // being dropped somewhere else.
       return;
     }
-    const x = pickingInfo.pickedPoint!.x + this.touchDragOffset.x;
-    const z = pickingInfo.pickedPoint!.z + this.touchDragOffset.z;
-    // The height belongs to the ground the building stands on, not to the ground under the finger -
-    // on a slope those differ, and the ghost would sink into the hill or hover over it.
-    const groundPickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(x, z));
-    const y = groundPickingInfo?.hit ? groundPickingInfo.pickedPoint!.y : pickingInfo.pickedPoint!.y;
-    this.setPosition(baseItemPlacer, new Vector3(x, y, z));
+    const point = pickingInfo.pickedPoint!;
+    this.setPosition(baseItemPlacer, new Vector3(point.x, point.y, point.z));
   }
 
   /** Move the ghost under the pointer. Returns whether the pointer was over terrain at all. */
@@ -331,6 +350,28 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       return false;
     }
     return Math.hypot(canvasX - ghost.x, canvasY - ghost.y) <= ghost.grabRadius;
+  }
+
+  /**
+   * Everything a finger can take hold of the building by: the building itself and the hint bubble
+   * riding above it. The bubble is the larger target of the two and sits where a thumb reaching
+   * into the screen arrives first, so leaving it out made the placer feel unmovable.
+   */
+  private isGrip(canvasX: number, canvasY: number): boolean {
+    return this.isOnGhost(canvasX, canvasY) || this.isOnHint(canvasX, canvasY);
+  }
+
+  /**
+   * The hint bubble measures itself in the pixels of the fullscreen GUI texture, which is the size
+   * of the render buffer; the pointer is counted in canvas pixels. That is the same factor
+   * {@link projectGhost} applies, in the other direction.
+   */
+  private isOnHint(canvasX: number, canvasY: number): boolean {
+    if (!this.pressMouseVisualization) {
+      return false;
+    }
+    const scale = this.rendererService.getScene().getEngine().getHardwareScalingLevel();
+    return this.pressMouseVisualization.containsGrip(canvasX / scale, canvasY / scale);
   }
 
   /** Where the ghost sits on the canvas and how big a target it makes, in canvas pixels. */

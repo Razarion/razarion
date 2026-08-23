@@ -7,6 +7,7 @@ import {
   StartupTaskJson,
   StartupTerminatedJson,
   TrackerControllerImplClient,
+  TrackingDevice,
   TrackingPlatform
 } from '../../generated/razarion-share';
 import {TypescriptGenerator} from '../typescript-generator';
@@ -19,7 +20,12 @@ import {TabsModule} from 'primeng/tabs';
 import {createStatistics, ProgressStatistic} from './progress-statistic';
 import {TableModule} from 'primeng/table';
 import {ChartModule} from 'primeng/chart';
-import {ClickIdField, TrackingContainerAnalyzer} from './tracking-container-analyzer';
+import {
+  DEFAULT_FUNNEL_VIEW,
+  DeviceFilter,
+  FunnelView,
+  TrackingContainerAnalyzer
+} from './tracking-container-analyzer';
 import {UserMgmtComponent} from '../../editor/user-mgmt/user-mgmt.component';
 import {ConnectionEvent, OpenConnectionsComponent} from '../../editor/open-connections/open-connections.component';
 import {PlayerSessionsComponent} from '../player-sessions/player-sessions.component';
@@ -53,9 +59,44 @@ import {announceConnectionChange, clearConnectionTabNotice} from './connection-t
 export class TrackingContainerComponent implements OnInit, OnDestroy {
   toDate = new Date();
   fromDate = new Date(this.toDate.getTime() - 24 * 60 * 60 * 1000);
-  platformOptions = [{name: "Reddit", value: 'rdtCid' as ClickIdField},
-    {name: "X", value: 'twclid' as ClickIdField}];
-  platform: ClickIdField = 'rdtCid';
+  /**
+   * "All" is not a third platform, it is the absence of the filter: it also counts the visitor no
+   * platform can be derived for.
+   */
+  platformOptions = [{name: "Reddit", value: TrackingPlatform.REDDIT as FunnelView},
+    {name: "X", value: TrackingPlatform.X as FunnelView},
+    {name: "All", value: 'all' as FunnelView}];
+  platform: FunnelView = DEFAULT_FUNNEL_VIEW;
+  /**
+   * The device split, answered the same way on both tabs: the funnel reads the user agent in the
+   * browser, the daily table on the server, from the same classification.
+   * <p>
+   * Unknown is offered on purpose: it is not a device but a missing user agent, and how much of
+   * the traffic has none is worth being able to look at rather than being quietly folded into the
+   * total.
+   */
+  deviceOptions = [{name: "All devices", value: 'all' as DeviceFilter},
+    {name: "Desktop", value: 'Desktop' as DeviceFilter},
+    {name: "Mobile", value: 'Mobile' as DeviceFilter},
+    {name: "Tablet", value: 'Tablet' as DeviceFilter},
+    {name: "Unknown", value: 'Unknown' as DeviceFilter}];
+  device: DeviceFilter = 'all';
+  /**
+   * The same selection as the server's enum. Written out rather than derived: the funnel's names
+   * are the words the tables show, the enum's are the wire format, and a case change in either
+   * would silently stop matching.
+   */
+  private static readonly DAILY_DEVICES: Record<DeviceFilter, TrackingDevice | undefined> = {
+    all: undefined,
+    Desktop: TrackingDevice.DESKTOP,
+    Mobile: TrackingDevice.MOBILE,
+    Tablet: TrackingDevice.TABLET,
+    Unknown: TrackingDevice.UNKNOWN
+  };
+  /** How far the daily table looks back. Ten days is a fortnight's worth of weekday shape. */
+  dailyDays = 10;
+  dailyDaysOptions = [{name: "10 days", value: 10}, {name: "14 days", value: 14},
+    {name: "30 days", value: 30}, {name: "60 days", value: 60}, {name: "90 days", value: 90}];
   progressStatistics: ProgressStatistic[] = [];
   /** Per-day funnel, newest first. Fixed 10-day window, independent of the range picker. */
   dailyProgresses: DailyProgress[] = [];
@@ -229,9 +270,22 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
     return info.name ? info.name : info.userId.substring(0, 8);
   }
 
+  /**
+   * The icon of the selected view. "All" is not a network, so it gets the neutral globe rather
+   * than borrowing one of their marks.
+   */
+  get platformIcon(): string {
+    if (this.platform === TrackingPlatform.REDDIT) {
+      return 'pi-reddit';
+    }
+    return this.platform === TrackingPlatform.X ? 'pi-twitter' : 'pi-globe';
+  }
+
   loadDailyProgress() {
-    const platform = this.platform === 'rdtCid' ? TrackingPlatform.REDDIT : TrackingPlatform.X;
-    this.trackerControllerImplClient.loadDailyProgress({platform})
+    // No parameter for "All": the server then counts every visitor - organic, every device.
+    const platform = this.platform === 'all' ? undefined : this.platform;
+    const device = TrackingContainerComponent.DAILY_DEVICES[this.device];
+    this.trackerControllerImplClient.loadDailyProgress({platform, device, days: this.dailyDays})
       .then(dailyProgresses => {
         this.dailyProgresses = dailyProgresses;
         this.updateDailyChart();
@@ -346,9 +400,7 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
         toDate: this.toDate
       }).then(trackingContainer => {
         this.trackingContainerAnalyzer.setTrackingContainer(trackingContainer);
-        this.trackingContainerAnalyzer.setClickIdField(this.platform);
-        this.progressStatistics.length = 0;
-        this.progressStatistics.push(...createStatistics(this.trackingContainerAnalyzer));
+        this.recomputeFunnel();
         this.startupTerminatedJsons = trackingContainer.startupTerminatedJson || [];
         this.startupTaskJsons = trackingContainer.startupTaskJsons || [];
         this.attentionAnalyzer.setTrackingContainer(trackingContainer);
@@ -393,11 +445,26 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
   }
 
   onPlatformChange() {
-    // Recompute the whole funnel for the selected platform; the loaded data already carries both click ids.
-    this.trackingContainerAnalyzer.setClickIdField(this.platform);
-    this.progressStatistics.length = 0;
-    this.progressStatistics.push(...createStatistics(this.trackingContainerAnalyzer));
+    this.recomputeFunnel();
     // The daily funnel is aggregated server side, so it needs its own reload for the new platform.
     this.loadDailyProgress();
+  }
+
+  onDeviceChange() {
+    this.recomputeFunnel();
+    // Counted on the server, so the daily table needs its own request for the new device.
+    this.loadDailyProgress();
+  }
+
+  onDailyDaysChange() {
+    this.loadDailyProgress();
+  }
+
+  /** Both filters run over the loaded data - no request, the container already carries everything. */
+  private recomputeFunnel() {
+    this.trackingContainerAnalyzer.setView(this.platform);
+    this.trackingContainerAnalyzer.setDevice(this.device);
+    this.progressStatistics.length = 0;
+    this.progressStatistics.push(...createStatistics(this.trackingContainerAnalyzer));
   }
 }

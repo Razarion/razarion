@@ -20,6 +20,7 @@ import {Dialog} from 'primeng/dialog';
 import {EditorDialogComponent} from '../editor/editor-dialog/editor-dialog.component';
 import {DrawerModule} from 'primeng/drawer';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
+import {UiSettingsService} from './ui-settings.service';
 import {CompactLayoutService, CompactPanel} from './cockpit/compact-layout.service';
 import {InventoryComponent} from './inventory/inventory.component';
 import {UnlockComponent} from './unlock/unlock.component';
@@ -30,6 +31,7 @@ import {BabylonAudioService} from './renderer/babylon-audio.service';
 import {ServerRestartComponent} from './server-restart/server-restart.component';
 import {RadarComponent} from './cockpit/main/radar/radar.component';
 import {SelectionShortcutsService} from './selection-shortcuts.service';
+import {TouchSelectionModeService} from './renderer/touch-selection-mode.service';
 import {RadarState} from '../gwtangular/GwtAngularFacade';
 
 
@@ -72,8 +74,6 @@ export class GameComponent implements OnInit {
 
   editorModels: EditorModel[] = [];
   modelDialogPresenter: ModelDialogPresenterImpl;
-  showInventory = false;
-  showUnlock = false;
 
   /**
    * The corner minimap on a phone. Large enough that the view field rectangle and the coloured item
@@ -93,11 +93,20 @@ export class GameComponent implements OnInit {
               private gameMockService: GameMockService,
               private actionService: ActionService,
               public selectionShortcuts: SelectionShortcutsService,
+              public touchSelectionMode: TouchSelectionModeService,
               private userService: UserService,
               private directorService: DirectorService,
+              protected uiSettingsService: UiSettingsService,
               private route: ActivatedRoute,
               private zone: NgZone) {
     this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, cockpitDisplayService);
+    // Turning the chat off while its overlay is open would leave the layout believing a panel is
+    // up: the panel itself goes invisible, but the minimap stays hidden behind nothing.
+    this.uiSettingsService.chatVisible$.subscribe(visible => {
+      if (!visible) {
+        this.compactLayout.closeIfOpen('chat');
+      }
+    });
     // An expanded map covers the screen, and so does an opening panel. Leaving it expanded would
     // mean closing the panel uncovers a full-screen map the player did not ask for again.
     effect(() => {
@@ -209,7 +218,12 @@ export class GameComponent implements OnInit {
     return available && this.compactLayout.isOpen(panel);
   }
 
-  private isPanelAvailable(panel: CompactPanel): boolean {
+  /**
+   * Whether the game has this panel to show at all. The chat additionally answers to the settings
+   * dialog: the cockpit flag says a chat exists, the setting says the player wants to look at it.
+   * Also read by the template, which must not offer an icon for a panel that cannot open.
+   */
+  protected isPanelAvailable(panel: CompactPanel): boolean {
     switch (panel) {
       case 'main':
         return this.cockpitDisplayService.showMainCockpit;
@@ -218,8 +232,26 @@ export class GameComponent implements OnInit {
       case 'quest':
         return this.cockpitDisplayService.showQuestCockpit;
       case 'chat':
-        return this.cockpitDisplayService.showChatCockpit;
+        return this.cockpitDisplayService.showChatCockpit && this.uiSettingsService.chatVisible;
     }
+  }
+
+  /**
+   * The two panels a player still has the field in mind behind: the build menu, which opens itself
+   * as soon as a builder is selected, and the quest they tapped open to read. Both are short, so
+   * the map can move up out from behind them instead of going away - see .compact-radar-docked.
+   * <p>
+   * The menu and the chat are the other kind: panels you open, read and close again, tall enough
+   * to reach the top of the screen, and with nothing on them a map helps with. Those still hide it.
+   */
+  protected isRadarDocked(): boolean {
+    const panel = this.compactLayout.openPanel();
+    return panel === 'item' || panel === 'quest';
+  }
+
+  /** A map behind an opaque panel is worse than no map: it would take taps meant for the panel. */
+  protected isRadarHidden(): boolean {
+    return this.compactLayout.openPanel() !== null && !this.isRadarDocked();
   }
 
   /** True while a director recording is running — drives the REC badge. */
@@ -228,11 +260,11 @@ export class GameComponent implements OnInit {
   }
 
   openInventory() {
-    this.showInventory = true;
+    this.cockpitDisplayService.showInventory = true;
   }
 
   openUnlock() {
-    this.showUnlock = true;
+    this.cockpitDisplayService.showUnlock = true;
   }
 
   addEditorModel(editorModel: EditorModel) {

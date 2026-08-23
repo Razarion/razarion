@@ -16,7 +16,6 @@ import com.btxtech.shared.dto.TabHiddenJson;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -270,12 +269,13 @@ public class PlayerSessionService {
             return clickIdPlatform;
         }
         // Only when no click id was found anywhere: the campaign the visit names itself.
-        TrackingPlatform utmPlatform = platformOfUtmSource(utmSource(tasks, terminatedJson, httpSessionId, pageRequests));
+        TrackingPlatform utmPlatform = TrackingPlatforms.ofUtmSource(
+                utmSource(tasks, terminatedJson, httpSessionId, pageRequests));
         if (utmPlatform != null) {
             return utmPlatform;
         }
         // And last the site the visitor came from, which needs no parameter to have survived at all.
-        return platformOfOrigin(origin(tasks, terminatedJson, httpSessionId, pageRequests));
+        return TrackingPlatforms.ofOrigin(origin(tasks, terminatedJson, httpSessionId, pageRequests));
     }
 
     /**
@@ -312,62 +312,7 @@ public class PlayerSessionService {
     }
 
     private TrackingPlatform platform(String rdtCid, String twclid) {
-        if (rdtCid != null && !rdtCid.isEmpty()) {
-            return TrackingPlatform.REDDIT;
-        }
-        if (twclid != null && !twclid.isEmpty()) {
-            return TrackingPlatform.X;
-        }
-        return null;
-    }
-
-    /**
-     * The campaign a visitor names, for the ones whose click id did not survive the trip.
-     * <p>
-     * A click id is lost easily - a reload without it, a link passed on, an in-app browser that
-     * strips the parameter - and every one of those used to count as organic although the visit
-     * still says where it came from. Over two weeks that was 155 sessions, more than a third of
-     * everything the history called organic.
-     */
-    private static TrackingPlatform platformOfUtmSource(String utmSource) {
-        if (utmSource == null) {
-            return null;
-        }
-        String normalized = utmSource.toLowerCase();
-        if (normalized.contains("reddit")) {
-            return TrackingPlatform.REDDIT;
-        }
-        if (normalized.contains("twitter") || normalized.equals("x")) {
-            return TrackingPlatform.X;
-        }
-        return null;
-    }
-
-    /**
-     * The platform a referring site belongs to, for a visit that carries no parameter at all.
-     * <p>
-     * A link shared onward keeps nothing but its referrer: t.co is X's own shortener, and a session
-     * arriving from it is X traffic that the history called organic because it looked for click ids
-     * and campaign names and found neither.
-     * <p>
-     * Only the two platforms that are advertised on are mapped. A visit from a search engine is
-     * genuinely organic, and saying so while the origin column names the search engine is the
-     * honest answer - not a third platform invented to fill the cell.
-     */
-    static TrackingPlatform platformOfOrigin(String origin) {
-        String host = host(origin != null ? origin : "");
-        if (isHost(host, "t.co") || isHost(host, "x.com") || isHost(host, "twitter.com")) {
-            return TrackingPlatform.X;
-        }
-        if (isHost(host, "reddit.com") || isHost(host, "redd.it")) {
-            return TrackingPlatform.REDDIT;
-        }
-        return null;
-    }
-
-    /** The domain itself or a subdomain of it, never a host that merely ends in the same letters. */
-    private static boolean isHost(String host, String domain) {
-        return host.equals(domain) || host.endsWith("." + domain);
+        return TrackingPlatforms.ofClickIds(rdtCid, twclid);
     }
 
     /**
@@ -406,26 +351,11 @@ public class PlayerSessionService {
             }
         }
         String utmSource = utmSource(tasks, terminatedJson, httpSessionId, pageRequests);
-        if (saysNothingBeyondThePlatform(utmSource,
+        if (TrackingPlatforms.saysNothingBeyondThePlatform(utmSource,
                 clickIdPlatform(tasks, terminatedJson, httpSessionId, pageRequests))) {
             return null;
         }
         return utmSource;
-    }
-
-    /**
-     * Whether naming the utm source would only repeat the platform column next to it.
-     * <p>
-     * "X · twitter" says one thing twice. The utm source is worth showing when it carries something
-     * the platform does not - a campaign named "newsletter" - and worth dropping when it is just
-     * the platform's own name written differently.
-     * <p>
-     * A source that contradicts the click id is kept: two answers that disagree is information, and
-     * quietly hiding one of them would leave the row looking settled when it is not.
-     */
-    static boolean saysNothingBeyondThePlatform(String utmSource, TrackingPlatform clickIdPlatform) {
-        TrackingPlatform utmPlatform = platformOfUtmSource(utmSource);
-        return utmPlatform != null && (clickIdPlatform == null || clickIdPlatform == utmPlatform);
     }
 
     private String landingReferer(String httpSessionId, List<PageRequest> pageRequests) {
@@ -442,33 +372,8 @@ public class PlayerSessionService {
         return null;
     }
 
-    /**
-     * Whether a referrer names somewhere other than this site. A page of our own is not an origin:
-     * it is the step before, and reporting it as the origin hides the one thing the column is for.
-     * <p>
-     * Anything that does not parse counts as foreign. It is not a page of ours - ours are written
-     * by us - and showing an odd value beats silently dropping it.
-     */
-    static boolean isForeign(String referrer) {
-        if (!notEmpty(referrer)) {
-            return false;
-        }
-        String host = host(referrer);
-        return !isOwnHost(host) && !host.equals("localhost");
-    }
-
-    /** The site itself and any subdomain of it - but not a host that merely ends in the same name. */
-    private static boolean isOwnHost(String host) {
-        return host.equals("razarion.com") || host.endsWith(".razarion.com");
-    }
-
-    private static String host(String url) {
-        try {
-            String host = URI.create(url).getHost();
-            return host != null ? host.toLowerCase() : "";
-        } catch (Exception e) {
-            return "";
-        }
+    private static boolean isForeign(String referrer) {
+        return TrackingPlatforms.isForeign(referrer);
     }
 
     private String utmSource(List<StartupTaskJson> tasks,
