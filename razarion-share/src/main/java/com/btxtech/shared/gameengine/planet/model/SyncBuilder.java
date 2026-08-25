@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
@@ -33,11 +34,14 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.SyncService;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.pathing.TerrainDestinationFinderUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import jakarta.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -46,12 +50,20 @@ import jakarta.inject.Inject;
  */
 
 public class SyncBuilder extends SyncBaseAbility {
+    /**
+     * How often one build job may walk back to its build position after having been shoved out of
+     * range. Generous enough for the odd collision, low enough that a builder wedged in a permanent
+     * traffic jam gives up instead of thrashing A* forever.
+     */
+    private static final int MAX_REPATH_ATTEMPTS = 10;
+    private final Logger logger = Logger.getLogger(SyncBuilder.class.getName());
     private final ItemTypeService itemTypeService;
     private final GameLogicService gameLogicService;
     private final BaseItemService baseItemService;
     private final TerrainService terrainService;
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private final SyncService syncService;
+    private final PathingService pathingService;
     private BuilderType builderType;
     private SyncBaseItem currentBuildup;
     private DecimalPosition toBeBuildPosition;
@@ -69,6 +81,11 @@ public class SyncBuilder extends SyncBaseAbility {
      * before the build job is released via stop(). Drives the client-side build outro animation window.
      */
     private int cooldownTicksRemaining = -1;
+    /**
+     * Number of walk-backs already spent on the current build job. Reset in {@link #stop()}, i.e.
+     * every new build job starts with a fresh budget.
+     */
+    private int repathAttempts;
 
     @Inject
     public SyncBuilder(SyncService syncService,
@@ -76,13 +93,15 @@ public class SyncBuilder extends SyncBaseAbility {
                        TerrainService terrainService,
                        BaseItemService baseItemService,
                        GameLogicService gameLogicService,
-                       ItemTypeService itemTypeService) {
+                       ItemTypeService itemTypeService,
+                       PathingService pathingService) {
         this.syncService = syncService;
         this.syncItemContainerService = syncItemContainerService;
         this.terrainService = terrainService;
         this.baseItemService = baseItemService;
         this.gameLogicService = gameLogicService;
         this.itemTypeService = itemTypeService;
+        this.pathingService = pathingService;
     }
 
     public void init(BuilderType builderType, SyncBaseItem syncBaseItem) {
@@ -109,7 +128,13 @@ public class SyncBuilder extends SyncBaseAbility {
                 return false;
             }
             if (!getSyncPhysicalMovable().hasDestination()) {
-                throw new IllegalStateException("SyncBuilder out of range from build position and SyncPhysicalMovable does not have a destination: " + getSyncBaseItem());
+                // The builder had arrived and stopped, then got shoved out of range - ORCA pushes
+                // standing units aside (PathingServiceUtil.setupPushAwayVelocity), and half a unit
+                // is enough because a builder parks exactly on the range boundary. It has no path
+                // left, so nothing would ever bring it back. Throwing here made BaseItemService
+                // cancel the whole build job, which leaves a half-built shell behind that a bot
+                // never picks up again. Walk back to the build position instead.
+                return repathToBuildTarget();
             }
             return true;
         }
@@ -225,6 +250,53 @@ public class SyncBuilder extends SyncBaseAbility {
     }
 
     /**
+     * Walk back to the build target after having been pushed out of range. Returns true while the
+     * build job stays alive (the builder is on its way back), false once it has been given up.
+     * <p>
+     * MASTER only: slaves never path on their own - they keep the job alive and wait for the
+     * master's corrected path to arrive through {@link #synchronize}, the same rule
+     * {@code PathingService.replanStuckItems} follows.
+     */
+    private boolean repathToBuildTarget() {
+        if (baseItemService.getGameEngineMode() != GameEngineMode.MASTER) {
+            return true;
+        }
+        if (repathAttempts >= MAX_REPATH_ATTEMPTS) {
+            logger.warning("SyncBuilder gave up walking back to its build position after "
+                    + MAX_REPATH_ATTEMPTS + " attempts: " + getSyncBaseItem());
+            stop();
+            return false;
+        }
+        repathAttempts++;
+        try {
+            SimplePath path;
+            if (currentBuildup != null) {
+                path = pathingService.setupPathToDestination(getSyncBaseItem(), builderType.getRangeOtherTerrain(), currentBuildup);
+            } else {
+                path = pathingService.setupPathToDestination(getSyncBaseItem(),
+                        builderType.getRangeOtherTerrain(),
+                        toBeBuiltType.getPhysicalAreaConfig().getTerrainType(),
+                        toBeBuildPosition,
+                        toBeBuiltType.getPhysicalAreaConfig().getRadius());
+            }
+            if (!path.isDestinationReachable()) {
+                // Same honest outcome as the isDestinationUnreachable() branch above: the build
+                // position cannot be reached at all, so end the job rather than orbit it.
+                stop();
+                return false;
+            }
+            getSyncPhysicalMovable().setPath(path);
+            // Push the new path to the slaves so their prediction follows the walk back.
+            syncService.notifySendSyncBaseItem(getSyncBaseItem());
+            return true;
+        } catch (Throwable t) {
+            logger.log(Level.WARNING, "SyncBuilder can not path back to its build position: " + getSyncBaseItem(), t);
+            stop();
+            return false;
+        }
+    }
+
+    /**
      * Cooldown phase: keep the builder in "building" state for N ticks after the target reached
      * buildup 1.0, so the client has time to play the build outro animation. Returns true while
      * the cooldown is still ticking, false (and calls stop()) once it's done.
@@ -306,6 +378,7 @@ public class SyncBuilder extends SyncBaseAbility {
         building = false;
         warmupTicksRemaining = -1;
         cooldownTicksRemaining = -1;
+        repathAttempts = 0;
         if (propagationNeeded) {
             gameLogicService.onSynBuilderStopped(getSyncBaseItem(), tmpCurrentBuildup);
         }

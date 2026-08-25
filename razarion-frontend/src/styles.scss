@@ -1,5 +1,11 @@
 @use "tailwindcss";
 @use "primeicons/primeicons.css";
+/* The desktop cockpit skin. Global rather than per-component because the four cockpit components
+   have to look like one instrument panel and emulated encapsulation cannot reach across them - see
+   the header of _hud.scss. Loaded after Tailwind so its unlayered rules outrank the utilities the
+   cockpit templates still carry for the phone layout. */
+@use "./app/game/cockpit/hud";
+@use "./app/game/cockpit/hud-panels";
 @plugin "tailwindcss-primeui";
 
 /*

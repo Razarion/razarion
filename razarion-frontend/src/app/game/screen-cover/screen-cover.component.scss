@@ -1,6 +1,7 @@
 /* The twin of #raz-boot in index.html. That splash paints before Angular exists and this one
    replaces it mid-startup, so any difference between the two is a visible flash. Background,
-   gradient and the portrait swap below have to stay identical in both files. */
+   gradient, the portrait swap below, and the card's plate all have to stay identical in both
+   files - index.html spells the plate out by hand because it cannot reach a stylesheet. */
 .cover-panel {
   --hero: url("/razarion-bg.webp");
   position: absolute;
@@ -32,10 +33,23 @@
   left: 50%;
   transform: translate(-50%, -50%);
   align-items: center;
-  border: solid 1px var(--p-emerald-900);
+  /* Frame, fill and shadow come from .hud-plate on this element (see _hud-panels.scss) - the same
+     plate the cockpit is built from, so the panel a player waits in front of and the one they end
+     up commanding from are the same object. Only the padding is ours: the plate's own 6px is a
+     gutter between instrument blocks, and this card holds text.
+     The plate is a global class and this is a component rule, so anything set here would win on
+     specificity - which is why the frame declarations are gone rather than overridden. */
   padding: 10px;
-  background-color: black;
-  box-shadow: 0 0 10px 0 black;
+}
+
+/* p-card paints its own surface and would cover the well. The card is used here for its title and
+   content slots, not for its skin. */
+:host ::ng-deep .cover-panel-center .p-card {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: inherit;
 }
 
 .cover-panel-fadeout {
@@ -73,9 +87,28 @@
   height: 0.6em;
 }
 
+/* The rail the bars are recessed into. Was a stack of Tailwind surface utilities - a stone-grey
+   box, which read as a foreign object once the card became a cockpit plate. Mirrors
+   #raz-boot-box in index.html. */
+.cover-progress-well {
+  padding: 0.25rem;
+  border-radius: 8px;
+  background: rgba(4, 10, 18, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(96, 168, 224, 0.26);
+}
+
 .info-font {
-  font-family: Arial, Helvetica, sans-serif;
-  color: #CCC;
+  font-family: var(--hud-font);
+  color: var(--hud-text);
+}
+
+/* The bar's own trough, the same near-black rail with a cyan rim as .hud-xp-fill-track in the
+   cockpit. The fill colours are left to the theme: green already means "yours" everywhere else in
+   this game. */
+:host ::ng-deep .cover-panel-center .p-progressbar {
+  background: #06101c;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(99, 200, 255, 0.25);
 }
 
 ::ng-deep .p-progressbar .p-progressbar-value {

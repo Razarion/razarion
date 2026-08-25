@@ -1,6 +1,9 @@
 @if (itemCockpitService.ownItemCockpit; as ownItemCockpit) {
-  <div class="flex flex-col gap-1">
-    <div class="item-panel flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
+  <!-- A column on a phone, a row on the desktop - the desktop rail lays these blocks out side by
+       side across the bottom of the screen instead of stacking them up the left edge. Which one it
+       is comes from the stylesheet, not from a second copy of the template. -->
+  <div class="item-cockpit-root flex flex-col gap-1">
+    <div class="item-panel item-info-panel flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
       <div class="flex">
         <div class="item-cockpit-image-col flex-none">
           <img src="{{ownItemCockpit.imageUrl}}" class="item-cockpit-image" alt="{{ownItemCockpit.itemTypeName}}">
@@ -60,6 +63,14 @@
     }
     @if (ownItemCockpit.buildupItems && ownItemCockpit.buildupProgress == null) {
       <div class="item-panel flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
+        <!-- Two shapes for the same buttons.
+             The phone keeps the carousel: ten tiles do not fit across 412px, and the arrows are a
+             target a thumb can hit. The desktop has the width, so it shows all of them at once -
+             paging five at a time behind an arrow hid half of what a builder can put up behind a
+             click that said nothing about what was on the other side.
+             Both carry #buildupItemDiv, which is how the build tip finds the button to point at;
+             only one of the two is ever in the document. -->
+        @if (compactLayout.compact()) {
         <p-carousel #buildupCarousel [value]="ownItemCockpit.buildupItems" [numVisible]="5" [numScroll]="5"
           styleClass="buildup-carousel">
           <ng-template pTemplate="item" let-buildupItem>
@@ -98,6 +109,43 @@
               </div>
             </ng-template>
           </p-carousel>
+        } @else {
+          <div class="hud-build-grid">
+            @for (buildupItem of ownItemCockpit.buildupItems; track buildupItem.itemTypeId) {
+              <div class="hud-build-cell" #buildupItemDiv
+                   [attr.data-item-type-id]="buildupItem.itemTypeId">
+                <!-- Not [disabled]: a disabled button swallows the click, and the reason it cannot
+                     be pressed would go with it. It stays pressable and answers with the reason,
+                     which is printed under the grid as well as offered as a tooltip. -->
+                <button class="hud-build-btn"
+                        (mousedown)="onBuildClick(buildupItem)"
+                        [title]="buildTooltip(buildupItem)"
+                        [attr.aria-disabled]="!isBuildable(buildupItem)">
+                  <img src="{{buildupItem.imageUrl}}" alt="{{buildupItem.itemTypeName}}">
+                  <span class="hud-build-limit">
+                    {{ buildupItem.itemCount }}/{{ buildupItem.itemLimit }}
+                  </span>
+                  <!-- Three icons rather than one grey wash: no slots left, no house space and no
+                       money each send the player somewhere different next. -->
+                  @if (!buildupItem.enabled) {
+                    <div class="hud-build-block">
+                      @if (buildupItem.buildLimitReached) {
+                        <i class="pi pi-ban"></i>
+                      } @else if (buildupItem.buildHouseSpaceReached) {
+                        <i class="pi pi-home"></i>
+                      } @else if (buildupItem.buildNoMoney) {
+                        <i class="pi pi-dollar"></i>
+                      }
+                    </div>
+                  }
+                </button>
+                <div class="hud-build-price">
+                  <i class="pi pi-sparkles"></i>{{ buildupItem.price }}
+                </div>
+              </div>
+            }
+          </div>
+        }
           @if (buildBlockedMessage) {
             <div class="item-cockpit-blocked-msg">{{ buildBlockedMessage }}</div>
           }

@@ -1,9 +1,9 @@
 <div class="cover-panel" [ngClass]="{'cover-panel-fadeout': fadeOutCover, 'cover-panel-hide':removeCover}">
-  <div class="cover-panel-center">
+  <div class="cover-panel-center hud-plate">
     <p-card>
       <ng-template pTemplate="title"><span class="info-font">Razarion – RTS meets MMO: One shared world that never stops</span></ng-template>
       <ng-template pTemplate="content">
-        <div class="bg-surface-800 p-1 rounded-xl border border-surface-500 bg-surface-100">
+        <div class="cover-progress-well">
           <div class="progress-bar-container">
             <div class="info-font">Loading...</div>
             @if (loadingProgress === null) {

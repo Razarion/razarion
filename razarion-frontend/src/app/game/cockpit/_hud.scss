@@ -1,0 +1,490 @@
+/*
+ * The desktop HUD skin.
+ *
+ * Global on purpose, not a component stylesheet. The cockpit is four components that have to look
+ * like one instrument panel: the top bar is drawn by main-cockpit, the unit shortcuts by
+ * game-component, the build tiles by item-cockpit, and the quest and chat frames sit inside two
+ * more. Emulated encapsulation cannot reach across those boundaries, and copying the frame recipe
+ * into five stylesheets is how a skin drifts. It also keeps it out of the per-component style
+ * budget (8kB hard limit in angular.json), which game.component.scss and item-cockpit.component.scss
+ * are already close to.
+ *
+ * Everything here hangs off .hud-skin, which game.component.html puts on the four panel wrappers
+ * only while the layout is NOT compact. The phone keeps the layout it was tuned for - see the
+ * compact block in game.component.scss - and nothing in this file may reach it.
+ *
+ * Selectors are prefixed with .game-main so they outrank the emulated-encapsulation rules in
+ * game.component.scss (.panel-main[_ngcontent-x] is two simple selectors, so a bare
+ * .panel-main.hud-skin would only tie with it and depend on stylesheet order).
+ */
+
+:root {
+  --hud-text: #cfe0f0;
+  --hud-text-dim: #8ba3ba;
+  --hud-accent: #3ad07a;
+  --hud-accent-dim: rgba(58, 208, 122, 0.5);
+  --hud-cyan: #63c8ff;
+  --hud-amber: #ffb020;
+  --hud-danger: #ff5a5a;
+  --hud-font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* ---------------------------------------------------------------- the frame
+
+   Two nested boxes: an outer bevel that is a vertical steel gradient (light top edge, dark belly,
+   a second highlight at the bottom so it reads as a rounded rail rather than a flat plate), and an
+   inner well that is nearly black with a cold blue cast and a thin cyan rim. Everything in the
+   cockpit is one of these. */
+
+.game-main .hud-frame {
+  position: relative;
+  padding: 4px;
+  border-radius: 12px;
+  background: linear-gradient(180deg,
+    #d3dde7 0%, #9aa8b7 5%, #64717f 22%,
+    #3b4551 52%, #242c36 78%, #6f7b89 96%, #b3bfcc 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 0 0 1px #0b1017,
+    0 8px 22px rgba(0, 0, 0, 0.6);
+}
+
+.game-main .hud-frame-inner {
+  position: relative;
+  border-radius: 9px;
+  background:
+    radial-gradient(120% 180% at 50% 0%, rgba(46, 100, 148, 0.32) 0%, rgba(8, 16, 27, 0) 62%),
+    linear-gradient(180deg, #0e1d2f 0%, #081422 55%, #050d17 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(96, 168, 224, 0.26),
+    inset 0 1px 0 rgba(160, 220, 255, 0.13),
+    inset 0 -20px 34px rgba(0, 0, 0, 0.5);
+  color: var(--hud-text);
+  font-family: var(--hud-font);
+}
+
+/* ---------------------------------------------------------------- buttons
+
+   One shape for every command in the cockpit: menu icons, unit shortcuts, radar zoom. Green
+   because that is the colour the game already uses for "yours" - the selection markers on the
+   field, the health bar - so a button reads as belonging to the player's own machinery. */
+
+.game-main .hud-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 32px;
+  border: 1px solid var(--hud-accent-dim);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(30, 62, 50, 0.95) 0%, rgba(9, 22, 19, 0.95) 100%);
+  color: var(--hud-accent);
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.12s, box-shadow 0.12s;
+}
+
+.game-main .hud-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(48, 104, 78, 0.98) 0%, rgba(16, 44, 34, 0.98) 100%);
+  box-shadow: 0 0 9px rgba(58, 208, 122, 0.45);
+}
+
+.game-main .hud-btn:active:not(:disabled) {
+  background: linear-gradient(180deg, rgba(9, 22, 19, 0.98) 0%, rgba(30, 62, 50, 0.98) 100%);
+}
+
+/* Dimmed, never removed: a row of commands that reorders itself as units are built and lost moves
+   the button out from under the cursor that was aiming at it. */
+.game-main .hud-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* The count is half the reason to look at the shortcut block - "how many harvesters do I have" is
+   the question that sends a player hunting for the panel in the first place. */
+.game-main .hud-btn-count {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  min-width: 15px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: #14532d;
+  border: 1px solid var(--hud-accent-dim);
+  color: #d6ffe8;
+  font: 700 10px/14px var(--hud-font);
+  text-align: center;
+}
+
+.game-main .hud-btn.hud-btn-blink {
+  animation: hud-blink 1s infinite;
+}
+
+@keyframes hud-blink {
+  50% { opacity: 0.35; }
+}
+
+/* ---------------------------------------------------------------- panel placement
+
+   The left sidebar is gone. What it held is spread to the edges it belongs to: the readouts across
+   the top where they are read without looking away from the field, the map into the bottom-left
+   corner an RTS player reaches for by reflex, the selection and its build options across the
+   bottom centre. */
+
+.game-main .panel-main.hud-skin {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  /* A full-screen layer that must not swallow a single click meant for the field; the clusters
+     inside take their own. */
+  pointer-events: none;
+}
+
+.game-main .panel-main.hud-skin main-cockpit {
+  position: absolute;
+  inset: 0;
+  background: none;
+}
+
+.game-main .hud-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- top bar */
+
+.game-main .hud-topbar {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Percent, not vw. 100vw counts the scrollbar and the client width does not, so a bar sized off
+     vw grows past the viewport the moment anything else puts a scrollbar on the page - and then
+     keeps it there. The containing block is .hud-layer, which is the viewport. */
+  max-width: calc(100% - 24px);
+  pointer-events: auto;
+}
+
+.game-main .hud-topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 14px 9px;
+}
+
+.game-main .hud-stat {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+/* Uppercase and spaced out, the way a panel legend is silk-screened rather than written. It is a
+   caption for the number beside it and must not compete with it. */
+.game-main .hud-stat-label {
+  color: var(--hud-text-dim);
+  font: 600 12px/1 var(--hud-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.game-main .hud-stat-value {
+  color: var(--hud-text);
+  font: 700 15px/1 var(--hud-font);
+  font-variant-numeric: tabular-nums;
+}
+
+.game-main .hud-stat-icon {
+  color: var(--hud-cyan);
+  font-size: 14px;
+}
+
+/* The level, in the badge the eye goes to first. */
+.game-main .hud-xp-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px dashed rgba(99, 200, 255, 0.55);
+  background: radial-gradient(circle at 50% 35%, rgba(40, 96, 140, 0.9), rgba(6, 16, 28, 0.95));
+  color: var(--hud-cyan);
+  font: 700 14px/1 var(--hud-font);
+  font-variant-numeric: tabular-nums;
+}
+
+.game-main .hud-sep {
+  width: 1px;
+  height: 22px;
+  flex: 0 0 auto;
+  background: linear-gradient(180deg,
+    rgba(99, 200, 255, 0) 0%, rgba(99, 200, 255, 0.35) 50%, rgba(99, 200, 255, 0) 100%);
+}
+
+.game-main .hud-sep-grow {
+  width: auto;
+  min-width: 10px;
+  flex: 1 1 auto;
+  background: none;
+}
+
+/* Experience towards the next level, hung under the middle of the bar. Its own rail rather than a
+   number, because what a player wants from it is "how close am I", which a fraction answers slowly
+   and a bar answers at a glance. */
+.game-main .hud-xp-track {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: -7px;
+  height: 12px;
+  border-radius: 6px;
+  padding: 2px;
+  background: linear-gradient(180deg, #99a6b4 0%, #47515e 40%, #1d242c 100%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+}
+
+.game-main .hud-xp-fill-track {
+  height: 100%;
+  border-radius: 4px;
+  background: #06101c;
+  box-shadow: inset 0 0 0 1px rgba(99, 200, 255, 0.25);
+  overflow: hidden;
+}
+
+.game-main .hud-xp-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #b4560f 0%, #ff9d2e 60%, #ffcf6b 100%);
+  box-shadow: 0 0 8px rgba(255, 157, 46, 0.6);
+  transition: width 0.35s ease-out;
+}
+
+/* --- power meter -------------------------------------------------------
+
+   Segments rather than a smooth bar. Energy is not a percentage a player tunes, it is headroom
+   they either have or do not, and a row of cells says "four left" where a bar says "roughly 70%".
+   The whole row turns red at overload, which is the one state that stops the base. */
+
+.game-main .hud-meter {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 4px;
+  background: #06101c;
+  box-shadow: inset 0 0 0 1px rgba(99, 200, 255, 0.25);
+}
+
+.game-main .hud-seg {
+  width: 7px;
+  height: 13px;
+  border-radius: 1px;
+  background: #16222f;
+}
+
+.game-main .hud-seg-on {
+  background: linear-gradient(180deg, #ffcf6b 0%, #ff9d2e 55%, #d4670c 100%);
+  box-shadow: 0 0 5px rgba(255, 157, 46, 0.55);
+}
+
+.game-main .hud-meter-over .hud-seg-on {
+  background: linear-gradient(180deg, #ff9a9a 0%, #ff4b4b 55%, #b31313 100%);
+  box-shadow: 0 0 5px rgba(255, 75, 75, 0.6);
+}
+
+.game-main .hud-value-warn {
+  color: var(--hud-danger);
+}
+
+/* --- razarion ----------------------------------------------------------
+
+   The counter carries its own state, because broke and at-the-cap both look exactly like
+   everything working: the number simply stops moving while the factories stand still. */
+
+.game-main .hud-razarion .hud-stat-value,
+.game-main .hud-razarion .hud-stat-icon {
+  color: var(--hud-amber);
+}
+
+.game-main .hud-razarion-EMPTY .hud-stat-value,
+.game-main .hud-razarion-EMPTY .hud-stat-icon {
+  color: var(--hud-danger);
+}
+
+.game-main .hud-razarion-EMPTY .hud-stat-icon {
+  animation: hud-blink 1.6s infinite;
+}
+
+.game-main .hud-razarion-FULL .hud-stat-value,
+.game-main .hud-razarion-FULL .hud-stat-icon {
+  color: #fff0b3;
+}
+
+/* --- menu cluster ------------------------------------------------------ */
+
+.game-main .hud-topbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* The admin readout, kept out of the button row: it is a sentence, not a command. */
+.game-main .hud-cursor-pos {
+  color: var(--hud-text-dim);
+  font: 500 11px/1 var(--hud-font);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- radar
+
+   Round, in the bottom-left corner. The map itself is still the three square canvases the radar
+   component draws - clipped to a circle here rather than rebuilt, so the click-to-move maths in
+   RadarComponent.onMapClicke keeps measuring against the same 200x200 box it always did. */
+
+.game-main .hud-radar-dock {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  pointer-events: auto;
+}
+
+.game-main .hud-radar-ring {
+  position: relative;
+  width: 232px;
+  height: 232px;
+  border-radius: 50%;
+  padding: 16px;
+  /* Load-bearing, not cosmetic. The sweep inside is a square that rotates, and a rotating square
+     has a growing bounding box - 200px becomes 283 at 45 degrees. That box counts towards the
+     document's scrollable area, and the ring sits 12px off the bottom of the screen, so four times
+     per revolution the page grew a scrollbar and lost it again: a visible flicker roughly twice a
+     second with nothing on screen actually moving. This contains it. */
+  overflow: hidden;
+  background: linear-gradient(150deg,
+    #d3dde7 0%, #93a1b0 12%, #56626f 34%,
+    #303945 58%, #1d242c 76%, #7b8794 94%, #b8c4d1 100%);
+  box-shadow: 0 0 0 1px #0b1017, 0 10px 26px rgba(0, 0, 0, 0.7);
+}
+
+.game-main .hud-radar-clip {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #04121a;
+  box-shadow:
+    inset 0 0 0 2px rgba(58, 208, 122, 0.35),
+    inset 0 0 26px rgba(0, 0, 0, 0.8);
+}
+
+/* The component draws a 1px white border on its own container, which is a square edge inside a
+   round hole. Inline style, so !important is the only way past it. */
+.game-main .hud-radar-clip radar > div,
+.game-main .hud-radar-clip .radarNoPower {
+  border: 0 !important;
+}
+
+/* Range rings and cross hairs. Painted once and never animated - they cost one composited layer
+   and nothing per frame. */
+.game-main .hud-radar-grid {
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, transparent 0 31%, rgba(58, 208, 122, 0.22) 31% 32%, transparent 32%),
+    radial-gradient(circle, transparent 0 63%, rgba(58, 208, 122, 0.18) 63% 64%, transparent 64%),
+    linear-gradient(0deg, transparent 0 49.7%, rgba(58, 208, 122, 0.14) 49.7% 50.3%, transparent 50.3%),
+    linear-gradient(90deg, transparent 0 49.7%, rgba(58, 208, 122, 0.14) 49.7% 50.3%, transparent 50.3%);
+}
+
+/* One rotating cone. A transform animation on its own layer, so it is composited and never
+   repaints - this sits over a game that is already GPU bound and may not cost it frames. */
+.game-main .hud-radar-sweep {
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(from 0deg,
+    rgba(58, 208, 122, 0.28) 0deg, rgba(58, 208, 122, 0.1) 26deg,
+    transparent 60deg, transparent 360deg);
+  animation: hud-radar-sweep 4s linear infinite;
+  will-change: transform;
+}
+
+@keyframes hud-radar-sweep {
+  to { transform: rotate(360deg); }
+}
+
+/* Two buttons on the rim instead of the desktop slider row: on a round map a straight row of
+   controls underneath is a rectangle stuck to a circle, and the slider has nothing to aim at that
+   two steps do not reach. */
+.game-main .hud-radar-zoom {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--hud-accent-dim);
+  background: linear-gradient(180deg, rgba(30, 62, 50, 0.97) 0%, rgba(9, 22, 19, 0.97) 100%);
+  color: var(--hud-accent);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.game-main .hud-radar-zoom:hover {
+  box-shadow: 0 0 10px rgba(58, 208, 122, 0.55);
+}
+
+.game-main .hud-radar-zoom-out { left: 0; top: 18px; }
+.game-main .hud-radar-zoom-in  { right: 0; bottom: 18px; }
+
+/* ---------------------------------------------------------------- narrow desktop
+
+   Half a laptop screen is around 800px wide and the compact layout does not begin until 640, so
+   between the two there is a desktop that has to fit the same bar into a third less room. Tighter
+   rather than shorter: every readout keeps its legend and its number, they just stop being spaced
+   like a bar that has room to spare. */
+@media (min-width: 641px) and (max-width: 900px) {
+  .game-main .hud-topbar-inner {
+    gap: 8px;
+    padding: 6px 9px 8px;
+  }
+
+  .game-main .hud-stat {
+    gap: 5px;
+  }
+
+  .game-main .hud-stat-label {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  .game-main .hud-stat-value {
+    font-size: 14px;
+  }
+
+  .game-main .hud-topbar-menu .hud-btn {
+    width: 30px;
+  }
+
+  .game-main .hud-seg {
+    width: 5px;
+  }
+
+  /* The map is left at its full size on purpose. Its canvases are sized in pixels by the radar
+     component, which knows nothing about this stylesheet, and its click-to-move maths measures
+     against them - shrinking the ring here would either crop the map or put a transform between
+     the click and the coordinate it turns into. A chunky map is the cheaper of the two. */
+}

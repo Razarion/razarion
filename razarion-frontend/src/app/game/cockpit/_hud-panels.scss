@@ -1,0 +1,400 @@
+/*
+ * The desktop HUD skin, part two: the three panels that keep their own templates.
+ *
+ * Split from _hud.scss only for length - same rules apply. Everything hangs off .hud-skin, which
+ * is on the panel wrappers in game.component.html and only while the layout is not compact, and
+ * every selector starts at .game-main so it outranks the emulated-encapsulation rules inside the
+ * cockpit components.
+ *
+ * The plate recipe repeats the two-tone frame of .hud-frame in a single element: a transparent
+ * border filled by a steel gradient clipped to the border box, over a dark well clipped to the
+ * padding box. One element instead of two, because these panels are drawn by their own components
+ * and cannot be given a wrapper without touching the phone layout that shares the template.
+ */
+
+@mixin hud-plate {
+  padding: 6px;
+  border: 4px solid transparent;
+  border-radius: 12px;
+  background-image:
+    radial-gradient(120% 180% at 50% 0%, rgba(46, 100, 148, 0.32) 0%, rgba(8, 16, 27, 0) 62%),
+    linear-gradient(180deg, #0e1d2f 0%, #081422 55%, #050d17 100%),
+    linear-gradient(180deg,
+      #d3dde7 0%, #9aa8b7 5%, #64717f 22%,
+      #3b4551 52%, #242c36 78%, #6f7b89 96%, #b3bfcc 100%);
+  background-origin: padding-box, padding-box, border-box;
+  background-clip: padding-box, padding-box, border-box;
+  box-shadow:
+    0 0 0 1px #0b1017,
+    0 8px 22px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(96, 168, 224, 0.26);
+  color: var(--hud-text);
+  font-family: var(--hud-font);
+}
+
+/* The plate as a class, for panels that are not part of the cockpit but should read as the same
+   instrument - the loading screen's card. No .game-main prefix and no .hud-skin: this one is worn
+   outside the game view and before the layout is known, so it must not depend on either. The
+   inline copy in razarion-frontend/src/index.html and the one in the landing page template repeat
+   these declarations by hand, because both paint before any stylesheet exists; changing the recipe
+   means changing all three. */
+.hud-plate {
+  @include hud-plate;
+}
+
+/* ---------------------------------------------------------------- bottom row
+
+   The selection, what it can build, the unit shortcuts and the chat.
+   The shortcuts are a sibling of the item panel rather than part of it: the item panel is hidden
+   whenever nothing is selected, and the shortcuts are how a player selects something in the first
+   place. */
+
+/* One flex line for everything along the bottom: the selection, the unit shortcuts and the chat.
+   A row rather than three independently positioned corners, because independent corners overlap -
+   a 480px chat pinned bottom-right met a rail centred on the viewport and covered the shortcuts on
+   any window below about 1780px. Flex items push each other instead.
+
+   The left inset clears the radar in its corner. No transform: the build tip is position:fixed and
+   lives inside the item cockpit, which is inside this wrapper, and a transform on an ancestor makes
+   a fixed descendant resolve against that ancestor rather than the viewport - the tip's coordinates
+   come from getBoundingClientRect(), so it would land hundreds of pixels below its button. */
+.game-main .hud-bottom {
+  position: absolute;
+  left: 258px;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  gap: 6px;
+  /* The last resort, once the chat has shrunk to its minimum and the build grid has dropped every
+     column it can: the chat takes a line of its own rather than being squeezed into illegibility
+     or pushed off the screen. A breakpoint would have to guess which window is too narrow; this
+     measures.
+     wrap-reverse, so the first line - the selection and the shortcuts, the two things in constant
+     use - keeps the bottom edge and the chat is the one that moves up. It also inverts the cross
+     axis, which is why the items are aligned to flex-start: that is the bottom of the line here. */
+  flex-wrap: wrap-reverse;
+  align-items: flex-start;
+  /* Everything between and beside the panels is field, not cockpit. */
+  pointer-events: none;
+}
+
+/* On a phone there is no rail. The shortcuts are not rendered at all (the @if in
+   game.component.html) and the item panel is an overlay that positions itself against the viewport,
+   which it can only do if this wrapper generates no box - a wrapper with a transform would
+   otherwise become its containing block.
+   In this file rather than in game.component.scss, where it would only tie on specificity with the
+   rule above and then depend on which stylesheet the browser saw last. Same test as
+   CompactLayoutService.QUERY and the compact block in game.component.scss - all three have to
+   agree on what counts as a phone. */
+@media (max-width: 640px), (max-height: 540px) {
+  .game-main .hud-bottom {
+    display: contents;
+    /* display:contents stops the box, not the inheritance. pointer-events is an inherited
+       property, so the none above went on reaching the item panel and the chat, and every tap on
+       a build button fell through to the field behind it. On the desktop the plates take it back
+       themselves with pointer-events:auto; on the phone the panels are the whole overlay, so it
+       is given back here, next to the rail rule it undoes. */
+    pointer-events: auto;
+  }
+}
+
+/* The selection takes the slack in the row. flex-grow, not a fixed reserved width: the shortcuts
+   then sit at a constant distance from the chat instead of following the selection about - without
+   it, picking a builder slid them 180px sideways, out from under the cursor aiming at them - and
+   the panel can still give the width back when the window gets too narrow to hold everything.
+   The plates inside stay left-aligned, so the slack is empty field, not a stretched panel. */
+.game-main .panel-item.hud-skin {
+  position: static;
+  flex: 1 1 auto;
+  /* Flex items refuse to shrink past their content unless told; this is what lets the build grid
+     drop a column instead of pushing the chat off the screen. */
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  /* Mostly empty most of the time, and an invisible box that wide over the field would swallow the
+     clicks meant for it. The plates inside take their own. */
+  pointer-events: none;
+}
+
+/* The component's three top-level blocks - the selected unit, a mixed selection, and whatever the
+   player last clicked that is not theirs - stack on a phone and stand side by side here. Which one
+   it is comes from the stylesheet, not from a second copy of the template. */
+.game-main .hud-skin item-cockpit {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  background: none;
+}
+
+.game-main .hud-skin .item-cockpit-root {
+  flex-direction: row;
+  align-items: stretch;
+  gap: 6px;
+  /* Part of the chain that lets the tile grid drop a column: every flex item between .panel-item
+     and the grid needs this, or the first one that refuses to shrink past its content stops the
+     rest and the plates spill out of the panel instead. */
+  min-width: 0;
+}
+
+.game-main .hud-skin .item-panel {
+  @include hud-plate;
+  /* The panel around them is click-through so the slack in the row does not cover the field. */
+  pointer-events: auto;
+  /* Lets the build grid drop a column when the row is tight; without it a flex item refuses to go
+     below its content width and the row overflows instead. */
+  min-width: 0;
+}
+
+/* --- the selected unit ------------------------------------------------- */
+
+.game-main .hud-skin .item-info-panel {
+  /* Fixed and non-shrinking: the portrait, the name and the health bar are the same size whatever
+     is selected, and the width the row has to give back comes out of the tile grid instead. */
+  flex: 0 0 288px;
+  justify-content: space-between;
+}
+
+.game-main .hud-skin .item-cockpit-image-col {
+  width: 68px;
+}
+
+.game-main .hud-skin .item-cockpit-image {
+  width: 62px;
+  height: 62px;
+  border: 2px solid rgba(99, 200, 255, 0.5);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #e7edf3, #b9c5d2);
+}
+
+.game-main .hud-skin .item-cockpit-title {
+  font: 700 17px/1.15 var(--hud-font);
+  color: var(--hud-cyan) !important;
+}
+
+/* Kept, though the mock-up drops it: two lines that say what the thing in your hands does are
+   worth more than the 30px they cost, and clamping is enough to stop a long one from stretching
+   the rail. */
+.game-main .hud-skin .item-cockpit-descr {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font: 400 11.5px/1.3 var(--hud-font);
+  color: var(--hud-text-dim);
+}
+
+/* --- build tiles -------------------------------------------------------
+
+   Two rows of five, all of it visible at once. The carousel it replaces on the desktop paged five
+   at a time behind two arrows, which hid half of what a builder can put up behind a click that
+   said nothing about what was on the other page. A builder with more than ten options scrolls. */
+
+.game-main .hud-build-grid {
+  display: grid;
+  /* auto-fill, not a fixed five. When the row runs out of width the grid drops a column and grows
+     a row instead of pushing the chat off the screen; the cap holds it at five wherever there is
+     room for five. 5 x 62 + 4 x 5 of gap. */
+  grid-template-columns: repeat(auto-fill, 62px);
+  max-width: 330px;
+  min-width: 62px;
+  gap: 5px;
+  max-height: 172px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 200, 255, 0.4) transparent;
+}
+
+.game-main .hud-build-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-main .hud-build-btn {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  padding: 0;
+  border: 1px solid rgba(150, 175, 200, 0.5);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #eef2f6 0%, #c3ced9 100%);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.game-main .hud-build-btn:hover {
+  border-color: var(--hud-accent);
+  box-shadow: 0 0 8px rgba(58, 208, 122, 0.5);
+}
+
+/* Not disabled, because a disabled button swallows the click and the reason it cannot be pressed
+   never reaches the player. It stays pressable and answers with the reason instead. */
+.game-main .hud-build-btn[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.game-main .hud-build-btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.game-main .hud-build-limit {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  padding: 1px 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #10161f;
+  font: 700 10px/1 var(--hud-font);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Why it cannot be built, in the one glance a player gives the row: no slots left, no house space,
+   no money. Three different icons rather than one grey wash, because the answer decides what they
+   do next. */
+.game-main .hud-build-block {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(178, 34, 34, 0.45);
+  color: #ffe4e4;
+  font-size: 22px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.game-main .hud-build-price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 17px;
+  color: var(--hud-amber);
+  font: 700 11px/1 var(--hud-font);
+  font-variant-numeric: tabular-nums;
+}
+
+.game-main .hud-build-price i {
+  font-size: 9px;
+  opacity: 0.8;
+}
+
+/* --- unit shortcuts ---------------------------------------------------- */
+
+.game-main .hud-shortcuts {
+  pointer-events: auto;
+}
+
+.game-main .hud-shortcuts-inner {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 7px;
+  padding: 9px;
+}
+
+.game-main .hud-shortcuts .hud-btn {
+  width: 44px;
+  height: 38px;
+  font-size: 17px;
+}
+
+/* ---------------------------------------------------------------- quest */
+
+.game-main .panel-quest.hud-skin {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.game-main .hud-skin quest-cockpit {
+  display: block;
+  background: none;
+}
+
+.game-main .hud-skin .quest-panel {
+  width: 21em;
+  gap: 5px;
+}
+
+.game-main .hud-skin .quest-box {
+  @include hud-plate;
+  padding: 9px 11px;
+}
+
+.game-main .hud-skin .quest-title {
+  font: 700 26px/1.15 var(--hud-font);
+  color: #ffffff;
+  letter-spacing: 0.01em;
+}
+
+.game-main .hud-skin .quest-row {
+  font: 500 13px/1.35 var(--hud-font);
+  color: var(--hud-text);
+}
+
+.game-main .hud-skin .quest-switch-label {
+  font: 600 12.5px/1 var(--hud-font);
+  color: var(--hud-text-dim);
+}
+
+/* ---------------------------------------------------------------- chat */
+
+/* The third item in the bottom row, not a corner of its own. It is the first thing asked to give up
+   width when the row gets tight - reading two lines of chat in a narrower box costs less than
+   losing a column of build buttons - down to a floor where the messages are still worth reading;
+   past that the row wraps and it takes a line of its own. */
+.game-main .panel-chat.hud-skin {
+  position: static;
+  /* Basis is the floor, not the preferred width, and the chat grows into whatever is left over.
+     Flexbox breaks a line on the item's flex-basis and only shrinks afterwards, so a basis of 480
+     made the chat wrap onto its own line at 1440px while it still had 180px of slack it could have
+     given up instead. Written this way it shrinks to 300 first and wraps only when even that does
+     not fit. */
+  flex: 1 1 300px;
+  max-width: 480px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  pointer-events: auto;
+}
+
+/* The component asks for 30em, which was the right answer while it had a corner to itself. Here its
+   width comes from the row. */
+.game-main .hud-skin chat-cockpit > div {
+  width: 100% !important;
+}
+
+.game-main .hud-skin .chat-message {
+  width: auto !important;
+  max-width: 100%;
+}
+
+.game-main .hud-skin .chat-box {
+  @include hud-plate;
+  padding: 7px;
+}
+
+.game-main .hud-skin .user-name {
+  background: linear-gradient(180deg, rgba(24, 66, 104, 0.95), rgba(14, 40, 66, 0.95));
+  border-left: 2px solid var(--hud-cyan);
+  padding: 2px 6px;
+  color: #d8ecff;
+  font: 600 12.5px/1.25 var(--hud-font);
+}
+
+.game-main .hud-skin .message {
+  background: rgba(10, 22, 36, 0.85);
+  padding: 2px 6px 3px;
+  color: var(--hud-text-dim);
+  font: 400 12px/1.3 var(--hud-font);
+}

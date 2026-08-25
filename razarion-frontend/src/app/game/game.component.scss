@@ -92,6 +92,9 @@
     background-color: var(--p-emerald-700, #047857);
   }
 
+  /* The desktop bottom rail (.hud-bottom, the flex row holding the item panel and the unit
+     shortcuts) is switched off for the phone in _hud-panels.scss, next to the rule it undoes. */
+
   /* An open panel spans the width and takes whatever height is left between the two bars, rather
      than its natural size - the chat alone is 502px wide and would otherwise run off screen. */
   .compact-panel {

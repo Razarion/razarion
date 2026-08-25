@@ -13,7 +13,7 @@
   <meta property="og:image" content="https://razarion.com/card.jpg">
   <meta property="og:site_name" content="Razarion">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@AloRtsDev">
+  <meta name="twitter:site" content="@razariongame">
   <meta name="twitter:title" content="Razarion – RTS meets MMO: One World That Never Stops">
   <meta name="twitter:description" content="RTS meets MMO: one shared world that never stops. Inspired by Command &amp; Conquer and StarCraft — persistent shared world, quests and levels. Play free in your browser via WebAssembly, no download. Open-source and community-driven.">
   <meta name="twitter:image" content="https://razarion.com/card.jpg">
@@ -199,6 +199,10 @@
     }
   }
 
+  /* The cockpit plate, by hand. This is @mixin hud-plate from _hud-panels.scss and the .hud-plate
+     class .cover-panel-center wears - the same recipe, spelled out, because this card paints
+     before any stylesheet exists and cannot reach a Sass mixin or a CSS variable. All three copies
+     have to change together, or the handover to Angular flashes. */
   #raz-boot-card {
     position: absolute;
     width: 40em;
@@ -207,20 +211,35 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border: solid 1px #014737;
     padding: 10px;
-    background-color: black;
-    box-shadow: 0 0 10px 0 black;
+    border: 4px solid transparent;
+    border-radius: 12px;
+    background-image:
+      radial-gradient(120% 180% at 50% 0%, rgba(46, 100, 148, 0.32) 0%, rgba(8, 16, 27, 0) 62%),
+      linear-gradient(180deg, #0e1d2f 0%, #081422 55%, #050d17 100%),
+      linear-gradient(180deg,
+        #d3dde7 0%, #9aa8b7 5%, #64717f 22%,
+        #3b4551 52%, #242c36 78%, #6f7b89 96%, #b3bfcc 100%);
+    background-origin: padding-box, padding-box, border-box;
+    background-clip: padding-box, padding-box, border-box;
+    box-shadow:
+      0 0 0 1px #0b1017,
+      0 8px 22px rgba(0, 0, 0, 0.6),
+      inset 0 0 0 1px rgba(96, 168, 224, 0.26);
+    color: #cfe0f0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
 
   #raz-boot-title {
     padding: 0.75rem 0.5rem 1rem;
   }
 
+  /* Mirrors .cover-progress-well in screen-cover.component.scss. */
   #raz-boot-box {
-    border: 1px solid #57534e;
-    border-radius: 0.75rem;
+    border-radius: 8px;
     padding: 0.25rem;
+    background: rgba(4, 10, 18, 0.6);
+    box-shadow: inset 0 0 0 1px rgba(96, 168, 224, 0.26);
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -231,15 +250,17 @@
     padding-left: 0.5rem;
   }
 
-  /* 28em/1.1em are the dimensions of the p-progressbar this hands over to. */
+  /* 28em/1.1em are the dimensions of the p-progressbar this hands over to, and the trough is the
+     same near-black rail with a cyan rim that .hud-xp-fill-track wears in the cockpit. */
   #raz-boot-track {
     position: relative;
     width: 28em;
     max-width: 60%;
     height: 1.1em;
     overflow: hidden;
-    background-color: #1c1917;
-    border-radius: 0.25rem;
+    background-color: #06101c;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgba(99, 200, 255, 0.25);
   }
 
   #raz-boot-fill {

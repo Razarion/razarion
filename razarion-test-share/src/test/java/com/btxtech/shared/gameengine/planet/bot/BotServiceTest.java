@@ -68,6 +68,53 @@ public class BotServiceTest extends BaseBotServiceTest {
         Assert.assertEquals(9, getSyncBaseItemInfos().size());
     }
 
+    /**
+     * A build job that ends before the target is finished used to leave the shell standing forever:
+     * Need was already satisfied when the shell was created, so nothing rebuilt it, and the bot
+     * could not produce from it either because a building below buildup 1.0 is never idle. On PROD
+     * this cost bot 1601 its whole Hydra supply for half an hour after its builder got pushed out
+     * of range one second before the dockyard was done.
+     */
+    @Test
+    public void abandonedShellIsFinishedByTheBot() {
+        setup();
+        // Give the factory a real build time - the fallback default of 0 finishes it in one tick,
+        // which would leave no window in which the shell can be abandoned.
+        getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID).buildup(50);
+
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().baseItemTypeId(FallbackConfig.BUILDER_ITEM_TYPE_ID).count(1).createDirectly(true).place(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
+        botItems.add(new BotItemConfig().baseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).count(1).createDirectly(false).place(new PlaceConfig().polygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().name("Normal").botItems(botItems));
+        botConfigs.add(new BotConfig().id(1).actionDelay(1).botEnragementStateConfigs(botEnragementStateConfigs).name("Kenny").npc(false));
+        startBots(botConfigs);
+
+        SyncBaseItem factory = null;
+        for (int i = 0; i < 5000 && factory == null; i++) {
+            tickBotRunner();
+            tickPlanetService();
+            factory = findBotItemOrNull(FallbackConfig.FACTORY_ITEM_TYPE_ID);
+        }
+        Assert.assertNotNull("Bot never started the factory", factory);
+        Assert.assertFalse("Factory was expected to be an unfinished shell", factory.isBuildup());
+
+        // Exactly what BaseItemService did to the builder when it was pushed out of range: the
+        // build job is dropped while the shell stays behind.
+        SyncBaseItem builder = findBotItemOrNull(FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        Assert.assertNotNull(builder);
+        builder.stop(true);
+        Assert.assertFalse(factory.isBuildup());
+
+        for (int i = 0; i < 5000; i++) {
+            tickBotRunner();
+            tickPlanetService();
+        }
+        Assert.assertTrue("Bot left the abandoned shell unfinished", factory.isBuildup());
+        Assert.assertEquals("The shell was to be finished, not replaced", 1, countBotItems(FallbackConfig.FACTORY_ITEM_TYPE_ID));
+    }
+
     @Test
     public void testAttack() {
         setup();
@@ -215,6 +262,15 @@ public class BotServiceTest extends BaseBotServiceTest {
         SyncBaseItem victim = findFirstBotItemHighestId(1, FallbackConfig.FACTORY_ITEM_TYPE_ID);
         getBotService().onKill(victim, camper);
         tickBotRunner();
+    }
+
+    private SyncBaseItem findBotItemOrNull(int baseItemTypeId) {
+        for (SyncBaseItem syncBaseItem : ((PlayerBaseFull) getBotBase(1)).getItems()) {
+            if (syncBaseItem.getBaseItemType().getId() == baseItemTypeId) {
+                return syncBaseItem;
+            }
+        }
+        return null;
     }
 
     private int countBotItems(int baseItemTypeId) {

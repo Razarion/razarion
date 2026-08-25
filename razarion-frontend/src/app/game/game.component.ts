@@ -17,6 +17,7 @@ import {ModelDialogPresenterImpl} from './model-dialog-presenter.impl';
 import {ActionService} from './action.service';
 import {ItemCockpitComponent} from './cockpit/item/item-cockpit.component';
 import {Dialog} from 'primeng/dialog';
+import {TooltipModule} from 'primeng/tooltip';
 import {EditorDialogComponent} from '../editor/editor-dialog/editor-dialog.component';
 import {DrawerModule} from 'primeng/drawer';
 import {CockpitDisplayService} from './cockpit/cockpit-display.service';
@@ -52,7 +53,8 @@ import {RadarState} from '../gwtangular/GwtAngularFacade';
     InfoDialogComponent,
     ServerRestartComponent,
     RadarComponent,
-    NgClass
+    NgClass,
+    TooltipModule
 ],
   styleUrls: ['game.component.scss']
 })

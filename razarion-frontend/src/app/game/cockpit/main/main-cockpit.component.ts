@@ -3,17 +3,10 @@ import {MainCockpit, RadarState} from "../../../gwtangular/GwtAngularFacade";
 import {GameComponent} from '../../game.component';
 import {Nullable, Observer, PointerEventTypes, PointerInfo} from '@babylonjs/core';
 import {BabylonRenderServiceAccessImpl} from '../../renderer/babylon-render-service-access-impl.service';
-import {Button} from 'primeng/button';
 import {RadarComponent} from './radar/radar.component';
 import {RadarNoPowerComponent} from './radar/radar-no-power.component';
-import {Checkbox} from 'primeng/checkbox';
 import { CommonModule, NgClass } from '@angular/common';
-import {Badge} from 'primeng/badge';
-import {InputText} from 'primeng/inputtext';
-import {InputGroupAddonModule} from 'primeng/inputgroupaddon';
-import {InputGroupModule} from 'primeng/inputgroup';
 import {TooltipModule} from 'primeng/tooltip';
-import {FormsModule} from '@angular/forms';
 import {Dialog} from 'primeng/dialog';
 import {LoginComponent} from '../../../auth/login/login.component';
 import {UserService} from '../../../auth/user.service';
@@ -21,7 +14,6 @@ import {UserComponent} from '../../../auth/user/user.component';
 import {RegisterComponent} from '../../../auth/register/register.component';
 import {CockpitDisplayService} from '../cockpit-display.service';
 import {SetNameComponent} from '../../../auth/set-name/set-name.component';
-import {SelectionShortcutCategory, SelectionShortcutsService} from '../../selection-shortcuts.service';
 import {SettingsComponent} from '../settings/settings.component';
 import {TechTreeComponent} from '../techtree/tech-tree.component';
 import {GwtAngularService} from '../../../gwtangular/GwtAngularService';
@@ -32,18 +24,11 @@ import {CompactLayoutService} from '../compact-layout.service';
   selector: 'main-cockpit',
   templateUrl: 'main-cockpit.component.html',
   imports: [
-    Button,
     RadarComponent,
     RadarNoPowerComponent,
-    Checkbox,
     NgClass,
-    Badge,
     CommonModule,
-    InputText,
-    InputGroupAddonModule,
-    InputGroupModule,
     TooltipModule,
-    FormsModule,
     Dialog,
     LoginComponent,
     UserComponent,
@@ -84,10 +69,25 @@ export class MainCockpitComponent implements MainCockpit {
   displayHouseSpace = "";
   displayEnergyString = "";
   displayXp2LevelUp = "";
+  /**
+   * The same three readouts as numbers.
+   * <p>
+   * The strings above are what the phone menu shows and what the desktop showed until the cockpit
+   * grew bars: "how close am I to the next level" and "how much power have I got left" are
+   * questions a fraction answers slowly and a filled rail answers at a glance. Kept beside the
+   * strings rather than replacing them - the compact menu still reads the strings, and the top bar
+   * prints them next to its bars.
+   */
+  xp = 0;
+  xp2LevelUp = 0;
+  energyConsuming = 0;
+  energyGenerating = 0;
   radarState!: RadarState;
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
   blinkUnlockEnabled = false;
+  /** Cells in the power meter. An array because the template iterates it; the value is the index. */
+  readonly powerSegments = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
   constructor(public mainCockpitService: CockpitDisplayService,
               private zone: NgZone,
@@ -96,12 +96,7 @@ export class MainCockpitComponent implements MainCockpit {
               private renderService: BabylonRenderServiceAccessImpl,
               private gwtAngularService: GwtAngularService,
               public compactLayout: CompactLayoutService,
-              public userService: UserService,
-              public selectionShortcuts: SelectionShortcutsService) {
-  }
-
-  shortcutBadge(category: SelectionShortcutCategory): string {
-    return this.selectionShortcuts.getCount(category).toString();
+              public userService: UserService) {
   }
 
   show(): void {
@@ -130,8 +125,39 @@ export class MainCockpitComponent implements MainCockpit {
 
   displayEnergy(consuming: number, generating: number): void {
     this.zone.run(() => {
+      this.energyConsuming = consuming;
+      this.energyGenerating = generating;
       this.displayEnergyString = `${consuming} / ${generating}`;
     });
+  }
+
+  /**
+   * Consumption has passed generation: the base is over its power budget. The one energy state
+   * worth a colour, so the meter can say it without the player working the fraction out.
+   */
+  get powerOverloaded(): boolean {
+    return this.energyConsuming > this.energyGenerating;
+  }
+
+  /**
+   * How many cells of the power meter are lit - consumption as a share of generation, rounded up
+   * so that drawing anything at all lights the first cell. Nothing generated yet but something
+   * drawing is a full red row rather than an empty one: it is the worst case, not the emptiest.
+   */
+  get powerFilled(): number {
+    const total = this.powerSegments.length;
+    if (this.energyGenerating <= 0) {
+      return this.energyConsuming > 0 ? total : 0;
+    }
+    return Math.min(total, Math.ceil(this.energyConsuming / this.energyGenerating * total));
+  }
+
+  /** Progress towards the next level, as a percentage for the rail under the top bar. */
+  get xpPercent(): number {
+    if (this.xp2LevelUp <= 0) {
+      return 0;
+    }
+    return Math.max(0, Math.min(100, this.xp / this.xp2LevelUp * 100));
   }
 
   displayItemCount(itemCount: number, usedHouseSpace: number, houseSpace: number): void {
@@ -217,6 +243,8 @@ export class MainCockpitComponent implements MainCockpit {
 
   displayXps(xp: number, xp2LevelUp: number): void {
     this.zone.run(() => {
+      this.xp = xp;
+      this.xp2LevelUp = xp2LevelUp;
       this.displayXp2LevelUp = `${xp} / ${xp2LevelUp}`;
     });
   }

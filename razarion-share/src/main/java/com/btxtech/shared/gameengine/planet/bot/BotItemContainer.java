@@ -99,6 +99,9 @@ public class BotItemContainer {
 
     public void work(PlayerBaseFull playerBase) {
         updateState();
+        // Before starting anything new: an unfinished shell is dead weight that also blocks its
+        // slot in Need, so finishing it beats building the next thing.
+        finalizeUnfinishedBuildings();
         Map<BotItemConfig, Integer> effectiveNeeds = need.getEffectiveItemNeed();
         if (!effectiveNeeds.isEmpty()) {
             buildItems(playerBase, effectiveNeeds);
@@ -253,6 +256,67 @@ public class BotItemContainer {
     private static boolean isLandTerrainType(TerrainType terrainType) {
         // A null terrain type defaults to LAND (see TerrainType.getNullTerrainType()).
         return terrainType == null || terrainType == TerrainType.LAND || terrainType == TerrainType.LAND_COAST;
+    }
+
+    /**
+     * Send an idle builder after every own building that is stuck below buildup 1.0.
+     * <p>
+     * A build job can end before the target is finished - the builder gets shoved out of range,
+     * the base runs dry, the item limit hits. The shell then stays put forever: {@link Need} was
+     * already satisfied when the shell was created ({@code onSyncBaseItemCreated}), so nothing
+     * rebuilds it, and {@code SyncBaseItem.isIdle()} is false while buildup < 1, so the bot does
+     * not even see it as a factory it could produce from. A half-built dockyard therefore silently
+     * cuts off the bot's whole ship supply. Bots never issued BuilderFinalizeCommand before - only
+     * the player UI did - which is exactly the recovery that was missing here.
+     */
+    private void finalizeUnfinishedBuildings() {
+        Collection<SyncBaseItem> unfinished = new ArrayList<>();
+        synchronized (botItems) {
+            for (SyncBaseItem syncBaseItem : botItems.keySet()) {
+                if (syncBaseItem.isAlive() && !syncBaseItem.isBuildup()) {
+                    unfinished.add(syncBaseItem);
+                }
+            }
+        }
+        for (SyncBaseItem building : unfinished) {
+            if (isBeingBuilt(building)) {
+                continue;
+            }
+            BotSyncBaseItem builder = getFirstIdleBuilderUnit(building.getBaseItemType());
+            if (builder == null) {
+                return;
+            }
+            builder.finalizeBuild(building);
+        }
+    }
+
+    private boolean isBeingBuilt(SyncBaseItem building) {
+        synchronized (botItems) {
+            for (SyncBaseItem syncBaseItem : botItems.keySet()) {
+                if (syncBaseItem.getSyncBuilder() != null && building.equals(syncBaseItem.getSyncBuilder().getCurrentBuildup())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Like {@link #getFirstIdleBuilder} but restricted to actual builder units - a factory can
+     * fabricate the type but cannot walk over and finish a shell.
+     */
+    private BotSyncBaseItem getFirstIdleBuilderUnit(BaseItemType toBeBuilt) {
+        synchronized (botItems) {
+            for (BotSyncBaseItem botSyncBaseItem : botItems.values()) {
+                SyncBaseItem syncBaseItem = botSyncBaseItem.getSyncBaseItem();
+                if (botSyncBaseItem.isIdle() && botSyncBaseItem.isAlive()
+                        && syncBaseItem.getSyncBuilder() != null
+                        && syncBaseItem.getSyncBuilder().getBuilderType().checkAbleToBuild(toBeBuilt.getId())) {
+                    return botSyncBaseItem;
+                }
+            }
+        }
+        return null;
     }
 
     private BotSyncBaseItem getFirstIdleBuilder(BaseItemType toBeBuilt) {

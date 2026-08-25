@@ -24,29 +24,84 @@
   <!-- The four panels never leave the DOM: they are registered with the GWT facade in ngOnInit
        (@ViewChild static), so an @if would tear the bridge down. Showing and hiding is CSS only.
        Position lives in the stylesheet rather than in an inline style object, so the compact
-       media query can move them without fighting inline specificity. -->
-  <div class="cockpit-border panel-main"
+       media query can move them without fighting inline specificity.
+
+       .hud-skin is what turns on the desktop cockpit skin (src/app/game/cockpit/_hud.scss and
+       _hud-panels.scss); .cockpit-border is the plain black box the phone overlay still wants. The
+       two are mutually exclusive, so the same signal picks one or the other and the phone layout
+       is untouched by anything the skin does. -->
+  <div class="panel-main"
+    [class.cockpit-border]="compactLayout.compact()"
+    [class.hud-skin]="!compactLayout.compact()"
     [class.compact-panel]="compactLayout.compact()"
     [style.visibility]="isPanelVisible('main') ? 'visible' : 'hidden'">
     <main-cockpit #mainCockpit></main-cockpit>
   </div>
 
-  <div class="cockpit-border panel-item"
-    [class.compact-panel]="compactLayout.compact()"
-    [style.visibility]="isPanelVisible('item') ? 'visible' : 'hidden'">
-    <item-cockpit #itemCockpitContainer></item-cockpit>
+  <!-- The bottom rail: what is selected, what it can build, and the way to select something else.
+       One flex row so the three read as one instrument. On a phone this wrapper is display:contents
+       and disappears, leaving the item panel to be the overlay it has always been. -->
+  <div class="hud-bottom">
+    <div class="panel-item"
+      [class.cockpit-border]="compactLayout.compact()"
+      [class.hud-skin]="!compactLayout.compact()"
+      [class.compact-panel]="compactLayout.compact()"
+      [style.visibility]="isPanelVisible('item') ? 'visible' : 'hidden'">
+      <item-cockpit #itemCockpitContainer></item-cockpit>
+    </div>
+
+    <!-- Unit navigation. Beside the item panel rather than inside it, because the item panel is
+         hidden whenever nothing is selected and this is how a player selects something in the
+         first place. All six stay put, dimmed at zero: a block that reorders itself as units are
+         built and lost moves the button out from under the cursor aiming at it.
+         The phone has its own column of these on the left edge - see .compact-nav below. -->
+    @if (!compactLayout.compact()) {
+      <div class="hud-shortcuts hud-frame"
+           [style.visibility]="cockpitDisplayService.showMainCockpit ? 'visible' : 'hidden'">
+        <div class="hud-frame-inner hud-shortcuts-inner">
+          @for (cat of selectionShortcuts.categories; track cat.id) {
+            <button type="button" class="hud-btn"
+                    [disabled]="selectionShortcuts.getCount(cat.id) === 0"
+                    (click)="selectionShortcuts.cycle(cat.id)"
+                    [pTooltip]="cat.tooltip"
+                    [attr.aria-label]="cat.tooltip">
+              <i [ngClass]="cat.icon"></i>
+              <span class="hud-btn-count">{{ selectionShortcuts.getCount(cat.id) }}</span>
+            </button>
+          }
+          <!-- An action, not a category, so it carries no count. -->
+          <button type="button" class="hud-btn"
+                  [disabled]="!selectionShortcuts.hasSelection()"
+                  (click)="selectionShortcuts.deselect()"
+                  pTooltip="Deselect" aria-label="Deselect">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- The chat is the third thing along the bottom, so it is in the same row as the other two
+         rather than pinned to the corner on its own. Two panels that are positioned independently
+         and both want the bottom right will sooner or later be drawn on top of each other - which
+         is what happened: a 480px chat in the corner met a rail centred on the viewport and buried
+         the unit shortcuts under it below about 1780px of window. In one flex line that cannot
+         happen; the chat gives up width until it reaches its minimum, then the build grid drops a
+         column. On a phone the wrapper is display:contents and this is an overlay again. -->
+    <div class="panel-chat"
+      [class.cockpit-border]="compactLayout.compact()"
+      [class.hud-skin]="!compactLayout.compact()"
+      [class.compact-panel]="compactLayout.compact()"
+      [style.visibility]="isPanelVisible('chat') ? 'visible' : 'hidden'">
+      <chat-cockpit #chatCockpitComponent></chat-cockpit>
+    </div>
   </div>
 
-  <div class="cockpit-border panel-quest"
+  <div class="panel-quest"
+    [class.cockpit-border]="compactLayout.compact()"
+    [class.hud-skin]="!compactLayout.compact()"
     [class.compact-panel]="compactLayout.compact()"
     [style.visibility]="isPanelVisible('quest') ? 'visible' : 'hidden'">
     <quest-cockpit #questCockpitContainer></quest-cockpit>
-  </div>
-
-  <div class="cockpit-border panel-chat"
-    [class.compact-panel]="compactLayout.compact()"
-    [style.visibility]="isPanelVisible('chat') ? 'visible' : 'hidden'">
-    <chat-cockpit #chatCockpitComponent></chat-cockpit>
   </div>
 
   @if (compactLayout.compact()) {

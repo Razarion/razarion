@@ -175,14 +175,30 @@ describe('ItemCockpitComponent buildup tip', () => {
     expect(fixture.componentInstance.buildTip).toBeNull();
   });
 
-  it('pages the carousel to the target button', () => {
+  it('pages the carousel to the target button on a phone', () => {
     // The Builder's 6 types at 5 per page: House (23) sits on page 2, where the tip would
-    // otherwise anchor to a clipped element.
-    const fixture = createFixture([4, 6, 7, 11, 21, 23].map(id => buildupItem(id, true)));
+    // otherwise anchor to a clipped element. Only the phone pages - the desktop shows all six at
+    // once and has no carousel to move.
+    const fixture = createFixture([4, 6, 7, 11, 21, 23].map(id => buildupItem(id, true)),
+      false, compactLayoutStub(true, true));
     const component = fixture.componentInstance;
     expect(component.showBuildupTip(23)).toBe(true);
     expect(component.buildupCarousel).toBeTruthy();
     expect(component.buildupCarousel!.page).toBe(1);
+  });
+
+  it('shows every buildup button at once on the desktop', () => {
+    const fixture = createFixture([4, 6, 7, 11, 21, 23].map(id => buildupItem(id, true)));
+    expect(fixture.nativeElement.querySelectorAll('.hud-build-btn').length).toBe(6);
+    // Nothing to page, so nothing that can leave a tip pointing at a clipped element.
+    expect(fixture.componentInstance.buildupCarousel).toBeUndefined();
+  });
+
+  it('keeps the paging carousel on a phone', () => {
+    const fixture = createFixture([4, 6, 7, 11, 21, 23].map(id => buildupItem(id, true)),
+      false, compactLayoutStub(true, true));
+    expect(fixture.nativeElement.querySelector('.hud-build-grid')).toBeNull();
+    expect(fixture.componentInstance.buildupCarousel).toBeTruthy();
   });
 
   it('re-measures the anchor on every call', () => {
@@ -225,9 +241,16 @@ describe('ItemCockpitComponent buildup tip', () => {
   });
 
   describe('a buildup button that cannot be pressed', () => {
-    /** The tap has to land: a disabled button would swallow it and answer nothing. */
+    /**
+     * The tap has to land: a disabled button would swallow it and answer nothing.
+     * <p>
+     * Two selectors, one button. The desktop grid and the phone carousel draw the same buildup
+     * button under different class names and exactly one of the two is ever in the document, so
+     * this finds whichever branch the fixture rendered.
+     */
     function tapFirstButton(fixture: ComponentFixture<ItemCockpitComponent>): void {
-      const button = fixture.nativeElement.querySelector('.item-cockpit-buildup-button') as HTMLButtonElement;
+      const button = fixture.nativeElement
+        .querySelector('.hud-build-btn, .item-cockpit-buildup-button') as HTMLButtonElement;
       expect(button.disabled).withContext('button must stay pressable').toBe(false);
       button.dispatchEvent(new MouseEvent('mousedown'));
       fixture.detectChanges();

@@ -89,102 +89,149 @@
     }
   </div>
 } @else {
-<div class="flex flex-col gap-1">
-  <div class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 items-center bg-surface-100">
-    <p-badge [value]="'Level: ' + levelNumber" severity="warn" size="large"></p-badge>
-  </div>
-  <div class="flex flex-col gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-    <p-inputgroup pTooltip="Experience points">
-      <p-inputgroup-addon>
-        <i class="pi pi-crown"></i>
-      </p-inputgroup-addon>
-      <input pInputText [ngModel]="displayXp2LevelUp" readonly="readonly"/>
-    </p-inputgroup>
-    <p-inputgroup pTooltip="Energy (consuming / producing)">
-      <p-inputgroup-addon>
-        <i class="pi pi-bolt"></i>
-      </p-inputgroup-addon>
-      <input pInputText [ngModel]="displayEnergyString" readonly="readonly"/>
-    </p-inputgroup>
-    <!-- The colour is the standing signal: the splash says it once, this keeps saying it for as
-         long as it is true. Empty and full are both states in which the base stops responding
-         without telling anyone. -->
-    <p-inputgroup [pTooltip]="razarionTooltip()" [ngClass]="'razarion-' + razarionState">
-      <p-inputgroup-addon>
-        <i class="pi pi-sparkles"></i>
-      </p-inputgroup-addon>
-      <input pInputText [ngModel]="resources" readonly="readonly"/>
-    </p-inputgroup>
-    <p-inputgroup pTooltip="House space (used / available)">
-      <p-inputgroup-addon>
-        <i class="pi pi-home"></i>
-      </p-inputgroup-addon>
-      <input pInputText [ngModel]="displayHouseSpace" readonly="readonly"/>
-    </p-inputgroup>
-  </div>
-  <div class="flex flex-row gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-    @if (isLoggedIn()) {
-      <p-button icon="pi pi-user-edit" title="Account"
-      (onClick)="mainCockpitService.showUserDialog = true"></p-button>
-    }
-    @if (!isLoggedIn()) {
-      <p-button icon="pi pi-user" (onClick)="mainCockpitService.showLoginDialog = true"></p-button>
-    }
-    <p-button icon="pi pi-info-circle" title="About" (onClick)="onInfo()">
-    </p-button>
-    <p-button icon="pi pi-sliders-h" title="Settings" (onClick)="mainCockpitService.showSettingsDialog = true">
-    </p-button>
-    <p-button icon="pi pi-sitemap" title="Tech Tree" (onClick)="mainCockpitService.showTechTreeDialog = true">
-    </p-button>
-    <p-button icon="pi pi-briefcase" title="Inventory" (onClick)="onInventory()">
-    </p-button>
-    <p-button icon="pi pi-lock-open" title="Unlock" (onClick)="onUnlock()"
-      [ngClass]="{'blinking-button': blinkUnlockEnabled}">
-    </p-button>
+<!-- The desktop cockpit.
+     Not a panel any more but a layer: the sidebar that used to stack every readout, every button
+     and the map down the left edge is broken into the two clusters below, and each goes to the
+     corner it is used from. The layer itself takes no clicks - see .panel-main.hud-skin in
+     _hud.scss - so the field underneath is as reachable as it was before. -->
+<div class="hud-layer">
+
+  <!-- Top bar: the four numbers a player checks without looking away from what they are doing.
+       Across the top rather than down the side because that is the shortest trip back to the
+       field, and the field is where the eye belongs. -->
+  <div class="hud-topbar hud-frame">
+    <div class="hud-frame-inner hud-topbar-inner">
+      <div class="hud-stat" pTooltip="Experience points towards the next level">
+        <span class="hud-xp-badge" [attr.aria-label]="'Level ' + levelNumber">{{ levelNumber }}</span>
+        <span class="hud-stat-label">XP</span>
+        <span class="hud-stat-value">{{ displayXp2LevelUp }}</span>
+      </div>
+
+      <span class="hud-sep"></span>
+
+      <div class="hud-stat" pTooltip="House space (used / available)">
+        <span class="hud-stat-label">Units</span>
+        <i class="pi pi-users hud-stat-icon"></i>
+        <span class="hud-stat-value">{{ displayHouseSpace }}</span>
+      </div>
+
+      <span class="hud-sep"></span>
+
+      <!-- The meter carries the state the fraction only implies: over budget is the one energy
+           situation that stops the base, and it is easy to miss in two numbers that both grow. -->
+      <div class="hud-stat" pTooltip="Energy (consuming / generating)">
+        <span class="hud-stat-label">Power</span>
+        <span class="hud-meter" [class.hud-meter-over]="powerOverloaded">
+          @for (segment of powerSegments; track segment) {
+            <span class="hud-seg" [class.hud-seg-on]="segment < powerFilled"></span>
+          }
+        </span>
+        <span class="hud-stat-value" [class.hud-value-warn]="powerOverloaded">{{ displayEnergyString }}</span>
+      </div>
+
+      <span class="hud-sep"></span>
+
+      <!-- The colour is the standing signal: the splash says it once, this keeps saying it for as
+           long as it is true. Empty and full are both states in which the base stops responding
+           without telling anyone. -->
+      <div class="hud-stat hud-razarion" [ngClass]="'hud-razarion-' + razarionState"
+           [pTooltip]="razarionTooltip()">
+        <i class="pi pi-sparkles hud-stat-icon"></i>
+        <span class="hud-stat-value">{{ resources }}</span>
+      </div>
+
+      <span class="hud-sep hud-sep-grow"></span>
+
+      <!-- Things you open, read and close again. At the far end of the bar, away from the numbers,
+           because they are not read at a glance and should not sit where the eye lands. -->
+      <div class="hud-topbar-menu">
+        @if (isLoggedIn()) {
+          <button type="button" class="hud-btn" pTooltip="Account"
+                  (click)="mainCockpitService.showUserDialog = true">
+            <i class="pi pi-user-edit"></i>
+          </button>
+        } @else {
+          <button type="button" class="hud-btn" pTooltip="Sign in"
+                  (click)="mainCockpitService.showLoginDialog = true">
+            <i class="pi pi-user"></i>
+          </button>
+        }
+        <button type="button" class="hud-btn" pTooltip="About" (click)="onInfo()">
+          <i class="pi pi-info-circle"></i>
+        </button>
+        <button type="button" class="hud-btn" pTooltip="Settings"
+                (click)="mainCockpitService.showSettingsDialog = true">
+          <i class="pi pi-sliders-h"></i>
+        </button>
+        <button type="button" class="hud-btn" pTooltip="Tech tree"
+                (click)="mainCockpitService.showTechTreeDialog = true">
+          <i class="pi pi-sitemap"></i>
+        </button>
+        <button type="button" class="hud-btn" pTooltip="Inventory" (click)="onInventory()">
+          <i class="pi pi-briefcase"></i>
+        </button>
+        <button type="button" class="hud-btn" pTooltip="Unlock units" (click)="onUnlock()"
+                [class.hud-btn-blink]="blinkUnlockEnabled">
+          <i class="pi pi-lock-open"></i>
+        </button>
+
+        @if (isAdmin()) {
+          <span class="hud-sep"></span>
+          <button type="button" class="hud-btn" pTooltip="Editor" (click)="editorDialog = true">
+            <i class="pi pi-cog"></i>
+          </button>
+          <!-- The readout replaces the label once it is on, so the button says the position rather
+               than only that it is showing one. -->
+          <button type="button" class="hud-btn" pTooltip="Show cursor position"
+                  (click)="onToggleCursorPosition()">
+            <i class="pi pi-map-marker"></i>
+          </button>
+          @if (cursorPosition) {
+            <span class="hud-cursor-pos">{{ cursorPosition }}</span>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Experience towards the next level, hung under the middle of the bar where it reads as the
+         bar's own progress rather than as a fifth readout. -->
+    <div class="hud-xp-track">
+      <div class="hud-xp-fill-track">
+        <div class="hud-xp-fill" [style.width.%]="xpPercent"></div>
+      </div>
+    </div>
   </div>
 
-  <div class="grid grid-cols-3 gap-1 bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-    @for (cat of selectionShortcuts.categories; track cat.id) {
-      <p-button class="w-full" styleClass="!w-full !h-10"
-                [icon]="cat.icon"
-                [pTooltip]="cat.tooltip"
-                [disabled]="selectionShortcuts.getCount(cat.id) === 0"
-                [badge]="shortcutBadge(cat.id)"
-                (onClick)="selectionShortcuts.cycle(cat.id)">
-      </p-button>
-    }
-    <p-button class="w-full" styleClass="!w-full !h-10"
-              icon="pi pi-times"
-              pTooltip="Deselect"
-              [disabled]="!selectionShortcuts.hasSelection()"
-              (onClick)="selectionShortcuts.deselect()">
-    </p-button>
-  </div>
-
-  @if (radarState == WORKING || radarState == NO_POWER) {
-    <div
-      class="flex bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-      @if (radarState == WORKING) {
-        <div>
-          <radar></radar>
+  <!-- The map, in the corner an RTS player reaches for by reflex. Round: the component still draws
+       the same three square canvases and still does its own click-to-move maths against them, the
+       ring only clips what is shown - see .hud-radar-clip. -->
+  @if (radarState == WORKING) {
+    <div class="hud-radar-dock">
+      <div class="hud-radar-ring">
+        <div class="hud-radar-clip">
+          <!-- Its own zoom row is a rectangle stuck to a circle, so the two buttons below take
+               over. The component keeps the methods either way. -->
+          <radar #desktopRadar [showZoomControls]="false"></radar>
         </div>
-      }
-      @if (radarState == NO_POWER) {
-        <div>
+        <div class="hud-radar-grid"></div>
+        <div class="hud-radar-sweep"></div>
+      </div>
+      <button type="button" class="hud-radar-zoom hud-radar-zoom-out"
+              (click)="desktopRadar.zoomOuButtonClick()" pTooltip="Zoom out" aria-label="Zoom out">
+        <i class="pi pi-search-minus"></i>
+      </button>
+      <button type="button" class="hud-radar-zoom hud-radar-zoom-in"
+              (click)="desktopRadar.zoomInButtonClick()" pTooltip="Zoom in" aria-label="Zoom in">
+        <i class="pi pi-search-plus"></i>
+      </button>
+    </div>
+  } @else if (radarState == NO_POWER) {
+    <div class="hud-radar-dock">
+      <div class="hud-radar-ring">
+        <div class="hud-radar-clip">
           <radar-no-power></radar-no-power>
         </div>
-      }
-    </div>
-  }
-
-  @if (isAdmin()) {
-    <div
-      class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 bg-surface-100">
-      <p-button type="button" label="Editor" icon="pi pi-cog" styleClass="p-button-sm"
-      (onClick)="this.editorDialog = true"></p-button>
-      <div class="flex">
-        <p-checkbox [(ngModel)]="showCursorPosition" (onChange)="onShowCursorPosition()" [binary]="true"></p-checkbox>
-        &nbsp;{{ cursorPosition ? cursorPosition : 'Show position' }}
+        <div class="hud-radar-grid"></div>
       </div>
     </div>
   }

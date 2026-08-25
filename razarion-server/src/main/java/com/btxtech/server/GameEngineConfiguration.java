@@ -258,13 +258,15 @@ public class GameEngineConfiguration {
                                    TerrainService terrainService,
                                    BaseItemService baseItemService,
                                    GameLogicService gameLogicService,
-                                   ItemTypeService itemTypeService) {
+                                   ItemTypeService itemTypeService,
+                                   PathingService pathingService) {
         return new SyncBuilder(syncService,
                 syncItemContainerService,
                 terrainService,
                 baseItemService,
                 gameLogicService,
-                itemTypeService);
+                itemTypeService,
+                pathingService);
     }
 
     @Bean

@@ -11,8 +11,8 @@
          blocks the first paint, and a third-party one costs a DNS lookup, a TCP connection and a
          TLS handshake before the browser is allowed to draw anything at all. Most visitors arrive
          from a link inside an app, where that cache is cold every single time - and half of them
-         are gone in under two seconds. The frame is drawn with clip-path below instead: same
-         shape, no request, painted with the first frame. -->
+         are gone in under two seconds. The frame is drawn in the inline style below instead: no
+         request, painted with the first frame. -->
     <!-- One hero per shape, and each viewport fetches only its own. The two media queries are exact
          complements - "not all and (max-aspect-ratio: 3/4)" rather than a min- counterpart, which
          would overlap at exactly 3/4 and make a portrait tablet download both. -->
@@ -31,7 +31,7 @@
 
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@AloRtsDev">
+    <meta name="twitter:site" content="@razariongame">
     <meta name="twitter:title" content="Razarion – RTS meets MMO: One World That Never Stops">
     <meta name="twitter:description" content="RTS meets MMO: one shared world that never stops. Inspired by Command &amp; Conquer and StarCraft — persistent shared world, quests and levels. Play free in your browser via WebAssembly, no download. Open-source and community-driven.">
     <meta name="twitter:image" content="https://razarion.com/card.jpg">
@@ -40,6 +40,17 @@
         *{margin:0;padding:0;box-sizing:border-box}
         html,body{height:100%}
         body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#0a0a12;color:#e0e0e0;line-height:1.6}
+
+        /* The cockpit's own tokens, copied from _hud.scss. The landing page cannot import that
+           stylesheet - it ships one inline <style> on purpose, see the note about the CDN above -
+           so the panel below repeats the recipe instead. Keep these in sync with the :root block
+           in razarion-frontend/src/app/game/cockpit/_hud.scss. */
+        :root{
+            --hud-text:#cfe0f0;
+            --hud-text-dim:#8ba3ba;
+            --hud-cyan:#63c8ff;
+            --hud-font:'Segoe UI',system-ui,-apple-system,sans-serif
+        }
 
         /* svh is the viewport with the browser's own bars showing, which is what a phone actually
            displays when the page opens - vh is the taller one it only reaches after a scroll. The
@@ -52,54 +63,46 @@
         .landing{position:relative;--hero:url('/razarion-bg.webp');min-height:100vh;min-height:100svh;background:linear-gradient(180deg,rgba(10,10,18,0) 0%,rgba(10,10,18,0) 35%,rgba(10,10,18,0.55) 65%,rgba(10,10,18,0.88) 100%),var(--hero) center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:2rem 2rem 18vh}
 
 
-        @keyframes panelGlow{0%,100%{filter:drop-shadow(0 0 28px rgba(255,119,51,0.45)) drop-shadow(0 0 60px rgba(80,200,255,0.12))}50%{filter:drop-shadow(0 0 55px rgba(255,140,60,0.85)) drop-shadow(0 0 100px rgba(80,200,255,0.35))}}
         @keyframes chevPulse{0%,100%{color:#f73;text-shadow:0 0 6px rgba(255,140,60,0.7)}50%{color:#fc6;text-shadow:0 0 14px rgba(255,180,80,1),0 0 4px #fff}}
         @keyframes titleShimmer{0%,100%{text-shadow:0 0 14px rgba(255,140,60,0.9),0 0 4px rgba(255,255,255,0.4)}50%{text-shadow:0 0 22px rgba(255,180,80,1),0 0 8px rgba(255,255,255,0.7),0 0 40px rgba(255,140,60,0.6)}}
         @keyframes btnShine{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
-        /* Panel frame. The element itself carries the gradient and is cut to the notched shape;
-           ::before is the same shape inset by one pixel and holds the fill, so what shows through
-           along the edge is a 1px gradient border. Corner sizes are the four variables - clockwise
-           from the top left, same as the shape this replaces. */
+        /* Panel frame - the same plate the cockpit is built from, so the page a visitor sees before
+           the click and the instrument panel they see after it are the same object. This is the
+           @mixin hud-plate from _hud-panels.scss, one element instead of the nested .hud-frame /
+           .hud-frame-inner pair: a transparent 4px border filled by the steel gradient clipped to
+           the border box, over the dark well clipped to the padding box. The content padding is
+           part of the well, so it simply makes the well bigger. */
         .info-panel{
-            --corner-tl:14px;
-            --corner-tr:36px;
-            --corner-br:14px;
-            --corner-bl:36px;
-            --panel-shape:polygon(
-                var(--corner-tl) 0,
-                calc(100% - var(--corner-tr)) 0,
-                100% var(--corner-tr),
-                100% calc(100% - var(--corner-br)),
-                calc(100% - var(--corner-br)) 100%,
-                var(--corner-bl) 100%,
-                0 calc(100% - var(--corner-bl)),
-                0 var(--corner-tl)
-            );
-            position:relative;
             padding:2rem 2.5rem;
+            border:4px solid transparent;
+            border-radius:12px;
             display:flex;
             flex-direction:column;
             align-items:center;
             max-width:640px;
-            background:linear-gradient(180deg,#f85 0%,#f73 35%,rgba(80,200,255,0.55) 75%,#5cf 100%);
-            clip-path:var(--panel-shape);
-            animation:panelGlow 3.5s ease-in-out infinite
-        }
-        .info-panel::before{
-            content:'';
-            position:absolute;
-            inset:1px;
-            clip-path:var(--panel-shape);
-            background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(255,255,255,0.03) 3px,rgba(255,255,255,0.03) 4px),repeating-linear-gradient(90deg,transparent 0,transparent 24px,rgba(255,119,51,0.04) 24px,rgba(255,119,51,0.04) 25px),linear-gradient(180deg,rgba(18,28,42,0.92) 0%,rgba(5,10,16,0.96) 100%)
+            background-image:
+                radial-gradient(120% 180% at 50% 0%,rgba(46,100,148,0.32) 0%,rgba(8,16,27,0) 62%),
+                linear-gradient(180deg,#0e1d2f 0%,#081422 55%,#050d17 100%),
+                linear-gradient(180deg,
+                    #d3dde7 0%,#9aa8b7 5%,#64717f 22%,
+                    #3b4551 52%,#242c36 78%,#6f7b89 96%,#b3bfcc 100%);
+            background-origin:padding-box,padding-box,border-box;
+            background-clip:padding-box,padding-box,border-box;
+            box-shadow:
+                0 0 0 1px #0b1017,
+                0 8px 22px rgba(0,0,0,0.6),
+                inset 0 0 0 1px rgba(96,168,224,0.26);
+            color:var(--hud-text);
+            font-family:var(--hud-font)
         }
 
-        .tagline{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;color:#fff;margin-bottom:1.2rem;padding-bottom:1rem;width:100%;text-transform:uppercase;border-bottom:1px solid rgba(255,119,51,0.5);animation:titleShimmer 2.8s ease-in-out infinite}
+        .tagline{display:flex;flex-direction:column;align-items:center;color:#fff;margin-bottom:1.2rem;padding-bottom:1rem;width:100%;text-transform:uppercase;border-bottom:1px solid rgba(99,200,255,0.35);animation:titleShimmer 2.8s ease-in-out infinite}
         .tagline-main{font-size:clamp(1.4rem,4vw,2rem);letter-spacing:0.22em;font-weight:800;line-height:1.1}
         .tagline-sub{font-size:clamp(0.72rem,1.9vw,0.95rem);letter-spacing:0.16em;font-weight:600;margin-top:0.5rem;opacity:0.85}
 
         @keyframes pulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,119,85,0.8),0 0 0 0 rgba(80,200,255,0.4)}70%{transform:scale(1.07);box-shadow:0 0 12px 16px rgba(255,119,85,0),0 0 18px 24px rgba(80,200,255,0)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,119,85,0),0 0 0 0 rgba(80,200,255,0)}}
-        .button{all:unset;position:relative;z-index:1;cursor:pointer;background:linear-gradient(110deg,#f85 0%,#f73 40%,#fc6 50%,#f73 60%,#a41 100%);background-size:250% 100%;border:1px solid #c52;padding:14px 44px;color:#fff;font-size:1.3rem;font-weight:900;text-align:center;clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%);transition:transform 0.2s ease,filter 0.2s ease;animation:pulse 1.8s infinite,btnShine 3s linear infinite;letter-spacing:0.18em;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.8),0 0 14px rgba(255,180,80,0.7)}
+        .button{all:unset;cursor:pointer;background:linear-gradient(110deg,#f85 0%,#f73 40%,#fc6 50%,#f73 60%,#a41 100%);background-size:250% 100%;border:1px solid #c52;padding:14px 44px;color:#fff;font-size:1.3rem;font-weight:900;text-align:center;clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%);transition:transform 0.2s ease,filter 0.2s ease;animation:pulse 1.8s infinite,btnShine 3s linear infinite;letter-spacing:0.18em;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.8),0 0 14px rgba(255,180,80,0.7)}
         /* Only where hovering is a thing. A touch browser applies :hover on tap and leaves it
            applied, so the button stayed blown up and glowing after it had been pressed. */
         @media (hover:hover){
@@ -107,8 +110,8 @@
         }
         .button:active{transform:scale(0.97);filter:brightness(1.15)}
 
-        .features{position:relative;z-index:1;list-style:none;margin-top:1.5rem;text-align:left;display:inline-block;padding:0}
-        .features li{padding:0.35rem 0;padding-left:1.7rem;position:relative;color:#e8e8e8;font-size:1rem}
+        .features{list-style:none;margin-top:1.5rem;text-align:left;display:inline-block;padding:0}
+        .features li{padding:0.35rem 0;padding-left:1.7rem;position:relative;color:var(--hud-text);font-size:1rem}
         .features li::before{content:'\25B8';position:absolute;left:0.1rem;top:0.32rem;color:#f73;font-size:1.05rem;line-height:1;animation:chevPulse 2.5s ease-in-out infinite}
         .features li:nth-child(2)::before{animation-delay:0.3s}
         .features li:nth-child(3)::before{animation-delay:0.6s}
@@ -116,7 +119,9 @@
         .features li:nth-child(5)::before{animation-delay:1.2s}
         .features li:nth-child(6)::before{animation-delay:1.5s}
 
-        .social-links{margin-top:1.5rem;display:flex;gap:1.5rem;justify-content:center}
+        /* Five of these now, and the row has to survive a narrow window: wrap rather than push the
+           last one off the side. Two gaps - the small one only ever applies to a second line. */
+        .social-links{margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:0.6rem 1.5rem;justify-content:center}
         .social-links a{color:#ddd;text-decoration:none;font-size:0.95rem;transition:color 0.3s;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
         .social-links a:hover{color:#f73}
         .social-links svg{width:20px;height:20px;vertical-align:middle;margin-right:0.4rem;fill:currentColor}
@@ -130,11 +135,6 @@
             .features li{font-size:0.92rem}
             .landing{background-position:center top}
             .info-panel{padding:1.25rem 1.25rem}
-            /* panelGlow animates two drop-shadows, which means re-rasterising the whole panel and
-               its blur every frame. On a phone that is the most expensive thing on the page and it
-               competes with the paint we are trying to make fast. The glow stays, it just stops
-               breathing. */
-            .info-panel{animation:none;filter:drop-shadow(0 0 28px rgba(255,119,51,0.45))}
         }
 
         /* Portrait. Two things happen here and they belong together.
@@ -163,8 +163,13 @@
                No safe-area inset needed: without viewport-fit=cover the viewport already ends above
                the gesture bar, so env() would resolve to zero and only look like it did something. */
             .landing{padding-bottom:0.75rem}
-            .social-links{margin-top:0.7rem;gap:1.1rem}
+            /* Marks only. Five labelled links do not fit on one line at 412px, and the panel is
+               already sitting on the bottom edge - a second row would take height the picture
+               needs. The name lives on in the aria-label. */
+            .social-links{margin-top:0.7rem;gap:0.5rem 1.4rem}
             .social-links a{font-size:0.85rem}
+            .social-links .social-label{display:none}
+            .social-links svg{width:22px;height:22px;margin-right:0}
 
             /* Out of the flow, so it cannot push the panel around; the panel keeps the bottom of
                the screen and this keeps the top. pointer-events off - it sits over the picture and
@@ -184,11 +189,10 @@
             .features .secondary{display:none}
         }
 
-        /* Six pulsing chevrons, a shimmering title, a pulsing button and a breathing panel is a
-           lot to ask of someone who has told their system they do not want it. */
+        /* Six pulsing chevrons, a shimmering title and a pulsing button is a lot to ask of someone
+           who has told their system they do not want it. The plate itself no longer moves. */
         @media (prefers-reduced-motion:reduce){
-            .info-panel,.tagline,.button,.features li::before{animation:none}
-            .info-panel{filter:drop-shadow(0 0 28px rgba(255,119,51,0.45))}
+            .tagline,.button,.features li::before{animation:none}
         }
     </style>
 </head>
@@ -218,14 +222,23 @@
                 <li class="secondary">Open-source, nonprofit, and community-driven</li>
             </ul>
         </div>
+        <!-- The label is a span so the portrait rules can drop it and leave the mark; aria-label
+             carries the name either way, and the svg is decoration once the link is named. -->
         <div class="social-links">
-            <a href="https://github.com/Razarion/razarion" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                GitHub
+            <a href="https://github.com/Razarion/razarion" target="_blank" rel="noopener" aria-label="Razarion on GitHub">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg><span class="social-label">GitHub</span>
             </a>
-            <a href="https://x.com/AloRtsDev" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                X
+            <a href="https://x.com/razariongame" target="_blank" rel="noopener" aria-label="Razarion on X">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="social-label">X</span>
+            </a>
+            <a href="https://www.instagram.com/razariongame/" target="_blank" rel="noopener" aria-label="Razarion on Instagram">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg><span class="social-label">Instagram</span>
+            </a>
+            <a href="https://www.youtube.com/@Razarion" target="_blank" rel="noopener" aria-label="Razarion on YouTube">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg><span class="social-label">YouTube</span>
+            </a>
+            <a href="https://www.facebook.com/Razarion" target="_blank" rel="noopener" aria-label="Razarion on Facebook">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><span class="social-label">Facebook</span>
             </a>
         </div>
     </section>

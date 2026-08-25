@@ -120,6 +120,21 @@ public class BotSyncBaseItem {
         }
     }
 
+    /**
+     * Send this builder to finish an own building that is stuck below buildup 1.0. Unlike
+     * {@link #buildBuilding} this does not throw: a shell that cannot be reached right now is not
+     * worth aborting the whole bot tick for, the next tick tries again.
+     */
+    public void finalizeBuild(SyncBaseItem building) {
+        try {
+            commandService.finalizeBuild(syncBaseItem, building);
+            clearIdle();
+        } catch (Exception e) {
+            setIdle();
+            logger.log(Level.WARNING, e.getMessage(), e);
+        }
+    }
+
     public void buildUnit(BaseItemType toBeBuilt) {
         try {
             commandService.fabricate(syncBaseItem, toBeBuilt);
