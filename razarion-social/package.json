@@ -1,0 +1,15 @@
+{
+  "name": "razarion-social",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Publishes one gameplay clip to YouTube, X, TikTok and Instagram from a single post spec.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "auth": "node src/cli.mjs auth",
+    "check": "node src/cli.mjs check",
+    "post": "node src/cli.mjs post"
+  }
+}

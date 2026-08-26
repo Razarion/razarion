@@ -66,3 +66,15 @@ razarion-frontend/mock-server/razarion-fake-server/resources/razarion_optimized.
 # (proprietary material, do not commit)
 .zh-research/
 extract-zh.js
+
+# Social publishing credentials - never commit these
+/razarion-social/.env
+/razarion-social/.tokens.json
+
+# Pipeline working data: fetched posts, downloaded media, generated cards, publish state
+/razarion-social/pipeline/data/
+/razarion-social/pipeline/state/
+/razarion-social/pipeline/node_modules/
+
+# Claude Code: the local permission allowlist is per-machine, the skills are not
+/.claude/settings.local.json

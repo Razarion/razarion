@@ -1,0 +1,11 @@
+{
+  "name": "razarion-social-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Mirrors the Razarion X timeline to Instagram, Facebook and YouTube, one reviewed step at a time.",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.60"
+  }
+}

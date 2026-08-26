@@ -1,0 +1,27 @@
+{
+  "notes": "Template. Copy, rename to the release date, fill in, then: node ../src/cli.mjs post <this file>",
+  "video": "../../../clips/ui-overview.mp4",
+  "thumbnail": "../../../clips/ui-overview.png",
+
+  "youtube": {
+    "title": "Razarion - UI Overview (Browser RTS)",
+    "description": "A walkthrough of the complete Razarion user interface: cockpit, unit selection, quests, radar, tech tree, inventory and the unlock screen.\n\nRazarion is an open-source multiplayer RTS that runs in the browser - no download, no account. Currently in alpha.\n\nPlay: https://www.razarion.com\nSource: https://github.com/Razarion/razarion",
+    "tags": ["razarion", "browser rts", "rts game", "real time strategy", "open source game", "webassembly"],
+    "privacy": "private"
+  },
+
+  "x": {
+    "handle": "razariongame",
+    "text": "A walkthrough of the whole Razarion interface: cockpit, quests, tech tree, inventory.\n\nOpen-source RTS, runs in a browser tab, no account needed.\n\nhttps://www.razarion.com",
+    "attachVideo": true
+  },
+
+  "tiktok": {
+    "title": "Every panel in the UI of an RTS that runs in a browser tab"
+  },
+
+  "instagram": {
+    "videoUrl": "https://www.razarion.com/media/ui-overview.mp4",
+    "caption": "A walkthrough of the whole Razarion interface. Open-source RTS, runs in a browser tab, no account needed. Link in bio.\n\n#rts #indiedev #browsergame #opensource #gamedev"
+  }
+}
