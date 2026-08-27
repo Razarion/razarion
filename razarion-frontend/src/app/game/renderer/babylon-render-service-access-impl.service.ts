@@ -539,12 +539,16 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         const perfActive = this.perfOverlay?.isActive() === true;
         // Telemetry needs the same two timestamps the overlay needs, so take them once for both.
         const measure = perfActive || this.renderTelemetry !== null;
+        // Babylon counts every draw call into this PerfCounter unconditionally (_reportDrawCall),
+        // so reading it is free — but nothing resets it unless somebody asks for a new frame.
+        const drawCounter = measure ? this.engine._drawCalls : null;
+        drawCounter?.fetchNewFrame();
         const renderStart = measure ? performance.now() : 0;
         this.scene.render();
         if (measure) {
           const renderEnd = performance.now();
           const renderMs = renderEnd - renderStart;
-          this.renderTelemetry?.recordFrame(renderEnd, renderMs);
+          this.renderTelemetry?.recordFrame(renderEnd, renderMs, drawCounter?.current ?? -1);
           if (perfActive) {
             this.perfOverlay!.record(renderEnd, renderMs, this.engine.getFps());
             this.perfOverlay!.draw();
@@ -1800,9 +1804,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   /**
    * Scene size as the telemetry period sees it. All of these are counters Babylon already keeps
-   * for the frame just rendered, so reading them costs nothing; instrumentation that would have
-   * to hook the engine (draw calls, GPU time) is deliberately left to F9, because turning it on
-   * for every player would change the number being measured.
+   * for the frame just rendered, so reading them costs nothing. Draw calls are the same kind of
+   * free — the engine counts them whether or not anyone looks — and are taken per frame in the
+   * render loop instead of here, because they vary within a period the way frame time does.
+   * Anything that would have to *hook* the engine to be measured (GPU time, shader compilation)
+   * still belongs to F9, because turning it on for every player would change what is measured.
    */
   private collectSceneStats(): RenderTelemetrySceneStats {
     const glInfo = this.engine.getGlInfo();

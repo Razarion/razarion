@@ -34,6 +34,12 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
   // main thread. We now queue them and keep at most maxConcurrentLoads() in flight, pumping the
   // next one whenever a load finishes.
   private pending: { entity: E; scene: Scene }[] = [];
+  /**
+   * Callers waiting for one specific entity, because the game no longer blocks on the whole set.
+   * The boolean says whether the model actually arrived: a failed load has to wake its waiters
+   * too, or an item whose glb 404s would sit invisible forever instead of falling back.
+   */
+  private waiting: Map<number, ((loaded: boolean) => void)[]> = new Map();
 
   /** Max models parsed concurrently. Kept low for heavy main-thread parsing (e.g. glTF). */
   protected maxConcurrentLoads(): number {
@@ -74,6 +80,50 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
     return this.loaded;
   }
 
+  /** Whether this one entity is usable yet, regardless of what the rest of the set is doing. */
+  isEntityLoaded(entityId: number): boolean {
+    return this.babylonModels.has(entityId);
+  }
+
+  /**
+   * Ask to be told when one entity is usable, and move it to the front of the queue while you
+   * wait. Returns a cancel function - the caller may be a unit that dies, or a terrain tile that
+   * scrolls away, before its model ever arrives.
+   *
+   * Called only for an entity that {@link isEntityLoaded} says is not ready; a caller that does
+   * not check first would be waiting for a notification that has already been sent.
+   */
+  whenEntityLoaded(entityId: number, callback: (loaded: boolean) => void): () => void {
+    let callbacks = this.waiting.get(entityId);
+    if (!callbacks) {
+      callbacks = [];
+      this.waiting.set(entityId, callbacks);
+    }
+    callbacks.push(callback);
+    this.prioritise(entityId);
+    return () => {
+      const list = this.waiting.get(entityId);
+      const index = list ? list.indexOf(callback) : -1;
+      if (index >= 0) {
+        list!.splice(index, 1);
+      }
+    };
+  }
+
+  /**
+   * Move a queued entity to the head of the queue. Somebody is looking at the place where this
+   * model belongs, which makes it worth more than whatever the load order happened to be.
+   *
+   * It cannot preempt a load already in flight - a glTF parse is one synchronous block - so the
+   * gain is bounded by the queue, not by the current model.
+   */
+  prioritise(entityId: number): void {
+    const index = this.pending.findIndex(p => p.entity.id === entityId);
+    if (index > 0) {
+      this.pending.unshift(this.pending.splice(index, 1)[0]);
+    }
+  }
+
   getEntity(entityId: number): E {
     return this.entities.get(entityId)!
   }
@@ -88,7 +138,24 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
     this.babylonModels.set(entity.id, babylonModel);
   }
 
-  protected handleBabylonModelLaded() {
+  /**
+   * @param entityId the entity that just finished, where the container tracks it. Waiters are
+   *                 woken from here rather than from setBabylonModel so they never see a model
+   *                 whose textures have not been assigned yet.
+   */
+  protected handleBabylonModelLaded(entityId?: number) {
+    if (entityId !== undefined) {
+      const callbacks = this.waiting.get(entityId);
+      this.waiting.delete(entityId);
+      const loaded = this.babylonModels.has(entityId);
+      callbacks?.forEach(callback => {
+        try {
+          callback(loaded);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    }
     this.loadingCount--;
     if (this.loadingCount <= 0) {
       this.loaded = true;
@@ -195,7 +262,7 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
                 // Single change-detection on completion: clear the progress UI and let Angular react.
                 this.zone.run(() => {
                   this.babylonModelService.glbContainerProgress = undefined;
-                  this.handleBabylonModelLaded();
+                  this.handleBabylonModelLaded(gltfEntity.id);
                 });
               }
             } catch (error) {
@@ -214,16 +281,16 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
           (scene: Scene, message: string, exception?: any) => {
             hasError = true;
             console.error(`Error loading glTF/glb '${url}'. exception: '${exception}'`);
-            this.zone.run(() => this.handleBabylonModelLaded());
+            this.zone.run(() => this.handleBabylonModelLaded(gltfEntity.id));
           }, ".glb")
         if (result === null) {
           console.error(`Error loading glTF/glb '${url}'`);
-          this.zone.run(() => this.handleBabylonModelLaded());
+          this.zone.run(() => this.handleBabylonModelLaded(gltfEntity.id));
         }
       } catch (e) {
         console.error(`Error loading glTF/glb '${url}'`);
         console.error(e);
-        this.zone.run(() => this.handleBabylonModelLaded());
+        this.zone.run(() => this.handleBabylonModelLaded(gltfEntity.id));
       }
     });
   }

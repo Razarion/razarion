@@ -611,6 +611,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (model3DId == null) {
       return;
     }
+    // The preview is decoration on top of the factory's own scan plate. If the glb has not landed
+    // yet there is nothing to show and nothing to wait for - the next build cycle asks again, by
+    // which time the models are there. Better a plain scan plate than a subscription whose
+    // callback lands after the factory finished building.
+    if (!this.babylonModelService.isModel3DReady(model3DId)) {
+      return;
+    }
 
     this.factoryBuildPreviewTypeId = constructingBaseItemTypeId;
     this.factoryBuildPreviewRenderObject = this.babylonModelService.cloneModel3D(
@@ -1224,6 +1231,28 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         console.warn(`BabylonBaseItemImpl animatable.onAnimationEnd failed ${e}`)
       }
     };
+  }
+
+  /**
+   * The name label is linked to the model node, and the interpolation reads its transform, so both
+   * have to be pointed at the model that just replaced the placeholder. Everything else the base
+   * item draws - health bar, beams, buildup effect - resolves the container at use time and needs
+   * no fixing up.
+   */
+  protected override onRenderObjectReplaced(): void {
+    if (this.nameBlock) {
+      this.nameBlock.linkWithMesh(this.getContainer());
+    }
+    if (this.position3D) {
+      // Skip the interpolation for this one step: it would otherwise lerp the real model in from
+      // wherever the placeholder's untouched transform happened to be, i.e. from the map origin.
+      this.getContainer().position = this.position3D.clone();
+      this.oldPosition3D = this.position3D.clone();
+    }
+    if (this.rotation3D) {
+      this.getContainer().rotation = this.rotation3D.clone();
+      this.oldRotation3D = this.rotation3D.clone();
+    }
   }
 
   private setupName(userName: string) {

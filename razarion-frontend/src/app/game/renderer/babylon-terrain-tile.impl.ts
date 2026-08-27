@@ -86,6 +86,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // inactive so their meshes and sprites cost nothing per frame while staying ready for fast re-show.
   private active: boolean = false;
   private disposed: boolean = false;
+  /**
+   * Cancel handles for terrain-object models still on the wire. A tile that is scrolled away and
+   * disposed must drop them, or its callback would plant rocks into a container that is gone.
+   */
+  private readonly pendingModelRequests: Set<() => void> = new Set();
   private groundHeights: number[] = [];
   private tileXOffset: number = 0;
   private tileYOffset: number = 0;
@@ -335,8 +340,16 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       return;
     }
     const end = Math.min(index + BabylonTerrainTileImpl.TERRAIN_OBJECTS_PER_BATCH, pending.length);
+    // Models no longer all exist by the time the game runs (see BabylonModelService.init). A rock
+    // whose glb is still on the wire is put aside rather than thrown away, and planted when it
+    // lands - the tile itself, its ground and its water are already on screen by then.
+    const waitingForModel: { config: TerrainObjectConfig, model: TerrainObjectModel }[] = [];
     for (let i = index; i < end; i++) {
       const { config, model } = pending[i];
+      if (!this.babylonModelService.isModel3DReady(config.getModel3DId())) {
+        waitingForModel.push(pending[i]);
+        continue;
+      }
       try {
         const terrainObject = BabylonTerrainTileImpl.createTerrainObject(model, config, this.babylonModelService, this.container);
         if (!this.active) {
@@ -354,9 +367,49 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         console.error(error);
       }
     }
+    this.plantWhenModelsArrive(waitingForModel);
     if (end < pending.length) {
       setTimeout(() => this.createTerrainObjectsBatched(pending, end), BabylonTerrainTileImpl.TERRAIN_OBJECT_BATCH_DELAY);
     }
+  }
+
+  /**
+   * Subscribe once per still-missing model and replant that model's objects when it arrives.
+   * Grouped by model rather than per object: one glb typically carries every rock on the tile,
+   * and one subscription per placement would mean hundreds of callbacks for a single load.
+   */
+  private plantWhenModelsArrive(waiting: { config: TerrainObjectConfig, model: TerrainObjectModel }[]): void {
+    if (waiting.length === 0) {
+      return;
+    }
+    const byModel3DId = new Map<number, { config: TerrainObjectConfig, model: TerrainObjectModel }[]>();
+    waiting.forEach(entry => {
+      const model3DId = entry.config.getModel3DId();
+      const group = byModel3DId.get(model3DId);
+      if (group) {
+        group.push(entry);
+      } else {
+        byModel3DId.set(model3DId, [entry]);
+      }
+    });
+    byModel3DId.forEach((group, model3DId) => {
+      // The handle is held in a box because requestModel3D answers synchronously for a model that
+      // can never arrive, i.e. before the returned cancel function exists.
+      const handle: { cancel?: () => void } = {};
+      let settled = false;
+      handle.cancel = this.babylonModelService.requestModel3D(model3DId, ready => {
+        settled = true;
+        if (handle.cancel) {
+          this.pendingModelRequests.delete(handle.cancel);
+        }
+        if (ready && !this.disposed) {
+          this.createTerrainObjectsBatched(group, 0);
+        }
+      });
+      if (!settled) {
+        this.pendingModelRequests.add(handle.cancel);
+      }
+    });
   }
 
   private setupHeightForTerrainObject(terrainObjectModel: TerrainObjectModel): number {
@@ -473,6 +526,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       return;
     }
     this.disposed = true;
+    this.pendingModelRequests.forEach(cancel => cancel());
+    this.pendingModelRequests.clear();
 
     // Detach meshes from the directional light so it never holds references to disposed meshes.
     const included = this.rendererService.directionalLight.includedOnlyMeshes;

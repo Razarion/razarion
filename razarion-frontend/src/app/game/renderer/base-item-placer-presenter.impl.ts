@@ -73,6 +73,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private touchDownScreen: { x: number, y: number } | null = null;
   /** Ghost centre minus the finger, in canvas pixels, held for the length of a drag. */
   private touchDragOffset: { x: number, y: number } = {x: 0, y: 0};
+  /** Set while the placer's model is still on the wire; pulled when the placer closes first. */
+  private cancelModelRequest: (() => void) | null = null;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService,
@@ -120,10 +122,24 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     } else {
       this.relativeOffsets.push({x: 0, z: 0});
     }
-    for (let i = 0; i < this.relativeOffsets.length; i++) {
-      const renderObject = this.babylonModelService.cloneModel3D(baseItemPlacer.getModel3DId()!, null, Diplomacy.OWN_PLACER);
-      renderObject.setRotationY(Tools.ToRadians(90));
-      this.renderObjects.push(renderObject);
+    const model3DId = baseItemPlacer.getModel3DId()!;
+    if (this.babylonModelService.isModel3DReady(model3DId)) {
+      this.createGhosts(model3DId);
+    } else {
+      // The glb may still be downloading when the first quest opens the placer - which is the one
+      // moment in the whole funnel that must not fail. The disc, the hint and the deploy button
+      // are all up and usable; only the translucent building is missing, and it drops in the
+      // moment the model lands, at whatever position the player has dragged the placer to by then.
+      this.cancelModelRequest = this.babylonModelService.requestModel3D(model3DId, ready => {
+        this.cancelModelRequest = null;
+        if (!ready || this.activationGeneration !== currentGeneration) {
+          return;
+        }
+        this.createGhosts(model3DId);
+        if (this.currentPosition) {
+          this.setPosition(baseItemPlacer, this.currentPosition.clone());
+        }
+      });
     }
 
     this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI("Base item placer");
@@ -444,6 +460,10 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
   private cleanupPreviousPlacer(): void {
     this.rendererService.touchCameraControl?.setPanClaim(null);
+    if (this.cancelModelRequest) {
+      this.cancelModelRequest();
+      this.cancelModelRequest = null;
+    }
     this.currentPosition = null;
     this.touchDragPointerId = null;
     this.touchDownScreen = null;
@@ -499,6 +519,15 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
   setBaseItemPlacerCallback(callback: ((event: BaseItemPlacerPresenterEvent) => void) | null) {
     this.baseItemPlacerCallback = callback;
+  }
+
+  /** One translucent building per relative offset, all sharing the placer's model. */
+  private createGhosts(model3DId: number): void {
+    for (let i = 0; i < this.relativeOffsets.length; i++) {
+      const renderObject = this.babylonModelService.cloneModel3D(model3DId, null, Diplomacy.OWN_PLACER);
+      renderObject.setRotationY(Tools.ToRadians(90));
+      this.renderObjects.push(renderObject);
+    }
   }
 
   private setPosition(baseItemPlacer: BaseItemPlacer, pickedPoint: Vector3) {

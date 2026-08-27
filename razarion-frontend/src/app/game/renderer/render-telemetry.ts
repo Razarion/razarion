@@ -80,6 +80,15 @@ export class RenderTelemetry {
 
   private readonly frameMs: number[] = [];
   private readonly renderMs: number[] = [];
+  /**
+   * GL draw calls issued per frame, shadow pass included. Splits the per-visible-mesh cost the
+   * PROD regression found (8.4 us per entry in scene.getActiveMeshes(), the biggest single term)
+   * into the two things it could be: real GL submissions, or Babylon's own per-mesh bookkeeping
+   * in _evaluateActiveMeshes. Terrain scenery is instanced, so a thousand active meshes that
+   * collapse into a handful of draw calls would say the cost is bookkeeping and thin instances
+   * are the fix; a thousand draw calls would say the opposite.
+   */
+  private readonly drawCalls: number[] = [];
   private readonly tickGapMs: number[] = [];
   private readonly clientTickMs: number[] = [];
   private readonly longFrames: number[] = [0, 0, 0];
@@ -96,10 +105,11 @@ export class RenderTelemetry {
   /**
    * One rendered frame.
    *
-   * @param now      performance.now() taken right after scene.render() returned
-   * @param renderMs CPU milliseconds spent inside scene.render()
+   * @param now       performance.now() taken right after scene.render() returned
+   * @param renderMs  CPU milliseconds spent inside scene.render()
+   * @param drawCalls GL draw calls that frame took, or -1 where the engine keeps no counter
    */
-  recordFrame(now: number, renderMs: number): void {
+  recordFrame(now: number, renderMs: number, drawCalls: number): void {
     if (this.periodStart === null) {
       this.periodStart = now;
     }
@@ -115,6 +125,7 @@ export class RenderTelemetry {
     }
     this.lastFrameTime = now;
     this.renderMs.push(renderMs);
+    this.drawCalls.push(drawCalls);
 
     if (now - periodStart >= RenderTelemetry.PERIOD_MS) {
       this.emit(now, periodStart);
@@ -146,6 +157,7 @@ export class RenderTelemetry {
     const stats = this.safeSceneStats();
     const frame = this.percentiles(this.frameMs);
     const render = this.percentiles(this.renderMs);
+    const draw = this.percentiles(this.drawCalls);
     const gap = this.percentiles(this.tickGapMs);
     const apply = this.percentiles(this.clientTickMs);
     const fps = frames / (periodMs / 1000);
@@ -158,6 +170,7 @@ export class RenderTelemetry {
       `frameP50=${frame.p50.toFixed(1)} frameP95=${frame.p95.toFixed(1)} frameP99=${frame.p99.toFixed(1)} frameMax=${frame.max.toFixed(1)} ` +
       `long50=${this.longFrames[0]} long100=${this.longFrames[1]} long250=${this.longFrames[2]} ` +
       `renderP50=${render.p50.toFixed(1)} renderP95=${render.p95.toFixed(1)} renderMax=${render.max.toFixed(1)} ` +
+      `drawP50=${draw.p50.toFixed(0)} drawMax=${draw.max.toFixed(0)} ` +
       `ticks=${this.tickGapMs.length} tickGapP50=${gap.p50.toFixed(0)} tickGapMax=${gap.max.toFixed(0)} ` +
       `tickApplyP50=${apply.p50.toFixed(1)} tickApplyMax=${apply.max.toFixed(1)} ` +
       `meshes=${stats.meshes} activeMeshes=${stats.activeMeshes} activeIndices=${stats.activeIndices} materials=${stats.materials} ` +
@@ -177,6 +190,7 @@ export class RenderTelemetry {
   private reset(): void {
     this.frameMs.length = 0;
     this.renderMs.length = 0;
+    this.drawCalls.length = 0;
     this.tickGapMs.length = 0;
     this.clientTickMs.length = 0;
     this.longFrames.fill(0);

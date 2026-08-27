@@ -67,6 +67,19 @@ export class BabylonModelService {
     this.scene = scene;
   }
 
+  /**
+   * Resolves when the game may start - which is deliberately NOT when every model has arrived.
+   *
+   * The glb set is the whole boot budget: PROD measured LOAD_THREE_JS_MODELS at 7.6 s median and
+   * 22.4 s p90 on mobile, against a median mobile patience of 6.4 s before the tab is closed. As
+   * long as that set blocks RUN_GAME, the wait is structurally longer than what a phone visitor
+   * is willing to sit through, and no amount of shaving milliseconds elsewhere can fix it.
+   *
+   * So only the small stuff blocks: node materials and particle systems, which are JSON and are
+   * needed to draw the ground at all. The glbs keep streaming afterwards, and everything that
+   * places one - items, the placer, terrain objects - asks {@link isModel3DReady} first and
+   * subscribes via {@link requestModel3D} when the answer is no.
+   */
   init(): Promise<void> {
     this.loadUiConfigCollection();
     return new Promise<void>((resolve, reject) => {
@@ -74,12 +87,49 @@ export class BabylonModelService {
     });
   }
 
+  /** The containers whose absence would leave nothing on screen at all. */
+  private isStartGateOpen(): boolean {
+    return this.babylonMaterialContainer.isLoaded() && this.particleSystemContainer.isLoaded();
+  }
+
   private handleResolve(handler: () => void) {
-    if (this.babylonMaterialContainer.isLoaded() && this.glbContainer.isLoaded() && this.particleSystemContainer.isLoaded()) {
+    if (this.isStartGateOpen()) {
       handler();
     } else {
       this.gwtResolver = handler;
     }
+  }
+
+  /**
+   * Whether this model can be placed right now. False means it is still on the wire, not that it
+   * does not exist - pair it with {@link requestModel3D}.
+   */
+  isModel3DReady(model3DId: number): boolean {
+    const gltfEntityId = this.gltfEntityIdOf(model3DId);
+    return gltfEntityId !== null && this.glbContainer.isEntityLoaded(gltfEntityId);
+  }
+
+  /**
+   * Run {@code onReady} once this model can be placed, and pull it forward in the load queue in
+   * the meantime. Returns a cancel function for the caller that disappears first - a unit that
+   * dies, a tile that scrolls away, a placer that is closed again.
+   *
+   * {@code onReady} is called with false if the model can never arrive (unknown id, or the glb
+   * failed to load), so a caller can fall back instead of waiting forever.
+   */
+  requestModel3D(model3DId: number, onReady: (ready: boolean) => void): () => void {
+    const gltfEntityId = this.gltfEntityIdOf(model3DId);
+    if (gltfEntityId === null) {
+      onReady(false);
+      return () => {
+      };
+    }
+    return this.glbContainer.whenEntityLoaded(gltfEntityId, loaded => onReady(loaded));
+  }
+
+  private gltfEntityIdOf(model3DId: number): number | null {
+    const model3DEntity = this.model3DEntities.get(GwtHelper.gwtIssueNumber(model3DId));
+    return model3DEntity ? model3DEntity.gltfEntityId : null;
   }
 
   private loadUiConfigCollection() {
@@ -92,9 +142,13 @@ export class BabylonModelService {
   }
 
   public handleLoaded(): void {
-    if (this.babylonMaterialContainer.isLoaded() && this.glbContainer.isLoaded() && this.particleSystemContainer.isLoaded()) {
+    if (this.isStartGateOpen()) {
       if (this.gwtResolver) {
-        this.gwtResolver();
+        // Once only: the glb container calls this again for every model that lands afterwards,
+        // and the boot promise must not be resolved a second time.
+        const resolver = this.gwtResolver;
+        this.gwtResolver = undefined;
+        resolver();
       }
     }
   }

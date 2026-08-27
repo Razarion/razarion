@@ -46,7 +46,19 @@ export class BabylonItemImpl implements BabylonItem {
   private static readonly BRACKET_ARM_FRACTION = 0.22;
   private static readonly BRACKET_ARM_MIN = 0.35;
   private static readonly BRACKET_ARM_MAX = 1.5;
-  private readonly renderObject: RenderObject;
+  /**
+   * Not readonly: models are no longer all present when the game starts (see
+   * BabylonModelService.init), so an item created during the window gets an empty placeholder and
+   * swaps in the real model when it lands. Never cache this - always go through
+   * {@link getRenderObject}, or a caller ends up holding the placeholder forever.
+   */
+  private renderObject: RenderObject;
+  private readonly modelParent: TransformNode;
+  /** Set while a model is on the wire; pulled when the item dies first. */
+  private cancelModelRequest: (() => void) | null = null;
+  private disposed = false;
+  /** Kept so the swapped-in model can be given the same triggers as the placeholder had. */
+  private actionManager!: ActionManager;
   private position: Vertex | null = null;
   private angle: number = 0;
   private bracketMesh: LinesMesh | null = null;
@@ -60,6 +72,12 @@ export class BabylonItemImpl implements BabylonItem {
   private selectionCallback: ((active: boolean) => void) | null = null;
   private itemClickCallback: (() => void) | null = null;
   private selectTipTexture: AdvancedDynamicTexture | null = null;
+  /**
+   * What the visible select prompt was asked for. The prompt links itself to the model node, so a
+   * model arriving mid-tip has to rebuild it - and the tip is exactly what is on screen during the
+   * first seconds of a game, which is the window where that happens.
+   */
+  private selectPromptArgs: { text: string, labelWidth: string, containerWidth: string } | null = null;
   private selectTipVisibilityObserver: Nullable<Observer<any>> = null;
   /**
    * The same dispatch the mesh's own pick triggers use. Kept reachable so a click that landed on
@@ -78,20 +96,31 @@ export class BabylonItemImpl implements BabylonItem {
               protected tsSelectionService: TsSelectionService,
               parent: TransformNode,
               protected disposeCallback: ((permanent: boolean) => void) | null) {
-    if (itemType.getModel3DId()) {
-      this.renderObject = this.babylonModelService.cloneModel3D(itemType.getModel3DId()!, parent, diplomacy);
+    this.modelParent = parent;
+    const model3DId = itemType.getModel3DId();
+    if (model3DId) {
+      if (babylonModelService.isModel3DReady(model3DId)) {
+        this.renderObject = this.babylonModelService.cloneModel3D(model3DId, parent, diplomacy);
+      } else {
+        // The glb is still on the wire. Stand up an empty node rather than a stand-in shape: the
+        // item is fully alive to the game (it takes positions, clicks and orders), it just has
+        // nothing to draw for a moment. A visible stand-in would be worse than nothing - the
+        // player would read a sphere as a real unit and shoot at the wrong silhouette.
+        this.renderObject = new RenderObject(rendererService);
+        this.renderObject.setModel3D(new TransformNode(`Awaiting model ${model3DId} for ${itemType.getInternalName()} '${id}'`, rendererService.getScene()));
+        this.cancelModelRequest = babylonModelService.requestModel3D(model3DId, ready => {
+          this.cancelModelRequest = null;
+          if (ready) {
+            this.replaceRenderObject(model3DId);
+          } else {
+            console.warn(`Model ${model3DId} never arrived for ${itemType.getInternalName()} '${id}' - it stays invisible`);
+          }
+        });
+      }
     } else {
       this.renderObject = new RenderObject(rendererService);
       this.renderObject.setModel3D(MeshBuilder.CreateSphere(`No threeJsModelPackConfigId or meshContainerId for ${itemType.getInternalName()} '${itemType.getId()}'`, {diameter: this.getRadius() * 2}))
       console.warn(`No MeshContainerId or ThreeJsModelPackConfigId for ${itemType.getInternalName()} '${itemType.getId()}'`)
-    }
-    this.renderObject.setParent(parent);
-    this.renderObject.setName(`${itemType.getInternalName()} '${id}')`);
-    // Water units (ships, water buildings) skip shadow casting — the only
-    // surface the shadow could land on is the underwater seabed, where it
-    // looks unnatural and hides the bow-wave foam halo overlay.
-    if (!this.isWaterUnit()) {
-      this.renderObject.addAllShadowCasters(rendererService);
     }
 
     let actionManager = new ActionManager(rendererService.getScene());
@@ -194,10 +223,94 @@ export class BabylonItemImpl implements BabylonItem {
       }
     }
     actionService.addCursorHandler(this.itemCursorTypeHandler);
-    this.renderObject.setActionManager(actionManager);
+    this.actionManager = actionManager;
+    this.attachRenderObject();
+  }
+
+  /**
+   * Everything the item hangs on its model. Called once at construction, and again for the real
+   * model when it replaces the placeholder - so the two paths can never drift apart.
+   */
+  private attachRenderObject(): void {
+    this.renderObject.setParent(this.modelParent);
+    this.renderObject.setName(`${this.itemType.getInternalName()} '${this.id}')`);
+    // Water units (ships, water buildings) skip shadow casting — the only
+    // surface the shadow could land on is the underwater seabed, where it
+    // looks unnatural and hides the bow-wave foam halo overlay.
+    if (!this.isWaterUnit()) {
+      this.renderObject.addAllShadowCasters(this.rendererService);
+    }
+    this.renderObject.setActionManager(this.actionManager);
     this.buildStateObserver = this.renderObject.onBuildAnimationActiveChanged.add(() => {
       this.updateHighlight();
     });
+  }
+
+  /**
+   * Swap the placeholder for the model that just arrived. The item keeps its identity - the game
+   * engine holds this object and never learns that the node underneath it changed - so everything
+   * that was attached to the old node has to be moved across: the highlight, the marker disc, the
+   * linked GUI of a subclass, and the transform, which is re-derived from the item's own last
+   * known position rather than copied off the placeholder.
+   */
+  private replaceRenderObject(model3DId: number): void {
+    if (this.disposed) {
+      return;
+    }
+    const placeholder = this.renderObject;
+    const selectPrompt = this.selectPromptArgs;
+    if (this.buildStateObserver) {
+      placeholder.onBuildAnimationActiveChanged.remove(this.buildStateObserver);
+      this.buildStateObserver = null;
+    }
+    // Brackets are built from the old node's bounding box. Dropping them clears highlightActive,
+    // so the updateHighlight() below rebuilds them against the real model's extents - which are
+    // the ones the player is actually looking at.
+    this.removeHighlight();
+    placeholder.removeAllShadowCasters(this.rendererService);
+    this.rendererService.getScene().removeTransformNode(placeholder.getModel3D());
+
+    this.renderObject = this.babylonModelService.cloneModel3D(model3DId, this.modelParent, this.diplomacy);
+    this.attachRenderObject();
+
+    // Re-parent before disposing: RenderObject.dispose() calls Node.dispose(), which recurses into
+    // descendants - the marker disc hanging under the placeholder would go down with it.
+    if (this.visualizationMarkerDisc) {
+      this.visualizationMarkerDisc.parent = this.renderObject.getModel3D();
+    }
+    this.reparentToRenderObject(this.renderObject.getModel3D(), placeholder.getModel3D());
+    placeholder.dispose();
+
+    if (this.position) {
+      // Re-runs the terrain pick as well, so the model lands on the slope it is standing on
+      // instead of inheriting a rotation the placeholder never had.
+      this.setPosition(this.position);
+    } else {
+      this.setAngle(this.angle);
+    }
+    if (selectPrompt) {
+      this.showSelectPromptVisualization(selectPrompt.text, selectPrompt.labelWidth, selectPrompt.containerWidth);
+    }
+    this.onRenderObjectReplaced();
+    this.updateHighlight();
+  }
+
+  /**
+   * Move whatever is still hanging under the placeholder onto the real model. The placeholder is
+   * an empty node, so its children can only be things the item itself hung there - a wake, a halo,
+   * a decal - and every one of them would be disposed with it otherwise.
+   */
+  private reparentToRenderObject(newRoot: TransformNode, placeholderRoot: TransformNode): void {
+    placeholderRoot.getChildren(undefined, true).forEach(child => {
+      child.parent = newRoot;
+    });
+  }
+
+  /**
+   * Hook for subclasses that keep something bound to the model node - a linked GUI control, a
+   * running animation - and have to re-bind it after the real model replaced the placeholder.
+   */
+  protected onRenderObjectReplaced(): void {
   }
 
   getId(): number {
@@ -238,6 +351,13 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   private disposeInternal(permanent: boolean): void {
+    this.disposed = true;
+    // A unit can die - or be scrolled out of view - while its model is still downloading. Without
+    // this the callback would fire into a disposed item and clone a model nobody can see.
+    if (this.cancelModelRequest) {
+      this.cancelModelRequest();
+      this.cancelModelRequest = null;
+    }
     if (this.disposeCallback) {
       this.disposeCallback(permanent);
     }
@@ -390,6 +510,7 @@ export class BabylonItemImpl implements BabylonItem {
     // Overwriting the fields would leave the previous texture on screen with an observer nobody
     // can reach any more - a second prompt that never goes away.
     this.hideSelectPromptVisualization();
+    this.selectPromptArgs = {text, labelWidth, containerWidth};
     this.selectTipTexture = AdvancedDynamicTexture.CreateFullscreenUI("Select tip");
     this.selectTipTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
     let pressMouseVisualization = new PressMouseVisualization(true, this.rendererService);
@@ -474,6 +595,7 @@ export class BabylonItemImpl implements BabylonItem {
   }
 
   hideSelectPromptVisualization(): void {
+    this.selectPromptArgs = null;
     if (this.selectTipVisibilityObserver) {
       this.rendererService.getScene().onBeforeRenderObservable.remove(this.selectTipVisibilityObserver);
       this.selectTipVisibilityObserver = null;

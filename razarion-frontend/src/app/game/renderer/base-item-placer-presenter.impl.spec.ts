@@ -95,7 +95,10 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
       dispose: () => {
       }
     };
-    const modelService = {cloneModel3D: () => renderObject} as unknown as BabylonModelService;
+    const modelService = {
+      isModel3DReady: () => true,
+      cloneModel3D: () => renderObject
+    } as unknown as BabylonModelService;
     const audioService = {speakCommand: () => {
     }} as unknown as BabylonAudioService;
 

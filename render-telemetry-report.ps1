@@ -80,11 +80,14 @@ $metrics = @(
     @{Name = "frameP95 (ms)"; Key = "frameP95"},
     @{Name = "frameMax (ms)"; Key = "frameMax"},
     @{Name = "renderP50 (ms)"; Key = "renderP50"},
+    @{Name = "drawP50 (calls)"; Key = "drawP50"},
     @{Name = "long100/10s"; Key = "long100"},
     @{Name = "tickGapMax (ms)"; Key = "tickGapMax"},
     @{Name = "activeMeshes"; Key = "activeMeshes"}
 )
 $rows = foreach ($metric in $metrics) {
+    # A dump taken before a field existed must not report it as a column of zeroes.
+    if (-not $records[0].PSObject.Properties[$metric.Key]) { continue }
     $values = [double[]]($records | ForEach-Object { [double]$_.($metric.Key) })
     [pscustomobject]@{
         Metric = $metric.Name
@@ -146,6 +149,37 @@ if ($withCensus) {
     Write-Host "  owners: $($worst.meshTop)`n" -ForegroundColor Gray
 } else {
     Write-Host "No mesh census in these lines -- dump predates the census fields.`n" -ForegroundColor Yellow
+}
+
+# --- 3b. Draw calls: is the per-visible-mesh cost GL, or Babylon's bookkeeping? -----------------
+# PROD 27.08.2026 fitted renderP50 = base + 8.4 us * activeMeshes + B * scene.meshes, and the
+# activeMeshes term was the biggest one. It has two possible owners. Terrain scenery is instanced,
+# so if a thousand active meshes collapse into a hundred draw calls the cost sits in
+# _evaluateActiveMeshes and thin instances are the fix; if it is a thousand draw calls, it is GL
+# submission and batching materials is the fix. This table is the answer.
+$withDraw = $records | Where-Object { $_.drawP50 -and [double]$_.drawP50 -ge 0 }
+if ($withDraw) {
+    Write-Host "Draw calls per frame, by how much is on screen" -ForegroundColor Cyan
+    $withDraw | Group-Object { [Math]::Floor([double]$_.activeMeshes / 500) } | Sort-Object { [int]$_.Name } | ForEach-Object {
+        $group = $_.Group
+        $avg = { param($key) ($group | ForEach-Object { [double]$_.$key } | Measure-Object -Average).Average }
+        $activeMeshes = & $avg "activeMeshes"
+        $drawCalls = & $avg "drawP50"
+        [pscustomobject]@{
+            ActiveMeshes    = "{0,5} - {1}" -f ([int]$_.Name * 500), ([int]$_.Name * 500 + 499)
+            Periods         = $_.Count
+            fps             = Fmt (& $avg "fps")
+            renderP50       = Fmt (& $avg "renderP50")
+            drawP50         = Fmt $drawCalls 0
+            drawMax         = Fmt (& $avg "drawMax") 0
+            MeshesPerCall   = if ($drawCalls -gt 0) { Fmt ($activeMeshes / $drawCalls) } else { "n/a" }
+            UsPerDrawCall   = if ($drawCalls -gt 0) { Fmt (1000 * (& $avg "renderP50") / $drawCalls) } else { "n/a" }
+        }
+    } | Format-Table -AutoSize
+    Write-Host "MeshesPerCall well above 1 means instancing is working and the cost is per-mesh bookkeeping," -ForegroundColor Gray
+    Write-Host "not GL submission -- in that case thin instances beat anything done to the materials.`n" -ForegroundColor Gray
+} else {
+    Write-Host "No draw-call counts in these lines -- dump predates drawP50.`n" -ForegroundColor Yellow
 }
 
 # --- 4. The parked-mesh filter A/B (F7) ---------------------------------------------------------

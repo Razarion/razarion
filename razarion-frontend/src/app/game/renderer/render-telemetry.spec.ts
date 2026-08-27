@@ -21,10 +21,11 @@ describe('RenderTelemetry', () => {
   }
 
   /** Feeds frames at a fixed interval starting at t=0, returning the timestamp of the last one. */
-  function feed(rt: RenderTelemetry, count: number, intervalMs: number, renderMs = 5, from = 0): number {
+  function feed(rt: RenderTelemetry, count: number, intervalMs: number, renderMs = 5, from = 0,
+                drawCalls = 120): number {
     let now = from;
     for (let i = 0; i < count; i++) {
-      rt.recordFrame(now, renderMs);
+      rt.recordFrame(now, renderMs, drawCalls);
       now += intervalMs;
     }
     return now - intervalMs;
@@ -51,7 +52,7 @@ describe('RenderTelemetry', () => {
     // 601 frames at a steady 60 fps, then one 400 ms freeze that closes the period. The mean
     // barely moves (16.6 ms); the max and the long-frame counters are the whole point.
     feed(rt, 601, 16);
-    rt.recordFrame(600 * 16 + 400, 5);
+    rt.recordFrame(600 * 16 + 400, 5, 120);
 
     expect(lines.length).toBe(1);
     expect(field(lines[0], 'frameP50')).toBe('16.0');
@@ -128,6 +129,23 @@ describe('RenderTelemetry', () => {
 
     expect(lines.length).toBe(1);
     expect(field(lines[0], 'meshes')).toBe('-1');
+  });
+
+  it('reports draw calls per frame, so the per-visible-mesh cost can be attributed', () => {
+    const rt = telemetry();
+    // A steady 140 draw calls with one spike: the median says what a normal frame submits, the
+    // max catches the frame that also rebuilt the shadow map.
+    feed(rt, 20, 500, 5, 0, 140);
+    rt.recordFrame(10_000, 5, 900);
+
+    expect(field(lines[0], 'drawP50')).toBe('140');
+    expect(field(lines[0], 'drawMax')).toBe('900');
+  });
+
+  it('carries -1 rather than a wrong number when the engine keeps no draw-call counter', () => {
+    feed(telemetry(), 21, 500, 5, 0, -1);
+
+    expect(field(lines[0], 'drawP50')).toBe('-1');
   });
 
   it('counts the engine ticks that arrived during the period', () => {
