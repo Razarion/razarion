@@ -17,11 +17,27 @@ export function estimateCost(text) {
   return hasLink(text) ? 0.2 : 0.015;
 }
 
+// X wants the real MIME type, and rejects a JPEG announced as video/mp4. The spec only ever
+// carried clips, so this was hardcoded; composed posts can attach a screenshot too.
+const MEDIA_TYPES = {
+  '.mp4': 'video/mp4',
+  '.mov': 'video/quicktime',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.gif': 'image/gif',
+};
+
+function mediaTypeFor(path) {
+  const ext = path.slice(path.lastIndexOf('.')).toLowerCase();
+  return MEDIA_TYPES[ext] || 'video/mp4';
+}
+
 async function uploadMedia(token, path, size, category) {
   step('X: initialising media upload');
   const init = await postJson(
     `${MEDIA_BASE}/initialize`,
-    { media_type: 'video/mp4', total_bytes: size, media_category: category },
+    { media_type: mediaTypeFor(path), total_bytes: size, media_category: category },
     { headers: { Authorization: `Bearer ${token}` } }
   );
   const mediaId = init.data?.id || init.data?.media_id_string || init.media_id_string;

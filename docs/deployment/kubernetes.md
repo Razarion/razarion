@@ -75,7 +75,7 @@ kubectl exec -it razarion-mariadb-0 -- bash -c "mysql -u root -pEinSicheresPassw
 | `k8s/mariadb-statefulset.yaml` | MariaDB StatefulSet definition |
 | `k8s/mariadb-service.yaml` | MariaDB headless service |
 | `k8s/my-custom.cnf` | MariaDB custom configuration |
-| `k8s/razarion-server-deployment.yaml` | Server deployment definition |
+| `k8s/templates/razarion-server-deployment.yaml` | Server deployment definition. `__TAG__` is replaced with the commit SHA by `deploy.ps1`; kept out of `k8s/` so a plain `kubectl apply -f k8s/` cannot apply the placeholder. |
 | `k8s/razarion-server-service.yaml` | LoadBalancer service |
 
 ## Common Operations

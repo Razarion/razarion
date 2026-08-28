@@ -252,6 +252,12 @@ async function main() {
       // Everything from here on is refinement of a post that is already out, so a failure warns
       // and moves on rather than ending the run.
       let postId = created.id;
+
+      // Backdating exists to put the 2026 archive back in chronological order. A post written
+      // today has no earlier date to restore - and a backdated post stays out of followers' feeds,
+      // which is what the backfill wanted and the opposite of what a new post wants.
+      const composed = entry.source === 'composed';
+
       try {
         if (created.kind === 'video') {
           const resolved = await resolveVideoPost(created.id, { pageId, token });
@@ -265,7 +271,9 @@ async function main() {
           }
         }
 
-        if (backdate && postId) {
+        if (composed) step('composed today, so not backdated');
+
+        if (backdate && postId && !composed) {
           const dated = await backdatePost(postId, entry, { token, granularity });
           posted.posted[entry.id].backdated_to = dated ? entry.date : null;
           if (dated) {
@@ -278,7 +286,7 @@ async function main() {
         warn(`Post is out, but the follow-up failed: ${err.message.split('\n')[0]}`);
       }
 
-      if (backdate && !posted.posted[entry.id].backdated_to) withoutBackdate++;
+      if (backdate && !composed && !posted.posted[entry.id].backdated_to) withoutBackdate++;
       writeJson(POSTED_FB_FILE, posted);
     } catch (err) {
       if (err instanceof FacebookError && err.code === PAGE_BLOCK_CODE) {

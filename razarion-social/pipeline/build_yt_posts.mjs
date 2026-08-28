@@ -12,7 +12,7 @@
 //   node build_yt_posts.mjs           # write data/youtube/ and its metadata.json
 //   node build_yt_posts.mjs --force   # regenerate, discarding edits
 
-import { copyFileSync, existsSync } from 'node:fs';
+import { copyFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseArgs } from './lib/args.mjs';
 import {
@@ -139,6 +139,9 @@ function slugify(title) {
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const force = Boolean(args.force);
+  // Nothing here can ask YouTube what is already on the channel, so the record of that is kept by
+  // hand: run --mark-uploaded once the batch is up, and later runs list only what came after.
+  const markUploaded = Boolean(args['mark-uploaded']);
 
   const source = readJson(POSTS_FILE);
   if (!source) throw new Error(`No ${toRelative(POSTS_FILE)}. Run: node fetch_posts.mjs`);
@@ -184,6 +187,7 @@ function main() {
       dimensions: clip.width ? `${clip.width}x${clip.height}` : null,
       flags: truncated ? ['title-truncated'] : [],
       edited: false,
+      uploaded_at: null,
       title,
       description: buildDescription(post),
       tags: buildTags(post.text || ''),
@@ -201,10 +205,23 @@ function main() {
         description: prev.description,
         tags: prev.tags,
         edited: true,
+        uploaded_at: prev.uploaded_at || null,
       };
     }
-    return entry;
+    return { ...entry, uploaded_at: (prev && prev.uploaded_at) || null };
   });
+
+  if (markUploaded) {
+    const stamp = new Date().toISOString();
+    let marked = 0;
+    for (const v of videos) {
+      if (!v.uploaded_at) {
+        v.uploaded_at = stamp;
+        marked++;
+      }
+    }
+    info(`--mark-uploaded: ${marked} clip(s) recorded as uploaded.`);
+  }
 
   videos.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
   const truncatedTitles = videos.filter((v) => v.flags.includes('title-truncated')).length;
@@ -222,12 +239,54 @@ function main() {
       becomes_short: videos.filter((v) => v.becomes_short).length,
       normal_video: videos.filter((v) => !v.becomes_short).length,
       titles_truncated: truncatedTitles,
+      uploaded: videos.filter((v) => v.uploaded_at).length,
+      not_uploaded_yet: videos.filter((v) => !v.uploaded_at).length,
     },
     videos,
   });
 
+  // metadata.json is the record; this is the thing you actually keep open while working through
+  // Studio, because copying three fields out of a JSON array is worse than it needs to be.
+  const sheet = [
+    '# YouTube upload sheet',
+    '',
+    `${videos.length} clips, oldest first. Drag every file from this folder into Studio at once -`,
+    'the names sort by date - then work down this list, one video per block.',
+    '',
+    'Category: Gaming. Not made for kids. Set the recording date to the date in the heading.',
+    '',
+    '---',
+    '',
+  ];
+  videos.forEach((v, index) => {
+    const number = String(index + 1).padStart(2, '0');
+    sheet.push(`## ${number} · ${v.date.slice(0, 10)}${v.becomes_short ? ' · SHORT (portrait)' : ''}`);
+    sheet.push('');
+    sheet.push('`' + v.file.split('/').pop() + '`');
+    sheet.push('');
+    sheet.push('**Title**');
+    sheet.push('');
+    sheet.push('    ' + v.title);
+    sheet.push('');
+    sheet.push('**Description**');
+    sheet.push('');
+    for (const line of v.description.split('\n')) sheet.push('    ' + line);
+    sheet.push('');
+    sheet.push('**Tags**');
+    sheet.push('');
+    sheet.push('    ' + v.tags.join(', '));
+    sheet.push('');
+    sheet.push('---');
+    sheet.push('');
+  });
+  const sheetFile = join(YOUTUBE_DIR, 'upload-sheet.md');
+  writeFileSync(sheetFile, sheet.join('\n'), 'utf8');
+
   info('');
   ok(`${videos.length} clips prepared in ${toRelative(YOUTUBE_DIR)}`);
+  const pending = videos.filter((v) => !v.uploaded_at).length;
+  info(`  not on the channel yet: ${pending}${pending === videos.length ? ' (none marked uploaded)' : ''}`);
+  info(`  work through them with ${toRelative(sheetFile)}`);
   info(`  copied now: ${copied}`);
   if (kept) info(`  kept your edits on: ${kept}`);
   info(`  will become Shorts (portrait or square): ${videos.filter((v) => v.becomes_short).length}`);

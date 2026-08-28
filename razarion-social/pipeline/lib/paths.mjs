@@ -20,6 +20,8 @@ export const INSTAGRAM_TOKEN_FILE = join(STATE_DIR, 'instagram-token.json');
 export const FACEBOOK_TOKEN_FILE = join(STATE_DIR, 'facebook-token.json');
 export const FB_POSTS_FILE = join(DATA_DIR, 'fb_posts.json');
 export const POSTED_FB_FILE = join(STATE_DIR, 'posted_fb.json');
+export const X_POSTS_FILE = join(DATA_DIR, 'x_posts.json');
+export const POSTED_X_FILE = join(STATE_DIR, 'posted_x.json');
 
 export function ensureDir(dir) {
   mkdirSync(dir, { recursive: true });

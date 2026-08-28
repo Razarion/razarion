@@ -69,6 +69,8 @@ extract-zh.js
 
 # Social publishing credentials - never commit these
 /razarion-social/.env
+/razarion-social/.env.*
+!/razarion-social/.env.example
 /razarion-social/.tokens.json
 
 # Pipeline working data: fetched posts, downloaded media, generated cards, publish state

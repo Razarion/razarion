@@ -7,7 +7,12 @@ const AUTH_URL = 'https://x.com/i/oauth2/authorize';
 const TOKEN_URL = 'https://api.x.com/2/oauth2/token';
 // media.write is a separate grant from tweet.write: a token without it gets a 403 the moment it
 // touches the upload endpoint, even though it can post text fine.
-const SCOPES = ['tweet.read', 'tweet.write', 'users.read', 'media.write', 'offline.access'];
+// X rejects the whole authorisation request - with nothing more useful than "something went
+// wrong" - if it does not recognise one of the scopes. X_SCOPES makes the list narrowable so the
+// offending one can be found by elimination; without media.write, text posts still work and only
+// the image upload fails.
+const DEFAULT_SCOPES = ['tweet.read', 'tweet.write', 'users.read', 'media.write', 'offline.access'];
+const SCOPES = env.X_SCOPES ? env.X_SCOPES.split(/[\s,]+/).filter(Boolean) : DEFAULT_SCOPES;
 
 const port = () => Number(env.X_REDIRECT_PORT || 8724);
 const redirectUri = () => env.X_REDIRECT_URI || `http://127.0.0.1:${port()}`;

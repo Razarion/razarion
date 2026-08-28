@@ -10,8 +10,12 @@ and reuses its `.env`, HTTP layer and logging.
 | Facebook | `build_fb_posts` → `upload_media --source fb` → `publish_fb` | `state/posted_fb.json` |
 | YouTube | `build_yt_posts` → you, in Studio | none - not automated, and why is below |
 
-Everything starts from `fetch_posts.mjs`, which is the only step that talks to X and the only one
-that costs money.
+Posts are written here now rather than mirrored from X: `generate.mjs` builds one from the live
+game data, `compose.mjs` from your own clip and a couple of sentences. `fetch_posts.mjs` and the
+two builders remain for the 2026 backfill they were written for.
+
+**[ANLEITUNG.md](ANLEITUNG.md) is the cheat sheet** - what to type, in order. This file explains why
+things are the way they are.
 
 ```bash
 cd razarion-social/pipeline
@@ -196,9 +200,15 @@ upload_media.mjs       media -> GitHub release (or R2) -> data/uploads.json
 publish.mjs            captions.json -> Instagram, state/posted.json
 build_fb_posts.mjs     posts.json -> data/fb_posts.json
 publish_fb.mjs         fb_posts.json -> Facebook Page, state/posted_fb.json
+compose.mjs            one new post -> all three review files
+generate.mjs           the next unit from the live game -> all three, card and all
+lib/razarion.mjs       admin login, unit types, images from the running server
+lib/entries.mjs        one text -> the three shapes the feeds want
+publish_x.mjs          x_posts.json -> X, state/posted_x.json
 fb_token.mjs           user token -> permanent Page token
 build_yt_posts.mjs     posts.json -> data/youtube/ for a manual Studio upload
-sync_new.mjs           the whole chain, for whatever is new since the last run
+sync_new.mjs           the whole chain for both networks, for whatever is new
+scheduled/run.ps1      what the scheduled task calls: token, sync, deliver
 refresh_token.mjs      swaps the Instagram token for a fresh 60-day one
 check.mjs              preflight: is everything ready for a live run
 lib/x.mjs              X API client: pagination, rate-limit retry, media variant picking
@@ -301,30 +311,88 @@ if it is square or portrait. They will be normal videos whatever route they take
 (720x960) becomes a Short on its own. Making the rest into Shorts would mean re-cutting them
 vertically - that is video editing, not backfilling.
 
+## Writing a post here instead of on X
+
+Everything above mirrors what X already carries. `compose.mjs` is the other direction - a clip or
+an image plus a couple of sentences, turned into the three shapes the feeds want:
+
+```bash
+node compose.mjs --media data/clips/harvester.mp4 --text "Der Harvester sammelt jetzt..."
+node compose.mjs --text "Nur Text" --link https://www.razarion.com
+node compose.mjs --media shot.jpg --text "..." --tags "harvester,economy"
+```
+
+One input, three entries, all on `review`:
+
+| | What it gets |
+|---|---|
+| **X** | Text with the link inline, checked against the 280 limit as X counts it - a link weighs 23 characters whatever its length |
+| **Instagram** | Caption without the link, `Link in bio.` instead, hashtags underneath. No media means a card gets rendered |
+| **Facebook** | Text with the link inline and clickable, nothing appended |
+
+The id is `own-<timestamp>`, which cannot collide with an X post id. That matters because
+`build_captions.mjs` and `build_fb_posts.mjs` rebuild their files from `posts.json`: both carry
+over entries that are not in it, so a composed post survives every later sync instead of vanishing
+at the next one.
+
+Media is copied into `data/own/` rather than referenced. The review files point at paths that have
+to still be there when publishing happens, which may be days later.
+
+### Posting to X
+
+`publish_x.mjs` reads `x_posts.json` and posts through the module in `../src/platforms/x.mjs`.
+X takes the file itself rather than a URL, so the local copy is what it uses - the GitHub uploads
+that Instagram and Facebook need are irrelevant on that side.
+
+**It bills per post**: $0.015, or **$0.20 once a link is in the text**. The dry run prints the
+estimate for the batch, the live run asks for confirmation of the total, and `state/posted_x.json`
+is written after each post so a crash never leads to paying twice for the same text.
+
+Writing needs an OAuth2 client with write scope - `X_CLIENT_ID` and `X_CLIENT_SECRET` in `.env`,
+then `node ../src/cli.mjs auth x`. The `X_BEARER_TOKEN` used for reading cannot post.
+
 ## Keeping it in sync
 
 `sync_new.mjs` runs the whole chain against whatever @razariongame has posted since the last run.
 It resumes from `state/sync.json`, falling back to the newest entry in `captions.json`.
 
 ```bash
-node sync_new.mjs                    # fetch, caption, render, upload - then stop
+node sync_new.mjs                    # fetch, prepare both networks - then stop
 node sync_new.mjs --auto             # ...and mark unflagged new posts as ok
 node sync_new.mjs --auto --publish   # ...and publish them
+node sync_new.mjs --only fb          # one network instead of both
 ```
 
 **Publishing is off by default, and so is `--auto`.** A job that posts whatever it finds, unread,
 is how an account ends up publishing a link-only post that says nothing on Instagram. `--auto`
 promotes only new entries that carry **no flags at all**; anything flagged waits for a person.
 
+It resumes from the newest post it has *seen*, not the newest it kept. A run that finds only replies
+to other accounts still moves the mark forward - otherwise every future run re-reads the same
+replies, and reads are billed.
+
 A run with nothing new costs nothing - no posts read, no files uploaded, and it stops before the
 rest of the chain.
 
-As a scheduled task on Windows (daily at 09:00):
+### On a schedule
+
+`scheduled/run.ps1` is what a scheduled task should call. It checks the Instagram token, syncs, and
+then publishes from the **approved** backlog - one post per network per run by default:
 
 ```
-schtasks /create /tn "razarion-instagram-sync" /sc daily /st 09:00 ^
-  /tr "node C:\dev\projects\razarion\code\razarion2\tools\social\backfill\sync_new.mjs --auto"
+schtasks /create /tn "razarion-social" /sc weekly /d MON,WED,FRI /st 10:00 ^
+  /tr "powershell -NoProfile -ExecutionPolicy Bypass -File C:\dev\projects\razarion\code\razarion2\razarion-social\pipeline\scheduled\run.ps1"
 ```
+
+Three runs a week, one post each, matches the cadence the editorial plan assumes. Everything lands
+in `state/scheduled.log`.
+
+The division of labour is deliberate: the task fetches, prepares and delivers; a person decides once
+a week what gets approved. Nothing reaches a feed that was not set to `ok` by hand, and a run with
+an empty approved backlog is a no-op rather than an improvisation.
+
+A failing step does not stop the ones after it - if Instagram is throttled, Facebook still delivers,
+and the token check runs regardless of both.
 
 ## The Instagram token expires
 

@@ -18,9 +18,27 @@ $ProdBaseUrl = "https://www.razarion.com"
 Write-Host "=== Razarion Deploy ===" -ForegroundColor Cyan
 
 # 0. JDK 21 Umgebung setzen
-Write-Host "`n[0/5] Setting JDK 21 environment..." -ForegroundColor Yellow
+Write-Host "`n[0/6] Setting JDK 21 environment..." -ForegroundColor Yellow
 . C:\dev\scripts\jdk21.ps1
 Write-Host "JAVA_HOME: $env:JAVA_HOME" -ForegroundColor Gray
+
+# 0b. Commit ermitteln. Das Image wird zusaetzlich zu :latest mit dem Kurz-SHA getaggt und der
+#     Rollout laeuft auf diesen festen Tag. Damit ist ablesbar, welcher Stand live ist, und ein
+#     Rollback ist ein kubectl-Aufruf statt zweier Maven-Durchlaeufe.
+#     Uncommittete Aenderungen brechen ab: ein Image, das keinem Commit entspricht, macht genau
+#     die Zuordnung wertlos, wegen der das hier steht.
+$Sha = (git -C $ProjectRoot rev-parse --short HEAD 2>$null)
+if (-not $Sha) {
+    Write-Host "Kein git-Commit ermittelbar - Abbruch." -ForegroundColor Red
+    exit 1
+}
+$Sha = $Sha.Trim()
+if (git -C $ProjectRoot status --porcelain) {
+    Write-Host "Arbeitsverzeichnis nicht sauber. Das Image waere keinem Commit zuzuordnen." -ForegroundColor Red
+    Write-Host "Committen oder verwerfen, dann erneut deployen." -ForegroundColor Yellow
+    exit 1
+}
+Write-Host "Deploying commit $Sha" -ForegroundColor Gray
 
 # 1. Full Maven Build (inkl. Frontend) - erster Durchlauf
 # -Pprod aktiviert das TeaVM-Profil der beiden WASM-Module (minifying,
@@ -48,9 +66,11 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "Build (2nd pass) successful!" -ForegroundColor Green
 
 # 3. Jib Build & Push
-Write-Host "`n[3/6] Building and pushing Docker image with Jib..." -ForegroundColor Yellow
+Write-Host "`n[3/6] Building and pushing Docker image with Jib ($Sha)..." -ForegroundColor Yellow
 Set-Location "$ProjectRoot\razarion-server"
-mvn compile jib:build
+# jib.to.tags kommt zusaetzlich zu dem :latest aus der pom - der bleibt, damit nichts bricht,
+# was sich darauf verlaesst.
+mvn compile jib:build "-Djib.to.tags=$Sha"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Jib build failed!" -ForegroundColor Red
     exit 1
@@ -96,11 +116,20 @@ if (-not $announced) {
     Write-Host "Continuing without announcement." -ForegroundColor Yellow
 }
 
-# 5. Rollout Restart
-Write-Host "`n[5/6] Restarting Kubernetes deployment..." -ForegroundColor Yellow
-kubectl rollout restart deployment/razarion-server
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Rollout restart failed!" -ForegroundColor Red
+# 5. Rollout auf den festen Tag. Das Deployment-Manifest liegt unter k8s\templates\, damit das
+#    kubectl apply in Schritt 4 es nicht mit dem Platzhalter im Image anwendet - apply -f auf ein
+#    Verzeichnis ist nicht rekursiv, deshalb genuegt das Unterverzeichnis.
+#    Ueber eine Datei statt per Pipe, weil Windows PowerShell beim Weiterreichen an ein natives
+#    Programm eine Byte-Order-Mark voranstellen kann, an der der YAML-Parser scheitert.
+Write-Host "`n[5/6] Rolling out $Sha..." -ForegroundColor Yellow
+$Template = "$ProjectRoot\k8s\templates\razarion-server-deployment.yaml"
+$Rendered = Join-Path $env:TEMP "razarion-server-deployment.$Sha.yaml"
+[System.IO.File]::WriteAllText($Rendered, (Get-Content $Template -Raw).Replace('__TAG__', $Sha))
+kubectl apply -f $Rendered
+$applyExit = $LASTEXITCODE
+Remove-Item $Rendered -Force -ErrorAction SilentlyContinue
+if ($applyExit -ne 0) {
+    Write-Host "Rollout failed!" -ForegroundColor Red
     exit 1
 }
 
@@ -122,4 +151,6 @@ $Duration = $EndTime - $StartTime
 
 Write-Host "`n=== Deploy Complete ===" -ForegroundColor Cyan
 Write-Host "Total time: $($Duration.Minutes)m $($Duration.Seconds)s" -ForegroundColor Gray
+Write-Host "Live: $Sha  https://github.com/Razarion/razarion/commit/$Sha" -ForegroundColor Gray
+Write-Host "Rollback: kubectl set image deployment/razarion-server razarion-server=us-central1-docker.pkg.dev/neural-passkey-426618-j3/razarion-repo/razarion-server:<sha>" -ForegroundColor DarkGray
 Set-Location $ProjectRoot

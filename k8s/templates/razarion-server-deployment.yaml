@@ -19,7 +19,7 @@ spec:
       priorityClassName: razarion-server-high
       containers:
         - name: razarion-server
-          image: us-central1-docker.pkg.dev/neural-passkey-426618-j3/razarion-repo/razarion-server:latest
+          image: us-central1-docker.pkg.dev/neural-passkey-426618-j3/razarion-repo/razarion-server:__TAG__
           ports:
             - containerPort: 8080
           # requests == limits (QoS class Guaranteed). Vorher stand hier request 1Gi

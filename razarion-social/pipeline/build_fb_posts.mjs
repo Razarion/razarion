@@ -110,6 +110,16 @@ function main() {
     warn('--force: regenerated every post, including ones that had been edited.');
   }
 
+  // posts.json holds what the last fetch asked for, and says nothing about posts written here
+  // rather than mirrored from X. Both are carried over: entries from an earlier, narrower fetch,
+  // and anything compose.mjs added, which has no counterpart on X at all.
+  const fetched = new Set(source.posts.map((p) => p.id));
+  const carriedOver = [...previousById.values()].filter((entry) => !fetched.has(entry.id));
+  if (carriedOver.length) {
+    posts.push(...carriedOver);
+    posts.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+  }
+
   const counts = {
     total: posts.length,
     kept_from_review: kept,
