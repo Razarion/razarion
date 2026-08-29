@@ -1,5 +1,7 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.server.model.tracking.PageRequest;
+import com.btxtech.server.service.tracking.MetaConversionService;
 import com.btxtech.server.service.tracking.PageRequestService;
 import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.XConversionService;
@@ -48,19 +50,22 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
     private final PageRequestService pageRequestService;
     private final RedditConversionService redditConversionService;
     private final XConversionService xConversionService;
+    private final MetaConversionService metaConversionService;
 
     public ClientGameConnectionService(Provider<ClientGameConnection> provider,
                                        Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter,
                                        UserService userService,
                                        PageRequestService pageRequestService,
                                        RedditConversionService redditConversionService,
-                                       XConversionService xConversionService) {
+                                       XConversionService xConversionService,
+                                       MetaConversionService metaConversionService) {
         this.provider = provider;
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
         this.userService = userService;
         this.pageRequestService = pageRequestService;
         this.redditConversionService = redditConversionService;
         this.xConversionService = xConversionService;
+        this.metaConversionService = metaConversionService;
     }
 
     @Override
@@ -87,6 +92,13 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
             xConversionService.registerUser(userId, twclid);
             xConversionService.sendClientStartupEvent(twclid);
         }
+        // The whole visit, not only the click id: it carries the browser Meta wants with every
+        // event, and this is the last moment it is known.
+        PageRequest metaVisit = pageRequestService.findFbclidPageRequest(httpSessionId);
+        if (metaVisit != null) {
+            metaConversionService.registerUser(userId, metaVisit.getFbclid(), metaVisit.getUserAgent());
+            metaConversionService.sendClientStartupEvent(metaVisit.getFbclid(), metaVisit.getUserAgent());
+        }
         // TODO connectionTrackingPersistence.onGameConnectionOpened(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
 
@@ -110,6 +122,7 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         }
         redditConversionService.unregisterUser(clientGameConnection.getUserId());
         xConversionService.unregisterUser(clientGameConnection.getUserId());
+        metaConversionService.unregisterUser(clientGameConnection.getUserId());
     }
 
     public void onBaseCreated(PlayerBaseFull playerBase) {

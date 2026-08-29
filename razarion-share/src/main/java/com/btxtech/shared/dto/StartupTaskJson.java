@@ -11,6 +11,8 @@ public class StartupTaskJson {
     private String error;
     private String rdtCid;
     private String twclid;
+    /** Meta's click id, on links from Facebook and Instagram. */
+    private String fbclid;
     private String utmCampaign;
     private String utmSource;
     /**
@@ -137,6 +139,14 @@ public class StartupTaskJson {
         this.twclid = twclid;
     }
 
+    public String getFbclid() {
+        return fbclid;
+    }
+
+    public void setFbclid(String fbclid) {
+        this.fbclid = fbclid;
+    }
+
     public String getUtmCampaign() {
         return utmCampaign;
     }
@@ -190,6 +200,11 @@ public class StartupTaskJson {
 
     public StartupTaskJson twclid(String twclid) {
         setTwclid(twclid);
+        return this;
+    }
+
+    public StartupTaskJson fbclid(String fbclid) {
+        setFbclid(fbclid);
         return this;
     }
 

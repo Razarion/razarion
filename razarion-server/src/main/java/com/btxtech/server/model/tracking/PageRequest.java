@@ -7,6 +7,13 @@ public class PageRequest {
     private Date serverTime;
     private String rdtCid;
     private String twclid;
+    /**
+     * Meta's click id, on links from Facebook and Instagram. Worth its own field for the same
+     * reason the other two have one: some placements deliver it as the only parameter there is -
+     * no utm source, no referrer - and a visit whose click id lives in the raw query string alone
+     * is attributed to nobody.
+     */
+    private String fbclid;
     private String utmCampaign;
     private String utmSource;
     private String utmMedium;
@@ -61,6 +68,30 @@ public class PageRequest {
      * when it was navigated off or closed. The same duration means different things under the two.
      */
     private String exitReason;
+    /**
+     * The four below answer the one question the rest cannot: why 98 of 100 paid visitors leave
+     * without pressing Play. {@link #interacted} says a hand was there, not what it reached for,
+     * and three very different failures look identical without these.
+     * <p>
+     * Milliseconds until the Play button was at least half on screen. Null means it never was -
+     * a visitor who was never shown the call to action did not decline it.
+     */
+    private Integer buttonSeenMillis;
+    /**
+     * A finger landed on the button, whether or not a click came of it. True here with no
+     * {@link PageRequestType#HOME_PLAY_CLICKED} of its own is a tap that went nowhere - a broken
+     * button rather than an unconvincing one. False on an exit is a real statement that no tap
+     * happened; null means the visit sent no exit at all.
+     */
+    private Boolean buttonPressed;
+    /** How far down they got, in percent. Above zero means the page did not fit on that device. */
+    private Integer scrollDepth;
+    /**
+     * The viewport on arrival as {@code width x height}. The device width is in the user agent;
+     * the height an app's own browser leaves over is not, and that is the half which decides
+     * whether the button is above the fold.
+     */
+    private String viewport;
 
     public PageRequestType getPageRequestType() {
         return pageRequestType;
@@ -92,6 +123,14 @@ public class PageRequest {
 
     public void setTwclid(String twclid) {
         this.twclid = twclid;
+    }
+
+    public String getFbclid() {
+        return fbclid;
+    }
+
+    public void setFbclid(String fbclid) {
+        this.fbclid = fbclid;
     }
 
     public String getUtmCampaign() {
@@ -214,6 +253,38 @@ public class PageRequest {
         this.exitReason = exitReason;
     }
 
+    public Integer getButtonSeenMillis() {
+        return buttonSeenMillis;
+    }
+
+    public void setButtonSeenMillis(Integer buttonSeenMillis) {
+        this.buttonSeenMillis = buttonSeenMillis;
+    }
+
+    public Boolean getButtonPressed() {
+        return buttonPressed;
+    }
+
+    public void setButtonPressed(Boolean buttonPressed) {
+        this.buttonPressed = buttonPressed;
+    }
+
+    public Integer getScrollDepth() {
+        return scrollDepth;
+    }
+
+    public void setScrollDepth(Integer scrollDepth) {
+        this.scrollDepth = scrollDepth;
+    }
+
+    public String getViewport() {
+        return viewport;
+    }
+
+    public void setViewport(String viewport) {
+        this.viewport = viewport;
+    }
+
     public PageRequest pageRequestType(PageRequestType pageRequestType) {
         setPageRequestType(pageRequestType);
         return this;
@@ -231,6 +302,11 @@ public class PageRequest {
 
     public PageRequest twclid(String twclid) {
         setTwclid(twclid);
+        return this;
+    }
+
+    public PageRequest fbclid(String fbclid) {
+        setFbclid(fbclid);
         return this;
     }
 
@@ -306,6 +382,26 @@ public class PageRequest {
 
     public PageRequest exitReason(String exitReason) {
         setExitReason(exitReason);
+        return this;
+    }
+
+    public PageRequest buttonSeenMillis(Integer buttonSeenMillis) {
+        setButtonSeenMillis(buttonSeenMillis);
+        return this;
+    }
+
+    public PageRequest buttonPressed(Boolean buttonPressed) {
+        setButtonPressed(buttonPressed);
+        return this;
+    }
+
+    public PageRequest scrollDepth(Integer scrollDepth) {
+        setScrollDepth(scrollDepth);
+        return this;
+    }
+
+    public PageRequest viewport(String viewport) {
+        setViewport(viewport);
         return this;
     }
 

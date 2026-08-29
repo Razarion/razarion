@@ -68,13 +68,14 @@ public class PageRequestService {
             pageRequest
                     .pageRequestType(pageRequestType)
                     .serverTime(new Date());
-            logger.info("Page request {} tracked: utmCampaign={} utmSource={} utmMedium={} twclid={} rdtCid={} session={} query='{}'",
+            logger.info("Page request {} tracked: utmCampaign={} utmSource={} utmMedium={} twclid={} rdtCid={} fbclid={} session={} query='{}'",
                     pageRequestType,
                     pageRequest.getUtmCampaign(),
                     pageRequest.getUtmSource(),
                     pageRequest.getUtmMedium(),
                     pageRequest.getTwclid(),
                     pageRequest.getRdtCid(),
+                    pageRequest.getFbclid(),
                     pageRequest.getHttpSessionId(),
                     pageRequest.getRawQueryString());
             mongoTemplate.save(pageRequest, PAGE_REQUEST);
@@ -95,6 +96,28 @@ public class PageRequestService {
             query.limit(1);
             PageRequest pageRequest = mongoTemplate.findOne(query, PageRequest.class, PAGE_REQUEST);
             return pageRequest != null ? pageRequest.getRdtCid() : null;
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    /**
+     * The whole visit rather than only its click id, because Meta wants the browser with the
+     * event and this row is the last place that still knows it - by the time a base is built
+     * there is no request left to read a user agent from.
+     */
+    public PageRequest findFbclidPageRequest(String httpSessionId) {
+        if (httpSessionId == null) {
+            return null;
+        }
+        try {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("httpSessionId").is(httpSessionId)
+                    .and("fbclid").ne(null));
+            query.with(Sort.by(Sort.Direction.DESC, "serverTime"));
+            query.limit(1);
+            return mongoTemplate.findOne(query, PageRequest.class, PAGE_REQUEST);
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
             return null;

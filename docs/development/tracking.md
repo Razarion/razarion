@@ -177,23 +177,25 @@ touch gesture rather than silently reclassifying them, because the correction wo
 # Ad-Network Conversion Tracking (Server-Side)
 
 Beyond storing page requests, the server sends **server-to-server conversion events** to ad
-networks so campaigns can optimise and attribute. Two networks are wired up, both following the
+networks so campaigns can optimise and attribute. Three networks are wired up, all following the
 same funnel:
 
-| Funnel event | Fired from | Reddit | X (Twitter) |
-|--------------|-----------|--------|-------------|
-| Page visit | `RequestInfoLoggingFilter` (`/game` with query string) | `GamePageVisit` | ✓ |
-| Client startup | `ClientGameConnectionService.afterConnectionEstablished` (WebSocket connect) | `GameClientStartup` | ✓ |
-| Builder deployed | `ServerGameEngineControl.onBaseCreated` (first base) | `GameBuilderDeployed` | ✓ |
-| Quest passed | `ServerLevelQuestService.onQuestPassed` | `GameQuestPassed_level{n}_Quest{id}` | ✓ (`GameQuestPassed`, detail in `description`) |
-| Level up | `ServerLevelQuestService.onQuestPassed` | `GameLevelUp_level{n}` | ✓ (`GameLevelUp`, detail in `description`) |
+| Funnel event | Fired from | Reddit | X (Twitter) | Meta |
+|--------------|-----------|--------|-------------|------|
+| Landing view | `RequestInfoLoggingFilter` (`/t.gif` page view only) | — | — | `GameLandingView` |
+| Page visit | `RequestInfoLoggingFilter` (`/game` with query string) | `GamePageVisit` | ✓ | ✓ |
+| Client startup | `ClientGameConnectionService.afterConnectionEstablished` (WebSocket connect) | `GameClientStartup` | ✓ | ✓ |
+| Builder deployed | `ServerGameEngineControl.onBaseCreated` (first base) | `GameBuilderDeployed` | ✓ | ✓ |
+| Quest passed | `ServerLevelQuestService.onQuestPassed` | `GameQuestPassed_level{n}_Quest{id}` | ✓ (`GameQuestPassed`, detail in `description`) | ✓ (detail in `custom_data.description`) |
+| Level up | `ServerLevelQuestService.onQuestPassed` | `GameLevelUp_level{n}` | ✓ (`GameLevelUp`, detail in `description`) | ✓ (detail in `custom_data.description`) |
 
-Both services are **fire-and-forget** (`@Async`, failures only logged) and fall back to a **MOCK
-mode** (log, don't send) when their credentials are not configured.
+All three services are **fire-and-forget** (`@Async`, failures only logged) and fall back to a
+**MOCK mode** (log, don't send) when their credentials are not configured.
 
 ## Click-ID persistence — IN-MEMORY ONLY (GDPR-conservative)
 
-The click ids (`rdt_cid` for Reddit, `twclid` for X) are **never persisted on the user record**.
+The click ids (`rdt_cid` for Reddit, `twclid` for X, `fbclid` for Meta) are **never persisted on
+the user record**.
 Each service keeps a `userId -> clickId` `ConcurrentHashMap`, populated on WebSocket connect
 (looked up from the latest `page_request` for the http session) and cleared on disconnect.
 Consequence: late-firing events in a *new* session (no fresh click id in the URL) are dropped and
@@ -222,8 +224,43 @@ not attributed. Accepted limitation pending a GDPR review before persisting.
 - Request body: `{ "conversions": [ { conversion_time, event_id, identifiers: [{twclid}],
   conversion_id, description? } ] }`
 
+## Meta (Facebook and Instagram) — `MetaConversionService`
+
+- Endpoint: `POST https://graph.facebook.com/{version}/{pixelId}/events`
+- Auth: a **system-user access token** from Events Manager → *Settings → Conversions API →
+  Generate access token*, passed as the `access_token` query parameter (the url is never logged).
+- **The click id is not sent as itself.** Meta matches on `fbc`, the value its browser pixel would
+  have written into a cookie: `fb.1.{millis when the click was seen}.{fbclid}`. It is built once,
+  when the click id is first seen, and kept with the user — rebuilding it at event time would
+  stamp a quest passed an hour later with the wrong click time. A wrong format here fails
+  silently: the events are accepted and matched to nobody.
+- Config (env `META_ADS_*`, k8s secret `meta-ads-secrets`, all `optional: true`):
+  - `meta.ads.pixel-id`, `meta.ads.access-token`, `meta.ads.api-version` (default `v21.0`)
+  - `meta.ads.test-event-code` — set while verifying in Events Manager → *Test events*; events
+    then arrive there instead of counting. Leave empty in production.
+  - `meta.ads.event.{landing-view,page-visit,client-startup,builder-deployed,quest-passed,level-up}` — the
+    **event name** per funnel step. Empty means the custom name in the table above, which shows up
+    as a custom event. Point a step at a standard event name (e.g. `CompleteRegistration` for
+    builder-deployed) to let campaigns optimise towards it without a deploy.
+- **Meta gets one step the other two do not: the landing view.** Its optimiser needs roughly fifty
+  conversions a week of an event before it stops guessing, and the step below — the game page — is
+  reached by barely one Meta visitor in a hundred: four a day against three hundred landing views.
+  It is fired from the page's own pixel rather than the document request, so Meta's link crawler,
+  which never runs the script and made up nine of ten requests on the first campaign day, is not
+  counted as a visitor. Only the page view fires it; the play click and the exit ride on the same
+  pixel url and would report one visitor three times.
+- **The browser goes with every event.** Meta counts `client_user_agent` as a required parameter
+  for a website event. It is only known on the request that brought the visitor, so it is stored
+  next to the `fbc` and replayed on the later funnel steps — by the time a base is built there is
+  no request left to read it from. `client_ip_address` is deliberately **not** sent: no IP address
+  is stored anywhere in this system, and that stands.
+- Request body: `{ "data": [ { event_name, event_time (seconds), action_source: "website",
+  event_id, user_data: { fbc, client_user_agent }, custom_data: { description }? } ],
+  test_event_code? }`
+
 ### Conversion-API key files
 
 - `razarion-server/.../service/tracking/RedditConversionService.java`
 - `razarion-server/.../service/tracking/XConversionService.java`
-- `razarion-server/.../service/tracking/PageRequestService.java` — `findRdtCidByHttpSessionId`, `findTwclidByHttpSessionId`
+- `razarion-server/.../service/tracking/MetaConversionService.java`
+- `razarion-server/.../service/tracking/PageRequestService.java` — `findRdtCidByHttpSessionId`, `findTwclidByHttpSessionId`, `findFbclidByHttpSessionId`

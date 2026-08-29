@@ -23,12 +23,15 @@ public final class TrackingPlatforms {
     }
 
     /** The platform a click id names - the only one of the three that is not a guess. */
-    public static TrackingPlatform ofClickIds(String rdtCid, String twclid) {
+    public static TrackingPlatform ofClickIds(String rdtCid, String twclid, String fbclid) {
         if (notEmpty(rdtCid)) {
             return TrackingPlatform.REDDIT;
         }
         if (notEmpty(twclid)) {
             return TrackingPlatform.X;
+        }
+        if (notEmpty(fbclid)) {
+            return TrackingPlatform.META;
         }
         return null;
     }
@@ -47,6 +50,15 @@ public final class TrackingPlatforms {
         }
         if (normalized.contains("twitter") || normalized.equals("x")) {
             return TrackingPlatform.X;
+        }
+        // Meta bills one campaign across both networks, so both names answer with the same
+        // platform - "instagram" is what the first campaign tagged its links with, and the
+        // placement it was actually delivered on is a question for the utm source column.
+        // "meta" only as a word of its own: a site named metacritic is not an ad network.
+        if (normalized.contains("instagram") || normalized.contains("facebook")
+                || normalized.equals("meta") || normalized.startsWith("meta_")
+                || normalized.startsWith("meta-") || normalized.equals("ig") || normalized.equals("fb")) {
+            return TrackingPlatform.META;
         }
         return null;
     }
@@ -69,6 +81,12 @@ public final class TrackingPlatforms {
         }
         if (isHost(host, "reddit.com") || isHost(host, "redd.it")) {
             return TrackingPlatform.REDDIT;
+        }
+        // m.facebook.com and l.facebook.com - the mobile site and Facebook's own link shim - are
+        // subdomains and covered by the same entry. Both were seen on the first campaign day.
+        if (isHost(host, "facebook.com") || isHost(host, "instagram.com")
+                || isHost(host, "fb.com") || isHost(host, "fb.me") || isHost(host, "fb.watch")) {
+            return TrackingPlatform.META;
         }
         return null;
     }

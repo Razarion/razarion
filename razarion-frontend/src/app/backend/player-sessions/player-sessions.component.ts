@@ -164,6 +164,8 @@ export class PlayerSessionsComponent implements OnChanges {
         return 'Reddit';
       case TrackingPlatform.X:
         return 'X';
+      case TrackingPlatform.META:
+        return 'Meta';
       default:
         return 'organic';
     }

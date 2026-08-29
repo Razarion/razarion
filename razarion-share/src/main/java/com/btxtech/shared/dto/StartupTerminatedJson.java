@@ -13,6 +13,8 @@ public class StartupTerminatedJson {
     private Date serverTime;
     private String rdtCid;
     private String twclid;
+    /** Meta's click id, on links from Facebook and Instagram. */
+    private String fbclid;
     private String utmCampaign;
     private String utmSource;
     /**
@@ -150,6 +152,14 @@ public class StartupTerminatedJson {
         this.twclid = twclid;
     }
 
+    public String getFbclid() {
+        return fbclid;
+    }
+
+    public void setFbclid(String fbclid) {
+        this.fbclid = fbclid;
+    }
+
     public String getUtmCampaign() {
         return utmCampaign;
     }
@@ -208,6 +218,11 @@ public class StartupTerminatedJson {
 
     public StartupTerminatedJson twclid(String twclid) {
         setTwclid(twclid);
+        return this;
+    }
+
+    public StartupTerminatedJson fbclid(String fbclid) {
+        setFbclid(fbclid);
         return this;
     }
 

@@ -209,7 +209,12 @@
         </h1>
         <div class="info-panel">
             <p class="tagline"><span class="tagline-main">RTS meets MMO</span><span class="tagline-sub">One shared world that never stops</span></p>
-            <button class="button" id="playButton" onclick="location.href='/game${qs}'">Play Now</button>
+            <!-- The navigation lives in the attribute because a visitor who arrives without
+                 campaign parameters gets no script at all - the tracking block below is inside a
+                 FreeMarker conditional. The flag is what keeps this from firing a second time
+                 after the script has already sent them on their way; see goToGame there. -->
+            <button class="button" id="playButton"
+                    onclick="if(!window.RAZ_navigating){window.RAZ_navigating=1;location.href='/game${qs}'}">Play Now</button>
             <ul class="features">
                 <!-- The three without "secondary" are the ones a phone keeps: what it is, what is
                      different about it, and what it costs to try. The others are true, but they can
@@ -275,6 +280,22 @@
             var playClicked = false;
             var exitReported = false;
             var interacted = false;
+            // Milliseconds until the Play button was at least half on screen; null means it never
+            // was. See the observer below.
+            var buttonSeenMillis = null;
+            // A finger landed on the button, whether or not a click came of it.
+            var buttonPressed = false;
+            // Furthest point reached, in percent of what there was to scroll.
+            var maxScroll = 0;
+            // The viewport as it was on arrival, before any address bar collapsed. The device
+            // width is in the user agent; the height an app's browser leaves over is not, and it
+            // is the half that decides whether the button is above the fold.
+            var viewport = null;
+            try {
+                viewport = Math.round(innerWidth) + 'x' + Math.round(innerHeight);
+            } catch (e) {
+                // Nothing to report rather than nothing at all.
+            }
             // A tap on an ad that opens the page behind the app, and a browser that loaded it on
             // spec, both produce a visit with a dwell time - and in neither case did a person see
             // anything. Read once, at the start: later the answer would always be "hidden".
@@ -292,13 +313,132 @@
                 }
             }
 
+            // How far a finger may travel and how long it may rest and still be a tap rather than
+            // a drag or a hold. Twelve pixels is about a millimetre of wobble on these screens.
+            var TAP_SLOP = 12;
+            var TAP_MILLIS = 800;
+
+            // The one thing this page is for. Reached from the pointer coming up, from the click
+            // that may or may not follow it, and from the button's own attribute - so the guard
+            // has to be the same one the attribute reads, which is why it lives on window.
+            function goToGame() {
+                if (window.RAZ_navigating) {
+                    return;
+                }
+                window.RAZ_navigating = 1;
+                playClicked = true;
+                send('&e=play');
+                location.href = '/game' + query;
+            }
+
             var button = document.getElementById('playButton');
             if (button) {
+                // Two of every three taps that reached this button produced no click at all. That
+                // is measured, not guessed: in one day 43 against 20, almost all of them in an
+                // app's own browser, and the people who tapped then stayed a median of eleven
+                // seconds waiting for something to happen before switching back to the app.
+                // Whatever cancels the gesture there - a few pixels of drift, the webview's own
+                // swipe handling - happens between the finger going down and a click that never
+                // comes, so the navigation cannot be left waiting for one.
+                //
+                // The inline onclick stays as it is. It is what makes the button work for a
+                // visitor who arrives without campaign parameters, for whom this whole script is
+                // not rendered at all; and a click that does arrive is welcome. Both paths lead
+                // through goToGame, which navigates once.
+                var downX = 0;
+                var downY = 0;
+                var downMillis = 0;
+                var downOnButton = false;
+
+                function pointerDown(x, y) {
+                    buttonPressed = true;
+                    downOnButton = true;
+                    downX = x;
+                    downY = y;
+                    downMillis = timing ? performance.now() : Date.now();
+                }
+
+                // A tap, or something else? Lifting far from where the finger landed is a drag,
+                // and resting on the button is a long press - neither is a press of the button,
+                // and treating them as one would send people into the game who did not ask.
+                function pointerUp(x, y) {
+                    if (!downOnButton) {
+                        return;
+                    }
+                    downOnButton = false;
+                    var dx = x - downX;
+                    var dy = y - downY;
+                    var held = (timing ? performance.now() : Date.now()) - downMillis;
+                    if (dx * dx + dy * dy <= TAP_SLOP * TAP_SLOP && held <= TAP_MILLIS) {
+                        goToGame();
+                    }
+                }
+
+                if (typeof PointerEvent === 'function') {
+                    button.addEventListener('pointerdown', function (event) {
+                        pointerDown(event.clientX, event.clientY);
+                    }, {passive: true});
+                    button.addEventListener('pointerup', function (event) {
+                        pointerUp(event.clientX, event.clientY);
+                    }, {passive: true});
+                    // The webview took the gesture for itself - a scroll, a swipe, a back
+                    // navigation. Nothing to do but forget the finger; the count of taps that
+                    // reached the button stands, which is what says how often this happens.
+                    button.addEventListener('pointercancel', function () {
+                        downOnButton = false;
+                    }, {passive: true});
+                } else {
+                    button.addEventListener('touchstart', function (event) {
+                        var touch = event.changedTouches[0];
+                        pointerDown(touch.clientX, touch.clientY);
+                    }, {passive: true});
+                    button.addEventListener('touchend', function (event) {
+                        var touch = event.changedTouches[0];
+                        pointerUp(touch.clientX, touch.clientY);
+                    }, {passive: true});
+                    button.addEventListener('touchcancel', function () {
+                        downOnButton = false;
+                    }, {passive: true});
+                }
+
                 button.addEventListener('click', function () {
-                    playClicked = true;
-                    send('&e=play');
+                    goToGame();
                 });
+
+                // When the button first stood in front of them, if it ever did. Nine in ten
+                // visitors here arrive in an app's own browser, which takes height away at the top
+                // and the bottom; whether the call to action was on screen at all cannot be read
+                // off the layout, only off the viewport it actually got.
+                try {
+                    if (typeof IntersectionObserver === 'function') {
+                        var seen = new IntersectionObserver(function (entries) {
+                            for (var i = 0; i < entries.length; i++) {
+                                if (entries[i].isIntersecting) {
+                                    buttonSeenMillis = Math.round((timing ? performance.now() : Date.now()) - start);
+                                    seen.disconnect();
+                                }
+                            }
+                        }, {threshold: 0.5});
+                        seen.observe(button);
+                    }
+                } catch (e) {
+                    // An optional measurement. The button works whether or not it is watched.
+                }
             }
+
+            // How far down they got. The panel is meant to fit without scrolling, so anything
+            // above zero says it did not fit on that device - and a visitor who scrolled looked
+            // for something rather than leaving at once.
+            addEventListener('scroll', function () {
+                var doc = document.documentElement;
+                var scrollable = doc.scrollHeight - doc.clientHeight;
+                if (scrollable > 0) {
+                    var depth = Math.round(100 * (window.pageYOffset || doc.scrollTop) / scrollable);
+                    if (depth > maxScroll) {
+                        maxScroll = depth;
+                    }
+                }
+            }, {passive: true});
 
             // Any sign of a hand: a finger down, a key, a scroll. Not "did they click Play" - the
             // question is whether the page was ever addressed at all, which is what separates a
@@ -368,6 +508,18 @@
                 var hero = heroMillis();
                 if (hero !== null) {
                     params += '&hb=' + hero;
+                }
+                if (buttonSeenMillis !== null) {
+                    params += '&bs=' + buttonSeenMillis;
+                }
+                if (buttonPressed) {
+                    params += '&bp=1';
+                }
+                if (maxScroll > 0) {
+                    params += '&sd=' + maxScroll;
+                }
+                if (viewport !== null) {
+                    params += '&vp=' + viewport;
                 }
                 send(params);
             }

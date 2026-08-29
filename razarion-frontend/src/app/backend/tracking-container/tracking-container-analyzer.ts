@@ -43,6 +43,7 @@ export type DeviceFilter = DeviceClass | 'all';
 interface Correlatable {
   rdtCid?: string;
   twclid?: string;
+  fbclid?: string;
   utmSource?: string;
   httpSessionId?: string;
   /** Startup records only: the run of the client itself, from the first beacon to the last. */
@@ -72,6 +73,7 @@ interface Visitor {
   engineRunning: boolean;
   rdtCid: boolean;
   twclid: boolean;
+  fbclid: boolean;
   utmSources: string[];
   /** The referrer of the landing page request, the only one that sees where the visitor came from. */
   landingReferers: string[];
@@ -358,7 +360,7 @@ export class TrackingContainerAnalyzer {
       if (visitor === undefined) {
         visitor = {
           key, httpSessionIds: new Set<string>(), landing: false, home: false, playClicked: false, game: false,
-          engineRunning: false, rdtCid: false, twclid: false, utmSources: [], landingReferers: [],
+          engineRunning: false, rdtCid: false, twclid: false, fbclid: false, utmSources: [], landingReferers: [],
           clientReferrers: [], userAgents: []
         };
         visitors.set(key, visitor);
@@ -371,6 +373,9 @@ export class TrackingContainerAnalyzer {
       }
       if (record.twclid) {
         visitor.twclid = true;
+      }
+      if (record.fbclid) {
+        visitor.fbclid = true;
       }
       if (record.utmSource) {
         visitor.utmSources.push(record.utmSource);
@@ -471,6 +476,9 @@ export class TrackingContainerAnalyzer {
     if (record.twclid) {
       handles.push('twclid:' + record.twclid);
     }
+    if (record.fbclid) {
+      handles.push('fbclid:' + record.fbclid);
+    }
     if (record.gameSessionUuid) {
       handles.push('game:' + record.gameSessionUuid);
     }
@@ -495,6 +503,9 @@ export class TrackingContainerAnalyzer {
     }
     if (visitor.twclid) {
       return TrackingPlatform.X;
+    }
+    if (visitor.fbclid) {
+      return TrackingPlatform.META;
     }
     for (const utmSource of visitor.utmSources) {
       const platform = TrackingContainerAnalyzer.platformOfUtmSource(utmSource);
@@ -528,6 +539,13 @@ export class TrackingContainerAnalyzer {
     if (normalized.includes('twitter') || normalized === 'x') {
       return TrackingPlatform.X;
     }
+    // Facebook and Instagram are one advertiser account and one campaign, so both names answer
+    // with the same platform - see TrackingPlatforms.ofUtmSource(), which this mirrors.
+    if (normalized.includes('instagram') || normalized.includes('facebook')
+      || normalized === 'meta' || normalized.startsWith('meta_') || normalized.startsWith('meta-')
+      || normalized === 'ig' || normalized === 'fb') {
+      return TrackingPlatform.META;
+    }
     return null;
   }
 
@@ -546,6 +564,15 @@ export class TrackingContainerAnalyzer {
     if (TrackingContainerAnalyzer.isHost(host, 'reddit.com')
       || TrackingContainerAnalyzer.isHost(host, 'redd.it')) {
       return TrackingPlatform.REDDIT;
+    }
+    // m.facebook.com and l.facebook.com - the mobile site and Facebook's own link shim - are
+    // subdomains and covered by the same entry.
+    if (TrackingContainerAnalyzer.isHost(host, 'facebook.com')
+      || TrackingContainerAnalyzer.isHost(host, 'instagram.com')
+      || TrackingContainerAnalyzer.isHost(host, 'fb.com')
+      || TrackingContainerAnalyzer.isHost(host, 'fb.me')
+      || TrackingContainerAnalyzer.isHost(host, 'fb.watch')) {
+      return TrackingPlatform.META;
     }
     return null;
   }

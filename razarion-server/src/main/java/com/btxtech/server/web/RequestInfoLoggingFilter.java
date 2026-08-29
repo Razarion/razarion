@@ -2,6 +2,7 @@ package com.btxtech.server.web;
 
 import com.btxtech.server.model.tracking.PageRequest;
 import com.btxtech.server.model.tracking.PageRequestType;
+import com.btxtech.server.service.tracking.MetaConversionService;
 import com.btxtech.server.service.tracking.PageRequestService;
 import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.XConversionService;
@@ -39,6 +40,14 @@ public class RequestInfoLoggingFilter implements Filter {
     private static final String HERO_MILLIS_PARAMETER = "hb";
     private static final String INTERACTED_PARAMETER = "i";
     private static final String EXIT_REASON_PARAMETER = "r";
+    /**
+     * The four that say why a visitor did not press Play. What each one means is documented on the
+     * field it fills in {@link PageRequest}.
+     */
+    private static final String BUTTON_SEEN_PARAMETER = "bs";
+    private static final String BUTTON_PRESSED_PARAMETER = "bp";
+    private static final String SCROLL_DEPTH_PARAMETER = "sd";
+    private static final String VIEWPORT_PARAMETER = "vp";
     private static final String EXIT_REASON_HIDDEN = "h";
     private static final String EXIT_REASON_PAGEHIDE = "u";
     /**
@@ -55,13 +64,16 @@ public class RequestInfoLoggingFilter implements Filter {
     private final PageRequestService pageRequestService;
     private final RedditConversionService redditConversionService;
     private final XConversionService xConversionService;
+    private final MetaConversionService metaConversionService;
 
     public RequestInfoLoggingFilter(PageRequestService pageRequestService,
                                     RedditConversionService redditConversionService,
-                                    XConversionService xConversionService) {
+                                    XConversionService xConversionService,
+                                    MetaConversionService metaConversionService) {
         this.pageRequestService = pageRequestService;
         this.redditConversionService = redditConversionService;
         this.xConversionService = xConversionService;
+        this.metaConversionService = metaConversionService;
     }
 
     @Override
@@ -75,12 +87,22 @@ public class RequestInfoLoggingFilter implements Filter {
             if (requestURI.equals("/") && isLandingWorthRecording(httpRequest, hasQueryString)) {
                 pageRequestService.onLanding(toPageRequest(httpRequest, queryString));
             } else if (requestURI.equals("/t.gif") && hasQueryString) {
-                pageRequestService.onHomeEvent(toPageRequest(httpRequest, queryString),
-                        homeEventType(httpRequest));
+                PageRequestType homeEventType = homeEventType(httpRequest);
+                pageRequestService.onHomeEvent(toPageRequest(httpRequest, queryString), homeEventType);
+                if (homeEventType == PageRequestType.HOME) {
+                    // Only the page view, not the click and not the exit: those ride on the same
+                    // pixel url and would report one visitor three times. Meta is told about this
+                    // step at all because the one below it - the game page - is reached too rarely
+                    // to optimise on; see MetaConversionService.
+                    metaConversionService.sendLandingViewEvent(httpRequest.getParameter("fbclid"),
+                            httpRequest.getHeader("User-Agent"));
+                }
             } else if ((requestURI.equals("/game") || requestURI.equals("/game/index.html")) && hasQueryString) {
                 pageRequestService.onGame(toPageRequest(httpRequest, queryString));
                 redditConversionService.sendPageVisitEvent(httpRequest.getParameter("rdt_cid"));
                 xConversionService.sendPageVisitEvent(httpRequest.getParameter("twclid"));
+                metaConversionService.sendPageVisitEvent(httpRequest.getParameter("fbclid"),
+                        httpRequest.getHeader("User-Agent"));
             }
         }
         chain.doFilter(request, response);
@@ -123,6 +145,7 @@ public class RequestInfoLoggingFilter implements Filter {
                 .utmMedium(httpRequest.getParameter("utm_medium"))
                 .rdtCid(httpRequest.getParameter("rdt_cid"))
                 .twclid(httpRequest.getParameter("twclid"))
+                .fbclid(httpRequest.getParameter("fbclid"))
                 .userAgent(trim(httpRequest.getHeader("User-Agent")))
                 .referer(trim(httpRequest.getHeader("Referer")))
                 .dwellMillis(millis(httpRequest, DWELL_PARAMETER))
@@ -132,6 +155,10 @@ public class RequestInfoLoggingFilter implements Filter {
                 .firstPaintMillis(millis(httpRequest, FIRST_PAINT_MILLIS_PARAMETER))
                 .heroLoadedMillis(millis(httpRequest, HERO_MILLIS_PARAMETER))
                 .interacted(presentFlag(httpRequest, INTERACTED_PARAMETER))
+                .buttonSeenMillis(millis(httpRequest, BUTTON_SEEN_PARAMETER))
+                .buttonPressed(presentFlag(httpRequest, BUTTON_PRESSED_PARAMETER))
+                .scrollDepth(percent(httpRequest, SCROLL_DEPTH_PARAMETER))
+                .viewport(viewport(httpRequest))
                 .exitReason(exitReason(httpRequest))
                 .rawQueryString(queryString);
     }
@@ -152,6 +179,33 @@ public class RequestInfoLoggingFilter implements Filter {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /**
+     * A percentage reported by the page. Same reasoning as {@link #millis}: it comes from a url
+     * anyone can craft, so anything outside nought to a hundred is dropped rather than stored.
+     */
+    private Integer percent(HttpServletRequest httpRequest, String parameter) {
+        String value = httpRequest.getParameter(parameter);
+        if (value == null) {
+            return null;
+        }
+        try {
+            int percent = Integer.parseInt(value);
+            return percent >= 0 && percent <= 100 ? percent : null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * The viewport, only in the shape the page sends it: two numbers with an x between them. It is
+     * shown in a report next to a user agent, and an attacker-controlled string that is neither
+     * bounded nor checked has no business being stored just because it arrived.
+     */
+    private String viewport(HttpServletRequest httpRequest) {
+        String value = httpRequest.getParameter(VIEWPORT_PARAMETER);
+        return value != null && value.matches("\\d{1,5}x\\d{1,5}") ? value : null;
     }
 
     /** A parameter sent as "1" or "0". Absent stays absent - it is not the same as false. */

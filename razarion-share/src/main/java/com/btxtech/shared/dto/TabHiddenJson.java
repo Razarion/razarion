@@ -22,6 +22,8 @@ public class TabHiddenJson {
     private Integer millisSincePageLoad;
     private String rdtCid;
     private String twclid;
+    /** Meta's click id, on links from Facebook and Instagram. */
+    private String fbclid;
     private String utmCampaign;
     private String utmSource;
 
@@ -63,6 +65,14 @@ public class TabHiddenJson {
 
     public void setTwclid(String twclid) {
         this.twclid = twclid;
+    }
+
+    public String getFbclid() {
+        return fbclid;
+    }
+
+    public void setFbclid(String fbclid) {
+        this.fbclid = fbclid;
     }
 
     public String getUtmCampaign() {

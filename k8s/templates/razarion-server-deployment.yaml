@@ -186,6 +186,60 @@ spec:
                   name: x-ads-secrets
                   key: event-level-up
                   optional: true
+            - name: META_ADS_PIXEL_ID
+              valueFrom:
+                secretKeyRef:
+                  name: meta-ads-secrets
+                  key: pixel-id
+                  optional: true
+            - name: META_ADS_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meta-ads-secrets
+                  key: access-token
+                  optional: true
+            - name: META_ADS_TEST_EVENT_CODE
+              valueFrom:
+                secretKeyRef:
+                  name: meta-ads-secrets
+                  key: test-event-code
+                  optional: true
+            - name: META_ADS_EVENT_LANDING_VIEW
+              valueFrom:
+                secretKeyRef:
+                  name: meta-ads-secrets
+                  key: event-landing-view
+                  optional: true
+            - name: META_ADS_EVENT_PAGE_VISIT
+              valueFrom:
+                secretKeyRef:
+                  name: meta-ads-secrets
+                  key: event-page-visit
+                  optional: true
+            - name: META_ADS_EVENT_CLIENT_STARTUP
+              valueFrom:
+                secretKeyRef:
+                  name: meta-ads-secrets
+                  key: event-client-startup
+                  optional: true
+            - name: META_ADS_EVENT_BUILDER_DEPLOYED
+              valueFrom:
+                secretKeyRef:
+                  name: meta-ads-secrets
+                  key: event-builder-deployed
+                  optional: true
+            - name: META_ADS_EVENT_QUEST_PASSED
+              valueFrom:
+                secretKeyRef:
+                  name: meta-ads-secrets
+                  key: event-quest-passed
+                  optional: true
+            - name: META_ADS_EVENT_LEVEL_UP
+              valueFrom:
+                secretKeyRef:
+                  name: meta-ads-secrets
+                  key: event-level-up
+                  optional: true
       volumes:
       - name: keystore
         secret:

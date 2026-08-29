@@ -47,6 +47,23 @@ class StartupBeaconPayloadTest {
         assertEquals(1753430000000L, startupTaskJson.getStartTime().getTime());
     }
 
+    /**
+     * The Meta click id has to survive the trip from the ad into the game: both beacons send it,
+     * and it is what ties an Instagram arrival to the session it becomes.
+     */
+    @Test
+    void metaClickIdIsRead() throws IOException {
+        String body = """
+                {"gameSessionUuid":"PGABC123","rdtCid":null,"twclid":null,"fbclid":"IwcGRvZgRle",
+                 "utmCampaign":"razarion01","utmSource":"instagram","taskEnum":"PAGE_LOADED",
+                 "startTime":1753430000000,"duration":0}""";
+
+        StartupTaskJson startupTaskJson = objectMapper.readValue(body, StartupTaskJson.class);
+
+        assertEquals("IwcGRvZgRle", startupTaskJson.getFbclid());
+        assertEquals("instagram", startupTaskJson.getUtmSource());
+    }
+
     /** A browser too old for WebAssembly reports itself here and nowhere else. */
     @Test
     void unsupportedBrowserErrorIsRead() throws IOException {

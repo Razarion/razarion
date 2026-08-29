@@ -2,6 +2,7 @@ package com.btxtech.server.web;
 
 import com.btxtech.server.model.tracking.PageRequest;
 import com.btxtech.server.model.tracking.PageRequestType;
+import com.btxtech.server.service.tracking.MetaConversionService;
 import com.btxtech.server.service.tracking.PageRequestService;
 import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.XConversionService;
@@ -15,7 +16,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Every landing page signal comes back through the same pixel URL and is told apart by one query
@@ -24,6 +30,7 @@ import static org.mockito.Mockito.mock;
  * than fail loudly.
  */
 class RequestInfoLoggingFilterTest {
+    private final MetaConversionService metaConversionService = mock(MetaConversionService.class);
     private final List<PageRequest> saved = new ArrayList<>();
     private final List<PageRequestType> savedTypes = new ArrayList<>();
     private final RequestInfoLoggingFilter filter = new RequestInfoLoggingFilter(
@@ -47,7 +54,8 @@ class RequestInfoLoggingFilterTest {
                 }
             },
             mock(RedditConversionService.class),
-            mock(XConversionService.class));
+            mock(XConversionService.class),
+            metaConversionService);
 
     @Test
     void pixelWithoutEventParameterStaysAPageView() throws Exception {
@@ -237,6 +245,89 @@ class RequestInfoLoggingFilterTest {
 
         assertEquals(List.of(PageRequestType.LANDING), savedTypes);
         assertEquals("abc", saved.get(0).getTwclid());
+    }
+
+    /**
+     * Why a visitor did not press Play, which is the one thing the numbers could not say: 98 of
+     * 100 paid arrivals leave without pressing it, and "never saw the button", "saw it and
+     * declined" and "pressed it and nothing happened" were the same row until now.
+     */
+    @Test
+    void theExitSaysWhatBecameOfTheButton() throws Exception {
+        call("/t.gif", "rdt_cid=abc&e=exit&d=6100&bs=1400&bp=1&sd=35&vp=412x780");
+
+        PageRequest pageRequest = saved.get(0);
+        assertEquals(1400, pageRequest.getButtonSeenMillis());
+        assertEquals(Boolean.TRUE, pageRequest.getButtonPressed());
+        assertEquals(35, pageRequest.getScrollDepth());
+        assertEquals("412x780", pageRequest.getViewport());
+    }
+
+    /**
+     * A button that was never on screen reports nothing rather than zero: never shown and shown
+     * at once are opposite findings, and zero would read as the second.
+     */
+    @Test
+    void aButtonThatWasNeverOnScreenIsAbsentRatherThanZero() throws Exception {
+        call("/t.gif", "rdt_cid=abc&e=exit&d=900");
+
+        PageRequest pageRequest = saved.get(0);
+        assertNull(pageRequest.getButtonSeenMillis());
+        assertNull(pageRequest.getScrollDepth());
+        assertNull(pageRequest.getViewport());
+        // Not null: on an exit, no press reported is a statement that none happened - unlike the
+        // three above, where absent means the measurement itself never came.
+        assertEquals(Boolean.FALSE, pageRequest.getButtonPressed());
+    }
+
+    /** Everything here rides on a url anyone can craft, so nothing implausible is stored. */
+    @Test
+    void craftedButtonMeasurementsAreDropped() throws Exception {
+        call("/t.gif", "rdt_cid=abc&e=exit&d=900&sd=4000&vp=<script>&bs=soon");
+
+        PageRequest pageRequest = saved.get(0);
+        assertNull(pageRequest.getScrollDepth());
+        assertNull(pageRequest.getViewport());
+        assertNull(pageRequest.getButtonSeenMillis());
+    }
+
+    /**
+     * Meta is told about the landing page because the step below it, the game page, is reached by
+     * barely one visitor in a hundred - too rarely for its optimiser to learn anything. All three
+     * landing signals ride on the same pixel url, so reporting the wrong ones would count one
+     * visitor three times and quietly inflate the very number the campaign is steered by.
+     */
+    @Test
+    void onlyTheLandingViewItselfIsReportedToMeta() throws Exception {
+        call("/t.gif", "fbclid=abc");
+        call("/t.gif", "fbclid=abc&e=play");
+        call("/t.gif", "fbclid=abc&e=exit&d=1000");
+
+        assertEquals(List.of(PageRequestType.HOME, PageRequestType.HOME_PLAY_CLICKED,
+                PageRequestType.HOME_EXIT), savedTypes);
+        verify(metaConversionService, times(1)).sendLandingViewEvent(eq("abc"), any());
+    }
+
+    /** A visitor who carries no Meta click id is nobody Meta can be told about. */
+    @Test
+    void aLandingViewWithoutAMetaClickIdReportsAnEmptyClickId() throws Exception {
+        call("/t.gif", "rdt_cid=abc");
+
+        verify(metaConversionService, times(1)).sendLandingViewEvent(eq(null), any());
+        verify(metaConversionService, never()).sendPageVisitEvent(any(), any());
+    }
+
+    /**
+     * Meta's click id arrives on its own from some placements - no utm source, no referrer. Before
+     * it had a field of its own, such a visit was stored with nothing but the raw query string and
+     * was reported as organic.
+     */
+    @Test
+    void metaClickIdIsStored() throws Exception {
+        call("/", "fbclid=IwcGRvZgRle");
+
+        assertEquals(List.of(PageRequestType.LANDING), savedTypes);
+        assertEquals("IwcGRvZgRle", saved.get(0).getFbclid());
     }
 
     /**

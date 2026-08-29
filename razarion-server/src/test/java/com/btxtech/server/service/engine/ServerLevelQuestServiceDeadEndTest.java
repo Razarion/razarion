@@ -5,6 +5,7 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.service.history.HistoryService;
+import com.btxtech.server.service.tracking.MetaConversionService;
 import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.UserActivityService;
 import com.btxtech.server.service.tracking.XConversionService;
@@ -41,6 +42,7 @@ class ServerLevelQuestServiceDeadEndTest {
     private final UserActivityService userActivityService = mock(UserActivityService.class);
     private final RedditConversionService redditConversionService = mock(RedditConversionService.class);
     private final XConversionService xConversionService = mock(XConversionService.class);
+    private final MetaConversionService metaConversionService = mock(MetaConversionService.class);
     private final HistoryService historyService = mock(HistoryService.class);
 
     private final ServerLevelQuestService serverLevelQuestService = new ServerLevelQuestService(questService,
@@ -54,6 +56,7 @@ class ServerLevelQuestServiceDeadEndTest {
             userActivityService,
             redditConversionService,
             xConversionService,
+            metaConversionService,
             historyService);
 
     @Test

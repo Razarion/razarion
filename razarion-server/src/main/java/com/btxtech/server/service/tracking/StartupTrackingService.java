@@ -150,6 +150,7 @@ public class StartupTrackingService {
                         // Carried over so the platform filter sees these like any other row.
                         .rdtCid(lastTask.getRdtCid())
                         .twclid(lastTask.getTwclid())
+                        .fbclid(lastTask.getFbclid())
                         .utmCampaign(lastTask.getUtmCampaign())
                         .utmSource(lastTask.getUtmSource())
                         .referrer(lastTask.getReferrer())

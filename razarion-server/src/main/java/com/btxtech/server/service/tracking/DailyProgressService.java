@@ -243,7 +243,7 @@ public class DailyProgressService {
 
         private void add(Signal signal) {
             if (clickIdPlatform == null) {
-                clickIdPlatform = TrackingPlatforms.ofClickIds(signal.rdtCid, signal.twclid);
+                clickIdPlatform = TrackingPlatforms.ofClickIds(signal.rdtCid, signal.twclid, signal.fbclid);
             }
             if (utmPlatform == null) {
                 utmPlatform = TrackingPlatforms.ofUtmSource(signal.utmSource);
@@ -277,7 +277,7 @@ public class DailyProgressService {
      * from the landing page into the game.
      */
     private record Signal(String httpSessionId, String gameSessionUuid, String rdtCid, String twclid,
-                          String utmSource, String landingReferer, String userAgent,
+                          String fbclid, String utmSource, String landingReferer, String userAgent,
                           PageRequestType pageRequestType, boolean startup, Date serverTime) {
         private List<String> handles() {
             List<String> handles = new ArrayList<>(3);
@@ -286,6 +286,9 @@ public class DailyProgressService {
             }
             if (notEmpty(twclid)) {
                 handles.add("twclid:" + twclid);
+            }
+            if (notEmpty(fbclid)) {
+                handles.add("fbclid:" + fbclid);
             }
             if (notEmpty(gameSessionUuid)) {
                 handles.add("game:" + gameSessionUuid);
@@ -303,7 +306,7 @@ public class DailyProgressService {
 
     private static Signal signal(PageRequest pageRequest) {
         return new Signal(pageRequest.getHttpSessionId(), null, pageRequest.getRdtCid(),
-                pageRequest.getTwclid(), pageRequest.getUtmSource(),
+                pageRequest.getTwclid(), pageRequest.getFbclid(), pageRequest.getUtmSource(),
                 // Only the landing page sees where the visitor came from: the pixel is a subresource
                 // of it and "Play Now" is a navigation to /game, so every referrer after it is ours.
                 pageRequest.getPageRequestType() == PageRequestType.LANDING ? pageRequest.getReferer() : null,
@@ -313,15 +316,15 @@ public class DailyProgressService {
 
     private static Signal signal(StartupTaskJson task) {
         return new Signal(task.getHttpSessionId(), task.getGameSessionUuid(), task.getRdtCid(),
-                task.getTwclid(), task.getUtmSource(), null, task.getUserAgent(), null, true,
+                task.getTwclid(), task.getFbclid(), task.getUtmSource(), null, task.getUserAgent(), null, true,
                 task.getServerTime());
     }
 
     /** The terminated record carries no user agent; its tasks do. */
     private static Signal signal(StartupTerminatedJson terminatedJson) {
         return new Signal(terminatedJson.getHttpSessionId(), terminatedJson.getGameSessionUuid(),
-                terminatedJson.getRdtCid(), terminatedJson.getTwclid(), terminatedJson.getUtmSource(),
-                null, null, null, true, terminatedJson.getServerTime());
+                terminatedJson.getRdtCid(), terminatedJson.getTwclid(), terminatedJson.getFbclid(),
+                terminatedJson.getUtmSource(), null, null, null, true, terminatedJson.getServerTime());
     }
 
     private static boolean inWindow(Date serverTime, Date from, Date to) {

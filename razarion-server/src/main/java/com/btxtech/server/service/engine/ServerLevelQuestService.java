@@ -7,6 +7,7 @@ import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.engine.quest.QuestBackendInfo;
 import com.btxtech.server.model.history.GameHistoryType;
 import com.btxtech.server.service.history.HistoryService;
+import com.btxtech.server.service.tracking.MetaConversionService;
 import com.btxtech.server.service.tracking.RedditConversionService;
 import com.btxtech.server.service.tracking.XConversionService;
 import com.btxtech.server.service.tracking.UserActivityService;
@@ -42,6 +43,7 @@ public class ServerLevelQuestService implements QuestListener {
     private final UserActivityService userActivityService;
     private final RedditConversionService redditConversionService;
     private final XConversionService xConversionService;
+    private final MetaConversionService metaConversionService;
     private final HistoryService historyService;
 
     public ServerLevelQuestService(QuestService questService,
@@ -55,6 +57,7 @@ public class ServerLevelQuestService implements QuestListener {
                                    UserActivityService userActivityService,
                                    RedditConversionService redditConversionService,
                                    XConversionService xConversionService,
+                                   MetaConversionService metaConversionService,
                                    HistoryService historyService) {
         this.questService = questService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
@@ -67,6 +70,7 @@ public class ServerLevelQuestService implements QuestListener {
         this.userActivityService = userActivityService;
         this.redditConversionService = redditConversionService;
         this.xConversionService = xConversionService;
+        this.metaConversionService = metaConversionService;
         this.historyService = historyService;
         questService.addQuestListener(this);
     }
@@ -94,12 +98,14 @@ public class ServerLevelQuestService implements QuestListener {
         historyService.onQuestPassed(userId, questConfig.getId(), currentLevel.getNumber());
         redditConversionService.sendQuestPassedEvent(userId, questConfig.getId(), currentLevel.getNumber());
         xConversionService.sendQuestPassedEvent(userId, questConfig.getId(), currentLevel.getNumber());
+        metaConversionService.sendQuestPassedEvent(userId, questConfig.getId(), currentLevel.getNumber());
         if (newXp >= currentLevel.getXp2LevelUp()) {
             LevelEntity newLevel = levelCrudPersistence.getNextLevel(currentLevel);
             if (newLevel != null) {
                 userActivityService.onLevelUp(userId, newLevel.getNumber());
                 redditConversionService.sendLevelUpEvent(userId, newLevel.getNumber());
                 xConversionService.sendLevelUpEvent(userId, newLevel.getNumber());
+                metaConversionService.sendLevelUpEvent(userId, newLevel.getNumber());
                 applyLevelUp(userId, userContext, newLevel);
             } else {
                 logger.warn("No next level found for: {}", currentLevel);

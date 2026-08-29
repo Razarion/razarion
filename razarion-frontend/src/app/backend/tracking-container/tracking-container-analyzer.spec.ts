@@ -146,6 +146,7 @@ describe('TrackingContainerAnalyzer level and quest statistics', () => {
 interface Campaign {
   rdtCid?: string;
   twclid?: string;
+  fbclid?: string;
   utmSource?: string;
   referer?: string;
   userAgent?: string;
@@ -262,6 +263,59 @@ describe('TrackingContainerAnalyzer platform resolution', () => {
     // Not 1: the two share no click id, they share the absence of one. That phantom visitor used
     // to come with a whole plausible funnel below it on a platform with no traffic at all.
     expect(analyzer.countHome()).toBe(0);
+  });
+
+  /**
+   * The first Meta campaign tagged its links utm_source=instagram, and some placements delivered
+   * fbclid as the only parameter there was. Both used to answer "organic" - the campaign was
+   * invisible in the very tab it was meant to be read in.
+   */
+  it('counts an Instagram visitor under Meta', () => {
+    const analyzer = analyzerFor(TrackingPlatform.META, [
+      request(PageRequestType.HOME, 'session-1', {utmSource: 'instagram'}),
+      request(PageRequestType.GAME, 'session-1', {utmSource: 'instagram'})
+    ]);
+
+    expect(analyzer.countHome()).toBe(1);
+    expect(analyzer.countGame()).toBe(1);
+  });
+
+  it('counts a visitor whose ad link carried nothing but the Meta click id', () => {
+    const analyzer = analyzerFor(TrackingPlatform.META, [
+      request(PageRequestType.HOME, 'session-1', {fbclid: 'IwcGRvZgRle'}),
+      request(PageRequestType.GAME, 'session-1', {fbclid: 'IwcGRvZgRle'})
+    ]);
+
+    expect(analyzer.countHome()).toBe(1);
+    expect(analyzer.countGame()).toBe(1);
+  });
+
+  it('counts a visitor known only by the Facebook page they came from', () => {
+    // m.facebook.com is the referrer the phones arrived with on the first campaign day.
+    const analyzer = analyzerFor(TrackingPlatform.META, [
+      request(PageRequestType.LANDING, 'session-1', {referer: 'http://m.facebook.com'}),
+      request(PageRequestType.GAME, 'session-1')
+    ]);
+
+    expect(analyzer.countGame()).toBe(1);
+  });
+
+  it('does not count a Meta visitor under X', () => {
+    const analyzer = analyzerFor(TrackingPlatform.X, [
+      request(PageRequestType.HOME, 'session-1', {fbclid: 'IwcGRvZgRle'}),
+      request(PageRequestType.HOME, 'session-2', {twclid: 'tw-1'})
+    ]);
+
+    expect(analyzer.countHome()).toBe(1);
+  });
+
+  it('keeps two Meta visitors apart by their click id', () => {
+    const analyzer = analyzerFor(TrackingPlatform.META, [
+      request(PageRequestType.HOME, 'session-1', {fbclid: 'fb-1'}),
+      request(PageRequestType.HOME, 'session-2', {fbclid: 'fb-2'})
+    ]);
+
+    expect(analyzer.countHome()).toBe(2);
   });
 
   it('reads zero for a platform without traffic instead of one phantom visitor', () => {

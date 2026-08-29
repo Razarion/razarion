@@ -159,7 +159,7 @@ public class PlayerSessionService {
                     .startTime(pageRequest.getServerTime())
                     .userId(usersPerHttpSession.get(httpSessionId))
                     .userAgent(pageRequest.getUserAgent())
-                    .source(platform(pageRequest.getRdtCid(), pageRequest.getTwclid()))
+                    .source(platform(pageRequest.getRdtCid(), pageRequest.getTwclid(), pageRequest.getFbclid()))
                     .outcome(PlayerSessionOutcome.NO_STARTUP)
                     .tasks(List.of()));
         }
@@ -287,13 +287,14 @@ public class PlayerSessionService {
                                              String httpSessionId,
                                              List<PageRequest> pageRequests) {
         for (StartupTaskJson task : tasks) {
-            TrackingPlatform platform = platform(task.getRdtCid(), task.getTwclid());
+            TrackingPlatform platform = platform(task.getRdtCid(), task.getTwclid(), task.getFbclid());
             if (platform != null) {
                 return platform;
             }
         }
         if (terminatedJson != null) {
-            TrackingPlatform platform = platform(terminatedJson.getRdtCid(), terminatedJson.getTwclid());
+            TrackingPlatform platform = platform(terminatedJson.getRdtCid(), terminatedJson.getTwclid(),
+                    terminatedJson.getFbclid());
             if (platform != null) {
                 return platform;
             }
@@ -301,7 +302,8 @@ public class PlayerSessionService {
         if (httpSessionId != null) {
             for (PageRequest pageRequest : pageRequests) {
                 if (httpSessionId.equals(pageRequest.getHttpSessionId())) {
-                    TrackingPlatform platform = platform(pageRequest.getRdtCid(), pageRequest.getTwclid());
+                    TrackingPlatform platform = platform(pageRequest.getRdtCid(), pageRequest.getTwclid(),
+                            pageRequest.getFbclid());
                     if (platform != null) {
                         return platform;
                     }
@@ -311,8 +313,8 @@ public class PlayerSessionService {
         return null;
     }
 
-    private TrackingPlatform platform(String rdtCid, String twclid) {
-        return TrackingPlatforms.ofClickIds(rdtCid, twclid);
+    private TrackingPlatform platform(String rdtCid, String twclid, String fbclid) {
+        return TrackingPlatforms.ofClickIds(rdtCid, twclid, fbclid);
     }
 
     /**

@@ -23,6 +23,7 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
     private final Provider<Boot> boot;
     private String rdtCid;
     private String twclid;
+    private String fbclid;
     private String utmCampaign;
     private String utmSource;
     /** Read once at construction: a later navigation inside the game would report itself. */
@@ -37,6 +38,7 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
                 JsURLSearchParams params = JsURLSearchParams.create(search);
                 rdtCid = params.get("rdt_cid");
                 twclid = params.get("twclid");
+                fbclid = params.get("fbclid");
                 utmCampaign = params.get("utm_campaign");
                 utmSource = params.get("utm_source");
             }
@@ -111,6 +113,9 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
             if (twclid != null) {
                 jsObj.set("twclid", twclid);
             }
+            if (fbclid != null) {
+                jsObj.set("fbclid", fbclid);
+            }
             if (utmCampaign != null) {
                 jsObj.set("utmCampaign", utmCampaign);
             }
@@ -141,6 +146,9 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
             }
             if (twclid != null) {
                 jsObj.set("twclid", twclid);
+            }
+            if (fbclid != null) {
+                jsObj.set("fbclid", fbclid);
             }
             if (utmCampaign != null) {
                 jsObj.set("utmCampaign", utmCampaign);

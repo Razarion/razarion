@@ -19,7 +19,7 @@ public class IndexController {
         // and the CDN in front of production did: it kept a copy and fetched the pixel itself.
         response.setHeader(HttpHeaders.CACHE_CONTROL, CacheControl.noStore().getHeaderValue());
         // Forward the complete raw query string (already URL-encoded) so that any campaign
-        // parameter (utm_*, rdt_cid, twclid, ...) is preserved and passed on to the tracking
+        // parameter (utm_*, rdt_cid, twclid, fbclid, ...) is preserved and passed on to the tracking
         // pixel (/t.gif) and the "Play Now" link (/game). RequestInfoLoggingFilter then logs them.
         String queryString = request.getQueryString();
         model.addAttribute("qs", sanitizeQueryString(queryString));

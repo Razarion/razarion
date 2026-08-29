@@ -65,6 +65,7 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
    */
   platformOptions = [{name: "Reddit", value: TrackingPlatform.REDDIT as FunnelView},
     {name: "X", value: TrackingPlatform.X as FunnelView},
+    {name: "Meta", value: TrackingPlatform.META as FunnelView},
     {name: "All", value: 'all' as FunnelView}];
   platform: FunnelView = DEFAULT_FUNNEL_VIEW;
   /**
@@ -278,7 +279,11 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
     if (this.platform === TrackingPlatform.REDDIT) {
       return 'pi-reddit';
     }
-    return this.platform === TrackingPlatform.X ? 'pi-twitter' : 'pi-globe';
+    if (this.platform === TrackingPlatform.X) {
+      return 'pi-twitter';
+    }
+    // Meta covers Facebook and Instagram; the mark of the company that bills the campaign.
+    return this.platform === TrackingPlatform.META ? 'pi-facebook' : 'pi-globe';
   }
 
   loadDailyProgress() {
