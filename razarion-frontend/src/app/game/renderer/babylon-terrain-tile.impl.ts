@@ -137,10 +137,10 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // in a single slice → multi-second "browser hängt" freezes. This global queue serializes the heavy
   // builds to AT MOST ONE per animation frame, so the render loop runs in between and the game stays
   // responsive (occasional single-build hitches instead of one long lock).
-  private static buildQueue: (() => void)[] = [];
+  private static buildQueue: (() => boolean)[] = [];
   private static buildQueueScheduled = false;
 
-  private static enqueueHeavyBuild(task: () => void): void {
+  private static enqueueHeavyBuild(task: () => boolean): void {
     BabylonTerrainTileImpl.buildQueue.push(task);
     BabylonTerrainTileImpl.drainBuildQueue();
   }
@@ -152,9 +152,22 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     BabylonTerrainTileImpl.buildQueueScheduled = true;
     const runNext = () => {
       BabylonTerrainTileImpl.buildQueueScheduled = false;
-      const task = BabylonTerrainTileImpl.buildQueue.shift();
-      if (task) {
-        task(); // one heavy build this frame
+      // Spend the frame on a tile that still exists. A disposed tile's task returns
+      // without building anything, but under the old "one shift per frame" rule it
+      // still burned a frame - and tiles are dropped in bulk: scrolling across the
+      // map, or the studio re-clipping its terrain region, queues hundreds of tiles
+      // that are disposed again before their turn. Draining those corpses one per
+      // frame left the tiles actually on screen stuck on the green placeholder for
+      // as long as the backlog took to clear (a 1024-tile full-map build ~= 17s of
+      // nothing but shifting). Skip them in one go; the frame budget is there to
+      // protect the render loop from shader compiles, and a no-op is not one.
+      let builtThisFrame = false;
+      while (!builtThisFrame) {
+        const task = BabylonTerrainTileImpl.buildQueue.shift();
+        if (!task) {
+          break;
+        }
+        builtThisFrame = task();
       }
       if (BabylonTerrainTileImpl.buildQueue.length > 0) {
         BabylonTerrainTileImpl.drainBuildQueue();
@@ -244,9 +257,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     BabylonTerrainTileImpl.enqueueHeavyBuild(() => this.buildPhase3_Material());
   }
 
-  private buildPhase3_Material(): void {
+  /** @return true if the heavy NodeMaterial build actually ran, false for a tile
+   *          that was disposed while queued - see drainBuildQueue. */
+  private buildPhase3_Material(): boolean {
     if (this.disposed) {
-      return;
+      return false;
     }
     const terrainTile = this.terrainTile;
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
@@ -280,6 +295,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.materialSubmeshes = [];
 
     BabylonTerrainTileImpl.scheduleIdle(() => this.buildPhase4_WaterAndObjects());
+    return true;
   }
 
   private buildPhase4_WaterAndObjects(): void {

@@ -10,7 +10,7 @@
 // The facts come from the running server, so they stay true as the game changes - which is the
 // whole reason for reading them rather than keeping a list here.
 
-import { writeFileSync, existsSync } from 'node:fs';
+import { writeFileSync, existsSync, copyFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createCanvas, loadImage } from '@napi-rs/canvas';
 import { parseArgs } from './lib/args.mjs';
@@ -22,6 +22,7 @@ import { buildEntries, writeEntries } from './lib/entries.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
 
 const OWN_DIR = join(DATA_DIR, 'own');
+const SCENES_DIR = join(DATA_DIR, 'scenes');
 const ROTATION_FILE = join(STATE_DIR, 'generate.json');
 
 const LINK = 'https://www.razarion.com';
@@ -228,11 +229,24 @@ async function main() {
   }
 
   ensureDir(OWN_DIR);
-  const thumbnail = await fetchImage(item.thumbnail);
-  const card = await renderCard(item, thumbnail);
-  const file = join(OWN_DIR, `${id}-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.jpg`);
-  writeFileSync(file, card);
-  step(`card rendered to ${toRelative(file)}`);
+  const slug = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const file = join(OWN_DIR, `${id}-${slug}.jpg`);
+
+  // A staged scene beats a card built around a 200px thumbnail every time - it shows the unit
+  // where it belongs, at a size that fills a feed post. Rendering one needs a person to see that
+  // the terrain has finished loading and the unit is in frame, which is why they are produced in
+  // the studio by hand and picked up here rather than rendered on the fly.
+  const scene = join(SCENES_DIR, `${slug}.png`);
+  let image = file;
+  if (existsSync(scene)) {
+    image = file.replace(/\.jpg$/, '.png');
+    copyFileSync(scene, image);
+    step(`scene render used: ${toRelative(scene)}`);
+  } else {
+    const thumbnail = await fetchImage(item.thumbnail);
+    writeFileSync(file, await renderCard(item, thumbnail));
+    step(`no scene for "${slug}", card built from the thumbnail instead`);
+  }
 
   const entries = buildEntries({
     id,
@@ -240,7 +254,7 @@ async function main() {
     text,
     link: LINK,
     tags: roleOf(item) === 'weapon' ? ['strategygame'] : ['basebuilding'],
-    media: [{ type: 'photo', file: toRelative(file), url: null }],
+    media: [{ type: 'photo', file: toRelative(image), url: null }],
     source: 'composed',
   });
   writeEntries(entries);

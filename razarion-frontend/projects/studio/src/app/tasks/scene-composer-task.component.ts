@@ -762,6 +762,9 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   private gizmoManager: GizmoManager | null = null;
   private readonly nodes = new Map<number, TransformNode>();
   private readonly renderObjects = new Map<number, RenderObject>();
+  /** Cancel handles for items whose glb had not streamed in yet, keyed by item id.
+   *  Dropped when the model arrives or the item is disposed. */
+  private readonly pendingModels = new Map<number, () => void>();
   private nextItemId = 1;
   /** Item ids whose attack VFX is auto-replayed on a timer. Volatile — never
    *  persisted because a saved scene should always load idle. */
@@ -1446,7 +1449,13 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       // Recompute next id from loaded content so re-saves don't clash.
       this.nextItemId = content.items.reduce((m, i) => Math.max(m, i.id), 0) + 1;
       for (const item of content.items) {
-        this.spawnNode(item);
+        // One unplaceable item must not cost the whole scene - and in particular
+        // must not skip the terrain load below.
+        try {
+          this.spawnNode(item);
+        } catch (e) {
+          console.warn('[Studio] item spawn failed', item, e);
+        }
       }
       // After every node exists, aim turrets so any persisted attackTargetId
       // shows up visually even before the user clicks anything.
@@ -1946,7 +1955,38 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       console.warn('[Studio] no library entry for', item);
       return;
     }
-    const renderObject = this.babylonModel.cloneModel3D(lib.model3DId, null, item.diplomacy as Diplomacy);
+    const model3DId = lib.model3DId;
+
+    // The glbs keep streaming after the renderer is up, so the first scene opened
+    // after a reload asks for models that have not landed yet. cloneModel3D throws
+    // for those, and the throw escaped all the way out of openScene - which also
+    // skipped the terrain load further down, leaving the scene on bare placeholder
+    // ground. Every in-game caller asks isModel3DReady first; do the same here.
+    if (this.babylonModel.isModel3DReady(model3DId)) {
+      this.placeNode(item, model3DId);
+      return;
+    }
+    this.cancelPendingModel(item.id);
+    const cancel = this.babylonModel.requestModel3D(model3DId, ready => {
+      this.pendingModels.delete(item.id);
+      if (!ready) {
+        console.warn('[Studio] model3D never arrived for', item);
+        return;
+      }
+      // The scene may have been closed, or the item deleted, while we waited.
+      if (!this.content()?.items.some(i => i.id === item.id)) {
+        return;
+      }
+      this.placeNode(item, model3DId);
+      if (item.attackTargetId != null) this.aimTurret(item.id);
+      if (this.selectedItemId() === item.id) this.attachGizmoToSelection();
+    });
+    this.pendingModels.set(item.id, cancel);
+  }
+
+  /** Clone the model and hang it in the scene. Only call once the model is ready. */
+  private placeNode(item: SceneItem, model3DId: number): void {
+    const renderObject = this.babylonModel.cloneModel3D(model3DId, null, item.diplomacy as Diplomacy);
     const node = renderObject.getModel3D();
     node.position = new Vector3(...item.position);
     node.rotation = new Vector3(0, item.rotationY, 0);
@@ -1956,6 +1996,14 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     this.nodes.set(item.id, node);
     this.renderObjects.set(item.id, renderObject);
     this.spawnResourceVfx(item);
+  }
+
+  private cancelPendingModel(id: number): void {
+    const cancel = this.pendingModels.get(id);
+    if (cancel) {
+      cancel();
+      this.pendingModels.delete(id);
+    }
   }
 
   private tagNodeTree(node: TransformNode, sceneItemId: number): void {
@@ -2036,10 +2084,15 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
 
   private disposeAllItems(): void {
     for (const id of [...this.nodes.keys()]) this.disposeItem(id);
+    // Items still waiting for their glb have no node yet, so the loop above does
+    // not reach them. Drop those requests as well - otherwise the model lands
+    // after the scene was swapped and places a stale item into whatever is open.
+    for (const id of [...this.pendingModels.keys()]) this.cancelPendingModel(id);
     this.gizmoManager?.attachToMesh(null);
   }
 
   private disposeItem(id: number): void {
+    this.cancelPendingModel(id);
     this.stopAttackLoop(id);
     this.stopHarvest(id);
     this.stopBuild(id);

@@ -42,6 +42,46 @@ Zwölf Einheiten sind darin — bei drei Beiträgen pro Woche also rund vier Woc
 derselben Einheiten bleiben draußen: sie tragen denselben Namen, aber andere Werte (der Bot-Viper
 kostet 100 statt 10), und ein Beitrag daraus nennte einen Preis, den kein Spieler je zahlt.
 
+### Bessere Bilder: Studio-Szenen
+
+Standardmäßig baut `generate.mjs` eine Karte um das gespeicherte Thumbnail — das ist nur 200×200
+und wirkt entsprechend weich. Liegt für eine Einheit dagegen ein Szenen-Render bereit, nimmt es
+den stattdessen:
+
+```
+data/scenes/factory.png      → wird für die Einheit "Factory" verwendet
+data/scenes/harvester.png    → für "Harvester"
+```
+
+Der Dateiname ist der Einheitenname in Kleinbuchstaben, Leerzeichen als Bindestrich.
+
+**So entsteht so ein Render:** [razarion.com/studio](https://www.razarion.com/studio) → *Scenes* →
+Szene anklicken → rechts *Resolution* auf **1080 × 1080 (social square)**, *Background* auf
+**Scene background** → **warten, bis der Boden nicht mehr einfarbig grün ist** → *Take screenshot*
+→ *Save PNG* → Datei nach `data/scenes/<name>.png` verschieben.
+
+Das einfarbige Grün ist kein fehlendes Terrain, sondern das Platzhalter-Material: die Geometrie
+steht sofort, das echte Boden-Material wird pro Kachel nachgebaut (ein Shader-Build von rund 100 ms,
+serialisiert auf eine Kachel pro Frame). Solange der Boden flach grün ist, ist der Render noch nicht
+fertig — auch wenn Einheiten und Effekte längst richtig aussehen.
+
+**`Terrain area` auf `Around camera (fast)` stehen lassen.** Das ist der Standard und baut die rund
+20 Kacheln um die Kamera, also gut zwei Sekunden. **`Full map (slow)` stellt 1024 Kacheln ein und
+macht es damit rund hundertmal langsamer** — der Boden bleibt dann minutenlang grün. Die Bezeichnung
+ist wörtlich gemeint.
+
+Tut ein Item in der Szene etwas, gehört das ins Bild — ein angeklicktes Item zeigt seine Aktionen in
+PROPERTIES. Beim Harvester ist *Harvest target* bereits gesetzt, **Start harvest** zündet den Strahl
+samt fliegender Kristallsplitter. Danach **Deselect** drücken, sonst stehen die Gizmo-Pfeile des
+ausgewählten Items mit im Render.
+
+Das Warten ist der Punkt, an dem es schiefgeht: löst man zu früh aus, kommt ein leeres Bild heraus,
+und die Vorschau zeigt das auch. Deshalb bleibt dieser Schritt Handarbeit — ob eine Szene fertig
+geladen und richtig gerahmt ist, sieht ein Mensch, ein Skript nicht.
+
+Vorhanden sind bisher `factory.png` und `harvester.png`. Für die übrigen zehn Einheiten gibt es
+teils Szenen im Studio (Tesla, Radar, Powerplant, Builder), teils noch keine.
+
 ### Mit eigenem Material
 
 ```bash
@@ -160,6 +200,7 @@ Hand ergänzen, sonst wird er beim nächsten Lauf erneut gepostet.
 ```
 data/captions.json  fb_posts.json  x_posts.json    die Review-Dateien
 data/own/                                          Bilder eigener Beiträge
+data/scenes/                                       Studio-Renders je Einheit
 data/cards/                                        gerenderte Textkarten
 data/youtube/                                      Clips und Metadaten für Studio
 state/posted*.json                                 was veröffentlicht wurde
