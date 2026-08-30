@@ -80,6 +80,20 @@ public class BoxService {
         gameEngineMode = planetActivationEvent.getGameEngineMode();
     }
 
+    /** Same as {@link ResourceService#clearSlave()}, for the boxes. */
+    public void clearSlave() {
+        synchronized (boxes) {
+            for (SyncBoxItem syncBoxItem : new ArrayList<>(boxes.values())) {
+                try {
+                    gameLogicService.onBoxDeleted(syncBoxItem, BoxDeletionReason.EXPIRED);
+                } catch (Throwable t) {
+                    logger.log(Level.WARNING, "BoxService.clearSlave failed for box id=" + syncBoxItem.getId() + ": " + t.getMessage(), t);
+                }
+            }
+            boxes.clear();
+        }
+    }
+
     public void setupSlave(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
         if (initialSlaveSyncItemInfo.getSyncBoxItemInfos() != null) {
             for (SyncBoxItemInfo syncBoxItemInfo : initialSlaveSyncItemInfo.getSyncBoxItemInfos()) {

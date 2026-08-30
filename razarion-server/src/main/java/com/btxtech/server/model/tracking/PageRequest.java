@@ -92,6 +92,22 @@ public class PageRequest {
      * whether the button is above the fold.
      */
     private String viewport;
+    /**
+     * Why the last touch on the button did not become a game, as one letter: {@code c} the browser
+     * took the gesture away before the finger came up, {@code d} the finger travelled too far to
+     * count as a tap, {@code h} it rested on the button too long, {@code o} it never came up at
+     * all. Null means no touch failed - either none happened, or the one that did worked.
+     * <p>
+     * {@link #buttonPressed} says how often a finger reaches the button and nothing follows; this
+     * says which of four quite different things to fix about it.
+     */
+    private String tapFailure;
+    /**
+     * What that failure measured: pixels for {@code d}, milliseconds for {@code c}, {@code h} and
+     * {@code o}. The letter says which of the two it is. A drag of fourteen pixels and one of two
+     * hundred are the same finding without this, and only the first says the limit is too tight.
+     */
+    private Integer tapFailureMeasure;
 
     public PageRequestType getPageRequestType() {
         return pageRequestType;
@@ -285,6 +301,22 @@ public class PageRequest {
         this.viewport = viewport;
     }
 
+    public String getTapFailure() {
+        return tapFailure;
+    }
+
+    public void setTapFailure(String tapFailure) {
+        this.tapFailure = tapFailure;
+    }
+
+    public Integer getTapFailureMeasure() {
+        return tapFailureMeasure;
+    }
+
+    public void setTapFailureMeasure(Integer tapFailureMeasure) {
+        this.tapFailureMeasure = tapFailureMeasure;
+    }
+
     public PageRequest pageRequestType(PageRequestType pageRequestType) {
         setPageRequestType(pageRequestType);
         return this;
@@ -402,6 +434,16 @@ public class PageRequest {
 
     public PageRequest viewport(String viewport) {
         setViewport(viewport);
+        return this;
+    }
+
+    public PageRequest tapFailure(String tapFailure) {
+        setTapFailure(tapFailure);
+        return this;
+    }
+
+    public PageRequest tapFailureMeasure(Integer tapFailureMeasure) {
+        setTapFailureMeasure(tapFailureMeasure);
         return this;
     }
 

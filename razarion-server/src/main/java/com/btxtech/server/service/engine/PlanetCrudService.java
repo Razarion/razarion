@@ -5,6 +5,7 @@ import com.btxtech.server.model.engine.BaseItemTypeEntity;
 import com.btxtech.server.model.engine.PlanetEntity;
 import com.btxtech.server.model.engine.TerrainObjectPositionEntity;
 import com.btxtech.server.repository.engine.PlanetRepository;
+import com.btxtech.server.service.ContentDigest;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -136,7 +137,32 @@ public class PlanetCrudService extends AbstractConfigCrudService<PlanetConfig, P
     public void updateCompressedHeightMap(int planetId, byte[] data) {
         PlanetEntity planetEntity = getEntity(planetId);
         planetEntity.setCompressedHeightMap(data);
+        // In the same transaction as the bytes. A digest written separately could survive a failed
+        // write of the height map, and every browser holding the old one would then be told it is
+        // current - the one outcome this must never produce.
+        planetEntity.setHeightMapDigest(data != null ? ContentDigest.of(data) : null);
         getJpaRepository().save(planetEntity);
+    }
+
+    /**
+     * The entity tag for one planet's height map, or null if there is none.
+     * <p>
+     * Reads the digest column and nothing else, so answering "still the same?" costs a small row
+     * instead of four megabytes of blob. A planet stored before this column existed has none yet;
+     * it is computed once, on the first request that needs it, and kept.
+     */
+    @Transactional
+    public String getCompressedHeightMapDigest(int planetId) {
+        PlanetEntity planetEntity = getEntity(planetId);
+        if (planetEntity.getHeightMapDigest() == null) {
+            byte[] heightMap = planetEntity.getCompressedHeightMap();
+            if (heightMap == null) {
+                return null;
+            }
+            planetEntity.setHeightMapDigest(ContentDigest.of(heightMap));
+            getJpaRepository().save(planetEntity);
+        }
+        return planetEntity.getHeightMapDigest();
     }
 
     @Transactional

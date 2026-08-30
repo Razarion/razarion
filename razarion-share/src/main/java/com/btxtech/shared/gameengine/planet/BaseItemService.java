@@ -131,6 +131,39 @@ public class BaseItemService {
         }
     }
 
+    /**
+     * Drops every base and every base item this client knows about, before a fresh snapshot is
+     * applied. Only ever called on a slave, and only on a reconnect - see
+     * PlanetService#initialSlaveSyncItemInfo.
+     * <p>
+     * Deliberately not {@link #removeSyncItem}: that is the path for an item that died, and it
+     * carries base bookkeeping, energy accounting and an onBaseRemoved that quests listen to.
+     * Nothing died here. The UI is told the item is gone - which on the worker is a plain id in the
+     * removed list, not the explosion that a kill produces - and the maps are emptied.
+     */
+    public void clearSlave() {
+        for (PlayerBase playerBase : new ArrayList<>(bases.values())) {
+            // Source level 8 here - this module is compiled to WASM by TeaVM.
+            if (playerBase instanceof PlayerBaseFull) {
+                PlayerBaseFull playerBaseFull = (PlayerBaseFull) playerBase;
+                for (SyncBaseItem syncBaseItem : new ArrayList<SyncBaseItem>(playerBaseFull.getItems())) {
+                    try {
+                        gameLogicService.onSyncBaseItemRemoved(syncBaseItem);
+                    } catch (Throwable t) {
+                        logger.log(Level.WARNING, "BaseItemService.clearSlave failed for item id=" + syncBaseItem.getId() + ": " + t.getMessage(), t);
+                    }
+                }
+            }
+        }
+        synchronized (bases) {
+            bases.clear();
+        }
+        activeItems.clear();
+        activeItemQueue.clear();
+        pendingReceivedTickInfos.clear();
+        lastBaseItId = 1;
+    }
+
     public void setupSlave(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
         for (PlayerBaseInfo playerBaseInfo : initialSlaveSyncItemInfo.getPlayerBaseInfos()) {
             try {

@@ -38,6 +38,7 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
   let moves: { x: number, z: number }[];
   let places: { x: number, z: number }[];
   let invalidAttempts: number;
+  let reportedInteractions: string[];
 
   beforeEach(() => {
     engine = new NullEngine({renderWidth: WIDTH, renderHeight: HEIGHT, textureSize: 512, deterministicLockstep: false, lockstepMaxSteps: 1});
@@ -61,6 +62,7 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
     moves = [];
     places = [];
     invalidAttempts = 0;
+    reportedInteractions = [];
 
     const rendererService = {
       getScene: () => scene,
@@ -74,6 +76,10 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
       setupTerrainPickPoint: (canvasX: number = scene.pointerX, canvasY: number = scene.pointerY) =>
         skyAt(canvasX, canvasY) ? new PickingInfo() : hit(groundUnder(canvasX, canvasY)),
       setupTerrainPickPointFromPosition: () => null,
+      // The placer reports when it appears, when a placement is refused and when one goes through -
+      // see PLACER_SHOWN in first-interaction-tracker.service.ts. Collected rather than ignored,
+      // so the tests below can say which of the three a given gesture produced.
+      reportFirstInteraction: (kind: string) => reportedInteractions.push(kind),
       touchCameraControl: {
         isGesturing: () => gesturing,
         setPanClaim: (claim: ((x: number, y: number) => boolean) | null) => panClaim = claim
@@ -269,6 +275,28 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
 
     expect(places.length).toBe(0);
     expect(invalidAttempts).toBe(1);
+    expect(reportedInteractions).toContain('PLACER_REJECTED');
+    expect(reportedInteractions).not.toContain('PLACER_CONFIRMED');
+  });
+
+  /**
+   * Placing the starting base is the first thing the game asks of anybody, and until these three
+   * events existed a player who was shown the placer and did nothing was indistinguishable from one
+   * who never got one - 63 of 95 such sessions on PROD, all unexplained. Reaching and being refused
+   * is a third case again, and each of the three calls for a different repair.
+   */
+  it('says that the game asked for a base, and what became of the asking', () => {
+    expect(reportedInteractions).toContain('PLACER_SHOWN');
+    expect(reportedInteractions).not.toContain('PLACER_CONFIRMED');
+    expect(reportedInteractions).not.toContain('PLACER_REJECTED');
+
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+    pressDeploy();
+
+    expect(places.length).toBe(1);
+    expect(reportedInteractions).toContain('PLACER_CONFIRMED');
   });
 
   it('hangs the hint below the building when it is dragged to the top edge', () => {

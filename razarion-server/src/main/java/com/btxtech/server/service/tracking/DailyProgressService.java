@@ -153,8 +153,12 @@ public class DailyProgressService {
             // further than the pixel does - it does not need a campaign parameter or a loaded
             // image - so counting it here would move the funnel's population without anything
             // about the visitors having changed. See PageRequestType.LANDING.
+            // The app fetching a link for itself is not a visit. It fires the pixel like any other
+            // render, so without this it would sit in the denominator of every rate on this page
+            // while being incapable of appearing in any numerator - see TrackingDevice.isAppFetch.
             if (inWindow(pageRequest.getServerTime(), from, to)
-                    && pageRequest.getPageRequestType() != PageRequestType.LANDING) {
+                    && pageRequest.getPageRequestType() != PageRequestType.LANDING
+                    && !TrackingDevice.isAppFetch(pageRequest.getUserAgent())) {
                 windowSignals.add(signal(pageRequest));
             }
         }

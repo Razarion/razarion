@@ -18,6 +18,10 @@ import {
 
 /** The kinds the client reports, in the order they are shown. */
 export const INTERACTION_KINDS = [
+  'POINTER_DOWN',
+  'PLACER_SHOWN',
+  'PLACER_REJECTED',
+  'PLACER_CONFIRMED',
   'CAMERA_PAN_TOUCH',
   'CAMERA_PINCH',
   'CAMERA_KEYBOARD',
@@ -27,6 +31,42 @@ export const INTERACTION_KINDS = [
 ] as const;
 
 export type InteractionKind = typeof INTERACTION_KINDS[number];
+
+/**
+ * The kinds fall into three classes, and every share on this page depends on keeping them apart.
+ *
+ * This one is not the player at all: the game put the base placer on screen. It is recorded because
+ * "was this player ever asked to place a base" cannot otherwise be asked - but a session in which
+ * only this happened is a session in which the player did nothing, and must still read as silent.
+ */
+const NOT_THE_PLAYER: InteractionKind[] = ['PLACER_SHOWN'];
+
+/**
+ * The player reached and got nothing out of it: a finger on the game field that led nowhere, or a
+ * tap on a spot where a base cannot go. Both are the opposite of PLACER_CONFIRMED and must not be
+ * counted as having achieved anything - that would hide exactly the players this view exists for.
+ */
+const REACHED_WITHOUT_RESULT: InteractionKind[] = ['POINTER_DOWN', 'PLACER_REJECTED'];
+
+/** Did the player do anything at all, however fruitless? */
+function reachedForIt(session: SessionFacts): boolean {
+  for (const kind of session.firstMillis.keys()) {
+    if (!NOT_THE_PLAYER.includes(kind)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Did this session do something that worked, as opposed to merely reaching for it? */
+function didSomething(session: SessionFacts): boolean {
+  for (const kind of session.firstMillis.keys()) {
+    if (!NOT_THE_PLAYER.includes(kind) && !REACHED_WITHOUT_RESULT.includes(kind)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export type DeviceClass = 'Mobile' | 'Tablet' | 'Desktop' | 'Unknown';
 
@@ -55,7 +95,15 @@ export interface InteractionRow {
  */
 export interface InteractionFunnel {
   started: number;
-  /** Reported any control at all. The rest of the chain is a subset of this. */
+  /**
+   * Touched the game field at all, whatever came of it. The gap between this and
+   * {@link interacted} is the finding: a player who reached for the game and got no answer.
+   */
+  touched: number;
+  /**
+   * Reported a control that did something - the touch itself does not count. The rest of the chain
+   * is a subset of this.
+   */
   interacted: number;
   selected: number;
   commanded: number;
@@ -66,8 +114,13 @@ export interface DeviceReport {
   device: DeviceClass;
   /** Sessions whose game came up - the denominator for every number in the report. */
   started: number;
-  /** Sessions that reported nothing at all. The players this view exists for. */
+  /** Sessions that reported nothing at all, not even a touch. */
   silent: number;
+  /**
+   * Sessions that touched the game field and never got anything out of it. Where {@link silent}
+   * leaves open whether the player was ever there, this does not: they reached for it.
+   */
+  touchedWithoutEffect: number;
   rows: InteractionRow[];
   funnel: InteractionFunnel;
 }
@@ -199,7 +252,8 @@ export class FirstInteractionAnalyzer {
     });
 
     // Each step narrows the one before it, so every share is of a population this one is part of.
-    const interacted = own.filter(session => session.firstMillis.size > 0);
+    const touched = own.filter(reachedForIt);
+    const interacted = own.filter(didSomething);
     const selected = interacted.filter(session => session.firstMillis.has('SELECT'));
     const commanded = selected.filter(session => session.firstMillis.has('COMMAND'));
     // By user, because that is how a quest is recorded - the session it happened in is not on the
@@ -209,10 +263,12 @@ export class FirstInteractionAnalyzer {
     return {
       device,
       started: own.length,
-      silent: own.length - interacted.length,
+      silent: own.length - touched.length,
+      touchedWithoutEffect: touched.length - interacted.length,
       rows,
       funnel: {
         started: own.length,
+        touched: touched.length,
         interacted: interacted.length,
         selected: selected.length,
         commanded: commanded.length,
@@ -280,7 +336,28 @@ export function classifyDevice(userAgent?: string): DeviceClass {
   if (/Mobile|Android|iPhone|iPod/i.test(userAgent)) {
     return 'Mobile';
   }
+  // The Facebook app fetching for itself sends only its own token - no browser string, and so none
+  // of the words above. FB4A is Facebook for Android, FBIOS is Facebook for iOS, so the device is
+  // known exactly; without this the whole lot counted as desktops. See isAppFetch.
+  if (/^\[FBAN\/(FB4A|FBIOS)/i.test(userAgent.trim())) {
+    return 'Mobile';
+  }
   return 'Desktop';
+}
+
+/**
+ * Whether the Facebook app fetched this page for itself rather than a browser showing it to
+ * somebody. Such a request carries the app's token alone, with no browser string in front of it - a
+ * real in-app browser sends the full Mozilla string and appends the token.
+ *
+ * Over seven days of PROD these 952 requests produced no play click, no exit event, no game page
+ * and no client start, and not one was ever reported visible. They are the app warming a link, and
+ * counting them as landing page views made every Meta conversion rate a fifth too small.
+ *
+ * Kept in step with TrackingDevice.isAppFetch() on the server.
+ */
+export function isAppFetch(userAgent?: string): boolean {
+  return !!userAgent && /^\[FBAN/i.test(userAgent.trim());
 }
 
 /** Median of an unsorted list, or null when there is nothing to take one of. */

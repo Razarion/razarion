@@ -86,6 +86,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   }
 
   activate(baseItemPlacer: BaseItemPlacer): void {
+    // Reported before anything is drawn: what this answers is whether the player was ever asked to
+    // place a base, and that has to be true even if the drawing below fails.
+    this.rendererService.reportFirstInteraction('PLACER_SHOWN');
     this.cleanupPreviousPlacer();
     this.activationGeneration++;
     const currentGeneration = this.activationGeneration;
@@ -322,6 +325,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     // anyway - the master silently dropped builder builds and let the start builder spawn on
     // top of a resource.
     if (!baseItemPlacer.isPositionValid()) {
+      this.rendererService.reportFirstInteraction('PLACER_REJECTED');
       baseItemPlacer.onInvalidPlaceAttempt();
       return;
     }
@@ -331,6 +335,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     if (baseItemPlacer.isPlayBuildSound()) {
       this.babylonAudioService.speakCommand('Building');
     }
+    this.rendererService.reportFirstInteraction('PLACER_CONFIRMED');
     baseItemPlacer.onPlace(position.x, position.z);
   }
 

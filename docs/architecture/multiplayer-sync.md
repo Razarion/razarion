@@ -27,6 +27,50 @@ Browser A (Sender)                Server (MASTER)              Browser B (Receiv
 - **MASTER** (Server): Executes all game logic, is authoritative for positions. Sends TickInfo to all clients.
 - **SLAVE** (Browser): Executes commands locally for responsiveness. Accepts server TickInfo to correct drift.
 
+## Reconnecting: the snapshot replaces the world, it does not add to it
+
+The server sends the **full** picture of the world on every `afterConnectionEstablished` — not what
+changed, and not only on the first connection. A mobile game socket closes far more often than a
+desktop one (`Code: 1006 WasClean: false` on a radio handover is routine), so a client sees this
+snapshot repeatedly.
+
+`PlanetService.initialSlaveSyncItemInfo()` therefore clears the slave world before applying a
+snapshot that arrives into a populated one:
+
+```
+if (!syncItemContainerService.isEmpty()) {     // a reconnect, not a first connect
+    baseItemService.clearSlave();              // quiet removal, per item
+    resourceService.clearSlave();
+    boxService.clearSlave();
+    syncItemContainerService.clear();
+}
+```
+
+**"Quiet" is the requirement.** Each `clearSlave()` tells the UI the item is *gone*
+(`onSyncBaseItemRemoved` → a plain id in the worker's removed list), never that it *died*
+(`onSyncBaseItemKilledSlave` → explosions, sounds, quest progress). A reconnect must look like a
+redraw, not like the player's base being destroyed. For the same reason `clearSlave()` does not go
+through `removeSyncItem`, which carries base bookkeeping, energy accounting and an
+`onBaseRemoved` that quests listen to. Nothing died.
+
+The first connection is untouched: the container is empty, nothing is cleared, and the path is
+exactly what it always was.
+
+### What this fixed
+
+**PROD, 2026-08-30.** A phone's socket closed five seconds after the player placed their factory.
+The snapshot was applied additively, sixteen ids collided, and
+`SyncItemContainerServiceImpl.initAndAddSlave()` — which put into the map *before* checking whether
+the id was free — replaced each positioned item with the half-built newcomer and only then threw.
+Every caller catches and logs, so the wreckage stayed: items with no `syncPhysicalArea`, and
+`onPostTick failed` for every item on every tick from then on. The player watched a factory that
+never finished and units that had vanished; only a browser reload recovered it.
+
+Both halves are fixed — the check now precedes the mutation in `initAndAdd` **and**
+`initAndAddSlave` (the master's ids are generated, so it cannot collide there, but the mistake was
+the same), and the snapshot is idempotent. `SlaveReconnectTest` covers both and fails on the old
+code with the exact production message, `no syncPhysicalArea|null`.
+
 ## Command Flow
 
 ### 1. Player Issues a Command (Browser A)
@@ -116,6 +160,8 @@ After 2 ticks, the server TickInfo reflects the new command state, and syncs res
 | `razarion-share/.../CommandService.java` | MASTER/SLAVE command routing |
 | `razarion-share/.../BaseItemService.java` | `executeForwardedCommand()` for command execution on clients |
 | `razarion-share/.../SyncService.java` | Abstract TickInfo accumulation and dispatch |
+| `razarion-share/.../PlanetService.java` | `initialSlaveSyncItemInfo()` — applies the snapshot, replacing on reconnect |
+| `razarion-share/.../SyncItemContainerServiceImpl.java` | `initAndAddSlave()` — refuses a taken id without touching what is there |
 | `razarion-share/.../SyncPhysicalMovable.java` | `synchronize()`, `skipSyncTicks`, movement physics |
 | `razarion-share/.../AbstractServerGameConnection.java` | Client-side WebSocket handler, dispatches received commands |
 | `razarion-share/.../command/BaseCommand.java` | `forwardedByConnection` transient flag |

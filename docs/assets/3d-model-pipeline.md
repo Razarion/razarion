@@ -188,6 +188,33 @@ Both files must report identical `RAZ_:` and `withUV:` counts.
 > await io.write(process.argv[3], await io.read(process.argv[2]));
 > ```
 
+## Delivery: how the file reaches the browser
+
+`GET /rest/gltf/glb/{id}` is the single largest thing the game downloads — one glb, 11.35 MB,
+101 WebP images making up 70.6% of it. It is a **conditional GET**:
+
+| Header | Value | Why |
+|---|---|---|
+| `Cache-Control` | `no-cache, must-revalidate` | the browser may keep the file but must ask before every use |
+| `ETag` | SHA-256 of the bytes, hex | changes exactly when the model changes |
+
+So a repeat start sends `If-None-Match` and gets **304 and no body**; a model that was edited gets a
+full 200. Stale is not a reachable state — which is the reason the endpoint previously carried
+`no-store` (via `NoCacheRestFilter`) and paid 11.35 MB on every single game start. That filter now
+exempts `GET /rest/gltf/glb/` and nothing else; the upload beside it stays under the blanket rule.
+
+The digest lives in `GLTF.glbDigest`, written in the same transaction as the bytes. Not in a map on
+the server: the blob is `@Lob` + `LAZY`, so answering "unchanged?" must not have to load it, and a
+per-process cache would let a second pod answer from a digest it computed before the model was
+replaced. Rows written before the column existed are backfilled on first use. The column is added
+by `ddl-auto=update`, so a deploy needs no migration.
+
+**Do not add `application/octet-stream` to `server.compression.mime-types`.** Over 70% of the file
+is already-compressed WebP; measured, gzip -9 takes 11'351'892 → 9'514'618 bytes (16.2%), all of it
+from the ~3.3 MB that is not image data — in exchange for gzipping 11 MB of incompressible bytes on
+every request that is not a 304. The levers that matter for the first visit are texture resolution
+and splitting the glb, not transport compression.
+
 ### Step 1b (recommended): texture-only compression
 
 Razarion models are **texture-heavy and geometry-light** — the full bundle is ~30 MB of textures over

@@ -35,6 +35,17 @@ public class DaggerSlaveEmulator extends AbstractDaggerIntegrationTest {
         getPlanetService().initialSlaveSyncItemInfo(weldMasterBaseTest.getPlanetService().generateSlaveSyncItemInfo(userContext.getUserId()));
     }
 
+    /**
+     * What the client does when its game socket comes back: the server sends the full snapshot
+     * again on every {@code afterConnectionEstablished}, and the client applies it to a world it
+     * already has. Nothing else about the slave is reset - that is precisely the situation this
+     * reproduces.
+     */
+    public void reconnectToMaster(UserContext userContext) {
+        getPlanetService().initialSlaveSyncItemInfo(
+                weldMasterBaseTest.getPlanetService().generateSlaveSyncItemInfo(userContext.getUserId()));
+    }
+
     public void disconnectFromMaster() {
         weldMasterBaseTest.getTestGameLogicListener().getTestWebSocket().remove(testClientWebSocket);
         weldMasterBaseTest.getWeldBean(TestSyncService.class).getTestWebSocket().remove(testClientWebSocket);

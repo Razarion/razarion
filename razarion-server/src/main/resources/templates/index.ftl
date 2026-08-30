@@ -285,6 +285,16 @@
             var buttonSeenMillis = null;
             // A finger landed on the button, whether or not a click came of it.
             var buttonPressed = false;
+            // Why the last touch on the button did not become a game. One letter, because it rides
+            // on a url that already carries the whole campaign query string: 'c' the browser took
+            // the gesture away, 'd' the finger travelled too far to be a tap, 'h' it rested too
+            // long, 'o' it never came up at all. Null while no touch has failed - and a touch that
+            // succeeds is the only thing that clears it again.
+            var tapFailure = null;
+            // What that failure measured: pixels for 'd', milliseconds for 'c', 'h' and 'o'. The
+            // letter says which. Without the number a drag of fourteen pixels and one of two
+            // hundred look the same, and only the first of them says the limit is set too tight.
+            var tapFailureMeasure = null;
             // Furthest point reached, in percent of what there was to scroll.
             var maxScroll = 0;
             // The viewport as it was on arrival, before any address bar collapsed. The device
@@ -327,6 +337,10 @@
                 }
                 window.RAZ_navigating = 1;
                 playClicked = true;
+                // However the button was reached in the end, it was reached - a gesture the pointer
+                // handlers had already given up on must not be reported as the reason it failed.
+                tapFailure = null;
+                tapFailureMeasure = null;
                 send('&e=play');
                 location.href = '/game' + query;
             }
@@ -356,6 +370,15 @@
                     downX = x;
                     downY = y;
                     downMillis = timing ? performance.now() : Date.now();
+                    // Assumed the moment the finger lands, so that a page which goes away while it
+                    // is still down reports that instead of nothing. Every way out of here
+                    // overwrites it.
+                    tapFailure = 'o';
+                    tapFailureMeasure = null;
+                }
+
+                function heldMillis() {
+                    return Math.round((timing ? performance.now() : Date.now()) - downMillis);
                 }
 
                 // A tap, or something else? Lifting far from where the finger landed is a drag,
@@ -368,10 +391,33 @@
                     downOnButton = false;
                     var dx = x - downX;
                     var dy = y - downY;
-                    var held = (timing ? performance.now() : Date.now()) - downMillis;
-                    if (dx * dx + dy * dy <= TAP_SLOP * TAP_SLOP && held <= TAP_MILLIS) {
+                    var travelled = Math.sqrt(dx * dx + dy * dy);
+                    var held = heldMillis();
+                    if (travelled > TAP_SLOP) {
+                        tapFailure = 'd';
+                        tapFailureMeasure = Math.round(travelled);
+                    } else if (held > TAP_MILLIS) {
+                        tapFailure = 'h';
+                        tapFailureMeasure = held;
+                    } else {
+                        tapFailure = null;
+                        tapFailureMeasure = null;
                         goToGame();
                     }
+                }
+
+                // The webview took the gesture for itself - a scroll, a swipe, a back navigation.
+                // Nothing to do but forget the finger. How long it had been down when that
+                // happened is the half worth keeping: taken away within fifty milliseconds is a
+                // scroll starting under a finger that never meant to press, taken away after four
+                // hundred is a press the browser decided against.
+                function cancelled() {
+                    if (!downOnButton) {
+                        return;
+                    }
+                    downOnButton = false;
+                    tapFailure = 'c';
+                    tapFailureMeasure = heldMillis();
                 }
 
                 if (typeof PointerEvent === 'function') {
@@ -381,11 +427,8 @@
                     button.addEventListener('pointerup', function (event) {
                         pointerUp(event.clientX, event.clientY);
                     }, {passive: true});
-                    // The webview took the gesture for itself - a scroll, a swipe, a back
-                    // navigation. Nothing to do but forget the finger; the count of taps that
-                    // reached the button stands, which is what says how often this happens.
                     button.addEventListener('pointercancel', function () {
-                        downOnButton = false;
+                        cancelled();
                     }, {passive: true});
                 } else {
                     button.addEventListener('touchstart', function (event) {
@@ -397,7 +440,7 @@
                         pointerUp(touch.clientX, touch.clientY);
                     }, {passive: true});
                     button.addEventListener('touchcancel', function () {
-                        downOnButton = false;
+                        cancelled();
                     }, {passive: true});
                 }
 
@@ -514,6 +557,12 @@
                 }
                 if (buttonPressed) {
                     params += '&bp=1';
+                }
+                if (tapFailure !== null) {
+                    params += '&tf=' + tapFailure;
+                    if (tapFailureMeasure !== null) {
+                        params += '&tm=' + tapFailureMeasure;
+                    }
                 }
                 if (maxScroll > 0) {
                     params += '&sd=' + maxScroll;

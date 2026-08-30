@@ -91,6 +91,10 @@ export class TouchCameraControl {
   }
 
   private pointerDown(event: PointerEvent) {
+    // Before the early return and before any verdict about the gesture: this is the one record
+    // that says the player reached for the game at all, and it has to be true of a finger that
+    // achieved nothing - see POINTER_DOWN in first-interaction-tracker.service.ts.
+    this.renderService.reportFirstInteraction('POINTER_DOWN');
     if (event.pointerType !== 'touch') {
       return;
     }

@@ -9,7 +9,7 @@ import {
   UserActivityType
 } from '../../generated/razarion-share';
 import {ProgressStatistic} from './progress-statistic';
-import {classifyDevice, DeviceClass} from './first-interaction-analyzer';
+import {classifyDevice, DeviceClass, isAppFetch} from './first-interaction-analyzer';
 
 /**
  * Which visitors the funnel is about: the ones a platform brought, or everyone.
@@ -592,8 +592,14 @@ export class TrackingContainerAnalyzer {
 
   // ---------------------------------------------------------------- the raw collections
 
+  /**
+   * Every page request except the ones the Facebook app made for itself. Filtered here, in the one
+   * accessor, rather than at each count: such a request fires the pixel like any other render, so
+   * it can enter a denominator but never a numerator, and one missed site would quietly put a fifth
+   * of the Meta traffic back into the base of every rate on the page. See isAppFetch.
+   */
   private pageRequests(): PageRequest[] {
-    return this.trackingContainer.pageRequests ?? [];
+    return (this.trackingContainer.pageRequests ?? []).filter(pageRequest => !isAppFetch(pageRequest.userAgent));
   }
 
   private startupTaskJsons(): StartupTaskJson[] {

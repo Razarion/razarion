@@ -31,28 +31,95 @@ describe('RenderTelemetry', () => {
     return now - intervalMs;
   }
 
+  /**
+   * Consumes the short first period and returns a timestamp to start the next feed from. Every
+   * test below that is about the steady ten-second window needs this: the first window is
+   * deliberately different, and without burning it those tests would read the warm-up line and
+   * then a second line built from the frames left over.
+   *
+   * Sixteen frames 200 ms apart end exactly on the three-second boundary with fifteen intervals,
+   * so nothing spills into the period that follows.
+   */
+  function skipFirstPeriod(rt: RenderTelemetry): number {
+    feed(rt, 16, 200);
+    expect(lines.length).toBe(1);
+    lines.length = 0;
+    return 3_200;
+  }
+
   function field(line: string, key: string): string {
     const match = line.match(new RegExp(`(?:^|\\s)${key}=("[^"]*"|\\S+)`));
     return match ? match[1] : '';
   }
 
+  /**
+   * The first line has to arrive early. A mobile player who reaches a running game stays about
+   * twenty seconds, and most of that is spent getting there - at ten seconds a window they were
+   * gone before the renderer ever said anything, which is why seven days of PROD telemetry held
+   * almost no mobile session at all.
+   */
+  it('says something within three seconds, before a mobile session is over', () => {
+    // 16 frames 200 ms apart: three seconds exactly, 15 intervals.
+    feed(telemetry(), 16, 200);
+
+    expect(lines.length).toBe(1);
+    expect(field(lines[0], 'frames')).toBe('15');
+    expect(field(lines[0], 'periodS')).toBe('3.0');
+    expect(field(lines[0], 'seq')).toBe('1');
+  });
+
   it('emits one summary line once the period is full', () => {
+    const rt = telemetry();
+    const from = skipFirstPeriod(rt);
     // 21 frames 500 ms apart = 10.0 s of wall time and 20 frame intervals.
-    feed(telemetry(), 21, 500);
+    feed(rt, 21, 500, 5, from);
 
     expect(lines.length).toBe(1);
     expect(field(lines[0], 'frames')).toBe('20');
     expect(field(lines[0], 'periodS')).toBe('10.0');
     expect(field(lines[0], 'fps')).toBe('2.0');
-    expect(field(lines[0], 'seq')).toBe('1');
+    expect(field(lines[0], 'seq')).toBe('2');
+  });
+
+  /**
+   * Why the frame floor ends the period instead of discarding it. This phone draws four frames a
+   * second; under the old rule it produced sixteen frames in ten seconds, missed the twenty-frame
+   * bar and reported nothing - every period, for its whole session.
+   */
+  it('waits for a slow device rather than throwing its period away', () => {
+    const rt = telemetry();
+    const from = skipFirstPeriod(rt);
+    // 4 fps: the twenty-frame floor is not met until ten seconds have passed anyway, and the
+    // period closes on the frame that satisfies both.
+    feed(rt, 41, 250, 5, from);
+
+    expect(lines.length).toBe(1);
+    expect(field(lines[0], 'frames')).toBe('40');
+    expect(field(lines[0], 'periodS')).toBe('10.0');
+    expect(field(lines[0], 'fps')).toBe('4.0');
+  });
+
+  /**
+   * A tab opened in the background never fires visibilitychange, so the reset that handles a tab
+   * being switched away never runs for it. Its frames are throttled to about 1 Hz, and a slow
+   * period is no longer dropped for being slow - so without this it would arrive as a phone
+   * drawing one frame a second.
+   */
+  it('says nothing at all from a tab that was never on screen', () => {
+    spyOnProperty(document, 'visibilityState').and.returnValue('hidden');
+
+    feed(telemetry(), 16, 200);
+
+    expect(lines.length).toBe(0);
   });
 
   it('reports the worst frame instead of hiding it in an average', () => {
     const rt = telemetry();
+    const from = skipFirstPeriod(rt);
     // 601 frames at a steady 60 fps, then one 400 ms freeze that closes the period. The mean
     // barely moves (16.6 ms); the max and the long-frame counters are the whole point.
-    feed(rt, 601, 16);
-    rt.recordFrame(600 * 16 + 400, 5, 120);
+    feed(rt, 601, 16, 5, from);
+    rt.recordFrame(from + 600 * 16 + 400, 5, 120);
 
     expect(lines.length).toBe(1);
     expect(field(lines[0], 'frameP50')).toBe('16.0');
@@ -63,16 +130,19 @@ describe('RenderTelemetry', () => {
   });
 
   it('says nothing about a period too short to mean anything', () => {
-    // 11 frames a second apart: 10 intervals, well under the 20-frame floor.
-    feed(telemetry(), 11, 1000);
+    // 6 frames a second apart: 5 intervals, under the floor even for the short first period. Six
+    // seconds of wall time is well past the three-second mark and still says nothing, which is
+    // the point - the frame count is the floor, not the clock.
+    feed(telemetry(), 6, 1000);
 
     expect(lines.length).toBe(0);
   });
 
   it('drops the frames around a visibility change rather than reporting 1 fps', () => {
     const rt = telemetry();
+    const from = skipFirstPeriod(rt);
     // A backgrounded tab: rAF throttled to ~1 Hz for 9 s...
-    feed(rt, 10, 1000);
+    feed(rt, 10, 1000, 5, from);
     document.dispatchEvent(new Event('visibilitychange'));
     // ...then a normal foreground period, which must not carry the 1000 ms frames.
     feed(rt, 21, 500, 5, 100_000);
@@ -84,7 +154,8 @@ describe('RenderTelemetry', () => {
   it('carries the session uuid so a lagging period can be joined to its device', () => {
     (window as any).RAZ_gameSessionUuid = 'abc-123';
     try {
-      feed(telemetry(), 21, 500);
+      const rt = telemetry();
+      feed(rt, 21, 500, 5, skipFirstPeriod(rt));
       expect(field(lines[0], 'session')).toBe('abc-123');
     } finally {
       delete (window as any).RAZ_gameSessionUuid;
@@ -92,7 +163,8 @@ describe('RenderTelemetry', () => {
   });
 
   it('keeps a quote in the GPU string from breaking the key="value" shape', () => {
-    feed(telemetry(), 21, 500);
+    const rt = telemetry();
+    feed(rt, 21, 500, 5, skipFirstPeriod(rt));
 
     expect(field(lines[0], 'gpu')).toBe(`"Test 'GPU'"`);
   });
@@ -100,7 +172,8 @@ describe('RenderTelemetry', () => {
   it('names the owners of scene.meshes, not just how many there are', () => {
     // The whole point of the census: 400 meshes of which 210 are switched off says "cached
     // scenery", and the bucket names say whose scenery it is.
-    feed(telemetry(), 21, 500);
+    const rt = telemetry();
+    feed(rt, 21, 500, 5, skipFirstPeriod(rt));
 
     expect(field(lines[0], 'disabledMeshes')).toBe('210');
     expect(field(lines[0], 'instanced')).toBe('380');
@@ -109,14 +182,16 @@ describe('RenderTelemetry', () => {
   });
 
   it('carries the A/B state so a period can be attributed to the parked-mesh filter', () => {
-    feed(telemetry({...STATS, parkedMeshes: -1, parkingFilter: false}), 21, 500);
+    const rt = telemetry({...STATS, parkedMeshes: -1, parkingFilter: false});
+    feed(rt, 21, 500, 5, skipFirstPeriod(rt));
 
     expect(field(lines[0], 'parked')).toBe('-1');
     expect(field(lines[0], 'parkingFilter')).toBe('false');
   });
 
   it('keeps a quote in a mesh name from breaking the key="value" shape', () => {
-    feed(telemetry({...STATS, meshTop: 'TerrainObject "palm":900'}), 21, 500);
+    const rt = telemetry({...STATS, meshTop: 'TerrainObject "palm":900'});
+    feed(rt, 21, 500, 5, skipFirstPeriod(rt));
 
     expect(field(lines[0], 'meshTop')).toBe(`"TerrainObject 'palm':900"`);
   });
@@ -125,7 +200,7 @@ describe('RenderTelemetry', () => {
     const rt = new RenderTelemetry(() => {
       throw new Error('scene disposed');
     });
-    feed(rt, 21, 500);
+    feed(rt, 21, 500, 5, skipFirstPeriod(rt));
 
     expect(lines.length).toBe(1);
     expect(field(lines[0], 'meshes')).toBe('-1');
@@ -135,25 +210,30 @@ describe('RenderTelemetry', () => {
     const rt = telemetry();
     // A steady 140 draw calls with one spike: the median says what a normal frame submits, the
     // max catches the frame that also rebuilt the shadow map.
-    feed(rt, 20, 500, 5, 0, 140);
-    rt.recordFrame(10_000, 5, 900);
+    const from = skipFirstPeriod(rt);
+    feed(rt, 20, 500, 5, from, 140);
+    rt.recordFrame(from + 10_000, 5, 900);
 
     expect(field(lines[0], 'drawP50')).toBe('140');
     expect(field(lines[0], 'drawMax')).toBe('900');
   });
 
   it('carries -1 rather than a wrong number when the engine keeps no draw-call counter', () => {
-    feed(telemetry(), 21, 500, 5, 0, -1);
+    const rt = telemetry();
+    feed(rt, 21, 500, 5, skipFirstPeriod(rt), -1);
 
     expect(field(lines[0], 'drawP50')).toBe('-1');
   });
 
   it('counts the engine ticks that arrived during the period', () => {
     const rt = telemetry();
+    // After the warm-up, not before: a tick recorded during the first period belongs to it and is
+    // cleared with it.
+    const from = skipFirstPeriod(rt);
     rt.recordTick(1);
     rt.recordTick(2);
     rt.recordTick(3);
-    feed(rt, 21, 500);
+    feed(rt, 21, 500, 5, from);
 
     // Three ticks produce two gaps between them.
     expect(field(lines[0], 'ticks')).toBe('2');

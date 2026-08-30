@@ -1470,8 +1470,20 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
         await this.terrainLoader.loadTerrain(content.terrain.planetId, this.regionToLoad()).catch(e => {
           console.warn('[Studio] terrain load failed', e);
         });
+        // The tiles are in the scene now, but each still wears the flat placeholder material
+        // until its shader is compiled - and that takes far longer than the fetch did. Saying
+        // "done" here would put a green field on screen and call it terrain, which is exactly
+        // how a screenshot ends up shipped with no ground on it. Keep reporting, but do not
+        // hold the editor hostage: the camera and the item list stay usable meanwhile.
+        this.rendererStatus.set('Building ground…');
+        this.terrainLoader.whenTerrainReady().then(() => {
+          if (this.current()?.id === id) {
+            this.rendererStatus.set('');
+          }
+        });
+      } else {
+        this.rendererStatus.set('');
       }
-      this.rendererStatus.set('');
     } catch (e) {
       console.warn('[Studio] scene open failed', e);
       this.rendererStatus.set('');

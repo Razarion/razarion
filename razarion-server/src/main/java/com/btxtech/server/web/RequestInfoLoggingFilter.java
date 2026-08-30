@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Component
 public class RequestInfoLoggingFilter implements Filter {
@@ -41,13 +42,21 @@ public class RequestInfoLoggingFilter implements Filter {
     private static final String INTERACTED_PARAMETER = "i";
     private static final String EXIT_REASON_PARAMETER = "r";
     /**
-     * The four that say why a visitor did not press Play. What each one means is documented on the
+     * The six that say why a visitor did not press Play. What each one means is documented on the
      * field it fills in {@link PageRequest}.
      */
     private static final String BUTTON_SEEN_PARAMETER = "bs";
     private static final String BUTTON_PRESSED_PARAMETER = "bp";
     private static final String SCROLL_DEPTH_PARAMETER = "sd";
     private static final String VIEWPORT_PARAMETER = "vp";
+    private static final String TAP_FAILURE_PARAMETER = "tf";
+    private static final String TAP_FAILURE_MEASURE_PARAMETER = "tm";
+    /**
+     * The only four letters the page ever sends for {@link #TAP_FAILURE_PARAMETER}: cancelled,
+     * dragged, held, and the finger that never came up. Kept as a set so that anything else off a
+     * crafted url is dropped instead of becoming a category of its own in every report.
+     */
+    private static final Set<String> TAP_FAILURES = Set.of("c", "d", "h", "o");
     private static final String EXIT_REASON_HIDDEN = "h";
     private static final String EXIT_REASON_PAGEHIDE = "u";
     /**
@@ -159,6 +168,8 @@ public class RequestInfoLoggingFilter implements Filter {
                 .buttonPressed(presentFlag(httpRequest, BUTTON_PRESSED_PARAMETER))
                 .scrollDepth(percent(httpRequest, SCROLL_DEPTH_PARAMETER))
                 .viewport(viewport(httpRequest))
+                .tapFailure(tapFailure(httpRequest))
+                .tapFailureMeasure(millis(httpRequest, TAP_FAILURE_MEASURE_PARAMETER))
                 .exitReason(exitReason(httpRequest))
                 .rawQueryString(queryString);
     }
@@ -206,6 +217,16 @@ public class RequestInfoLoggingFilter implements Filter {
     private String viewport(HttpServletRequest httpRequest) {
         String value = httpRequest.getParameter(VIEWPORT_PARAMETER);
         return value != null && value.matches("\\d{1,5}x\\d{1,5}") ? value : null;
+    }
+
+    /**
+     * Why the gesture on the button failed, and only in the shape the page sends it. An unknown
+     * letter is dropped: this is counted by category, and a crafted url must not be able to invent
+     * one.
+     */
+    private String tapFailure(HttpServletRequest httpRequest) {
+        String value = httpRequest.getParameter(TAP_FAILURE_PARAMETER);
+        return value != null && TAP_FAILURES.contains(value) ? value : null;
     }
 
     /** A parameter sent as "1" or "0". Absent stays absent - it is not the same as false. */

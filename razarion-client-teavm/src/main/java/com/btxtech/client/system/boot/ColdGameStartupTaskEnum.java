@@ -11,12 +11,6 @@ public enum ColdGameStartupTaskEnum implements StartupTaskEnum {
             return new LoadStartJsTask();
         }
     },
-    COMPATIBILITY_CHECK(CompatibilityCheckerStartupTask.class) {
-        @Override
-        public CompatibilityCheckerStartupTask createAbstractStartupTask(BootContext bootContext) {
-            return new CompatibilityCheckerStartupTask(bootContext);
-        }
-    },
     LOAD_AND_START_WORKER(LoadWorkerTask.class) {
         @Override
         public AbstractStartupTask createAbstractStartupTask(BootContext bootContext) {

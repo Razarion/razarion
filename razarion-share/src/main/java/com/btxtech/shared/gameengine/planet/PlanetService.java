@@ -215,8 +215,27 @@ public class PlanetService implements Runnable { // Only available in worker. On
         pathingService.enableTracking(track);
     }
 
+    /**
+     * Applies the server's full picture of the world.
+     * <p>
+     * The server sends this on every connection, reconnects included, and it describes the whole
+     * world rather than what changed. Applied onto a world that is already populated it collides
+     * with itself on every id - which is what happened on PROD on 2026-08-30 and left a player
+     * watching a factory that never finished and units that had vanished.
+     * <p>
+     * So a snapshot that arrives into a populated world replaces it rather than adding to it. The
+     * first connection is untouched: there the container is empty, nothing is cleared, and the path
+     * is exactly what it always was. Only the reconnect - the one that is broken today - behaves
+     * differently.
+     */
     public void initialSlaveSyncItemInfo(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
         this.tickCount = (long) initialSlaveSyncItemInfo.getTickCount();
+        if (!syncItemContainerService.isEmpty()) {
+            baseItemService.clearSlave();
+            resourceService.clearSlave();
+            boxService.clearSlave();
+            syncItemContainerService.clear();
+        }
         resourceService.setupSlave(initialSlaveSyncItemInfo);
         baseItemService.setupSlave(initialSlaveSyncItemInfo);
         boxService.setupSlave(initialSlaveSyncItemInfo);

@@ -90,6 +90,26 @@ public class ResourceService {
         }
     }
 
+    /**
+     * Drops every resource this client knows about, quietly, before a fresh snapshot is applied.
+     * <p>
+     * "Quietly" is the whole point: the UI is told the resource is gone the same way an exhausted
+     * one is, not the way a destroyed one is. A reconnect must look like a redraw, not like the
+     * map being blown up.
+     */
+    public void clearSlave() {
+        synchronized (resources) {
+            for (SyncResourceItem syncResourceItem : new ArrayList<>(resources.values())) {
+                try {
+                    gameLogicService.onResourceExhausted(syncResourceItem);
+                } catch (Throwable t) {
+                    logger.log(Level.WARNING, "ResourceService.clearSlave failed for resource id=" + syncResourceItem.getId() + ": " + t.getMessage(), t);
+                }
+            }
+            resources.clear();
+        }
+    }
+
     public void setupSlave(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
         if (initialSlaveSyncItemInfo.getSyncResourceItemInfos() != null) {
             for (SyncResourceItemInfo syncResourceItemInfo : initialSlaveSyncItemInfo.getSyncResourceItemInfos()) {

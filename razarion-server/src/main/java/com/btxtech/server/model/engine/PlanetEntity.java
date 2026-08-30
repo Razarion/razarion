@@ -46,6 +46,14 @@ public class PlanetEntity extends BaseEntity {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] compressedHeightMap;
+    /**
+     * SHA-256 of {@link #compressedHeightMap}, hex, as the HTTP entity tag for it. See
+     * {@link com.btxtech.server.service.ContentDigest} for why it is stored rather than computed:
+     * the blob is four megabytes and lazily fetched, and answering "has it changed?" must not have
+     * to load it. Length stated, because a truncated digest would silently match the wrong content.
+     */
+    @Column(length = 64)
+    private String heightMapDigest;
 
     public PlanetConfig toPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig()
@@ -101,6 +109,14 @@ public class PlanetEntity extends BaseEntity {
 
     public void setCompressedHeightMap(byte[] compressedHeightMap) {
         this.compressedHeightMap = compressedHeightMap;
+    }
+
+    public String getHeightMapDigest() {
+        return heightMapDigest;
+    }
+
+    public void setHeightMapDigest(String heightMapDigest) {
+        this.heightMapDigest = heightMapDigest;
     }
 
     @Override

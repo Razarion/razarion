@@ -2,6 +2,38 @@
 
 The terrain rendering system composites two layers per terrain tile: a **ground mesh** (with multi-material submeshes handling both land and underwater) and a **water surface mesh**. Together they create a seamless transition from deep water through shoreline to land.
 
+## Delivery: what the worker waits for
+
+Before the game can run, the game engine worker fetches two things and blocks on both
+(`TerrainShapeManager.lazyInit` → `NativeTerrainShapeAccess.load`):
+
+| | on the wire | cacheable |
+|---|---|---|
+| `GET /rest/terrainshape/{planetId}` | ~1.06 MB (JSON, gzipped by `server.compression`) | no — see below |
+| `GET /rest/terrainHeightMap/{planetId}` | ~3.93 MB | **yes**, conditional GET |
+
+That is the `INIT_WORKER` startup task, and after the model boot gate landed it became the wall:
+of the PROD sessions on 2026-08-30 that got their user interface up and never a running game, every
+recent one was waiting on this task.
+
+**The height map is a conditional GET.** `Cache-Control: no-cache, must-revalidate` plus an
+`ETag` — SHA-256 of the bytes, stored in `PLANET.heightMapDigest` in the same transaction as the
+blob. Unchanged is 304 and nothing on the wire; a re-uploaded map is a full 200. Stale is not a
+reachable state, which is the guarantee the blanket `no-store` in `NoCacheRestFilter` was giving
+and the reason that filter now exempts `GET /rest/terrainHeightMap/`. See
+`ContentDigest`, which the model file uses the same way.
+
+The bytes are **already gzip in the database** (`PlanetEntity.compressedHeightMap`, served with
+`Content-Encoding: gzip`), so there is nothing to win by compressing them again — only by not
+sending them twice.
+
+**The terrain shape is deliberately not cacheable.** It is computed per pod at startup from the
+planet config, the terrain objects, generated decals and bot grounds
+(`ServerTerrainShapeService`), and held in memory — never stored. A digest computed in one pod
+therefore cannot be trusted to match another's, which is the same argument that put the height map's
+digest in the database rather than in a map on the server. Making it cacheable means deriving it
+from something persisted first.
+
 ## Scene Hierarchy
 
 Each terrain tile is organized as:

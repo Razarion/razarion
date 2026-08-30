@@ -140,6 +140,47 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private static buildQueue: (() => boolean)[] = [];
   private static buildQueueScheduled = false;
 
+  // Nothing outside a tile could tell whether it still wore its green placeholder material, so
+  // "is the ground finished?" was answered by looking at the screen and guessing - which is
+  // wrong exactly when it matters, because the placeholder has disableLighting and hides every
+  // contour. Count the tiles that still owe work and let callers await the moment none do.
+  private static pendingBuilds = 0;
+  private static settleWaiters: (() => void)[] = [];
+
+  /** How many tiles have been constructed but not yet finished building. */
+  static get pendingTileBuilds(): number {
+    return BabylonTerrainTileImpl.pendingBuilds;
+  }
+
+  /** Resolves once every tile constructed so far has finished building - or been disposed. */
+  static whenBuildsSettled(): Promise<void> {
+    if (BabylonTerrainTileImpl.pendingBuilds === 0) {
+      return Promise.resolve();
+    }
+    return new Promise<void>(resolve => BabylonTerrainTileImpl.settleWaiters.push(resolve));
+  }
+
+  private static releaseIfSettled(): void {
+    if (BabylonTerrainTileImpl.pendingBuilds > 0) {
+      return;
+    }
+    const waiters = BabylonTerrainTileImpl.settleWaiters;
+    BabylonTerrainTileImpl.settleWaiters = [];
+    waiters.forEach(resolve => resolve());
+  }
+
+  private buildSettled = false;
+
+  /** Called once per tile, whether it finished building or was thrown away first. */
+  private markBuildSettled(): void {
+    if (this.buildSettled) {
+      return;
+    }
+    this.buildSettled = true;
+    BabylonTerrainTileImpl.pendingBuilds = Math.max(0, BabylonTerrainTileImpl.pendingBuilds - 1);
+    BabylonTerrainTileImpl.releaseIfSettled();
+  }
+
   private static enqueueHeavyBuild(task: () => boolean): void {
     BabylonTerrainTileImpl.buildQueue.push(task);
     BabylonTerrainTileImpl.drainBuildQueue();
@@ -167,7 +208,16 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         if (!task) {
           break;
         }
-        builtThisFrame = task();
+        try {
+          builtThisFrame = task();
+        } catch (error) {
+          // A tile that fails to build is one tile missing. Letting it out of here would skip the
+          // reschedule below and strand every tile still queued behind it - the whole map stuck on
+          // the green placeholder because one of them threw. Count the frame as spent: whatever
+          // just failed was not a no-op.
+          console.error('Terrain tile build failed', error);
+          builtThisFrame = true;
+        }
       }
       if (BabylonTerrainTileImpl.buildQueue.length > 0) {
         BabylonTerrainTileImpl.drainBuildQueue();
@@ -188,6 +238,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
               private threeJsWaterRenderService: BabylonWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
     this.groundMesh = new Mesh("Ground", rendererService.getScene());
+    BabylonTerrainTileImpl.pendingBuilds++;
 
     // Phase 1 (sync): Vertex data — needed immediately for visible ground mesh
     this.buildPhase1_VertexData();
@@ -244,6 +295,17 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     if (this.disposed) {
       return;
     }
+    try {
+      this.buildPhase2_ShoreAndMaterialInternal();
+    } catch (error) {
+      // Same reasoning as phase 3: this phase's job is to hand the tile to the next one, and the
+      // next one is what eventually settles it. A throw here means nobody ever will.
+      this.markBuildSettled();
+      throw error;
+    }
+  }
+
+  private buildPhase2_ShoreAndMaterialInternal(): void {
     const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     const yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
 
@@ -263,14 +325,27 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     if (this.disposed) {
       return false;
     }
+    try {
+      return this.buildPhase3_MaterialInternal();
+    } catch (error) {
+      // The success path hands the tile to phase 4, which is what settles it. If we never get
+      // there, this is the last chance to stop owing work - otherwise whenBuildsSettled() waits
+      // for ever on a tile that has given up.
+      this.markBuildSettled();
+      throw error;
+    }
+  }
+
+  private buildPhase3_MaterialInternal(): boolean {
     const terrainTile = this.terrainTile;
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
-    this.groundMaterial = buildGroundMaterial(this.rendererService.getScene());
-    const groundUtilityBlock = <TextureBlock>this.groundMaterial.getBlockByName("GroundUtility");
-    if (groundUtilityBlock && this.groundUtil) {
-      groundUtilityBlock.texture = new Texture(this.groundUtil.createGroundTypeTexture().toDataURL(), this.rendererService.getScene());
-      this.groundMaterial.build();
-    }
+    // The ground type texture goes into the graph before the material is built. Attaching it
+    // afterwards needs a second build(), which parallel shader compilation refuses while the
+    // first one is still running - the sampler stays unwired and the tile renders flat green.
+    const groundUtilityTexture = this.groundUtil
+      ? new Texture(this.groundUtil.createGroundTypeTexture().toDataURL(), this.rendererService.getScene())
+      : null;
+    this.groundMaterial = buildGroundMaterial(this.rendererService.getScene(), groundUtilityTexture);
     let asphaltMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(groundConfig.getAsphaltBabylonMaterialId());
 
     const multiMaterial = new MultiMaterial(`Ground ${groundConfig.getInternalName()}`, this.rendererService.getScene());
@@ -302,6 +377,17 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     if (this.disposed) {
       return;
     }
+    // In a finally: a tile that throws half way through is still a tile that will never finish,
+    // and leaving the count raised would make whenBuildsSettled() unresolvable for the life of
+    // the page - "Building ground..." for ever, in a studio where nothing is building any more.
+    try {
+      this.buildPhase4_WaterAndObjectsInternal();
+    } finally {
+      this.markBuildSettled();
+    }
+  }
+
+  private buildPhase4_WaterAndObjectsInternal(): void {
     const terrainTile = this.terrainTile;
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
 
@@ -542,6 +628,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       return;
     }
     this.disposed = true;
+    // A tile dropped mid-build owes nothing any more - without this a scene switch would leave
+    // whenBuildsSettled() waiting forever on tiles that no longer exist.
+    this.markBuildSettled();
     this.pendingModelRequests.forEach(cancel => cancel());
     this.pendingModelRequests.clear();
 

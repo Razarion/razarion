@@ -55,8 +55,12 @@ export class FirstInteractionComponent implements OnChanges {
   private static steps(funnel: InteractionFunnel): FunnelStep[] {
     return [
       {name: 'Game running', count: funnel.started, ofName: 'sessions', ofCount: funnel.started},
-      {name: 'Touched anything', count: funnel.interacted, ofName: 'game running', ofCount: funnel.started},
-      {name: 'Selected something', count: funnel.selected, ofName: 'touched anything', ofCount: funnel.interacted},
+      // Two steps where there used to be one. Reaching for the game and getting something out of
+      // it are different events, and the gap between them is the only place a control that does
+      // not answer can show up at all.
+      {name: 'Touched the field', count: funnel.touched, ofName: 'game running', ofCount: funnel.started},
+      {name: 'Got a reaction', count: funnel.interacted, ofName: 'touched the field', ofCount: funnel.touched},
+      {name: 'Selected something', count: funnel.selected, ofName: 'got a reaction', ofCount: funnel.interacted},
       {name: 'Gave an order', count: funnel.commanded, ofName: 'selected something', ofCount: funnel.selected},
       {name: 'Passed a quest', count: funnel.questPassed, ofName: 'gave an order', ofCount: funnel.commanded}
     ];

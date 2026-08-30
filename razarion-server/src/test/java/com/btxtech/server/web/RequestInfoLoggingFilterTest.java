@@ -280,15 +280,56 @@ class RequestInfoLoggingFilterTest {
         assertEquals(Boolean.FALSE, pageRequest.getButtonPressed());
     }
 
+    /**
+     * The four ways a touch on the button dies are four different repairs - a webview that steals
+     * the gesture is not a slop limit set too tight - so the letter and its measure are kept apart
+     * and kept whole.
+     */
+    @Test
+    void theExitSaysHowTheGestureDied() throws Exception {
+        call("/t.gif", "rdt_cid=abc&e=exit&d=6100&bp=1&tf=d&tm=47");
+
+        PageRequest pageRequest = saved.get(0);
+        assertEquals(Boolean.TRUE, pageRequest.getButtonPressed());
+        assertEquals("d", pageRequest.getTapFailure());
+        assertEquals(47, pageRequest.getTapFailureMeasure());
+    }
+
+    /** A touch that became a game reports no failure at all - and neither does a visit without one. */
+    @Test
+    void aGestureThatDidNotFailReportsNothing() throws Exception {
+        call("/t.gif", "rdt_cid=abc&e=exit&d=900&bp=1");
+
+        PageRequest pageRequest = saved.get(0);
+        assertNull(pageRequest.getTapFailure());
+        assertNull(pageRequest.getTapFailureMeasure());
+    }
+
+    /**
+     * These are counted by category. A letter the page never sends would become a category of its
+     * own in every report from then on, so it is dropped rather than stored.
+     */
+    @Test
+    void anInventedFailureLetterIsDropped() throws Exception {
+        call("/t.gif", "rdt_cid=abc&e=exit&d=900&bp=1&tf=x&tm=12");
+
+        assertNull(saved.get(0).getTapFailure());
+        // The measure alone says nothing without the letter, but it is bounded and harmless; what
+        // matters is that no report can be made to grow a category it was never meant to have.
+        assertEquals(12, saved.get(0).getTapFailureMeasure());
+    }
+
     /** Everything here rides on a url anyone can craft, so nothing implausible is stored. */
     @Test
     void craftedButtonMeasurementsAreDropped() throws Exception {
-        call("/t.gif", "rdt_cid=abc&e=exit&d=900&sd=4000&vp=<script>&bs=soon");
+        call("/t.gif", "rdt_cid=abc&e=exit&d=900&sd=4000&vp=<script>&bs=soon&tf=dragged&tm=-5");
 
         PageRequest pageRequest = saved.get(0);
         assertNull(pageRequest.getScrollDepth());
         assertNull(pageRequest.getViewport());
         assertNull(pageRequest.getButtonSeenMillis());
+        assertNull(pageRequest.getTapFailure());
+        assertNull(pageRequest.getTapFailureMeasure());
     }
 
     /**

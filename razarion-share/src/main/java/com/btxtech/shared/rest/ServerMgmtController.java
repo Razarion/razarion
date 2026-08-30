@@ -19,8 +19,4 @@ public interface ServerMgmtController {
         // Enum as return value not working. Not proper JSON. Too many quotation marks.
     String getServerStatus();
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("interfaceVersion")
-    String getInterfaceVersion();
 }

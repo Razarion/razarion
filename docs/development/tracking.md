@@ -42,6 +42,37 @@ with the Controls tab), *Daily* on the server (`TrackingDevice.of()`); the two a
 they answer the same question the same way. `UNKNOWN` is a value of its own rather than a bucket
 folded into the desktops: it means the records carry no user agent at all.
 
+### The Facebook app fetching for itself
+
+A request whose user agent is the app's own token with no browser string in front of it —
+
+```
+[FBAN/FB4A;FBAV/575.1.0.55.73;FBDM/{density=2.8125,width=1080,height=2340};FBLC/en_GB;]
+```
+
+— is the Facebook app warming a link, not a browser showing the page to anybody. Over seven days of
+PROD, 952 of these produced **no play click, no exit event, no game page and no client start**, and
+not one was ever reported visible. A real in-app browser is the opposite case and must be kept: it
+sends the whole Mozilla string and *appends* the token. What separates them is whether the token
+stands alone.
+
+Two things follow, and they are separate:
+
+- **Device.** The bare token contains none of the words the classification looks for, so 937 of
+  those 952 counted as desktops — while `FBAN/FB4A` is Facebook for Android and `FBDM` states a
+  1080×2340 screen. Both classifiers now read the app token. Measured effect on seven days: the
+  desktop landing conversion went from 3.65% to **16.54%**, because the bucket had been four fifths
+  machine.
+- **Denominator.** `TrackingDevice.isAppFetch()` (server) and `isAppFetch()` (frontend) keep these
+  rows out of the funnel — 15% of all `HOME` records. They are kept in the collection, because how
+  much of this there is, is worth reading; they are simply not a population any rate is measured
+  against.
+
+A caveat worth stating, because it decides which past numbers were wrong: the app prefetches the
+link with **the same click id** the person then arrives with. So a rate counted per click id was
+never inflated — the prefetch collapses into the same visitor. Rates counted per http session, and
+every device split, were.
+
 *Daily* answers the platform question with the same three steps
 (`TrackingPlatforms`, shared with the history), counts a game visit from the startup records as the
 funnel does, and reports as many days back as the table asks for — 10 by default, 90 at most.
@@ -77,6 +108,36 @@ that POST so the static resource handler (GET only) does not reject it. The reco
 in `RequestInfoLoggingFilter` for both methods. The beacons only run when the landing page carries
 a query string, exactly like the pixel, so all the counts describe the same population.
 
+### What the exit event carries
+
+An exit that says only "they left after nine seconds" cannot be acted on. These six say what became
+of the call to action, and they ride on the same pixel URL, so they cost no extra request. All of
+them are attacker-controlled, so an implausible value is dropped rather than stored — a single
+crafted visit must not be able to move a median or invent a category.
+
+| Parameter | Stored field | What it answers |
+|-----------|--------------|-----------------|
+| `bs` | `buttonSeenMillis` | when the Play button was first half on screen; absent means it never was |
+| `bp` | `buttonPressed` | a finger landed on the button. Absent on an exit means none did — a real statement, not a missing measurement |
+| `sd` | `scrollDepth` | how far down they got, in percent |
+| `vp` | `viewport` | the viewport on arrival; the height an app's own browser leaves over is not in the user agent |
+| `tf` | `tapFailure` | why the last touch on the button did not become a game — see below |
+| `tm` | `tapFailureMeasure` | pixels for `d`, milliseconds for `c`, `h` and `o` |
+
+`bp` without a `HOME_PLAY_CLICKED` of its own is a touch that went nowhere. That happens often
+enough on these visitors to be the largest single loss on the page, and the four ways it happens
+call for four different repairs, which is what `tf` separates:
+
+| `tf` | The gesture | What it would mean |
+|------|-------------|--------------------|
+| `c` | the browser took it away before the finger came up | the webview claimed it for a scroll or a swipe; cancelled within ~50 ms is a scroll starting under a finger that never meant to press |
+| `d` | the finger travelled further than `TAP_SLOP` | with `tm` near the limit the limit is too tight; with `tm` large it was a swipe, not a tap |
+| `h` | it rested longer than `TAP_MILLIS` | a long press, or a page too busy to respond |
+| `o` | it never came up at all | they left mid-press, or the event never arrived |
+
+A touch that reaches the game clears `tf` again, however it got there — a gesture the pointer
+handlers had given up on before a native `click` arrived is not a failure.
+
 `userAgent` and `referer` are stored for every page request. Without them a visit that never
 continues cannot be told apart from a crawler or an ad network's click verification, both of which
 fetch the pixel just like a browser.
@@ -90,6 +151,7 @@ fetch the pixel just like a browser.
 | `utm_medium` | `utmMedium` | Campaign medium |
 | `rdt_cid` | `rdtCid` | Reddit click ID |
 | `twclid` | `twclid` | X (Twitter) click ID |
+| `fbclid` | `fbclid` | Meta (Facebook/Instagram) click ID |
 | `e` | *(picks the `PageRequestType`)* | Landing page event, see below |
 | `d` | `dwellMillis` | Milliseconds the landing page was open, on the exit event only |
 | *(everything)* | `rawQueryString` | The complete raw query string, so any additional/unknown parameter is preserved |
@@ -133,9 +195,39 @@ http://localhost:8080/?utm_campaign=x_launch&utm_source=x&utm_medium=cpc&twclid=
 # First Interaction — the Controls tab
 
 `first_interaction` records the first time a player used each control in a game session
-(`CAMERA_PAN_TOUCH`, `CAMERA_PINCH`, `CAMERA_KEYBOARD`, `CAMERA_WHEEL`, `SELECT`, `COMMAND`).
-Reported once per session and kind by `FirstInteractionTrackerService`, stored by
-`FirstInteractionService` with a 180-day TTL — the only tracking collection that expires.
+(`POINTER_DOWN`, `PLACER_SHOWN`, `PLACER_REJECTED`, `PLACER_CONFIRMED`, `CAMERA_PAN_TOUCH`,
+`CAMERA_PINCH`, `CAMERA_KEYBOARD`, `CAMERA_WHEEL`, `SELECT`, `COMMAND`). Reported once per session and kind by `FirstInteractionTrackerService`,
+stored by `FirstInteractionService` with a 180-day TTL — the only tracking collection that
+expires. `kind` is a free string on the server, so a new one needs no server change.
+
+### Three classes of kind
+
+Every share on the Controls tab depends on keeping these apart:
+
+| Class | Kinds | Meaning |
+|---|---|---|
+| not the player | `PLACER_SHOWN` | the *game* did something — it asked for a base |
+| reached, no result | `POINTER_DOWN`, `PLACER_REJECTED` | the player reached and got nothing |
+| achievement | everything else | it worked |
+
+A session in which only `PLACER_SHOWN` happened is a session in which the player did nothing, and
+still reads as **silent**. Getting that wrong would send the one number this view was built for to
+zero on the day the event shipped.
+
+**Why the placer events exist.** Placing the starting base is the first thing the game asks of
+anybody. Measured over 14 days on PROD: of 338 users in the History tab, 160 never built a base —
+95 of them had a running game and did nothing, and **63 of those 95 had reported no interaction of
+any kind**. That number cannot say whether they were shown the placer and ignored it, never got
+one, or tapped a spot that was refused. Those are three different repairs, and these three events
+separate them.
+
+**`POINTER_DOWN` is the only kind that is not an outcome.** Every other kind records something
+that worked — a camera that moved, a unit that was picked, an order that went out — so a finger
+that touches the screen and gets no answer leaves no trace at all. Seven days of PROD showed the
+paid mobile cohort at 37 sessions with a running game, one interaction between them and no base;
+that number cannot tell *never reached for it* from *reached for it and the game did not
+respond*, and those are opposite repairs. It is reported for a mouse as well as a finger: a kind
+that exists on only one device cannot be checked against the other.
 
 **Absence is the signal.** The funnel counts how many stop before the first quest but cannot say
 whether they could steer at all. A session that never reports `CAMERA_PAN_TOUCH` never found the
@@ -146,7 +238,10 @@ exactly the players the collection exists to find.
 The **Controls** tab in the backend view shows, per device class:
 
 - one row per control: sessions, share of the running games, median time to first use;
-- a nested funnel: game running → touched anything → selected → gave an order → passed a quest.
+- a nested funnel: game running → **touched the field** → **got a reaction** → selected → gave
+  an order → passed a quest. The first two steps used to be one. `touchedWithoutEffect` — the
+  gap between them — is a player who reached for the game and got nothing, and it is shown next
+  to `silent`, who never reached at all.
 
 ## Why the funnel nests and why the camera is not a step
 

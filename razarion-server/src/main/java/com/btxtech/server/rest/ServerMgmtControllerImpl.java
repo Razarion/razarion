@@ -1,6 +1,5 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.shared.Constants;
 import com.btxtech.shared.rest.ServerMgmtController;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +17,6 @@ public class ServerMgmtControllerImpl implements ServerMgmtController {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    @GetMapping(value = "interfaceVersion", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String getInterfaceVersion() {
-        return String.valueOf(Constants.INTERFACE_VERSION);
-    }
 
 
 }

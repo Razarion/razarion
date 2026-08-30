@@ -92,8 +92,28 @@ export class TerrainLoaderService {
   private currentTiles: BabylonTerrainTile[] = [];
   private terrainTypeServiceReady = false;
 
+  // Per-planet data that cannot change while the studio is open - it only ever reads terrain.
+  // The heightmap is 50 MB for a 5120x5120 planet and was re-fetched on every scene switch,
+  // which is what made opening a scene take minutes instead of seconds. Promises rather than
+  // values, so two scenes opened in quick succession share one request. Reload the page to
+  // pick up a planet that was edited elsewhere.
+  private readonly heightmapCache = new Map<number, Promise<ArrayBuffer>>();
+  private readonly terrainShapeCache = new Map<number, Promise<NativeTerrainShape>>();
+
   async listPlanets() {
     return this.planetClient.getObjectNameIds();
+  }
+
+  /**
+   * Resolves once the tiles built for the current terrain wear their real ground material.
+   *
+   * loadTerrain() returns as soon as the tiles are in the scene, but each one still shows the
+   * flat placeholder until its shader is compiled - and the placeholder has disableLighting,
+   * so it hides every contour and looks like perfectly ordinary flat ground. Without this,
+   * "is the ground finished?" can only be answered by staring at the viewport.
+   */
+  whenTerrainReady(): Promise<void> {
+    return BabylonTerrainTileImpl.whenBuildsSettled();
   }
 
   /**
@@ -211,16 +231,29 @@ export class TerrainLoaderService {
     return this.planetClient.read(planetId);
   }
 
-  private async fetchHeightmap(planetId: number): Promise<ArrayBuffer> {
-    return await firstValueFrom(
-      this.httpClient.get(`/rest/terrainHeightMap/${planetId}`, {responseType: 'arraybuffer'})
-    );
+  private fetchHeightmap(planetId: number): Promise<ArrayBuffer> {
+    let pending = this.heightmapCache.get(planetId);
+    if (!pending) {
+      pending = firstValueFrom(
+        this.httpClient.get(`/rest/terrainHeightMap/${planetId}`, {responseType: 'arraybuffer'})
+      );
+      // A failed request must not be remembered as the answer for the rest of the session.
+      pending.catch(() => this.heightmapCache.delete(planetId));
+      this.heightmapCache.set(planetId, pending);
+    }
+    return pending;
   }
 
-  private async fetchTerrainShape(planetId: number): Promise<NativeTerrainShape> {
-    return await firstValueFrom(
-      this.httpClient.get<NativeTerrainShape>(`/rest/terrainshape/${planetId}`)
-    );
+  private fetchTerrainShape(planetId: number): Promise<NativeTerrainShape> {
+    let pending = this.terrainShapeCache.get(planetId);
+    if (!pending) {
+      pending = firstValueFrom(
+        this.httpClient.get<NativeTerrainShape>(`/rest/terrainshape/${planetId}`)
+      );
+      pending.catch(() => this.terrainShapeCache.delete(planetId));
+      this.terrainShapeCache.set(planetId, pending);
+    }
+    return pending;
   }
 }
 

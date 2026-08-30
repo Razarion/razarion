@@ -71,8 +71,34 @@ export class RenderTelemetry {
 
   /** Matches PlanetServiceTracker's 100-tick dump, so both lines line up in the log by timestamp. */
   private static readonly PERIOD_MS = 10_000;
-  /** Below this a period says nothing: a tab that just became visible, or a stalled first second. */
+  /**
+   * The first period is short, and it is short for one cohort: a mobile player who reaches a
+   * running game stays a median of 22 seconds and then leaves. At ten seconds a period they
+   * contribute one window at best, and the visibility reset usually takes even that - which is why
+   * seven days of PROD telemetry reached almost no mobile session at all, exactly the sessions the
+   * question is about. Three seconds lands a first line before they go.
+   * <p>
+   * Only the first: once a session has said something, ten seconds is the better window and the
+   * lines stay comparable with everything measured so far. {@code seq=1} marks the short one.
+   */
+  private static readonly FIRST_PERIOD_MS = 3_000;
+  /**
+   * Below this a period says nothing - too few samples for a percentile to mean anything.
+   * <p>
+   * It now ends the period rather than discarding it: a phone at four frames a second reached
+   * sixteen frames in ten seconds, failed this bar and reported nothing at all, session after
+   * session. The device that cannot fill the window is the device the window was opened for. The
+   * window stays open until it has enough, and {@code periodS} on the line says how long that took.
+   */
   private static readonly MIN_FRAMES = 20;
+  /**
+   * The same bar for the short first period, scaled to it - and scaled by the worst case rather
+   * than the typical one. A phone at five frames a second manages fifteen frames in three seconds
+   * and would fail the normal bar, and a phone at five frames a second is precisely the device
+   * this is trying to see. Eight frames give a usable median; they do not give a usable p99, and
+   * a reader has {@code frames} on the line to tell the two apart.
+   */
+  private static readonly FIRST_MIN_FRAMES = 8;
   /** A frame this long is a visible hitch rather than merely a slow frame. */
   private static readonly LONG_FRAME_MS = [50, 100, 250];
   /** Keep the GPU string from turning the log line into a paragraph. */
@@ -127,7 +153,10 @@ export class RenderTelemetry {
     this.renderMs.push(renderMs);
     this.drawCalls.push(drawCalls);
 
-    if (now - periodStart >= RenderTelemetry.PERIOD_MS) {
+    // Both conditions, not either: time alone would turn two frames into a percentile, and frames
+    // alone would turn a burst into a period. A device that meets one of them late meets the pair
+    // late, which is a longer period - never a lost one.
+    if (now - periodStart >= this.periodLength() && this.frameMs.length >= this.minFrames()) {
       this.emit(now, periodStart);
     }
   }
@@ -147,10 +176,29 @@ export class RenderTelemetry {
     this.clientTickMs.push(clientTickMs);
   }
 
+  /**
+   * How long the window being filled runs for. Keyed on what has actually been reported rather
+   * than on how many windows were attempted: a first period thrown away for too few frames leaves
+   * this short, so the next attempt is short too. A session that cannot fill three seconds will
+   * not fill ten.
+   */
+  private periodLength(): number {
+    return this.emitted === 0 ? RenderTelemetry.FIRST_PERIOD_MS : RenderTelemetry.PERIOD_MS;
+  }
+
+  private minFrames(): number {
+    return this.emitted === 0 ? RenderTelemetry.FIRST_MIN_FRAMES : RenderTelemetry.MIN_FRAMES;
+  }
+
   private emit(now: number, periodStart: number): void {
     const periodMs = now - periodStart;
     const frames = this.frameMs.length;
-    if (frames < RenderTelemetry.MIN_FRAMES) {
+    // A tab that was in the background for its whole life never fires visibilitychange, so the
+    // reset that handles a tab being switched away never runs for it. Its frames are throttled to
+    // about 1 Hz and would arrive as a device drawing one frame a second - which, now that a slow
+    // period is no longer thrown away for being slow, is indistinguishable from the phones this
+    // exists to find.
+    if (document.visibilityState === 'hidden') {
       this.reset();
       return;
     }

@@ -42,9 +42,14 @@ function color3Input(name: string, r: number, g: number, b_: number): InputBlock
 
 /**
  * Builds the Ground NodeMaterial entirely in code.
- * The GroundUtility texture must be set externally after creation via getBlockByName("GroundUtility").
+ *
+ * The GroundUtility texture is handed in rather than attached afterwards. build() compiles
+ * the graph as it stands at that moment, and the renderer runs with parallel shader
+ * compilation - so a follow-up build() meant to pick up a late texture is refused outright
+ * ("Build is already in progress") and the material keeps a sampler that was never wired.
+ * The tile then renders a flat colour instead of ground.
  */
-export function buildGroundMaterial(scene: Scene): NodeMaterial {
+export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture | null): NodeMaterial {
   const mat = new NodeMaterial("Ground", scene);
 
   // ========== Vertex attributes ==========
@@ -121,10 +126,10 @@ export function buildGroundMaterial(scene: Scene): NodeMaterial {
 
 
 
-  // ========== GroundUtility texture (set externally) ==========
+  // ========== GroundUtility texture ==========
   const groundUtility = new TextureBlock("GroundUtility");
   uv.output.connectTo(groundUtility.uv);
-  // Texture set at runtime by BabylonTerrainTileImpl
+  groundUtility.texture = groundUtilityTexture;
 
   // Mountain factor with noise for organic edge
   const mountainBlendRaw = new ScaleBlock("Scale mountain blend");

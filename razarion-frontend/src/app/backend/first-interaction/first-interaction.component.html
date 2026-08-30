@@ -35,6 +35,9 @@
         <p class="interaction-note pb-2">
           {{ device.silent }} of them
           ({{ percent(device.silent, device.started) }}) never reported a single interaction.
+          {{ device.touchedWithoutEffect }}
+          ({{ percent(device.touchedWithoutEffect, device.started) }}) touched the game field and
+          got nothing out of it &ndash; they reached for the game and it did not answer.
         </p>
 
         <p-table [value]="device.rows">

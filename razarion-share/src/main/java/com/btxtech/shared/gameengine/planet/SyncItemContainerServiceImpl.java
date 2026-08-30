@@ -85,6 +85,14 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
         this.syncBaseItemProvider = syncBaseItemProvider;
     }
 
+    /** Whether the container holds anything. Read before a slave snapshot to tell a reconnect
+     *  from a first connect - see PlanetService#initialSlaveSyncItemInfo. */
+    public boolean isEmpty() {
+        synchronized (items) {
+            return items.isEmpty();
+        }
+    }
+
     public void clear() {
         items.clear();
         cells.clear();
@@ -269,24 +277,43 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
         return syncBoxItem;
     }
 
+    /**
+     * Refuses a taken id without touching what is already there.
+     * <p>
+     * The order matters more than it looks. Putting first and checking afterwards means the throw
+     * does not prevent the registration - it happens after the good item has already been replaced
+     * by the new one, which at this point has no physical area yet: every caller sets that only
+     * after this method returns, and it never returns. On the master the ids are generated here so
+     * a collision cannot happen, but the mistake is the same one and is corrected in both places.
+     */
     private void initAndAdd(ItemType itemType, SyncItem syncItem) {
         synchronized (items) {
             syncItem.init(lastItemId, itemType);
-            SyncItem old = items.put(lastItemId, syncItem);
+            SyncItem old = items.get(lastItemId);
             if (old != null) {
                 throw new IllegalArgumentException("SyncItemContainerService.initAndAdd(). Id is not free. New: " + syncItem + " old: " + old);
             }
+            items.put(lastItemId, syncItem);
             lastItemId++;
         }
     }
 
+    /**
+     * The same, for ids that come from the server rather than from here - where a collision is not
+     * hypothetical. PROD, 2026-08-30: a phone's game socket closed with 1006, the server sent the
+     * full snapshot on reconnect, and sixteen ids collided. Each collision replaced a positioned
+     * item with a positionless one and then threw; the callers log and carry on, so the container
+     * kept the wreckage and onPostTick threw for every item, every tick, until the player reloaded.
+     * The factory they were building never finished and their units vanished from the screen.
+     */
     private void initAndAddSlave(ItemType itemType, int syncItemId, SyncItem syncItem) {
         synchronized (items) {
             syncItem.init(syncItemId, itemType);
-            SyncItem old = items.put(syncItemId, syncItem);
+            SyncItem old = items.get(syncItemId);
             if (old != null) {
                 throw new IllegalArgumentException("SyncItemContainerService.initAndAddSlave(). Id is not free. New: " + syncItem + " old: " + old);
             }
+            items.put(syncItemId, syncItem);
             lastItemId = Math.max(lastItemId + 1, syncItemId + 1);
         }
     }

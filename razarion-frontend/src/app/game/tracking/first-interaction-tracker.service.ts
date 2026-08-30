@@ -14,6 +14,37 @@ import {TypescriptGenerator} from '../../backend/typescript-generator';
  * question and needs days of data, not the weeks a rate comparison needs.
  */
 export type InteractionKind =
+/**
+ * A pointer went down on the game field, before anything has been decided about what it was. The
+ * only kind here that is not an outcome.
+ * <p>
+ * Every other kind records something that worked, so a finger that touches the screen and gets no
+ * answer leaves no trace at all - and the paid mobile cohort produces exactly that: 37 sessions
+ * with a running game in seven days, one interaction between them, no base. That number cannot
+ * tell "never reached for it" from "reached for it and the game did not respond", and those are
+ * opposite repairs. Against this it can.
+ * <p>
+ * Reported for a mouse as well as a finger. The question is mobile, but a kind that exists only on
+ * one device cannot be checked against the other.
+ */
+  | 'POINTER_DOWN'
+/**
+ * The base placer appeared on screen. Not a player action at all - the only kind here that the
+ * player did not cause - and it is here because the question it answers cannot be asked without it.
+ * <p>
+ * Placing the starting base is the first thing the game asks of anybody, and 63 of the 95 players
+ * who reached a running game and built nothing had reported no interaction of any kind. That number
+ * cannot say whether they were shown the placer and ignored it, or never got one.
+ */
+  | 'PLACER_SHOWN'
+/**
+ * The player tapped a spot the placer refused - occupied ground, wrong terrain, an enemy too near,
+ * outside the allowed area. They reached for the one thing the game wants from them and were told
+ * no, which is a different failure from never reaching at all and needs a different repair.
+ */
+  | 'PLACER_REJECTED'
+/** The placement went through. The base exists from here on. */
+  | 'PLACER_CONFIRMED'
 /** The camera kinds name the input, not the effect. "The camera moved" is true on a desktop too
  *  and always has been, so it cannot answer whether the touch gesture was discovered. */
   | 'CAMERA_PAN_TOUCH'
