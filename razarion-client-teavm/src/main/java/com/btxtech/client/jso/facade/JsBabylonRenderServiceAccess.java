@@ -178,6 +178,11 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
     }
 
     @Override
+    public void reportEngineError(String reason) {
+        callMethod1S(js, "reportEngineError", reason);
+    }
+
+    @Override
     public void onGameEngineTick(double clientTickMs) {
         callMethod1D(js, "onGameEngineTick", clientTickMs);
     }

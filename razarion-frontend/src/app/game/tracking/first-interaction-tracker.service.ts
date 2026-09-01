@@ -29,6 +29,31 @@ export type InteractionKind =
  */
   | 'POINTER_DOWN'
 /**
+ * A pointer went down anywhere on the page, seen from the window in the capture phase rather than
+ * from the canvas.
+ * <p>
+ * The pair POINTER_DOWN / POINTER_DOWN_PAGE is the point: the second without the first means the
+ * touch arrived and something else took it, and neither means the browser never delivered it. See
+ * {@link PagePointerProbe}, which carries the landing site in the detail.
+ */
+  | 'POINTER_DOWN_PAGE'
+/**
+ * Which build of the client the browser is running, as the bundle's file name. Not a player action
+ * at all - see {@link clientBuildStamp} for why a deploy is not proof that anybody is running it.
+ */
+  | 'CLIENT_BUILD'
+/**
+ * The running game engine hit something it could not carry out. Not a player action, and the only
+ * kind here that is a defect rather than an observation.
+ * <p>
+ * It exists because the engine's own failures were console-only, and on a phone in an in-app
+ * browser there is no console. The Meta cohort renders terrain, resources and the bot ground area
+ * but never a single unit, building or bot - and the tick stream, which is the one channel that
+ * carries those, answers "could not build a tick" in silence when it fails. The detail names what
+ * failed.
+ */
+  | 'ENGINE_ERROR'
+/**
  * The base placer appeared on screen. Not a player action at all - the only kind here that the
  * player did not cause - and it is here because the question it answers cannot be asked without it.
  * <p>
@@ -43,6 +68,20 @@ export type InteractionKind =
  * no, which is a different failure from never reaching at all and needs a different repair.
  */
   | 'PLACER_REJECTED'
+/**
+ * The placer opened while the terrain under the screen centre was not there yet, so it had to be
+ * put down on a position computed from the camera rather than picked off the ground.
+ * <p>
+ * Not a player action, and not in itself a failure - the placer is on screen and usable. It is
+ * reported because the state used to be completely silent, and while it was, it cost every base in
+ * the Meta webview: nothing positioned the placer at all back then, so it stood at the world origin
+ * with its hint bubble attached to it, off screen, retrying once a second forever. Three sessions
+ * reported PLACER_SHOWN, waited seventeen to fifty seconds and left without one finger reaching the
+ * canvas.
+ * <p>
+ * Reported once per session like every other kind, though the condition is re-checked each second.
+ */
+  | 'PLACER_NO_TERRAIN'
 /** The placement went through. The base exists from here on. */
   | 'PLACER_CONFIRMED'
 /** The camera kinds name the input, not the effect. "The camera moved" is true on a desktop too
@@ -65,22 +104,40 @@ export type InteractionKind =
 export class FirstInteractionTrackerService {
   private readonly trackerControllerImplClient: TrackerControllerImplClient;
   /**
-   * Kinds already sent for this page. The camera moves on every frame while a finger is down, so
-   * reporting each occurrence would be a firehose - and every question asked of this data is
-   * "did it happen at all, and how long did it take".
+   * What has already been sent for this page: a kind on its own, or a kind and its detail where
+   * there is one. The camera moves on every frame while a finger is down, so reporting each
+   * occurrence would be a firehose - and every question asked of the interaction kinds is "did it
+   * happen at all, and how long did it take".
+   * <p>
+   * Keying on the detail as well exists for ENGINE_ERROR, where the reasons differ and the second
+   * one is not a repeat of the first. {@link #MAX_PER_KIND} keeps that from becoming the firehose
+   * this set was built to prevent: a broken tick repeats every tick, and after a handful of
+   * distinct reasons nothing new is being learned.
    */
-  private readonly reported = new Set<InteractionKind>();
+  private readonly reported = new Set<string>();
+  private readonly countPerKind = new Map<InteractionKind, number>();
+  private static readonly MAX_PER_KIND = 5;
 
   constructor(httpClient: HttpClient) {
     this.trackerControllerImplClient = new TrackerControllerImplClient(
       TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
 
-  public report(kind: InteractionKind): void {
-    if (this.reported.has(kind)) {
+  /**
+   * @param detail optional `name=value` pairs describing the circumstances, for the kinds whose
+   *        existence is not the whole answer. See {@link FirstInteractionJson#detail}.
+   */
+  public report(kind: InteractionKind, detail?: string): void {
+    const key = detail ? kind + '|' + detail : kind;
+    if (this.reported.has(key)) {
       return;
     }
-    this.reported.add(kind);
+    const seen = this.countPerKind.get(kind) ?? 0;
+    if (seen >= FirstInteractionTrackerService.MAX_PER_KIND) {
+      return;
+    }
+    this.reported.add(key);
+    this.countPerKind.set(kind, seen + 1);
     const global = window as any;
     const gameSessionUuid = global.RAZ_gameSessionUuid;
     if (!gameSessionUuid) {
@@ -92,6 +149,7 @@ export class FirstInteractionTrackerService {
     this.trackerControllerImplClient.firstInteraction({
       gameSessionUuid,
       kind,
+      detail: detail ?? null,
       millisSincePageLoad: pageLoadedAt ? Date.now() - pageLoadedAt : null
     } as unknown as FirstInteractionJson)
       // Telemetry must never surface as a broken game.

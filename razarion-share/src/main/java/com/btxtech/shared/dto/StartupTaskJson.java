@@ -22,6 +22,13 @@ public class StartupTaskJson {
      */
     private String userAgent;
     /**
+     * What the browser can do, as {@code name=value} pairs - wasm, wasmgc, webgl2, coi, sab, mem,
+     * cores. Sent with PAGE_LOADED only, from the inline script in index.html, so it is there even
+     * for the sessions that never load anything else. See that script for why it is always
+     * reported rather than only when something is missing.
+     */
+    private String capabilities;
+    /**
      * Where the browser says it came from, straight from document.referrer.
      * <p>
      * Worth something only for a visitor who opened the game directly. "Play Now" is a navigation
@@ -73,6 +80,14 @@ public class StartupTaskJson {
 
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+    }
+
+    public String getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(String capabilities) {
+        this.capabilities = capabilities;
     }
 
     public String getGameSessionUuid() {
@@ -220,6 +235,11 @@ public class StartupTaskJson {
 
     public StartupTaskJson userAgent(String userAgent) {
         setUserAgent(userAgent);
+        return this;
+    }
+
+    public StartupTaskJson capabilities(String capabilities) {
+        setCapabilities(capabilities);
         return this;
     }
 

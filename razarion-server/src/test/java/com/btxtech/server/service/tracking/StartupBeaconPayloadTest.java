@@ -25,6 +25,48 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class StartupBeaconPayloadTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * The capability line the page measures before anything else loads.
+     *
+     * Half of the sessions from the Meta in-app browser stop at PAGE_LOADED, and the standing
+     * explanation was that the embedded webview cannot carry the client. Nothing in the data said
+     * so either way, because nothing asked. It is reported on every session, not only when
+     * something is missing: a field written only on failure cannot tell "everything was fine" from
+     * "the check never ran", which is precisely what made WASM_LOAD unreadable.
+     */
+    @Test
+    void theBrowsersCapabilitiesAreRead() throws IOException {
+        String body = """
+                {"gameSessionUuid":"PGABC123","taskEnum":"PAGE_LOADED","startTime":1753430000000,
+                 "duration":0,"userAgent":"Mozilla/5.0 (Linux; Android 10; K) [FBAV/575.0]",
+                 "capabilities":"wasm=1,wasmgc=1,webgl2=1,coi=1,sab=1,mem=4,cores=8","error":null}""";
+
+        StartupTaskJson startupTaskJson = objectMapper.readValue(body, StartupTaskJson.class);
+
+        assertEquals("wasm=1,wasmgc=1,webgl2=1,coi=1,sab=1,mem=4,cores=8",
+                startupTaskJson.getCapabilities());
+    }
+
+    /** A browser that cannot run the client says so in the same line, rather than by silence. */
+    @Test
+    void aMissingCapabilityIsNamed() throws IOException {
+        String body = """
+                {"gameSessionUuid":"PGABC123","taskEnum":"PAGE_LOADED","startTime":1753430000000,
+                 "duration":0,"capabilities":"wasm=1,wasmgc=0,webgl2=1,coi=0,sab=0,mem=2,cores=4"}""";
+
+        assertEquals("wasm=1,wasmgc=0,webgl2=1,coi=0,sab=0,mem=2,cores=4",
+                objectMapper.readValue(body, StartupTaskJson.class).getCapabilities());
+    }
+
+    /** An older page, or a beacon that failed to measure, sends none - and that must stay null. */
+    @Test
+    void aBeaconWithoutCapabilitiesIsNotInvented() throws IOException {
+        String body = """
+                {"gameSessionUuid":"PGABC123","taskEnum":"PAGE_LOADED","startTime":1753430000000,"duration":0}""";
+
+        assertNull(objectMapper.readValue(body, StartupTaskJson.class).getCapabilities());
+    }
+
     /** What the page posts to /rest/tracker/startupTask as soon as it has loaded. */
     @Test
     void pageLoadedTaskIsRead() throws IOException {

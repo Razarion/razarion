@@ -76,6 +76,10 @@ public class BabylonRendererService {
         babylonRenderServiceAccess.disposeOutOfViewItem(id);
     }
 
+    public void reportEngineError(String reason) {
+        babylonRenderServiceAccess.reportEngineError(reason);
+    }
+
     public void onGameEngineTick(double clientTickMs) {
         babylonRenderServiceAccess.onGameEngineTick(clientTickMs);
     }

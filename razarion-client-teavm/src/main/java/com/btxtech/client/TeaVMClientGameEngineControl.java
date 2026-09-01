@@ -1,6 +1,8 @@
 package com.btxtech.client;
 
 import com.btxtech.client.jso.JsConsole;
+import com.btxtech.client.jso.JsURLSearchParams;
+import com.btxtech.client.jso.JsWindow;
 import com.btxtech.client.jso.JsWorker;
 import com.btxtech.client.jso.SharedTickBufferReader;
 import com.btxtech.shared.CommonUrl;
@@ -75,19 +77,60 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
             worker = JsWorker.create(CommonUrl.getWorkerScriptUrl());
             worker.setOnMessage(evt -> safeWasmCall(() -> {
                 JSObject data = evt.getData();
-                GameEngineControlPackage controlPackage = TeaVMClientMarshaller.deMarshall(data);
+                GameEngineControlPackage controlPackage;
+                try {
+                    controlPackage = TeaVMClientMarshaller.deMarshall(data);
+                } catch (Throwable t) {
+                    // The session of 2026-08-31 reported two traps, and only the second carried a
+                    // command - because this step runs before there is a command to name.
+                    reportEngineErrorToServer("deMarshall: " + t.getMessage());
+                    throw t;
+                }
                 if (controlPackage.getCommand() == GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED
                         || controlPackage.getCommand() == GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED_NO_BASE) {
                     initialSyncComplete = true;
                 }
-                dispatch(controlPackage);
+                /*
+                 * "wasm trap: dereferencing a null pointer" is what the Meta cohort reported on
+                 * 2026-08-31, 449ms after RUN_GAME, and a trap here stops the tick pull loop before
+                 * it can ask for the next tick - which is why that session rendered terrain, moved
+                 * its camera, and never showed a unit.
+                 *
+                 * The message alone does not say which handler died, and there is no stack. The
+                 * command is the one piece of context that is free to carry, so it is carried.
+                 * Rethrown so nothing about the existing behaviour changes: the JS catch above
+                 * still logs it, this only adds a name to the report.
+                 */
+                try {
+                    dispatch(controlPackage);
+                } catch (Throwable t) {
+                    reportEngineErrorToServer("dispatch " + controlPackage.getCommand()
+                            + ": " + t.getMessage());
+                    /*
+                     * Without a SharedArrayBuffer the tick arrives as a request/response pull loop,
+                     * and the request for the next one is the last thing onTickUpdate does. A throw
+                     * on the way there is therefore not one lost tick but the end of the stream:
+                     * units, buildings and bots never update again while the game goes on rendering
+                     * terrain and moving its camera, which is what the Meta cohort has been looking
+                     * at. One tick nobody can apply must not cost all the following ones.
+                     *
+                     * The reason is reported above either way, so this cannot quietly paper over a
+                     * defect - it only stops that defect from being permanent.
+                     */
+                    if (controlPackage.getCommand() == GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE) {
+                        sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
+                    }
+                    throw t;
+                }
             }));
             worker.setOnError(evt -> {
                 // The ErrorEvent carries message/filename/lineno and often the Error with its stack.
                 // Logging only the bare sentence turned every uncaught exception in the game engine
                 // into an anonymous one: 111 of these in a single session on 2026-08-01, none of them
                 // diagnosable afterwards.
-                JsConsole.error("TeaVMClientGameEngineControl: worker error: " + describeErrorEvent(evt));
+                String described = describeErrorEvent(evt);
+                JsConsole.error("TeaVMClientGameEngineControl: worker error: " + described);
+                reportEngineErrorToServer("worker error: " + described);
             });
         } catch (Throwable t) {
             this.deferredStartup.failed(t);
@@ -97,8 +140,8 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
 
     private void initSharedTickBuffer() {
         try {
-            if (false) {
-                JsConsole.log("[CLIENT-WASM] SharedBuffer disabled for debugging, using postMessage fallback");
+            if (isSharedBufferDisabledByUrl()) {
+                JsConsole.log("[CLIENT-WASM] ?nosab in the URL, using postMessage for tick data");
                 return;
             }
             if (!isCrossOriginIsolated()) {
@@ -211,6 +254,14 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
         int itemCount = jsArrayGetInt(array, TICK_ITEM_COUNT);
         result.resources = jsArrayGetInt(array, TICK_RESOURCES);
         result.houseSpace = jsArrayGetInt(array, TICK_HOUSE_SPACE);
+
+        // An empty tick is a tick with no items, not a tick with no array. Leaving the field null
+        // here is what emptied the game without a SharedArrayBuffer: onTickUpdate hands it
+        // straight to BaseItemUiService.updateSyncBaseItems, which stores it, and every later
+        // read walks over null and traps. A player who has not placed a base yet owns nothing, so
+        // the very first tick is the empty one - which is why this only ever showed up in the
+        // in-app browsers, and there always.
+        result.updatedNativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
 
         // Decode updated items from TypedArrays
         if (itemCount > 0) {
@@ -457,6 +508,39 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
         return sb.toString();
     }
 
+    /**
+     * Whether ?nosab in the URL asks for the postMessage tick path.
+     * <p>
+     * Every browser that gets cross-origin isolation takes the SharedArrayBuffer path, so the
+     * postMessage fallback is exercised by nobody in production - except the in-app browsers of
+     * Facebook and Instagram. Those run on the Android WebView, which withholds SharedArrayBuffer
+     * however the server sets its headers: measured on a Pixel 7 on 2026-08-30 as
+     * "wasm=1,wasmgc=1,webgl2=1,coi=0,sab=0". They are also the one cohort that has never placed a
+     * single base, and a path only they take is a path that cannot be debugged where they are.
+     * <p>
+     * With this it can be taken on a desktop, with a console and a debugger:
+     * <pre>http://localhost:4200/game?nosab=1</pre>
+     * locally and
+     * <pre>https://www.razarion.com/game?nosab=1</pre>
+     * against production. The dev server answers the root with a redirect to /game that keeps
+     * the query string, so the shorter form works too.
+     * The worker needs no switch of its own. It is in postMessage mode exactly when the client
+     * never hands it a shared buffer, which is what returning here does.
+     */
+    private static boolean isSharedBufferDisabledByUrl() {
+        try {
+            String search = JsWindow.getLocationSearch();
+            if (search == null || search.isEmpty()) {
+                return false;
+            }
+            return JsURLSearchParams.create(search).has("nosab");
+        } catch (Throwable t) {
+            // A diagnostic switch is never a reason for a client not to start.
+            JsConsole.warn("Failed to read ?nosab from the URL: " + t.getMessage());
+            return false;
+        }
+    }
+
     // ============ SharedArrayBuffer JS interop ============
 
     @JSBody(script = "return typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated === true;")
@@ -468,10 +552,33 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     @JSBody(params = {"worker", "sab"}, script = "worker.postMessage({type: 'shared-tick-buffer', buffer: sab});")
     private static native void sendSharedBufferInit(JsWorker worker, JSObject sab);
 
+    /**
+     * Reports through the same channel {@link #safeWasmCall} uses, for the failures that are caught
+     * in Java rather than trapped in JS. Silently does nothing if the renderer has not installed
+     * the reporter yet - which is itself honest: nothing was there to hear it.
+     */
+    @JSBody(params = {"reason"}, script = "try { if (window.RAZ_engineError) { window.RAZ_engineError(reason); } } catch (ignored) {}")
+    private static native void reportEngineErrorToServer(String reason);
+
     @JSBody(params = {"callback"}, script = "requestAnimationFrame(callback);")
     private static native void requestAnimationFrame(RafCallback callback);
 
-    @JSBody(params = {"fn"}, script = "try { fn(); } catch(e) { console.error('[WASM trap]', e); }")
+    /**
+     * Runs a call that may trap in WASM, and says so where somebody can read it.
+     *
+     * Every message from the worker is dispatched inside this, so this catch is the roof over the
+     * whole engine-to-client path - including the cast of the tick and everything applied from it.
+     * A trap here stops the tick pull loop before it can ask for the next one, which leaves a game
+     * that renders terrain and moves its camera and never shows a unit again.
+     *
+     * It used to reach the console and nothing else. On a phone in an in-app browser there is no
+     * console, and that is where the Meta cohort lives. RAZ_engineError is installed by the
+     * renderer and reports to the server; the guards around it are because a diagnostic must never
+     * be the reason a trap turns into a crash.
+     */
+    @JSBody(params = {"fn"}, script = "try { fn(); } catch(e) { console.error('[WASM trap]', e);"
+            + " try { if (window.RAZ_engineError) { window.RAZ_engineError('wasm trap: '"
+            + " + ((e && e.message) ? e.message : e)); } } catch (ignored) {} }")
     private static native void safeWasmCall(SafeCallback fn);
 
     @JSFunctor

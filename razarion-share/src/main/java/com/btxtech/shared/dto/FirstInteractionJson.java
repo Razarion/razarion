@@ -37,6 +37,16 @@ public class FirstInteractionJson {
      * playing and the moment they leave can be put on one axis.
      */
     private Integer millisSincePageLoad;
+    /**
+     * Free-form {@code name=value} pairs describing the circumstances, for the kinds that need it.
+     * Null for the others, which are answered by their own existence.
+     * <p>
+     * POINTER_DOWN_PAGE uses it to say where the finger actually landed and how the page was laid
+     * out at that moment. Knowing that a touch reached the page is only half an answer: the other
+     * half is which element took it, and that cannot be a second kind because it is not a set of
+     * outcomes but an open description.
+     */
+    private String detail;
     private String userId;
     private Date serverTime;
 
@@ -62,6 +72,14 @@ public class FirstInteractionJson {
 
     public void setMillisSincePageLoad(Integer millisSincePageLoad) {
         this.millisSincePageLoad = millisSincePageLoad;
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
     }
 
     public String getUserId() {
@@ -95,6 +113,11 @@ public class FirstInteractionJson {
         return this;
     }
 
+    public FirstInteractionJson detail(String detail) {
+        setDetail(detail);
+        return this;
+    }
+
     public FirstInteractionJson userId(String userId) {
         setUserId(userId);
         return this;
@@ -111,6 +134,7 @@ public class FirstInteractionJson {
                 "gameSessionUuid='" + gameSessionUuid + '\'' +
                 ", kind='" + kind + '\'' +
                 ", millisSincePageLoad=" + millisSincePageLoad +
+                ", detail='" + detail + '\'' +
                 ", userId='" + userId + '\'' +
                 '}';
     }

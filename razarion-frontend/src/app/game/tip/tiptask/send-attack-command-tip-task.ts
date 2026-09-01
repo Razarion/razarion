@@ -43,8 +43,11 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
         return;
       }
 
-      // No enemy found at all - retry after delay (server may not be synchronized)
-      this.stallReason = TipStallReason.NO_ENEMY;
+      // Two different silences, and they were both reported as NO_ENEMY. Without an attacker
+      // there is nothing to measure a distance from, so no enemy can be found however many there
+      // are - saying so is the difference between "the world is empty" and "I lost sight of the
+      // unit this tip is about".
+      this.stallReason = this.attackerGroundPosition() ? TipStallReason.NO_ENEMY : TipStallReason.ACTOR_NOT_FOUND;
       this.retryTimeout = setTimeout(() => this.start(), 1000);
       return;
     }
@@ -89,6 +92,28 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
     }
   }
 
+  /**
+   * Where the attacker is, or was last seen, as plain ground coordinates.
+   *
+   * The live instance is null whenever the actor is off screen - scrolling it out of view disposes
+   * it, see TipTaskContext - and this task is restarted by onBecameVisible, which is to say on a
+   * camera move, which is to say on exactly that event. Asserting the instance away threw a
+   * TypeError out of the view-field listener chain, and because that chain is a forEach, every
+   * listener behind this one stopped updating for as long as the tip kept throwing. Measured on
+   * PROD on 2026-08-30 at 19:01:57, on a phone, after the player's attacker had died.
+   *
+   * Ground coordinates rather than the Vertex the renderer hands out: the remembered position is
+   * two-dimensional, and comparing distances on the ground is what this task is doing anyway.
+   */
+  private attackerGroundPosition(): { x: number, y: number } | null {
+    const live = this.tipTaskContext.babylonBaseItemImpl?.getPosition();
+    if (live) {
+      return {x: live.getX(), y: live.getY()};
+    }
+    const remembered = this.lastKnownActorPosition;
+    return remembered ? {x: remembered.getX(), y: remembered.getY()} : null;
+  }
+
   private findVisibleEnemy(): BabylonBaseItemImpl | null {
     let enemies = this.tipService.renderService.getBabylonBaseItemsByDiplomacy(Diplomacy.ENEMY);
     if (this.enemyItemTypeId !== null) {
@@ -98,17 +123,25 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
       return null;
     }
 
-    const attackerPosition = this.tipTaskContext.babylonBaseItemImpl!.getPosition()!;
+    const attacker = this.attackerGroundPosition();
+    if (!attacker) {
+      return null;
+    }
     let enemyFound: BabylonBaseItemImpl | null = null;
     let minDistance: number | null = null;
     for (const enemy of enemies) {
-      const distance = enemy.getPosition()?.distance(attackerPosition)!;
-      if (minDistance !== null) {
-        if (minDistance > distance) {
-          enemyFound = enemy;
-          minDistance = distance;
-        }
-      } else {
+      const position = enemy.getPosition();
+      // An enemy without a position is one that has scrolled out of view. Before, it entered the
+      // comparison as undefined, and every arithmetic test against undefined is false - so the
+      // first such enemy became the answer and no later one could replace it.
+      if (!position) {
+        continue;
+      }
+      const dx = position.getX() - attacker.x;
+      const dy = position.getY() - attacker.y;
+      // Squared: the nearest by this is the nearest by distance, and there is no root to take.
+      const distance = dx * dx + dy * dy;
+      if (minDistance === null || distance < minDistance) {
         enemyFound = enemy;
         minDistance = distance;
       }
@@ -117,7 +150,7 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
   }
 
   private findNearestEnemyPosition(): { x: number, y: number } | null {
-    const attackerPosition = this.tipTaskContext.babylonBaseItemImpl!.getPosition();
+    const attackerPosition = this.attackerGroundPosition();
     if (!attackerPosition) {
       return null;
     }
@@ -129,8 +162,8 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
     }
 
     const nearestPosition = baseItemUiService.getNearestEnemyPosition(
-      attackerPosition.getX(),
-      attackerPosition.getY(),
+      attackerPosition.x,
+      attackerPosition.y,
       this.enemyItemTypeId ?? 0,
       this.enemyItemTypeId !== null
     );

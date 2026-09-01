@@ -126,6 +126,22 @@ public class UiTerrainTile {
             return TerrainType.values()[ordinal];
         }
 
+        if (terrainAnalyzer == null) {
+            // The tile has been asked for and has not arrived. terrainAnalyzer is built in
+            // terrainTileReceived, so between the request and the answer there is nothing here to
+            // ask - and since the game deliberately starts before the tiles are in, that window is
+            // seconds long on a phone and reliably hit by the base placer on its first check.
+            //
+            // BLOCKED is the honest answer: not "you may build here" and not a trap, but "not
+            // here". The placer turns red, the player can move it, and the next check answers
+            // properly the moment the tile lands.
+            //
+            // This is the null that cost every base on the planet from 2026-08-27 on. It read
+            // "dereferencing a null pointer" with no stack, escaped the placer, the scene and the
+            // worker dispatch, and took the tick stream with it - so the game rendered terrain,
+            // moved its camera, and never showed a unit or a deploy dialog again.
+            return TerrainType.BLOCKED;
+        }
         return terrainAnalyzer.getTerrainType(analyzeIndex);
     }
 }

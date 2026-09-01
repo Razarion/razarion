@@ -48,6 +48,12 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private static readonly HINT_BELOW_OFFSET_PX = 138;
   /** Below this the bubble would hang off the top of the screen, so it moves under the building. */
   private static readonly HINT_ABOVE_MIN_Y_PX = 200;
+  /**
+   * How long the placer may stand on a camera-computed position before that is reported. Three
+   * seconds is well past the point where a tile under the camera should have been built, and short
+   * enough to still be inside the session: the players this exists to find leave after twenty.
+   */
+  private static readonly NO_TERRAIN_REPORT_MS = 3000;
 
   private disc: Mesh | null = null;
   private rallyDisc: Mesh | null = null;
@@ -75,6 +81,10 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private touchDragOffset: { x: number, y: number } = {x: 0, y: 0};
   /** Set while the placer's model is still on the wire; pulled when the placer closes first. */
   private cancelModelRequest: (() => void) | null = null;
+  /** Set as soon as the player drags or taps the ghost themselves. */
+  private movedByPlayer = false;
+  /** Whether this activation has already reported that it opened without terrain. */
+  private noTerrainReported = false;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService,
@@ -157,11 +167,32 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       this.enableTouchMode(baseItemPlacer);
     }
 
-    let pickedPoint = this.setupPickedPoint();
+    /*
+     * The placer has to be somewhere from the first frame, and the terrain ray pick cannot promise
+     * that: it needs the tile under the screen centre to exist, and since the game deliberately
+     * starts before the tiles are built there is a window in which it does not.
+     *
+     * What used to happen in that window is that nothing was positioned at all. The disc is created
+     * with only its y set, so it kept x=0, z=0 - the corner of the map - and the hint bubble is
+     * linked to the disc and went with it. The placer was fully active off screen, holding the pan
+     * claim, retrying once a second in silence. On PROD that cost every single base placed from the
+     * Meta in-app browser.
+     *
+     * So the pick is now an improvement on a position, not a precondition for having one. The
+     * camera-computed point is a few centimetres of height away from the picked one at worst, and
+     * it is on screen, which is the whole difference.
+     */
+    this.movedByPlayer = false;
+    this.noTerrainReported = false;
+    const pickedPoint = this.setupPickedPoint();
     if (pickedPoint) {
       this.setPosition(baseItemPlacer, pickedPoint);
     } else {
-      this.setupPickedPointDelayed(baseItemPlacer, currentGeneration);
+      const estimated = this.rendererService.setupCenterTerrainPosition();
+      if (estimated) {
+        this.setPosition(baseItemPlacer, estimated);
+      }
+      this.setupPickedPointDelayed(baseItemPlacer, currentGeneration, Date.now());
     }
 
     this.rendererService.baseItemPlacerActive = true;
@@ -298,6 +329,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       return;
     }
     const point = pickingInfo.pickedPoint!;
+    this.movedByPlayer = true;
     this.setPosition(baseItemPlacer, new Vector3(point.x, point.y, point.z));
   }
 
@@ -307,6 +339,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     if (!pickingInfo.hit) {
       return false;
     }
+    this.movedByPlayer = true;
     this.setPosition(baseItemPlacer, pickingInfo.pickedPoint!);
     return true;
   }
@@ -451,15 +484,35 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     }
   }
 
-  private setupPickedPointDelayed(baseItemPlacer: BaseItemPlacer, generation: number) {
+  /**
+   * Waits for the terrain to appear under the screen centre and moves the ghost onto it.
+   * <p>
+   * The placer is already on screen by the time this runs - see {@link activate} - so this is a
+   * correction and no longer the only thing that can put it anywhere. It ends on the first
+   * successful pick, and reports once the wait has gone on long enough to be worth knowing about.
+   */
+  private setupPickedPointDelayed(baseItemPlacer: BaseItemPlacer, generation: number, since: number) {
     setTimeout(() => {
-      if (this.activationGeneration !== generation) return;
-      let pickedPoint = this.setupPickedPoint();
-      if (pickedPoint) {
-        this.setPosition(baseItemPlacer, pickedPoint);
-      } else {
-        this.setupPickedPointDelayed(baseItemPlacer, generation);
+      if (this.activationGeneration !== generation) {
+        return;
       }
+      const pickedPoint = this.setupPickedPoint();
+      if (pickedPoint) {
+        // A player who has already dragged the ghost somewhere meant to put it there. Snapping it
+        // back to the screen centre would undo a deliberate move, so the correction only applies
+        // while the placer still stands where the game put it.
+        if (!this.movedByPlayer) {
+          this.setPosition(baseItemPlacer, pickedPoint);
+        }
+        return;
+      }
+      if (!this.noTerrainReported && Date.now() - since >= BaseItemPlacerPresenterImpl.NO_TERRAIN_REPORT_MS) {
+        // Once. The wait below has no upper bound, and the tracker discarding a repeat is not a
+        // reason to hand it one every second for the rest of the session.
+        this.noTerrainReported = true;
+        this.rendererService.reportFirstInteraction('PLACER_NO_TERRAIN');
+      }
+      this.setupPickedPointDelayed(baseItemPlacer, generation, since);
     }, 1000);
   }
 

@@ -53,6 +53,12 @@
 }
 
 .cover-panel-fadeout {
+  pointer-events: none;
+  /* An overlay nobody can see must not take what nobody aimed at it. The fade runs for two
+     seconds and .cover-panel-hide only lands after 300ms, so even in the healthy case there is a
+     stretch where a transparent cover swallows every touch - and if the hide never lands, that
+     stretch is the rest of the session. Measured on PROD from the Meta in-app browser on
+     2026-08-31: a touch reached the page, hit an LI, and never reached the canvas. */
   opacity: 0;
   transition: opacity 2s ease;
 }

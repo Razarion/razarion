@@ -530,6 +530,8 @@ export interface BabylonRenderServiceAccess {
    *  authoritative tick-rate curve. clientTickMs = main-thread time spent applying the tick. */
   onGameEngineTick(clientTickMs: number): void;
 
+  reportEngineError(reason: string): void;
+
   /** Reports terrain-tile timing to the F8 perf overlay: workerMs = worker generation time,
    *  clientMs = main-thread Babylon mesh-build time (the scroll-stutter source). */
   onTerrainTileBuilt(workerMs: number, clientMs: number): void;

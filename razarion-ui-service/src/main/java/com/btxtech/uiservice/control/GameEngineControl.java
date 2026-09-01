@@ -291,6 +291,7 @@ import java.util.logging.Logger;
             if (!tickUpdateBrokenReported) {
                 tickUpdateBrokenReported = true;
                 logger.severe("onTickUpdate did not complete - the previous tick died between start and end");
+                babylonRendererService.reportEngineError("tick did not complete");
             }
         } else {
             tickUpdateBrokenReported = false;
@@ -304,6 +305,10 @@ import java.util.logging.Logger;
             gameUiControl.setGameInfo(nativeTickInfo);
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "Exception in onTickUpdate", t);
+            // The tick arrived and applying it threw. Everything the tick carries - units,
+            // buildings, bots - is then missing while the game otherwise runs, which is exactly
+            // what the Meta cohort sees, and until now this line was the only trace of it.
+            babylonRendererService.reportEngineError("onTickUpdate: " + t.getMessage());
         }
         if (!isSharedBufferMode()) {
             sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
@@ -313,7 +318,13 @@ import java.util.logging.Logger;
         babylonRendererService.onGameEngineTick(System.currentTimeMillis() - tickApplyStart);
     }
 
+    /**
+     * The worker could not build a tick. It answers this way rather than not at all, so the pull
+     * loop below keeps running - and the game keeps rendering terrain while no unit, building or
+     * bot ever appears, because those are the only things the tick carries. Silent until now.
+     */
     private void onTickUpdateFailed() {
+        babylonRendererService.reportEngineError("tick update failed");
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
     }
 
@@ -343,6 +354,8 @@ import java.util.logging.Logger;
         }
         if (message.startsWith("ERROR ")) {
             logger.severe("[WORKER] " + message.substring("ERROR ".length()));
+            // The worker's own failures used to end here, in a console nobody can open on a phone.
+            babylonRendererService.reportEngineError("worker: " + message.substring("ERROR ".length()));
         } else if (message.startsWith("WARN ")) {
             logger.warning("[WORKER] " + message.substring("WARN ".length()));
         } else {

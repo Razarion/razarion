@@ -132,6 +132,10 @@ public class TerrainUiService {
     }
 
     public boolean isTerrainFree(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
+        if (baseItemType == null || baseItemType.getPhysicalAreaConfig() == null) {
+            // Not placeable rather than fatal - see the null check in the overload below.
+            return false;
+        }
         double radius = baseItemType.getPhysicalAreaConfig().getRadius();
         TerrainType terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();
         for (DecimalPosition terrainPosition : terrainPositions) {
@@ -142,7 +146,20 @@ public class TerrainUiService {
         return true;
     }
 
+    /**
+     * Whether a body of this radius fits at this position.
+     * <p>
+     * A null terrainType answers "no" instead of dereferencing it. This is reached from the base
+     * placer on every cursor move, and in TeaVM WASM-GC a null dereference is not a Java
+     * NullPointerException but a trap: it is not catchable by the try/catch in
+     * BaseItemPlacer.onMove, it escapes through the worker message dispatch, and it takes the tick
+     * pull loop with it - which is how one bad check turned into a session that renders terrain and
+     * never shows a unit again. A refused placement is recoverable; a trap is not.
+     */
     public boolean isTerrainFree(DecimalPosition terrainPosition, double radius, TerrainType terrainType) {
+        if (terrainType == null) {
+            return false;
+        }
         if (terrainType.isAreaCheck()) {
             List<Index> nodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.NODE_SIZE);
             for (Index nodeIndex : nodeIndices) {
@@ -158,6 +175,9 @@ public class TerrainUiService {
     }
 
     public boolean isTerrainFree(DecimalPosition terrainPosition, TerrainType terrainType) {
+        if (terrainType == null || terrainPosition == null) {
+            return false;
+        }
         Index terrainTile = TerrainUtil.terrainPositionToTileIndex(terrainPosition);
         UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
         if (uiTerrainTile == null) {

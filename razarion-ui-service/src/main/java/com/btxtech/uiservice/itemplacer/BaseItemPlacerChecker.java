@@ -75,7 +75,7 @@ public class BaseItemPlacerChecker {
         if (isAllowedAreaOk) {
             isEnemiesOk = !baseItemUiService.hasEnemyForSpawn(position, enemyFreeRadius);
         }
-        if (isEnemiesOk) {
+        if (isEnemiesOk && baseItemType != null && baseItemType.getPhysicalAreaConfig() != null) {
             double radius = baseItemType.getPhysicalAreaConfig().getRadius();
             isItemsOk = !baseItemUiService.hasItemsInRangeInViewField(absoluteItemPositions, radius);
             // Resources count as occupied ground too: the master rejects a builder build over a resource
@@ -154,11 +154,21 @@ public class BaseItemPlacerChecker {
         TerrainType terrainType = TerrainType.LAND;
         for (int ableToBuildId : factoryType.getAbleToBuildIds()) {
             BaseItemType buildable = itemTypeService.getBaseItemType(ableToBuildId);
+            // A buildable that cannot be resolved, or one without a physical area, is skipped rather
+            // than dereferenced: this runs once per placer activation and a trap here is not
+            // catchable in TeaVM WASM-GC.
+            if (buildable == null || buildable.getPhysicalAreaConfig() == null) {
+                continue;
+            }
             double radius = buildable.getPhysicalAreaConfig().getRadius();
             if (radius > maxRadius) {
                 maxRadius = radius;
             }
-            terrainType = buildable.getPhysicalAreaConfig().getTerrainType();
+            // Only when it has one. Overwriting the LAND default with null would leave
+            // rallyTerrainType null, and the rally check dereferences it on every cursor move.
+            if (buildable.getPhysicalAreaConfig().getTerrainType() != null) {
+                terrainType = buildable.getPhysicalAreaConfig().getTerrainType();
+            }
         }
         rallyRadius = maxRadius;
         rallyTerrainType = terrainType;

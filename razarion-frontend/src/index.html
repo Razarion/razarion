@@ -77,12 +77,69 @@
       };
       w.RAZ_trackPayload = payload;
 
+      /*
+       * What this browser can do, measured rather than assumed.
+       *
+       * Half of the sessions from the Meta in-app browser stop at PAGE_LOADED and never reach the
+       * WASM client, and the standing explanation was that the embedded webview cannot carry it -
+       * no WebGL2, no WASM-GC, no cross-origin isolation for the worker. Nothing in the data said
+       * so either way, because nothing asked. This asks, on every session, from the one place that
+       * runs before the Angular bundle - which is the point, since the sessions in question never
+       * get past that bundle.
+       *
+       * Reported always, not only on failure. A field that is written only when something breaks
+       * cannot distinguish "everything was fine" from "the check never ran", and that ambiguity is
+       * exactly what made WASM_LOAD unreadable.
+       *
+       * The WASM-GC probe validates a module whose type section declares a struct (0x5F). A
+       * browser without GC does not know that type and rejects the module - verified against a
+       * browser that does support it, and against a deliberately wrong type byte, which is
+       * rejected. Everything here is wrapped: a capability probe must never cost a startup.
+       */
+      function capabilities() {
+        var parts = [];
+        function add(name, value) {
+          parts.push(name + '=' + (value === true ? 1 : value === false ? 0 : value));
+        }
+        try {
+          add('wasm', typeof WebAssembly !== 'undefined');
+          add('wasmgc', typeof WebAssembly !== 'undefined' && WebAssembly.validate(
+            new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 0x5F, 1, 0x78, 0])));
+        } catch (ignored) {
+          add('wasmgc', 'error');
+        }
+        try {
+          // The context is released again straight away. On a phone the renderer is about to ask
+          // for one of its own, and two live contexts on a tight device is a cost this has no
+          // business adding.
+          var gl = document.createElement('canvas').getContext('webgl2');
+          add('webgl2', !!gl);
+          if (gl) {
+            var lose = gl.getExtension('WEBGL_lose_context');
+            if (lose) {
+              lose.loseContext();
+            }
+          }
+        } catch (ignored) {
+          add('webgl2', 'error');
+        }
+        try {
+          add('coi', self.crossOriginIsolated === true);
+          add('sab', typeof SharedArrayBuffer !== 'undefined');
+          add('mem', navigator.deviceMemory || 0);
+          add('cores', navigator.hardwareConcurrency || 0);
+        } catch (ignored) {
+        }
+        return parts.join(',');
+      }
+
       // "A browser got this far." Anything that never reports it left during the page load.
       w.RAZ_track('/rest/tracker/startupTask', payload({
         taskEnum: 'PAGE_LOADED',
         startTime: Date.now(),
         duration: 0,
         userAgent: navigator.userAgent,
+        capabilities: capabilities(),
         error: (typeof WebAssembly === 'undefined') ? 'No WebAssembly support' : null
       }));
 

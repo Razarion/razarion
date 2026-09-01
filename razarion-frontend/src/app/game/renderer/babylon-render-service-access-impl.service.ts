@@ -66,6 +66,8 @@ import {LocationVisualization} from "src/app/editor/common/place-config/location
 import {ActionService} from "../action.service";
 import {SelectionService as TsSelectionService} from "../selection.service";
 import {FirstInteractionTrackerService, InteractionKind} from "../tracking/first-interaction-tracker.service";
+import {PagePointerProbe} from "../tracking/page-pointer-probe";
+import {reportClientBuild} from "../tracking/client-build-stamp";
 import {BaseItemPlacerPresenterEvent, BaseItemPlacerPresenterImpl} from "./base-item-placer-presenter.impl";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {UiSettingsService} from "../ui-settings.service";
@@ -674,6 +676,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   setup(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    // Before the engine: the question it answers is whether a touch ever reaches the page, and a
+    // session that dies during setup is one of the sessions worth hearing from.
+    new PagePointerProbe(canvas, this.firstInteractionTrackerService).install();
+    // Which bundle this browser actually got. A deploy is not proof that anybody is running it.
+    reportClientBuild(this.firstInteractionTrackerService);
+    // The WASM client traps into this. It is a global rather than a facade method because the
+    // catch that needs it is an inline @JSBody in TeaVMClientGameEngineControl, which has no Java
+    // object to call back into at that point.
+    (window as any).RAZ_engineError = (reason: string) => this.reportEngineError(reason);
     this.engine = new Engine(this.canvas)
     this.scene = new Scene(this.engine);
     this.scene.createDefaultEnvironment({
@@ -918,6 +929,26 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   public setupCenterGroundPosition(): Vector3 {
     return this.setupZeroLevelPosition(0, 0, Matrix.Invert(this.camera.getTransformationMatrix()));
+  }
+
+  /**
+   * The ground point in the middle of the screen, computed from the camera instead of picked off
+   * the terrain.
+   * <p>
+   * A ray pick needs the terrain tile under the screen centre to already exist. The game starts
+   * before the tiles are built, so there is a window in which it does not - and on a phone that
+   * window is seconds long, because the build queue takes one heavy tile per frame. This needs only
+   * the camera matrix and the height map, and both are there from the first frame.
+   * <p>
+   * Null only when the camera cannot be inverted into a ground intersection at all, which is the
+   * same guard {@link setViewFieldCenter} applies before it moves anything.
+   */
+  public setupCenterTerrainPosition(): Vector3 | null {
+    const centre = this.setupCenterGroundPosition();
+    if (!this.isValidVector3(centre)) {
+      return null;
+    }
+    return new Vector3(centre.x, this.getTerrainHeightAt(centre.x, centre.z) ?? 0, centre.z);
   }
 
   addTerrainTileToScene(terrainTile: BabylonTerrainTileImpl): void {
@@ -1183,8 +1214,16 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         this.viewField.getTopLeft().getX(), this.viewField.getTopLeft().getY(),
       );
 
+      // One listener at a time. The catch below would otherwise swallow the whole round: a
+      // listener that throws ends the forEach, and every listener registered after it is skipped -
+      // on every camera move, for as long as the throwing one keeps throwing. That is how a tip
+      // task holding a dead actor stopped the quest markers from updating on PROD.
       this.viewFieldListeners.forEach(viewFieldListener => {
-        viewFieldListener.onViewFieldChanged(this.viewField!);
+        try {
+          viewFieldListener.onViewFieldChanged(this.viewField!);
+        } catch (error) {
+          console.error('View field listener failed', error);
+        }
       });
     } catch (error) {
       console.error(error);
@@ -1795,6 +1834,21 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
    * Called by the game engine (Java) once per simulation tick. Authoritative tick signal for the
    * perf overlay — fires every tick regardless of whether anything moved.
    */
+  /**
+   * A failure inside the running engine, sent to the server rather than to a console.
+   * <p>
+   * The tracker reports each kind once per session, which is what makes this safe to call from a
+   * per-tick failure path: a broken tick repeats every tick, and a beacon per tick would be a
+   * firehose. The first one carries the reason, and the reason is what is missing today.
+   */
+  reportEngineError(reason: string): void {
+    try {
+      this.firstInteractionTrackerService.report('ENGINE_ERROR', (reason || 'unknown').slice(0, 300));
+    } catch (ignored) {
+      // Never at the expense of the game.
+    }
+  }
+
   onGameEngineTick(clientTickMs: number): void {
     this.renderTelemetry?.recordTick(clientTickMs);
     if (this.perfOverlay?.isActive()) {

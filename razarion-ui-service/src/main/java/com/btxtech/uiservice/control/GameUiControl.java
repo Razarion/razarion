@@ -34,6 +34,7 @@ import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -154,16 +155,50 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiContext.getWarmGameUiContext().getGameEngineMode());
     }
 
-    private void runScene() {
-        if (currentScene != null) {
-            sceneFinished();
-            currentScene.cleanup();
+    /**
+     * Rethrows without building a new exception around it.
+     * <p>
+     * Wrapping named the step, which is how "runScene.run(Multiplayer wait for base created)" was
+     * found - but a wrapped exception carries the wrapper's stack, and in TeaVM WASM-GC that
+     * stack is the only thing that ever names the failing call. The step is known now; the frames
+     * are what is missing. So the original goes back up untouched and the name goes to the log.
+     */
+    private RuntimeException rethrow(String step, Throwable t) {
+        if (t instanceof Error) {
+            throw (Error) t;
         }
-        currentScene = sceneInstance.get();
-        SceneConfig sceneConfig = scenes.get(nextSceneNumber);
-        currentScene.init(sceneConfig);
+        if (t instanceof RuntimeException) {
+            throw (RuntimeException) t;
+        }
+        return new IllegalStateException(step + ": " + t.getMessage(), t);
+    }
+
+    private void runScene() {
+        try {
+            if (currentScene != null) {
+                sceneFinished();
+                currentScene.cleanup();
+            }
+            currentScene = sceneInstance.get();
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, "runScene.previous", t);
+            throw rethrow("runScene.previous", t);
+        }
+        SceneConfig sceneConfig;
+        try {
+            sceneConfig = scenes.get(nextSceneNumber);
+            currentScene.init(sceneConfig);
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, "runScene.init[" + nextSceneNumber + "]", t);
+            throw rethrow("runScene.init[" + nextSceneNumber + "]", t);
+        }
         sceneStartTimeStamp = new Date();
-        currentScene.run();
+        try {
+            currentScene.run();
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, "runScene.run(" + sceneConfig.getInternalName() + ")", t);
+            throw rethrow("runScene.run(" + sceneConfig.getInternalName() + ")", t);
+        }
     }
 
     void onSceneCompleted() {
@@ -240,11 +275,22 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         return Math.min(levelCount + unlockedCount, planetCount);
     }
 
+    /**
+     * The steps are named on the way out because the only trace of a failure here is a WASM trap
+     * with no stack: "dereferencing a null pointer" and nothing else. On PROD this is where the
+     * Meta cohort loses its units - the handover reaches the base placer and dies, and the tick
+     * stream stops with it.
+     */
     public void onInitialSlaveSynchronized(DecimalPosition scrollToPosition) {
-        if (scrollToPosition != null) {
-            scenes = setupSlaveExistingScenes(scrollToPosition);
-        } else {
-            scenes = setupSlaveSpawnScenes();
+        try {
+            if (scrollToPosition != null) {
+                scenes = setupSlaveExistingScenes(scrollToPosition);
+            } else {
+                scenes = setupSlaveSpawnScenes();
+            }
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, "onInitialSlaveSynchronized.setupScenes", t);
+            throw rethrow("setupScenes", t);
         }
         runScene();
     }

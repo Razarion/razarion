@@ -110,6 +110,16 @@ public class BaseItemUiService {
 
     public void updateSyncBaseItems(NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos) {
         // May be easier if replaced with SyncItemState and SyncItemMonitor
+        // Null means "no items", and storing it that way turns every later read into a trap - a
+        // dozen loops in this class walk this field, and the rest of this method walks the
+        // parameter. Normalising the parameter covers both; guarding only the field would have
+        // left the loop three lines down unprotected.
+        //
+        // TeaVMClientGameEngineControl.castToNativeTickInfo no longer produces null, and this is
+        // the guard that does not depend on which marshaller called.
+        if (nativeSyncBaseItemTickInfos == null) {
+            nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
+        }
         this.nativeSyncBaseItemTickInfos = nativeSyncBaseItemTickInfos;
         Collection<Integer> leftoversAliveBabylonBaseItems = new ArrayList<>(babylonBaseItems.keySet());
         Set<Integer> aliveItemIds = new HashSet<>();

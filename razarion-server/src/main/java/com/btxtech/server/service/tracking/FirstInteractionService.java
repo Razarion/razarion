@@ -62,6 +62,7 @@ public class FirstInteractionService {
                     .append("gameSessionUuid", firstInteractionJson.getGameSessionUuid())
                     .append("kind", firstInteractionJson.getKind())
                     .append("millisSincePageLoad", firstInteractionJson.getMillisSincePageLoad())
+                    .append("detail", firstInteractionJson.getDetail())
                     .append("userId", userId)
                     .append("serverTime", now)
                     .append("expireAt", new Date(now.getTime() + RETENTION_DAYS * 24 * 3600 * 1000L));

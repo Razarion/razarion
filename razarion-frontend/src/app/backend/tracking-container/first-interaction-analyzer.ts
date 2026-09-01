@@ -19,9 +19,13 @@ import {
 /** The kinds the client reports, in the order they are shown. */
 export const INTERACTION_KINDS = [
   'POINTER_DOWN',
+  'POINTER_DOWN_PAGE',
+  'CLIENT_BUILD',
+  'ENGINE_ERROR',
   'PLACER_SHOWN',
   'PLACER_REJECTED',
   'PLACER_CONFIRMED',
+  'PLACER_NO_TERRAIN',
   'CAMERA_PAN_TOUCH',
   'CAMERA_PINCH',
   'CAMERA_KEYBOARD',
@@ -35,18 +39,22 @@ export type InteractionKind = typeof INTERACTION_KINDS[number];
 /**
  * The kinds fall into three classes, and every share on this page depends on keeping them apart.
  *
- * This one is not the player at all: the game put the base placer on screen. It is recorded because
- * "was this player ever asked to place a base" cannot otherwise be asked - but a session in which
- * only this happened is a session in which the player did nothing, and must still read as silent.
+ * These are not the player at all: the game put the base placer on screen, the placer had to
+ * position itself without terrain, the client said which build it is, and the engine reported a
+ * failure of its own. Both are recorded because the questions they answer - "was this
+ * player ever asked to place a base", "did the ground exist when we asked" - cannot otherwise be
+ * asked. But a session in which only these happened is a session in which the player did nothing,
+ * and must still read as silent.
  */
-const NOT_THE_PLAYER: InteractionKind[] = ['PLACER_SHOWN'];
+const NOT_THE_PLAYER: InteractionKind[] = ['PLACER_SHOWN', 'PLACER_NO_TERRAIN', 'CLIENT_BUILD',
+  'ENGINE_ERROR'];
 
 /**
- * The player reached and got nothing out of it: a finger on the game field that led nowhere, or a
- * tap on a spot where a base cannot go. Both are the opposite of PLACER_CONFIRMED and must not be
+ * The player reached and got nothing out of it: a finger on the game field that led nowhere, a
+ * finger that reached the page but never the canvas, or a tap on a spot where a base cannot go. Both are the opposite of PLACER_CONFIRMED and must not be
  * counted as having achieved anything - that would hide exactly the players this view exists for.
  */
-const REACHED_WITHOUT_RESULT: InteractionKind[] = ['POINTER_DOWN', 'PLACER_REJECTED'];
+const REACHED_WITHOUT_RESULT: InteractionKind[] = ['POINTER_DOWN', 'POINTER_DOWN_PAGE', 'PLACER_REJECTED'];
 
 /** Did the player do anything at all, however fruitless? */
 function reachedForIt(session: SessionFacts): boolean {

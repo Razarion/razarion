@@ -51,13 +51,44 @@ public class BaseItemPlacer {
     }
 
     @SuppressWarnings("unused") // Called by Angular
+    /**
+     * Catches Throwable, not Exception, and that difference is the whole defect.
+     * <p>
+     * In TeaVM WASM-GC a null dereference is not a NullPointerException but a trap that arrives as
+     * an Error, so the previous catch(Exception) let it straight through. From here it escaped the
+     * placer, the scene that activates it, the worker message dispatch, and finally the tick pull
+     * loop - which is how one bad check produced a game that rendered terrain, moved its camera,
+     * and never showed a unit or a deploy dialog again. Measured on PROD on 2026-08-31:
+     * "dispatch INITIAL_SLAVE_SYNCHRONIZED_NO_BASE: runScene.run(script: Multiplayer Planet
+     * viewfield): runScene.run(Multiplayer wait for base created): dereferencing a null pointer".
+     * <p>
+     * Proven rather than assumed: the same trap was caught the moment runScene wrapped it in
+     * catch(Throwable), while this catch(Exception) had been letting it past for weeks.
+     * <p>
+     * A check that cannot be completed means the position is not known to be good, so it is
+     * refused - the ghost turns red and the player moves it elsewhere. That is recoverable.
+     * Letting it through is not.
+     */
     public void onMove(double xTerrainPosition, double yTerrainPosition) {
-        DecimalPosition position = new DecimalPosition(xTerrainPosition, yTerrainPosition);
+        // A method whose whole job is to answer "may I build here" has no business taking a
+        // session down, so all of it is guarded - including the construction of the position.
+        //
+        // One thing here is still not understood. On 2026-08-31 a WASM trap from
+        // UiTerrainTile.getTerrainType passed straight through this catch, and the log line below
+        // never appeared, although the debug build put onMove squarely in the stack and the same
+        // catch(Throwable) in GameUiControl.runScene held a trap of the same kind twice in the
+        // same session. The null itself is fixed at its source; this remains as a guard whose
+        // reliability against a trap is unproven.
         try {
+            DecimalPosition position = new DecimalPosition(xTerrainPosition, yTerrainPosition);
             baseItemPlacerChecker.check(position);
             setupErrorText();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "BaseItemPlacer.onMove() " + position, e);
+        } catch (Throwable t) {
+            errorText = "Can not check this position";
+            // The message only. Handing a WASM trap to a formatter is one more thing that can
+            // trap, and it would do so from inside the handler for the first one.
+            logger.severe("BaseItemPlacer.onMove(" + xTerrainPosition + ", " + yTerrainPosition
+                    + ") failed: " + t.getMessage());
         }
     }
 
@@ -68,8 +99,12 @@ public class BaseItemPlacer {
             baseItemPlacerChecker.check(position);
             setupErrorText();
             placeCallback.accept(position);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "BaseItemPlacer.onPlace() " + position, e);
+        } catch (Throwable t) {
+            // Same reason as onMove: a WASM trap is an Error, not an Exception, and this is the
+            // tap that actually places the base - the one moment in the whole funnel that must
+            // not take the session down with it.
+            errorText = "Can not check this position";
+            logger.severe("BaseItemPlacer.onPlace() " + position + " failed: " + t.getMessage());
         }
     }
 

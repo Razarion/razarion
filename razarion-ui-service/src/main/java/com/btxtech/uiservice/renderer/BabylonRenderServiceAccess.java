@@ -36,6 +36,13 @@ public interface BabylonRenderServiceAccess {
     void onGameEngineTick(double clientTickMs);
 
     /**
+     * Something went wrong inside the running engine, in a way the player can see but no log can
+     * reach. Reported to the server, not to a console: on a phone in an in-app browser there is no
+     * console, and three separate defects went undiagnosed for days behind exactly that.
+     */
+    void reportEngineError(String reason);
+
+    /**
      * Reports terrain-tile timing to the F8 perf overlay: how long the worker took to generate the
      * tile, and how long the main thread took to build its Babylon mesh (the part that can stutter
      * while scrolling into new terrain).
