@@ -1,12 +1,14 @@
-﻿import {Component, effect, ElementRef, HostBinding, HostListener, NgZone, OnInit, ViewChild} from '@angular/core';
+﻿import {Component, effect, ElementRef, HostBinding, HostListener, NgZone, OnInit, ViewChild, Injector} from '@angular/core';
 import {NgClass} from '@angular/common';
+import {reportStartupTiming} from './tracking/startup-timing';
+import {StartupPayloadProbe} from './tracking/startup-payload';
+import {FirstInteractionTrackerService} from './tracking/first-interaction-tracker.service';
 import {ActivatedRoute} from '@angular/router';
 import {environment} from 'src/environments/environment';
 import {DirectorService} from './director/director.service';
 
 import {ScreenCoverComponent} from "./screen-cover/screen-cover.component";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
-import {GameMockService} from "./game-mock.service";
 import {BabylonRenderServiceAccessImpl} from './renderer/babylon-render-service-access-impl.service';
 import {EditorModel} from '../editor/editor-model';
 import {QuestCockpitComponent} from './cockpit/quest/quest-cockpit.component';
@@ -92,7 +94,7 @@ export class GameComponent implements OnInit {
               public compactLayout: CompactLayoutService,
               private babylonRenderServiceAccessImpl: BabylonRenderServiceAccessImpl,
               private babylonAudioService: BabylonAudioService,
-              private gameMockService: GameMockService,
+              private injector: Injector,
               private actionService: ActionService,
               public selectionShortcuts: SelectionShortcutsService,
               public touchSelectionMode: TouchSelectionModeService,
@@ -100,6 +102,8 @@ export class GameComponent implements OnInit {
               private directorService: DirectorService,
               protected uiSettingsService: UiSettingsService,
               private route: ActivatedRoute,
+              private firstInteractionTrackerService: FirstInteractionTrackerService,
+              private startupPayloadProbe: StartupPayloadProbe,
               private zone: NgZone) {
     this.modelDialogPresenter = new ModelDialogPresenterImpl(this.zone, cockpitDisplayService);
     // Turning the chat off while its overlay is open would leave the layout believing a panel is
@@ -137,6 +141,13 @@ export class GameComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Before anything else: where the seconds before this moment went. Half of the in-app sessions
+    // never get further than roughly here, and until now nothing said whether they were spent
+    // downloading or parsing.
+    reportStartupTiming(this.firstInteractionTrackerService);
+    // And what those seconds were spent downloading. Started here rather than from the renderer on
+    // purpose: a session whose engine never runs still downloads, and it is the one we cannot see.
+    this.startupPayloadProbe.start();
     this.userService.checkToken()
       .then(() => {
         this.initAndStart();
@@ -159,7 +170,12 @@ export class GameComponent implements OnInit {
     this.actionService.setRendererService(this.babylonRenderServiceAccessImpl);
 
     if (environment.gwtMock) {
-      this.gameMockService.startGame(true, this);
+      // Fetched only in the mock build. Injected in the constructor, this service was created for
+      // every player, and through it the terrain editor and its thirty barrel imports of
+      // @babylonjs/core were in everyone's first page load - for code that does nothing unless
+      // environment.gwtMock is set.
+      import('./game-mock.service').then(module =>
+        this.injector.get(module.GameMockService).startGame(true, this));
     } else {
       this.startGame();
     }

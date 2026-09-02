@@ -3,6 +3,7 @@ package com.btxtech.server.rest.ui;
 import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.ui.Image;
 import com.btxtech.server.model.ui.ImageGalleryItem;
+import com.btxtech.server.service.NoSuchEntityException;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.server.service.ui.ImageService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -78,6 +79,10 @@ public class ImageController {
                     .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
                     .lastModified(ZonedDateTime.now())
                     .body(data);
+        } catch (NoSuchEntityException e) {
+            // A planet id that does not exist is an answer, and the 404 is it. Logging a stack
+            // trace here is what made thirty-three of these indistinguishable from a fault.
+            throw e;
         } catch (Throwable e) {
             logger.warn("Can not loadCold MiniMapImage for planetId: {}", planetId, e);
             throw e;

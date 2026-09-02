@@ -2,6 +2,28 @@
 <html lang="en" class="razarion-frontend-dark">
 <head>
   <meta charset="utf-8">
+  <script>
+    /*
+     * Resource timing keeps 250 entries and then silently drops everything after them.
+     *
+     * A game start fetches 675 JavaScript chunks before one line of our own code runs, so by the
+     * time anything of ours could raise this, the buffer has been full for seconds - and the
+     * WebAssembly, the models and the textures, which is what STARTUP_PAYLOAD exists to weigh,
+     * never appear at all. The first measurement read as "1.1 MB, and nothing more arrived after
+     * the game was playable", which is not a thing that happens.
+     *
+     * It has to be here, ahead of every tag that fetches something: raising the limit afterwards
+     * does not bring back what was already dropped. The flag exists so this can never again be
+     * silent - a truncated measurement says so in its own detail rather than looking complete.
+     */
+    try {
+      performance.setResourceTimingBufferSize(20000);
+      addEventListener('resourcetimingbufferfull', function () {
+        window.RAZ_resourceBufferFull = 1;
+      });
+    } catch (ignored) {
+    }
+  </script>
   <title>Razarion – RTS meets MMO: One World That Never Stops</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">

@@ -44,12 +44,21 @@ public class NoCacheRestFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Reading the model file or the terrain height map, and only reading. Both are megabytes, both
-     * are asked for on every game start, and both declare their own entity tag. The uploads beside
-     * them stay under the blanket rule: a write is exactly the case the filter was added for.
+     * Reading the model file, the terrain height map or a material, and only reading. All three are
+     * megabytes, all three are asked for on every game start, and all three declare their own
+     * entity tag. The uploads beside them stay under the blanket rule: a write is exactly the case
+     * the filter was added for.
+     * <p>
+     * The materials and the particle systems joined this list last, and neither was noticed by eye:
+     * eight megabytes and 1.5 MB respectively, both read on every start, both found only once
+     * STARTUP_PAYLOAD weighed a start by category. The particle systems sit under /rest/editor/
+     * despite being read by every player, which is why they were not looked for here at all.
      */
     private boolean isConditionalModelRead(HttpServletRequest req, String uri) {
         return "GET".equals(req.getMethod())
-                && (uri.startsWith("/rest/gltf/glb/") || uri.startsWith("/rest/terrainHeightMap/"));
+                && (uri.startsWith("/rest/gltf/glb/")
+                || uri.startsWith("/rest/terrainHeightMap/")
+                || uri.startsWith("/rest/babylon-material/data/")
+                || uri.startsWith("/rest/editor/particle-system/data/"));
     }
 }

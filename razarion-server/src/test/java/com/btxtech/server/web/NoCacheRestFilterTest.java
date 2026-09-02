@@ -53,6 +53,58 @@ class NoCacheRestFilterTest {
     }
 
     /**
+     * The materials are the third and were the largest: six responses, eight megabytes, 51% of
+     * everything a player downloads before the game is playable. They were re-sent in full on
+     * every start until STARTUP_PAYLOAD weighed them.
+     */
+    @Test
+    void readingAMaterialIsAlsoLeftToItsController() throws Exception {
+        MockHttpServletResponse response = call("GET", "/rest/babylon-material/data/2");
+
+        assertNull(response.getHeader("Cache-Control"));
+        assertNull(response.getHeader("Pragma"));
+        assertNull(response.getHeader("Expires"));
+    }
+
+    /** The upload sits one path segment away from the read and must not inherit its freedom. */
+    @Test
+    void uploadingAMaterialStaysUnderTheBlanketRule() throws Exception {
+        assertEquals("no-store, no-cache, must-revalidate, max-age=0",
+                call("POST", "/rest/babylon-material/upload/2").getHeader("Cache-Control"));
+        // The size listing is not the blob and has no tag of its own.
+        assertEquals("no-store, no-cache, must-revalidate, max-age=0",
+                call("GET", "/rest/babylon-material/sizes").getHeader("Cache-Control"));
+    }
+
+    /**
+     * The particle systems are the fourth. They sit under /rest/editor/ although every player
+     * reads them, which is exactly why nobody went looking for them under a cache rule - the path
+     * says editor, the traffic says game.
+     */
+    @Test
+    void readingAParticleSystemIsAlsoLeftToItsController() throws Exception {
+        MockHttpServletResponse response = call("GET", "/rest/editor/particle-system/data/6");
+
+        assertNull(response.getHeader("Cache-Control"));
+        assertNull(response.getHeader("Pragma"));
+        assertNull(response.getHeader("Expires"));
+    }
+
+    /**
+     * Everything else under /rest/editor/ keeps the blanket rule. The exemption is one path that
+     * happens to live there, not a hole in the editor.
+     */
+    @Test
+    void theRestOfTheEditorStaysUnderTheBlanketRule() throws Exception {
+        assertEquals("no-store, no-cache, must-revalidate, max-age=0",
+                call("GET", "/rest/editor/particle-system/sizes").getHeader("Cache-Control"));
+        assertEquals("no-store, no-cache, must-revalidate, max-age=0",
+                call("PUT", "/rest/editor/particle-system/upload/6").getHeader("Cache-Control"));
+        assertEquals("no-store, no-cache, must-revalidate, max-age=0",
+                call("GET", "/rest/editor/base-item-type/1").getHeader("Cache-Control"));
+    }
+
+    /**
      * The terrain shape beside it is NOT exempt. It is computed per pod at startup rather than
      * stored, so no digest computed here can be trusted to match another pod's - the same argument
      * that put the model's digest in the database.

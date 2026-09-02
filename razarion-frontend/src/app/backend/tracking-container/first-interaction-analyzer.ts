@@ -22,6 +22,8 @@ export const INTERACTION_KINDS = [
   'POINTER_DOWN_PAGE',
   'CLIENT_BUILD',
   'ENGINE_ERROR',
+  'STARTUP_TIMING',
+  'STARTUP_PAYLOAD',
   'PLACER_SHOWN',
   'PLACER_REJECTED',
   'PLACER_CONFIRMED',
@@ -40,14 +42,14 @@ export type InteractionKind = typeof INTERACTION_KINDS[number];
  * The kinds fall into three classes, and every share on this page depends on keeping them apart.
  *
  * These are not the player at all: the game put the base placer on screen, the placer had to
- * position itself without terrain, the client said which build it is, and the engine reported a
- * failure of its own. Both are recorded because the questions they answer - "was this
- * player ever asked to place a base", "did the ground exist when we asked" - cannot otherwise be
- * asked. But a session in which only these happened is a session in which the player did nothing,
- * and must still read as silent.
+ * position itself without terrain, the client said which build it is, the engine reported a
+ * failure of its own, and the startup said where its seconds and its bytes went. All of them are
+ * recorded because the questions they answer - "was this player ever asked to place a base", "did
+ * the ground exist when we asked" - cannot otherwise be asked. But a session in which only these
+ * happened is a session in which the player did nothing, and must still read as silent.
  */
 const NOT_THE_PLAYER: InteractionKind[] = ['PLACER_SHOWN', 'PLACER_NO_TERRAIN', 'CLIENT_BUILD',
-  'ENGINE_ERROR'];
+  'ENGINE_ERROR', 'STARTUP_TIMING', 'STARTUP_PAYLOAD'];
 
 /**
  * The player reached and got nothing out of it: a finger on the game field that led nowhere, a

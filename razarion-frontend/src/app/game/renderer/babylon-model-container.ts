@@ -40,10 +40,41 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
    * too, or an item whose glb 404s would sit invisible forever instead of falling back.
    */
   private waiting: Map<number, ((loaded: boolean) => void)[]> = new Map();
+  /**
+   * The entities the start gate waits for. Null means all of them, which is what this class did
+   * before there was a reason to distinguish.
+   * <p>
+   * There is one: STARTUP_PAYLOAD measured a first visit and found 15 MB arriving before the game
+   * was playable, of which 9.5 MB was this gate - every material and every particle system, in
+   * full, while the glb models beside them had streamed individually for months. The single
+   * largest item was a 4.8 MB vehicle material, waited for by a player who has not placed a base
+   * yet and owns no vehicles.
+   * <p>
+   * A required entity is loaded first and holds the gate; the rest still load, just without
+   * anybody standing in the doorway for them.
+   */
+  private required: Set<number> | null = null;
+  private requiredOutstanding = 0;
 
   /** Max models parsed concurrently. Kept low for heavy main-thread parsing (e.g. glTF). */
   protected maxConcurrentLoads(): number {
     return 4;
+  }
+
+  /**
+   * Which entities the start gate waits for. Call before {@link load}; an id that is not in the
+   * set being loaded is ignored rather than deadlocking the gate.
+   */
+  setRequired(requiredIds: number[] | null): void {
+    this.required = requiredIds === null ? null : new Set(requiredIds);
+  }
+
+  /**
+   * Whether everything the first frame needs is here. Not the same question as {@link isLoaded},
+   * which asks whether the whole set has finished.
+   */
+  isStartRequirementMet(): boolean {
+    return this.required === null ? this.loaded : this.requiredOutstanding <= 0;
   }
 
   load(entities: E[], babylonModelService: BabylonModelService, scene: Scene) {
@@ -62,6 +93,20 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
       this.entities.set(entity.id, entity);
       return {entity, scene};
     });
+
+    // What the gate waits for goes first. Without this the required entities would sit behind
+    // whatever the load order happened to be - and the whole point is not to wait for that.
+    if (this.required !== null) {
+      const required = this.required;
+      this.requiredOutstanding = entities.filter(entity => required.has(entity.id)).length;
+      this.pending.sort((a, b) =>
+        Number(required.has(b.entity.id)) - Number(required.has(a.entity.id)));
+      if (this.requiredOutstanding === 0) {
+        // Nothing is required, so the gate is already open. Say so now rather than at the end of
+        // a load nobody is waiting for.
+        this.babylonModelService.handleLoaded();
+      }
+    }
 
     const initial = Math.min(this.maxConcurrentLoads(), this.pending.length);
     for (let i = 0; i < initial; i++) {
@@ -155,6 +200,11 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
           console.error(e);
         }
       });
+      // A failed load counts too. The gate must open on "this will not arrive" exactly as it does
+      // on "this arrived", or one 404 keeps every player on the splash screen forever.
+      if (this.required?.has(entityId) && --this.requiredOutstanding === 0) {
+        this.babylonModelService.handleLoaded();
+      }
     }
     this.loadingCount--;
     if (this.loadingCount <= 0) {
@@ -190,16 +240,19 @@ export class BabylonMaterialContainer extends BabylonModelContainer<BabylonMater
           } else {
             console.error(`Error parsing material`);
           }
-          this.handleBabylonModelLaded();
+          // Named, so a waiter can be woken for this one material and the start gate can count it.
+          // Reported without an id, every one of these looked alike and nobody could wait for a
+          // single material - which is what kept all six of them in front of the first frame.
+          this.handleBabylonModelLaded(babylonMaterialEntity.id);
         } catch (e) {
           console.error(e);
           console.error(`Error parsing material '${e}'`);
-          this.handleBabylonModelLaded();
+          this.handleBabylonModelLaded(babylonMaterialEntity.id);
         }
       })
       .catch(err => {
         console.error(`Error loading Babylon file '${err}'`);
-        this.handleBabylonModelLaded();
+        this.handleBabylonModelLaded(babylonMaterialEntity.id);
       })
   }
 }
@@ -257,12 +310,21 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
         const result = SceneLoader.LoadAssetContainer(url, '', scene, assetContainer => {
             try {
               if (!hasError) {
-                this.setBabylonModel(gltfEntity, assetContainer);
-                this.assignGlbTextures(gltfEntity, assetContainer, gltfHelper);
-                // Single change-detection on completion: clear the progress UI and let Angular react.
-                this.zone.run(() => {
-                  this.babylonModelService.glbContainerProgress = undefined;
-                  this.handleBabylonModelLaded(gltfEntity.id);
+                // The materials this model paints itself with are no longer guaranteed to be
+                // there: they were taken out of the start gate, because a 4.8 MB vehicle material
+                // in front of the first frame is 4.8 MB a player waits for while owning no
+                // vehicles. So the model waits for its own instead - it is the only thing that
+                // knows which ones it needs, and a mesh set up without them turns bright red for
+                // good. The download ran in parallel with the glb, so this is usually already
+                // satisfied by the time it is asked.
+                this.whenMaterialsReady(gltfEntity, () => {
+                  this.setBabylonModel(gltfEntity, assetContainer);
+                  this.assignGlbTextures(gltfEntity, assetContainer, gltfHelper);
+                  // Single change-detection on completion: clear the progress UI and let Angular react.
+                  this.zone.run(() => {
+                    this.babylonModelService.glbContainerProgress = undefined;
+                    this.handleBabylonModelLaded(gltfEntity.id);
+                  });
                 });
               }
             } catch (error) {
@@ -293,6 +355,30 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
         this.zone.run(() => this.handleBabylonModelLaded(gltfEntity.id));
       }
     });
+  }
+
+  /**
+   * Runs {@code onReady} once every material this model names is loaded - or has failed, which is
+   * also an answer: a model held back for a material that will never arrive would be invisible
+   * instead of merely wrong, and wrong is the better of the two.
+   * <p>
+   * Waiting also pulls each material to the front of the material queue, so asking is what makes
+   * it arrive sooner.
+   */
+  private whenMaterialsReady(gltf: GltfEntity, onReady: () => void): void {
+    const missing = Object.values(gltf.materialGltfNames ?? {})
+      .filter(materialId => !this.babylonMaterialContainer.isEntityLoaded(materialId));
+    if (missing.length === 0) {
+      onReady();
+      return;
+    }
+    let outstanding = missing.length;
+    missing.forEach(materialId =>
+      this.babylonMaterialContainer.whenEntityLoaded(materialId, () => {
+        if (--outstanding === 0) {
+          onReady();
+        }
+      }));
   }
 
   private assignGlbTextures(gltf: GltfEntity, assetContainer: AssetContainer, gltfHelper: GltfHelper) {
@@ -328,14 +414,16 @@ export class ParticleSystemSetContainer extends BabylonModelContainer<ParticleSy
   protected loadBabylonModel(particleSystemEntity: ParticleSystemEntity, scene: Scene): void {
     this.particleSystemControllerClient.getData(particleSystemEntity.id)
       .then(data => {
-        this.handleBabylonModelLaded();
+        // Set before announcing: a waiter woken first would ask for the model and find nothing,
+        // which is the same bug the base class warns about for glb textures.
         this.setBabylonModel(particleSystemEntity, NodeParticleSystemSet.Parse(data));
+        this.handleBabylonModelLaded(particleSystemEntity.id);
       }).catch(err => {
       console.error(`Load Particle System failed (inner). '${particleSystemEntity.internalName} (${particleSystemEntity.id})' Reason: ${err}`);
-      this.handleBabylonModelLaded();
+      this.handleBabylonModelLaded(particleSystemEntity.id);
     }).catch(err => {
       console.error(`Load Particle System failed (outer). '${particleSystemEntity.internalName} (${particleSystemEntity.id})' Reason: ${err}`);
-      this.handleBabylonModelLaded();
+      this.handleBabylonModelLaded(particleSystemEntity.id);
     })
   }
 

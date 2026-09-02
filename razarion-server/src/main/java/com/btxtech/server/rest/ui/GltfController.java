@@ -4,6 +4,7 @@ import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.ui.GltfEntity;
 import com.btxtech.server.rest.AbstractBaseController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
+import com.btxtech.server.service.NoSuchEntityException;
 import com.btxtech.server.service.ContentDigest;
 import com.btxtech.server.service.ui.GltfService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -95,6 +96,9 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
                     .eTag(eTag)
                     .cacheControl(REVALIDATE)
                     .body(gltfService.getGlb(id));
+        } catch (NoSuchEntityException e) {
+            // Not there is not broken. The 404 says which.
+            throw e;
         } catch (Throwable e) {
             logger.log(Level.SEVERE, "Can not load GltfEntity for id: " + id, e);
             throw e;

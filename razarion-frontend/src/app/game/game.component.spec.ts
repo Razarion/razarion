@@ -30,7 +30,7 @@ describe('GameComponent chat visibility', () => {
     TestBed.configureTestingModule({});
     component = TestBed.runInInjectionContext(() => new GameComponent(
       unused, cockpitDisplay, compactLayout, unused, unused, unused, unused, unused, unused,
-      unused, unused, uiSettings, unused, TestBed.inject(NgZone)));
+      unused, unused, uiSettings, unused, unused, unused, TestBed.inject(NgZone)));
     // The game has signed the player in and put its cockpit up.
     cockpitDisplay.showChatCockpit = true;
   });

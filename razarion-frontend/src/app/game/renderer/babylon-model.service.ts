@@ -20,6 +20,7 @@ import {GLTFFileLoader} from "@babylonjs/loaders";
 import {Model3DEntity, ParticleSystemEntity} from "src/app/generated/razarion-share";
 import {SimpleMaterial} from "@babylonjs/materials";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
+import {materialsForFirstFrame} from "./start-gate-materials";
 import {BabylonMaterialContainer, GlbContainer, ParticleSystemSetContainer} from "./babylon-model-container";
 import {GltfHelper} from "./gltf-helper";
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
@@ -75,10 +76,14 @@ export class BabylonModelService {
    * long as that set blocks RUN_GAME, the wait is structurally longer than what a phone visitor
    * is willing to sit through, and no amount of shaving milliseconds elsewhere can fix it.
    *
-   * So only the small stuff blocks: node materials and particle systems, which are JSON and are
-   * needed to draw the ground at all. The glbs keep streaming afterwards, and everything that
-   * places one - items, the placer, terrain objects - asks {@link isModel3DReady} first and
-   * subscribes via {@link requestModel3D} when the answer is no.
+   * So the glbs stream, and everything that places one - items, the placer, terrain objects - asks
+   * {@link isModel3DReady} first and subscribes via {@link requestModel3D} when the answer is no.
+   *
+   * What blocks is now only what the first frame paints itself: the materials no glb names. It
+   * used to be every material and every particle system, on the reasoning that they are "small
+   * JSON" - they are not. STARTUP_PAYLOAD weighed them at 9.5 MB of the 15 MB before a first-time
+   * player could act, the largest single item being a 4.8 MB vehicle material. See
+   * {@link materialsForFirstFrame}.
    */
   init(): Promise<void> {
     this.loadUiConfigCollection();
@@ -87,9 +92,17 @@ export class BabylonModelService {
     });
   }
 
-  /** The containers whose absence would leave nothing on screen at all. */
+  /**
+   * The containers whose absence would leave nothing on screen at all - and only the parts of them
+   * that the first frame actually paints. See {@link materialsForFirstFrame}.
+   * <p>
+   * This used to ask isLoaded(), meaning every material and every particle system in full. That is
+   * 9.5 MB of the 15 MB a first-time player waited through before the game was playable, measured
+   * by STARTUP_PAYLOAD across five sessions on three devices.
+   */
   private isStartGateOpen(): boolean {
-    return this.babylonMaterialContainer.isLoaded() && this.particleSystemContainer.isLoaded();
+    return this.babylonMaterialContainer.isStartRequirementMet()
+      && this.particleSystemContainer.isStartRequirementMet();
   }
 
   private handleResolve(handler: () => void) {
@@ -134,12 +147,19 @@ export class BabylonModelService {
 
   private loadUiConfigCollection() {
     this.uiConfigCollectionService.getUiConfigCollection().then(uiConfigCollection => {
+      this.babylonMaterialContainer.setRequired(materialsForFirstFrame(uiConfigCollection));
+      // None. Both particle systems are effects - smoke and a spawn burst - and 1.5 MB of them
+      // stood in front of every first frame. createParticleSystem already answers "not here yet"
+      // with a warning and no effect, so the worst case is a missing puff of smoke in the first
+      // seconds, against a game that starts sooner.
+      this.particleSystemContainer.setRequired([]);
       this.babylonMaterialContainer.load(uiConfigCollection.babylonMaterials, this, this.scene);
       this.setupModel3DEntities(uiConfigCollection.model3DEntities);
       this.particleSystemContainer.load(uiConfigCollection.particleSystemEntities, this, this.scene)
       this.glbContainer.load(uiConfigCollection.gltfs, this, this.scene);
     });
   }
+
 
   public handleLoaded(): void {
     if (this.isStartGateOpen()) {

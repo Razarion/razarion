@@ -78,6 +78,7 @@ import {ViewField, ViewFieldListener} from './view-field';
 import {PlaceConfigComponent} from '../../editor/common/place-config/place-config.component';
 import {buildQuestPlaceVisualizationMaterial} from './quest-place-visualization-material';
 import {CommandTargetKind, CommandTargetMarker} from './command-target-marker';
+import {StartupPayloadProbe} from '../tracking/startup-payload';
 
 
 export interface RazarionMetadata {
@@ -242,6 +243,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
               public babylonAudioService: BabylonAudioService,
               private tsSelectionService: TsSelectionService,
               private firstInteractionTrackerService: FirstInteractionTrackerService,
+              private startupPayloadProbe: StartupPayloadProbe,
               public uiSettingsService: UiSettingsService,
               public touchSelectionMode: TouchSelectionModeService) {
     this.babylonModelService.renderer = this;
@@ -1850,6 +1852,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   onGameEngineTick(clientTickMs: number): void {
+    // The first tick is the moment the game is playable, and everything downloaded up to here was
+    // blocking. The probe keeps that apart from what streams in afterwards; it ignores every tick
+    // but the first.
+    this.startupPayloadProbe.onGamePlayable();
     this.renderTelemetry?.recordTick(clientTickMs);
     if (this.perfOverlay?.isActive()) {
       this.perfOverlay.onTickArrived(clientTickMs);

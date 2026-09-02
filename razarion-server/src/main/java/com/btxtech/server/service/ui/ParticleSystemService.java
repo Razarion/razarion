@@ -5,6 +5,7 @@ import com.btxtech.server.repository.ui.ParticleSystemRepository;
 import com.btxtech.server.rest.ui.MaterialSizeInfo;
 import com.btxtech.server.rest.ui.ParticleSystemController;
 import com.btxtech.server.service.AbstractBaseEntityCrudService;
+import com.btxtech.server.service.ContentDigest;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +36,34 @@ public class ParticleSystemService extends AbstractBaseEntityCrudService<Particl
         return getEntity(id).getData();
     }
 
+    /**
+     * The entity tag for one particle system, or null if there is nothing to tag.
+     * <p>
+     * Reads the digest column and nothing else, so answering "still the same?" costs a small row
+     * instead of a megabyte of blob. A row written before this column existed has none yet; it is
+     * computed once, on the first request that needs it, and kept.
+     */
+    @Transactional
+    public String getDataDigest(int id) {
+        ParticleSystemEntity entity = getEntity(id);
+        if (entity.getDataDigest() == null) {
+            byte[] data = entity.getData();
+            if (data == null) {
+                return null;
+            }
+            entity.setDataDigest(ContentDigest.of(data));
+            getJpaRepository().save(entity);
+        }
+        return entity.getDataDigest();
+    }
+
     @Transactional
     public void setData(int id, byte[] data) {
         ParticleSystemEntity entity = getEntity(id);
         entity.setData(data);
+        // In the same transaction as the bytes. A digest written separately could survive a failed
+        // write, and every browser holding the old copy would then be told it is current.
+        entity.setDataDigest(data != null ? ContentDigest.of(data) : null);
         getJpaRepository().save(entity);
     }
 

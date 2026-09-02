@@ -54,6 +54,23 @@ export type InteractionKind =
  */
   | 'ENGINE_ERROR'
 /**
+ * Where the seconds before the game went: downloading, parsing, booting. Not a player action.
+ * <p>
+ * Half of the in-app sessions are lost between PAGE_LOADED and WASM_BOOTSTRAP, and "make it
+ * smaller" and "show something sooner" are different repairs. This is the split that decides which.
+ * See {@link StartupTiming}.
+ */
+  | 'STARTUP_TIMING'
+/**
+ * What the start downloaded, by category, at three moments. Not a player action.
+ * <p>
+ * STARTUP_TIMING says how long the download took; this says what was in it. Of roughly 18.8 MB per
+ * start, only the 2.4 MB of JavaScript and 1.3 MB of WebAssembly can be weighed in the repository -
+ * the models, textures and audio live in the database, and four fifths of a start has therefore
+ * never been measured at all. See {@link StartupPayload}.
+ */
+  | 'STARTUP_PAYLOAD'
+/**
  * The base placer appeared on screen. Not a player action at all - the only kind here that the
  * player did not cause - and it is here because the question it answers cannot be asked without it.
  * <p>
