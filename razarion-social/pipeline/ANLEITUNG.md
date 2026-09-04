@@ -97,6 +97,39 @@ weil Instagram keine reinen Textbeiträge annimmt:
 node render_cards.mjs
 ```
 
+### Clips
+
+Ein Clip wird genauso übergeben wie ein Bild — `--media clip.mp4`. Um die Formate musst du dich
+nicht kümmern: **jedes Netzwerk bekommt beim Ausliefern seine eigene Fassung**, abgeleitet neben der
+Originaldatei als `<name>--<format>.mp4` und beim nächsten Lauf wiederverwendet. Die Originaldatei
+wird nie verändert.
+
+```
+Instagram, Facebook   Reel 9:16, 1080×1920, max 90 s
+X                     eigene Form, nur Codec und Obergrenze, max 140 s
+```
+
+Warum unterschiedlich: Instagram und Facebook zeigen Reels hochkant und quetschen alles andere in
+einen Streifen. X hat dagegen kein festes Format, sondern nimmt alles von 1:3 bis 3:1 — dort einen
+Querformat-Clip auf 16:9 zu polstern hieße, Balken an etwas zu kleben, das die Zeitleiste ohnehin
+ganz gezeigt hätte.
+
+**Balken im Original werden erkannt und entfernt.** Die Archivclips stammen aus Browserfenstern und
+bringen fast alle schwarze Ränder mit — beim Explosionsclip 184 px auf jeder Seite. Ohne das säßen
+sie mitten im fertigen Reel als harte schwarze Kanten. Erkannt wird über drei Zeitpunkte im Clip;
+gewinnt die *größte* gefundene Bildfläche, damit eine dunkle Szene nie zu eng schneiden kann.
+
+Beim Hochformat füllt eine unscharfe Kopie des Clips den Rest des Bildes, statt ihn schwarz zu
+lassen — bei einem 2:1-Clip in 9:16 wären sonst 70 % der Fläche leer. Beschnitten wird nie: was zu
+sehen ist, bleibt vollständig zu sehen.
+
+`check.mjs` misst vorher, was die Umwandlung nicht reparieren kann:
+
+```
+unter 3 s     Instagram lehnt das Reel ab - nur eine längere Aufnahme hilft
+über 90 s     die Reel-Fassung wird geschnitten, der Rest fällt weg
+```
+
 ## 2. Lesen und freigeben
 
 Drei Dateien, ein Eintrag pro Netzwerk:
@@ -170,8 +203,13 @@ X, Beitrag mit Link       $0.20
 X lesen (nicht mehr aktiv) $0.005 pro Beitrag
 ```
 
-Der Link ist der Hebel: drei von vier Beiträgen ohne Link senken die Jahreskosten bei drei
-Beiträgen pro Woche von rund 31 auf 10 Dollar.
+**X-Beiträge tragen den Link nicht mehr.** Er kostete dort das Dreizehnfache, und X drückt
+zusätzlich die Reichweite von Beiträgen mit Link — er kaufte also weniger Publikum zum höheren
+Preis. Der Weg zur Seite ist auf X das Profil, wie auf Instagram auch. Bei drei Beiträgen pro Woche
+sind das rund 31 Dollar im Jahr statt rund 2.
+
+Instagram bekommt weiterhin „Link in bio.", Facebook den Link im Text — dort ist er klickbar und
+kostet nichts.
 
 ## Wenn etwas klemmt
 

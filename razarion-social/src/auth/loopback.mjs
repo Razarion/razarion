@@ -13,12 +13,21 @@ export function pkcePair() {
 }
 
 function openBrowser(url) {
-  const cmd =
-    process.platform === 'win32' ? ['cmd', ['/c', 'start', '', url]]
-    : process.platform === 'darwin' ? ['open', [url]]
-    : ['xdg-open', [url]];
+  // Windows needs the URL quoted, and the quotes have to survive Node. cmd.exe re-parses its own
+  // command line and reads & as a command separator, so an unquoted authorisation URL is cut at
+  // the first parameter - the browser then opens a request carrying only client_id and Google
+  // answers "Required parameter is missing: response_type", which reads like a bug in the request
+  // rather than in how it was opened. windowsVerbatimArguments stops Node from re-escaping the
+  // quotes we add. The empty pair before it is start's window-title argument: without it, start
+  // treats the quoted URL as the title and opens nothing.
+  const [command, args, options] =
+    process.platform === 'win32'
+      ? ['cmd', ['/c', 'start', '""', `"${url}"`], { windowsVerbatimArguments: true }]
+      : process.platform === 'darwin'
+        ? ['open', [url], {}]
+        : ['xdg-open', [url], {}];
   try {
-    spawn(cmd[0], cmd[1], { detached: true, stdio: 'ignore' }).unref();
+    spawn(command, args, { detached: true, stdio: 'ignore', ...options }).unref();
   } catch {
     warn('Could not open a browser automatically.');
   }

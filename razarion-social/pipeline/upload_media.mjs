@@ -17,6 +17,9 @@ import {
   PIPELINE_ROOT, CAPTIONS_FILE, UPLOADS_FILE, POSTED_FILE,
   FB_POSTS_FILE, POSTED_FB_FILE, readJson, writeJson, toRelative,
 } from './lib/paths.mjs';
+import {
+  FORMATS, PLATFORM_FORMAT, derivedPath, needsTranscode, probeVideo, transcodeVideo,
+} from './lib/video.mjs';
 import { r2Config, putObject, contentTypeFor, sha256 } from './lib/r2.mjs';
 import { githubConfig, ensureRelease, listAssets, uploadAsset } from './lib/github.mjs';
 import { env } from '../src/config.mjs';
@@ -40,6 +43,60 @@ const PAD_TO_MAX = 1.9;
 const PAD_COLOUR = '#1c1917';
 
 /**
+ * Put one file into the shape the network it is going to expects.
+ *
+ * The split is by media type, not by network. An image only needs work for Instagram - Facebook
+ * takes PNG at any shape - but a video needs it for both, because a reel slot is 9:16 on both and a
+ * landscape recording dropped into one is shown as a stripe with most of the screen wasted.
+ */
+async function prepareMedia(item, absolutePath, dryRun, raw, platform) {
+  if (item.type === 'photo') return prepareImage(item, absolutePath, dryRun, raw);
+  return prepareVideo(item, absolutePath, dryRun, platform);
+}
+
+/**
+ * Derive the copy of a clip that `platform` wants, next to the master.
+ *
+ * The master file is never touched. Each network's copy is written beside it as
+ * `<name>--<format>.mp4` and reused on the next run, so re-publishing a queue does not re-encode
+ * anything. A clip that already matches the target is passed through untouched rather than being
+ * re-encoded into slightly worse pixels for no reason.
+ */
+async function prepareVideo(item, absolutePath, dryRun, platform) {
+  const formatName = PLATFORM_FORMAT[platform];
+  if (!formatName) return absolutePath;
+  const format = FORMATS[formatName];
+
+  const probe = await probeVideo(absolutePath);
+  if (!probe) {
+    warn(`${basename(absolutePath)}: ffprobe cannot read this file; left as is.`);
+    return absolutePath;
+  }
+  if (!needsTranscode(probe, format)) return absolutePath;
+
+  const target = derivedPath(absolutePath, formatName);
+  if (existsSync(target)) {
+    item.file = toRelative(target);
+    return target;
+  }
+
+  if (dryRun) {
+    step(`would convert ${basename(absolutePath)} (${probe.width}x${probe.height}) to ${format.label}`);
+    return absolutePath;
+  }
+
+  await transcodeVideo(absolutePath, target, format);
+  const after = await probeVideo(target);
+  const cut = after && probe.duration - after.duration > 0.5
+    ? `, trimmed to ${format.maxSeconds}s`
+    : '';
+  step(`converted ${basename(absolutePath)} ${probe.width}x${probe.height} to ${format.label}${cut}`);
+
+  item.file = toRelative(target);
+  return target;
+}
+
+/**
  * Makes an image something Instagram will actually take: JPEG, and within the accepted shape.
  *
  * Two things get rejected at publish time rather than at upload time, which is the expensive place
@@ -50,7 +107,7 @@ const PAD_COLOUR = '#1c1917';
  * removed shows nothing worth seeing. So the image is padded onto the game's own background colour
  * instead: nothing is lost, and the bars read as part of the design rather than as damage.
  */
-async function prepareForInstagram(item, absolutePath, dryRun, raw) {
+async function prepareImage(item, absolutePath, dryRun, raw) {
   // Facebook takes PNG and imposes no aspect ratio, so preparing a file for it means leaving it
   // alone. Padding a screenshot there would add bars for no reason.
   if (raw || item.type !== 'photo') return absolutePath;
@@ -136,8 +193,9 @@ async function main() {
   // --limit is there to try the whole chain on one file before committing 57 MB to it.
   const limit = args.limit ? Number(args.limit) : Infinity;
 
-  // Two review files feed two networks. Facebook gets the untouched originals; Instagram gets the
-  // converted and padded versions, because only Instagram insists on them.
+  // Two review files feed two networks. For images Facebook gets the untouched originals and only
+  // Instagram insists on JPEG and a shape; for video both want a 9:16 reel, so `raw` covers images
+  // alone and the clip conversion is chosen by platform further down.
   const target = args.source === 'fb' ? 'fb' : 'ig';
   const sourceFile = target === 'fb' ? FB_POSTS_FILE : CAPTIONS_FILE;
   const listKey = target === 'fb' ? 'posts' : 'captions';
@@ -183,7 +241,7 @@ async function main() {
         warn(`${entry.id}: ${item.file} is missing on disk; skipped.`);
         continue;
       }
-      file = await prepareForInstagram(item, file, dryRun, raw);
+      file = await prepareMedia(item, file, dryRun, raw, target === 'fb' ? 'facebook' : 'instagram');
 
       const size = statSync(file).size;
       const maxBytes = item.type === 'photo' ? MAX_IMAGE_BYTES : MAX_VIDEO_BYTES;

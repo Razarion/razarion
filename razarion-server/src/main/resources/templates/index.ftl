@@ -125,6 +125,9 @@
         .social-links a{color:#ddd;text-decoration:none;font-size:0.95rem;transition:color 0.3s;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
         .social-links a:hover{color:#f73}
         .social-links svg{width:20px;height:20px;vertical-align:middle;margin-right:0.4rem;fill:currentColor}
+        .legal-links{margin-top:0.9rem;display:flex;gap:1.2rem;justify-content:center}
+        .legal-links a{color:#8ba3ba;text-decoration:none;font-size:0.8rem;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
+        .legal-links a:hover{color:#f73}
 
         @media (max-height:700px){
             .features{display:none}
@@ -170,6 +173,8 @@
             .social-links a{font-size:0.85rem}
             .social-links .social-label{display:none}
             .social-links svg{width:22px;height:22px;margin-right:0}
+            .legal-links{margin-top:0.5rem;gap:1rem}
+            .legal-links a{font-size:0.72rem}
 
             /* Out of the flow, so it cannot push the panel around; the panel keeps the bottom of
                the screen and this keeps the top. pointer-events off - it sits over the picture and
@@ -245,6 +250,14 @@
             <a href="https://www.facebook.com/Razarion" target="_blank" rel="noopener" aria-label="Razarion on Facebook">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><span class="social-label">Facebook</span>
             </a>
+        </div>
+        <!-- Google's OAuth consent screen refuses to leave testing without a reachable privacy
+             policy URL, and the app verification that follows looks for it linked from the
+             homepage it was given. Small and dim on purpose: it is a legal requirement, not a
+             destination. -->
+        <div class="legal-links">
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
         </div>
     </section>
     <#if qs?has_content><img src="/t.gif${qs}" width="1" height="1" alt="" style="position:absolute;opacity:0">

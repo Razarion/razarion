@@ -3,6 +3,7 @@ import {FormsModule} from '@angular/forms';
 import {
   AbstractMesh,
   ArcRotateCamera,
+  Camera,
   Color3,
   Color4,
   DirectionalLight,
@@ -106,8 +107,13 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
           </div>
         }
         <canvas #viewportCanvas [hidden]="!current()"></canvas>
+        <!-- The ground phase is advisory: the tiles are already in the scene and only their
+             shaders are still compiling, so the editor is meant to stay usable through it. A
+             full-strength overlay contradicted that - it swallowed every click and wheel event
+             over the viewport, and when whenTerrainReady() failed to settle (it does) the scene
+             could not be touched at all. -->
         @if (current() && rendererStatus(); as msg) {
-          <div class="loading-overlay">
+          <div class="loading-overlay" [class.advisory]="msg === groundStatus">
             <div class="spinner"></div>
             <span>{{ msg }}</span>
           </div>
@@ -183,8 +189,23 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
               </select>
             </div>
             <div class="prop-row">
-              <button (click)="takeScreenshot()" [disabled]="!rendererReady() || screenshotBusy()">
+              <button (click)="takeScreenshot()" [disabled]="!rendererReady() || screenshotBusy() || recordingBusy()">
                 {{ screenshotBusy() ? 'Rendering…' : 'Take screenshot' }}
+              </button>
+            </div>
+            <div class="prop-row">
+              <span class="prop-label">Clip length</span>
+              <select [(ngModel)]="clipSeconds" [disabled]="recordingBusy()">
+                @for (s of clipLengths; track s) {
+                  <option [ngValue]="s">{{ s }} seconds</option>
+                }
+              </select>
+            </div>
+            <div class="prop-row">
+              <button (click)="recordClip()" [disabled]="!rendererReady() || screenshotBusy() || recordingBusy()">
+                {{ recordingBusy()
+                    ? 'Recording… ' + (clipSeconds - recordElapsed()).toFixed(0) + 's'
+                    : 'Record clip' }}
               </button>
             </div>
           </div>
@@ -265,6 +286,14 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
                   <label class="muted" style="display:flex;align-items:center;gap:4px;">
                     <input type="checkbox" [checked]="isLooping(it.id)" (change)="toggleAttackLoop(it.id)">
                     Loop
+                  </label>
+                  <label class="muted" style="display:flex;align-items:center;gap:4px;">
+                    every
+                    <select [(ngModel)]="attackIntervalSeconds" [disabled]="isLooping(it.id)">
+                      @for (s of attackIntervals; track s) {
+                        <option [ngValue]="s">{{ s }}s</option>
+                      }
+                    </select>
                   </label>
                   <label class="muted" style="display:flex;align-items:center;gap:4px;">
                     <input type="checkbox" [checked]="it.explodeTargetOnFire === true"
@@ -362,6 +391,26 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
               <span class="muted filename">{{ p.filename }}</span>
               <button class="ghost" (click)="discardScreenshot()" title="Esc">Discard</button>
               <button class="primary" (click)="saveScreenshot()">Save PNG</button>
+            </footer>
+          </div>
+        </div>
+      }
+
+      <!-- ============ Clip preview modal ============ -->
+      @if (clipPreview(); as c) {
+        <div class="modal-backdrop" (click)="discardClip()">
+          <div class="modal" (click)="$event.stopPropagation()">
+            <header class="modal-header">
+              <h3>Clip preview</h3>
+              <span class="muted">{{ c.w }} × {{ c.h }} · {{ c.seconds }}s · {{ (c.bytes / 1048576).toFixed(1) }} MB</span>
+            </header>
+            <div class="modal-body">
+              <video [src]="c.url" controls autoplay loop muted></video>
+            </div>
+            <footer class="modal-footer">
+              <span class="muted filename">{{ c.filename }}</span>
+              <button class="ghost" (click)="discardClip()" title="Esc">Discard</button>
+              <button class="primary" (click)="saveClip()">Save clip</button>
             </footer>
           </div>
         </div>
@@ -509,6 +558,14 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
       font-size: 13px;
       letter-spacing: 0.04em;
     }
+    /* Says what is still happening without standing in front of it. */
+    .loading-overlay.advisory {
+      pointer-events: none;
+      background: rgba(14, 16, 20, 0.25);
+      justify-content: flex-end;
+      padding-bottom: 18px;
+    }
+    .loading-overlay.advisory .spinner { width: 18px; height: 18px; border-width: 2px; }
     .spinner {
       width: 36px;
       height: 36px;
@@ -684,7 +741,8 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
       align-items: center;
       justify-content: center;
     }
-    .modal-body img {
+    .modal-body img,
+    .modal-body video {
       max-width: 100%;
       max-height: calc(100vh - 200px);
       display: block;
@@ -723,6 +781,9 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   readonly content = signal<SceneContent | null>(null);
   readonly selectedItemId = signal<number | null>(null);
   readonly rendererStatus = signal<string>('');
+  /** The one status the overlay reports without blocking - see the template. Named rather than
+   *  repeated so the message and the class that keys off it cannot drift apart. */
+  readonly groundStatus = 'Building ground…';
   readonly gizmoTool = signal<GizmoTool>('move');
   readonly diplomacies = DIPLOMACIES;
   readonly planets = signal<ObjectNameId[]>([]);
@@ -749,10 +810,25 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   customWidth = 1920;
   customHeight = 1080;
   screenshotBackground: 'transparent' | 'scene' = 'transparent';
+  /** How long the attack loop waits between strikes. 0.6s was the old fixed
+   *  value and is kept for screenshotting, where overlapping bolts only widen
+   *  the window to catch a good frame. Anything being filmed wants a gap. */
+  readonly attackIntervals: ReadonlyArray<number> = [0.6, 1.5, 2.5, 4];
+  attackIntervalSeconds = 2.5;
+
   /** Delay between fireAttack() and takeScreenshot() in "Fire + capture" mode.
    *  70ms = BabylonLightning bolt peak (PEAK_MS in babylon-lightning.ts). */
   captureDelayMs = 600;
   readonly screenshotBusy = signal(false);
+
+  /** How long a clip runs. Kept short: the reel slots reward a loop, not a session. */
+  readonly clipLengths: ReadonlyArray<number> = [5, 8, 12, 20, 30];
+  clipSeconds = 8;
+  readonly recordingBusy = signal(false);
+  /** Seconds already captured, so the button can count down rather than just sit there. */
+  readonly recordElapsed = signal(0);
+  /** Pending clip awaiting Save/Discard, mirroring screenshotPreview. */
+  readonly clipPreview = signal<{url: string; w: number; h: number; seconds: number; filename: string; bytes: number} | null>(null);
   /** Pending screenshot awaiting Save/Discard decision in the preview modal.
    *  Set by takeScreenshot(); consumed by saveScreenshot()/discardScreenshot(). */
   readonly screenshotPreview = signal<{dataUrl: string; w: number; h: number; filename: string} | null>(null);
@@ -865,6 +941,16 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       }
       return;
     }
+    if (this.clipPreview()) {
+      if (event.key === 'Escape') {
+        this.discardClip();
+        event.preventDefault();
+      }
+      return;
+    }
+    // A recording runs for a fixed number of seconds and every shortcut behind this point moves the
+    // camera or the gizmo - which would be filmed. Swallow them until it is over.
+    if (this.recordingBusy()) return;
     if (!this.current() || !this.rendererReady()) return;
     const target = event.target as HTMLElement | null;
     if (target && (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'TEXTAREA')) return;
@@ -940,9 +1026,11 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     if (this.attackLoops.has(id)) {
       this.stopAttackLoop(id);
     } else {
-      // ~600ms keeps a couple lightning bolts alive at once and gives the user
-      // a wide window for screenshotting; cheap enough not to hurt the loop.
-      const handle = setInterval(() => this.fireAttack(id), 600);
+      // The interval is what separates one strike from the next. A bolt lives
+      // 700ms and the explosion behind it about a second, so anything under
+      // ~1.5s runs them together and the clip becomes a continuous arc rather
+      // than a sequence of attacks.
+      const handle = setInterval(() => this.fireAttack(id), this.attackIntervalSeconds * 1000);
       this.attackLoops.set(id, handle);
       this.fireAttack(id); // fire immediately so the user gets visual feedback
     }
@@ -964,7 +1052,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
    * the target. Other weapon kinds (projectile/rocket) would need the trail +
    * flying mesh path from babylon-base-item, deferred for now.
    */
-  fireAttack(attackerId: number): void {
+  fireAttack(attackerId: number, boltLifetimeMs?: number): void {
     const attacker = this.content()?.items.find(i => i.id === attackerId);
     if (!attacker || attacker.attackTargetId == null) return;
     const target = this.content()?.items.find(i => i.id === attacker.attackTargetId);
@@ -987,10 +1075,12 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     targetNode.setEnabled(true);
 
     BabylonMuzzleFlash.fire(scene, start, end.subtract(start).normalize());
-    // Long bolt lifetime so the bolt is still visible at late capture delays
-    // (e.g. 500ms when the explosion fireball is at its peak). Default 700ms
-    // would leave the bolt at ~32% alpha at 500ms; 3000ms keeps it at ~85%.
-    BabylonLightning.fire(scene, start, end, 3000);
+    // Undefined leaves BabylonLightning on its own 700ms, which is what a strike
+    // looks like in the game. Only "Fire + capture" asks for a longer one, and
+    // only because it photographs the bolt hundreds of milliseconds after it
+    // was fired - see fireAndCapture. Filming wants the short one: a 3s bolt
+    // outlives several loop ticks and the frame fills up with standing arcs.
+    BabylonLightning.fire(scene, start, end, boltLifetimeMs);
     BabylonImpact.detonate(scene, end);
     if (attacker.explodeTargetOnFire) {
       // Brief delay so the explosion reads as a consequence of the bolt, not
@@ -1006,7 +1096,11 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
    * to catch the lightning bolt peak (~70ms) or the impact explosion (~180ms).
    */
   async fireAndCapture(attackerId: number): Promise<void> {
-    this.fireAttack(attackerId);
+    // The screenshot is taken captureDelayMs after the shot, so the bolt has to
+    // outlast the wait: at the default 600ms its own 700ms lifetime would leave
+    // it at ~15% alpha. 3000ms keeps it at ~85% and costs nothing here, because
+    // nothing else is fired while the capture is pending.
+    this.fireAttack(attackerId, 3000);
     const delay = Math.max(0, this.captureDelayMs | 0);
     await new Promise(r => setTimeout(r, delay));
     await this.takeScreenshot();
@@ -1378,11 +1472,13 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
           undefined, false, {lifetimeMs: 1000, fadeMs: 1000},
         );
       }, 600);
-      // Respawn after 5s so the user keeps a continuously-readable scene
-      // (otherwise an "Explode now" leaves a hole on screen until reload).
-      // No-op in loop mode — fireAttack re-enables at the start of every
-      // cycle anyway.
-      setTimeout(() => node.setEnabled(true), 5000);
+      // Back once the fireball has burned out (1.0-1.4s) and the wreckage decal
+      // is fading, so the target is present again for the pause before the next
+      // shot rather than for the 180ms between being re-enabled and being blown
+      // up. At 5s, which is what this was, a filmed loop showed lightning
+      // striking bare ground: the only frames holding a vehicle were the ones
+      // where it was already inside the explosion.
+      setTimeout(() => node.setEnabled(true), 1800);
     }
   }
 
@@ -1475,7 +1571,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
         // "done" here would put a green field on screen and call it terrain, which is exactly
         // how a screenshot ends up shipped with no ground on it. Keep reporting, but do not
         // hold the editor hostage: the camera and the item list stay usable meanwhile.
-        this.rendererStatus.set('Building ground…');
+        this.rendererStatus.set(this.groundStatus);
         this.terrainLoader.whenTerrainReady().then(() => {
           if (this.current()?.id === id) {
             this.rendererStatus.set('');
@@ -1935,6 +2031,170 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       scene.clearColor = originalClear;
       this.screenshotBusy.set(false);
     }
+  }
+
+  /**
+   * The container the browser will actually give us, best first.
+   *
+   * Chrome can mux H.264 straight into MP4, which is what every network wants and saves the
+   * pipeline a re-encode. Where that is missing WebM is always there, and ffmpeg converts it on the
+   * way out - the clip is worth having either way, so an unsupported codec must not be fatal.
+   */
+  private pickClipMime(): string | null {
+    const candidates = [
+      'video/mp4;codecs=avc1.42E01E',
+      'video/mp4',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm',
+    ];
+    return candidates.find(t => MediaRecorder.isTypeSupported(t)) ?? null;
+  }
+
+  /**
+   * Record the viewport for `clipSeconds` and open the result in the preview modal.
+   *
+   * This captures the canvas as it plays rather than stepping frames and rendering each one. The
+   * effects worth filming - the build-up grid, the harvest beam, the muzzle flashes - are driven by
+   * setInterval and the wall clock, not by a frame counter, so a stepped capture would hold them
+   * still while the camera moved and produce something that never happened. What the recorder sees
+   * is what a player would see.
+   *
+   * The canvas is resized to the chosen preset for the duration and put back afterwards, so the
+   * output is exactly the requested size instead of whatever the window happened to be. The
+   * viewport looks stretched while it runs; that is the trade for not having a second renderer.
+   */
+  async recordClip(): Promise<void> {
+    if (!this.camera || !this.rendererReady() || this.recordingBusy() || this.screenshotBusy()) return;
+
+    const engine = this.babylonRender.getScene().getEngine();
+    const canvas = engine.getRenderingCanvas();
+    if (!canvas) {
+      console.warn('[Studio] no rendering canvas to record');
+      return;
+    }
+
+    const mime = this.pickClipMime();
+    if (!mime) {
+      console.warn('[Studio] this browser offers no video container MediaRecorder can write');
+      return;
+    }
+
+    const preset = this.screenshotPreset;
+    const width = preset.w > 0 ? preset.w : Math.max(64, Math.round(this.customWidth));
+    const height = preset.h > 0 ? preset.h : Math.max(64, Math.round(this.customHeight));
+    const seconds = this.clipSeconds;
+
+    const beforeWidth = engine.getRenderWidth();
+    const beforeHeight = engine.getRenderHeight();
+    const beforeFovMode = this.camera.fovMode;
+
+    this.recordingBusy.set(true);
+    this.recordElapsed.set(0);
+    let ticker: ReturnType<typeof setInterval> | null = null;
+    const scene = this.babylonRender.getScene();
+    let frameObserver: ReturnType<typeof scene.onAfterRenderObservable.add> | null = null;
+
+    try {
+      // Babylon holds the vertical field of view constant when the aspect changes, so a landscape
+      // viewport recorded as a 9:16 reel keeps its height and loses both sides - the builder off the
+      // left edge, the factory off the right, neither of them visible while the shot was framed.
+      // Pinning the horizontal field instead keeps everything that was in frame and reveals more
+      // above and below, which is the direction a taller format has room for anyway. Only for
+      // targets narrower than the viewport; a wider one has the same problem on the other axis and
+      // the default already handles it.
+      const viewportAspect = beforeWidth / beforeHeight;
+      if (width / height < viewportAspect) {
+        this.camera.fovMode = Camera.FOVMODE_HORIZONTAL_FIXED;
+      }
+      engine.setSize(width, height);
+      // One frame at the new size before the first one is captured, otherwise the opening frames
+      // are the old shape stretched into the new one.
+      await new Promise(r => requestAnimationFrame(r));
+
+      // 8 Mbit at 30 fps is generous for a game capture and still small enough to hand around; the
+      // clip is re-encoded per network afterwards, so this only has to avoid throwing detail away.
+      // A canvas stream with a frame rate hands over a frame only when the canvas is seen to
+      // change, and a scene between two attacks does not change at all: an 8s recording of one
+      // came back as two frames spanning 0.17s. It looked like a container bug and was not - the
+      // frames were never captured. The earlier version survived only because its lightning lived
+      // 3s and therefore always overlapped the next bolt, which is the artefact this recording is
+      // meant to avoid; even then it managed 105 frames, not 240.
+      //
+      // Capturing on demand instead - one frame per render, driven by Babylon's own loop - is
+      // indifferent to whether anything moved, so a still second costs 30 frames like any other.
+      const stream = canvas.captureStream(0);
+      const frameTrack = stream.getVideoTracks()[0] as CanvasCaptureMediaStreamTrack;
+      frameObserver = scene.onAfterRenderObservable.add(() => frameTrack.requestFrame());
+      const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8_000_000 });
+      const chunks: Blob[] = [];
+      recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+
+      const started = performance.now();
+      ticker = setInterval(
+        () => this.recordElapsed.set(Math.min(seconds, (performance.now() - started) / 1000)),
+        100,
+      );
+
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        recorder.onerror = (e) => reject(e);
+        recorder.onstop = () => resolve(new Blob(chunks, { type: mime }));
+        recorder.start();
+        setTimeout(() => recorder.stop(), seconds * 1000);
+      });
+
+      stream.getTracks().forEach(t => t.stop());
+
+      this.clipPreview.set({
+        url: URL.createObjectURL(blob),
+        w: width,
+        h: height,
+        seconds,
+        bytes: blob.size,
+        filename: this.makeClipFilename(width, height, mime),
+      });
+    } catch (e) {
+      console.error('[Studio] clip recording failed', e);
+    } finally {
+      if (ticker) clearInterval(ticker);
+      // Left attached, this keeps asking a dead track for frames on every frame the editor draws
+      // for the rest of the session.
+      if (frameObserver) scene.onAfterRenderObservable.remove(frameObserver);
+      if (this.camera) this.camera.fovMode = beforeFovMode;
+      engine.setSize(beforeWidth, beforeHeight);
+      engine.resize();
+      this.recordingBusy.set(false);
+      this.recordElapsed.set(0);
+    }
+  }
+
+  /** Download the pending clip and close the dialog. */
+  saveClip(): void {
+    const c = this.clipPreview();
+    if (!c) return;
+    const a = document.createElement('a');
+    a.href = c.url;
+    a.download = c.filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // The object URL owns the blob until it is revoked, and a few 20 MB clips add up over a session.
+    URL.revokeObjectURL(c.url);
+    this.clipPreview.set(null);
+  }
+
+  /** Throw the pending clip away without downloading. */
+  discardClip(): void {
+    const c = this.clipPreview();
+    if (c) URL.revokeObjectURL(c.url);
+    this.clipPreview.set(null);
+  }
+
+  private makeClipFilename(w: number, h: number, mime: string): string {
+    const slug = (this.current()?.name ?? 'scene').replace(/[^a-z0-9-_]+/gi, '_').toLowerCase();
+    const ts = new Date().toISOString().replace(/[:.]/g, '-').replace('T', '_').slice(0, 19);
+    const ext = mime.startsWith('video/mp4') ? 'mp4' : 'webm';
+    return `${slug}_${w}x${h}_${ts}.${ext}`;
   }
 
   /** Download the pending preview as a PNG and close the dialog. */

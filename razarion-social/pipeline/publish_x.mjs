@@ -9,12 +9,15 @@
 //   node publish_x.mjs --live
 
 import { existsSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { parseArgs } from './lib/args.mjs';
 import {
   PIPELINE_ROOT, X_POSTS_FILE, POSTED_X_FILE, STATE_DIR,
   ensureDir, readJson, writeJson, toRelative,
 } from './lib/paths.mjs';
+import {
+  FORMATS, PLATFORM_FORMAT, derivedPath, needsTranscode, probeVideo, transcodeVideo,
+} from './lib/video.mjs';
 import { postToX, estimateCost } from '../src/platforms/x.mjs';
 import { sleep } from '../src/util/http.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
@@ -24,6 +27,30 @@ const DEFAULT_PAUSE_SECONDS = 60;
 function firstLine(text) {
   const line = (text || '').split('\n')[0];
   return line.length > 76 ? line.slice(0, 73) + '...' : line;
+}
+
+/**
+ * The copy of a clip that X will accept, derived next to the master and reused once made.
+ *
+ * Photos are handled upstream and pass straight through. A clip that already matches the target is
+ * left alone rather than re-encoded into slightly worse pixels for nothing.
+ */
+async function prepareClip(item, file) {
+  if (item.type === 'photo') return file;
+  const format = FORMATS[PLATFORM_FORMAT.x];
+  const probe = await probeVideo(file);
+  if (!probe) {
+    warn(`${basename(file)}: ffprobe cannot read this file; sending it unchanged.`);
+    return file;
+  }
+  if (!needsTranscode(probe, format)) return file;
+
+  const target = derivedPath(file, PLATFORM_FORMAT.x);
+  if (!existsSync(target)) {
+    step(`converting ${basename(file)} ${probe.width}x${probe.height} to ${format.label}`);
+    await transcodeVideo(file, target, format);
+  }
+  return target;
 }
 
 async function main() {
@@ -84,12 +111,16 @@ async function main() {
     const item = (entry.media || [])[0];
     const spec = { x: { text: entry.text, attachVideo: Boolean(item) } };
     if (item) {
-      const file = join(PIPELINE_ROOT, item.file);
+      let file = join(PIPELINE_ROOT, item.file);
       if (!existsSync(file)) {
         fail(`${entry.id}: ${item.file} is missing on disk.`);
         warn(`Stopping. ${published} post(s) went out.`);
         process.exit(1);
       }
+      // A clip keeps its landscape shape here - X is read on a desktop far more than the phone-first
+      // feeds are - but it still has to be H.264/AAC within the duration cap, and the archive clips
+      // carry the pillarbox bars of whatever window they were recorded from.
+      file = await prepareClip(item, file);
       spec.video = file;
       spec.videoSize = statSync(file).size;
       spec.x.mediaCategory = item.type === 'photo' ? 'tweet_image' : 'tweet_video';

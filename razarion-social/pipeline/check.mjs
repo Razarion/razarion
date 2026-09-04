@@ -11,6 +11,7 @@ import { loadImage } from '@napi-rs/canvas';
 import {
   PIPELINE_ROOT, CAPTIONS_FILE, POSTS_FILE, UPLOADS_FILE, POSTED_FILE, readJson, toRelative,
 } from './lib/paths.mjs';
+import { FORMATS, PLATFORM_FORMAT, probeVideo } from './lib/video.mjs';
 import { env } from '../src/config.mjs';
 import { info, ok, warn, fail } from '../src/util/log.mjs';
 
@@ -29,6 +30,10 @@ const MAX_RATIO = 1.91;
 // Instagram takes JPEG and nothing else for images. A PNG is accepted by the upload and then fails
 // at publish time with a format error, which is the worst possible place to find out.
 const ALLOWED_IMAGE = /\.jpe?g$/i;
+
+// A reel shorter than this is rejected at publish time, and there is nothing upload_media.mjs can
+// do about it - the only fix is a longer recording. Worth knowing before a queue runs, not after.
+const MIN_REEL_SECONDS = 3;
 
 const blockers = [];
 const notices = [];
@@ -59,9 +64,14 @@ function checkCaptions() {
 }
 
 async function checkMedia(doc) {
-  const live = doc.captions.filter((e) => e.status === 'ok');
+  // Only what could still go out. Media of a published post is finished work: its file has already
+  // been through conversion, and reporting that it "still needs upload_media.mjs" - or that a clip
+  // published to X two months ago is too short to be a reel - is a finding nobody can act on. The
+  // whole point of a preflight is that everything it says is worth reading.
+  const posted = readJson(POSTED_FILE, { posted: {} });
+  const live = doc.captions.filter((e) => e.status === 'ok' && !posted.posted[e.id]);
   info('');
-  info(`Media for the ${live.length} entr(ies) marked ok`);
+  info(`Media for the ${live.length} unpublished entr(ies) marked ok`);
 
   let missingFiles = 0;
   let notJpeg = 0;
@@ -70,6 +80,10 @@ async function checkMedia(doc) {
   let notUploaded = 0;
   let carouselOver = 0;
   let offRatio = 0;
+  let clips = 0;
+  let clipsTooShort = 0;
+  let clipsTrimmed = 0;
+  let clipsUnreadable = 0;
 
   for (const entry of live) {
     const media = entry.media || [];
@@ -123,6 +137,34 @@ async function checkMedia(doc) {
         }
       }
 
+      // Clips are measured for what upload_media.mjs cannot fix on its own. The shape and the codec
+      // it converts; a clip too short for a reel, or longer than the slot, is a decision about the
+      // recording and belongs in front of the run rather than inside it.
+      if (item.type !== 'photo' && !item.url) {
+        clips++;
+        const probe = await probeVideo(file);
+        if (!probe) {
+          clipsUnreadable++;
+          block(`${entry.id}: ${item.file} cannot be read by ffprobe - is it a valid video?`);
+        } else {
+          const reel = FORMATS[PLATFORM_FORMAT.instagram];
+          if (probe.duration && probe.duration < MIN_REEL_SECONDS) {
+            clipsTooShort++;
+            block(
+              `${entry.id}: ${item.file} is ${probe.duration.toFixed(1)}s; Instagram rejects a reel ` +
+                `under ${MIN_REEL_SECONDS}s. Use a longer recording.`
+            );
+          }
+          if (probe.duration > reel.maxSeconds) {
+            clipsTrimmed++;
+            notice(
+              `${entry.id}: ${item.file} is ${Math.round(probe.duration)}s; the reel copy is cut ` +
+                `to ${reel.maxSeconds}s.`
+            );
+          }
+        }
+      }
+
       if (!item.url) notUploaded++;
     }
   }
@@ -130,6 +172,14 @@ async function checkMedia(doc) {
   info(`  files on disk: ${missingFiles ? missingFiles + ' MISSING' : 'all present'}`);
   info(`  image format:  ${notJpeg ? notJpeg + ' PNG, converted to JPEG on upload' : 'all JPEG'}`);
   info(`  aspect ratio:  ${offRatio ? offRatio + ' outside 0.8-1.91, padded on upload' : 'all within range'}`);
+  if (clips) {
+    const clipNotes = [
+      clipsUnreadable ? `${clipsUnreadable} unreadable` : null,
+      clipsTooShort ? `${clipsTooShort} under ${MIN_REEL_SECONDS}s` : null,
+      clipsTrimmed ? `${clipsTrimmed} trimmed for the reel slot` : null,
+    ].filter(Boolean);
+    info(`  clips:         ${clips} to convert${clipNotes.length ? ' - ' + clipNotes.join(', ') : ', all usable'}`);
+  }
   info(`  uploaded:      ${notUploaded ? notUploaded + ' still without a public URL' : 'all have URLs'}`);
   if (notUploaded) notice(`${notUploaded} file(s) still need upload_media.mjs before publishing.`);
   if (noMedia || oversize || carouselOver) info(`  other: ${noMedia} without media, ${oversize} oversize`);

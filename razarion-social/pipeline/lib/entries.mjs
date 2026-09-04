@@ -26,7 +26,11 @@ export const BASE_HASHTAGS = ['rts', 'indiedev', 'opensource', 'webassembly', 'b
 export function buildEntries({ id, date, text, link, tags = [], media = [], source = 'composed' }) {
   const hashtags = [...BASE_HASHTAGS, ...tags].slice(0, 10).map((t) => '#' + t);
 
-  const xText = link ? `${text}\n\n${link}` : text;
+  // X gets the text without the link, and it is the one network where that is the better post.
+  // A link costs $0.20 an post against $0.015 without one - thirteen times the price - and X also
+  // damps the reach of anything carrying one, so the link buys a smaller audience at a higher
+  // price. The route to the site is the profile, the same as on Instagram.
+  const xText = text;
   const xFlags = [];
   if (xLength(xText) > MAX_X) xFlags.push('too-long');
   if (!media.length) xFlags.push('text-only');
