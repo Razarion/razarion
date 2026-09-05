@@ -9,8 +9,10 @@ import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadImage } from '@napi-rs/canvas';
 import {
-  PIPELINE_ROOT, CAPTIONS_FILE, POSTS_FILE, UPLOADS_FILE, POSTED_FILE, readJson, toRelative,
+  PIPELINE_ROOT, CAPTIONS_FILE, POSTS_FILE, UPLOADS_FILE, POSTED_FILE,
+  YT_POSTS_FILE, POSTED_YT_FILE, readJson, toRelative,
 } from './lib/paths.mjs';
+import { MAX_TITLE } from './lib/youtube.mjs';
 import { FORMATS, PLATFORM_FORMAT, probeVideo } from './lib/video.mjs';
 import { env } from '../src/config.mjs';
 import { info, ok, warn, fail } from '../src/util/log.mjs';
@@ -269,6 +271,54 @@ function checkState(doc) {
   info(`  files uploaded:    ${Object.keys(uploads.uploaded).length}`);
 }
 
+/**
+ * The YouTube queue, which the Instagram-shaped checks above cannot speak for.
+ *
+ * It carries a title rather than a caption, takes video only, and the file goes up from disk
+ * rather than from the GitHub release the reel feeds pull from - so the only thing worth
+ * confirming is that the clip is still where the entry says it is.
+ */
+function checkYouTube() {
+  const doc = readJson(YT_POSTS_FILE);
+  info('');
+  info('YouTube');
+  if (!doc) {
+    info('  no queue yet - compose a post with a clip to create one');
+    return;
+  }
+  const videos = doc.videos || [];
+  const posted = readJson(POSTED_YT_FILE, { posted: {} });
+  const approved = videos.filter((e) => e.status === 'ok');
+  const waiting = approved.filter((e) => !posted.posted[e.id]);
+  const inReview = videos.filter((e) => e.status === 'review').length;
+
+  info(`  already uploaded:  ${Object.keys(posted.posted).length}`);
+  info(`  waiting:           ${waiting.length}`);
+  if (inReview) info(`  still on review:   ${inReview}`);
+
+  for (const entry of waiting) {
+    const item = (entry.media || [])[0];
+    const file = item ? join(PIPELINE_ROOT, item.file) : null;
+    if (!file || !existsSync(file)) {
+      block(`YouTube ${entry.id}: ${item ? item.file : 'no media'} is missing on disk.`);
+    }
+    if (!entry.title) block(`YouTube ${entry.id}: no title.`);
+    else if (entry.title.length > MAX_TITLE) {
+      notice(`YouTube ${entry.id}: the title is ${entry.title.length} characters; a phone shows about ${MAX_TITLE}.`);
+    }
+    if ((entry.flags || []).includes('title-truncated')) {
+      notice(`YouTube ${entry.id}: the title was cut to fit - worth rewriting by hand.`);
+    }
+  }
+  // Public is not refused by the API, it is silently reset, so an entry asking for it before the
+  // audit has passed will look like it worked and will not have.
+  const publicOnes = waiting.filter((e) => (e.privacy || 'private') !== 'private').length;
+  if (publicOnes) {
+    notice(`${publicOnes} YouTube entr(ies) ask for public. Without a passed compliance audit ` +
+      'YouTube resets that to private without saying so - see razarion-social/YOUTUBE-AUDIT.md.');
+  }
+}
+
 const posts = readJson(POSTS_FILE);
 if (!posts) {
   fail(`No ${toRelative(POSTS_FILE)} - run fetch_posts.mjs first.`);
@@ -281,6 +331,7 @@ if (doc) {
   checkCaptionText(doc);
   checkState(doc);
 }
+checkYouTube();
 checkCredentials();
 
 info('');

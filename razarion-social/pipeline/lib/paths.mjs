@@ -22,6 +22,8 @@ export const FB_POSTS_FILE = join(DATA_DIR, 'fb_posts.json');
 export const POSTED_FB_FILE = join(STATE_DIR, 'posted_fb.json');
 export const X_POSTS_FILE = join(DATA_DIR, 'x_posts.json');
 export const POSTED_X_FILE = join(STATE_DIR, 'posted_x.json');
+export const YT_POSTS_FILE = join(DATA_DIR, 'yt_posts.json');
+export const POSTED_YT_FILE = join(STATE_DIR, 'posted_yt.json');
 
 export function ensureDir(dir) {
   mkdirSync(dir, { recursive: true });

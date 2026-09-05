@@ -40,42 +40,45 @@ gespeicherte Tokens      nur "x"
 
 Es fehlt also nicht nur das Audit, sondern die komplette Vorstufe.
 
-## Ist-Zustand (geprüft am 2026-09-04)
+## Ist-Zustand (2026-09-04, abends)
+
+**Die Vorstufe ist vollständig durchlaufen, und ein Video liegt auf dem Kanal.**
 
 ```
 YouTube Data API v3      aktiviert
-OAuth-Client             angelegt, GOOGLE_CLIENT_ID/_SECRET stehen in .env
-Testnutzer               beat.keller@btxtech.com eingetragen
-gespeicherte Tokens      "x" und "google" - Refresh-Token ist da
-Veröffentlichungsstatus  Test
-Kanalbindung             KEINE - channels.list?mine=true liefert 0 Kanäle
+OAuth-Client             angelegt, GOOGLE_CLIENT_ID/_SECRET in .env
+Veröffentlichungsstatus  Produktion
+Kanalbindung             Razarion (@razarion, UCgsooVWjIipqHt0xYyjc5og)
+erster Upload            hDmrfUUK2IQ - über die API hoch, von Hand freigeschaltet
 ```
 
-Die Kette funktioniert damit erwiesenermassen: Client, Scopes, Loopback und die
-Token-Erneuerung laufen durch. Was fehlt, ist allein der Kanal.
+Der Weg dahin, weil zwei Sackgassen darin Zeit gekostet haben:
 
-**Warum das Token auf keinen Kanal zeigt.** @Razarion ist ein Marken-Konto und hat keine eigene
-E-Mail-Adresse, kann also nicht als Testnutzer eingetragen werden. Im Status *Test* darf nur
-autorisieren, wer dort steht — wählt man das Marken-Konto trotzdem im Kontowähler, bricht Google
-wortlos ab („Ein Problem ist aufgetreten"). Autorisiert wurde deshalb das persönliche Konto, und
-das besitzt selbst gar keinen YouTube-Kanal. Ein Upload liefe in `youtubeSignupRequired`.
+**Das Marken-Konto kann im Testmodus nicht autorisieren.** @Razarion hat keine eigene
+E-Mail-Adresse und kann deshalb nicht als Testnutzer eingetragen werden; im Status *Test* darf nur
+autorisieren, wer dort steht. Wählt man es trotzdem im Kontowähler, bricht Google wortlos ab („Ein
+Problem ist aufgetreten"). Das persönliche Konto kam durch, besitzt aber selbst keinen Kanal —
+`channels.list?mine=true` lieferte nichts, und ein Upload wäre in `youtubeSignupRequired` gelaufen.
 
-Der Ausweg ist der Wechsel in den Produktionsmodus. Er verlangt laut Console „einen gültigen
-Anwendungsname, eine Support-E-Mail-Adresse sowie URLs für die Startseite und die
-Datenschutzerklärung". Die ersten beiden stehen; die Seiten gibt es seit dem 2026-09-04:
-`LegalController` liefert `/privacy` und `/terms` aus `templates/privacy.ftl` bzw. `terms.ftl`,
-verlinkt im Fuss der Landing Page. **Sie müssen erst auf PROD stehen** — Google prüft
-`https://razarion.com/privacy`, nicht localhost.
+**Der Produktionsmodus verlangt zwei Seiten.** Die Console nennt sie im Tooltip des ausgegrauten
+Knopfes: „ein gültiger Anwendungsname, eine Support-E-Mail-Adresse sowie URLs für die Startseite
+und die Datenschutzerklärung". `LegalController` liefert `/privacy` und `/terms`; sie mussten erst
+auf PROD stehen, weil Google `https://razarion.com/privacy` prüft, nicht localhost.
 
-Offen, in dieser Reihenfolge:
+Beides ist erledigt, und danach ging die Autorisierung mit **Razarion** auf Anhieb durch.
 
-1. Deploy, damit die beiden URLs öffentlich erreichbar sind
-2. In der Console: URLs ins Branding, `razarion.com` unter *Autorisierte Domains*, speichern
-3. *Zielgruppe → App veröffentlichen*
-4. `node src/cli.mjs auth google` erneut, diesmal **Razarion** wählen
-5. `channels.list?mine=true` muss den Kanal zurückgeben, dann Test-Upload
+## Was noch fehlt: das Audit
 
-Danach erst das Audit — ohne das bleibt jeder Upload `private`.
+Es ist der einzige verbliebene Punkt, und er entscheidet über genau eine Sache — ob ein Upload
+öffentlich sein darf. Ohne bestandenes Audit setzt YouTube `privacyStatus: public` still auf
+`private` zurück; freischalten geht dann nur von Hand in Studio.
+
+Beantragt wird es über das *YouTube API Services – Audit and Quota Extension*-Formular, verlinkt in
+der [Compliance-Dokumentation](https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits).
+Der Antragstext steht unten fertig. Rechne mit mehreren Wochen.
+
+**Wenn es durch ist**, ist es eine Zeile: `DEFAULT_PRIVACY` in `pipeline/lib/youtube.mjs` auf
+`'public'`. Bereits geschriebene Einträge behalten, was sie haben.
 
 ## Schritte
 
@@ -126,6 +129,92 @@ Projekt, das die API noch nie aufgerufen hat, hat wenig zu prüfen.
 Die Feldnamen ändern sich gelegentlich; der Inhalt unten passt trotzdem.
 
 Rechne mit mehreren Wochen.
+
+## Das Formular, Feld für Feld
+
+Ausgefüllt am 2026-09-04, nicht abgeschickt. Das Formular selbst speichert nichts — wer es
+schliesst, tippt neu. Deshalb steht hier jede Antwort, damit das Neutippen Abschreiben ist und
+kein Nachdenken.
+
+### 1 Art des Antrags
+Compliance-Audit durchführen, um zusätzliches Kontingent anzufordern. Die zweite Option ist nur
+für ein Re-Audit, zu dem Google auffordert. Dass wir gar kein höheres Kontingent wollen, steht in
+Abschnitt 5 — das ist kein Widerspruch, sondern der übliche Weg zum Audit.
+
+### 2 Organisation und Kontakt
+```
+Antrag als                als Einzelnutzer*in
+Vollständiger Name        Beat Keller
+Organisation (Pflichtfeld) Beat Keller (individual, filing on my own behalf)
+Muttergesellschaft        leer
+Website                   https://www.razarion.com
+Land / Kanton             Schweiz / Zürich
+Grösse und Art            Entwickler*in (unabhängig) / Alleininhaber*in
+Kategorie                 Gaming, sonst Media & Entertainment
+Kontakte                  alle drei identisch, beat.keller@btxtech.com
+```
+Kein Firmenname ohne Registereintrag — das Feld verlangt den Namen aus offiziellen Dokumenten,
+und die Rechtsseiten nennen ebenfalls eine Privatperson.
+
+### 3 Geschäftsmodell
+```
+Zielgruppe        nur "Interne Nutzer*innen" - gefragt sind die Nutzer des Clients,
+                  nicht das Publikum der Videos
+Monetarisierung   nur "Kostenloser Dienst"
+Google-Kontakt    nein
+Rechteinhaber-ID  leer (Content-Manager-System, nicht zutreffend)
+Google Ads        leer
+```
+Der Freitext steht unten unter *Antragstext*.
+
+### 4 API-Client
+```
+Clientname        Razarion Social Publisher
+Name mit YouTube  nein
+Zugriffs-URL      https://github.com/Razarion/razarion/tree/master/razarion-social
+Datenschutz       https://www.razarion.com/privacy
+Nutzungsbed.      https://www.razarion.com/terms
+Öffentlich?       Nein - Einzelbetrieb, nicht verteilt
+Demokonto         keins. Begründung im Feld "Besondere Hinweise", siehe unten
+```
+Ins Feld *Besondere Hinweise für den Zugriff*:
+
+> There is no demo account. The API client is a command-line tool with no login of its own: it
+> authorises against my own Google account over OAuth and uploads to my own channel. There is
+> nothing for a third party to sign in to.
+>
+> The client can be reviewed in full instead. The source is public at
+> https://github.com/Razarion/razarion/tree/master/razarion-social - the uploader is
+> `src/platforms/youtube.mjs`, about 90 lines, and the publishing step that drives it is
+> `pipeline/publish_youtube.mjs`. A video produced through exactly this path is public at
+> https://www.youtube.com/watch?v=hDmrfUUK2IQ.
+
+### 5 Anwendungsfälle
+```
+Projektnummern    1
+Projektnummer     579831821740      (ID: neural-passkey-426618-j3)
+Anwendungsfälle   Video-Upload und Kontoverwaltung
+                  Internes Unternehmenstool
+OAuth 2.0         Ja
+Nutzungsvolumen   niedrigste Stufe - ~4800 Einheiten pro Woche
+```
+
+### Die Nachweise
+
+Liegen als Bilder in `pipeline/data/audit/`, aufgenommen von der öffentlichen Seite nach dem
+Deploy. Der Ordner ist gitignored und bleibt trotzdem liegen:
+
+```
+1-privacy-policy-google-section.jpg      Abschnitt 6 vollständig
+2-homepage-youtube-and-privacy-link.jpg  YouTube-Symbol und Privacy-Link im selben Bild
+3-terms-of-service.jpg                   Nutzungsbedingungen
+4a-oauth-consent-screen.jpg              Zustimmungsbildschirm mit App-Namen
+4b-oauth-scopes-and-revoke.jpg           beide Berechtigungen, samt Widerrufshinweis
+```
+
+Für den bedingten Nachweis fehlt noch ein Terminal-Screenshot von `check.mjs` und
+`publish_youtube.mjs` — das ist die "Upload-Oberfläche" und das "Dashboard" eines Werkzeugs, das
+keine grafische Oberfläche hat. Nur von Hand aufzunehmen.
 
 ## Antragstext (Entwurf)
 

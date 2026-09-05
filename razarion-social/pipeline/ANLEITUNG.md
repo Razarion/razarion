@@ -13,7 +13,7 @@ cd C:\dev\projects\razarion\code\razarion2\razarion-social\pipeline
 
 ```
 1. Beitrag erzeugen      generate.mjs   oder   compose.mjs
-2. Lesen und freigeben   status auf "ok" in den drei JSON-Dateien
+2. Lesen und freigeben   status auf "ok" in den Review-Dateien
 3. Ausliefern            upload + publish
 ```
 
@@ -32,7 +32,7 @@ node generate.mjs --reset         # Rotation von vorn
 ```
 
 Holt Name, Beschreibung, Preis, Lebenspunkte und Spawn-Zeit vom laufenden Server, rendert eine
-Karte und schreibt den Beitrag in alle drei Review-Dateien. Braucht `RAZARION_ADMIN_USER` und
+Karte und schreibt den Beitrag in die Review-Dateien. Braucht `RAZARION_ADMIN_USER` und
 `RAZARION_ADMIN_PASSWORD` in `../.env`.
 
 Die Rotation merkt sich in `state/generate.json`, welche Einheiten schon dran waren. Zwei Läufe am
@@ -107,6 +107,7 @@ wird nie verändert.
 ```
 Instagram, Facebook   Reel 9:16, 1080×1920, max 90 s
 X                     eigene Form, nur Codec und Obergrenze, max 140 s
+YouTube               das Original, unverändert
 ```
 
 Warum unterschiedlich: Instagram und Facebook zeigen Reels hochkant und quetschen alles andere in
@@ -132,13 +133,20 @@ unter 3 s     Instagram lehnt das Reel ab - nur eine längere Aufnahme hilft
 
 ## 2. Lesen und freigeben
 
-Drei Dateien, ein Eintrag pro Netzwerk:
+Vier Dateien, ein Eintrag pro Netzwerk:
 
 ```
 data/captions.json    Instagram
 data/fb_posts.json    Facebook
 data/x_posts.json     X
+data/yt_posts.json    YouTube - nur bei Clips
 ```
+
+**YouTube bekommt nur Videos.** Ein Bild- oder Textbeitrag erzeugt dort gar keinen Eintrag, statt
+einen, der nie rausgehen könnte. Der YouTube-Eintrag trägt statt einer Bildunterschrift `title`,
+`description` und `tags`; der Titel wird aus dem ersten Satz gebaut und auf 70 Zeichen gekürzt —
+mehr zeigt ein Telefon nicht. Steht `title-truncated` in den `flags`, wurde geschnitten und der
+Titel ist es wert, von Hand geschrieben zu werden.
 
 Beim neuen Eintrag `"status": "review"` auf `"ok"` setzen — oder auf `"skip"`, wenn er dort nicht
 erscheinen soll. Texte darfst du frei ändern; setz dann `"edited": true`, damit ein späterer Lauf
@@ -160,10 +168,15 @@ node publish.mjs                   # Trockenlauf
 node publish.mjs --live --limit 1  # Instagram
 node publish_fb.mjs --live --limit 1
 node publish_x.mjs --live --limit 1
+node publish_youtube.mjs --live --limit 1
 ```
 
-**Ohne `--live` passiert nichts.** Der Trockenlauf zeigt, was rausginge, und bei X auch, was es
-kostet.
+**Ohne `--live` passiert nichts.** Der Trockenlauf zeigt, was rausginge, bei X auch, was es
+kostet, und bei YouTube, ob der Clip als Short oder als normales Video einsortiert wird.
+
+YouTube braucht `upload_media.mjs` nicht: die Datei geht von der Platte hoch, nicht über die
+GitHub-Release-URL, die Instagram und Facebook brauchen. Der Master geht unverändert raus —
+YouTube kodiert ohnehin neu, und anders als bei den Reel-Feeds gibt es kein Format zu treffen.
 
 `--limit N` begrenzt, wie viele Beiträge ein Lauf absetzt. Ohne Angabe geht die ganze freigegebene
 Warteschlange raus.
@@ -201,7 +214,12 @@ Instagram, Facebook       kostenlos
 X, Beitrag ohne Link      $0.015
 X, Beitrag mit Link       $0.20
 X lesen (nicht mehr aktiv) $0.005 pro Beitrag
+YouTube                   kostenlos, aber 1600 von 10000 Kontingentpunkten pro Upload
 ```
+
+**YouTube zahlt in Kontingent statt in Geld.** Sechs Uploads am Tag sind das Maximum, und der
+Publisher warnt, wenn ein Lauf darüber hinausginge. Abfragen lässt sich der Rest nicht, also zählt
+er nur mit.
 
 **X-Beiträge tragen den Link nicht mehr.** Er kostete dort das Dreizehnfache, und X drückt
 zusätzlich die Reichweite von Beiträgen mit Link — er kaufte also weniger Publikum zum höheren
@@ -236,12 +254,14 @@ Hand ergänzen, sonst wird er beim nächsten Lauf erneut gepostet.
 ## Wo was liegt
 
 ```
-data/captions.json  fb_posts.json  x_posts.json    die Review-Dateien
+data/captions.json  fb_posts.json  x_posts.json
+data/yt_posts.json                                 die Review-Dateien
 data/own/                                          Bilder eigener Beiträge
 data/scenes/                                       Studio-Renders je Einheit
 data/cards/                                        gerenderte Textkarten
 data/youtube/                                      Clips und Metadaten für Studio
 state/posted*.json                                 was veröffentlicht wurde
+                                                   (posted, posted_fb, posted_x, posted_yt)
 state/generate.json                                wo die Einheiten-Rotation steht
 state/scheduled.log                                Protokoll der geplanten Läufe
 ../.env                                            alle Zugangsdaten

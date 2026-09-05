@@ -1,6 +1,6 @@
 # Razarion Social - geplanter Lauf
 #
-# Veroeffentlicht, was in den Review-Dateien auf "ok" steht - auf X, Instagram und Facebook.
+# Veroeffentlicht, was in den Review-Dateien auf "ok" steht - auf X, Instagram, Facebook und YouTube.
 # Beitraege entstehen mit compose.mjs; dieser Lauf verteilt sie nur. Neue Beitraege werden NICHT automatisch freigegeben - sie warten
 # auf status "ok" in captions.json und fb_posts.json.
 #
@@ -65,5 +65,8 @@ if ($PrepareOnly) {
 Invoke-Step "Instagram veroeffentlichen" @("publish.mjs", "--live", "--limit", "$Limit") | Out-Null
 Invoke-Step "Facebook veroeffentlichen" @("publish_fb.mjs", "--live", "--limit", "$Limit") | Out-Null
 Invoke-Step "X veroeffentlichen" @("publish_x.mjs", "--live", "--limit", "$Limit") | Out-Null
+# YouTube laeuft zuletzt: ein Upload kostet 1600 von 10000 Kontingentpunkten am Tag, und anders als
+# die drei davor haelt er den Lauf minutenlang auf, waehrend die Datei hochgeht.
+Invoke-Step "YouTube veroeffentlichen" @("publish_youtube.mjs", "--live", "--limit", "$Limit") | Out-Null
 
 Write-Log "=== Lauf beendet"

@@ -1,4 +1,7 @@
-import { CAPTIONS_FILE, FB_POSTS_FILE, X_POSTS_FILE, readJson, writeJson } from './paths.mjs';
+import {
+  CAPTIONS_FILE, FB_POSTS_FILE, X_POSTS_FILE, YT_POSTS_FILE, readJson, writeJson,
+} from './paths.mjs';
+import { buildTitle, buildDescription, buildTags, DEFAULT_PRIVACY } from './youtube.mjs';
 
 // Instagram's caption ceiling and X's post ceiling. Facebook's is 63206, which nothing here
 // approaches.
@@ -17,11 +20,13 @@ export function xLength(text) {
 export const BASE_HASHTAGS = ['rts', 'indiedev', 'opensource', 'webassembly', 'browsergame', 'gamedev'];
 
 /**
- * Turns one piece of writing into the three shapes the feeds want.
+ * Turns one piece of writing into the four shapes the feeds want.
  *
  * The differences are not stylistic: a link is clickable on X and Facebook and dead on Instagram,
  * Instagram is the only one that rewards hashtags, and only Instagram refuses a post without
- * media. Everything else stays identical so the same thing is being said in all three places.
+ * media. YouTube is the odd one out - it wants a title and a description rather than a caption,
+ * and it takes video only, so a text or photo post produces no entry there at all. Everything
+ * else stays identical so the same thing is being said in every place.
  */
 export function buildEntries({ id, date, text, link, tags = [], media = [], source = 'composed' }) {
   const hashtags = [...BASE_HASHTAGS, ...tags].slice(0, 10).map((t) => '#' + t);
@@ -47,7 +52,28 @@ export function buildEntries({ id, date, text, link, tags = [], media = [], sour
   const common = { id, date, x_url: null, status: 'review', edited: false, source };
   const copyMedia = () => media.map((m) => ({ ...m }));
 
+  // YouTube takes video and nothing else. A photo or a text card has no entry there rather than a
+  // rejected one, which is why the caller has to cope with yt being null.
+  const clip = media.find((m) => m.type === 'video');
+  const { title, truncated } = clip ? buildTitle(text) : { title: null, truncated: false };
+  const yt = clip
+    ? {
+        ...common,
+        flags: truncated ? ['title-truncated'] : [],
+        notes: [],
+        media: [{ ...clip }],
+        title,
+        description: buildDescription(text),
+        tags: buildTags(text, tags),
+        // See DEFAULT_PRIVACY in youtube.mjs: one line decides this for every new entry, and it
+        // stays "private" until the compliance audit is through.
+        privacy: DEFAULT_PRIVACY,
+        source_text: text,
+      }
+    : null;
+
   return {
+    yt,
     ig: {
       ...common,
       flags: igFlags,
@@ -82,24 +108,31 @@ const TARGETS = [
   { file: CAPTIONS_FILE, key: 'captions', pick: (e) => e.ig, label: 'Instagram' },
   { file: FB_POSTS_FILE, key: 'posts', pick: (e) => e.fb, label: 'Facebook' },
   { file: X_POSTS_FILE, key: 'posts', pick: (e) => e.x, label: 'X' },
+  { file: YT_POSTS_FILE, key: 'videos', pick: (e) => e.yt, label: 'YouTube' },
 ];
 
 /**
- * Appends the three entries to the review files the publishers already read.
+ * Appends the entries to the review files the publishers already read.
  *
  * Writing into those rather than into a file of its own is what makes the rest of the pipeline
- * work unchanged: the same review gate, the same upload step, the same publishers.
+ * work unchanged: the same review gate, the same upload step, the same publishers. A target whose
+ * entry is null - YouTube, for anything that is not a clip - is skipped rather than given an empty
+ * one, so nothing sits in that queue that could never go out.
  */
 export function writeEntries(entries) {
+  const written = [];
   for (const target of TARGETS) {
+    const entry = target.pick(entries);
+    if (!entry) continue;
     const doc = readJson(target.file, { generated_at: null, counts: {}, [target.key]: [] });
     const list = doc[target.key] || (doc[target.key] = []);
-    const entry = target.pick(entries);
     if (list.some((e) => e.id === entry.id)) {
       throw new Error(`${target.label}: an entry with id ${entry.id} already exists.`);
     }
     list.push(entry);
     list.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
     writeJson(target.file, doc);
+    written.push(target.label);
   }
+  return written;
 }

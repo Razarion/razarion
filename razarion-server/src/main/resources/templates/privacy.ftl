@@ -122,6 +122,21 @@
         <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank"
            rel="noopener">Google API Services User Data Policy</a>, including the Limited Use
         requirements.</p>
+    <p>What YouTube does with the videos once they are on the channel is governed by the
+        <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms of
+        Service</a>, and what Google does with data it receives by the
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy
+        Policy</a>.</p>
+
+    <h3>Revoking it, and deleting what it holds</h3>
+    <p>The authorisation can be withdrawn at any time at
+        <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google's
+        permissions page</a>. It takes effect immediately: the stored token stops working and no
+        further upload is possible without authorising again.</p>
+    <p>The only thing kept from Google is that refresh token, in a file on the operator's own
+        machine, plus the id of each video uploaded so the same clip is not uploaded twice. Deleting
+        that file removes both. No Google account data is stored on any server, shared with anyone,
+        or used for anything other than uploading to the Razarion channel.</p>
 
     <h2>7. How long it is kept</h2>
     <ul>

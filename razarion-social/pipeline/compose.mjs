@@ -1,41 +1,32 @@
 #!/usr/bin/env node
-// Writes one new post into the review files of all three feeds.
+// Writes one new post into the review files of every feed.
 //
 // The rest of the pipeline mirrors what X already carries. This is the other direction: a clip or
-// an image plus a couple of sentences, turned into the three shapes the networks want, waiting for
+// an image plus a couple of sentences, turned into the shapes the networks want, waiting for
 // approval like everything else.
 //
 //   node compose.mjs --media data/clips/harvester.mp4 --text "Der Harvester sammelt jetzt..."
 //   node compose.mjs --text "Nur Text" --link https://www.razarion.com
 //   node compose.mjs --media shot.jpg --text "..." --tags "harvester,economy"
 //
-// Nothing is published here. The entries land on status "review" in captions.json, fb_posts.json
-// and x_posts.json; publish.mjs, publish_fb.mjs and publish_x.mjs take it from there.
+// Nothing is published here. The entries land on status "review" in captions.json, fb_posts.json,
+// x_posts.json and - for a clip - yt_posts.json; the publishers take it from there.
+//
+// The shaping itself lives in lib/entries.mjs and is shared with generate.mjs. It used to be
+// duplicated here, and the copies drifted: this one kept putting the link into the X text for
+// weeks after the shared version had stopped, at thirteen times the price per post.
 
 import { existsSync, copyFileSync, statSync } from 'node:fs';
 import { basename, join, extname } from 'node:path';
 import { parseArgs } from './lib/args.mjs';
-import {
-  PIPELINE_ROOT, DATA_DIR, CAPTIONS_FILE, FB_POSTS_FILE, X_POSTS_FILE,
-  ensureDir, readJson, writeJson, toRelative,
-} from './lib/paths.mjs';
+import { DATA_DIR, ensureDir, toRelative } from './lib/paths.mjs';
+import { buildEntries, writeEntries, xLength } from './lib/entries.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
 
 const OWN_MEDIA_DIR = join(DATA_DIR, 'own');
 
 const MAX_X = 280;
 const MAX_IG = 2200;
-
-// The same six that fit the account everywhere else, so a composed post is not visibly different
-// from a mirrored one.
-const BASE_HASHTAGS = ['rts', 'indiedev', 'opensource', 'webassembly', 'browsergame', 'gamedev'];
-
-// X counts every link as 23 characters regardless of its real length.
-const X_LINK_WEIGHT = 23;
-
-function xLength(text) {
-  return text.replace(/https?:\/\/\S+/g, 'x'.repeat(X_LINK_WEIGHT)).length;
-}
 
 function videoLike(file) {
   return ['.mp4', '.mov', '.webm'].includes(extname(file).toLowerCase());
@@ -68,95 +59,34 @@ function main() {
     step(`media: ${toRelative(target)} (${(statSync(target).size / 1024 / 1024).toFixed(1)} MB)`);
   }
 
-  const hashtags = [...BASE_HASHTAGS, ...extraTags].slice(0, 10).map((t) => '#' + t);
-
-  // X: the link belongs in the text, and the budget is what X counts, not what the string is long.
-  const xText = link ? `${text}\n\n${link}` : text;
-  const xFlags = [];
-  if (xLength(xText) > MAX_X) xFlags.push('too-long');
-  if (!media.length) xFlags.push('text-only');
-
-  // Instagram: links are dead in a caption, so the link becomes the bio pointer and the hashtags
-  // go underneath. Without media the entry needs a card, which render_cards.mjs draws from this
-  // caption.
-  const igCaption = [text, link ? 'Link in bio.' : null, hashtags.join(' ')]
-    .filter(Boolean)
-    .join('\n\n');
-  const igFlags = [];
-  if (igCaption.length > MAX_IG) igFlags.push('too-long');
-  if (!media.length) igFlags.push('needs-card');
-
-  // Facebook: link stays inline and clickable, nothing appended.
-  const fbMessage = link ? `${text}\n\n${link}` : text;
-
-  const common = {
+  const entries = buildEntries({
     id,
     date: when.toISOString(),
-    x_url: null,
-    status: 'review',
-    edited: false,
+    text,
+    link,
+    tags: extraTags,
+    media,
     source: 'composed',
-  };
+  });
 
-  const targets = [
-    {
-      file: CAPTIONS_FILE,
-      key: 'captions',
-      label: 'Instagram',
-      entry: {
-        ...common,
-        flags: igFlags,
-        notes: [],
-        needs_card: media.length === 0,
-        media: media.map((m) => ({ ...m })),
-        caption: igCaption,
-        source_text: text,
-      },
-    },
-    {
-      file: FB_POSTS_FILE,
-      key: 'posts',
-      label: 'Facebook',
-      entry: {
-        ...common,
-        flags: [],
-        notes: link ? ['has-links'] : [],
-        media: media.map((m) => ({ ...m })),
-        message: fbMessage,
-        source_text: text,
-      },
-    },
-    {
-      file: X_POSTS_FILE,
-      key: 'posts',
-      label: 'X',
-      entry: {
-        ...common,
-        flags: xFlags,
-        notes: [],
-        media: media.map((m) => ({ ...m })),
-        text: xText,
-        source_text: text,
-      },
-    },
-  ];
+  const written = writeEntries(entries);
 
-  for (const target of targets) {
-    const doc = readJson(target.file, { generated_at: null, counts: {}, [target.key]: [] });
-    const list = doc[target.key] || (doc[target.key] = []);
-    if (list.some((e) => e.id === id)) {
-      throw new Error(`${target.label}: an entry with id ${id} already exists. Pass --date to differ.`);
-    }
-    list.push(target.entry);
-    list.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
-    writeJson(target.file, doc);
-  }
+  const { x: xFlags, ig: igFlags } = entries.flags;
+  const lengths = entries.lengths;
 
   info('');
-  ok(`Composed ${id} into all three review files.`);
-  info(`  X          ${xLength(xText)}/${MAX_X} characters${xFlags.length ? '  [' + xFlags.join(',') + ']' : ''}`);
-  info(`  Instagram  ${igCaption.length}/${MAX_IG} characters${igFlags.length ? '  [' + igFlags.join(',') + ']' : ''}`);
-  info(`  Facebook   ${fbMessage.length} characters`);
+  ok(`Composed ${id} into ${written.length} review file(s): ${written.join(', ')}.`);
+  info(`  X          ${lengths.x}/${MAX_X} characters${xFlags.length ? '  [' + xFlags.join(',') + ']' : ''}`);
+  info(`  Instagram  ${lengths.ig}/${MAX_IG} characters${igFlags.length ? '  [' + igFlags.join(',') + ']' : ''}`);
+  info(`  Facebook   ${lengths.fb} characters`);
+  if (entries.yt) {
+    info(`  YouTube    ${entries.yt.title}`);
+    if (entries.yt.flags.includes('title-truncated')) {
+      warn('  The YouTube title was cut to fit 70 characters. Rewrite it before approving.');
+    }
+  } else {
+    info('  YouTube    skipped - it takes video only');
+  }
   info('');
   if (igFlags.includes('needs-card')) info('  Text only: run render_cards.mjs so Instagram has something to show.');
   if (xFlags.includes('too-long')) warn('  The X text is over 280 characters as X counts them. Shorten it before approving.');
