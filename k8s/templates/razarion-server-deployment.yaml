@@ -204,12 +204,6 @@ spec:
                   name: meta-ads-secrets
                   key: test-event-code
                   optional: true
-            - name: META_ADS_EVENT_LANDING_VIEW
-              valueFrom:
-                secretKeyRef:
-                  name: meta-ads-secrets
-                  key: event-landing-view
-                  optional: true
             - name: META_ADS_EVENT_PAGE_VISIT
               valueFrom:
                 secretKeyRef:

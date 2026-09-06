@@ -67,8 +67,13 @@ public class ParticleSystemController extends AbstractBaseController<ParticleSys
      * Same arrangement as the model and the materials: {@code no-cache} plus an entity tag keeps
      * the guarantee that an edit reaches the player, while unchanged costs a comparison instead of
      * a megabyte. The upload beside it stays under the blanket no-store rule.
+     * <p>
+     * And compressed, for the same reason as the materials - see BabylonMaterialController.getData.
+     * The larger of these two is 1,198 KB of which 1,187 KB is one base64 PNG; it gzips to 895 KB.
+     * The declared type is what decides that, because server.compression.mime-types lists
+     * application/json and not application/octet-stream.
      */
-    @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<byte[]> getData(@PathVariable("id") int id,
                                           @RequestHeader(value = HttpHeaders.IF_NONE_MATCH, required = false)
                                           String ifNoneMatch) {
@@ -78,10 +83,10 @@ public class ParticleSystemController extends AbstractBaseController<ParticleSys
                 // No bytes to tag. Answer as before rather than inventing a tag for nothing.
                 return ResponseEntity
                         .ok()
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .body(particleSystemCrudPersistence.getData(id));
             }
-            String eTag = ContentDigest.eTag(digest);
+            String eTag = ContentDigest.weakETag(digest);
             if (ContentDigest.matches(ifNoneMatch, eTag)) {
                 return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
                         .eTag(eTag)
@@ -90,7 +95,7 @@ public class ParticleSystemController extends AbstractBaseController<ParticleSys
             }
             return ResponseEntity
                     .ok()
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .eTag(eTag)
                     .cacheControl(REVALIDATE)
                     .body(particleSystemCrudPersistence.getData(id));

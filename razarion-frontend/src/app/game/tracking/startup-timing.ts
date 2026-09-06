@@ -33,11 +33,25 @@ export interface StartupTiming {
   downloadMs: number;
   /** Last byte arrived to here: parsing, executing, and Angular starting up. */
   parseAndBootMs: number;
+  /**
+   * Frames the loading screen animation actually drew, and the longest it went without one.
+   * <p>
+   * Null for the half of the players who get the plain splash - there is nothing drawing. For
+   * the other half these two decide whether the animation is an animation: requestAnimationFrame
+   * does not run while the main thread compiles, and a cold start spends most of these seconds
+   * compiling. Three frames with a four second gap looks exactly like no animation at all, which
+   * is what a phone reported, and nothing until now could tell that apart from a coin flip that
+   * landed on plain.
+   */
+  bootFrames: number | null;
+  bootMaxGapMs: number | null;
 }
 
 const ASSET = /\.(js|css)(\?|$)/;
 
-export function collectStartupTiming(perf: Performance = performance): StartupTiming | null {
+export function collectStartupTiming(perf: Performance = performance,
+                                     splash: { RAZ_bootFrames?: number, RAZ_bootMaxGap?: number }
+                                       = window as never): StartupTiming | null {
   try {
     const nav = perf.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
     const assets = (perf.getEntriesByType('resource') as PerformanceResourceTiming[])
@@ -67,7 +81,9 @@ export function collectStartupTiming(perf: Performance = performance): StartupTi
       transferredKb: Math.round(transferred / 1024),
       cachedCount: cached,
       downloadMs: assets.length ? Math.round(lastEnd - firstStart) : 0,
-      parseAndBootMs: assets.length ? Math.max(0, Math.round(boot - lastEnd)) : 0
+      parseAndBootMs: assets.length ? Math.max(0, Math.round(boot - lastEnd)) : 0,
+      bootFrames: typeof splash.RAZ_bootFrames === 'number' ? splash.RAZ_bootFrames : null,
+      bootMaxGapMs: typeof splash.RAZ_bootMaxGap === 'number' ? splash.RAZ_bootMaxGap : null
     };
   } catch (ignored) {
     // Resource timing is not worth a failed start.
@@ -86,7 +102,12 @@ export function formatStartupTiming(timing: StartupTiming): string {
     'cached=' + timing.cachedCount,
     'download=' + timing.downloadMs,
     'parseBoot=' + timing.parseAndBootMs
-  ].join(',');
+  ].concat(timing.bootFrames === null ? [] : [
+    // Absent for the plain half, which is how a session that never had an animation is told
+    // apart from one whose animation never got a frame.
+    'bootFrames=' + timing.bootFrames,
+    'bootGap=' + timing.bootMaxGapMs
+  ]).join(',');
 }
 
 export function reportStartupTiming(tracker: FirstInteractionTrackerService,

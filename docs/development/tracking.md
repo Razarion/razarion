@@ -277,7 +277,6 @@ same funnel:
 
 | Funnel event | Fired from | Reddit | X (Twitter) | Meta |
 |--------------|-----------|--------|-------------|------|
-| Landing view | `RequestInfoLoggingFilter` (`/t.gif` page view only) | — | — | `GameLandingView` |
 | Page visit | `RequestInfoLoggingFilter` (`/game` with query string) | `GamePageVisit` | ✓ | ✓ |
 | Client startup | `ClientGameConnectionService.afterConnectionEstablished` (WebSocket connect) | `GameClientStartup` | ✓ | ✓ |
 | Builder deployed | `ServerGameEngineControl.onBaseCreated` (first base) | `GameBuilderDeployed` | ✓ | ✓ |
@@ -333,17 +332,17 @@ not attributed. Accepted limitation pending a GDPR review before persisting.
   - `meta.ads.pixel-id`, `meta.ads.access-token`, `meta.ads.api-version` (default `v21.0`)
   - `meta.ads.test-event-code` — set while verifying in Events Manager → *Test events*; events
     then arrive there instead of counting. Leave empty in production.
-  - `meta.ads.event.{landing-view,page-visit,client-startup,builder-deployed,quest-passed,level-up}` — the
+  - `meta.ads.event.{page-visit,client-startup,builder-deployed,quest-passed,level-up}` — the
     **event name** per funnel step. Empty means the custom name in the table above, which shows up
     as a custom event. Point a step at a standard event name (e.g. `CompleteRegistration` for
     builder-deployed) to let campaigns optimise towards it without a deploy.
-- **Meta gets one step the other two do not: the landing view.** Its optimiser needs roughly fifty
-  conversions a week of an event before it stops guessing, and the step below — the game page — is
-  reached by barely one Meta visitor in a hundred: four a day against three hundred landing views.
-  It is fired from the page's own pixel rather than the document request, so Meta's link crawler,
-  which never runs the script and made up nine of ten requests on the first campaign day, is not
-  counted as a visitor. Only the page view fires it; the play click and the exit ride on the same
-  pixel url and would report one visitor three times.
+- **The landing page is reported to nobody.** Meta was told about every landing view for a
+  while, on the argument that its optimiser needs roughly fifty conversions a week and the step
+  below — the game page — is reached by barely one Meta visitor in a hundred. Measured over nine
+  days that was the wrong trade: 21,591 landing views, 1.1% of which reached the game. The event
+  buried the steps that mean something under a hundred times their volume, and a campaign
+  optimised on it is being steered towards the click rather than the player. All three networks
+  now start at the game page.
 - **The browser goes with every event.** Meta counts `client_user_agent` as a required parameter
   for a website event. It is only known on the request that brought the visitor, so it is stored
   next to the `fbc` and replayed on the later funnel steps — by the time a base is built there is

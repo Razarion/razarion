@@ -13,7 +13,7 @@
 
     /*
      * Build stamp, substituted by Maven (see razarion.build in the pom). This file itself is
-     * always fetched fresh - game.component.ts appends a timestamp - so the stamp below is always
+     * always fetched fresh - wasm-boot.ts appends a timestamp - so the stamp below is always
      * the one from the running deployment. Everything it is appended to may therefore be cached
      * indefinitely: a deploy changes the URL, nothing else does.
      *
@@ -72,11 +72,50 @@
                 }
             });
 
-            console.log('[TeaVM Client] WASM-GC module loaded, calling main...');
+            console.log('[TeaVM Client] WASM-GC module loaded');
 
-            teavm.exports.main([]);
-
-            console.log('[TeaVM Client] Client initialization complete');
+            /*
+             * Downloading and compiling the module needs nothing from the page; entering main
+             * does. It reaches straight for the cockpit adapters on the facade, so it has to
+             * wait for Angular to have wired them.
+             *
+             * That is why this file is fetched from main.ts before bootstrapApplication rather
+             * than from GameComponent: the compile then happens beside the bundle download
+             * instead of after it. The latch releases on whichever of the two finishes second,
+             * so neither order can lose. Without it - an older page, the mock build - main runs
+             * straight away, which is what it did before.
+             */
+            var startMain = function () {
+                try {
+                    console.log('[TeaVM Client] Calling main...');
+                    teavm.exports.main([]);
+                    console.log('[TeaVM Client] Client initialization complete');
+                } catch (error) {
+                    console.error('[TeaVM Client] main() failed:', error);
+                    track('WASM_LOAD', 'WASM-GC main failed: ' + error);
+                }
+            };
+            if (window.RAZ_boot && window.RAZ_boot.wasmReady) {
+                /*
+                 * If the other half never arrives the game hangs on the splash screen with
+                 * nothing to show for it - the one failure mode this arrangement adds. Say so
+                 * rather than wait quietly; twenty seconds is far past any real Angular boot,
+                 * and the engine is not started here because calling into an unwired facade
+                 * fails worse and later than not calling at all.
+                 */
+                var released = false;
+                setTimeout(function () {
+                    if (!released) {
+                        track('WASM_LOAD', 'Angular never signalled readiness');
+                    }
+                }, 20000);
+                window.RAZ_boot.wasmReady(function () {
+                    released = true;
+                    startMain();
+                });
+            } else {
+                startMain();
+            }
 
         } catch (error) {
             console.error('[TeaVM Client] Failed to initialize WebAssembly GC client:', error);

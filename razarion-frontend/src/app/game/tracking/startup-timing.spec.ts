@@ -109,6 +109,34 @@ describe('Startup timing', () => {
     expect(detail).toContain('parseBoot=1800');
   });
 
+  /**
+   * Whether the loading screen animation was an animation.
+   * <p>
+   * requestAnimationFrame does not run while the main thread is busy, and a cold start spends
+   * its seconds compiling 2.7 MB of JavaScript. Three frames with a four second gap between
+   * them looks exactly like the plain splash from the outside - which is what came back from a
+   * phone, and there was no way to tell it from a coin flip that landed on plain.
+   */
+  it('counts the frames the build-up actually drew', () => {
+    const detail = formatStartupTiming(collectStartupTiming(
+      fakePerformance([asset('https://x/main-A.js', 200, 1200, 250000)], 3000),
+      {RAZ_bootFrames: 4, RAZ_bootMaxGap: 3900})!);
+
+    expect(detail).toContain('bootFrames=4');
+    expect(detail).toContain('bootGap=3900');
+    expect(detail.split(',').every(pair => pair.split('=').length === 2)).toBeTrue();
+  });
+
+  it('says nothing about frames where nothing was drawing', () => {
+    // The plain half of the experiment. An absent pair and a pair reading zero mean different
+    // things: no animation at all, against an animation that never got a frame.
+    const timing = collectStartupTiming(
+      fakePerformance([asset('https://x/main-A.js', 200, 1200, 250000)], 3000), {})!;
+
+    expect(timing.bootFrames).toBeNull();
+    expect(formatStartupTiming(timing)).not.toContain('bootFrames');
+  });
+
   it('reports it as its own kind, not as a player action', () => {
     const reported: { kind: string, detail?: string }[] = [];
     const tracker: any = {report: (kind: string, detail?: string) => reported.push({kind, detail})};

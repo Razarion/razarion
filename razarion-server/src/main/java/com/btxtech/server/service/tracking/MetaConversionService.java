@@ -1,5 +1,7 @@
 package com.btxtech.server.service.tracking;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,14 +42,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class MetaConversionService {
     private static final String CONVERSION_URL = "https://graph.facebook.com/{version}/{pixelId}/events";
-    /**
-     * The landing page was rendered - the only step of ours that happens often enough to optimise
-     * on. Meta needs about fifty conversions a week of an event before it stops guessing, and the
-     * step below this one, the game page, is reached by barely one visitor in a hundred: four a
-     * day against three hundred here. Reddit and X do not have it because neither was ever asked
-     * to optimise towards anything but the click.
-     */
-    private static final String EVENT_LANDING_VIEW = "GameLandingView";
     private static final String EVENT_PAGE_VISIT = "GamePageVisit";
     private static final String EVENT_CLIENT_STARTUP = "GameClientStartup";
     private static final String EVENT_BUILDER_DEPLOYED = "GameBuilderDeployed";
@@ -58,12 +52,14 @@ public class MetaConversionService {
      * razarion.com writes; it is part of the value and not a number we are free to choose.
      */
     private static final String FBC_DOMAIN_INDEX = "1";
+    private static final ObjectMapper ACK_MAPPER = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(MetaConversionService.class);
     private final RestClient restClient;
     private final String apiVersion;
     private final String pixelId;
     private final String accessToken;
     private final String testEventCode;
+    private final String siteUrl;
     private final Map<String, String> eventNames = new HashMap<>();
     private final boolean enabled;
     private final Map<String, Click> userIdToClick = new ConcurrentHashMap<>();
@@ -81,7 +77,7 @@ public class MetaConversionService {
             @Value("${meta.ads.pixel-id:}") String pixelId,
             @Value("${meta.ads.access-token:}") String accessToken,
             @Value("${meta.ads.test-event-code:}") String testEventCode,
-            @Value("${meta.ads.event.landing-view:}") String eventLandingView,
+            @Value("${meta.ads.site-url:https://www.razarion.com}") String siteUrl,
             @Value("${meta.ads.event.page-visit:}") String eventPageVisit,
             @Value("${meta.ads.event.client-startup:}") String eventClientStartup,
             @Value("${meta.ads.event.builder-deployed:}") String eventBuilderDeployed,
@@ -91,7 +87,8 @@ public class MetaConversionService {
         this.pixelId = pixelId;
         this.accessToken = accessToken;
         this.testEventCode = testEventCode;
-        this.eventNames.put(EVENT_LANDING_VIEW, eventLandingView);
+        // No trailing slash: the paths below add their own.
+        this.siteUrl = siteUrl.endsWith("/") ? siteUrl.substring(0, siteUrl.length() - 1) : siteUrl;
         this.eventNames.put(EVENT_PAGE_VISIT, eventPageVisit);
         this.eventNames.put(EVENT_CLIENT_STARTUP, eventClientStartup);
         this.eventNames.put(EVENT_BUILDER_DEPLOYED, eventBuilderDeployed);
@@ -121,17 +118,6 @@ public class MetaConversionService {
         if (userId != null) {
             userIdToClick.remove(userId);
         }
-    }
-
-    /**
-     * The landing page rendered in front of somebody. Sent from the page's own pixel rather than
-     * from the document request, so a crawler that never runs the script does not count as a
-     * visitor - which matters here more than anywhere: nine of ten requests on the first campaign
-     * day came from Meta's own link crawler.
-     */
-    @Async
-    public void sendLandingViewEvent(String fbclid, String userAgent) {
-        sendEventForClickId(EVENT_LANDING_VIEW, null, fbclid, userAgent);
     }
 
     @Async
@@ -167,8 +153,79 @@ public class MetaConversionService {
                 fbclid == null || fbclid.isEmpty() ? null : new Click(fbc(fbclid), userAgent));
     }
 
+    /**
+     * What Meta said about the event, rather than only that the request did not throw.
+     * <p>
+     * The body used to be discarded. A 200 from this endpoint means the request was well formed,
+     * not that anything was counted: the Graph API answers with {@code events_received} and a
+     * {@code messages} array, and it is in that array that it says things like a click id it
+     * cannot match or a field it ignored. Two hundred and thirty-nine events logged as "sent
+     * successfully" told us nothing at all when Meta reported receiving none, because nobody had
+     * ever read the answer.
+     * <p>
+     * Quiet on the ordinary case - one event in, one event received, nothing to say - and loud
+     * on anything else. There is no secret in the body; the access token travels in the query
+     * string and the url is never logged.
+     */
+    private void logSent(String funnelStep, String eventName, String response) {
+        String problem = ackProblem(response);
+        if (problem == null) {
+            logger.info("Meta conversion event '{}' (eventName={}) received by Meta", funnelStep, eventName);
+            return;
+        }
+        logger.warn("Meta conversion event '{}' (eventName={}) was not counted as expected: {} - body={}",
+                funnelStep, eventName, problem, abbreviate(response));
+    }
+
+    /**
+     * What is wrong with Meta's answer, or null when nothing is.
+     * <p>
+     * A clean acceptance is one event in and one event received with nothing to say about it.
+     * Anything else - a different count, a warning in {@code messages}, a body that is not the
+     * shape this endpoint returns - is worth a line in the log, because none of it raises an
+     * exception and all of it used to be invisible.
+     */
+    static String ackProblem(String response) {
+        if (response == null || response.isBlank()) {
+            return "empty answer";
+        }
+        JsonNode node;
+        try {
+            node = ACK_MAPPER.readTree(response);
+        } catch (Exception e) {
+            return "answer is not JSON";
+        }
+        if (!node.hasNonNull("events_received")) {
+            return "no events_received in the answer";
+        }
+        int received = node.get("events_received").asInt();
+        if (received != 1) {
+            return "events_received=" + received + ", one was sent";
+        }
+        JsonNode messages = node.get("messages");
+        if (messages != null && !messages.isEmpty()) {
+            return "Meta had something to say: " + messages;
+        }
+        return null;
+    }
+
+    private static String abbreviate(String text) {
+        if (text == null) {
+            return "(empty)";
+        }
+        return text.length() <= 400 ? text : text.substring(0, 400) + "...";
+    }
+
     private String fbc(String fbclid) {
         return fbc(fbclid, System.currentTimeMillis());
+    }
+
+    /**
+     * Where the events happen. All of them are in the game now that the landing page is no
+     * longer reported: the client starting up, a builder deployed, a quest, a level.
+     */
+    String sourceUrl() {
+        return siteUrl + "/game";
     }
 
     /**
@@ -201,6 +258,12 @@ public class MetaConversionService {
             // Seconds, not millis - and Meta rejects anything older than seven days.
             event.put("event_time", System.currentTimeMillis() / 1000L);
             event.put("action_source", "website");
+            /*
+             * Where it happened. Meta asks for this on every website event and drops the ones
+             * that arrive without it - which is a way to have every request answered 200 and
+             * still be told that no events were processed.
+             */
+            event.put("event_source_url", sourceUrl());
             // Nothing of ours fires a browser pixel for the same conversion, so this only has to
             // be unique: it is what a retry would be deduplicated against.
             event.put("event_id", UUID.randomUUID().toString());
@@ -223,16 +286,16 @@ public class MetaConversionService {
                 body.put("test_event_code", testEventCode);
             }
 
-            restClient.post()
+            String response = restClient.post()
                     .uri(UriComponentsBuilder.fromUriString(CONVERSION_URL)
                             .queryParam("access_token", accessToken)
                             .build(apiVersion, pixelId))
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(body)
                     .retrieve()
-                    .toBodilessEntity();
+                    .body(String.class);
 
-            logger.info("Meta conversion event '{}' (eventName={}) sent successfully", funnelStep, eventName);
+            logSent(funnelStep, eventName, response);
         } catch (Exception e) {
             logger.warn("Failed to send Meta conversion event '{}': {}", funnelStep, e.getMessage());
         }

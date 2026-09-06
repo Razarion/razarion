@@ -16,12 +16,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Every landing page signal comes back through the same pixel URL and is told apart by one query
@@ -333,29 +329,24 @@ class RequestInfoLoggingFilterTest {
     }
 
     /**
-     * Meta is told about the landing page because the step below it, the game page, is reached by
-     * barely one visitor in a hundred - too rarely for its optimiser to learn anything. All three
-     * landing signals ride on the same pixel url, so reporting the wrong ones would count one
-     * visitor three times and quietly inflate the very number the campaign is steered by.
+     * The landing page is recorded and reported to nobody.
+     * <p>
+     * Meta was told about every landing view for a while, on the argument that the step below it -
+     * the game page - was too rare for its optimiser to learn on. Measured, that was the wrong
+     * trade: 21,591 landing views in nine days, 1.1% of which reached the game. The event buried
+     * the ones that mean something under a hundred times their volume, and any campaign optimised
+     * on it was being steered towards the click rather than the player.
      */
     @Test
-    void onlyTheLandingViewItselfIsReportedToMeta() throws Exception {
+    void noLandingSignalIsReportedToMeta() throws Exception {
         call("/t.gif", "fbclid=abc");
         call("/t.gif", "fbclid=abc&e=play");
         call("/t.gif", "fbclid=abc&e=exit&d=1000");
-
-        assertEquals(List.of(PageRequestType.HOME, PageRequestType.HOME_PLAY_CLICKED,
-                PageRequestType.HOME_EXIT), savedTypes);
-        verify(metaConversionService, times(1)).sendLandingViewEvent(eq("abc"), any());
-    }
-
-    /** A visitor who carries no Meta click id is nobody Meta can be told about. */
-    @Test
-    void aLandingViewWithoutAMetaClickIdReportsAnEmptyClickId() throws Exception {
         call("/t.gif", "rdt_cid=abc");
 
-        verify(metaConversionService, times(1)).sendLandingViewEvent(eq(null), any());
-        verify(metaConversionService, never()).sendPageVisitEvent(any(), any());
+        assertEquals(List.of(PageRequestType.HOME, PageRequestType.HOME_PLAY_CLICKED,
+                PageRequestType.HOME_EXIT, PageRequestType.HOME), savedTypes);
+        verifyNoInteractions(metaConversionService);
     }
 
     /**

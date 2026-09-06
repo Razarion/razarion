@@ -6,6 +6,7 @@ import {ProgressBarModule} from 'primeng/progressbar';
 import {ScreenCover} from '../../gwtangular/GwtAngularFacade';
 import {BabylonModelService} from '../renderer/babylon-model.service';
 import {announceReadyIfHidden} from './tab-ready-notice';
+import {isAnimatedSplash, removeSplash, reportBootProgress} from '../boot-splash';
 
 @Component({
   selector: 'screen-cover',
@@ -30,17 +31,39 @@ export class ScreenCoverComponent implements ScreenCover, AfterViewInit {
 
   /**
    * Takes over from the boot splash in index.html, which covered the stretch before Angular
-   * existed. Dropped after a frame so the two are never both gone at once.
+   * existed - but only where that splash is the plain one.
+   * <p>
+   * Where the page is drawing the animated build-up it keeps it, and this cover waits behind it
+   * until the terrain is on screen. Handing over here instead would take the picture away at the
+   * moment the application appears, which is four seconds before there is anything to look at.
    */
   ngAfterViewInit(): void {
     requestAnimationFrame(() => {
-      document.getElementById('raz-boot')?.remove();
+      if (!isAnimatedSplash()) {
+        removeSplash();
+        return;
+      }
+      /*
+       * The outer bound. removeLoadingCover arms a shorter one, but only if the engine gets far
+       * enough to call it - and a loading screen that never leaves is the one way this change
+       * could be worse than what it replaced.
+       */
+      setTimeout(() => removeSplash(), 45000);
     });
   }
 
   removeLoadingCover(): void {
     // The engine is up. If nobody is looking, say so in the tab strip.
     announceReadyIfHidden();
+    /*
+     * From here the splash is waiting for the terrain. If that never arrives - a tile that fails
+     * to build, a material that never parses - the player would be left on a loading screen for
+     * good, which is worse than the abrupt handover this replaced. Twelve seconds is far past
+     * the 1.5 s a tile normally needs after the first tick.
+     */
+    if (isAnimatedSplash()) {
+      setTimeout(() => removeSplash(), 12000);
+    }
     this.zone.run(() => {
       this.fadeOutCover = true;
       setTimeout(() => {
@@ -51,6 +74,9 @@ export class ScreenCoverComponent implements ScreenCover, AfterViewInit {
   }
 
   onStartupProgress(percent: number): void {
+    // The page cannot see any of this: it can weigh the JavaScript arriving and nothing after.
+    // Handed on so the build-up keeps moving instead of standing finished for four seconds.
+    reportBootProgress(percent / 100);
     this.zone.run(() => {
       this.loadingProgress = Math.floor(percent);
     });

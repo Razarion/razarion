@@ -36,6 +36,7 @@ import {RadarComponent} from './cockpit/main/radar/radar.component';
 import {SelectionShortcutsService} from './selection-shortcuts.service';
 import {TouchSelectionModeService} from './renderer/touch-selection-mode.service';
 import {RadarState} from '../gwtangular/GwtAngularFacade';
+import {notifyAngularReady} from '../wasm-boot';
 
 
 @Component({
@@ -188,33 +189,12 @@ export class GameComponent implements OnInit {
     }
   }
 
+  /**
+   * The facade is wired, so the engine may call into it. The module itself has been downloading
+   * since main.ts, long before this component existed - see wasm-boot.
+   */
   private startGame(): void {
-    GameComponent.loadGameScriptUrl('/teavm-client/client-bootstrap.js');
-  }
-
-  private static loadGameScriptUrl(url: string) {
-    // Check if exits
-    let scriptsElements = document.getElementsByTagName('script');
-    for (let i = scriptsElements.length; i--;) {
-      if (scriptsElements[i].src.startsWith(url)) {
-        return;
-      }
-    }
-    // Add
-    let scriptObject = document.createElement('script');
-    // scriptObject.src = 'http://localhost:8080' + url;
-    scriptObject.src = url + '?t=' + new Date().getTime();
-    scriptObject.type = 'text/javascript';
-    scriptObject.charset = 'utf-8';
-    document.getElementsByTagName('head')[0].appendChild(scriptObject);
-  }
-
-  private static insertGameScript(script: string) {
-    let scriptObject = document.createElement('script');
-    scriptObject.text = script;
-    scriptObject.type = 'text/javascript';
-    scriptObject.charset = 'utf-8';
-    document.getElementsByTagName('head')[0].appendChild(scriptObject);
+    notifyAngularReady();
   }
 
   getGameComponent(): GameComponent {

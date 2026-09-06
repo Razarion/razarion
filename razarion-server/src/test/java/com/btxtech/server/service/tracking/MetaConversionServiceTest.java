@@ -3,6 +3,9 @@ package com.btxtech.server.service.tracking;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 /**
@@ -32,10 +35,9 @@ class MetaConversionServiceTest {
     @Test
     void withoutCredentialsNothingIsSentAndNothingBreaks() {
         MetaConversionService service = new MetaConversionService(
-                "v21.0", "", "", "", "", "", "", "", "", "");
+                "v21.0", "", "", "", "https://www.razarion.com", "", "", "", "", "");
 
         assertDoesNotThrow(() -> {
-            service.sendLandingViewEvent("IwcGRvZgRle", "Mozilla/5.0 (iPhone) Instagram");
             service.sendPageVisitEvent("IwcGRvZgRle", "Mozilla/5.0 (iPhone) Instagram");
             service.registerUser("user-1", "IwcGRvZgRle", "Mozilla/5.0 (iPhone) Instagram");
             service.sendBuilderDeployedEvent("user-1");
@@ -49,15 +51,76 @@ class MetaConversionServiceTest {
     @Test
     void aVisitorWithoutAClickIdProducesNoEvent() {
         MetaConversionService service = new MetaConversionService(
-                "v21.0", "", "", "", "", "", "", "", "", "");
+                "v21.0", "", "", "", "https://www.razarion.com", "", "", "", "", "");
 
         assertDoesNotThrow(() -> {
-            service.sendLandingViewEvent(null, "Mozilla/5.0");
             service.sendPageVisitEvent(null, "Mozilla/5.0");
             service.sendPageVisitEvent("", "Mozilla/5.0");
             service.registerUser("user-2", null, "Mozilla/5.0");
             // Nothing was registered, so this finds nothing rather than sending an unmatched event.
             service.sendBuilderDeployedEvent("user-2");
         });
+    }
+
+    /**
+     * Reading Meta's answer instead of only noticing that the request did not throw.
+     * <p>
+     * A 200 from the events endpoint means the request was well formed, not that anything was
+     * counted. Two hundred and thirty-nine events were logged as "sent successfully" while Meta
+     * reported receiving none, and the body that would have said which of the two was true had
+     * been thrown away unread.
+     */
+    @Test
+    void oneEventInAndOneReceivedIsNothingToReport() {
+        assertNull(MetaConversionService.ackProblem(
+                "{\"events_received\":1,\"messages\":[],\"fbtrace_id\":\"Abc123\"}"));
+    }
+
+    @Test
+    void aWarningFromMetaIsWorthALine() {
+        // Where it says things like a click id it cannot match, without failing the request.
+        String problem = MetaConversionService.ackProblem(
+                "{\"events_received\":1,\"messages\":[\"Invalid parameter fbc\"]}");
+
+        assertNotNull(problem);
+        assertTrue(problem.contains("Invalid parameter fbc"));
+    }
+
+    @Test
+    void anEventThatWasNotCountedIsWorthALine() {
+        assertNotNull(MetaConversionService.ackProblem("{\"events_received\":0,\"messages\":[]}"));
+    }
+
+    @Test
+    void anAnswerInAnotherShapeIsNotReadAsSuccess() {
+        // A proxy page, an empty body, a redirect: none of these is an accepted event, and none
+        // of them throws.
+        assertNotNull(MetaConversionService.ackProblem(null));
+        assertNotNull(MetaConversionService.ackProblem(""));
+        assertNotNull(MetaConversionService.ackProblem("<html>gateway timeout</html>"));
+        assertNotNull(MetaConversionService.ackProblem("{\"fbtrace_id\":\"Abc123\"}"));
+    }
+
+    /**
+     * Where the event happened, which Meta asks for on every website event.
+     * <p>
+     * Without it a request is still answered 200 and the event is still not processed - the exact
+     * shape of "the connection exists but no events came through" that the diagnostics reported
+     * while the log here said 239 sent successfully. Every remaining step happens in the game.
+     */
+    @Test
+    void everyEventSaysWhichPageItHappenedOn() {
+        MetaConversionService service = new MetaConversionService("v21.0", "", "", "",
+                "https://www.razarion.com", "", "", "", "", "");
+
+        assertEquals("https://www.razarion.com/game", service.sourceUrl());
+    }
+
+    @Test
+    void aTrailingSlashDoesNotBecomeADoubleOne() {
+        MetaConversionService service = new MetaConversionService("v21.0", "", "", "",
+                "https://www.razarion.com/", "", "", "", "", "");
+
+        assertEquals("https://www.razarion.com/game", service.sourceUrl());
     }
 }

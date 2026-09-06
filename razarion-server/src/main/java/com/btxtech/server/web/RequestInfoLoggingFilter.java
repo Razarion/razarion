@@ -97,15 +97,13 @@ public class RequestInfoLoggingFilter implements Filter {
                 pageRequestService.onLanding(toPageRequest(httpRequest, queryString));
             } else if (requestURI.equals("/t.gif") && hasQueryString) {
                 PageRequestType homeEventType = homeEventType(httpRequest);
+                // The landing page is recorded here and reported to nobody. Meta was told about
+                // it for a while, on the argument that the step below - the game page - was too
+                // rare to optimise on. Measured, it was the wrong trade: 21,591 of them in nine
+                // days, 1.1% of which reached the game, against a step Meta already counts
+                // itself. It buried the events that mean something under a hundred times their
+                // volume and invited being optimised on, which is targeting the click.
                 pageRequestService.onHomeEvent(toPageRequest(httpRequest, queryString), homeEventType);
-                if (homeEventType == PageRequestType.HOME) {
-                    // Only the page view, not the click and not the exit: those ride on the same
-                    // pixel url and would report one visitor three times. Meta is told about this
-                    // step at all because the one below it - the game page - is reached too rarely
-                    // to optimise on; see MetaConversionService.
-                    metaConversionService.sendLandingViewEvent(httpRequest.getParameter("fbclid"),
-                            httpRequest.getHeader("User-Agent"));
-                }
             } else if ((requestURI.equals("/game") || requestURI.equals("/game/index.html")) && hasQueryString) {
                 pageRequestService.onGame(toPageRequest(httpRequest, queryString));
                 redditConversionService.sendPageVisitEvent(httpRequest.getParameter("rdt_cid"));

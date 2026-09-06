@@ -35,9 +35,26 @@ public final class ContentDigest {
         }
     }
 
-    /** The digest as an HTTP entity tag - quoted, strong. */
+    /** The digest as an HTTP entity tag - quoted, strong. For bytes that go out as they are. */
     public static String eTag(String digest) {
         return "\"" + digest + "\"";
+    }
+
+    /**
+     * The same tag, weakened. For a response the server may compress.
+     * <p>
+     * A strong tag promises the bytes are identical, and gzipped and plain are not the same bytes.
+     * Tomcat holds us to that: {@code noCompressionStrongETag} defaults to true, so a response
+     * carrying a strong tag is sent uncompressed however the mime types are configured. That is
+     * how eight megabytes of material JSON went out unpacked for weeks without anything looking
+     * wrong - the compression was configured, it was declined.
+     * <p>
+     * Weak is what this actually means: the two encodings are equivalent, which is all a
+     * revalidation needs to know. {@link #matches} compares without the prefix, so a client that
+     * sends the tag back either way is answered the same.
+     */
+    public static String weakETag(String digest) {
+        return "W/\"" + digest + "\"";
     }
 
     /**
@@ -51,15 +68,17 @@ public final class ContentDigest {
         if (ifNoneMatch == null || ifNoneMatch.isBlank()) {
             return false;
         }
+        String expected = withoutWeakPrefix(eTag);
         for (String candidate : ifNoneMatch.split(",")) {
-            String trimmed = candidate.trim();
-            if (trimmed.startsWith("W/")) {
-                trimmed = trimmed.substring(2);
-            }
-            if (trimmed.equals("*") || trimmed.equals(eTag)) {
+            String trimmed = withoutWeakPrefix(candidate.trim());
+            if (trimmed.equals("*") || trimmed.equals(expected)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private static String withoutWeakPrefix(String eTag) {
+        return eTag.startsWith("W/") ? eTag.substring(2) : eTag;
     }
 }

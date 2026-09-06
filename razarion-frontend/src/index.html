@@ -65,6 +65,44 @@
       w.RAZ_currentTask = 'PAGE_LOADED';
       w.RAZ_startupTerminated = null;
 
+      /*
+       * Half the players get the built-up world on the loading screen, half get the plain splash
+       * that was there before. Without the split the two would be compared across different days
+       * with different traffic, and the last time that was done the step in the numbers turned out
+       * to be a campaign change rather than the deploy.
+       *
+       * ?boot=grid or ?boot=plain forces one, for looking at it on purpose. It sticks to the
+       * browser afterwards - not just the tab, which died with every window and sent the next
+       * test back to the coin flip. A flip that lands on plain twice running is indistinguishable
+       * from a broken animation, and it was taken for one four times before this was written.
+       * ?boot=off forgets it again. Nobody who does not pass the parameter is ever pinned.
+       */
+      var forced = new URLSearchParams(location.search).get('boot');
+      var remembered = null;
+      try {
+        if (forced === 'off') {
+          localStorage.removeItem('razBoot');
+        } else if (forced === 'grid' || forced === 'plain') {
+          localStorage.setItem('razBoot', forced);
+        }
+        remembered = localStorage.getItem('razBoot');
+      } catch (ignored) {
+        // A browser that refuses storage still gets a variant, just not a sticky one.
+      }
+      var chosen = forced === 'grid' || forced === 'plain' ? forced : remembered;
+      w.RAZ_bootVariant = chosen === 'grid' || chosen === 'plain'
+        ? chosen
+        : (Math.random() < 0.5 ? 'grid' : 'plain');
+      /*
+       * Said out loud, because "did I see the animation or did I get the other half" is not a
+       * question anybody should have to answer by staring at a loading screen.
+       */
+      try {
+        console.log('[Razarion] Ladebildschirm: ' + w.RAZ_bootVariant
+          + (chosen ? ' (erzwungen)' : ' (Zufall)'));
+      } catch (ignored) {
+      }
+
       var params = new URLSearchParams(location.search);
 
       function payload(extra) {
@@ -145,6 +183,13 @@
         } catch (ignored) {
           add('webgl2', 'error');
         }
+        // Which loading screen this session gets. A coin flip, decided here because this line is
+        // the only one every session sends before anything else - including the sessions that
+        // leave during the bundle, which are the ones the experiment is about. Carried in the
+        // capabilities catalogue rather than in a field of its own: the record it would have to
+        // reach is the abort beacon, and that one is joined to this by the game session uuid
+        // anyway.
+        add('boot', w.RAZ_bootVariant);
         try {
           add('coi', self.crossOriginIsolated === true);
           add('sab', typeof SharedArrayBuffer !== 'undefined');
@@ -203,7 +248,23 @@
           successful: false,
           aborted: true,
           hidden: hidden,
-          lastTaskEnum: w.RAZ_currentTask || 'PAGE_LOADED'
+          lastTaskEnum: w.RAZ_currentTask || 'PAGE_LOADED',
+          // How long they were willing to wait. Three quarters of the aborts happen while the
+          // JavaScript is still arriving, and until this field there was no way to tell a player
+          // who never looked from one who watched the loading screen for fifteen seconds. Same
+          // origin as the tabHidden beacon above, so the two are comparable.
+          millisSincePageLoad: Date.now() - pageLoadedAt,
+          /*
+           * And whether there was anything moving while they waited.
+           *
+           * The same two counters STARTUP_TIMING carries - but that one is sent from inside the
+           * application, so only players who got that far ever reported them. The people this
+           * experiment is about are the ones who did not, and about them the counters said
+           * nothing. Undefined in the unanimated half, where JSON.stringify drops the pair and
+           * the record keeps "no animation was running" apart from "it never got a frame".
+           */
+          bootFrames: w.RAZ_bootFrames,
+          bootMaxGap: w.RAZ_bootMaxGap
         }));
       }
 
@@ -239,6 +300,7 @@
   measured bar takes over in ScreenCoverComponent, which also removes this splash.
 -->
 <div id="raz-boot">
+  <canvas id="raz-boot-grid" aria-hidden="true"></canvas>
   <div id="raz-boot-card">
     <div id="raz-boot-title">Razarion &ndash; RTS meets MMO: One shared world that never stops</div>
     <div id="raz-boot-box">
@@ -258,26 +320,22 @@
   /* Mirrors screen-cover.component.scss so the handover to Angular is not a visible jump. Both
      files carry the same background and the same portrait swap below; changing one alone shows up
      as a flash the moment Angular takes over. */
+  /* No picture behind it any more. The build-up is what there is to look at, and a photograph
+     under it was something to see through rather than something to see. */
   #raz-boot {
-    --hero: url("/razarion-bg.webp");
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 10000;
-    background: linear-gradient(180deg, rgba(10, 10, 18, 0.2) 0%, rgba(10, 10, 18, 0.5) 50%, rgba(10, 10, 18, 0.8) 100%), var(--hero) center/cover no-repeat;
+    background: linear-gradient(180deg, #0b1420 0%, #070e18 55%, #04080f 100%);
     font-family: Arial, Helvetica, sans-serif;
     color: #CCC;
   }
 
-  /* The 16:9 hero laid over a portrait frame by center/cover shows 27% of its width - a gear
-     fragment over empty beach. Same treatment as the landing page: a picture cut for the shape. */
-  @media (max-aspect-ratio: 3/4) {
-    #raz-boot {
-      --hero: url("/razarion-bg-portrait.webp");
-    }
-  }
+  /* No portrait variant any more: the picture above is already taller than it is wide, so
+     center/cover keeps its subject in both shapes. */
 
   /* The cockpit plate, by hand. This is @mixin hud-plate from _hud-panels.scss and the .hud-plate
      class .cover-panel-center wears - the same recipe, spelled out, because this card paints
@@ -376,6 +434,31 @@
   #raz-boot-tips li {
     padding: 0.3rem 0;
   }
+
+  /* The build-up sits behind the card and over the hero, so the world looks like it is being
+     assembled rather than waited for. Transparent where nothing is drawn, which keeps the hero
+     visible and the handover to Angular on the same backdrop. */
+  #raz-boot-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+  }
+
+  /* What the renderer hands over with, instead of the splash being cut away. */
+  #raz-boot.raz-boot-leaving {
+    opacity: 0;
+    transition: opacity 450ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #raz-boot.raz-boot-leaving {
+      transition: none;
+    }
+  }
 </style>
 <script>
   /*
@@ -393,6 +476,525 @@
         splash.parentNode.removeChild(splash);
       }
     }
+  })();
+</script>
+<script>
+  /*
+   * The loading screen, as a world being built.
+   *
+   * For the first five seconds of an in-app start nothing on this page changes: a static hero, a
+   * sweeping stripe and three tips. Three quarters of every abandoned start happen inside exactly
+   * that window, and 60% of those players still had the tab in front of them - they watched a
+   * frozen picture and left. This draws a terrain grid instead, filling in from the horizon, then
+   * objects standing up on it, then colour: the shape of the game arriving.
+   *
+   * It is a fake, and deliberately so. The real renderer cannot draw anything until 2.4 MB of
+   * JavaScript has arrived, which is the wait being covered. What it must not be is a lie about
+   * progress, so the build-up is driven by the bytes actually landing rather than by a timer: it
+   * cannot finish early on a slow connection and it cannot crawl on a fast one. Only the sweep
+   * moves on its own, so a stalled download still looks alive rather than hung.
+   *
+   * Canvas 2D and nothing else. A downloaded asset would compete for the bandwidth this exists to
+   * cover: at the 5 Mbit/s an in-app webview gets, every 500 KB of animation costs another second
+   * of the wait it is meant to hide.
+   *
+   * Which half of the players see it is decided by RAZ_bootVariant in the tracking script above,
+   * and reported with the capabilities line - see the comment there.
+   */
+  (function () {
+    var canvas = document.getElementById('raz-boot-grid');
+    if (!canvas || !canvas.getContext || window.RAZ_bootVariant !== 'grid') {
+      if (canvas && canvas.parentNode) {
+        canvas.parentNode.removeChild(canvas);
+      }
+      return;
+    }
+    var ctx;
+    try {
+      ctx = canvas.getContext('2d');
+    } catch (ignored) {
+      return;
+    }
+    if (!ctx) {
+      return;
+    }
+    var reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+    /*
+     * The card goes, and with it the title, the bar and the three tips.
+     *
+     * It sits in the middle of the screen - forty ems wide, nearly the whole width of a phone -
+     * which is exactly where the build front is during the first seconds. The report that came
+     * back from a phone was "I did not see it", and a panel over the only part that moves is at
+     * least as good an explanation as anything else.
+     *
+     * So this half of the players gets the build and nothing else. It carries its own progress:
+     * how far the plane has come is how far the start has come, which is the thing a bar was
+     * saying in words. The other half keeps the card, because the other half is the screen this
+     * is being measured against.
+     *
+     * Not when the system asked for less motion. There the build is drawn once and stands still,
+     * and a still picture with no word on it is a page that looks broken.
+     */
+    if (!reduced) {
+      var card = document.getElementById('raz-boot-card');
+      if (card) {
+        card.style.display = 'none';
+      }
+    }
+
+    // The JavaScript this screen waits for, measured on the deployed build: 186 kB of eager
+    // bundle plus the game chunk, 2,740 kB together over the wire. Only the scale of the fill -
+    // the clamp below means a wrong number shows as a slightly fast or slow build-up and never as
+    // anything worse.
+    var EXPECTED_BYTES = 2750 * 1024;
+    var GREEN = '99, 232, 176';
+    var CYAN = '99, 200, 255';
+
+    var width = 0;
+    var height = 0;
+
+    function resize() {
+      var ratio = Math.min(window.devicePixelRatio || 1, 2);
+      width = canvas.clientWidth || window.innerWidth;
+      height = canvas.clientHeight || window.innerHeight;
+      canvas.width = Math.max(1, Math.round(width * ratio));
+      canvas.height = Math.max(1, Math.round(height * ratio));
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+
+    resize();
+    addEventListener('resize', resize);
+
+    /*
+     * How far along the download is, from the bytes that have actually landed.
+     *
+     * Recounted from the whole buffer rather than accumulated, which is both simpler and immune to
+     * counting an entry twice. index.html raises the resource timing buffer to 20000 in the first
+     * script on the page, so nothing is dropped. A warm start reports transferSize 0 and a body
+     * size instead - counting only the wire would leave a returning player looking at a grid that
+     * never builds.
+     */
+    var bytes = 0;
+    // Below zero until the application reports for the first time, which is also how the page
+    // knows Angular is alive without asking.
+    var enginePart = -1;
+    var demoProgress = 0;
+    /*
+     * Watching it on purpose. An in-app player waits about five seconds for the bundle and sees
+     * the whole build; on localhost it is over before the eye catches it, which is not a fault in
+     * the animation but does make it impossible to look at. ?bootDemo=8 stretches it over eight
+     * seconds, ?bootDemo over twelve. Never reached without the parameter.
+     */
+    var demoParam = new URLSearchParams(location.search).get('bootDemo');
+    var demoMillis = demoParam === null ? 0 : (Number(demoParam) || 12) * 1000;
+    var started = 0;
+
+    function recount() {
+      var total = 0;
+      var entries;
+      try {
+        entries = performance.getEntriesByType('resource');
+      } catch (ignored) {
+        return;
+      }
+      for (var i = 0; i < entries.length; i++) {
+        var entry = entries[i];
+        /*
+         * Only the JavaScript, because only the JavaScript is what this screen waits for: the
+         * splash is taken down by ScreenCoverComponent, which exists once the game chunk has run.
+         * The engine module, the hero and the materials all arrive in the same seconds and would
+         * push the build-up to finished while the player is still waiting - which is the one thing
+         * a progress display may not do.
+         */
+        if (entry.name.indexOf('.js') < 0) {
+          continue;
+        }
+        total += entry.transferSize || entry.encodedBodySize || 0;
+      }
+      bytes = total;
+    }
+
+    // A fixed pattern, so the picture is the same every time and nothing jitters between frames.
+    var seed = 0x2f6e2b1;
+
+    function random() {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+      return seed / 0x7fffffff;
+    }
+
+    /*
+     * Buildings, in world units on the ground plane. Sizes and heights are roughly what the game's
+     * own put there: a factory covers a few nodes and stands a handful of units tall.
+     */
+    var objects = [];
+    for (var i = 0; i < 26; i++) {
+      objects.push({
+        x: Math.round((random() - 0.5) * 120 / 6) * 6,
+        // Not right in the camera's face: a box at the near edge fills a third of the frame.
+        z: Math.round((-6 + random() * 66) / 6) * 6,
+        size: 3 + Math.round(random() * 3),
+        tall: 2 + random() * 5,
+        // Spread across the middle of the build so they keep arriving the whole way through.
+        at: 0.3 + random() * 0.5
+      });
+    }
+
+    /*
+     * The camera the game actually uses, so that what builds up under the loading screen is the
+     * view the player is handed when it goes away.
+     *
+     * BabylonRenderServiceAccessImpl puts a FreeCamera at (0, 30, -35) looking at the origin and
+     * never turns it - only the position moves, and updateCameraHeight keeps it 30 above the ground
+     * under the view centre. The field of view is Babylon's default 0.8 rad, vertical.
+     *
+     * That comes to 40.6 degrees below the horizontal, and it has a consequence the first version
+     * of this screen got wrong: at that pitch the horizon projects to 2.03 in normalised device
+     * coordinates, which is above the top of the frame. The game never shows sky. A loading screen
+     * with a horizon a third of the way down and black above it is not this game seen early, it is
+     * a different game.
+     */
+    var CAM_HEIGHT = 30;
+    var CAM_BACK = 35;
+    var FOV = 0.8;
+    var CAM_LEN = Math.sqrt(CAM_HEIGHT * CAM_HEIGHT + CAM_BACK * CAM_BACK);
+    var FWD_Y = -CAM_HEIGHT / CAM_LEN;
+    var FWD_Z = CAM_BACK / CAM_LEN;
+    var UP_Y = CAM_BACK / CAM_LEN;
+    var UP_Z = CAM_HEIGHT / CAM_LEN;
+    var TAN_HALF = Math.tan(FOV / 2);
+
+    /*
+     * The strip of ground this camera holds: z from -20 to 59 fills the frame exactly, so the grid
+     * runs a little past both edges. One terrain node is one unit, so a six-unit cell is six of
+     * them - fine enough that the ground reads as ground rather than as a chessboard, coarse enough
+     * that a phone fills it in a couple of hundred quads.
+     */
+    var Z_NEAR = -26;
+    var Z_FAR = 66;
+    var CELL = 6;
+
+    /** A point on the ground, or above it, where the game's camera would put it. */
+    function project(x, z, y) {
+      var vy = (y || 0) - CAM_HEIGHT;
+      var vz = z + CAM_BACK;
+      var zc = vy * FWD_Y + vz * FWD_Z;
+      if (zc < 0.5) {
+        // Behind the camera, or so close to its plane that the projection blows up.
+        return null;
+      }
+      var yc = vy * UP_Y + vz * UP_Z;
+      var aspect = width / height;
+      return {
+        x: width * 0.5 * (1 + (x / zc) / (TAN_HALF * aspect)),
+        y: height * 0.5 * (1 - (yc / zc) / TAN_HALF)
+      };
+    }
+
+    /** How far to either side the frame reaches at this depth, in world units. */
+    function halfWidthAt(z) {
+      var zc = (-CAM_HEIGHT) * FWD_Y + (z + CAM_BACK) * FWD_Z;
+      return TAN_HALF * (width / height) * zc + CELL;
+    }
+
+    /** Where the build has got to. It runs from the far edge towards the camera. */
+    function frontAt(progress) {
+      return Z_FAR - (Z_FAR - Z_NEAR) * Math.min(1, progress);
+    }
+
+    /** The columns this depth needs, snapped to the grid. Narrow up close, wide far away. */
+    function columnRange(z) {
+      var half = Math.ceil(halfWidthAt(z) / CELL) * CELL;
+      return {from: -half, to: half};
+    }
+
+    function drawCells(wash) {
+      var edge = frontAt(wash);
+      for (var z = Z_FAR - CELL; z >= Z_NEAR; z -= CELL) {
+        if (z + CELL < edge) {
+          continue;
+        }
+        var cols = columnRange(z + CELL);
+        // Fades in over one cell's depth, so the colour arrives as a soft front rather than a step.
+        var alpha = Math.min(1, (z + CELL - edge) / CELL);
+        for (var x = cols.from; x < cols.to; x += CELL) {
+          var a = project(x, z + CELL);
+          var b = project(x + CELL, z + CELL);
+          var c = project(x + CELL, z);
+          var d = project(x, z);
+          if (!a || !b || !c || !d) {
+            continue;
+          }
+          /*
+           * Grass and sand in patches, not per cell. Two cells to a patch, because the ground in
+           * the game is areas of one and areas of the other - cell-by-cell noise reads as static.
+           * The multiplications go through imul: without it the products leave the 32 bit range,
+           * the low bits stop mixing and the pattern comes out in stripes.
+           */
+          var px = Math.floor(x / (CELL * 2)) + 512;
+          var pz = Math.floor(z / (CELL * 2)) + 512;
+          var mix = Math.imul(px, 374761393) ^ Math.imul(pz, 668265263);
+          mix = Math.imul(mix ^ (mix >>> 13), 1274126177);
+          var sand = ((mix ^ (mix >>> 16)) >>> 0) % 100 < 42;
+          ctx.fillStyle = 'rgba(' + (sand ? '96, 92, 68' : '60, 82, 62') + ','
+            + (alpha * 0.6).toFixed(3) + ')';
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.lineTo(c.x, c.y);
+          ctx.lineTo(d.x, d.y);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+    }
+
+    function drawWireframe(progress) {
+      var edge = frontAt(progress);
+      var cols = columnRange(Z_FAR);
+      ctx.lineWidth = 1;
+      // Lines across, one per row of cells, appearing as the front passes them.
+      for (var z = Z_FAR; z >= Z_NEAR; z -= CELL) {
+        if (z < edge) {
+          continue;
+        }
+        var age = (z - edge) / CELL;
+        var settled = Math.min(1, age);
+        var glow = Math.max(0, 1 - age);
+        var row = columnRange(z);
+        var left = project(row.from, z);
+        var right = project(row.to, z);
+        if (!left || !right) {
+          continue;
+        }
+        ctx.lineWidth = glow > 0.2 ? 1.6 : 1;
+        ctx.strokeStyle = 'rgba(' + (glow > 0.2 ? CYAN : GREEN) + ','
+          + (0.18 + settled * 0.16 + glow * 0.5).toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.moveTo(left.x, left.y);
+        ctx.lineTo(right.x, right.y);
+        ctx.stroke();
+      }
+      // Lines into the distance, growing with the front rather than appearing whole.
+      var near = Math.max(Z_NEAR, edge);
+      if (near >= Z_FAR) {
+        return;
+      }
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(' + GREEN + ', 0.2)';
+      for (var x = cols.from; x <= cols.to; x += CELL) {
+        var far = project(x, Z_FAR);
+        var end = project(x, near);
+        if (!far || !end) {
+          continue;
+        }
+        ctx.beginPath();
+        ctx.moveTo(far.x, far.y);
+        ctx.lineTo(end.x, end.y);
+        ctx.stroke();
+      }
+    }
+
+    function drawObjects(progress) {
+      for (var i = 0; i < objects.length; i++) {
+        var obj = objects[i];
+        var since = (progress - obj.at) / 0.12;
+        if (since <= 0) {
+          continue;
+        }
+        var grown = Math.min(1, since);
+        var height3d = obj.tall * grown;
+        var x0 = obj.x;
+        var x1 = obj.x + obj.size;
+        var zNear = obj.z;
+        var zFar = obj.z + obj.size;
+        var baseLeft = project(x0, zNear, 0);
+        var baseRight = project(x1, zNear, 0);
+        var topLeft = project(x0, zNear, height3d);
+        var topRight = project(x1, zNear, height3d);
+        var backLeft = project(x0, zFar, height3d);
+        var backRight = project(x1, zFar, height3d);
+        if (!baseLeft || !baseRight || !topLeft || !topRight || !backLeft || !backRight) {
+          continue;
+        }
+        // Colour arrives after the outline, the way the materials do in the real start.
+        var solid = Math.max(0, Math.min(1, since - 1.2));
+        if (solid > 0) {
+          ctx.fillStyle = 'rgba(38, 48, 62,' + (solid * 0.94).toFixed(3) + ')';
+          ctx.beginPath();
+          ctx.moveTo(baseLeft.x, baseLeft.y);
+          ctx.lineTo(baseRight.x, baseRight.y);
+          ctx.lineTo(topRight.x, topRight.y);
+          ctx.lineTo(topLeft.x, topLeft.y);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = 'rgba(74, 92, 112,' + (solid * 0.94).toFixed(3) + ')';
+          ctx.beginPath();
+          ctx.moveTo(topLeft.x, topLeft.y);
+          ctx.lineTo(topRight.x, topRight.y);
+          ctx.lineTo(backRight.x, backRight.y);
+          ctx.lineTo(backLeft.x, backLeft.y);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.lineWidth = 1.3;
+        ctx.strokeStyle = 'rgba(' + CYAN + ',' + (0.4 + (1 - grown) * 0.5).toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.moveTo(baseLeft.x, baseLeft.y);
+        ctx.lineTo(baseRight.x, baseRight.y);
+        ctx.lineTo(topRight.x, topRight.y);
+        ctx.lineTo(topLeft.x, topLeft.y);
+        ctx.closePath();
+        ctx.stroke();
+      }
+    }
+
+    function draw(now, progress) {
+      ctx.clearRect(0, 0, width, height);
+
+      // Colour last: the wireframe is drawn, then it gets its ground.
+      var wash = Math.max(0, (progress - 0.5) / 0.5);
+      if (wash > 0) {
+        // Cells first, so the wireframe stays on top of its own material.
+        drawCells(wash);
+      }
+      drawWireframe(Math.min(1, progress / 0.5));
+      drawObjects(progress);
+
+      // The one thing that moves on its own. Without it a download that stalls looks like a page
+      // that crashed, which is the reading this whole screen exists to avoid.
+      if (!reduced) {
+        // Runs in the world, not down the screen, so it keeps the plane's perspective.
+        var sweepZ = Z_FAR - (Z_FAR - Z_NEAR) * ((now % 2600) / 2600);
+        var lead = project(0, sweepZ);
+        var trail = project(0, sweepZ + CELL * 1.5);
+        if (lead && trail && trail.y < lead.y) {
+          var band = ctx.createLinearGradient(0, trail.y, 0, lead.y);
+          band.addColorStop(0, 'rgba(' + CYAN + ', 0)');
+          band.addColorStop(1, 'rgba(' + CYAN + ', 0.22)');
+          ctx.fillStyle = band;
+          ctx.fillRect(0, trail.y, width, lead.y - trail.y);
+        }
+      }
+    }
+
+    /*
+     * Thirty frames a second, not sixty. This shares a thread with the bundle the player is
+     * waiting for, and the animation must never be the reason it arrives later.
+     */
+    var shown = 0;
+    var last = 0;
+    /*
+     * Whether any of this was on screen at all.
+     *
+     * requestAnimationFrame does not run while the main thread is busy, and during a cold start
+     * that thread is compiling 2.7 MB of JavaScript in the gaps between chunks arriving. An
+     * animation that gets three frames in five seconds is a still picture with extra steps, and
+     * from the outside it is indistinguishable from the plain splash - which is exactly the
+     * report that came back from a phone. Counted here, sent with STARTUP_TIMING, so the question
+     * has an answer instead of a guess.
+     */
+    window.RAZ_bootFrames = 0;
+    window.RAZ_bootMaxGap = 0;
+
+    function frame(now) {
+      if (!document.getElementById('raz-boot')) {
+        return;
+      }
+      if (last) {
+        window.RAZ_bootMaxGap = Math.max(window.RAZ_bootMaxGap, Math.round(now - last));
+      }
+      if (now - last >= 33) {
+        last = now;
+        window.RAZ_bootFrames++;
+        if (demoMillis) {
+          // ?bootDemo - the build paced by a clock instead of by the download, because on a
+          // developer machine the whole bundle is here in half a second and there is nothing to
+          // watch. The number of seconds is the parameter's value, twelve by default.
+          demoProgress = Math.min(1, (now - started) / demoMillis);
+        } else {
+          recount();
+        }
+        // Eased towards the measurement rather than snapped to it, so one chunk landing does not
+        // jump the build forward. Never retreats: a bar that goes backwards is worse than one
+        // that stops.
+        /*
+         * Two halves, because two different things are being waited for and only one of them can
+         * be seen from here. The JavaScript arriving fills the first half; the engine's own boot -
+         * the worker, the configuration, the models - fills the second, and the application has to
+         * report that because nothing in the page can measure it.
+         */
+        var target = demoMillis
+          ? demoProgress
+          : (enginePart < 0
+            ? Math.min(0.5, bytes / EXPECTED_BYTES * 0.5)
+            : 0.5 + enginePart * 0.5);
+        shown = Math.max(shown, shown + (target - shown) * 0.08);
+        try {
+          draw(now, shown);
+        } catch (ignored) {
+          return;
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    if (reduced) {
+      // Someone who asked the system to stop animating gets one picture of a world already built.
+      try {
+        draw(0, 1);
+      } catch (ignored) {
+      }
+    } else {
+      requestAnimationFrame(function (now) {
+        started = now;
+        frame(now);
+      });
+    }
+
+    /*
+     * The handover. ScreenCoverComponent calls this instead of removing the splash outright, so
+     * the built world dissolves into the real one rather than being cut away.
+     *
+     * Defined inside the grid arm on purpose, after the early return above: the other half of the
+     * players must see exactly the screen this is being measured against, and there they get the
+     * component's own remove. It cannot reach the number either way - what is being counted is
+     * players leaving during the wait, and this runs once the wait is over.
+     */
+    /*
+     * The engine's progress, handed in by ScreenCoverComponent. The sweeping stripe stops here:
+     * it means "nobody can say how far along this is", and from this call on somebody can.
+     */
+    window.RAZ_bootProgress = function (fraction) {
+      enginePart = Math.max(0, Math.min(1, fraction));
+      var fill = document.getElementById('raz-boot-fill');
+      if (fill) {
+        fill.style.animation = 'none';
+        fill.style.left = '0';
+        fill.style.width = Math.round(5 + enginePart * 95) + '%';
+      }
+    };
+
+    /*
+     * The terrain is on screen. Until this, the loading screen stays up - the first engine tick
+     * comes while the ground is still untextured, and handing over there shows an empty plane.
+     */
+    window.RAZ_bootTerrainReady = function () {
+      window.RAZ_bootFadeOut();
+    };
+
+    window.RAZ_bootFadeOut = function () {
+      var splash = document.getElementById('raz-boot');
+      if (!splash) {
+        return;
+      }
+      splash.classList.add('raz-boot-leaving');
+      setTimeout(function () {
+        if (splash.parentNode) {
+          splash.parentNode.removeChild(splash);
+        }
+      }, 500);
+    };
   })();
 </script>
 <app-root></app-root>

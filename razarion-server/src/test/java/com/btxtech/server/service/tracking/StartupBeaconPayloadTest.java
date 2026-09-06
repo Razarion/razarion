@@ -123,7 +123,7 @@ class StartupBeaconPayloadTest {
         String body = """
                 {"gameSessionUuid":"PGABC123","rdtCid":"rdt-42","twclid":null,"utmCampaign":null,
                  "utmSource":"reddit","successful":false,"aborted":true,"hidden":false,
-                 "lastTaskEnum":"LOAD_THREE_JS_MODELS"}""";
+                 "lastTaskEnum":"LOAD_THREE_JS_MODELS","millisSincePageLoad":4820}""";
 
         StartupTerminatedJson startupTerminatedJson = objectMapper.readValue(body, StartupTerminatedJson.class);
 
@@ -132,6 +132,9 @@ class StartupBeaconPayloadTest {
         assertEquals(Boolean.FALSE, startupTerminatedJson.getHidden());
         assertEquals("LOAD_THREE_JS_MODELS", startupTerminatedJson.getLastTaskEnum());
         assertEquals("rdt-42", startupTerminatedJson.getRdtCid());
+        // How long they waited. Without it, "left during the JavaScript" covers both the player
+        // who never looked and the one who watched for fifteen seconds.
+        assertEquals(Integer.valueOf(4820), startupTerminatedJson.getMillisSincePageLoad());
     }
 
     /**
@@ -163,6 +166,19 @@ class StartupBeaconPayloadTest {
         assertNull(objectMapper.readValue(body, StartupTerminatedJson.class).getHidden());
     }
 
+    /**
+     * The same for the waiting time. A derived abort has no browser behind it, so there is nobody
+     * who could have timed anything - and a zero would read as a player who left instantly, which
+     * is the very group this field exists to find.
+     */
+    @Test
+    void derivedAbortHasNoWaitingTime() throws IOException {
+        String body = """
+                {"gameSessionUuid":"PGABC123","successful":false,"aborted":true}""";
+
+        assertNull(objectMapper.readValue(body, StartupTerminatedJson.class).getMillisSincePageLoad());
+    }
+
     /** What the beacon posts to /rest/tracker/tabHidden once the game is already running. */
     @Test
     void tabHiddenAfterStartupIsRead() throws IOException {
@@ -188,5 +204,43 @@ class StartupBeaconPayloadTest {
                 {"gameSessionUuid":"PGABC123","successful":false,"aborted":true}""";
 
         assertEquals(null, objectMapper.readValue(body, StartupTerminatedJson.class).getTotalTime());
+    }
+
+    /**
+     * Whether anything was moving while they waited.
+     * <p>
+     * The same two counters STARTUP_TIMING carries, but that one is sent from inside the
+     * application: only players who got that far ever reported them, and the ones this is about
+     * are the ones who did not.
+     */
+    @Test
+    void theAbortBeaconSaysWhetherTheAnimationWasRunning() throws IOException {
+        String body = """
+                {"gameSessionUuid":"PGABC123","successful":false,"aborted":true,"hidden":false,
+                 "lastTaskEnum":"PAGE_LOADED","millisSincePageLoad":9200,
+                 "bootFrames":74,"bootMaxGap":210}""";
+
+        StartupTerminatedJson startupTerminatedJson = objectMapper.readValue(body, StartupTerminatedJson.class);
+
+        assertEquals(Integer.valueOf(74), startupTerminatedJson.getBootFrames());
+        assertEquals(Integer.valueOf(210), startupTerminatedJson.getBootMaxGap());
+    }
+
+    /**
+     * The unanimated half sends neither, because there was nothing drawing. Null has to survive:
+     * a zero would read as an animation that never got a frame, which is the other finding
+     * entirely and the one worth acting on.
+     */
+    @Test
+    void anAbortWithoutAnAnimationReportsNoFrames() throws IOException {
+        String body = """
+                {"gameSessionUuid":"PGABC123","successful":false,"aborted":true,
+                 "millisSincePageLoad":4100}""";
+
+        StartupTerminatedJson startupTerminatedJson = objectMapper.readValue(body, StartupTerminatedJson.class);
+
+        assertNull(startupTerminatedJson.getBootFrames());
+        assertNull(startupTerminatedJson.getBootMaxGap());
+        assertEquals(Integer.valueOf(4100), startupTerminatedJson.getMillisSincePageLoad());
     }
 }

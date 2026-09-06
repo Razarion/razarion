@@ -59,12 +59,18 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
      * the file but must ask before every use, and the answer is a comparison rather than eight
      * megabytes. Unchanged is 304 and nothing on the wire; changed is a full 200.
      * <p>
-     * Compressing instead would have been the obvious move and the wrong one: 99% of this payload
-     * is base64-embedded binary that is already compressed, and gzip recovers 27% of it once, on
-     * every start, for server CPU. Not sending it at all recovers 100% of it on every start after
-     * the first.
+     * Compressed as well, which an earlier version of this comment argued against: the entity tag
+     * only helps somebody who has been here before, and almost nobody has. Measured over the Meta
+     * campaign, 27.08.-04.09.2026, the median start arrives with 111 KB in its cache and downloads
+     * the full eight megabytes - the paid visitor is a first visit by definition. And the payload
+     * turns out to compress by 29%: it is 99% base64, and base64 is six bits carried in eight, so
+     * gzip gets back very nearly what the encoding wastes. 9,145 KB become 6,517 KB.
+     * <p>
+     * Which is also why the type below says what it is. The bytes have always been JSON; declaring
+     * them application/octet-stream is what kept them out of server.compression.mime-types and
+     * meant nobody noticed for as long as they were served.
      */
-    @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<byte[]> getData(@PathVariable("id") int id,
                                           @RequestHeader(value = HttpHeaders.IF_NONE_MATCH, required = false)
                                           String ifNoneMatch) {
@@ -75,10 +81,10 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
                 byte[] data = babylonMaterialPersistence.getData(id);
                 return ResponseEntity
                         .ok()
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .body(data);
             }
-            String eTag = ContentDigest.eTag(digest);
+            String eTag = ContentDigest.weakETag(digest);
             if (ContentDigest.matches(ifNoneMatch, eTag)) {
                 return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
                         .eTag(eTag)
@@ -88,10 +94,9 @@ public class BabylonMaterialController extends AbstractBaseController<BabylonMat
             byte[] data = babylonMaterialPersistence.getData(id);
             return ResponseEntity
                     .ok()
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .eTag(eTag)
                     .cacheControl(REVALIDATE)
-                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(data.length))
                     .body(data);
         } catch (NoSuchEntityException e) {
             // Not there is not broken. The 404 says which.

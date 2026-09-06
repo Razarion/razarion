@@ -39,6 +39,35 @@ public class StartupTerminatedJson {
      * aborts the server derived itself, which cannot know which of the two happened.
      */
     private Boolean hidden;
+    /**
+     * How long the player waited before leaving, from the moment the page began loading.
+     * <p>
+     * Three quarters of every aborted start end at PAGE_LOADED - during the JavaScript, before the
+     * application's own clock begins - and until now nothing said whether that was after two
+     * seconds or after twenty. The two call for opposite answers: a player who leaves at two
+     * seconds never gave the loading screen a chance, and one who leaves at fifteen watched it and
+     * gave up. Any change to what that screen shows has to be judged against this number, and it
+     * did not exist.
+     * <p>
+     * Measured against the same origin as {@link TabHiddenJson#millisSincePageLoad}, which is the
+     * inline script in index.html rather than navigation start - a few milliseconds later, and not
+     * the same clock as STARTUP_PAYLOAD's {@code ms}. Null for an abort the server derived itself:
+     * nobody was there to time it.
+     */
+    private Integer millisSincePageLoad;
+
+    /**
+     * Frames the loading screen animation had drawn when they left, and the longest it went
+     * without one.
+     * <p>
+     * STARTUP_TIMING carries the same two, but it is sent from inside the application - only
+     * players who got that far ever reported them, and this experiment is about the ones who did
+     * not. Null for the half that never had an animation, which is not the same as an animation
+     * that never got a frame, and the difference is the whole question.
+     */
+    private Integer bootFrames;
+    private Integer bootMaxGap;
+
     /** Where the browser says it came from; see StartupTaskJson#referrer. */
     private String referrer;
     /**
@@ -236,6 +265,35 @@ public class StartupTerminatedJson {
         return this;
     }
 
+    public Integer getMillisSincePageLoad() {
+        return millisSincePageLoad;
+    }
+
+    public void setMillisSincePageLoad(Integer millisSincePageLoad) {
+        this.millisSincePageLoad = millisSincePageLoad;
+    }
+
+    public StartupTerminatedJson millisSincePageLoad(Integer millisSincePageLoad) {
+        setMillisSincePageLoad(millisSincePageLoad);
+        return this;
+    }
+
+    public Integer getBootFrames() {
+        return bootFrames;
+    }
+
+    public void setBootFrames(Integer bootFrames) {
+        this.bootFrames = bootFrames;
+    }
+
+    public Integer getBootMaxGap() {
+        return bootMaxGap;
+    }
+
+    public void setBootMaxGap(Integer bootMaxGap) {
+        this.bootMaxGap = bootMaxGap;
+    }
+
     public String getReferrer() {
         return referrer;
     }
@@ -256,6 +314,7 @@ public class StartupTerminatedJson {
                 ", aborted=" + aborted +
                 ", lastTaskEnum='" + lastTaskEnum + '\'' +
                 ", totalTime=" + totalTime +
+                ", millisSincePageLoad=" + millisSincePageLoad +
                 ", gameSessionUuid='" + gameSessionUuid + '\'' +
                 ", serverTime=" + serverTime +
                 '}';
