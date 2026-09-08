@@ -38,16 +38,31 @@ spec:
           # also ~800 MB Reserve statt bisher ~150 MB).
           #
           # cpu ebenfalls request == limit. Autopilot verlangt beim Standard-Compute-
-          # Class ein Verhaeltnis von hoechstens 6.5 GiB Memory pro vCPU *request* und
-          # wuerde den CPU-request bei 3Gi/300m sonst selbst hochziehen; 1000m ergibt
-          # 3:1 und bleibt damit dort, wo das Limit ohnehin schon stand.
+          # Class ein Verhaeltnis von hoechstens 6.5 GiB Memory pro vCPU *request*; bei
+          # 3Gi sind das mindestens 462m. Hier standen lange 1000m, einfach weil das
+          # Limit ohnehin schon dort stand. Bezahlt wird bei Autopilot aber der
+          # *request*, und der war damit der groesste einzelne Posten der Rechnung.
+          #
+          # 750m nach Messung ueber 14 Tage (kubernetes.io/container/cpu/core_usage_time,
+          # 1-Minuten-Fenster): Median 0.059, p99 0.170, p99.9 0.702, Maximum 1.000 vCPU.
+          # Die 45 Fenster ueber 0.5 vCPU liegen alle unmittelbar nach einem Container-
+          # Start - die Uptime-Metrik faellt dort jeweils auf ~30 s. Das ist Spring-Boot-
+          # Start, Planetenladen und JIT-Warmlauf, kein Spielbetrieb.
+          #
+          # Achtung bei 5-Minuten-Mittelwerten: die zeigen als Maximum 0.374 und legen
+          # damit 500m nahe. Das ist ein Artefakt der Mittelung.
+          #
+          # Deshalb nicht 500m: der Spielbetrieb liefe damit bequem, der *Start* aber
+          # gedrosselt - und ein doppelt so langer Boot laeuft gegen die livenessProbe
+          # unten (120 s + 5 x 30 s), im schlechtesten Fall in eine Restart-Schleife.
+          # 750m liegt ueber p99.9 und laesst den Start unangetastet.
           resources:
             requests:
               memory: "3Gi"
-              cpu: "1000m"
+              cpu: "750m"
             limits:
               memory: "3Gi"
-              cpu: "1000m"
+              cpu: "750m"
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness

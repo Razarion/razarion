@@ -1,0 +1,26 @@
+[
+  {
+    "name": "keep-recent-15",
+    "action": { "type": "Keep" },
+    "mostRecentVersions": {
+      "packageNamePrefixes": ["razarion-server"],
+      "keepCount": 15
+    }
+  },
+  {
+    "name": "delete-untagged",
+    "action": { "type": "Delete" },
+    "condition": {
+      "tagState": "UNTAGGED",
+      "olderThan": "7d"
+    }
+  },
+  {
+    "name": "delete-ancient",
+    "action": { "type": "Delete" },
+    "condition": {
+      "tagState": "ANY",
+      "olderThan": "90d"
+    }
+  }
+]

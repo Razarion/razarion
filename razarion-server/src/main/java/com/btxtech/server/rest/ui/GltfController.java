@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -35,6 +36,13 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
      * CDN revalidating on behalf of many players is the same guarantee and less origin traffic.
      */
     private static final CacheControl REVALIDATE = CacheControl.noCache().mustRevalidate();
+    /**
+     * For the url that carries the digest. A year, public, immutable: the path names the content,
+     * so the answer cannot go stale - a different model is a different url. The backend config caps
+     * this at seven days (maxTtl), which is the safety net rather than the intent.
+     */
+    private static final CacheControl IMMUTABLE =
+            CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable();
     private final Logger logger = Logger.getLogger(GltfController.class.getName());
     private final GltfService gltfService;
 
@@ -106,7 +114,46 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
     }
 
 
-    @PreAuthorize("hasAuthority('ADMIN')") 
+    /**
+     * The same model, at a url that names its content.
+     * <p>
+     * The conditional read above keeps the file out of the wire only for someone who already holds
+     * it. Measured over a day: 154 requests for this model, 19 of them answered 304. A visitor who
+     * arrives from an advertisement arrives once and has nothing to revalidate against, so 88% of
+     * them downloaded eleven megabytes from us-central1 - which is most of what a start weighs, and
+     * they are the population that gives up waiting.
+     * <p>
+     * With the digest in the path the response may be public and immutable, so Cloud CDN can hold
+     * it at an edge near the player. Eight files answer every start and every player wants the same
+     * eight, which is about as cacheable as a workload gets. The freshness guarantee is not
+     * weakened, it moves: an edited model gets a new digest and therefore a new url, and the old
+     * one is never asked for again.
+     * <p>
+     * A digest that does not match is not an error. It is a client holding a url from before an
+     * edit; it gets the current bytes under the revalidating header, which is exactly what the
+     * plain path does, and its next configuration carries the new digest.
+     */
+    @GetMapping(value = "/glb/{id}/{digest}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> getGlbByDigest(@PathVariable("id") int id,
+                                                 @PathVariable("digest") String digest) {
+        try {
+            String current = gltfService.getGlbDigest(id);
+            boolean fresh = current != null && current.equals(digest);
+            return ResponseEntity
+                    .ok()
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                    .eTag(ContentDigest.eTag(current == null ? digest : current))
+                    .cacheControl(fresh ? IMMUTABLE : REVALIDATE)
+                    .body(gltfService.getGlb(id));
+        } catch (NoSuchEntityException e) {
+            throw e;
+        } catch (Throwable e) {
+            logger.log(Level.SEVERE, "Can not load GltfEntity for id: " + id, e);
+            throw e;
+        }
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "upload-glb/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void uploadGlb(@PathVariable("id") int id, @RequestBody byte[] data) {
         gltfService.setGlb(id, data);

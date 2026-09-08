@@ -298,7 +298,22 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
   }
 
   protected loadBabylonModel(gltfEntity: GltfEntity, scene: Scene): void {
-    const url = `${URL_GLTF}/glb/${gltfEntity.id}`;
+    /*
+     * The digest in the path is what lets this be cached. Without it the url is the same for every
+     * version of the model, so the response can only ever be revalidated - and a visitor who
+     * arrives from an advertisement arrives once, holds nothing, and downloads eleven megabytes
+     * from us-central1. Measured over a day: 154 requests, 19 of them a 304.
+     *
+     * With it the server answers public and immutable, so an edge near the player can hold it. An
+     * edited model gets a new digest and therefore a new url, so nothing goes stale.
+     *
+     * The fallback is not dead code: glbDigest is null for a model whose bytes were written before
+     * the column existed, and the plain path still answers those correctly.
+     */
+    const digest = gltfEntity.glbDigest;
+    const url = digest
+      ? `${URL_GLTF}/glb/${gltfEntity.id}/${digest}`
+      : `${URL_GLTF}/glb/${gltfEntity.id}`;
     const gltfHelper = new GltfHelper(gltfEntity, this.babylonModelService, this, this.babylonMaterialContainer);
     this.gltfHelpers.set(gltfEntity.id, gltfHelper);
     // Run the whole load outside the Angular zone: Babylon's glTF loader fires progress/parse

@@ -25,9 +25,16 @@ public class GltfEntity extends BaseEntity {
      * <p>
      * Length is stated: an @Enumerated or plain String without one has bitten this schema before,
      * and a truncated digest would silently start matching the wrong content.
+     * <p>
+     * Sent to the client rather than hidden, which is what lets the model be cached at all. The
+     * entity tag it backs only ever produced a 304 - measured over a day, 19 of 154 requests for
+     * this file, because a paid visitor arrives once and holds nothing to revalidate against. With
+     * the digest in hand the client can ask for /rest/gltf/glb/{id}/{digest}, and that url is
+     * immutable by construction: an edited model gets a new digest and therefore a new url, so the
+     * response may be cached publicly and served from an edge instead of from us-central1. The
+     * guarantee the no-store header protects is kept - it moves from revalidation into the path.
      */
     @Column(length = 64)
-    @JsonIgnore
     private String glbDigest;
     @Transient
     private Map<String, Integer> materialGltfNames;

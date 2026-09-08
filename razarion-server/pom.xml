@@ -93,6 +93,36 @@
     </dependencies>
 
     <build>
+        <!--
+          The default, written out, plus one exclusion.
+
+          gwt-unitCache is the compiler cache of the old GWT client that TeaVM replaced. It sat
+          in the resource path at 688 MB across 25 files, untouched since 28 January 2026 -
+          the week of "Add TeaVM Web Worker as GWT replacement" - because no GWT compile runs
+          any more. Nothing regenerates it: the only compile goals left belong to the two TeaVM
+          modules, and the gwt-user dependency that remains in razarion-share is provided-scope,
+          there for the annotations the shared code compiles against.
+
+          None of that kept it local. Maven copies src/main/resources into target/classes and
+          Jib packs target/classes into the image, so it shipped with every deploy and was
+          pulled back on every pod start. Measured on 8 September 2026 it was the largest thing
+          in the resources layer, against 61 MB of actual frontend.
+
+          Seven months unnoticed because it is gitignored: it never shows up in git status, and
+          nothing measured the image, so there was no surface for it to appear on.
+
+          Excluded rather than only deleted, so a cache that comes back does not quietly ship
+          again. No <filtering>: it is off by default, and turning it on would have Maven look
+          for ${...} inside binary files.
+        -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>gwt-unitCache/**</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

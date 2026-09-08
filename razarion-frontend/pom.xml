@@ -60,6 +60,51 @@
         </executions>
       </plugin>
 
+      <!--
+        Empties the two destinations before the build refills them.
+
+        copy-resources below adds and overwrites, it never deletes. Angular names its output by
+        content hash, so every build writes new names rather than replacing the old ones - and
+        the destinations sit under src/main/resources, which `mvn clean` does not touch, because
+        clean removes target and this is a source directory. Nothing in that chain removed
+        anything: measured on 8 September 2026 the directory held 2.1 GB in 2,899 files, 434 of
+        them main-*.js going back to 22 July, where one build needs 59 MB.
+
+        None of it stayed local. Maven copies src/main/resources into target/classes and Jib
+        packs target/classes into the image, so those two gigabytes went to Artifact Registry on
+        every deploy and came back down on every pod start. The registry stood at 133.6 GB
+        across 295 images - that is this arithmetic, not a coincidence.
+
+        excludeDefaultDirectories is not optional: without it the same run also takes this
+        module's target, which at that point in the lifecycle holds the node install and the
+        finished Angular output. generated/teavm-client and generated/teavm-worker are
+        deliberately not in the filesets; they come from the two TeaVM modules.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>clear-stale-frontend-output</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                  <directory>${project.basedir}/../razarion-server/src/main/resources/generated/game</directory>
+                </fileset>
+                <fileset>
+                  <directory>${project.basedir}/../razarion-server/src/main/resources/generated/studio</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>

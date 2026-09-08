@@ -66,33 +66,51 @@
       w.RAZ_startupTerminated = null;
 
       /*
-       * Half the players get the built-up world on the loading screen, half get the plain splash
-       * that was there before. Without the split the two would be compared across different days
-       * with different traffic, and the last time that was done the step in the numbers turned out
-       * to be a campaign change rather than the deploy.
+       * Three loading screens, a third of the players each. Without the split they would be
+       * compared across different days with different traffic, and the last time that was done
+       * the step in the numbers turned out to be a campaign change rather than the deploy.
        *
-       * ?boot=grid or ?boot=plain forces one, for looking at it on purpose. It sticks to the
+       * plain   the card that was here before, and the control: it is what the historical
+       *         numbers were measured on, and it still lands on them.
+       * grid    the world being built, drawn on a canvas. The bet is that showing the player
+       *         the view he is about to get is what makes waiting bearable.
+       * console the boot log. The opposite bet: honesty about the machine rather than a
+       *         preview of the game.
+       *
+       * The third arm exists because of what the first three days measured. Inside grid, a gap
+       * of more than a second between frames goes with a 93% abort rate against 51% under
+       * 200 ms - a still frame inside a moving picture reads as a crash. A console has no such
+       * failure mode: a pause between two lines is what a boot log does. And its first lines
+       * are in the document, so they are on screen before any script runs, which is the one
+       * thing neither of the others can do against a 3.0 s median first paint.
+       *
+       * It costs time to know: three arms need half again as many sessions as two for the same
+       * confidence, and at ~60 armed sessions a day the pair was already weeks away from an
+       * answer. Dropping grid now to keep it at two would be deciding it on p = 0.12.
+       *
+       * ?boot=grid|plain|console forces one, for looking at it on purpose. It sticks to the
        * browser afterwards - not just the tab, which died with every window and sent the next
        * test back to the coin flip. A flip that lands on plain twice running is indistinguishable
        * from a broken animation, and it was taken for one four times before this was written.
        * ?boot=off forgets it again. Nobody who does not pass the parameter is ever pinned.
        */
+      var VARIANTS = ['plain', 'grid', 'console'];
       var forced = new URLSearchParams(location.search).get('boot');
       var remembered = null;
       try {
         if (forced === 'off') {
           localStorage.removeItem('razBoot');
-        } else if (forced === 'grid' || forced === 'plain') {
+        } else if (VARIANTS.indexOf(forced) >= 0) {
           localStorage.setItem('razBoot', forced);
         }
         remembered = localStorage.getItem('razBoot');
       } catch (ignored) {
         // A browser that refuses storage still gets a variant, just not a sticky one.
       }
-      var chosen = forced === 'grid' || forced === 'plain' ? forced : remembered;
-      w.RAZ_bootVariant = chosen === 'grid' || chosen === 'plain'
+      var chosen = VARIANTS.indexOf(forced) >= 0 ? forced : remembered;
+      w.RAZ_bootVariant = VARIANTS.indexOf(chosen) >= 0
         ? chosen
-        : (Math.random() < 0.5 ? 'grid' : 'plain');
+        : VARIANTS[Math.floor(Math.random() * VARIANTS.length)];
       /*
        * Said out loud, because "did I see the animation or did I get the other half" is not a
        * question anybody should have to answer by staring at a loading screen.
@@ -301,6 +319,19 @@
 -->
 <div id="raz-boot">
   <canvas id="raz-boot-grid" aria-hidden="true"></canvas>
+  <!--
+    The boot log arm. Hidden until the script below finds this session in it, so the other two
+    arms never see it - but written out here rather than built in JavaScript, because that is the
+    whole point of it: these three lines are on screen when the document is, and the median first
+    paint is 3.0 seconds with 55% of visitors gone inside three. Everything after them is appended
+    against a real event; nothing here runs on a timer.
+  -->
+  <div id="raz-boot-console" hidden>
+    <div class="raz-c-head">razarion &mdash; booting</div>
+    <div class="raz-c-line"><span class="raz-c-t">[ 0.00]</span> page loaded<span class="raz-c-ok"> ok</span></div>
+    <div id="raz-boot-console-lines"></div>
+    <div id="raz-boot-console-cursor" aria-hidden="true"></div>
+  </div>
   <div id="raz-boot-card">
     <div id="raz-boot-title">Razarion &ndash; RTS meets MMO: One shared world that never stops</div>
     <div id="raz-boot-box">
@@ -446,6 +477,75 @@
     height: 100%;
     display: block;
     pointer-events: none;
+  }
+
+  /* The boot log. Monospace and left aligned, sized so that a 360 px portrait phone - the shape
+     97% of the paid traffic arrives in - holds about forty characters without wrapping. */
+  #raz-boot-console {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 16px 12px;
+    overflow: hidden;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #9fb4c7;
+  }
+  #raz-boot-console .raz-c-head {
+    color: #63e8b0;
+    margin-bottom: .8em;
+  }
+  /* pre keeps the timestamp column aligned without a table. */
+  #raz-boot-console .raz-c-line { white-space: pre; }
+  #raz-boot-console .raz-c-t { color: #5a7183; }
+  #raz-boot-console .raz-c-ok { color: #63e8b0; }
+  #raz-boot-console .raz-c-val { color: #e6eef5; }
+
+  /*
+    The two things that keep moving while the main thread is busy.
+
+    requestAnimationFrame does not run at all while 2.7 MB of JavaScript is being compiled - the
+    largest gap measured in the grid arm was 6,345 ms - so anything driven from script stands
+    still exactly when standing still is most alarming, and a still picture inside a moving one
+    reads as a crash. These two are CSS animations on opacity and transform only, which the
+    compositor runs on its own thread: they keep going straight through the compile that freezes
+    everything else.
+  */
+  #raz-boot-console-cursor {
+    margin-top: .25em;
+    width: .62em;
+    height: 1.05em;
+    background: #63e8b0;
+    animation: raz-c-blink 1.05s steps(1, end) infinite;
+  }
+  @keyframes raz-c-blink {
+    0%, 45% { opacity: 1; }
+    45.01%, 100% { opacity: 0; }
+  }
+  #raz-boot-console::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 32%;
+    background: linear-gradient(90deg, rgba(99, 232, 176, 0), rgba(99, 232, 176, .85), rgba(99, 232, 176, 0));
+    animation: raz-c-sweep 2.4s ease-in-out infinite;
+  }
+  @keyframes raz-c-sweep {
+    0% { transform: translateX(-40%); }
+    50% { transform: translateX(200%); }
+    100% { transform: translateX(-40%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #raz-boot-console-cursor,
+    #raz-boot-console::after {
+      animation: none;
+    }
   }
 
   /* What the renderer hands over with, instead of the splash being cut away. */
@@ -674,21 +774,41 @@
     var Z_FAR = 66;
     var CELL = 6;
 
-    /** A point on the ground, or above it, where the game's camera would put it. */
-    function project(x, z, y) {
+    /*
+     * Points are written into slots that live as long as the animation, not returned fresh.
+     *
+     * The version before this one returned a new {x, y} for every corner, which is four objects
+     * per ground cell and six per building - around four hundred a frame, thirty times a second.
+     * On a phone that is a garbage collection every few seconds, and a collection is exactly the
+     * kind of pause that shows up in bootMaxGap. Measured over the first half of the experiment,
+     * a quarter of the sessions that left had seen a stall of more than a second, against one in
+     * fifty of the sessions that stayed.
+     *
+     * Six slots, because drawObjects needs six corners of one box at the same time. Everything
+     * else uses the first four.
+     */
+    var P = [
+      {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0},
+      {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}
+    ];
+
+    /**
+     * A point on the ground, or above it, where the game's camera would put it. Writes into the
+     * given slot and says whether it landed in front of the camera.
+     */
+    function project(x, z, y, out) {
       var vy = (y || 0) - CAM_HEIGHT;
       var vz = z + CAM_BACK;
       var zc = vy * FWD_Y + vz * FWD_Z;
       if (zc < 0.5) {
         // Behind the camera, or so close to its plane that the projection blows up.
-        return null;
+        return false;
       }
       var yc = vy * UP_Y + vz * UP_Z;
       var aspect = width / height;
-      return {
-        x: width * 0.5 * (1 + (x / zc) / (TAN_HALF * aspect)),
-        y: height * 0.5 * (1 - (yc / zc) / TAN_HALF)
-      };
+      out.x = width * 0.5 * (1 + (x / zc) / (TAN_HALF * aspect));
+      out.y = height * 0.5 * (1 - (yc / zc) / TAN_HALF);
+      return true;
     }
 
     /** How far to either side the frame reaches at this depth, in world units. */
@@ -702,10 +822,13 @@
       return Z_FAR - (Z_FAR - Z_NEAR) * Math.min(1, progress);
     }
 
-    /** The columns this depth needs, snapped to the grid. Narrow up close, wide far away. */
-    function columnRange(z) {
-      var half = Math.ceil(halfWidthAt(z) / CELL) * CELL;
-      return {from: -half, to: half};
+    /**
+     * How far to either side the columns run at this depth, snapped to the grid. Narrow up close,
+     * wide far away. A single number rather than a {from, to} pair, because the range is symmetric
+     * and the pair was one more object per row per frame.
+     */
+    function columnHalf(z) {
+      return Math.ceil(halfWidthAt(z) / CELL) * CELL;
     }
 
     function drawCells(wash) {
@@ -714,15 +837,24 @@
         if (z + CELL < edge) {
           continue;
         }
-        var cols = columnRange(z + CELL);
+        var half = columnHalf(z + CELL);
         // Fades in over one cell's depth, so the colour arrives as a soft front rather than a step.
         var alpha = Math.min(1, (z + CELL - edge) / CELL);
-        for (var x = cols.from; x < cols.to; x += CELL) {
-          var a = project(x, z + CELL);
-          var b = project(x + CELL, z + CELL);
-          var c = project(x + CELL, z);
-          var d = project(x, z);
-          if (!a || !b || !c || !d) {
+        /*
+         * The two colours of this row, built once instead of once per cell. The alpha only depends
+         * on the row, so the string was the same across the whole row and was being rebuilt - and
+         * reparsed as a CSS colour by the canvas - for every quad in it. lastSand then keeps the
+         * assignment itself down to one per run of same-material cells, which patches two wide
+         * make roughly half of them.
+         */
+        var rowAlpha = (alpha * 0.6).toFixed(3);
+        var sandStyle = 'rgba(96, 92, 68,' + rowAlpha + ')';
+        var grassStyle = 'rgba(60, 82, 62,' + rowAlpha + ')';
+        var lastSand = -1;
+        var a = P[0], b = P[1], c = P[2], d = P[3];
+        for (var x = -half; x < half; x += CELL) {
+          if (!project(x, z + CELL, 0, a) || !project(x + CELL, z + CELL, 0, b)
+            || !project(x + CELL, z, 0, c) || !project(x, z, 0, d)) {
             continue;
           }
           /*
@@ -735,9 +867,11 @@
           var pz = Math.floor(z / (CELL * 2)) + 512;
           var mix = Math.imul(px, 374761393) ^ Math.imul(pz, 668265263);
           mix = Math.imul(mix ^ (mix >>> 13), 1274126177);
-          var sand = ((mix ^ (mix >>> 16)) >>> 0) % 100 < 42;
-          ctx.fillStyle = 'rgba(' + (sand ? '96, 92, 68' : '60, 82, 62') + ','
-            + (alpha * 0.6).toFixed(3) + ')';
+          var sand = ((mix ^ (mix >>> 16)) >>> 0) % 100 < 42 ? 1 : 0;
+          if (sand !== lastSand) {
+            ctx.fillStyle = sand ? sandStyle : grassStyle;
+            lastSand = sand;
+          }
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
@@ -751,7 +885,8 @@
 
     function drawWireframe(progress) {
       var edge = frontAt(progress);
-      var cols = columnRange(Z_FAR);
+      var farHalf = columnHalf(Z_FAR);
+      var left = P[0], right = P[1];
       ctx.lineWidth = 1;
       // Lines across, one per row of cells, appearing as the front passes them.
       for (var z = Z_FAR; z >= Z_NEAR; z -= CELL) {
@@ -761,10 +896,8 @@
         var age = (z - edge) / CELL;
         var settled = Math.min(1, age);
         var glow = Math.max(0, 1 - age);
-        var row = columnRange(z);
-        var left = project(row.from, z);
-        var right = project(row.to, z);
-        if (!left || !right) {
+        var rowHalf = columnHalf(z);
+        if (!project(-rowHalf, z, 0, left) || !project(rowHalf, z, 0, right)) {
           continue;
         }
         ctx.lineWidth = glow > 0.2 ? 1.6 : 1;
@@ -782,17 +915,22 @@
       }
       ctx.lineWidth = 1;
       ctx.strokeStyle = 'rgba(' + GREEN + ', 0.2)';
-      for (var x = cols.from; x <= cols.to; x += CELL) {
-        var far = project(x, Z_FAR);
-        var end = project(x, near);
-        if (!far || !end) {
+      /*
+       * All of these share one colour and one width, so they are one path with a subpath each and
+       * a single stroke at the end - rather than a beginPath and a stroke per line. Every stroke
+       * is a rasterisation pass of its own; ten of them a frame is nine more than this needs.
+       * Separate subpaths never join, so the picture is the same.
+       */
+      var far = P[2], end = P[3];
+      ctx.beginPath();
+      for (var x = -farHalf; x <= farHalf; x += CELL) {
+        if (!project(x, Z_FAR, 0, far) || !project(x, near, 0, end)) {
           continue;
         }
-        ctx.beginPath();
         ctx.moveTo(far.x, far.y);
         ctx.lineTo(end.x, end.y);
-        ctx.stroke();
       }
+      ctx.stroke();
     }
 
     function drawObjects(progress) {
@@ -808,19 +946,19 @@
         var x1 = obj.x + obj.size;
         var zNear = obj.z;
         var zFar = obj.z + obj.size;
-        var baseLeft = project(x0, zNear, 0);
-        var baseRight = project(x1, zNear, 0);
-        var topLeft = project(x0, zNear, height3d);
-        var topRight = project(x1, zNear, height3d);
-        var backLeft = project(x0, zFar, height3d);
-        var backRight = project(x1, zFar, height3d);
-        if (!baseLeft || !baseRight || !topLeft || !topRight || !backLeft || !backRight) {
+        var baseLeft = P[0], baseRight = P[1], topLeft = P[2],
+          topRight = P[3], backLeft = P[4], backRight = P[5];
+        if (!project(x0, zNear, 0, baseLeft) || !project(x1, zNear, 0, baseRight)
+          || !project(x0, zNear, height3d, topLeft) || !project(x1, zNear, height3d, topRight)
+          || !project(x0, zFar, height3d, backLeft) || !project(x1, zFar, height3d, backRight)) {
           continue;
         }
         // Colour arrives after the outline, the way the materials do in the real start.
         var solid = Math.max(0, Math.min(1, since - 1.2));
         if (solid > 0) {
-          ctx.fillStyle = 'rgba(38, 48, 62,' + (solid * 0.94).toFixed(3) + ')';
+          // The same number in both faces, formatted once.
+          var solidAlpha = (solid * 0.94).toFixed(3);
+          ctx.fillStyle = 'rgba(38, 48, 62,' + solidAlpha + ')';
           ctx.beginPath();
           ctx.moveTo(baseLeft.x, baseLeft.y);
           ctx.lineTo(baseRight.x, baseRight.y);
@@ -828,7 +966,7 @@
           ctx.lineTo(topLeft.x, topLeft.y);
           ctx.closePath();
           ctx.fill();
-          ctx.fillStyle = 'rgba(74, 92, 112,' + (solid * 0.94).toFixed(3) + ')';
+          ctx.fillStyle = 'rgba(74, 92, 112,' + solidAlpha + ')';
           ctx.beginPath();
           ctx.moveTo(topLeft.x, topLeft.y);
           ctx.lineTo(topRight.x, topRight.y);
@@ -866,9 +1004,9 @@
       if (!reduced) {
         // Runs in the world, not down the screen, so it keeps the plane's perspective.
         var sweepZ = Z_FAR - (Z_FAR - Z_NEAR) * ((now % 2600) / 2600);
-        var lead = project(0, sweepZ);
-        var trail = project(0, sweepZ + CELL * 1.5);
-        if (lead && trail && trail.y < lead.y) {
+        var lead = P[0], trail = P[1];
+        if (project(0, sweepZ, 0, lead) && project(0, sweepZ + CELL * 1.5, 0, trail)
+          && trail.y < lead.y) {
           var band = ctx.createLinearGradient(0, trail.y, 0, lead.y);
           band.addColorStop(0, 'rgba(' + CYAN + ', 0)');
           band.addColorStop(1, 'rgba(' + CYAN + ', 0.22)');
@@ -884,6 +1022,14 @@
      */
     var shown = 0;
     var last = 0;
+    /*
+     * When the download was last measured. See the throttle in frame().
+     *
+     * Far enough in the past that the first frame always measures: starting at zero would have
+     * held the first reading back by a quarter of a second, and the build would have begun from
+     * nothing on a warm start where the bundle was already there.
+     */
+    var counted = -1e9;
     /*
      * Whether any of this was on screen at all.
      *
@@ -912,7 +1058,18 @@
           // developer machine the whole bundle is here in half a second and there is nothing to
           // watch. The number of seconds is the parameter's value, twelve by default.
           demoProgress = Math.min(1, (now - started) / demoMillis);
-        } else {
+        } else if (now - counted >= 250) {
+          /*
+           * Four times a second, not thirty. recount walks performance.getEntriesByType, which
+           * hands back a fresh array of wrapper objects over a buffer this page raises to 20000
+           * entries - so the cost grows with every file the start has fetched, and it was being
+           * paid on every frame. Chunks land hundreds of milliseconds apart; reading the total
+           * more often than that only produced the same number again.
+           *
+           * The build-up does not step, because shown eases towards the target on every frame
+           * either way - it is the easing that is drawn, not the measurement.
+           */
+          counted = now;
           recount();
         }
         // Eased towards the measurement rather than snapped to it, so one chunk landing does not
@@ -984,6 +1141,196 @@
     };
 
     window.RAZ_bootFadeOut = function () {
+      var splash = document.getElementById('raz-boot');
+      if (!splash) {
+        return;
+      }
+      splash.classList.add('raz-boot-leaving');
+      setTimeout(function () {
+        if (splash.parentNode) {
+          splash.parentNode.removeChild(splash);
+        }
+      }, 500);
+    };
+  })();
+
+  /*
+   * The boot log, for the third of the players who get it.
+   *
+   * Everything here is bound to something that actually happened: bytes that have landed, a
+   * percentage the engine reported, the terrain arriving. Nothing runs on a timer, because a
+   * sequence paced by a clock is a fake progress bar with extra steps - and the same file already
+   * says why that is the one thing a progress display may not be.
+   *
+   * What moves on its own is in the stylesheet above, not here. Both animations are CSS on
+   * opacity and transform, so they survive the compile that stops this script.
+   */
+  (function () {
+    var out = document.getElementById('raz-boot-console');
+    if (!out) {
+      return;
+    }
+    if (window.RAZ_bootVariant !== 'console') {
+      if (out.parentNode) {
+        out.parentNode.removeChild(out);
+      }
+      return;
+    }
+    out.hidden = false;
+    // The card carries its own title, bar and tips. This arm replaces all three.
+    var card = document.getElementById('raz-boot-card');
+    if (card) {
+      card.style.display = 'none';
+    }
+
+    var lines = document.getElementById('raz-boot-console-lines');
+    var timing = typeof performance !== 'undefined' && !!performance.now;
+    var start = timing ? performance.now() : Date.now();
+    // Same figure the build-up uses: the eager bundle plus the game chunk, over the wire.
+    var EXPECTED_BYTES = 2750 * 1024;
+    var known = {};
+
+    function seconds() {
+      var s = ((timing ? performance.now() : Date.now()) - start) / 1000;
+      var text = s.toFixed(2);
+      // Right aligned to five characters, so the column holds until 99 seconds.
+      while (text.length < 5) {
+        text = ' ' + text;
+      }
+      return text;
+    }
+
+    function span(parent, cls, text) {
+      var el = document.createElement('span');
+      if (cls) {
+        el.className = cls;
+      }
+      el.textContent = text || '';
+      parent.appendChild(el);
+      return el;
+    }
+
+    /**
+     * Writes a line, or rewrites the one already carrying this key.
+     *
+     * The spans are built and kept rather than reached for by position afterwards. An earlier
+     * version set innerHTML and then wrote through childNodes[2..4], which is correct exactly
+     * until somebody adds a space between two tags.
+     */
+    function say(key, text, value, done) {
+      var row = known[key];
+      if (!row) {
+        var el = document.createElement('div');
+        el.className = 'raz-c-line';
+        row = {
+          // The timestamp is the moment the step began and does not move afterwards.
+          time: span(el, 'raz-c-t', '[' + seconds() + ']'),
+          label: span(el, null, ' '),
+          value: span(el, 'raz-c-val', ''),
+          ok: span(el, 'raz-c-ok', '')
+        };
+        known[key] = row;
+        if (lines) {
+          lines.appendChild(el);
+        }
+      }
+      /*
+       * The label is padded so the two live lines - bytes and percent - keep their numbers in
+       * one column. A line that never carries a number has nothing to line up with, so its
+       * padding comes off again rather than sitting in front of the "ok".
+       */
+      row.label.textContent = ' ' + (value ? text : text.replace(/\s+$/, ''));
+      row.value.textContent = value || '';
+      row.ok.textContent = done ? ' ok' : '';
+    }
+
+    function megabytes(n) {
+      return (n / 1048576).toFixed(1);
+    }
+
+    function loadedBytes() {
+      var total = 0;
+      var entries;
+      try {
+        entries = performance.getEntriesByType('resource');
+      } catch (ignored) {
+        return -1;
+      }
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].name.indexOf('.js') < 0) {
+          continue;
+        }
+        total += entries[i].transferSize || entries[i].encodedBodySize || 0;
+      }
+      return total;
+    }
+
+    /*
+     * Four times a second, on a timer rather than a frame callback: this has nothing to
+     * synchronise with the screen, and the bundle it is reporting on is what needs the thread.
+     */
+    /*
+     * ?bootDemo paces the byte count by a clock instead of by the download, for the same reason
+     * the build-up has it: on a developer machine the whole bundle is here in half a second and
+     * there is nothing to look at. Never reached without the parameter, and it is the only place
+     * in here where a number does not come from a measurement.
+     */
+    var demoParam = new URLSearchParams(location.search).get('bootDemo');
+    var demoMillis = demoParam === null ? 0 : (Number(demoParam) || 12) * 1000;
+
+    var clientDone = false;
+    var poll = setInterval(function () {
+      if (clientDone) {
+        return;
+      }
+      var bytes;
+      if (demoMillis) {
+        var elapsed = (timing ? performance.now() : Date.now()) - start;
+        bytes = EXPECTED_BYTES * Math.min(1, elapsed / demoMillis);
+      } else {
+        bytes = loadedBytes();
+      }
+      if (bytes < 0) {
+        return;
+      }
+      say('client', 'loading client  ',
+        megabytes(Math.min(bytes, EXPECTED_BYTES)) + '/' + megabytes(EXPECTED_BYTES) + ' MB');
+    }, 250);
+
+    function stopPolling() {
+      if (!clientDone) {
+        clientDone = true;
+        clearInterval(poll);
+        say('client', 'loading client  ', megabytes(EXPECTED_BYTES) + ' MB', true);
+      }
+    }
+
+    /*
+     * The engine's own boot, which the page cannot see: it can weigh the JavaScript arriving and
+     * nothing after. The first call is also the proof that Angular is alive, so it closes the
+     * line above - by then the bundle is there whatever the byte count says.
+     */
+    window.RAZ_bootProgress = function (fraction) {
+      var percent = Math.round(Math.max(0, Math.min(1, fraction)) * 100);
+      stopPolling();
+      if (percent >= 100) {
+        say('engine', 'starting engine ', '100%', true);
+        say('terrain', 'building terrain', '');
+      } else {
+        say('engine', 'starting engine ', percent + '%');
+      }
+    };
+
+    window.RAZ_bootTerrainReady = function () {
+      stopPolling();
+      say('engine', 'starting engine ', '100%', true);
+      say('terrain', 'building terrain', '', true);
+      say('world', 'entering world  ', '', true);
+      window.RAZ_bootFadeOut();
+    };
+
+    window.RAZ_bootFadeOut = function () {
+      clearInterval(poll);
       var splash = document.getElementById('raz-boot');
       if (!splash) {
         return;
