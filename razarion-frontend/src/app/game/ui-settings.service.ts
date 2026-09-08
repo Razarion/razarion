@@ -16,13 +16,40 @@ export class UiSettingsService {
    */
   chatVisible$ = new BehaviorSubject<boolean>(true);
 
+  /**
+   * While true, unit names stay off no matter what anyone asks for.
+   *
+   * The name plate carries the player's own name and is drawn into the canvas, which is what the
+   * recorder captures - so it is the one piece of a person that can end up in a published clip.
+   * A default of "off in director mode" was not enough: a preference that can be switched back on
+   * is one settings dialog away from a name in a reel. The preference itself is left alone and
+   * comes back when filming stops.
+   */
+  private namesLockedOff = false;
+  /** What the user actually wants, remembered across a lock. */
+  private unitNamesPreference = true;
+
   get unitNamesVisible(): boolean {
     return this.unitNamesVisible$.value;
   }
 
   set unitNamesVisible(value: boolean) {
-    if (this.unitNamesVisible$.value !== value) {
-      this.unitNamesVisible$.next(value);
+    this.unitNamesPreference = value;
+    const effective = value && !this.namesLockedOff;
+    if (this.unitNamesVisible$.value !== effective) {
+      this.unitNamesVisible$.next(effective);
+    }
+  }
+
+  /** Lock names off for the duration of a recording, then restore what the user had. */
+  setNamesLockedOff(locked: boolean): void {
+    if (this.namesLockedOff === locked) {
+      return;
+    }
+    this.namesLockedOff = locked;
+    const effective = this.unitNamesPreference && !locked;
+    if (this.unitNamesVisible$.value !== effective) {
+      this.unitNamesVisible$.next(effective);
     }
   }
 

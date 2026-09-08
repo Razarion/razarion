@@ -234,6 +234,12 @@ spec:
                   name: meta-ads-secrets
                   key: event-level-up
                   optional: true
+            # Director mode: the camera half only - fly a plan, record, list the bases. It changes
+            # nothing in the world it films. The half that creates bases and spawns attacking units
+            # is a second switch (RAZARION_DIRECTOR_STAGING_ENABLED) and is deliberately NOT set
+            # here: staging a battle on the live planet destroys what players built.
+            - name: RAZARION_DIRECTOR_ENABLED
+              value: "true"
       volumes:
       - name: keystore
         secret:

@@ -1,4 +1,5 @@
 import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild, inject, signal} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
 import {
   AbstractMesh,
@@ -20,6 +21,7 @@ import {
 import {StudioSceneSummary} from '../../../../../src/app/generated/razarion-share';
 import {BabylonModelService} from '../../../../../src/app/game/renderer/babylon-model.service';
 import {BabylonBuildupEffect} from '../../../../../src/app/game/renderer/babylon-buildup-effect';
+import {BabylonEnergyBeam} from '../../../../../src/app/game/renderer/babylon-energy-beam';
 import {BabylonExplosion} from '../../../../../src/app/game/renderer/babylon-explosion';
 import {BabylonHarvestingBeam} from '../../../../../src/app/game/renderer/babylon-harvesting-beam';
 import {BabylonImpact} from '../../../../../src/app/game/renderer/babylon-impact';
@@ -31,7 +33,12 @@ import {BabylonWreckage} from '../../../../../src/app/game/renderer/babylon-wrec
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from '../../../../../src/app/game/renderer/babylon-render-service-access-impl.service';
 import {RenderObject} from '../../../../../src/app/game/renderer/render-object';
 import {Diplomacy} from '../../../../../src/app/gwtangular/GwtAngularFacade';
-import {ObjectNameId} from '../../../../../src/app/generated/razarion-share';
+import {
+  BaseItemTypeEditorControllerClient,
+  ObjectNameId,
+  WeaponType
+} from '../../../../../src/app/generated/razarion-share';
+import {TypescriptGenerator} from '../../../../../src/app/backend/typescript-generator';
 import {SceneContent, SceneItem, SceneStorageService, SceneTerrain, emptyScene} from './scene-storage.service';
 import {TerrainLoaderService} from './terrain-loader.service';
 import {ThumbnailItem, ThumbnailStorageService} from './thumbnail-storage.service';
@@ -289,7 +296,8 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
                   </label>
                   <label class="muted" style="display:flex;align-items:center;gap:4px;">
                     every
-                    <select [(ngModel)]="attackIntervalSeconds" [disabled]="isLooping(it.id)">
+                    <select [ngModel]="loopSecondsOf(it)" (ngModelChange)="setLoopSeconds(it.id, $event)"
+                            [disabled]="isLooping(it.id)">
                       @for (s of attackIntervals; track s) {
                         <option [ngValue]="s">{{ s }}s</option>
                       }
@@ -299,6 +307,13 @@ export type GizmoTool = 'move' | 'rotate' | 'scale' | 'none';
                     <input type="checkbox" [checked]="it.explodeTargetOnFire === true"
                            (change)="updateProp('explodeTargetOnFire', $any($event.target).checked)">
                     Explode target
+                  </label>
+                </div>
+                <div class="prop-row">
+                  <label class="muted" style="display:flex;align-items:center;gap:4px;">
+                    <input type="checkbox" [checked]="it.attackLoopSeconds != null"
+                           (change)="setAutoLoop(it.id, $any($event.target).checked)">
+                    Loop on open (saved with the scene, so a recording needs no clicks)
                   </label>
                 </div>
                 <div class="prop-row">
@@ -772,6 +787,10 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   private readonly babylonModel = inject(BabylonModelService);
   private readonly babylonRender = inject(BabylonRenderServiceAccessImpl);
   private readonly terrainLoader = inject(TerrainLoaderService);
+  /** Weapon configs are not in the thumbnail grid, and the effect a shot draws depends on them. */
+  private readonly baseItemTypeClient = new BaseItemTypeEditorControllerClient(
+    TypescriptGenerator.generateHttpClientAdapter(inject(HttpClient))
+  );
 
   @ViewChild('viewportCanvas', {static: true}) private canvasRef!: ElementRef<HTMLCanvasElement>;
 
@@ -903,6 +922,14 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     } catch (e) {
       console.warn('[Studio] planet list failed', e);
     }
+    // Weapon kinds, so a fired shot draws the effect that unit actually has. A
+    // failure here is not fatal: fireAttack falls back to the lightning look.
+    try {
+      const types = await this.baseItemTypeClient.readAll();
+      this.weaponTypes = new Map(types.map(t => [t.id, t.weaponType]));
+    } catch (e) {
+      console.warn('[Studio] base item types failed - shots fall back to lightning', e);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -1016,10 +1043,51 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
 
   // ===== Attack VFX =====
 
+  /** Weapon config per base item type id, filled once in ngOnInit. Empty until
+   *  then, and empty if the request failed - fireAttack treats both the same. */
+  private weaponTypes = new Map<number, WeaponType | null>();
+
+  private weaponTypeOf(itemTypeId: number): WeaponType | null {
+    return this.weaponTypes.get(itemTypeId) ?? null;
+  }
+
   isLooping(id: number): boolean {
     // Read loopTick so isLooping() re-evaluates when toggleAttackLoop runs.
     this.loopTick();
     return this.attackLoops.has(id);
+  }
+
+  /** The item's own saved interval, falling back to the editor default for items
+   *  that have never been given one. */
+  loopSecondsOf(item: SceneItem): number {
+    return item.attackLoopSeconds ?? this.attackIntervalSeconds;
+  }
+
+  /** Change the interval. Only written back to the item once it has opted into
+   *  the saved loop - otherwise picking a rate in the editor would silently arm
+   *  a scene that was never meant to fire on its own. */
+  setLoopSeconds(id: number, seconds: number): void {
+    this.attackIntervalSeconds = seconds;
+    const item = this.content()?.items.find(i => i.id === id);
+    if (item && item.attackLoopSeconds != null) {
+      item.attackLoopSeconds = seconds;
+      this.content.update(c => c ? {...c} : c);
+    }
+  }
+
+  /** Arm or disarm the loop that starts by itself when the scene is opened. */
+  setAutoLoop(id: number, on: boolean): void {
+    const item = this.content()?.items.find(i => i.id === id);
+    if (!item) return;
+    item.attackLoopSeconds = on ? this.loopSecondsOf(item) : null;
+    this.content.update(c => c ? {...c} : c);
+    // Reflect it immediately, so the checkbox does what it says rather than
+    // only after the next Save + reopen.
+    if (on && !this.attackLoops.has(id)) {
+      this.toggleAttackLoop(id);
+    } else if (!on && this.attackLoops.has(id)) {
+      this.stopAttackLoop(id);
+    }
   }
 
   toggleAttackLoop(id: number): void {
@@ -1030,7 +1098,9 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       // 700ms and the explosion behind it about a second, so anything under
       // ~1.5s runs them together and the clip becomes a continuous arc rather
       // than a sequence of attacks.
-      const handle = setInterval(() => this.fireAttack(id), this.attackIntervalSeconds * 1000);
+      const item = this.content()?.items.find(i => i.id === id);
+      const seconds = item ? this.loopSecondsOf(item) : this.attackIntervalSeconds;
+      const handle = setInterval(() => this.fireAttack(id), seconds * 1000);
       this.attackLoops.set(id, handle);
       this.fireAttack(id); // fire immediately so the user gets visual feedback
     }
@@ -1047,10 +1117,17 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Plays the production lightning VFX from attacker → target: muzzle flash at
-   * the beam origin, a lightning bolt between the two, and an impact burst on
-   * the target. Other weapon kinds (projectile/rocket) would need the trail +
-   * flying mesh path from babylon-base-item, deferred for now.
+   * Plays the attacker's own weapon VFX from attacker → target, branching on the
+   * weapon kind the way onProjectileFired does in babylon-base-item:
+   *
+   *   ENERGY_BEAM (Badger)  sustained beam, no separate muzzle flash - the beam
+   *                         draws its own, and the ballistic powder burst on top
+   *                         of it belongs to a gun the unit does not carry.
+   *   LIGHTNING (Tesla)     muzzle flash + one flickering bolt.
+   *
+   * PROJECTILE still borrows the lightning look: the flying mesh + trail path is
+   * not reproduced here. A scene filmed with a projectile unit therefore shows an
+   * effect the game never draws - worth knowing before it ends up in a clip.
    */
   fireAttack(attackerId: number, boltLifetimeMs?: number): void {
     const attacker = this.content()?.items.find(i => i.id === attackerId);
@@ -1074,13 +1151,31 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     // expect the target to "respawn" each tick.
     targetNode.setEnabled(true);
 
-    BabylonMuzzleFlash.fire(scene, start, end.subtract(start).normalize());
-    // Undefined leaves BabylonLightning on its own 700ms, which is what a strike
-    // looks like in the game. Only "Fire + capture" asks for a longer one, and
-    // only because it photographs the bolt hundreds of milliseconds after it
-    // was fired - see fireAndCapture. Filming wants the short one: a 3s bolt
-    // outlives several loop ticks and the frame fills up with standing arcs.
-    BabylonLightning.fire(scene, start, end, boltLifetimeMs);
+    const weapon = this.weaponTypeOf(attacker.itemTypeId);
+    if (weapon?.weaponKind === 'ENERGY_BEAM') {
+      // Held open rather than fired once, exactly as in the game: the origin is
+      // re-read every frame so the beam stays on the muzzle, and the unit centre
+      // is the fallback for models without a beam origin.
+      const attackerNode = this.nodes.get(attackerId);
+      const beam = new BabylonEnergyBeam(
+        scene,
+        () => attackerRender.getBeamOrigin(),
+        () => (attackerNode ?? attackerRender.getModel3D()).getAbsolutePosition().clone(),
+      );
+      beam.start(end);
+      // Same default as babylon-base-item when the type carries no duration.
+      // "Fire + capture" overrides it for the same reason it lengthens a bolt:
+      // the screenshot is taken hundreds of milliseconds after the shot.
+      setTimeout(() => beam.dispose(), boltLifetimeMs ?? weapon.lightningDurationMs ?? 350);
+    } else {
+      BabylonMuzzleFlash.fire(scene, start, end.subtract(start).normalize());
+      // Undefined leaves BabylonLightning on its own 700ms, which is what a strike
+      // looks like in the game. Only "Fire + capture" asks for a longer one, and
+      // only because it photographs the bolt hundreds of milliseconds after it
+      // was fired - see fireAndCapture. Filming wants the short one: a 3s bolt
+      // outlives several loop ticks and the frame fills up with standing arcs.
+      BabylonLightning.fire(scene, start, end, boltLifetimeMs);
+    }
     BabylonImpact.detonate(scene, end);
     if (attacker.explodeTargetOnFire) {
       // Brief delay so the explosion reads as a consequence of the bolt, not
@@ -1558,6 +1653,14 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
       for (const item of content.items) {
         if (item.attackTargetId != null) this.aimTurret(item.id);
       }
+      // Scenes that carry their own loop start firing here. This is what lets a
+      // recording run unattended: the recorder can open a scene and press
+      // record, but it cannot click an item in the viewport to arm anything.
+      for (const item of content.items) {
+        if (item.attackTargetId != null && item.attackLoopSeconds != null && !this.attackLoops.has(item.id)) {
+          this.toggleAttackLoop(item.id);
+        }
+      }
       // Terrain — fired after items so terrain build progress isn't blocking
       // the item display. Clipped to a region (see regionToLoad) so we don't
       // build the whole planet. Errors are logged but don't abort scene open.
@@ -1880,6 +1983,7 @@ export class SceneComposerTaskComponent implements OnInit, AfterViewInit {
     // is still waiting for the bolt material to become ready when the bolt
     // has already faded.
     BabylonLightning.preWarm(scene);
+    BabylonEnergyBeam.preWarm(scene);
     BabylonImpact.preWarm(scene);
 
     this.rendererStatus.set('Loading model library…');

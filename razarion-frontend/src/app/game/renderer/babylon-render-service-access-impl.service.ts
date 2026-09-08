@@ -75,6 +75,7 @@ import {BabylonAudioService} from "./babylon-audio.service";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
 import earcut from 'earcut';
 import {ViewField, ViewFieldListener} from './view-field';
+import {CombatTracker} from './combat-tracker';
 import {PlaceConfigComponent} from '../../editor/common/place-config/place-config.component';
 import {buildQuestPlaceVisualizationMaterial} from './quest-place-visualization-material';
 import {CommandTargetKind, CommandTargetMarker} from './command-target-marker';
@@ -171,6 +172,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private waterVisible: boolean = true;
   private interpolationListeners: BabylonBaseItemImpl[] = [];
   private babylonBaseItems: BabylonBaseItemImpl[] = [];
+  /** Where the shooting is, for a camera that would rather film a battle than a factory. */
+  readonly combatTracker = new CombatTracker();
   private babylonResourceItems: BabylonResourceItemImpl[] = [];
   // Boxes are looked up by footprint for the same reason resources are: a click on the ground a box
   // stands on has to become a pick, not a move onto a spot the box occupies.
@@ -2013,6 +2016,41 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   public getBabylonBaseItemsByDiplomacy(diplomacy: Diplomacy): BabylonBaseItemImpl[] {
     return this.babylonBaseItems.filter(item => item.diplomacy === diplomacy);
+  }
+
+  /**
+   * Centre of everything a base owns, and how far the furthest piece of it is from that centre.
+   * Used by the director's follow camera to frame a base without being told a distance.
+   * <p>
+   * The centre is the mean rather than the middle of the bounding box: a base is usually a cluster
+   * of buildings with one harvester out at a resource, and the box would frame mostly empty
+   * ground to keep that one harvester in shot.
+   */
+  public baseExtent(baseId: number): { centre: Vector3, radius: number } | null {
+    let x = 0, y = 0, z = 0, n = 0;
+    for (const item of this.babylonBaseItems) {
+      if (item.getBaseId() !== baseId) {
+        continue;
+      }
+      const p = item.getContainer().position;
+      x += p.x;
+      y += p.y;
+      z += p.z;
+      n++;
+    }
+    if (n === 0) {
+      return null;
+    }
+    const centre = new Vector3(x / n, y / n, z / n);
+    let radius = 0;
+    for (const item of this.babylonBaseItems) {
+      if (item.getBaseId() !== baseId) {
+        continue;
+      }
+      const p = item.getContainer().position;
+      radius = Math.max(radius, Math.hypot(p.x - centre.x, p.z - centre.z));
+    }
+    return {centre, radius};
   }
 
   public findBabylonBaseItemAtPosition(worldPos: Vector3): BabylonBaseItemImpl | null {

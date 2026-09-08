@@ -97,6 +97,31 @@ weil Instagram keine reinen Textbeiträge annimmt:
 node render_cards.mjs
 ```
 
+### Clips aufnehmen, ohne dabeizusitzen
+
+```bash
+node record_studio.mjs --scene "Badger vs Radar"
+node record_studio.mjs --scene "Badger vs Radar" --seconds 12 --out data/clips/badger.mp4
+node record_studio.mjs --scene "Tesla" --url https://www.razarion.com/studio/scenes
+node record_studio.mjs --scene "Tesla" --head        # zusehen, statt headless
+```
+
+Startet ein eigenes Chrome ohne Fenster, meldet sich mit den Zugangsdaten aus `../.env` an (kein
+Login-Formular, das Token wird vor dem Start in den `localStorage` gelegt), öffnet die Szene, wartet
+auf Modelle und Boden, nimmt auf und legt die Datei ab.
+
+**Was die Szene mitbringen muss:** die Kamera — und bei einer Szene, die feuert, die Angriffsschleife
+als **„Loop on open"** am angreifenden Item gespeichert. Der Recorder kann kein Item im Viewport
+anklicken; eine Szene, die erst nach einem Klick feuert, wird im Stillstand gefilmt.
+
+**Der Lauf prüft sich selbst.** Kommt ein Clip mit eingebrochener Bildrate zurück, bricht er mit
+Fehler ab, statt eine unbrauchbare Datei zu hinterlassen. Genau das ist hier schon passiert: eine
+Aufnahme in einem Hintergrund-Tab lieferte 5 Frames in 0,17 s, weil Chrome den Render-Loop in einem
+unsichtbaren Tab anhält — headless gibt es dieses Problem nicht.
+
+Standardmäßig zielt er auf den lokalen Dev-Server (`http://localhost:4300/scenes`, Token vom
+Backend auf 8080). Für die Produktion `--url https://www.razarion.com/studio/scenes`.
+
 ### Clips
 
 Ein Clip wird genauso übergeben wie ein Bild — `--media clip.mp4`. Um die Formate musst du dich

@@ -13,13 +13,19 @@ import {firstValueFrom} from 'rxjs';
  */
 export interface DirectorCameraKey {
   time: number;
-  mode: 'orbit' | 'free';
+  mode: 'orbit' | 'free' | 'follow';
   target: [number, number, number];
   position?: [number, number, number];
   alpha?: number;
   beta?: number;
   radius?: number;
   easing?: 'linear' | 'ease';
+  /** Follow: whose units to keep in frame. */
+  followBaseId?: number | null;
+  /** Follow: 'base' sits on the middle of the base, 'combat' prefers where it is fighting. */
+  followWhat?: 'base' | 'combat';
+  /** Follow: derive the distance from how far the base spreads, instead of a fixed radius. */
+  autoRadius?: boolean;
 }
 
 /** A timed attack on the plan timeline (spawn a green force + attack a base). */
@@ -39,6 +45,14 @@ export interface DirectorBaseInfo {
   name: string;
   character: string;
   botId?: number | null;
+  userId?: string | null;
+  itemCount?: number;
+  /** Game coordinates of the middle of the base, and how far it spreads. Null when it has no
+   *  items. The follow camera needs this as a starting point: the client is only sent what
+   *  happens near where it looks, so a base it has never seen has to be flown to first. */
+  centreX?: number | null;
+  centreY?: number | null;
+  radius?: number | null;
 }
 
 export interface DirectorPlan {
@@ -152,6 +166,22 @@ export class DirectorStorageService {
     await firstValueFrom(this.http.post(`${this.base}/command`, {type, ...extra}));
   }
 
+  /**
+   * How long ago a rendering client last polled, in milliseconds, or null when none has since the
+   * server started. The channel carries commands one way and reports nothing back, so without this
+   * a studio driving a client that is signed in as the wrong user behaves exactly like a studio
+   * driving nothing: buttons work, and the camera never moves.
+   */
+  async clientLastSeenMillisAgo(): Promise<number | null> {
+    try {
+      const status = await firstValueFrom(
+        this.http.get<{clientLastSeenMillisAgo: number | null}>(`${this.base}/status`));
+      return status?.clientLastSeenMillisAgo ?? null;
+    } catch {
+      return null;
+    }
+  }
+
   /** Create (reset) the operator's green base with its start building at (x,y).
    *  Returns the new base id. */
   async createBase(x: number, y: number): Promise<number> {
@@ -163,13 +193,16 @@ export class DirectorStorageService {
     return await firstValueFrom(this.http.post<StageAttackResult>(`${this.base}/stage-attack`, req));
   }
 
-  /** All current bases (for the attack-target dropdown). */
+  /**
+   * All current bases, for the follow picker and the attack-target dropdown.
+   *
+   * Throws rather than returning an empty list on failure. Swallowing it meant a picker with
+   * nothing in it looked exactly like a world with no bases in it - and the usual cause is the
+   * dullest one: the list is fetched once when the tab opens, so a tab that was open across a
+   * login or a server restart is holding the empty answer from before.
+   */
   async listBases(): Promise<DirectorBaseInfo[]> {
-    try {
-      return (await firstValueFrom(this.http.get<DirectorBaseInfo[]>(`${this.base}/bases`))) ?? [];
-    } catch {
-      return [];
-    }
+    return (await firstValueFrom(this.http.get<DirectorBaseInfo[]>(`${this.base}/bases`))) ?? [];
   }
 
   /** Ask the client to publish its current camera, then read it back. Returns

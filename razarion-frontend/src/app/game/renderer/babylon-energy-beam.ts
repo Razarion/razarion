@@ -89,6 +89,19 @@ export class BabylonEnergyBeam {
     return this.renderCallback !== null;
   }
 
+  /**
+   * Force the whole beam pipeline (meshes, materials, textures, shared light) through one real
+   * frame, hidden deep underground, so the first visible shot is not a blank quad while Babylon
+   * compiles shaders and uploads textures. Same rationale and same trick as
+   * {@link BabylonLightning.preWarm}; call once at scene init.
+   */
+  static preWarm(scene: Scene): void {
+    const hidden = new Vector3(0, -1000, 0);
+    const beam = new BabylonEnergyBeam(scene, () => hidden, () => hidden);
+    beam.start(new Vector3(0, -1000, 1));
+    scene.onAfterRenderObservable.addOnce(() => beam.dispose());
+  }
+
   /** Aim the (already firing) beam at a new target. No-op if not started. */
   setTarget(target: Vector3): void {
     this.target = target.clone();

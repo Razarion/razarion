@@ -1,4 +1,4 @@
-import {Component, OnInit, inject, signal} from '@angular/core';
+import {Component, OnDestroy, OnInit, inject, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {
   DirectorBaseInfo,
@@ -78,6 +78,7 @@ import {
                       <select [(ngModel)]="k.mode" (ngModelChange)="onModeChange(k)">
                         <option value="orbit">orbit</option>
                         <option value="free">free</option>
+                        <option value="follow">follow</option>
                       </select>
                     </td>
                     <td class="triple">
@@ -86,7 +87,35 @@ import {
                       <input type="number" step="1" [(ngModel)]="k.target[2]">
                     </td>
                     <td class="triple">
-                      @if (k.mode === 'orbit') {
+                      @if (k.mode === 'follow') {
+                        <select [ngModel]="k.followBaseId ?? null" (ngModelChange)="setFollowBase(k, $event)"
+                                title="Whose units to keep in frame">
+                          <option [ngValue]="null">— pick a base —</option>
+                          @for (b of bases(); track b.baseId) {
+                            <option [ngValue]="b.baseId">
+                              {{ b.name || '#' + b.baseId }} ({{ b.character }}, {{ b.itemCount ?? 0 }})
+                            </option>
+                          }
+                        </select>
+                        <!-- An empty picker and a world with no bases in it look the same, so the
+                             one that is fixable says so and offers the fix. -->
+                        @if (!bases().length) {
+                          <button class="ghost xs" (click)="reloadBases()" title="Re-read the base list">↻</button>
+                          <span class="muted">{{ basesError() ?? 'no bases loaded' }}</span>
+                        }
+                        <select [(ngModel)]="k.followWhat" title="What to keep in the middle of the frame">
+                          <option value="combat">the fighting</option>
+                          <option value="base">the whole base</option>
+                        </select>
+                        <label class="muted" title="Derive the distance from how wide the base is">
+                          <input type="checkbox" [checked]="k.autoRadius !== false"
+                                 (change)="k.autoRadius = $any($event.target).checked"> auto
+                        </label>
+                        <input type="number" step="0.1" [(ngModel)]="k.alpha" title="azimuth rad">
+                        <input type="number" step="0.05" [(ngModel)]="k.beta" title="elevation rad">
+                        <input type="number" step="50" [(ngModel)]="k.radius" title="distance"
+                               [disabled]="k.autoRadius !== false">
+                      } @else if (k.mode === 'orbit') {
                         <input type="number" step="0.1" [(ngModel)]="k.alpha" title="azimuth rad">
                         <input type="number" step="0.05" [(ngModel)]="k.beta" title="elevation rad">
                         <input type="number" step="50" [(ngModel)]="k.radius" title="distance">
@@ -167,6 +196,20 @@ import {
       <!-- ===== Right: transport ===== -->
       <aside class="right">
         <header><h3>Transport</h3></header>
+        <!-- Whether anything is listening. Every button here posts into a slot on the server and
+             gets an OK back whether or not a client ever reads it, so without this line a studio
+             driving nothing looks exactly like a studio driving a client. -->
+        <div class="client-state" [class.live]="clientLive()">
+          @if (clientLive()) {
+            <span>● Client verbunden</span>
+          } @else {
+            <span>○ Kein Client</span>
+            <span class="muted">
+              Im Client-Tab <code>/game/director</code> öffnen und <strong>dort</strong> als Admin
+              anmelden — Studio und Spiel sind getrennte Sitzungen.
+            </span>
+          }
+        </div>
         @if (plan(); as pl) {
           <div class="transport">
             <button class="primary block" (click)="loadInClient()" [disabled]="busy()">⤓ Load in client</button>
@@ -280,12 +323,17 @@ import {
     .placeholder.small { padding: 12px; font-size: 11px; }
   `]
 })
-export class DirectorTaskComponent implements OnInit {
+export class DirectorTaskComponent implements OnInit, OnDestroy {
   protected readonly storage = inject(DirectorStorageService);
 
   readonly current = signal<DirectorPlanSummary | null>(null);
   readonly plan = signal<DirectorPlan | null>(null);
   readonly busy = signal(false);
+  /** Is a rendering client polling the command channel right now? */
+  readonly clientLive = signal(false);
+  /** Why the base list is empty, when it is. */
+  readonly basesError = signal<string | null>(null);
+  private clientWatch: ReturnType<typeof setInterval> | null = null;
   readonly capturing = signal(false);
   readonly bases = signal<DirectorBaseInfo[]>([]);
   currentName = '';
@@ -306,10 +354,38 @@ export class DirectorTaskComponent implements OnInit {
     this.loadStage();
     await this.reload().catch(() => {});
     await this.reloadBases();
+    // The client polls four times a second; asking once a second is enough to tell a live tab
+    // from a closed one without turning the indicator into a second poll loop.
+    this.clientWatch = setInterval(() => this.refreshClientState(), 1000);
+    this.refreshClientState();
   }
 
+  ngOnDestroy(): void {
+    if (this.clientWatch) clearInterval(this.clientWatch);
+  }
+
+  private async refreshClientState(): Promise<void> {
+    const ago = await this.storage.clientLastSeenMillisAgo();
+    // Two seconds is eight missed polls: long enough to ride out a slow frame, short enough that
+    // closing the client tab shows up while you are still looking at the screen.
+    this.clientLive.set(ago != null && ago < 2000);
+  }
+
+  /**
+   * Re-fetch the base list. Called when the tab opens, when a plan is opened, and from the reload
+   * button beside an empty picker - because the list is a snapshot of a live world, and the tab
+   * outlives both logins and server restarts.
+   */
   async reloadBases(): Promise<void> {
-    this.bases.set(await this.storage.listBases());
+    try {
+      this.bases.set(await this.storage.listBases());
+      this.basesError.set(null);
+    } catch (e: any) {
+      this.bases.set([]);
+      this.basesError.set(e?.status === 401 || e?.status === 403
+        ? 'Not signed in as an admin here.'
+        : `Could not read the bases (HTTP ${e?.status ?? 0}).`);
+    }
   }
 
   private loadStage(): void {
@@ -335,6 +411,7 @@ export class DirectorTaskComponent implements OnInit {
   }
 
   async openPlan(id: number): Promise<void> {
+    void this.reloadBases();
     this.busy.set(true);
     try {
       const {summary, plan} = await this.storage.read(id);
@@ -392,6 +469,34 @@ export class DirectorTaskComponent implements OnInit {
       k.alpha ??= 0;
       k.beta ??= 0.55;
       k.radius ??= 1600;
+    }
+    if (k.mode === 'follow') {
+      k.followWhat ??= 'combat';
+      k.autoRadius ??= true;
+      // The angles a player has in front of them all day: azimuth zero, so the world stays square
+      // to the frame, and roughly the elevation of the game's own camera (which sits at y=30 above
+      // a target 35 away, i.e. atan(30/35)). An azimuth of its own reads as a tilted picture -
+      // nothing in the game is ever seen from an angle to its own grid. Dial it in for a
+      // deliberately cinematic shot; do not start there.
+      k.alpha ??= 0;
+      k.beta ??= 0.7;
+    }
+  }
+
+  /**
+   * Point a follow key at a base — and write that base's current middle into the key's target.
+   *
+   * The target is not decoration for a follow key, it is where the camera starts. A client is only
+   * sent what happens near where it is looking, so it has never heard of a base on the other side
+   * of the planet and has nothing to follow; flying there on the server's word is what puts the
+   * units in its hands. After that the client's own live centre takes over.
+   */
+  setFollowBase(k: any, baseId: number | null): void {
+    k.followBaseId = baseId;
+    const base = this.bases().find(b => b.baseId === baseId);
+    if (base?.centreX != null && base.centreY != null) {
+      // Game (x, y) on the ground plane is the renderer's (x, z).
+      k.target = [base.centreX, 0, base.centreY];
     }
   }
 

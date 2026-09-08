@@ -30,6 +30,8 @@ public class DirectorService {
     private final AtomicLong seqGenerator = new AtomicLong();
     /** Last camera pose captured from the client (for studio "capture view"). */
     private final AtomicReference<DirectorCameraPose> lastCamera = new AtomicReference<>();
+    /** When a rendering client last asked for a command; 0 = never. */
+    private final AtomicLong lastClientPollAt = new AtomicLong();
 
     public DirectorService(DirectorPlanRepository repository) {
         this.repository = repository;
@@ -88,6 +90,21 @@ public class DirectorService {
     /** The latest command, or null if none has been posted yet. */
     public DirectorCommand lastCommand() {
         return lastCommand.get();
+    }
+
+    /**
+     * A rendering client polled. Recorded so the studio can say whether anything is listening:
+     * the channel is one-way and a command posted into a slot nobody reads looks exactly like a
+     * command that was carried out badly.
+     */
+    public void noteClientPoll() {
+        lastClientPollAt.set(System.currentTimeMillis());
+    }
+
+    /** Milliseconds since a rendering client last polled, or null if none ever has. */
+    public Long clientLastSeenMillisAgo() {
+        long at = lastClientPollAt.get();
+        return at == 0 ? null : System.currentTimeMillis() - at;
     }
 
     /** Client publishes its current camera pose (in response to a CAPTURE command). */

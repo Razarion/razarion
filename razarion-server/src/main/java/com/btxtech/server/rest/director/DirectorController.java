@@ -1,18 +1,11 @@
 package com.btxtech.server.rest.director;
 
 import com.btxtech.server.service.director.DirectorService;
-import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.gameengine.datatypes.Character;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.CommandService;
-import com.btxtech.shared.gameengine.planet.SyncService;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,18 +14,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Director mode = filming the live local game world for social-media clips.
+ * Director mode = filming the live game world for social-media clips.
  * <p>
- * DEV-ONLY: the whole controller is gated behind {@code razarion.director.enabled}
- * (true only in application-local.properties). On prod the property is unset, so
- * the bean is never created and none of these endpoints exist — a deliberate
- * safety guard since these can drive/record the running world.
+ * Everything here leaves the world exactly as it found it: it hands the rendering client a camera
+ * flight to fly and a recording to start, and answers questions about what is out there. Nothing
+ * spawns, builds or destroys — the endpoints that do live in {@link DirectorStagingController}
+ * behind their own property, so this half can be switched on against the live planet without
+ * bringing the other half with it.
+ * <p>
+ * Writing is not the same as changing the world: plans and the transport command are stored in
+ * the director's own table and an in-memory slot. A base filmed by this controller cannot tell
+ * that anyone was watching.
  * <p>
  * GET    /rest/director/plan          → plan summary list
  * GET    /rest/director/plan/{id}     → full plan payload
@@ -41,43 +40,28 @@ import java.util.List;
  * DELETE /rest/director/plan/{id}     → delete
  * POST   /rest/director/command       → studio publishes a transport command
  * GET    /rest/director/command       → director-mode client polls the latest
- * POST   /rest/director/create-base   → create the operator's green base at (x,y)
- * POST   /rest/director/stage-attack  → spawn a green strike force that attacks the bot
+ * POST   /rest/director/camera        → client publishes its live camera pose
+ * GET    /rest/director/camera        → studio reads it back to author a keyframe
+ * GET    /rest/director/bases         → which bases exist, to pick one to follow
  */
 @RestController
 @RequestMapping("/rest/director")
-// Defense-in-depth so this is never reachable on prod:
-//  1. @ConditionalOnProperty — the bean is only created when razarion.director.enabled=true.
-//     application.properties defaults it to false; only application-local.properties sets it
-//     true. So on prod the controller (and all its endpoints) simply does not exist → 404.
-//  2. @PreAuthorize ADMIN — even where the property IS enabled, only authenticated admins
-//     pass. Both the studio and the rendering client send the JWT via AuthInterceptor.
+// Two guards, unchanged in kind - only the default changed from "never on prod" to "on where it
+// is asked for":
+//  1. @ConditionalOnProperty — the bean exists only where razarion.director.enabled is true.
+//     application.properties reads it from RAZARION_DIRECTOR_ENABLED and defaults to false, so
+//     an environment that says nothing gets no endpoints at all → 404.
+//  2. @PreAuthorize ADMIN — only authenticated admins pass. Both the studio and the rendering
+//     client send the JWT via AuthInterceptor.
 @ConditionalOnProperty(name = "razarion.director.enabled", havingValue = "true")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class DirectorController {
     private final DirectorService service;
     private final BaseItemService baseItemService;
-    private final CommandService commandService;
-    private final ItemTypeService itemTypeService;
-    private final UserService userService;
-    private final SyncService syncService;
-    /**
-     * Serializes stage-attack engine mutations (mirrors PlanetMgmtController).
-     */
-    private final Object engineLock = new Object();
 
-    public DirectorController(DirectorService service,
-                              BaseItemService baseItemService,
-                              CommandService commandService,
-                              ItemTypeService itemTypeService,
-                              UserService userService,
-                              SyncService syncService) {
+    public DirectorController(DirectorService service, BaseItemService baseItemService) {
         this.service = service;
         this.baseItemService = baseItemService;
-        this.commandService = commandService;
-        this.itemTypeService = itemTypeService;
-        this.userService = userService;
-        this.syncService = syncService;
     }
 
     @GetMapping("/plan")
@@ -110,9 +94,27 @@ public class DirectorController {
         return service.postCommand(command);
     }
 
+    /**
+     * The rendering client polls this four times a second; the studio also reads it, so only a
+     * caller that says {@code client=render} counts as "a client is listening".
+     */
     @GetMapping("/command")
-    public DirectorCommand lastCommand() {
+    public DirectorCommand lastCommand(@RequestParam(name = "client", required = false) String client) {
+        if (client != null) {
+            service.noteClientPoll();
+        }
         return service.lastCommand();
+    }
+
+    /**
+     * Is anything out there? The command channel is one-way: a command lands in a slot, and
+     * nothing in the answer says whether a client ever read it. Without this, a studio driving a
+     * client that is signed in as the wrong user looks identical to one driving nothing at all.
+     */
+    @GetMapping("/status")
+    public DirectorStatus status() {
+        DirectorCommand last = service.lastCommand();
+        return new DirectorStatus(service.clientLastSeenMillisAgo(), last != null ? last.getSeq() : null);
     }
 
     @PostMapping("/camera")
@@ -126,111 +128,41 @@ public class DirectorController {
     }
 
     /**
-     * Create (reset) the AUTHENTICATED operator's green (OWN/human) base with its
-     * start building at (x, y). Use the same admin account in the studio and the
-     * /game/director client so the base renders green in the client. Returns the
-     * new base id.
-     */
-    @PostMapping("/create-base")
-    public int createBase(@RequestBody CreateBaseRequest request) {
-        synchronized (engineLock) {
-            UserContext userContext = userService.getUserContextFromContext();
-            return baseItemService.createHumanBaseWithBaseItem(
-                    userContext.getLevelId(),
-                    userContext.getUnlockedItemLimit(),
-                    userContext.getUserId(),
-                    "Director Base",
-                    new DecimalPosition(request.getX(), request.getY())
-            ).getBaseId();
-        }
-    }
-
-    /**
-     * Spawn a green (OWN/human) strike force at the requested position and order
-     * it to attack the enemy bot — stages a filmed battle. Operates on the first
-     * existing HUMAN base (the operator's green base) so it works regardless of
-     * which app/identity triggers it; the bot is the first non-human base.
+     * All current bases with where they are, so the studio can pick one to follow.
      * <p>
-     * Units are spawned instantly-finished (noSpawn) AND explicitly synced to the
-     * clients via {@link SyncService#notifySendSyncBaseItem} — spawnSyncBaseItem
-     * only notifies clients on the animated (noSpawn=false) path, so without this
-     * the spawned units would be invisible in the /game/director tab.
+     * The position is the part that matters: a client is only sent what happens near where it is
+     * looking, so a camera told to follow a base it has never seen has nothing to aim at. With a
+     * centre from here the plan can start by flying there; from then on the client has the units
+     * and follows them itself.
      */
-    @PostMapping("/stage-attack")
-    public StageAttackResult stageAttack(@RequestBody StageAttackRequest request) {
-        synchronized (engineLock) {
-            PlayerBaseFull humanBase = firstBaseOfCharacter(Character.HUMAN);
-            if (humanBase == null) {
-                throw new IllegalStateException("No human (green) base found — create your base first (Create base).");
-            }
-            PlayerBaseFull botBase;
-            if (request.getTargetBaseId() != null) {
-                botBase = (PlayerBaseFull) baseItemService.getPlayerBase4BaseId(request.getTargetBaseId());
-                if (botBase == null) {
-                    throw new IllegalStateException("Target base " + request.getTargetBaseId() + " not found.");
-                }
-            } else {
-                botBase = firstNonHumanBase();
-                if (botBase == null) {
-                    throw new IllegalStateException("No bot base found to attack.");
-                }
-            }
-            SyncBaseItem target = botBase.getItems().stream().findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Bot base has no units to target."));
-
-            BaseItemType attackerType = request.getBaseItemTypeId() != null
-                    ? itemTypeService.getBaseItemType(request.getBaseItemTypeId())
-                    : firstWeaponType();
-
-            int count = request.getCount() != null ? Math.max(1, request.getCount()) : 5;
-            List<SyncBaseItem> spawned = new ArrayList<>();
-            List<String> errors = new ArrayList<>();
-            for (int i = 0; i < count; i++) {
-                // Small grid spread so units don't stack on one point.
-                DecimalPosition pos = new DecimalPosition(
-                        request.getX() + (i % 3) * 3.0,
-                        request.getY() + (i / 3) * 3.0);
-                try {
-                    SyncBaseItem unit = baseItemService.spawnSyncBaseItem(attackerType, pos, 0.0, humanBase, true);
-                    syncService.notifySendSyncBaseItem(unit); // make it visible on the clients
-                    spawned.add(unit);
-                } catch (Exception e) {
-                    errors.add(e.getClass().getSimpleName() + ": " + e.getMessage());
-                }
-            }
-            for (SyncBaseItem unit : spawned) {
-                // followTarget only if the unit can move (mirrors CommandService.attack(IdsDto,...)).
-                commandService.attack(unit, target, unit.getAbstractSyncPhysical().canMove());
-            }
-            return new StageAttackResult(spawned.size(), attackerType.getInternalName(),
-                    botBase.getBaseId(), target.getId(), errors);
-        }
-    }
-
-    /** All current bases (human + bots) — the studio uses this to pick an attack target. */
     @GetMapping("/bases")
-    public List<PlayerBaseInfo> bases() {
-        return baseItemService.getPlayerBaseInfos();
-    }
-
-    private PlayerBaseFull firstBaseOfCharacter(Character character) {
+    public List<DirectorBaseInfo> bases() {
         return baseItemService.getPlayerBaseInfos().stream()
-                .filter(info -> info.getCharacter() == character)
-                .map(info -> (PlayerBaseFull) baseItemService.getPlayerBase4BaseId(info.getBaseId()))
-                .findFirst().orElse(null);
+                .map(this::toDirectorBaseInfo)
+                .toList();
     }
 
-    private PlayerBaseFull firstNonHumanBase() {
-        return baseItemService.getPlayerBaseInfos().stream()
-                .filter(info -> info.getCharacter() != Character.HUMAN)
-                .map(info -> (PlayerBaseFull) baseItemService.getPlayerBase4BaseId(info.getBaseId()))
-                .findFirst().orElse(null);
-    }
-
-    private BaseItemType firstWeaponType() {
-        return itemTypeService.getBaseItemTypes().stream()
-                .filter(type -> type.getWeaponType() != null)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No combat (weapon) unit type available."));
+    private DirectorBaseInfo toDirectorBaseInfo(PlayerBaseInfo info) {
+        PlayerBase base = baseItemService.getPlayerBase4BaseId(info.getBaseId());
+        List<DecimalPosition> positions = base instanceof PlayerBaseFull full
+                ? full.getItems().stream()
+                .map(item -> item.getAbstractSyncPhysical().getPosition())
+                .filter(Objects::nonNull)
+                .toList()
+                : List.of();
+        if (positions.isEmpty()) {
+            return new DirectorBaseInfo(info.getBaseId(), info.getName(), info.getCharacter(),
+                    info.getUserId(), 0, null, null, null);
+        }
+        // The mean, not the middle of the bounding box: a base is usually a cluster with one
+        // harvester out at a resource, and the box would put the camera on empty ground between
+        // the two.
+        double x = positions.stream().mapToDouble(DecimalPosition::getX).average().orElse(0);
+        double y = positions.stream().mapToDouble(DecimalPosition::getY).average().orElse(0);
+        double radius = positions.stream()
+                .mapToDouble(p -> Math.hypot(p.getX() - x, p.getY() - y))
+                .max().orElse(0);
+        return new DirectorBaseInfo(info.getBaseId(), info.getName(), info.getCharacter(),
+                info.getUserId(), positions.size(), x, y, radius);
     }
 }

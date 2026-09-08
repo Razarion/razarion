@@ -406,3 +406,25 @@
 @keyframes rec-blink {
   50% { opacity: 0.15; }
 }
+
+/* Director-mode channel badge. Sits where the REC badge sits, in the same shape, because it is
+   the same kind of message about the same mode - and it is replaced by REC the moment filming
+   starts, so it can never appear in a recording. */
+.director-indicator {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(120, 40, 0, 0.75);
+  color: #fff;
+  font: 600 13px/1 sans-serif;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+}
+
+.director-indicator.ok {
+  background: rgba(0, 80, 30, 0.7);
+}

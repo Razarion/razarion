@@ -257,6 +257,29 @@ export class GameComponent implements OnInit {
     return this.directorService.recording();
   }
 
+  /** Only director mode shows the channel badge; a player must never see it. */
+  protected get directorMode(): boolean {
+    return !!this.route.snapshot.data['director'];
+  }
+
+  /**
+   * What the badge says. The studio can only report clients whose polls reached the server, so a
+   * client rejected at the door is invisible over there and has to say so here.
+   */
+  protected get directorChannel(): string {
+    switch (this.directorService.channelState()) {
+      case 'connected': return 'DIRECTOR · Studio verbunden';
+      case 'unauthorized': return 'DIRECTOR · nicht als Admin angemeldet — in DIESEM Tab anmelden';
+      case 'disabled': return 'DIRECTOR · auf diesem Server abgeschaltet';
+      case 'offline': return 'DIRECTOR · Server antwortet nicht';
+      default: return 'DIRECTOR · verbinde…';
+    }
+  }
+
+  protected get directorChannelOk(): boolean {
+    return this.directorService.channelState() === 'connected';
+  }
+
   openInventory() {
     this.cockpitDisplayService.showInventory = true;
   }

@@ -1,28 +1,43 @@
 import {Injectable, inject, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
-import {Vector3} from '@babylonjs/core';
-import {VideoRecorder} from '@babylonjs/core/Misc/videoRecorder';
+import {Scene, Vector3} from '@babylonjs/core';
 import {BabylonRenderServiceAccessImpl} from '../renderer/babylon-render-service-access-impl.service';
 import {UiSettingsService} from '../ui-settings.service';
+import {CombatTracker} from '../renderer/combat-tracker';
 
 /**
  * Camera keyframe. `mode` decides how it's resolved to a camera pose:
- *  - 'free'  → position + target are used directly (fly-through).
- *  - 'orbit' → position is derived from target + spherical {alpha, beta, radius}
- *              (cinematic orbit / push-in around a point).
+ *  - 'free'   → position + target are used directly (fly-through).
+ *  - 'orbit'  → position is derived from target + spherical {alpha, beta, radius}
+ *               (cinematic orbit / push-in around a point).
+ *  - 'follow' → same spherical framing, but around a base that moves: the target is read from
+ *               the live world every frame instead of from `target`.
  * Coordinates are Babylon world space (x, z = ground plane, y = up).
  */
 export interface DirectorCameraKey {
   time: number;
-  mode: 'orbit' | 'free';
+  mode: 'orbit' | 'free' | 'follow';
   target: [number, number, number];
   position?: [number, number, number];
-  /** Orbit only: azimuth (rad), elevation (rad), distance. */
+  /** Orbit and follow: azimuth (rad), elevation (rad), distance. */
   alpha?: number;
   beta?: number;
   radius?: number;
   easing?: 'linear' | 'ease';
+  /** Follow only: whose units to keep in frame. */
+  followBaseId?: number | null;
+  /**
+   * Follow only. 'base' sits on the middle of everything that base owns; 'combat' prefers where
+   * that base is currently fighting and falls back to the middle when the shooting stops - which
+   * is the difference between filming a factory and filming a battle.
+   */
+  followWhat?: 'base' | 'combat';
+  /**
+   * Follow only: leave `radius` empty to frame the base by its own size. A base that grows, or a
+   * strike force that spreads out, then stays in shot without anyone re-authoring the plan.
+   */
+  autoRadius?: boolean;
 }
 
 /**
@@ -78,17 +93,45 @@ export class DirectorService {
   /** True while a WebM recording is in progress (drives the client REC badge). */
   readonly recording = signal(false);
   private maxZApplied = false;
+  /** See notifyViewField: often enough for streaming, rare enough not to be a per-frame bridge call. */
+  private static readonly VIEW_FIELD_NOTIFY_MS = 100;
+  private lastViewFieldNotify = 0;
+  /** Time constant of the follow camera. Roughly: two thirds of the way to the target in this long. */
+  private static readonly FOLLOW_SMOOTHING_MS = 600;
+  /** Never frame a base closer than this, however small it is - one builder must not fill the screen. */
+  private static readonly FOLLOW_MIN_RADIUS = 60;
+  /** Smoothed state of the follow camera; null until the first frame of a follow key. */
+  private followTarget: Vector3 | null = null;
+  private followRadius = 200;
   /** Cue indices already fired this play-through (reset on load/stop/seek). */
   private readonly firedCues = new Set<number>();
   private lastSeq = 0;
+  /** The first answer from the channel is a standing order from before this client existed. */
+  private firstPoll = true;
+  /**
+   * What the command channel is doing, for the badge in the client. 'waiting' until the first
+   * answer arrives; after that either 'connected' or the reason it is not. The studio can only
+   * see polls that got through - an unauthorised client never reaches the server at all - so this
+   * side has to be able to say it out loud.
+   */
+  readonly channelState = signal<'waiting' | 'connected' | 'unauthorized' | 'disabled' | 'offline'>('waiting');
+  /** Whether the last poll got through, so the console says so once rather than four times a second. */
+  private pollHealthy = false;
+  /** HTTP status of the failure already reported; -1 = nothing reported yet. */
+  private pollFailureStatus = -1;
   private pollHandle: ReturnType<typeof setInterval> | null = null;
-  private recorder: VideoRecorder | null = null;
-  /** Render state saved on record start, restored on stop (load reduction). */
+  private mediaRecorder: MediaRecorder | null = null;
+  /** The observer that asks for one captured frame per render; removed on stop. */
+  private frameObserver: ReturnType<Scene['onAfterRenderObservable']['add']> | null = null;
+  private recordScene: Scene | null = null;
+  /** Render state saved on record start, restored on stop. */
   private savedShadowEnabled: boolean | null = null;
-  private savedScaling: number | null = null;
-  /** Extra internal-resolution downscale while recording (1 = off). Lower render
-   *  + encode cost → far fewer baked-in stutters, at slightly softer output. */
-  recordScale = 1.5;
+  private savedRenderWidth: number | null = null;
+  private savedRenderHeight: number | null = null;
+  /** What the file comes out as, regardless of the window. YouTube's own recommendation, and the
+   *  size the reel derivations in the social pipeline expect to cut down from. */
+  recordWidth = 1920;
+  recordHeight = 1080;
 
   /** Wire up the camera tick + start polling the command channel. Idempotent. */
   activate(renderer: BabylonRenderServiceAccessImpl): void {
@@ -108,12 +151,46 @@ export class DirectorService {
 
   private async poll(): Promise<void> {
     try {
-      const cmd = await firstValueFrom(this.http.get<DirectorCommand | null>('/rest/director/command'));
+      // The query parameter is the client saying "I am here": the server records the moment and
+      // the studio shows it, so "is anything listening?" has an answer other than watching the
+      // camera not move.
+      const cmd = await firstValueFrom(
+        this.http.get<DirectorCommand | null>('/rest/director/command', {params: {client: 'render'}}));
+      if (!this.pollHealthy) {
+        this.pollHealthy = true;
+        this.pollFailureStatus = -1;
+        this.channelState.set('connected');
+        console.log('[Director] command channel reachable — the studio can drive this client');
+      }
       if (!cmd || cmd.seq <= this.lastSeq) return;
       this.lastSeq = cmd.seq;
+      // The command slot holds the last thing the studio said, for as long as the server runs, and
+      // a client that has just opened starts from seq 0 - so without this it obeys an instruction
+      // that may be hours old. That is confusing for a camera flight and unacceptable for the rest:
+      // a client opened after a recording session would start recording by itself. A fresh client
+      // comes up as an ordinary game client, adopts the plan so it is ready, and waits to be told.
+      if (this.firstPoll) {
+        this.firstPoll = false;
+        if (cmd.type === 'LOAD_PLAN' && cmd.planId != null) {
+          await this.loadPlan(cmd.planId, /*quiet*/ true);
+        } else {
+          console.log('[Director] ignoring the standing', cmd.type, 'from before this client opened');
+        }
+        return;
+      }
       await this.handle(cmd);
-    } catch {
-      /* server down or endpoint disabled (prod) — ignore */
+    } catch (e: any) {
+      // Four failures a second must not fill the console, but silence is worse: swallowing this
+      // is why a client that is merely signed in as the wrong user looks exactly like a client
+      // that is not running at all. Report the first failure, and each change of reason.
+      const status = e?.status ?? 0;
+      if (this.pollFailureStatus !== status) {
+        this.pollFailureStatus = status;
+        this.pollHealthy = false;
+        this.channelState.set(
+          status === 401 || status === 403 ? 'unauthorized' : status === 404 ? 'disabled' : 'offline');
+        console.warn(`[Director] command channel unreachable (HTTP ${status}). ${explainPollFailure(status)}`);
+      }
     }
   }
 
@@ -148,14 +225,23 @@ export class DirectorService {
     console.log('[Director] camera captured');
   }
 
-  async loadPlan(id: number): Promise<void> {
+  /**
+   * @param quiet keep the plan but leave the camera alone — see the first-poll handling in poll().
+   */
+  async loadPlan(id: number, quiet = false): Promise<void> {
     const dto = await firstValueFrom(this.http.get<{jsonContent: string}>(`/rest/director/plan/${id}`));
     this.plan = JSON.parse(dto.jsonContent) as DirectorPlan;
     this.clockMs = 0;
     this.playing = false;
     this.firedCues.clear();
+    if (quiet) {
+      console.log('[Director] plan adopted, camera left alone:', id);
+      return;
+    }
     if (this.renderer) this.renderer.directorActive = true;
+    // A jump, not a move: the whole view changed at once, so the engine hears about it at once.
     this.applyPose(0);
+    this.notifyViewField(true);
     console.log('[Director] plan loaded:', this.plan);
   }
 
@@ -188,55 +274,104 @@ export class DirectorService {
     // the seeked pose on the very next frame.
     if (this.renderer) this.renderer.directorActive = true;
     this.applyPose(this.clockMs);
+    this.notifyViewField(true);
   }
 
+  /**
+   * Record the viewport while the plan plays.
+   *
+   * Two things are deliberately not Babylon's VideoRecorder, which this used to be.
+   *
+   * It asked the browser for a stream at a frame rate, and a canvas stream hands over a frame only
+   * when the canvas is seen to change - so a held shot over a quiet stretch of world returns almost
+   * no frames, and the file reads as broken rather than still. Frames are requested here instead,
+   * one per render off Babylon's own loop, which is indifferent to whether anything moved.
+   *
+   * And the output size was whatever the window happened to be, divided by a scaling factor: a
+   * 1280 window at scale 1.5 recorded 853x480, which is below what any of the networks want and
+   * cannot be recovered afterwards. The size is set explicitly for the duration instead. The
+   * viewport looks stretched while it runs; that is the trade for not keeping a second renderer.
+   */
   recordStart(fileName: string): void {
     const r = this.renderer;
     if (!r || !this.plan) return;
     const engine = r.getEngine();
-    if (!VideoRecorder.IsSupported(engine)) {
-      console.warn('[Director] VideoRecorder not supported in this browser');
+    const canvas = engine.getRenderingCanvas();
+    const mime = pickClipMime();
+    if (!canvas || !mime) {
+      console.warn('[Director] this browser cannot record the viewport');
       return;
     }
-    // Recording is real-time — any per-frame hitch is baked into the WebM.
-    // Cut the load so the capture stays smooth: shadows off (the 4096 shadow
-    // map is re-rendered every frame) + lower internal resolution (cheaper to
-    // render AND encode). Both are restored in recordStop.
+
+    // The 4096 shadow map is re-rendered every frame and the recording is real time: any hitch is
+    // baked into the file. Restored in recordStop.
     if (r.directionalLight) {
       this.savedShadowEnabled = r.directionalLight.shadowEnabled;
       r.directionalLight.shadowEnabled = false;
     }
-    this.savedScaling = engine.getHardwareScalingLevel();
-    if (this.recordScale > 1) {
-      engine.setHardwareScalingLevel(this.savedScaling * this.recordScale);
-    }
 
-    this.recorder = new VideoRecorder(engine, {fps: 30});
-    // maxDuration 0 = record until stopRecording(); we stop at playback end.
-    void this.recorder.startRecording(fileName, 0);
+    // Not a preference for the duration of the take: the name plate is the player's own name,
+    // drawn into the canvas the recorder captures. Released again in recordStop.
+    this.uiSettings.setNamesLockedOff(true);
+    this.uiSettings.tipsVisible = false;
+    this.uiSettings.questVisualizationVisible = false;
+
+    this.savedRenderWidth = engine.getRenderWidth();
+    this.savedRenderHeight = engine.getRenderHeight();
+    engine.setSize(this.recordWidth, this.recordHeight);
+
+    const scene = r.getScene();
+    const stream = canvas.captureStream(0);
+    const frameTrack = stream.getVideoTracks()[0] as CanvasCaptureMediaStreamTrack;
+    this.frameObserver = scene.onAfterRenderObservable.add(() => frameTrack.requestFrame());
+
+    const chunks: Blob[] = [];
+    const recorder = new MediaRecorder(stream, {mimeType: mime, videoBitsPerSecond: 12_000_000});
+    recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+    recorder.onstop = () => {
+      stream.getTracks().forEach(track => track.stop());
+      downloadBlob(new Blob(chunks, {type: mime}), withExtensionFor(fileName, mime));
+    };
+    recorder.start();
+
+    this.mediaRecorder = recorder;
+    this.recordScene = scene;
     this.recording.set(true);
     this.clockMs = 0;
     this.play();
-    console.log('[Director] recording →', fileName);
+    console.log(`[Director] recording ${this.recordWidth}x${this.recordHeight} as ${mime}`);
   }
 
   recordStop(): void {
-    if (this.recorder) {
-      void this.recorder.stopRecording(); // triggers the file download
-      this.recorder = null;
+    // The blob is assembled and downloaded in the recorder's onstop; stopping here only asks.
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      this.mediaRecorder.stop();
     }
-    // Restore render quality.
+    this.mediaRecorder = null;
+    // Left attached, this keeps asking a dead track for a frame on every frame the client draws
+    // for the rest of the session.
+    if (this.frameObserver && this.recordScene) {
+      this.recordScene.onAfterRenderObservable.remove(this.frameObserver);
+    }
+    this.frameObserver = null;
+    this.recordScene = null;
+
+    // Restore render quality and the size the window actually is.
     const r = this.renderer;
     if (r) {
       if (this.savedShadowEnabled !== null && r.directionalLight) {
         r.directionalLight.shadowEnabled = this.savedShadowEnabled;
       }
-      if (this.savedScaling !== null) {
-        r.getEngine().setHardwareScalingLevel(this.savedScaling);
+      if (this.savedRenderWidth !== null && this.savedRenderHeight !== null) {
+        r.getEngine().setSize(this.savedRenderWidth, this.savedRenderHeight);
+        r.getEngine().resize();
       }
     }
     this.savedShadowEnabled = null;
-    this.savedScaling = null;
+    this.savedRenderWidth = null;
+    this.savedRenderHeight = null;
+    // Hand the name plates back to whatever the operator had chosen.
+    this.uiSettings.setNamesLockedOff(false);
     this.recording.set(false);
   }
 
@@ -260,12 +395,12 @@ export class DirectorService {
       this.fireDueCues();
       if (ended) {
         this.playing = false;
-        this.applyPose(this.clockMs);
+        this.applyPose(this.clockMs, dtMs);
         if (this.recording()) this.recordStop();
         return;
       }
     }
-    this.applyPose(this.clockMs);
+    this.applyPose(this.clockMs, dtMs);
   }
 
   /** Fire any attack cue whose time the clock has now reached (once each). */
@@ -289,25 +424,160 @@ export class DirectorService {
     }).subscribe({error: (e) => console.warn('[Director] cue attack failed', e)});
   }
 
-  private applyPose(t: number): void {
+  private applyPose(t: number, dtMs: number | null = null): void {
     const cam = this.renderer?.getCamera();
     if (!cam || !this.plan || !this.plan.cameraKeys.length) return;
-    const pose = interpolatePose(this.plan.cameraKeys, t);
+    const pose = interpolatePose(this.plan.cameraKeys, t, key => this.resolveFollow(key, dtMs));
     cam.position.copyFrom(pose.position);
     cam.setTarget(pose.target);
+    this.notifyViewField();
+  }
+
+  /**
+   * Where a follow key is looking, right now.
+   *
+   * Two things are smoothed rather than taken raw. The centre of a base jumps when a unit is built
+   * at the far edge or destroyed, and the framing distance jumps with it; unsmoothed, the camera
+   * twitches on every event, which reads as a broken camera rather than a moving base. The
+   * smoothing is per-second so it behaves the same at 30 and at 144 frames.
+   *
+   * `dtMs` null means "do not smooth": a plan just loaded or seeked, and there is nothing to ease
+   * from - easing there would start every recording with a slow drift out of the previous shot.
+   */
+  private resolveFollow(key: DirectorCameraKey, dtMs: number | null): { target: Vector3; radius: number } | null {
+    const renderer = this.renderer;
+    if (!renderer || key.followBaseId == null) {
+      return null;
+    }
+    const extent = renderer.baseExtent(key.followBaseId);
+    // A base with nothing in it is a base that has just been destroyed. Hold the last framing
+    // rather than snapping to the origin, so the shot ends on the wreckage.
+    const wanted = (key.followWhat === 'combat'
+      ? renderer.combatTracker.centre(CombatTracker.DEFAULT_WINDOW_MS, key.followBaseId)
+      : null) ?? extent?.centre ?? this.followTarget;
+    if (!wanted) {
+      return null;
+    }
+    const wantedRadius = key.autoRadius && extent
+      // Twice the spread plus a margin: the far edge sits inside the frame rather than on it.
+      ? Math.max(DirectorService.FOLLOW_MIN_RADIUS, extent.radius * 2.5 + 50)
+      : (key.radius ?? 200);
+
+    if (dtMs == null || !this.followTarget) {
+      this.followTarget = wanted.clone();
+      this.followRadius = wantedRadius;
+    } else {
+      const f = 1 - Math.exp(-dtMs / DirectorService.FOLLOW_SMOOTHING_MS);
+      this.followTarget = Vector3.Lerp(this.followTarget, wanted, f);
+      this.followRadius += (wantedRadius - this.followRadius) * f;
+    }
+    return {target: this.followTarget, radius: this.followRadius};
+  }
+
+  /**
+   * Tell the engine where the camera is looking.
+   *
+   * Moving a Babylon camera moves nothing else: the terrain streams, and items become visible,
+   * because the engine is handed a view field - which the RTS controls do on every scroll and the
+   * ResizeObserver does on every resize. Flying a plan does neither, so a filmed flight showed the
+   * clear colour and nothing in it, and the only thing that ever fixed it was resizing the window,
+   * which looks like a rendering bug and is a message that was never sent.
+   *
+   * Throttled rather than per frame: this crosses into the WASM engine, and terrain that streams
+   * ten times a second keeps up with any camera move worth filming.
+   */
+  private notifyViewField(force = false): void {
+    const now = performance.now();
+    if (!force && now - this.lastViewFieldNotify < DirectorService.VIEW_FIELD_NOTIFY_MS) {
+      return;
+    }
+    this.lastViewFieldNotify = now;
+    this.renderer?.onViewFieldChanged();
+  }
+}
+
+/**
+ * The container the browser will actually give us, best first. Chrome muxes H.264 straight into
+ * MP4, which is what every network wants and saves the pipeline a re-encode; where that is missing
+ * WebM is always there and ffmpeg converts it later. An unsupported codec must not lose the take.
+ */
+function pickClipMime(): string | null {
+  const candidates = [
+    'video/mp4;codecs=avc1.42E01E',
+    'video/mp4',
+    'video/webm;codecs=vp9',
+    'video/webm;codecs=vp8',
+    'video/webm',
+  ];
+  return candidates.find(type => MediaRecorder.isTypeSupported(type)) ?? null;
+}
+
+/** The name the operator asked for, with the extension the browser actually produced. */
+function withExtensionFor(fileName: string, mime: string): string {
+  const wanted = mime.startsWith('video/mp4') ? 'mp4' : 'webm';
+  return fileName.replace(/\.(mp4|webm)$/i, '') + '.' + wanted;
+}
+
+function downloadBlob(blob: Blob, fileName: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  // The object URL owns the blob until revoked, and these are tens of megabytes.
+  URL.revokeObjectURL(url);
+  console.log('[Director] recording saved as', fileName, `(${(blob.size / 1024 / 1024).toFixed(1)} MB)`);
+}
+
+/**
+ * What each failure actually means, because the status alone sends people to the wrong place.
+ * 403 in particular looks like a broken setup and is almost always the plainest thing: the studio
+ * and the game are different origins with different logins, so signing in to one signs in to
+ * neither the other.
+ */
+function explainPollFailure(status: number): string {
+  switch (status) {
+    case 0:
+      return 'No answer at all — is the server running?';
+    case 401:
+    case 403:
+      return 'Signed in, but not as an admin (or not signed in here at all). The studio tab and '
+        + 'this tab are separate origins with separate sessions — log in again in THIS tab.';
+    case 404:
+      return 'The endpoint is not there: director mode is switched off on this server '
+        + '(razarion.director.enabled).';
+    default:
+      return 'Unexpected — see the network tab.';
   }
 }
 
 // ===== Pure interpolation helpers =====
 
-function resolvePose(k: DirectorCameraKey): CameraPose {
+/**
+ * What a follow key is pointing at this frame, or null when it cannot be resolved (no base
+ * chosen, base gone, no renderer). A null falls back to the key's stored target, so a plan
+ * written against a base that no longer exists still produces a camera rather than an exception.
+ */
+type FollowResolver = (key: DirectorCameraKey) => { target: Vector3; radius: number } | null;
+
+function resolvePose(k: DirectorCameraKey, follow?: FollowResolver): CameraPose {
+  if (k.mode === 'follow' && follow) {
+    const live = follow(k);
+    if (live) {
+      return orbitPose(live.target, k.alpha ?? 0, k.beta ?? Math.PI / 4, live.radius);
+    }
+  }
   const target = new Vector3(k.target[0], k.target[1], k.target[2]);
   if (k.mode === 'free' && k.position) {
     return {position: new Vector3(k.position[0], k.position[1], k.position[2]), target};
   }
-  const alpha = k.alpha ?? 0;
-  const beta = k.beta ?? Math.PI / 4;
-  const radius = k.radius ?? 100;
+  return orbitPose(target, k.alpha ?? 0, k.beta ?? Math.PI / 4, k.radius ?? 100);
+}
+
+/** Camera placed on a sphere around `target`: azimuth, elevation, distance. */
+function orbitPose(target: Vector3, alpha: number, beta: number, radius: number): CameraPose {
   const position = new Vector3(
     target.x + radius * Math.cos(beta) * Math.sin(alpha),
     target.y + radius * Math.sin(beta),
@@ -325,11 +595,11 @@ function lerp(a: number, b: number, f: number): number {
 }
 
 /** Interpolate the camera pose at time `t` across the (unsorted) keyframes. */
-function interpolatePose(keys: DirectorCameraKey[], t: number): CameraPose {
+function interpolatePose(keys: DirectorCameraKey[], t: number, follow?: FollowResolver): CameraPose {
   const sorted = [...keys].sort((a, b) => a.time - b.time);
-  if (t <= sorted[0].time) return resolvePose(sorted[0]);
+  if (t <= sorted[0].time) return resolvePose(sorted[0], follow);
   const last = sorted[sorted.length - 1];
-  if (t >= last.time) return resolvePose(last);
+  if (t >= last.time) return resolvePose(last, follow);
 
   let a = sorted[0];
   let b = sorted[1];
@@ -360,8 +630,8 @@ function interpolatePose(keys: DirectorCameraKey[], t: number): CameraPose {
   }
 
   // Mixed / free: resolve both ends to poses and lerp position + target.
-  const pa = resolvePose(a);
-  const pb = resolvePose(b);
+  const pa = resolvePose(a, follow);
+  const pb = resolvePose(b, follow);
   return {
     position: Vector3.Lerp(pa.position, pb.position, f),
     target: Vector3.Lerp(pa.target, pb.target, f),

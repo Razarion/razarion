@@ -777,6 +777,9 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     const targetRadius = targetBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius();
     targetPos.y += targetRadius * 0.8;
 
+    // Both sides are recorded, so a camera following either base counts this fight as its own.
+    this.rendererService.combatTracker.record(targetPos, [this.getBaseId(), targetBaseItem.getBaseId()]);
+
     if (weaponKind === "ENERGY_BEAM") {
       const scene = this.rendererService.getScene();
       // Event-driven, one shot per fire (like LIGHTNING): open the sustained beam, then dispose it
@@ -815,6 +818,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   onExplode(): void {
+    // A unit dying is the moment a filmed battle is about, and it is the last chance to note
+    // where it happened - the item is on its way out.
+    this.rendererService.combatTracker.record(this.getContainer().position.clone(), [this.getBaseId()]);
+
     // Drop selection brackets, hover, and the marker disc BEFORE the debris loop detaches
     // and clones child meshes — otherwise these container-parented decorations get treated as
     // regular child meshes, cloned 3x and tumbled with the wreckage.

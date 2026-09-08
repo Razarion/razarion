@@ -47,6 +47,12 @@ export interface SceneItem {
    *  attack-scene re-arms automatically; only meaningful when attackTargetId
    *  is set. */
   explodeTargetOnFire?: boolean;
+  /** Seconds between shots of a self-starting attack loop, or null for "only
+   *  when a person presses Loop". Persisted because a filmed scene has to say
+   *  what it does: the recorder opens the scene and hits record, and it has no
+   *  way to click an item in the viewport to arm the loop first. A person
+   *  opening the same scene sees the same thing the camera would. */
+  attackLoopSeconds?: number | null;
   /** Another item in the scene this one is harvesting from. Drives the
    *  BabylonHarvestingBeam (red beam + spiraling crystals). Only meaningful
    *  when the target's kind === 'resource'. */

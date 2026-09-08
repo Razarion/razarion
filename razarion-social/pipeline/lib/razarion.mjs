@@ -10,11 +10,16 @@ const BASE = () => env.RAZARION_BASE_URL || 'https://www.razarion.com';
  * The editor endpoints are the only place the unit data is readable: the game itself receives it
  * over the game connection rather than from a public REST endpoint, so there is no anonymous way
  * to ask what a Viper costs.
+ *
+ * The optional baseUrl is for the recorder, which drives a studio served from somewhere other
+ * than the live site (a dev server in front of a local backend) and needs a token that server
+ * signed - one minted by production would be rejected there, and the failure looks like a login
+ * problem rather than a wrong issuer.
  */
-export async function adminToken() {
+export async function adminToken(baseUrl) {
   const [user, password] = requireEnv('RAZARION_ADMIN_USER', 'RAZARION_ADMIN_PASSWORD');
   const basic = Buffer.from(`${user}:${password}`).toString('base64');
-  const res = await fetch(`${BASE()}/rest/user/auth`, {
+  const res = await fetch(`${baseUrl ?? BASE()}/rest/user/auth`, {
     method: 'POST',
     headers: { Authorization: 'Basic ' + basic },
   });
