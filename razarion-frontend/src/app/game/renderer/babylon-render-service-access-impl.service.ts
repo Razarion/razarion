@@ -56,6 +56,7 @@ import {BabylonImpact} from "./babylon-impact";
 import {BabylonPerfOverlay} from "./babylon-perf-overlay";
 import {RenderTelemetry, RenderTelemetrySceneStats} from "./render-telemetry";
 import {ParkedMeshFilter} from "./parked-mesh-filter";
+import {ShadowCasters, ShadowQuality} from "./shadow-quality";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 import {SelectionFrame} from "./selection-frame";
 import {TouchCameraControl} from "./touch-camera-control";
@@ -129,6 +130,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private scene!: Scene;
   private engine!: Engine;
   public shadowGenerator!: ShadowGenerator;
+  /** Edge length the shadow map was built with, reported by the telemetry. See ShadowQuality. */
+  private shadowMapSize = ShadowQuality.MAX_SIZE;
+  private shadowArm: 'hi' | 'lo' = 'hi';
+  private casterArm: 'all' | 'units' = 'all';
   public directionalLight!: DirectionalLight
   private camera!: FreeCamera;
   /** Director mode (filming the live world): when active, the render loop hands
@@ -380,9 +385,25 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.directionalLight.specular = new Color3(1, 1, 1);
     this.directionalLight.shadowEnabled = true;
 
-    this.shadowGenerator = new ShadowGenerator(4096, this.directionalLight);
+    // 4096 for everybody was the shipped behaviour and is still what arm "hi" gets. See
+    // ShadowQuality: on the median touch device that map is 61x the area of the screen it ends up
+    // on, and the depth pass that fills it is the single biggest identifiable item in a 58 ms
+    // render. Arm "lo" sizes it to the backbuffer instead.
+    this.shadowArm = ShadowQuality.arm();
+    this.shadowMapSize = ShadowQuality.size(
+      this.engine.getRenderWidth(), this.engine.getRenderHeight(), this.shadowArm);
+    this.shadowGenerator = new ShadowGenerator(this.shadowMapSize, this.directionalLight);
     this.shadowGenerator.useExponentialShadowMap = true;
     this.shadowGenerator.darkness = 0.6;
+    // Second, independent arm: who is on the caster list. Set before any terrain object exists —
+    // the call both walks the templates that are there and holds the flag that later instances are
+    // created under, which is what makes one call at startup enough.
+    this.casterArm = ShadowCasters.arm();
+    this.terrainShadowsEnabled = ShadowCasters.sceneryCastsShadows(this.casterArm);
+    this.babylonModelService.setStaticModelsShadowCasting(this.terrainShadowsEnabled);
+    console.log(`[Razarion] Schattenkarte: ${this.shadowMapSize}x${this.shadowMapSize} (Arm ${this.shadowArm}, `
+      + `Backbuffer ${this.engine.getRenderWidth()}x${this.engine.getRenderHeight()}), `
+      + `Landschaftsschatten ${this.terrainShadowsEnabled ? 'an' : 'aus'} (Arm ${this.casterArm})`);
 
     // Must come after the shadow generator: the filter hooks both per-frame walks over the mesh
     // array, and the second one is the shadow map's render list. F7 bypasses it for an A/B.
@@ -1884,6 +1905,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       disabledMeshes: census.disabled,
       instancedMeshes: census.instanced,
       shadowCasters: this.shadowGenerator?.getShadowMap()?.renderList?.length ?? -1,
+      shadowMapSize: this.shadowMapSize,
+      shadowArm: this.shadowArm,
+      casterArm: this.casterArm,
       meshTop: census.top,
       parkedMeshes: this.parkedMeshFilter.getParkedCount(),
       parkingFilter: this.parkedMeshFilter.isEnabled(),
@@ -2019,38 +2043,30 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   /**
-   * Centre of everything a base owns, and how far the furthest piece of it is from that centre.
+   * Where a base is, and how wide the part of it that is actually there.
    * Used by the director's follow camera to frame a base without being told a distance.
    * <p>
-   * The centre is the mean rather than the middle of the bounding box: a base is usually a cluster
-   * of buildings with one harvester out at a resource, and the box would frame mostly empty
-   * ground to keep that one harvester in shot.
+   * Both numbers are medians and percentiles rather than means and maxima, and that is the whole
+   * point: one unit can be anywhere. A transporter crossing the map belongs to the base and says
+   * nothing about where the base is - on production one base of fifteen units measured a spread of
+   * 796 while the median base measured 23, and a camera framed on that filmed the planet from
+   * orbit. The 80th percentile leaves the stragglers out of shot, which is the right trade: a
+   * viewer who cannot see the harvester loses nothing, a viewer who cannot see the base loses
+   * everything.
    */
   public baseExtent(baseId: number): { centre: Vector3, radius: number } | null {
-    let x = 0, y = 0, z = 0, n = 0;
-    for (const item of this.babylonBaseItems) {
-      if (item.getBaseId() !== baseId) {
-        continue;
-      }
-      const p = item.getContainer().position;
-      x += p.x;
-      y += p.y;
-      z += p.z;
-      n++;
-    }
-    if (n === 0) {
+    const items = this.babylonBaseItems.filter(item => item.getBaseId() === baseId);
+    if (!items.length) {
       return null;
     }
-    const centre = new Vector3(x / n, y / n, z / n);
-    let radius = 0;
-    for (const item of this.babylonBaseItems) {
-      if (item.getBaseId() !== baseId) {
-        continue;
-      }
-      const p = item.getContainer().position;
-      radius = Math.max(radius, Math.hypot(p.x - centre.x, p.z - centre.z));
-    }
-    return {centre, radius};
+    const positions = items.map(item => item.getContainer().position);
+    const centre = new Vector3(
+      median(positions.map(p => p.x)),
+      median(positions.map(p => p.y)),
+      median(positions.map(p => p.z)),
+    );
+    const distances = positions.map(p => Math.hypot(p.x - centre.x, p.z - centre.z));
+    return {centre, radius: percentile(distances, 0.8)};
   }
 
   public findBabylonBaseItemAtPosition(worldPos: Vector3): BabylonBaseItemImpl | null {
@@ -2175,3 +2191,16 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 }
 
+/** Nearest-rank percentile of an unsorted list; 0 for an empty one. */
+function percentile(values: number[], p: number): number {
+  if (!values.length) {
+    return 0;
+  }
+  const sorted = [...values].sort((a, b) => a - b);
+  const index = Math.round(p * (sorted.length - 1));
+  return sorted[Math.max(0, Math.min(sorted.length - 1, index))];
+}
+
+function median(values: number[]): number {
+  return percentile(values, 0.5);
+}

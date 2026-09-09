@@ -44,6 +44,16 @@ export interface RenderTelemetrySceneStats {
   /** Size of the ShadowGenerator's render list — a second per-frame walk over the same meshes. */
   shadowCasters: number;
   /**
+   * Edge length of the shadow map, and which half of the sizing experiment this session is in.
+   * See ShadowQuality. Both on the line so the arms can be split apart with a regex over Cloud
+   * Logging alone — the arm also rides in the capabilities catalogue, but that one only reaches
+   * the tracking database, and every number this experiment is about lives here.
+   */
+  shadowMapSize: number;
+  shadowArm: string;
+  /** Which half of the caster arm. See ShadowCasters — "units" means the scenery is off the list. */
+  casterArm: string;
+  /**
    * The biggest mesh-name groups, "name:count" newest-first, e.g. "Rock:12000,Palm:8000".
    * Names are normalised (ids, indices and the "#inst" suffix stripped) so one model's thousands
    * of placements collapse into one bucket and the line names the actual owner of the array.
@@ -223,6 +233,7 @@ export class RenderTelemetry {
       `tickApplyP50=${apply.p50.toFixed(1)} tickApplyMax=${apply.max.toFixed(1)} ` +
       `meshes=${stats.meshes} activeMeshes=${stats.activeMeshes} activeIndices=${stats.activeIndices} materials=${stats.materials} ` +
       `disabledMeshes=${stats.disabledMeshes} instanced=${stats.instancedMeshes} shadowCasters=${stats.shadowCasters} ` +
+      `shadowMap=${stats.shadowMapSize} shadowArm=${stats.shadowArm} casterArm=${stats.casterArm} ` +
       `parked=${stats.parkedMeshes} parkingFilter=${stats.parkingFilter} ` +
       `meshTop="${this.clean(stats.meshTop)}" ` +
       `backbuffer=${stats.renderWidth}x${stats.renderHeight} scaling=${stats.hardwareScaling.toFixed(2)} dpr=${window.devicePixelRatio} ` +
@@ -286,7 +297,8 @@ export class RenderTelemetry {
     } catch (e) {
       return {
         meshes: -1, activeMeshes: -1, activeIndices: -1, materials: -1,
-        disabledMeshes: -1, instancedMeshes: -1, shadowCasters: -1, meshTop: "unknown",
+        disabledMeshes: -1, instancedMeshes: -1, shadowCasters: -1,
+        shadowMapSize: -1, shadowArm: "unknown", casterArm: "unknown", meshTop: "unknown",
         parkedMeshes: -1, parkingFilter: false,
         renderWidth: -1, renderHeight: -1, hardwareScaling: -1, gpu: null
       };

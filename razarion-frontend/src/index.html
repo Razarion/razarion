@@ -66,35 +66,34 @@
       w.RAZ_startupTerminated = null;
 
       /*
-       * Three loading screens, a third of the players each. Without the split they would be
-       * compared across different days with different traffic, and the last time that was done
-       * the step in the numbers turned out to be a campaign change rather than the deploy.
+       * Two loading screens, half the players each. Without the split they would be compared
+       * across different days with different traffic, and the last time that was done the step in
+       * the numbers turned out to be a campaign change rather than the deploy.
        *
-       * plain   the card that was here before, and the control: it is what the historical
-       *         numbers were measured on, and it still lands on them.
-       * grid    the world being built, drawn on a canvas. The bet is that showing the player
-       *         the view he is about to get is what makes waiting bearable.
-       * console the boot log. The opposite bet: honesty about the machine rather than a
-       *         preview of the game.
+       * plain  the card that was here before, and the control: it is what the historical numbers
+       *        were measured on, and it still lands on them.
+       * grid   the world being built, drawn on a canvas. The bet is that showing the player the
+       *        view he is about to get is what makes waiting bearable.
        *
-       * The third arm exists because of what the first three days measured. Inside grid, a gap
-       * of more than a second between frames goes with a 93% abort rate against 51% under
-       * 200 ms - a still frame inside a moving picture reads as a crash. A console has no such
-       * failure mode: a pause between two lines is what a boot log does. And its first lines
-       * are in the document, so they are on screen before any script runs, which is the one
-       * thing neither of the others can do against a 3.0 s median first paint.
+       * There was a third for a day: a boot log, on the argument that a pause between two lines
+       * is what a boot log does, where a still frame inside a moving picture reads as a crash.
+       * Measured over the same hours as the other two, against the same audience: console 34.6%
+       * reaching the game against plain 54.9% and grid 49.3%, n = 162/142/140, z = 3.6 against
+       * plain. Checked on a phone three times before removing it - it was not broken, it was
+       * worse.
        *
-       * It costs time to know: three arms need half again as many sessions as two for the same
-       * confidence, and at ~60 armed sessions a day the pair was already weeks away from an
-       * answer. Dropping grid now to keep it at two would be deciding it on p = 0.12.
+       * The reason is the thing it was built for. A console does not hide a pause, it timestamps
+       * one: "starting engine 63%" sits there and the seconds can be counted off it. A sweeping
+       * bar and a building world are ambiguous about how long is left, and ambiguity turns out to
+       * be worth more than honesty here. The argument for it was exactly backwards.
        *
-       * ?boot=grid|plain|console forces one, for looking at it on purpose. It sticks to the
-       * browser afterwards - not just the tab, which died with every window and sent the next
-       * test back to the coin flip. A flip that lands on plain twice running is indistinguishable
-       * from a broken animation, and it was taken for one four times before this was written.
+       * ?boot=grid|plain forces one, for looking at it on purpose. It sticks to the browser
+       * afterwards - not just the tab, which died with every window and sent the next test back
+       * to the coin flip. A flip that lands on plain twice running is indistinguishable from a
+       * broken animation, and it was taken for one four times before this was written.
        * ?boot=off forgets it again. Nobody who does not pass the parameter is ever pinned.
        */
-      var VARIANTS = ['plain', 'grid', 'console'];
+      var VARIANTS = ['plain', 'grid'];
       var forced = new URLSearchParams(location.search).get('boot');
       var remembered = null;
       try {
@@ -107,6 +106,44 @@
       } catch (ignored) {
         // A browser that refuses storage still gets a variant, just not a sticky one.
       }
+      /*
+       * A name for this browser that outlives the session, so that "did anybody come back?" has
+       * an answer.
+       *
+       * Today it does not. An unregistered player's userId is handed out by UserService from a
+       * ConcurrentHashMap keyed on the http session, so it dies with the session and with every
+       * restart of the pod - and this deploys several times a day. Measured over thirty days: 385
+       * players built a base, 381 of them appear on exactly one calendar day. That number is not
+       * a fact about the game, it is the shape of an identity that cannot survive until tomorrow.
+       *
+       * Deliberately NOT the userId. This changes nothing about who the player is: it does not
+       * restore a base, it does not log anybody in, the server does not read it. It exists so the
+       * tracking can tell two visits by the same browser apart from two visits by two browsers,
+       * and nothing else.
+       *
+       * Note what it is, though: a durable identifier in the visitor's storage, which is the one
+       * thing the click-id handling here has always avoided - rdtCid, twclid and fbc are held in
+       * memory on purpose. This is first-party, opaque and random, and it is never sent anywhere
+       * but to this server. It is still a persistent identifier, and it belongs in the privacy
+       * policy beside the others.
+       *
+       * Carried in the capabilities catalogue for the same reason the boot arm is: that line is
+       * the only thing every session sends before anything else, including the sessions that end
+       * during the bundle. A browser that refuses storage simply has no name and stays
+       * uncountable, which is the honest failure.
+       */
+      try {
+        var visitor = localStorage.getItem('razVisitor');
+        if (!visitor) {
+          visitor = 'V' + Date.now().toString(36).toUpperCase()
+            + Math.random().toString(36).slice(2, 10).toUpperCase();
+          localStorage.setItem('razVisitor', visitor);
+        }
+        w.RAZ_visitorId = visitor;
+      } catch (ignored) {
+        // No storage, no name. The session still reports everything else.
+      }
+
       var chosen = VARIANTS.indexOf(forced) >= 0 ? forced : remembered;
       w.RAZ_bootVariant = VARIANTS.indexOf(chosen) >= 0
         ? chosen
@@ -120,6 +157,66 @@
           + (chosen ? ' (erzwungen)' : ' (Zufall)'));
       } catch (ignored) {
       }
+
+      /*
+       * Second arm, same coin: how big the shadow map is. See ShadowQuality in the renderer for
+       * what the two halves do and why 4096 on a 640-pixel-wide phone is 61 shadow texels per
+       * visible pixel.
+       *
+       * Decided here rather than in the renderer, for the reason the boot arm is decided here: it
+       * has to reach the capabilities catalogue, which is the only thing a session sends before
+       * anything else. That is what lets the question be "did the faster arm build more bases",
+       * not merely "was the faster arm faster" - the second one the telemetry answers on its own.
+       *
+       * Sticky per browser, like the other two. A player who gets a different shadow map on every
+       * reload is a player whose two visits cannot be compared, and comparing visits is the whole
+       * point of razVisitor above.
+       *
+       * ?shadow=hi|lo forces one, ?shadow=off forgets it. "hi" is the behaviour that ships today.
+       */
+      var SHADOW_ARMS = ['hi', 'lo'];
+      var forcedShadow = new URLSearchParams(location.search).get('shadow');
+      var rememberedShadow = null;
+      try {
+        if (forcedShadow === 'off') {
+          localStorage.removeItem('razShadow');
+        } else if (SHADOW_ARMS.indexOf(forcedShadow) >= 0) {
+          localStorage.setItem('razShadow', forcedShadow);
+        }
+        rememberedShadow = localStorage.getItem('razShadow');
+      } catch (ignored) {
+      }
+      var chosenShadow = SHADOW_ARMS.indexOf(forcedShadow) >= 0 ? forcedShadow : rememberedShadow;
+      w.RAZ_shadowArm = SHADOW_ARMS.indexOf(chosenShadow) >= 0
+        ? chosenShadow
+        : SHADOW_ARMS[Math.floor(Math.random() * SHADOW_ARMS.length)];
+
+      /*
+       * Third arm, and a separate coin from the one above on purpose: whether the scenery casts
+       * shadows at all. See ShadowCasters in the renderer - the shadow pass draws the whole scene
+       * a second time, and PROD says the vegetation is almost all of it.
+       *
+       * Two independent flips rather than one four-way choice. Each effect is then read at the
+       * full sample size, averaged over the other, instead of cutting thin traffic into quarters.
+       *
+       * ?casters=all|units forces one, ?casters=off forgets it. "all" is what ships today.
+       */
+      var CASTER_ARMS = ['all', 'units'];
+      var forcedCasters = new URLSearchParams(location.search).get('casters');
+      var rememberedCasters = null;
+      try {
+        if (forcedCasters === 'off') {
+          localStorage.removeItem('razCasters');
+        } else if (CASTER_ARMS.indexOf(forcedCasters) >= 0) {
+          localStorage.setItem('razCasters', forcedCasters);
+        }
+        rememberedCasters = localStorage.getItem('razCasters');
+      } catch (ignored) {
+      }
+      var chosenCasters = CASTER_ARMS.indexOf(forcedCasters) >= 0 ? forcedCasters : rememberedCasters;
+      w.RAZ_casterArm = CASTER_ARMS.indexOf(chosenCasters) >= 0
+        ? chosenCasters
+        : CASTER_ARMS[Math.floor(Math.random() * CASTER_ARMS.length)];
 
       var params = new URLSearchParams(location.search);
 
@@ -208,6 +305,15 @@
         // reach is the abort beacon, and that one is joined to this by the game session uuid
         // anyway.
         add('boot', w.RAZ_bootVariant);
+        // Which shadow map this session gets, for the same reason and joined the same way. The
+        // renderer repeats it on every telemetry line; this copy is the one that reaches the
+        // sessions which never get as far as a rendered frame.
+        add('shadow', w.RAZ_shadowArm);
+        add('casters', w.RAZ_casterArm);
+        // The browser's own name, where there is one. See where it is made, above.
+        if (w.RAZ_visitorId) {
+          add('vid', w.RAZ_visitorId);
+        }
         try {
           add('coi', self.crossOriginIsolated === true);
           add('sab', typeof SharedArrayBuffer !== 'undefined');
@@ -319,19 +425,6 @@
 -->
 <div id="raz-boot">
   <canvas id="raz-boot-grid" aria-hidden="true"></canvas>
-  <!--
-    The boot log arm. Hidden until the script below finds this session in it, so the other two
-    arms never see it - but written out here rather than built in JavaScript, because that is the
-    whole point of it: these three lines are on screen when the document is, and the median first
-    paint is 3.0 seconds with 55% of visitors gone inside three. Everything after them is appended
-    against a real event; nothing here runs on a timer.
-  -->
-  <div id="raz-boot-console" hidden>
-    <div class="raz-c-head">razarion &mdash; booting</div>
-    <div class="raz-c-line"><span class="raz-c-t">[ 0.00]</span> page loaded<span class="raz-c-ok"> ok</span></div>
-    <div id="raz-boot-console-lines"></div>
-    <div id="raz-boot-console-cursor" aria-hidden="true"></div>
-  </div>
   <div id="raz-boot-card">
     <div id="raz-boot-title">Razarion &ndash; RTS meets MMO: One shared world that never stops</div>
     <div id="raz-boot-box">
@@ -477,75 +570,6 @@
     height: 100%;
     display: block;
     pointer-events: none;
-  }
-
-  /* The boot log. Monospace and left aligned, sized so that a 360 px portrait phone - the shape
-     97% of the paid traffic arrives in - holds about forty characters without wrapping. */
-  #raz-boot-console {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    padding: 16px 12px;
-    overflow: hidden;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace;
-    font-size: 13px;
-    line-height: 1.55;
-    color: #9fb4c7;
-  }
-  #raz-boot-console .raz-c-head {
-    color: #63e8b0;
-    margin-bottom: .8em;
-  }
-  /* pre keeps the timestamp column aligned without a table. */
-  #raz-boot-console .raz-c-line { white-space: pre; }
-  #raz-boot-console .raz-c-t { color: #5a7183; }
-  #raz-boot-console .raz-c-ok { color: #63e8b0; }
-  #raz-boot-console .raz-c-val { color: #e6eef5; }
-
-  /*
-    The two things that keep moving while the main thread is busy.
-
-    requestAnimationFrame does not run at all while 2.7 MB of JavaScript is being compiled - the
-    largest gap measured in the grid arm was 6,345 ms - so anything driven from script stands
-    still exactly when standing still is most alarming, and a still picture inside a moving one
-    reads as a crash. These two are CSS animations on opacity and transform only, which the
-    compositor runs on its own thread: they keep going straight through the compile that freezes
-    everything else.
-  */
-  #raz-boot-console-cursor {
-    margin-top: .25em;
-    width: .62em;
-    height: 1.05em;
-    background: #63e8b0;
-    animation: raz-c-blink 1.05s steps(1, end) infinite;
-  }
-  @keyframes raz-c-blink {
-    0%, 45% { opacity: 1; }
-    45.01%, 100% { opacity: 0; }
-  }
-  #raz-boot-console::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 2px;
-    width: 32%;
-    background: linear-gradient(90deg, rgba(99, 232, 176, 0), rgba(99, 232, 176, .85), rgba(99, 232, 176, 0));
-    animation: raz-c-sweep 2.4s ease-in-out infinite;
-  }
-  @keyframes raz-c-sweep {
-    0% { transform: translateX(-40%); }
-    50% { transform: translateX(200%); }
-    100% { transform: translateX(-40%); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    #raz-boot-console-cursor,
-    #raz-boot-console::after {
-      animation: none;
-    }
   }
 
   /* What the renderer hands over with, instead of the splash being cut away. */
@@ -1141,196 +1165,6 @@
     };
 
     window.RAZ_bootFadeOut = function () {
-      var splash = document.getElementById('raz-boot');
-      if (!splash) {
-        return;
-      }
-      splash.classList.add('raz-boot-leaving');
-      setTimeout(function () {
-        if (splash.parentNode) {
-          splash.parentNode.removeChild(splash);
-        }
-      }, 500);
-    };
-  })();
-
-  /*
-   * The boot log, for the third of the players who get it.
-   *
-   * Everything here is bound to something that actually happened: bytes that have landed, a
-   * percentage the engine reported, the terrain arriving. Nothing runs on a timer, because a
-   * sequence paced by a clock is a fake progress bar with extra steps - and the same file already
-   * says why that is the one thing a progress display may not be.
-   *
-   * What moves on its own is in the stylesheet above, not here. Both animations are CSS on
-   * opacity and transform, so they survive the compile that stops this script.
-   */
-  (function () {
-    var out = document.getElementById('raz-boot-console');
-    if (!out) {
-      return;
-    }
-    if (window.RAZ_bootVariant !== 'console') {
-      if (out.parentNode) {
-        out.parentNode.removeChild(out);
-      }
-      return;
-    }
-    out.hidden = false;
-    // The card carries its own title, bar and tips. This arm replaces all three.
-    var card = document.getElementById('raz-boot-card');
-    if (card) {
-      card.style.display = 'none';
-    }
-
-    var lines = document.getElementById('raz-boot-console-lines');
-    var timing = typeof performance !== 'undefined' && !!performance.now;
-    var start = timing ? performance.now() : Date.now();
-    // Same figure the build-up uses: the eager bundle plus the game chunk, over the wire.
-    var EXPECTED_BYTES = 2750 * 1024;
-    var known = {};
-
-    function seconds() {
-      var s = ((timing ? performance.now() : Date.now()) - start) / 1000;
-      var text = s.toFixed(2);
-      // Right aligned to five characters, so the column holds until 99 seconds.
-      while (text.length < 5) {
-        text = ' ' + text;
-      }
-      return text;
-    }
-
-    function span(parent, cls, text) {
-      var el = document.createElement('span');
-      if (cls) {
-        el.className = cls;
-      }
-      el.textContent = text || '';
-      parent.appendChild(el);
-      return el;
-    }
-
-    /**
-     * Writes a line, or rewrites the one already carrying this key.
-     *
-     * The spans are built and kept rather than reached for by position afterwards. An earlier
-     * version set innerHTML and then wrote through childNodes[2..4], which is correct exactly
-     * until somebody adds a space between two tags.
-     */
-    function say(key, text, value, done) {
-      var row = known[key];
-      if (!row) {
-        var el = document.createElement('div');
-        el.className = 'raz-c-line';
-        row = {
-          // The timestamp is the moment the step began and does not move afterwards.
-          time: span(el, 'raz-c-t', '[' + seconds() + ']'),
-          label: span(el, null, ' '),
-          value: span(el, 'raz-c-val', ''),
-          ok: span(el, 'raz-c-ok', '')
-        };
-        known[key] = row;
-        if (lines) {
-          lines.appendChild(el);
-        }
-      }
-      /*
-       * The label is padded so the two live lines - bytes and percent - keep their numbers in
-       * one column. A line that never carries a number has nothing to line up with, so its
-       * padding comes off again rather than sitting in front of the "ok".
-       */
-      row.label.textContent = ' ' + (value ? text : text.replace(/\s+$/, ''));
-      row.value.textContent = value || '';
-      row.ok.textContent = done ? ' ok' : '';
-    }
-
-    function megabytes(n) {
-      return (n / 1048576).toFixed(1);
-    }
-
-    function loadedBytes() {
-      var total = 0;
-      var entries;
-      try {
-        entries = performance.getEntriesByType('resource');
-      } catch (ignored) {
-        return -1;
-      }
-      for (var i = 0; i < entries.length; i++) {
-        if (entries[i].name.indexOf('.js') < 0) {
-          continue;
-        }
-        total += entries[i].transferSize || entries[i].encodedBodySize || 0;
-      }
-      return total;
-    }
-
-    /*
-     * Four times a second, on a timer rather than a frame callback: this has nothing to
-     * synchronise with the screen, and the bundle it is reporting on is what needs the thread.
-     */
-    /*
-     * ?bootDemo paces the byte count by a clock instead of by the download, for the same reason
-     * the build-up has it: on a developer machine the whole bundle is here in half a second and
-     * there is nothing to look at. Never reached without the parameter, and it is the only place
-     * in here where a number does not come from a measurement.
-     */
-    var demoParam = new URLSearchParams(location.search).get('bootDemo');
-    var demoMillis = demoParam === null ? 0 : (Number(demoParam) || 12) * 1000;
-
-    var clientDone = false;
-    var poll = setInterval(function () {
-      if (clientDone) {
-        return;
-      }
-      var bytes;
-      if (demoMillis) {
-        var elapsed = (timing ? performance.now() : Date.now()) - start;
-        bytes = EXPECTED_BYTES * Math.min(1, elapsed / demoMillis);
-      } else {
-        bytes = loadedBytes();
-      }
-      if (bytes < 0) {
-        return;
-      }
-      say('client', 'loading client  ',
-        megabytes(Math.min(bytes, EXPECTED_BYTES)) + '/' + megabytes(EXPECTED_BYTES) + ' MB');
-    }, 250);
-
-    function stopPolling() {
-      if (!clientDone) {
-        clientDone = true;
-        clearInterval(poll);
-        say('client', 'loading client  ', megabytes(EXPECTED_BYTES) + ' MB', true);
-      }
-    }
-
-    /*
-     * The engine's own boot, which the page cannot see: it can weigh the JavaScript arriving and
-     * nothing after. The first call is also the proof that Angular is alive, so it closes the
-     * line above - by then the bundle is there whatever the byte count says.
-     */
-    window.RAZ_bootProgress = function (fraction) {
-      var percent = Math.round(Math.max(0, Math.min(1, fraction)) * 100);
-      stopPolling();
-      if (percent >= 100) {
-        say('engine', 'starting engine ', '100%', true);
-        say('terrain', 'building terrain', '');
-      } else {
-        say('engine', 'starting engine ', percent + '%');
-      }
-    };
-
-    window.RAZ_bootTerrainReady = function () {
-      stopPolling();
-      say('engine', 'starting engine ', '100%', true);
-      say('terrain', 'building terrain', '', true);
-      say('world', 'entering world  ', '', true);
-      window.RAZ_bootFadeOut();
-    };
-
-    window.RAZ_bootFadeOut = function () {
-      clearInterval(poll);
       var splash = document.getElementById('raz-boot');
       if (!splash) {
         return;

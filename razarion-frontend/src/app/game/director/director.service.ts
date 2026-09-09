@@ -100,6 +100,8 @@ export class DirectorService {
   private static readonly FOLLOW_SMOOTHING_MS = 600;
   /** Never frame a base closer than this, however small it is - one builder must not fill the screen. */
   private static readonly FOLLOW_MIN_RADIUS = 60;
+  /** Nor further away than this: beyond it a base is a smudge and the clip is of nothing. */
+  private static readonly FOLLOW_MAX_RADIUS = 450;
   /** Smoothed state of the follow camera; null until the first frame of a follow key. */
   private followTarget: Vector3 | null = null;
   private followRadius = 200;
@@ -459,9 +461,11 @@ export class DirectorService {
       return null;
     }
     const wantedRadius = key.autoRadius && extent
-      // Twice the spread plus a margin: the far edge sits inside the frame rather than on it.
-      ? Math.max(DirectorService.FOLLOW_MIN_RADIUS, extent.radius * 2.5 + 50)
-      : (key.radius ?? 200);
+      // Twice the spread plus a margin puts the far edge inside the frame rather than on it. The
+      // ceiling is not politeness: past a few hundred units a base is a smudge on a map, and the
+      // one thing a clip cannot survive is not being able to tell what it is of.
+      ? clamp(extent.radius * 2.5 + 50, DirectorService.FOLLOW_MIN_RADIUS, DirectorService.FOLLOW_MAX_RADIUS)
+      : clamp(key.radius ?? 200, DirectorService.FOLLOW_MIN_RADIUS, DirectorService.FOLLOW_MAX_RADIUS);
 
     if (dtMs == null || !this.followTarget) {
       this.followTarget = wanted.clone();
@@ -577,6 +581,10 @@ function resolvePose(k: DirectorCameraKey, follow?: FollowResolver): CameraPose 
 }
 
 /** Camera placed on a sphere around `target`: azimuth, elevation, distance. */
+function clamp(value: number, low: number, high: number): number {
+  return Math.max(low, Math.min(high, value));
+}
+
 function orbitPose(target: Vector3, alpha: number, beta: number, radius: number): CameraPose {
   const position = new Vector3(
     target.x + radius * Math.cos(beta) * Math.sin(alpha),

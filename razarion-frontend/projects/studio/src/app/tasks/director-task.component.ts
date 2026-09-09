@@ -89,12 +89,11 @@ import {
                     <td class="triple">
                       @if (k.mode === 'follow') {
                         <select [ngModel]="k.followBaseId ?? null" (ngModelChange)="setFollowBase(k, $event)"
-                                title="Whose units to keep in frame">
+                                title="Whose units to keep in frame"
+                                style="min-width:230px;">
                           <option [ngValue]="null">— pick a base —</option>
-                          @for (b of bases(); track b.baseId) {
-                            <option [ngValue]="b.baseId">
-                              {{ b.name || '#' + b.baseId }} ({{ b.character }}, {{ b.itemCount ?? 0 }})
-                            </option>
+                          @for (b of followableBases(); track b.baseId) {
+                            <option [ngValue]="b.baseId">{{ baseLabel(b) }}</option>
                           }
                         </select>
                         <!-- An empty picker and a world with no bases in it look the same, so the
@@ -481,6 +480,29 @@ export class DirectorTaskComponent implements OnInit, OnDestroy {
       k.alpha ??= 0;
       k.beta ??= 0.7;
     }
+  }
+
+  /**
+   * The bases worth pointing a camera at, biggest first.
+   *
+   * Server order is database order, which on production means thirty entries in the sequence they
+   * were created, most of them nameless and several of them empty. Nothing about that list helps
+   * anyone choose. Size is what makes a base worth filming, so size decides the order, and bases
+   * with nothing in them are left out entirely - there is no shot there.
+   */
+  followableBases(): DirectorBaseInfo[] {
+    return this.bases()
+      .filter(b => (b.itemCount ?? 0) > 0)
+      .sort((a, b) => (b.itemCount ?? 0) - (a.itemCount ?? 0));
+  }
+
+  /** Name if it has one, then what it is and how big - the three things you choose on. */
+  baseLabel(b: DirectorBaseInfo): string {
+    const who = b.character === 'BOT' ? 'Bot' : 'Player';
+    const where = b.centreX != null && b.centreY != null
+      ? ` at ${Math.round(b.centreX)}/${Math.round(b.centreY)}`
+      : '';
+    return `${b.itemCount} units · ${b.name || '#' + b.baseId} (${who})${where}`;
   }
 
   /**
