@@ -80,6 +80,20 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private boolean crowded;
     private double desiredMoveAngle;
     private final StuckDetector stuckDetector = new StuckDetector(STUCK_TICK_THRESHOLD, MAX_REPLANS);
+    /**
+     * Where the unit stood at its last stuck replan, purely so the diagnostic can tell two
+     * situations apart that look identical in the log.
+     * <p>
+     * A replan that returns the path the unit is already stuck on is only worth reporting when the
+     * unit actually moved in between. A* is deterministic, so replanning from an unchanged position
+     * necessarily yields the identical path — that says nothing about the pathing and everything
+     * about the unit not having moved. The first day of these logs was 166 such lines against 23
+     * informative ones.
+     * <p>
+     * Not serialized and MASTER-only, like {@link #stuckDetector}: replanning never happens on a
+     * client.
+     */
+    private DecimalPosition lastReplanPosition;
     /** Closest distance reached to the final way point so far, NaN while not on it. */
     private double bestApproachDistance = Double.NaN;
     /** Consecutive ticks on the final way point that failed to beat bestApproachDistance. */
@@ -232,11 +246,27 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         }
         // Cannot get there. Stopping here is the honest outcome: the unit ends up next to whatever
         // it could not reach instead of circling it until the player intervenes.
-        stop();
-        // After stop(), which clears it - this is the one case that must survive into the next tick
-        // so the owning ability can tell a give-up from an ordinary arrival.
-        destinationUnreachable = true;
+        stopUnreachable();
         return true;
+    }
+
+    /**
+     * Stop because the destination could not be reached, as opposed to stopping on arrival.
+     *
+     * <p>This exists as its own method because the difference is invisible at the call site and was
+     * missed exactly once. {@link #stop()} clears {@link #destinationUnreachable} through
+     * {@link #resetApproachTracking()}, so the flag has to be raised *after* it — the approach
+     * watchdog below did that with a comment, and {@code PathingService.replanStuckItems}, added
+     * later, called plain {@code stop()} instead.
+     *
+     * <p>What that cost: the give-up became invisible to the owning ability, which saw an ordinary
+     * "no destination" and re-issued the job. PROD logs showed the same Viper giving up 13 times at
+     * intervals of exactly 6.0 s — 15 ticks of stuck detection plus three replans of 15 ticks each,
+     * the full cycle, restarting the instant it ended. Nobody was clicking; the loop was closed.
+     */
+    public void stopUnreachable() {
+        stop();
+        destinationUnreachable = true;
     }
 
     /** True when the last path was abandoned as unreachable rather than completed. */
@@ -271,6 +301,7 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     public void setReplanPath(SimplePath path) {
         this.path = instancePath.get();
         this.path.init(path);
+        lastReplanPosition = getPosition();
         stuckDetector.onReplan();
         // A replan is a new route to the same goal - the old approach history says nothing about
         // whether this one can arrive.
@@ -290,6 +321,17 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
 
     public boolean isReplanBudgetExhausted() {
         return stuckDetector.replanBudgetExhausted();
+    }
+
+    /** Whether the unit has moved since its last stuck replan. See {@link #lastReplanPosition}. */
+    public boolean movedSinceLastReplan() {
+        return lastReplanPosition == null || !lastReplanPosition.equalsDelta(getPosition());
+    }
+
+    /** How many replans this movement has already consumed — on the give-up line, so a reader can
+     * see whether the unit burned its budget or gave up on the first try. */
+    public int getReplanCount() {
+        return stuckDetector.getReplanCount();
     }
 
     /** The final destination of the current path (its last way position), or null if not moving. */

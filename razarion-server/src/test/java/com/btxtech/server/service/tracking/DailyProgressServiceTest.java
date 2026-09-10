@@ -12,6 +12,7 @@ import com.btxtech.shared.dto.StartupTerminatedJson;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -43,11 +44,14 @@ class DailyProgressServiceTest {
     private final List<StartupTerminatedJson> terminated = new ArrayList<>();
     private final List<UserActivity> userActivities = new ArrayList<>();
     private DailyProgressService dailyProgressService;
+    /** Holds the query the service actually sent, for the projection tripwire at the bottom. */
+    private ArgumentCaptor<Query> pageRequestQuery;
 
     @BeforeEach
     void setUp() {
         MongoTemplate mongoTemplate = Mockito.mock(MongoTemplate.class);
-        Mockito.when(mongoTemplate.find(ArgumentMatchers.any(Query.class),
+        pageRequestQuery = ArgumentCaptor.forClass(Query.class);
+        Mockito.when(mongoTemplate.find(pageRequestQuery.capture(),
                         ArgumentMatchers.eq(PageRequest.class), ArgumentMatchers.anyString()))
                 .thenReturn(pageRequests);
         // The activity collectors rely on the query to say which type they want, so the fake has to
@@ -202,5 +206,27 @@ class DailyProgressServiceTest {
         userActivity.setDetail(detail);
         userActivity.setServerTime(serverTime);
         return userActivity;
+    }
+
+    /**
+     * The tripwire for the projection on the page-request query.
+     * <p>
+     * With a platform or device filter the query reads the whole collection - 142'544 documents
+     * and about 141 MB when this was written - so it asks for the nine fields attribution needs
+     * and nothing else. A field dropped from that list does not throw: it arrives as null and the
+     * visitor is quietly attributed to the wrong platform. Nothing else in this file would catch
+     * that, because every fixture below sets exactly those fields anyway.
+     */
+    @Test
+    void theQueryAsksForEveryFieldAttributionReads() {
+        pageRequests.add(pageRequest(PageRequestType.HOME, "session", today()));
+        dailyProgressService.loadDailyProgress(1, 2, 5, TrackingPlatform.META, null);
+
+        Document fields = pageRequestQuery.getValue().getFieldsObject();
+        for (String field : List.of("httpSessionId", "serverTime", "pageRequestType",
+                "rdtCid", "twclid", "fbclid", "utmSource", "referer", "userAgent")) {
+            assertEquals(1, fields.get(field), "projection is missing " + field
+                    + " - signal(PageRequest) reads it, so it would silently arrive as null");
+        }
     }
 }

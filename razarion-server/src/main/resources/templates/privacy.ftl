@@ -94,15 +94,14 @@
     <h2>4. Cookies and storage on your device</h2>
     <p>One session cookie, set by the web server so that a series of requests is recognised as one
         session. It expires when the browser session ends.</p>
-    <p>Four values are kept in your browser's local storage, which &mdash; unlike the session
+    <p>Two values are kept in your browser's local storage, which &mdash; unlike the session
         cookie &mdash; survives closing the browser:</p>
     <ul>
         <li><code>razVisitor</code> &mdash; a random, opaque name for this browser. It exists so
             that two visits from one browser can be told apart from two visits by two people. It is
             not your account, it restores nothing, and it is sent to this server only.</li>
-        <li><code>razBoot</code>, <code>razShadow</code> and <code>razCasters</code> &mdash; which version of the loading
-            screen and of the graphics settings this browser was given, so that it keeps the same
-            one on the next visit instead of changing every time.</li>
+        <li><code>razBoot</code> &mdash; which version of the loading screen this browser was
+            given, so that it keeps the same one on the next visit instead of changing every time.</li>
     </ul>
     <p>Clearing your browser's site data for razarion.com removes all of them, and the site works
         exactly as before afterwards.</p>

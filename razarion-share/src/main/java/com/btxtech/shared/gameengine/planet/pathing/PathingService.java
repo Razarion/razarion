@@ -33,6 +33,10 @@ public class PathingService {
     /** How far around a given-up unit the diagnostic looks for the building it is wedged against.
      * Generous next to the radii that matter (a Factory is 2.55) and still a bounded cell query. */
     private static final double DIAGNOSTIC_BUILDING_SCAN = 20;
+    /** Within this, another unit is close enough to be part of the jam rather than merely nearby. */
+    private static final double DIAGNOSTIC_CROWD_RANGE = 5;
+    /** Two destinations closer than this came from the same click. */
+    private static final double DIAGNOSTIC_SAME_DESTINATION = 0.5;
     private final Logger logger = Logger.getLogger(PathingService.class.getName());
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private final TerrainService terrainService;
@@ -158,43 +162,84 @@ public class PathingService {
             if (position != null && destination != null) {
                 text.append(" remaining=").append(round(position.getDistance(destination)));
             }
-            appendNearestBuilding(text, position, syncBaseItem);
+            text.append(" replans=").append(movable.getReplanCount());
+            appendNeighbourhood(text, position, syncBaseItem, destination);
         } catch (Throwable t) {
             text.append(" (context unavailable: ").append(t.getMessage()).append(')');
         }
         return text.toString();
     }
 
-    private void appendNearestBuilding(StringBuilder text, DecimalPosition position, SyncBaseItem self) {
+    /**
+     * What is standing around the unit: the nearest building, the nearest other unit, how crowded
+     * it is, and how many neighbours were sent to the same place.
+     *
+     * <p>The first version of this reported only the nearest building, because a building was what
+     * the hypothesis was about — and the first day of logs duly reported a building every time.
+     * That was the instrument agreeing with its author: 80 % of the events turned out to be three
+     * group-move destinations in one base, where the thing in the way is another unit and the
+     * building is merely the nearest object that cannot move. {@code sameDest} is the field that
+     * separates those two stories without anyone having to guess.
+     */
+    private void appendNeighbourhood(StringBuilder text, DecimalPosition position, SyncBaseItem self,
+                                     DecimalPosition destination) {
         if (position == null) {
             return;
         }
-        SyncBaseItem[] nearest = new SyncBaseItem[1];
-        double[] nearestGap = new double[]{Double.MAX_VALUE};
+        SyncBaseItem[] nearestBuilding = new SyncBaseItem[1];
+        SyncBaseItem[] nearestUnit = new SyncBaseItem[1];
+        double[] buildingGap = new double[]{Double.MAX_VALUE};
+        double[] unitGap = new double[]{Double.MAX_VALUE};
+        int[] crowd = new int[1];
+        int[] sameDest = new int[1];
         // Spatial query, not a full item walk: this runs inside the server tick, and a base where
         // twenty units give up in the same second would otherwise pay twenty scans over every item
         // on the planet for the sake of a log line.
         syncItemContainerService.iterateCellQuadBaseItem(position, DIAGNOSTIC_BUILDING_SCAN, other -> {
             AbstractSyncPhysical physical = other.getAbstractSyncPhysical();
-            if (other.equals(self) || physical.canMove() || !physical.hasPosition()) {
+            if (other.equals(self) || !physical.hasPosition() || physical.getPosition() == null) {
                 return;
             }
-            // Gap between the bodies, not between the centres: "0.0" then reads as touching.
+            // Centre to surface: the unit's own radius is not subtracted, so "touching" reads as
+            // the unit's radius (Viper and Harvester 1.0, Builder 1.45), not as zero.
             double gap = physical.getPosition().getDistance(position) - physical.getRadius();
-            if (gap < nearestGap[0]) {
-                nearestGap[0] = gap;
-                nearest[0] = other;
+            if (!physical.canMove()) {
+                if (gap < buildingGap[0]) {
+                    buildingGap[0] = gap;
+                    nearestBuilding[0] = other;
+                }
+                return;
+            }
+            if (gap < unitGap[0]) {
+                unitGap[0] = gap;
+                nearestUnit[0] = other;
+            }
+            if (gap < DIAGNOSTIC_CROWD_RANGE) {
+                crowd[0]++;
+            }
+            if (destination != null) {
+                DecimalPosition otherDestination = ((SyncPhysicalMovable) physical).getFinalDestination();
+                if (otherDestination != null && otherDestination.getDistance(destination) < DIAGNOSTIC_SAME_DESTINATION) {
+                    sameDest[0]++;
+                }
             }
         });
-        if (nearest[0] == null) {
+        appendItem(text, "nearestBuilding", nearestBuilding[0], buildingGap[0]);
+        appendItem(text, "nearestUnit", nearestUnit[0], unitGap[0]);
+        text.append(" crowd").append((int) DIAGNOSTIC_CROWD_RANGE).append('=').append(crowd[0]);
+        text.append(" sameDest=").append(sameDest[0]);
+    }
+
+    private void appendItem(StringBuilder text, String key, SyncBaseItem item, double gap) {
+        if (item == null) {
             return;
         }
-        text.append(" nearestBuilding=");
-        text.append(nearest[0].getBaseItemType() != null ? nearest[0].getBaseItemType().getInternalName() : "?");
-        text.append('#').append(nearest[0].getId());
-        text.append('@').append(round(nearestGap[0]));
-        if (nearest[0].getBase() != null) {
-            text.append(" nearestBuildingBase=").append(nearest[0].getBase().getBaseId());
+        text.append(' ').append(key).append('=');
+        text.append(item.getBaseItemType() != null ? item.getBaseItemType().getInternalName() : "?");
+        text.append('#').append(item.getId());
+        text.append('@').append(round(gap));
+        if (item.getBase() != null) {
+            text.append(':').append(item.getBase().getBaseId());
         }
     }
 
@@ -303,7 +348,11 @@ public class PathingService {
                 // incident goes on one line — where it stood, where it wanted to go, and what was
                 // next to it — because the alternative is reconstructing it from the source again.
                 logger.warning("[PathingStuck] gave up" + describe(syncBaseItem, movable));
-                movable.stop();
+                // stopUnreachable, not stop: plain stop() clears destinationUnreachable, and the
+                // ability that owns this job reads exactly that flag to tell "the movement layer
+                // gave up" from "I arrived and drifted". Without it the ability re-issued the job
+                // in the same tick and the whole cycle ran again, forever, every 6.0 s.
+                movable.stopUnreachable();
                 notifier.accept(syncBaseItem);
                 return;
             }
@@ -319,13 +368,16 @@ public class PathingService {
                         physical.getTerrainType(),
                         destination,
                         0);
-                if (oldWay != null && oldWay.equals(newPath.getWayPositions())) {
-                    // A replan that returns the path the unit is already stuck on cannot free it,
-                    // and the next two will do the same: A* is deterministic, so the only thing
-                    // that can change the answer is the overlay, and the overlay is computed from
-                    // this same position. Worth a line of its own — it is the difference between
-                    // "the route is genuinely blocked" and "the replan is a no-op", which look
-                    // identical from the outside and need opposite fixes.
+                if (oldWay != null && oldWay.equals(newPath.getWayPositions()) && movable.movedSinceLastReplan()) {
+                    // A replan that returns the path the unit is already stuck on cannot free it.
+                    // Worth a line of its own — it is the difference between "the route is genuinely
+                    // blocked" and "the replan is a no-op", which look identical from the outside
+                    // and need opposite fixes.
+                    //
+                    // Only when the unit actually moved in between. A* is deterministic, so
+                    // replanning from an unchanged position necessarily yields the identical path;
+                    // that is arithmetic, not a finding. Without this guard the first day of logs
+                    // was 166 such lines against 23 informative ones, and the noise was mine.
                     logger.warning("[PathingStuck] replan returned the identical path"
                             + describe(syncBaseItem, movable));
                 }
@@ -333,7 +385,9 @@ public class PathingService {
                 notifier.accept(syncBaseItem);
             } catch (Throwable t) {
                 logger.log(Level.WARNING, "Stuck replan failed for item " + syncBaseItem.getId() + ": " + t.getMessage(), t);
-                movable.stop();
+                // Same reason as above: a replan that throws (PathFindingNotFreeException, say) is
+                // a give-up too, and re-issuing the job would only throw again.
+                movable.stopUnreachable();
                 notifier.accept(syncBaseItem);
             }
         });

@@ -20,6 +20,43 @@
         <org.dominokit.version>1.0.2</org.dominokit.version>
     </properties>
 
+    <!--
+        TeaVM. Nothing after 0.15.0 is on Maven Central; the 0.16.0-dev-* builds live only on the
+        project's own host, and the client and worker modules are pinned to 0.16.0-dev-4.
+        docs/architecture/teavm-016-evaluation.md has the measurement behind that choice.
+
+        Note what this is, because it is easy to stop seeing: an unsigned artifact from a
+        third-party host, in the resolution path of a production build. It stays until 0.16.0 is
+        released, and then this block goes.
+
+        Scoped to releases only. A snapshot from here would change under the build without the
+        version changing, and a compiler that changes silently is the one thing this must not be.
+    -->
+    <repositories>
+        <repository>
+            <id>teavm-dev</id>
+            <url>https://teavm.org/maven/repository</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>teavm-dev</id>
+            <url>https://teavm.org/maven/repository</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
     <modules>
         <module>razarion-share</module>
         <module>razarion-test-share</module>

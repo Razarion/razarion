@@ -6,6 +6,7 @@ import {
   AbstractMesh,
   AnimationGroup,
   Color3,
+  DracoCompression,
   InstancedMesh,
   Material,
   Mesh,
@@ -55,9 +56,45 @@ export class BabylonModelService {
   private staticTemplatesParent: TransformNode | null = null;
   private shadowsEnabledForStatics = true;
 
+  /**
+   * The Draco decoder, served by us rather than by Babylon's CDN.
+   *
+   * The models are Draco-compressed, which takes the geometry in the glb from 2.99 MB to 0.66 MB -
+   * after the texture resize, geometry was the largest thing left in the file. Unpacking costs
+   * something, and the obvious worry is that it cancels the saving out. Measured on a Pixel 7 with
+   * this exact decoder and this exact model: 140 ms cold, on the main thread with no worker, which
+   * is the worst case since Babylon spreads the work over workers. Against that, real players fetch
+   * the model at a median of 0.99 MB/s on mobile, so 2.26 MB saved is about 2.3 seconds. Unpacking
+   * would have to take a full second before the trade stopped paying.
+   *
+   * Babylon defaults these urls to cdn.babylonjs.com. That would put a third party on the critical
+   * boot path - an extra dns lookup and tls handshake before any geometry can be decoded, on the
+   * one path where mobile visitors already give up at 6.4 seconds. Same origin instead, which is
+   * also what lets the files sit behind our own cache headers.
+   *
+   * No fallbackUrl: that is the 512 kB pure-JavaScript decoder for browsers without WebAssembly,
+   * and this game is WebAssembly from end to end - a browser that cannot run wasm never reaches
+   * model loading, it gets the unsupported notice at boot. Shipping a fallback that can never run
+   * would be half a megabyte of nothing.
+   *
+   * The paths are relative on purpose, like every other asset under public/renderer. Babylon
+   * resolves them against the current url, so they become /game/renderer/draco/... - which is what
+   * the server actually serves. A leading slash looks tidier and is wrong: /renderer/... answers
+   * 404 in production. Verified against PROD, not assumed.
+   */
+  private static configureDraco(): void {
+    DracoCompression.Configuration = {
+      decoder: {
+        wasmUrl: "renderer/draco/draco_wasm_wrapper_gltf.js",
+        wasmBinaryUrl: "renderer/draco/draco_decoder_gltf.wasm"
+      }
+    };
+  }
+
   constructor(private uiConfigCollectionService: UiConfigCollectionService,
               httpClient: HttpClient,
               zone: NgZone) {
+    BabylonModelService.configureDraco();
     SceneLoader.RegisterPlugin(new GLTFFileLoader());
     this.glbContainer = new GlbContainer(this.babylonMaterialContainer, zone);
     this.babylonMaterialContainer.setHttpClient(httpClient);

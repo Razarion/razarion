@@ -25,7 +25,6 @@ import java.util.Date;
 public abstract class BaseCommand {
     private int id;
     private Date timeStamp;
-    private transient boolean forwardedByConnection = false;
 
     public abstract GameConnectionPacket connectionPackage();
 
@@ -47,14 +46,6 @@ public abstract class BaseCommand {
 
     public void updateTimeStamp() {
         timeStamp = new Date();
-    }
-
-    public boolean isForwardedByConnection() {
-        return forwardedByConnection;
-    }
-
-    public void setForwardedByConnection(boolean forwardedByConnection) {
-        this.forwardedByConnection = forwardedByConnection;
     }
 
     @Override

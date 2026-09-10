@@ -29,6 +29,7 @@ import {
   EngineInstrumentation,
   FreeCamera,
   InputBlock,
+  InternalTexture,
   Matrix,
   Mesh,
   MeshBuilder,
@@ -56,7 +57,8 @@ import {BabylonImpact} from "./babylon-impact";
 import {BabylonPerfOverlay} from "./babylon-perf-overlay";
 import {RenderTelemetry, RenderTelemetrySceneStats} from "./render-telemetry";
 import {ParkedMeshFilter} from "./parked-mesh-filter";
-import {ShadowCasters, ShadowQuality} from "./shadow-quality";
+import {ShadowQuality} from "./shadow-quality";
+import {TextureMemory} from "./texture-memory";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
 import {SelectionFrame} from "./selection-frame";
 import {TouchCameraControl} from "./touch-camera-control";
@@ -132,8 +134,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   public shadowGenerator!: ShadowGenerator;
   /** Edge length the shadow map was built with, reported by the telemetry. See ShadowQuality. */
   private shadowMapSize = ShadowQuality.MAX_SIZE;
-  private shadowArm: 'hi' | 'lo' = 'hi';
-  private casterArm: 'all' | 'units' = 'all';
   public directionalLight!: DirectionalLight
   private camera!: FreeCamera;
   /** Director mode (filming the live world): when active, the render loop hands
@@ -385,25 +385,16 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.directionalLight.specular = new Color3(1, 1, 1);
     this.directionalLight.shadowEnabled = true;
 
-    // 4096 for everybody was the shipped behaviour and is still what arm "hi" gets. See
-    // ShadowQuality: on the median touch device that map is 61x the area of the screen it ends up
-    // on, and the depth pass that fills it is the single biggest identifiable item in a 58 ms
-    // render. Arm "lo" sizes it to the backbuffer instead.
-    this.shadowArm = ShadowQuality.arm();
-    this.shadowMapSize = ShadowQuality.size(
-      this.engine.getRenderWidth(), this.engine.getRenderHeight(), this.shadowArm);
+    // Sized for the screen instead of a hardcoded 4096. See ShadowQuality for the three arms that
+    // ran against this and all came back null: the size buys no frame time, and neither did
+    // shortening the caster list or halving the refresh rate. It stayed for the memory — 4 MB on a
+    // phone against 64 MB — which is the one axis still open. Both were reverted to what shipped.
+    this.shadowMapSize = ShadowQuality.size(this.engine.getRenderWidth(), this.engine.getRenderHeight());
     this.shadowGenerator = new ShadowGenerator(this.shadowMapSize, this.directionalLight);
     this.shadowGenerator.useExponentialShadowMap = true;
     this.shadowGenerator.darkness = 0.6;
-    // Second, independent arm: who is on the caster list. Set before any terrain object exists —
-    // the call both walks the templates that are there and holds the flag that later instances are
-    // created under, which is what makes one call at startup enough.
-    this.casterArm = ShadowCasters.arm();
-    this.terrainShadowsEnabled = ShadowCasters.sceneryCastsShadows(this.casterArm);
-    this.babylonModelService.setStaticModelsShadowCasting(this.terrainShadowsEnabled);
-    console.log(`[Razarion] Schattenkarte: ${this.shadowMapSize}x${this.shadowMapSize} (Arm ${this.shadowArm}, `
-      + `Backbuffer ${this.engine.getRenderWidth()}x${this.engine.getRenderHeight()}), `
-      + `Landschaftsschatten ${this.terrainShadowsEnabled ? 'an' : 'aus'} (Arm ${this.casterArm})`);
+    console.log(`[Razarion] Schattenkarte: ${this.shadowMapSize}x${this.shadowMapSize} `
+      + `(Backbuffer ${this.engine.getRenderWidth()}x${this.engine.getRenderHeight()})`);
 
     // Must come after the shadow generator: the filter hooks both per-frame walks over the mesh
     // array, and the second one is the shadow map's render list. F7 bypasses it for an A/B.
@@ -1906,15 +1897,42 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       instancedMeshes: census.instanced,
       shadowCasters: this.shadowGenerator?.getShadowMap()?.renderList?.length ?? -1,
       shadowMapSize: this.shadowMapSize,
-      shadowArm: this.shadowArm,
-      casterArm: this.casterArm,
       meshTop: census.top,
       parkedMeshes: this.parkedMeshFilter.getParkedCount(),
       parkingFilter: this.parkedMeshFilter.isEnabled(),
+      ...this.collectMemoryStats(),
       renderWidth: this.engine.getRenderWidth(),
       renderHeight: this.engine.getRenderHeight(),
       hardwareScaling: this.engine.getHardwareScalingLevel(),
       gpu: glInfo?.renderer ?? null
+    };
+  }
+
+  /**
+   * What the session is holding in memory, once per telemetry period.
+   *
+   * <p>Walking the texture cache is O(textures) — tens of entries, once every ten seconds. That is
+   * affordable where a per-frame walk would not be, which is why it lives here and not in the
+   * render loop.
+   *
+   * <p>Best effort throughout: a browser that refuses {@code performance.memory}, or a Babylon
+   * version that renames the cache, must cost the period its memory numbers and nothing else.
+   */
+  private collectMemoryStats(): Pick<RenderTelemetrySceneStats,
+    "heapUsedMb" | "heapLimitMb" | "textureCount" | "textureMb" | "geometries"> {
+    const [used, limit] = TextureMemory.jsHeap();
+    let textures: InternalTexture[] | null = null;
+    try {
+      textures = this.engine.getLoadedTexturesCache();
+    } catch (e) {
+      textures = null;
+    }
+    return {
+      heapUsedMb: TextureMemory.toMb(used),
+      heapLimitMb: TextureMemory.toMb(limit),
+      textureCount: textures ? textures.length : -1,
+      textureMb: TextureMemory.toMb(TextureMemory.totalBytes(textures)),
+      geometries: this.scene.geometries ? this.scene.geometries.length : -1
     };
   }
 

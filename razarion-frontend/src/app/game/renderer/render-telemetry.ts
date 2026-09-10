@@ -44,15 +44,11 @@ export interface RenderTelemetrySceneStats {
   /** Size of the ShadowGenerator's render list — a second per-frame walk over the same meshes. */
   shadowCasters: number;
   /**
-   * Edge length of the shadow map, and which half of the sizing experiment this session is in.
-   * See ShadowQuality. Both on the line so the arms can be split apart with a regex over Cloud
-   * Logging alone — the arm also rides in the capabilities catalogue, but that one only reaches
-   * the tracking database, and every number this experiment is about lives here.
+   * Edge length of the shadow map. Kept after the three shadow arms were removed, because unlike
+   * an arm this varies per device by rule (see ShadowQuality) and a reader of the line otherwise
+   * has no way to tell a 1024 phone from a 4096 desktop.
    */
   shadowMapSize: number;
-  shadowArm: string;
-  /** Which half of the caster arm. See ShadowCasters — "units" means the scenery is off the list. */
-  casterArm: string;
   /**
    * The biggest mesh-name groups, "name:count" newest-first, e.g. "Rock:12000,Palm:8000".
    * Names are normalised (ids, indices and the "#inst" suffix stripped) so one model's thousands
@@ -67,6 +63,18 @@ export interface RenderTelemetrySceneStats {
   parkedMeshes: number;
   /** False after F7 — the same picture drawn the old, slower way. */
   parkingFilter: boolean;
+  /**
+   * Memory, added because nothing on this line could tell "this device is slower" from "this
+   * device keeps stopping to tidy up" - and PROD says the 3-4 GB cohort is the second one.
+   * See TextureMemory. Estimates in MB; -1 where the browser does not say (iOS has no
+   * performance.memory).
+   */
+  heapUsedMb: number;
+  heapLimitMb: number;
+  /** Real GPU allocations, not Texture objects: several of those can share one allocation. */
+  textureCount: number;
+  textureMb: number;
+  geometries: number;
   /** Backbuffer size in device pixels, i.e. what the GPU actually has to fill. */
   renderWidth: number;
   renderHeight: number;
@@ -233,9 +241,10 @@ export class RenderTelemetry {
       `tickApplyP50=${apply.p50.toFixed(1)} tickApplyMax=${apply.max.toFixed(1)} ` +
       `meshes=${stats.meshes} activeMeshes=${stats.activeMeshes} activeIndices=${stats.activeIndices} materials=${stats.materials} ` +
       `disabledMeshes=${stats.disabledMeshes} instanced=${stats.instancedMeshes} shadowCasters=${stats.shadowCasters} ` +
-      `shadowMap=${stats.shadowMapSize} shadowArm=${stats.shadowArm} casterArm=${stats.casterArm} ` +
+      `shadowMap=${stats.shadowMapSize} ` +
       `parked=${stats.parkedMeshes} parkingFilter=${stats.parkingFilter} ` +
       `meshTop="${this.clean(stats.meshTop)}" ` +
+      `heapMb=${stats.heapUsedMb} heapLimitMb=${stats.heapLimitMb} textures=${stats.textureCount} textureMb=${stats.textureMb} geometries=${stats.geometries} ` +
       `backbuffer=${stats.renderWidth}x${stats.renderHeight} scaling=${stats.hardwareScaling.toFixed(2)} dpr=${window.devicePixelRatio} ` +
       `touch=${navigator.maxTouchPoints > 0} gpu="${this.shortGpu(stats.gpu)}"`
     );
@@ -298,7 +307,8 @@ export class RenderTelemetry {
       return {
         meshes: -1, activeMeshes: -1, activeIndices: -1, materials: -1,
         disabledMeshes: -1, instancedMeshes: -1, shadowCasters: -1,
-        shadowMapSize: -1, shadowArm: "unknown", casterArm: "unknown", meshTop: "unknown",
+        shadowMapSize: -1, meshTop: "unknown",
+        heapUsedMb: -1, heapLimitMb: -1, textureCount: -1, textureMb: -1, geometries: -1,
         parkedMeshes: -1, parkingFilter: false,
         renderWidth: -1, renderHeight: -1, hardwareScaling: -1, gpu: null
       };

@@ -4,28 +4,47 @@ This document describes how units and game state are kept in sync across multipl
 
 ## Overview
 
-Razarion uses a **hybrid command-forwarding + position-sync** architecture:
+Razarion uses **local prediction for your own commands + position-sync for everything else**:
 
-1. **Command Forwarding**: Player commands are forwarded by the server to all other clients, which execute them locally
-2. **Position Sync (TickInfo)**: The server periodically sends authoritative position snapshots to correct client-side simulation drift
+1. **Local prediction**: the browser that issued a command runs it immediately, so the unit reacts
+   without waiting for the round trip
+2. **Position Sync (TickInfo)**: the server periodically sends authoritative position snapshots,
+   which is how every *other* player's actions arrive
 
 ```
 Browser A (Sender)                Server (MASTER)              Browser B (Receiver)
      |                                |                              |
      |--- MoveCommand -------------->|                              |
-     | (execute locally,             |--- MoveCommand ------------->|
-     |  skip syncs 2 ticks)          |   (forward to others)       | (execute locally,
-     |                               |                              |  accept syncs)
-     |                               |-- tick: ORCA, movement -->  |
+     | (execute locally,             | (execute on MASTER)          |
+     |  skip syncs 2 ticks)          |                              |
+     |                               |-- tick: ORCA, movement -->   |
      |                               |                              |
      |<-- TickInfo (positions) ------|------- TickInfo ----------->|
      | (skip if within 2 ticks)      |                              | (apply positions)
 ```
 
+### A third arrow used to be here
+
+The server also broadcast each command to the other clients, which executed it locally and
+predicted its outcome. That half was removed from the client in `4adfe4d75` ("removal of local
+command forwarding in SLAVE mode"), as part of fixing a SharedArrayBuffer race — but the server
+went on sending for seven months. `AbstractServerGameConnection` has no case for those packets,
+so every recipient threw `IllegalArgumentException: Unknown Packet` on arrival.
+
+It reached the tracking as `ENGINE_ERROR`: over seven days, 330 of them in 18 % of all sessions,
+and concentrated where it mattered — 59 % of the sessions that got as far as issuing a command saw
+one, against 6 % of the sessions that never placed a base. The broadcast is gone as of this
+document's revision.
+
+The consequence for anyone reading this to understand latency: **another player's units move on
+your screen only as fast as TickInfo arrives.** There is no longer a faster path, and there is no
+prediction of what somebody else did.
+
 ## Client Modes
 
 - **MASTER** (Server): Executes all game logic, is authoritative for positions. Sends TickInfo to all clients.
-- **SLAVE** (Browser): Executes commands locally for responsiveness. Accepts server TickInfo to correct drift.
+- **SLAVE** (Browser): Executes its *own* player's commands locally for responsiveness. Accepts
+  server TickInfo to correct drift, and learns about other players only from it.
 
 ## Reconnecting: the snapshot replaces the world, it does not add to it
 
@@ -82,7 +101,7 @@ code with the exact production message, `no syncPhysicalArea|null`.
 
 ```
 CommandService (SLAVE)
-  -> BaseItemService.executeForwardedCommand(cmd, markLocallyCommanded=true)
+  -> executes locally, sets skipSyncTicks = 2
   -> gameLogicService.onSlaveCommandSent(item, cmd)  // sends to server
 ```
 
@@ -90,23 +109,22 @@ CommandService (SLAVE)
 
 `ClientGameConnection.onPackageReceived()`:
 - Deserializes the command
-- Sets `forwardedByConnection = true` (transient flag, not serialized)
-- Executes the command on the **MASTER** simulation via `CommandService.executeCommand()`
-- **Broadcasts** the command to all OTHER clients via `ClientGameConnectionService.broadcastCommand()`
+- Executes it on the **MASTER** simulation via `CommandService.executeCommand()`
 
 ```
 ClientGameConnection
-  -> cmd.setForwardedByConnection(true)
   -> commandService.executeCommand(cmd)    // MASTER queues for next tick
-  -> clientGameConnectionService.broadcastCommand(packet, cmd, excludeUserId)
 ```
 
-### 3. Other Clients Receive Forwarded Command (Browser B)
+That is the whole step. It used to also broadcast the command to every other client — see
+*A third arrow used to be here* above for what that cost and why it is gone.
+`BaseCommand.forwardedByConnection` went with it: the flag was set on every command and read by
+nobody.
 
-`AbstractServerGameConnection.handleMessage()`:
-- Deserializes the command using the platform marshaller (e.g. `TeaVMWorkerMarshaller`)
-- Executes locally via `BaseItemService.executeForwardedCommand(cmd, markLocallyCommanded=false)`
-- Since `markLocallyCommanded=false`, the unit accepts server TickInfo corrections immediately
+### 3. Other Clients Learn About It
+
+Only through TickInfo, below. There is no command-shaped message on the wire from server to
+client, and `AbstractServerGameConnection` deliberately has no case for one.
 
 ### 4. Server Sends TickInfo
 
@@ -149,8 +167,8 @@ After 2 ticks, the server TickInfo reflects the new command state, and syncs res
 
 | File | Purpose |
 |------|---------|
-| `razarion-server/.../ClientGameConnection.java` | WebSocket endpoint per client, receives commands, triggers broadcast |
-| `razarion-server/.../ClientGameConnectionService.java` | Manages all connections, `broadcastCommand()` and `sendTickinfo()` |
+| `razarion-server/.../ClientGameConnection.java` | WebSocket endpoint per client, receives commands and runs them on the MASTER |
+| `razarion-server/.../ClientGameConnectionService.java` | Manages all connections and `sendTickinfo()` |
 | `razarion-server/.../ServerSyncService.java` | Implements `SyncService.internSendTickInfo()` for server-side broadcast |
 
 ### Shared (Server + Client)
@@ -158,19 +176,18 @@ After 2 ticks, the server TickInfo reflects the new command state, and syncs res
 | File | Purpose |
 |------|---------|
 | `razarion-share/.../CommandService.java` | MASTER/SLAVE command routing |
-| `razarion-share/.../BaseItemService.java` | `executeForwardedCommand()` for command execution on clients |
+| `razarion-share/.../BaseItemService.java` | Command execution and item lifecycle |
 | `razarion-share/.../SyncService.java` | Abstract TickInfo accumulation and dispatch |
 | `razarion-share/.../PlanetService.java` | `initialSlaveSyncItemInfo()` — applies the snapshot, replacing on reconnect |
 | `razarion-share/.../SyncItemContainerServiceImpl.java` | `initAndAddSlave()` — refuses a taken id without touching what is there |
 | `razarion-share/.../SyncPhysicalMovable.java` | `synchronize()`, `skipSyncTicks`, movement physics |
-| `razarion-share/.../AbstractServerGameConnection.java` | Client-side WebSocket handler, dispatches received commands |
-| `razarion-share/.../command/BaseCommand.java` | `forwardedByConnection` transient flag |
+| `razarion-share/.../AbstractServerGameConnection.java` | Client-side WebSocket handler. Deliberately has no case for command packets - see above |
 
 ### Client (TeaVM)
 
 | File | Purpose |
 |------|---------|
-| `razarion-client-worker-teavm/.../TeaVMWorkerMarshaller.java` | Deserializes forwarded commands from JSON |
+| `razarion-client-worker-teavm/.../TeaVMWorkerMarshaller.java` | Marshals commands to JSON on the way out, TickInfo on the way in |
 
 ## ORCA Collision Avoidance
 
@@ -189,4 +206,4 @@ TickInfo corrects this drift periodically.
 
 Bot commands are executed server-side only. They go through `BaseItemService.executeCommand()` which calls `syncService.notifySendSyncBaseItem()`. Clients receive bot unit updates via TickInfo position sync, not via command forwarding.
 
-The `forwardedByConnection` flag distinguishes player commands (forwarded via WebSocket) from bot commands (internal server execution). Both call `notifySendSyncBaseItem()` for TickInfo inclusion.
+Player commands and bot commands take the same road out: both run on the MASTER and both call `notifySendSyncBaseItem()` for TickInfo inclusion. There is no longer any distinction on the wire - a `forwardedByConnection` flag used to mark the first kind and was read by nobody.

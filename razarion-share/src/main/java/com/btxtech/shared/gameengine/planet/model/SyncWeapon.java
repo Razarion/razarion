@@ -112,6 +112,18 @@ public class SyncWeapon extends SyncBaseAbility {
                 if (!getAbstractSyncPhysical().canMove()) {
                     throw new IllegalStateException("SyncWeapon out of range from Target and getSyncPhysicalArea can not move");
                 }
+                if (getSyncPhysicalMovable().isDestinationUnreachable()) {
+                    // The movement layer gave up: the target cannot be reached. Ending the attack is
+                    // the honest outcome, and it is what SyncBuilder, SyncHarvester and the box
+                    // pickup have always done — this was the one ability that never asked.
+                    //
+                    // What that cost: the branch below re-issues the path on "no destination", and a
+                    // give-up looks exactly like that. PROD showed the same Viper cycling every
+                    // 6.0 s — stuck detection plus three replans, then a fresh path, then the same
+                    // again — for fifteen minutes, with nobody clicking.
+                    stop();
+                    return false;
+                }
                 if (!getSyncPhysicalMovable().hasDestination()) {
                     if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
                         getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), 0, target));

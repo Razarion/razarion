@@ -2,6 +2,7 @@ package com.btxtech.server.service.tracking;
 
 import com.btxtech.server.model.tracking.PageRequest;
 import com.btxtech.server.model.tracking.PageRequestType;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.annotation.PostConstruct;
@@ -13,7 +14,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PageRequestService {
@@ -160,4 +163,98 @@ public class PageRequestService {
 
         return mongoTemplate.find(query, PageRequest.class, PAGE_REQUEST);
     }
+
+    /**
+     * The same window as {@link #loadPageRequests}, reduced to one record per http session.
+     * <p>
+     * The history view never wants a page request; it wants what the session behind it says about
+     * the visitor, and it asked that question by scanning the whole list once per row. Measured on
+     * a 24-hour window: 4,522 documents and 5.71 MB to produce an 88 kB response, where 75 % of
+     * every document is the query string, the referrer, the user agent and the click id - the same
+     * strings again on each of a session's requests. Grouped here instead, 4,522 documents become
+     * about 1,250 records of a few hundred bytes.
+     * <p>
+     * Sorted before grouping so "the earliest click id in the session" means that, rather than
+     * whatever order the storage engine happened to return - which is what the scan it replaces was
+     * reading, since the query it used carried no sort at all.
+     * <p>
+     * {@code $addToSet} rather than {@code $push} for the strings: within one session the referrer
+     * is usually the identical value on every request, and the caller only tests them for
+     * foreignness, so duplicates would be bytes for nothing.
+     */
+    public Map<String, SessionAttribution> loadSessionAttribution(Date fromDate, Date toDate) {
+        List<Document> pipeline = List.of(
+                new Document("$match", matchWindow(fromDate, toDate)
+                        .append("httpSessionId", new Document("$ne", null))),
+                new Document("$sort", new Document("serverTime", 1)),
+                new Document("$group", new Document("_id", "$httpSessionId")
+                        .append("userAgents", TrackingAttribution.addToSetNonNull("$userAgent"))
+                        .append("referers", TrackingAttribution.addToSetNonNull("$referer"))
+                        .append("utmSources", TrackingAttribution.addToSetNonNull("$utmSource"))
+                        .append("landingReferers", new Document("$addToSet", new Document("$cond",
+                                List.of(new Document("$eq", List.of("$pageRequestType", PageRequestType.LANDING.name())),
+                                        "$referer", "$$REMOVE"))))
+                        // The click ids travel as a triple: one request may carry the fbclid and
+                        // another the twclid, and ofClickIds() reads them together.
+                        //
+                        // null and a $filter below rather than $$REMOVE, which does not work inside
+                        // $push - measured, not assumed: a session whose requests carry no click id
+                        // came back with a [{}] instead of an []. That happens to be harmless once
+                        // the fields are read off it, but it would not be for a session that landed
+                        // without a click id and picked one up later: the empty first element would
+                        // hide the real one.
+                        //
+                        // $ifNull around each field for a second reason found the same way: an
+                        // absent field resolves to "missing", and {$ne: [missing, null]} is TRUE in
+                        // an aggregation expression, unlike the $match semantics one expects. Every
+                        // request without click ids therefore took the "has one" branch. $ifNull is
+                        // what makes missing and null the same thing again.
+                        .append("clickIds", new Document("$push", new Document("$cond", List.of(
+                                new Document("$or", List.of(
+                                        TrackingAttribution.notNull("$rdtCid"),
+                                        TrackingAttribution.notNull("$twclid"),
+                                        TrackingAttribution.notNull("$fbclid"))),
+                                new Document("rdtCid", "$rdtCid")
+                                        .append("twclid", "$twclid")
+                                        .append("fbclid", "$fbclid"),
+                                null))))
+                        .append("firstGameTime", new Document("$min", new Document("$cond",
+                                List.of(new Document("$eq", List.of("$pageRequestType", PageRequestType.GAME.name())),
+                                        "$serverTime", "$$REMOVE"))))),
+                new Document("$addFields", new Document("clickIds",
+                        new Document("$filter", new Document("input", "$clickIds")
+                                .append("cond", new Document("$ne", List.of("$$this", null)))))));
+
+        Map<String, SessionAttribution> perSession = new HashMap<>();
+        for (Document document : mongoTemplate.getCollection(PAGE_REQUEST).aggregate(pipeline)) {
+            String httpSessionId = document.getString("_id");
+            if (httpSessionId == null) {
+                continue;
+            }
+            List<Document> clickIds = document.getList("clickIds", Document.class, List.of());
+            Document firstClickId = clickIds.isEmpty() ? new Document() : clickIds.get(0);
+            perSession.put(httpSessionId, new SessionAttribution(
+                    TrackingAttribution.strings(document, "userAgents"),
+                    TrackingAttribution.strings(document, "landingReferers"),
+                    TrackingAttribution.strings(document, "referers"),
+                    TrackingAttribution.strings(document, "utmSources"),
+                    firstClickId.getString("rdtCid"),
+                    firstClickId.getString("twclid"),
+                    firstClickId.getString("fbclid"),
+                    document.getDate("firstGameTime")));
+        }
+        return perSession;
+    }
+
+    private Document matchWindow(Date fromDate, Date toDate) {
+        Document serverTime = new Document();
+        if (fromDate != null) {
+            serverTime.append("$gte", fromDate);
+        }
+        if (toDate != null) {
+            serverTime.append("$lte", toDate);
+        }
+        return serverTime.isEmpty() ? new Document() : new Document("serverTime", serverTime);
+    }
+
 }

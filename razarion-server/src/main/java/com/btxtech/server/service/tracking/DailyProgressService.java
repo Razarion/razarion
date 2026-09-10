@@ -52,6 +52,28 @@ import java.util.TreeMap;
 @Service
 public class DailyProgressService {
     private static final DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    /**
+     * The only fields of a page request this service ever reads — see {@code signal(PageRequest)},
+     * which is the single place they come out of, plus {@code countWindow}, which additionally
+     * uses the user agent and the type.
+     *
+     * <p>Why a projection at all: with a platform or device filter set, the query below reads the
+     * <b>whole</b> collection, because attribution has to reach back past the reported window.
+     * That was 142'544 documents and roughly 141 MB on 2026-09-10, on every call, decoded into as
+     * many Java objects and thrown away again — on a server already holding 1.7 of its 3 GB. Of
+     * those bytes 39 % were never looked at, {@code rawQueryString} alone being 31.7 %.
+     *
+     * <p><b>The failure mode here is silent.</b> A field missing from this list does not throw: it
+     * arrives as null, and the visitor is quietly attributed to the wrong platform or to none at
+     * all. Anything added to {@code signal(PageRequest)} has to be added here in the same edit.
+     *
+     * <p>This narrows the query, it does not fix its shape. The whole history is still read; the
+     * honest repair is to resolve the platform once when the user is created and store it there,
+     * so the funnel never needs the history.
+     */
+    private static final List<String> ATTRIBUTION_FIELDS = List.of(
+            "httpSessionId", "serverTime", "pageRequestType",
+            "rdtCid", "twclid", "fbclid", "utmSource", "referer", "userAgent");
     /** Longest history the daily table will report. Past this it is a data export, not a trend. */
     private static final int MAX_DAYS = 90;
     private final Logger logger = LoggerFactory.getLogger(DailyProgressService.class);
@@ -82,9 +104,11 @@ public class DailyProgressService {
         boolean filtered = platform != null || device != null;
 
         // Without a filter there is nothing to attribute, and the window is all that is read.
-        List<PageRequest> pageRequests = mongoTemplate.find(filtered
+        Query pageRequestQuery = filtered
                 ? new Query()
-                : new Query(Criteria.where("serverTime").gte(from).lt(to)), PageRequest.class,
+                : new Query(Criteria.where("serverTime").gte(from).lt(to));
+        ATTRIBUTION_FIELDS.forEach(field -> pageRequestQuery.fields().include(field));
+        List<PageRequest> pageRequests = mongoTemplate.find(pageRequestQuery, PageRequest.class,
                 PageRequestService.PAGE_REQUEST);
         List<StartupTaskJson> startupTasks = startupTrackingService.loadStartupTaskJsons(from, to);
         List<StartupTerminatedJson> terminated = startupTrackingService.loadStartupTerminatedJson(from, to);

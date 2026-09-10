@@ -20,11 +20,24 @@ import {classifyDevice, DeviceClass, isAppFetch} from './first-interaction-analy
 export type FunnelView = TrackingPlatform | 'all';
 
 /**
- * Which view the funnel opens on. X, because that is where the traffic is: in a sample day not one
- * of 200 home visits carried a Reddit click id and 197 carried an X one, so opening on Reddit
- * showed an empty funnel and read as "nobody plays".
+ * Which view the funnel opens on.
+ *
+ * This used to be X, on the reasoning that X is where the traffic is: in a sample day not one of
+ * 200 home visits carried a Reddit click id and 197 carried an X one, so opening on Reddit showed
+ * an empty funnel and read as "nobody plays". That reasoning still holds for Reddit - it does not
+ * hold for 'all', which is the superset of every platform and can never be the empty view.
+ *
+ * It moved because of what it costs. This value is not only the funnel's view, it is also the
+ * platform filter the daily table sends to loadDailyProgress, and any platform there means
+ * attribution, which reads the entire page-request history rather than the reported window.
+ * Measured on PROD: 143,152 documents, about 28 MB even with the projection, and two requests that
+ * took 1013 and 1019 seconds. Opening the backend page paid that every time, without anybody
+ * choosing a filter - and while it ran it starved the other two tabs, which the same page loads at
+ * the same moment on a pod with 0.75 of a core.
+ *
+ * Picking X from the dropdown still does all of that. What changed is that it is now a choice.
  */
-export const DEFAULT_FUNNEL_VIEW: FunnelView = TrackingPlatform.X;
+export const DEFAULT_FUNNEL_VIEW: FunnelView = 'all';
 
 /**
  * Which device the funnel is about. The same classification the Controls tab uses, so the two

@@ -57,7 +57,7 @@
         class="w-full md:w-56"/>
     </div>
   </div>
-  <p-tabs value="0">
+  <p-tabs [value]="activeTab" (valueChange)="onTabChange($event)">
     <p-tablist>
       <p-tab value="0">
         <i class="pi p-1" [ngClass]="platformIcon"></i>
@@ -165,7 +165,11 @@
       </p-tabpanel>
     </p-tabpanels>
     <p-tabpanel value="1">
-      <player-sessions [fromDate]="fromDate" [toDate]="toDate"></player-sessions>
+      <!-- Only built once the tab has been opened: the component loads on creation, and that
+           request is about a hundred seconds. -->
+      @if (isOpened('1')) {
+        <player-sessions [fromDate]="fromDate" [toDate]="toDate"></player-sessions>
+      }
     </p-tabpanel>
     <p-tabpanel value="2">
       <user-mgmt class="col-span-4"></user-mgmt>

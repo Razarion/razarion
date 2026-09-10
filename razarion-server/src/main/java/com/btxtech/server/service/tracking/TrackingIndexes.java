@@ -36,6 +36,31 @@ final class TrackingIndexes {
     }
 
     /**
+     * For the reads that ask for one kind of activity rather than a time range.
+     * <p>
+     * {@code DailyProgressService} asks user_activity three separate questions - every USER_CREATED,
+     * every BASE_CREATED, and the LEVEL_UPs in a window - and the collection had no index on
+     * userActivityType at all, so each of the three scanned all 31,194 documents. The first two
+     * carry no time bound by design: attribution has to see a user created three weeks ago, and
+     * "first base" means the first one ever.
+     * <p>
+     * Compound and in this order, so one index serves all three: the userActivityType prefix
+     * answers the two unbounded ones, and the full pair answers the windowed LEVEL_UP without a
+     * separate sort. Descending on serverTime to match the other reads on this collection.
+     */
+    static void ensureActivityTypeIndex(MongoTemplate mongoTemplate, Logger logger, String collection) {
+        try {
+            mongoTemplate.indexOps(collection)
+                    .ensureIndex(new Index()
+                            .on("userActivityType", Sort.Direction.ASC)
+                            .on("serverTime", Sort.Direction.DESC));
+        } catch (Exception e) {
+            logger.warn("Could not ensure the userActivityType/serverTime index on {}: {}",
+                    collection, e.getMessage());
+        }
+    }
+
+    /**
      * Per-document expiry: Mongo drops a document once its own expireAt has passed, which is what
      * expireAfterSeconds(0) means. Documents without the field are never dropped.
      * <p>

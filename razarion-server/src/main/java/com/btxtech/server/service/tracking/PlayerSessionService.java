@@ -57,12 +57,14 @@ public class PlayerSessionService {
     }
 
     public List<PlayerSessionInfo> load(Date fromDate, Date toDate) {
-        List<StartupTaskJson> startupTasks = startupTrackingService.loadStartupTaskJsons(fromDate, toDate);
+        List<StartupTaskJson> startupTasks = startupTrackingService.loadStartupTaskRows(fromDate, toDate);
+        Map<String, SessionAttribution> attemptAttribution =
+                startupTrackingService.loadAttemptAttribution(fromDate, toDate);
         List<StartupTerminatedJson> terminated = startupTrackingService.resolveTerminated(
                 startupTasks, startupTrackingService.loadStartupTerminatedJson(fromDate, toDate));
         List<TabHiddenJson> tabHiddenJsons = startupTrackingService.loadTabHiddenJsons(fromDate, toDate);
         List<UserActivity> userActivities = userActivityService.loadUserActivities(fromDate, toDate);
-        List<PageRequest> pageRequests = pageRequestService.loadPageRequests(fromDate, toDate);
+        Map<String, SessionAttribution> attribution = pageRequestService.loadSessionAttribution(fromDate, toDate);
 
         Map<String, List<StartupTaskJson>> tasksPerSession = tasksPerSession(startupTasks);
         Map<String, StartupTerminatedJson> terminatedPerSession = terminatedPerSession(terminated);
@@ -78,9 +80,10 @@ public class PlayerSessionService {
                     terminatedPerSession.get(sessionUuid),
                     tabbedAwaySessions.contains(sessionUuid),
                     userActivities,
-                    pageRequests));
+                    attribution,
+                    attemptAttribution.getOrDefault(sessionUuid, SessionAttribution.EMPTY)));
         }
-        rows.addAll(noStartupRows(pageRequests, tasksPerSession, terminatedPerSession, userActivities));
+        rows.addAll(noStartupRows(attribution, tasksPerSession, terminatedPerSession, userActivities));
 
         // Newest first, then the per-player enrichment, which needs the whole set at once.
         rows.sort(Comparator.comparing(PlayerSessionInfo::getStartTime,
@@ -94,7 +97,8 @@ public class PlayerSessionService {
                                          StartupTerminatedJson terminatedJson,
                                          boolean tabbedAway,
                                          List<UserActivity> userActivities,
-                                         List<PageRequest> pageRequests) {
+                                         Map<String, SessionAttribution> attribution,
+                                         SessionAttribution attempt) {
         String userId = userIdOfAttempt(tasks, terminatedJson, sessionUuid, userActivities);
         String httpSessionId = firstHttpSessionId(tasks, terminatedJson);
         PlayerSessionInfo row = new PlayerSessionInfo()
@@ -102,9 +106,9 @@ public class PlayerSessionService {
                 .gameSessionUuid(sessionUuid)
                 .startTime(startTime(tasks, terminatedJson))
                 .userId(userId)
-                .userAgent(userAgent(tasks, httpSessionId, pageRequests))
-                .source(source(tasks, terminatedJson, httpSessionId, pageRequests))
-                .origin(origin(tasks, terminatedJson, httpSessionId, pageRequests))
+                .userAgent(userAgent(tasks, httpSessionId, attribution, attempt))
+                .source(source(tasks, terminatedJson, httpSessionId, attribution, attempt))
+                .origin(origin(tasks, terminatedJson, httpSessionId, attribution, attempt))
                 .outcome(outcome(terminatedJson))
                 .tasks(tasks.stream()
                         .map(task -> new PlayerSessionTask()
@@ -132,7 +136,7 @@ public class PlayerSessionService {
      * started stamping it, no startup could be matched to its page visit, and every visit in the
      * range would be reported as a dead one.
      */
-    private List<PlayerSessionInfo> noStartupRows(List<PageRequest> pageRequests,
+    private List<PlayerSessionInfo> noStartupRows(Map<String, SessionAttribution> attribution,
                                                   Map<String, List<StartupTaskJson>> tasksPerSession,
                                                   Map<String, StartupTerminatedJson> terminatedPerSession,
                                                   List<UserActivity> userActivities) {
@@ -146,20 +150,22 @@ public class PlayerSessionService {
         Map<String, String> usersPerHttpSession = usersPerHttpSession(userActivities);
         List<PlayerSessionInfo> rows = new ArrayList<>();
         Set<String> seen = new HashSet<>();
-        for (PageRequest pageRequest : pageRequests) {
-            String httpSessionId = pageRequest.getHttpSessionId();
-            if (pageRequest.getPageRequestType() != PageRequestType.GAME
-                    || httpSessionId == null
+        for (Map.Entry<String, SessionAttribution> entry : attribution.entrySet()) {
+            String httpSessionId = entry.getKey();
+            SessionAttribution session = entry.getValue();
+            // firstGameTime is set exactly when this session asked for the game page at all, which
+            // is what the scan over page requests used to look for.
+            if (session.firstGameTime() == null
                     || startedSessions.contains(httpSessionId)
                     || !seen.add(httpSessionId)) {
                 continue;
             }
             rows.add(new PlayerSessionInfo()
                     .rowId("no-startup-" + httpSessionId)
-                    .startTime(pageRequest.getServerTime())
+                    .startTime(session.firstGameTime())
                     .userId(usersPerHttpSession.get(httpSessionId))
-                    .userAgent(pageRequest.getUserAgent())
-                    .source(platform(pageRequest.getRdtCid(), pageRequest.getTwclid(), pageRequest.getFbclid()))
+                    .userAgent(first(session.userAgents()))
+                    .source(platform(session.rdtCid(), session.twclid(), session.fbclid()))
                     .outcome(PlayerSessionOutcome.NO_STARTUP)
                     .tasks(List.of()));
         }
@@ -263,19 +269,20 @@ public class PlayerSessionService {
     private TrackingPlatform source(List<StartupTaskJson> tasks,
                                     StartupTerminatedJson terminatedJson,
                                     String httpSessionId,
-                                    List<PageRequest> pageRequests) {
-        TrackingPlatform clickIdPlatform = clickIdPlatform(tasks, terminatedJson, httpSessionId, pageRequests);
+                                    Map<String, SessionAttribution> attribution,
+                                    SessionAttribution attempt) {
+        TrackingPlatform clickIdPlatform = clickIdPlatform(tasks, terminatedJson, httpSessionId, attribution, attempt);
         if (clickIdPlatform != null) {
             return clickIdPlatform;
         }
         // Only when no click id was found anywhere: the campaign the visit names itself.
         TrackingPlatform utmPlatform = TrackingPlatforms.ofUtmSource(
-                utmSource(tasks, terminatedJson, httpSessionId, pageRequests));
+                utmSource(tasks, terminatedJson, httpSessionId, attribution, attempt));
         if (utmPlatform != null) {
             return utmPlatform;
         }
         // And last the site the visitor came from, which needs no parameter to have survived at all.
-        return TrackingPlatforms.ofOrigin(origin(tasks, terminatedJson, httpSessionId, pageRequests));
+        return TrackingPlatforms.ofOrigin(origin(tasks, terminatedJson, httpSessionId, attribution, attempt));
     }
 
     /**
@@ -285,12 +292,11 @@ public class PlayerSessionService {
     private TrackingPlatform clickIdPlatform(List<StartupTaskJson> tasks,
                                              StartupTerminatedJson terminatedJson,
                                              String httpSessionId,
-                                             List<PageRequest> pageRequests) {
-        for (StartupTaskJson task : tasks) {
-            TrackingPlatform platform = platform(task.getRdtCid(), task.getTwclid(), task.getFbclid());
-            if (platform != null) {
-                return platform;
-            }
+                                             Map<String, SessionAttribution> attribution,
+                                             SessionAttribution attempt) {
+        TrackingPlatform attemptPlatform = platform(attempt.rdtCid(), attempt.twclid(), attempt.fbclid());
+        if (attemptPlatform != null) {
+            return attemptPlatform;
         }
         if (terminatedJson != null) {
             TrackingPlatform platform = platform(terminatedJson.getRdtCid(), terminatedJson.getTwclid(),
@@ -300,14 +306,10 @@ public class PlayerSessionService {
             }
         }
         if (httpSessionId != null) {
-            for (PageRequest pageRequest : pageRequests) {
-                if (httpSessionId.equals(pageRequest.getHttpSessionId())) {
-                    TrackingPlatform platform = platform(pageRequest.getRdtCid(), pageRequest.getTwclid(),
-                            pageRequest.getFbclid());
-                    if (platform != null) {
-                        return platform;
-                    }
-                }
+            SessionAttribution session = session(attribution, httpSessionId);
+            TrackingPlatform platform = platform(session.rdtCid(), session.twclid(), session.fbclid());
+            if (platform != null) {
+                return platform;
             }
         }
         return null;
@@ -330,48 +332,61 @@ public class PlayerSessionService {
     private String origin(List<StartupTaskJson> tasks,
                           StartupTerminatedJson terminatedJson,
                           String httpSessionId,
-                          List<PageRequest> pageRequests) {
-        String landingReferer = landingReferer(httpSessionId, pageRequests);
+                          Map<String, SessionAttribution> attribution,
+                          SessionAttribution attempt) {
+        String landingReferer = landingReferer(httpSessionId, attribution);
         if (landingReferer != null) {
             return landingReferer;
         }
         // No landing page in this session: the game was opened directly, and then what the client
         // read is a real origin rather than the page before it.
-        for (StartupTaskJson task : tasks) {
-            if (isForeign(task.getReferrer())) {
-                return task.getReferrer();
+        for (String referrer : attempt.referers()) {
+            if (isForeign(referrer)) {
+                return referrer;
             }
         }
         if (terminatedJson != null && isForeign(terminatedJson.getReferrer())) {
             return terminatedJson.getReferrer();
         }
         if (httpSessionId != null) {
-            for (PageRequest pageRequest : pageRequests) {
-                if (httpSessionId.equals(pageRequest.getHttpSessionId()) && isForeign(pageRequest.getReferer())) {
-                    return pageRequest.getReferer();
+            for (String referer : session(attribution, httpSessionId).referers()) {
+                if (isForeign(referer)) {
+                    return referer;
                 }
             }
         }
-        String utmSource = utmSource(tasks, terminatedJson, httpSessionId, pageRequests);
+        String utmSource = utmSource(tasks, terminatedJson, httpSessionId, attribution, attempt);
         if (TrackingPlatforms.saysNothingBeyondThePlatform(utmSource,
-                clickIdPlatform(tasks, terminatedJson, httpSessionId, pageRequests))) {
+                clickIdPlatform(tasks, terminatedJson, httpSessionId, attribution, attempt))) {
             return null;
         }
         return utmSource;
     }
 
-    private String landingReferer(String httpSessionId, List<PageRequest> pageRequests) {
+    private String landingReferer(String httpSessionId, Map<String, SessionAttribution> attribution) {
         if (httpSessionId == null) {
             return null;
         }
-        for (PageRequest pageRequest : pageRequests) {
-            if (pageRequest.getPageRequestType() == PageRequestType.LANDING
-                    && httpSessionId.equals(pageRequest.getHttpSessionId())
-                    && isForeign(pageRequest.getReferer())) {
-                return pageRequest.getReferer();
+        for (String referer : session(attribution, httpSessionId).landingReferers()) {
+            if (isForeign(referer)) {
+                return referer;
             }
         }
         return null;
+    }
+
+    /**
+     * A session the window knows nothing about answers with nothing rather than with null: the
+     * callers walk lists, and an absent session is the same case as one whose page requests carried
+     * no referrer at all.
+     */
+    private static SessionAttribution session(Map<String, SessionAttribution> attribution, String httpSessionId) {
+        SessionAttribution session = attribution.get(httpSessionId);
+        return session != null ? session : SessionAttribution.EMPTY;
+    }
+
+    private static String first(List<String> values) {
+        return values.isEmpty() ? null : values.get(0);
     }
 
     private static boolean isForeign(String referrer) {
@@ -381,19 +396,20 @@ public class PlayerSessionService {
     private String utmSource(List<StartupTaskJson> tasks,
                              StartupTerminatedJson terminatedJson,
                              String httpSessionId,
-                             List<PageRequest> pageRequests) {
-        for (StartupTaskJson task : tasks) {
-            if (notEmpty(task.getUtmSource())) {
-                return task.getUtmSource();
+                             Map<String, SessionAttribution> attribution,
+                             SessionAttribution attempt) {
+        for (String taskUtmSource : attempt.utmSources()) {
+            if (notEmpty(taskUtmSource)) {
+                return taskUtmSource;
             }
         }
         if (terminatedJson != null && notEmpty(terminatedJson.getUtmSource())) {
             return terminatedJson.getUtmSource();
         }
         if (httpSessionId != null) {
-            for (PageRequest pageRequest : pageRequests) {
-                if (httpSessionId.equals(pageRequest.getHttpSessionId()) && notEmpty(pageRequest.getUtmSource())) {
-                    return pageRequest.getUtmSource();
+            for (String utmSource : session(attribution, httpSessionId).utmSources()) {
+                if (notEmpty(utmSource)) {
+                    return utmSource;
                 }
             }
         }
@@ -405,19 +421,17 @@ public class PlayerSessionService {
     }
 
     /** Only the first task carries it; a page visit answers for everything that has no task at all. */
-    private String userAgent(List<StartupTaskJson> tasks, String httpSessionId, List<PageRequest> pageRequests) {
-        for (StartupTaskJson task : tasks) {
-            if (task.getUserAgent() != null) {
-                return task.getUserAgent();
-            }
+    private String userAgent(List<StartupTaskJson> tasks, String httpSessionId, Map<String, SessionAttribution> attribution, SessionAttribution attempt) {
+        String attemptUserAgent = first(attempt.userAgents());
+        if (attemptUserAgent != null) {
+            return attemptUserAgent;
         }
         if (httpSessionId == null) {
             return null;
         }
-        for (PageRequest pageRequest : pageRequests) {
-            if (httpSessionId.equals(pageRequest.getHttpSessionId()) && pageRequest.getUserAgent() != null) {
-                return pageRequest.getUserAgent();
-            }
+        String userAgent = first(session(attribution, httpSessionId).userAgents());
+        if (userAgent != null) {
+            return userAgent;
         }
         return null;
     }

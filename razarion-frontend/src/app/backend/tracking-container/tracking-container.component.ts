@@ -36,6 +36,10 @@ import {FirstInteractionComponent} from '../first-interaction/first-interaction.
 import {FirstInteractionAnalyzer, FirstInteractionReport} from './first-interaction-analyzer';
 import {announceConnectionChange, clearConnectionTabNotice} from './connection-tab-notice';
 
+/** The tab values from the template. Strings, because that is what p-tabs binds. */
+const TAB_FUNNEL = '0';
+const TAB_DAILY = '4';
+
 @Component({
   selector: 'tracking-container',
   imports: [
@@ -95,6 +99,9 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
     Unknown: TrackingDevice.UNKNOWN
   };
   /** How far the daily table looks back. Ten days is a fortnight's worth of weekday shape. */
+  /** Which tab is showing, and which ones have ever shown - see {@link onTabChange}. */
+  activeTab: string = TAB_FUNNEL;
+  private readonly openedTabs = new Set<string>([TAB_FUNNEL]);
   dailyDays = 10;
   dailyDaysOptions = [{name: "10 days", value: 10}, {name: "14 days", value: 14},
     {name: "30 days", value: 30}, {name: "60 days", value: 60}, {name: "90 days", value: 90}];
@@ -172,9 +179,46 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // The tracking container stays here: it is what the tab that opens shows, and Startup and
+    // Attention read the same payload. The other two heavy requests wait for their tab.
     this.load();
-    this.loadDailyProgress();
     this.startConnectionWatch();
+  }
+
+  /**
+   * Loading a tab's data when the tab is opened, rather than all of it when the page is.
+   * <p>
+   * Opening the backend used to fire three heavy requests at once - measured, 130 of 133 of them
+   * overlapped - on a pod with three quarters of a core and one database connection pool. The daily
+   * report alone took 215 seconds and the history around 100, and you paid for both even when you
+   * came to look at one of them.
+   */
+  onTabChange(value: string | number | undefined): void {
+    const tab = String(value ?? TAB_FUNNEL);
+    this.activeTab = tab;
+    if (this.openedTabs.has(tab)) {
+      return;
+    }
+    this.openedTabs.add(tab);
+    if (tab === TAB_DAILY) {
+      this.loadDailyProgress();
+    }
+  }
+
+  /** Whether this tab was ever opened - what keeps its content, and its request, out of the page. */
+  isOpened(tab: string): boolean {
+    return this.openedTabs.has(tab);
+  }
+
+  /**
+   * A reload of the daily table only for someone who is looking at it. The range picker and the
+   * platform and device filters all touch it, and firing it from a tab that does not show it is
+   * exactly the cost this was meant to remove.
+   */
+  private reloadDailyIfOpened(): void {
+    if (this.openedTabs.has(TAB_DAILY)) {
+      this.loadDailyProgress();
+    }
   }
 
   ngOnDestroy(): void {
@@ -395,7 +439,7 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
     this.loadTime(this.toDate.getTime() - this.fromDate.getTime());
     // Aggregated server side over its own window, so it does not come with the range above and was
     // left standing by every refresh - only opening the page reloaded it.
-    this.loadDailyProgress();
+    this.reloadDailyIfOpened();
   }
 
   load() {
@@ -452,13 +496,13 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
   onPlatformChange() {
     this.recomputeFunnel();
     // The daily funnel is aggregated server side, so it needs its own reload for the new platform.
-    this.loadDailyProgress();
+    this.reloadDailyIfOpened();
   }
 
   onDeviceChange() {
     this.recomputeFunnel();
     // Counted on the server, so the daily table needs its own request for the new device.
-    this.loadDailyProgress();
+    this.reloadDailyIfOpened();
   }
 
   onDailyDaysChange() {

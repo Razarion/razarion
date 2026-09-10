@@ -7,6 +7,8 @@ import com.btxtech.server.service.AbstractBaseEntityCrudService;
 import com.btxtech.server.service.NoSuchEntityException;
 import com.btxtech.server.service.ContentDigest;
 import com.btxtech.server.service.ui.GltfService;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
@@ -80,16 +82,16 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
      * reachable state, on any cache between here and the player.
      */
     @GetMapping(value = "/glb/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<byte[]> getGlb(@PathVariable("id") int id,
-                                         @RequestHeader(value = HttpHeaders.IF_NONE_MATCH, required = false)
-                                         String ifNoneMatch) {
+    public ResponseEntity<Resource> getGlb(@PathVariable("id") int id,
+                                           @RequestHeader(value = HttpHeaders.IF_NONE_MATCH, required = false)
+                                           String ifNoneMatch) {
         try {
             String digest = gltfService.getGlbDigest(id);
             if (digest == null) {
                 // No bytes to tag. Answer as before rather than inventing a tag for nothing.
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
-                        .body(gltfService.getGlb(id));
+                        .body(body(id));
             }
             String eTag = ContentDigest.eTag(digest);
             if (ContentDigest.matches(ifNoneMatch, eTag)) {
@@ -103,7 +105,7 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
                     .eTag(eTag)
                     .cacheControl(REVALIDATE)
-                    .body(gltfService.getGlb(id));
+                    .body(body(id));
         } catch (NoSuchEntityException e) {
             // Not there is not broken. The 404 says which.
             throw e;
@@ -134,8 +136,8 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
      * plain path does, and its next configuration carries the new digest.
      */
     @GetMapping(value = "/glb/{id}/{digest}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<byte[]> getGlbByDigest(@PathVariable("id") int id,
-                                                 @PathVariable("digest") String digest) {
+    public ResponseEntity<Resource> getGlbByDigest(@PathVariable("id") int id,
+                                                   @PathVariable("digest") String digest) {
         try {
             String current = gltfService.getGlbDigest(id);
             boolean fresh = current != null && current.equals(digest);
@@ -144,13 +146,41 @@ public class GltfController extends AbstractBaseController<GltfEntity> {
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
                     .eTag(ContentDigest.eTag(current == null ? digest : current))
                     .cacheControl(fresh ? IMMUTABLE : REVALIDATE)
-                    .body(gltfService.getGlb(id));
+                    .body(body(id));
         } catch (NoSuchEntityException e) {
             throw e;
         } catch (Throwable e) {
             logger.log(Level.SEVERE, "Can not load GltfEntity for id: " + id, e);
             throw e;
         }
+    }
+
+    /**
+     * The bytes as a {@link Resource} rather than a {@code byte[]}, which is what makes this
+     * response range-capable.
+     * <p>
+     * Spring MVC answers {@code Range} requests and advertises {@code Accept-Ranges: bytes} only
+     * for a {@code Resource} return value; for a {@code byte[]} it writes the whole body and says
+     * nothing about ranges. That distinction is not cosmetic. Cloud CDN stores a response larger
+     * than 10 MiB only if the origin can serve ranges, because that is how it fills its cache in
+     * chunks - and without it the model was never cached at an edge at all. Measured over 72 hours
+     * on the 10.83 MiB model: 685 requests to the immutable digest url, 458 of them complete
+     * deliveries, cacheLookup true every single time, and zero cache fills. Every player, anywhere,
+     * paid the trip to us-central1. The 6.05 MiB model that replaced it filled on its first
+     * request, because it fits under the limit.
+     * <p>
+     * Fitting under the limit is luck, not a guarantee - nothing fails and nothing is logged when a
+     * model grows past it again. Serving ranges removes the limit instead of living beneath it.
+     * <p>
+     * A {@code ByteArrayResource} and not a streaming one: the blob is already fully in memory by
+     * the time it gets here, so wrapping it costs nothing and a range is then served as a region of
+     * that array.
+     */
+    private Resource body(int id) {
+        // A row with no model at all answers as it always did, with no body. ByteArrayResource
+        // rejects a null array, so the check has to happen here rather than at the call sites.
+        byte[] glb = gltfService.getGlb(id);
+        return glb != null ? new ByteArrayResource(glb) : null;
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

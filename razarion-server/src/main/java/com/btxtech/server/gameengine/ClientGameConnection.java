@@ -123,10 +123,20 @@ public class ClientGameConnection {
             case LOAD_CONTAINER_COMMAND:
             case MOVE_COMMAND:
             case PICK_BOX_COMMAND:
-                BaseCommand cmd = (BaseCommand) param;
-                cmd.setForwardedByConnection(true);
-                commandService.executeCommand(cmd);
-                clientGameConnectionService.broadcastCommand(packet, param, userId);
+                // Executed on the MASTER and nowhere else. The result reaches the other players
+                // through TickInfo like every other change to the world.
+                //
+                // It used to be broadcast to them as well, so their clients could run the command
+                // locally and predict the outcome. That half was removed from the client in
+                // 4adfe4d75 ("removal of local command forwarding in SLAVE mode") and the server
+                // kept sending: AbstractServerGameConnection has no case for these packets, so
+                // every recipient threw IllegalArgumentException on arrival.
+                //
+                // Seven days of PROD: 330 "Unknown Packet" errors reaching the tracking, in 18 %
+                // of all sessions, and concentrated exactly where it hurts — 59 % of the sessions
+                // that got as far as issuing a command saw one, against 6 % of those that never
+                // placed a base. Nobody is listening; this stops shouting.
+                commandService.executeCommand((BaseCommand) param);
                 break;
             case SELL_ITEMS:
                 baseItemService.sellItems(((IdsDto) param).getIds(), getPlayerBase());

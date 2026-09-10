@@ -51,6 +51,60 @@
 
     track('WASM_BOOTSTRAP');
 
+    /*
+     * Whether this failure is worth a second attempt.
+     *
+     * Seven days of PROD split the 179 dead starts in this file almost in half:
+     *
+     *   51  TypeError: Failed to fetch
+     *   46  WebAssembly compilation aborted: Network error: Response body loading was aborted
+     *   66  CompileError: ... enable with --experimental-wasm-gc / Invalid opcode 0xfb
+     *
+     * The first two are a connection that died mid-body - a phone changing cell inside an in-app
+     * browser, and the median download here is eighteen seconds, so there is plenty of body to
+     * die in the middle of. Those are worth retrying.
+     *
+     * A CompileError is not. The browser has read the bytes and cannot execute them; fetching the
+     * same eight megabytes again produces the same verdict, on a device that already waited
+     * eighteen seconds for the first copy. Retrying it would be cruelty with extra steps.
+     */
+    function worthRetrying(error) {
+        if (error instanceof WebAssembly.CompileError) {
+            return false;
+        }
+        var text = String(error && error.message ? error.message : error);
+        return /Failed to fetch|NetworkError|Network error|aborted|network|load failed/i.test(text);
+    }
+
+    /*
+     * Three attempts, 1s and 3s apart. The gaps are there because an instant retry hits the same
+     * dead radio; they are short because the player has already been waiting and a fourth attempt
+     * would be past anyone's patience - PROD says a mobile visitor gives up at around 11 seconds.
+     */
+    async function loadWithRetry() {
+        var versuche = 3;
+        for (var i = 1; ; i++) {
+            try {
+                return await TeaVM.wasmGC.load("/teavm-client/razarion-client.wasm?v=" + BUILD, {
+                    noAutoImports: true,
+                    stackDeobfuscator: {
+                        enabled: false
+                    }
+                });
+            } catch (error) {
+                if (i >= versuche || !worthRetrying(error)) {
+                    throw error;
+                }
+                console.warn('[TeaVM Client] WASM download failed (attempt ' + i + '), retrying:', error);
+                // Reported per attempt, not only at the end: without it a start that succeeded on
+                // the second try is indistinguishable from one that never stumbled, and the
+                // question this retry has to answer is how often it is actually needed.
+                track('WASM_RETRY', 'attempt ' + i + ': ' + error);
+                await new Promise(function (ok) { setTimeout(ok, i * 2000 - 1000); });
+            }
+        }
+    }
+
     var script = document.createElement('script');
     script.src = '/teavm-client/classes.wasm-runtime.js?v=' + BUILD;
     script.onload = async function() {
@@ -65,12 +119,7 @@
              * has no global imports at all (only teavmJso/teavmMath/teavmDate/teavm functions),
              * so skipping that step costs nothing.
              */
-            var teavm = await TeaVM.wasmGC.load("/teavm-client/razarion-client.wasm?v=" + BUILD, {
-                noAutoImports: true,
-                stackDeobfuscator: {
-                    enabled: false
-                }
-            });
+            var teavm = await loadWithRetry();
 
             console.log('[TeaVM Client] WASM-GC module loaded');
 
@@ -121,6 +170,19 @@
             console.error('[TeaVM Client] Failed to initialize WebAssembly GC client:', error);
             // Needs Chrome 119+, Firefox 120+ or Safari 18.2+. Older browsers land here.
             track('WASM_LOAD', 'WASM-GC init failed: ' + error);
+            /*
+             * Tell the player. Until now this line was the whole response to a start that can
+             * never finish: 179 sessions in seven days watched a progress bar with nothing behind
+             * it, and one of them reached the game.
+             *
+             * A CompileError is the browser saying it cannot run this, which is a sentence a
+             * person can act on. Everything else here is a network that gave up after three
+             * attempts, and "reload" is the honest advice for that - so it keeps the ordinary
+             * loading screen rather than claiming the browser is at fault.
+             */
+            if (error instanceof WebAssembly.CompileError && window.RAZ_showUnsupported) {
+                window.RAZ_showUnsupported('compile failed: ' + error);
+            }
         }
     };
     script.onerror = function(error) {

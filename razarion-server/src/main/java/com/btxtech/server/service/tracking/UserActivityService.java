@@ -27,6 +27,9 @@ public class UserActivityService {
     @PostConstruct
     public void ensureIndexes() {
         TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, USER_ACTIVITY);
+        // Separate call, separate try: an index that collides with an Atlas-created one fails with
+        // error 85, and one failure must not take the other index with it.
+        TrackingIndexes.ensureActivityTypeIndex(mongoTemplate, logger, USER_ACTIVITY);
     }
 
     public void onBaseCreated(String userId, int baseId) {

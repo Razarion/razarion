@@ -16,7 +16,9 @@
     <packaging>jar</packaging>
 
     <properties>
-        <teavm.version>0.15.0</teavm.version>
+        <!-- 0.16.0-dev-* lives only on teavm.org, see the repository block in the root pom and
+             docs/architecture/teavm-016-evaluation.md for what the step from 0.15.0 costs. -->
+        <teavm.version>0.16.0-dev-4</teavm.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <!-- TeaVM build settings (defaults for development) -->

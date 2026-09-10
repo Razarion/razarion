@@ -159,64 +159,86 @@
       }
 
       /*
-       * Second arm, same coin: how big the shadow map is. See ShadowQuality in the renderer for
-       * what the two halves do and why 4096 on a 640-pixel-wide phone is 61 shadow texels per
-       * visible pixel.
+       * Three shadow arms lived here for two days - map size, caster list, refresh rate - and
+       * all three came back null. See ShadowQuality in the renderer for the numbers. Matched on
+       * the device class present in both halves they moved renderP50 by nothing, and the 20 %
+       * that showed up unmatched was six flagship GPUs landing on one side by chance.
        *
-       * Decided here rather than in the renderer, for the reason the boot arm is decided here: it
-       * has to reach the capabilities catalogue, which is the only thing a session sends before
-       * anything else. That is what lets the question be "did the faster arm build more bases",
-       * not merely "was the faster arm faster" - the second one the telemetry answers on its own.
-       *
-       * Sticky per browser, like the other two. A player who gets a different shadow map on every
-       * reload is a player whose two visits cannot be compared, and comparing visits is the whole
-       * point of razVisitor above.
-       *
-       * ?shadow=hi|lo forces one, ?shadow=off forgets it. "hi" is the behaviour that ships today.
+       * The sizing rule stayed, without a coin: it costs nothing on speed and gives a phone back
+       * 60 MB of texture memory. The other two are reverted to what shipped before.
        */
-      var SHADOW_ARMS = ['hi', 'lo'];
-      var forcedShadow = new URLSearchParams(location.search).get('shadow');
-      var rememberedShadow = null;
-      try {
-        if (forcedShadow === 'off') {
-          localStorage.removeItem('razShadow');
-        } else if (SHADOW_ARMS.indexOf(forcedShadow) >= 0) {
-          localStorage.setItem('razShadow', forcedShadow);
-        }
-        rememberedShadow = localStorage.getItem('razShadow');
-      } catch (ignored) {
-      }
-      var chosenShadow = SHADOW_ARMS.indexOf(forcedShadow) >= 0 ? forcedShadow : rememberedShadow;
-      w.RAZ_shadowArm = SHADOW_ARMS.indexOf(chosenShadow) >= 0
-        ? chosenShadow
-        : SHADOW_ARMS[Math.floor(Math.random() * SHADOW_ARMS.length)];
 
       /*
-       * Third arm, and a separate coin from the one above on purpose: whether the scenery casts
-       * shadows at all. See ShadowCasters in the renderer - the shadow pass draws the whole scene
-       * a second time, and PROD says the vegetation is almost all of it.
+       * Can this browser run the client at all?
        *
-       * Two independent flips rather than one four-way choice. Each effect is then read at the
-       * full sample size, averaged over the other, instead of cutting thin traffic into quarters.
+       * The module below declares an array type AND calls a GC instruction on it. Both halves are
+       * needed, and the second one is the half that was missing.
        *
-       * ?casters=all|units forces one, ?casters=off forgets it. "all" is what ships today.
+       * Seven days of PROD, 179 dead starts in WASM_LOAD, joined to this catalogue:
+       *
+       *   error mentions a TYPE   (Unknown type code 0x5e, array types not enabled)   40 sessions
+       *   this probe already said wasmgc=0                                            40 sessions
+       *   error mentions an OPCODE (Invalid opcode 0xfb)                              26 sessions
+       *   this probe said wasmgc=1                                                    26 sessions
+       *
+       * The correspondence is exact, and it names the gap: those 26 browsers know the GC *types*
+       * and reject the GC *instructions*, so a probe made only of types waves them through. They
+       * then download the whole client and die compiling it.
+       *
+       * Bytes, for anyone who has to change them: magic and version; type section with (array i8)
+       * at index 0 and (func) at index 1; function section; code section with
+       * `i32.const 0 ; array.new_default 0 ; drop ; end`. array.new_default is 0xFB 0x07 - 0x06
+       * and 0x08 are different instructions and were rejected by a browser that supports GC, which
+       * is exactly the false negative to avoid here. Verified against Chrome 152.
        */
-      var CASTER_ARMS = ['all', 'units'];
-      var forcedCasters = new URLSearchParams(location.search).get('casters');
-      var rememberedCasters = null;
-      try {
-        if (forcedCasters === 'off') {
-          localStorage.removeItem('razCasters');
-        } else if (CASTER_ARMS.indexOf(forcedCasters) >= 0) {
-          localStorage.setItem('razCasters', forcedCasters);
+      function hasWasmGc() {
+        if (typeof WebAssembly === 'undefined' || !WebAssembly.validate) {
+          return false;
         }
-        rememberedCasters = localStorage.getItem('razCasters');
-      } catch (ignored) {
+        return WebAssembly.validate(new Uint8Array([
+          0, 97, 115, 109, 1, 0, 0, 0,
+          1, 7, 2, 0x5E, 0x78, 0x00, 0x60, 0x00, 0x00,
+          3, 2, 1, 1,
+          10, 10, 1, 8, 0, 0x41, 0x00, 0xFB, 0x07, 0x00, 0x1A, 0x0B
+        ]));
       }
-      var chosenCasters = CASTER_ARMS.indexOf(forcedCasters) >= 0 ? forcedCasters : rememberedCasters;
-      w.RAZ_casterArm = CASTER_ARMS.indexOf(chosenCasters) >= 0
-        ? chosenCasters
-        : CASTER_ARMS[Math.floor(Math.random() * CASTER_ARMS.length)];
+
+      /*
+       * Say so, instead of loading nineteen megabytes into a browser that cannot run them.
+       *
+       * Of 1356 sessions in seven days, 74 answered the probe with no - 5.5 % - and *none of them*
+       * ever reached RUN_GAME. Not one. They watched a progress bar that could never finish,
+       * because nothing about the failure is visible from the outside: the module downloads fine
+       * and then fails to compile.
+       *
+       * Deliberately replaces the loading text rather than adding to it. A message beside a
+       * running bar reads as a warning about something that is still going to work.
+       */
+      w.RAZ_showUnsupported = function (reason) {
+        try {
+          var label = document.getElementById('raz-boot-label');
+          if (label) {
+            label.innerHTML = 'This browser cannot run Razarion.'
+              + '<br><span style="font-size:0.8em;opacity:0.75">Razarion needs WebAssembly GC:'
+              + ' Chrome 119+, Firefox 120+ or Safari 18.2+.'
+              + ' In-app browsers inside Facebook or Instagram are often older &ndash;'
+              + ' opening this page in your normal browser usually works.</span>';
+          }
+          var track = document.getElementById('raz-boot-track');
+          if (track) {
+            track.style.display = 'none';
+          }
+          var grid = document.getElementById('raz-boot-grid');
+          if (grid) {
+            grid.style.display = 'none';
+          }
+        } catch (ignored) {
+        }
+        try {
+          console.warn('[Razarion] WASM-GC not supported: ' + reason);
+        } catch (ignored) {
+        }
+      };
 
       var params = new URLSearchParams(location.search);
 
@@ -278,8 +300,7 @@
         }
         try {
           add('wasm', typeof WebAssembly !== 'undefined');
-          add('wasmgc', typeof WebAssembly !== 'undefined' && WebAssembly.validate(
-            new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 0x5F, 1, 0x78, 0])));
+          add('wasmgc', hasWasmGc());
         } catch (ignored) {
           add('wasmgc', 'error');
         }
@@ -305,11 +326,6 @@
         // reach is the abort beacon, and that one is joined to this by the game session uuid
         // anyway.
         add('boot', w.RAZ_bootVariant);
-        // Which shadow map this session gets, for the same reason and joined the same way. The
-        // renderer repeats it on every telemetry line; this copy is the one that reaches the
-        // sessions which never get as far as a rendered frame.
-        add('shadow', w.RAZ_shadowArm);
-        add('casters', w.RAZ_casterArm);
         // The browser's own name, where there is one. See where it is made, above.
         if (w.RAZ_visitorId) {
           add('vid', w.RAZ_visitorId);
@@ -333,6 +349,15 @@
         capabilities: capabilities(),
         error: (typeof WebAssembly === 'undefined') ? 'No WebAssembly support' : null
       }));
+
+      // After the beacon, never before it: a browser that cannot play is still a session worth
+      // counting, and the count is how we know whether this message is worth having.
+      try {
+        if (!hasWasmGc()) {
+          w.RAZ_showUnsupported('capability probe');
+        }
+      } catch (ignored) {
+      }
 
       // The player stopped looking at the page. Reported once each for the two cases below.
       var abortReported = false;

@@ -210,9 +210,13 @@ function stage(rows: ProgressStatistic[], name: string) {
  * the table next to it.
  */
 describe('TrackingContainerAnalyzer platform resolution', () => {
-  it('opens on the platform that carries the traffic', () => {
-    // Reddit was the default while every click id in the data was an X one.
-    expect(DEFAULT_FUNNEL_VIEW).toBe(TrackingPlatform.X);
+  it('opens on a view that costs nothing to compute and can never be empty', () => {
+    // Reddit was the default while every click id in the data was an X one, so it opened on an
+    // empty funnel; X replaced it. X is not free, though: as the daily table's platform filter it
+    // makes the server attribute over the whole page-request history, measured at 1013 s on PROD
+    // for a page nobody had touched a setting on. 'all' is the superset of every platform, so it
+    // cannot be the empty view Reddit was, and it needs no attribution pass.
+    expect(DEFAULT_FUNNEL_VIEW).toBe('all');
   });
 
   it('counts a visitor whose campaign is named only by utm_source', () => {

@@ -4,7 +4,8 @@ describe('RenderTelemetry', () => {
   const STATS: RenderTelemetrySceneStats = {
     meshes: 400, activeMeshes: 180, activeIndices: 1234, materials: 88,
     disabledMeshes: 210, instancedMeshes: 380, shadowCasters: 395,
-    shadowMapSize: 2048, shadowArm: 'lo', casterArm: 'units',
+    shadowMapSize: 2048,
+    heapUsedMb: 128.5, heapLimitMb: 512, textureCount: 40, textureMb: 96.25, geometries: 210,
     meshTop: 'Rock:200,Palm:120,ground:20',
     parkedMeshes: 205, parkingFilter: true,
     renderWidth: 1280, renderHeight: 720, hardwareScaling: 1, gpu: 'Test "GPU"'

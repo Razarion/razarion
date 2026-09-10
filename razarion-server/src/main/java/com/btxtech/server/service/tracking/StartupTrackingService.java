@@ -72,6 +72,40 @@ public class StartupTrackingService {
         return mongoTemplate.find(query, StartupTaskJson.class, STARTUP_TASK_COLLECTION);
     }
 
+    /**
+     * The same rows without the attribution fields, for a caller that gets those from
+     * {@link #loadAttemptAttribution} instead.
+     * <p>
+     * A startup writes about seven of these rows per attempt - one per boot phase - and each one
+     * carried its own full copy of the referrer and the click id. Measured over 24 hours: 3,447
+     * documents, 3.07 MB, of which the referrer was 36 % and the fbclid 18 %. The same two strings,
+     * seven times each, for 521 attempts. The history needs them once per attempt, so they are
+     * grouped once and left out here.
+     */
+    public List<StartupTaskJson> loadStartupTaskRows(Date fromDate, Date toDate) {
+        Query query = buildTimeRangeQuery(fromDate, toDate);
+        for (String field : List.of("gameSessionUuid", "httpSessionId", "userId",
+                "serverTime", "taskEnum", "duration", "error")) {
+            query.fields().include(field);
+        }
+        return mongoTemplate.find(query, StartupTaskJson.class, STARTUP_TASK_COLLECTION);
+    }
+
+    /**
+     * What the startup rows of one attempt say about where that visitor came from, one record per
+     * gameSessionUuid - the counterpart of
+     * {@link PageRequestService#loadSessionAttribution} for the startup side.
+     * <p>
+     * Lists rather than single values for the same reason as there: whether a referrer counts is
+     * Java, and the pipeline does the cheap half. landingReferers and firstGameTime stay empty -
+     * neither has a meaning for a startup row.
+     */
+    public Map<String, SessionAttribution> loadAttemptAttribution(Date fromDate, Date toDate) {
+        return TrackingAttribution.perKey(mongoTemplate, STARTUP_TASK_COLLECTION,
+                buildTimeRangeQuery(fromDate, toDate).getQueryObject(),
+                "gameSessionUuid", "referrer");
+    }
+
     public List<StartupTerminatedJson> loadStartupTerminatedJson(Date fromDate, Date toDate) {
         Query query = buildTimeRangeQuery(fromDate, toDate);
         return mongoTemplate.find(query, StartupTerminatedJson.class, STARTUP_TERMINATED_COLLECTION);
