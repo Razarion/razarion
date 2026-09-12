@@ -183,3 +183,64 @@ Two consequences worth keeping:
   `getGlbByDigest` makes Spring MVC answer range requests and advertise `Accept-Ranges: bytes`,
   after which Cloud CDN fills large objects in chunks and the size limit stops mattering. Small
   change, and it makes the caching robust rather than lucky.
+
+## A census of everything the GPU actually holds
+
+The work above shrank the model and left 666 MB reported from the field, which raised the obvious
+question: 666 MB of what? Counted in the running game by walking
+`engine.getLoadedTexturesCache()` on a 2533×1232 screen — every entry there occupies GPU memory
+whoever created it.
+
+| source | memory | textures |
+|---|---|---|
+| **NodeMaterial textures** | **448 MB** | 20, at 2048² and 4096² |
+| **Shadow map + its depth buffer** | **192 MB** | 2, at 4096² |
+| glb, environment, sprites | 148 MB | ~110, mostly 512² |
+| **total** | **787 MB** | 132 |
+
+The model everything had been about was the smallest of the three.
+
+**The materials carried their own copies.** The same images appeared twice in memory:
+`Main_forms_Red` at 2048² from `NodeMaterial: Main 3 'OWN'` and at 512² from the glb, and the same
+for the normal, the metallic-roughness and the occlusion map. The NodeMaterial copies are the ones
+that render, so yesterday's resize had shrunk mostly the copy that does not. Two of them were
+4096².
+
+The material data is a Babylon node-material JSON with its textures embedded as `data:` URIs, so
+the same texel-density argument applies unchanged - and four times harder, because 2048 is two mip
+levels above the 1024 that was already 21 texels per screen pixel on a phone.
+
+| material | images | data | GPU |
+|---|---|---|---|
+| Vehicle main | 10 | 2540 kB | 341 MB |
+| Building main | 4 | 502 kB | 85 MB |
+| Asphalt | 2 | 477 kB | 11 MB |
+| rest | 4 | 160 kB | 4 MB |
+
+Capped at 512: **441 MB → 25 MB**, and the payload 3.59 MB → 0.98 MB.
+
+One trap in doing it: the four Building-main images were PNG, 2048² in about 100 kB each because
+they are nearly flat. Resampling puts noise into flat areas and PNG loses exactly the compression
+that made them small - as 512² PNGs they came out *twice the size of the 2048² originals*. Written
+as WebP they behave normally.
+
+**The shadow map was RGBA for a value with one channel.** An exponential shadow map stores one
+number per texel; Babylon allocates four channels unless told otherwise. `useRedTextureType`, the
+fifth constructor argument, takes 4096² half-float from 128 MB to 32 MB. In the field a third of
+all reported periods run a 4096 map, and their median texture total was 1237 MB against 657 MB for
+the devices on a 1024 map.
+
+Together: **787 MB → 275 MB**, measured the same way in the same scene.
+
+The duplication was then not worth removing on its own. Once the material copies are 512 as well,
+the second copy of each image costs 8 MB rather than the 90 it cost before - not enough to justify
+touching how models resolve their materials.
+
+### Reproducing the material resize
+
+`C:\dev\tmp\mat-ab\` holds the originals, the shrunk versions and the two scripts.
+`mat-inventur.js` lists what is embedded and what it weighs; `mat-resize.js <max>` writes the
+shrunk copies. They read the files fetched from `GET /rest/babylon-material/data/{id}` and the
+result goes back with `POST /rest/babylon-material/upload/{id}` (ADMIN). The scripts walk the whole
+block tree for `data:` URIs rather than looking in an expected place - where a texture sits differs
+by block type.

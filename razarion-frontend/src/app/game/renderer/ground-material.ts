@@ -143,7 +143,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
 
   const mountainNoiseTex = new TextureBlock("Mountain noise");
   uvMountainNoise.output.connectTo(mountainNoiseTex.uv);
-  mountainNoiseTex.texture = new Texture(TEX_PATH + "ground-splatter.jpg", scene);
+  mountainNoiseTex.texture = new Texture(TEX_PATH + "ground-splatter.webp", scene);
 
   // noise centered around 0: (tex.r - 0.5) * strength
   const mountainNoiseCenter = new SubtractBlock("Mountain noise center");
@@ -167,7 +167,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   // Splatter texture — large scale (overall shape)
   const splatterTex = new TextureBlock("Splatter texture");
   uvSplatter.output.connectTo(splatterTex.uv);
-  splatterTex.texture = new Texture(TEX_PATH + "ground-splatter.jpg", scene);
+  splatterTex.texture = new Texture(TEX_PATH + "ground-splatter.webp", scene);
 
   // (splatterTex.r - 0.4) * 0.6 + position.y
   const splatterOffset = floatInput("splatter offset", 0.4);
@@ -222,11 +222,11 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   // ========== Diffuse textures ==========
   const groundUpperDiffuse = new TextureBlock("Ground upper");
   uvGroundUpper.output.connectTo(groundUpperDiffuse.uv);
-  groundUpperDiffuse.texture = new Texture(TEX_PATH + "ground-upper-diffuse.jpg", scene);
+  groundUpperDiffuse.texture = new Texture(TEX_PATH + "ground-upper-diffuse.webp", scene);
 
   const groundUnderDiffuse = new TextureBlock("Ground under");
   uvGroundUnder.output.connectTo(groundUnderDiffuse.uv);
-  groundUnderDiffuse.texture = new Texture(TEX_PATH + "ground-under-diffuse.jpg", scene);
+  groundUnderDiffuse.texture = new Texture(TEX_PATH + "ground-under-diffuse.webp", scene);
 
   // ========== TriPlanar for mountain (no stretching on steep faces) ==========
   const triPlanarScale = floatInput("triplanar scale", 0.2);
@@ -237,13 +237,13 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   const mountainDiffuseTriplanar = new TriPlanarBlock("TriPlanar diffuse");
   triPlanarPos.output.connectTo(mountainDiffuseTriplanar.position);
   worldNormal.output.connectTo(mountainDiffuseTriplanar.normal);
-  mountainDiffuseTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-diffuse.jpg", scene);
+  mountainDiffuseTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-diffuse.webp", scene);
 
   // Mountain ambient occlusion (also triplanar)
   const mountainAOTriplanar = new TriPlanarBlock("TriPlanar AO");
   triPlanarPos.output.connectTo(mountainAOTriplanar.position);
   worldNormal.output.connectTo(mountainAOTriplanar.normal);
-  mountainAOTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-ao.jpg", scene);
+  mountainAOTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-ao.webp", scene);
 
   // Darken mountain diffuse for better contrast against grass
   const mountainDiffuseDarken = new ScaleBlock("Mountain diffuse darken");
@@ -302,7 +302,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   // Beach diffuse texture
   const beachDiffuse = new TextureBlock("Beach diffuse");
   uvBeach.output.connectTo(beachDiffuse.uv);
-  beachDiffuse.texture = new Texture(TEX_PATH + "ground-beach-diffuse.jpg", scene);
+  beachDiffuse.texture = new Texture(TEX_PATH + "ground-beach-diffuse.webp", scene);
 
   // Darken sand near waterline (wet sand effect)
   const beachDiffuseWet = new ScaleBlock("beach diffuse wet");
@@ -370,7 +370,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
 
   const groundUnderNormTex = new TextureBlock("Ground under norm");
   uvGroundUnder.output.connectTo(groundUnderNormTex.uv);
-  groundUnderNormTex.texture = new Texture(TEX_PATH + "ground-under-norm.jpg", scene);
+  groundUnderNormTex.texture = new Texture(TEX_PATH + "ground-under-norm.webp", scene);
 
   // Flip green channel (DirectX → OpenGL normal map convention)
   const underNormFlipG = new OneMinusBlock("Flip under norm G");
@@ -615,7 +615,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
 
   const foamTex = new TextureBlock("Foam texture");
   foamUv.xy.connectTo(foamTex.uv);
-  foamTex.texture = new Texture(TEX_PATH + "foam-wave.png", scene);
+  foamTex.texture = new Texture(TEX_PATH + "foam-wave.webp", scene);
 
   // Foam alpha = textureAlpha * foamFade * foamOpacity
   const foamAlphaFaded = new MultiplyBlock("foam alpha faded");

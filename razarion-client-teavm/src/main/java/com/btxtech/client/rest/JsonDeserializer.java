@@ -218,8 +218,6 @@ public class JsonDeserializer {
         r.setOnLevelUp(json.getNullableInt("onLevelUp"));
         r.setOnBoxPicked(json.getNullableInt("onBoxPicked"));
         r.setOnBaseLost(json.getNullableInt("onBaseLost"));
-        r.setTerrainLoopWater(json.getNullableInt("terrainLoopWater"));
-        r.setTerrainLoopLand(json.getNullableInt("terrainLoopLand"));
         return r;
     }
 
@@ -444,8 +442,6 @@ public class JsonDeserializer {
         r.setSpawnParticleSystemId(json.getNullableInt("spawnParticleSystemId"));
         r.setSpawnAudioId(json.getNullableInt("spawnAudioId"));
         r.setDemolitionStepEffects(list(json, "demolitionStepEffects", JsonDeserializer::deserializeDemolitionStepEffect));
-        r.setDemolitionImageId(json.getNullableInt("demolitionImageId"));
-        r.setBuildupTextureId(json.getNullableInt("buildupTextureId"));
         r.setExplosionAudioItemConfigId(json.getNullableInt("explosionAudioItemConfigId"));
         r.setExplosionParticleId(json.getNullableInt("explosionParticleId"));
         return r;

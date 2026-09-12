@@ -106,7 +106,7 @@ export function buildWhitecapMaterial(scene: Scene): NodeMaterial {
 
   const noiseTex1 = new TextureBlock("WC noise 1");
   uvAnim1.output.connectTo(noiseTex1.uv);
-  noiseTex1.texture = new Texture(TEX_PATH + "foam-noise.png", scene);
+  noiseTex1.texture = new Texture(TEX_PATH + "foam-noise.webp", scene);
 
   // ========== Noise layer 2: counter-drift ==========
   const timeSpeed2 = new ScaleBlock("wc time speed 2");
@@ -131,7 +131,7 @@ export function buildWhitecapMaterial(scene: Scene): NodeMaterial {
 
   const noiseTex2 = new TextureBlock("WC noise 2");
   uvAnim2.output.connectTo(noiseTex2.uv);
-  noiseTex2.texture = new Texture(TEX_PATH + "foam-noise.png", scene);
+  noiseTex2.texture = new Texture(TEX_PATH + "foam-noise.webp", scene);
 
   // ========== Combine noise: multiply → sparse positioning mask ==========
   const noiseCombined = new MultiplyBlock("wc noise combined");

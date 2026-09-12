@@ -151,7 +151,16 @@ class HandleGroups {
 }
 
 export class TrackingContainerAnalyzer {
-  private trackingContainer!: TrackingContainer;
+  /**
+   * Absent until the load returns, which is why it is optional and every read below goes through
+   * ?. - the same shape AttentionAnalyzer and FirstInteractionAnalyzer already use.
+   *
+   * It was declared with ! and read with a plain dot, so the ?? [] fallbacks never got a chance:
+   * touching the platform or device filter before the container arrived threw
+   * "Cannot read properties of undefined (reading 'pageRequests')" and left the funnel blank. The
+   * request behind it takes about two minutes, so the window is not a narrow one.
+   */
+  private trackingContainer?: TrackingContainer;
   private view: FunnelView = DEFAULT_FUNNEL_VIEW;
   private device: DeviceFilter = 'all';
   /** Built from the container alone, so it survives a change of view or device. */
@@ -612,19 +621,19 @@ export class TrackingContainerAnalyzer {
    * of the Meta traffic back into the base of every rate on the page. See isAppFetch.
    */
   private pageRequests(): PageRequest[] {
-    return (this.trackingContainer.pageRequests ?? []).filter(pageRequest => !isAppFetch(pageRequest.userAgent));
+    return (this.trackingContainer?.pageRequests ?? []).filter(pageRequest => !isAppFetch(pageRequest.userAgent));
   }
 
   private startupTaskJsons(): StartupTaskJson[] {
-    return this.trackingContainer.startupTaskJsons ?? [];
+    return this.trackingContainer?.startupTaskJsons ?? [];
   }
 
   private startupTerminatedJsons(): StartupTerminatedJson[] {
-    return this.trackingContainer.startupTerminatedJson ?? [];
+    return this.trackingContainer?.startupTerminatedJson ?? [];
   }
 
   private userActivities(): UserActivity[] {
-    return this.trackingContainer.userActivities ?? [];
+    return this.trackingContainer?.userActivities ?? [];
   }
 
   /** Which user was created in which http session - the join from a visitor to a player. */

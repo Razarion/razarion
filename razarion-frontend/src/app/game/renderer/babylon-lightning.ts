@@ -5,7 +5,7 @@ export class BabylonLightning {
   private static readonly DEFAULT_LIFETIME_MS = 700;
   private static readonly PEAK_MS = 70;
   private static readonly WIDTH = 10.0;
-  private static readonly SHEET_URL = "renderer/textures/lightning-sprite.png";
+  private static readonly SHEET_URL = "renderer/textures/lightning-sprite.webp";
   private static readonly FRAME_MS = 60;
   // 2x2 sprite sheet: cell (uOffset, vOffset) values, scale is 0.5 in both axes.
   private static readonly FRAMES: Array<[number, number]> = [

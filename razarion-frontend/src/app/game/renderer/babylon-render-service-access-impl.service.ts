@@ -390,7 +390,18 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // shortening the caster list or halving the refresh rate. It stayed for the memory — 4 MB on a
     // phone against 64 MB — which is the one axis still open. Both were reverted to what shipped.
     this.shadowMapSize = ShadowQuality.size(this.engine.getRenderWidth(), this.engine.getRenderHeight());
-    this.shadowGenerator = new ShadowGenerator(this.shadowMapSize, this.directionalLight);
+    // The fifth argument is useRedTextureType, and it is worth four times its length in memory.
+    //
+    // A shadow map is one number per texel - how far away the nearest caster is - and an
+    // exponential shadow map stores exactly that one number. Babylon nevertheless allocates RGBA
+    // by default, so three of the four channels held nothing. Counted in the running game on a
+    // 2533x1232 screen: 4096x4096 half float RGBA is 128 MB, and a single red channel is 32.
+    //
+    // That is not a corner of the budget. A census of every loaded texture there came to 787 MB,
+    // of which the shadow map was 128 and the whole glb, after yesterday's resize, was about 148.
+    // In the field a third of all reported periods run a 4096 map.
+    this.shadowGenerator = new ShadowGenerator(this.shadowMapSize, this.directionalLight, false,
+      null, true);
     this.shadowGenerator.useExponentialShadowMap = true;
     this.shadowGenerator.darkness = 0.6;
     console.log(`[Razarion] Schattenkarte: ${this.shadowMapSize}x${this.shadowMapSize} `
@@ -567,7 +578,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         if (measure) {
           const renderEnd = performance.now();
           const renderMs = renderEnd - renderStart;
-          this.renderTelemetry?.recordFrame(renderEnd, renderMs, drawCounter?.current ?? -1);
+          this.renderTelemetry?.recordFrame(renderEnd, renderMs, drawCounter?.current ?? -1,
+            this.cameraTerrainDistance);
           if (perfActive) {
             this.perfOverlay!.record(renderEnd, renderMs, this.engine.getFps());
             this.perfOverlay!.draw();
@@ -580,19 +592,17 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       }
     });
 
-    // Start atmosphere audio after a short delay to ensure game context is ready
+    // The rest of the audio configuration still has to reach the service; only the two terrain
+    // loops are gone. Same delay as before, because what is being waited for is the cold
+    // context, and that has not changed.
     setTimeout(() => {
       try {
         const audioConfig = this.gwtAngularService.gwtAngularFacade.gameUiControl?.getColdGameUiContext()?.getAudioConfig?.();
         if (audioConfig) {
           this.babylonAudioService.configureFromAudioConfig(audioConfig);
-          this.babylonAudioService.startAtmosphere(
-            audioConfig.getTerrainLoopWater(),
-            audioConfig.getTerrainLoopLand()
-          );
         }
       } catch (e) {
-        console.error("BabylonRenderServiceAccessImpl: Failed to start atmosphere audio", e);
+        console.error("BabylonRenderServiceAccessImpl: Failed to configure audio", e);
       }
     }, 2000);
   }

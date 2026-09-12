@@ -219,7 +219,7 @@ export function buildQuestPlaceVisualizationMaterial(scene: Scene): NodeMaterial
 
   const noiseTex1 = new TextureBlock("noise 1");
   noiseUv1.output.connectTo(noiseTex1.uv);
-  noiseTex1.texture = new Texture(TEX_PATH + "foam-noise.png", scene);
+  noiseTex1.texture = new Texture(TEX_PATH + "foam-noise.webp", scene);
 
   // Layer 2 — counter-drift toward lower-left, slightly different speed so the
   // two layers never sync up and the interference pattern keeps evolving.
@@ -241,7 +241,7 @@ export function buildQuestPlaceVisualizationMaterial(scene: Scene): NodeMaterial
 
   const noiseTex2 = new TextureBlock("noise 2");
   noiseUv2.output.connectTo(noiseTex2.uv);
-  noiseTex2.texture = new Texture(TEX_PATH + "foam-noise.png", scene);
+  noiseTex2.texture = new Texture(TEX_PATH + "foam-noise.webp", scene);
 
   // Combine via screen blend: 1 - (1-a)(1-b) = a + b - a*b.
   // Brighter than multiply (mean ~0.5 vs ~0.25 for uniform layers) while

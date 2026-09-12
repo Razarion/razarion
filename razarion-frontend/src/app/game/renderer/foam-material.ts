@@ -200,7 +200,7 @@ export function buildFoamMaterial(scene: Scene): NodeMaterial {
 
   const noiseTex1 = new TextureBlock("Noise texture 1");
   uvAnimated1.output.connectTo(noiseTex1.uv);
-  noiseTex1.texture = new Texture(TEX_PATH + "foam-noise.png", scene);
+  noiseTex1.texture = new Texture(TEX_PATH + "foam-noise.webp", scene);
 
   // Layer 2: faster counter-drift
   const timeSpeed2 = new ScaleBlock("time speed 2");
@@ -225,7 +225,7 @@ export function buildFoamMaterial(scene: Scene): NodeMaterial {
 
   const noiseTex2 = new TextureBlock("Noise texture 2");
   uvAnimated2.output.connectTo(noiseTex2.uv);
-  noiseTex2.texture = new Texture(TEX_PATH + "foam-noise.png", scene);
+  noiseTex2.texture = new Texture(TEX_PATH + "foam-noise.webp", scene);
 
   // Combine noise layers (red channel)
   const noiseCombined = new MultiplyBlock("noise combined");

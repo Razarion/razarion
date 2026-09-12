@@ -68,11 +68,11 @@ export class BabylonResourceDecal {
     this.rendererService.directionalLight.includedOnlyMeshes.push(this.decalMesh);
     this.decalMaterial = new StandardMaterial("resourceDecalMat", this.scene);
 
-    const diffuseTex = new Texture("renderer/textures/resource-decal-diffuse.png", this.scene);
+    const diffuseTex = new Texture("renderer/textures/resource-decal-diffuse.webp", this.scene);
     diffuseTex.hasAlpha = true;
     this.decalMaterial.diffuseTexture = diffuseTex;
     this.decalMaterial.emissiveTexture = diffuseTex;
-    const bumpTex = new Texture("renderer/textures/resource-decal-normal.png", this.scene);
+    const bumpTex = new Texture("renderer/textures/resource-decal-normal.webp", this.scene);
     bumpTex.level = 2.0;
     this.decalMaterial.bumpTexture = bumpTex;
     this.decalMaterial.useAlphaFromDiffuseTexture = true;

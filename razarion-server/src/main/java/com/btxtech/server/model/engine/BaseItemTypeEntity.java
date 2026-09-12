@@ -67,12 +67,6 @@ public class BaseItemTypeEntity extends BaseEntity {
     private double dropBoxPossibility;
     private double boxPickupRange;
     private Integer unlockCrystals;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ImageLibraryEntity buildupTexture;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private ImageLibraryEntity demolitionImage;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private WeaponTypeEntity weaponType;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -143,12 +137,6 @@ public class BaseItemTypeEntity extends BaseEntity {
         baseItemType.setSpawnDurationMillis(spawnDurationMillis);
         if (thumbnail != null) {
             baseItemType.setThumbnail(thumbnail.getId());
-        }
-        if (demolitionImage != null) {
-            baseItemType.setDemolitionImageId(demolitionImage.getId());
-        }
-        if (buildupTexture != null) {
-            baseItemType.setBuildupTextureId(buildupTexture.getId());
         }
         if (weaponType != null) {
             baseItemType.setWeaponType(weaponType.toWeaponType());
@@ -312,14 +300,6 @@ public class BaseItemTypeEntity extends BaseEntity {
 
     public Model3DEntity getModel3DEntity() {
         return model3DEntity;
-    }
-
-    public void setBuildupTexture(ImageLibraryEntity buildupTexture) {
-        this.buildupTexture = buildupTexture;
-    }
-
-    public void setDemolitionImage(ImageLibraryEntity demolitionImage) {
-        this.demolitionImage = demolitionImage;
     }
 
     public void setSpawnAudio(AudioLibraryEntity spawnAudio) {

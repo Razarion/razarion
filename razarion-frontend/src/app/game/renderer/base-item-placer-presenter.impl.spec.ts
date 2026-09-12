@@ -76,6 +76,9 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
       setupTerrainPickPoint: (canvasX: number = scene.pointerX, canvasY: number = scene.pointerY) =>
         skyAt(canvasX, canvasY) ? new PickingInfo() : hit(groundUnder(canvasX, canvasY)),
       setupTerrainPickPointFromPosition: () => null,
+      // The ground this fixture invents is flat at y=0 - see groundUnder(). Only the nudge asks,
+      // and only for the spot it settles on.
+      getTerrainHeightAt: () => 0,
       // The placer reports when it appears, when a placement is refused and when one goes through -
       // see PLACER_SHOWN in first-interaction-tracker.service.ts. Collected rather than ignored,
       // so the tests below can say which of the three a given gesture produced.
@@ -394,5 +397,53 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
     fire(PointerEventTypes.POINTERDOWN, 1, 'mouse');
 
     expect(places).toEqual([{x: 40, z: 0}]);
+  });
+
+  /**
+   * Where the placer opens. It used to take the middle of the screen and colour the ghost red if
+   * the game would not build there, which on PROD was 44% of first clicks.
+   */
+  describe('the spot it opens on', () => {
+    /** Makes validity depend on where the ghost stands, which the flat mock cannot express. */
+    function blockWithin(radius: number) {
+      let at = {x: 0, z: 0};
+      (placer as any).onMove = (x: number, z: number) => {
+        at = {x, z};
+        moves.push({x, z});
+      };
+      (placer as any).isPositionValid = () => Math.hypot(at.x, at.z) > radius;
+    }
+
+    it('moves the ghost off an occupied spot to one the game accepts', () => {
+      blockWithin(15);
+      moves.length = 0;
+      presenter.activate(placer);
+
+      const settled = moves[moves.length - 1];
+      expect(Math.hypot(settled.x, settled.z)).toBeGreaterThan(15);
+    });
+
+    /**
+     * The ghost has to end up standing where the last check was made. Probing leaves the placer
+     * on whichever spot it tried last, and its error text with it - so a search that gave up
+     * without putting the ghost back would leave the bubble naming a reason for a position the
+     * player is not looking at.
+     */
+    it('puts the ghost back where it opened when nothing near is free', () => {
+      blockWithin(Number.POSITIVE_INFINITY);
+      moves.length = 0;
+      presenter.activate(placer);
+
+      expect(moves[moves.length - 1]).toEqual({x: 0, z: 0});
+    });
+
+    it('leaves a spot alone when the game already accepts it', () => {
+      positionValid = true;
+      moves.length = 0;
+      presenter.activate(placer);
+
+      // One move, not thirty-three: no ring is searched when there is nothing to search for.
+      expect(moves).toEqual([{x: 0, z: 0}]);
+    });
   });
 });

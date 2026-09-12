@@ -54,9 +54,7 @@ export interface ColdGameUiContext {
 }
 
 export interface AudioConfig {
-  getTerrainLoopWater(): number | null;
 
-  getTerrainLoopLand(): number | null;
 
   getOnQuestActivated(): number | null;
 }

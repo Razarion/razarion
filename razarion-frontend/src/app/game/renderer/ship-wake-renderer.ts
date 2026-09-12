@@ -12,7 +12,7 @@ import {
 import {BowWaveHalo} from "./bow-wave-halo";
 
 // Ship wake renderer: per ship, two continuous ribbon meshes (port + starboard
-// arm) drawn with foam-wave.png on a transparent unlit StandardMaterial. Each
+// arm) drawn with foam-wave.webp on a transparent unlit StandardMaterial. Each
 // arm is a single merged mesh with shared vertices between segments — the
 // ribbon stays smooth where adjacent segments meet. Plus a bow-wave foam halo
 // under the hull (delegated to BowWaveHalo).
@@ -173,7 +173,7 @@ class WakeArm {
 }
 
 export class ShipWakeRenderer {
-  // Single shared material for all ship wakes — foam-wave.png on a transparent,
+  // Single shared material for all ship wakes — foam-wave.webp on a transparent,
   // unlit StandardMaterial.
   private static sharedMaterial: Material | null = null;
 
@@ -257,7 +257,7 @@ export class ShipWakeRenderer {
   private static getMaterial(scene: Scene): Material {
     if (!ShipWakeRenderer.sharedMaterial) {
       const mat = new StandardMaterial("ShipWakeMat", scene);
-      const tex = new Texture("renderer/textures/foam-wave.png", scene);
+      const tex = new Texture("renderer/textures/foam-wave.webp", scene);
       tex.hasAlpha = true;
       // Prevent shared cache from being collected when one wake quad is disposed.
       tex.dispose = () => {};

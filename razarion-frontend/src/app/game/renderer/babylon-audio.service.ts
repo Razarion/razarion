@@ -8,9 +8,6 @@ import type {AudioConfig, AudioItemConfig} from "../../gwtangular/GwtAngularFaca
 
 const ENVIRONMENT_VOLUME = 0.1;
 const MAX_INSTANCES = 5;
-const ATMOSPHERE_VOLUME = 0.3;
-const ATMOSPHERE_CROSSFADE_DURATION = 1.0;
-const ATMOSPHERE_CHECK_INTERVAL = 500;
 // Distance at which a spatial sound fades to silence. 100 units was inaudible
 // for any sound played beyond camera-zoom range (e.g. defensive Tesla coils
 // at base perimeter while the player watches frontline combat).
@@ -28,9 +25,7 @@ export class BabylonAudioService {
   // disposing the underlying Web Audio source mid-stream produces a quiet click
   // instead of the full sound. Sounds are removed and disposed on completion.
   private activeOneShots = new Set<AbstractSound>();
-  private waterLoop: AbstractSound | null = null;
-  private landLoop: AbstractSound | null = null;
-  private atmosphereInterval: ReturnType<typeof setInterval> | null = null;
+
   private currentTerrainIsWater = false;
   private rendererService: any = null;
   private audioConfig: AudioConfig | null = null;
@@ -221,103 +216,6 @@ export class BabylonAudioService {
   playQuestActivatedAudio() {
     if (this.audioConfig?.getOnQuestActivated()) {
       this.playAudio(this.audioConfig.getOnQuestActivated()!);
-    }
-  }
-
-  async startAtmosphere(waterAudioId: number | null, landAudioId: number | null): Promise<void> {
-    if (!this.audioEngine) {
-      return;
-    }
-    if (!waterAudioId && !landAudioId) {
-      return;
-    }
-
-    try {
-      if (waterAudioId) {
-        this.waterLoop = await CreateSoundAsync('atmosphere-water', `/rest/audio/${waterAudioId}`, {
-          loop: true,
-          volume: 0,
-          maxInstances: 1,
-        }, this.audioEngine);
-        this.waterLoop.play();
-      }
-
-      if (landAudioId) {
-        this.landLoop = await CreateSoundAsync('atmosphere-land', `/rest/audio/${landAudioId}`, {
-          loop: true,
-          volume: ATMOSPHERE_VOLUME,
-          maxInstances: 1,
-        }, this.audioEngine);
-        this.landLoop.play();
-      }
-
-      // Start with land as default
-      this.currentTerrainIsWater = false;
-
-      this.atmosphereInterval = setInterval(() => this.updateAtmosphere(), ATMOSPHERE_CHECK_INTERVAL);
-    } catch (e) {
-      console.error("BabylonAudioService: Failed to start atmosphere loops", e);
-    }
-  }
-
-  private updateAtmosphere(): void {
-    if (!this.rendererService) {
-      return;
-    }
-
-    try {
-      const center = this.rendererService.setupCenterGroundPosition();
-      if (!center || !isFinite(center.x) || !isFinite(center.z)) {
-        return;
-      }
-
-      const height = this.rendererService.getTerrainHeightAt(center.x, center.z);
-      if (height === null) {
-        return;
-      }
-
-      const isWater = height <= 0;
-      if (isWater === this.currentTerrainIsWater) {
-        return;
-      }
-
-      this.currentTerrainIsWater = isWater;
-
-      if (isWater) {
-        this.setLoopVolume(this.waterLoop, ATMOSPHERE_VOLUME);
-        this.setLoopVolume(this.landLoop, 0);
-      } else {
-        this.setLoopVolume(this.waterLoop, 0);
-        this.setLoopVolume(this.landLoop, ATMOSPHERE_VOLUME);
-      }
-    } catch (e) {
-      // Silently ignore errors during atmosphere update
-    }
-  }
-
-  private setLoopVolume(sound: AbstractSound | null, volume: number): void {
-    if (!sound) {
-      return;
-    }
-    try {
-      sound.setVolume(volume, {duration: ATMOSPHERE_CROSSFADE_DURATION});
-    } catch (e) {
-      // Ramp already in progress — ignore
-    }
-  }
-
-  stopAtmosphere(): void {
-    if (this.atmosphereInterval !== null) {
-      clearInterval(this.atmosphereInterval);
-      this.atmosphereInterval = null;
-    }
-    if (this.waterLoop) {
-      this.waterLoop.dispose();
-      this.waterLoop = null;
-    }
-    if (this.landLoop) {
-      this.landLoop.dispose();
-      this.landLoop = null;
     }
   }
 }

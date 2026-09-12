@@ -136,6 +136,18 @@ export class RenderTelemetry {
   private readonly tickGapMs: number[] = [];
   private readonly clientTickMs: number[] = [];
   private readonly longFrames: number[] = [0, 0, 0];
+  /**
+   * Camera height above the terrain at the view centre, one sample per frame. Percentiles over
+   * frames are percentiles over time, because frames are what time is made of here - so p50 is
+   * the zoom the session actually played at, not a zoom it merely passed through.
+   * <p>
+   * It exists to answer whether the renderer textures can be made smaller. Their texel density
+   * was measured against the starting view (height 30) and looked two to seven times finer than
+   * the screen can show - but the zoom clamps down to 5, and at that end every ground texture is
+   * already too coarse for the pixels it covers. Shrinking them is only defensible if nobody
+   * goes there. This says whether anybody does.
+   */
+  private readonly cameraHeight: number[] = [];
 
   private periodStart: number | null = null;
   private lastFrameTime: number | null = null;
@@ -152,8 +164,9 @@ export class RenderTelemetry {
    * @param now       performance.now() taken right after scene.render() returned
    * @param renderMs  CPU milliseconds spent inside scene.render()
    * @param drawCalls GL draw calls that frame took, or -1 where the engine keeps no counter
+   * @param cameraHeight camera height above the terrain at the view centre, i.e. the zoom level
    */
-  recordFrame(now: number, renderMs: number, drawCalls: number): void {
+  recordFrame(now: number, renderMs: number, drawCalls: number, cameraHeight: number): void {
     if (this.periodStart === null) {
       this.periodStart = now;
     }
@@ -170,6 +183,7 @@ export class RenderTelemetry {
     this.lastFrameTime = now;
     this.renderMs.push(renderMs);
     this.drawCalls.push(drawCalls);
+    this.cameraHeight.push(cameraHeight);
 
     // Both conditions, not either: time alone would turn two frames into a percentile, and frames
     // alone would turn a burst into a period. A device that meets one of them late meets the pair
@@ -226,6 +240,10 @@ export class RenderTelemetry {
     const draw = this.percentiles(this.drawCalls);
     const gap = this.percentiles(this.tickGapMs);
     const apply = this.percentiles(this.clientTickMs);
+    // Reported low end first, unlike every other series on this line: for a frame time the tail
+    // that hurts is the slow one, for zoom it is the close one. p50 is the view the session
+    // played at, min and p05 say how far in it ever went.
+    const zoom = this.lowPercentiles(this.cameraHeight);
     const fps = frames / (periodMs / 1000);
 
     // Flat, unique key=value pairs on one line: the analysis is a regex over Cloud Logging output,
@@ -246,6 +264,7 @@ export class RenderTelemetry {
       `meshTop="${this.clean(stats.meshTop)}" ` +
       `heapMb=${stats.heapUsedMb} heapLimitMb=${stats.heapLimitMb} textures=${stats.textureCount} textureMb=${stats.textureMb} geometries=${stats.geometries} ` +
       `backbuffer=${stats.renderWidth}x${stats.renderHeight} scaling=${stats.hardwareScaling.toFixed(2)} dpr=${window.devicePixelRatio} ` +
+      `zoomMin=${zoom.min.toFixed(1)} zoomP05=${zoom.p05.toFixed(1)} zoomP50=${zoom.p50.toFixed(1)} zoomP95=${zoom.p95.toFixed(1)} ` +
       `touch=${navigator.maxTouchPoints > 0} gpu="${this.shortGpu(stats.gpu)}"`
     );
     this.reset();
@@ -261,10 +280,21 @@ export class RenderTelemetry {
     this.drawCalls.length = 0;
     this.tickGapMs.length = 0;
     this.clientTickMs.length = 0;
+    this.cameraHeight.length = 0;
     this.longFrames.fill(0);
     this.periodStart = null;
     this.lastFrameTime = null;
     this.lastTickTime = null;
+  }
+
+  /** The same idea as {@link percentiles}, read from the other end - see the call site for why. */
+  private lowPercentiles(values: number[]): { min: number, p05: number, p50: number, p95: number } {
+    if (values.length === 0) {
+      return {min: -1, p05: -1, p50: -1, p95: -1};
+    }
+    const sorted = [...values].sort((a, b) => a - b);
+    const at = (q: number) => sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))];
+    return {min: sorted[0], p05: at(0.05), p50: at(0.5), p95: at(0.95)};
   }
 
   private percentiles(values: number[]): { p50: number, p95: number, p99: number, max: number } {

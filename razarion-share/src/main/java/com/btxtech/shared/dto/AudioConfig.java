@@ -12,8 +12,6 @@ public class AudioConfig {
     private Integer onLevelUp;
     private Integer onBoxPicked;
     private Integer onBaseLost;
-    private Integer terrainLoopWater;
-    private Integer terrainLoopLand;
 
     public Integer getDialogOpened() {
         return dialogOpened;
@@ -78,21 +76,4 @@ public class AudioConfig {
         return this;
     }
 
-    public Integer getTerrainLoopWater() {
-        return terrainLoopWater;
-    }
-
-    public AudioConfig setTerrainLoopWater(Integer terrainLoopWater) {
-        this.terrainLoopWater = terrainLoopWater;
-        return this;
-    }
-
-    public Integer getTerrainLoopLand() {
-        return terrainLoopLand;
-    }
-
-    public AudioConfig setTerrainLoopLand(Integer terrainLoopLand) {
-        this.terrainLoopLand = terrainLoopLand;
-        return this;
-    }
 }

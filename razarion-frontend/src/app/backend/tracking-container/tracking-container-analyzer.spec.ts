@@ -209,6 +209,36 @@ function stage(rows: ProgressStatistic[], name: string) {
  * listed them as X. That is how the funnel came to top out at level 2 with players on level 7 in
  * the table next to it.
  */
+describe('TrackingContainerAnalyzer before anything has loaded', () => {
+  /**
+   * The container arrives about two minutes after the page does, and the platform and device
+   * filters are reachable the whole time. Touching one of them threw
+   * "Cannot read properties of undefined (reading 'pageRequests')" and left the funnel blank -
+   * the field was declared with ! and read with a plain dot, so its ?? [] fallbacks never ran.
+   */
+  it('answers with empty counts instead of throwing', () => {
+    const analyzer = new TrackingContainerAnalyzer();
+
+    analyzer.setView(TrackingPlatform.META);
+    analyzer.setDevice('Mobile');
+
+    expect(() => analyzer.countHome()).not.toThrow();
+    expect(analyzer.countHome()).toBe(0);
+  });
+
+  it('still works once the container turns up', () => {
+    const analyzer = new TrackingContainerAnalyzer();
+    analyzer.setView('all');
+    analyzer.countHome();
+
+    analyzer.setTrackingContainer({
+      pageRequests: [request(PageRequestType.HOME, 'session-1', {utmSource: 'twitter'})]
+    } as any);
+
+    expect(analyzer.countHome()).toBe(1);
+  });
+});
+
 describe('TrackingContainerAnalyzer platform resolution', () => {
   it('opens on a view that costs nothing to compute and can never be empty', () => {
     // Reddit was the default while every click id in the data was an X one, so it opened on an

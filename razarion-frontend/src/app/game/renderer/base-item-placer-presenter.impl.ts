@@ -35,6 +35,20 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
    */
   private static readonly MIN_GRAB_RADIUS_PX = 55;
   private static readonly MAX_GRAB_RADIUS_PX = 160;
+  /**
+   * How far the ghost may be nudged when the placer opens on a spot the game will not accept,
+   * as a fraction of the smaller screen dimension. Far enough to clear a building, near enough
+   * that the player sees it settle rather than finding it gone.
+   */
+  private static readonly NUDGE_MAX_SCREEN_FRACTION = 0.35;
+  /**
+   * Rings searched outward and probes per ring. Every probe is one onMove plus one validity
+   * check - the same work a single mouse move costs - so thirty-two of them is a few frames
+   * worth of budget, spent once, at the moment the placer opens.
+   */
+  private static readonly NUDGE_RINGS = 4;
+  private static readonly NUDGE_PROBES_PER_RING = 8;
+
   /** Same tap tolerance the camera control and the terrain click use. */
   private static readonly TAP_THRESHOLD_PX = 5;
   /**
@@ -186,11 +200,11 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.noTerrainReported = false;
     const pickedPoint = this.setupPickedPoint();
     if (pickedPoint) {
-      this.setPosition(baseItemPlacer, pickedPoint);
+      this.openAt(baseItemPlacer, pickedPoint);
     } else {
       const estimated = this.rendererService.setupCenterTerrainPosition();
       if (estimated) {
-        this.setPosition(baseItemPlacer, estimated);
+        this.openAt(baseItemPlacer, estimated);
       }
       this.setupPickedPointDelayed(baseItemPlacer, currentGeneration, Date.now());
     }
@@ -502,7 +516,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
         // back to the screen centre would undo a deliberate move, so the correction only applies
         // while the placer still stands where the game put it.
         if (!this.movedByPlayer) {
-          this.setPosition(baseItemPlacer, pickedPoint);
+          this.openAt(baseItemPlacer, pickedPoint);
         }
         return;
       }
@@ -586,6 +600,87 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       renderObject.setRotationY(Tools.ToRadians(90));
       this.renderObjects.push(renderObject);
     }
+  }
+
+  /**
+   * Put the ghost down where the placer opened, and if the game will not accept that spot, on
+   * the nearest one it will.
+   * <p>
+   * The placer used to open wherever the camera happened to point and merely colour the ghost
+   * red. Measured over seven days on PROD: of 520 sessions that clicked at all, 231 - 44% - had
+   * their first click rejected, and 23% of those never placed a base at all. For the start
+   * base the reasons were 48% "blocked by another item" and 34% "cannot build on a razarion
+   * field", so the player was not aiming badly; the placer was opening on top of things.
+   * <p>
+   * Only on opening, and only while the player has not taken over: once somebody drags the
+   * ghost themselves, where it sits is their decision and moving it would be rude.
+   */
+  private openAt(baseItemPlacer: BaseItemPlacer, pickedPoint: Vector3): void {
+    this.setPosition(baseItemPlacer, pickedPoint);
+    if (this.movedByPlayer || baseItemPlacer.isPositionValid()) {
+      return;
+    }
+    const better = this.findValidPosition(baseItemPlacer, pickedPoint);
+    // setPosition either way: the probing left the placer on the last spot it tried, and its
+    // error text with it. Without this the bubble would name a reason for a position the ghost
+    // is not standing on.
+    this.setPosition(baseItemPlacer, better ?? pickedPoint);
+  }
+
+  /**
+   * The nearest acceptable spot, searched outward in rings. Null when the neighbourhood is full,
+   * which is an answer too - the ghost then stays put and stays red, as before.
+   * <p>
+   * Probes carry no terrain height: {@link BaseItemPlacer#onMove} only takes x and z, and the
+   * height is cosmetic. One ray pick is spent on the winner, none on the losers.
+   */
+  private findValidPosition(baseItemPlacer: BaseItemPlacer, start: Vector3): Vector3 | null {
+    const maxRadius = this.nudgeRadiusLimit(start);
+    if (maxRadius === null || !(maxRadius > 0)) {
+      return null;
+    }
+    for (let ring = 1; ring <= BaseItemPlacerPresenterImpl.NUDGE_RINGS; ring++) {
+      const radius = maxRadius * ring / BaseItemPlacerPresenterImpl.NUDGE_RINGS;
+      const probes = BaseItemPlacerPresenterImpl.NUDGE_PROBES_PER_RING;
+      // Every other ring is rotated half a step so the probes do not all sit on the same spokes,
+      // which would miss a gap lying between them at every radius.
+      const phase = (ring % 2) * Math.PI / probes;
+      for (let i = 0; i < probes; i++) {
+        const angle = phase + 2 * Math.PI * i / probes;
+        const x = start.x + radius * Math.cos(angle);
+        const z = start.z + radius * Math.sin(angle);
+        baseItemPlacer.onMove(x, z);
+        if (baseItemPlacer.isPositionValid()) {
+          return new Vector3(x, this.rendererService.getTerrainHeightAt(x, z) ?? start.y, z);
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * How far the nudge may reach, in world units, so that it is the same distance on screen at
+   * every zoom level. Bounding it in world units instead would be a nudge on a zoomed-out view
+   * and a teleport on a zoomed-in one.
+   */
+  private nudgeRadiusLimit(start: Vector3): number | null {
+    const scene = this.rendererService.getScene();
+    const camera = scene.activeCamera;
+    if (!camera) {
+      return null;
+    }
+    const engine = scene.getEngine();
+    const viewport = camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight());
+    const transform = scene.getTransformMatrix();
+    const centre = Vector3.Project(start, Matrix.Identity(), transform, viewport);
+    const edge = Vector3.Project(new Vector3(start.x + 1, start.y, start.z),
+      Matrix.Identity(), transform, viewport);
+    const pixelsPerWorldUnit = Math.hypot(edge.x - centre.x, edge.y - centre.y);
+    if (!isFinite(pixelsPerWorldUnit) || pixelsPerWorldUnit <= 0) {
+      return null;
+    }
+    return Math.min(viewport.width, viewport.height) *
+      BaseItemPlacerPresenterImpl.NUDGE_MAX_SCREEN_FRACTION / pixelsPerWorldUnit;
   }
 
   private setPosition(baseItemPlacer: BaseItemPlacer, pickedPoint: Vector3) {

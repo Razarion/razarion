@@ -17,14 +17,14 @@ import {Scene} from "@babylonjs/core/scene";
 //   1) Fireball  — 8x8 sprite-sheet animated (64 frames, fire→smoke sequence)
 //                  driven by the WebP sheet in public/renderer/textures/explosion-texture.webp
 //   2) Debris    — tumbling earth chunks thrown outward, strong gravity
-//                  (public/renderer/textures/explosion-debris.png)
+//                  (public/renderer/textures/explosion-debris.webp)
 //   3) Shockwave — 3D expanding sphere (same component as BabylonImpact.spawnShockwave,
 //                  scaled up for building-sized detonation)
 //
 // Tuning values mirror the source NodeParticleSystemSet inputs (emit power / lifetime / size / etc.).
 export class BabylonExplosion {
   private static readonly SHEET_URL = "renderer/textures/explosion-texture.webp";
-  private static readonly DEBRIS_URL = "renderer/textures/explosion-debris.png";
+  private static readonly DEBRIS_URL = "renderer/textures/explosion-debris.webp";
   private static readonly SHEET_COLS = 8;
   private static readonly SHEET_ROWS = 8;
   private static readonly SHEET_FRAMES = 64;

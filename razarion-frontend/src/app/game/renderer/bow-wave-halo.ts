@@ -105,11 +105,11 @@ export class BowWaveHalo {
         needAlphaBlending: true,
       });
 
-      const foamTex = new Texture("renderer/textures/foam-cells.png", scene);
+      const foamTex = new Texture("renderer/textures/foam-cells.webp", scene);
       foamTex.hasAlpha = true;
       foamTex.dispose = () => {};
 
-      const noiseTex = new Texture("renderer/textures/foam-noise.png", scene);
+      const noiseTex = new Texture("renderer/textures/foam-noise.webp", scene);
       noiseTex.dispose = () => {};
 
       mat.setTexture("foamSampler", foamTex);

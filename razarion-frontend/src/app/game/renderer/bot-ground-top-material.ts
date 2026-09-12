@@ -100,11 +100,11 @@ export function buildBotGroundTopMaterial(scene: Scene): NodeMaterial {
   // ========== Diffuse + bump ==========
   const diffuseTex = new TextureBlock("BotGround top diffuse");
   scaledUv.output.connectTo(diffuseTex.uv);
-  diffuseTex.texture = new Texture(TEX_PATH + "bot-ground-top-diffuse.jpg", scene);
+  diffuseTex.texture = new Texture(TEX_PATH + "bot-ground-top-diffuse.webp", scene);
 
   const normalTex = new TextureBlock("BotGround top norm");
   scaledUv.output.connectTo(normalTex.uv);
-  normalTex.texture = new Texture(TEX_PATH + "bot-ground-top-norm.jpg", scene);
+  normalTex.texture = new Texture(TEX_PATH + "bot-ground-top-norm.webp", scene);
 
   // ========== Faction-colored border tint ==========
   // Detects proximity to the box edge in local XZ (box is 8 m centered on

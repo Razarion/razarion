@@ -62,7 +62,7 @@ describe('Base item placer position', () => {
       placer.movedByPlayer = false;
       placer.noTerrainReported = false;
       placer.setupPickedPoint = () => pick();
-      placer.setPosition = (_: unknown, point: Vector3) => positions.push(point);
+      placer.openAt = (_: unknown, point: Vector3) => positions.push(point);
       placer.rendererService = {reportFirstInteraction: (kind: string) => reported.push(kind)};
     });
 

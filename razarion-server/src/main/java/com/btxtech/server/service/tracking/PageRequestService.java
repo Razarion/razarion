@@ -183,7 +183,20 @@ public class PageRequestService {
      * foreignness, so duplicates would be bytes for nothing.
      */
     public Map<String, SessionAttribution> loadSessionAttribution(Date fromDate, Date toDate) {
-        List<Document> pipeline = List.of(
+        return collect(sessionAttributionPipeline(fromDate, toDate));
+    }
+
+    /**
+     * Built apart from being run, so that a test can build it without a database.
+     * <p>
+     * The version of this that shipped put a null into a {@code List.of} - which rejects one, and
+     * the null is the whole point of it, since {@code $$REMOVE} is ignored inside {@code $push}. So
+     * every call threw a NullPointerException before the database saw a single stage, and the
+     * history tab answered 500. The stages had been verified against production data by running
+     * them from a script; the Java that assembles them had never been executed once.
+     */
+    List<Document> sessionAttributionPipeline(Date fromDate, Date toDate) {
+        return List.of(
                 new Document("$match", matchWindow(fromDate, toDate)
                         .append("httpSessionId", new Document("$ne", null))),
                 new Document("$sort", new Document("serverTime", 1)),
@@ -209,22 +222,19 @@ public class PageRequestService {
                         // an aggregation expression, unlike the $match semantics one expects. Every
                         // request without click ids therefore took the "has one" branch. $ifNull is
                         // what makes missing and null the same thing again.
-                        .append("clickIds", new Document("$push", new Document("$cond", List.of(
-                                new Document("$or", List.of(
-                                        TrackingAttribution.notNull("$rdtCid"),
-                                        TrackingAttribution.notNull("$twclid"),
-                                        TrackingAttribution.notNull("$fbclid"))),
-                                new Document("rdtCid", "$rdtCid")
-                                        .append("twclid", "$twclid")
-                                        .append("fbclid", "$fbclid"),
-                                null))))
+                        //
+                        // Shared with the startup side rather than spelled out twice: the copy that
+                        // used to stand here built its $cond with List.of, which rejects null - and
+                        // the null is the whole point of it. Every call threw a
+                        // NullPointerException before it reached the database.
+                        .append("clickIds", TrackingAttribution.clickIds())
                         .append("firstGameTime", new Document("$min", new Document("$cond",
                                 List.of(new Document("$eq", List.of("$pageRequestType", PageRequestType.GAME.name())),
                                         "$serverTime", "$$REMOVE"))))),
-                new Document("$addFields", new Document("clickIds",
-                        new Document("$filter", new Document("input", "$clickIds")
-                                .append("cond", new Document("$ne", List.of("$$this", null)))))));
+                TrackingAttribution.filterNulls("clickIds"));
+    }
 
+    private Map<String, SessionAttribution> collect(List<Document> pipeline) {
         Map<String, SessionAttribution> perSession = new HashMap<>();
         for (Document document : mongoTemplate.getCollection(PAGE_REQUEST).aggregate(pipeline)) {
             String httpSessionId = document.getString("_id");

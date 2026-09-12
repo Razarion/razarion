@@ -59,19 +59,23 @@ public class ParticleSystemController extends AbstractBaseController<ParticleSys
     /**
      * The particle systems, as a conditional GET.
      * <p>
-     * Two of these are read on every game start and weigh 1.5 MB between them - and they were the
+     * Two of these are read on every game start and weigh 860 KB between them - and they were the
      * larger half of an anonymous 2.5 MB that the payload measurement could only call "other".
      * They were found by naming the heaviest unrecognised resource in the telemetry detail, which
      * is the whole reason that field exists.
+     * <p>
+     * Both ship to every client whether or not anything uses them, because the config collection
+     * sends readAllBaseEntitiesJson. Do not conclude from an empty foreign-key scan that one is
+     * dead: "Smoke" is reached by the mesh name RAZ_P_6 in the scene GLB, which no column records.
      * <p>
      * Same arrangement as the model and the materials: {@code no-cache} plus an entity tag keeps
      * the guarantee that an edit reaches the player, while unchanged costs a comparison instead of
      * a megabyte. The upload beside it stays under the blanket no-store rule.
      * <p>
      * And compressed, for the same reason as the materials - see BabylonMaterialController.getData.
-     * The larger of these two is 1,198 KB of which 1,187 KB is one base64 PNG; it gzips to 895 KB.
-     * The declared type is what decides that, because server.compression.mime-types lists
-     * application/json and not application/octet-stream.
+     * The larger of the two is "Smoke" at 563 KB, nearly all of it one base64 1024x1024 WebP; it
+     * gzips to 419 KB, and "Spawn" to 195 KB. The declared type is what decides that, because
+     * server.compression.mime-types lists application/json and not application/octet-stream.
      */
     @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<byte[]> getData(@PathVariable("id") int id,

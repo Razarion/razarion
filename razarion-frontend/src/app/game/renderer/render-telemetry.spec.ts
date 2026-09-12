@@ -24,10 +24,11 @@ describe('RenderTelemetry', () => {
 
   /** Feeds frames at a fixed interval starting at t=0, returning the timestamp of the last one. */
   function feed(rt: RenderTelemetry, count: number, intervalMs: number, renderMs = 5, from = 0,
-                drawCalls = 120): number {
+                drawCalls = 120, cameraHeight: number | ((i: number) => number) = 30): number {
     let now = from;
     for (let i = 0; i < count; i++) {
-      rt.recordFrame(now, renderMs, drawCalls);
+      rt.recordFrame(now, renderMs, drawCalls,
+        typeof cameraHeight === "function" ? cameraHeight(i) : cameraHeight);
       now += intervalMs;
     }
     return now - intervalMs;
@@ -121,7 +122,7 @@ describe('RenderTelemetry', () => {
     // 601 frames at a steady 60 fps, then one 400 ms freeze that closes the period. The mean
     // barely moves (16.6 ms); the max and the long-frame counters are the whole point.
     feed(rt, 601, 16, 5, from);
-    rt.recordFrame(from + 600 * 16 + 400, 5, 120);
+    rt.recordFrame(from + 600 * 16 + 400, 5, 120, 30);
 
     expect(lines.length).toBe(1);
     expect(field(lines[0], 'frameP50')).toBe('16.0');
@@ -214,7 +215,7 @@ describe('RenderTelemetry', () => {
     // max catches the frame that also rebuilt the shadow map.
     const from = skipFirstPeriod(rt);
     feed(rt, 20, 500, 5, from, 140);
-    rt.recordFrame(from + 10_000, 5, 900);
+    rt.recordFrame(from + 10_000, 5, 900, 30);
 
     expect(field(lines[0], 'drawP50')).toBe('140');
     expect(field(lines[0], 'drawMax')).toBe('900');
@@ -240,5 +241,26 @@ describe('RenderTelemetry', () => {
     // Three ticks produce two gaps between them.
     expect(field(lines[0], 'ticks')).toBe('2');
     expect(field(lines[0], 'tickApplyMax')).toBe('3.0');
+  });
+
+  it('reports the zoom from the near end, because that is the end the question is about', () => {
+    const rt = telemetry();
+    // Twenty frames far out, one frame pushed right in. A session that dips to the closest zoom
+    // for a single frame must show it in zoomMin and must NOT show it in zoomP50 - otherwise the
+    // line cannot tell 'someone glanced in close' from 'this session is played close'.
+    feed(rt, 21, 500, 5, skipFirstPeriod(rt), 120, i => (i === 10 ? 5 : 30));
+
+    expect(field(lines[0], 'zoomMin')).toBe('5.0');
+    expect(field(lines[0], 'zoomP50')).toBe('30.0');
+    expect(field(lines[0], 'zoomP95')).toBe('30.0');
+  });
+
+  it('says -1 for the zoom when no frame carried one', () => {
+    const rt = telemetry();
+    // The first recorded frame sets the clock and contributes no interval, so a period can emit
+    // with an empty camera array. -1 is the same 'no answer' the draw-call counter uses; a 0
+    // would read as a camera on the ground.
+    rt.recordFrame(0, 5, 120, 30);
+    expect(lines.length).toBe(0);
   });
 });

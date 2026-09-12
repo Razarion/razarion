@@ -13,8 +13,6 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import com.btxtech.shared.dto.editor.CollectionReference;
-import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.system.Nullable;
 import jsinterop.annotations.JsType;
 import org.teavm.flavour.json.JsonPersistable;
@@ -52,10 +50,6 @@ public class BaseItemType extends ItemType {
     private Integer spawnParticleSystemId;
     private Integer spawnAudioId;
     private List<DemolitionStepEffect> demolitionStepEffects;
-    @CollectionReference(CollectionReferenceType.IMAGE)
-    private Integer demolitionImageId;
-    @CollectionReference(CollectionReferenceType.IMAGE)
-    private Integer buildupTextureId;
     private Integer explosionAudioItemConfigId;
     private Integer explosionParticleId;
 
@@ -256,22 +250,6 @@ public class BaseItemType extends ItemType {
         this.demolitionStepEffects = demolitionStepEffects;
     }
 
-    public Integer getDemolitionImageId() {
-        return demolitionImageId;
-    }
-
-    public void setDemolitionImageId(Integer demolitionImageId) {
-        this.demolitionImageId = demolitionImageId;
-    }
-
-    public Integer getBuildupTextureId() {
-        return buildupTextureId;
-    }
-
-    public void setBuildupTextureId(Integer buildupTextureId) {
-        this.buildupTextureId = buildupTextureId;
-    }
-
     public Integer getExplosionAudioItemConfigId() {
         return explosionAudioItemConfigId;
     }
@@ -410,16 +388,6 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType demolitionStepEffects(List<DemolitionStepEffect> demolitionStepEffects) {
         setDemolitionStepEffects(demolitionStepEffects);
-        return this;
-    }
-
-    public BaseItemType demolitionImageId(Integer demolitionImageId) {
-        setDemolitionImageId(demolitionImageId);
-        return this;
-    }
-
-    public BaseItemType buildupTextureId(Integer buildupTextureId) {
-        setBuildupTextureId(buildupTextureId);
         return this;
     }
 

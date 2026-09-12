@@ -297,8 +297,6 @@ public class DtoConverter {
     public static JSObject convertAudioConfig(AudioConfig config) {
         if (config == null) return null;
         JsObject obj = JsObject.create();
-        setGetterObj(obj, "getTerrainLoopWater", () -> convertNullableInt(config.getTerrainLoopWater()));
-        setGetterObj(obj, "getTerrainLoopLand", () -> convertNullableInt(config.getTerrainLoopLand()));
         setGetterObj(obj, "getOnQuestActivated", () -> convertNullableInt(config.getOnQuestActivated()));
         return obj;
     }
