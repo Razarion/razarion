@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine.datatypes.exception;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 22.02.13
  * Time: 16:42
  */

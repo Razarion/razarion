@@ -5,7 +5,7 @@ import jsinterop.annotations.JsType;
 import org.teavm.flavour.json.JsonPersistable;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 13.01.13
  * Time: 13:14
  */

@@ -6,7 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.system.Nullable;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 10.10.2011
  * Time: 13:37:24
  */

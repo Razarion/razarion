@@ -3,7 +3,7 @@ package com.btxtech.shared.utils;
 import com.btxtech.shared.datatypes.Vertex;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 23.05.2011
  * Time: 01:06:28
  */

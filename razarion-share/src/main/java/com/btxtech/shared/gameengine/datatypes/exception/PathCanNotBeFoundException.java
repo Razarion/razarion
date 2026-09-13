@@ -4,7 +4,7 @@ package com.btxtech.shared.gameengine.datatypes.exception;
 import com.btxtech.shared.datatypes.Index;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 02.10.2011
  * Time: 16:38:22
  */

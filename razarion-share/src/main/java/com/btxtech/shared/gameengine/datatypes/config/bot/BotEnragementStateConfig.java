@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine.datatypes.config.bot;
 import java.util.List;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 14.06.12
  * Time: 12:41
  */

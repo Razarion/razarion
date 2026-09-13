@@ -4,7 +4,7 @@ import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import org.dominokit.jackson.annotation.JSONMapper;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 21.05.12
  * Time: 00:27
  */

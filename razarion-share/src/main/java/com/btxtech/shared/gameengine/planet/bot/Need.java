@@ -5,7 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import java.util.*;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 08.08.2011
  * Time: 14:08:04
  */

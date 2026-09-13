@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.datatypes.info;
 
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 31.05.13
  * Time: 13:44
  */

@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.function.BiPredicate;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 11.11.2011
  * Time: 18:33:46
  */

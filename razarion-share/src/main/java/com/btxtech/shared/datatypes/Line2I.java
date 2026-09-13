@@ -3,7 +3,7 @@ package com.btxtech.shared.datatypes;
 import com.btxtech.shared.utils.MathHelper;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 08.05.2011
  * Time: 16:24:24
  */

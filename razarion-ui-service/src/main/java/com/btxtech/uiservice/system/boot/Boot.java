@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 04.12.2010
  * Time: 10:56:33
  */

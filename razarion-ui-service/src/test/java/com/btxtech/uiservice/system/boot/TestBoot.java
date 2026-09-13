@@ -12,7 +12,7 @@ import java.util.List;
 import static org.easymock.EasyMock.*;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 18.02.2011
  * Time: 20:20:18
  */

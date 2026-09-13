@@ -4,7 +4,7 @@ package com.btxtech.shared.gameengine.planet.quest;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 07.09.13
  * Time: 11:31
  */

@@ -28,7 +28,7 @@ Established over several rounds with the user; do not drift from it.
 
 The load-bearing facts, in rough order of how much they interest a stranger: runs in a browser
 tab with no download and no account; one persistent world shared by every player; open source
-under the LGPL; the engine is Java compiled to WebAssembly via TeaVM, rendering is Babylon.js,
+under the MIT license; the engine is Java compiled to WebAssembly via TeaVM, rendering is Babylon.js,
 UI is Angular, backend is Spring Boot; currently alpha.
 
 ## Per platform

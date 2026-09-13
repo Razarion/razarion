@@ -8,7 +8,7 @@ package com.btxtech.shared.gameengine.datatypes;
  * session to study how tutorial players moved. Neither is needed while players cannot attack each
  * other, so both are gone.
  * <p>
- * User: beat
+ * User: Razarion contributors
  * Date: 29.10.2011
  * Time: 00:47:33
  */

@@ -14,7 +14,7 @@ No registration. No installation. Just play.
 
 - **Multiplayer on one shared world** – Everyone plays together on a single persistent planet
 - **Runs entirely in the browser via WebAssembly** – No login, no download, no ads
-- **Fully open-source** – LGPL-licensed hobby project
+- **Fully open-source** – MIT-licensed hobby project
 - **In active alpha** – Under development, feedback welcome
 
 ---
@@ -53,7 +53,7 @@ Detailed technical documentation is available in the [`docs/README.md`](docs/REA
 
 ## 💻 Source Code
 
-Everything is open-source under the LGPL license:  
+Everything is open-source under the MIT license:  
 🔗 [GitHub Repository](https://github.com/Razarion/razarion)
 
 ---
@@ -67,7 +67,12 @@ Suggestions, issue reports, and pull requests are warmly welcome!
 
 ## 📜 License
 
-This project is licensed under the **GNU Lesser General Public License (LGPL)**.
+The source code in this repository is licensed under the **MIT License** – see [`LICENSE`](LICENSE).
+
+Third-party components bundled in the repository keep their own licenses (for example
+`razarion-frontend/public/renderer/draco/draco.license`). The 3D models served by the game
+are stored in the game database, are not part of this repository, and are not covered by
+this license.
 
 ---
 

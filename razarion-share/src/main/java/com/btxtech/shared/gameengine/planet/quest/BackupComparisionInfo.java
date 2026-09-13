@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 05.02.2012
  * Time: 13:11:53
  */

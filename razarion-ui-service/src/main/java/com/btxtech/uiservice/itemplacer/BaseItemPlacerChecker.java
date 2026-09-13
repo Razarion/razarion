@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 01.05.13
  * Time: 12:55
  */

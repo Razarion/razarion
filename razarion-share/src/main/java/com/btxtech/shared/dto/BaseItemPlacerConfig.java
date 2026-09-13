@@ -6,7 +6,7 @@ import com.btxtech.shared.dto.editor.CollectionReferenceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 01.05.13
  * Time: 13:00
  */

@@ -3,7 +3,7 @@ package com.btxtech.uiservice.i18n;
 
 /**
  * Created with IntelliJ IDEA.
- * User: beat
+ * User: Razarion contributors
  * Date: 03.01.13
  * Time: 14:51
  */

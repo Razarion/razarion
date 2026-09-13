@@ -3,7 +3,7 @@ package com.btxtech.uiservice.i18n;
 import com.btxtech.shared.datatypes.I18nString;
 /**
  * Created with IntelliJ IDEA.
- * User: beat
+ * User: Razarion contributors
  * Date: 03.01.13
  * Time: 14:53
  */

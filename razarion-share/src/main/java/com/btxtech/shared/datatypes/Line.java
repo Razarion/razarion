@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 08.05.2011
  * Time: 16:24:24
  */

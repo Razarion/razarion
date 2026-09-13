@@ -4,7 +4,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 07.10.2011
  * Time: 14:54:10
  */

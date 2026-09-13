@@ -12,7 +12,7 @@ import jakarta.inject.Provider;
 import java.util.*;
 
 /**
- * User: beat
+ * User: Razarion contributors
  * Date: 14.06.12
  * Time: 12:44
  */
