@@ -88,6 +88,7 @@ teils Szenen im Studio (Tesla, Radar, Powerplant, Builder), teils noch keine.
 node compose.mjs --media pfad/zum/bild.jpg --text "Was zu sehen ist." --link "https://www.razarion.com"
 node compose.mjs --text "Nur Text"                    # Instagram bekommt eine Karte
 node compose.mjs --media clip.mp4 --text "..." --tags "harvester,economy"
+node compose.mjs --portrait clip-portrait.mp4 --landscape clip-landscape.mp4 --text "..."
 ```
 
 `--link` und `--tags` sind optional. Ohne `--media` rendert der nächste Schritt eine Textkarte,
@@ -100,6 +101,7 @@ node render_cards.mjs
 ### Clips aufnehmen, ohne dabeizusitzen
 
 ```bash
+node record_studio.mjs --scene "Badger vs Radar" --both   # hochkant und quer, der Normalfall
 node record_studio.mjs --scene "Badger vs Radar"
 node record_studio.mjs --scene "Badger vs Radar" --seconds 12 --out data/clips/badger.mp4
 node record_studio.mjs --scene "Tesla" --url https://www.razarion.com/studio/scenes
@@ -108,7 +110,11 @@ node record_studio.mjs --scene "Tesla" --head        # zusehen, statt headless
 
 Startet ein eigenes Chrome ohne Fenster, meldet sich mit den Zugangsdaten aus `../.env` an (kein
 Login-Formular, das Token wird vor dem Start in den `localStorage` gelegt), öffnet die Szene, wartet
-auf Modelle und Boden, nimmt auf und legt die Datei ab.
+auf Modelle und Boden, nimmt auf und legt die Datei ab. Mit `--both` nimmt er die Szene zweimal auf,
+erst hochkant, dann quer, und legt `<name>-portrait.mp4` und `<name>-landscape.mp4` ab.
+
+**Im Director** gibt es neben „Record" dieselbe Wahl: *portrait* oder *landscape*. Einen Plan einmal
+pro Format aufnehmen.
 
 **Was die Szene mitbringen muss:** die Kamera — und bei einer Szene, die feuert, die Angriffsschleife
 als **„Loop on open"** am angreifenden Item gespeichert. Der Recorder kann kein Item im Viewport
@@ -124,36 +130,46 @@ Backend auf 8080). Für die Produktion `--url https://www.razarion.com/studio/sc
 
 ### Clips
 
-Ein Clip wird genauso übergeben wie ein Bild — `--media clip.mp4`. Um die Formate musst du dich
-nicht kümmern: **jedes Netzwerk bekommt beim Ausliefern seine eigene Fassung**, abgeleitet neben der
-Originaldatei als `<name>--<format>.mp4` und beim nächsten Lauf wiederverwendet. Die Originaldatei
-wird nie verändert.
+**Jeder Clip am besten zweimal: hochkant und quer.** Instagram, Facebook und YouTube Shorts sind
+Handy-Feeds und wollen 9:16. X wird am Desktop gelesen und bekommt 16:9: Von dort kommen 24 % der
+Desktop-Besucher bis ins Spiel, am Handy 5 %.
 
-```
-Instagram, Facebook   Reel 9:16, 1080×1920, max 90 s
-X                     eigene Form, nur Codec und Obergrenze, max 140 s
-YouTube               das Original, unverändert
+```bash
+node compose.mjs --portrait data/clips/badger-portrait.mp4 --landscape data/clips/badger-landscape.mp4 --text "..."
 ```
 
-Warum unterschiedlich: Instagram und Facebook zeigen Reels hochkant und quetschen alles andere in
-einen Streifen. X hat dagegen kein festes Format, sondern nimmt alles von 1:3 bis 3:1 — dort einen
-Querformat-Clip auf 16:9 zu polstern hieße, Balken an etwas zu kleben, das die Zeitleiste ohnehin
-ganz gezeigt hätte.
+Jedes Netzwerk bekommt beim Ausliefern seine eigene Fassung. Sie wird aus der Vorlage mit dem
+passenden Format abgeleitet, neben ihr als `<name>--<format>.mp4` abgelegt und beim nächsten Lauf
+wiederverwendet. Die Vorlagen werden nie verändert. Passt eine Vorlage schon, geht sie unverändert
+hoch.
+
+```
+Instagram, Facebook   Reel 9:16, 1080×1920, max 90 s    aus der Hochformat-Vorlage
+YouTube               Short 9:16, 1080×1920, max 180 s  aus der Hochformat-Vorlage
+X                     16:9, 1920×1080, max 140 s        aus der Querformat-Vorlage
+```
+
+**Jede Fassung füllt das ganze Bild, es gibt keine Balken und keinen Rahmen.** Fehlt eine Vorlage,
+wird die andere beschnitten: Von einem 16:9-Clip bleibt im Reel das mittlere Drittel, von einem
+Hochkant-Clip bei X ebenso. Das geht, wenn die Action in der Mitte steht; sonst fehlt am Rand, was
+zu sehen sein sollte. `compose.mjs` und `check.mjs` sagen es, wenn eine Vorlage fehlt. Mit
+`--media clip.mp4` wird der Clip gemessen und als Hoch- oder Querformat eingeordnet.
+
+Früher füllte eine unscharfe Kopie des Clips den Rest des Reels. In den Feeds sah das wie ein Rahmen
+aus. Die alten `--reel.mp4` mit Rahmen werden nicht mehr verwendet (die neuen heißen
+`--reel-v2.mp4`) und können gelöscht werden, ebenso die alten `--native.mp4` für X.
 
 **Balken im Original werden erkannt und entfernt.** Die Archivclips stammen aus Browserfenstern und
-bringen fast alle schwarze Ränder mit — beim Explosionsclip 184 px auf jeder Seite. Ohne das säßen
-sie mitten im fertigen Reel als harte schwarze Kanten. Erkannt wird über drei Zeitpunkte im Clip;
-gewinnt die *größte* gefundene Bildfläche, damit eine dunkle Szene nie zu eng schneiden kann.
-
-Beim Hochformat füllt eine unscharfe Kopie des Clips den Rest des Bildes, statt ihn schwarz zu
-lassen — bei einem 2:1-Clip in 9:16 wären sonst 70 % der Fläche leer. Beschnitten wird nie: was zu
-sehen ist, bleibt vollständig zu sehen.
+bringen fast alle schwarze Ränder mit, beim Explosionsclip 184 px auf jeder Seite. Ohne das säßen
+sie als harte schwarze Kanten im fertigen Bild. Erkannt wird an drei Zeitpunkten im Clip; es gewinnt
+die *größte* gefundene Bildfläche, damit eine dunkle Szene nie zu eng schneiden kann.
 
 `check.mjs` misst vorher, was die Umwandlung nicht reparieren kann:
 
 ```
 unter 3 s     Instagram lehnt das Reel ab - nur eine längere Aufnahme hilft
 über 90 s     die Reel-Fassung wird geschnitten, der Rest fällt weg
+Vorlage fehlt die Fassung zeigt nur die Bildmitte der anderen - beide Formate aufnehmen
 ```
 
 ## 2. Lesen und freigeben
@@ -200,8 +216,8 @@ node publish_youtube.mjs --live --limit 1
 kostet, und bei YouTube, ob der Clip als Short oder als normales Video einsortiert wird.
 
 YouTube braucht `upload_media.mjs` nicht: die Datei geht von der Platte hoch, nicht über die
-GitHub-Release-URL, die Instagram und Facebook brauchen. Der Master geht unverändert raus —
-YouTube kodiert ohnehin neu, und anders als bei den Reel-Feeds gibt es kein Format zu treffen.
+GitHub-Release-URL, die Instagram und Facebook brauchen. Jeder Clip geht als Short hoch. Passt die
+Hochformat-Vorlage schon, geht sie unverändert raus, denn YouTube kodiert ohnehin neu.
 
 `--limit N` begrenzt, wie viele Beiträge ein Lauf absetzt. Ohne Angabe geht die ganze freigegebene
 Warteschlange raus.

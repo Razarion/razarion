@@ -13,7 +13,7 @@ import {
   YT_POSTS_FILE, POSTED_YT_FILE, readJson, toRelative,
 } from './lib/paths.mjs';
 import { MAX_TITLE } from './lib/youtube.mjs';
-import { FORMATS, PLATFORM_FORMAT, probeVideo } from './lib/video.mjs';
+import { FORMATS, PLATFORM_FORMAT, keptShare, masterFor, orientationOf, probeVideo } from './lib/video.mjs';
 import { env } from '../src/config.mjs';
 import { info, ok, warn, fail } from '../src/util/log.mjs';
 
@@ -65,6 +65,20 @@ function checkCaptions() {
   return doc;
 }
 
+/**
+ * One format per shape, keyed by the networks that get it: { 'Instagram, Facebook, YouTube': 'reel',
+ * X: 'landscape' }. The portrait networks share a master, so one missing clip is reported once.
+ */
+function clipTargets() {
+  const names = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube', x: 'X' };
+  const byShape = {};
+  for (const [platform, formatName] of Object.entries(PLATFORM_FORMAT)) {
+    const shape = orientationOf(formatName);
+    (byShape[shape] ||= { platforms: [], formatName }).platforms.push(names[platform]);
+  }
+  return Object.fromEntries(Object.values(byShape).map((g) => [g.platforms.join(', '), g.formatName]));
+}
+
 async function checkMedia(doc) {
   // Only what could still go out. Media of a published post is finished work: its file has already
   // been through conversion, and reporting that it "still needs upload_media.mjs" - or that a clip
@@ -86,6 +100,7 @@ async function checkMedia(doc) {
   let clipsTooShort = 0;
   let clipsTrimmed = 0;
   let clipsUnreadable = 0;
+  let clipsCropped = 0;
 
   for (const entry of live) {
     const media = entry.media || [];
@@ -157,6 +172,23 @@ async function checkMedia(doc) {
                 `under ${MIN_REEL_SECONDS}s. Use a longer recording.`
             );
           }
+          // Every copy fills its frame by cutting off what overhangs. From a master of the other
+          // shape that leaves the middle third, and whatever stood at the edges is gone - so a
+          // missing master is worth a line, with what it costs.
+          for (const [platforms, formatName] of Object.entries(clipTargets())) {
+            const shape = orientationOf(formatName);
+            if (item[shape]) continue;
+            const master = masterFor(item, formatName);
+            const source = master === item.file ? probe : await probeVideo(join(PIPELINE_ROOT, master));
+            const share = keptShare(source, formatName);
+            if (share > 0.9) continue;
+            clipsCropped++;
+            notice(
+              `${entry.id}: no ${shape} clip; ${platforms} get the middle ${Math.round(share * 100)} % ` +
+                `of ${master}. Record it ${shape === 'portrait' ? 'upright' : 'wide'} if the action is not ` +
+                'in the centre.'
+            );
+          }
           if (probe.duration > reel.maxSeconds) {
             clipsTrimmed++;
             notice(
@@ -179,6 +211,7 @@ async function checkMedia(doc) {
       clipsUnreadable ? `${clipsUnreadable} unreadable` : null,
       clipsTooShort ? `${clipsTooShort} under ${MIN_REEL_SECONDS}s` : null,
       clipsTrimmed ? `${clipsTrimmed} trimmed for the reel slot` : null,
+      clipsCropped ? `${clipsCropped} cut from a master of the other shape` : null,
     ].filter(Boolean);
     info(`  clips:         ${clips} to convert${clipNotes.length ? ' - ' + clipNotes.join(', ') : ', all usable'}`);
   }

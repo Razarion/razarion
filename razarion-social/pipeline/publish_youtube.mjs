@@ -24,7 +24,7 @@ import {
   PIPELINE_ROOT, YT_POSTS_FILE, POSTED_YT_FILE, STATE_DIR,
   ensureDir, readJson, writeJson, toRelative,
 } from './lib/paths.mjs';
-import { probeVideo } from './lib/video.mjs';
+import { PLATFORM_FORMAT, deriveClip, masterFor, probeVideo } from './lib/video.mjs';
 import { becomesShort } from './lib/youtube.mjs';
 import { postToYouTube } from '../src/platforms/youtube.mjs';
 import { sleep } from '../src/util/http.mjs';
@@ -40,12 +40,28 @@ function short(text, width = 76) {
 }
 
 /**
- * Describes what YouTube will make of the file, for the dry run.
+ * The Short a clip goes up as: the portrait master when it already fits, otherwise a 9:16 copy cut
+ * from it - or from the landscape master when that is all the clip has.
  *
- * Nothing is declared to YouTube about Shorts - it sorts on the file itself, at a ratio of 1.05 or
- * under and at most 180 seconds - so this is reported and never sent. It is worth reporting
- * because it decides which surface the clip lands on, which is the whole reason the reel format
- * exists upstream.
+ * Nothing is declared to YouTube about Shorts; it sorts on the file itself, vertical or square and
+ * at most 180 seconds. A master that fits is uploaded untouched, because YouTube re-encodes
+ * everything it is given and a conversion first would only throw detail away.
+ */
+async function prepareClip(item, dryRun) {
+  const formatName = PLATFORM_FORMAT.youtube;
+  const master = join(PIPELINE_ROOT, masterFor(item, formatName));
+  if (!existsSync(master)) return { file: null, pending: null };
+  let pending = null;
+  const { file } = await deriveClip(master, formatName, {
+    dryRun,
+    onStep: (line) => { if (dryRun) pending = line; else step(line); },
+  });
+  return { file: file || master, pending };
+}
+
+/**
+ * Describes what YouTube will make of the file, for the dry run. Worth reporting because it decides
+ * which surface the clip lands on.
  */
 async function describe(file) {
   const probe = await probeVideo(file);
@@ -101,11 +117,13 @@ async function main() {
     info('');
     for (const entry of batch) {
       const item = (entry.media || [])[0];
-      const file = item ? join(PIPELINE_ROOT, item.file) : null;
+      const { file, pending } = item ? await prepareClip(item, true) : { file: null };
       info(`  ${entry.date.slice(0, 10)}  ${entry.privacy || 'private'}`);
       info(`     ${short(entry.title)}`);
-      if (!file || !existsSync(file)) {
-        fail(`     ${item ? item.file : 'no media'} is missing on disk.`);
+      if (!file) {
+        fail(`     ${item ? masterFor(item, PLATFORM_FORMAT.youtube) : 'no media'} is missing on disk.`);
+      } else if (pending) {
+        info(`     ${pending} - files as a Short`);
       } else {
         const d = await describe(file);
         info(`     ${basename(file)}: ${d.line}`);
@@ -125,16 +143,15 @@ async function main() {
     step(short(entry.title));
 
     const item = (entry.media || [])[0];
-    const file = item ? join(PIPELINE_ROOT, item.file) : null;
-    if (!file || !existsSync(file)) {
-      fail(`${entry.id}: ${item ? item.file : 'no media'} is missing on disk.`);
+    const { file } = item ? await prepareClip(item, false) : { file: null };
+    if (!file) {
+      fail(`${entry.id}: ${item ? masterFor(item, PLATFORM_FORMAT.youtube) : 'no media'} is missing on disk.`);
       warn(`Stopping. ${published} upload(s) went out.`);
       process.exit(1);
     }
 
-    // The master goes up unchanged. YouTube re-encodes everything it is given, so converting first
-    // would only throw detail away, and unlike the reel feeds it has no shape to satisfy - a
-    // landscape clip stays landscape and a portrait one becomes a Short on its own.
+    // Every clip goes up as a Short (see prepareClip), so the feed it lands in is the phone one the
+    // reels are made for, not the main video feed where a twelve-second clip has no chance.
     const spec = {
       video: file,
       videoSize: statSync(file).size,

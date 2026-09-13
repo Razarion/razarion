@@ -15,9 +15,7 @@ import {
   PIPELINE_ROOT, X_POSTS_FILE, POSTED_X_FILE, STATE_DIR,
   ensureDir, readJson, writeJson, toRelative,
 } from './lib/paths.mjs';
-import {
-  FORMATS, PLATFORM_FORMAT, derivedPath, needsTranscode, probeVideo, transcodeVideo,
-} from './lib/video.mjs';
+import { PLATFORM_FORMAT, deriveClip, masterFor } from './lib/video.mjs';
 import { postToX, estimateCost } from '../src/platforms/x.mjs';
 import { sleep } from '../src/util/http.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
@@ -30,27 +28,21 @@ function firstLine(text) {
 }
 
 /**
- * The copy of a clip that X will accept, derived next to the master and reused once made.
+ * The 16:9 copy of a clip that X gets, cut from the landscape master when the clip has one.
  *
- * Photos are handled upstream and pass straight through. A clip that already matches the target is
- * left alone rather than re-encoded into slightly worse pixels for nothing.
+ * Photos are handled upstream and pass straight through. A master that already fits is sent as it
+ * is rather than re-encoded into slightly worse pixels for nothing.
  */
 async function prepareClip(item, file) {
   if (item.type === 'photo') return file;
-  const format = FORMATS[PLATFORM_FORMAT.x];
-  const probe = await probeVideo(file);
-  if (!probe) {
-    warn(`${basename(file)}: ffprobe cannot read this file; sending it unchanged.`);
-    return file;
+  const wanted = join(PIPELINE_ROOT, masterFor(item, PLATFORM_FORMAT.x));
+  const master = existsSync(wanted) ? wanted : file;
+  const { file: derived } = await deriveClip(master, PLATFORM_FORMAT.x, { onStep: step });
+  if (!derived) {
+    warn(`${basename(master)}: ffprobe cannot read this file; sending it unchanged.`);
+    return master;
   }
-  if (!needsTranscode(probe, format)) return file;
-
-  const target = derivedPath(file, PLATFORM_FORMAT.x);
-  if (!existsSync(target)) {
-    step(`converting ${basename(file)} ${probe.width}x${probe.height} to ${format.label}`);
-    await transcodeVideo(file, target, format);
-  }
-  return target;
+  return derived;
 }
 
 async function main() {
@@ -117,9 +109,8 @@ async function main() {
         warn(`Stopping. ${published} post(s) went out.`);
         process.exit(1);
       }
-      // A clip keeps its landscape shape here - X is read on a desktop far more than the phone-first
-      // feeds are - but it still has to be H.264/AAC within the duration cap, and the archive clips
-      // carry the pillarbox bars of whatever window they were recorded from.
+      // X gets 16:9 - it is read on a desktop far more than the phone-first feeds are - as H.264
+      // within the duration cap, and without the pillarbox bars the archive clips carry.
       file = await prepareClip(item, file);
       spec.video = file;
       spec.videoSize = statSync(file).size;

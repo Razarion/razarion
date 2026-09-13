@@ -17,9 +17,7 @@ import {
   PIPELINE_ROOT, CAPTIONS_FILE, UPLOADS_FILE, POSTED_FILE,
   FB_POSTS_FILE, POSTED_FB_FILE, readJson, writeJson, toRelative,
 } from './lib/paths.mjs';
-import {
-  FORMATS, PLATFORM_FORMAT, derivedPath, needsTranscode, probeVideo, transcodeVideo,
-} from './lib/video.mjs';
+import { PLATFORM_FORMAT, deriveClip, masterFor } from './lib/video.mjs';
 import { r2Config, putObject, contentTypeFor, sha256 } from './lib/r2.mjs';
 import { githubConfig, ensureRelease, listAssets, uploadAsset } from './lib/github.mjs';
 import { env } from '../src/config.mjs';
@@ -46,8 +44,7 @@ const PAD_COLOUR = '#1c1917';
  * Put one file into the shape the network it is going to expects.
  *
  * The split is by media type, not by network. An image only needs work for Instagram - Facebook
- * takes PNG at any shape - but a video needs it for both, because a reel slot is 9:16 on both and a
- * landscape recording dropped into one is shown as a stripe with most of the screen wasted.
+ * takes PNG at any shape - but a video needs it for both, because a reel slot is 9:16 on both.
  */
 async function prepareMedia(item, absolutePath, dryRun, raw, platform) {
   if (item.type === 'photo') return prepareImage(item, absolutePath, dryRun, raw);
@@ -55,45 +52,26 @@ async function prepareMedia(item, absolutePath, dryRun, raw, platform) {
 }
 
 /**
- * Derive the copy of a clip that `platform` wants, next to the master.
+ * Derive the copy of a clip that `platform` wants, from the master of the matching shape.
  *
- * The master file is never touched. Each network's copy is written beside it as
- * `<name>--<format>.mp4` and reused on the next run, so re-publishing a queue does not re-encode
- * anything. A clip that already matches the target is passed through untouched rather than being
- * re-encoded into slightly worse pixels for no reason.
+ * A clip recorded twice carries a portrait and a landscape master, and the reel is cut from the
+ * portrait one; `absolutePath` is only the fallback for an item that has a single file. The master
+ * is never touched, and a master that already fits goes up as it is.
  */
 async function prepareVideo(item, absolutePath, dryRun, platform) {
   const formatName = PLATFORM_FORMAT[platform];
   if (!formatName) return absolutePath;
-  const format = FORMATS[formatName];
 
-  const probe = await probeVideo(absolutePath);
-  if (!probe) {
-    warn(`${basename(absolutePath)}: ffprobe cannot read this file; left as is.`);
-    return absolutePath;
+  const wanted = join(PIPELINE_ROOT, masterFor(item, formatName));
+  const master = existsSync(wanted) ? wanted : absolutePath;
+
+  const { file } = await deriveClip(master, formatName, { dryRun, onStep: step });
+  if (!file) {
+    warn(`${basename(master)}: ffprobe cannot read this file; left as is.`);
+    return master;
   }
-  if (!needsTranscode(probe, format)) return absolutePath;
-
-  const target = derivedPath(absolutePath, formatName);
-  if (existsSync(target)) {
-    item.file = toRelative(target);
-    return target;
-  }
-
-  if (dryRun) {
-    step(`would convert ${basename(absolutePath)} (${probe.width}x${probe.height}) to ${format.label}`);
-    return absolutePath;
-  }
-
-  await transcodeVideo(absolutePath, target, format);
-  const after = await probeVideo(target);
-  const cut = after && probe.duration - after.duration > 0.5
-    ? `, trimmed to ${format.maxSeconds}s`
-    : '';
-  step(`converted ${basename(absolutePath)} ${probe.width}x${probe.height} to ${format.label}${cut}`);
-
-  item.file = toRelative(target);
-  return target;
+  item.file = toRelative(file);
+  return file;
 }
 
 /**

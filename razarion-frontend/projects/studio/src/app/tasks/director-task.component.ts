@@ -224,12 +224,17 @@ import {
             </div>
             <div class="divider"></div>
             <div class="row">
+              <select class="shape" [(ngModel)]="recordShape" title="Portrait for Instagram, Facebook and YouTube Shorts; landscape for X">
+                <option value="portrait">1080 × 1920 portrait</option>
+                <option value="landscape">1920 × 1080 landscape</option>
+              </select>
               <button class="rec" (click)="startRecord()">● Record</button>
               <button (click)="cmd('RECORD_STOP')">■ Stop rec</button>
             </div>
             <div class="hint">
               Record plays from the start and downloads a WebM in the CLIENT tab
-              when the plan ends. <strong>Stop</strong> hands camera control back
+              when the plan ends. Record each plan once per shape: the reels and
+              Shorts are cut from the portrait take, X gets the landscape one. <strong>Stop</strong> hands camera control back
               to the client so you can scroll / re-frame again.
             </div>
           </div>
@@ -308,6 +313,7 @@ import {
     td { padding: 3px 6px; vertical-align: middle; }
     td.triple { display: flex; gap: 3px; }
     td.row-actions { white-space: nowrap; }
+    select.shape { width: auto; }
     input, select { padding: 3px 5px; font-size: 11px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.18); border-radius: 3px; color: #eee; font-variant-numeric: tabular-nums; font-family: inherit; width: 56px; }
     input[type=range] { width: 100%; }
     input:focus, select:focus { outline: none; border-color: #4a9eff; }
@@ -337,6 +343,7 @@ export class DirectorTaskComponent implements OnInit, OnDestroy {
   readonly bases = signal<DirectorBaseInfo[]>([]);
   currentName = '';
   seekMs = 0;
+  recordShape: 'portrait' | 'landscape' = 'portrait';
 
   // Stage-battle controls
   stageX = 2560;
@@ -642,7 +649,12 @@ export class DirectorTaskComponent implements OnInit, OnDestroy {
 
   async startRecord(): Promise<void> {
     const name = (this.currentName || 'director').replace(/[^a-z0-9-_]+/gi, '_').toLowerCase();
-    await this.storage.sendCommand('RECORD_START', {fileName: `${name}.webm`});
+    const portrait = this.recordShape === 'portrait';
+    await this.storage.sendCommand('RECORD_START', {
+      fileName: `${name}-${this.recordShape}.webm`,
+      width: portrait ? 1080 : 1920,
+      height: portrait ? 1920 : 1080,
+    });
   }
 
   async createBase(): Promise<void> {

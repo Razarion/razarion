@@ -1,10 +1,11 @@
 // Video the way each network wants it.
 //
-// The clips are recorded once, in whatever shape the game window had, and every network then wants
-// a different one. Instagram and Facebook show reels at 9:16 and letterbox anything else into a
-// sliver; X takes the landscape recording as it is; YouTube sorts a clip into Shorts or the main
-// feed purely by its aspect ratio. So the source file is the master and each network gets its own
-// derived copy, rather than one compromise file that looks wrong in three places.
+// Two shapes cover all four networks. Instagram, Facebook and YouTube Shorts are phone feeds and
+// want 9:16; X is read on a desktop far more and wants 16:9. A clip is therefore best recorded
+// twice, once in each shape, and a media item carries both masters (`portrait`, `landscape`). Each
+// network gets a copy derived from the master of its own shape. When only one master exists it is
+// cropped into the other shape - never padded, because bars of any kind read as a frame around a
+// video that was not made for the feed.
 //
 // ffmpeg and ffprobe come from npm rather than from the machine. The pipeline already runs on two
 // checkouts and a scheduled task, and "works here, missing there" is the failure this avoids.
@@ -21,19 +22,20 @@ const execFileAsync = promisify(execFile);
 export const FFMPEG = ffmpegPath;
 export const FFPROBE = ffprobeStatic.path;
 
-// The game's own background, the same colour the image cards and the padded screenshots use. Bars
-// in this colour read as part of the design; black bars read as a mistake.
-export const PAD_COLOUR = '#1c1917';
-
 /**
  * What each network actually accepts, as opposed to what it recommends.
  *
- * `ratio` is the target shape. `maxSeconds` is the hard limit that makes a publish fail rather than
- * look poor - the numbers are the documented API limits, not the in-app editor's. `fill` decides
- * what happens to the space when the source has a different shape: reels lose too much of the frame
- * to plain bars (a 2:1 recording inside 9:16 leaves 70 % of the screen empty), so they get the
- * blurred backdrop that every phone-first feed uses. The wider formats keep the flat colour, where
- * the bars are thin enough to pass for framing.
+ * `maxSeconds` is the hard limit that makes a publish fail rather than look poor - the documented
+ * API limits, not the in-app editor's: Instagram publishes reels of 3-90 s through the API even
+ * though the app takes three minutes, YouTube files anything vertical up to 180 s as a Short, X
+ * takes 140 s without Premium.
+ *
+ * Every format is filled edge to edge (`cover`): the clip is scaled until it covers the frame and
+ * the overhang is cut off both sides equally. The posts that went out with a blurred backdrop
+ * behind a landscape clip looked framed, and a flat colour or black looks worse.
+ *
+ * `revision` goes into the name of the derived file. Derived copies are reused by name, so without
+ * it a change to how a format is built would never reach a clip that had been converted before.
  */
 export const FORMATS = {
   reel: {
@@ -41,73 +43,65 @@ export const FORMATS = {
     width: 1080,
     height: 1920,
     maxSeconds: 90,
-    fill: 'blur',
+    revision: 2,
+    // A reel without an audio stream is taken by the API and then plays as a black frame on some
+    // clients, and a clip recorded off a canvas has no audio at all.
     needsAudio: true,
   },
-  square: {
-    label: 'square 1:1',
+  // YouTube decides Short or normal video on the file alone: vertical or square, at most 180 s. It
+  // re-encodes whatever it is given, so a portrait master that already fits goes up untouched.
+  short: {
+    label: 'Short 9:16',
     width: 1080,
-    height: 1080,
-    maxSeconds: 90,
-    fill: 'colour',
-    needsAudio: true,
+    height: 1920,
+    maxSeconds: 180,
   },
-  // X has a slot rather than a shape: anything from 1:3 to 3:1 is shown at its own proportions, so
-  // there is no fixed size to convert to. Forcing 16:9 on a 1.19:1 recording would add bars to a
-  // clip the timeline would have shown whole - the same reason the image path only pads what falls
-  // outside the accepted range. `maxWidth`/`maxHeight` are the ceiling X will accept, not a target.
-  native: {
-    label: 'X native',
-    maxWidth: 1920,
-    maxHeight: 1200,
-    minRatio: 1 / 3,
-    maxRatio: 3,
+  // X accepts anything from 1:3 to 3:1 up to 1920x1200, but its timeline is read on a desktop -
+  // 24 % of its desktop visitors reach the game against 5 % on mobile - where a portrait clip is a
+  // narrow strip in the middle of the column. 16:9 fills it.
+  landscape: {
+    label: 'landscape 16:9',
+    width: 1920,
+    height: 1080,
     maxSeconds: 140,
-    fill: 'colour',
   },
 };
 
-/**
- * The pixel size a clip of `sourceWidth`x`sourceHeight` ends up at in `format`.
- *
- * A fixed-shape format answers with its own numbers. A slot format keeps the source proportions,
- * shrinks them under the ceiling, and only reaches for padding when the shape itself is outside
- * what the network accepts. Everything is rounded to even numbers: H.264 4:2:0 cannot encode odd
- * dimensions and ffmpeg fails the run rather than rounding for you.
- */
-export function targetSize(format, sourceWidth, sourceHeight) {
-  const even = (n) => Math.max(2, Math.round(n / 2) * 2);
-  if (format.width && format.height) {
-    return { width: format.width, height: format.height, pad: true };
-  }
-
-  let w = sourceWidth;
-  let h = sourceHeight;
-  const scale = Math.min(format.maxWidth / w, format.maxHeight / h, 1);
-  w = even(w * scale);
-  h = even(h * scale);
-
-  const ratio = w / h;
-  if (ratio < format.minRatio) return { width: even(h * format.minRatio), height: h, pad: true };
-  if (ratio > format.maxRatio) return { width: w, height: even(w / format.maxRatio), pad: true };
-  return { width: w, height: h, pad: false };
-}
-
-/**
- * Which shape each network gets.
- *
- * Instagram and Facebook are phone-first and bury anything that is not a reel, so both get 9:16.
- * X shows video inline in a timeline read mostly on desktop - the numbers say 24 % of its desktop
- * visitors reach the game against 5 % on mobile - so it keeps the landscape recording. YouTube
- * decides Shorts by aspect ratio alone, which makes the choice there a content decision rather than
- * a technical one; `null` means "leave the master alone" and lets build_yt_posts.mjs label it.
- */
+/** Which shape each network gets. */
 export const PLATFORM_FORMAT = {
   instagram: 'reel',
   facebook: 'reel',
-  x: 'native',
-  youtube: null,
+  youtube: 'short',
+  x: 'landscape',
 };
+
+/** 'portrait' or 'landscape': which of a media item's two masters a format is cut from. */
+export function orientationOf(formatName) {
+  const format = FORMATS[formatName];
+  return format && format.height > format.width ? 'portrait' : 'landscape';
+}
+
+/**
+ * The master a network's copy is derived from, as a path relative to the pipeline.
+ *
+ * The master of the matching shape when the item has one; otherwise whatever the item has. Items
+ * written before there were two masters carry only `file`, and that is what they keep using.
+ */
+export function masterFor(item, formatName) {
+  return item[orientationOf(formatName)] || item.portrait || item.landscape || item.file;
+}
+
+/**
+ * How much of a master survives the crop into `formatName`, 0..1 along the side that is cut.
+ * 1 means the shapes match and nothing is lost.
+ */
+export function keptShare(probe, formatName) {
+  const format = FORMATS[formatName];
+  if (!probe || !format || !probe.width || !probe.height) return 1;
+  const source = probe.width / probe.height;
+  const target = format.width / format.height;
+  return Math.min(source, target) / Math.max(source, target);
+}
 
 export function isVideoFile(file) {
   return /\.(mp4|mov|m4v|webm|avi|mkv)$/i.test(file);
@@ -181,7 +175,7 @@ function parseFps(value) {
  *
  * The archive clips were recorded from a browser window and most of them arrive pillarboxed: the
  * explosion clip is stored 1008x480 but its picture is 640x480 sitting at x=184. Fitting that into
- * 9:16 keeps the bars, and they end up as hard black edges in the middle of the blurred backdrop -
+ * 9:16 keeps the bars, and they end up as hard black edges inside the finished frame -
  * which reads as a broken export rather than a framing choice.
  *
  * cropdetect is easy to fool: a genuinely dark frame looks exactly like a letterbox. So the clip is
@@ -244,37 +238,25 @@ export async function detectContentCrop(file, probe = null) {
 /**
  * The filter chain that turns a clip of any shape into `format`.
  *
- * Nothing is ever cropped. The clips show a game UI and a battlefield, and cutting the edges off to
- * fill a phone screen removes the part worth watching. The frame is filled instead - blurred copy
- * of the clip behind for reels, flat colour for the rest - and the whole recording stays visible in
- * the middle at its own shape.
+ * The clip is scaled until it covers the frame and the overhang is cut off both sides equally, so
+ * the middle of the recording - where the studio and director cameras put the action - stays. From
+ * a master of the other shape that is only the middle third, which is why every clip should come
+ * with a master of each shape and check.mjs says so when one is missing.
  *
  * The even-width rounding is not cosmetic: H.264 4:2:0 cannot encode odd dimensions, and ffmpeg
- * fails the run rather than rounding for you.
+ * fails the run rather than rounding for you. The format sizes are even already.
  */
-function filterFor(format, crop = null, size = null) {
-  const { width: w, height: h } = size || format;
-  const fill = format.fill;
-  const fit = `scale=${w}:${h}:force_original_aspect_ratio=decrease,scale=trunc(iw/2)*2:trunc(ih/2)*2`;
+function filterFor(format, crop = null) {
+  const { width: w, height: h } = format;
   // Strip the bars the source already carries before anything is measured or scaled.
   const source = crop
     ? `[0:v]crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}[src]`
     : null;
   const input = crop ? '[src]' : '[0:v]';
 
-  if (fill === 'blur') {
-    return [
-      source,
-      `${input}split=2[bg][fg]`,
-      `[bg]scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h},gblur=sigma=24[bgb]`,
-      `[fg]${fit}[fgs]`,
-      `[bgb][fgs]overlay=(W-w)/2:(H-h)/2,setsar=1[v]`,
-    ].filter(Boolean).join(';');
-  }
-
   return [
     source,
-    `${input}${fit},pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2:${PAD_COLOUR},setsar=1[v]`,
+    `${input}scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h},setsar=1[v]`,
   ].filter(Boolean).join(';');
 }
 
@@ -285,18 +267,13 @@ function filterFor(format, crop = null, size = null) {
  * about what the networks reject: the shape, the container, the codecs. A 1080x1920 H.264 file goes
  * up untouched.
  */
-export function needsTranscode(probe, format, crop = null) {
+export function needsTranscode(probe, format) {
   if (!probe) return true;
   if (!format) return false;
-  const w = crop ? crop.width : probe.width;
-  const h = crop ? crop.height : probe.height;
-  const size = targetSize(format, w, h);
-  const shapeOff = w !== size.width || h !== size.height;
+  const shapeOff = probe.width !== format.width || probe.height !== format.height;
   const codecOff = probe.videoCodec !== 'h264';
-  // A missing audio track is as much a reason to re-encode as a wrong one. A clip recorded off a
-  // canvas has no audio at all, and a reel without an audio stream is taken by the API and then
-  // plays as a black frame on some clients - so the silent track transcodeVideo adds is not a
-  // nicety. Everything else here would have said "already fine" and sent it straight up.
+  // A missing audio track is as much a reason to re-encode as a wrong one where the format needs
+  // one - see `needsAudio` on the reel. Everything else here would have said "already fine".
   const audioOff = probe.hasAudio
     ? probe.audioCodec !== 'aac'
     : Boolean(format.needsAudio);
@@ -312,10 +289,6 @@ export function needsTranscode(probe, format, crop = null) {
  * `-movflags +faststart` moves the index to the front of the file. Instagram and Facebook fetch the
  * file over HTTP and start reading before the download finishes; with the index at the end they
  * report a generic processing error and there is nothing in the response to say why.
- *
- * A silent AAC track is added when the source has none. A reel without an audio stream is accepted
- * by the API and then plays as a black frame on some clients - the recordings come from a browser
- * tab and frequently have no audio at all.
  */
 export async function transcodeVideo(input, output, format, { maxSeconds = null, crop = undefined } = {}) {
   const limit = maxSeconds ?? format.maxSeconds ?? null;
@@ -324,14 +297,11 @@ export async function transcodeVideo(input, output, format, { maxSeconds = null,
   const probe = await probeVideo(input);
   // `crop: null` is an explicit "leave the bars alone"; undefined means "work it out".
   const bars = crop === undefined ? await detectContentCrop(input, probe) : crop;
-  const size = probe
-    ? targetSize(format, bars ? bars.width : probe.width, bars ? bars.height : probe.height)
-    : null;
-  const silent = probe && !probe.hasAudio;
+  const silent = probe && !probe.hasAudio && format.needsAudio;
   if (silent) args.push('-f', 'lavfi', '-i', 'anullsrc=channel_layout=stereo:sample_rate=44100');
 
   args.push(
-    '-filter_complex', filterFor(format, bars, size),
+    '-filter_complex', filterFor(format, bars),
     '-map', '[v]',
     '-map', silent ? '1:a' : '0:a?',
     '-c:v', 'libx264',
@@ -353,11 +323,40 @@ export async function transcodeVideo(input, output, format, { maxSeconds = null,
   return output;
 }
 
+/**
+ * The copy of `master` that `formatName` wants: the master itself when it already fits, otherwise a
+ * derived file next to it, made once and reused on every later run.
+ *
+ * Returns `{ file, probe, converted }`; `file` is null when ffprobe cannot read the master. A dry run
+ * reports what it would do through `onStep` and hands back the master.
+ */
+export async function deriveClip(master, formatName, { dryRun = false, onStep = () => {} } = {}) {
+  const format = FORMATS[formatName];
+  const probe = await probeVideo(master);
+  if (!probe) return { file: null, probe: null, converted: false };
+  if (!format || !needsTranscode(probe, format)) return { file: master, probe, converted: false };
+
+  const target = derivedPath(master, formatName);
+  if (existsSync(target)) return { file: target, probe, converted: false };
+
+  if (dryRun) {
+    onStep(`would convert ${basename(master)} (${probe.width}x${probe.height}) to ${format.label}`);
+    return { file: master, probe, converted: false };
+  }
+
+  await transcodeVideo(master, target, format);
+  const after = await probeVideo(target);
+  const cut = after && probe.duration - after.duration > 0.5 ? `, trimmed to ${format.maxSeconds}s` : '';
+  onStep(`converted ${basename(master)} ${probe.width}x${probe.height} to ${format.label}${cut}`);
+  return { file: target, probe, converted: true };
+}
+
 /** Where a derived copy lives: alongside the master, named after the format it was made for. */
 export function derivedPath(input, formatName) {
   const dir = join(input, '..');
   const stem = basename(input, extname(input));
-  return join(dir, `${stem}--${formatName}.mp4`);
+  const revision = FORMATS[formatName]?.revision;
+  return join(dir, `${stem}--${formatName}${revision ? `-v${revision}` : ''}.mp4`);
 }
 
 /** ffprobe on the command line, for the odd one-off question. Throws on an unreadable file. */

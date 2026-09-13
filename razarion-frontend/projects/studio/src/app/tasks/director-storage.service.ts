@@ -162,7 +162,7 @@ export class DirectorStorageService {
 
   // ===== Transport command channel =====
 
-  async sendCommand(type: DirectorCommandType, extra: {planId?: number; timeMs?: number; fileName?: string} = {}): Promise<void> {
+  async sendCommand(type: DirectorCommandType, extra: {planId?: number; timeMs?: number; fileName?: string; width?: number; height?: number} = {}): Promise<void> {
     await firstValueFrom(this.http.post(`${this.base}/command`, {type, ...extra}));
   }
 

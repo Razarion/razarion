@@ -1,7 +1,7 @@
 import {Injectable, inject, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
-import {Scene, Vector3} from '@babylonjs/core';
+import {Camera, Scene, Vector3} from '@babylonjs/core';
 import {BabylonRenderServiceAccessImpl} from '../renderer/babylon-render-service-access-impl.service';
 import {UiSettingsService} from '../ui-settings.service';
 import {CombatTracker} from '../renderer/combat-tracker';
@@ -68,6 +68,8 @@ interface DirectorCommand {
   planId?: number;
   timeMs?: number;
   fileName?: string;
+  width?: number;
+  height?: number;
 }
 
 interface CameraPose { position: Vector3; target: Vector3; }
@@ -130,8 +132,9 @@ export class DirectorService {
   private savedShadowEnabled: boolean | null = null;
   private savedRenderWidth: number | null = null;
   private savedRenderHeight: number | null = null;
-  /** What the file comes out as, regardless of the window. YouTube's own recommendation, and the
-   *  size the reel derivations in the social pipeline expect to cut down from. */
+  private savedFovMode: number | null = null;
+  /** What the file comes out as, regardless of the window. The studio sends 1080x1920 for the
+   *  portrait take the reels and Shorts are cut from, and 1920x1080 for the landscape one X gets. */
   recordWidth = 1920;
   recordHeight = 1080;
 
@@ -204,7 +207,7 @@ export class DirectorService {
       case 'PAUSE': this.playing = false; break;
       case 'STOP': this.stop(); break;
       case 'SEEK': this.seek(cmd.timeMs ?? 0); break;
-      case 'RECORD_START': this.recordStart(cmd.fileName ?? 'director.webm'); break;
+      case 'RECORD_START': this.recordStart(cmd.fileName ?? 'director.webm', cmd.width, cmd.height); break;
       case 'RECORD_STOP': this.recordStop(); break;
       case 'CAPTURE': await this.captureCamera(); break;
     }
@@ -294,9 +297,11 @@ export class DirectorService {
    * cannot be recovered afterwards. The size is set explicitly for the duration instead. The
    * viewport looks stretched while it runs; that is the trade for not keeping a second renderer.
    */
-  recordStart(fileName: string): void {
+  recordStart(fileName: string, width = 1920, height = 1080): void {
     const r = this.renderer;
     if (!r || !this.plan) return;
+    this.recordWidth = width;
+    this.recordHeight = height;
     const engine = r.getEngine();
     const canvas = engine.getRenderingCanvas();
     const mime = pickClipMime();
@@ -320,6 +325,15 @@ export class DirectorService {
 
     this.savedRenderWidth = engine.getRenderWidth();
     this.savedRenderHeight = engine.getRenderHeight();
+    // Babylon holds the vertical field of view when the aspect changes, so a plan framed in a
+    // landscape window and recorded upright would lose both sides of every shot. Holding the
+    // horizontal field instead keeps what was framed and adds sky and ground - the same choice the
+    // studio makes for its portrait clips. Restored in recordStop.
+    const cam = r.getCamera();
+    if (cam && this.recordWidth / this.recordHeight < this.savedRenderWidth / this.savedRenderHeight) {
+      this.savedFovMode = cam.fovMode;
+      cam.fovMode = Camera.FOVMODE_HORIZONTAL_FIXED;
+    }
     engine.setSize(this.recordWidth, this.recordHeight);
 
     const scene = r.getScene();
@@ -368,7 +382,10 @@ export class DirectorService {
         r.getEngine().setSize(this.savedRenderWidth, this.savedRenderHeight);
         r.getEngine().resize();
       }
+      const cam = r.getCamera();
+      if (cam && this.savedFovMode !== null) cam.fovMode = this.savedFovMode;
     }
+    this.savedFovMode = null;
     this.savedShadowEnabled = null;
     this.savedRenderWidth = null;
     this.savedRenderHeight = null;

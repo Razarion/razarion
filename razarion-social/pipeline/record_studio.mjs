@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Films a studio scene without a person in front of it.
 //
+//   node record_studio.mjs --scene "Badger vs Radar" --both      # portrait and landscape, one run
 //   node record_studio.mjs --scene "Badger vs Radar"
 //   node record_studio.mjs --scene "Badger vs Radar" --seconds 12 --out data/clips/badger.mp4
 //   node record_studio.mjs --scene "Tesla" --url https://www.razarion.com/studio/scenes
@@ -10,12 +11,16 @@
 // fires - the attack loop, saved per item as "Loop on open". The recorder cannot click an item in
 // the viewport, and a scene that only fires after a click would be filmed standing still.
 //
+// --both films the scene twice in one page, portrait first, because the networks want both shapes:
+// Instagram, Facebook and YouTube Shorts are cut from the portrait take, X from the landscape one.
+// The scene is loaded once; only the resolution changes between the takes.
+//
 // The run verifies its own result. A clip whose frame rate collapsed is the one failure this
 // pipeline has actually produced (a recording in a background tab returned 5 frames spanning
 // 0.17s and looked like a broken container), and it is invisible until someone plays the file.
 
 import { mkdirSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, extname, join, resolve } from 'node:path';
 import { parseArgs } from './lib/args.mjs';
 import { PIPELINE_ROOT } from './lib/paths.mjs';
 import { withStudioPage, renderingCapabilities, isSoftwareRenderer, assertPageUsable } from './lib/browser.mjs';
@@ -26,12 +31,16 @@ const DEFAULT_URL = 'http://localhost:4300/scenes';
 /** Dev server in front of a local backend: the token has to come from the backend. */
 const DEV_API_BASE = 'http://127.0.0.1:8080';
 
+const PORTRAIT = '1080 × 1920 (FHD portrait)';
+const LANDSCAPE = '1920 × 1080 (FHD landscape)';
+
 /** A clip this far below the requested frame rate is a failed take, not a slow one. */
 const MIN_FPS = 20;
 
 function usage() {
   info('node record_studio.mjs --scene "<name>" [--seconds 5|8|12|20|30] [--out <file>]');
-  info('                       [--url <scenes page>] [--resolution "1920 × 1080 (FHD landscape)"]');
+  info('                       [--both | --resolution "1920 × 1080 (FHD landscape)"]');
+  info('                       [--url <scenes page>]');
   info('                       [--settle <seconds>] [--head]');
 }
 
@@ -46,7 +55,7 @@ async function main() {
   const sceneName = String(args.scene);
   const seconds = args.seconds ? Number(args.seconds) : 12;
   const url = String(args.url ?? DEFAULT_URL);
-  const resolution = String(args.resolution ?? '1920 × 1080 (FHD landscape)');
+  if (args.both && args.resolution) throw new Error('--both records both resolutions; drop --resolution.');
   // The ground builds one tile per frame after the fetch is done, and the overlay that reports it
   // is advisory - it can clear while shaders are still compiling. Filming too early yields a clip
   // of flat green placeholder terrain, so there is a wait here even when the page says it is done.
@@ -55,9 +64,17 @@ async function main() {
   const out = resolve(PIPELINE_ROOT, String(args.out ?? join('data', 'clips', `${slug}.mp4`)));
   const apiBase = new URL(url).port === '4300' ? DEV_API_BASE : new URL(url).origin;
 
+  // With --both the two takes are named after their shape, next to where the single one would go.
+  const takes = args.both
+    ? [
+        { resolution: PORTRAIT, out: sibling(out, 'portrait'), shape: 'portrait' },
+        { resolution: LANDSCAPE, out: sibling(out, 'landscape'), shape: 'landscape' },
+      ]
+    : [{ resolution: String(args.resolution ?? LANDSCAPE), out, shape: null }];
+
   mkdirSync(dirname(out), { recursive: true });
 
-  info(`Scene "${sceneName}" · ${seconds}s · ${resolution}`);
+  info(`Scene "${sceneName}" · ${seconds}s · ${takes.map((t) => t.resolution).join(' + ')}`);
   step(`page ${url}`);
 
   await withStudioPage({ url, apiBase, headless: !args.head }, async (page) => {
@@ -89,32 +106,46 @@ async function main() {
       .catch(() => warn('The loading overlay never cleared - filming anyway after the settle wait.'));
     await page.waitForTimeout(settleSeconds * 1000);
 
-    await selectByLabel(page, 'Resolution', resolution);
     await selectByLabel(page, 'Clip length', `${seconds} seconds`);
 
     // Anything selected draws its gizmo arrows into the recording.
     const deselect = page.getByRole('button', { name: 'Deselect' });
     if (await deselect.count()) await deselect.click();
 
-    step(`recording ${seconds}s`);
-    await page.getByRole('button', { name: 'Record clip' }).click();
+    for (const take of takes) {
+      await selectByLabel(page, 'Resolution', take.resolution);
+      step(`recording ${seconds}s${take.shape ? ` ${take.shape}` : ''}`);
+      await page.getByRole('button', { name: 'Record clip' }).click();
 
-    const saveButton = page.getByRole('button', { name: 'Save clip' });
-    await saveButton.waitFor({ state: 'visible', timeout: (seconds + 60) * 1000 });
+      const saveButton = page.getByRole('button', { name: 'Save clip' });
+      await saveButton.waitFor({ state: 'visible', timeout: (seconds + 60) * 1000 });
 
-    const [download] = await Promise.all([
-      page.waitForEvent('download', { timeout: 120_000 }),
-      saveButton.click(),
-    ]);
-    await download.saveAs(out);
+      const [download] = await Promise.all([
+        page.waitForEvent('download', { timeout: 120_000 }),
+        saveButton.click(),
+      ]);
+      await download.saveAs(take.out);
+      // Checked before the next take rather than at the end: a broken first take would otherwise
+      // cost the full length of the second one before anyone hears about it.
+      await verifyTake(take.out, seconds);
+    }
   });
 
-  const probe = await probeVideo(out);
-  if (!probe) {
-    throw new Error(`ffprobe cannot read ${out} — the download did not produce a usable file.`);
+  ok(takes.length > 1 ? 'Both clips recorded.' : 'Clip recorded.');
+  if (takes.length > 1) {
+    info(`  Next: node compose.mjs --portrait ${relativeToPipeline(takes[0].out)} ` +
+      `--landscape ${relativeToPipeline(takes[1].out)} --text "..."`);
+  } else {
+    info(`  Next: node compose.mjs --media ${relativeToPipeline(out)} --text "..."`);
   }
-  info('');
-  info(`  ${out}`);
+}
+
+async function verifyTake(file, seconds) {
+  const probe = await probeVideo(file);
+  if (!probe) {
+    throw new Error(`ffprobe cannot read ${file} — the download did not produce a usable file.`);
+  }
+  info(`  ${file}`);
   info(`  ${probe.width}x${probe.height}, ${probe.duration.toFixed(1)}s, ${probe.fps.toFixed(1)} fps, ` +
     `${(probe.bytes / 1024 / 1024).toFixed(1)} MB, ${probe.videoCodec}`);
 
@@ -124,15 +155,17 @@ async function main() {
       `${seconds}s clip. The frames were not drawn - check that the page was rendering.`
     );
   }
-
-  ok('Clip recorded.');
-  info(`  Next: node compose.mjs --media ${relativeToPipeline(out)} --text "..."`);
 }
 
 /** Pick an option in the <select> that sits in the settings row with this label. */
 async function selectByLabel(page, label, optionLabel) {
   const select = page.locator('.prop-row', { hasText: label }).locator('select').first();
   await select.selectOption({ label: optionLabel });
+}
+
+/** data/clips/badger.mp4 -> data/clips/badger-portrait.mp4 */
+function sibling(file, suffix) {
+  return join(dirname(file), `${basename(file, extname(file))}-${suffix}.mp4`);
 }
 
 function relativeToPipeline(file) {

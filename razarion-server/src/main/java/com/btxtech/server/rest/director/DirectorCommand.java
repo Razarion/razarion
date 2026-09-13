@@ -18,6 +18,9 @@ public class DirectorCommand {
     private Integer timeMs;
     /** RECORD_START: download file name. */
     private String fileName;
+    /** RECORD_START: output size in pixels; the client records 1920x1080 when absent. */
+    private Integer width;
+    private Integer height;
 
     public long getSeq() { return seq; }
     public void setSeq(long seq) { this.seq = seq; }
@@ -29,4 +32,8 @@ public class DirectorCommand {
     public void setTimeMs(Integer timeMs) { this.timeMs = timeMs; }
     public String getFileName() { return fileName; }
     public void setFileName(String fileName) { this.fileName = fileName; }
+    public Integer getWidth() { return width; }
+    public void setWidth(Integer width) { this.width = width; }
+    public Integer getHeight() { return height; }
+    public void setHeight(Integer height) { this.height = height; }
 }
