@@ -95,7 +95,8 @@ describe('Startup payload', () => {
 
     const detail = formatStartupPayload('playable', payload);
 
-    expect(detail).toBe('at=playable,ms=8421,files=2,kb=400,cachedKb=0,jsKb=100,jsN=1,gltfKb=300,gltfN=1');
+    // scope says which thread's timeline this is. The worker has its own and is not in here.
+    expect(detail).toBe('at=playable,scope=main,ms=8421,files=2,kb=400,cachedKb=0,jsKb=100,jsN=1,gltfKb=300,gltfN=1');
     for (const pair of detail.split(',')) {
       expect(pair.split('=').length).toBe(2);
     }

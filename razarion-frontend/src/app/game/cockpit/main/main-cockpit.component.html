@@ -56,7 +56,8 @@
       <i class="pi pi-angle-right menu-chevron"></i>
     </button>
     <button type="button" class="menu-row"
-            (click)="mainCockpitService.showTechTreeDialog = true; compactLayout.close()">
+            [class.has-news]="techTreeNews"
+            (click)="openTechTree(); compactLayout.close()">
       <i class="pi pi-sitemap"></i>
       <span class="menu-label">Tech tree</span>
       <i class="pi pi-angle-right menu-chevron"></i>
@@ -164,7 +165,8 @@
           <i class="pi pi-sliders-h"></i>
         </button>
         <button type="button" class="hud-btn" pTooltip="Tech tree"
-                (click)="mainCockpitService.showTechTreeDialog = true">
+                [class.has-news]="techTreeNews"
+                (click)="openTechTree()">
           <i class="pi pi-sitemap"></i>
         </button>
         <button type="button" class="hud-btn" pTooltip="Inventory" (click)="onInventory()">

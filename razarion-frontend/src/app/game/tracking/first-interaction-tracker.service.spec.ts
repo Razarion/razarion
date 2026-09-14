@@ -1,4 +1,4 @@
-import {FirstInteractionTrackerService} from './first-interaction-tracker.service';
+import {FirstInteractionTrackerService, groupSizeDetail} from './first-interaction-tracker.service';
 
 /**
  * What the tracker sends and what it swallows.
@@ -80,5 +80,28 @@ describe('First interaction tracker', () => {
     service.report('POINTER_DOWN');
 
     expect(sent.length).toBe(0);
+  });
+});
+
+/**
+ * Group sizes are bucketed rather than counted. The cap allows five distinct details per kind and
+ * per session, and a player who selects two, then three, then five units would spend it on
+ * counting instead of on the question: was a group formed, and was it the three quest 379 needs.
+ */
+describe('Group size detail', () => {
+  it('keeps the sizes that mean something apart', () => {
+    expect(groupSizeDetail(2)).toBe('units=2');
+    expect(groupSizeDetail(3)).toBe('units=3');
+  });
+
+  it('puts everything above three in one bucket, so the cap is never spent on counting', () => {
+    expect(groupSizeDetail(4)).toBe('units=4plus');
+    expect(groupSizeDetail(9)).toBe('units=4plus');
+    expect(groupSizeDetail(40)).toBe('units=4plus');
+  });
+
+  it('leaves room under the cap for the whole vocabulary', () => {
+    const alle = new Set([2, 3, 4, 5, 12, 30].map(groupSizeDetail));
+    expect(alle.size).toBeLessThan(5);
   });
 });

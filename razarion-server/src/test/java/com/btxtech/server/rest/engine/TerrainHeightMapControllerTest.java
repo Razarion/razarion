@@ -1,5 +1,7 @@
 package com.btxtech.server.rest.engine;
 
+import com.btxtech.server.service.engine.HeightMapDeltaService;
+import com.btxtech.server.service.engine.HeightMapRegionService;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +31,10 @@ class TerrainHeightMapControllerTest {
     private static final String E_TAG = "\"" + DIGEST + "\"";
 
     private final PlanetCrudService planetCrudService = mock(PlanetCrudService.class);
-    private final TerrainHeightMapControllerImpl controller = new TerrainHeightMapControllerImpl(planetCrudService);
+    private final HeightMapDeltaService heightMapDeltaService = mock(HeightMapDeltaService.class);
+    private final HeightMapRegionService heightMapRegionService = mock(HeightMapRegionService.class);
+    private final TerrainHeightMapControllerImpl controller =
+            new TerrainHeightMapControllerImpl(planetCrudService, heightMapDeltaService, heightMapRegionService);
 
     private ResponseEntity<byte[]> get(String ifNoneMatch) {
         when(planetCrudService.getCompressedHeightMapDigest(1)).thenReturn(DIGEST);

@@ -24,6 +24,7 @@ public class JsMainCockpit implements MainCockpit {
     @Override public void displayEnergy(int consuming, int generating) { callMethod2D(js, "displayEnergy", consuming, generating); }
     @Override public void showRadar(GameUiControl.RadarState radarState) { callMethod1S(js, "showRadar", radarState.name()); }
     @Override public void blinkAvailableUnlock(boolean show) { callMethod1B(js, "blinkAvailableUnlock", show); }
+    @Override public void techTreeHasNews() { callMethod0(js, "techTreeHasNews"); }
     @Override public void clean() { callMethod0(js, "clean"); }
 
     @org.teavm.jso.JSBody(params = {"obj", "method", "a1", "a2", "a3"}, script = "obj[method](a1, a2, a3);")

@@ -9,6 +9,7 @@ import {GwtAngularService} from '../../gwtangular/GwtAngularService';
 import {SelectionService} from '../selection.service';
 import {UiSettingsService} from '../ui-settings.service';
 import {TipStallTrackerService} from './tip-stall-tracker.service';
+import {FirstInteractionTrackerService} from '../tracking/first-interaction-tracker.service';
 import {GwtHelper} from '../../gwtangular/GwtHelper';
 
 @Injectable({
@@ -38,7 +39,9 @@ export class TipService implements ViewFieldListener {
     private readonly gwtAngularService: GwtAngularService,
     public readonly selectionService: SelectionService,
     private readonly uiSettingsService: UiSettingsService,
-    private readonly tipStallTrackerService: TipStallTrackerService
+    private readonly tipStallTrackerService: TipStallTrackerService,
+    /** Public: a tip task says what it decided, and the tasks only reach the world through here. */
+    public readonly firstInteractionTracker: FirstInteractionTrackerService
   ) {
     this.renderService.addViewFieldListener(this);
     // Scrolling the actor out and back in gives it a new BabylonBaseItemImpl. The running task

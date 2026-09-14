@@ -20,5 +20,12 @@ public interface MainCockpit {
 
     void blinkAvailableUnlock(boolean show);
 
+    /**
+     * A level was reached that allows something the one before it did not - a unit type that was
+     * not buildable, or more of one than before. Says nothing about which: the tech tree shows the
+     * whole matrix and marks the player's column, so pointing at it is the whole message.
+     */
+    void techTreeHasNews();
+
     void clean();
 }

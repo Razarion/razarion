@@ -83,7 +83,28 @@ describe('IdleItemTipTask', () => {
     task.start();
     actor.idle = true;
     rendered.current = actor as unknown as BabylonBaseItemImpl;
-    tick(4000); // past the settle window, so the idle state counts
+    // This actor has never been seen working, so only the safety net can end the task.
+    tick(16000);
+
+    expect(onSucceed).toHaveBeenCalled();
+    task.cleanup();
+  }));
+
+  it('ends as soon as an actor that was working goes idle', fakeAsync(() => {
+    // The test is the observation, not the clock: an actor that has been seen working and is idle
+    // again has finished whatever it was told to do, and there is nothing left to wait for.
+    const actor = createActor();
+    const rendered: { current: BabylonBaseItemImpl | null } = {current: actor as unknown as BabylonBaseItemImpl};
+    const {tipService, context, onSucceed} = createHarness(rendered);
+    context.setActor(actor as unknown as BabylonBaseItemImpl);
+    const task = new IdleItemTipTask(tipService, context);
+
+    task.start(); // busy, so the order has demonstrably been taken up
+    tick(1000);
+    expect(onSucceed).not.toHaveBeenCalled();
+
+    actor.idle = true;
+    tick(1000); // well inside the window an unobserved actor would have to sit out
 
     expect(onSucceed).toHaveBeenCalled();
     task.cleanup();
@@ -102,11 +123,16 @@ describe('IdleItemTipTask', () => {
 
     task.start();
     expect(onSucceed).not.toHaveBeenCalled();
-    tick(2000);
+
+    // Four seconds is not a chance. How long an order takes to be taken up is a property of the
+    // transport, and in the Meta in-app browser there is no SharedArrayBuffer, so the tick comes
+    // through the postMessage fallback and arrives late.
+    tick(4000);
     expect(onSucceed).not.toHaveBeenCalled();
 
-    // Still idle once it has had its chance: then it really has nothing to do.
-    tick(2000);
+    // Still idle long afterwards, and never once seen working: the order never landed, and the
+    // chain has to re-engage rather than leave the player in front of a tip that says nothing.
+    tick(12000);
     expect(onSucceed).toHaveBeenCalled();
     task.cleanup();
   }));

@@ -39,6 +39,9 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
   let places: { x: number, z: number }[];
   let invalidAttempts: number;
   let reportedInteractions: string[];
+  /** kind plus the detail where one was given, so a test can assert the reason travelled. */
+  let reportedDetails: string[];
+  let errorText: string;
 
   beforeEach(() => {
     engine = new NullEngine({renderWidth: WIDTH, renderHeight: HEIGHT, textureSize: 512, deterministicLockstep: false, lockstepMaxSteps: 1});
@@ -63,6 +66,8 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
     places = [];
     invalidAttempts = 0;
     reportedInteractions = [];
+    reportedDetails = [];
+    errorText = '';
 
     const rendererService = {
       getScene: () => scene,
@@ -82,7 +87,10 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
       // The placer reports when it appears, when a placement is refused and when one goes through -
       // see PLACER_SHOWN in first-interaction-tracker.service.ts. Collected rather than ignored,
       // so the tests below can say which of the three a given gesture produced.
-      reportFirstInteraction: (kind: string) => reportedInteractions.push(kind),
+      reportFirstInteraction: (kind: string, detail?: string) => {
+        reportedInteractions.push(kind);
+        reportedDetails.push(detail ? kind + '|' + detail : kind);
+      },
       touchCameraControl: {
         isGesturing: () => gesturing,
         setPanClaim: (claim: ((x: number, y: number) => boolean) | null) => panClaim = claim
@@ -116,7 +124,7 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
       getRelativeItemPositions: () => [],
       getSpawnAudioId: () => null,
       isPositionValid: () => positionValid,
-      getErrorText: () => '',
+      getErrorText: () => errorText,
       isPlayBuildSound: () => false,
       getEnemyFreeRadius: () => DISC_RADIUS,
       onMove: (x: number, z: number) => moves.push({x, z}),
@@ -280,6 +288,39 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
     expect(invalidAttempts).toBe(1);
     expect(reportedInteractions).toContain('PLACER_REJECTED');
     expect(reportedInteractions).not.toContain('PLACER_CONFIRMED');
+  });
+
+  /**
+   * The reason travels with the rejection. Six conditions can redden the ghost and they want
+   * different repairs - the opening search clears "blocked by another item" and can do nothing
+   * about "outside the allowed area" - so a bare count of rejections cannot say what to build.
+   * It used to be logged and nowhere else, in a record that carries no game session.
+   */
+  it('reports why the spot was refused, not only that it was', () => {
+    positionValid = false;
+    errorText = 'Blocked by another item';
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+
+    pressDeploy();
+
+    expect(reportedDetails).toContain('PLACER_REJECTED|Blocked by another item');
+  });
+
+  it('says unknown rather than nothing when the placer has no reason to give', () => {
+    // getErrorText is empty whenever the check itself failed - a WASM trap sets "Can not check
+    // this position", but a placer that never ran a check at all returns the empty string. An
+    // empty detail would be dropped and the row would look like the old one.
+    positionValid = false;
+    errorText = '';
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+
+    pressDeploy();
+
+    expect(reportedDetails).toContain('PLACER_REJECTED|unknown');
   });
 
   /**

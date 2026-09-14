@@ -206,6 +206,14 @@
       <div class="compact-select-hint">Drag a box around your units</div>
     }
 
+    <!-- The other half of the same line: a tip is asking for a group and the mode is not armed yet,
+         so the sentence has to name the button rather than the gesture. Nothing else in the game
+         ever mentions that icon, and by the time an army is needed the player has been taught
+         eleven times that selecting means tapping one thing. -->
+    @if (touchSelectionMode.asked() && !touchSelectionMode.armed() && !compactLayout.openPanel()) {
+      <div class="compact-select-hint">Tap the box below to select several units at once</div>
+    }
+
     <!-- Icon bar: one tap opens a panel, the same tap closes it again. An icon whose panel has
          nothing to show is disabled rather than hidden, so the row does not jump around. -->
     <div class="compact-bar">
@@ -235,6 +243,7 @@
            panel icons instead of among them. -->
       <button type="button" class="compact-icon"
               [class.compact-icon-open]="touchSelectionMode.armed()"
+              [class.compact-icon-asked]="touchSelectionMode.asked() && !touchSelectionMode.armed()"
               (click)="touchSelectionMode.toggle()"
               [attr.aria-pressed]="touchSelectionMode.armed()"
               aria-label="Select a group of units">
@@ -263,14 +272,25 @@
           <i class="pi pi-comments"></i>
         </button>
       }
+      <!-- The tech tree is a row inside this menu, so when a level allows something new it is the
+           menu that has to say so - a mark on a button two taps away is a mark nobody sees. It is
+           the same reason the build tip points at the wrench when the item panel is collapsed. -->
       <button type="button" class="compact-icon"
               [class.compact-icon-open]="compactLayout.isOpen('main')"
+              [class.compact-icon-asked]="mainCockpit.techTreeNews && !compactLayout.isOpen('main')"
               [disabled]="!cockpitDisplayService.showMainCockpit"
               (click)="compactLayout.toggle('main')"
               aria-label="Menu">
         <i class="pi pi-bars"></i>
       </button>
     </div>
+  }
+
+  <!-- The same request, for a player who has a mouse. There is no icon to point at here - the left
+       button draws the marquee by itself - but the tip that asks for a group must not be the only
+       one in the chain that waits in silence, which is what it would be outside the compact layout. -->
+  @if (!compactLayout.compact() && touchSelectionMode.asked()) {
+    <div class="desktop-select-hint">Drag a box around your units to select all of them</div>
   }
 
   <server-restart #serverRestartComponent></server-restart>

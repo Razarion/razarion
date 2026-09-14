@@ -133,6 +133,10 @@ public class DaggerUiBaseIntegrationTest {
             }
 
             @Override
+            public void techTreeHasNews() {
+            }
+
+            @Override
             public void displayLevel(int levelNumber) {
 
             }

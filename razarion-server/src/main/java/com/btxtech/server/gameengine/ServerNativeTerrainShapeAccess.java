@@ -19,7 +19,7 @@ public class ServerNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
     }
 
     @Override
-    public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
+    public void load(int planetId, int tileXCount, int tileYCount, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
         loadedCallback.accept(serverTerrainShapeService.getNativeTerrainShape(planetId));
     }
 

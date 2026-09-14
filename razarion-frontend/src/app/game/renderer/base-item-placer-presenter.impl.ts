@@ -372,7 +372,21 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     // anyway - the master silently dropped builder builds and let the start builder spawn on
     // top of a resource.
     if (!baseItemPlacer.isPositionValid()) {
-      this.rendererService.reportFirstInteraction('PLACER_REJECTED');
+      /*
+       * With the reason, because without it the record cannot be acted on. The six conditions
+       * want different repairs - the opening search can clear "blocked by another item", and is
+       * powerless against "outside the allowed area" - and which one dominates decides what to
+       * build next. Measured over seven days before the search existed, 44% of the sessions that
+       * clicked were rejected at least once; the reasons behind that number had to be read out
+       * of Cloud Logging, where onInvalidPlaceAttempt logs them, and that record carries no
+       * gameSessionUuid. So it could never be crossed with the device, the outcome, or whether
+       * the player gave up.
+       *
+       * Keyed with the kind, so a session reports each distinct reason once - the same shape
+       * ENGINE_ERROR already uses, and MAX_PER_KIND caps it at five.
+       */
+      this.rendererService.reportFirstInteraction('PLACER_REJECTED',
+        baseItemPlacer.getErrorText() || 'unknown');
       baseItemPlacer.onInvalidPlaceAttempt();
       return;
     }

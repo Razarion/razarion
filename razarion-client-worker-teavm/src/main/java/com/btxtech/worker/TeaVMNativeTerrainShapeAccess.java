@@ -51,23 +51,97 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.TILE_NODE
 public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     private final TerrainService terrainService;
     private NativeTerrainShape nativeTerrainShape;
-    private Uint16Array terrainHeightMap;
+    /**
+     * One Uint16Array per tile, or null for a tile that has not been loaded. Indexed the way the
+     * height map is laid out: {@code tileY * tileXCount + tileX}, tiles contiguous, rows contiguous
+     * inside a tile.
+     */
+    private JSObject tileStore;
+    /** One height per tile, the value a flat tile has edge to edge. See {@link #flatValues}. */
+    private Uint16Array flatValues;
+    private int tileXCount;
+    private int tileYCount;
+    /** Set once both the flat table and the first region have arrived. */
+    private boolean heightsLoaded;
 
     @Inject
     public TeaVMNativeTerrainShapeAccess(TerrainService terrainService) {
         this.terrainService = terrainService;
     }
 
+    /**
+     * Three fetches, and the game waits for all of them.
+     * <p>
+     * The height map arrives by the tile now rather than as one array. Today that is still the
+     * whole planet in one rectangle, so nothing about what is loaded has changed - only how it is
+     * held, which is what lets a later change ask for the player's corner and stream the rest.
+     * <p>
+     * The flat table is the piece that makes a partly loaded map safe: for the 70% of tiles that
+     * are one height edge to edge it answers exactly, not approximately. That matters because the
+     * server runs the planet on the full map - a client whose height differs anywhere reads a
+     * different terrain type there, walks a different path, and drifts out of sync.
+     */
     @Override
-    public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
+    public void load(int planetId, int tileXCount, int tileYCount, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
         nativeTerrainShape = null;
-        terrainHeightMap = null;
+        this.tileXCount = tileXCount;
+        this.tileYCount = tileYCount;
+        this.heightsLoaded = false;
+        this.flatValues = null;
+        this.tileStore = createTileStore(tileXCount * tileYCount);
 
-        // Load terrain shape JSON
         loadTerrainShape(planetId, loadedCallback, failCallback);
+        loadHeights(planetId, loadedCallback);
+    }
 
-        // Load terrain height map binary
-        loadTerrainHeightMap(planetId, loadedCallback, failCallback);
+    /**
+     * The flat table first, then the heights - in that order, because a height read that arrives
+     * before its tile does has to fall back on the table, and a table that is not there yet would
+     * answer zero. Zero is sea level minus two hundred metres, which the pathing would read as
+     * water.
+     */
+    private void loadHeights(int planetId, Consumer<NativeTerrainShape> loadedCallback) {
+        fetchArrayBuffer(CommonUrl.terrainHeightMapFlatController(planetId), flatBuffer -> {
+            try {
+                flatValues = readFlatTable(flatBuffer, tileXCount, tileYCount);
+            } catch (Throwable t) {
+                JsConsole.warn("Error reading the flat height table: " + t.getMessage());
+                flatValues = createUint16Array(tileXCount * tileYCount);
+            }
+            loadRegion(planetId, 0, 0, tileXCount, tileYCount, loadedCallback);
+        }, error -> {
+            JsConsole.warn("Failed to load the flat height table: " + error);
+            flatValues = createUint16Array(tileXCount * tileYCount);
+            loadRegion(planetId, 0, 0, tileXCount, tileYCount, loadedCallback);
+        });
+    }
+
+    /**
+     * A rectangle of tiles into the store. Each tile in the response is delta encoded from zero, so
+     * a tile can be read without the tiles before it - see HeightMapRegionService on the server.
+     * <p>
+     * A failure leaves the store as it is and carries on: every tile then answers from the flat
+     * table, which is a flat planet rather than no planet. The same choice the single fetch made
+     * before, for the same reason - telemetry and terrain are not worth a start.
+     */
+    private void loadRegion(int planetId, int tileX, int tileY, int countX, int countY,
+                            Consumer<NativeTerrainShape> loadedCallback) {
+        fetchArrayBuffer(CommonUrl.terrainHeightMapRegionController(planetId, tileX, tileY, countX, countY), buffer -> {
+            try {
+                storeRegion(buffer, tileStore, tileXCount, TILE_NODE_SIZE, NODE_X_COUNT);
+            } catch (Throwable t) {
+                // An error rather than a warning, and said out loud: this is the one failure that is
+                // otherwise invisible. Wrong heights draw a planet of the wrong shape and nothing
+                // complains - no exception, no missing tile, just cliffs where there is meadow.
+                JsConsole.error("Height map region rejected: " + t.getMessage());
+            }
+            heightsLoaded = true;
+            checkBothLoaded(loadedCallback);
+        }, error -> {
+            JsConsole.warn("Failed to load a height map region: " + error);
+            heightsLoaded = true;
+            checkBothLoaded(loadedCallback);
+        });
     }
 
     private void loadTerrainShape(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
@@ -87,26 +161,8 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
         });
     }
 
-    private void loadTerrainHeightMap(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
-        String url = CommonUrl.terrainHeightMapController(planetId);
-
-        fetchArrayBuffer(url, buffer -> {
-            try {
-                terrainHeightMap = JsFetch.createUint16Array(buffer);
-            } catch (Throwable t) {
-                JsConsole.warn("Error converting height map: " + t.getMessage());
-                terrainHeightMap = createEmptyUint16Array();
-            }
-            checkBothLoaded(loadedCallback);
-        }, error -> {
-            JsConsole.warn("Failed to load terrain height map: " + error);
-            terrainHeightMap = createEmptyUint16Array();
-            checkBothLoaded(loadedCallback);
-        });
-    }
-
     private void checkBothLoaded(Consumer<NativeTerrainShape> loadedCallback) {
-        if (nativeTerrainShape != null && terrainHeightMap != null) {
+        if (nativeTerrainShape != null && heightsLoaded) {
             loadedCallback.accept(nativeTerrainShape);
         }
     }
@@ -127,7 +183,7 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             int destHeightMapStart = i * (NODE_X_COUNT + 1);
 
             try {
-                ArrayBufferView slice = sliceUint16Array(terrainHeightMap, sourceHeightMapStart, sourceHeightMapEnd);
+                ArrayBufferView slice = sliceFromStore(tileStore, flatValues, TILE_NODE_SIZE, sourceHeightMapStart, sourceHeightMapEnd);
                 setUint16ArraySlice(resultArray, slice, destHeightMapStart);
 
                 // Add from next X tile
@@ -137,13 +193,13 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
                 } else {
                     sourceNextTileHeightMapStart = sourceHeightMapEnd + 1;
                 }
-                ArrayBufferView sliceEast = sliceUint16Array(terrainHeightMap, sourceNextTileHeightMapStart, sourceNextTileHeightMapStart + 1);
+                ArrayBufferView sliceEast = sliceFromStore(tileStore, flatValues, TILE_NODE_SIZE, sourceNextTileHeightMapStart, sourceNextTileHeightMapStart + 1);
                 setUint16ArraySlice(resultArray, sliceEast, destHeightMapStart + NODE_X_COUNT);
 
                 // Add last north row
                 if (i == NODE_Y_COUNT - 1) {
                     if (terrainTileIndex.getY() + 1 < terrainService.getTerrainShape().getTileYCount()) {
-                        ArrayBufferView sliceNorth = sliceUint16Array(terrainHeightMap, nextYTileHeightMapStart, nextYTileHeightMapStart + NODE_X_COUNT);
+                        ArrayBufferView sliceNorth = sliceFromStore(tileStore, flatValues, TILE_NODE_SIZE, nextYTileHeightMapStart, nextYTileHeightMapStart + NODE_X_COUNT);
                         setUint16ArraySlice(resultArray, sliceNorth, destHeightMapStart + NODE_X_COUNT + 1);
 
                         if (terrainTileIndex.getX() + 1 < terrainService.getTerrainShape().getTileXCount()) {
@@ -151,7 +207,7 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
                         } else {
                             sourceNextTileHeightMapStart = nextYTileHeightMapStart + NODE_X_COUNT + 1;
                         }
-                        ArrayBufferView sliceNorthEast = sliceUint16Array(terrainHeightMap, sourceNextTileHeightMapStart, sourceNextTileHeightMapStart + 1);
+                        ArrayBufferView sliceNorthEast = sliceFromStore(tileStore, flatValues, TILE_NODE_SIZE, sourceNextTileHeightMapStart, sourceNextTileHeightMapStart + 1);
                         setUint16ArraySlice(resultArray, sliceNorthEast, destHeightMapStart + NODE_X_COUNT + 1 + NODE_X_COUNT);
                     } else {
                         setUint16ArraySlice(resultArray, slice, destHeightMapStart + NODE_X_COUNT + 1);
@@ -161,7 +217,7 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
                         } else {
                             sourceNextTileHeightMapStart = sourceHeightMapEnd;
                         }
-                        ArrayBufferView sliceNorthEast = sliceUint16Array(terrainHeightMap, sourceNextTileHeightMapStart, sourceNextTileHeightMapStart + 1);
+                        ArrayBufferView sliceNorthEast = sliceFromStore(tileStore, flatValues, TILE_NODE_SIZE, sourceNextTileHeightMapStart, sourceNextTileHeightMapStart + 1);
                         setUint16ArraySlice(resultArray, sliceNorthEast, destHeightMapStart + NODE_X_COUNT + 1 + NODE_X_COUNT);
                     }
                 }
@@ -179,10 +235,147 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
 
     @Override
     public int getGroundHeightAt(int index) {
-        return getUint16ArrayValue(terrainHeightMap, index);
+        return heightFromStore(tileStore, flatValues, TILE_NODE_SIZE, index);
     }
 
     // Native JavaScript helpers via @JSBody
+
+    /** One slot per tile, all empty. A slot stays null until its tile has been loaded. */
+    @JSBody(params = {"tiles"}, script = "return new Array(tiles).fill(null);")
+    private static native JSObject createTileStore(int tiles);
+
+    /**
+     * One height, from its tile or from the flat table.
+     *
+     * <p>One crossing of the bridge, the same as the array read this replaces: the whole lookup
+     * happens on the JavaScript side, because this is called once per node by the pathing and the
+     * crossing costs more than the arithmetic.
+     *
+     * <p>An index outside the planet answers zero, which is what the array read did by falling off
+     * its end - kept so that a bad index stays as harmless as it was.
+     */
+    @JSBody(params = {"store", "flat", "tileValues", "index"}, script =
+            "if (index < 0) { return 0; }" +
+            "var t = (index / tileValues) | 0;" +
+            "if (t >= store.length) { return 0; }" +
+            "var tile = store[t];" +
+            "return tile ? tile[index - t * tileValues] : flat[t];")
+    private static native int heightFromStore(JSObject store, Uint16Array flat, int tileValues, int index);
+
+    /**
+     * A run of heights, as the slice of the global array it used to be.
+     *
+     * <p>Every run this is asked for lies inside one tile: a row of a tile is contiguous, and the
+     * callers ask for a row, the first row of the tile above, or a single value. The fast path
+     * therefore slices one tile's array. The loop below it is the honest fallback for a run that
+     * does cross a boundary - it cannot happen today, and if it ever does it must not silently
+     * return the wrong tile's heights.
+     *
+     * <p>A tile that is not loaded answers with its flat height repeated, which is exact for the
+     * seventy per cent of tiles that are flat.
+     */
+    @JSBody(params = {"store", "flat", "tileValues", "from", "to"}, script =
+            "var length = to - from;" +
+            "var t = (from / tileValues) | 0;" +
+            "var offset = from - t * tileValues;" +
+            "if (offset + length <= tileValues && t < store.length) {" +
+            "  var tile = store[t];" +
+            "  if (tile) { return tile.slice(offset, offset + length); }" +
+            "  var flatRun = new Uint16Array(length);" +
+            "  flatRun.fill(flat[t]);" +
+            "  return flatRun;" +
+            "}" +
+            "var out = new Uint16Array(length);" +
+            "for (var i = 0; i < length; i++) {" +
+            "  var index = from + i;" +
+            "  var ti = (index / tileValues) | 0;" +
+            "  if (ti >= store.length) { out[i] = 0; continue; }" +
+            "  var owner = store[ti];" +
+            "  out[i] = owner ? owner[index - ti * tileValues] : flat[ti];" +
+            "}" +
+            "return out;")
+    private static native ArrayBufferView sliceFromStore(JSObject store, Uint16Array flat, int tileValues, int from, int to);
+
+    /**
+     * Reads the flat table: {@code u16 tileXCount, u16 tileYCount}, a bitmask with the bit set for
+     * a flat tile, then one u16 per tile. Only a flat tile's height means anything, so a tile that
+     * is not flat keeps whatever the table says and is never read from here while it is loaded.
+     *
+     * <p>Throws if the table describes a different grid than the planet config does. That would
+     * mean every tile offset lands somewhere else, and the result would be wrong terrain rather
+     * than missing terrain - the one outcome worth refusing to start for.
+     */
+    @JSBody(params = {"buffer", "tileXCount", "tileYCount"}, script =
+            "var head = new Uint16Array(buffer, 0, 2);" +
+            "if (head[0] !== tileXCount || head[1] !== tileYCount) {" +
+            "  throw new Error('flat table is ' + head[0] + 'x' + head[1] + ', planet is ' + tileXCount + 'x' + tileYCount);" +
+            "}" +
+            "var tiles = tileXCount * tileYCount;" +
+            "var values = 4 + ((tiles + 7) >> 3);" +
+            "return new Uint16Array(buffer.slice(values, values + tiles * 2));")
+    private static native Uint16Array readFlatTable(ArrayBuffer buffer, int tileXCount, int tileYCount);
+
+    /**
+     * Unpacks a region into the store, one tile at a time.
+     *
+     * <p>Each value is the difference from what its three already-decoded neighbours predict -
+     * left + above - corner, over the tile's own 160x160 grid, with neighbours outside the tile
+     * read as zero. See HeightMapRegionService on the server, which subtracts exactly this. The
+     * wrap at sixteen bits is the format, not a safety net: the server subtracted with the same
+     * wrap.
+     *
+     * <p>The prediction never reaches outside the tile, so the tiles stay independent and a
+     * rectangle is still a slice of the planet rather than a replay of everything before it.
+     *
+     * <p>The header's checksum is recomputed here from what came out and compared. It costs nothing
+     * - it rides the loop that is already running - and it catches the failure that has no other
+     * symptom: bytes written by one encoding and read by another. That is not hypothetical. On
+     * 2026-09-14 a browser answered this very fetch out of its cache with the previous encoding,
+     * because the entity tag covered the heights and the rectangle but not the format, and the
+     * planet came out full of cliffs and canyons with nothing logged anywhere. Neither curl, which
+     * has no cache, nor ctrl-F5, which does not reach a fetch made from inside a worker, could see
+     * it.
+     *
+     * <p>Written in JavaScript for the same reason as the reads: this is 25,600 values per tile and
+     * the bridge is not worth crossing for each one.
+     */
+    @JSBody(params = {"buffer", "store", "tileXCount", "tileValues", "tileRow"}, script =
+            "var head = new Uint16Array(buffer, 0, 4);" +
+            "var tileX = head[0], tileY = head[1], countX = head[2], countY = head[3];" +
+            "var expected = new Int32Array(buffer, 8, 1)[0];" +
+            "var data = new Uint16Array(buffer, 12);" +
+            "var at = 0;" +
+            "var checksum = 1;" +
+            "for (var y = 0; y < countY; y++) {" +
+            "  for (var x = 0; x < countX; x++) {" +
+            "    var tile = new Uint16Array(tileValues);" +
+            "    for (var row = 0; row < tileRow; row++) {" +
+            "      var base = row * tileRow;" +
+            "      for (var column = 0; column < tileRow; column++) {" +
+            "        var i = base + column;" +
+            "        var predicted;" +
+            "        if (column === 0) {" +
+            "          predicted = row > 0 ? tile[i - tileRow] : 0;" +
+            "        } else if (row === 0) {" +
+            "          predicted = tile[i - 1];" +
+            "        } else {" +
+            "          predicted = tile[i - 1] + tile[i - tileRow] - tile[i - tileRow - 1];" +
+            "        }" +
+            "        var height = (data[at + i] + predicted) & 0xFFFF;" +
+            "        tile[i] = height;" +
+            "        checksum = (Math.imul(checksum, 31) + height) | 0;" +
+            "      }" +
+            "    }" +
+            "    at += tileValues;" +
+            "    store[(tileY + y) * tileXCount + (tileX + x)] = tile;" +
+            "  }" +
+            "}" +
+            "if (checksum !== expected) {" +
+            "  throw new Error('height checksum ' + checksum + ', server said ' + expected" +
+            "    + ' - these bytes were not written by the encoder that is reading them');" +
+            "}")
+    private static native void storeRegion(ArrayBuffer buffer, JSObject store, int tileXCount,
+                                           int tileValues, int tileRow);
 
     @JSBody(params = {"length"}, script = "return new Uint16Array(length);")
     private static native Uint16Array createUint16Array(int length);

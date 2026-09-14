@@ -374,15 +374,103 @@ export class SendBuildCommandTipTask extends AbstractTipTask implements ViewFiel
     };
   }
 
+  /**
+   * The spot the out-of-view arrow points at. It has to lie inside the region: the player who
+   * follows the arrow has to arrive somewhere he can actually build.
+   * <p>
+   * It used to be the centre of the bounding box, which is the same point only for a region that
+   * roughly fills its box. Quest 386 asks for a dockyard on a coastal band running diagonally
+   * across the map, filling 17% of its box: the box centre is (150.9/162.2), which is 75.6 units
+   * outside the region. The arrow sent the player 137 units from his base to a place where the
+   * building could never be set down, and of the 18 stalls that quest's placement step collected in
+   * 21 days on PROD, not one resolved.
+   * <p>
+   * Nearest rather than central, because any point of the region will do for the quest and the
+   * arrow is a direction to walk in. For a base at (148/25) that is 132 units instead of 232.
+   */
   private calculatePlaceConfigCenter(): DecimalPosition | null {
-    if (!this.placeConfigBoundaryRect) {
+    const boxCenter = this.placeConfigBoundaryRect
+      ? GwtInstance.newDecimalPosition(
+        this.placeConfigBoundaryRect.x + this.placeConfigBoundaryRect.width / 2,
+        this.placeConfigBoundaryRect.y + this.placeConfigBoundaryRect.height / 2)
+      : null;
+    const corners = this.placeConfigCorners();
+    if (!corners) {
+      // A circular region: its box centre is its centre, and that is inside by construction.
+      return boxCenter;
+    }
+    const candidates = this.interiorCandidates(corners);
+    if (candidates.length === 0) {
+      return boxCenter;
+    }
+    const actor = this.actorGroundPosition();
+    if (!actor) {
+      // Nobody to measure from yet: the roomiest part of the region is the stable answer.
+      return this.toPosition(candidates.reduce((a, b) => b.width > a.width ? b : a));
+    }
+    return this.toPosition(candidates.reduce((a, b) =>
+      this.squaredDistance(b, actor) < this.squaredDistance(a, actor) ? b : a));
+  }
+
+  private toPosition(candidate: { x: number, y: number }): DecimalPosition {
+    return GwtInstance.newDecimalPosition(candidate.x, candidate.y);
+  }
+
+  private squaredDistance(one: { x: number, y: number }, other: { x: number, y: number }): number {
+    const dx = one.x - other.x;
+    const dy = one.y - other.y;
+    // Squared: the nearest by this is the nearest by distance, and there is no root to take.
+    return dx * dx + dy * dy;
+  }
+
+  /** Where the builder is, or was last seen. Null while it has never been on screen. */
+  private actorGroundPosition(): { x: number, y: number } | null {
+    const live = this.tipTaskContext.babylonBaseItemImpl?.getPosition();
+    if (live) {
+      return {x: live.getX(), y: live.getY()};
+    }
+    const remembered = this.lastKnownActorPosition;
+    return remembered ? {x: remembered.getX(), y: remembered.getY()} : null;
+  }
+
+  /** The region's corners as plain ground coordinates, or null when it is a circle. */
+  private placeConfigCorners(): { x: number, y: number }[] | null {
+    if (!this.placeConfig || this.placeConfig.getPosition() || !this.placeConfig.getPolygon2D()) {
       return null;
     }
-    const rect = this.placeConfigBoundaryRect;
-    return GwtInstance.newDecimalPosition(
-      rect.x + rect.width / 2,
-      rect.y + rect.height / 2
-    );
+    const corners = this.placeConfig.getPolygon2D()!.toCornersAngular();
+    return corners.length >= 3 ? corners.map(corner => ({x: corner.getX(), y: corner.getY()})) : null;
+  }
+
+  /**
+   * Midpoints of the region's horizontal cross sections, one set per sampling line laid between
+   * two consecutive corner heights. Each is inside the region by construction: a cross section
+   * runs from one edge crossing to the next with region in between, so its midpoint cannot be
+   * outside however bent or hollow the shape is.
+   */
+  private interiorCandidates(corners: { x: number, y: number }[]): { x: number, y: number, width: number }[] {
+    const heights = [...new Set(corners.map(corner => corner.y))].sort((one, other) => one - other);
+    const candidates: { x: number, y: number, width: number }[] = [];
+    for (let i = 0; i + 1 < heights.length; i++) {
+      const y = (heights[i] + heights[i + 1]) / 2;
+      const crossings: number[] = [];
+      for (let current = 0, previous = corners.length - 1; current < corners.length; previous = current++) {
+        const a = corners[current];
+        const b = corners[previous];
+        if ((a.y > y) !== (b.y > y)) {
+          crossings.push((b.x - a.x) * (y - a.y) / (b.y - a.y) + a.x);
+        }
+      }
+      crossings.sort((one, other) => one - other);
+      for (let k = 0; k + 1 < crossings.length; k += 2) {
+        candidates.push({
+          x: (crossings[k] + crossings[k + 1]) / 2,
+          y,
+          width: crossings[k + 1] - crossings[k]
+        });
+      }
+    }
+    return candidates;
   }
 
   private calculatePlaceConfigBoundaryRect(): Rectangle | null {

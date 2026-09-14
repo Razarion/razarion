@@ -57,6 +57,25 @@ public class CommonUrl {
         return APPLICATION_PATH + "/" + TERRAIN_HEIGHT_MAP_CONTROLLER + "/" + planetId;
     }
 
+    /**
+     * The same height map with each value stored as its difference from the one before it, which
+     * takes it from 3.75 MB to 2.42 MB on the wire. The caller has to add the differences back up.
+     */
+    /** Every tile's constant height, about 2 kB - what a tile that is not loaded answers with. */
+    public static String terrainHeightMapFlatController(int planetId) {
+        return APPLICATION_PATH + "/" + TERRAIN_HEIGHT_MAP_CONTROLLER + "/" + planetId + "/flat";
+    }
+
+    /** A rectangle of tiles, each delta encoded from zero so it can be read on its own. */
+    public static String terrainHeightMapRegionController(int planetId, int tileX, int tileY, int countX, int countY) {
+        return APPLICATION_PATH + "/" + TERRAIN_HEIGHT_MAP_CONTROLLER + "/" + planetId
+                + "/region/" + tileX + "/" + tileY + "/" + countX + "/" + countY;
+    }
+
+    public static String terrainHeightMapDeltaController(int planetId) {
+        return APPLICATION_PATH + "/" + TERRAIN_HEIGHT_MAP_CONTROLLER + "/" + planetId + "/delta";
+    }
+
     public static String getWorkerScriptUrl() {
         // Use TeaVM worker (replaces GWT worker)
         return TEAVM_WORKER_SCRIPT + "?t=" + System.currentTimeMillis();

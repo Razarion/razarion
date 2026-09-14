@@ -33,7 +33,18 @@ export const INTERACTION_KINDS = [
   'CAMERA_KEYBOARD',
   'CAMERA_WHEEL',
   'SELECT',
-  'COMMAND'
+  'COMMAND',
+  // Group selection, in the order it has to happen: found the icon, held more than one unit,
+  // gave that group an order. Shown next to SELECT and COMMAND because the question is the
+  // difference between the two pairs - how much of what a player selects is ever a group.
+  'SELECTION_BOX_ARMED',
+  'SELECT_GROUP',
+  'COMMAND_GROUP',
+  'GROUP_TIP',
+  // The tech tree: the game marking it after a level that allows something new, and the player
+  // acting on that mark. Shown as a pair - the second against the first is the whole question.
+  'TECH_TREE_OFFERED',
+  'TECH_TREE_OPENED'
 ] as const;
 
 export type InteractionKind = typeof INTERACTION_KINDS[number];
@@ -49,14 +60,22 @@ export type InteractionKind = typeof INTERACTION_KINDS[number];
  * happened is a session in which the player did nothing, and must still read as silent.
  */
 const NOT_THE_PLAYER: InteractionKind[] = ['PLACER_SHOWN', 'PLACER_NO_TERRAIN', 'CLIENT_BUILD',
-  'ENGINE_ERROR', 'STARTUP_TIMING', 'STARTUP_PAYLOAD'];
+  'ENGINE_ERROR', 'STARTUP_TIMING', 'STARTUP_PAYLOAD',
+  // The game asking for a group, or deciding not to. Like PLACER_SHOWN: it says what the player
+  // was offered, never what he did with it.
+  'GROUP_TIP',
+  // Marking the tech tree is the game offering, like PLACER_SHOWN. TECH_TREE_OPENED is the player.
+  'TECH_TREE_OFFERED'];
 
 /**
  * The player reached and got nothing out of it: a finger on the game field that led nowhere, a
  * finger that reached the page but never the canvas, or a tap on a spot where a base cannot go. Both are the opposite of PLACER_CONFIRMED and must not be
  * counted as having achieved anything - that would hide exactly the players this view exists for.
  */
-const REACHED_WITHOUT_RESULT: InteractionKind[] = ['POINTER_DOWN', 'POINTER_DOWN_PAGE', 'PLACER_REJECTED'];
+const REACHED_WITHOUT_RESULT: InteractionKind[] = ['POINTER_DOWN', 'POINTER_DOWN_PAGE', 'PLACER_REJECTED',
+  // Arming the box is an intent, not an outcome: the mode spends itself on the next drag, and a
+  // player who arms it and then taps has done nothing. SELECT_GROUP is the outcome half.
+  'SELECTION_BOX_ARMED'];
 
 /** Did the player do anything at all, however fruitless? */
 function reachedForIt(session: SessionFacts): boolean {

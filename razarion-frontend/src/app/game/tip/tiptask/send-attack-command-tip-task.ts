@@ -23,6 +23,11 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
   }
 
   start(): void {
+    // start() is also called again from the retry below and when the target scrolls back into view
+    if (this.retryTimeout !== null) {
+      clearTimeout(this.retryTimeout);
+      this.retryTimeout = null;
+    }
     this.enemy = this.findVisibleEnemy();
 
     // Register global selection listener
@@ -35,11 +40,24 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
       // No visible enemy found - check if there's an enemy out of view
       const nearestEnemyPosition = this.findNearestEnemyPosition();
       if (nearestEnemyPosition) {
-        // Enemy exists but is out of view - set OutOfView target and wait
+        /*
+         * The enemy exists but is off screen: point the marker at it and keep polling, the way
+         * the harvest tip does. Waiting for onBecameVisible() alone means waiting for the player
+         * to move the camera of his own accord, and the whole reason this tip is up is that he
+         * does not know he has to.
+         *
+         * Measured on PROD over 21 days on quest 379, which asks for the bot refinery: 60 stalls
+         * on this reason, 41 of them never resolved. The refinery stands 111 units from the
+         * player's base while the bot's teslas respawn at 33, so the player fights what is in
+         * front of him - 2403 teslas killed by the 52 players who failed the quest, and not one
+         * refinery. The target also moves and dies, so the position is re-read on every pass
+         * rather than frozen at the moment the tip opened.
+         */
         this.stallReason = TipStallReason.ENEMY_OUT_OF_VIEW;
         this.tipService.setOutOfViewTarget(
           GwtInstance.newDecimalPosition(nearestEnemyPosition.x, nearestEnemyPosition.y)
         );
+        this.retryTimeout = setTimeout(() => this.start(), 1000);
         return;
       }
 

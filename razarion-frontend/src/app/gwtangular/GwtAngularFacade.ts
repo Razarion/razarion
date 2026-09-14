@@ -715,6 +715,9 @@ export interface MainCockpit {
 
   blinkAvailableUnlock(show: boolean): void
 
+  /** A level was reached that allows something the one before it did not. See MainCockpitService. */
+  techTreeHasNews(): void
+
   clean(): void;
 }
 

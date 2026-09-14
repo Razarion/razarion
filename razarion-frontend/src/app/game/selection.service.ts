@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BabylonItem, BaseItemType, Diplomacy } from '../gwtangular/GwtAngularFacade';
 import { BabylonBaseItemImpl } from './renderer/babylon-base-item.impl';
 import { BabylonAudioService } from './renderer/babylon-audio.service';
-import { FirstInteractionTrackerService } from './tracking/first-interaction-tracker.service';
+import { FirstInteractionTrackerService, groupSizeDetail } from './tracking/first-interaction-tracker.service';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +34,12 @@ export class SelectionService {
   selectOwnItems(items: BabylonBaseItemImpl[]): void {
     if (items.length) {
       this.reportSelected();
+    }
+    if (items.length > 1) {
+      // However it came about - the marquee, the touch box, or a tap that happened to catch two.
+      // What this answers is whether a player ever holds more than one unit at once, which is the
+      // thing the quest chain never asks him to do and quest 379 needs him to have learned.
+      this.firstInteractionTrackerService.report('SELECT_GROUP', groupSizeDetail(items.length));
     }
     this.deselectCurrent();
     this.selectedOwnItems = [...items];

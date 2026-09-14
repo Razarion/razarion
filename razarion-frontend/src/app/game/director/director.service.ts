@@ -124,6 +124,9 @@ export class DirectorService {
   /** HTTP status of the failure already reported; -1 = nothing reported yet. */
   private pollFailureStatus = -1;
   private pollHandle: ReturnType<typeof setInterval> | null = null;
+  /** See recordStart: how long the camera holds the first pose at the new size before the take. */
+  private static readonly RECORD_PRE_ROLL_MS = 4000;
+  private preRollHandle: ReturnType<typeof setTimeout> | null = null;
   private mediaRecorder: MediaRecorder | null = null;
   /** The observer that asks for one captured frame per render; removed on stop. */
   private frameObserver: ReturnType<Scene['onAfterRenderObservable']['add']> | null = null;
@@ -133,6 +136,7 @@ export class DirectorService {
   private savedRenderWidth: number | null = null;
   private savedRenderHeight: number | null = null;
   private savedFovMode: number | null = null;
+  private savedFov: number | null = null;
   /** What the file comes out as, regardless of the window. The studio sends 1080x1920 for the
    *  portrait take the reels and Shorts are cut from, and 1920x1080 for the landscape one X gets. */
   recordWidth = 1920;
@@ -329,36 +333,61 @@ export class DirectorService {
     // landscape window and recorded upright would lose both sides of every shot. Holding the
     // horizontal field instead keeps what was framed and adds sky and ground - the same choice the
     // studio makes for its portrait clips. Restored in recordStop.
+    // Switching the mode alone is not enough: Babylon then reads the same `fov` as the horizontal
+    // angle, and 0.8 rad across a portrait frame is a 1.6x zoom on a 16:9 window - the opposite of
+    // holding the field. The angle is converted to the horizontal one the window actually had.
     const cam = r.getCamera();
-    if (cam && this.recordWidth / this.recordHeight < this.savedRenderWidth / this.savedRenderHeight) {
+    const windowAspect = this.savedRenderWidth / this.savedRenderHeight;
+    if (cam && this.recordWidth / this.recordHeight < windowAspect) {
       this.savedFovMode = cam.fovMode;
+      this.savedFov = cam.fov;
+      if (cam.fovMode !== Camera.FOVMODE_HORIZONTAL_FIXED) {
+        cam.fov = 2 * Math.atan(Math.tan(cam.fov / 2) * windowAspect);
+      }
       cam.fovMode = Camera.FOVMODE_HORIZONTAL_FIXED;
     }
     engine.setSize(this.recordWidth, this.recordHeight);
 
-    const scene = r.getScene();
-    const stream = canvas.captureStream(0);
-    const frameTrack = stream.getVideoTracks()[0] as CanvasCaptureMediaStreamTrack;
-    this.frameObserver = scene.onAfterRenderObservable.add(() => frameTrack.requestFrame());
-
-    const chunks: Blob[] = [];
-    const recorder = new MediaRecorder(stream, {mimeType: mime, videoBitsPerSecond: 12_000_000});
-    recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
-    recorder.onstop = () => {
-      stream.getTracks().forEach(track => track.stop());
-      downloadBlob(new Blob(chunks, {type: mime}), withExtensionFor(fileName, mime));
-    };
-    recorder.start();
-
-    this.mediaRecorder = recorder;
-    this.recordScene = scene;
+    // Pre-roll. The new shape sees ground the window did not, and that ground is built one tile per
+    // frame: recorded straight away, a portrait take spent its first four seconds at 8 fps. The
+    // camera holds the first pose of the plan until it is there, and only then does the take start.
     this.recording.set(true);
+    this.playing = false;
     this.clockMs = 0;
-    this.play();
-    console.log(`[Director] recording ${this.recordWidth}x${this.recordHeight} as ${mime}`);
+    r.directorActive = true;
+    this.applyPose(0);
+    this.notifyViewField(true);
+    console.log(`[Director] pre-roll ${DirectorService.RECORD_PRE_ROLL_MS} ms at ${this.recordWidth}x${this.recordHeight}`);
+    this.preRollHandle = setTimeout(() => {
+      this.preRollHandle = null;
+      const scene = r.getScene();
+      const stream = canvas.captureStream(0);
+      const frameTrack = stream.getVideoTracks()[0] as CanvasCaptureMediaStreamTrack;
+      this.frameObserver = scene.onAfterRenderObservable.add(() => frameTrack.requestFrame());
+
+      const chunks: Blob[] = [];
+      const recorder = new MediaRecorder(stream, {mimeType: mime, videoBitsPerSecond: 12_000_000});
+      recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+      recorder.onstop = () => {
+        stream.getTracks().forEach(track => track.stop());
+        downloadBlob(new Blob(chunks, {type: mime}), withExtensionFor(fileName, mime));
+      };
+      recorder.start();
+
+      this.mediaRecorder = recorder;
+      this.recordScene = scene;
+      this.clockMs = 0;
+      this.play();
+      console.log(`[Director] recording ${this.recordWidth}x${this.recordHeight} as ${mime}`);
+    }, DirectorService.RECORD_PRE_ROLL_MS);
   }
 
   recordStop(): void {
+    // Stopped during the pre-roll: nothing was recorded, so there is no file to hand over.
+    if (this.preRollHandle !== null) {
+      clearTimeout(this.preRollHandle);
+      this.preRollHandle = null;
+    }
     // The blob is assembled and downloaded in the recorder's onstop; stopping here only asks.
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       this.mediaRecorder.stop();
@@ -384,8 +413,10 @@ export class DirectorService {
       }
       const cam = r.getCamera();
       if (cam && this.savedFovMode !== null) cam.fovMode = this.savedFovMode;
+      if (cam && this.savedFov !== null) cam.fov = this.savedFov;
     }
     this.savedFovMode = null;
+    this.savedFov = null;
     this.savedShadowEnabled = null;
     this.savedRenderWidth = null;
     this.savedRenderHeight = null;

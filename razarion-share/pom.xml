@@ -25,10 +25,22 @@
             <artifactId>jsinterop-annotations</artifactId>
             <version>2.0.0</version>
         </dependency>
+        <!--
+            Held at the version jackson-databind wants, not below it.
+
+            domino-jackson drags in jackson-databind 2.16.0, and databind calls annotations that
+            did not exist in 2.10.2 - JsonKey arrived in 2.12. Maven resolves the directly declared
+            version, so 2.10.2 won and every test that reads or writes a scenario file died with
+            NoClassDefFoundError: com/fasterxml/jackson/annotation/JsonKey. That is 27 tests across
+            six classes in razarion-test-share, among them PushAwayUnitTest, the ten tests that
+            cover exactly the behaviour this file's module implements.
+
+            Annotations only - no code, nothing for TeaVM to compile differently.
+        -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.10.2</version>
+            <version>2.16.0</version>
         </dependency>
         <dependency>
             <groupId>org.gwtproject</groupId>

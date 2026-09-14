@@ -41,7 +41,6 @@ import {Nullable} from "@babylonjs/core/types";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import {GroundUtil} from './ground-util';
 import {ParkedMeshFilter} from "./parked-mesh-filter";
-import {reportTerrainVisible} from '../boot-splash';
 
 enum MaterialIndex {
   GROUND = 0,
@@ -69,8 +68,6 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly HEIGHT_DEFAULT = 0.5;
   static readonly BOT_BOX_LENGTH = 8;
   static readonly BOT_BOX_Z_ROTATION = 22;
-  /** Whether the loading screen has already been told the terrain is up. See boot-splash. */
-  private static terrainAnnounced = false;
   public readonly container: TransformNode;
   private readonly groundMesh: Mesh;
   private waterMesh: Mesh | null = null;
@@ -373,53 +370,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.materialSubmeshes = [];
 
     BabylonTerrainTileImpl.scheduleIdle(() => this.buildPhase4_WaterAndObjects());
-    /*
-     * The first tile with a ground material is the moment the world stops being an empty plane,
-     * and it is what the loading screen waits for. Not the first engine tick: that comes while
-     * the ground is still untextured, and the difference is seconds.
-     */
-    this.announceTerrainWhenDrawn();
     return true;
-  }
-
-  /**
-   * Tells the loading screen once the ground is actually painted.
-   * <p>
-   * Assigning the material is not the same as being able to draw it: the ground is a NodeMaterial
-   * and its shader is still compiling, in parallel, while the asphalt beside it - already
-   * compiled, it came down with the first materials - draws straight away. Announcing on the
-   * assignment handed the player a screen with roads on it and black where the ground belongs.
-   * So it waits for the mesh to report itself ready for all of its submeshes, and then for one
-   * more frame, which is the frame that has it in it.
-   * <p>
-   * Bounded: if the shader never comes the observer is dropped and the loading screen falls back
-   * to its own timeout rather than this leaving an observer on the scene for the session.
-   */
-  private announceTerrainWhenDrawn(): void {
-    if (BabylonTerrainTileImpl.terrainAnnounced) {
-      return;
-    }
-    BabylonTerrainTileImpl.terrainAnnounced = true;
-    const scene = this.rendererService.getScene();
-    const mesh = this.groundMesh;
-    let framesWaited = 0;
-    let drawnOnce = false;
-    const observer = scene.onAfterRenderObservable.add(() => {
-      framesWaited++;
-      if (drawnOnce) {
-        scene.onAfterRenderObservable.remove(observer);
-        reportTerrainVisible();
-        return;
-      }
-      // completeCheck: the material has to be ready for every submesh, ground as well as asphalt.
-      if (mesh.isReady(true)) {
-        drawnOnce = true;
-        return;
-      }
-      if (framesWaited > 900) {
-        scene.onAfterRenderObservable.remove(observer);
-      }
-    });
   }
 
   private buildPhase4_WaterAndObjects(): void {

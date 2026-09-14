@@ -3,7 +3,7 @@ import { BabylonItem, ItemType, Diplomacy, GameCommandService, Vertex } from '..
 import { GwtAngularService } from '../gwtangular/GwtAngularService';
 import { BabylonAudioService } from './renderer/babylon-audio.service';
 import { SelectionService as TsSelectionService } from './selection.service';
-import { FirstInteractionTrackerService } from './tracking/first-interaction-tracker.service';
+import { FirstInteractionTrackerService, groupSizeDetail } from './tracking/first-interaction-tracker.service';
 import { BabylonRenderServiceAccessImpl } from './renderer/babylon-render-service-access-impl.service';
 
 
@@ -106,12 +106,17 @@ export class ActionService {
    * the click handlers around them: those all have branches that select instead of commanding, and
    * a player who can select but never command is a different defect from one who never selects.
    */
-  private reportCommand(): void {
+  private reportCommand(unitCount: number): void {
     this.firstInteractionTrackerService.report('COMMAND');
+    if (unitCount > 1) {
+      // The order went to a group. This is the end of the group funnel and the only part of it
+      // that is worth anything on its own: a selection nobody commands was made by accident.
+      this.firstInteractionTrackerService.report('COMMAND_GROUP', groupSizeDetail(unitCount));
+    }
   }
 
   private sendMoveCommand(movableIds: number[], x: number, y: number): void {
-    this.reportCommand();
+    this.reportCommand(movableIds.length);
     this.gameCommandService.moveCmd(movableIds, x, y);
     this.hasPendingMoveCommand = true;
     if (this.moveAckTimeout) {
@@ -206,7 +211,7 @@ export class ActionService {
         if (containableIds.length > 0) {
       
           this.babylonAudioService.speakCommand('Loading up');
-          this.reportCommand();
+          this.reportCommand(containableIds.length);
           this.gameCommandService.loadContainerCmd(containableIds, id);
           return;
         }
@@ -218,7 +223,7 @@ export class ActionService {
         if (builderIds.length > 0) {
       
           this.babylonAudioService.speakCommand('Completing construction');
-          this.reportCommand();
+          this.reportCommand(builderIds.length);
           this.gameCommandService.finalizeBuildCmd(builderIds, id);
           return;
         }
@@ -245,7 +250,7 @@ export class ActionService {
       if (attackerIds.length > 0) {
         this.babylonAudioService.speakCommand('Engaging target');
         this.rendererService?.showCommandTargetMarker(babylonItem, 'attack');
-        this.reportCommand();
+        this.reportCommand(attackerIds.length);
         this.gameCommandService.attackCmd(attackerIds, id);
         return;
       }
@@ -259,7 +264,7 @@ export class ActionService {
       if (harvesterIds.length > 0) {
         this.babylonAudioService.speakCommand('Harvesting');
         this.rendererService?.showCommandTargetMarker(babylonItem, 'harvest');
-        this.reportCommand();
+        this.reportCommand(harvesterIds.length);
         this.gameCommandService.harvestCmd(harvesterIds, id);
         return;
       }
@@ -272,7 +277,7 @@ export class ActionService {
       const movableIds = this.tsSelectionService.getMovableIds();
       if (movableIds.length > 0) {
         this.babylonAudioService.speakCommand('Picking up');
-        this.reportCommand();
+        this.reportCommand(movableIds.length);
         this.gameCommandService.pickBoxCmd(movableIds, id);
         return;
       }

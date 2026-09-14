@@ -113,7 +113,56 @@ export type InteractionKind =
   /** An order was actually issued - move, attack, harvest, load, finalize build. Selecting without
    *  ever commanding is a different defect from never selecting, and the two look identical in
    *  every other record we keep. */
-  | 'COMMAND';
+  | 'COMMAND'
+  /*
+   * The three below are one funnel of their own: found the box, filled it, used what was in it.
+   * They are separate kinds rather than a detail on SELECT and COMMAND on purpose - those two
+   * carry the in-game funnel and their row shape has to stay comparable backwards.
+   *
+   * Why they exist: nothing in the game ever teaches group selection. SelectTipTask points at one
+   * unit found by item type, and no step of the quest chain asks for a second. Quest 379 needs one
+   * anyway - a single viper is out-ranged by the tesla guarding the way (range 10 against 15) and
+   * dies before it fires, while three kill it in two seconds. Measured on PROD over 21 days: the 52
+   * players who failed that quest killed 2403 teslas, lost 193 vipers, and destroyed not one
+   * refinery. Whether any of them ever drew a box was not recorded anywhere.
+   */
+  /** The icon bar armed the selection box. The player found the mode; nothing says it worked. */
+  | 'SELECTION_BOX_ARMED'
+  /** More than one own unit ended up selected, however it was done. */
+  | 'SELECT_GROUP'
+  /** An order went to more than one unit - the only one of the three that is worth anything on
+   *  its own, because a group that is never commanded is a group that was made by accident. */
+  | 'COMMAND_GROUP'
+  /**
+   * What the group tip decided, as `state=asked` or `state=skipped`. Not a player action - the
+   * game asking, or declining to ask - but without it the three kinds above cannot be read: a
+   * session with no group in it looks the same whether the tip taught one and was ignored or
+   * never opened its mouth. The skip has no other record at all, because a task that succeeds at
+   * once never waits long enough for the stall watchdog to look at it.
+   */
+  | 'GROUP_TIP'
+  /*
+   * The tech tree, in the two halves that answer different questions. Only six of the seventeen
+   * levels on planet 117 allow anything the one before did not, and one of those is level 6,
+   * where the dockyard appears - the building quest 386 asks for and 66% of the players who
+   * reach it never build.
+   */
+  /** A level allowed something new and the tech tree was marked. The game offering, not the player. */
+  | 'TECH_TREE_OFFERED'
+  /** The player opened it while it was marked. Only then - otherwise this would count how often
+   *  the tech tree is opened, which is a different question from whether the mark worked. */
+  | 'TECH_TREE_OPENED';
+
+/**
+ * How a group size is reported. Bucketed rather than exact: {@link
+ * FirstInteractionTrackerService#MAX_PER_KIND} allows five distinct details per kind and per
+ * session, and a player who selects two, then three, then five units would spend that on counting
+ * instead of on the question, which is whether a group was formed at all and whether it was the
+ * three the quest asks for.
+ */
+export function groupSizeDetail(count: number): string {
+  return 'units=' + (count >= 4 ? '4plus' : String(count));
+}
 
 @Injectable({
   providedIn: 'root'

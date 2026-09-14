@@ -314,3 +314,142 @@ describe('SendBuildCommandTipTask', () => {
     tick(5000);
   }));
 });
+
+/**
+ * Where the arrow sends a player who has to build inside a region.
+ *
+ * The aim point used to be the centre of the region's bounding box, which is the same point only
+ * for a region that roughly fills its box. Quest 386 on PROD asks for a dockyard on a coastal band
+ * running diagonally across the map, filling 17% of its box: the box centre lies 75.6 units outside
+ * the region, and of the 18 stalls that quest's placement step collected in 21 days, not one
+ * resolved.
+ */
+describe('SendBuildCommandTipTask aiming at a region', () => {
+  const DOCKYARD_TYPE_ID = 11;
+  /** Quest 386 on PROD, place config 1797, as stored. */
+  const COAST: [number, number][] = [
+    [2.49, 322.81], [2.12, 291.07], [31.69, 286.89], [52.05, 273.55], [92.48, 258.89],
+    [159.60, 238.23], [219.55, 221.53], [241.03, 198.54], [241.38, 168.21], [261.42, 147.94],
+    [261.10, 119.61], [244.15, 84.98], [253.88, 61.70], [264.49, 48.31], [275.85, 27.29],
+    [279.14, 1.73], [287.32, 2.95], [299.63, 1.66], [287.50, 109.89], [279.32, 194.04],
+    [259.98, 229.01], [236.83, 253.66], [208.65, 261.76], [182.21, 270.65], [155.96, 280.66]];
+  /** The player's base in the session this was measured from. */
+  const BASE = {x: 148, y: 25};
+
+  function insideCoast(x: number, y: number): boolean {
+    let inside = false;
+    for (let i = 0, j = COAST.length - 1; i < COAST.length; j = i++) {
+      const [xi, yi] = COAST[i];
+      const [xj, yj] = COAST[j];
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  function createTask() {
+    const aimedAt: { x: number, y: number }[] = [];
+    const placeConfig = {
+      getPosition: () => null,
+      toRadiusAngular: () => null,
+      getPolygon2D: () => ({
+        toCornersAngular: () => COAST.map(([x, y]) => ({getX: () => x, getY: () => y}))
+      })
+    };
+    const builder = {
+      getId: () => 99,
+      getPosition: () => ({getX: () => BASE.x, getY: () => BASE.y}),
+      getIdle: () => false,
+      isSelected: () => true
+    };
+    const viewField = {
+      contains: () => true,
+      // Far from the coast, so the region is off screen and the arrow is what the player gets.
+      calculateInnerAabbRectangle: () => ({x: BASE.x - 20, y: BASE.y - 20, width: 40, height: 40}),
+      getAngleTo: (position: any) => {
+        aimedAt.push({x: position.getX(), y: position.getY()});
+        return 0;
+      }
+    };
+    const visualConfig = {
+      getRadius: () => 1,
+      getNodesMaterialId: () => 1,
+      getPlaceNodesMaterialId: () => 1,
+      getOutOfViewNodesMaterialId: () => 1,
+      getOutOfViewSize: () => 1,
+      getOutOfViewDistanceFromCamera: () => 1
+    };
+    const renderService = {
+      getBabylonBaseItemsByDiplomacy: () => [],
+      getBabylonBaseItemById: (id: number) => (id === 99 ? builder : null),
+      getCurrentViewField: () => viewField,
+      addViewFieldListener: () => {
+      },
+      removeViewFieldListener: () => {
+      },
+      showOutOfViewMarker: () => {
+      },
+      showPlaceMarker: () => {
+      },
+      setBaseItemPlacerCallback: () => {
+      },
+      baseItemPlacerActive: false
+    } as unknown as BabylonRenderServiceAccessImpl;
+    const tipService = {
+      renderService,
+      selectionService: {
+        addSelectionListener: () => {
+        },
+        removeSelectionListener: () => {
+        },
+        hasOwnSelection: () => true
+      },
+      gwtAngularFacade: {
+        gameUiControl: {
+          getColdGameUiContext: () => ({getInGameQuestVisualConfig: () => visualConfig})
+        }
+      },
+      setOutOfViewTarget: () => {
+      },
+      onSucceed: () => {
+      },
+      onTaskFailed: () => {
+      }
+    } as unknown as TipService;
+    const context = new TipTaskContext(renderService);
+    context.setActor(builder as unknown as BabylonBaseItemImpl);
+    return {
+      task: new SendBuildCommandTipTask(DOCKYARD_TYPE_ID, placeConfig as any, tipService, context),
+      aimedAt
+    };
+  }
+
+  it('points at a spot inside the region, not at the middle of its bounding box', fakeAsync(() => {
+    const {task, aimedAt} = createTask();
+
+    task.start();
+
+    expect(aimedAt.length).toBeGreaterThan(0);
+    const aim = aimedAt[aimedAt.length - 1];
+    expect(insideCoast(aim.x, aim.y)).toBeTrue();
+    // The point the arrow used to carry, for the record: it is not in the region at all.
+    expect(insideCoast(150.9, 162.2)).toBeFalse();
+    task.cleanup();
+    tick(5000);
+  }));
+
+  it('picks the part of the region nearest the builder', fakeAsync(() => {
+    // Any point of the region satisfies the quest, and the arrow is a direction to walk in - so
+    // the roomiest part of a region that runs right across the map is the wrong answer.
+    const {task, aimedAt} = createTask();
+
+    task.start();
+
+    const aim = aimedAt[aimedAt.length - 1];
+    const distance = Math.hypot(aim.x - BASE.x, aim.y - BASE.y);
+    expect(distance).toBeLessThan(160);
+    task.cleanup();
+    tick(5000);
+  }));
+});

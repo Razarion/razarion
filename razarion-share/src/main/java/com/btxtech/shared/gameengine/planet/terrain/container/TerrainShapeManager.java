@@ -61,7 +61,7 @@ public class TerrainShapeManager {
                 index -> getNativeTerrainShapeAccess().getGroundHeightAt(index),
                 this);
         setupDimension(planetConfig);
-        nativeTerrainShapeAccess.load(planetConfig.getId(), nativeTerrainShape -> {
+        nativeTerrainShapeAccess.load(planetConfig.getId(), tileXCount, tileYCount, nativeTerrainShape -> {
             try {
                 terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
                 for (int x = 0; x < tileXCount; x++) {

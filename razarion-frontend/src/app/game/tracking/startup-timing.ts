@@ -34,14 +34,16 @@ export interface StartupTiming {
   /** Last byte arrived to here: parsing, executing, and Angular starting up. */
   parseAndBootMs: number;
   /**
-   * Frames the loading screen animation actually drew, and the longest it went without one.
+   * How often the page got a frame while the player waited, and the longest it went without one.
    * <p>
-   * Null for the half of the players who get the plain splash - there is nothing drawing. For
-   * the other half these two decide whether the animation is an animation: requestAnimationFrame
-   * does not run while the main thread compiles, and a cold start spends most of these seconds
-   * compiling. Three frames with a four second gap looks exactly like no animation at all, which
-   * is what a phone reported, and nothing until now could tell that apart from a coin flip that
-   * landed on plain.
+   * requestAnimationFrame does not run while the main thread compiles, and a cold start spends
+   * most of these seconds compiling: the progress bar animates `left`, which is layout, so it
+   * freezes with everything else. These two say how much of the wait was frozen.
+   * <p>
+   * They were built for the animated loading screen, where the largest gap predicted the abort
+   * hard: 93% of the sessions with a gap over a second left, against 51% of those under 200 ms.
+   * That screen lost its experiment and is gone; the counter stayed and now measures the one
+   * everybody gets. Null only where the page never ran it - the backend and the auth pages.
    */
   bootFrames: number | null;
   bootMaxGapMs: number | null;

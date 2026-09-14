@@ -1,5 +1,6 @@
 ﻿import {TipTaskContainer} from './tip-task.container';
 import {SelectTipTask} from './tiptask/select-tip-task';
+import {SelectGroupTipTask} from './tiptask/select-group-tip-task';
 import {TipService} from './tip.service';
 import {QuestConfig, Tip} from '../../gwtangular/GwtAngularFacade';
 import {StartBuildPlacerTipTask} from './tiptask/start-build-placer-tip-task';
@@ -78,9 +79,14 @@ export class TipTaskFactory {
     let tipTaskContainer = new TipTaskContainer(tipService.renderService);
 
     tipTaskContainer.add(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
+    // Between holding one unit and sending it in. The attack chain is the only one that needs an
+    // army, and this is the only place in the game where a group is ever asked for: a single viper
+    // is out-ranged by the tesla on the way and dies before it fires.
+    tipTaskContainer.add(new SelectGroupTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.add(new SendAttackCommandTipTask(enemyItemTypeId, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new IdleItemTipTask(tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
+    tipTaskContainer.addFallback(new SelectGroupTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new SendAttackCommandTipTask(enemyItemTypeId, tipService, tipTaskContainer.tipTaskContext));
     return tipTaskContainer;
   }

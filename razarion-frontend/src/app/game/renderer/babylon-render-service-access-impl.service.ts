@@ -118,6 +118,8 @@ interface PendingZoomAnchor {
 })
 export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAccess {
   private readonly SPAWN_PARTICLE_HEIGHT = 15;
+  /** See setupViewFieldDirection. 3 degrees: from 20 m up, the view field reaches about 380 m. */
+  private static readonly VIEW_FIELD_MIN_DOWN_ANGLE = 3 * Math.PI / 180;
   private static readonly GO_CURSOR = 'url("cursors/go.png") 15 15, auto';
   private static readonly GO_NO_CURSOR = 'url("cursors/go-no.png") 15 15, auto';
   // The same images the items' own ActionManager.hoverCursor uses, so hovering the mesh and
@@ -775,10 +777,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   /**
    * Records that the player used one of the controls for the first time. Lives here because the
    * renderer is what {@link TouchCameraControl} already holds; the service behind it reports each
-   * kind once per session.
+   * kind once per session - and once per detail where one is given.
    */
-  public reportFirstInteraction(kind: InteractionKind): void {
-    this.firstInteractionTrackerService.report(kind);
+  public reportFirstInteraction(kind: InteractionKind, detail?: string): void {
+    this.firstInteractionTrackerService.report(kind, detail);
   }
 
   private checkKeyDown(key1: string, key2: string, key3: string): boolean {
@@ -1282,10 +1284,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     );
   }
 
-  private setupTerrainPosition(ndcX: number, ndcY: number, invertCameraViewProj: Matrix): Vector3 | undefined {
-    let worldNearPosition = Vector3.TransformCoordinates(new Vector3(ndcX, ndcY, -1), invertCameraViewProj);
-    let direction = worldNearPosition.subtract(this.camera.position).normalize();
-
+  private setupTerrainPosition(direction: Vector3): Vector3 | undefined {
     let terrainPosition = LocationVisualization.getTerrainPositionFromRay(
       new Ray(
         this.camera.position,
@@ -1300,6 +1299,35 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
   }
 
+  /**
+   * The ray through a screen point, as the view field may use it.
+   *
+   * A corner ray that is nearly level meets the ground arbitrarily far away, and one that points
+   * above the horizon meets it behind the camera. The RTS camera never looks that flat, but a
+   * Director shot does: an orbit lowering towards the water pushed the top corners out by
+   * kilometres, the terrain streamed hundreds of tiles and the page froze; a portrait take, whose
+   * top edge looks above the horizon from the first frame, folded the view field back behind the
+   * camera and left the upper half of the picture without ground. So the ray is treated as
+   * looking at least VIEW_FIELD_MIN_DOWN_ANGLE down.
+   */
+  private setupViewFieldDirection(ndcX: number, ndcY: number, invertCameraViewProj: Matrix): Vector3 {
+    const worldNearPosition = Vector3.TransformCoordinates(new Vector3(ndcX, ndcY, -1), invertCameraViewProj);
+    const direction = worldNearPosition.subtract(this.camera.position).normalize();
+    const horizontal = Math.hypot(direction.x, direction.z);
+    const minDown = horizontal * Math.tan(BabylonRenderServiceAccessImpl.VIEW_FIELD_MIN_DOWN_ANGLE);
+    if (direction.y > -minDown) {
+      direction.y = -minDown;
+      direction.normalize();
+    }
+    return direction;
+  }
+
+  /** Where the ray meets zero level, but never farther than the camera draws. */
+  private setupViewFieldZeroLevelPosition(direction: Vector3): Vector3 {
+    const distanceToNullLevel = Math.min(-this.camera.position.y / direction.y, this.camera.maxZ);
+    return this.camera.position.add(direction.scale(distanceToNullLevel));
+  }
+
   private setupViewField(): ViewField {
     // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
     // getViewMatrix() forces recalculation of the camera view matrix
@@ -1307,20 +1335,17 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
     let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
 
-    let bottomLeft = this.setupTerrainPosition(-1, -1, invertCameraViewProj);
-    let bottomRight = this.setupTerrainPosition(1, -1, invertCameraViewProj);
-    let topRight = this.setupTerrainPosition(1, 1, invertCameraViewProj);
-    let topLeft = this.setupTerrainPosition(-1, 1, invertCameraViewProj);
-    let screenCenter = this.setupTerrainPosition(0, 0, invertCameraViewProj);
+    const directions = [[-1, -1], [1, -1], [1, 1], [-1, 1], [0, 0]]
+      .map(([ndcX, ndcY]) => this.setupViewFieldDirection(ndcX, ndcY, invertCameraViewProj));
+
+    let [bottomLeft, bottomRight, topRight, topLeft, screenCenter] =
+      directions.map(direction => this.setupTerrainPosition(direction));
 
     // console.info(`ViewField BL ${bottomLeft.x}:${bottomLeft.z}:${bottomLeft.y} BR ${bottomRight.x}:${bottomRight.z}:${bottomRight.y} TR ${topRight.x}:${topRight.z}:${topRight.y} TL ${topLeft.x}:${topLeft.z}:${topLeft.y}`)
 
     if (!bottomLeft || !bottomRight || !topRight || !topLeft || !screenCenter) {
-      bottomLeft = this.setupZeroLevelPosition(-1, -1, invertCameraViewProj);
-      bottomRight = this.setupZeroLevelPosition(1, -1, invertCameraViewProj);
-      topRight = this.setupZeroLevelPosition(1, 1, invertCameraViewProj);
-      topLeft = this.setupZeroLevelPosition(-1, 1, invertCameraViewProj);
-      screenCenter = this.setupZeroLevelPosition(0, 0, invertCameraViewProj);
+      [bottomLeft, bottomRight, topRight, topLeft, screenCenter] =
+        directions.map(direction => this.setupViewFieldZeroLevelPosition(direction));
     }
 
     if (![bottomLeft, bottomRight, topRight, topLeft, screenCenter].every(corner => this.isValidVector3(corner))) {

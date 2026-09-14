@@ -10,6 +10,7 @@ import {TooltipModule} from 'primeng/tooltip';
 import {Dialog} from 'primeng/dialog';
 import {LoginComponent} from '../../../auth/login/login.component';
 import {UserService} from '../../../auth/user.service';
+import {FirstInteractionTrackerService} from '../../tracking/first-interaction-tracker.service';
 import {UserComponent} from '../../../auth/user/user.component';
 import {RegisterComponent} from '../../../auth/register/register.component';
 import {CockpitDisplayService} from '../cockpit-display.service';
@@ -86,6 +87,18 @@ export class MainCockpitComponent implements MainCockpit {
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
   blinkUnlockEnabled = false;
+  /**
+   * A level was reached that allows something the one before it did not, and the player has not
+   * looked yet. Marks the tech tree and, on a phone, the menu it is behind.
+   */
+  techTreeNews = false;
+  /**
+   * How long that mark stays up. An icon that is still asking for attention ten minutes after the
+   * level-up is not news any more, it is decoration - and decoration is what the next real prompt
+   * has to compete with.
+   */
+  private static readonly TECH_TREE_NEWS_MILLIS = 90_000;
+  private techTreeNewsTimeout: ReturnType<typeof setTimeout> | null = null;
   /** Cells in the power meter. An array because the template iterates it; the value is the index. */
   readonly powerSegments = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
@@ -96,7 +109,8 @@ export class MainCockpitComponent implements MainCockpit {
               private renderService: BabylonRenderServiceAccessImpl,
               private gwtAngularService: GwtAngularService,
               public compactLayout: CompactLayoutService,
-              public userService: UserService) {
+              public userService: UserService,
+              private firstInteractionTrackerService: FirstInteractionTrackerService) {
   }
 
   show(): void {
@@ -265,6 +279,41 @@ export class MainCockpitComponent implements MainCockpit {
     this.zone.run(() => {
       this.blinkUnlockEnabled = show;
     });
+  }
+
+  /**
+   * Called from the engine when a level allows something the one before it did not. The zone, as
+   * everywhere on this bridge: the call arrives from the worker and the bar has to repaint on it.
+   */
+  techTreeHasNews(): void {
+    this.zone.run(() => {
+      this.techTreeNews = true;
+      this.firstInteractionTrackerService.report('TECH_TREE_OFFERED');
+      if (this.techTreeNewsTimeout !== null) {
+        clearTimeout(this.techTreeNewsTimeout);
+      }
+      this.techTreeNewsTimeout = setTimeout(
+        () => this.zone.run(() => this.techTreeNews = false),
+        MainCockpitComponent.TECH_TREE_NEWS_MILLIS);
+    });
+  }
+
+  /**
+   * Opens the tech tree and takes the mark down. Both entry points go through here - the button in
+   * the desktop bar and the row in the phone's menu - so neither can leave the mark standing.
+   */
+  openTechTree(): void {
+    if (this.techTreeNews) {
+      // Only when it was actually asked for, so the count answers "did the prompt work" rather
+      // than "how often is the tech tree opened", which is a different question.
+      this.firstInteractionTrackerService.report('TECH_TREE_OPENED');
+    }
+    this.techTreeNews = false;
+    if (this.techTreeNewsTimeout !== null) {
+      clearTimeout(this.techTreeNewsTimeout);
+      this.techTreeNewsTimeout = null;
+    }
+    this.mainCockpitService.showTechTreeDialog = true;
   }
 
   isLoggedIn(): boolean {

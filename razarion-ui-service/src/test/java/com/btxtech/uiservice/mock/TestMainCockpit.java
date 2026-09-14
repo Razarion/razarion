@@ -25,6 +25,10 @@ public class TestMainCockpit implements MainCockpit {
     }
 
     @Override
+    public void techTreeHasNews() {
+    }
+
+    @Override
     public void displayLevel(int levelNumber) {
 
     }

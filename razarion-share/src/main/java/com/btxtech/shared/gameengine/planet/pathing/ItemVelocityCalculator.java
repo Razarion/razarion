@@ -6,6 +6,8 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 
@@ -120,6 +122,28 @@ public class ItemVelocityCalculator {
 //                }
                 if (otherSyncPhysicalMovable.isMoving() || otherSyncPhysicalMovable.hasDestination()) {
                     orca.add(otherSyncPhysicalMovable);
+                } else if (isWorking(otherSyncItem)) {
+                    /*
+                     * Standing still because it is doing something, not because it has nothing to
+                     * do. Such a unit is avoided like any other neighbour and never shoved.
+                     *
+                     * Shoving it costs the job. A builder parks exactly on its build range
+                     * boundary, so half a unit of displacement puts it out of range; it then walks
+                     * back, and the walk back goes past the building it was just working on. In
+                     * 65 hours of PROD logs that walk is the single most common way a unit ends up
+                     * stuck - 38% of what is left after the give-up loop was fixed - and every one
+                     * of those lines is a builder touching a building of its own base at exactly
+                     * its own radius, with no other unit within five metres. Three replans later
+                     * the movement layer gives up, SyncBuilder reads destinationUnreachable and
+                     * ends the job, and the half-built shell stands there for good.
+                     *
+                     * Orca.add of a unit with no velocity already makes the mover take the full
+                     * avoidance correction rather than the reciprocal half, so the one that has
+                     * somewhere to be is the one that goes around. That is the right way round:
+                     * the mover has a path and can be replanned, the worker has a job and a
+                     * position that job depends on.
+                     */
+                    orca.add(otherSyncPhysicalMovable);
                 } else {
                     if (isPiercing(orca.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
                         PathingServiceUtil.setupPushAwayVelocity(orca.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
@@ -132,6 +156,23 @@ public class ItemVelocityCalculator {
                 orca.add(other);
             }
         });
+    }
+
+    /**
+     * Whether a standing unit is standing there on purpose.
+     *
+     * <p>{@link SyncBaseItem#isIdle()} is the existing answer to "has this item nothing to do":
+     * built up, not spawning, no destination, no active ability, not carrying a box and not
+     * entering a container. Its negation is what may not be shoved. Deliberately the whole of it
+     * rather than a builder check - a harvester on a razarion field and a factory mid-fabrication
+     * hold their position for the same reason, and a weapon that is firing has aimed from where
+     * it stands.
+     *
+     * <p>Anything that is not a {@link SyncBaseItem} - a resource, a box - never reaches here:
+     * those are not {@link SyncPhysicalMovable} and go to the obstacle branch above.
+     */
+    private boolean isWorking(SyncItem syncItem) {
+        return syncItem instanceof SyncBaseItem && !((SyncBaseItem) syncItem).isIdle();
     }
 
     private boolean isPiercing(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {

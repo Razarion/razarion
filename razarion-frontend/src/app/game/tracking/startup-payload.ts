@@ -171,6 +171,25 @@ export function collectStartupPayload(perf: Performance = performance,
 export function formatStartupPayload(at: string, payload: StartupPayload): string {
   const pairs = [
     'at=' + at,
+    /*
+     * Which timeline this is, and it is not all of them.
+     *
+     * performance.getEntriesByType('resource') reports the thread it is asked on, and this runs on
+     * the main one. The game engine worker has a timeline of its own, and on it are the two files
+     * the whole INIT_WORKER step waits for: the terrain shape, about 1.0 MB gzip, and the height
+     * map, 2.4 MB gzip since it went delta encoded and 3.75 MB before. None of that is counted
+     * here and none of it ever was.
+     *
+     * That silence cost a wrong headline on 2026-09-13: a start was reported as 13.0 MB when it
+     * fetches about 17.8, and INIT_WORKER - the largest single block of the wait at a median of
+     * 5.6 s - looked like it had no bytes behind it at all. Saying `main` makes the gap part of
+     * the record instead of an assumption.
+     *
+     * Closing it properly means the worker reporting its own timeline, which needs the game
+     * session uuid down there: the worker is started from a bare URL and is handed the uuid only
+     * inside the INITIALIZE command, well after these fetches begin.
+     */
+    'scope=main',
     'ms=' + payload.ms,
     'files=' + payload.fileCount,
     'kb=' + payload.transferredKb,

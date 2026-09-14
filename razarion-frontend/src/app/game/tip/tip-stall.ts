@@ -8,6 +8,8 @@
 /** One per tip task class. Must stay stable - the tracking data is read by this name. */
 export const TipTaskName = {
   SELECT: 'SELECT',
+  /** Asks for more than one unit at once. Nothing else in the chain ever does. */
+  SELECT_GROUP: 'SELECT_GROUP',
   START_BUILD_PLACER: 'START_BUILD_PLACER',
   SEND_BUILD_COMMAND: 'SEND_BUILD_COMMAND',
   SEND_FABRICATE_COMMAND: 'SEND_FABRICATE_COMMAND',
@@ -76,7 +78,15 @@ export const TipStallReason = {
   NO_ENEMY: 'NO_ENEMY',
   ENEMY_OUT_OF_VIEW: 'ENEMY_OUT_OF_VIEW',
   AWAIT_ATTACK_CLICK: 'AWAIT_ATTACK_CLICK',
-  AWAIT_IDLE: 'AWAIT_IDLE'
+  AWAIT_IDLE: 'AWAIT_IDLE',
+  /** The group tip is up and the player has not put a second unit into the selection yet. */
+  AWAIT_GROUP: 'AWAIT_GROUP',
+  /**
+   * Asking for a group of one. The player owns fewer units of the type than a group needs, so
+   * there is nothing to teach and nothing to wait for - told apart from AWAIT_GROUP because one
+   * is a player who has not understood and the other is a quest that cannot be demonstrated.
+   */
+  TOO_FEW_TO_GROUP: 'TOO_FEW_TO_GROUP'
 } as const;
 
 /**

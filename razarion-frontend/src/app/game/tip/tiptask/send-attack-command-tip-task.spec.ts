@@ -1,3 +1,4 @@
+import {fakeAsync, tick} from '@angular/core/testing';
 import {SendAttackCommandTipTask} from './send-attack-command-tip-task';
 import {TipTaskContext} from './abstract-tip-task';
 import {TipService} from '../tip.service';
@@ -115,4 +116,30 @@ describe('SendAttackCommandTipTask without a live attacker', () => {
     expect(prompted).toEqual([9]);
     attackTask.cleanup();
   });
+
+  /**
+   * The one branch of this task that used to have no retry. It set the direction marker and then
+   * waited for onBecameVisible - which is a camera move, which is the very thing the player does
+   * not know he has to do.
+   *
+   * Measured on PROD over 21 days on quest 379, which asks for the bot refinery 111 units from the
+   * player's base: 60 stalls on this reason, 41 of them never resolved. The bot's teslas respawn at
+   * 33 units, so the players who failed killed 2403 of those and not a single refinery.
+   */
+  it('keeps looking while the enemy is off screen', fakeAsync(() => {
+    const enemies: BabylonBaseItemImpl[] = [];
+    const {task: attackTask, context} = task(enemies, null, {x: 160, y: 126});
+    context.rememberActorPosition({getX: () => 148, getY: () => 25} as any);
+
+    attackTask.start();
+    expect(attackTask.getStallReason()).toBe(TipStallReason.ENEMY_OUT_OF_VIEW);
+    expect(prompted).toEqual([]);
+
+    // The target turns up, and nothing else happens: no second camera move to wake the task.
+    enemies.push(enemyAt(9, 160, 126));
+    tick(1500);
+
+    expect(prompted).toEqual([9]);
+    attackTask.cleanup();
+  }));
 });
