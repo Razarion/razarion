@@ -1,5 +1,5 @@
 import {AbstractTipTask, TipTaskContext} from './abstract-tip-task';
-import {TipConfig} from '../../../gwtangular/GwtAngularFacade';
+import {Diplomacy, TipConfig} from '../../../gwtangular/GwtAngularFacade';
 import {TipService} from '../tip.service';
 import {GwtHelper} from '../../../gwtangular/GwtHelper';
 import {TipStallReason, TipTaskName} from '../tip-stall';
@@ -68,6 +68,7 @@ export class SelectGroupTipTask extends AbstractTipTask {
       this.selectionListener = () => this.check();
       this.tipService.selectionService.addSelectionListener(this.selectionListener);
     }
+    this.startActorTracking();
     this.check();
     this.poll();
   }
@@ -92,6 +93,34 @@ export class SelectGroupTipTask extends AbstractTipTask {
     this.stallReason = TipStallReason.AWAIT_GROUP;
     this.report('asked');
     this.tipService.renderService.touchSelectionMode.setAsked(true);
+    this.pointAtTheUnits();
+  }
+
+  /**
+   * Puts the direction marker on the units when they are off screen.
+   *
+   * <p>Without this the tip asks for a box around units the player cannot see, and says nothing
+   * about where they are - which is the same silence the attack tip was fixed for a day earlier,
+   * repeated here in new code. Measured on PROD in the first twenty hours: 0.36 stalls per player
+   * on quest 379 reported ACTOR_OUT_OF_VIEW, from a task that had no way to point anywhere.
+   *
+   * <p>The remembered position rather than a live one: an actor that is off screen has no instance
+   * to ask, and off screen is exactly when the marker is needed.
+   */
+  private pointAtTheUnits(): void {
+    const live = this.tipService.renderService
+      .getBabylonBaseItemByDiplomacyItemType(Diplomacy.OWN, this.actorItemTypeId);
+    this.trackActor();
+    if (live) {
+      // On screen: the player can see what the box is meant to go around.
+      this.tipService.setOutOfViewTarget(null);
+      return;
+    }
+    const remembered = this.lastKnownActorPosition;
+    if (remembered) {
+      this.stallReason = TipStallReason.ACTOR_OUT_OF_VIEW;
+      this.tipService.setOutOfViewTarget(remembered);
+    }
   }
 
   /**
@@ -141,6 +170,7 @@ export class SelectGroupTipTask extends AbstractTipTask {
       this.tipService.selectionService.removeSelectionListener(this.selectionListener);
       this.selectionListener = null;
     }
+    this.stopActorTracking();
     // Must not outlive the task: the prompt hangs on an icon and would otherwise keep asking for
     // a group while the next tip asks for something else.
     this.tipService.renderService.touchSelectionMode.setAsked(false);

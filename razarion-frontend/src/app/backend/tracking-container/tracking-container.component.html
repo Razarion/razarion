@@ -28,12 +28,11 @@
       <p-button label="7d"
                 icon="pi pi-sync"
                 (onClick)="load7d()"/>
+      <!-- Stops at 2w: that is how long a page request and a startup task are kept. A "1m" button
+           returned two weeks of rows under a one-month heading, which is worse than no button. -->
       <p-button label="2w"
                 icon="pi pi-sync"
                 (onClick)="load2w()"/>
-      <p-button label="1m"
-                icon="pi pi-sync"
-                (onClick)="load1m()"/>
       <p-button icon="pi pi-sync"
                 title="Reload: same span, ending now"
                 (onClick)="refresh()"/>

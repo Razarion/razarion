@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +25,11 @@ import java.util.List;
 @Service
 public class TipStallService {
     public static final String TIP_STALL_COLLECTION = "tip_stall";
+    /**
+     * The smallest collection there is - 164 documents and 0.06 MB a day - and the one read over
+     * the longest spans, because a tip fix is judged against the weeks of stalls before it.
+     */
+    private static final Duration RETENTION = Duration.ofDays(90);
     private final MongoTemplate mongoTemplate;
     private final Logger logger = LoggerFactory.getLogger(TipStallService.class);
 
@@ -37,7 +43,7 @@ public class TipStallService {
      */
     @PostConstruct
     public void ensureIndexes() {
-        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, TIP_STALL_COLLECTION);
+        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, RETENTION, TIP_STALL_COLLECTION);
     }
 
     /**

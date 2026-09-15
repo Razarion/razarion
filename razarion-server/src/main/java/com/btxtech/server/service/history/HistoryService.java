@@ -62,8 +62,17 @@ public class HistoryService {
     private static final int SHUTDOWN_DRAIN_SECONDS = 5;
     /** Retention for the high-volume engine/bot debug firehose (base/item/box lifecycle). */
     private static final Duration SHORT_RETENTION = Duration.ofDays(7);
-    /** Retention for meaningful per-user interactions (login, level, quest, economy, unlock). */
-    private static final Duration LONG_RETENTION = Duration.ofDays(365);
+    /**
+     * Retention for meaningful per-user interactions (login, level, quest, economy, unlock).
+     * <p>
+     * Was a year, which this cluster cannot pay for. The long-lived types alone arrive at 0.3 MB a
+     * day, so 365 days settles at 98 MB on top of the 50 MB the seven-day firehose holds - 193 MB
+     * with indexes, out of 512 for the whole database, for a history whose every reader is a
+     * comparison across weeks: the quest funnel, the per-quest pass rates, the level curve. Ninety
+     * days is the same window {@code DailyProgressService} refuses to report past, and settles at
+     * about 100 MB.
+     */
+    private static final Duration LONG_RETENTION = Duration.ofDays(90);
     private final MongoTemplate mongoTemplate;
     private final Logger logger = LoggerFactory.getLogger(HistoryService.class);
     private final AtomicLong droppedCount = new AtomicLong();
@@ -111,6 +120,40 @@ public class HistoryService {
         ensureIndex(new Index()
                 .on("targetUserId", Sort.Direction.ASC)
                 .on("serverTime", Sort.Direction.DESC), "targetUserId/serverTime");
+        shortenOverlongExpiry();
+    }
+
+    /**
+     * Brings documents written under a longer {@link #LONG_RETENTION} down to the current one.
+     * <p>
+     * The expiry is stamped on each document as it is written, so lowering the constant alone
+     * changes nothing about what is already stored - the rows keep the year they were given and the
+     * collection stays at its old size for that year, which is exactly the year this change exists
+     * to avoid. Only rows that would outlive the current retention are touched, so on every start
+     * after the first this matches nothing.
+     * <p>
+     * <b>It deletes.</b> Whatever is already past the shortened window is swept by the TTL index
+     * within the minute. Raising {@link #LONG_RETENTION} again does not bring it back.
+     */
+    private void shortenOverlongExpiry() {
+        try {
+            Date latest = new Date(System.currentTimeMillis() + LONG_RETENTION.toMillis());
+            Query overlong = new Query(Criteria.where("expireAt").gt(latest));
+            long count = mongoTemplate.count(overlong, GAME_HISTORY);
+            if (count == 0) {
+                return;
+            }
+            logger.info("Shortening the expiry of {} game history entries to {} days",
+                    count, LONG_RETENTION.toDays());
+            mongoTemplate.getCollection(GAME_HISTORY).updateMany(
+                    overlong.getQueryObject(),
+                    List.of(new org.bson.Document("$set", new org.bson.Document("expireAt",
+                            new org.bson.Document("$add",
+                                    List.of("$serverTime", LONG_RETENTION.toMillis()))))));
+        } catch (Exception e) {
+            // A history that expires later than intended is a size problem, not a broken server.
+            logger.warn("Could not shorten the game history expiry: {}", e.getMessage());
+        }
     }
 
     /**

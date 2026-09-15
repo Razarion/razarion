@@ -11,12 +11,24 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 
 @Service
 public class UserActivityService {
     public static final String USER_ACTIVITY = "user_activity";
+    /**
+     * The backbone of the daily funnel - USER_CREATED, BASE_CREATED and every LEVEL_UP - and cheap
+     * at 1687 documents and 0.43 MB a day, so it gets the longest window of the tracking
+     * collections.
+     * <p>
+     * Two of its three reads are deliberately unbounded: attribution has to see a user created
+     * weeks ago, and "first base" means the first one ever. Ninety days is where that stops being
+     * true, and it is also {@code DailyProgressService.MAX_DAYS}, past which the daily table
+     * refuses to report at all.
+     */
+    private static final Duration RETENTION = Duration.ofDays(90);
     private final MongoTemplate mongoTemplate;
     private final Logger logger = LoggerFactory.getLogger(UserActivityService.class);
 
@@ -26,7 +38,7 @@ public class UserActivityService {
 
     @PostConstruct
     public void ensureIndexes() {
-        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, USER_ACTIVITY);
+        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, RETENTION, USER_ACTIVITY);
         // Separate call, separate try: an index that collides with an Atlas-created one fails with
         // error 85, and one failure must not take the other index with it.
         TrackingIndexes.ensureActivityTypeIndex(mongoTemplate, logger, USER_ACTIVITY);

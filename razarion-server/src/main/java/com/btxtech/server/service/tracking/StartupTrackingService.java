@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -31,6 +32,23 @@ public class StartupTrackingService {
      * minutes, dominated by the model download.
      */
     private static final long ABORT_GRACE_MILLIS = 5 * 60 * 1000L;
+    /**
+     * The second heaviest collection in the database at 3268 documents and 2.8 MB a day - twelve
+     * rows per boot, each repeating the whole campaign attribution of the session it belongs to -
+     * and the one read purely as "what is the boot doing lately".
+     * <p>
+     * Fourteen days rather than the thirty the backend's time picker offers, for the reason given
+     * at {@code PageRequestService.RETENTION}: this one and that one are the two heavy collections,
+     * and thirty days everywhere settles at 502 MB of a 512 MB cluster.
+     */
+    private static final Duration TASK_RETENTION = Duration.ofDays(14);
+    /**
+     * Twice as long for the two small ones. A terminated startup is the record of a player who
+     * never arrived and a hidden tab the record of one who looked away; at 493 and 202 documents a
+     * day a longer window costs almost nothing, and it lets a release be compared against the
+     * season before it rather than only the month.
+     */
+    private static final Duration OUTCOME_RETENTION = Duration.ofDays(60);
     private final Logger logger = LoggerFactory.getLogger(StartupTrackingService.class);
     private final MongoTemplate mongoTemplate;
 
@@ -44,8 +62,10 @@ public class StartupTrackingService {
      */
     @PostConstruct
     public void ensureIndexes() {
-        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger,
-                STARTUP_TASK_COLLECTION, STARTUP_TERMINATED_COLLECTION, TAB_HIDDEN_COLLECTION);
+        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, TASK_RETENTION,
+                STARTUP_TASK_COLLECTION);
+        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, OUTCOME_RETENTION,
+                STARTUP_TERMINATED_COLLECTION, TAB_HIDDEN_COLLECTION);
     }
 
     public void onStartupTask(StartupTaskJson startupTaskJson) {

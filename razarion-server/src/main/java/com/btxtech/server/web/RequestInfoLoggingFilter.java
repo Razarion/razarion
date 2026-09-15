@@ -94,7 +94,7 @@ public class RequestInfoLoggingFilter implements Filter {
             var hasQueryString = queryString != null && !queryString.isEmpty();
 
             if (requestURI.equals("/") && isLandingWorthRecording(httpRequest, hasQueryString)) {
-                pageRequestService.onLanding(toPageRequest(httpRequest, queryString));
+                pageRequestService.onLanding(toPageRequest(httpRequest));
             } else if (requestURI.equals("/t.gif") && hasQueryString) {
                 PageRequestType homeEventType = homeEventType(httpRequest);
                 // The landing page is recorded here and reported to nobody. Meta was told about
@@ -103,9 +103,9 @@ public class RequestInfoLoggingFilter implements Filter {
                 // days, 1.1% of which reached the game, against a step Meta already counts
                 // itself. It buried the events that mean something under a hundred times their
                 // volume and invited being optimised on, which is targeting the click.
-                pageRequestService.onHomeEvent(toPageRequest(httpRequest, queryString), homeEventType);
+                pageRequestService.onHomeEvent(toPageRequest(httpRequest), homeEventType);
             } else if ((requestURI.equals("/game") || requestURI.equals("/game/index.html")) && hasQueryString) {
-                pageRequestService.onGame(toPageRequest(httpRequest, queryString));
+                pageRequestService.onGame(toPageRequest(httpRequest));
                 redditConversionService.sendPageVisitEvent(httpRequest.getParameter("rdt_cid"));
                 xConversionService.sendPageVisitEvent(httpRequest.getParameter("twclid"));
                 metaConversionService.sendPageVisitEvent(httpRequest.getParameter("fbclid"),
@@ -142,7 +142,12 @@ public class RequestInfoLoggingFilter implements Filter {
         return PageRequestType.HOME;
     }
 
-    private PageRequest toPageRequest(HttpServletRequest httpRequest, String queryString) {
+    /**
+     * The whole query string used to be stored alongside these fields. Nothing ever read it back -
+     * everything in it that anybody asks about is parsed out above and sits in its own field - and
+     * it weighed 41 MB, 26 % of the bytes of the largest collection in the database.
+     */
+    private PageRequest toPageRequest(HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession(true);
         String sessionId = session != null ? session.getId() : null;
         return new PageRequest()
@@ -168,8 +173,7 @@ public class RequestInfoLoggingFilter implements Filter {
                 .viewport(viewport(httpRequest))
                 .tapFailure(tapFailure(httpRequest))
                 .tapFailureMeasure(millis(httpRequest, TAP_FAILURE_MEASURE_PARAMETER))
-                .exitReason(exitReason(httpRequest))
-                .rawQueryString(queryString);
+                .exitReason(exitReason(httpRequest));
     }
 
     /**

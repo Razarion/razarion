@@ -17,7 +17,6 @@ public class PageRequest {
     private String utmCampaign;
     private String utmSource;
     private String utmMedium;
-    private String rawQueryString;
     private String httpSessionId;
     /**
      * Browser and device of the visitor, straight from the request header. Without it a landing
@@ -171,14 +170,6 @@ public class PageRequest {
 
     public void setUtmMedium(String utmMedium) {
         this.utmMedium = utmMedium;
-    }
-
-    public String getRawQueryString() {
-        return rawQueryString;
-    }
-
-    public void setRawQueryString(String rawQueryString) {
-        this.rawQueryString = rawQueryString;
     }
 
     public String getHttpSessionId() {
@@ -354,11 +345,6 @@ public class PageRequest {
 
     public PageRequest utmMedium(String utmMedium) {
         setUtmMedium(utmMedium);
-        return this;
-    }
-
-    public PageRequest rawQueryString(String rawQueryString) {
-        setRawQueryString(rawQueryString);
         return this;
     }
 

@@ -33,7 +33,8 @@ describe('SelectGroupTipTask', () => {
     } as unknown as BabylonBaseItemImpl;
   }
 
-  function createTask(owned: number, selection: { current: BabylonBaseItemImpl[] }) {
+  function createTask(owned: number, selection: { current: BabylonBaseItemImpl[] },
+                      sichtbar: { current: BabylonBaseItemImpl | null } = {current: viper(1)}) {
     const asked: boolean[] = [];
     const gemeldet: string[] = [];
     // setAsked, nicht asked.set: der Poll-Timer laeuft ausserhalb von Angulars Zone, und ein
@@ -42,9 +43,12 @@ describe('SelectGroupTipTask', () => {
     const touchSelectionMode = {
       setAsked: (value: boolean) => asked.push(value)
     };
+    const zielMarker: (string | null)[] = [];
     const renderService = {
       touchSelectionMode,
-      getBabylonBaseItemById: () => null
+      getBabylonBaseItemById: () => null,
+      // Sichtbar oder nicht - das entscheidet, ob der Richtungsmarker gesetzt wird.
+      getBabylonBaseItemByDiplomacyItemType: () => sichtbar.current
     } as unknown as BabylonRenderServiceAccessImpl;
     const onSucceed = jasmine.createSpy('onSucceed');
     const tipService = {
@@ -60,13 +64,12 @@ describe('SelectGroupTipTask', () => {
       gwtAngularFacade: {
         baseItemUiService: {getMyItemCount: () => owned}
       },
-      setOutOfViewTarget: () => {
-      },
+      setOutOfViewTarget: (p: any) => zielMarker.push(p === null ? null : "gesetzt"),
       firstInteractionTracker: {report: (_kind: string, detail?: string) => gemeldet.push(detail ?? '')}
     } as unknown as TipService;
     const tipConfig = {getActorItemTypeId: () => VIPER_TYPE_ID} as unknown as TipConfig;
     const context = new TipTaskContext(renderService);
-    return {task: new SelectGroupTipTask(tipConfig, tipService, context), onSucceed, asked, gemeldet};
+    return {task: new SelectGroupTipTask(tipConfig, tipService, context), onSucceed, asked, gemeldet, zielMarker, context};
   }
 
   it('asks for the box while only one unit is held', fakeAsync(() => {
@@ -162,6 +165,42 @@ describe('SelectGroupTipTask', () => {
     zweite.task.start();
     expect(zweite.gemeldet).toContain('state=skipped');
     zweite.task.cleanup();
+    tick(2000);
+  }));
+
+  /**
+   * A tip asking for a box around units the player cannot see, without saying where they are, is
+   * the same silence the attack tip was fixed for the day before - repeated in new code. Measured
+   * on PROD in the first twenty hours after it shipped: 0.36 stalls per player on quest 379
+   * reporting ACTOR_OUT_OF_VIEW.
+   */
+  it('points at the units when they are off screen', fakeAsync(() => {
+    const selection = {current: [viper(1)]};
+    const sichtbar: { current: BabylonBaseItemImpl | null } = {current: null};
+    const {task, zielMarker, context} = createTask(3, selection, sichtbar);
+    context.rememberActorPosition({getX: () => 148, getY: () => 25} as any);
+
+    task.start();
+
+    expect(task.getStallReason()).toBe(TipStallReason.ACTOR_OUT_OF_VIEW);
+    expect(zielMarker[zielMarker.length - 1]).toBe('gesetzt');
+    task.cleanup();
+    tick(2000);
+  }));
+
+  it('takes the marker down again once they are on screen', fakeAsync(() => {
+    const selection = {current: [viper(1)]};
+    const sichtbar: { current: BabylonBaseItemImpl | null } = {current: null};
+    const {task, zielMarker, context} = createTask(3, selection, sichtbar);
+    context.rememberActorPosition({getX: () => 148, getY: () => 25} as any);
+
+    task.start();
+    sichtbar.current = viper(1);
+    tick(600);
+
+    expect(task.getStallReason()).toBe(TipStallReason.AWAIT_GROUP);
+    expect(zielMarker[zielMarker.length - 1]).toBeNull();
+    task.cleanup();
     tick(2000);
   }));
 

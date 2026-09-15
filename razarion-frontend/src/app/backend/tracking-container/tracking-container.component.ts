@@ -103,8 +103,14 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
   activeTab: string = TAB_FUNNEL;
   private readonly openedTabs = new Set<string>([TAB_FUNNEL]);
   dailyDays = 10;
-  dailyDaysOptions = [{name: "10 days", value: 10}, {name: "14 days", value: 14},
-    {name: "30 days", value: 30}, {name: "60 days", value: 60}, {name: "90 days", value: 90}];
+  /**
+   * Stops at 14 days because that is how long a page request is kept - see RETENTION in
+   * PageRequestService. An option past the retention does not fail: it returns a table whose older
+   * half is silently empty, which reads as "nobody played then" rather than "nothing is stored
+   * from then". Raise both together or neither.
+   */
+  dailyDaysOptions = [{name: "7 days", value: 7}, {name: "10 days", value: 10},
+    {name: "14 days", value: 14}];
   progressStatistics: ProgressStatistic[] = [];
   /** Per-day funnel, newest first. Fixed 10-day window, independent of the range picker. */
   dailyProgresses: DailyProgress[] = [];
@@ -481,10 +487,6 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
 
   load2w() {
     this.loadTime(14 * 24 * 60 * 60 * 1000)
-  }
-
-  load1m() {
-    this.loadTime(30 * 24 * 60 * 60 * 1000)
   }
 
   private loadTime(millis: number) {

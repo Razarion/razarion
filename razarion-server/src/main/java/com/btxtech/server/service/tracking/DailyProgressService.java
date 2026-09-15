@@ -61,7 +61,8 @@ public class DailyProgressService {
      * <b>whole</b> collection, because attribution has to reach back past the reported window.
      * That was 142'544 documents and roughly 141 MB on 2026-09-10, on every call, decoded into as
      * many Java objects and thrown away again — on a server already holding 1.7 of its 3 GB. Of
-     * those bytes 39 % were never looked at, {@code rawQueryString} alone being 31.7 %.
+     * those bytes 39 % were never looked at, the raw query string alone being 31.7 % — which is
+     * why that field is no longer written at all.
      *
      * <p><b>The failure mode here is silent.</b> A field missing from this list does not throw: it
      * arrives as null, and the visitor is quietly attributed to the wrong platform or to none at
@@ -76,6 +77,12 @@ public class DailyProgressService {
             "rdtCid", "twclid", "fbclid", "utmSource", "referer", "userAgent");
     /** Longest history the daily table will report. Past this it is a data export, not a trend. */
     private static final int MAX_DAYS = 90;
+    /**
+     * How many session ids go into one attribution query. Large enough that a reported day is one
+     * or two round trips, small enough that the query document stays a query rather than becoming
+     * the thing being sent.
+     */
+    private static final int SESSION_BATCH = 500;
     private final Logger logger = LoggerFactory.getLogger(DailyProgressService.class);
     private final MongoTemplate mongoTemplate;
     private final StartupTrackingService startupTrackingService;
@@ -83,6 +90,71 @@ public class DailyProgressService {
     public DailyProgressService(MongoTemplate mongoTemplate, StartupTrackingService startupTrackingService) {
         this.mongoTemplate = mongoTemplate;
         this.startupTrackingService = startupTrackingService;
+    }
+
+    private List<PageRequest> findPageRequests(Query query) {
+        ATTRIBUTION_FIELDS.forEach(field -> query.fields().include(field));
+        return mongoTemplate.find(query, PageRequest.class, PageRequestService.PAGE_REQUEST);
+    }
+
+    /** Every http session the reported window mentions, from whichever record mentions it. */
+    private static Set<String> sessionIds(List<PageRequest> pageRequests,
+                                          List<StartupTaskJson> startupTasks,
+                                          List<StartupTerminatedJson> terminated) {
+        Set<String> ids = new HashSet<>();
+        pageRequests.forEach(pageRequest -> add(ids, pageRequest.getHttpSessionId()));
+        startupTasks.forEach(task -> add(ids, task.getHttpSessionId()));
+        terminated.forEach(terminatedJson -> add(ids, terminatedJson.getHttpSessionId()));
+        return ids;
+    }
+
+    private static void add(Set<String> ids, String id) {
+        if (id != null && !id.isEmpty()) {
+            ids.add(id);
+        }
+    }
+
+    /**
+     * The page requests these sessions made <em>before</em> the reported window.
+     *
+     * <p>They are what carries the attribution: a visitor's click id is stated by the landing
+     * request, which may be days older than the game session being counted. Reported days and
+     * attribution therefore need different ranges, and that is why this exists as a second query.
+     *
+     * <p>It used to be one query with no range at all - {@code new Query()}, the whole collection,
+     * whenever a platform or device filter was set. That was cheap when the collection was small
+     * and is not any more: 162,720 documents against the 4,756 of a reported day, a factor of 34
+     * and growing by thousands a day since the Meta traffic started. Reproduced on 2026-09-15
+     * against the production database, it had not finished after eleven minutes, and it holds the
+     * pod's one database connection for all of it, so the rest of the backend waits with it.
+     *
+     * <p>Keyed on httpSessionId, which is indexed, and asked in batches: an {@code $in} of every
+     * session of a ninety day window would be one very large query in place of one very large scan.
+     */
+    private List<PageRequest> attributionBefore(Date from, Set<String> sessionIds) {
+        if (sessionIds.isEmpty()) {
+            return List.of();
+        }
+        List<PageRequest> earlier = new ArrayList<>();
+        List<String> batch = new ArrayList<>(SESSION_BATCH);
+        for (String sessionId : sessionIds) {
+            batch.add(sessionId);
+            if (batch.size() == SESSION_BATCH) {
+                earlier.addAll(findAttributionBatch(from, batch));
+                batch.clear();
+            }
+        }
+        if (!batch.isEmpty()) {
+            earlier.addAll(findAttributionBatch(from, batch));
+        }
+        logger.info("Daily progress attribution: {} sessions, {} page requests before the window",
+                sessionIds.size(), earlier.size());
+        return earlier;
+    }
+
+    private List<PageRequest> findAttributionBatch(Date from, List<String> sessionIds) {
+        return findPageRequests(new Query(Criteria.where("httpSessionId").in(sessionIds)
+                .and("serverTime").lt(from)));
     }
 
     /**
@@ -103,15 +175,13 @@ public class DailyProgressService {
         Date to = Date.from(today.plusDays(1).atStartOfDay(zone).toInstant());
         boolean filtered = platform != null || device != null;
 
-        // Without a filter there is nothing to attribute, and the window is all that is read.
-        Query pageRequestQuery = filtered
-                ? new Query()
-                : new Query(Criteria.where("serverTime").gte(from).lt(to));
-        ATTRIBUTION_FIELDS.forEach(field -> pageRequestQuery.fields().include(field));
-        List<PageRequest> pageRequests = mongoTemplate.find(pageRequestQuery, PageRequest.class,
-                PageRequestService.PAGE_REQUEST);
+        List<PageRequest> pageRequests = new ArrayList<>(findPageRequests(
+                new Query(Criteria.where("serverTime").gte(from).lt(to))));
         List<StartupTaskJson> startupTasks = startupTrackingService.loadStartupTaskJsons(from, to);
         List<StartupTerminatedJson> terminated = startupTrackingService.loadStartupTerminatedJson(from, to);
+        if (filtered) {
+            pageRequests.addAll(attributionBefore(from, sessionIds(pageRequests, startupTasks, terminated)));
+        }
 
         Map<String, Visitor> sessionVisitors = new HashMap<>();
         pageRequests.forEach(pageRequest -> attribute(sessionVisitors, signal(pageRequest)));

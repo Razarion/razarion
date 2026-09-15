@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,27 @@ import java.util.Map;
 @Service
 public class PageRequestService {
     public static final String PAGE_REQUEST = "page_request";
+    /**
+     * How long a page request is kept.
+     * <p>
+     * The largest collection in the database by a wide margin and the fastest growing: 4325
+     * documents and 3.9 MB a day in September 2026 with the raw query string gone, which at ninety
+     * days would be 350 MB on its own against a 512 MB cluster.
+     * <p>
+     * Fourteen days is what the cluster can pay for, not what the reader wants. Thirty would match
+     * the widest range the backend's own time picker offers, and every window here was first set to
+     * that - together they settled at 502 MB of the 512, which is not a size, it is a cliff. This
+     * one and {@code StartupTrackingService.TASK_RETENTION} are the two that were cut to fit,
+     * because they are the two heavy ones and the daily funnel defaults to ten days anyway. Both
+     * should go back to thirty the day this database is not on a free tier.
+     * <p>
+     * It also bounds attribution. {@code DailyProgressService} walks the whole page-request history
+     * to decide which platform a player came from, so a player who first arrived more than two
+     * weeks ago now counts towards no platform. That is the price of this collection having a size
+     * at all; the repair is to resolve the platform once when the user is created and store it on
+     * the user, which would make this window irrelevant.
+     */
+    private static final Duration RETENTION = Duration.ofDays(14);
     private final MongoTemplate mongoTemplate;
     private final Logger logger = LoggerFactory.getLogger(PageRequestService.class);
 
@@ -34,7 +56,7 @@ public class PageRequestService {
      */
     @PostConstruct
     public void ensureIndexes() {
-        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, PAGE_REQUEST);
+        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, RETENTION, PAGE_REQUEST);
         try {
             mongoTemplate.indexOps(PAGE_REQUEST).ensureIndex(new Index().on("httpSessionId", Sort.Direction.ASC));
         } catch (Exception e) {
@@ -71,7 +93,7 @@ public class PageRequestService {
             pageRequest
                     .pageRequestType(pageRequestType)
                     .serverTime(new Date());
-            logger.info("Page request {} tracked: utmCampaign={} utmSource={} utmMedium={} twclid={} rdtCid={} fbclid={} session={} query='{}'",
+            logger.info("Page request {} tracked: utmCampaign={} utmSource={} utmMedium={} twclid={} rdtCid={} fbclid={} session={}",
                     pageRequestType,
                     pageRequest.getUtmCampaign(),
                     pageRequest.getUtmSource(),
@@ -79,8 +101,7 @@ public class PageRequestService {
                     pageRequest.getTwclid(),
                     pageRequest.getRdtCid(),
                     pageRequest.getFbclid(),
-                    pageRequest.getHttpSessionId(),
-                    pageRequest.getRawQueryString());
+                    pageRequest.getHttpSessionId());
             mongoTemplate.save(pageRequest, PAGE_REQUEST);
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);

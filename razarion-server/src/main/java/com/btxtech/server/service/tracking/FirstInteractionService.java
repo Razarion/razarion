@@ -26,10 +26,15 @@ public class FirstInteractionService {
     public static final String FIRST_INTERACTION_COLLECTION = "first_interaction";
     /**
      * Long enough to compare a release against the weeks before it, short enough that a collection
-     * nobody prunes cannot grow without end. The other tracking collections have no expiry at all
-     * and only ever get bigger; this one does not repeat that.
+     * nobody prunes cannot grow without end.
+     * <p>
+     * Was 180 days, chosen when this collection was three days old and looked small. It is not:
+     * 2838 documents and 0.8 MB a day, which at 180 days settles at 168 MB of a 512 MB cluster -
+     * for a signal whose every question, "did this player ever pan the camera", is answered by
+     * comparing a release against the weeks around it. Sixty days holds four such comparisons and
+     * settles at 56 MB.
      */
-    private static final long RETENTION_DAYS = 180;
+    private static final long RETENTION_DAYS = 60;
     private final MongoTemplate mongoTemplate;
     private final Logger logger = LoggerFactory.getLogger(FirstInteractionService.class);
 
@@ -39,7 +44,11 @@ public class FirstInteractionService {
 
     @PostConstruct
     public void ensureIndexes() {
-        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, FIRST_INTERACTION_COLLECTION);
+        // No expiry on the serverTime index here: this collection stamps every document with its
+        // own expireAt, and the TTL index below is what acts on it. Shortening RETENTION_DAYS
+        // therefore only affects documents written from now on - the ones already stored keep the
+        // expireAt they were given.
+        TrackingIndexes.ensureServerTimeIndex(mongoTemplate, logger, null, FIRST_INTERACTION_COLLECTION);
         TrackingIndexes.ensureExpireAtIndex(mongoTemplate, logger, FIRST_INTERACTION_COLLECTION);
     }
 

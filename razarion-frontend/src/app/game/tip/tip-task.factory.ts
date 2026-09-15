@@ -78,15 +78,31 @@ export class TipTaskFactory {
     }
     let tipTaskContainer = new TipTaskContainer(tipService.renderService);
 
+    /*
+     * The group is asked for only when the quest names what to destroy.
+     *
+     * A quest that says "destroy anything" is satisfied by the nearest enemy, and on planet 117
+     * that is an undefended extractor 33 units from the player's base - one unit is plenty. A quest
+     * that names a target has to be carried to wherever that target stands: the refinery of 379 is
+     * 111 units away behind teslas that out-range a viper.
+     *
+     * This is not a rule derived from the two quests it happens to separate. It was added after
+     * asking every attack quest for a group cost quest 365 - the first fight in the game, at level
+     * 2, "destroy anything" - twenty points of its pass rate in a day: 83% over the six days before,
+     * 64% and 62% on the two days after, with one player in five stalling on a group tip that had
+     * not existed the day before. Asking somebody to gather an army before their first shot at an
+     * unarmed extractor is a hurdle where the game meant to have none.
+     */
     tipTaskContainer.add(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
-    // Between holding one unit and sending it in. The attack chain is the only one that needs an
-    // army, and this is the only place in the game where a group is ever asked for: a single viper
-    // is out-ranged by the tesla on the way and dies before it fires.
-    tipTaskContainer.add(new SelectGroupTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
+    if (enemyItemTypeId !== null) {
+      tipTaskContainer.add(new SelectGroupTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
+    }
     tipTaskContainer.add(new SendAttackCommandTipTask(enemyItemTypeId, tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new IdleItemTipTask(tipService, tipTaskContainer.tipTaskContext));
     tipTaskContainer.addFallback(new SelectTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
-    tipTaskContainer.addFallback(new SelectGroupTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
+    if (enemyItemTypeId !== null) {
+      tipTaskContainer.addFallback(new SelectGroupTipTask(tipConfig, tipService, tipTaskContainer.tipTaskContext));
+    }
     tipTaskContainer.addFallback(new SendAttackCommandTipTask(enemyItemTypeId, tipService, tipTaskContainer.tipTaskContext));
     return tipTaskContainer;
   }
