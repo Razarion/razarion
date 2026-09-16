@@ -43,6 +43,20 @@ public interface BabylonRenderServiceAccess {
     void reportEngineError(String reason);
 
     /**
+     * A point the start passed through, once per session, so its absence can be read.
+     * <p>
+     * The startup tasks stop at RUN_GAME, and everything between that and the player being asked
+     * to place a base is unmeasured. Five sessions a day report a wholly successful start and are
+     * never shown the placer: every startup task complete, no engine error, no difference from a
+     * session that works. They cannot be told apart from a session whose scene chain never ran,
+     * because both look like nothing at all.
+     *
+     * @param stage  what was reached, e.g. GAME_START or SCENE_FIRST
+     * @param detail the circumstance that matters for that stage, or null
+     */
+    void reportStartupStage(String stage, String detail);
+
+    /**
      * Reports terrain-tile timing to the F8 perf overlay: how long the worker took to generate the
      * tile, and how long the main thread took to build its Babylon mesh (the part that can stutter
      * while scrolling into new terrain).

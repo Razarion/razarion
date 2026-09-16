@@ -343,6 +343,40 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
     expect(reportedInteractions).toContain('PLACER_CONFIRMED');
   });
 
+  /**
+   * Green is a snapshot of the last drag. The engine checks again inside onPlace(), and if that
+   * check refuses, nothing is built and nothing is said - while the bubble is already closed and
+   * the placement already reported as confirmed. Reported from a phone in the Meta in-app browser
+   * on 2026-09-16.
+   */
+  it('re-checks the exact deploy position before committing anything', () => {
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+    const movesBeforeDeploy = moves.length;
+
+    pressDeploy();
+
+    // The last thing checked is the spot being built on, not wherever the drag happened to end.
+    expect(moves.length).toBe(movesBeforeDeploy + 1);
+    expect(moves[moves.length - 1]).toEqual(places[places.length - 1]);
+  });
+
+  it('commits nothing when the fresh check refuses the deploy position', () => {
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+    // The world moved between the drag and the tap: an enemy wandered in, a resource streamed.
+    positionValid = false;
+
+    pressDeploy();
+
+    expect(places.length).toBe(0);
+    expect(invalidAttempts).toBe(1);
+    expect(reportedInteractions).toContain('PLACER_REJECTED');
+    expect(reportedInteractions).not.toContain('PLACER_CONFIRMED');
+  });
+
   it('hangs the hint below the building when it is dragged to the top edge', () => {
     // With this camera the screen points along +z, so a spot further along z sits higher up.
     pointAt(CENTRE_X + 200, CENTRE_Y);

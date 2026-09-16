@@ -142,4 +142,46 @@ describe('SendAttackCommandTipTask without a live attacker', () => {
     expect(prompted).toEqual([9]);
     attackTask.cleanup();
   }));
+
+  /**
+   * Having found a target used to stop this task's clock. The prompt and the click callback hang
+   * off one BabylonBaseItemImpl and there is no removed-listener on the render service, so a
+   * target that died left the tip standing on a disposed mesh with nothing to click.
+   *
+   * Measured on PROD 14.-15.09.2026, when a bot respawned a fresh tesla at one spot every three
+   * seconds for 25 hours: quest 365 fell from 83% to 32%, none of the players who failed it
+   * destroyed anything at all, and their stall rate on the quest doubled.
+   */
+  it('re-aims when the target dies', fakeAsync(() => {
+    const dying = enemyAt(9, 20, 20);
+    const other = enemyAt(10, 30, 30);
+    const enemies: BabylonBaseItemImpl[] = [dying, other];
+    const {task: attackTask, context} = task(enemies, null);
+    context.rememberActorPosition({getX: () => 10, getY: () => 10} as any);
+
+    attackTask.start();
+    expect(prompted).toEqual([9]);
+
+    // The near one dies. Nothing else happens - no camera move, no click, no new enemy.
+    enemies.splice(0, 1);
+    tick(1500);
+
+    expect(prompted).toEqual([9, 10]);
+    attackTask.cleanup();
+  }));
+
+  /**
+   * The other half of the same clock: a target that is still there must not be re-prompted every
+   * second, or the prompt flickers and the tip looks broken for the opposite reason.
+   */
+  it('leaves a living target alone', fakeAsync(() => {
+    const {task: attackTask, context} = task([enemyAt(9, 20, 20)], null);
+    context.rememberActorPosition({getX: () => 10, getY: () => 10} as any);
+
+    attackTask.start();
+    tick(5000);
+
+    expect(prompted).toEqual([9]);
+    attackTask.cleanup();
+  }));
 });

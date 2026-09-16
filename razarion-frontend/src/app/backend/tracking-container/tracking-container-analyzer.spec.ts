@@ -1,6 +1,7 @@
 import {
   DEFAULT_FUNNEL_VIEW,
   FunnelView,
+  QuestRowInfo,
   TrackingContainerAnalyzer
 } from './tracking-container-analyzer';
 import {
@@ -64,7 +65,8 @@ describe('TrackingContainerAnalyzer level and quest statistics', () => {
    * A visitor is keyed by their click id where there is one, so every player would collapse into
    * one row if they shared it. Each gets their own.
    */
-  function statistics(players: ReturnType<typeof player>[]) {
+  function statistics(players: ReturnType<typeof player>[],
+                      questInfo: (questId: number) => QuestRowInfo | undefined = () => undefined) {
     const analyzer = new TrackingContainerAnalyzer();
     analyzer.setView(TrackingPlatform.REDDIT);
     analyzer.setTrackingContainer({
@@ -75,7 +77,7 @@ describe('TrackingContainerAnalyzer level and quest statistics', () => {
       startupTaskJsons: [],
       tabHiddenJsons: []
     } as unknown as TrackingContainer);
-    return analyzer.generateLevelQuestStatistics(players.length);
+    return analyzer.generateLevelQuestStatistics(players.length, questInfo);
   }
 
   function row(rows: ReturnType<typeof statistics>, name: string) {
@@ -109,34 +111,102 @@ describe('TrackingContainerAnalyzer level and quest statistics', () => {
       player('u3')
     ]);
 
-    // Two of three players reached level 2...
-    expect(row(rows, 'Level 2')!.percent).toBe(67);
-    // ...and one of those two passed the quest. Against all three it would read 33%.
+    // Two of three players reached level 2, and one of those two passed the quest. Against all
+    // three it would read 33%.
     expect(row(rows, 'Quest 363 (Level 2)')!.percent).toBe(50);
   });
 
-  it('keeps a level measured against the level before it', () => {
+  /**
+   * A level-up is not something a player does - it falls out of passing the quests of the level
+   * before it. Its row restated the last quest row above it and put a stage in the funnel that
+   * nobody can fail on its own. The count it carries is still needed, as the denominator of the
+   * quests below it, which the test above is about.
+   */
+  it('does not show levels as stages', () => {
     const rows = statistics([
       player('u1', levelUp('u1', 2), levelUp('u1', 3)),
       player('u2', levelUp('u2', 2)),
-      player('u3', levelUp('u3', 2)),
-      player('u4')
+      player('u3')
     ]);
 
-    expect(row(rows, 'Level 2')!.percent).toBe(75);
-    // 1 of the 3 who reached level 2, not 1 of the 4 who have a base.
-    expect(row(rows, 'Level 3')!.percent).toBe(33);
+    expect(rows.map(progressStatistic => progressStatistic.name)
+      .filter(name => name.startsWith('Level'))).toEqual([]);
   });
 
-  it('shows the quests of a level by size without that changing a percentage', () => {
+  /**
+   * A quest id says nothing about why a row is the one players fall off.
+   */
+  it('says what a quest asks for when the wording is known', () => {
+    const rows = statistics([player('u1', questPassed('u1', 386, 1))],
+      questId => questId === 386 ? {label: 'Build 1 Dockyard on a region', order: 0} : undefined);
+
+    expect(rows[0].name).toBe('Quest 386 (Level 1): Build 1 Dockyard on a region');
+  });
+
+  it('leaves the row on the quest id alone when the wording is missing', () => {
+    const rows = statistics([player('u1', questPassed('u1', 386, 1))]);
+
+    expect(rows[0].name).toBe('Quest 386 (Level 1)');
+  });
+
+  function names(rows: ReturnType<typeof statistics>) {
+    return rows.map(progressStatistic => progressStatistic.name)
+      .filter(name => name.startsWith('Quest'));
+  }
+
+  /**
+   * The order the game offers them in, which is neither the quest id nor how often each was
+   * passed. Level 2 really does run 363, 364, 365, 361, 362.
+   */
+  it('shows the quests of a level in the order the game offers them', () => {
+    const order: Record<number, number> = {363: 0, 364: 1, 365: 2, 361: 3, 362: 4};
+    const rows = statistics(
+      [player('u1', questPassed('u1', 362, 2), questPassed('u1', 365, 2),
+        questPassed('u1', 361, 2), questPassed('u1', 363, 2), questPassed('u1', 364, 2))],
+      questId => ({label: '', order: order[questId]}));
+
+    expect(names(rows)).toEqual(['Quest 363 (Level 2)', 'Quest 364 (Level 2)',
+      'Quest 365 (Level 2)', 'Quest 361 (Level 2)', 'Quest 362 (Level 2)']);
+  });
+
+  /**
+   * What the user hit: at level 9 a handful of players have passed everything exactly once, so
+   * every row said 1 and 100% and sorting by size left their sequence to whichever quest id
+   * happened to appear first in the activity list.
+   */
+  it('keeps equal counts in the level order rather than in stream order', () => {
+    const order: Record<number, number> = {393: 0, 395: 1, 396: 2, 400: 3, 401: 4};
+    const rows = statistics(
+      [player('u1', questPassed('u1', 400, 9), questPassed('u1', 401, 9),
+        questPassed('u1', 396, 9), questPassed('u1', 395, 9), questPassed('u1', 393, 9))],
+      questId => ({label: '', order: order[questId]}));
+
+    expect(names(rows)).toEqual(['Quest 393 (Level 9)', 'Quest 395 (Level 9)',
+      'Quest 396 (Level 9)', 'Quest 400 (Level 9)', 'Quest 401 (Level 9)']);
+  });
+
+  /**
+   * A quest that belongs to no level has order -1 from the server. It goes to the end rather than
+   * to the front, where -1 would otherwise put it: unplaced is not "first".
+   */
+  it('puts a quest with no place at the end, by id', () => {
+    const rows = statistics(
+      [player('u1', questPassed('u1', 359, 1), questPassed('u1', 358, 1),
+        questPassed('u1', 357, 1))],
+      questId => questId === 358 ? {label: '', order: 0} : {label: '', order: -1});
+
+    expect(names(rows)).toEqual(['Quest 358 (Level 1)', 'Quest 357 (Level 1)',
+      'Quest 359 (Level 1)']);
+  });
+
+  it('sorting the rows does not change a percentage', () => {
+    const order: Record<number, number> = {358: 0, 359: 1};
     const rows = statistics([
       player('u1', questPassed('u1', 359, 1), questPassed('u1', 358, 1)),
       player('u2', questPassed('u2', 358, 1))
-    ]);
+    ], questId => ({label: '', order: order[questId]}));
 
-    const questNames = rows.map(progressStatistic => progressStatistic.name)
-      .filter(name => name.startsWith('Quest'));
-    expect(questNames).toEqual(['Quest 358 (Level 1)', 'Quest 359 (Level 1)']);
+    expect(names(rows)).toEqual(['Quest 358 (Level 1)', 'Quest 359 (Level 1)']);
     expect(row(rows, 'Quest 358 (Level 1)')!.percent).toBe(100);
     expect(row(rows, 'Quest 359 (Level 1)')!.percent).toBe(50);
   });
@@ -463,7 +533,6 @@ describe('TrackingContainerAnalyzer game stage', () => {
     expect(stage(rows, 'Game (total)')!.count).toBe(1);
     expect(stage(rows, 'Engine running')!.count).toBe(1);
     expect(stage(rows, 'Initial Base created')!.count).toBe(1);
-    expect(stage(rows, 'Level 2')!.count).toBe(1);
   });
 
   it('counts that visitor under the platform their referrer names', () => {

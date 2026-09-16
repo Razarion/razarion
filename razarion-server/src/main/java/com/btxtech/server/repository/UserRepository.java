@@ -43,6 +43,32 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     @Query("SELECT u FROM UserEntity u WHERE u.systemConnectionClosed IS NOT NULL AND u.systemConnectionClosed < :cutoff")
     List<UserEntity> findInactiveSince(@Param("cutoff") LocalDateTime cutoff);
 
+    /**
+     * Users whose connection is open as far as the database knows, which is not the same as open.
+     * <p>
+     * The close timestamp is written by the websocket close event alone, and no idle timeout is
+     * configured, so a socket that dies without a close frame - a locked phone, a swiped-away tab,
+     * a network that simply stops - never produces one. The row then says "still connected"
+     * forever, and {@link #findInactiveSince} can never see it because that asks for a close time.
+     * Measured on PROD on 2026-09-16: one of the four anonymous players who had actually connected
+     * was in this state, and the row survives until the next server start.
+     */
+    @Query("SELECT u FROM UserEntity u WHERE u.systemConnectionOpened IS NOT NULL "
+            + "AND u.systemConnectionClosed IS NULL AND u.systemConnectionOpened < :cutoff")
+    List<UserEntity> findOpenSince(@Param("cutoff") LocalDateTime cutoff);
+
+    /**
+     * Users that never opened a connection at all.
+     * <p>
+     * Every game start writes more than one of these: the tracking beacon creates an anonymous user
+     * before anybody plays, and only one of them goes on to connect. They own nothing - no base, no
+     * spawn point - but they are invisible to every cleanup there is, because all of those key on a
+     * connection timestamp and these have none. Eleven of the fifteen anonymous rows on PROD on
+     * 2026-09-16 were this, about nine an hour, cleared only by a server restart.
+     */
+    @Query("SELECT u FROM UserEntity u WHERE u.systemConnectionOpened IS NULL AND u.creationDate < :cutoff")
+    List<UserEntity> findNeverConnectedBefore(@Param("cutoff") Date cutoff);
+
     @Query("SELECT u FROM UserEntity u WHERE u.verificationStartedDate IS NOT NULL AND u.verificationDoneDate IS NULL AND u.verificationStartedDate < :cutoff")
     List<UserEntity> findUnverifiedUsersOlderThan(@Param("cutoff") LocalDateTime cutoff);
 

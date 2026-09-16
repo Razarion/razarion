@@ -191,6 +191,9 @@ public class JsGwtAngularFacade {
     static native void callMethod1B(JSObject obj, String method, boolean arg);
 
     @JSBody(params = {"obj", "method", "a1", "a2"}, script = "obj[method](a1, a2);")
+    static native void callMethod2S(JSObject obj, String method, String a1, String a2);
+
+    @JSBody(params = {"obj", "method", "a1", "a2"}, script = "obj[method](a1, a2);")
     static native void callMethod2(JSObject obj, String method, JSObject a1, JSObject a2);
 
     @JSBody(params = {"obj", "method", "a1", "a2"}, script = "obj[method](a1, a2);")

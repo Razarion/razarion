@@ -530,6 +530,10 @@ export interface BabylonRenderServiceAccess {
 
   reportEngineError(reason: string): void;
 
+  /** A point the start passed through, once per session, so its absence can be read. The startup
+   *  tasks stop at RUN_GAME and everything between that and the placer is unmeasured. */
+  reportStartupStage(stage: string, detail: string | null): void;
+
   /** Reports terrain-tile timing to the F8 perf overlay: workerMs = worker generation time,
    *  clientMs = main-thread Babylon mesh-build time (the scroll-stutter source). */
   onTerrainTileBuilt(workerMs: number, clientMs: number): void;

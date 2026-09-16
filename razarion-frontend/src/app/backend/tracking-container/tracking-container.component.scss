@@ -4,6 +4,33 @@
   padding-bottom: 1rem;
 }
 
+// How a table is counted, out of the way until it is asked for. It is reference material - read
+// once, then never again while the numbers are - and on a phone it filled the screen before the
+// first row. A plain <details> rather than a panel: it collapses without script, it is already
+// keyboard and screen-reader addressable, and the browser remembers nothing, which is right for a
+// note that should start closed every time.
+.notes {
+  padding-bottom: 0.5rem;
+
+  summary {
+    cursor: pointer;
+    color: var(--p-text-muted-color, #898781);
+    font-size: 0.875rem;
+  }
+
+  > div {
+    padding-top: 0.5rem;
+  }
+}
+
+// The one place a sideways scroll belongs. The daily table is nine columns and cannot be made
+// narrow enough for a phone, so it scrolls inside its own box instead of widening the page - which
+// is what it did before, because every block here is a child of the same column.
+.table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
 .chart-title {
   color: var(--p-text-muted-color, #898781);
   font-size: 0.875rem;

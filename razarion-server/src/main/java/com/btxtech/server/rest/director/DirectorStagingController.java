@@ -102,9 +102,11 @@ public class DirectorStagingController {
     @PostMapping("/stage-attack")
     public StageAttackResult stageAttack(@RequestBody StageAttackRequest request) {
         synchronized (engineLock) {
-            PlayerBaseFull humanBase = firstBaseOfCharacter(Character.HUMAN);
+            // The operator's own base, not the first human one: on a copy of the live planet that is
+            // somebody else's, and the strike force would be red in the director client.
+            PlayerBaseFull humanBase = baseItemService.getPlayerBaseFull4UserId(userService.getUserContextFromContext().getUserId());
             if (humanBase == null) {
-                throw new IllegalStateException("No human (green) base found — create your base first (Create base).");
+                throw new IllegalStateException("You have no base — create your base first (Create base).");
             }
             PlayerBaseFull botBase;
             if (request.getTargetBaseId() != null) {
@@ -118,21 +120,24 @@ public class DirectorStagingController {
                     throw new IllegalStateException("No bot base found to attack.");
                 }
             }
-            SyncBaseItem target = botBase.getItems().stream().findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Bot base has no units to target."));
+            List<SyncBaseItem> targets = new ArrayList<>(botBase.getItems());
+            if (targets.isEmpty()) {
+                throw new IllegalStateException("Bot base has no units to target.");
+            }
 
             BaseItemType attackerType = request.getBaseItemTypeId() != null
                     ? itemTypeService.getBaseItemType(request.getBaseItemTypeId())
                     : firstWeaponType();
 
             int count = request.getCount() != null ? Math.max(1, request.getCount()) : 5;
+            // Two diameters apart: closer than that a spawn overlaps its neighbour and is refused.
+            double spacing = attackerType.getPhysicalAreaConfig().getRadius() * 4.0;
             List<SyncBaseItem> spawned = new ArrayList<>();
             List<String> errors = new ArrayList<>();
             for (int i = 0; i < count; i++) {
-                // Small grid spread so units don't stack on one point.
                 DecimalPosition pos = new DecimalPosition(
-                        request.getX() + (i % 3) * 3.0,
-                        request.getY() + (i / 3) * 3.0);
+                        request.getX() + (i % 4) * spacing,
+                        request.getY() + (i / 4) * spacing);
                 try {
                     SyncBaseItem unit = baseItemService.spawnSyncBaseItem(attackerType, pos, 0.0, humanBase, true);
                     syncService.notifySendSyncBaseItem(unit); // make it visible on the clients
@@ -141,20 +146,21 @@ public class DirectorStagingController {
                     errors.add(e.getClass().getSimpleName() + ": " + e.getMessage());
                 }
             }
-            for (SyncBaseItem unit : spawned) {
-                // followTarget only if the unit can move (mirrors CommandService.attack(IdsDto,...)).
-                commandService.attack(unit, target, unit.getAbstractSyncPhysical().canMove());
+            // Spread over the whole base rather than all on one item: a force that kills one building
+            // and then stands still is a short clip.
+            for (int i = 0; i < spawned.size(); i++) {
+                SyncBaseItem unit = spawned.get(i);
+                SyncBaseItem target = targets.get(i % targets.size());
+                try {
+                    // followTarget only if the unit can move (mirrors CommandService.attack(IdsDto,...)).
+                    commandService.attack(unit, target, unit.getAbstractSyncPhysical().canMove());
+                } catch (Exception e) {
+                    errors.add("attack " + target.getId() + ": " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                }
             }
             return new StageAttackResult(spawned.size(), attackerType.getInternalName(),
-                    botBase.getBaseId(), target.getId(), errors);
+                    botBase.getBaseId(), targets.get(0).getId(), errors);
         }
-    }
-
-    private PlayerBaseFull firstBaseOfCharacter(Character character) {
-        return baseItemService.getPlayerBaseInfos().stream()
-                .filter(info -> info.getCharacter() == character)
-                .map(info -> (PlayerBaseFull) baseItemService.getPlayerBase4BaseId(info.getBaseId()))
-                .findFirst().orElse(null);
     }
 
     private PlayerBaseFull firstNonHumanBase() {

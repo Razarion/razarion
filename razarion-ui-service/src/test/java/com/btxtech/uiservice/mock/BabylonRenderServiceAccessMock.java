@@ -123,6 +123,10 @@ public class BabylonRenderServiceAccessMock implements BabylonRenderServiceAcces
     }
 
     @Override
+    public void reportStartupStage(String stage, String detail) {
+    }
+
+    @Override
     public void onGameEngineTick(double clientTickMs) {
 
     }

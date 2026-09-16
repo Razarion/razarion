@@ -25,6 +25,7 @@ import com.btxtech.uiservice.cockpit.ChatCockpitService;
 import com.btxtech.uiservice.cockpit.MainCockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.renderer.BabylonRendererService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.system.boot.Boot;
 import com.btxtech.uiservice.user.UserUiService;
@@ -45,6 +46,7 @@ import java.util.logging.Logger;
 public class GameUiControl { // Equivalent worker class is PlanetService
     private final Logger logger = Logger.getLogger(GameUiControl.class.getName());
     private final Provider<Scene> sceneInstance;
+    private final BabylonRendererService babylonRendererService;
     private final BaseItemUiService baseItemUiService;
     private final MainCockpitService cockpitService;
     private final ChatCockpitService chatUiService;
@@ -84,7 +86,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
                          ChatCockpitService chatUiService,
                          MainCockpitService cockpitService,
                          BaseItemUiService baseItemUiService,
-                         Provider<Scene> sceneInstance) {
+                         Provider<Scene> sceneInstance,
+                         BabylonRendererService babylonRendererService) {
         this.serverSystemConnectionInstance = serverSystemConnectionInstance;
         this.screenCover = screenCover;
         this.modalDialogManager = modalDialogManager;
@@ -99,6 +102,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         this.cockpitService = cockpitService;
         this.baseItemUiService = baseItemUiService;
         this.sceneInstance = sceneInstance;
+        this.babylonRendererService = babylonRendererService;
     }
 
     public void onWarmGameConfigLoaded(WarmGameUiContext warmGameUiContext) {
@@ -140,6 +144,15 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void start() {
         cockpitService.show(userUiService.get().getUserContext());
         nextSceneNumber = 0;
+        /*
+         * Reported before the branch below, and carrying the mode, because the branch is where the
+         * two outcomes part: a MASTER runs a scene on the next line, a SLAVE returns and waits.
+         * Measured on PROD over seven days, five sessions a day report every startup task complete
+         * and are never shown the base placer - with no engine error and no field that separates
+         * them from a session that works. Everything after RUN_GAME was unmeasured, so "no scene
+         * ever ran" and "a scene ran without a placer" looked the same: like nothing.
+         */
+        reportStartupStage("GAME_START", "mode=" + gameEngineMode);
         if (gameEngineMode == GameEngineMode.SLAVE) {
             // Scene started if slave synchronized (from GameEngine)
             return;
@@ -173,7 +186,25 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         return new IllegalStateException(step + ": " + t.getMessage(), t);
     }
 
+    /**
+     * Never at the expense of the start: a beacon that throws would take down the very sequence it
+     * is there to observe, and this runs on the path that decides whether the player sees anything
+     * at all.
+     */
+    private void reportStartupStage(String stage, String detail) {
+        try {
+            babylonRendererService.reportStartupStage(stage, detail);
+        } catch (Throwable ignored) {
+            // Deliberately silent.
+        }
+    }
+
     private void runScene() {
+        if (nextSceneNumber == 0) {
+            // The chain got off the ground. Its absence after GAME_START is the thing being
+            // measured, so it is reported before anything here can throw.
+            reportStartupStage("SCENE_FIRST", null);
+        }
         try {
             if (currentScene != null) {
                 sceneFinished();

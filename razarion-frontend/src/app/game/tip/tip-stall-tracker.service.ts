@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {TipStallJson, TrackerControllerImplClient} from '../../generated/razarion-share';
 import {TypescriptGenerator} from '../../backend/typescript-generator';
 import {TipStallReason, TipStallSource} from './tip-stall';
+import {FirstInteractionTrackerService} from '../tracking/first-interaction-tracker.service';
 
 /**
  * Watches the running tip task and reports the ones that stop making progress.
@@ -39,18 +40,35 @@ export class TipStallTrackerService {
    */
   public static readonly THRASHING_FAILURES = 3;
   public static readonly THRASHING_WINDOW_MILLIS = 10000;
+  /**
+   * How long a tip may stand unanswered before the player counts as absent rather than slow.
+   *
+   * Ten seconds, against the watchdog's thirty, because it asks a different question: not "did
+   * this task finish" but "was anybody there at all". A player who is reading the prompt, dragging
+   * the camera or hunting for a button answers it without finishing anything, so the threshold can
+   * be short without blaming a tip that works - which is the reason STALL_MILLIS may not be.
+   *
+   * Measured on PROD over seven days: of the 286 who lose quest 358, 234 never create a single
+   * item and are gone a median of 15 seconds after the quest appears, while the median player who
+   * passes it has not started building until 18. Only 36 of those 234 appear in tip_stall at all,
+   * and they cannot - the watchdog is slower than they are.
+   */
+  public static readonly COLD_MILLIS = 10000;
   private readonly trackerControllerImplClient: TrackerControllerImplClient;
   private questId: number | null = null;
   private source: TipStallSource | null = null;
   private taskStartTime = 0;
   private watchdogTimeout: ReturnType<typeof setTimeout> | null = null;
+  /** The shorter clock beside it - see {@link #COLD_MILLIS}. */
+  private coldTimeout: ReturnType<typeof setTimeout> | null = null;
   /** Set once a stall was reported for the running task; the resolution refers back to it. */
   private stallUuid: string | null = null;
   /** Backtrack times of the recent past, for the restart-loop check. */
   private recentFailureTimes: number[] = [];
   private thrashingReported = false;
 
-  constructor(httpClient: HttpClient) {
+  constructor(httpClient: HttpClient,
+              private readonly firstInteractionTracker: FirstInteractionTrackerService) {
     this.trackerControllerImplClient = new TrackerControllerImplClient(
       TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
@@ -62,6 +80,31 @@ export class TipStallTrackerService {
     this.source = source;
     this.taskStartTime = Date.now();
     this.armWatchdog();
+    this.coldTimeout = setTimeout(() => this.onCold(), TipStallTrackerService.COLD_MILLIS);
+  }
+
+  /**
+   * A tip that has stood for {@link #COLD_MILLIS} without the player doing anything at all.
+   *
+   * Reported through the interaction tracker rather than as a stall, on purpose: tip_stall is read
+   * backwards across releases and a new reason in it would move numbers that are being compared.
+   * This is a different measurement and belongs beside the other "was anybody there" records.
+   */
+  private onCold(): void {
+    this.coldTimeout = null;
+    if (!this.source) {
+      return;
+    }
+    // A backgrounded tab is not an unanswered tip - the same reasoning as the watchdog. The player
+    // is not looking at the prompt, so their silence says nothing about it.
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+      return;
+    }
+    if (this.firstInteractionTracker.lastPlayerAction >= this.taskStartTime) {
+      return;
+    }
+    this.firstInteractionTracker.report('TIP_COLD',
+      `quest=${this.questId ?? '-'} task=${this.source.getTaskName()}`);
   }
 
   /** Reports a chain that keeps falling back, once per burst rather than once per backtrack. */
@@ -177,6 +220,10 @@ export class TipStallTrackerService {
     if (this.watchdogTimeout !== null) {
       clearTimeout(this.watchdogTimeout);
       this.watchdogTimeout = null;
+    }
+    if (this.coldTimeout !== null) {
+      clearTimeout(this.coldTimeout);
+      this.coldTimeout = null;
     }
     this.questId = null;
     this.source = null;

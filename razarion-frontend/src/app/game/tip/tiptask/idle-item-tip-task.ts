@@ -21,7 +21,23 @@ export class IdleItemTipTask extends AbstractTipTask {
    */
   private static readonly NEVER_TOOK_ORDER_MILLIS = 15000;
   private pollTimeout: ReturnType<typeof setTimeout> | null = null;
-  private startedAt = 0;
+  /**
+   * How long the actor has been watchable since this task started - not how long the task has
+   * been running.
+   *
+   * The safety net below is a statement about an actor that was looked at and never seen working.
+   * An actor off screen is not being looked at: its instance is gone, so neither busy nor idle can
+   * be read, and counting that time would let the net fire on evidence nobody gathered.
+   *
+   * That is not hypothetical. Reported from a phone on 2026-09-16: the player sent a viper to
+   * attack, scrolled to the extractor so the viper was off screen for the whole walk, and the
+   * chain put the select arrow back on the viper the moment it arrived. The same quest behaves
+   * with a harvester because the field and the harvester are both on screen, so the harvester is
+   * seen working within the first poll.
+   */
+  private observedMillis = 0;
+  /** When the actor was last seen. Null while it is out of view, which is what stops the clock. */
+  private lastSeenAt: number | null = null;
   /**
    * Whether the actor has been seen working since this task started. That is the real test: an
    * actor that was busy and is idle again has finished, while one that has never been busy has
@@ -41,7 +57,8 @@ export class IdleItemTipTask extends AbstractTipTask {
 
   start(): void {
     this.stopped = false;
-    this.startedAt = Date.now();
+    this.observedMillis = 0;
+    this.lastSeenAt = null;
     this.sawBusy = false;
     this.refreshActor();
     this.pollActor();
@@ -57,11 +74,19 @@ export class IdleItemTipTask extends AbstractTipTask {
     this.trackActor(sampleMillis);
     if (!actor) {
       // Was null-asserted here, which threw and left the whole fallback chain dead.
+      // The clock stops with the sighting: while this is null nothing can be observed, so the
+      // gap must not count towards the safety net below.
+      this.lastSeenAt = null;
       this.stallReason = this.lastKnownActorPosition === null
         ? TipStallReason.ACTOR_NOT_FOUND
         : TipStallReason.ACTOR_OUT_OF_VIEW;
       return;
     }
+    const now = Date.now();
+    if (this.lastSeenAt !== null) {
+      this.observedMillis += now - this.lastSeenAt;
+    }
+    this.lastSeenAt = now;
     this.stallReason = TipStallReason.AWAIT_IDLE;
     actor.setIdleCallback(idle => {
       if (!idle) {
@@ -84,10 +109,15 @@ export class IdleItemTipTask extends AbstractTipTask {
   /**
    * Whether an idle reading can be believed. Seeing the actor work at any point since the task
    * started is the evidence that the order arrived, so a later idle means it is done; without that
-   * evidence only the clock is left.
+   * evidence only the clock is left - and the clock counts watched time, not wall time.
+   *
+   * An actor that is never watchable therefore never trips the net. That is the honest state: the
+   * tip waits, and the stall watchdog reports ACTOR_OUT_OF_VIEW after its thirty seconds, which
+   * says what is actually wrong. Sending the player back to a step he has already done says
+   * something false.
    */
   private idleCounts(): boolean {
-    return this.sawBusy || Date.now() - this.startedAt >= IdleItemTipTask.NEVER_TOOK_ORDER_MILLIS;
+    return this.sawBusy || this.observedMillis >= IdleItemTipTask.NEVER_TOOK_ORDER_MILLIS;
   }
 
   private pollActor(): void {

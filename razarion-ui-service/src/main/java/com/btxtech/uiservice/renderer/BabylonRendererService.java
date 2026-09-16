@@ -80,6 +80,10 @@ public class BabylonRendererService {
         babylonRenderServiceAccess.reportEngineError(reason);
     }
 
+    public void reportStartupStage(String stage, String detail) {
+        babylonRenderServiceAccess.reportStartupStage(stage, detail);
+    }
+
     public void onGameEngineTick(double clientTickMs) {
         babylonRenderServiceAccess.onGameEngineTick(clientTickMs);
     }

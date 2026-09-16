@@ -137,6 +137,51 @@ describe('IdleItemTipTask', () => {
     task.cleanup();
   }));
 
+  /**
+   * Reported from a phone on 2026-09-16: the player sent a viper to attack, scrolled to the
+   * extractor so the viper was off screen for the whole walk, and the chain put the select arrow
+   * back on the viper. The safety net had counted the walk as "watched and never seen working",
+   * but nobody was watching - off screen the item does not exist and neither state can be read.
+   */
+  it('does not run the safety net while the actor is out of view', fakeAsync(() => {
+    const actor = createActor();
+    const rendered: { current: BabylonBaseItemImpl | null } = {current: actor as unknown as BabylonBaseItemImpl};
+    const {tipService, context, onSucceed} = createHarness(rendered);
+    context.setActor(actor as unknown as BabylonBaseItemImpl);
+    const task = new IdleItemTipTask(tipService, context);
+
+    actor.idle = true;
+    task.start();
+    // Straight off screen - the player scrolled to the target the unit was sent to.
+    rendered.current = null;
+    tick(30000);
+
+    expect(onSucceed).not.toHaveBeenCalled();
+    task.cleanup();
+  }));
+
+  /** Watched time, not wall time: what is watched still counts once the actor is back. */
+  it('resumes the clock when the actor comes back into view', fakeAsync(() => {
+    const actor = createActor();
+    const rendered: { current: BabylonBaseItemImpl | null } = {current: actor as unknown as BabylonBaseItemImpl};
+    const {tipService, context, onSucceed} = createHarness(rendered);
+    context.setActor(actor as unknown as BabylonBaseItemImpl);
+    const task = new IdleItemTipTask(tipService, context);
+
+    actor.idle = true;
+    task.start();
+    rendered.current = null;
+    tick(30000);
+    expect(onSucceed).not.toHaveBeenCalled();
+
+    // Back on screen, still idle and still never seen working: now the net may close.
+    rendered.current = actor as unknown as BabylonBaseItemImpl;
+    tick(20000);
+
+    expect(onSucceed).toHaveBeenCalled();
+    task.cleanup();
+  }));
+
   it('points at where another task of the chain last saw the actor', fakeAsync(() => {
     // The fallback tasks are separate instances. Entered while the actor is already off screen,
     // one of them has nothing of its own to point at - the position has to be the chain's.

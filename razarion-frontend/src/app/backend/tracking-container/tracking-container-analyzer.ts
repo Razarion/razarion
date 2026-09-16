@@ -20,6 +20,16 @@ import {classifyDevice, DeviceClass, isAppFetch} from './first-interaction-analy
 export type FunnelView = TrackingPlatform | 'all';
 
 /**
+ * What a quest row needs beyond its own count: what the quest asks for, and where it stands in its
+ * level. The order is the level entry's own orderColumn, or -1 for a quest that belongs to no
+ * level.
+ */
+export interface QuestRowInfo {
+  label: string;
+  order: number;
+}
+
+/**
  * Which view the funnel opens on.
  *
  * This used to be X, on the reasoning that X is where the traffic is: in a sample day not one of
@@ -276,20 +286,29 @@ export class TrackingContainerAnalyzer {
   }
 
   /**
-   * The level and quest rows below the funnel.
+   * The quest rows below the funnel.
    * <p>
-   * Levels are a chain - nobody reaches level 3 without level 2 - so each level is measured
-   * against the one before it. The quests inside a level are not: a player passes them in their
-   * own order, and the rows are shown by size rather than by that order. Every quest is therefore
-   * measured against the players who reached its level, which is a fixed reference and reads the
-   * same however the rows are sorted.
+   * A player passes the quests of a level in their own order, and the rows are shown by size
+   * rather than by that order. Every quest is therefore measured against the players who reached
+   * its level, which is a fixed reference and reads the same however the rows are sorted.
    * <p>
    * They used to be chained to each other instead, in the order the quest ids happened to appear
    * in the activity list, and then re-sorted by count for display - so a row's percentage referred
    * to whichever quest came before it in the raw data, not to the row above it. A quest passed
    * more often than its accidental predecessor showed over 100%.
+   * <p>
+   * The levels themselves are counted but no longer shown. A level-up is not a thing a player
+   * does: it falls out of passing the quests of the level before it, so its row restated the last
+   * quest row above it and put a stage in the funnel that nobody can fail on its own. What the
+   * count is still needed for is the denominator - the players who reached a level are what its
+   * quests are a share of.
+   *
+   * @param questInfo what the quest asks for, appended to its row - the id alone says nothing
+   *                  about why players fall off there - and where it stands in its level, which
+   *                  is the order the rows are shown in.
    */
-  generateLevelQuestStatistics(baseCreatedCount: number) {
+  generateLevelQuestStatistics(baseCreatedCount: number,
+                               questInfo: (questId: number) => QuestRowInfo | undefined = () => undefined) {
     let levels: number[] = [];
     let levelQuests: Map<number, Map<number, number>> = new Map<number, Map<number, number>>()
     let maxLevelNumber = 0;
@@ -337,21 +356,39 @@ export class TrackingContainerAnalyzer {
     for (let levelNumber = 1; levelNumber <= maxLevelNumber; levelNumber++) {
       const levelUpCount = levels[levelNumber];
       if (levelUpCount !== undefined) {
-        progressStatistics.push(new ProgressStatistic(`Level ${levelNumber}`, levelUpCount, levelReached));
+        // Counted, not shown - see the method comment. This is the denominator of the rows below.
         levelReached = levelUpCount;
       }
       const levelQuestMap = levelQuests.get(levelNumber);
       if (levelQuestMap !== undefined) {
-        let questProgressStatistics: ProgressStatistic[] = []
+        let questRows: { statistic: ProgressStatistic, order: number, questId: number }[] = []
         levelQuestMap.forEach((count, questId) => {
           if (count !== undefined) {
-            questProgressStatistics.push(
-              new ProgressStatistic(`Quest ${questId} (Level ${levelNumber})`, count, levelReached));
+            const info = questInfo(questId);
+            const label = info?.label ?? '';
+            const name = `Quest ${questId} (Level ${levelNumber})${label ? `: ${label}` : ''}`;
+            questRows.push({
+              statistic: new ProgressStatistic(name, count, levelReached),
+              // Unplaced quests to the end rather than mixed into the sequence.
+              order: info && info.order >= 0 ? info.order : Number.MAX_SAFE_INTEGER,
+              questId
+            });
           }
         });
-        // Display order only - it no longer moves any percentage.
-        questProgressStatistics.sort((a, b) => b.count - a.count);
-        progressStatistics.push(...questProgressStatistics);
+        /*
+         * The order the game offers them in, from the level entry's own orderColumn.
+         *
+         * They used to be sorted by how often each was passed. That reads as a funnel only while
+         * the counts differ, and in the deeper levels they do not: at level 9 a handful of players
+         * have passed everything exactly once, so every row said 1 and 100% and their sequence was
+         * whichever quest id happened to appear first in the activity list. The quest id is not an
+         * order either - level 2 runs 363, 364, 365, 361, 362.
+         *
+         * Display order only, still: every quest is measured against the players who reached its
+         * level, so no percentage moves with the sort.
+         */
+        questRows.sort((a, b) => (a.order - b.order) || (a.questId - b.questId));
+        progressStatistics.push(...questRows.map(row => row.statistic));
       }
     }
 

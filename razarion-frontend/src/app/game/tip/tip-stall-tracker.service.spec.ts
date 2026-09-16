@@ -3,6 +3,7 @@ import {HttpTestingController, provideHttpClientTesting} from '@angular/common/h
 import {provideHttpClient} from '@angular/common/http';
 import {TipStallTrackerService} from './tip-stall-tracker.service';
 import {TipStallReason, TipStallSource, TipTaskName} from './tip-stall';
+import {FirstInteractionTrackerService} from '../tracking/first-interaction-tracker.service';
 
 describe('TipStallTrackerService', () => {
   const URL = '/rest/tracker/tipStall';
@@ -184,4 +185,86 @@ describe('TipStallTrackerService', () => {
     expect(postedBodies().length).toBe(0);
     service.stop();
   }));
+
+  /**
+   * The players this is for are gone before the watchdog looks: of the 286 who lose quest 358, 234
+   * never create anything and leave a median of 15 seconds after it appears, while the watchdog
+   * reports after 30.
+   */
+  describe('the cold tip', () => {
+    const COLD_URL = '/rest/tracker/firstInteraction';
+    let tracker: FirstInteractionTrackerService;
+
+    /** Bodies of the firstInteraction posts, flushed so the promises settle. */
+    function coldBodies(): any[] {
+      return httpTestingController.match(COLD_URL).map(request => {
+        request.flush(null);
+        return request.request.body;
+      });
+    }
+
+    beforeEach(() => {
+      tracker = TestBed.inject(FirstInteractionTrackerService);
+      (window as any).RAZ_gameSessionUuid = 'session-1';
+    });
+
+    afterEach(() => delete (window as any).RAZ_gameSessionUuid);
+
+    it('reports the quest and the task nobody answered', fakeAsync(() => {
+      service.taskStarted(358, source());
+      tick(TipStallTrackerService.COLD_MILLIS);
+
+      const bodies = coldBodies();
+      expect(bodies.length).toBe(1);
+      expect(bodies[0].kind).toBe('TIP_COLD');
+      expect(bodies[0].detail).toBe('quest=358 task=SELECT');
+      service.stop();
+    }));
+
+    /**
+     * The difference from the watchdog: it asks whether the task finished, this asks whether
+     * anybody was there. Someone dragging the camera has answered it without finishing anything.
+     */
+    it('says nothing when the player did something, even unrelated', fakeAsync(() => {
+      service.taskStarted(358, source());
+      tick(TipStallTrackerService.COLD_MILLIS / 2);
+      tracker.report('CAMERA_PAN_TOUCH');
+      coldBodies();
+      tick(TipStallTrackerService.COLD_MILLIS);
+
+      expect(coldBodies().length).toBe(0);
+      service.stop();
+    }));
+
+    /** The game reaching a milestone is not the player being there. */
+    it('is not satisfied by the game doing something', fakeAsync(() => {
+      service.taskStarted(358, source());
+      tick(TipStallTrackerService.COLD_MILLIS / 2);
+      tracker.report('PLACER_SHOWN');
+      coldBodies();
+      tick(TipStallTrackerService.COLD_MILLIS);
+
+      const bodies = coldBodies();
+      expect(bodies.length).toBe(1);
+      expect(bodies[0].kind).toBe('TIP_COLD');
+      service.stop();
+    }));
+
+    it('stops watching once the task ends', fakeAsync(() => {
+      service.taskStarted(358, source());
+      service.taskEnded(true);
+      tick(TipStallTrackerService.COLD_MILLIS);
+
+      expect(coldBodies().length).toBe(0);
+    }));
+
+    it('blames nothing while the tab is in the background', fakeAsync(() => {
+      spyOnProperty(document, 'visibilityState').and.returnValue('hidden');
+      service.taskStarted(358, source());
+      tick(TipStallTrackerService.COLD_MILLIS);
+
+      expect(coldBodies().length).toBe(0);
+      service.stop();
+    }));
+  });
 });

@@ -6,6 +6,14 @@ import {GwtInstance} from '../../../gwtangular/GwtInstance';
 import {TipStallReason, TipTaskName} from '../tip-stall';
 
 export class SendAttackCommandTipTask extends AbstractTipTask {
+  /**
+   * How often the chosen target is checked for still being there.
+   *
+   * The same second the two failure branches already retry on: a target that dies is the same
+   * silence as a target that was never found, and the player waits it out the same way.
+   */
+  private static readonly TARGET_POLL_MILLIS = 1000;
+
   private enemy: BabylonBaseItemImpl | null = null;
   private selectionListener: (() => void) | null = null;
   private retryTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -83,6 +91,62 @@ export class SendAttackCommandTipTask extends AbstractTipTask {
         GwtInstance.newDecimalPosition(enemyPosition.getX(), enemyPosition.getY())
       );
     }
+
+    /*
+     * Keep watching the target. Having found one used to end this task's own clock: the click
+     * callback and the prompt hang off one BabylonBaseItemImpl, and nothing tells the task when
+     * that item dies. There is no removed-listener on the render service at all - only
+     * addBaseItemCreatedListener, and it fires for the actor, not for the enemy - so the only way
+     * back into start() was onBecameVisible, which is a camera move, which is the very thing the
+     * player does not know he has to do. The tip then stood on a disposed mesh: text on screen,
+     * no prompt, nothing to click.
+     *
+     * Measured on PROD 14.-15.09.2026, when a bot respawned a fresh tesla at one spot every three
+     * seconds for 25 hours: quest 365 fell from 83% to 32%, and of the players who failed it, not
+     * one destroyed anything at all while all of them were giving orders. Their stall rate on the
+     * quest doubled. The runaway only made this loud - any target that dies leaves the tip dead,
+     * whether another unit killed it or it walked out of view.
+     */
+    this.retryTimeout = setTimeout(
+      () => this.reviewTarget(), SendAttackCommandTipTask.TARGET_POLL_MILLIS);
+  }
+
+  /**
+   * Re-aims when the target is gone, and otherwise looks again in a second.
+   */
+  private reviewTarget(): void {
+    this.retryTimeout = null;
+    if (this.isTargetStillThere()) {
+      this.retryTimeout = setTimeout(
+        () => this.reviewTarget(), SendAttackCommandTipTask.TARGET_POLL_MILLIS);
+      return;
+    }
+    /*
+     * Dropped without taking its prompt and callback down: they live on the item's own mesh and
+     * went with it. Reaching into a disposed BabylonBaseItemImpl is the thing being avoided here,
+     * and cleanup() reads this field, so nulling it is what keeps the restart from doing it.
+     */
+    this.enemy = null;
+    this.start();
+  }
+
+  /**
+   * Whether the chosen enemy is still among the rendered ones.
+   *
+   * By id rather than by instance: scrolling an item out and back in gives it a fresh
+   * BabylonBaseItemImpl, and the tip is about the unit, not about the object holding it. Losing
+   * sight of it counts as gone on purpose - start() then falls into the out-of-view branch, which
+   * asks the worker where the nearest enemy is and points the marker there, rather than leaving a
+   * prompt on an item the player cannot see.
+   */
+  private isTargetStillThere(): boolean {
+    const enemy = this.enemy;
+    if (!enemy) {
+      return false;
+    }
+    return this.tipService.renderService
+      .getBabylonBaseItemsByDiplomacy(Diplomacy.ENEMY)
+      .some(candidate => candidate.getId() === enemy.getId());
   }
 
   cleanup(): void {

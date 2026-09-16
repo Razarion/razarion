@@ -183,6 +183,11 @@ public class JsBabylonRenderServiceAccess implements BabylonRenderServiceAccess 
     }
 
     @Override
+    public void reportStartupStage(String stage, String detail) {
+        callMethod2S(js, "reportStartupStage", stage, detail);
+    }
+
+    @Override
     public void onGameEngineTick(double clientTickMs) {
         callMethod1D(js, "onGameEngineTick", clientTickMs);
     }

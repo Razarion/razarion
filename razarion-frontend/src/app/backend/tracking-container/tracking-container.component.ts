@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {
+  BaseItemTypeEditorControllerClient,
   ConnectionMgmtControllerClient,
   DailyProgress,
   OpenConnectionInfo,
@@ -8,8 +9,10 @@ import {
   StartupTerminatedJson,
   TrackerControllerImplClient,
   TrackingDevice,
-  TrackingPlatform
+  TrackingPlatform,
+  UserMgmtControllerClient
 } from '../../generated/razarion-share';
+import {questConditionText} from './quest-condition-text';
 import {TypescriptGenerator} from '../typescript-generator';
 import {CommonModule} from '@angular/common';
 import {DatePickerModule} from 'primeng/datepicker';
@@ -24,6 +27,7 @@ import {
   DEFAULT_FUNNEL_VIEW,
   DeviceFilter,
   FunnelView,
+  QuestRowInfo,
   TrackingContainerAnalyzer
 } from './tracking-container-analyzer';
 import {UserMgmtComponent} from '../../editor/user-mgmt/user-mgmt.component';
@@ -168,6 +172,14 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
   private static readonly MAX_CONNECTION_EVENTS = 200;
   private trackerControllerImplClient!: TrackerControllerImplClient;
   private connectionMgmtControllerClient: ConnectionMgmtControllerClient;
+  private userMgmtControllerClient: UserMgmtControllerClient;
+  private baseItemTypeEditorControllerClient: BaseItemTypeEditorControllerClient;
+  /**
+   * What each quest asks for and where it stands in its level, by quest id. Static content rather
+   * than tracking, so it is fetched once and survives every filter change and every reload of the
+   * range.
+   */
+  private questInfos = new Map<number, QuestRowInfo>();
   private connectionTimer: ReturnType<typeof setInterval> | null = null;
   /**
    * Who was connected at the previous poll, user id to display label. Null means there is nothing
@@ -182,13 +194,43 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
     this.trackerControllerImplClient = new TrackerControllerImplClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
     this.connectionMgmtControllerClient =
       new ConnectionMgmtControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
+    this.userMgmtControllerClient =
+      new UserMgmtControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
+    this.baseItemTypeEditorControllerClient =
+      new BaseItemTypeEditorControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
   }
 
   ngOnInit(): void {
     // The tracking container stays here: it is what the tab that opens shows, and Startup and
     // Attention read the same payload. The other two heavy requests wait for their tab.
     this.load();
+    this.loadQuestInfos();
     this.startConnectionWatch();
+  }
+
+  /**
+   * What each quest asks for and where it stands, for the quest rows in the funnel.
+   *
+   * Two static requests, both small and both already serving the editor: the quest conditions and
+   * the item type names the typed ones point at. They are not chained to the funnel - the table
+   * renders on the tracking data alone and gains the wording when it arrives, so a slow or failed
+   * request costs a label rather than the page. A failure is deliberately not a message either:
+   * the funnel is still readable by quest id, which is how it read until now.
+   */
+  private loadQuestInfos(): void {
+    Promise.all([
+      this.userMgmtControllerClient.getQuestBackendInfos(),
+      this.baseItemTypeEditorControllerClient.getObjectNameIds()
+    ]).then(([questBackendInfos, itemTypes]) => {
+      const itemTypeNames = new Map<number, string>(
+        itemTypes.map(itemType => [itemType.id, itemType.internalName]));
+      this.questInfos.clear();
+      questBackendInfos.forEach(questBackendInfo => this.questInfos.set(questBackendInfo.id, {
+        label: questConditionText(questBackendInfo.conditionConfig, itemTypeNames),
+        order: questBackendInfo.orderInLevel
+      }));
+      this.recomputeFunnel();
+    }).catch(e => console.warn('Quest conditions not available for the funnel rows', e));
   }
 
   /**
@@ -516,6 +558,7 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
     this.trackingContainerAnalyzer.setView(this.platform);
     this.trackingContainerAnalyzer.setDevice(this.device);
     this.progressStatistics.length = 0;
-    this.progressStatistics.push(...createStatistics(this.trackingContainerAnalyzer));
+    this.progressStatistics.push(...createStatistics(
+      this.trackingContainerAnalyzer, questId => this.questInfos.get(questId)));
   }
 }

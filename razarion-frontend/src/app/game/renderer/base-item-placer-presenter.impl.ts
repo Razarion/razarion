@@ -367,6 +367,23 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     if (!position) {
       return;
     }
+    /*
+     * Re-check at exactly the position about to be built on, before anything is committed.
+     *
+     * Green is a snapshot of the last onMove, which came from the drag: a slightly different
+     * position, and an older picture of the world. onPlace() checks again on its way through, and
+     * if that check refuses, BaseItemPlacerService.onPlace() builds nothing and says nothing -
+     * while this method has already fired PLACED, closed the deploy bubble and reported the
+     * placement as confirmed. Reported from a phone in the Meta in-app browser on 2026-09-16: the
+     * factory placer was green, the dialog vanished, nothing was built, and the build arrow came
+     * back on the builder a while later.
+     *
+     * Forcing the check here closes the window rather than papering over it. This call, the test
+     * below and onPlace() all run in one synchronous pass, and worker updates arrive as their own
+     * tasks - so nothing can change the answer in between, and the silent branch downstream
+     * becomes unreachable instead of merely unlikely.
+     */
+    baseItemPlacer.onMove(position.x, position.z);
     // Ignore clicks on an invalid spot (red preview): occupied by an item or a resource, wrong
     // terrain, enemy too near or outside the allowed area. Without this the placement was sent
     // anyway - the master silently dropped builder builds and let the start builder spawn on

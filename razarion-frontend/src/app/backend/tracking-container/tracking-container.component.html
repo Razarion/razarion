@@ -1,5 +1,9 @@
 <div class="flex flex-col gap-1 p-1">
-  <div class="flex flex-row">
+  <!-- Wrapping, because this row is five filters and six buttons and a phone is 400px wide. It
+       used to be one unwrappable line, which is what pushed the whole page sideways: everything
+       below is inside this column, so the column was as wide as its widest child and the tables
+       inherited a horizontal scroll they did not need. -->
+  <div class="flex flex-row flex-wrap items-end gap-2">
     <div class="basis-3xs">From
       <p-datepicker [(ngModel)]="fromDate"
                     dateFormat="dd.mm.yy"
@@ -15,7 +19,7 @@
                     (onSelect)="load()"
                     (onInput)="load()"></p-datepicker>
     </div>
-    <div class="flex flex-row gap-1">
+    <div class="flex flex-row flex-wrap gap-1">
       <p-button label="24h"
                 icon="pi pi-sync"
                 (onClick)="load24h()"/>
@@ -56,7 +60,9 @@
         class="w-full md:w-56"/>
     </div>
   </div>
-  <p-tabs [value]="activeTab" (valueChange)="onTabChange($event)">
+  <!-- Eight tabs do not fit on a phone. Scrollable keeps them on one line with navigators rather
+       than letting the strip set the page width. -->
+  <p-tabs [value]="activeTab" (valueChange)="onTabChange($event)" [scrollable]="true">
     <p-tablist>
       <p-tab value="0">
         <i class="pi p-1" [ngClass]="platformIcon"></i>
@@ -75,43 +81,51 @@
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
-        <div class="pb-2">A visitor is followed by their click id where there is one and by their
-          http session where there is not, and the platform is read the way the history reads it:
-          click id, then <em>utm_source</em>, then the site they came from. An organic post carries
-          no click id, so those players used to be missing from every platform view.
-          @if (platform === 'all') {
-            <em>All</em> adds the ones no platform can be derived for.
-          }
-          The rows above <em>Game (total)</em> need the landing pixel, which only fires when the
-          page carries a query string &ndash; someone arriving over a plain link produces neither a
-          pixel nor a /game record, and is known from their startup records alone.
-          @if (device !== 'all') {
-            <br>Device <em>{{ device }}</em>, read from the user agent, the same classification the
-            Controls tab and the daily table use.
-            @if (device === 'Unknown') {
-              Unknown is not a device: it is a visit whose records carry no user agent at all.
+        <details class="notes">
+          <summary>How this funnel is counted</summary>
+          <div>A visitor is followed by their click id where there is one and by their
+            http session where there is not, and the platform is read the way the history reads it:
+            click id, then <em>utm_source</em>, then the site they came from. An organic post carries
+            no click id, so those players used to be missing from every platform view.
+            @if (platform === 'all') {
+              <em>All</em> adds the ones no platform can be derived for.
             }
-          }
+            The rows above <em>Game (total)</em> need the landing pixel, which only fires when the
+            page carries a query string &ndash; someone arriving over a plain link produces neither a
+            pixel nor a /game record, and is known from their startup records alone.
+            @if (device !== 'all') {
+              <br>Device <em>{{ device }}</em>, read from the user agent, the same classification the
+              Controls tab and the daily table use.
+              @if (device === 'Unknown') {
+                Unknown is not a device: it is a visit whose records carry no user agent at all.
+              }
+            }
+          </div>
+        </details>
+        <div class="table-scroll">
+          <!-- Striped through PrimeNG rather than a colour of our own: it paints the odd rows from
+               the theme's own surface token, so it follows the backend into dark and light instead
+               of being a value that has to be kept in step by hand. -->
+          <p-table [value]="progressStatistics" [stripedRows]="true">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Stage</th>
+                <th>Count</th>
+                <th>Percent</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-progressStatistic>
+              <tr>
+                <td>{{ progressStatistic.name }}</td>
+                <td>{{ progressStatistic.count }}</td>
+                <td>{{ progressStatistic.percent !== undefined ? progressStatistic.percent + "%" : "-" }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
         </div>
-        <p-table [value]="progressStatistics">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Stage</th>
-              <th>Count</th>
-              <th>Percent</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-progressStatistic>
-            <tr>
-              <td>{{ progressStatistic.name }}</td>
-              <td>{{ progressStatistic.count }}</td>
-              <td>{{ progressStatistic.percent !== undefined ? progressStatistic.percent + "%" : "-" }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
       </p-tabpanel>
       <p-tabpanel value="4">
-        <div class="flex flex-row items-center gap-2 pb-2">
+        <div class="flex flex-row flex-wrap items-center gap-2 pb-2">
           <div class="basis-3xs shrink-0">Days
             <p-select
               [options]="dailyDaysOptions"
@@ -121,7 +135,11 @@
               optionValue="value"
               class="w-full"/>
           </div>
-          <span>The platform and device chosen above, counted per day. Base and levels are
+          <p-button icon="pi pi-sync" size="small" (onClick)="loadDailyProgress()"/>
+        </div>
+        <details class="notes">
+          <summary>How this table is counted</summary>
+          <div>The platform and device chosen above, counted per day. Base and levels are
             attributed over the whole history (visit &rarr; session &rarr; user), so a player who
             arrived weeks ago still counts towards that platform. The platform is read the same way
             as in the funnel and the history: click id, then <em>utm_source</em>, then the site the
@@ -129,38 +147,39 @@
             visitor never fires; Game also counts the startup records, which are the only trace of
             someone who arrived without a query string.
             Click a legend entry to hide that stage &ndash; hiding Home rescales the axis and
-            brings out the deeper levels.</span>
-          <p-button icon="pi pi-sync" size="small" (onClick)="loadDailyProgress()"/>
-        </div>
+            brings out the deeper levels.</div>
+        </details>
         <div class="daily-chart">
           <p-chart type="bar" [data]="dailyChartData" [options]="chartOptions"></p-chart>
         </div>
-        <p-table [value]="dailyProgresses">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Day</th>
-              <th>Home</th>
-              <th title="Pressed &quot;Play Now&quot; on the home page">Play clicked</th>
-              <th>Game</th>
-              <th>Initial Base created</th>
-              @for (level of dailyLevels; track level) {
-                <th>Level {{ level }}</th>
-              }
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-dailyProgress>
-            <tr>
-              <td>{{ dailyProgress.day }}</td>
-              <td>{{ dailyProgress.home }}</td>
-              <td>{{ dailyProgress.playClicked }}</td>
-              <td>{{ dailyProgress.game }}</td>
-              <td>{{ dailyProgress.initialBaseCreated }}</td>
-              @for (level of dailyLevels; track level) {
-                <td>{{ levelUp(dailyProgress, level) }}</td>
-              }
-            </tr>
-          </ng-template>
-        </p-table>
+        <div class="table-scroll">
+          <p-table [value]="dailyProgresses">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Day</th>
+                <th>Home</th>
+                <th title="Pressed &quot;Play Now&quot; on the home page">Play clicked</th>
+                <th>Game</th>
+                <th>Initial Base created</th>
+                @for (level of dailyLevels; track level) {
+                  <th>Level {{ level }}</th>
+                }
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-dailyProgress>
+              <tr>
+                <td>{{ dailyProgress.day }}</td>
+                <td>{{ dailyProgress.home }}</td>
+                <td>{{ dailyProgress.playClicked }}</td>
+                <td>{{ dailyProgress.game }}</td>
+                <td>{{ dailyProgress.initialBaseCreated }}</td>
+                @for (level of dailyLevels; track level) {
+                  <td>{{ levelUp(dailyProgress, level) }}</td>
+                }
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
       </p-tabpanel>
     </p-tabpanels>
     <p-tabpanel value="1">

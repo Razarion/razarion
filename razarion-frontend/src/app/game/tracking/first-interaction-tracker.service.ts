@@ -151,7 +151,41 @@ export type InteractionKind =
   | 'TECH_TREE_OFFERED'
   /** The player opened it while it was marked. Only then - otherwise this would count how often
    *  the tech tree is opened, which is a different question from whether the mark worked. */
-  | 'TECH_TREE_OPENED';
+  | 'TECH_TREE_OPENED'
+  /*
+   * The gap between a finished start and the first thing the player is asked to do.
+   *
+   * The startup tasks stop at RUN_GAME. After that the scene chain runs, and one of its scenes
+   * carries the base placer. Five sessions a day report every startup task complete, no engine
+   * error, and are never shown the placer - and they are indistinguishable from a working session
+   * on every field that exists today, because the whole stretch is unmeasured.
+   *
+   * Two kinds rather than one with a detail: the tracker keeps one record per kind per session,
+   * so as details only the first stage would ever be stored, and which stage is MISSING is the
+   * entire question.
+   */
+  /** GameUiControl.start() ran, with `mode=MASTER` or `mode=SLAVE`. Absent means the start never
+   *  got that far, whatever the startup tasks claim. */
+  | 'GAME_START'
+  /** The first scene actually ran. In SLAVE mode start() returns without one and the chain waits
+   *  for the initial synchronisation, so GAME_START without this is a wait that never ended. */
+  | 'SCENE_FIRST'
+  /**
+   * A tip was on screen and nobody answered it - carrying which quest and which task, as
+   * `quest=358 task=SELECT`.
+   *
+   * Measured on PROD over seven days: of the 286 players who lose quest 358, 234 never create a
+   * single item and are gone a median of 15 seconds after the quest appears, while the median
+   * player who passes it has not started building until 18. Only 36 of those 234 leave any trace
+   * in tip_stall, and they cannot: that watchdog reports after 30 seconds of waiting, so half the
+   * largest single loss in the chain sits below its resolution.
+   *
+   * Deliberately not a shorter STALL_MILLIS. That threshold is 30 seconds because a false stall
+   * blames a tip that works, and the series is compared backwards across releases. This asks a
+   * different question - not "did the task finish" but "was anybody there at all" - and a player
+   * who is reading, scrolling or hunting for a button answers it without finishing anything.
+   */
+  | 'TIP_COLD';
 
 /**
  * How a group size is reported. Bucketed rather than exact: {@link
@@ -183,6 +217,29 @@ export class FirstInteractionTrackerService {
   private readonly reported = new Set<string>();
   private readonly countPerKind = new Map<InteractionKind, number>();
   private static readonly MAX_PER_KIND = 5;
+  /**
+   * When the player last did something, as opposed to when the game last reached a milestone.
+   *
+   * Stamped on every call rather than on every record, which is the point: the set above answers
+   * "did this ever happen", and this answers "is anybody there right now". The two questions need
+   * different memories - a player who has already moved the camera once reports nothing further
+   * however much they move it, and reporting nothing is exactly what being gone looks like.
+   */
+  private lastPlayerActionAt = 0;
+  /**
+   * Which kinds are the player. The rest are the game reaching a milestone - the placer opening,
+   * the client naming its build, the start passing a stage - and counting those as presence would
+   * make an empty session look occupied.
+   */
+  private static readonly PLAYER_KINDS: ReadonlySet<string> = new Set<InteractionKind>([
+    'POINTER_DOWN', 'POINTER_DOWN_PAGE', 'CAMERA_PAN_TOUCH', 'CAMERA_PINCH', 'CAMERA_KEYBOARD',
+    'CAMERA_WHEEL', 'SELECT', 'COMMAND', 'SELECT_GROUP', 'COMMAND_GROUP', 'SELECTION_BOX_ARMED',
+    'PLACER_CONFIRMED', 'PLACER_REJECTED', 'TECH_TREE_OPENED']);
+
+  /** When the player last did anything at all, or 0 if they never have. */
+  public get lastPlayerAction(): number {
+    return this.lastPlayerActionAt;
+  }
 
   constructor(httpClient: HttpClient) {
     this.trackerControllerImplClient = new TrackerControllerImplClient(
@@ -194,6 +251,11 @@ export class FirstInteractionTrackerService {
    *        existence is not the whole answer. See {@link FirstInteractionJson#detail}.
    */
   public report(kind: InteractionKind, detail?: string): void {
+    // Before the dedupe below, deliberately: presence is the repeats, and the repeats are exactly
+    // what that dedupe throws away.
+    if (FirstInteractionTrackerService.PLAYER_KINDS.has(kind)) {
+      this.lastPlayerActionAt = Date.now();
+    }
     const key = detail ? kind + '|' + detail : kind;
     if (this.reported.has(key)) {
       return;

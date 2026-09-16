@@ -867,6 +867,8 @@ public class UserService implements UserDetailsService {
     @Scheduled(fixedRate = 60000)
     public void cleanupDisconnectedUnregisteredUsers() {
         var cutoff = LocalDateTime.now().minusMinutes(UNREGISTERED_DISCONNECT_GRACE_MINUTES);
+        closeConnectionsThatEndedWithoutSayingSo(cutoff);
+        deleteAnonymousUsersThatNeverConnected(cutoff);
         // Only users whose connection actually closed: onClientSystemConnectionOpened() resets the
         // timestamp to null, so anyone currently playing is out of this query by construction.
         for (UserEntity userEntity : userRepository.findInactiveSince(cutoff)) {
@@ -883,6 +885,64 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    /**
+     * Writes the close timestamp for connections that ended without anybody noticing.
+     *
+     * The timestamp comes from the websocket close event alone and no idle timeout is configured,
+     * so a socket that dies without a close frame - a locked phone, a swiped-away tab, a network
+     * that stops - never produces one. The row then claims to be connected for good, and the
+     * deletion above can never see it: it asks for a close time, and there is none. Measured on
+     * PROD on 2026-09-16, one of the four anonymous players who had connected sat in that state,
+     * and only a server restart would have cleared him.
+     *
+     * Repairing the missing event rather than adding a second deletion rule, on purpose. The grace
+     * keeps meaning "sixty minutes after the connection ended" instead of gaining a second meaning
+     * that has to be kept in step with the first. It also makes the race harmless: a player who is
+     * reloading gets a close stamped and clears it again on reconnect, where a rule that deleted
+     * straight away would take his base during those seconds.
+     *
+     * The open-connection map is the authority on who is playing, not the row - that is the whole
+     * point, since the row is what is wrong.
+     */
+    private void closeConnectionsThatEndedWithoutSayingSo(LocalDateTime cutoff) {
+        var openConnections = clientSystemConnectionService.getOpenConnections();
+        for (UserEntity userEntity : userRepository.findOpenSince(cutoff)) {
+            if (openConnections.containsKey(userEntity.getUserId())) {
+                continue;
+            }
+            logger.info("System connection of {} ended without a close event, opened {}",
+                    userEntity.getUserId(), userEntity.getSystemConnectionOpened());
+            userEntity.setSystemConnectionClosed(LocalDateTime.now());
+            userRepository.save(userEntity);
+        }
+    }
+
+    /**
+     * Deletes anonymous users that never connected at all.
+     *
+     * Every game start writes more than one: the tracking beacon creates a user before anybody
+     * plays, and only one of them goes on to open a connection. They own nothing - no base, no
+     * spawn point - but no cleanup could see them either, because all of them key on a connection
+     * timestamp and these have none. Eleven of the fifteen anonymous rows on PROD on 2026-09-16
+     * were exactly this, arriving at about nine an hour and cleared only by a server restart.
+     *
+     * Measured from creation, because that is the only evidence of life such a row has. The grace
+     * is the same one, which leaves a player who is still loading far more room than he needs -
+     * the connection opens seconds after the user is created, and opening it takes the row out of
+     * this query.
+     */
+    private void deleteAnonymousUsersThatNeverConnected(LocalDateTime cutoff) {
+        var cutoffDate = Date.from(cutoff.atZone(ZoneId.systemDefault()).toInstant());
+        for (UserEntity userEntity : userRepository.findNeverConnectedBefore(cutoffDate)) {
+            if (userEntity.createRegisterState() != UserContext.RegisterState.UNREGISTERED) {
+                continue;
+            }
+            logger.info("Removing anonymous user that never connected, created {}: {}",
+                    userEntity.getCreationDate(), userEntity.getUserId());
+            forgetAnonymousSessions(userEntity.getUserId());
+            userRepository.delete(userEntity);
+        }
+    }
 
     @Scheduled(fixedRate = 60000)
     @Transactional

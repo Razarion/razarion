@@ -118,6 +118,16 @@ interface PendingZoomAnchor {
 })
 export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAccess {
   private readonly SPAWN_PARTICLE_HEIGHT = 15;
+  /**
+   * The capped arm's frame budget: 33 ms, i.e. thirty a second.
+   *
+   * Picked against the measurement rather than as a round number. The phone in question opened at
+   * 45 fps and ended at 19, so thirty sits below what it could sustain at the start and above
+   * where it finished - which is the only range in which a cap can trade a fast beginning for a
+   * steady middle. A cap at the peak would save nothing and one at the floor would give away what
+   * the device manages without help.
+   */
+  private static readonly FRAME_CAP_MS = 33;
   /** See setupViewFieldDirection. 3 degrees: from 20 m up, the view field reaches about 380 m. */
   private static readonly VIEW_FIELD_MIN_DOWN_ANGLE = 3 * Math.PI / 180;
   private static readonly GO_CURSOR = 'url("cursors/go.png") 15 15, auto';
@@ -218,6 +228,21 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   // The overlay's server-side counterpart: same measurements, but summarised and shipped, because
   // the overlay only ever exists on the machine that is not the one reporting the lag.
   private renderTelemetry: RenderTelemetry | null = null;
+  /**
+   * How long the render loop waits between frames, 0 to draw as fast as the device will.
+   *
+   * A phone measured on 2026-09-16 held 833 draw calls and 273 active meshes unchanged for four
+   * minutes while its render time went from 30 to 54 ms: identical work at twice the cost, which
+   * is the device throttling, not the renderer. It had started at 45 fps and ended at 19 - and the
+   * 45 is what makes the heat that the 19 pays for. Thirty held steadily would feel better than
+   * forty-five that decays, but that is a belief until it is measured, so this is an arm rather
+   * than a setting.
+   *
+   * Touch devices only. A desktop has cooling and does not do this, and there a cap is nothing but
+   * a downgrade.
+   */
+  private frameCapMs = 0;
+  private lastRenderedAt = 0;
   // Keeps the parked terrain-tile cache out of Babylon's per-frame walks — the fix for the PROD
   // finding that the frame time follows scene.meshes rather than what is drawn.
   private readonly parkedMeshFilter = new ParkedMeshFilter();
@@ -316,6 +341,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     if (RenderTelemetry.ENABLED && !this.renderTelemetry) {
       this.renderTelemetry = new RenderTelemetry(() => this.collectSceneStats());
     }
+    this.assignFrameCapArm();
 
     // ----- Keyboard -----
     const self = this;
@@ -325,6 +351,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     window.addEventListener("keydown", e => {
       if (!self.keyPressed.has(e.key)) {
         self.keyPressed.set(e.key, Date.now());
+      }
+      if (e.key === "F6") {
+        e.preventDefault();
+        self.frameCapMs = self.frameCapMs > 0 ? 0 : BabylonRenderServiceAccessImpl.FRAME_CAP_MS;
+        console.log(`[PerfDebug] frame cap ${self.frameCapMs > 0 ? self.frameCapMs + "ms" : "OFF"} — `
+          + `the arm a touch device is assigned at random. Compare frameP50 and renderP50 over `
+          + `several minutes, not seconds: what this is about is the slide, not the first reading.`);
       }
       if (e.key === "F7") {
         e.preventDefault();
@@ -567,6 +600,20 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       try {
         if (!this.scene.activeCamera) {
           return;
+        }
+        if (this.frameCapMs > 0) {
+          const now = performance.now();
+          /*
+           * The tolerance is what makes a cap land evenly. requestAnimationFrame offers a frame
+           * every 16.7 ms, and a bare "has the interval passed" test against 33.3 misses the frame
+           * at 33.4 by a hair and takes the next one at 50 - so a 30 fps cap delivers an alternating
+           * 33/50 judder that is worse than the uncapped picture it replaced. Half a display frame
+           * of slack lets it settle on every second one.
+           */
+          if (now - this.lastRenderedAt < this.frameCapMs - 8) {
+            return;
+          }
+          this.lastRenderedAt = now;
         }
         const perfActive = this.perfOverlay?.isActive() === true;
         // Telemetry needs the same two timestamps the overlay needs, so take them once for both.
@@ -1901,6 +1948,24 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
   }
 
+  /**
+   * A point the start passed through. Absence is the signal, which is why it is reported at all:
+   * a session that never runs a scene and a session whose scene chain held no placer look
+   * identical today - both report nothing after RUN_GAME.
+   *
+   * The stage is the kind rather than the detail, because the tracker keeps one record per kind
+   * per session: as a detail, only whichever stage came first would ever be stored, and the whole
+   * question is which of them is missing.
+   */
+  reportStartupStage(stage: string, detail: string | null): void {
+    try {
+      this.firstInteractionTrackerService.report(stage as InteractionKind,
+        detail ? detail.slice(0, 300) : undefined);
+    } catch (ignored) {
+      // Never at the expense of the game.
+    }
+  }
+
   onGameEngineTick(clientTickMs: number): void {
     // The first tick is the moment the game is playable, and everything downloaded up to here was
     // blocking. The probe keeps that apart from what streams in afterwards; it ignores every tick
@@ -1920,6 +1985,25 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
    * Anything that would have to *hook* the engine to be measured (GPU time, shader compilation)
    * still belongs to F9, because turning it on for every player would change what is measured.
    */
+  /**
+   * Puts this session in one of the two frame-cap arms.
+   *
+   * Random per session rather than rolled out, because the question cannot be answered by
+   * comparing before with after: the thing being measured is a slide over minutes, and which
+   * phones played at which hour would decide the answer instead of the cap. Both arms run at the
+   * same time, on the same mix of devices, and the telemetry line carries the arm.
+   *
+   * Touch devices only. What is being avoided is a phone heating itself up; a desktop does not do
+   * that, and there the cap would be a downgrade and nothing else.
+   */
+  private assignFrameCapArm(): void {
+    const touch = typeof window !== 'undefined'
+      && window.matchMedia?.('(pointer: coarse)').matches === true;
+    this.frameCapMs = touch && Math.random() < 0.5
+      ? BabylonRenderServiceAccessImpl.FRAME_CAP_MS
+      : 0;
+  }
+
   private collectSceneStats(): RenderTelemetrySceneStats {
     const glInfo = this.engine.getGlInfo();
     const census = this.censusMeshes();
@@ -1933,8 +2017,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       shadowCasters: this.shadowGenerator?.getShadowMap()?.renderList?.length ?? -1,
       shadowMapSize: this.shadowMapSize,
       meshTop: census.top,
+      indexTop: census.indexTop,
       parkedMeshes: this.parkedMeshFilter.getParkedCount(),
       parkingFilter: this.parkedMeshFilter.isEnabled(),
+      frameCapMs: this.frameCapMs,
       ...this.collectMemoryStats(),
       renderWidth: this.engine.getRenderWidth(),
       renderHeight: this.engine.getRenderHeight(),
@@ -1982,7 +2068,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
    * The pass still runs inside the render loop, so the name normalisation is memoised: thousands
    * of placements share a handful of distinct raw names, and the regexes must not be paid per mesh.
    */
-  private censusMeshes(): { disabled: number, instanced: number, top: string } {
+  private censusMeshes(): { disabled: number, instanced: number, top: string, indexTop: string } {
     const meshes = this.scene.meshes;
     const counts = new Map<string, number>();
     let disabled = 0;
@@ -2010,7 +2096,61 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       .slice(0, BabylonRenderServiceAccessImpl.MESH_CENSUS_BUCKETS)
       .map(([name, count]) => `${name}:${count}`)
       .join(",");
-    return {disabled, instanced, top};
+    return {disabled, instanced, top, indexTop: this.censusIndices()};
+  }
+
+  /**
+   * Who owns the triangles actually being drawn, once per telemetry period.
+   *
+   * activeIndices says how many there are and nothing about whose they are, and on PROD that is
+   * now the open question. Two phones measured on 2026-09-16 drew the same ~1.97 M triangles a
+   * frame; the Mali-G710 spent 15.7 us per thousand of them and the Mali-G72 62.2, which is 45 fps
+   * against 7. Neither meshes, nor shadows, nor pixels separate those two sessions - the backbuffer
+   * is 411x780 at scaling 1.00 in both - so the only lever left is drawing fewer triangles on a
+   * weak device, and that cannot be aimed without knowing which model is carrying them.
+   *
+   * Counted over the active meshes rather than the whole array, because those are the ones whose
+   * triangles reach the GPU. {@link #censusMeshes} answers the other question and keeps counting
+   * everything.
+   *
+   * The three shadow arms are the warning this is built against: each was a reasonable guess about
+   * where the time went, each cost two days, and all three came back null. Measure whose triangles
+   * they are before removing any.
+   */
+  private censusIndices(): string {
+    const active = this.scene.getActiveMeshes();
+    const indices = new Map<string, number>();
+    for (let i = 0; i < active.length; i++) {
+      const mesh = active.data[i];
+      if (!mesh) {
+        continue;
+      }
+      let count: number;
+      try {
+        // An instance carries no geometry of its own; the source's triangles are what it submits.
+        count = mesh.getTotalIndices();
+      } catch (ignored) {
+        continue;
+      }
+      if (!count) {
+        continue;
+      }
+      let key = this.meshCensusKeys.get(mesh.name);
+      if (key === undefined) {
+        key = BabylonRenderServiceAccessImpl.meshCensusKey(mesh.name);
+        if (this.meshCensusKeys.size >= BabylonRenderServiceAccessImpl.MESH_CENSUS_KEY_CACHE_MAX) {
+          this.meshCensusKeys.clear();
+        }
+        this.meshCensusKeys.set(mesh.name, key);
+      }
+      indices.set(key, (indices.get(key) ?? 0) + count);
+    }
+    return [...indices.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, BabylonRenderServiceAccessImpl.MESH_CENSUS_BUCKETS)
+      // In thousands: the interesting numbers are millions, and the line has to stay one line.
+      .map(([name, count]) => `${name}:${Math.round(count / 1000)}k`)
+      .join(",");
   }
 
   /**

@@ -36,4 +36,24 @@ public interface ServerGameEngineConfigRepository extends JpaRepository<ServerGa
                 WHERE entry.quest.id = :questConfigId
             """)
     Optional<Integer> findMinimalLevelNumberByQuestConfigId(@Param("questConfigId") int questConfigId);
+
+    /**
+     * Where every quest sits: which level it belongs to, and where in that level it stands.
+     * <p>
+     * One row per quest rather than one query per quest - the caller wants all of them, and asking
+     * for the level one at a time is a hundred round trips on a pod with one connection pool.
+     * <p>
+     * {@code entry.orderColumn} is the order the game itself offers the quests in; it is what
+     * {@link ServerLevelQuestEntity} sorts its entries by. Without it the only orders available to
+     * a reader are the quest id, which is not the order they are played in, and how often each was
+     * passed, which says nothing at all once two of them are equal.
+     *
+     * @return {questConfigId, levelNumber, orderColumn} per row
+     */
+    @Query("""
+                SELECT entry.quest.id, slqe.minimalLevel.number, entry.orderColumn
+                FROM ServerLevelQuestEntity slqe
+                JOIN slqe.serverLevelQuestEntryEntities entry
+            """)
+    List<Object[]> findQuestLevelAndOrder();
 }

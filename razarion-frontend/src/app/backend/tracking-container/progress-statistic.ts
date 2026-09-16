@@ -1,4 +1,4 @@
-import {TrackingContainerAnalyzer} from './tracking-container-analyzer';
+import {QuestRowInfo, TrackingContainerAnalyzer} from './tracking-container-analyzer';
 
 /**
  * The funnel table, top to bottom.
@@ -10,7 +10,8 @@ import {TrackingContainerAnalyzer} from './tracking-container-analyzer';
  * page's own conversion is measured on one population, and no row below is a share of a number it
  * could never reach.
  */
-export function createStatistics(trackingContainerAnalyzer: TrackingContainerAnalyzer): ProgressStatistic[] {
+export function createStatistics(trackingContainerAnalyzer: TrackingContainerAnalyzer,
+                                 questInfo: (questId: number) => QuestRowInfo | undefined = () => undefined): ProgressStatistic[] {
   const homeCount = trackingContainerAnalyzer.countHome();
   const gameCount = trackingContainerAnalyzer.countGame();
   // One stage between opening the game page and building a base: the engine is up and the player
@@ -41,7 +42,7 @@ export function createStatistics(trackingContainerAnalyzer: TrackingContainerAna
     new ProgressStatistic("Game (total)", gameCount),
     new ProgressStatistic("Engine running", gameStarted, gameCount),
     new ProgressStatistic("Initial Base created", baseCreated, gameStarted));
-  progressStatistics.push(...trackingContainerAnalyzer.generateLevelQuestStatistics(baseCreated));
+  progressStatistics.push(...trackingContainerAnalyzer.generateLevelQuestStatistics(baseCreated, questInfo));
   return progressStatistics;
 }
 

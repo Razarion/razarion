@@ -24,6 +24,16 @@ export const INTERACTION_KINDS = [
   'ENGINE_ERROR',
   'STARTUP_TIMING',
   'STARTUP_PAYLOAD',
+  // The stretch between a finished start and the placer, which the startup tasks do not cover.
+  // Read as a chain with PLACER_SHOWN below: GAME_START says the start reached the scene chain
+  // and in which mode, SCENE_FIRST says the chain actually ran. GAME_START with mode=SLAVE and no
+  // SCENE_FIRST is a session waiting for an initial synchronisation that never arrived.
+  'GAME_START',
+  'SCENE_FIRST',
+  // A tip stood for ten seconds and nobody answered it, carrying the quest and the task. Beside
+  // the two above rather than in tip_stall: that watchdog reports after thirty seconds, and the
+  // players this is about are gone at fifteen.
+  'TIP_COLD',
   'PLACER_SHOWN',
   'PLACER_REJECTED',
   'PLACER_CONFIRMED',
@@ -61,6 +71,11 @@ export type InteractionKind = typeof INTERACTION_KINDS[number];
  */
 const NOT_THE_PLAYER: InteractionKind[] = ['PLACER_SHOWN', 'PLACER_NO_TERRAIN', 'CLIENT_BUILD',
   'ENGINE_ERROR', 'STARTUP_TIMING', 'STARTUP_PAYLOAD',
+  // The start reaching its own milestones. Like PLACER_SHOWN: the game got somewhere, the player
+  // did nothing.
+  'GAME_START', 'SCENE_FIRST',
+  // The strongest case of all: TIP_COLD exists precisely because the player did nothing.
+  'TIP_COLD',
   // The game asking for a group, or deciding not to. Like PLACER_SHOWN: it says what the player
   // was offered, never what he did with it.
   'GROUP_TIP',
