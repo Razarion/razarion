@@ -19,7 +19,7 @@ import {
 } from './lib/paths.mjs';
 import { PLATFORM_FORMAT, deriveClip, masterFor } from './lib/video.mjs';
 import { r2Config, putObject, contentTypeFor, sha256 } from './lib/r2.mjs';
-import { githubConfig, ensureRelease, listAssets, uploadAsset } from './lib/github.mjs';
+import { githubConfig, ensureRelease, listAssets, uploadAsset, isComplete, deleteAsset } from './lib/github.mjs';
 import { env } from '../src/config.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
 
@@ -154,9 +154,16 @@ async function openStorage(name) {
     label: `GitHub release ${config.repo}@${config.tag}`,
     put: async (key, body, contentType) => {
       // An asset name is unique inside a release, and the name carries the content hash, so an
-      // asset that is already there is the same bytes and can be reused as is.
+      // asset that is already there is the same bytes and can be reused as is - but only if its
+      // bytes actually arrived. See isComplete: a half-uploaded asset holds the name and serves a
+      // 404, and the networks then report nothing but "could not fetch the file".
       const known = existing.get(key);
-      if (known) return known.browser_download_url;
+      if (known && isComplete(known)) return known.browser_download_url;
+      if (known) {
+        warn(`${key} is on the release but was never fully uploaded - replacing it`);
+        await deleteAsset(config, known.id);
+        existing.delete(key);
+      }
       const uploaded = await uploadAsset(config, release.id, key, body, contentType);
       return uploaded.url;
     },

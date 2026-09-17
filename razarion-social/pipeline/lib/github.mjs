@@ -83,6 +83,22 @@ export async function listAssets(config, releaseId) {
 }
 
 /**
+ * An asset that exists but never finished uploading.
+ *
+ * GitHub creates the asset record before it has the bytes and leaves it on `state: "starter"` when
+ * the upload dies halfway - which a 57 MB clip over a home connection does. The name is then taken,
+ * the download URL answers 404, and Instagram and Facebook both report only that they could not
+ * fetch the file. Such an asset has to be deleted before the name can be used again.
+ */
+export function isComplete(asset) {
+  return asset.state === 'uploaded';
+}
+
+export async function deleteAsset(config, assetId) {
+  await gh(config, `/repos/${config.repo}/releases/assets/${assetId}`, { method: 'DELETE' });
+}
+
+/**
  * Uploads one file and returns the URL Instagram will be handed.
  *
  * The content type matters: GitHub stores whatever is sent here and serves it back on download,

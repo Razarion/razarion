@@ -102,6 +102,8 @@ export class DirectorService {
   private static readonly FOLLOW_SMOOTHING_MS = 600;
   /** Never frame a base closer than this, however small it is - one builder must not fill the screen. */
   private static readonly FOLLOW_MIN_RADIUS = 60;
+  /** The floor for a radius written into the plan: only low enough not to put the camera inside a unit. */
+  private static readonly FOLLOW_EXPLICIT_MIN_RADIUS = 15;
   /** Nor further away than this: beyond it a base is a smudge and the clip is of nothing. */
   private static readonly FOLLOW_MAX_RADIUS = 450;
   /** Smoothed state of the follow camera; null until the first frame of a follow key. */
@@ -513,7 +515,9 @@ export class DirectorService {
       // ceiling is not politeness: past a few hundred units a base is a smudge on a map, and the
       // one thing a clip cannot survive is not being able to tell what it is of.
       ? clamp(extent.radius * 2.5 + 50, DirectorService.FOLLOW_MIN_RADIUS, DirectorService.FOLLOW_MAX_RADIUS)
-      : clamp(key.radius ?? 200, DirectorService.FOLLOW_MIN_RADIUS, DirectorService.FOLLOW_MAX_RADIUS);
+      // A distance the plan names is a framing choice, not a base being sized: following a fight
+      // from 40 m is what makes the units readable on a phone, so only the ceiling applies.
+      : clamp(key.radius ?? 200, DirectorService.FOLLOW_EXPLICIT_MIN_RADIUS, DirectorService.FOLLOW_MAX_RADIUS);
 
     if (dtMs == null || !this.followTarget) {
       this.followTarget = wanted.clone();
