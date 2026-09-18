@@ -7,6 +7,17 @@ import { FirstInteractionTrackerService, groupSizeDetail } from './tracking/firs
 import { BabylonRenderServiceAccessImpl } from './renderer/babylon-render-service-access-impl.service';
 
 
+/**
+ * An order this client sent, as the quest tips need to know it: the engine reports a unit busy only
+ * a few ticks later, in the Meta webview seconds later, and until then the unit reads idle.
+ */
+export interface OrderNote {
+  kind: 'move' | 'attack' | 'harvest' | 'finalize' | 'load' | 'pickBox';
+  unitIds: number[];
+  targetId: number | null;
+  targetTypeId: number | null;
+}
+
 export class SelectionInfo {
   hasOwnSelection: boolean = false;
   hasOwnMovable: boolean = false;
@@ -19,6 +30,7 @@ export class SelectionInfo {
 })
 export class ActionService {
   private readonly cursorTypeHandlers: ((selectionInfo: SelectionInfo) => void)[] = [];
+  private readonly orderListeners: ((order: OrderNote) => void)[] = [];
   private rendererService: BabylonRenderServiceAccessImpl | null = null;
   private hasPendingMoveCommand = false;
   private queuedMoveCommand: { movableIds: number[], x: number, y: number } | null = null;
@@ -106,6 +118,21 @@ export class ActionService {
    * the click handlers around them: those all have branches that select instead of commanding, and
    * a player who can select but never command is a different defect from one who never selects.
    */
+  addOrderListener(listener: (order: OrderNote) => void): void {
+    this.orderListeners.push(listener);
+  }
+
+  removeOrderListener(listener: (order: OrderNote) => void): void {
+    const index = this.orderListeners.indexOf(listener);
+    if (index >= 0) {
+      this.orderListeners.splice(index, 1);
+    }
+  }
+
+  private notifyOrder(order: OrderNote): void {
+    this.orderListeners.forEach(listener => listener(order));
+  }
+
   private reportCommand(unitCount: number): void {
     this.firstInteractionTrackerService.report('COMMAND');
     if (unitCount > 1) {
@@ -118,6 +145,7 @@ export class ActionService {
   private sendMoveCommand(movableIds: number[], x: number, y: number): void {
     this.reportCommand(movableIds.length);
     this.gameCommandService.moveCmd(movableIds, x, y);
+    this.notifyOrder({kind: 'move', unitIds: movableIds, targetId: null, targetTypeId: null});
     this.hasPendingMoveCommand = true;
     if (this.moveAckTimeout) {
       clearTimeout(this.moveAckTimeout);
@@ -213,6 +241,7 @@ export class ActionService {
           this.babylonAudioService.speakCommand('Loading up');
           this.reportCommand(containableIds.length);
           this.gameCommandService.loadContainerCmd(containableIds, id);
+          this.notifyOrder({kind: 'load', unitIds: containableIds, targetId: id, targetTypeId: baseItemType.getId()});
           return;
         }
       }
@@ -225,6 +254,7 @@ export class ActionService {
           this.babylonAudioService.speakCommand('Completing construction');
           this.reportCommand(builderIds.length);
           this.gameCommandService.finalizeBuildCmd(builderIds, id);
+          this.notifyOrder({kind: 'finalize', unitIds: builderIds, targetId: id, targetTypeId: baseItemType.getId()});
           return;
         }
       }
@@ -252,6 +282,7 @@ export class ActionService {
         this.rendererService?.showCommandTargetMarker(babylonItem, 'attack');
         this.reportCommand(attackerIds.length);
         this.gameCommandService.attackCmd(attackerIds, id);
+        this.notifyOrder({kind: 'attack', unitIds: attackerIds, targetId: id, targetTypeId: item.getBaseItemType().getId()});
         return;
       }
     }
@@ -266,6 +297,7 @@ export class ActionService {
         this.rendererService?.showCommandTargetMarker(babylonItem, 'harvest');
         this.reportCommand(harvesterIds.length);
         this.gameCommandService.harvestCmd(harvesterIds, id);
+        this.notifyOrder({kind: 'harvest', unitIds: harvesterIds, targetId: id, targetTypeId: itemTypeId});
         return;
       }
     }
@@ -279,6 +311,7 @@ export class ActionService {
         this.babylonAudioService.speakCommand('Picking up');
         this.reportCommand(movableIds.length);
         this.gameCommandService.pickBoxCmd(movableIds, id);
+        this.notifyOrder({kind: 'pickBox', unitIds: movableIds, targetId: id, targetTypeId: itemTypeId});
         return;
       }
     }

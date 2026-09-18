@@ -82,6 +82,17 @@ public class UserService implements UserDetailsService {
      * from websocket/request threads and now also pruned from the cleanup scheduler.
      */
     private final Map<String, String> anonymousMap = new ConcurrentHashMap<>();
+    /**
+     * Serialises the creation of anonymous players per http session - see getOrCreateUserId().
+     * Striped rather than one lock per session so nothing grows with the number of sessions.
+     */
+    private final Object[] anonymousCreationLocks = createLocks(64);
+    /**
+     * Anonymous players this server created within the last minute, trusted before their row is
+     * visible: the transaction that inserts it commits after the lock is released.
+     */
+    private static final long RECENTLY_CREATED_MILLIS = 60000;
+    private final Map<String, Long> recentlyCreatedAnonymousUsers = new ConcurrentHashMap<>();
     private final UserRepository userRepository;
     private final ServerGameEngineService serverGameEngineCrudPersistence;
     private final QuestConfigService questConfigService;
@@ -121,6 +132,14 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
         this.userActivityService = userActivityService;
         this.historyService = historyService;
+    }
+
+    private static Object[] createLocks(int count) {
+        Object[] locks = new Object[count];
+        for (int i = 0; i < count; i++) {
+            locks[i] = new Object();
+        }
+        return locks;
     }
 
     public static Authentication removeAnonymousAuthentication(Authentication authentication) {
@@ -289,15 +308,34 @@ public class UserService implements UserDetailsService {
         return getOrCreateUserId(authentication, httpSessionId);
     }
 
+    /**
+     * One anonymous player per http session, also when the page asks several things at once.
+     * <p>
+     * The game page fires its first requests in parallel - the cold game context, startup tracking,
+     * the first-interaction beacon - before the session has a player. Each one found no mapping and
+     * created its own, the last put won, and the answers already sent carried the others. Measured
+     * on PROD 2026-09-11..18: of 1180 new players, 37 placed their base and never got a quest; 26 of
+     * them had more than one user id in their startup session, against 4 of the 1142 who got one.
+     * The client knew itself under one id and its base under another, so the base was a friend's -
+     * the builder yellow and unselectable, no quest ever activated - until a reload.
+     */
     @Transactional
     public String getOrCreateUserId(Authentication auth, String httpSessionId) {
         auth = removeAnonymousAuthentication(auth);
         if (auth != null) {
             return getUserIdByEmail(auth.getName());
         }
+        synchronized (anonymousCreationLocks[Math.floorMod(httpSessionId.hashCode(), anonymousCreationLocks.length)]) {
+            return getOrCreateAnonymousUserId(httpSessionId);
+        }
+    }
+
+    private String getOrCreateAnonymousUserId(String httpSessionId) {
         String userId = anonymousMap.get(httpSessionId);
         if (userId != null) {
-            if (userRepository.findByUserId(userId).isPresent()) {
+            // Created a moment ago by a request of the same page: its transaction may not have
+            // committed yet, so the row is not visible here - but the player exists.
+            if (isRecentlyCreated(userId) || userRepository.findByUserId(userId).isPresent()) {
                 return userId;
             }
             // The user is gone but the HTTP session outlived it - cleanupDisconnectedUnregisteredUsers()
@@ -311,7 +349,15 @@ public class UserService implements UserDetailsService {
         }
         String anonymousUserId = createAnonymousUser(httpSessionId);
         anonymousMap.put(httpSessionId, anonymousUserId);
+        long now = System.currentTimeMillis();
+        recentlyCreatedAnonymousUsers.values().removeIf(createdAt -> now - createdAt > RECENTLY_CREATED_MILLIS);
+        recentlyCreatedAnonymousUsers.put(anonymousUserId, now);
         return anonymousUserId;
+    }
+
+    private boolean isRecentlyCreated(String userId) {
+        Long createdAt = recentlyCreatedAnonymousUsers.get(userId);
+        return createdAt != null && System.currentTimeMillis() - createdAt <= RECENTLY_CREATED_MILLIS;
     }
 
     /**
@@ -322,6 +368,7 @@ public class UserService implements UserDetailsService {
     private void forgetAnonymousSessions(String userId) {
         if (userId != null) {
             anonymousMap.values().removeIf(userId::equals);
+            recentlyCreatedAnonymousUsers.remove(userId);
         }
     }
 

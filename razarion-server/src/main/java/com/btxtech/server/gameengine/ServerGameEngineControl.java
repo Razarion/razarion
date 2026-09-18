@@ -251,6 +251,20 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         baseItemService.updateLevel(userId, levelId);
     }
 
+    /**
+     * Pays the Razarion a quest rewards. A player without a base gets nothing - there is nowhere to
+     * put it, and a quest is passed with a base anyway.
+     */
+    public void addRazarion(String userId, int razarion) {
+        PlayerBaseFull playerBase = baseItemService.getPlayerBaseFull4UserId(userId);
+        if (playerBase == null) {
+            logger.warn("No base for user {} - {} Razarion quest reward dropped", userId, razarion);
+            return;
+        }
+        playerBase.addResource(razarion);
+        gameLogicService.onResourcesBalanceChanged(playerBase, (int) playerBase.getResources());
+    }
+
     @Override
     public void onBaseCreated(PlayerBaseFull playerBase) {
         clientGameConnectionService.onBaseCreated(playerBase);

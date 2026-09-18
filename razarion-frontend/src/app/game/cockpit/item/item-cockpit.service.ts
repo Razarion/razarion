@@ -93,6 +93,17 @@ export class ItemCockpitService {
   private watchedBuildupItem: BabylonBaseItemImpl | null = null;
   private watchedHealthItems: BabylonBaseItemImpl[] = [];
 
+  /** What the phone's item panel says it is about: the selected type, how many, or several kinds. */
+  get panelTitle(): string {
+    if (this.ownItemCockpit) {
+      return this.count > 1 ? `${this.count}× ${this.ownItemCockpit.itemTypeName}` : this.ownItemCockpit.itemTypeName;
+    }
+    if (this.ownMultipleItems) {
+      return `${this.count} units`;
+    }
+    return this.otherItemCockpit?.itemTypeName ?? 'Selection';
+  }
+
   constructor(
     private selectionService: SelectionService,
     private gwtAngularService: GwtAngularService,
@@ -169,13 +180,22 @@ export class ItemCockpitService {
         this.count = selectedItems.length;
       }
       this.cockpitDisplayService.showItemCockpit = true;
-      // On a phone the panel is a collapsed overlay, and selecting something that can build is the
-      // player asking for the build menu - so hand it over instead of only ringing the icon. Only
-      // for a selection that has buildup buttons: opening the overlay for a harvester would cover
-      // the field with a readout nobody asked to see. Closing it again stays the player's call -
-      // this fires on selection changes only, so a panel they tapped shut stays shut.
-      if (this.ownItemCockpit?.buildupItems && this.ownItemCockpit.buildupProgress == null) {
+      // On a phone the panel is a collapsed overlay, and selecting something the panel has buttons
+      // for is the player asking for them: the build menu of a builder or factory, the unload button
+      // of a transporter, and for several kinds at once the "keep only this kind" buttons - a box
+      // around a crowded base catches buildings and harvesters with the vipers, and those buttons
+      // are how the vipers are picked out of it. Everything else - a harvester, a viper - is
+      // commanded on the field, and an open overlay covers the field; so the panel closes then.
+      // It used to be left as it was, which made the same tap show the panel after a builder and
+      // not after nothing (reported from a phone, 2026-09-18). This fires on selection changes
+      // only, so a panel the player tapped shut stays shut.
+      const own = this.ownItemCockpit;
+      const hasButtons = !!this.ownMultipleItems
+        || (!!own && ((!!own.buildupItems && own.buildupProgress == null) || own.containerCount != null));
+      if (hasButtons) {
         this.compactLayout.open('item');
+      } else {
+        this.compactLayout.closeIfOpen('item');
       }
     } else if (this.selectionService.getSelectedOtherId() != null) {
       // Other selection

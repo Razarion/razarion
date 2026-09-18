@@ -1,113 +1,46 @@
 # Quest Tip System
 
-The quest tip system guides new players through game actions with visual prompts (animated arrows, text labels, markers). It is built as a task-based flow where each step waits for a specific player action before advancing.
+The quest tip guides beginners through the quests of levels 1-8 that carry a tip config (358-389):
+it tells the player what to click next - a prompt on a unit, an arrow to something off screen, a
+hint on a cockpit button, the place marker of a build region, the group prompt - and says nothing
+while the player's units are doing what the quest needs.
 
-## Key Files
+Since 2026-09-18 it is a single decision computed from the state of the world, not a chain of
+tasks. Why, and what it replaced: [quest-tip-redesign.md](quest-tip-redesign.md). What it has to do in
+every situation: [quest-tip-case-catalog.md](quest-tip-case-catalog.md).
+
+## Key files
+
+All under `razarion-frontend/src/app/game/tip/`.
 
 | File | Purpose |
 |------|---------|
-| `razarion-frontend/src/app/game/tip/tip.service.ts` | Main orchestrator, manages lifecycle |
-| `razarion-frontend/src/app/game/tip/tip-task.container.ts` | Container managing main + fallback task sequences |
-| `razarion-frontend/src/app/game/tip/tip-task.factory.ts` | Factory creating tip flows per quest type |
-| `razarion-frontend/src/app/game/tip/tiptask/abstract-tip-task.ts` | Base class with `onSucceed()` / `onFailed()` |
-| `razarion-frontend/src/app/game/tip/tiptask/select-tip-task.ts` | Prompts player to select a unit |
-| `razarion-frontend/src/app/game/tip/tiptask/start-build-placer-tip-task.ts` | Prompts player to click building in ItemCockpit menu |
-| `razarion-frontend/src/app/game/tip/tiptask/send-build-command-tip-task.ts` | Prompts player to place building or click existing one |
-| `razarion-frontend/src/app/game/tip/tiptask/idle-item-tip-task.ts` | Waits for a unit to become idle |
-| `razarion-frontend/src/app/game/tip/tiptask/send-fabricate-command-tip-task.ts` | Prompts player to fabricate a unit |
-| `razarion-frontend/src/app/game/tip/tiptask/send-harvest-command-tip-task.ts` | Prompts player to harvest a resource |
-| `razarion-frontend/src/app/game/tip/tiptask/send-attack-command-tip-task.ts` | Prompts player to attack an enemy |
+| `tip.service.ts` | Entry point: `activate(questConfig)` from the quest cockpit, `deactivate()`, the tips-visible switch |
+| `guide/tip-guide.ts` | Evaluates every 500 ms and on selection change, camera move and order; remembers orders until the engine reports them; stall tracking |
+| `guide/tip-decision.ts` | `decide()`: the pure function from world to `Guidance`, one section per tip type |
+| `guide/guidance-view.ts` | Puts one `Guidance` on the screen and takes the previous one down |
+| `guide/tip-region.ts` | Build region of a position quest (386): in view, and a point inside it for the arrow |
+| `tip-stall-tracker.service.ts`, `tip-stall.ts` | Stall watchdog and its task names and reasons (stable strings, read from `tip_stall`) |
+| `testbed/` | The test bed: a fake world, the real tip code on it, one spec per catalog group |
 
-## Tip Types
+## Inputs
 
-Defined in `GwtAngularFacade.ts`:
+- **`BaseItemUiService.getTipItemStates(enemyItemTypeId)`** (Java, via the TeaVM bridge): every own
+  selectable item and the enemies of the quest's type, over the whole planet, with position, `idle`,
+  `buildup` and `factoryBuildQueue`. An item off screen has no rendered instance, so nothing is read
+  from instances.
+- **`SelectionService.getSelectedOwnItemIds()`** - the selection by id, off screen included.
+- **`ActionService.addOrderListener()`** - the orders this client sends. A unit reads idle until the
+  engine has taken an order up; the guide treats it as working in between (up to 15 s).
+- The cockpit's block reason per button, the placer, the rendered resource fields.
 
-- **BUILD** - Guide through building construction (select builder, open menu, place building)
-- **FABRICATE** - Guide through unit fabrication (select factory, click fabricate)
-- **HARVEST** - Guide through harvesting (select harvester, click resource)
-- **ATTACK** - Guide through attacking (select unit, click enemy)
+## Tip config
 
-## Task Lifecycle
+`TipConfig` on the quest: `tipString` (BUILD, FABRICATE, HARVEST, ATTACK), `actorItemTypeId`, and
+`group` - whether the attack tip asks for a group first (set on 379, not on the first attack 365).
+Edited in the server quest editor, stored in `QUEST.tipString`, `tipActorItemType_id`, `tipGroup`.
 
-Each `AbstractTipTask` has three lifecycle methods:
+## Testing
 
-- **`isFulfilled()`** - Returns `true` if the task's goal is already met (allows skipping)
-- **`start()`** - Activates the task: registers listeners, shows visual prompts
-- **`cleanup()`** - Removes listeners and visual prompts
-
-And two transition methods:
-
-- **`onSucceed()`** - Task completed, advance to next task
-- **`onFailed()`** - Task interrupted (e.g. unit deselected), backtrack to previous task
-
-## Main Sequence and Fallback
-
-Each tip type defines two sequences in `TipTaskFactory`:
-
-1. **Main sequence** - The primary step-by-step flow
-2. **Fallback sequence** - Recovery flow activated after the main sequence completes
-
-### Example: BUILD Tip
-
-**Main sequence:**
-1. `SelectTipTask` - Select the builder unit
-2. `StartBuildPlacerTipTask` - Click building type in ItemCockpit menu
-3. `SendBuildCommandTipTask` - Place building on terrain
-
-**Fallback sequence** (activated after building is placed):
-1. `IdleItemTipTask` - Wait for builder to finish constructing
-2. `SelectTipTask` - Re-select builder if deselected
-3. `StartBuildPlacerTipTask` - Re-open build menu if needed
-4. `SendBuildCommandTipTask` - Click existing building to resume construction
-
-### Fallback Activation Flow
-
-```
-Main sequence completes (all tasks succeed)
-    |
-    v
-TipService.onSucceed() calls activateFallback()
-    |
-    v
-Fallback sequence starts from task 0
-    |
-    v
-If task fails (e.g. unit deselected) -> backtrackTask() finds last unfulfilled task
-```
-
-## Task Container Navigation
-
-`TipTaskContainer` provides:
-
-- **`next()`** - Advance index, recursively skip fulfilled tasks
-- **`backtrackTask()`** - Walk backwards to find the first non-fulfilled task
-- **`activateFallback()`** - Switch from main to fallback sequence
-
-The `isFulfilled()` check enables smart skipping. For example, if the builder is already selected when the fallback starts, `SelectTipTask` is skipped automatically.
-
-## Visual Prompts
-
-### Select Prompt (`showSelectPromptVisualization`)
-Animated arrow pointing down at a unit with a text label. Used by:
-- `SelectTipTask` - "Click to select" (default)
-- `SendBuildCommandTipTask` - "Click to finish building" (when building exists)
-- `SendHarvestCommandTipTask` - "Click to harvest"
-- `SendAttackCommandTipTask` - "Click to attack"
-
-### Place Marker (`showPlaceMarker`)
-Colored disc on terrain showing where to place a building. Used by `SendBuildCommandTipTask` when no building exists yet.
-
-### Out-of-View Marker (`showOutOfViewMarker`)
-Directional indicator at screen edge when the target is off-screen. Managed by `TipService` via `ViewFieldListener`.
-
-### ItemCockpit Tip (`showBuildupTip`)
-Popover highlighting a specific building type in the build menu. Used by `StartBuildPlacerTipTask`.
-
-## Deselection Handling
-
-Several tasks detect when the player deselects the active unit:
-
-- `StartBuildPlacerTipTask` uses `setSelectionCallback()` on the builder
-- `SendBuildCommandTipTask` uses a global `selectionService` listener
-
-When deselection is detected, `onFailed()` triggers `backtrackTask()` which walks back to find the appropriate recovery task (typically `SelectTipTask`).
+`npx ng test --watch=false --include='**/tip/**/*.spec.ts'`. Every change to the tips runs against
+the test bed; a new report becomes a catalog case and a test before it is fixed.

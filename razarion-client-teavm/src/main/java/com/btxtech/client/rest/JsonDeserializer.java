@@ -660,6 +660,7 @@ public class JsonDeserializer {
         TipConfig r = new TipConfig();
         r.setTipString(json.isNullOrUndefined("tipString") ? null : json.getString("tipString"));
         r.setActorItemTypeId(json.getNullableInt("actorItemTypeId"));
+        r.setGroup(Boolean.TRUE.equals(json.getNullableBoolean("group")));
         return r;
     }
 

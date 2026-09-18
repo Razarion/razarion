@@ -1,14 +1,20 @@
 package com.btxtech.shared.gameengine.datatypes;
 
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
+import com.btxtech.shared.gameengine.planet.pathing.BuildingBlockerOverlay.Blocker;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import jakarta.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -32,8 +38,31 @@ public class Path {
      */
     private static final int MAX_RETREAT_STEPS = 8;
     private static final int UNSET_INDEX = -1;
+    /**
+     * How far a building centre may lie outside the rectangle of a sight segment and still reach into it:
+     * the largest building radius plus the largest unit radius (PROD 09/2026: Refinery 3.45, units up
+     * to 2.0), with room to spare. The cell grid files a building under its centre only.
+     */
+    private static final double BUILDING_REACH = 10;
+    /**
+     * A building footprint is kept this far below the distance of both ends of a sight segment, so
+     * neither end ever counts as inside it - see {@link #isBuildingInTheWay}.
+     */
+    private static final double ENDPOINT_MARGIN = 0.05;
 
     private final TerrainService terrainService;
+    private final SyncItemContainerServiceImpl syncItemContainerService;
+    /**
+     * Buildings around the unit, valid for one {@link #setupCurrentWayPoint} and collected only when a
+     * sight test gets past the terrain. A tick of a moving unit usually runs one sight test, so the
+     * first collection covers only the rectangle around that sight segment. A second test in the same
+     * tick - the first tick of a path runs one per way point in the look ahead - collects the whole
+     * look ahead once instead of querying per test.
+     */
+    private final List<Blocker> nearbyBuildings = new ArrayList<>();
+    /** Where {@link #nearbyBuildings} is complete for a sight segment, null while nothing is collected. */
+    private Rectangle2D nearbyBuildingsCover;
+    private boolean nearbyBuildingsWholeLookAhead;
     private List<DecimalPosition> wayPositions;
     private DecimalPosition currentWayPoint;
     /**
@@ -45,8 +74,9 @@ public class Path {
     private int currentWayPointIndex = UNSET_INDEX;
 
     @Inject
-    public Path(TerrainService terrainService) {
+    public Path(TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService) {
         this.terrainService = terrainService;
+        this.syncItemContainerService = syncItemContainerService;
     }
 
     /**
@@ -67,11 +97,14 @@ public class Path {
         if (currentWayPointIndex == UNSET_INDEX) {
             currentWayPointIndex = nearestWayPointIndex(itemPosition);
         }
-        // Either way the way point handed out was checked against the terrain in this tick, unless
-        // the walk back ran out of steps or hit the start of the path.
+        nearbyBuildingsCover = null;
+        nearbyBuildingsWholeLookAhead = false;
+        // Either way the way point handed out was checked against the terrain and the buildings in
+        // this tick, unless the walk back ran out of steps or hit the start of the path.
         if (!advanceToFarthestVisible(itemPosition, radius, terrainType)) {
             retreatToVisible(itemPosition, radius, terrainType);
         }
+        nearbyBuildings.clear();
         currentWayPoint = wayPositions.get(currentWayPointIndex);
     }
 
@@ -91,8 +124,7 @@ public class Path {
             if (itemPosition.getDistance(next) > MAX_LOOK_AHEAD_DISTANCE) {
                 break;
             }
-            // Attention due to performance!! isInSight() surface data (Obstacle-Model) is not based on the AStar surface data -> AStar model must overlap Obstacle-Model
-            if (!terrainService.getTerrainAnalyzer().isInSight(itemPosition, radius, next, terrainType)) {
+            if (!isInSight(itemPosition, radius, next, terrainType)) {
                 break;
             }
             currentWayPointIndex++;
@@ -107,11 +139,84 @@ public class Path {
      */
     private void retreatToVisible(DecimalPosition itemPosition, double radius, TerrainType terrainType) {
         for (int step = 0; step < MAX_RETREAT_STEPS && currentWayPointIndex > 0; step++) {
-            if (terrainService.getTerrainAnalyzer().isInSight(itemPosition, radius, wayPositions.get(currentWayPointIndex), terrainType)) {
+            if (isInSight(itemPosition, radius, wayPositions.get(currentWayPointIndex), terrainType)) {
                 return;
             }
             currentWayPointIndex--;
         }
+    }
+
+    /**
+     * Whether the unit can drive straight to {@code target}. Has to see what A* saw: the terrain, and
+     * the buildings of {@code BuildingBlockerOverlay}. A follower that only knows the terrain looks
+     * past the detour A* made around a building, steers through the building towards the destination,
+     * and ORCA pins the unit to the wall. A replan gets the same detour and the follower skips it
+     * again - the "replan returned the identical path" at the own base in PROD
+     * (docs/architecture/pathing-flowfield-analysis.md).
+     */
+    private boolean isInSight(DecimalPosition itemPosition, double radius, DecimalPosition target, TerrainType terrainType) {
+        return terrainService.getTerrainAnalyzer().isInSight(itemPosition, radius, target, terrainType)
+                && !isBuildingInTheWay(itemPosition, radius, target);
+    }
+
+    /**
+     * Tests the sight segment against each building footprint inflated by the unit radius, as A* does.
+     * <p>
+     * The footprint never reaches the unit or the target. A* frees a clearance disc around the start,
+     * so a unit touching a building - or squeezed a few centimetres into it - gets its first way points
+     * inside that footprint, and a full footprint would hide every one of them: the unit would stand
+     * still in front of the path meant to lead it away.
+     */
+    private boolean isBuildingInTheWay(DecimalPosition itemPosition, double radius, DecimalPosition target) {
+        if (nearbyBuildingsCover == null) {
+            collectNearbyBuildings(itemPosition, radius, Rectangle2D.generateRectangleFromAnyPoints(itemPosition, target));
+        } else if (!nearbyBuildingsWholeLookAhead && !(nearbyBuildingsCover.contains(itemPosition) && nearbyBuildingsCover.contains(target))) {
+            nearbyBuildingsWholeLookAhead = true;
+            collectNearbyBuildings(itemPosition, radius, Rectangle2D.generateRectangleFromMiddlePoint(itemPosition, 2.0 * MAX_LOOK_AHEAD_DISTANCE, 2.0 * MAX_LOOK_AHEAD_DISTANCE));
+        }
+        Line segment = null;
+        for (Blocker building : nearbyBuildings) {
+            double footprint = Math.min(building.radius + radius,
+                    Math.min(building.position.getDistance(itemPosition), building.position.getDistance(target))) - ENDPOINT_MARGIN;
+            if (footprint <= 0) {
+                continue;
+            }
+            if (segment == null) {
+                segment = new Line(itemPosition, target);
+            }
+            if (new Circle2D(building.position, footprint).doesLineCut(segment)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Same selection as {@code PathingService.collectBuildings()}, plus the one exemption of the
+     * overlay: a building the destination lies in is the goal (attack, build, dock), and A* led the
+     * path into it. A way point behind a building further away than the look ahead reaches (a unit
+     * pushed far off its path) is tested against the terrain only, as before.
+     *
+     * @param cover where the list has to be complete for sight segments, before growing it by the
+     *              reach of a building
+     */
+    private void collectNearbyBuildings(DecimalPosition itemPosition, double radius, Rectangle2D cover) {
+        nearbyBuildingsCover = cover;
+        nearbyBuildings.clear();
+        DecimalPosition destination = wayPositions.get(wayPositions.size() - 1);
+        Rectangle2D scan = new Rectangle2D(cover.startX() - BUILDING_REACH, cover.startY() - BUILDING_REACH,
+                cover.width() + 2.0 * BUILDING_REACH, cover.height() + 2.0 * BUILDING_REACH);
+        syncItemContainerService.iterateCellRectangleBaseItem(scan, other -> {
+            AbstractSyncPhysical physical = other.getAbstractSyncPhysical();
+            if (physical.canMove() || !physical.hasPosition()) {
+                return;
+            }
+            DecimalPosition centre = physical.getPosition();
+            if (centre.getDistance(destination) <= physical.getRadius() + radius) {
+                return;
+            }
+            nearbyBuildings.add(new Blocker(centre, physical.getRadius()));
+        });
     }
 
     /**

@@ -5,7 +5,10 @@
  * and are compared across releases, and the production build minifies class names away.
  */
 
-/** One per tip task class. Must stay stable - the tracking data is read by this name. */
+/**
+ * One per step of the tip (named after the task classes of the old chain, which the guide replaced).
+ * Must stay stable - the tracking data is read by this name.
+ */
 export const TipTaskName = {
   SELECT: 'SELECT',
   /** Asks for more than one unit at once. Nothing else in the chain ever does. */
@@ -90,11 +93,18 @@ export const TipStallReason = {
 } as const;
 
 /**
- * What the stall watchdog needs from a tip task. Kept separate from AbstractTipTask so the
- * tracker does not import the task hierarchy that imports the tip service that owns the tracker.
+ * What the stall watchdog needs from the running tip step. Kept apart from the guide so the tracker
+ * does not import the tip code that owns the tracker.
  */
 export interface TipStallSource {
   getTaskName(): string;
+
+  /**
+   * Whether the tip is asking the player for something right now. False while it stays quiet
+   * because a unit is doing what the quest needs - a player waiting for it is not absent.
+   * Missing means asking.
+   */
+  asksPlayer?(): boolean;
 
   getStallReason(): string;
 }

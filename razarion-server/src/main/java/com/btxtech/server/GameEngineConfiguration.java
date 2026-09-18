@@ -182,8 +182,8 @@ public class GameEngineConfiguration {
 
     @Bean
     @Scope("prototype")
-    public Path path(TerrainService terrainService) {
-        return new Path(terrainService);
+    public Path path(TerrainService terrainService, SyncItemContainerServiceImpl syncItemContainerService) {
+        return new Path(terrainService, syncItemContainerService);
     }
 
     @Bean

@@ -90,6 +90,15 @@ public class ServerLevelQuestService implements QuestListener {
     @Transactional
     public void onQuestPassed(String userId, QuestConfig questConfig) {
         clientSystemConnectionService.onQuestPassed(userId, questConfig);
+        /*
+         * The Razarion reward was configurable in the editor and never paid - only the xp below
+         * was. Nobody noticed because no quest had one set. The tipped quests of levels 1-7 cost
+         * 198 Razarion against a start of 100, and the harvester stops on an empty field, so a
+         * beginner can end up in front of a greyed-out build button the tip points at.
+         */
+        if (questConfig.getRazarion() > 0) {
+            serverGameEngineControlInstance.get().addRazarion(userId, questConfig.getRazarion());
+        }
         UserContext userContext = userService.getUserContextTransactional(userId);
         // Check for level up
         int newXp = userContext.getXp() + questConfig.getXp();

@@ -553,6 +553,45 @@ public class BaseItemUiService {
         return result.toArray(new NativeSyncBaseItemTickInfo[0]);
     }
 
+    /**
+     * The player's own items and the enemies a quest is about, for the quest tips - over the whole
+     * planet, not only the view field.
+     * <p>
+     * Own items are those that can be selected: still spawning or sitting inside a container, an
+     * item has no instance and cannot be clicked, the same rule as {@link #getMyOwnSyncItemTickInfos()}.
+     *
+     * @param enemyItemTypeId enemies of this type; 0 for every enemy, a negative value for none
+     */
+    public TipItemState[] getTipItemStates(int enemyItemTypeId) {
+        List<TipItemState> result = new ArrayList<>();
+        for (NativeSyncBaseItemTickInfo info : nativeSyncBaseItemTickInfos) {
+            if (info.contained) {
+                continue;
+            }
+            boolean own = isMyOwnProperty(info);
+            if (own) {
+                if (info.spawning < 1.0) {
+                    continue;
+                }
+            } else if (enemyItemTypeId < 0
+                    || (enemyItemTypeId > 0 && info.itemTypeId != enemyItemTypeId)
+                    || !isMyEnemy(info)) {
+                continue;
+            }
+            TipItemState state = new TipItemState();
+            state.id = info.id;
+            state.itemTypeId = info.itemTypeId;
+            state.own = own;
+            state.x = info.x;
+            state.y = info.y;
+            state.idle = info.idle;
+            state.buildup = info.buildup;
+            state.factoryBuildQueue = info.factoryBuildQueue != null ? info.factoryBuildQueue : new int[0];
+            result.add(state);
+        }
+        return result.toArray(new TipItemState[0]);
+    }
+
     private NativeSyncBaseItemTickInfo findMyEnemyItemWithPlace(PlaceConfig placeConfig) {
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
             if (nativeSyncBaseItemTickInfo.contained) {

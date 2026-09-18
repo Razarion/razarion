@@ -45,6 +45,16 @@
     [class.hud-skin]="!compactLayout.compact()"
     [class.compact-panel]="compactLayout.compact()"
     [style.visibility]="isPanelVisible('main') ? 'visible' : 'hidden'">
+    <!-- On a phone every open overlay says what it is and closes where it is read: the icons in the
+         bar light up, but which one is open was the question asked about it (2026-09-18). -->
+    @if (compactLayout.compact()) {
+      <div class="compact-panel-header">
+        <span class="compact-panel-title">Menu</span>
+        <button type="button" class="compact-icon" (click)="compactLayout.close()" aria-label="Close">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+    }
     <main-cockpit #mainCockpit></main-cockpit>
   </div>
 
@@ -57,6 +67,16 @@
       [class.hud-skin]="!compactLayout.compact()"
       [class.compact-panel]="compactLayout.compact()"
       [style.visibility]="isPanelVisible('item') ? 'visible' : 'hidden'">
+      <!-- An own unit's cockpit has a head row of its own that names it and closes the panel; only
+           the other selections (an enemy, several kinds at once) need this one. -->
+      @if (compactLayout.compact() && !itemCockpitContainer.itemCockpitService.ownItemCockpit) {
+        <div class="compact-panel-header">
+          <span class="compact-panel-title">{{ itemCockpitContainer.itemCockpitService.panelTitle }}</span>
+          <button type="button" class="compact-icon" (click)="compactLayout.close()" aria-label="Close">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      }
       <item-cockpit #itemCockpitContainer></item-cockpit>
     </div>
 
@@ -102,6 +122,14 @@
       [class.hud-skin]="!compactLayout.compact()"
       [class.compact-panel]="compactLayout.compact()"
       [style.visibility]="isPanelVisible('chat') ? 'visible' : 'hidden'">
+      @if (compactLayout.compact()) {
+        <div class="compact-panel-header">
+          <span class="compact-panel-title">Chat</span>
+          <button type="button" class="compact-icon" (click)="compactLayout.close()" aria-label="Close">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      }
       <chat-cockpit #chatCockpitComponent></chat-cockpit>
     </div>
   </div>
@@ -130,18 +158,29 @@
       <span><i class="pi pi-home"></i> {{ mainCockpit.displayHouseSpace }}</span>
     </div>
 
-    <!-- The current quest, always on screen. Only one overlay may be open at a time, so a quest
-         that lives behind the flag icon is invisible for as long as the player has the build menu
-         up - which is exactly when they need to know what they are building towards. One line
-         costs 26px; tapping it opens the full panel. -->
+    <!-- The current quest, always on screen, and the only place it shows on a phone. There used to
+         be a quest panel as well, opened from here and from a flag icon in the bar: it repeated
+         this line, and as one of several overlays of which only one is open it kept trading places
+         with the build menu - "which panel is this, and why is it open again". Reported from a
+         phone on 2026-09-18. What the panel had beyond this line: every progress row (now all on
+         the line), the time limit (too), the in-game marker switch (in the settings) and the
+         quest choice - which a tap on the line opens directly when there is a choice. -->
     @if (cockpitDisplayService.showQuestCockpit && questCockpitContainer.title) {
-      <button type="button" class="compact-quest"
-              [class.compact-quest-open]="compactLayout.isOpen('quest')"
-              (click)="compactLayout.toggle('quest')">
-        <i class="pi pi-flag"></i>
-        <span class="compact-quest-title">{{ questCockpitContainer.title }}</span>
-        <span class="compact-quest-progress">{{ questCockpitContainer.currentProgressText }}</span>
-      </button>
+      @if (questCockpitContainer.showQuestSelectionButton) {
+        <button type="button" class="compact-quest"
+                (click)="cockpitDisplayService.showQuestDialog = true">
+          <i class="pi pi-flag"></i>
+          <span class="compact-quest-title">{{ questCockpitContainer.title }}</span>
+          <span class="compact-quest-progress">{{ questCockpitContainer.progressSummary }}</span>
+          <i class="pi pi-list compact-quest-choose"></i>
+        </button>
+      } @else {
+        <div class="compact-quest">
+          <i class="pi pi-flag"></i>
+          <span class="compact-quest-title">{{ questCockpitContainer.title }}</span>
+          <span class="compact-quest-progress">{{ questCockpitContainer.progressSummary }}</span>
+        </div>
+      }
     }
 
     <!-- Unit navigation: one chip per category, stacked up the left edge opposite the minimap.
@@ -206,14 +245,6 @@
       <div class="compact-select-hint">Drag a box around your units</div>
     }
 
-    <!-- The other half of the same line: a tip is asking for a group and the mode is not armed yet,
-         so the sentence has to name the button rather than the gesture. Nothing else in the game
-         ever mentions that icon, and by the time an army is needed the player has been taught
-         eleven times that selecting means tapping one thing. -->
-    @if (touchSelectionMode.asked() && !touchSelectionMode.armed() && !compactLayout.openPanel()) {
-      <div class="compact-select-hint">Tap the box below to select several units at once</div>
-    }
-
     <!-- Icon bar: one tap opens a panel, the same tap closes it again. An icon whose panel has
          nothing to show is disabled rather than hidden, so the row does not jump around. -->
     <div class="compact-bar">
@@ -227,20 +258,26 @@
               aria-label="Build">
         <i class="pi pi-wrench"></i>
       </button>
-      <button type="button" class="compact-icon"
-              [class.compact-icon-open]="compactLayout.isOpen('quest')"
-              [class.compact-icon-ready]="cockpitDisplayService.showQuestCockpit && !compactLayout.isOpen('quest')"
-              [disabled]="!cockpitDisplayService.showQuestCockpit"
-              (click)="compactLayout.toggle('quest')"
-              aria-label="Quest">
-        <i class="pi pi-flag"></i>
-      </button>
       <!-- Group selection. The marquee a mouse draws by dragging has no equivalent gesture here -
            one finger is all a phone has and the camera already owns it - so the box is armed with
            a button, drawn with the next drag, and gone again as soon as that drag ends. Without it
            a mobile player can only ever select the single unit under their finger, and an army
            cannot be moved one tap at a time. An action rather than a panel, so it sits next to the
            panel icons instead of among them. -->
+      <span class="compact-icon-anchor">
+      <!-- A tip is asking for a group and the mode is not armed yet: say so right at the button,
+           with an arrow onto it. It used to be a line in the middle of the screen that an open panel
+           hid - and after quest 369 the item panel is open, because selecting the factory opens it.
+           On a phone on 2026-09-18 the ring on this icon also lost against the menu icon beside it,
+           pulsing for the tech tree in the same colour; that one waits while this is asked. -->
+      @if (touchSelectionMode.asked() && !touchSelectionMode.armed()) {
+        <div class="compact-callout" role="status">
+          <span class="compact-callout-text">Tap here to select several units at once</span>
+          <svg class="compact-callout-arrow" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 22 3.5 12H9V2h6v10h5.5z"/>
+          </svg>
+        </div>
+      }
       <button type="button" class="compact-icon"
               [class.compact-icon-open]="touchSelectionMode.armed()"
               [class.compact-icon-asked]="touchSelectionMode.asked() && !touchSelectionMode.armed()"
@@ -259,6 +296,7 @@
           <circle cx="11.8" cy="15.1" r="1.9"/>
         </svg>
       </button>
+      </span>
       <span class="compact-bar-spacer"></span>
       <!-- Gone rather than greyed out when the player switched the chat off in the settings: a
            disabled button still says "there is a chat here", which is the thing they asked to be
@@ -277,7 +315,7 @@
            the same reason the build tip points at the wrench when the item panel is collapsed. -->
       <button type="button" class="compact-icon"
               [class.compact-icon-open]="compactLayout.isOpen('main')"
-              [class.compact-icon-asked]="mainCockpit.techTreeNews && !compactLayout.isOpen('main')"
+              [class.compact-icon-asked]="mainCockpit.techTreeNews && !compactLayout.isOpen('main') && !touchSelectionMode.asked()"
               [disabled]="!cockpitDisplayService.showMainCockpit"
               (click)="compactLayout.toggle('main')"
               aria-label="Menu">

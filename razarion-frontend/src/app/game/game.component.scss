@@ -44,8 +44,8 @@
     --compact-nav-gap: 6px;
   }
 
-  /* Directly under the status strip and always on screen, because the quest panel itself is one of
-     four overlays of which only one may be open. */
+  /* Directly under the status strip and always on screen - the only place the quest shows on a
+     phone. It carries every progress row, so it may run long; the rows give up room first. */
   .compact-quest {
     position: absolute;
     left: 0;
@@ -86,10 +86,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     opacity: 0.85;
-  }
-
-  .compact-quest-open {
-    background-color: var(--p-emerald-700, #047857);
   }
 
   /* The desktop bottom rail (.hud-bottom, the flex row holding the item panel and the unit
@@ -261,6 +257,90 @@
     white-space: nowrap;
     pointer-events: none;
     z-index: 19;
+  }
+
+  /* Every open overlay names itself and closes where it is read. Sticky, because the panel scrolls
+     (overflow:auto) and the way out must not scroll away with the content. The negative margin
+     undoes the panel's padding so the line runs edge to edge. */
+  .compact-panel-header {
+    position: sticky;
+    top: -8px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    margin: -8px -8px 8px;
+    padding: 6px 6px 6px 12px;
+    border-bottom: solid 1px var(--p-emerald-900);
+    background: #000;
+  }
+
+  .compact-panel-title {
+    flex: 1;
+    color: var(--p-emerald-400, #34d399);
+    font: 700 14px sans-serif;
+  }
+
+  /* The strip opens the quest choice when there is one; the list icon says it can be tapped. */
+  .compact-quest-choose {
+    margin-left: auto;
+  }
+
+  /* The group button carries its own callout, so it needs a box to anchor it to. */
+  .compact-icon-anchor {
+    position: relative;
+    display: flex;
+  }
+
+  /* Sits on the button it talks about, above an open panel rather than behind it: z-index over the
+     bar, which is itself over the panels. Takes no touch - the finger has to reach the button
+     through it. */
+  /* Starts at the button's left edge and runs to the right: centred on it, the line ran off the
+     left of a 412px screen and over the unit column (phone, 2026-09-18). The arrow is placed under
+     the button's centre by its own margin. */
+  .compact-callout {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 6px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    pointer-events: none;
+    z-index: 21;
+  }
+
+  .compact-callout-text {
+    padding: 5px 10px;
+    border: solid 1px var(--p-emerald-600, #059669);
+    border-radius: 999px;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: var(--p-emerald-300, #6ee7b7);
+    font: 600 12px/1.2 sans-serif;
+    white-space: nowrap;
+  }
+
+  .compact-callout-arrow {
+    width: 26px;
+    height: 26px;
+    margin-left: 9px;
+    color: var(--p-emerald-400, #34d399);
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.9));
+    animation: compact-callout-bounce 0.9s ease-in-out infinite;
+  }
+
+  @keyframes compact-callout-bounce {
+    0%, 100% {
+      transform: translateY(-4px);
+    }
+    50% {
+      transform: translateY(4px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .compact-callout-arrow {
+      animation: none;
+    }
   }
 
   /* Unit navigation up the left edge, opposite the minimap: find your units on the left, move the

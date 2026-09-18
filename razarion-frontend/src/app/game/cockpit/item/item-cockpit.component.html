@@ -13,9 +13,13 @@
             <div class="item-cockpit-title" [style]="{color: '#64B5F6'}">
               {{ ownItemCockpit.itemTypeName }}
             </div>
-            <div class="item-cockpit-descr">
-              {{ ownItemCockpit.itemTypeDescr }}
-            </div>
+            <!-- Not on a phone: the row is the panel's head there, and every line it takes is one the
+                 build buttons below do not get. -->
+            @if (!compactLayout.compact()) {
+              <div class="item-cockpit-descr">
+                {{ ownItemCockpit.itemTypeDescr }}
+              </div>
+            }
             <div>
               @if (itemCockpitService.count > 1) {
                 <div>
@@ -35,6 +39,13 @@
                       [title]="sellArmed ? 'Tap again to sell' : 'Sell'"
                       (click)="onSellClick()"></p-button>
           </div>
+        }
+        <!-- On a phone this row names the open panel, so it also closes it - a second header above it
+             repeated the name and cost a row (2026-09-18). -->
+        @if (compactLayout.compact()) {
+          <button type="button" class="item-cockpit-close" (click)="compactLayout.close()" aria-label="Close">
+            <i class="pi pi-times"></i>
+          </button>
         }
       </div>
       <!-- Undamaged is the normal case and says nothing; on a phone that row is a sixth of the panel. -->

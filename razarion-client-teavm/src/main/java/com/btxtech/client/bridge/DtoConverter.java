@@ -35,6 +35,7 @@ import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.system.alarm.Alarm;
+import com.btxtech.uiservice.item.TipItemState;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacer;
 import com.btxtech.uiservice.renderer.MarkerConfig;
 import org.teavm.jso.JSBody;
@@ -279,6 +280,7 @@ public class DtoConverter {
         JsObject obj = JsObject.create();
         setGetterString(obj, "getTipString", config::getTipString);
         setGetterObj(obj, "getActorItemTypeId", () -> convertNullableInt(config.getActorItemTypeId()));
+        setGetterBool(obj, "isGroup", config::isGroup);
         return obj;
     }
 
@@ -831,6 +833,35 @@ public class DtoConverter {
     }
 
     // ============ NativeSyncBaseItemTickInfo converters ============
+
+    /**
+     * Plain JS objects with fields, read once per tip evaluation - a snapshot, not a live view.
+     */
+    public static JSObject convertTipItemStates(TipItemState[] states) {
+        JsArray<JSObject> arr = JsArray.create();
+        if (states == null) {
+            return arr;
+        }
+        for (TipItemState state : states) {
+            JsObject obj = JsObject.create();
+            obj.set("id", state.id);
+            obj.set("itemTypeId", state.itemTypeId);
+            obj.set("own", state.own);
+            obj.set("x", state.x);
+            obj.set("y", state.y);
+            obj.set("idle", state.idle);
+            obj.set("buildup", state.buildup);
+            JsArray<JSObject> queue = JsArray.create();
+            if (state.factoryBuildQueue != null) {
+                for (int itemTypeId : state.factoryBuildQueue) {
+                    queue.push(itemTypeId);
+                }
+            }
+            obj.set("factoryBuildQueue", queue);
+            arr.push(obj);
+        }
+        return arr;
+    }
 
     public static JSObject convertNativeSyncBaseItemTickInfos(NativeSyncBaseItemTickInfo[] infos) {
         if (infos == null) return null;

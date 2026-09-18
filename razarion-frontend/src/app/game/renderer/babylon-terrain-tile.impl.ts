@@ -1,6 +1,7 @@
 import {
   BabylonDecal,
   BabylonTerrainTile,
+  GroundConfig,
   BotGround,
   TerrainObjectConfig,
   TerrainObjectModel,
@@ -73,6 +74,26 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private waterMesh: Mesh | null = null;
   private whitecapMesh: Mesh | null = null;
   private waterResources: WaterTileResources | null = null;
+  /**
+   * Whether any node of this tile lies below the water level (with a margin for the whitecaps), and so
+   * whether it needs a water and a whitecap mesh at all.
+   * <p>
+   * Every tile used to get both, each with exactly as many indices as the ground - so two thirds of
+   * the terrain's triangles were water, most of it under dry land where the depth test throws it
+   * away after the GPU has paid for it. Measured on a Pixel 7 on 2026-09-18: 8.9 M active indices
+   * and 12-20 fps looking at four inland tiles, Ground 614k / Water 614k / Whitecaps 614k. The start
+   * region lies inland, so this is the view every new player has.
+   * <p>
+   * Any node rather than the average: the average of a tile with a bit of coast is dry, and its
+   * water would vanish at the tile edge.
+   */
+  private hasWater = true;
+  /**
+   * The water is a flat plane at WATER_LEVEL and the whitecaps sit 0.02 above it - nothing is displaced.
+   * A tile whose every node is above that hides its water under the ground completely. Not 0.5: that
+   * is HEIGHT_DEFAULT, the height of flat land, and would have given water back to every flat tile.
+   */
+  private static readonly WATER_MARGIN = 0.05;
   // Editor toggle: when false the water + whitecap meshes are hidden so the terrain relief under the
   // sea is visible. Stored on the tile because water is built lazily in phase 4 — tiles streamed in
   // after the toggle was flipped must adopt the current state (applied in buildPhase4_WaterAndObjects).
@@ -100,6 +121,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // flat [minX,minY,maxX,maxY,...] arrays so the sprite hot-loop is pure JS with zero bridge crossings.
   private botGroundBoxes: Float64Array | null = null;
   private decalBoxes: Float64Array | null = null;
+
+  /** Whether a tile whose lowest node is at this height has any water to show. */
+  public static needsWater(minHeight: number): boolean {
+    return minHeight < BabylonTerrainTileImpl.WATER_LEVEL + BabylonTerrainTileImpl.WATER_MARGIN;
+  }
 
   /**
    * Canonical terrain-type classification. Mirrors the authoritative game-engine rule in
@@ -391,10 +417,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const terrainTile = this.terrainTile;
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
 
-    this.waterResources = this.threeJsWaterRenderService.setup(terrainTile.getIndex(), groundConfig, this.container, this.uv2GroundHeightMap, this.rendererService);
-    this.waterMesh = this.waterResources.waterMesh;
-    this.whitecapMesh = this.waterResources.whitecapMesh;
-    this.applyWaterVisibility();
+    if (this.hasWater) {
+      this.setupWater(groundConfig);
+    }
 
     if (terrainTile.getTerrainTileObjectLists()) {
       this.setupTerrainTileObjects(terrainTile.getTerrainTileObjectLists());
@@ -407,6 +432,13 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
   private static readonly TERRAIN_OBJECTS_PER_BATCH = 100;
   private static readonly TERRAIN_OBJECT_BATCH_DELAY = 16;
+
+  private setupWater(groundConfig: GroundConfig): void {
+    this.waterResources = this.threeJsWaterRenderService.setup(this.terrainTile.getIndex(), groundConfig, this.container, this.uv2GroundHeightMap, this.rendererService);
+    this.waterMesh = this.waterResources.waterMesh;
+    this.whitecapMesh = this.waterResources.whitecapMesh;
+    this.applyWaterVisibility();
+  }
 
   private setupTerrainTileObjects(terrainTileObjectLists: TerrainTileObjectList[]): void {
     // Collect all terrain objects to create, then batch-process them
@@ -730,12 +762,20 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     const yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
 
+    let minHeight = Number.POSITIVE_INFINITY;
     for (let y = 0; y < yCount; y++) {
       for (let x = 0; x < xCount; x++) {
         const index = (x + y * xCount) * 3;
         const height = positions[index + 1]; // y-component is height
+        minHeight = Math.min(minHeight, height);
         groundUtil.addHeightAt(height, x, y);
       }
+    }
+    // The editor lowered a dry tile below the water level: it needs the water it was built without.
+    if (!this.waterMesh && BabylonTerrainTileImpl.needsWater(minHeight)) {
+      this.hasWater = true;
+      this.setupWater(this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(
+        GwtHelper.gwtIssueNumber(this.terrainTile.getGroundConfigId())));
     }
 
     // Dispose old texture to prevent memory leak
@@ -771,10 +811,12 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     let yOffset = this.terrainTile.getIndex().getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
 
     // Vertices
+    let minHeight = Number.POSITIVE_INFINITY;
     for (let y = 0; y < yCount; y++) {
       for (let x = 0; x < xCount; x++) {
         const index = x + y * xCount;
         const height = BabylonTerrainTileImpl.setupHeight(index, groundHeightMap);
+        minHeight = Math.min(minHeight, height);
 
         groundUtil.addHeightAt(height, x, y);
 
@@ -793,6 +835,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         uv2GroundHeightMap.push(invertedGroundHeight, 0);
       }
     }
+
+    this.hasWater = BabylonTerrainTileImpl.needsWater(minHeight);
 
     // Compute shore direction (gradient of ground height) and store angle in UV2.y
     BabylonTerrainTileImpl.computeShoreDirections(uv2GroundHeightMap, xCount, yCount);

@@ -30,6 +30,7 @@ import {
   ItemContainerType,
   ItemTypeService,
   NativeSyncBaseItemTickInfo,
+  TipItemState,
   PhysicalAreaConfig,
   PlaceConfig,
   PlanetConfig,
@@ -1008,6 +1009,10 @@ export class GameMockService {
     }
 
     getMyOwnSyncItemTickInfos(): NativeSyncBaseItemTickInfo[] {
+      return [];
+    }
+
+    getTipItemStates(_enemyItemTypeId: number): TipItemState[] {
       return [];
     }
 

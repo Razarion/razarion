@@ -282,6 +282,10 @@ public class AngularProxyFactory {
         setMethodRetObj(proxy, "getMyOwnSyncItemTickInfos", () ->
                 DtoConverter.convertNativeSyncBaseItemTickInfos(service.getMyOwnSyncItemTickInfos()));
 
+        // getTipItemStates(enemyItemTypeId): TipItemState[]
+        setMethodIntObj(proxy, "getTipItemStates", enemyItemTypeId ->
+                DtoConverter.convertTipItemStates(service.getTipItemStates(enemyItemTypeId)));
+
         // getResources(): number
         setMethodRetObj(proxy, "getResources", () -> DtoConverter.toJsInt(service.getResources()));
 

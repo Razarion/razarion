@@ -697,7 +697,13 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     public void iterateCellQuadBaseItem(DecimalPosition center, double width, Consumer<SyncBaseItem> callback) {
-        List<Index> cellIndexes = GeometricUtil.rasterizeRectangleInclusive(Rectangle2D.generateRectangleFromMiddlePoint(center, width, width), CELL_LENGTH);
+        iterateCellRectangleBaseItem(Rectangle2D.generateRectangleFromMiddlePoint(center, width, width), callback);
+    }
+
+    /** Base items filed in the cells the rectangle touches - by their centre, so a caller looking for
+     * items reaching into the rectangle has to grow it by their radius. */
+    public void iterateCellRectangleBaseItem(Rectangle2D rectangle, Consumer<SyncBaseItem> callback) {
+        List<Index> cellIndexes = GeometricUtil.rasterizeRectangleInclusive(rectangle, CELL_LENGTH);
         cellIndexes.forEach(cellIndex -> {
             SyncItemContainerCell cell = cells.get(cellIndex);
             if (cell != null) {

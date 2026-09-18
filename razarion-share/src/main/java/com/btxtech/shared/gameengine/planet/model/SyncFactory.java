@@ -34,6 +34,9 @@ import java.util.List;
 public class SyncFactory extends SyncBaseAbility {
     private static final double GIVE_UP_RELAY_MIN = Math.toRadians(5);
     private static final double RELAY_POINT_DISTANCE = 2;
+    /** Radius around a rally point candidate in which buildings are looked at: covers the largest
+     * building radius (PROD 09/2026: 3.45) with room to spare. */
+    private static final double RALLY_BUILDING_SCAN = 10;
     // private Logger log = Logger.getLogger(SyncFactory.class.getName());
     private final GameLogicService gameLogicService;
     private final BaseItemService baseItemService;
@@ -198,6 +201,7 @@ public class SyncFactory extends SyncBaseAbility {
                 // the entire outro animation window to walk away. By the time we actually spawn
                 // the new unit at the end of cooldown, the rally point is typically already clear.
                 if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
+                    keepRallyPointClear();
                     displaceUnitsAtRallyPoint();
                 }
             }
@@ -504,24 +508,116 @@ public class SyncFactory extends SyncBaseAbility {
         }
     }
 
+    /**
+     * First spot of the sweep that the terrain allows and no building covers. A factory whose every
+     * spot is covered by buildings - a bot base laid out densely - still gets the first spot the
+     * terrain allows, as before buildings were looked at: a factory without a rally point cannot be
+     * created at all.
+     */
     private DecimalPosition findFreePosition(DecimalPosition start, double radius, TerrainType terrainType, double distance, boolean checkInsight) {
+        DecimalPosition terrainOnly = null;
         double delta = MathHelper.QUARTER_RADIANT;
         while (delta > GIVE_UP_RELAY_MIN) {
             for (double angle = 0; angle <= MathHelper.ONE_RADIANT; angle += delta) {
                 double correctedAngle = MathHelper.normaliseAngle(angle + MathHelper.THREE_QUARTER_RADIANT);
                 DecimalPosition decimalPosition = start.getPointWithDistance(correctedAngle, distance);
-                if (terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, decimalPosition, radius)) {
-                    if (checkInsight) {
-                        if (terrainService.getTerrainAnalyzer().isInSight(start, radius, decimalPosition, terrainType)) {
-                            return decimalPosition;
-                        }
-                    } else {
+                if (terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, decimalPosition, radius)
+                        && (!checkInsight || terrainService.getTerrainAnalyzer().isInSight(start, radius, decimalPosition, terrainType))) {
+                    if (isClearOfBuildings(decimalPosition, radius)) {
                         return decimalPosition;
+                    }
+                    if (terrainOnly == null) {
+                        terrainOnly = decimalPosition;
                     }
                 }
             }
             delta /= 2.0;
         }
+        if (terrainOnly != null) {
+            return terrainOnly;
+        }
         throw new IllegalStateException("SyncFactory.findFreePosition() can not find position: " + getSyncBaseItem());
+    }
+
+    /**
+     * The rally point is chosen when the factory is placed, which is usually before the rest of the
+     * base exists: the player's placer puts it right beside the factory, checked against the terrain
+     * only. A powerplant or radar built later can stand on it, or leave it in a gap narrower than the
+     * unit, and then every unit of this factory spawns wedged between two buildings - the Harvester
+     * and Viper share of the PROD "[PathingStuck] gave up" at the own base. Checked when the unit is
+     * about to appear, and moved if a building took the spot. Master only.
+     */
+    private void keepRallyPointClear() {
+        double unitRadius = toBeBuiltType.getPhysicalAreaConfig().getRadius();
+        if (rallyPoint != null && isClearOfBuildings(rallyPoint, unitRadius)) {
+            return;
+        }
+        DecimalPosition clear = findClearRallyPoint(unitRadius, toBeBuiltType.getPhysicalAreaConfig().getTerrainType());
+        if (clear != null) {
+            rallyPoint = clear;
+            syncService.notifySendSyncBaseItem(getSyncBaseItem());
+        }
+    }
+
+    /**
+     * A spot around the factory, as far from the other buildings as the sweep finds - the direction
+     * that leads out of the base rather than into the next gap. Without other buildings around, every
+     * candidate ties and the first one of the sweep wins, like in {@link #findFreePosition}.
+     */
+    private DecimalPosition findClearRallyPoint(double unitRadius, TerrainType terrainType) {
+        DecimalPosition factoryPos = getSyncBaseItem().getAbstractSyncPhysical().getPosition();
+        double distance = getSyncBaseItem().getAbstractSyncPhysical().getRadius() + unitRadius
+                + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE + RELAY_POINT_DISTANCE;
+        double delta = MathHelper.QUARTER_RADIANT;
+        while (delta > GIVE_UP_RELAY_MIN) {
+            DecimalPosition best = null;
+            double bestGap = -1;
+            for (double angle = 0; angle < MathHelper.ONE_RADIANT; angle += delta) {
+                DecimalPosition candidate = factoryPos.getPointWithDistance(MathHelper.normaliseAngle(angle + MathHelper.THREE_QUARTER_RADIANT), distance);
+                if (!terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, candidate, unitRadius)
+                        || !isClearOfBuildings(candidate, unitRadius)) {
+                    continue;
+                }
+                double gap = gapToOtherBuildings(candidate, unitRadius);
+                if (gap > bestGap) {
+                    best = candidate;
+                    bestGap = gap;
+                }
+            }
+            if (best != null) {
+                return best;
+            }
+            delta /= 2.0;
+        }
+        return null;
+    }
+
+    /** Whether a unit of this radius fits at the position without touching a building. */
+    private boolean isClearOfBuildings(DecimalPosition position, double unitRadius) {
+        boolean[] clear = {true};
+        syncItemContainerService.iterateCellQuadBaseItem(position, 2.0 * (unitRadius + RALLY_BUILDING_SCAN), other -> {
+            AbstractSyncPhysical physical = other.getAbstractSyncPhysical();
+            if (!clear[0] || physical.canMove() || !physical.hasPosition()) {
+                return;
+            }
+            if (physical.getPosition().getDistance(position) < physical.getRadius() + unitRadius + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
+                clear[0] = false;
+            }
+        });
+        return clear[0];
+    }
+
+    /** Free room between a unit at the position and the nearest building other than this factory,
+     * {@link #RALLY_BUILDING_SCAN} if there is none that close. */
+    private double gapToOtherBuildings(DecimalPosition position, double unitRadius) {
+        double[] gap = {RALLY_BUILDING_SCAN};
+        syncItemContainerService.iterateCellQuadBaseItem(position, 2.0 * (unitRadius + RALLY_BUILDING_SCAN), other -> {
+            AbstractSyncPhysical physical = other.getAbstractSyncPhysical();
+            if (other == getSyncBaseItem() || physical.canMove() || !physical.hasPosition()) {
+                return;
+            }
+            gap[0] = Math.min(gap[0], physical.getPosition().getDistance(position) - physical.getRadius() - unitRadius);
+        });
+        return gap[0];
     }
 }

@@ -247,11 +247,31 @@ export interface BaseItemUiService {
    */
   getMyOwnSyncItemTickInfos(): NativeSyncBaseItemTickInfo[];
 
+  /**
+   * The player's own selectable items and the enemies a quest is about, over the whole planet -
+   * what the quest tips decide from, whether an item is on screen or not.
+   * @param enemyItemTypeId enemies of this type; 0 for every enemy, a negative value for none
+   */
+  getTipItemStates(enemyItemTypeId: number): TipItemState[];
+
   getResources(): number;
 
   getUsedHouseSpace(): number;
 
   getHouseSpace(): number;
+}
+
+export interface TipItemState {
+  id: number;
+  itemTypeId: number;
+  own: boolean;
+  x: number;
+  y: number;
+  idle: boolean;
+  /** 1 when finished; construction sites are below. */
+  buildup: number;
+  /** Item types a factory has queued, the one in production first; empty for anything else. */
+  factoryBuildQueue: number[];
 }
 
 export interface NativeSyncBaseItemTickInfo {
@@ -461,6 +481,9 @@ export interface TipConfig {
   getTipString(): string;
 
   getActorItemTypeId(): number;
+
+  /** Whether the tip asks for a group of the actor before the command. */
+  isGroup(): boolean;
 }
 
 export interface QuestDescriptionConfig {

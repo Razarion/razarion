@@ -181,6 +181,22 @@ export class SelectionService {
     return Array.from(this.selectedOwnItemIds);
   }
 
+  /**
+   * The selected own items of one type, by id - including those scrolled out of view.
+   *
+   * getSelectedOwnItems() only holds the rendered instances, so a unit that is selected and off
+   * screen is missing from it although it is still selected and still takes orders.
+   */
+  getSelectedOwnItemIdsOfType(itemTypeId: number): number[] {
+    const ids: number[] = [];
+    for (const [id, type] of this.selectedOwnItemTypes) {
+      if (type.getId() === itemTypeId) {
+        ids.push(id);
+      }
+    }
+    return ids;
+  }
+
   getSelectedOtherId(): number | null {
     return this.selectedOtherId;
   }

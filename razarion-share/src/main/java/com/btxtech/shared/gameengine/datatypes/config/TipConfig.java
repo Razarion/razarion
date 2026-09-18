@@ -7,6 +7,11 @@ import jsinterop.annotations.JsType;
 public class TipConfig {
     private String tipString;
     private Integer actorItemTypeId;
+    /**
+     * Whether the tip asks for a group of the actor before the command. Only where the quest needs
+     * one: the first attack (365) teaches attacking with a single unit, the group comes with 379.
+     */
+    private boolean group;
 
     public String getTipString() {
         return tipString;
@@ -24,6 +29,14 @@ public class TipConfig {
         this.actorItemTypeId = actorItemTypeId;
     }
 
+    public boolean isGroup() {
+        return group;
+    }
+
+    public void setGroup(boolean group) {
+        this.group = group;
+    }
+
     public TipConfig tipString(String tipString) {
         setTipString(tipString);
         return this;
@@ -31,6 +44,11 @@ public class TipConfig {
 
     public TipConfig actorItemTypeId(Integer actorItemTypeId) {
         setActorItemTypeId(actorItemTypeId);
+        return this;
+    }
+
+    public TipConfig group(boolean group) {
+        setGroup(group);
         return this;
     }
 

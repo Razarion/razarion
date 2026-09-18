@@ -19,4 +19,10 @@
       (onChangeEmitter)="onActorItemTypeIdChange()"></base-item-type>
     </div>
   </div>
+  <div class="grid grid-cols-12 gap-4">
+    <span class="col-span-3" title="Ask for a group of the actor before the command. Not on the first attack.">Group tip</span>
+    <div class="col-span-9">
+      <p-checkbox [(ngModel)]="group" [binary]="true" (onChange)="onGroupChange()"></p-checkbox>
+    </div>
+  </div>
 }

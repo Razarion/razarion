@@ -103,6 +103,12 @@ export class TipStallTrackerService {
     if (this.firstInteractionTracker.lastPlayerAction >= this.taskStartTime) {
       return;
     }
+    // Waiting for a unit is not an unanswered tip. Measured on PROD 16.-18.09.2026: 102 of the
+    // first 164 records were quest 359 while the factory built the harvester - the player right
+    // where he should be, and the tip quiet on purpose.
+    if (this.source.asksPlayer?.() === false) {
+      return;
+    }
     this.firstInteractionTracker.report('TIP_COLD',
       `quest=${this.questId ?? '-'} task=${this.source.getTaskName()}`);
   }

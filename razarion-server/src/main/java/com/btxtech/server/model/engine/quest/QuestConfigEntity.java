@@ -29,6 +29,8 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BaseItemTypeEntity tipActorItemType;
+    /** Nullable: the column is added to existing rows, which read as "no group". */
+    private Boolean tipGroup;
 
     public QuestConfig toQuestConfig() {
         QuestConfig questConfig = new QuestConfig().id(getId()).internalName(getInternalName()).xp(xp).razarion(razarion).crystal(crystal);
@@ -38,7 +40,8 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
         if (tipString != null) {
             questConfig.setTipConfig(new TipConfig()
                     .tipString(tipString)
-                    .actorItemTypeId(extractId(tipActorItemType, BaseEntity::getId)));
+                    .actorItemTypeId(extractId(tipActorItemType, BaseEntity::getId))
+                    .group(Boolean.TRUE.equals(tipGroup)));
         }
         return questConfig;
     }
@@ -59,6 +62,7 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
         TipConfig tipConfig = questConfig.getTipConfig();
         if (tipConfig != null) {
             tipString = tipConfig.getTipString();
+            tipGroup = tipConfig.isGroup();
             if (tipConfig.getActorItemTypeId() != null) {
                 tipActorItemType = (BaseItemTypeEntity) new BaseItemTypeEntity().id(tipConfig.getActorItemTypeId());
             } else {
@@ -67,6 +71,7 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
         } else {
             tipString = null;
             tipActorItemType = null;
+            tipGroup = null;
         }
     }
 

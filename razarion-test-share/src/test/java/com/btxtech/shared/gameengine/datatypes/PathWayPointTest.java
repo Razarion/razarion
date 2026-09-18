@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
 import com.btxtech.shared.gameengine.planet.model.AbstractSyncPhysical;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
@@ -150,7 +151,8 @@ public class PathWayPointTest {
     private Path createPath(List<DecimalPosition> wayPositions) {
         SimplePath simplePath = new SimplePath();
         simplePath.setWayPositions(wayPositions);
-        Path path = new Path(terrainService);
+        // An empty item container: these tests are about the terrain sight tests, no building around.
+        Path path = new Path(terrainService, new SyncItemContainerServiceImpl(null, null, terrainService, null, null, null, null, null));
         path.init(simplePath);
         return path;
     }

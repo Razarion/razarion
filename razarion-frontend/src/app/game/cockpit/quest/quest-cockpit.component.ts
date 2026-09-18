@@ -57,12 +57,16 @@ export class QuestCockpitComponent implements QuestCockpit {
   }
 
   /**
-   * The single line the compact status bar shows: the step the player is on. The first unfinished
-   * row, or the last one when everything is done and the quest is about to close.
+   * The whole progress on one line, for the phone's quest strip - the only place the quest shows
+   * there since the quest panel is gone from the compact layout. Every row, not only the open one:
+   * a quest like "Radar and Powerplant" has two, and the strip has to say which is done.
    */
-  get currentProgressText(): string {
-    const open = this.progressRows.find(row => !row.done);
-    return (open ?? this.progressRows[this.progressRows.length - 1])?.text ?? '';
+  get progressSummary(): string {
+    const rows = this.progressRows.map(row => (row.done ? '✓ ' : '') + row.text);
+    if (this.timeRow) {
+      rows.push(this.timeRow);
+    }
+    return rows.join(' · ');
   }
 
   showQuestSideBar(questDescriptionConfig: QuestDescriptionConfig | null, showQuestSelectionButton: boolean): void {

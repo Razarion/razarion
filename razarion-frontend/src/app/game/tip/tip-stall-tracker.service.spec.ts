@@ -236,6 +236,15 @@ describe('TipStallTrackerService', () => {
       service.stop();
     }));
 
+    /** A tip that is quiet while a unit works asks nothing, so nobody answering it means nothing. */
+    it('says nothing while the tip is quiet', fakeAsync(() => {
+      service.taskStarted(359, {...source(TipStallReason.AWAIT_IDLE), asksPlayer: () => false});
+      tick(TipStallTrackerService.COLD_MILLIS);
+
+      expect(coldBodies().length).toBe(0);
+      service.stop();
+    }));
+
     /** The game reaching a milestone is not the player being there. */
     it('is not satisfied by the game doing something', fakeAsync(() => {
       service.taskStarted(358, source());
