@@ -1,9 +1,7 @@
 package com.btxtech.server.rest.director;
 
 import com.btxtech.server.service.director.DirectorService;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Director mode = filming the live game world for social-media clips.
@@ -142,44 +139,15 @@ public class DirectorController {
                 .toList();
     }
 
-    /** @param sorted ascending; empty gives 0. */
-    private static double median(double[] sorted) {
-        return percentile(sorted, 0.5);
-    }
-
-    /** @param sorted ascending; empty gives 0. Nearest-rank, which needs no interpolation. */
-    private static double percentile(double[] sorted, double p) {
-        if (sorted.length == 0) {
-            return 0;
-        }
-        int index = (int) Math.round(p * (sorted.length - 1));
-        return sorted[Math.max(0, Math.min(sorted.length - 1, index))];
-    }
-
     private DirectorBaseInfo toDirectorBaseInfo(PlayerBaseInfo info) {
         PlayerBase base = baseItemService.getPlayerBase4BaseId(info.getBaseId());
-        List<DecimalPosition> positions = base instanceof PlayerBaseFull full
-                ? full.getItems().stream()
-                .map(item -> item.getAbstractSyncPhysical().getPosition())
-                .filter(Objects::nonNull)
-                .toList()
-                : List.of();
-        if (positions.isEmpty()) {
+        BaseGeometry geometry = BaseGeometry.of(base);
+        if (geometry.centre() == null) {
             return new DirectorBaseInfo(info.getBaseId(), info.getName(), info.getCharacter(),
                     info.getUserId(), 0, null, null, null);
         }
-        // Both numbers are deliberately robust rather than exact, because one unit can be
-        // anywhere: a transporter crossing the map belongs to the base and says nothing about
-        // where the base is. On production a base of 15 units had a mean-and-maximum spread of
-        // 796 while the median base measured 23, and a camera framed on that filmed the planet
-        // from orbit. The median position and the 80th percentile of the distances describe the
-        // part of a base that is actually somewhere.
-        double x = median(positions.stream().mapToDouble(DecimalPosition::getX).sorted().toArray());
-        double y = median(positions.stream().mapToDouble(DecimalPosition::getY).sorted().toArray());
-        double[] distances = positions.stream()
-                .mapToDouble(p -> Math.hypot(p.getX() - x, p.getY() - y))
-                .sorted().toArray();
         return new DirectorBaseInfo(info.getBaseId(), info.getName(), info.getCharacter(),
-                info.getUserId(), positions.size(), x, y, percentile(distances, 0.8));
+                info.getUserId(), geometry.itemCount(),
+                geometry.centre().getX(), geometry.centre().getY(), geometry.radius());
     }
 }
