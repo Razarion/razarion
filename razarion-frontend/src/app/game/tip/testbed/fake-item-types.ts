@@ -30,6 +30,7 @@ export const ItemTypeId = {
   POWERPLANT: 7,
   DOCKYARD: 11,
   HYDRA: 12,
+  TRANSPORTER: 18,
   BOT_EXTRACTOR: 22,
   BOT_REFINERY: 24,
   BOT_TESLA: 25,
@@ -57,11 +58,14 @@ const specs: FakeItemTypeSpec[] = [
   {id: ItemTypeId.POWERPLANT, name: 'Powerplant', price: 35, radius: 2, speed: 0, health: 30, buildSeconds: 10},
   {
     id: ItemTypeId.DOCKYARD, name: 'Dockyard', price: 35, radius: 3, speed: 0, health: 40, buildSeconds: 10,
-    fabricates: [ItemTypeId.HYDRA]
+    fabricates: [ItemTypeId.HYDRA, ItemTypeId.TRANSPORTER]
   },
   {
     id: ItemTypeId.HYDRA, name: 'Hydra', price: 13, radius: 1, speed: 5, health: 13, buildSeconds: 5,
     weapon: {range: 10, damage: 4, reloadSeconds: 1}
+  },
+  {
+    id: ItemTypeId.TRANSPORTER, name: 'Transporter', price: 50, radius: 1, speed: 3, health: 25, buildSeconds: 8
   },
   {id: ItemTypeId.BOT_EXTRACTOR, name: '(Bot1) Extractor', price: 0, radius: 2, speed: 0, health: 15, buildSeconds: 0},
   {id: ItemTypeId.BOT_REFINERY, name: '(Bot1) Refinery', price: 0, radius: 3, speed: 0, health: 15, buildSeconds: 0},

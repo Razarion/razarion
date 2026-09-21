@@ -150,6 +150,23 @@ describe('TipStallTrackerService', () => {
     expect(postedBodies().length).toBe(0);
   }));
 
+  it('does not call a loop the player is driving a restart loop', fakeAsync(() => {
+    // Since the guide replaced the chain, a step back is what the world did. A player putting his
+    // selection down and picking it up again three times in ten seconds is not a broken tip - and
+    // was reported as one (PROD 365/379 SELECT|CHAIN_THRASHING, 18.-20.09.2026).
+    const interactions = TestBed.inject(FirstInteractionTrackerService);
+    for (let i = 0; i < TipStallTrackerService.THRASHING_FAILURES; i++) {
+      service.taskStarted(365, source());
+      tick(1000);
+      interactions.report('SELECT');
+      tick(500);
+      service.taskEnded(false);
+    }
+
+    expect(postedBodies().filter(body => body.reason === TipStallReason.CHAIN_THRASHING).length).toBe(0);
+    service.stop();
+  }));
+
   it('does not add up backtracks that are far apart', fakeAsync(() => {
     // A player who gives up on a step now and then is not a broken chain.
     for (let i = 0; i < 4; i++) {

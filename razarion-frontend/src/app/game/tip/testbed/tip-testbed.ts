@@ -6,6 +6,7 @@ import {SelectionService} from '../../selection.service';
 import {ActionService} from '../../action.service';
 import {FirstInteractionTrackerService} from '../../tracking/first-interaction-tracker.service';
 import {FakeBaseItem, FakeItemCockpit, FakeResourceItem, QuestCondition, Unit, World} from './fake-world';
+import {TipStallReason} from '../tip-stall';
 import {fakeBaseItemType, ItemTypeId} from './fake-item-types';
 
 /** A quest with a tip, as in catalog section 3. */
@@ -54,7 +55,9 @@ export const QUESTS: Record<number, TipQuest> = {
   387: {id: 387, tip: 'FABRICATE', actorTypeId: ItemTypeId.DOCKYARD, typeCount: {typeId: ItemTypeId.HYDRA, count: 1},
     condition: {kind: 'created', typeId: ItemTypeId.HYDRA, count: 1, includeExisting: true}},
   388: {id: 388, tip: 'ATTACK', actorTypeId: ItemTypeId.HYDRA, typeCount: {typeId: ItemTypeId.BOT_HYDRA, count: 1},
-    condition: {kind: 'killed', typeId: ItemTypeId.BOT_HYDRA, count: 1}}
+    condition: {kind: 'killed', typeId: ItemTypeId.BOT_HYDRA, count: 1}},
+  389: {id: 389, tip: 'FABRICATE', actorTypeId: ItemTypeId.DOCKYARD, typeCount: {typeId: ItemTypeId.TRANSPORTER, count: 1},
+    condition: {kind: 'created', typeId: ItemTypeId.TRANSPORTER, count: 1, includeExisting: true}}
 };
 
 /** What is on the player's screen that a tip put there. */
@@ -100,6 +103,8 @@ export class TipTestbed {
   readonly violations: Violation[] = [];
   /** Expectations of the case that did not hold; see check(). */
   readonly failures: string[] = [];
+  /** How far {@link #checkRules} has read the stall reports (R8). */
+  private checkedStallReports = 0;
   private readonly openViolations = new Map<string, { since: number, message: string, recorded: boolean }>();
   private readonly tipsVisible$ = new BehaviorSubject<boolean>(true);
   quest: TipQuest | null = null;
@@ -329,6 +334,11 @@ export class TipTestbed {
     return last ? last.reason ?? null : null;
   }
 
+  /** The reasons reported to the stall tracking, in order - what R8 is read from. */
+  stallReasons(): string[] {
+    return this.stallReports.filter(report => report.reason).map(report => report.reason);
+  }
+
   // --- Rules R1-R7 (catalog section 1) ----------------------------------------------------------
 
   private checkRules(): void {
@@ -362,6 +372,15 @@ export class TipTestbed {
     if (this.errors.length > 0) {
       this.record('R7', `console.error: ${this.errors.join(' | ')}`);
       this.errors.length = 0;
+    }
+
+    // R8, the half of it that needs no case of its own: a tip that is doing its job never reports
+    // itself as a restart loop. Every other reason is judged by the case, this one never holds.
+    while (this.checkedStallReports < this.stallReports.length) {
+      const report = this.stallReports[this.checkedStallReports++];
+      if (report.reason === TipStallReason.CHAIN_THRASHING) {
+        this.record('R8', `CHAIN_THRASHING reported on ${report.tipTaskName} after ${report.waitMillis} ms`);
+      }
     }
   }
 
@@ -409,11 +428,20 @@ export class TipTestbed {
     return false;
   }
 
-  /** Anything the arrow could legitimately mean: own units, bot units, resources. */
+  /**
+   * Anything the arrow could legitimately mean: own units, bot units, resources - and the build
+   * region of a quest that has one, which R4 names explicitly ("a point inside a build region").
+   */
   private arrowPointsAtSomething(angle: number): boolean {
+    const region = this.quest?.region ?? [];
     const candidates: { x: number, y: number }[] = [
       ...[...this.world.units.values()].map(unit => ({x: unit.x, y: unit.y})),
-      ...[...this.world.resources.values()].map(resource => ({x: resource.x, y: resource.y}))
+      ...[...this.world.resources.values()].map(resource => ({x: resource.x, y: resource.y})),
+      ...region,
+      ...(region.length > 0 ? [{
+        x: region.reduce((sum, corner) => sum + corner.x, 0) / region.length,
+        y: region.reduce((sum, corner) => sum + corner.y, 0) / region.length
+      }] : [])
     ];
     return candidates.some(candidate =>
       !this.world.onScreen(candidate.x, candidate.y)

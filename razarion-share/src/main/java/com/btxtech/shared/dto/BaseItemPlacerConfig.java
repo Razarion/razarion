@@ -17,6 +17,12 @@ public class BaseItemPlacerConfig {
     private int baseItemCount;
     private Double enemyFreeRadius;
     private PlaceConfig allowedArea;
+    /**
+     * What to tell the player when the spot is outside {@link #allowedArea}, when "outside the
+     * allowed area" does not say anything they can act on. The unload placer sets it: its area is
+     * the reach of the ship they are standing next to, and only the caller knows that.
+     */
+    private String allowedAreaText;
 
     public DecimalPosition getSuggestedPosition() {
         return suggestedPosition;
@@ -80,6 +86,19 @@ public class BaseItemPlacerConfig {
 
     public BaseItemPlacerConfig allowedArea(PlaceConfig allowedArea) {
         setAllowedArea(allowedArea);
+        return this;
+    }
+
+    public String getAllowedAreaText() {
+        return allowedAreaText;
+    }
+
+    public void setAllowedAreaText(String allowedAreaText) {
+        this.allowedAreaText = allowedAreaText;
+    }
+
+    public BaseItemPlacerConfig allowedAreaText(String allowedAreaText) {
+        setAllowedAreaText(allowedAreaText);
         return this;
     }
 }

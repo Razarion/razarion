@@ -1,13 +1,17 @@
 package com.btxtech.client.jso.facade;
 
 import com.btxtech.client.jso.JsObject;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.SyncBaseItemMonitor;
+import com.btxtech.uiservice.item.SyncBaseItemState;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
@@ -115,11 +119,20 @@ public class JsItemCockpitBridge {
         setIntVoid(proxy, "requestUnload", (containerId) -> {
             try {
                 SyncBaseItemMonitor monitor = baseItemUiService.monitorSyncItem(containerId);
-                int[] containingIds = monitor.getSyncBaseItemState().getContainingItemTypeIds();
+                SyncBaseItemState state = monitor.getSyncBaseItemState();
+                int[] containingIds = state.getContainingItemTypeIds();
+                DecimalPosition containerPosition = state.getPosition2d();
+                int containerTypeId = state.getSyncBaseItem().getItemTypeId();
                 monitor.release();
                 if (containingIds != null && containingIds.length > 0) {
                     int baseItemTypeId = containingIds[0];
                     BaseItemPlacerConfig config = new BaseItemPlacerConfig().baseItemCount(1).baseItemTypeId(baseItemTypeId);
+                    PlaceConfig reach = unloadReach(itemTypeService, containerTypeId, containerPosition);
+                    if (reach != null) {
+                        BaseItemType containerType = itemTypeService.getBaseItemType(containerTypeId);
+                        config.allowedArea(reach).allowedAreaText("Too far from the "
+                                + (containerType != null ? containerType.getInternalName() : "transport"));
+                    }
                     baseItemPlacerService.activate(config, true, (decimalPositions, rallyPoint) -> {
                         gameEngineControl.unloadContainerCmd(containerId, CollectionUtils.getFirst(decimalPositions));
                     });
@@ -226,6 +239,35 @@ public class JsItemCockpitBridge {
         if (cockpitStateCallback != null) {
             callJsFunction(cockpitStateCallback);
         }
+    }
+
+    /**
+     * The circle a container can actually set a unit down in, as an allowed area for the placer.
+     * <p>
+     * Unloading has a condition building does not: the engine refuses a spot the container cannot
+     * reach ({@code SyncItemContainer.allowedUnload}), and it refuses it in silence - the order is
+     * dropped and the tick clears it. The placer knew nothing about that range, so it showed green
+     * ground the ship could not serve, and the player tapped it and got nothing. Measured on quest
+     * 392: the crossing works, the unload is where it ends.
+     * <p>
+     * The radius is the plain range, not range plus the container's own radius, which is what the
+     * engine allows. The difference is the ship's hull, and giving it away buys a margin for a ship
+     * that drifts a little while the placer is open - being slightly stricter than the engine is
+     * the safe direction: everything the placer calls green is then really placeable.
+     *
+     * @return null when there is nothing to limit by - the placer then behaves as before
+     */
+    private static PlaceConfig unloadReach(ItemTypeService itemTypeService, int containerTypeId,
+                                           DecimalPosition containerPosition) {
+        if (containerPosition == null) {
+            return null;
+        }
+        BaseItemType containerType = itemTypeService.getBaseItemType(containerTypeId);
+        ItemContainerType itemContainerType = containerType != null ? containerType.getItemContainerType() : null;
+        if (itemContainerType == null) {
+            return null;
+        }
+        return new PlaceConfig().position(containerPosition).radius(itemContainerType.getRange());
     }
 
     // --- JS array conversion ---

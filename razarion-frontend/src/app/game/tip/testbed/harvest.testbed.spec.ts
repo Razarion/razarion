@@ -104,4 +104,33 @@ describe('Tip test bed - harvest', () => {
     bed.run(2000);
     bed.check(bed.showsOnly('Click to harvest', field.id), '"Click to harvest" once the field is there');
   });
+
+  /*
+   * PROD 18.-20.09.2026, a signature the task chain never wrote: 363 and 366 report
+   * SEND_HARVEST_COMMAND|CHAIN_THRASHING. A harvest round trip ends one step (IDLE_ITEM, the
+   * harvester is working) and opens a lower one (SEND_HARVEST_COMMAND, the next field) - which is
+   * exactly HRV-06, the harvest quests are nothing but that cycle. Three small fields inside the
+   * ten-second window and the guide reports itself as a restart loop.
+   */
+  tipCase('X-09 quest 366, three fields run dry in a row: a work cycle is not a restart loop', bed => {
+    bed.own(ItemTypeId.FACTORY, -8, 0);
+    const harvester = bed.own(ItemTypeId.HARVESTER, 0, -5);
+    // Small and close: each round trip is over in about two seconds, three of them in the window.
+    bed.world.addResource(2, -4, 1);
+    bed.world.addResource(-2, -4, 1);
+    bed.world.addResource(0, -8, 1);
+    bed.lookAt(0, 0);
+    bed.click(harvester);
+    bed.activateQuest(366);
+
+    for (let round = 1; round <= 3; round++) {
+      bed.runUntil(() => bed.onlyPrompt()?.text === 'Click to harvest', 6000, `harvest prompt ${round}`);
+      const fieldId = bed.onlyPrompt()!.itemId;
+      bed.click({id: fieldId});
+      bed.runUntil(() => !bed.world.resources.has(fieldId), 8000, `field ${round} empty`);
+    }
+    bed.run(1000);
+
+    bed.check(!bed.stallReasons().includes('CHAIN_THRASHING'), 'no restart loop reported');
+  });
 });

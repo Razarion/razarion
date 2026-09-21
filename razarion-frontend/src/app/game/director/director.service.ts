@@ -106,9 +106,20 @@ export class DirectorService {
   private static readonly FOLLOW_EXPLICIT_MIN_RADIUS = 15;
   /** Nor further away than this: beyond it a base is a smudge and the clip is of nothing. */
   private static readonly FOLLOW_MAX_RADIUS = 450;
+  /** How long a battle is worth standing on after the last shot - see heldCombat. */
+  private static readonly COMBAT_HOLD_MS = 20000;
   /** Smoothed state of the follow camera; null until the first frame of a follow key. */
   private followTarget: Vector3 | null = null;
   private followRadius = 200;
+  /**
+   * Where this take last saw fighting, for which base, and when. See resolveFollow: without it the
+   * camera leaves the battle between two volleys.
+   *
+   * The base id travels with it because a plan has several keys: without it, a later key that
+   * follows another base - or the same base without the fighting - would be held on the first
+   * key's battle, which is exactly what `followWhat: 'base'` promises not to do.
+   */
+  private lastCombat: { centre: Vector3, baseId: number, at: number } | null = null;
   /** Cue indices already fired this play-through (reset on load/stop/seek). */
   private readonly firedCues = new Set<number>();
   private lastSeq = 0;
@@ -245,6 +256,8 @@ export class DirectorService {
     this.clockMs = 0;
     this.playing = false;
     this.firedCues.clear();
+    // A new take starts without a battle to hold on to (see resolveFollow).
+    this.lastCombat = null;
     if (quiet) {
       console.log('[Director] plan adopted, camera left alone:', id);
       return;
@@ -269,6 +282,7 @@ export class DirectorService {
     this.playing = false;
     this.clockMs = 0;
     this.firedCues.clear();
+    this.lastCombat = null;
     if (this.renderer) this.renderer.directorActive = false;
   }
 
@@ -496,17 +510,46 @@ export class DirectorService {
    * `dtMs` null means "do not smooth": a plan just loaded or seeked, and there is nothing to ease
    * from - easing there would start every recording with a slow drift out of the previous shot.
    */
+  /**
+   * The remembered battle, while it still belongs to this key and is still worth standing on.
+   *
+   * Bounded on purpose. Holding it for the whole take is right while a fight is merely quiet and
+   * wrong once it is over: the last defender dies, and the camera stays on an empty patch of
+   * ground for the rest of the shot instead of going back to the base it is following. Well past
+   * the tracker's own window, so an ordinary lull never reaches it.
+   */
+  private heldCombat(key: DirectorCameraKey): Vector3 | null {
+    const last = this.lastCombat;
+    if (!last || key.followWhat !== 'combat' || key.followBaseId !== last.baseId) {
+      return null;
+    }
+    return Date.now() - last.at <= DirectorService.COMBAT_HOLD_MS ? last.centre : null;
+  }
+
   private resolveFollow(key: DirectorCameraKey, dtMs: number | null): { target: Vector3; radius: number } | null {
     const renderer = this.renderer;
     if (!renderer || key.followBaseId == null) {
       return null;
     }
     const extent = renderer.baseExtent(key.followBaseId);
+    // Where the fighting is, or - once this take has seen any - where it last was.
+    //
+    // The tracker only remembers the last few seconds, which is right for "is anything happening
+    // here", and wrong as the only thing the camera stands on: a fight has gaps longer than that,
+    // a reload or a unit closing the distance, and on every gap the camera left for the middle of
+    // the base and came back on the next shot. The base centre is typically a hundred metres away,
+    // so that reads as the camera zooming out and in again rather than as a camera following
+    // anything - it is what made the filmed Garrison fight unusable either side of the action.
+    // The battle is still where it was, so the camera stays there until it hears otherwise.
+    const combat = key.followWhat === 'combat'
+      ? renderer.combatTracker.centre(CombatTracker.DEFAULT_WINDOW_MS, key.followBaseId)
+      : null;
+    if (combat) {
+      this.lastCombat = {centre: combat, baseId: key.followBaseId, at: Date.now()};
+    }
     // A base with nothing in it is a base that has just been destroyed. Hold the last framing
     // rather than snapping to the origin, so the shot ends on the wreckage.
-    const wanted = (key.followWhat === 'combat'
-      ? renderer.combatTracker.centre(CombatTracker.DEFAULT_WINDOW_MS, key.followBaseId)
-      : null) ?? extent?.centre ?? this.followTarget;
+    const wanted = combat ?? this.heldCombat(key) ?? extent?.centre ?? this.followTarget;
     if (!wanted) {
       return null;
     }

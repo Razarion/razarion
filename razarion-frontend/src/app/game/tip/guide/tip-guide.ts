@@ -313,7 +313,12 @@ export class TipGuide implements ViewFieldListener {
       return;
     }
     if (previous) {
-      const forward = (TipGuide.STEP_RANK[decision.taskName] ?? 0) >= (TipGuide.STEP_RANK[previous.taskName] ?? 0);
+      // Leaving IDLE_ITEM is never a step back: the unit finished what it was doing, and the next
+      // round of a quest that asks for ten Razarion or three vipers starts below it by design
+      // (HRV-06, FAB-06). Counting it as a failure reported the harvest quests as a restart loop
+      // (X-09; PROD 363/366 SEND_HARVEST_COMMAND|CHAIN_THRASHING, 18.-20.09.2026).
+      const forward = previous.taskName === TipTaskName.IDLE_ITEM
+        || (TipGuide.STEP_RANK[decision.taskName] ?? 0) >= (TipGuide.STEP_RANK[previous.taskName] ?? 0);
       this.deps.stallTracker.taskEnded(forward);
     }
     this.deps.stallTracker.taskStarted(this.quest?.questId ?? null, this.stallSource);

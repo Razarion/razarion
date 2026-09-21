@@ -93,6 +93,31 @@ describe('Tip test bed - fabricate', () => {
     bed.runUntil(() => bed.questPassed, 20000, 'quest 387 passing');
   });
 
+  /*
+   * Quest 389 (level 8, the transporter) was missing from the test bed, and PROD shows why it has
+   * to be in: SELECT|ACTOR_NOT_FOUND on 389 went from 11 records to 1 with the guide, and
+   * SELECT|AWAIT_SELECTION appeared in its place. That is the improvement written down - the tip
+   * now finds the dockyard and asks for it, where the chain claimed there was nothing to point at -
+   * and the case makes sure the reason stays that one.
+   */
+  tipCase('FAB-08 quest 389: select the dockyard, then the hint on the transporter button', bed => {
+    const dockyard = bed.own(ItemTypeId.DOCKYARD, 0, 0);
+    bed.lookAt(0, 0);
+    bed.activateQuest(389);
+    bed.run(1500);
+    bed.check(bed.showsOnly('Click to select', dockyard.id), '"Click to select" on the dockyard');
+
+    bed.run(31000); // the player does not act: the watchdog names what the tip is waiting for
+    bed.check(bed.stallReasons().every(reason => reason === 'AWAIT_SELECTION'),
+      `AWAIT_SELECTION and nothing else, got ${bed.stallReasons().join(', ') || 'nothing'}`);
+
+    bed.click(dockyard);
+    bed.run(1500);
+    bed.check(bed.view().cockpitHintTypeId === ItemTypeId.TRANSPORTER, 'hint on the transporter button');
+    bed.clickBuildButton(ItemTypeId.TRANSPORTER);
+    bed.runUntil(() => bed.questPassed, 20000, 'quest 389 passing');
+  });
+
   tipGraceful('FAB-02 too little Razarion: no hint on a disabled button', bed => {
     const factory = base(bed);
     bed.world.razarion = 5;

@@ -168,6 +168,55 @@ describe('Tip test bed - build', () => {
     bed.check(REGION_386.length === 4, 'region');
   });
 
+  /*
+   * PROD 18.-20.09.2026: SEND_BUILD_COMMAND|TARGET_OUT_OF_VIEW is the most frequent of the new
+   * signatures (10 records in a day and a half), and it is not a defect - the placer is open, the
+   * coast is off screen, the arrow points into the region and the player does not scroll for half
+   * a minute. The case pins that reading: the guidance stays right, and the reason the watchdog
+   * writes is the one a person watching would give (R8).
+   */
+  tipCase('BLD-14 quest 386, placer open and the region off screen for 30 s: arrow, and TARGET_OUT_OF_VIEW', bed => {
+    const builder = base(bed);
+    bed.click(builder);
+    bed.activateQuest(386);
+    bed.run(1500);
+    bed.clickBuildButton(ItemTypeId.DOCKYARD);
+    bed.run(1500);
+    bed.check(bed.arrowPointsAt(60, 0), 'test setup: arrow into the region');
+
+    bed.run(31000);
+
+    bed.check(bed.arrowPointsAt(60, 0), 'arrow still into the region after half a minute');
+    bed.check(bed.stallReasons().includes('TARGET_OUT_OF_VIEW'),
+      `TARGET_OUT_OF_VIEW reported, got ${bed.stallReasons().join(', ') || 'nothing'}`);
+  });
+
+  /*
+   * PROD 18.-20.09.2026: AWAIT_BUILD_FINALIZE (5) and AWAIT_BUILD_SITE (3) on 386, both new. The
+   * dockyard is the one building of the chain that stands far from the base: the builder drives to
+   * the coast and puts up a building that takes its time, and the whole of it is longer than the
+   * watchdog's thirty seconds. Nothing is stuck - the tip is quiet on purpose (R3) - so the records
+   * are a measurement of the player's wait, and the case holds the reason to the two honest ones.
+   */
+  tipCase('BLD-15 quest 386, the drive and the build take longer than the watchdog: quiet, and an honest reason', bed => {
+    const builder = bed.own(ItemTypeId.BUILDER, -40, 0);
+    bed.lookAt(-40, 0);
+    bed.click(builder);
+    bed.activateQuest(386);
+    bed.run(1500);
+    bed.clickBuildButton(ItemTypeId.DOCKYARD);
+    bed.run(1000);
+    bed.lookAt(60, 0);
+    bed.run(1000);
+    bed.place(60, 0);
+    bed.run(35000); // 100 units of driving at speed 4, then ten seconds of building
+
+    bed.check(bed.stallReasons().length > 0, 'the watchdog fired at all');
+    bed.check(bed.stallReasons().every(reason => reason === 'AWAIT_BUILD_SITE' || reason === 'AWAIT_BUILD_FINALIZE'),
+      `only the two build reasons, got ${bed.stallReasons().join(', ')}`);
+    bed.runUntil(() => bed.questPassed, 20000, 'quest 386 passing');
+  });
+
   tipGraceful('PLC-02 too little Razarion: no hint on a disabled button', bed => {
     const builder = base(bed);
     bed.world.razarion = 20;

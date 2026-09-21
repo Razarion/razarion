@@ -170,6 +170,7 @@ test bed should run the **actor** axis in full for *every* step.
 | GRP-04 | units off screen, not selected | direction arrow to them | ? |
 | GRP-05 | quest 365 (first attack) | no group tip (Q4) | ✓ bed since the `group` field of the tip config (2026-09-18), ✗ from 2026-09-16 until then |
 | GRP-06 | one of the group dies while asked | count adapts | ? |
+| GRP-07 | the box falls back to a single viper three times in ten seconds | the group tip comes and goes with the selection, and none of it is a restart loop | ✓ bed since 2026-09-20; before: `SELECT_GROUP|CHAIN_THRASHING` |
 
 ### PLC - Press the build button (BUILD)
 
@@ -201,6 +202,8 @@ test bed should run the **actor** axis in full for *every* step.
 | BLD-11 | construction site destroyed | back to placing | ✓ bed since the guide (2026-09-18); the chain: a destroyed site looks like one out of view (no removed-listener, W5); the task waits for it forever and never offers the placement again |
 | BLD-12 | builder dies | fail gracefully (Q1) | ? |
 | BLD-13 | finished while off screen | quest done, everything gone | ✓ bed |
+| BLD-14 | 386, placer open and the region off screen, the player does not scroll for 30 s | arrow into the region the whole time, stall reason `TARGET_OUT_OF_VIEW` | ✓ bed since 2026-09-20 |
+| BLD-15 | 386, drive to the coast plus the build take longer than the watchdog | quiet (R3); the only reasons reported are `AWAIT_BUILD_SITE` and `AWAIT_BUILD_FINALIZE` | ✓ bed since 2026-09-20 |
 
 ### FAB - Fabricate (FABRICATE)
 
@@ -213,6 +216,7 @@ test bed should run the **actor** axis in full for *every* step.
 | FAB-05 | several factories / dockyards | hint on the selected one | ? |
 | FAB-06 | 369 (3 vipers): after the first | hint for the next one, without a detour through SEL | ✓ bed |
 | FAB-07 | unit finished, factory off screen | quest done or next hint | ✓ bed since the guide (2026-09-18); the chain: the idle step can only read a factory on screen - with the camera elsewhere it points the arrow at the working factory and the hint for the next viper never comes |
+| FAB-08 | 389 (transporter), dockyard not selected | "Click to select" on the dockyard, then the hint on the transporter button; `AWAIT_SELECTION` while the player does not act | ✓ bed since 2026-09-20; the chain: `ACTOR_NOT_FOUND` (11 records on PROD, 1 with the guide) |
 
 ### HRV - Harvest (HARVEST)
 
@@ -266,7 +270,9 @@ test bed should run the **actor** axis in full for *every* step.
 | X-05 | touch: pan starts on a unit | no click, no step change | ~ |
 | X-06 | quest starts while the placer is open | ? | ? |
 | X-07 | chain throws | recovery + `CHAIN_ERROR` (R7) | ? |
-| X-08 | chain keeps going back and forth | `CHAIN_THRASHING` | ✓ test |
+| X-08 | the tip keeps going back and forth **on its own** | `CHAIN_THRASHING` | ✓ test |
+| X-09 | 366, three small fields run dry one after the other | every round trip starts the next step; none of it is a restart loop | ✓ bed since 2026-09-20; before: `SEND_HARVEST_COMMAND|CHAIN_THRASHING` |
+| X-10 | the player puts his selection down and picks it up three times in ten seconds | the tip follows him (SEL-13) and reports no restart loop | ✓ bed since 2026-09-20; before: `SELECT|CHAIN_THRASHING` |
 
 ---
 
@@ -358,21 +364,25 @@ In `razarion-frontend/src/app/game/tip/testbed/`, run with
   `BaseItemUiService` feeds the real renderer: instances only inside the render box, created before
   their engine state is set, removed from view or disposed with the matching selection call.
   `FakeItemCockpit` is rebuilt from the rendered selection on every selection change.
-- **`tip-testbed.ts`** - the real `TipService`, `TipTaskFactory`, all tasks, `SelectionService`,
-  `ActionService` and `TipStallTrackerService` on top of it; only renderer, worker queries, cockpit
+- **`tip-testbed.ts`** - the real `TipService` with its guide, `SelectionService`, `ActionService`
+  and `TipStallTrackerService` on top of it; only renderer, worker queries, cockpit
   and network are faked. The player clicks, boxes, deselects, scrolls and places through the real
   `ActionService`. `view()` is what the player sees: prompts on items that are on screen, the
   direction arrow, the cockpit hint, the place marker, the group prompt. R1-R5 and R7 are checked
-  after every 100 ms step, with 1.5 s grace (R6). R8 is not checked yet.
+  after every 100 ms step, with 1.5 s grace (R6). Of R8, the half that needs no case of its own is
+  checked everywhere since 2026-09-20: a `CHAIN_THRASHING` record is a violation in every case,
+  because a tip that is doing its job never reports itself as a restart loop. The rest of R8 -
+  which reason is the honest one - is checked case by case through `stallReasons()`.
 - **`tip-case.ts`** - three kinds of test:
   - `tipCase` - the case's own checks and every rule hold.
   - `tipRegression` - a reported bug, pinned to the rules it broke.
   - `tipGraceful` - a case the quests are prepared against: every rule but R1 (nothing to teach,
     only nothing wrong).
-- **`select`, `attack`, `build`, `fabricate`, `harvest`, `cross` `.testbed.spec.ts`** - 44
-  cases across all four tip types. Not covered yet: SEL-04/06/07/09/12/14, GRP-01/03/04/06, PLC-03/04/07/08,
-  BLD-01/05/10/12, FAB-03/05, ATK-04/08/10b/11, IDL-01/03/04/07, X-02/04/05/06/07/08 - several of them
-  are covered by the unit specs of the tasks, and X-04 (reload) and X-05 (touch) are outside what the
+- **`select`, `attack`, `build`, `fabricate`, `harvest`, `cross` `.testbed.spec.ts`** - 50
+  cases across all four tip types, quests 358 to 389. Not covered yet: SEL-04/06/07/09/12/14,
+  GRP-01/03/04/06, PLC-03/04/07/08, BLD-01/05/10/12, FAB-03/05, ATK-04/08/10b/11, IDL-01/03/04/07,
+  X-02/04/05/06/07/08 - several of them
+  are covered by the unit specs, and X-04 (reload) and X-05 (touch) are outside what the
   bed simulates.
 
 Exceptions out of the tip code count as R7 findings rather than test errors: out of a timer the loop
@@ -385,6 +395,32 @@ wrong); the bed now runs the guide only.
 The bed was checked against the bug reported on 2026-09-18: with c3f1ce3a7 reverted it reports R2
 and R3 at 3.8 s - "Click to select" on the selected viper as it arrives - exactly as seen in the
 game.
+
+### What PROD said after the switch (measured 2026-09-20)
+
+The guide went live on 2026-09-18 15:32 UTC. Over the next 1.5 days `tip_stall` fell from 25.0 to
+19.6 records per 100 quest activations, and three of the signatures the chain used to write
+disappeared completely (`361|SELECT|ACTOR_NOT_FOUND`, `386|SEND_BUILD_COMMAND|ACTOR_OUT_OF_VIEW`,
+`379|IDLE_ITEM|ACTOR_OUT_OF_VIEW`). Seven signatures were **new**, and each one became a case:
+
+| New on PROD | Records | What it turned out to be |
+|---|---|---|
+| `363/366 SEND_HARVEST_COMMAND\|CHAIN_THRASHING` | 3 | the tracker, not the tip: **X-09** |
+| `365/379 SELECT\|CHAIN_THRASHING`, `379 SELECT_GROUP\|CHAIN_THRASHING` | 16 | the tracker, not the tip: **X-10**, **GRP-07** |
+| `386 SEND_BUILD_COMMAND\|TARGET_OUT_OF_VIEW` | 10 | correct: the coast is off screen and the player does not scroll - **BLD-14** |
+| `386 SEND_BUILD_COMMAND\|AWAIT_BUILD_SITE/FINALIZE` | 8 | correct: the drive to the coast plus the build outlast the watchdog - **BLD-15** |
+| `389 SELECT\|AWAIT_SELECTION` | 3 | an improvement: the chain said `ACTOR_NOT_FOUND` here - **FAB-08** |
+
+The two thrashing families were one defect with two halves, both fixed on 2026-09-20 and both
+pinned by the cases above:
+
+1. `TipGuide.reportStep` ranked `IDLE_ITEM` highest and called every step below it a failure. But
+   leaving `IDLE_ITEM` means the unit finished its work - it is how HRV-06 and FAB-06 go round.
+2. `TipStallTrackerService.checkThrashing` counted those backtracks without asking whether the
+   player caused them. A step back is what the *world* did, and the world is mostly the player:
+   a selection put down and picked up, a box tried out, a field run dry. The detector now asks the
+   same question `COLD_MILLIS` asks - was anybody there - and stays silent if they were. A tip
+   looping on its own, with nobody touching it, is still reported (X-08).
 
 Still needed outside the bed: **a worker query** for the position of own units by id, or the
 nearest own unit of a type. Without it SEL-03 and ATK-06 cannot be solved - that is a change to the

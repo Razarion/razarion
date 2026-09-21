@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import jakarta.inject.Inject;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 public class SyncItemContainer extends SyncBaseAbility {
     public static final TerrainType DEFAULT_UNLOAD_TERRAIN_TYPE = TerrainType.LAND;
+    private static final Logger logger = Logger.getLogger(SyncItemContainer.class.getName());
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private final TerrainService terrainService;
     private final GameLogicService gameLogicService;
@@ -95,6 +97,7 @@ public class SyncItemContainer extends SyncBaseAbility {
             throw new IllegalStateException("No items in item container: " + getSyncBaseItem());
         }
         unloadPos = unloadContainerCommand.getUnloadPos();
+        log("unload ordered");
     }
 
     public boolean tick() throws ItemDoesNotExistException {
@@ -107,6 +110,7 @@ public class SyncItemContainer extends SyncBaseAbility {
         if (baseItemService.getGameEngineMode() != GameEngineMode.MASTER) {
             return;
         }
+        int before = containedItems.size();
         containedItems.removeIf(contained -> {
             if (allowedUnload()) {
                 contained.clearContained(unloadPos);
@@ -116,6 +120,10 @@ public class SyncItemContainer extends SyncBaseAbility {
             }
             return false;
         });
+        // tick() calls stop() right after this, so the order is over either way: an unload that was
+        // not allowed is dropped without a word, and the player is left holding a full transporter
+        // and no reason. Until that is fixed, it is at least on the record.
+        log(containedItems.size() < before ? "unloaded " + (before - containedItems.size()) : "unload REFUSED");
         setupMaxContainingRadius();
         syncService.notifySendSyncBaseItem(getSyncBaseItem());
         gameLogicService.onSyncItemContainerUnloaded(getSyncBaseItem());
@@ -153,6 +161,38 @@ public class SyncItemContainer extends SyncBaseAbility {
         if (!itemContainerType.isAbleToContain(syncBaseItem.getBaseItemType().getId())) {
             throw new IllegalArgumentException("Container " + getSyncBaseItem() + " is not able to contain: " + syncBaseItem);
         }
+    }
+
+    /**
+     * One line per step of unloading - the other half of the container trail, see
+     * {@link SyncBaseItem#logContainer}. Both conditions of {@link #allowedUnload()} are printed
+     * apart, because they fail for opposite reasons: out of range means the player picked a spot
+     * the ship cannot reach over, wrong terrain means they picked water or a slope.
+     */
+    private void log(String what) {
+        if (baseItemService.getGameEngineMode() != GameEngineMode.MASTER) {
+            return;
+        }
+        boolean inRange = false;
+        boolean terrainOk = false;
+        if (unloadPos != null) {
+            try {
+                inRange = getAbstractSyncPhysical().isInRange(getRange(), unloadPos);
+                terrainOk = terrainService.getTerrainAnalyzer()
+                        .isTerrainTypeAllowed(DEFAULT_UNLOAD_TERRAIN_TYPE, unloadPos, maxContainingRadius);
+            } catch (Throwable t) {
+                // Reporting must never be the thing that breaks the tick.
+            }
+        }
+        logger.warning("[Container] " + what
+                + " container=" + getSyncBaseItem().getId()
+                + " containerType=" + getSyncBaseItem().getBaseItemType().getInternalName()
+                + " contained=" + containedItems.size()
+                + " containerPos=" + getAbstractSyncPhysical().getPosition()
+                + " unloadPos=" + unloadPos
+                + " range=" + getRange()
+                + " inRange=" + inRange
+                + " terrainOk=" + terrainOk);
     }
 
     private boolean allowedUnload() throws ItemDoesNotExistException {

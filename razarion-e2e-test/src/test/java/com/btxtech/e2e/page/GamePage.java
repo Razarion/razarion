@@ -17,17 +17,39 @@ public class GamePage {
     private final WebDriver driver;
     private final WebDriverWait wait;
 
+    /** Dockyard(11) fabricates it; it is the only container in the game. */
+    private static final int TRANSPORTER_TYPE_ID = 18;
+
     private static final By CANVAS = By.cssSelector("canvas.canvas");
     private static final By LOADING_OVERLAY = By.cssSelector("div.cover-panel");
     private static final By MAIN_COCKPIT = By.cssSelector("main-cockpit");
     private static final By QUEST_COCKPIT = By.cssSelector("quest-cockpit");
-    private static final By QUEST_TITLE = By.cssSelector("quest-cockpit .font-semibold.text-3xl");
+    private static final By QUEST_TITLE = By.cssSelector("quest-cockpit .quest-title");
     private static final By ITEM_COCKPIT = By.cssSelector("item-cockpit");
-    private static final By BUILD_BUTTON = By.cssSelector("button.item-cockpit-buildup-button:enabled");
-    private static final By SELL_BUTTON = By.cssSelector("item-cockpit p-button[label='$'] button");
+    /**
+     * The build buttons, in both layouts the cockpit has: the HUD grid it renders today and the
+     * carousel it still falls back to.
+     * <p>
+     * Not :enabled - the buttons are deliberately never disabled. A disabled button swallows the
+     * click and the reason it cannot be pressed goes with it, so the cockpit keeps them pressable
+     * and says why instead. That makes :enabled true for every one of them, which is how this test
+     * came to click on buttons that could not build.
+     */
+    private static final String BUILDABLE = "button.hud-build-btn:not([aria-disabled='true'])";
+    private static final String BUILDABLE_CAROUSEL = "button.item-cockpit-buildup-button:not([aria-disabled='true'])";
+    private static final By BUILD_BUTTON = By.cssSelector(BUILDABLE + ", " + BUILDABLE_CAROUSEL);
+
+    /** The build button for one item type, buildable right now. */
+    private static By buildableButton(int itemTypeId) {
+        String cell = "[data-item-type-id='" + itemTypeId + "'] ";
+        return By.cssSelector(cell + BUILDABLE + ", " + cell + BUILDABLE_CAROUSEL);
+    }
+    // The label is a property binding ([label]="sellArmed ? 'Sell?' : '$'"), so it is not in the
+    // DOM as an attribute: match the rendered text instead.
+    private static final By SELL_BUTTON = By.xpath("//item-cockpit//button[normalize-space(.)='$' or normalize-space(.)='Sell?']");
     private static final By QUEST_PROGRESS_ROW = By.cssSelector("quest-cockpit .flex.flex-row .flex:last-child");
     private static final By QUEST_DONE_ICON = By.cssSelector("quest-cockpit .pi-check-circle");
-    private static final By LEVEL_BADGE = By.cssSelector("main-cockpit p-badge");
+    private static final By LEVEL_BADGE = By.cssSelector("main-cockpit .hud-xp-badge");
 
     public GamePage(WebDriver driver) {
         this.driver = driver;
@@ -195,6 +217,15 @@ public class GamePage {
         // Try a wide grid of positions across the canvas, spiraling outward
         List<int[]> offsets = new ArrayList<>();
         offsets.add(new int[]{0, 0});
+        // Fine rings first. Eighty pixels is already several metres of ground, and an unload has
+        // only the band of land within the ship's reach - a grid that starts at 80 can step over
+        // it entirely and report that nothing is placeable anywhere.
+        for (int radius = 20; radius < 80; radius += 20) {
+            for (int angle = 0; angle < 360; angle += 30) {
+                offsets.add(new int[]{(int) (radius * Math.cos(Math.toRadians(angle))),
+                        (int) (radius * Math.sin(Math.toRadians(angle)))});
+            }
+        }
         for (int radius = 80; radius <= 500; radius += 80) {
             for (int angle = 0; angle < 360; angle += 30) {
                 int x = (int) (radius * Math.cos(Math.toRadians(angle)));
@@ -206,11 +237,21 @@ public class GamePage {
             try {
                 clickCanvasAt(offset[0], offset[1]);
                 new WebDriverWait(driver, Duration.ofSeconds(1)).until(d -> isBaseItemPlacerInactive());
+                // How far from the middle of the screen the accepted spot was. For an unload that
+                // is the distance from the ship, which is what decides whether the engine accepts
+                // it - and the placer itself knows nothing about that range.
+                System.out.println("[E2E] placed at screen offset " + offset[0] + "/" + offset[1]
+                        + " (" + (int) Math.hypot(offset[0], offset[1]) + " px from the centre)");
                 return;
             } catch (Exception e) {
                 // Terrain not free, out of bounds, or not in quest region — try next
             }
         }
+        // Where the tried points actually were on the ground. A placement that is refused
+        // everywhere is either a spot that really is unusable or a grid that misses the usable
+        // band, and only the ground coordinates tell the two apart.
+        System.out.println("[E2E] nothing placeable. Ground under the canvas centre: " + groundAt(0, 0)
+                + ", at +80/0: " + groundAt(80, 0) + ", at 0/+80: " + groundAt(0, 80));
         throw new RuntimeException("Could not find free terrain for placement after trying " + offsets.size() + " positions");
     }
 
@@ -345,26 +386,53 @@ public class GamePage {
     }
 
     public void clickBuildButtonForItemType(int itemTypeId) {
-        By selector = By.cssSelector("div[data-item-type-id='" + itemTypeId + "'] button.item-cockpit-buildup-button:enabled");
+        By selector = buildableButton(itemTypeId);
         WebElement button = driver.findElement(selector);
         new Actions(driver).moveToElement(button).click().perform();
     }
 
     public boolean hasBuildButtonForItemType(int itemTypeId) {
-        By selector = By.cssSelector("div[data-item-type-id='" + itemTypeId + "'] button.item-cockpit-buildup-button:enabled");
+        By selector = buildableButton(itemTypeId);
         return !driver.findElements(selector).isEmpty();
     }
 
     public void waitForBuildButtonForItemType(int itemTypeId) {
-        By enabledSelector = By.cssSelector("div[data-item-type-id='" + itemTypeId + "'] button.item-cockpit-buildup-button:enabled");
-        wait.until(d -> {
-            if (!d.findElements(enabledSelector).isEmpty()) return true;
-            // Periodically trigger Angular change detection to ensure cockpit renders
-            executeScript(
-                    "if (window.__e2eAppRef) { window.__e2eAppRef.tick(); }"
-            );
-            return false;
-        });
+        By enabledSelector = buildableButton(itemTypeId);
+        try {
+            wait.until(d -> {
+                if (!d.findElements(enabledSelector).isEmpty()) return true;
+                // Periodically trigger Angular change detection to ensure cockpit renders
+                executeScript(
+                        "if (window.__e2eAppRef) { window.__e2eAppRef.tick(); }"
+                );
+                return false;
+            });
+        } catch (RuntimeException e) {
+            // A selector that no longer matches and a cockpit that never opened fail identically
+            // from here. Say which one it was, with what is actually in the page.
+            System.out.println("[E2E] no build button for type " + itemTypeId + ". " + describeCockpit());
+            throw e;
+        }
+    }
+
+    /** What the item cockpit currently offers, for a build button that could not be found. */
+    private String describeCockpit() {
+        try {
+            return String.valueOf(executeScript(
+                    "var cockpit = document.querySelector('item-cockpit');" +
+                    "if (!cockpit) { return 'no item-cockpit element'; }" +
+                    "var tiles = [].map.call(cockpit.querySelectorAll('[data-item-type-id]'), function (tile) {" +
+                    "  var button = tile.querySelector('button');" +
+                    "  return tile.getAttribute('data-item-type-id')" +
+                    "    + (button ? '(' + button.className + (button.disabled ? ',disabled' : '')" +
+                    "       + ',aria-disabled=' + button.getAttribute('aria-disabled') + ')' : '(no button)');" +
+                    "});" +
+                    "return 'visible=' + (cockpit.offsetParent !== null)" +
+                    "  + ' tiles=[' + tiles.join(' ') + ']'" +
+                    "  + ' buttons=' + cockpit.querySelectorAll('button.hud-build-btn, button.item-cockpit-buildup-button').length;"));
+        } catch (RuntimeException e) {
+            return "cockpit not readable: " + e.getMessage();
+        }
     }
 
     // ========== Sell Button ==========
@@ -387,6 +455,62 @@ public class GamePage {
     public void clickCanvas() {
         WebElement canvas = driver.findElement(CANVAS);
         new Actions(driver).moveToElement(canvas).click().perform();
+    }
+
+    /**
+     * Places at a point on the ground, not at a pixel on the screen.
+     * <p>
+     * The spiral in {@link #placeOnFreePosition()} says "somewhere that works", which is the right
+     * thing when the position is incidental. Where the position <em>is</em> the quest - a dockyard
+     * in the coastal region, a builder set down within a ship's reach - it is the wrong language:
+     * a screen offset cannot express a ground condition, and when the placer refuses, the test
+     * cannot say whether the spot was bad or the grid missed it.
+     * <p>
+     * Moves the camera there first, because a point off screen has no pixel to click.
+     *
+     * @return false when the placer refused the spot - the caller decides whether that is a
+     * finding or just the next candidate
+     */
+    public boolean placeAt(double groundX, double groundY) {
+        jsMoveCamera(groundX, groundY);
+        try { Thread.sleep(1500); } catch (InterruptedException ignored) {} // terrain and camera settle
+        Object screen = executeScript(
+                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
+                "var point = svc.projectGroundPositionToScreen(" + groundX + ", " + groundY + ", 0);" +
+                "if (!point) { return null; }" +
+                "var canvas = svc.getScene().getEngine().getRenderingCanvas();" +
+                "return [point.x - canvas.width / 2, point.y - canvas.height / 2];");
+        if (!(screen instanceof List) || ((List<?>) screen).size() != 2) {
+            System.out.println("[E2E] placeAt " + groundX + "/" + groundY + ": not on screen");
+            return false;
+        }
+        int offsetX = (int) Math.round(((Number) ((List<?>) screen).get(0)).doubleValue());
+        int offsetY = (int) Math.round(((Number) ((List<?>) screen).get(1)).doubleValue());
+        clickCanvasAt(offsetX, offsetY);
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(2)).until(d -> isBaseItemPlacerInactive());
+            System.out.println("[E2E] placed at " + groundX + "/" + groundY);
+            return true;
+        } catch (RuntimeException e) {
+            System.out.println("[E2E] placer refused " + groundX + "/" + groundY
+                    + " (canvas offset " + offsetX + "/" + offsetY + ")");
+            return false;
+        }
+    }
+
+    /** The terrain point under a canvas offset from the middle, as "x/y" - what a click there hits. */
+    public String groundAt(int offsetX, int offsetY) {
+        try {
+            return String.valueOf(executeScript(
+                    "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
+                    "var scene = svc.getScene();" +
+                    "var canvas = scene.getEngine().getRenderingCanvas();" +
+                    "var pick = scene.pick(canvas.width / 2 + " + offsetX + ", canvas.height / 2 + " + offsetY + ");" +
+                    "if (!pick || !pick.pickedPoint) { return 'nothing picked'; }" +
+                    "return Math.round(pick.pickedPoint.x) + '/' + Math.round(pick.pickedPoint.z);"));
+        } catch (RuntimeException e) {
+            return "not readable";
+        }
     }
 
     public void clickCanvasAt(int offsetX, int offsetY) {
@@ -617,16 +741,21 @@ public class GamePage {
     /**
      * Moves the camera to the given terrain position.
      */
+    /**
+     * Moves the camera the way the minimap does, and says where it ended up.
+     * <p>
+     * It used to assign {@code scene.activeCamera.target.x/z}. The renderer uses a FreeCamera,
+     * which has no such property to write, so the guard around it was false and the camera never
+     * moved - while the line below printed that it had. Every step that clicked the canvas after
+     * "moving" the camera was clicking wherever the camera still was; on Noob Island that is
+     * harmless, and at the Phase 2 coast it put the unload four hundred units from the ship.
+     * setViewFieldCenter is what the minimap calls, and it tells the engine about the new view.
+     */
     public void jsMoveCamera(double x, double y) {
-        executeScript(
-                "var scene = window.gwtAngularFacade.babylonRenderServiceAccess.getScene();" +
-                "var camera = scene.activeCamera;" +
-                "if (camera && camera.target) {" +
-                "  camera.target.x = " + x + ";" +
-                "  camera.target.z = " + y + ";" +
-                "}"
-        );
-        System.out.println("[E2E] Camera moved to " + x + ", " + y);
+        executeScript("window.gwtAngularFacade.babylonRenderServiceAccess.setViewFieldCenter("
+                + x + ", " + y + ");");
+        try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+        System.out.println("[E2E] camera moved to " + x + "/" + y + ", ground under the centre: " + groundAt(0, 0));
     }
 
     /**
@@ -1008,39 +1137,109 @@ public class GamePage {
      * Moves own items of the given type to the specified terrain position.
      */
     public void jsMoveItemsOfType(int itemTypeId, double x, double y) {
-        executeScript(
-                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
-                "var gameCmd = window.gwtAngularFacade.gameCommandService;" +
-                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
-                "var ids = [];" +
-                "for (var i = 0; i < items.length; i++) {" +
-                "  if (items[i].getBaseItemType().getId() === " + itemTypeId + ") {" +
-                "    ids.push(items[i].getId());" +
-                "  }" +
-                "}" +
-                "if (ids.length > 0) {" +
-                "  gameCmd.moveCmd(ids, " + x + ", " + y + ");" +
-                "}"
-        );
+        List<Long> ids = jsOwnItemIdsOfType(itemTypeId);
+        if (ids.isEmpty()) {
+            System.out.println("[E2E] jsMoveItemsOfType: no item of type " + itemTypeId + " on the planet");
+            return;
+        }
+        executeScript("window.gwtAngularFacade.gameCommandService.moveCmd(" + ids + ", " + x + ", " + y + ");");
     }
 
     /**
      * Fabricates a unit from a factory via JS command.
      */
+    /**
+     * Own items of a type over the whole planet, as {@code [{id, x, y, idle, buildup}]}.
+     * <p>
+     * Everything else here reads the renderer, which only knows what is on screen - the dockyard on
+     * the coast, a viper that drove off, the transporter halfway to the second island are all
+     * invisible to it, and a step that looks for them finds nothing and waits out its timeout. The
+     * worker knows them all; {@code getTipItemStates} is the query that asks it.
+     */
+    @SuppressWarnings("unchecked")
+    public List<java.util.Map<String, Object>> jsOwnItemsOfType(int itemTypeId) {
+        Object result = executeScript(
+                "var svc = window.gwtAngularFacade.baseItemUiService;" +
+                "if (!svc || !svc.getTipItemStates) { return []; }" +
+                "return svc.getTipItemStates(-1).filter(function (item) {" +
+                "  return item.own && item.itemTypeId === " + itemTypeId + ";" +
+                "}).map(function (item) {" +
+                "  return {id: item.id, x: item.x, y: item.y, idle: item.idle, buildup: item.buildup};" +
+                "});");
+        return result instanceof List ? (List<java.util.Map<String, Object>>) result : new ArrayList<>();
+    }
+
+    /**
+     * Enemies of a type over the whole planet, the same way {@link #jsOwnItemsOfType} finds own
+     * ones: the query takes an enemy type and returns those too, which is how the quest tip points
+     * at a target that was never on screen.
+     */
+    @SuppressWarnings("unchecked")
+    public List<java.util.Map<String, Object>> jsEnemyItemsOfType(int itemTypeId) {
+        Object result = executeScript(
+                "var svc = window.gwtAngularFacade.baseItemUiService;" +
+                "if (!svc || !svc.getTipItemStates) { return []; }" +
+                "return svc.getTipItemStates(" + itemTypeId + ").filter(function (item) {" +
+                "  return !item.own && item.itemTypeId === " + itemTypeId + ";" +
+                "}).map(function (item) {" +
+                "  return {id: item.id, x: item.x, y: item.y};" +
+                "});");
+        return result instanceof List ? (List<java.util.Map<String, Object>>) result : new ArrayList<>();
+    }
+
+    /**
+     * Sends everything of one type at the nearest enemy of another, wherever both are. The older
+     * attack helper is about vipers on land and rebuilds them from the factory; this one is the
+     * plain order, which is what the water fight of quest 388 needs.
+     */
+    public void jsAttackWithType(int attackerTypeId, int enemyTypeId) {
+        List<Long> attackerIds = jsOwnItemIdsOfType(attackerTypeId);
+        List<java.util.Map<String, Object>> enemies = jsEnemyItemsOfType(enemyTypeId);
+        if (attackerIds.isEmpty() || enemies.isEmpty()) {
+            System.out.println("[E2E] jsAttackWithType: attackers=" + attackerIds.size()
+                    + " enemies of type " + enemyTypeId + "=" + enemies.size());
+            return;
+        }
+        // The nearest one, not the first the engine happens to list: the bot keeps two dozen of
+        // them spread over the water, and sending a ship across the map to the far one loses it.
+        java.util.Map<String, Object> first = jsOwnItemsOfType(attackerTypeId).get(0);
+        double fromX = ((Number) first.get("x")).doubleValue();
+        double fromY = ((Number) first.get("y")).doubleValue();
+        java.util.Map<String, Object> enemy = enemies.stream()
+                .min(java.util.Comparator.comparingDouble(candidate ->
+                        Math.hypot(((Number) candidate.get("x")).doubleValue() - fromX,
+                                ((Number) candidate.get("y")).doubleValue() - fromY)))
+                .orElseThrow();
+        long targetId = ((Number) enemy.get("id")).longValue();
+        double enemyX = ((Number) enemy.get("x")).doubleValue();
+        double enemyY = ((Number) enemy.get("y")).doubleValue();
+        java.util.Map<String, Object> attacker = jsOwnItemsOfType(attackerTypeId).get(0);
+        double attackerX = ((Number) attacker.get("x")).doubleValue();
+        double attackerY = ((Number) attacker.get("y")).doubleValue();
+        double distance = Math.hypot(attackerX - enemyX, attackerY - enemyY);
+        System.out.printf("[E2E] attack %d at %.0f/%.0f with %s at %.0f/%.0f, distance %.0f, idle=%s%n",
+                targetId, enemyX, enemyY, attackerIds, attackerX, attackerY, distance, attacker.get("idle"));
+        executeScript("window.gwtAngularFacade.gameCommandService.attackCmd(" + attackerIds + ", " + targetId + ");");
+    }
+
+    /** The ids of all own items of a type, wherever they are. */
+    public List<Long> jsOwnItemIdsOfType(int itemTypeId) {
+        List<Long> ids = new ArrayList<>();
+        for (java.util.Map<String, Object> item : jsOwnItemsOfType(itemTypeId)) {
+            ids.add(((Number) item.get("id")).longValue());
+        }
+        return ids;
+    }
+
     public void jsFabricate(int factoryItemTypeId, int unitItemTypeId) {
+        List<Long> factoryIds = jsOwnItemIdsOfType(factoryItemTypeId);
+        if (factoryIds.isEmpty()) {
+            System.out.println("[E2E] jsFabricate: no item of type " + factoryItemTypeId + " on the planet");
+            return;
+        }
         executeScript(
-                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
                 "var bridge = window.gwtAngularFacade.itemCockpitBridge;" +
-                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
-                "var factoryIds = [];" +
-                "for (var i = 0; i < items.length; i++) {" +
-                "  if (items[i].getBaseItemType().getId() === " + factoryItemTypeId + ") {" +
-                "    factoryIds.push(items[i].getId());" +
-                "  }" +
-                "}" +
-                "if (factoryIds.length > 0 && bridge) {" +
-                "  bridge.requestFabricate(factoryIds, " + unitItemTypeId + ");" +
-                "}"
+                "if (bridge) { bridge.requestFabricate(" + factoryIds + ", " + unitItemTypeId + "); }"
         );
     }
 
@@ -1068,58 +1267,97 @@ public class GamePage {
      * Loads items into a transporter.
      */
     public void jsLoadIntoTransporter(int itemTypeIdToLoad) {
-        executeScript(
-                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
-                "var gameCmd = window.gwtAngularFacade.gameCommandService;" +
-                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
-                "var transporterId = null;" +
-                "var loadIds = [];" +
-                "for (var i = 0; i < items.length; i++) {" +
-                "  if (items[i].getBaseItemType().getId() === 18) {" +
-                "    transporterId = items[i].getId();" +
-                "  }" +
-                "  if (items[i].getBaseItemType().getId() === " + itemTypeIdToLoad + ") {" +
-                "    loadIds.push(items[i].getId());" +
-                "  }" +
-                "}" +
-                "if (transporterId != null && loadIds.length > 0) {" +
-                "  gameCmd.loadContainerCmd(loadIds, transporterId);" +
-                "}"
-        );
+        List<Long> transporterIds = jsOwnItemIdsOfType(TRANSPORTER_TYPE_ID);
+        List<Long> loadIds = jsOwnItemIdsOfType(itemTypeIdToLoad);
+        if (transporterIds.isEmpty() || loadIds.isEmpty()) {
+            System.out.println("[E2E] jsLoadIntoTransporter: transporters=" + transporterIds.size()
+                    + " to load=" + loadIds.size());
+            return;
+        }
+        System.out.println("[E2E] load " + loadIds + " into transporter " + transporterIds.get(0));
+        executeScript("window.gwtAngularFacade.gameCommandService.loadContainerCmd("
+                + loadIds + ", " + transporterIds.get(0) + ");");
+    }
+
+    /** Whether the transporter is carrying anything - the load half of quest 392, from outside. */
+    public boolean isTransporterLoaded(int itemTypeIdLoaded) {
+        return jsOwnItemsOfType(itemTypeIdLoaded).isEmpty() && !jsOwnItemsOfType(TRANSPORTER_TYPE_ID).isEmpty();
+    }
+
+    /**
+     * How far from a container a unit may be set down. The placer does not know this number - it
+     * checks terrain and neighbours - so a spot it accepts can still be one the engine refuses.
+     */
+    public Object jsContainerRange(int containerItemTypeId) {
+        return executeScript(
+                "try {" +
+                "  var type = window.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(" + containerItemTypeId + ");" +
+                "  var container = type.getItemContainerType();" +
+                "  return container ? container.getRange() : 'no container type';" +
+                "} catch (e) { return 'not readable: ' + e; }");
+    }
+
+    /** Waits for a condition of the game itself, and says what it was waiting for when it fails. */
+    public void waitUntil(java.util.function.BooleanSupplier condition, int timeoutSeconds, String what) {
+        System.out.println("[E2E] waiting for " + what);
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds)).until(d -> {
+                try {
+                    return condition.getAsBoolean();
+                } catch (RuntimeException e) {
+                    return false;
+                }
+            });
+        } catch (RuntimeException e) {
+            throw new RuntimeException("waited in vain for " + what, e);
+        }
+    }
+
+    /** Whether a position is within a radius of a point; null (nothing there) is never near. */
+    public boolean isNear(double[] position, double x, double y, double radius) {
+        return position != null && Math.hypot(position[0] - x, position[1] - y) <= radius;
+    }
+
+    /** Where an own item of this type stands, or null if there is none. */
+    public double[] jsPositionOfType(int itemTypeId) {
+        List<java.util.Map<String, Object>> items = jsOwnItemsOfType(itemTypeId);
+        if (items.isEmpty()) {
+            return null;
+        }
+        return new double[]{((Number) items.get(0).get("x")).doubleValue(),
+                ((Number) items.get(0).get("y")).doubleValue()};
     }
 
     /**
      * Unloads a transporter.
      */
+    /**
+     * Presses Unload on the transporter. That opens the base item placer - the player then picks
+     * the spot the unit steps out on - so a placement has to follow, exactly as for a building.
+     */
     public void jsUnloadTransporter() {
-        executeScript(
-                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
-                "var bridge = window.gwtAngularFacade.itemCockpitBridge;" +
-                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
-                "for (var i = 0; i < items.length; i++) {" +
-                "  if (items[i].getBaseItemType().getId() === 18) {" +
-                "    if (bridge) bridge.requestUnload(items[i].getId());" +
-                "    return;" +
-                "  }" +
-                "}"
-        );
+        List<Long> transporterIds = jsOwnItemIdsOfType(TRANSPORTER_TYPE_ID);
+        if (transporterIds.isEmpty()) {
+            System.out.println("[E2E] jsUnloadTransporter: no transporter on the planet");
+            return;
+        }
+        executeScript("var bridge = window.gwtAngularFacade.itemCockpitBridge;"
+                + "if (bridge) { bridge.requestUnload(" + transporterIds.get(0) + "); }");
     }
 
     /**
      * Gets the game ID of the first own item of given type (requires item to be rendered).
      */
+    /**
+     * The id of an own item of this type, wherever it is on the planet, or -1.
+     * <p>
+     * Asks the worker, not the renderer. The renderer knows what is on screen, so this used to
+     * answer -1 for a builder that had walked off, and the caller then sent its orders to id -1
+     * and waited out a two-minute timeout on a quest that was never given a chance.
+     */
     public int jsGetOwnItemId(int itemTypeId) {
-        Object result = executeScript(
-                "var svc = window.gwtAngularFacade.babylonRenderServiceAccess;" +
-                "var items = svc.getBabylonBaseItemsByDiplomacy('OWN');" +
-                "for (var i = 0; i < items.length; i++) {" +
-                "  if (items[i].getBaseItemType().getId() === " + itemTypeId + ") {" +
-                "    return items[i].getId();" +
-                "  }" +
-                "}" +
-                "return -1;"
-        );
-        return ((Number) result).intValue();
+        List<Long> ids = jsOwnItemIdsOfType(itemTypeId);
+        return ids.isEmpty() ? -1 : ids.get(0).intValue();
     }
 
     /**
@@ -1265,14 +1503,33 @@ public class GamePage {
      * Builds an item using the builder: clicks build button, waits for placer, places it.
      */
     public void buildViaBuilder(int itemTypeId) {
-        long countBefore = getBaseItemCount();
-        waitForBuildButtonForItemType(itemTypeId);
+        // Own items of this type, not the scene's node count. That count includes every bot unit
+        // in the scene, so it rises and falls with traffic that has nothing to do with the
+        // building - and a bot walking off screen while the site goes up hides the very thing
+        // the last step waits for.
+        int ownBefore = jsOwnItemsOfType(itemTypeId).size();
+        // Named steps, because the four waits in here all fail the same way from the outside - a
+        // timeout on a lambda - and the stack trace then says only "buildViaBuilder".
+        step("build " + itemTypeId + ": wait for the button", () -> waitForBuildButtonForItemType(itemTypeId));
         try { Thread.sleep(500); } catch (InterruptedException ignored) {} // Let carousel settle
-        clickBuildButtonForItemType(itemTypeId);
-        waitForBaseItemPlacerActive();
+        step("build " + itemTypeId + ": click the button", () -> clickBuildButtonForItemType(itemTypeId));
+        step("build " + itemTypeId + ": wait for the placer", this::waitForBaseItemPlacerActive);
         try { Thread.sleep(500); } catch (InterruptedException ignored) {} // Let placer initialize
-        placeOnFreePosition();
-        waitForBaseItemCountAbove(countBefore);
+        step("build " + itemTypeId + ": place it", this::placeOnFreePosition);
+        step("build " + itemTypeId + ": wait for the item",
+                () -> waitUntil(() -> jsOwnItemsOfType(itemTypeId).size() > ownBefore, 60,
+                        "a new item of type " + itemTypeId));
+    }
+
+    /** Runs a step, says so, and names it again if it throws. */
+    private void step(String what, Runnable body) {
+        System.out.println("[E2E] " + what);
+        try {
+            body.run();
+        } catch (RuntimeException e) {
+            System.out.println("[E2E] FAILED: " + what + " -> " + e.getClass().getSimpleName());
+            throw new RuntimeException(what, e);
+        }
     }
 
     /**

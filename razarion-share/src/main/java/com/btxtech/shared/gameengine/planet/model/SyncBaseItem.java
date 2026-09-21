@@ -38,6 +38,8 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 
+import java.util.logging.Logger;
+
 import static com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil.toNativeDecimalPosition;
 import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.WATER_LEVEL;
 
@@ -48,6 +50,7 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.WATER_LEV
  */
 
 public class SyncBaseItem extends SyncItem {
+    private static final Logger logger = Logger.getLogger(SyncBaseItem.class.getName());
     private final Provider<SyncWeapon> syncWeaponProvider;
     private final Provider<SyncFactory> syncFactoryProvider;
     private final Provider<SyncBuilder> syncBuilderProvider;
@@ -378,7 +381,13 @@ public class SyncBaseItem extends SyncItem {
         }
 
         syncBoxItemToPick = null;
-        targetContainer = null;
+        if (targetContainer != null) {
+            // Reached here with a container still set means the load did not happen: a new command
+            // came in, the unit died, or the movement layer gave up. putInContainer() clears it
+            // itself on success, so this line never fires for a load that worked.
+            logContainer("load given up", targetContainer);
+            targetContainer = null;
+        }
 
         if (syncWeapon != null) {
             syncWeapon.stop();
@@ -475,6 +484,7 @@ public class SyncBaseItem extends SyncItem {
         }
         targetContainer = syncItemContainerService.getSyncBaseItemSave(loadContainerCommand.getItemContainer());
         ((SyncPhysicalMovable) getAbstractSyncPhysical()).setPath(loadContainerCommand.getSimplePath());
+        logContainer("load ordered", targetContainer);
     }
 
     public SyncItem getTarget() {
@@ -671,16 +681,52 @@ public class SyncBaseItem extends SyncItem {
 
     private boolean putInContainer() {
         if (!targetContainer.isAlive()) {
+            logContainer("load abandoned, the container is gone", targetContainer);
             stop(true);
             return false;
         }
         if (getAbstractSyncPhysical().isInRange(targetContainer.getSyncItemContainer().getRange(), targetContainer)) {
-            targetContainer.getSyncItemContainer().load(this);
+            SyncBaseItem container = targetContainer;
+            // Cleared before stop(), so the give-up line in stop() can tell a load that arrived
+            // from one the player or a new command took away. stop() would clear it anyway.
+            targetContainer = null;
+            container.getSyncItemContainer().load(this);
+            logContainer("loaded", container);
             stop(true);
             return false;
         } else {
             return true;
         }
+    }
+
+    /**
+     * One line per step of loading a unit into a container - see {@link SyncItemContainer} for the
+     * unloading half.
+     * <p>
+     * Quest 392 is the only place in the game that asks for this, and it fell from 90% passed to
+     * none at all over September 2026 without a single line anywhere saying why: the movement is
+     * ordinary pathing, the load is silent, and a refused unload returns without a word. The three
+     * questions this has to answer are whether the player ever asked for it, whether the unit ever
+     * got there, and whether the unload was allowed - and none of them could be answered from
+     * outside. MASTER only: the same code runs in the browser worker, where it would be noise.
+     */
+    private void logContainer(String what, SyncBaseItem container) {
+        if (baseItemService.getGameEngineMode() != GameEngineMode.MASTER) {
+            return;
+        }
+        logger.warning("[Container] " + what
+                + " item=" + getId() + " type=" + getBaseItemType().getInternalName()
+                + " container=" + container.getId()
+                + " containerType=" + container.getBaseItemType().getInternalName()
+                + " base=" + (getBase() != null ? getBase().getBaseId() : null)
+                + " distance=" + round(getAbstractSyncPhysical().getDistance(container))
+                + " range=" + round(container.getSyncItemContainer().getRange())
+                + " pos=" + getAbstractSyncPhysical().getPosition()
+                + " containerPos=" + container.getAbstractSyncPhysical().getPosition());
+    }
+
+    private static double round(double value) {
+        return Math.round(value * 100.0) / 100.0;
     }
 
     public boolean isRazarionEarningOrConsuming() {

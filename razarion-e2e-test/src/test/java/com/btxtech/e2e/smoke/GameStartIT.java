@@ -22,6 +22,33 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class GameStartIT extends BaseE2eTest {
 
+    /**
+     * Every spot on the ground this test names, in one place.
+     * <p>
+     * Where the position is incidental - build a factory somewhere near the base - the test does
+     * not name one and lets the placer search. These are the other kind: the position <em>is</em>
+     * the quest, and then it belongs in the test as plainly as the item type does.
+     * <p>
+     * They are an assumption about the terrain, and terrain gets edited - the Phase 2 bridgehead
+     * was hand-modelled on PROD and already differs from LOCAL. A spot that turns to water makes
+     * this test fail for a reason that has nothing to do with the code under test, so each one
+     * carries what it is for: when a step fails, check the spot before the code.
+     */
+    private static final class Spot {
+        /** Noob Island, the player's base area - camera home. */
+        static final double[] BASE = {178, 20};
+        /** Inside quest 386's coastal strip (PlaceConfig 1797), on land, where the builder waits. */
+        static final double[] DOCKYARD_SHORE = {200, 240};
+        /** A water tile of the same strip, a dockyard's own terrain type - where it gets built. */
+        static final double[] DOCKYARD_SITE = {200, 245};
+        /**
+         * Fallback for quest 392's region (PlaceConfig 2063) when the bridge does not hand one
+         * over. The region's own centroid is open water, and a ship sent there has no land within
+         * its reach - this is a shore point instead.
+         */
+        static final double[] PHASE2_LANDING = {470, 494};
+    }
+
     private static final int BUILDER = 1;
     private static final int HARVESTER = 2;
     private static final int VIPER = 3;
@@ -102,7 +129,9 @@ class GameStartIT extends BaseE2eTest {
 
         // Quest 363: Harvest 15 Razarion
         gamePage.verifyQuestCockpit("Harvest");
-        gamePage.jsHarvestNearest();
+        // One harvest command is not the quest: a harvester stops on an empty field and does not
+        // look for the next one, so the order has to be given again - which is what a player does.
+        gamePage.waitForQuestCompletedWithRetry(gamePage::jsHarvestNearest, "Harvest", 180);
 
         // Quest 364: Fabricate Viper from Factory
         gamePage.waitForQuestProgressContaining("Viper");
@@ -137,15 +166,14 @@ class GameStartIT extends BaseE2eTest {
 
         // Quest 366: Harvest 30 Razarion
         gamePage.verifyQuestCockpit("Harvest");
-        gamePage.jsHarvestNearest();
+        gamePage.waitForQuestCompletedWithRetry(gamePage::jsHarvestNearest, "Harvest", 180);
 
         // Quest 369: Fabricate 3 Vipers from Factory
         gamePage.waitForQuestProgressContaining("Viper");
-        long vipersBefore = gamePage.getOwnItemCountByType(VIPER);
-        for (int i = 0; i < 3; i++) {
-            gamePage.jsFabricate(FACTORY, VIPER);
-            gamePage.waitForOwnItemCountByType(VIPER, vipersBefore + i + 1);
-        }
+        // Counted by the quest, not by the renderer: a finished viper drives off and stops being
+        // rendered, and the quest counts existing ones too, so an item count says neither how many
+        // were built nor how many are still needed.
+        gamePage.waitForQuestCompletedWithRetry(() -> gamePage.jsFabricate(FACTORY, VIPER), "Build", 180);
     }
 
     // ========== Level 5: Kill Bot Refinery 2 ==========
@@ -171,7 +199,7 @@ class GameStartIT extends BaseE2eTest {
         gamePage.jsAttackEnemyOfTypeUntilDone(BOT_REFINERY_2);
 
         // Move camera back to base for level 6
-        gamePage.jsMoveCamera(178, 20);
+        gamePage.jsMoveCamera(Spot.BASE[0], Spot.BASE[1]);
     }
 
     // ========== Level 6: Dockyard in region ==========
@@ -183,21 +211,36 @@ class GameStartIT extends BaseE2eTest {
         // Polygon region: coastal strip, centroid ~(200,230), safe interior point ~(200,245)
         gamePage.verifyQuestCockpit("Region");
 
-        // Get builder ID while it's rendered at base
+        // The fight of level 5 can cost the builder, and without one this level cannot start at
+        // all. Rebuilding it from the factory is what the quest expects of a player too.
+        if (gamePage.jsOwnItemsOfType(BUILDER).isEmpty()) {
+            System.out.println("[E2E] no builder left after the fight, building one");
+            gamePage.waitUntil(() -> {
+                gamePage.jsFabricate(FACTORY, BUILDER);
+                return !gamePage.jsOwnItemsOfType(BUILDER).isEmpty();
+            }, 120, "a new builder");
+        }
         int builderId = gamePage.jsGetOwnItemId(BUILDER);
         System.out.println("[E2E] Builder ID: " + builderId);
 
-        // Send move command by ID to quest region (works regardless of rendering)
-        gamePage.jsMoveById(builderId, 200, 240);
-        // Wait for builder to arrive (it moves ~10 units/sec, distance ~220 units → ~25s)
-        try { Thread.sleep(25000); } catch (InterruptedException ignored) {}
-
-        // Move camera to quest region and build
-        gamePage.jsMoveCamera(200, 240);
-        try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
-        gamePage.jsBuildById(builderId, DOCKYARD, 200, 245);
-        // Wait longer - building needs construction time + quest detection
-        gamePage.waitForQuestCompletedWithRetry(() -> {}, "Region", 120);
+        // Walk there first, then build. A builder does walk to its own site, but the site is on
+        // water and it has to find land within build range of it from wherever it starts; sending
+        // it to the shore first is what made this level pass, and dropping that was a regression
+        // of this test, not of the game. Best effort: if it is slow, the build order still brings
+        // it the rest of the way.
+        gamePage.jsMoveById(builderId, Spot.DOCKYARD_SHORE[0], Spot.DOCKYARD_SHORE[1]);
+        try {
+            gamePage.waitUntil(() -> gamePage.isNear(gamePage.jsPositionOfType(BUILDER),
+                    Spot.DOCKYARD_SHORE[0], Spot.DOCKYARD_SHORE[1], 30), 120, "the builder at the shore");
+        } catch (RuntimeException e) {
+            System.out.println("[E2E] builder still on its way, ordering the build anyway");
+        }
+        gamePage.jsMoveCamera(Spot.DOCKYARD_SHORE[0], Spot.DOCKYARD_SHORE[1]);
+        gamePage.jsBuildById(builderId, DOCKYARD, Spot.DOCKYARD_SITE[0], Spot.DOCKYARD_SITE[1]);
+        // Given once, then left alone. Repeating it every ten seconds looked like robustness and
+        // was the opposite: a new command stops the current job, so the builder kept restarting a
+        // walk of some two hundred units and never arrived. The engine brings it there.
+        gamePage.waitForQuestCompletedWithRetry(() -> {}, "Region", 180);
     }
 
     // ========== Level 7: Fabricate Hydra, Kill Bot Hydra ==========
@@ -207,11 +250,22 @@ class GameStartIT extends BaseE2eTest {
 
         // Quest 387: Fabricate Hydra from Dockyard
         gamePage.verifyQuestCockpit("Build");
-        gamePage.jsFabricate(DOCKYARD, HYDRA);
+        // Same as the vipers: one order is not the quest. The dockyard may still be finishing,
+        // the queue may have swallowed it, and only the quest knows when it is done.
+        gamePage.waitForQuestCompletedWithRetry(() -> gamePage.jsFabricate(DOCKYARD, HYDRA), "Build", 180);
 
-        // Quest 388: Kill (Bot) Hydra
+        // Quest 388: Kill (Bot) Hydra. The water fight: hydra against hydra, both of them far from
+        // the base and usually off screen, so the attack order is given by id.
         gamePage.verifyQuestCockpit("Destroy");
-        gamePage.jsAttackEnemyOfTypeUntilDone(BOT_HYDRA);
+        gamePage.waitForQuestCompletedWithRetry(() -> {
+            // One hydra against the twenty-five the bot keeps in the water loses as often as it
+            // wins, and a dead attacker makes the order a no-op forever. Rebuild, then attack -
+            // which is what the quest expects of a player too.
+            if (gamePage.jsOwnItemsOfType(HYDRA).size() < 4) {
+                gamePage.jsFabricate(DOCKYARD, HYDRA);
+            }
+            gamePage.jsAttackWithType(HYDRA, BOT_HYDRA);
+        }, "Destroy", 240);
     }
 
     // ========== Level 8: Fabricate Transporter, Builder on region ==========
@@ -221,22 +275,51 @@ class GameStartIT extends BaseE2eTest {
 
         // Quest 389: Fabricate Transporter from Dockyard
         gamePage.verifyQuestCockpit("Build");
-        gamePage.jsFabricate(DOCKYARD, TRANSPORTER);
-        gamePage.waitForOwnItemCountByType(TRANSPORTER, 1);
+        gamePage.waitForQuestCompletedWithRetry(() -> gamePage.jsFabricate(DOCKYARD, TRANSPORTER), "Build", 180);
+        // Not the rendered count: after the water fight the camera is out at sea, and the fresh
+        // transporter sits at the dockyard.
+        gamePage.waitUntil(() -> !gamePage.jsOwnItemsOfType(TRANSPORTER).isEmpty(), 60, "the transporter to exist");
 
-        // Quest 392: Move Builder to Phase 2 region
+        // Quest 392: Move Builder to Phase 2 region. Four separate things have to work, and the
+        // player has to find all four: load the builder, sail across, press Unload, and place the
+        // builder on land within the ship's range. Each one is its own step here, so a failure
+        // says which of them it was.
         gamePage.verifyQuestCockpit("Region");
         double[] regionCenter = gamePage.getQuestRegionCenter();
-        double destX = regionCenter != null ? regionCenter[0] : 200;
-        double destY = regionCenter != null ? regionCenter[1] : 500;
+        double destX = regionCenter != null ? regionCenter[0] : Spot.PHASE2_LANDING[0];
+        double destY = regionCenter != null ? regionCenter[1] : Spot.PHASE2_LANDING[1];
+        System.out.println("[E2E] quest 392 region at " + destX + "," + destY);
+
         gamePage.jsLoadIntoTransporter(BUILDER);
-        try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+        gamePage.waitUntil(() -> gamePage.isTransporterLoaded(BUILDER), 60,
+                "the builder to be inside the transporter");
+
         gamePage.jsMoveItemsOfType(TRANSPORTER, destX, destY);
-        // Wait for arrival, then unload repeatedly until quest completes
+        gamePage.waitUntil(() -> gamePage.isNear(gamePage.jsPositionOfType(TRANSPORTER), destX, destY, 20), 180,
+                "the transporter to reach the region");
+
+        // The unload button opens the placer; the spot still has to be picked, on land and within
+        // the ship's range - and an unload that is out of range is dropped without a word.
+        gamePage.jsMoveCamera(destX, destY);
+        try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+        System.out.println("[E2E] container range of the transporter: " + gamePage.jsContainerRange(TRANSPORTER));
+        gamePage.jsUnloadTransporter();
+        gamePage.waitForBaseItemPlacerActive();
+        gamePage.placeOnFreePosition();
+
         gamePage.waitForQuestCompletedWithRetry(() -> {
+            // Says whether the builder ever came out: an unload the engine refuses - out of the
+            // ship's range, or onto something that is not land - is dropped without a word, and
+            // from the outside that looks exactly like a placement nobody made.
+            System.out.println("[E2E] unload attempt: builders on the planet=" + gamePage.jsOwnItemsOfType(BUILDER)
+                    + " transporter=" + gamePage.jsOwnItemsOfType(TRANSPORTER));
             gamePage.jsUnloadTransporter();
-            try { Thread.sleep(3000); } catch (InterruptedException ignored) {}
-            gamePage.jsMoveItemsOfType(TRANSPORTER, destX, destY);
+            try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+            if (gamePage.isBaseItemPlacerActive()) {
+                gamePage.placeOnFreePosition();
+            } else {
+                System.out.println("[E2E] unload attempt: the placer did not open");
+            }
         }, "Region", 120);
     }
 

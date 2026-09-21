@@ -26,6 +26,8 @@ public class BaseItemPlacer {
     private BaseItemType baseItemType;
     private String errorText;
     private String lastLoggedErrorText;
+    /** What the caller wants said when the spot is outside its allowed area; null = the general wording. */
+    private String allowedAreaText;
 
     @Inject
     public BaseItemPlacer(ItemTypeService itemTypeService, BaseItemPlacerChecker baseItemPlacerChecker) {
@@ -35,6 +37,7 @@ public class BaseItemPlacer {
 
     public BaseItemPlacer init(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<DecimalPosition> placeCallback, Runnable cancelCallback) {
         baseItemType = itemTypeService.getBaseItemType(baseItemPlacerConfig.getBaseItemTypeId());
+        allowedAreaText = baseItemPlacerConfig.getAllowedAreaText();
         this.canBeCanceled = canBeCanceled;
         this.placeCallback = placeCallback;
         this.cancelCallback = cancelCallback;
@@ -188,7 +191,7 @@ public class BaseItemPlacer {
      */
     private void setupErrorText() {
         if (!baseItemPlacerChecker.isAllowedAreaOk()) {
-            errorText = "Outside the allowed area";
+            errorText = allowedAreaText != null ? allowedAreaText : "Outside the allowed area";
         } else if (!baseItemPlacerChecker.isEnemiesOk()) {
             errorText = "Enemy too near";
         } else if (!baseItemPlacerChecker.isItemsOk()) {

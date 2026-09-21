@@ -126,6 +126,15 @@ export class TipStallTrackerService {
     if (this.thrashingReported) {
       return;
     }
+    // A loop the player is driving is not a loop. Since the guide replaced the chain, a step back
+    // is what the world did - a selection put down and picked up again, a box tried out, a field
+    // run dry - and a player doing that three times in ten seconds got the tip reported as broken
+    // (X-09, X-10, GRP-07; PROD 365/379/363/366 CHAIN_THRASHING, 18.-20.09.2026). The question the
+    // record has to answer is the one COLD_MILLIS asks: was anybody there. If they were, the steps
+    // followed them.
+    if (this.firstInteractionTracker.lastPlayerAction >= this.recentFailureTimes[0]) {
+      return;
+    }
     this.thrashingReported = true;
     this.report({
       stallUuid: TipStallTrackerService.newUuid(),

@@ -186,6 +186,60 @@ describe('Tip test bed - attack', () => {
    * the viper for as long as it is off screen - an invitation to scroll there and click it while
    * it is doing exactly what it was told (decision Q2: show nothing).
    */
+  /*
+   * PROD 18.-20.09.2026, a signature the task chain never wrote: 365 reports SELECT|CHAIN_THRASHING
+   * six times in a day and a half, in sessions with nothing else wrong. Losing the selection is the
+   * one thing that takes the guide from the attack step all the way back to select, and a player
+   * who picks his unit up and puts it down again three times does nothing wrong - SEL-13 says the
+   * tip has to follow him there.
+   */
+  tipCase('X-10 quest 365, the player changes his selection three times: that is not a restart loop', bed => {
+    const {viper, extractor} = base(bed);
+    bed.lookAt(20, 0); // viper and extractor both on screen
+    bed.click(viper);
+    bed.activateQuest(365);
+    bed.run(1500);
+    bed.check(bed.showsOnly('Click to attack', extractor.id), 'test setup: "Click to attack" up');
+
+    for (let round = 1; round <= 3; round++) {
+      bed.deselect();
+      bed.run(1600);
+      bed.check(bed.showsOnly('Click to select', viper.id), `"Click to select" after deselect ${round}`);
+      bed.click(viper);
+      bed.run(1600);
+      bed.check(bed.showsOnly('Click to attack', extractor.id), `"Click to attack" after reselect ${round}`);
+    }
+
+    bed.check(!bed.stallReasons().includes('CHAIN_THRASHING'), 'no restart loop reported');
+  });
+
+  /*
+   * PROD 18.-20.09.2026: 379 reports SELECT_GROUP|CHAIN_THRASHING four times. The group step is the
+   * one below the attack step, so every time the selection falls back to a single viper the guide
+   * counts a step backwards - and shrinking the selection is how a player tries out a box.
+   */
+  tipCase('GRP-07 quest 379, the box falls back to one viper three times: not a restart loop', bed => {
+    const {viper} = base(bed);
+    const second = bed.own(ItemTypeId.VIPER, 7, -6);
+    bed.bot(ItemTypeId.BOT_REFINERY, 60, 20);
+    bed.lookAt(5, -6);
+    bed.click(viper);
+    bed.activateQuest(379);
+    bed.run(1500);
+    bed.check(bed.view().groupAsked, 'test setup: group tip up');
+
+    for (let round = 1; round <= 3; round++) {
+      bed.boxSelect(viper, second);
+      bed.run(1600);
+      bed.check(!bed.view().groupAsked, `group tip gone with two selected, round ${round}`);
+      bed.click(viper);
+      bed.run(1600);
+      bed.check(bed.view().groupAsked, `group tip back with one selected, round ${round}`);
+    }
+
+    bed.check(!bed.stallReasons().includes('CHAIN_THRASHING'), 'no restart loop reported');
+  });
+
   tipCase('IDL-02 attacker works off screen: no arrow to it', bed => {
     const {viper, extractor} = base(bed);
     bed.lookAt(20, 0);
