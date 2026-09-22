@@ -2,13 +2,7 @@ import {MarkerConfig, PlaceConfig} from '../../../gwtangular/GwtAngularFacade';
 import {BabylonRenderServiceAccessImpl} from '../../renderer/babylon-render-service-access-impl.service';
 import {ItemCockpitComponent} from '../../cockpit/item/item-cockpit.component';
 import {GwtInstance} from '../../../gwtangular/GwtInstance';
-import {Guidance, PROMPT} from './tip-decision';
-
-/** Label and container widths of the prompt, per text - the longer ones do not fit the default. */
-const PROMPT_WIDTHS: Record<string, [string, string]> = {
-  [PROMPT.HARVEST]: ['150px', '200px'],
-  [PROMPT.CONTINUE_BUILDING]: ['200px', '250px']
-};
+import {Guidance} from './tip-decision';
 
 /**
  * Puts one Guidance on the screen and takes the previous one down.
@@ -36,9 +30,10 @@ export class GuidanceView {
     switch (guidance.kind) {
       case 'prompt': {
         const item = this.findItem(guidance.itemId, guidance.resource);
-        if (item && !item.isSelectPromptVisible()) {
-          const [labelWidth, containerWidth] = PROMPT_WIDTHS[guidance.text] ?? ['150px', '200px'];
-          item.showSelectPromptVisualization(guidance.text, labelWidth, containerWidth);
+        // Misplaced: the prompt is up but built for the other side of the item, which the player
+        // scrolled it to - see isSelectPromptMisplaced. Rebuilding is what turns the label round.
+        if (item && (!item.isSelectPromptVisible() || item.isSelectPromptMisplaced?.())) {
+          item.showSelectPromptVisualization(guidance.text);
         }
         break;
       }
@@ -51,6 +46,10 @@ export class GuidanceView {
         break;
       case 'placeMarker':
         this.renderService.showPlaceMarker(placeConfig, this.placeMarkerConfig());
+        break;
+      case 'unload':
+        // Re-anchored on every evaluation, like the build button.
+        this.itemCockpit()?.showUnloadTip(true);
         break;
       case 'group':
         this.renderService.touchSelectionMode.setAsked(true);
@@ -91,6 +90,9 @@ export class GuidanceView {
     if (previous.kind === 'button' && next.kind !== 'button') {
       this.itemCockpit()?.showBuildupTip(null);
     }
+    if (previous.kind === 'unload' && next.kind !== 'unload') {
+      this.itemCockpit()?.showUnloadTip(false);
+    }
     if (previous.kind === 'placeMarker') {
       this.renderService.showPlaceMarker(null, null);
     }
@@ -110,7 +112,9 @@ export class GuidanceView {
 
   private findItem(id: number, resource: boolean): {
     isSelectPromptVisible(): boolean,
-    showSelectPromptVisualization(text: string, labelWidth: string, containerWidth: string): void,
+    /** Optional: the resource items do not carry a side. */
+    isSelectPromptMisplaced?(): boolean,
+    showSelectPromptVisualization(text: string): void,
     hideSelectPromptVisualization(): void
   } | null {
     if (resource) {

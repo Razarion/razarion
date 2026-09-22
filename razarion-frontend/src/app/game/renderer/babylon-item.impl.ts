@@ -38,6 +38,7 @@ import {PressMouseVisualization} from './press-mouse-visualization';
 import {AdvancedDynamicTexture, StackPanel} from '@babylonjs/gui';
 import {Image} from '@babylonjs/gui/2D/controls/image';
 import {GwtHelper} from '../../gwtangular/GwtHelper';
+import {isTouchDevice, promptAssemblyLengthBeside, promptAssemblyWidthPx, promptFitsAt, promptOffsets, PROMPT_GEOMETRY, PROMPT_HEIGHT_PX, PROMPT_IDEAL_HEIGHT_PX, PromptSide} from './prompt-geometry';
 
 export class BabylonItemImpl implements BabylonItem {
   private static readonly HIGHLIGHT_HOVER_INTENSITY = 0.55;
@@ -46,6 +47,10 @@ export class BabylonItemImpl implements BabylonItem {
   private static readonly BRACKET_ARM_FRACTION = 0.22;
   private static readonly BRACKET_ARM_MIN = 0.35;
   private static readonly BRACKET_ARM_MAX = 1.5;
+  /** Which arrow asset points back at the item from each side the label can sit on. */
+  private static readonly ARROW_OF: Record<PromptSide, string> = {
+    above: 'down', below: 'up', left: 'right', right: 'left'
+  };
   /**
    * Not readonly: models are no longer all present when the game starts (see
    * BabylonModelService.init), so an item created during the window gets an empty placeholder and
@@ -77,8 +82,10 @@ export class BabylonItemImpl implements BabylonItem {
    * model arriving mid-tip has to rebuild it - and the tip is exactly what is on screen during the
    * first seconds of a game, which is the window where that happens.
    */
-  private selectPromptArgs: { text: string, labelWidth: string, containerWidth: string } | null = null;
+  private selectPromptArgs: { text: string } | null = null;
   private selectTipVisibilityObserver: Nullable<Observer<any>> = null;
+  /** Which side of the item the running prompt is on - see showSelectPromptVisualization. */
+  private selectPromptSide: PromptSide = 'above';
   /**
    * The same dispatch the mesh's own pick triggers use. Kept reachable so a click that landed on
    * the ground inside this item's footprint can be routed here instead of becoming a move onto a
@@ -289,7 +296,7 @@ export class BabylonItemImpl implements BabylonItem {
       this.setAngle(this.angle);
     }
     if (selectPrompt) {
-      this.showSelectPromptVisualization(selectPrompt.text, selectPrompt.labelWidth, selectPrompt.containerWidth);
+      this.showSelectPromptVisualization(selectPrompt.text);
     }
     this.onRenderObjectReplaced();
     this.updateHighlight();
@@ -506,84 +513,203 @@ export class BabylonItemImpl implements BabylonItem {
     }
   }
 
-  showSelectPromptVisualization(text: string = "Click to select", labelWidth: string = "150px", containerWidth: string = "200px"): void {
+  showSelectPromptVisualization(text: string = "Click to select"): void {
     // Overwriting the fields would leave the previous texture on screen with an observer nobody
     // can reach any more - a second prompt that never goes away.
     this.hideSelectPromptVisualization();
-    this.selectPromptArgs = {text, labelWidth, containerWidth};
+    this.selectPromptArgs = {text};
+    const touch = isTouchDevice();
+    // A finger has no button to click, and the mouse icon beside the text is about a mouse.
+    const shown = touch ? text.replace(/^Click\b/, 'Tap') : text;
     this.selectTipTexture = AdvancedDynamicTexture.CreateFullscreenUI("Select tip");
+    // Every pixel below is read against this, so the prompt keeps its share of the picture on a
+    // phone instead of covering it - see PROMPT_IDEAL_HEIGHT_PX.
+    this.selectTipTexture.idealHeight = PROMPT_IDEAL_HEIGHT_PX;
     this.selectTipTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
     let pressMouseVisualization = new PressMouseVisualization(true, this.rendererService);
-    pressMouseVisualization.label.text = text;
-    pressMouseVisualization.label.width = labelWidth;
-    pressMouseVisualization.container.width = containerWidth;
+    pressMouseVisualization.label.text = shown;
+    // Sized by the text, not by a number per prompt. The fixed widths were a table of exceptions
+    // (PROMPT_WIDTHS in guidance-view) and still cut "Click to attack" in two on a phone, where
+    // the second line did not fit the label's height either.
+    const bubbleWidth = pressMouseVisualization.fitToText(touch);
     let stackPanel = new StackPanel();
-    stackPanel.spacing = 10;
-    stackPanel.addControl(pressMouseVisualization.getContainer());
+    stackPanel.spacing = PROMPT_GEOMETRY.spacing;
 
-    const mouse = new Image();
-    mouse.source = "babylon-gui/arrow-down.svg";
-    mouse.width = "65px";
-    mouse.height = "110px";
-
-    stackPanel.addControl(mouse)
+    // Above the item by preference. An item high in the picture has no room there - the label
+    // would be cut off at the top edge while the item itself looks perfectly visible, which is
+    // what it did on every phone in portrait. Then below, and beside when the picture is too
+    // narrow for the label to be centred on the item at all.
+    const side = this.choosePromptSide(shown, touch);
+    this.selectPromptSide = side;
+    const horizontal = side === 'left' || side === 'right';
+    const arrow = new Image();
+    arrow.source = `babylon-gui/arrow-${BabylonItemImpl.ARROW_OF[side]}.svg`;
+    arrow.width = `${horizontal ? PROMPT_GEOMETRY.arrowHeight : PROMPT_GEOMETRY.arrowThickness}px`;
+    arrow.height = `${horizontal ? PROMPT_GEOMETRY.arrowThickness : PROMPT_GEOMETRY.arrowHeight}px`;
+    stackPanel.isVertical = !horizontal;
+    // Both dimensions in pixels, and neither left at the default "100%". StackPanel only sizes
+    // itself along its own axis, so the other one would stay as wide or as tall as the whole
+    // picture - and a panel that hangs over an edge gets its contents centred in what is left of
+    // it instead of on the item. See fitToText.
+    if (horizontal) {
+      stackPanel.height = `${PROMPT_GEOMETRY.arrowThickness}px`;
+    } else {
+      stackPanel.width = `${bubbleWidth}px`;
+    }
+    // The arrow always points from the label back at the item, so it comes second when the label
+    // is above or left of it and first when it is below or right of it.
+    const labelFirst = side === 'above' || side === 'left';
+    for (const control of labelFirst ? [pressMouseVisualization.getContainer(), arrow]
+      : [arrow, pressMouseVisualization.getContainer()]) {
+      stackPanel.addControl(control);
+    }
     this.selectTipTexture.addControl(stackPanel)
     stackPanel.linkWithMesh(this.getContainer());
 
+    // How long the assembly is along the direction it floats in - which is what decides how far
+    // its centre has to sit from the item for the near end to clear it. Beside the item that is
+    // the whole width of arrow plus label; above it, only the height.
+    const lengthOf = (bubble: number) =>
+      horizontal ? promptAssemblyLengthBeside(bubble) : PROMPT_HEIGHT_PX;
+    this.animateSelectPrompt(stackPanel, side, lengthOf(bubbleWidth));
+
+    this.watchSelectPromptOnScreen(stackPanel, () => {
+      const width = pressMouseVisualization.refitWidth();
+      if (width === null) {
+        return;
+      }
+      // The text turned out wider or narrower than the first guess, so the assembly is a
+      // different length and has to float at a different distance.
+      if (!horizontal) {
+        stackPanel.width = `${width}px`;
+      }
+      this.animateSelectPrompt(stackPanel, side, lengthOf(width));
+    });
+  }
+
+  /** Floats the prompt beside or above the item, between the near and the far gap. */
+  private animateSelectPrompt(stackPanel: StackPanel, side: PromptSide, assemblyLength: number): void {
+    const horizontal = side === 'left' || side === 'right';
     const frameRate = 100;
-    const xSlide = new Animation("xSlide", "linkOffsetY", frameRate, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
-    const keyFrames = [];
+    const property = horizontal ? "linkOffsetX" : "linkOffsetY";
+    const slide = new Animation("promptFloat", property, frameRate, Animation.ANIMATIONTYPE_FLOAT,
+      Animation.ANIMATIONLOOPMODE_CYCLE);
+    const sign = side === 'below' || side === 'right' ? 1 : -1;
+    const {near, far} = promptOffsets(assemblyLength);
+    slide.setKeys([
+      {frame: 0, value: sign * near},
+      {frame: 2 * frameRate, value: sign * far},
+      {frame: 3 * frameRate, value: sign * near}
+    ]);
+    const scene = this.rendererService.getScene();
+    scene.stopAnimation(stackPanel);
+    stackPanel.animations = [slide];
+    scene.beginAnimation(stackPanel, 0, 3 * frameRate, true, 4);
+  }
 
-    keyFrames.push({
-      frame: 0,
-      value: -150,
-    });
+  /**
+   * Whether the label fits above the item right now. Unknown projection keeps the old side: a
+   * prompt above is what every case up to now looked like, and the guide only asks for one where
+   * it has already decided that one of the two sides has room.
+   */
+  private choosePromptSide(text: string, touch: boolean): PromptSide {
+    const projected = this.projectPromptAnchor();
+    if (projected === null) {
+      return 'above';
+    }
+    const fit = this.promptFit(projected, text, touch);
+    // Unreadable is not this method's to answer - the guide decided there was room before it
+    // asked for a prompt at all, and half a second of the world moving is not worth a blank
+    // screen. Above is what the prompt has always looked like.
+    return fit.readable ? fit.side : 'above';
+  }
 
-    keyFrames.push({
-      frame: 2 * frameRate,
-      value: -200,
-    });
+  private promptFit(projected: { x: number, y: number }, text: string, touch: boolean) {
+    const engine = this.rendererService.getScene().getEngine();
+    return promptFitsAt(projected.x, projected.y, engine.getRenderWidth(), engine.getRenderHeight(),
+      this.rendererService.getHudBottomPixels(), promptAssemblyWidthPx(text, !touch));
+  }
 
-    keyFrames.push({
-      frame: 3 * frameRate,
-      value: -150,
-    });
-
-    xSlide.setKeys(keyFrames);
-
-    stackPanel.animations = [];
-    stackPanel.animations.push(xSlide);
-
-    this.rendererService.getScene().beginAnimation(stackPanel, 0, 3 * frameRate, true, 4);
-    this.watchSelectPromptOnScreen(stackPanel);
+  private projectPromptAnchor(): { x: number, y: number } | null {
+    const scene = this.rendererService.getScene();
+    const camera = scene.activeCamera;
+    if (!camera) {
+      return null;
+    }
+    const projected = Vector3.Project(
+      this.getContainer().getAbsolutePosition(),
+      Matrix.Identity(),
+      scene.getTransformMatrix(),
+      camera.viewport.toGlobal(scene.getEngine().getRenderWidth(), scene.getEngine().getRenderHeight()));
+    if (projected.z <= 0 || projected.z >= 1) {
+      return null;
+    }
+    return {x: projected.x, y: projected.y};
   }
 
   /**
    * A GUI control linked to a mesh does not disappear when the mesh leaves the screen - Babylon
-   * clamps it to the border. The prompt then sits at the bottom edge pointing at nothing, which
-   * looks like a stuck tip and outlives whatever it was talking about. Hide it instead; the tip
-   * tasks put an out-of-view marker on the target, and that is what should lead the way back.
+   * writes the projected position into left/top unclamped (`Control._moveToProjectedPosition`),
+   * so the prompt is simply cut off at the edge while the tip goes on waiting for a click on it.
+   * Hide it instead; the tip puts an out-of-view marker on the target, and that is what should
+   * lead the way back.
+   *
+   * The label counts, not only the anchor. Checking the anchor alone was the older half of this:
+   * an item near the top of the picture is on screen by every test here while its label, 290 px
+   * above it, is not - and on a phone in portrait 290 px is 42 % of the height.
    */
-  private watchSelectPromptOnScreen(stackPanel: StackPanel): void {
+  private watchSelectPromptOnScreen(stackPanel: StackPanel, refit: () => void): void {
     const scene = this.rendererService.getScene();
-    this.selectTipVisibilityObserver = scene.onBeforeRenderObservable.add(() => {
-      const camera = scene.activeCamera;
-      if (!camera) {
-        return;
-      }
-      const projected = Vector3.Project(
-        this.getContainer().getAbsolutePosition(),
-        Matrix.Identity(),
-        scene.getTransformMatrix(),
-        camera.viewport.toGlobal(scene.getEngine().getRenderWidth(), scene.getEngine().getRenderHeight()));
-      const onScreen = projected.z > 0 && projected.z < 1
-        && projected.x >= 0 && projected.x <= scene.getEngine().getRenderWidth()
-        && projected.y >= 0 && projected.y <= scene.getEngine().getRenderHeight();
-      if (stackPanel.isVisible !== onScreen) {
-        stackPanel.isVisible = onScreen;
-      }
-    });
+    // Babylon knows the text's real width only after it has laid the prompt out, so the first
+    // frames correct the bubble to it. A handful, not one: the texture may need a pass or two
+    // before the measurement settles.
+    let refitFrames = 8;
+    // One line per prompt, not one per frame - see RAZ_promptProbe in the render service.
+    let panelLogged = false;
+    this.selectTipVisibilityObserver =
+      scene.onBeforeRenderObservable.add(() => {
+        if (refitFrames > 0) {
+          refitFrames--;
+          refit();
+        }
+        // Only the anchor decides whether the prompt is drawn. Hiding it because the side it was
+        // built for stopped fitting would leave the player with nothing at all in the half second
+        // until the guide rebuilds it the other way round (isSelectPromptMisplaced), and a label
+        // hanging a little over an edge for that long is the smaller of the two.
+        const anchor = this.projectPromptAnchor();
+        const engine = scene.getEngine();
+        const floor = engine.getRenderHeight() - this.rendererService.getHudBottomPixels();
+        const visible = anchor !== null
+          && anchor.x >= 0 && anchor.x <= engine.getRenderWidth()
+          && anchor.y >= 0 && anchor.y <= floor;
+        if (stackPanel.isVisible !== visible) {
+          stackPanel.isVisible = visible;
+        }
+        if ((window as any).RAZ_promptProbe && !panelLogged) {
+          panelLogged = true;
+          const measure = (stackPanel as any)._currentMeasure;
+          const anchor = this.projectPromptAnchor();
+          console.log('[PanelProbe] ' + JSON.stringify({
+            side: this.selectPromptSide,
+            anchor: anchor ? [Math.round(anchor.x), Math.round(anchor.y)] : null,
+            panel: [Math.round(measure.left), Math.round(measure.top), Math.round(measure.width), Math.round(measure.height)],
+            linkOffset: [stackPanel.linkOffsetX, stackPanel.linkOffsetY],
+            bubble: stackPanel.children.map(c => [c.name, Math.round((c as any)._currentMeasure.left), Math.round((c as any)._currentMeasure.top), Math.round((c as any)._currentMeasure.width), Math.round((c as any)._currentMeasure.height)])
+          }));
+        }
+      });
   }
+
+  private currentPromptFit() {
+    const args = this.selectPromptArgs;
+    const projected = this.projectPromptAnchor();
+    if (args === null || projected === null) {
+      return null;
+    }
+    const touch = isTouchDevice();
+    return this.promptFit(projected, touch ? args.text.replace(/^Click\b/, 'Tap') : args.text, touch);
+  }
+
 
   /**
    * Whether this item currently carries a prompt. The tip tasks check it: the prompt dies with
@@ -592,6 +718,21 @@ export class BabylonItemImpl implements BabylonItem {
    */
   isSelectPromptVisible(): boolean {
     return this.selectTipTexture !== null;
+  }
+
+  /**
+   * Whether the running prompt is built for the wrong side of its item. Which side the label goes
+   * on is decided once, when the prompt is made, and the item moves under the camera afterwards -
+   * a player scrolling crosses the line where the label no longer fits above. The watcher hides it
+   * then, and this is how the tip finds out that it has to build it again the other way round
+   * rather than leave the item without a prompt.
+   */
+  isSelectPromptMisplaced(): boolean {
+    if (this.selectTipTexture === null) {
+      return false;
+    }
+    const fit = this.currentPromptFit();
+    return fit !== null && fit.readable && fit.side !== this.selectPromptSide;
   }
 
   hideSelectPromptVisualization(): void {

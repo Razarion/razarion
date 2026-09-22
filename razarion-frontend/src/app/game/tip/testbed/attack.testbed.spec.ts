@@ -240,6 +240,63 @@ describe('Tip test bed - attack', () => {
     bed.check(!bed.stallReasons().includes('CHAIN_THRASHING'), 'no restart loop reported');
   });
 
+  /*
+   * VIS-01 to VIS-03: being inside the view field is not the same as being seen.
+   *
+   * Quest 365 loses 26 % of its players on PROD (22.09.2026, 14 days, 755 -> 557), the worst of the
+   * early quests together with 363, while its neighbours 364, 366 and 369 pass at 83-91 %. The
+   * target is a median 52 units from the player's base and the picture on a phone in portrait is
+   * 21 units wide, so 44 % of the stalls on 365 are OUT_OF_VIEW - more than on any other early
+   * quest. Of the rest, which the guide believed to be on screen, only 45 % ever resolve.
+   *
+   * These cases are that remainder: the guide said "on screen, put a prompt on it" for a spot the
+   * player could not see it at, because the view field is built from the NDC corners and reaches
+   * under the HUD and up to the very top edge.
+   */
+
+  tipCase('VIS-01 target on screen but behind the bottom HUD: the arrow, not a prompt', bed => {
+    const {viper, extractor} = base(bed);
+    bed.lookAt(20, 0);
+    bed.click(viper);
+    bed.activateQuest(365);
+    bed.run(1500);
+    bed.lookSoThat(extractor, 0.85); // inside the view field, under the bottom row of the HUD
+    bed.run(1500);
+
+    bed.check(bed.onlyPrompt() === null, 'no prompt on a target hidden behind the HUD');
+    bed.check(bed.arrowPointsAt(extractor.x, extractor.y), 'arrow to the extractor');
+  });
+
+  tipCase('VIS-02 target high in the picture: the prompt is shown, with the label below it', bed => {
+    const {viper, extractor} = base(bed);
+    bed.lookAt(20, 0);
+    bed.click(viper);
+    bed.activateQuest(365);
+    bed.run(1500);
+    bed.lookSoThat(extractor, 0.1); // no room above, plenty below - the label goes there
+    bed.run(1500);
+
+    bed.check(bed.showsOnly('Click to attack', extractor.id), '"Click to attack" on the extractor');
+    bed.click(extractor);
+    bed.runUntil(() => bed.questPassed, 30000, 'quest 365 passing');
+    bed.run(2000);
+  });
+
+  tipCase('VIS-03 the target scrolls under the HUD: the prompt goes down, the arrow comes up', bed => {
+    const {viper, extractor} = base(bed);
+    bed.lookAt(20, 0);
+    bed.click(viper);
+    bed.activateQuest(365);
+    bed.lookSoThat(extractor, 0.5); // readable: room for the label above
+    bed.run(1500);
+    bed.check(bed.showsOnly('Click to attack', extractor.id), 'test setup: prompt up');
+
+    bed.lookSoThat(extractor, 0.85);
+    bed.run(1500);
+    bed.check(bed.onlyPrompt() === null, 'prompt taken down');
+    bed.check(bed.arrowPointsAt(extractor.x, extractor.y), 'arrow to the extractor');
+  });
+
   tipCase('IDL-02 attacker works off screen: no arrow to it', bed => {
     const {viper, extractor} = base(bed);
     bed.lookAt(20, 0);

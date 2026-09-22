@@ -109,6 +109,12 @@ export class QuestDialogComponent implements OnInit {
       case ConditionTrigger.SYNC_ITEM_POSITION: {
         return this.specificOrCount("units or buildings on position", "on region", questConfig);
       }
+      case ConditionTrigger.SYNC_ITEM_LOADED: {
+        return this.specificOrCount("units loaded", "loaded", questConfig);
+      }
+      case ConditionTrigger.LOADED_CONTAINER_POSITION: {
+        return this.specificOrCount("loaded transporters on position", "loaded on region", questConfig);
+      }
       case ConditionTrigger.BOX_PICKED: {
         return `Boxes picked ${questConfig.conditionConfig.comparisonConfig.count}`;
       }

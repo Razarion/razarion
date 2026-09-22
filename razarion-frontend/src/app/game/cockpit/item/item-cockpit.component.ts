@@ -26,7 +26,8 @@ import {CompactLayoutService} from '../compact-layout.service';
 export interface BuildTipAnchor {
   x: number;
   y: number;
-  mode: 'build' | 'open-menu';
+  /** open-menu-unload: the unload button is behind the collapsed panel. */
+  mode: 'build' | 'open-menu' | 'unload' | 'open-menu-unload';
 }
 
 @Component({
@@ -54,6 +55,8 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
   buildTipBox?: ElementRef<HTMLElement>;
   @ViewChild('buildupCarousel')
   buildupCarousel?: Carousel;
+  @ViewChild('unloadButton', {read: ElementRef})
+  unloadButton?: ElementRef<HTMLElement>;
   @ViewChildren('buildupItemDiv')
   buildupItemDiv?: QueryList<ElementRef>;
   private buildClickCallback: ((model: BuildupItemModel) => void) | null = null;
@@ -211,14 +214,14 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
    * player and the build menu. Looked up in the document because that button belongs to the game
    * component while the tip is drawn here, and re-measured on every call like the other anchor.
    */
-  private anchorToCompactBuildIcon(): void {
+  private anchorToCompactBuildIcon(mode: 'open-menu' | 'open-menu-unload' = 'open-menu'): void {
     const icon = document.getElementById('compact-build-icon');
     if (!icon) {
       this.buildTip = null;
       return;
     }
     const rect = icon.getBoundingClientRect();
-    this.buildTip = {x: rect.left + rect.width / 2, y: rect.top, mode: 'open-menu'};
+    this.buildTip = {x: rect.left + rect.width / 2, y: rect.top, mode};
     this.updateBuildTipShift(this.buildTip.x);
   }
 
@@ -252,6 +255,63 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
       return TipStallReason.ITEM_PANEL_CLOSED;
     }
     return null;
+  }
+
+  /**
+   * The same tip on the Unload button of a loaded container. Crossing the water is the only place
+   * this button is ever needed, and it only exists while a container with cargo is selected.
+   */
+  showUnloadTip(show: boolean): boolean {
+    if (!show) {
+      if (this.buildTip?.mode === 'unload' || this.buildTip?.mode === 'open-menu-unload') {
+        this.buildTip = null;
+      }
+      return true;
+    }
+    const blockReason = this.getUnloadTipBlockReason();
+    if (blockReason === TipStallReason.ITEM_PANEL_CLOSED) {
+      this.anchorToCompactBuildIcon('open-menu-unload');
+      return false;
+    }
+    if (blockReason !== null) {
+      this.buildTip = null;
+      return false;
+    }
+    const rect = this.unloadButton!.nativeElement.getBoundingClientRect();
+    this.buildTip = {x: rect.left + rect.width / 2, y: rect.top, mode: 'unload'};
+    this.updateBuildTipShift(this.buildTip.x);
+    return true;
+  }
+
+  /** Why the tip cannot be put on the Unload button, null when it can. */
+  getUnloadTipBlockReason(): string | null {
+    const cockpit = this.itemCockpitService.ownItemCockpit;
+    if (!cockpit || cockpit.containerCount == null) {
+      return TipStallReason.COCKPIT_NOT_READY;
+    }
+    if (!cockpit.containerCount) {
+      return TipStallReason.BUTTON_DISABLED;
+    }
+    if (!this.unloadButton) {
+      return TipStallReason.BUTTON_NOT_RENDERED;
+    }
+    if (this.compactLayout.compact() && !this.compactLayout.isOpen('item')) {
+      return TipStallReason.ITEM_PANEL_CLOSED;
+    }
+    return null;
+  }
+
+  protected buildTipText(tip: BuildTipAnchor): string {
+    switch (tip.mode) {
+      case 'open-menu':
+        return 'Tap here to build';
+      case 'open-menu-unload':
+        return 'Tap here to unload';
+      case 'unload':
+        return this.touch ? 'Tap to unload' : 'Click to unload';
+      default:
+        return this.touch ? 'Tap to build' : 'Click to build';
+    }
   }
 
   private findBuildupItemDiv(itemTypeId: number): ElementRef | undefined {

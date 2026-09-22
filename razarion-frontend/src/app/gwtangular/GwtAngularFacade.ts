@@ -272,6 +272,8 @@ export interface TipItemState {
   buildup: number;
   /** Item types a factory has queued, the one in production first; empty for anything else. */
   factoryBuildQueue: number[];
+  /** Item types a container carries; empty for anything else. Carried units are not in the list. */
+  cargo: number[];
 }
 
 export interface NativeSyncBaseItemTickInfo {
@@ -421,6 +423,9 @@ export interface BuilderType {
 
 export interface ItemContainerType {
   isAbleToContain(itemTypeId: number): boolean;
+
+  /** How far from the container a unit can be unloaded (SyncItemContainer.allowedUnload). */
+  getRange(): number;
 }
 
 export interface FactoryType {
@@ -473,8 +478,10 @@ export enum Tip {
   FABRICATE = 'FABRICATE',
   HARVEST = 'HARVEST',
   ATTACK = 'ATTACK',
-  // LOAD_CONTAINER = 'LOAD_CONTAINER',
-  // UNLOAD_CONTAINER = 'UNLOAD_CONTAINER',
+  /** Crossing the water, one per step: the actor is the unit that crosses (tip-decision.ts). */
+  LOAD = 'LOAD',
+  SAIL = 'SAIL',
+  UNLOAD = 'UNLOAD',
 }
 
 export interface TipConfig {

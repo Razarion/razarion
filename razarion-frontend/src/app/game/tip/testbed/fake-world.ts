@@ -2,6 +2,7 @@ import {Vector3} from '@babylonjs/core';
 import {Diplomacy} from '../../../gwtangular/GwtAngularFacade';
 import {ViewField, ViewFieldListener} from '../../renderer/view-field';
 import {BaseItemPlacerPresenterEvent} from '../../renderer/base-item-placer-presenter.impl';
+import {PROMPT_CLEARANCE_FRACTION} from '../../renderer/prompt-geometry';
 import {TipStallReason} from '../tip-stall';
 import {fakeBaseItemType, FakeItemTypeSpec, itemTypeSpec} from './fake-item-types';
 
@@ -21,7 +22,8 @@ export type Order =
   { kind: 'attack', targetId: number } |
   { kind: 'harvest', resourceId: number } |
   { kind: 'build', typeId: number, x: number, y: number } |
-  { kind: 'finalize', siteId: number };
+  { kind: 'finalize', siteId: number } |
+  { kind: 'load', containerId: number };
 
 export interface Unit {
   id: number;
@@ -39,6 +41,10 @@ export interface Unit {
   queueProgress: number;
   /** Builder: the site its build order created, so it keeps building that one. */
   siteId: number | null;
+  /** The container it sits in. A contained unit is nowhere: not rendered, not in the tip states. */
+  containedIn: number | null;
+  /** Container: the ids of the units inside. */
+  cargo: number[];
 }
 
 export interface Resource {
@@ -59,10 +65,47 @@ export type QuestCondition =
   { kind: 'created', typeId: number, count: number, includeExisting: boolean } |
   { kind: 'killed', typeId: number | null, count: number } |
   { kind: 'harvested', amount: number } |
-  { kind: 'createdIn', typeId: number, region: { x: number, y: number }[] };
+  { kind: 'createdIn', typeId: number, region: { x: number, y: number }[] } |
+  /** SYNC_ITEM_LOADED */
+  { kind: 'loaded', typeId: number } |
+  /** LOADED_CONTAINER_POSITION */
+  { kind: 'loadedIn', containerTypeId: number, region: { x: number, y: number }[] } |
+  /** SYNC_ITEM_POSITION: contained units are nowhere and never count. */
+  { kind: 'in', typeId: number, region: { x: number, y: number }[] };
 
 /** Half widths and depths of the visible trapezoid around the camera, in ground units. */
 const VIEW = {near: 12, far: 18, nearHalfWidth: 14, farHalfWidth: 26};
+
+/**
+ * The camera of the live client, so a ground point can be turned into a height in the picture.
+ *
+ * Being inside the view field is not the same as being seen, and where exactly a point lands
+ * cannot be guessed from the depth alone: the camera looks down at a fixed angle, which crowds
+ * the far half of the ground into the top of the picture. Mapping the trapezoid linearly puts a
+ * unit a few steps in front of the player down at 77 % of the height, where the real one is at
+ * 53 % - the difference between "behind the HUD" and "perfectly visible".
+ *
+ * `new FreeCamera(position(0, 30, -35))` with `setTarget(0, 0, 0)` and Babylon's default vertical
+ * field of view, at the standard zoom (`cameraTerrainDistance = 30`, which is where the players
+ * sit: zoomP05 = zoomP50 = zoomP95 = 30.0 in the render telemetry). The ground it sees runs from
+ * 15 to 94 units in front of the camera; this world's trapezoid is stretched onto that range.
+ */
+const CAMERA = {
+  height: 30,
+  pitch: Math.atan2(30, 35),
+  halfFov: 0.4,
+  nearGround: 15,
+  farGround: 94
+};
+
+/**
+ * What the picture costs the prompt, as fractions of its height.
+ *
+ * The HUD number is measured on the live client (a phone in portrait, backbuffer about 369x683,
+ * bottom row about 180 px). The clearance comes from the prompt itself, so the bed cannot drift
+ * away from what the renderer does.
+ */
+const SCREEN = {hudFraction: 0.26, clearanceFraction: PROMPT_CLEARANCE_FRACTION};
 
 export class World {
   private nextId = 1;
@@ -99,7 +142,7 @@ export class World {
     const spec = itemTypeSpec(typeId);
     const unit: Unit = {
       id: this.nextId++, spec, owner, x, y, health: spec.health, buildup, order: null,
-      reloadLeft: 0, queue: [], queueProgress: 0, siteId: null
+      reloadLeft: 0, queue: [], queueProgress: 0, siteId: null, containedIn: null, cargo: []
     };
     this.units.set(unit.id, unit);
     return unit;
@@ -178,6 +221,45 @@ export class World {
     return this.viewField().contains({getX: () => x, getY: () => y} as any);
   }
 
+  /**
+   * Where the point sits in the picture, 0 at the top edge and 1 at the bottom. See {@link CAMERA}
+   * for why this is not simply the depth.
+   */
+  screenFraction(y: number): number {
+    const depth = (y - (this.cameraY - VIEW.near)) / (VIEW.near + VIEW.far);
+    const distance = CAMERA.nearGround + depth * (CAMERA.farGround - CAMERA.nearGround);
+    if (distance <= 0) {
+      return 1;
+    }
+    const above = CAMERA.pitch - Math.atan(CAMERA.height / distance);
+    return (1 - Math.tan(above) / Math.tan(CAMERA.halfFov)) / 2;
+  }
+
+  /** The camera row that puts this ground row at the given height in the picture - the inverse. */
+  cameraYForScreenFraction(y: number, fraction: number): number {
+    const above = Math.atan((1 - 2 * fraction) * Math.tan(CAMERA.halfFov));
+    const distance = CAMERA.height / Math.tan(CAMERA.pitch - above);
+    const depth = (distance - CAMERA.nearGround) / (CAMERA.farGround - CAMERA.nearGround);
+    return y + VIEW.near - depth * (VIEW.near + VIEW.far);
+  }
+
+  /**
+   * Whether a prompt anchored here would actually be read: on screen, not behind the bottom HUD,
+   * and with room for the label on one side of the anchor or the other. See {@link SCREEN}.
+   */
+  promptReadable(x: number, y: number): boolean {
+    if (!this.onScreen(x, y)) {
+      return false;
+    }
+    const fraction = this.screenFraction(y);
+    const floor = 1 - SCREEN.hudFraction;
+    if (fraction > floor) {
+      return false; // behind the HUD
+    }
+    return fraction >= SCREEN.clearanceFraction
+      || fraction + SCREEN.clearanceFraction <= floor;
+  }
+
   // --- Commands, as the game command service receives them ---------------------------------------
 
   command(unitIds: number[], order: Order): void {
@@ -208,6 +290,33 @@ export class World {
           factory.queue.push(typeId);
         }
       })
+    });
+  }
+
+  /**
+   * The unload order, as SyncItemContainer carries it out: everything comes out at the spot when the
+   * spot is in the container's reach, and nothing happens at all when it is not - no answer either.
+   */
+  unload(containerId: number, x: number, y: number): void {
+    this.pendingCommands.push({
+      dueAt: this.time + this.commandLatencyMillis,
+      unitIds: [containerId],
+      apply: () => {
+        const container = this.units.get(containerId);
+        if (!container || !container.spec.container || container.cargo.length === 0
+          || Math.hypot(x - container.x, y - container.y) > container.spec.container.range) {
+          return;
+        }
+        container.cargo.forEach((unitId, index) => {
+          const unit = this.units.get(unitId);
+          if (unit) {
+            unit.containedIn = null;
+            unit.x = x + index * 1.5;
+            unit.y = y;
+          }
+        });
+        container.cargo = [];
+      }
     });
   }
 
@@ -252,6 +361,9 @@ export class World {
         continue; // killed earlier in this step
       }
       unit.reloadLeft = Math.max(0, unit.reloadLeft - seconds);
+      if (unit.containedIn !== null) {
+        continue; // carried: does nothing, is nowhere
+      }
       if (unit.owner === 'bot') {
         this.botDefends(unit);
       } else {
@@ -321,6 +433,20 @@ export class World {
       case 'finalize':
         this.executeBuild(unit, order, seconds);
         break;
+      case 'load': {
+        // SyncBaseItem.putInContainer: walks until the container is within the container's range.
+        const container = this.units.get(order.containerId);
+        if (!container || !container.spec.container) {
+          unit.order = null;
+          break;
+        }
+        if (this.driveTo(unit, container.x, container.y, container.spec.container.range, seconds)) {
+          unit.order = null;
+          unit.containedIn = container.id;
+          container.cargo.push(unit.id);
+        }
+        break;
+      }
     }
   }
 
@@ -438,7 +564,19 @@ export class World {
         break;
       case 'createdIn':
         passed = [...this.units.values()].some(u => u.owner === 'own' && u.spec.id === condition.typeId
-          && u.buildup >= 1 && insidePolygon(u.x, u.y, condition.region));
+          && u.buildup >= 1 && u.containedIn === null && insidePolygon(u.x, u.y, condition.region));
+        break;
+      case 'loaded':
+        passed = [...this.units.values()].some(u => u.owner === 'own' && u.spec.id === condition.typeId
+          && u.containedIn !== null);
+        break;
+      case 'loadedIn':
+        passed = [...this.units.values()].some(u => u.owner === 'own' && u.spec.id === condition.containerTypeId
+          && u.cargo.length > 0 && insidePolygon(u.x, u.y, condition.region));
+        break;
+      case 'in':
+        passed = [...this.units.values()].some(u => u.owner === 'own' && u.spec.id === condition.typeId
+          && u.containedIn === null && insidePolygon(u.x, u.y, condition.region));
         break;
     }
     if (passed) {
@@ -593,6 +731,15 @@ export class FakeBaseItem {
   isOnScreen(): boolean {
     return !this.disposed && this.world.onScreen(this.x, this.y);
   }
+
+  /**
+   * Whether a prompt on this item would be read. The real renderer hides the label when it no
+   * longer fits - see watchSelectPromptOnScreen - so a prompt put somewhere it cannot be seen
+   * leaves the player with nothing, and the bed has to show that the same way.
+   */
+  promptReadable(): boolean {
+    return !this.disposed && this.world.promptReadable(this.x, this.y);
+  }
 }
 
 export class FakeResourceItem {
@@ -650,6 +797,15 @@ export class FakeResourceItem {
   isOnScreen(): boolean {
     return !this.disposed && this.world.onScreen(this.x, this.y);
   }
+
+  /**
+   * Whether a prompt on this item would be read. The real renderer hides the label when it no
+   * longer fits - see watchSelectPromptOnScreen - so a prompt put somewhere it cannot be seen
+   * leaves the player with nothing, and the bed has to show that the same way.
+   */
+  promptReadable(): boolean {
+    return !this.disposed && this.world.promptReadable(this.x, this.y);
+  }
 }
 
 /** The selection operations the renderer triggers when items come and go (W3, W7). */
@@ -692,7 +848,7 @@ export class FakeRenderer {
   sync(): void {
     const leftovers = new Set(this.baseItems.map(item => item.getId()));
     for (const unit of this.world.units.values()) {
-      if (!this.world.inRenderBox(unit.x, unit.y, unit.spec.radius)) {
+      if (unit.containedIn !== null || !this.world.inRenderBox(unit.x, unit.y, unit.spec.radius)) {
         continue;
       }
       let item = this.baseItems.find(candidate => candidate.getId() === unit.id);
@@ -768,6 +924,10 @@ export class FakeRenderer {
     return this.world.viewField();
   }
 
+  isPromptReadable(x: number, y: number): boolean {
+    return this.world.promptReadable(x, y);
+  }
+
   addViewFieldListener(listener: ViewFieldListener): void {
     if (!this.viewFieldListeners.includes(listener)) {
       this.viewFieldListeners.push(listener);
@@ -815,10 +975,22 @@ export class FakeRenderer {
 
   private placerTypeId: number | null = null;
   private placerBuilderIds: number[] = [];
+  /** The container whose Unload button opened the placer; null for a build placer. */
+  private unloadContainerId: number | null = null;
 
   activatePlacer(typeId: number, builderIds: number[]): void {
     this.placerTypeId = typeId;
     this.placerBuilderIds = builderIds;
+    this.unloadContainerId = null;
+    this.baseItemPlacerActive = true;
+    this.placerCallback?.(BaseItemPlacerPresenterEvent.ACTIVATED);
+  }
+
+  /** JsItemCockpitBridge.requestUnload: the placer, with the unit type as the thing placed. */
+  activateUnloadPlacer(containerId: number): void {
+    this.placerTypeId = null;
+    this.placerBuilderIds = [];
+    this.unloadContainerId = containerId;
     this.baseItemPlacerActive = true;
     this.placerCallback?.(BaseItemPlacerPresenterEvent.ACTIVATED);
   }
@@ -827,9 +999,12 @@ export class FakeRenderer {
     if (!this.baseItemPlacerActive) {
       throw new Error('No placer to place with');
     }
-    const typeId = this.placerTypeId!;
     this.placerCallback?.(BaseItemPlacerPresenterEvent.PLACED);
-    this.world.command(this.placerBuilderIds, {kind: 'build', typeId, x, y});
+    if (this.unloadContainerId !== null) {
+      this.world.unload(this.unloadContainerId, x, y);
+    } else {
+      this.world.command(this.placerBuilderIds, {kind: 'build', typeId: this.placerTypeId!, x, y});
+    }
     this.deactivatePlacer();
   }
 
@@ -840,6 +1015,7 @@ export class FakeRenderer {
   private deactivatePlacer(): void {
     this.baseItemPlacerActive = false;
     this.placerTypeId = null;
+    this.unloadContainerId = null;
     this.placerCallback?.(BaseItemPlacerPresenterEvent.DEACTIVATED);
   }
 
@@ -862,6 +1038,8 @@ export class FakeRenderer {
 export class FakeItemCockpit {
   /** The build button the hint stands on, as the player sees it. */
   hintTypeId: number | null = null;
+  /** The hint stands on the Unload button. */
+  unloadHint = false;
   private cockpitTypeId: number | null = null;
   private cockpitItemIds: number[] = [];
   private buildClickCallback: ((model: { itemTypeId: number }) => void) | null = null;
@@ -912,6 +1090,45 @@ export class FakeItemCockpit {
 
   setBuildClickCallback(callback: ((model: { itemTypeId: number }) => void) | null): void {
     this.buildClickCallback = callback;
+  }
+
+  /** As ItemCockpitComponent.showUnloadTip. */
+  showUnloadTip(show: boolean): boolean {
+    if (!show) {
+      this.unloadHint = false;
+      return true;
+    }
+    const blockReason = this.getUnloadTipBlockReason();
+    this.unloadHint = blockReason === null;
+    return this.unloadHint;
+  }
+
+  /** The Unload button is there while one container is selected, and enabled while it carries something. */
+  getUnloadTipBlockReason(): string | null {
+    const container = this.container();
+    if (!container) {
+      return TipStallReason.COCKPIT_NOT_READY;
+    }
+    if (container.cargo.length === 0) {
+      return TipStallReason.BUTTON_DISABLED;
+    }
+    return null;
+  }
+
+  /** The player presses Unload. */
+  clickUnload(renderer: FakeRenderer): void {
+    const container = this.container();
+    if (!container || container.cargo.length === 0) {
+      throw new Error('There is no enabled Unload button');
+    }
+    renderer.activateUnloadPlacer(container.id);
+  }
+
+  private container(): Unit | null {
+    if (this.cockpitTypeId === null || this.cockpitItemIds.length !== 1 || !itemTypeSpec(this.cockpitTypeId).container) {
+      return null;
+    }
+    return this.world.units.get(this.cockpitItemIds[0]) ?? null;
   }
 
   buttons(): number[] {

@@ -88,7 +88,38 @@ spec:
               # 60 % von 3Gi = 1.8 GiB Heap. Siehe Kommentar bei resources: bewusst
               # niedriger als die frueheren 75 %, damit die groessere Box als Reserve
               # ankommt und nicht als zusaetzlicher Heap.
-              value: "-XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
+              #
+              # -Xlog:gc* --- Diagnose fuer die langen Ticks. Am 20.09.2026 hing ein
+              # einzelner Tick 89,5 s in notifyTickListeners(), und dort steht auf dem
+              # Server ueberhaupt kein Code: der einzige Listener
+              # (ServerGameEngineControl.onPostTick) ist auskommentiert. Der Thread hat
+              # also nicht gearbeitet, sondern gestanden. Dass die ganze JVM stand und
+              # nicht nur der Tick-Thread, liess sich nur indirekt zeigen -- die
+              # Logdichte des Pods fiel in diesen 89 s von 42 auf 7,9 Zeilen/s, 94 % der
+              # Wanduhr lagen in Luecken ueber einer Sekunde. Mit dieser Zeile steht die
+              # Pause samt Ursache und Dauer direkt im Log, rueckwirkend und ohne dass
+              # jemand den Moment treffen muss.
+              #
+              # Ein Thread-Dump waere hier das falsche Werkzeug (er zeigte den
+              # Tick-Thread in einer leeren Methode), und er ginge auch nicht: das
+              # Jib-Basisimage ist eclipse-temurin:21-jre, in /opt/java/openjdk/bin
+              # liegen nur java, jfr, jrunscript, jwebserver, keytool, rmiregistry --
+              # kein jcmd.
+              #
+              # -XX:StartFlightRecording --- die eigentliche Frage ist, WAS waechst: der
+              # Speicher steigt nach jedem Neustart monoton (05:20 1224 MiB -> 16:20
+              # 2428 MiB am 20.09.) und die langen Ticks erscheinen, sobald der Heap am
+              # Anschlag ist. Da jcmd fehlt, kann die Aufzeichnung nicht auf Zuruf
+              # ausgeloest werden, also laeuft sie von selbst: delay=90m, damit der Heap
+              # schon gewachsen ist, 20 Minuten lang, dann schreibt die JVM die Datei
+              # selbst. settings=profile enthaelt OldObjectSample -- die ueberlebenden
+              # Objekte MIT Allokations-Stacktrace, also genau die Leckkandidaten.
+              # Danach:
+              #   kubectl cp <pod>:/tmp/leak.jfr leak.jfr -c razarion-server
+              #   jfr summary leak.jfr
+              #   jfr print --events OldObjectSample leak.jfr
+              # Beides wieder entfernen, sobald die Ursache steht.
+              value: "-XX:MaxRAMPercentage=60.0 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -Xlog:gc*:stdout:time,uptime,level,tags -XX:StartFlightRecording=name=leak,delay=90m,duration=20m,settings=profile,maxsize=64m,filename=/tmp/leak.jfr"
             - name: SPRING_PROFILES_ACTIVE
               value: prod
             - name: SPRING_DATASOURCE_URL

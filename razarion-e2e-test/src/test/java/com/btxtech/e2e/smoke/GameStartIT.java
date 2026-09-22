@@ -47,6 +47,11 @@ class GameStartIT extends BaseE2eTest {
          * its reach - this is a shore point instead.
          */
         static final double[] PHASE2_LANDING = {470, 494};
+        /**
+         * Inside quest 486's strip of water along the Phase 2 coast. The strip bends with the
+         * coast, so its centroid lies outside it - a point in it has to be named.
+         */
+        static final double[] COAST_WATER = {466, 485};
     }
 
     private static final int BUILDER = 1;
@@ -280,26 +285,27 @@ class GameStartIT extends BaseE2eTest {
         // transporter sits at the dockyard.
         gamePage.waitUntil(() -> !gamePage.jsOwnItemsOfType(TRANSPORTER).isEmpty(), 60, "the transporter to exist");
 
-        // Quest 392: Move Builder to Phase 2 region. Four separate things have to work, and the
-        // player has to find all four: load the builder, sail across, press Unload, and place the
-        // builder on land within the ship's range. Each one is its own step here, so a failure
-        // says which of them it was.
-        gamePage.verifyQuestCockpit("Region");
-        double[] regionCenter = gamePage.getQuestRegionCenter();
-        double destX = regionCenter != null ? regionCenter[0] : Spot.PHASE2_LANDING[0];
-        double destY = regionCenter != null ? regionCenter[1] : Spot.PHASE2_LANDING[1];
-        System.out.println("[E2E] quest 392 region at " + destX + "," + destY);
+        // Quest 392 - the builder to the Phase 2 region - is three quests since 2026-09-22, one per
+        // thing the player has to find: load the builder, sail the loaded transporter to the water
+        // off the coast, press Unload and place the builder on land within the ship's range.
 
+        // Quest 485: load the builder
+        gamePage.verifyQuestCockpit("Load into the Transporter");
         gamePage.jsLoadIntoTransporter(BUILDER);
         gamePage.waitUntil(() -> gamePage.isTransporterLoaded(BUILDER), 60,
                 "the builder to be inside the transporter");
 
-        gamePage.jsMoveItemsOfType(TRANSPORTER, destX, destY);
-        gamePage.waitUntil(() -> gamePage.isNear(gamePage.jsPositionOfType(TRANSPORTER), destX, destY, 20), 180,
-                "the transporter to reach the region");
+        // Quest 486: sail to the strip of water along the coast, which is the quest's place
+        gamePage.waitForQuestProgressContaining("with cargo");
+        double destX = Spot.COAST_WATER[0];
+        double destY = Spot.COAST_WATER[1];
+        System.out.println("[E2E] quest 486 water at " + destX + "," + destY);
+        gamePage.waitForQuestCompletedWithRetry(() -> gamePage.jsMoveItemsOfType(TRANSPORTER, destX, destY),
+                "Sail to the marked region", 240);
 
-        // The unload button opens the placer; the spot still has to be picked, on land and within
-        // the ship's range - and an unload that is out of range is dropped without a word.
+        // Quest 392: unload. The unload button opens the placer; the spot still has to be picked, on
+        // land and within the ship's range - which the placer now enforces.
+        gamePage.verifyQuestCockpit("Region");
         gamePage.jsMoveCamera(destX, destY);
         try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
         System.out.println("[E2E] container range of the transporter: " + gamePage.jsContainerRange(TRANSPORTER));

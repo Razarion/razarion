@@ -104,7 +104,11 @@ public class BotEnragementState {
         return bases;
     }
 
-    void enrageOnKill(SyncBaseItem target, PlayerBase actor) {
+    /**
+     * @return whether this kill moved the bot up a state, so the caller can put the new state's
+     * units on the ground at once - see {@link BotRunner#enrageOnKill}.
+     */
+    boolean enrageOnKill(SyncBaseItem target, PlayerBase actor) {
         if (isEnragementActive) {
             Integer kills = killsPerBase.get(actor);
             if (kills == null) {
@@ -118,9 +122,11 @@ public class BotEnragementState {
                 if (listener != null) {
                     listener.onEnrageUp(botName, nextState, actor);
                 }
+                return true;
             }
             // TODO remove the killed bot item from the botItemContainer here instead of iterating over and removing the death items
         }
+        return false;
     }
 
     public void executeCommand(AbstractBotCommandConfig botCommandConfig, PlayerBaseFull base) {

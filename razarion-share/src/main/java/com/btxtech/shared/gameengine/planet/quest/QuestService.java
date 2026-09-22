@@ -265,6 +265,23 @@ public class QuestService {
                 } else {
                     throw new UnsupportedOperationException();
                 }
+            case SYNC_ITEM_LOADED:
+                if (comparisonConfig.getTypeCount() != null) {
+                    BaseItemPositionComparison loadedComparison = baseItemPositionComparisonProvider.get();
+                    loadedComparison.init(convertItemCount(comparisonConfig.getTypeCount()), null, comparisonConfig.getTimeSeconds(), userId, SyncBaseItem::isContainedIn);
+                    return loadedComparison;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            case LOADED_CONTAINER_POSITION:
+                if (comparisonConfig.getTypeCount() != null) {
+                    BaseItemPositionComparison loadedContainerComparison = baseItemPositionComparisonProvider.get();
+                    loadedContainerComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTimeSeconds(), userId,
+                            syncBaseItem -> syncBaseItem.getSyncItemContainer() != null && !syncBaseItem.getSyncItemContainer().getContainedItems().isEmpty());
+                    return loadedContainerComparison;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
             default:
                 throw new IllegalArgumentException("QuestService.createAbstractComparison() Unknown conditionTrigger: " + conditionTrigger);
         }

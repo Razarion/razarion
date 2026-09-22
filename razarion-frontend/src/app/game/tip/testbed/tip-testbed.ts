@@ -7,12 +7,12 @@ import {ActionService} from '../../action.service';
 import {FirstInteractionTrackerService} from '../../tracking/first-interaction-tracker.service';
 import {FakeBaseItem, FakeItemCockpit, FakeResourceItem, QuestCondition, Unit, World} from './fake-world';
 import {TipStallReason} from '../tip-stall';
-import {fakeBaseItemType, ItemTypeId} from './fake-item-types';
+import {fakeBaseItemType, ItemTypeId, itemTypeSpec} from './fake-item-types';
 
 /** A quest with a tip, as in catalog section 3. */
 export interface TipQuest {
   id: number;
-  tip: 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK';
+  tip: 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD';
   actorTypeId: number;
   /** The typed part of the condition, which is also what the tip reads its target from. */
   typeCount: { typeId: number, count: number } | null;
@@ -28,6 +28,21 @@ export interface TipQuest {
  * box while the camera is at home.
  */
 export const REGION_386 = [{x: 55, y: -10}, {x: 65, y: -10}, {x: 65, y: 10}, {x: 55, y: 10}];
+
+/**
+ * The crossing off the noob island in small: the coast of the Phase 2 region 80 units north-east of
+ * the base, and the circle of water off it the transporter has to reach - within the transporter's
+ * unload range (20) of that coast, as on the planet.
+ */
+export const REGION_PHASE2 = [{x: 80, y: 40}, {x: 130, y: 40}, {x: 130, y: 90}, {x: 80, y: 90}];
+export const REGION_COAST_WATER = octagon(72, 32, 6);
+
+function octagon(x: number, y: number, radius: number): { x: number, y: number }[] {
+  return [...Array(8).keys()].map(i => ({
+    x: x + radius * Math.cos(i * Math.PI / 4),
+    y: y + radius * Math.sin(i * Math.PI / 4)
+  }));
+}
 
 export const QUESTS: Record<number, TipQuest> = {
   358: {id: 358, tip: 'BUILD', actorTypeId: ItemTypeId.BUILDER, typeCount: {typeId: ItemTypeId.FACTORY, count: 1},
@@ -57,7 +72,14 @@ export const QUESTS: Record<number, TipQuest> = {
   388: {id: 388, tip: 'ATTACK', actorTypeId: ItemTypeId.HYDRA, typeCount: {typeId: ItemTypeId.BOT_HYDRA, count: 1},
     condition: {kind: 'killed', typeId: ItemTypeId.BOT_HYDRA, count: 1}},
   389: {id: 389, tip: 'FABRICATE', actorTypeId: ItemTypeId.DOCKYARD, typeCount: {typeId: ItemTypeId.TRANSPORTER, count: 1},
-    condition: {kind: 'created', typeId: ItemTypeId.TRANSPORTER, count: 1, includeExisting: true}}
+    condition: {kind: 'created', typeId: ItemTypeId.TRANSPORTER, count: 1, includeExisting: true}},
+  // Quest 392 split in three (2026-09-22); 485 and 486 are the local ids.
+  485: {id: 485, tip: 'LOAD', actorTypeId: ItemTypeId.BUILDER, typeCount: {typeId: ItemTypeId.BUILDER, count: 1},
+    condition: {kind: 'loaded', typeId: ItemTypeId.BUILDER}},
+  486: {id: 486, tip: 'SAIL', actorTypeId: ItemTypeId.BUILDER, typeCount: {typeId: ItemTypeId.TRANSPORTER, count: 1},
+    condition: {kind: 'loadedIn', containerTypeId: ItemTypeId.TRANSPORTER, region: REGION_COAST_WATER}, region: REGION_COAST_WATER},
+  392: {id: 392, tip: 'UNLOAD', actorTypeId: ItemTypeId.BUILDER, typeCount: {typeId: ItemTypeId.BUILDER, count: 1},
+    condition: {kind: 'in', typeId: ItemTypeId.BUILDER, region: REGION_PHASE2}, region: REGION_PHASE2}
 };
 
 /** What is on the player's screen that a tip put there. */
@@ -71,6 +93,8 @@ export interface PlayerView {
   placerActive: boolean;
   /** The group tip lights the selection-box button in the icon bar. */
   groupAsked: boolean;
+  /** The hint stands on the Unload button of the item cockpit. */
+  unloadHint: boolean;
 }
 
 export interface Violation {
@@ -164,6 +188,15 @@ export class TipTestbed {
     this.lookAt(unit.x, unit.y);
   }
 
+  /**
+   * Puts the camera so the unit lands at a given height in the picture: 0 is the top edge, 1 the
+   * bottom. For the cases that ask what happens when a target is on screen but cannot carry a
+   * prompt - behind the bottom HUD, or with no room for the label.
+   */
+  lookSoThat(unit: Unit, screenFraction: number): void {
+    this.lookAt(unit.x, this.world.cameraYForScreenFraction(unit.y, screenFraction));
+  }
+
   activateQuest(questId: number): void {
     const quest = QUESTS[questId];
     this.quest = quest;
@@ -210,6 +243,10 @@ export class TipTestbed {
 
   place(x: number, y: number): void {
     this.world.renderer.place(x, y);
+  }
+
+  clickUnload(): void {
+    this.cockpit.clickUnload(this.world.renderer);
   }
 
   cancelPlacer(): void {
@@ -268,13 +305,13 @@ export class TipTestbed {
     const prompts: PlayerView['prompts'] = [];
     for (const item of renderer.liveBaseItems()) {
       const text = item.getPromptText();
-      if (text !== null && item.isOnScreen()) {
+      if (text !== null && item.promptReadable()) {
         prompts.push({text, itemId: item.getId(), typeId: item.itemType.getId()});
       }
     }
     for (const item of renderer.liveResourceItems()) {
       const text = item.getPromptText();
-      if (text !== null && item.isOnScreen()) {
+      if (text !== null && item.promptReadable()) {
         prompts.push({text, itemId: item.getId(), typeId: item.itemType.getId()});
       }
     }
@@ -284,7 +321,8 @@ export class TipTestbed {
       cockpitHintTypeId: this.cockpit.hintTypeId,
       placeMarker: renderer.placeMarkerShown,
       placerActive: renderer.baseItemPlacerActive,
-      groupAsked: renderer.touchSelectionMode.asked
+      groupAsked: renderer.touchSelectionMode.asked,
+      unloadHint: this.cockpit.unloadHint
     };
   }
 
@@ -299,7 +337,7 @@ export class TipTestbed {
 
   hasGuidance(view = this.view()): boolean {
     return view.prompts.length > 0 || view.arrowAngle !== null || view.cockpitHintTypeId !== null
-      || view.placeMarker || view.placerActive || view.groupAsked;
+      || view.placeMarker || view.placerActive || view.groupAsked || view.unloadHint;
   }
 
   /** The one prompt on screen, if there is exactly one. */
@@ -412,8 +450,17 @@ export class TipTestbed {
    */
   private actorIsWorking(quest: TipQuest): boolean {
     return [...this.world.units.values()].some(unit =>
-      unit.owner === 'own' && unit.spec.id === quest.actorTypeId
+      unit.owner === 'own' && (unit.spec.id === quest.actorTypeId || this.carriesActor(quest, unit))
       && (!this.world.isIdle(unit) || this.world.hasPendingOrder(unit.id)));
+  }
+
+  /**
+   * Crossing the water: the loaded container sails and unloads for the unit inside it, and a
+   * dockyard building a container to replace a sunk one works for it too.
+   */
+  private carriesActor(quest: TipQuest, unit: Unit): boolean {
+    return unit.cargo.some(id => this.world.units.get(id)?.spec.id === quest.actorTypeId)
+      || unit.queue.some(typeId => !!itemTypeSpec(typeId).container?.carries.includes(quest.actorTypeId));
   }
 
   /** No target on the whole planet: nothing to show until it is back (Q7). */
@@ -443,8 +490,10 @@ export class TipTestbed {
         y: region.reduce((sum, corner) => sum + corner.y, 0) / region.length
       }] : [])
     ];
+    // Not onScreen: a target inside the view field but behind the HUD or in the band where the
+    // label does not fit is exactly what the arrow is for, so it counts as something to point at.
     return candidates.some(candidate =>
-      !this.world.onScreen(candidate.x, candidate.y)
+      !this.world.promptReadable(candidate.x, candidate.y)
       && this.angleDifference(angle, this.angleTo(candidate.x, candidate.y)) < 20 * Math.PI / 180);
   }
 
@@ -480,6 +529,7 @@ export class TipTestbed {
         getMyItemCount: (typeId: number) => world.ownCount(typeId),
         // As BaseItemUiService.getTipItemStates(): every own item, the enemies of the given type.
         getTipItemStates: (enemyItemTypeId: number) => [...world.units.values()]
+          .filter(unit => unit.containedIn === null)
           .filter(unit => unit.owner === 'own'
             || (enemyItemTypeId >= 0 && (enemyItemTypeId === 0 || unit.spec.id === enemyItemTypeId)))
           .map(unit => ({
@@ -490,7 +540,8 @@ export class TipTestbed {
             y: unit.y,
             idle: world.isIdle(unit),
             buildup: unit.buildup,
-            factoryBuildQueue: [...unit.queue]
+            factoryBuildQueue: [...unit.queue],
+            cargo: unit.cargo.map(id => world.units.get(id)!.spec.id)
           }))
       },
       itemTypeService: {
@@ -528,8 +579,7 @@ export class TipTestbed {
           setTimeout(() => moveAck?.(), world.commandLatencyMillis);
         },
         finalizeBuildCmd: (ids: number[], siteId: number) => world.command(ids, {kind: 'finalize', siteId}),
-        loadContainerCmd: () => {
-        },
+        loadContainerCmd: (ids: number[], containerId: number) => world.command(ids, {kind: 'load', containerId}),
         setMoveCommandAckCallback: (callback: () => void) => moveAck = callback
       }
     };

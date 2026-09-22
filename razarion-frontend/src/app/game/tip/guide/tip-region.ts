@@ -46,6 +46,24 @@ export class TipRegion {
     ].some(point => insidePolygon(point, this.corners!));
   }
 
+  /** How far the point is from the region, 0 inside it. */
+  distanceTo(point: Point): number {
+    if (this.circle) {
+      return Math.max(0, Math.sqrt(squaredDistance(point, this.circle.center)) - this.circle.radius);
+    }
+    if (!this.corners || this.corners.length < 3) {
+      return Infinity;
+    }
+    if (insidePolygon(point, this.corners)) {
+      return 0;
+    }
+    let best = Infinity;
+    for (let i = 0, j = this.corners.length - 1; i < this.corners.length; j = i++) {
+      best = Math.min(best, distanceToSegment(point, this.corners[j], this.corners[i]));
+    }
+    return best;
+  }
+
   /**
    * A point inside the region, nearest to the builder: any point of it will do for the quest, and the
    * arrow is a direction to walk in. Not the centre of the bounding box - for quest 386's diagonal
@@ -105,6 +123,16 @@ function insidePolygon(point: Point, corners: Point[]): boolean {
     }
   }
   return inside;
+}
+
+function distanceToSegment(point: Point, a: Point, b: Point): number {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const lengthSquared = dx * dx + dy * dy;
+  const t = lengthSquared > 0
+    ? Math.max(0, Math.min(1, ((point.x - a.x) * dx + (point.y - a.y) * dy) / lengthSquared))
+    : 0;
+  return Math.sqrt(squaredDistance(point, {x: a.x + t * dx, y: a.y + t * dy}));
 }
 
 function squaredDistance(one: Point, other: Point): number {

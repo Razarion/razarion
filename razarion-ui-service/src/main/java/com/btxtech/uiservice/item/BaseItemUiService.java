@@ -587,6 +587,7 @@ public class BaseItemUiService {
             state.idle = info.idle;
             state.buildup = info.buildup;
             state.factoryBuildQueue = info.factoryBuildQueue != null ? info.factoryBuildQueue : new int[0];
+            state.cargo = info.containingItemTypeIds != null ? info.containingItemTypeIds : new int[0];
             result.add(state);
         }
         return result.toArray(new TipItemState[0]);

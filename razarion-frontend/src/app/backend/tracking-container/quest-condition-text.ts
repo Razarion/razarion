@@ -40,6 +40,10 @@ function triggerText(trigger: ConditionTrigger | null,
       // The place is the point of this one - it is the quest that sends the player somewhere - but
       // a polygon does not fit in a row, so it is named rather than drawn.
       return `${countOrTypes('Place', 'units or buildings', comparison, itemTypeNames)} on a region`;
+    case ConditionTrigger.SYNC_ITEM_LOADED:
+      return `${countOrTypes('Load', 'units', comparison, itemTypeNames)} into a transporter`;
+    case ConditionTrigger.LOADED_CONTAINER_POSITION:
+      return `${countOrTypes('Sail', 'transporters', comparison, itemTypeNames)} loaded to a region`;
     case ConditionTrigger.HARVEST:
       return `Harvest ${comparison?.count ?? '?'} razarion`;
     case ConditionTrigger.BASE_KILLED:

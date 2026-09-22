@@ -18,4 +18,6 @@ public class TipItemState {
     public double buildup;
     /** Item types a factory has queued, the one in production first; empty for anything else. */
     public int[] factoryBuildQueue;
+    /** Item types a container carries; empty for anything else. The carried units themselves are not listed. */
+    public int[] cargo;
 }

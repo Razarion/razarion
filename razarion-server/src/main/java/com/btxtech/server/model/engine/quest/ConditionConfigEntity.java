@@ -3,6 +3,7 @@ package com.btxtech.server.model.engine.quest;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,6 +21,7 @@ public class ConditionConfigEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Enumerated(EnumType.STRING)
+    @Column(length = 255)
     private ConditionTrigger conditionTrigger;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private ComparisonConfigEntity comparisonConfig;

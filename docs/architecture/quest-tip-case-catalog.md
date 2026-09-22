@@ -19,7 +19,7 @@ test bed passes on it. Where a row says "the chain:", that is what the removed t
 
 The quest list and the configuration numbers come from the **local** DB; PROD may differ.
 
-**Scope.** Tips are for beginners. They run on the quests of levels 1-8 only (the last is 389), and those quests are
+**Scope.** Tips are for beginners. They run on the quests of levels 1-8 only (the last is 392), and those quests are
 prepared for them: each quest provides what the next one needs. A case that the quest chain
 prepares against still has to be handled gracefully (no stuck chain, no wrong prompt), but it does
 not have to teach anything.
@@ -117,8 +117,14 @@ SelectGroup is added today whenever the quest names a target type. **Decided:** 
 | 7 | 387 | FABRICATE | Dockyard | 1× Hydra |
 | 7 | 388 | ATTACK | Hydra | kill 1× (Bot1) Hydra (water) |
 | 8 | 389 | FABRICATE | Dockyard | 1× Transporter |
+| 8 | 485 | LOAD | Builder | 1× Builder loaded (SYNC_ITEM_LOADED) |
+| 8 | 486 | SAIL | Builder | 1× Transporter **with cargo** in the strip of water along the Phase 2 coast, ~230 × 10 (LOADED_CONTAINER_POSITION) |
+| 8 | 392 | UNLOAD | Builder | 1× Builder in the Phase 2 region |
 
-From 392 on (level 8), no quest has a tip. Corrected 2026-09-18: 389 was missing from this table.
+After 392 no quest has a tip. Corrected 2026-09-18: 389 was missing from this table. 2026-09-22: 392
+("carry the builder off the noob island") split into load, sail and unload, each with a tip - it
+passed at 0 % from 18.09. on, and PROD recorded not one load order: nobody was ever told to put
+the builder into the transporter. 485 and 486 are the local ids.
 
 ---
 
@@ -230,6 +236,20 @@ test bed should run the **actor** axis in full for *every* step.
 | HRV-06 | idle, amount not reached yet | "Click to harvest" again | ✓ bed |
 | HRV-07 | no field on the planet | nothing until a field is back (Q7) | ✓ bed |
 
+### TRN - Cross the water (LOAD, SAIL, UNLOAD)
+
+One decision for all three quests: each can find the world in an earlier quest's state.
+
+| Id | Situation | Expected | Today |
+|---|---|---|---|
+| TRN-01 | 485, builder not selected | "Click to select" on the builder, then "Click to load" on the transporter; quiet while it walks (`AWAIT_LOAD`) | ✓ bed since 2026-09-22 |
+| TRN-02 | 485, transporter off screen | arrow to it (`CONTAINER_OUT_OF_VIEW`), the prompt once it is on screen | ✓ bed since 2026-09-22 |
+| TRN-03 | 485, transporter sunk | select the dockyard, hint on the transporter button, then back to the builder | ✓ bed since 2026-09-22 |
+| TRN-04 | 486, loaded transporter | select it, arrow to the coast, the water circle marked once in view (`AWAIT_MOVE_CLICK`), quiet while sailing | ✓ bed since 2026-09-22 |
+| TRN-05 | 486, builder not aboard | the load steps of 485 | ✓ bed since 2026-09-22 |
+| TRN-06 | 392, transporter at the coast | select it, hint on the Unload button, the region marked while placing | ✓ bed since 2026-09-22 |
+| TRN-07 | 392, transporter still at home | sail first (arrow, marked region); the Unload hint once the region is within reach (range - 2) | ✓ bed since 2026-09-22 |
+
 ### ATK - Attack (ATTACK)
 
 | Id | Situation | Expected | Today |
@@ -246,6 +266,32 @@ test bed should run the **actor** axis in full for *every* step.
 | ATK-10a | player attacks another enemy **of the quest's type** than the marked one | counts as done → quiet (Q5) | ✓ bed since the guide (2026-09-18); the chain: the prompt stays on the marked extractor while the viper attacks the other one |
 | ATK-10b | player attacks an enemy **of another type** | does not count, prompt stays (Q5) | ? |
 | ATK-11 | water (388, hydra against hydra) | as ATK-01..10 | ? |
+
+### VIS - On screen is not the same as seen (all chains)
+
+Being inside the view field does not mean the player can see a prompt there. The view field is
+built from the NDC corners ±1, so it covers the strip behind the bottom row of the HUD and the
+very top edge of the picture, and the prompt is not a dot: label, gap and arrow are 180 px and the
+label floats another 150-200 px above the item. On a phone in portrait (backbuffer about 369x683)
+that was 42 % of the height of clearance against 26 % of HUD - a target had to sit in a band of
+less than a third of the picture for its prompt to be seen, and nothing checked.
+
+Two changes answer this, and the cases below pin both: the prompt is scaled to the picture
+(`PROMPT_IDEAL_HEIGHT_PX`) so one side of the anchor always has room, and `isPromptReadable`
+decides between prompt and arrow instead of the view field alone.
+
+| Id | Situation | Expected | Today |
+|---|---|---|---|
+| VIS-01 | target inside the view field, behind the bottom HUD | arrow, no prompt | ✓ bed since 2026-09-22 |
+| VIS-02 | target high in the picture, no room above | prompt with the label **below** the item | ✓ bed since 2026-09-22 |
+| VIS-03 | target scrolls from readable to under the HUD | prompt down, arrow up within ~1 s | ✓ bed since 2026-09-22 |
+| VIS-04 | the label's side stops fitting while the prompt is up | rebuilt on the other side, not left hidden | ✓ code (`isSelectPromptMisplaced`), no case |
+| VIS-05 | HUD panel open on a compact phone | prompt keeps clear of the panel | ✓ code (measured, `getHudBottomPixels`), no case |
+
+The bed models the bands with the live camera's geometry (`CAMERA` in fake-world) and takes the
+clearance from the renderer's own constant, so the two cannot drift. What it cannot check is the
+projection itself and the HUD measurement - those are `prompt-geometry.spec.ts` and the live
+client.
 
 ### IDL - Wait until the unit is done (entry of the fallback chain)
 
@@ -378,8 +424,8 @@ In `razarion-frontend/src/app/game/tip/testbed/`, run with
   - `tipRegression` - a reported bug, pinned to the rules it broke.
   - `tipGraceful` - a case the quests are prepared against: every rule but R1 (nothing to teach,
     only nothing wrong).
-- **`select`, `attack`, `build`, `fabricate`, `harvest`, `cross` `.testbed.spec.ts`** - 50
-  cases across all four tip types, quests 358 to 389. Not covered yet: SEL-04/06/07/09/12/14,
+- **`select`, `attack`, `build`, `fabricate`, `harvest`, `transport`, `cross` `.testbed.spec.ts`** - 57
+  cases across all seven tip types, quests 358 to 392 (the 7 TRN cases in `transport` since 2026-09-22). Not covered yet: SEL-04/06/07/09/12/14,
   GRP-01/03/04/06, PLC-03/04/07/08, BLD-01/05/10/12, FAB-03/05, ATK-04/08/10b/11, IDL-01/03/04/07,
   X-02/04/05/06/07/08 - several of them
   are covered by the unit specs, and X-04 (reload) and X-05 (touch) are outside what the

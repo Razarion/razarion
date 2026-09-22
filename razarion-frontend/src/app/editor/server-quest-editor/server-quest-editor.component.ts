@@ -58,6 +58,8 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
       ConditionTrigger.SYNC_ITEM_CREATED,
       ConditionTrigger.BASE_KILLED,
       ConditionTrigger.SYNC_ITEM_POSITION,
+      ConditionTrigger.SYNC_ITEM_LOADED,
+      ConditionTrigger.LOADED_CONTAINER_POSITION,
       ConditionTrigger.BOX_PICKED,
       ConditionTrigger.INVENTORY_ITEM_PLACED,
       ConditionTrigger.UNLOCKED,

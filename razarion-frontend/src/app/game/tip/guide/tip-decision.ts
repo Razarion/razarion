@@ -11,7 +11,11 @@ import {TipStallReason, TipTaskName} from '../tip-stall';
  * next evaluation simply sees it.
  */
 
-export type TipKind = 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK';
+/**
+ * LOAD, SAIL and UNLOAD are the three steps off the noob island (quest 392 split in three): the
+ * actor is the unit that crosses, the container is whatever can carry it.
+ */
+export type TipKind = 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD';
 
 export interface TipQuestSpec {
   questId: number | null;
@@ -25,7 +29,7 @@ export interface TipQuestSpec {
 
 /** An order this client sent that the engine may not have taken up yet (W8). */
 export interface PendingOrder {
-  kind: 'attack' | 'harvest' | 'build' | 'finalize' | 'fabricate' | 'move' | 'other';
+  kind: 'attack' | 'harvest' | 'build' | 'finalize' | 'fabricate' | 'move' | 'load' | 'unload' | 'other';
   /** The quest-relevant type of the order: what is attacked, built or fabricated. */
   targetTypeId: number | null;
   /** The engine has reported the unit busy since the order - it arrived. */
@@ -49,8 +53,11 @@ export interface DecisionInput {
   selectedIds: ReadonlySet<number>;
   /** Orders this client sent, by unit id, that are still under way or being carried out. */
   orders: ReadonlyMap<number, PendingOrder>;
-  /** Whether a ground point is on the player's screen. */
-  onScreen: (x: number, y: number) => boolean;
+  /**
+   * Whether a ground point is on the player's screen and could carry the prompt named by the
+   * text - a long one needs more room beside an item near an edge than a short one.
+   */
+  onScreen: (x: number, y: number, text?: string) => boolean;
   viewCenter: Point;
   placer: { active: boolean, typeId: number | null };
   /** Why the cockpit button for this type cannot be pointed at; null when it can. */
@@ -62,6 +69,17 @@ export interface DecisionInput {
   nearestResource: (from: Point) => Point | null;
   /** BUILD with a region (386): where the arrow goes and whether the region is in view. */
   region: { point: Point | null, inView: boolean } | null;
+  /**
+   * LOAD/SAIL/UNLOAD: how far a point is from the quest's region, 0 inside it; null without a
+   * region. The region's point above is taken from the loaded container, or the unit when none is.
+   */
+  regionDistance: (point: Point) => number | null;
+  /** Container types that can carry the given type: the ones the player owns or can fabricate. */
+  containerTypesFor: (itemTypeId: number) => number[];
+  /** How far from a container of this type a unit can be put down. */
+  containerRange: (itemTypeId: number) => number;
+  /** Why the Unload button cannot be pointed at; null when it can. */
+  unloadBlock: () => string | null;
   /** The enemy the attack prompt stood on last time, kept while it lives so the prompt does not jump. */
   markedTargetId: number | null;
 }
@@ -72,6 +90,7 @@ export type Guidance =
   { kind: 'arrow', x: number, y: number } |
   { kind: 'button', itemTypeId: number } |
   { kind: 'placeMarker' } |
+  { kind: 'unload' } |
   { kind: 'group', arrow: Point | null };
 
 export interface Decision {
@@ -85,7 +104,8 @@ export const PROMPT = {
   SELECT: 'Click to select',
   ATTACK: 'Click to attack',
   HARVEST: 'Click to harvest',
-  CONTINUE_BUILDING: 'Click to continue building'
+  CONTINUE_BUILDING: 'Click to continue building',
+  LOAD: 'Click to load'
 } as const;
 
 export function decide(input: DecisionInput): Decision {
@@ -98,6 +118,10 @@ export function decide(input: DecisionInput): Decision {
       return decideFabricate(input, input.quest.actorTypeId, input.quest.targetTypeId!);
     case 'HARVEST':
       return decideHarvest(input);
+    case 'LOAD':
+    case 'SAIL':
+    case 'UNLOAD':
+      return decideTransport(input);
   }
 }
 
@@ -238,6 +262,121 @@ function decideHarvest(input: DecisionInput): Decision {
   };
 }
 
+// --- LOAD / SAIL / UNLOAD -----------------------------------------------------------------------------
+
+/**
+ * One function for the three quests, because each of them can find the world in the state of an
+ * earlier one: a player on the sailing quest who put the unit down on the wrong shore has to load it
+ * again, and a transporter sunk by the bot's hydras has to be built again before anything else.
+ */
+function decideTransport(input: DecisionInput): Decision {
+  const quest = input.quest;
+  const cargoTypeId = quest.actorTypeId;
+  const containerTypes = input.containerTypesFor(cargoTypeId);
+  const containers = ownOfTypes(input, containerTypes).filter(container => container.buildup >= 1);
+  const loaded = containers.filter(container => (container.cargo ?? []).includes(cargoTypeId));
+  if (loaded.length === 0) {
+    return decideLoad(input, containers, containerTypes);
+  }
+  if (quest.tip === 'LOAD') {
+    return quiet(TipTaskName.SEND_LOAD_COMMAND, TipStallReason.AWAIT_IDLE); // passes with the next tick
+  }
+  const selectedShip = loaded.find(container => input.selectedIds.has(container.id));
+  const ship = selectedShip ?? nearestTo(loaded, input.viewCenter);
+  const distance = input.regionDistance(ship);
+  if (distance === null) {
+    return quiet(TipTaskName.SEND_MOVE_COMMAND, TipStallReason.WAITING); // no region: nothing to point at
+  }
+  if (quest.tip === 'SAIL') {
+    if (distance <= 0) {
+      return quiet(TipTaskName.SEND_MOVE_COMMAND, TipStallReason.AWAIT_IDLE); // passes with the next tick
+    }
+    return sailStep(input, ship, !!selectedShip);
+  }
+  // UNLOAD. The placer takes only spots in the ship's reach (JsItemCockpitBridge.requestUnload), so
+  // with the region out of reach the ship has to go closer first. Its hull is the margin.
+  if (distance > input.containerRange(ship.itemTypeId) - 2) {
+    return sailStep(input, ship, !!selectedShip);
+  }
+  const order = input.orders.get(ship.id);
+  if (order && order.kind === 'unload') {
+    return quiet(TipTaskName.SEND_UNLOAD_COMMAND, TipStallReason.AWAIT_UNLOAD);
+  }
+  if (!selectedShip) {
+    return selectStep(input, [ship]);
+  }
+  if (input.placer.active) {
+    const region = input.region;
+    if (region && !region.inView && region.point) {
+      return {
+        guidance: {kind: 'arrow', x: region.point.x, y: region.point.y},
+        taskName: TipTaskName.SEND_UNLOAD_COMMAND,
+        reason: TipStallReason.TARGET_OUT_OF_VIEW
+      };
+    }
+    return {guidance: {kind: 'placeMarker'}, taskName: TipTaskName.SEND_UNLOAD_COMMAND, reason: TipStallReason.AWAIT_PLACEMENT};
+  }
+  const block = input.unloadBlock();
+  if (block === null || block === TipStallReason.ITEM_PANEL_CLOSED) {
+    return {guidance: {kind: 'unload'}, taskName: TipTaskName.START_UNLOAD_PLACER, reason: block ?? TipStallReason.AWAIT_UNLOAD_CLICK};
+  }
+  return quiet(TipTaskName.START_UNLOAD_PLACER, block);
+}
+
+/** Nothing loaded: get a container, pick the unit, tap the container. */
+function decideLoad(input: DecisionInput, containers: TipItemState[], containerTypes: number[]): Decision {
+  const quest = input.quest;
+  const units = own(input, quest.actorTypeId);
+  if (units.length === 0) {
+    return quiet(TipTaskName.SELECT, TipStallReason.ACTOR_NOT_FOUND); // prepared against: graceful
+  }
+  if (quest.tip === 'UNLOAD' && units.some(unit => input.regionDistance(unit) === 0)) {
+    return quiet(TipTaskName.SEND_UNLOAD_COMMAND, TipStallReason.AWAIT_IDLE); // passes with the next tick
+  }
+  if (containers.length === 0) {
+    // Sunk on the way, or never built: build one, as the attack tip does with a dead attacker.
+    for (const containerType of containerTypes) {
+      const factories = ownOfTypes(input, input.factoriesFor(containerType));
+      if (factories.length > 0) {
+        return decideFabricate(input, factories[0].itemTypeId, containerType);
+      }
+    }
+    return quiet(TipTaskName.SEND_LOAD_COMMAND, TipStallReason.ACTOR_NOT_FOUND);
+  }
+  if (units.some(unit => worksOn(input, unit, ['load'], null))) {
+    return quiet(TipTaskName.SEND_LOAD_COMMAND, TipStallReason.AWAIT_LOAD);
+  }
+  const selected = units.filter(unit => input.selectedIds.has(unit.id));
+  if (selected.length === 0) {
+    return selectStep(input, units);
+  }
+  const container = nearestTo(containers, centroid(selected));
+  return pointAt(input, container, false, PROMPT.LOAD, TipTaskName.SEND_LOAD_COMMAND,
+    TipStallReason.AWAIT_LOAD_CLICK, TipStallReason.CONTAINER_OUT_OF_VIEW);
+}
+
+/** The loaded container, selected and told where to go: the region when it is in view, else the way there. */
+function sailStep(input: DecisionInput, ship: TipItemState, selected: boolean): Decision {
+  if (worksOn(input, ship, ['move'], null)) {
+    return quiet(TipTaskName.SEND_MOVE_COMMAND, TipStallReason.AWAIT_ARRIVAL);
+  }
+  if (!selected) {
+    return selectStep(input, [ship]);
+  }
+  const region = input.region;
+  if (region && region.inView) {
+    return {guidance: {kind: 'placeMarker'}, taskName: TipTaskName.SEND_MOVE_COMMAND, reason: TipStallReason.AWAIT_MOVE_CLICK};
+  }
+  if (region && region.point) {
+    return {
+      guidance: {kind: 'arrow', x: region.point.x, y: region.point.y},
+      taskName: TipTaskName.SEND_MOVE_COMMAND,
+      reason: TipStallReason.TARGET_OUT_OF_VIEW
+    };
+  }
+  return quiet(TipTaskName.SEND_MOVE_COMMAND, TipStallReason.WAITING);
+}
+
 // --- Shared steps -----------------------------------------------------------------------------------
 
 /**
@@ -266,7 +405,7 @@ function buttonStep(input: DecisionInput, itemTypeId: number, taskName: string, 
 /** On screen: a prompt on it. Off screen: the arrow. Decided once, here, for every step. */
 function pointAt(input: DecisionInput, item: Point & { id: number }, resource: boolean, text: string,
                  taskName: string, onScreenReason: string, offScreenReason: string): Decision {
-  if (input.onScreen(item.x, item.y)) {
+  if (input.onScreen(item.x, item.y, text)) {
     return {guidance: {kind: 'prompt', itemId: item.id, resource, text}, taskName, reason: onScreenReason};
   }
   return {guidance: {kind: 'arrow', x: item.x, y: item.y}, taskName, reason: offScreenReason};

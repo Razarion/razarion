@@ -51,6 +51,27 @@ public enum ConditionTrigger {
             return new TickConditionProgress(this, abstractComparison);
         }
     },
+    /**
+     * Units of the type count sitting inside a container, anywhere. The first of the three steps
+     * off the noob island (load, sail, unload): no quest before it ever asked for a load.
+     */
+    SYNC_ITEM_LOADED(true) {
+        @Override
+        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
+            return new TickConditionProgress(this, abstractComparison);
+        }
+    },
+    /**
+     * Like {@link #SYNC_ITEM_POSITION}, but a container only counts while it carries something. An
+     * empty transporter in the region would pass the sailing step and leave the player at the
+     * unloading step with nothing to unload.
+     */
+    LOADED_CONTAINER_POSITION(true) {
+        @Override
+        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
+            return new TickConditionProgress(this, abstractComparison);
+        }
+    },
     //    CRYSTALS_INCREASED(true) {
 //        @Override
 //        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {

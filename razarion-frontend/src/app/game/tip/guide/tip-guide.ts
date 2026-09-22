@@ -10,7 +10,7 @@ import {TipStallSource, TipTaskName} from '../tip-stall';
 import {GwtHelper} from '../../../gwtangular/GwtHelper';
 import {GwtInstance} from '../../../gwtangular/GwtInstance';
 import {ViewField, ViewFieldListener} from '../../renderer/view-field';
-import {decide, Decision, PendingOrder, ResourcePoint, TipKind, TipQuestSpec} from './tip-decision';
+import {decide, Decision, PendingOrder, PROMPT, ResourcePoint, TipKind, TipQuestSpec} from './tip-decision';
 import {GuidanceView} from './guidance-view';
 import {TipRegion} from './tip-region';
 
@@ -50,6 +50,10 @@ export class TipGuide implements ViewFieldListener {
     [TipTaskName.SEND_FABRICATE_COMMAND]: 2,
     [TipTaskName.SEND_HARVEST_COMMAND]: 2,
     [TipTaskName.SEND_ATTACK_COMMAND]: 2,
+    [TipTaskName.SEND_LOAD_COMMAND]: 2,
+    [TipTaskName.SEND_MOVE_COMMAND]: 3,
+    [TipTaskName.START_UNLOAD_PLACER]: 4,
+    [TipTaskName.SEND_UNLOAD_COMMAND]: 5,
     [TipTaskName.SEND_BUILD_COMMAND]: 3,
     [TipTaskName.IDLE_ITEM]: 4
   };
@@ -159,9 +163,19 @@ export class TipGuide implements ViewFieldListener {
 
     const renderService = this.deps.renderService;
     const viewField = renderService.getCurrentViewField();
-    const onScreen = (x: number, y: number) => !!viewField && viewField.contains(GwtInstance.newDecimalPosition(x, y));
+    // Inside the view field AND in the part of the picture where a prompt can be read - the view
+    // field alone reaches under the HUD and to the very top edge (see isPromptReadable). Every
+    // step that asks this question is about to put a prompt somewhere or send the player after it.
+    const onScreen = (x: number, y: number, text?: string) => !!viewField
+      && viewField.contains(GwtInstance.newDecimalPosition(x, y))
+      && renderService.isPromptReadable(x, y, text);
     const viewCenter = viewField ? {x: viewField.getScreenCenter().getX(), y: viewField.getScreenCenter().getY()} : {x: 0, y: 0};
+    const transport = TipGuide.isTransport(quest);
     const builder = items.find(item => item.own && item.itemTypeId === quest.actorTypeId) ?? null;
+    // Crossing the water: the arrow goes from the loaded container, which is what sails.
+    const regionAnchor = transport
+      ? (items.find(item => item.own && (item.cargo ?? []).includes(quest.actorTypeId)) ?? builder)
+      : builder;
 
     const decision = decide({
       quest,
@@ -176,19 +190,45 @@ export class TipGuide implements ViewFieldListener {
         return cockpit ? cockpit.getBuildupTipBlockReason(itemTypeId) : 'COCKPIT_NOT_READY';
       },
       factoriesFor: itemTypeId => this.factoriesFor(facade, items, itemTypeId),
-      resourcesOnScreen: quest.tip === 'HARVEST' ? this.resourcesOnScreen(onScreen) : [],
+      resourcesOnScreen: quest.tip === 'HARVEST'
+        ? this.resourcesOnScreen((x, y) => onScreen(x, y, PROMPT.HARVEST)) : [],
       nearestResource: from => {
         const position = facade.resourceUiService?.getNearestResourcePosition(from.x, from.y);
         return position ? {x: position.getX(), y: position.getY()} : null;
       },
       region: this.region && viewField
-        ? {point: this.region.pointFor(builder ? {x: builder.x, y: builder.y} : null), inView: this.region.inView(viewField)}
+        ? {point: this.region.pointFor(regionAnchor ? {x: regionAnchor.x, y: regionAnchor.y} : null), inView: this.region.inView(viewField)}
         : null,
+      regionDistance: point => this.region ? this.region.distanceTo(point) : null,
+      containerTypesFor: itemTypeId => transport ? this.containerTypesFor(facade, items, itemTypeId) : [],
+      containerRange: itemTypeId => {
+        try {
+          return facade.itemTypeService.getBaseItemTypeAngular(itemTypeId).getItemContainerType()?.getRange() ?? 0;
+        } catch (e) {
+          return 0;
+        }
+      },
+      unloadBlock: () => {
+        const cockpit = this.deps.itemCockpit();
+        return cockpit ? cockpit.getUnloadTipBlockReason() : 'COCKPIT_NOT_READY';
+      },
       markedTargetId: this.markedTargetId
     });
 
     if (decision.guidance.kind === 'prompt' && quest.tip === 'ATTACK' && !decision.guidance.resource) {
       this.markedTargetId = decision.guidance.itemId;
+    }
+    // Companion of the renderer's RAZ_promptProbe: that one says whether a prompt could be seen
+    // at a point, this one says which point the guide asked about and what it decided. Neither
+    // is visible from the outside - a prompt that is not there and a step that never runs look
+    // the same on the screen.
+    if ((window as any).RAZ_promptProbe) {
+      console.log('[TipProbe] ' + JSON.stringify({
+        task: decision.taskName, reason: decision.reason, guidance: decision.guidance,
+        selected: [...this.deps.selectionService.getSelectedOwnItemIds()],
+        items: items.filter(item => item.own || item.itemTypeId === quest.targetTypeId)
+          .map(item => `${item.id}:${item.itemTypeId}${item.own ? '' : '(enemy)'}@${Math.round(item.x)},${Math.round(item.y)}${item.idle ? '' : ' busy'}`)
+      }));
     }
     this.reportStep(decision);
     this.reportGroupTip(quest, items, decision);
@@ -237,15 +277,20 @@ export class TipGuide implements ViewFieldListener {
 
   private onOrder(order: OrderNote): void {
     const kind: PendingOrder['kind'] = order.kind === 'attack' || order.kind === 'harvest'
-    || order.kind === 'finalize' || order.kind === 'move' ? order.kind : 'other';
+    || order.kind === 'finalize' || order.kind === 'move' || order.kind === 'load' ? order.kind : 'other';
     this.remember(order.unitIds, kind, order.targetTypeId);
   }
 
   /** Placing starts a build order for the selected builders - the placer is not an ActionService command. */
   private onPlacerEvent(event: BaseItemPlacerPresenterEvent): void {
     if (event === BaseItemPlacerPresenterEvent.PLACED && this.quest) {
-      const builderIds = this.selectedOfType(this.quest.actorTypeId);
-      this.remember(builderIds, 'build', this.placerTypeId ?? this.quest.targetTypeId);
+      if (this.quest.tip === 'UNLOAD') {
+        // The unload placer: the order goes to the selected container, not to a builder.
+        this.remember(this.deps.selectionService.getSelectedOwnItemIds(), 'unload', null);
+      } else {
+        const builderIds = this.selectedOfType(this.quest.actorTypeId);
+        this.remember(builderIds, 'build', this.placerTypeId ?? this.quest.targetTypeId);
+      }
     }
     if (event === BaseItemPlacerPresenterEvent.DEACTIVATED) {
       this.placerTypeId = null;
@@ -292,6 +337,35 @@ export class TipGuide implements ViewFieldListener {
         return false;
       }
     });
+  }
+
+  private static isTransport(quest: TipQuestSpec): boolean {
+    return quest.tip === 'LOAD' || quest.tip === 'SAIL' || quest.tip === 'UNLOAD';
+  }
+
+  /**
+   * Container types that can carry the unit: the ones the player owns, and the ones an own factory
+   * can fabricate - a transporter sunk on the way has to be found again in the dockyard's menu.
+   */
+  private containerTypesFor(facade: GwtAngularFacade, items: TipItemState[], itemTypeId: number): number[] {
+    const canCarry = (typeId: number) => {
+      try {
+        return !!facade.itemTypeService.getBaseItemTypeAngular(typeId).getItemContainerType()?.isAbleToContain(itemTypeId);
+      } catch (e) {
+        return false;
+      }
+    };
+    const candidates = new Set<number>();
+    for (const typeId of new Set(items.filter(item => item.own).map(item => item.itemTypeId))) {
+      candidates.add(typeId);
+      try {
+        facade.itemTypeService.getBaseItemTypeAngular(typeId).getFactoryType()?.getAbleToBuildIds()
+          .forEach(buildable => candidates.add(buildable));
+      } catch (e) {
+        // not a type the client knows: nothing to add
+      }
+    }
+    return [...candidates].filter(canCarry);
   }
 
   private resourcesOnScreen(onScreen: (x: number, y: number) => boolean): ResourcePoint[] {

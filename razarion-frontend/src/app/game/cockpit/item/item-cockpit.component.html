@@ -189,7 +189,7 @@
         <div
           class="item-panel flex flex-row  items-center  gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500">
           <span>{{ `Containing items: ${ownItemCockpit.containerCount}` }}</span>
-          <p-button icon="pi pi-upload"
+          <p-button #unloadButton icon="pi pi-upload"
             label="Unload"
             size="small"
             (mousedown)="onUnloadClick()"
@@ -323,7 +323,7 @@
                 <img class="build-tip-mouse-button" src="babylon-gui/mouse-left-button.svg" alt="">
               </span>
             }
-            <span>{{ tip.mode === 'open-menu' ? 'Tap here to build' : (touch ? 'Tap to build' : 'Click to build') }}</span>
+            <span>{{ buildTipText(tip) }}</span>
           </div>
           <img class="build-tip-arrow" src="babylon-gui/arrow-down.svg" alt="">
         </div>

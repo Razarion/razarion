@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +34,7 @@ public class BaseItemPositionComparison extends AbstractTickComparison {
     private boolean isFulfilled;
     private boolean isItemFulfilled;
     private Integer fulfilledTickCount;
+    private Predicate<SyncBaseItem> itemFilter = syncBaseItem -> true;
     private final Collection<SyncBaseItem> fulfilledItems = new HashSet<>();
 
     @Inject
@@ -42,10 +44,20 @@ public class BaseItemPositionComparison extends AbstractTickComparison {
     }
 
     public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer timeSeconds, String userId) {
+        init(itemTypes, placeConfig, timeSeconds, userId, syncBaseItem -> true);
+    }
+
+    /**
+     * @param itemFilter which of the items that are there count. Without a place the base's items
+     *                   are taken as they are, contained ones included; with a place, contained
+     *                   ones never count (they are not anywhere).
+     */
+    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer timeSeconds, String userId, Predicate<SyncBaseItem> itemFilter) {
         this.itemTypes = itemTypes;
         this.placeConfig = placeConfig;
         this.timeSeconds = timeSeconds;
         this.userId = userId;
+        this.itemFilter = itemFilter;
     }
 
     @Override
@@ -110,7 +122,7 @@ public class BaseItemPositionComparison extends AbstractTickComparison {
         } else {
             items = playerBase.getItems();
         }
-        return items.stream().filter(syncBaseItem -> syncBaseItem.isAlive() && syncBaseItem.isBuildup()).collect(Collectors.toList());
+        return items.stream().filter(syncBaseItem -> syncBaseItem.isAlive() && syncBaseItem.isBuildup()).filter(itemFilter).collect(Collectors.toList());
     }
 
     @Override

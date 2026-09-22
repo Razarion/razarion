@@ -78,6 +78,7 @@ import {BabylonAudioService} from "./babylon-audio.service";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
 import earcut from 'earcut';
 import {ViewField, ViewFieldListener} from './view-field';
+import {isTouchDevice, LONGEST_PROMPT_TEXT, promptAssemblyWidthPx, promptFitsAt} from './prompt-geometry';
 import {CombatTracker} from './combat-tracker';
 import {PlaceConfigComponent} from '../../editor/common/place-config/place-config.component';
 import {buildQuestPlaceVisualizationMaterial} from './quest-place-visualization-material';
@@ -130,6 +131,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private static readonly FRAME_CAP_MS = 33;
   /** See setupViewFieldDirection. 3 degrees: from 20 m up, the view field reaches about 380 m. */
   private static readonly VIEW_FIELD_MIN_DOWN_ANGLE = 3 * Math.PI / 180;
+  /** See getHudBottomPixels. Long enough to survive one tip evaluation, short enough to follow a
+   *  panel that opens - the tips re-evaluate twice a second anyway. */
+  private static readonly HUD_MEASURE_TTL_MILLIS = 400;
+  /** The elements that cover the bottom of the canvas - the rail on a desktop, the panel on a
+   *  phone, where the rail itself is display:contents and has no box. */
+  private static readonly HUD_BOTTOM_SELECTORS = ['.hud-bottom', '.panel-item'];
   private static readonly GO_CURSOR = 'url("cursors/go.png") 15 15, auto';
   private static readonly GO_NO_CURSOR = 'url("cursors/go-no.png") 15 15, auto';
   // The same images the items' own ActionManager.hoverCursor uses, so hovering the mesh and
@@ -220,6 +227,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   // Terrain height under the view centre, as of the last updateCameraHeight(). Null until the first
   // frame has run. Shared with the gesture code so it does not pick the same ray a second time.
   private centerTerrainHeight: number | null = null;
+  // See getHudBottomPixels.
+  private hudBottomPixels: number | null = null;
+  private hudBottomPixelsAt = 0;
   private perfDebugActive = false;
   private sceneInstrumentation: SceneInstrumentation | null = null;
   private engineInstrumentation: EngineInstrumentation | null = null;
@@ -326,6 +336,122 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       this.viewField = this.setupViewField();
     }
     return this.viewField;
+  }
+
+  /**
+   * Whether a tip prompt anchored at this ground point would actually be read.
+   *
+   * Being inside the view field is not the same as being seen, and the quest tips used to treat it
+   * as the same thing: the view field is built from the NDC corners ±1, so it covers the strip
+   * behind the bottom HUD and the very top edge of the picture. A target there got a prompt the
+   * player had no way of finding, and the guide went on waiting for a click on it. On PROD that is
+   * the second half of the loss on quest 365 - of the stalls where the target was believed to be
+   * on screen, 55 % never resolved (22.09.2026, 14 days).
+   *
+   * Three conditions: the point is in the picture, it is not under the bottom HUD, and the label
+   * fits on one side of it or the other - above by preference, below when the anchor sits too high.
+   *
+   * The ground height is taken as the one under the view centre rather than picked per point: a
+   * ray pick each time would cost more than this answer is worth, and the bands are wide.
+   */
+  isPromptReadable(x: number, y: number, text: string = LONGEST_PROMPT_TEXT): boolean {
+    const engine = this.scene.getEngine();
+    const projected = this.projectGroundToScreen(x, y);
+    // The wording the guide is about to use, because the width of the bubble is most of what
+    // decides whether it fits beside an item near an edge. Asking with the longest of the four
+    // texts refused prompts the short ones would have fitted, and the player got the direction
+    // arrow at a target in plain sight.
+    const assembly = promptAssemblyWidthPx(text, !isTouchDevice());
+    const hud = this.getHudBottomPixels();
+    const fit = projected === null ? null
+      : promptFitsAt(projected.x, projected.y, engine.getRenderWidth(), engine.getRenderHeight(),
+        hud, assembly);
+    // Turned on with RAZ_promptProbe = 1 in the console. Whether a prompt may go somewhere is a
+    // decision with no visible middle ground - either the label is there or the player gets a
+    // direction arrow - and every number behind it (the projection, the HUD, the scaling) is
+    // invisible from the outside. Guessing at it once was enough.
+    if ((window as any).RAZ_promptProbe) {
+      console.log('[PromptProbe] ' + JSON.stringify({
+        ground: [Math.round(x), Math.round(y)],
+        screen: projected ? [Math.round(projected.x), Math.round(projected.y)] : null,
+        picture: [engine.getRenderWidth(), engine.getRenderHeight()],
+        terrainHeight: this.centerTerrainHeight,
+        hud, assembly: Math.round(assembly), fit
+      }));
+    }
+    return fit !== null && fit.readable;
+  }
+
+  /**
+   * Where a ground point lands in the picture, in render pixels, or null when it is behind the
+   * camera or outside the canvas.
+   */
+  projectGroundToScreen(x: number, y: number): { x: number, y: number } | null {
+    const engine = this.scene.getEngine();
+    const width = engine.getRenderWidth();
+    const height = engine.getRenderHeight();
+    const camera = this.scene.activeCamera;
+    if (!camera || width <= 0 || height <= 0) {
+      return null;
+    }
+    const projected = Vector3.Project(
+      new Vector3(x, this.centerTerrainHeight ?? 0, y),
+      Matrix.Identity(),
+      this.scene.getTransformMatrix(),
+      camera.viewport.toGlobal(width, height));
+    if (projected.z <= 0 || projected.z >= 1
+      || projected.x < 0 || projected.x > width || projected.y < 0 || projected.y > height) {
+      return null;
+    }
+    return {x: projected.x, y: projected.y};
+  }
+
+  /**
+   * The strip along the bottom of the canvas that the HUD covers, in render pixels.
+   *
+   * Measured rather than configured: the bottom rail is one row on a desktop and an overlay panel
+   * on a phone - where `.hud-bottom` is `display: contents` and has no box at all - and it opens
+   * and closes while the game runs. Cached briefly because it is asked once per item per tip
+   * evaluation.
+   */
+  getHudBottomPixels(): number {
+    const now = Date.now();
+    if (this.hudBottomPixels !== null && now - this.hudBottomPixelsAt < BabylonRenderServiceAccessImpl.HUD_MEASURE_TTL_MILLIS) {
+      return this.hudBottomPixels;
+    }
+    this.hudBottomPixelsAt = now;
+    this.hudBottomPixels = this.measureHudBottom();
+    return this.hudBottomPixels;
+  }
+
+  private measureHudBottom(): number {
+    try {
+      const canvas = this.scene.getEngine().getRenderingCanvas();
+      if (!canvas) {
+        return 0;
+      }
+      const canvasRect = canvas.getBoundingClientRect();
+      if (canvasRect.height <= 0) {
+        return 0;
+      }
+      const toRenderPixels = this.scene.getEngine().getRenderHeight() / canvasRect.height;
+      let covered = 0;
+      for (const selector of BabylonRenderServiceAccessImpl.HUD_BOTTOM_SELECTORS) {
+        for (const element of Array.from(document.querySelectorAll(selector))) {
+          const rect = element.getBoundingClientRect();
+          // display:contents and hidden panels have no box; an element that does not reach the
+          // bottom of the canvas is not covering the ground near the player.
+          if (rect.height <= 0 || rect.bottom < canvasRect.bottom - rect.height) {
+            continue;
+          }
+          covered = Math.max(covered, (canvasRect.bottom - rect.top) * toRenderPixels);
+        }
+      }
+      return Math.min(covered, this.scene.getEngine().getRenderHeight());
+    } catch (error) {
+      // Nothing here may break the render loop; without a measurement the old behaviour applies.
+      return 0;
+    }
   }
 
   runRenderer(): void {

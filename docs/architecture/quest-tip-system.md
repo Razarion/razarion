@@ -1,6 +1,6 @@
 # Quest Tip System
 
-The quest tip guides beginners through the quests of levels 1-8 that carry a tip config (358-389):
+The quest tip guides beginners through the quests of levels 1-8 that carry a tip config (358-392):
 it tells the player what to click next - a prompt on a unit, an arrow to something off screen, a
 hint on a cockpit button, the place marker of a build region, the group prompt - and says nothing
 while the player's units are doing what the quest needs.
@@ -36,7 +36,7 @@ All under `razarion-frontend/src/app/game/tip/`.
 
 ## Tip config
 
-`TipConfig` on the quest: `tipString` (BUILD, FABRICATE, HARVEST, ATTACK), `actorItemTypeId`, and
+`TipConfig` on the quest: `tipString` (BUILD, FABRICATE, HARVEST, ATTACK, and LOAD, SAIL, UNLOAD for crossing the water - see the TRN cases), `actorItemTypeId`, and
 `group` - whether the attack tip asks for a group first (set on 379, not on the first attack 365).
 Edited in the server quest editor, stored in `QUEST.tipString`, `tipActorItemType_id`, `tipGroup`.
 

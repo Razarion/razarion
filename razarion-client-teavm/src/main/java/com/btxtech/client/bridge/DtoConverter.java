@@ -539,6 +539,7 @@ public class DtoConverter {
         JsObject obj = JsObject.create();
         setMethodIntBool(obj, "isAbleToContain", (itemTypeId) ->
                 type.getItemContainerType().isAbleToContain(itemTypeId));
+        setGetterDouble(obj, "getRange", () -> type.getItemContainerType().getRange());
         return obj;
     }
 
@@ -858,6 +859,13 @@ public class DtoConverter {
                 }
             }
             obj.set("factoryBuildQueue", queue);
+            JsArray<JSObject> cargo = JsArray.create();
+            if (state.cargo != null) {
+                for (int itemTypeId : state.cargo) {
+                    cargo.push(itemTypeId);
+                }
+            }
+            obj.set("cargo", cargo);
             arr.push(obj);
         }
         return arr;

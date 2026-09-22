@@ -174,6 +174,14 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.specificOrCount("Units or buildings on position", "on region");
         break;
       }
+      case ConditionTrigger.SYNC_ITEM_LOADED: {
+        this.specificOrCount("Units loaded", "in the Transporter");
+        break;
+      }
+      case ConditionTrigger.LOADED_CONTAINER_POSITION: {
+        this.specificOrCount("Loaded units on position", "with cargo on region");
+        break;
+      }
       case ConditionTrigger.BOX_PICKED: {
         this.setupSingleCount("Box picked");
         break;
@@ -265,6 +273,14 @@ export class QuestCockpitComponent implements QuestCockpit {
       }
       case ConditionTrigger.SYNC_ITEM_POSITION: {
         return "Region";
+      }
+      // The first quests in the game that are not one click on one thing: the title has to say
+      // the gesture, because nothing else on screen does.
+      case ConditionTrigger.SYNC_ITEM_LOADED: {
+        return "Load into the Transporter";
+      }
+      case ConditionTrigger.LOADED_CONTAINER_POSITION: {
+        return "Sail to the marked region";
       }
       case ConditionTrigger.BOX_PICKED: {
         return "Pick box";

@@ -186,7 +186,17 @@ public class BotRunner {
     void enrageOnKill(SyncBaseItem syncBaseItem, PlayerBase actor) {
         if (botEnragementState != null) {
             // Timer bot is may inactive
-            botEnragementState.enrageOnKill(syncBaseItem, actor);
+            if (botEnragementState.enrageOnKill(syncBaseItem, actor) && isBaseAlive()) {
+                // The new state's units go up in the same moment the bot enrages, not on the next
+                // pass of the ticker. That pass is actionDelay away - three seconds for the six
+                // passive "RazCore Extractor" bots - and in those seconds the player who forced
+                // the enragement kills the freshly respawned item again and keeps the spawn to
+                // himself. Measured on PROD 22.09.2026, 19:09-19:27: one level 8 player held all
+                // six extractor spawns with about seven vipers, 19 kills in 18 minutes, while
+                // twelve players on level 1 and 2 were online, for whom those extractors are the
+                // first target the game gives them.
+                botEnragementState.work(base);
+            }
         }
     }
 

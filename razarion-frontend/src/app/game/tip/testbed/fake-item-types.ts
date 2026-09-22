@@ -17,6 +17,8 @@ export interface FakeItemTypeSpec {
   builds?: number[];
   /** Factory: the units it fabricates. */
   fabricates?: number[];
+  /** Container: how far from it a unit can be loaded or put down, and what it carries. */
+  container?: { range: number, carries: number[] };
   /** Seconds from start to finished, for buildings and fabricated units alike. */
   buildSeconds: number;
 }
@@ -65,7 +67,8 @@ const specs: FakeItemTypeSpec[] = [
     weapon: {range: 10, damage: 4, reloadSeconds: 1}
   },
   {
-    id: ItemTypeId.TRANSPORTER, name: 'Transporter', price: 50, radius: 1, speed: 3, health: 25, buildSeconds: 8
+    id: ItemTypeId.TRANSPORTER, name: 'Transporter', price: 50, radius: 2, speed: 3, health: 25, buildSeconds: 8,
+    container: {range: 20, carries: [ItemTypeId.BUILDER]}
   },
   {id: ItemTypeId.BOT_EXTRACTOR, name: '(Bot1) Extractor', price: 0, radius: 2, speed: 0, health: 15, buildSeconds: 0},
   {id: ItemTypeId.BOT_REFINERY, name: '(Bot1) Refinery', price: 0, radius: 3, speed: 0, health: 15, buildSeconds: 0},
@@ -103,7 +106,9 @@ export function fakeBaseItemType(id: number): any {
       ? {checkAbleToBuild: (typeId: number) => spec.builds!.includes(typeId)}
       : null,
     getFactoryType: () => spec.fabricates ? {getAbleToBuildIds: () => spec.fabricates} : null,
-    getItemContainerType: () => null,
+    getItemContainerType: () => spec.container
+      ? {isAbleToContain: (typeId: number) => spec.container!.carries.includes(typeId), getRange: () => spec.container!.range}
+      : null,
     getPhysicalAreaConfig: () => ({
       fulfilledMovable: () => spec.speed > 0,
       getRadius: () => spec.radius

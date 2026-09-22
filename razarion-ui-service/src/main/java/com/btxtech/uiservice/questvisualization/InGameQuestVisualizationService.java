@@ -116,7 +116,8 @@ public class InGameQuestVisualizationService {
                 setupVisualization(resourceUiService.createSyncItemSetPositionMonitor(setupMarkerConfig()));
                 break;
             }
-            case SYNC_ITEM_POSITION: {
+            case SYNC_ITEM_POSITION:
+            case LOADED_CONTAINER_POSITION: {
                 PlaceConfig placeConfig = quest.getConditionConfig().getComparisonConfig().getPlaceConfig();
                 if (placeConfig != null) {
                     questInGamePlaceVisualization = instanceQuestInGamePlaceVisualization.get();

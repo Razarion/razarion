@@ -18,6 +18,11 @@ export const TipTaskName = {
   SEND_FABRICATE_COMMAND: 'SEND_FABRICATE_COMMAND',
   SEND_HARVEST_COMMAND: 'SEND_HARVEST_COMMAND',
   SEND_ATTACK_COMMAND: 'SEND_ATTACK_COMMAND',
+  /** Crossing the water: put the unit into the container, sail it, press Unload, place. */
+  SEND_LOAD_COMMAND: 'SEND_LOAD_COMMAND',
+  SEND_MOVE_COMMAND: 'SEND_MOVE_COMMAND',
+  START_UNLOAD_PLACER: 'START_UNLOAD_PLACER',
+  SEND_UNLOAD_COMMAND: 'SEND_UNLOAD_COMMAND',
   IDLE_ITEM: 'IDLE_ITEM'
 } as const;
 
@@ -82,6 +87,20 @@ export const TipStallReason = {
   ENEMY_OUT_OF_VIEW: 'ENEMY_OUT_OF_VIEW',
   AWAIT_ATTACK_CLICK: 'AWAIT_ATTACK_CLICK',
   AWAIT_IDLE: 'AWAIT_IDLE',
+  /** The unit is selected and the prompt stands on the container; the player has not tapped it. */
+  AWAIT_LOAD_CLICK: 'AWAIT_LOAD_CLICK',
+  /** The load was ordered and the unit is on its way to the container. */
+  AWAIT_LOAD: 'AWAIT_LOAD',
+  /** The container the unit should go into is off screen. */
+  CONTAINER_OUT_OF_VIEW: 'CONTAINER_OUT_OF_VIEW',
+  /** The loaded container is selected and the region is on screen; no move ordered. */
+  AWAIT_MOVE_CLICK: 'AWAIT_MOVE_CLICK',
+  /** The container is sailing. */
+  AWAIT_ARRIVAL: 'AWAIT_ARRIVAL',
+  /** The Unload button is pointed at and not pressed. */
+  AWAIT_UNLOAD_CLICK: 'AWAIT_UNLOAD_CLICK',
+  /** Unload placed, waiting for the unit to come out. */
+  AWAIT_UNLOAD: 'AWAIT_UNLOAD',
   /** The group tip is up and the player has not put a second unit into the selection yet. */
   AWAIT_GROUP: 'AWAIT_GROUP',
   /**

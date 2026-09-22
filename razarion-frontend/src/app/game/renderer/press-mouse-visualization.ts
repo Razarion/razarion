@@ -18,6 +18,8 @@ export class PressMouseVisualization {
   private deployButton: Button | null = null;
   private deployCallback: (() => void) | null = null;
   private touchMode = false;
+  /** Whether fitToText was told this is a touch device - see refitWidth. */
+  private touchFit = false;
   private positionValid = true;
 
   constructor(positionValid: boolean,
@@ -162,6 +164,108 @@ export class PressMouseVisualization {
 
   isTouchMode(): boolean {
     return this.touchMode;
+  }
+
+  /**
+   * Gives the bubble the width its text actually needs, in pixels.
+   *
+   * The quest tips used to hand a width in per prompt, with a table of exceptions for the longer
+   * texts, and it still went wrong: on a phone the label is a large share of the width, so
+   * "Click to attack" wrapped onto a second line the 40 px label had no room for and the player
+   * read "Click to" with the rest cut off.
+   *
+   * Measured rather than left to `adaptWidthToChildren`, which Babylon implements by setting the
+   * container's width to "100%" - and a child with a width in percent is skipped when the
+   * StackPanel around it adds up its children, so the panel keeps the full size of the picture in
+   * that axis. Its contents are then centred in whatever of it is not clipped away at the edge
+   * rather than on the item, which is how the arrow ended up above the unit it was pointing at.
+   *
+   * @param touch hides the mouse icon. A finger has no button to press, and the icon is 60 px of
+   *              a picture that has none to spare.
+   * @return the width of the bubble, in the GUI's pixels.
+   */
+  fitToText(touch: boolean): number {
+    this.touchFit = touch;
+    const text = this.label.text;
+    const textWidth = Math.ceil(PressMouseVisualization.measureText(text));
+    this.label.textWrapping = false;
+    // Babylon measures the text itself once it lays out, in whatever font the texture ends up
+    // using. The width below is only a starting guess so the first frame is not wildly wrong -
+    // refitWidth() replaces it with the real thing. Measuring here with "18px Arial" was close
+    // but not equal: on Android the family falls back and the text came out a fifth wider, which
+    // is one word cut off the end.
+    this.label.resizeToFit = true;
+    this.label.paddingRight = "10px";
+    this.label.width = `${textWidth + 2 * PressMouseVisualization.LABEL_PADDING + PressMouseVisualization.TEXT_SLACK}px`;
+    this.label.height = "40px";
+    if (touch) {
+      this.mouseContainer.isVisible = false;
+      this.mouseContainer.width = "0px";
+      this.mouseContainer.height = "0px";
+      this.rendererService.getScene().stopAnimation(this.mouse);
+      this.rendererService.getScene().stopAnimation(this.mouseLeftButton);
+      this.mouse.animations = [];
+      this.mouseLeftButton.animations = [];
+    }
+    // Plus the bubble's own border on both sides: a Rectangle measures its children inside its
+    // thickness, so a label exactly as wide as the bubble loses its last letters - which is what
+    // cut "Tap to select" to "Tap to sel" on the phone.
+    const width = textWidth + 2 * PressMouseVisualization.LABEL_PADDING + PressMouseVisualization.TEXT_SLACK
+      + 2 * PressMouseVisualization.BUBBLE_BORDER + (touch ? 0 : PressMouseVisualization.MOUSE_ICON_WIDTH);
+    this.container.width = `${width}px`;
+    return width;
+  }
+
+  /**
+   * Corrects the bubble to the width Babylon measured for the text, once it has laid it out.
+   * Returns the new width when something changed, null when it is already right.
+   */
+  refitWidth(): number | null {
+    const measured = (this.label as any)._lines?.[0]?.width;
+    if (typeof measured !== 'number' || measured <= 0) {
+      return null;
+    }
+    // _lines is in render pixels; everything set here is in the GUI's own, which the ideal size
+    // scales down by the same factor.
+    const host = this.label.host;
+    const scale = host && host.idealHeight ? host.getSize().height / host.idealHeight : 1;
+    const wanted = Math.ceil(measured / scale) + 2 * PressMouseVisualization.LABEL_PADDING
+      + PressMouseVisualization.TEXT_SLACK;
+    if (Math.abs(wanted - this.label.widthInPixels / scale) < 2) {
+      return null;
+    }
+    this.label.width = `${wanted}px`;
+    const width = wanted + 2 * PressMouseVisualization.BUBBLE_BORDER
+      + (this.touchFit ? 0 : PressMouseVisualization.MOUSE_ICON_WIDTH);
+    this.container.width = `${width}px`;
+    return width;
+  }
+
+  /** Width of the mouse icon beside the text, which a finger has no use for. */
+  static readonly MOUSE_ICON_WIDTH = 60;
+  /** paddingLeft/Right on the label. */
+  private static readonly LABEL_PADDING = 10;
+  /** The orange frame of the bubble - see fitToText. */
+  private static readonly BUBBLE_BORDER = 4;
+  /** Room for the last glyph: measureText and the GUI's own layout round differently. */
+  private static readonly TEXT_SLACK = 8;
+  private static measureCanvas: CanvasRenderingContext2D | null = null;
+
+  /**
+   * How wide the text comes out in the GUI's own pixels - the label carries no font of its own, so
+   * it renders in the fullscreen texture's default, and the ideal-size scaling then applies to the
+   * result exactly as it does to every other pixel value here.
+   */
+  private static measureText(text: string): number {
+    if (!PressMouseVisualization.measureCanvas) {
+      PressMouseVisualization.measureCanvas = document.createElement('canvas').getContext('2d');
+    }
+    const context = PressMouseVisualization.measureCanvas;
+    if (!context) {
+      return text.length * 10; // No 2d context in this environment; the estimate is close enough.
+    }
+    context.font = '18px Arial';
+    return context.measureText(text).width;
   }
 
   /**
