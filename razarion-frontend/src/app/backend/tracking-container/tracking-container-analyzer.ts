@@ -557,6 +557,12 @@ export class TrackingContainerAnalyzer {
    * survived at all: t.co is X's own shortener, and a visit arriving from it is X traffic.
    */
   private static platformOf(visitor: Visitor): TrackingPlatform | null {
+    // An own post outranks the click id: Meta's apps add an fbclid to every link that leaves them,
+    // the bio link included, so there the click id proves the app, not the ad. Mirrors
+    // TrackingPlatforms.isOwnPost().
+    if (visitor.utmSources.some(utmSource => TrackingContainerAnalyzer.isOwnPost(utmSource))) {
+      return TrackingPlatform.SOCIAL;
+    }
     if (visitor.rdtCid) {
       return TrackingPlatform.REDDIT;
     }
@@ -590,6 +596,11 @@ export class TrackingContainerAnalyzer {
    * without it, a link passed on, an in-app browser that strips the parameter. An organic post is
    * never tagged with a click id at all and has nothing else.
    */
+  /** The social pipeline tags the account's own posts and profiles utm_source=social-<network>. */
+  private static isOwnPost(utmSource: string): boolean {
+    return utmSource.toLowerCase().startsWith('social-');
+  }
+
   private static platformOfUtmSource(utmSource: string): TrackingPlatform | null {
     const normalized = utmSource.toLowerCase();
     if (normalized.includes('reddit')) {

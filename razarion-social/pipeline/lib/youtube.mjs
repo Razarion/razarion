@@ -44,10 +44,13 @@ const TOPIC_TAGS = [
   [/\b(harvest|resource|crystal|economy)\b/i, 'rts economy'],
 ];
 
-const BOILERPLATE =
+const PLAY_URL = 'https://www.razarion.com';
+
+// The play link is a parameter so a post's own description can carry a tracked one (lib/links.mjs).
+const boilerplate = (playUrl = PLAY_URL) =>
   'Razarion is an open-source multiplayer RTS that runs in a browser tab - no download, ' +
   'no account. One persistent world shared by every player. Currently in alpha.\n\n' +
-  'Play: https://www.razarion.com\n' +
+  `Play: ${playUrl}\n` +
   'Source: https://github.com/Razarion/razarion';
 
 const MONTHS = [
@@ -110,12 +113,12 @@ export function buildTitle(text) {
  * so; one composed here was never on X, and claiming it was would be a small lie in a field
  * nobody would ever check.
  */
-export function buildDescription(text, { origin = null } = {}) {
+export function buildDescription(text, { origin = null, playUrl = PLAY_URL } = {}) {
   const clean = stripDecoration(text || '').trim();
   const blocks = [];
   if (clean) blocks.push(clean);
   if (origin) blocks.push(origin);
-  blocks.push(BOILERPLATE);
+  blocks.push(boilerplate(playUrl));
   return blocks.join('\n\n');
 }
 

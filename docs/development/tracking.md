@@ -42,6 +42,20 @@ with the Controls tab), *Daily* on the server (`TrackingDevice.of()`); the two a
 they answer the same question the same way. `UNKNOWN` is a value of its own rather than a bucket
 folded into the desktops: it means the records carry no user agent at all.
 
+### The account's own posts
+
+The social pipeline tags every link of an unpaid post or profile `utm_source=social-<network>`
+(`ig`, `fb`, `x`, `yt`), `utm_medium=social` and `utm_campaign=<post id>` or `bio`
+(`razarion-social/pipeline/lib/links.mjs`). `TrackingPlatforms.isOwnPost()` files these under
+their own platform, `SOCIAL` ("Own posts" in the Daily tab), and **ahead of the click id** — the
+only case where the click id does not win.
+
+The reason is Meta's apps: they append an `fbclid` to every link that leaves them, a bio link and
+a Page post included. On Facebook and Instagram a click id therefore proves the app, not the ad,
+and before this every organic visitor from there was counted under `META` as bought. No ad
+campaign may use the `social-` prefix. The frontend mirror is `isOwnPost()` in
+`tracking-container-analyzer.ts`; `PlayerSessionService.source()` applies the same order.
+
 ### The Facebook app fetching for itself
 
 A request whose user agent is the app's own token with no browser string in front of it —

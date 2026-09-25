@@ -271,13 +271,18 @@ public class PlayerSessionService {
                                     String httpSessionId,
                                     Map<String, SessionAttribution> attribution,
                                     SessionAttribution attempt) {
+        TrackingPlatform utmPlatform = TrackingPlatforms.ofUtmSource(
+                utmSource(tasks, terminatedJson, httpSessionId, attribution, attempt));
+        // An own post outranks the click id: Meta's apps add an fbclid to every link that leaves
+        // them, so there the click id proves the app, not the ad (TrackingPlatforms.isOwnPost).
+        if (utmPlatform == TrackingPlatform.SOCIAL) {
+            return utmPlatform;
+        }
         TrackingPlatform clickIdPlatform = clickIdPlatform(tasks, terminatedJson, httpSessionId, attribution, attempt);
         if (clickIdPlatform != null) {
             return clickIdPlatform;
         }
         // Only when no click id was found anywhere: the campaign the visit names itself.
-        TrackingPlatform utmPlatform = TrackingPlatforms.ofUtmSource(
-                utmSource(tasks, terminatedJson, httpSessionId, attribution, attempt));
         if (utmPlatform != null) {
             return utmPlatform;
         }

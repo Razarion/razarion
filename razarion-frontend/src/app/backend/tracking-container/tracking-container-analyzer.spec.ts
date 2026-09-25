@@ -394,6 +394,17 @@ describe('TrackingContainerAnalyzer platform resolution', () => {
     expect(analyzer.countGame()).toBe(1);
   });
 
+  it('counts an own post under Social, not Meta, although Instagram added its click id', () => {
+    const records = [
+      request(PageRequestType.HOME, 'session-1', {utmSource: 'social-ig', fbclid: 'IwZXh0bgNhZW0'}),
+      request(PageRequestType.GAME, 'session-1', {utmSource: 'social-ig', fbclid: 'IwZXh0bgNhZW0'})
+    ];
+
+    expect(analyzerFor(TrackingPlatform.SOCIAL, records).countHome()).toBe(1);
+    expect(analyzerFor(TrackingPlatform.SOCIAL, records).countGame()).toBe(1);
+    expect(analyzerFor(TrackingPlatform.META, records).countHome()).toBe(0);
+  });
+
   it('counts a visitor known only by the Facebook page they came from', () => {
     // m.facebook.com is the referrer the phones arrived with on the first campaign day.
     const analyzer = analyzerFor(TrackingPlatform.META, [

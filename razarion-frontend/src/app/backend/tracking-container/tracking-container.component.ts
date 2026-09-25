@@ -74,6 +74,7 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
   platformOptions = [{name: "Reddit", value: TrackingPlatform.REDDIT as FunnelView},
     {name: "X", value: TrackingPlatform.X as FunnelView},
     {name: "Meta", value: TrackingPlatform.META as FunnelView},
+    {name: "Own posts", value: TrackingPlatform.SOCIAL as FunnelView},
     {name: "All", value: 'all' as FunnelView}];
   platform: FunnelView = DEFAULT_FUNNEL_VIEW;
   /**
@@ -373,6 +374,9 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
     }
     if (this.platform === TrackingPlatform.X) {
       return 'pi-twitter';
+    }
+    if (this.platform === TrackingPlatform.SOCIAL) {
+      return 'pi-megaphone';
     }
     // Meta covers Facebook and Instagram; the mark of the company that bills the campaign.
     return this.platform === TrackingPlatform.META ? 'pi-facebook' : 'pi-globe';

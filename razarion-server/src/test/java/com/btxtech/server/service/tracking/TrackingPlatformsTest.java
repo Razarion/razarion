@@ -116,6 +116,17 @@ class TrackingPlatformsTest {
         assertNull(TrackingPlatforms.ofUtmSource("metacritic"));
     }
 
+    /** What the social pipeline tags the account's own posts and profiles with. */
+    @Test
+    void anOwnPostIsSocialAndNotTheNetworkItWasPostedOn() {
+        assertEquals(TrackingPlatform.SOCIAL, TrackingPlatforms.ofUtmSource("social-ig"));
+        assertEquals(TrackingPlatform.SOCIAL, TrackingPlatforms.ofUtmSource("social-x"));
+        assertEquals(TrackingPlatform.SOCIAL, TrackingPlatforms.ofUtmSource("Social-FB"));
+        assertTrue(TrackingPlatforms.isOwnPost("social-yt"));
+        assertFalse(TrackingPlatforms.isOwnPost("instagram"));
+        assertFalse(TrackingPlatforms.isOwnPost(null));
+    }
+
     /** "Meta · instagram" says one thing twice, the same way "X · twitter" does. */
     @Test
     void aUtmSourceThatRepeatsMetaIsDropped() {

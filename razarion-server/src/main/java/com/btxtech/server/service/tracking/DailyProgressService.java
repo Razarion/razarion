@@ -356,8 +356,14 @@ public class DailyProgressService {
             }
         }
 
-        /** The three steps of TrackingPlatforms, in their order. Null means organic. */
+        /**
+         * The three steps of TrackingPlatforms, in their order, after an own post, which outranks
+         * them all (see TrackingPlatforms.isOwnPost). Null means organic.
+         */
         private TrackingPlatform platform() {
+            if (utmPlatform == TrackingPlatform.SOCIAL) {
+                return utmPlatform;
+            }
             if (clickIdPlatform != null) {
                 return clickIdPlatform;
             }

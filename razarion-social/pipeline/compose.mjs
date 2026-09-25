@@ -9,6 +9,10 @@
 //   node compose.mjs --portrait data/clips/badger-portrait.mp4 --landscape data/clips/badger-landscape.mp4 --text "..."
 //   node compose.mjs --text "Nur Text" --link https://www.razarion.com
 //   node compose.mjs --media shot.jpg --text "..." --tags "harvester,economy"
+//   node compose.mjs --media clip.mp4 --text "..." --format battle --subject "datacenter"
+//
+// --format and --subject go into the content ledger (lib/ledger.mjs) and are what later runs use to
+// vary what comes next. Without them the format is just the medium: clip, photo or text.
 //
 // Nothing is published here. The entries land on status "review" in captions.json, fb_posts.json,
 // x_posts.json and - for a clip - yt_posts.json; the publishers take it from there.
@@ -22,7 +26,8 @@ import { basename, join, extname } from 'node:path';
 import { parseArgs } from './lib/args.mjs';
 import { probeVideo } from './lib/video.mjs';
 import { DATA_DIR, ensureDir, toRelative } from './lib/paths.mjs';
-import { buildEntries, writeEntries, xLength } from './lib/entries.mjs';
+import { buildEntries, writeAndRecord } from './lib/entries.mjs';
+import { loadLedger, hashMedia, findByHash, mediumOf, publishedMap } from './lib/ledger.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
 
 const OWN_MEDIA_DIR = join(DATA_DIR, 'own');
@@ -90,10 +95,26 @@ async function main() {
   // and build_fb_posts keeps these entries instead of treating them as vanished.
   const id = 'own-' + when.toISOString().replace(/[-:T]/g, '').slice(0, 14);
 
-  let media = [];
   const mediaArg = args.media ? String(args.media) : null;
   const portrait = args.portrait ? String(args.portrait) : null;
   const landscape = args.landscape ? String(args.landscape) : null;
+
+  // The same file under another name is still the same post. The ledger knows clips that went out
+  // by hand too (node ledger.mjs --external), which the posted_*.json files never heard of.
+  // Checked on the sources, before anything is copied into data/own.
+  const sources = [mediaArg, portrait, landscape].filter(Boolean).map((file) => ({ file }));
+  const hashes = await hashMedia(sources);
+  const seen = findByHash(loadLedger(), hashes.map((h) => h.sha256));
+  if (seen.length && !args.force) {
+    const live = publishedMap();
+    for (const e of seen) {
+      const where = Object.keys(live.get(e.id) || {});
+      warn(`Already in the ledger: ${e.id} (${e.format}, ${e.date.slice(0, 10)})${where.length ? ', live on ' + where.join(', ') : e.source === 'external' ? ', posted outside the pipeline' : ', not published yet'}`);
+    }
+    throw new Error('This media has been used before. Pass --force to post it again anyway.');
+  }
+
+  let media = [];
   if ((portrait || landscape) && mediaArg && !videoLike(mediaArg)) {
     throw new Error('A post carries either a picture or a clip. Drop --media, or drop --portrait/--landscape.');
   }
@@ -113,7 +134,10 @@ async function main() {
     source: 'composed',
   });
 
-  const written = writeEntries(entries);
+  const written = await writeAndRecord(entries, {
+    format: args.format ? String(args.format) : mediumOf(media) === 'video' ? 'clip' : mediumOf(media),
+    subject: args.subject ? String(args.subject) : null,
+  });
 
   const { x: xFlags, ig: igFlags } = entries.flags;
   const lengths = entries.lengths;

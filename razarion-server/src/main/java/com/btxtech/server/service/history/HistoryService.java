@@ -4,6 +4,7 @@ import com.btxtech.server.model.UserEntity;
 import com.btxtech.server.model.engine.LevelEntity;
 import com.btxtech.server.model.history.GameHistory;
 import com.btxtech.server.model.history.GameHistorySource;
+import com.btxtech.server.model.history.GameHistorySummaryRow;
 import com.btxtech.server.model.history.GameHistoryType;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.GameHistoryEntry;
@@ -17,6 +18,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -27,9 +29,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -526,6 +531,61 @@ public class HistoryService {
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
             return Collections.emptyList();
+        }
+    }
+
+    /**
+     * The whole history since {@code since}, folded into counts per event type, cause and - for
+     * items - item type. What a weekly "what happened in the world" post is built from.
+     * <p>
+     * Only counts and a distinct-user tally come back; names stay on the server. There is no index
+     * on serverTime, so this scans the collection: acceptable for an admin call made about once a
+     * week against the ~50 MB the seven-day firehose holds, and not worth an index every write pays
+     * for. The item and base types are kept only {@link #SHORT_RETENTION}, so a window longer than
+     * that silently counts fewer of them.
+     */
+    public List<GameHistorySummaryRow> summarize(Date since) {
+        List<Document> pipeline = List.of(
+                new Document("$match", new Document("serverTime", new Document("$gte", since))),
+                new Document("$group", new Document("_id", new Document()
+                        .append("type", "$type")
+                        .append("source", "$source")
+                        // $gt against null is false for both a null and a missing field.
+                        .append("targetHuman", new Document("$gt", Arrays.asList("$targetUserId", null)))
+                        .append("itemTypeName", new Document("$cond", Arrays.asList(
+                                new Document("$in", Arrays.asList("$type", List.of(
+                                        GameHistoryType.ITEM_CREATED.name(), GameHistoryType.ITEM_DESTROYED.name()))),
+                                "$itemTypeName",
+                                null))))
+                        .append("count", new Document("$sum", 1))
+                        .append("users", new Document("$addToSet", "$userId"))
+                        .append("maxLevel", new Document("$max", "$levelNumber"))));
+        List<GameHistorySummaryRow> rows = new ArrayList<>();
+        for (Document group : mongoTemplate.getCollection(GAME_HISTORY).aggregate(pipeline).allowDiskUse(true)) {
+            Document id = group.get("_id", Document.class);
+            List<?> users = group.getList("users", Object.class, List.of());
+            GameHistorySummaryRow row = new GameHistorySummaryRow();
+            row.setType(enumOrNull(GameHistoryType.class, id.getString("type")));
+            row.setSource(enumOrNull(GameHistorySource.class, id.getString("source")));
+            row.setTargetHuman(Boolean.TRUE.equals(id.getBoolean("targetHuman")));
+            row.setItemTypeName(id.getString("itemTypeName"));
+            row.setCount(((Number) group.get("count")).longValue());
+            row.setUsers((int) users.stream().filter(Objects::nonNull).count());
+            Object maxLevel = group.get("maxLevel");
+            row.setMaxLevel(maxLevel instanceof Number number ? number.intValue() : null);
+            rows.add(row);
+        }
+        return rows;
+    }
+
+    private static <E extends Enum<E>> E enumOrNull(Class<E> type, String name) {
+        if (name == null) {
+            return null;
+        }
+        try {
+            return Enum.valueOf(type, name);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 

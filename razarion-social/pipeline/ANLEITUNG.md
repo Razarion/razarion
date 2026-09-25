@@ -98,6 +98,63 @@ weil Instagram keine reinen Textbeiträge annimmt:
 node render_cards.mjs
 ```
 
+### Formate: Duell, Wochenbilanz, Devlog
+
+```bash
+node produce.mjs --list                              # alle Formate, wann jedes zuletzt lief
+node produce.mjs --format duel                       # das fällige Einheiten-Paar
+node produce.mjs --format duel --subject viper,badger
+node produce.mjs --format week-in-numbers            # die letzten 7 Tage der Spielwelt
+node produce.mjs --format devlog                     # erster Lauf: Entwurf, zweiter Lauf: Karte
+node produce.mjs --format duel --dry-run             # Bild nach data/preview, sonst nichts
+```
+
+Ein Format ist ein Rezept: woher das Material kommt, was daraus wird, und woran es erkennt, dass
+es ein Thema schon hatte. Die Formate liegen in `lib/formats/`. Wie `compose.mjs` landet alles auf
+`review`.
+
+- **duel** — zwei Kampfeinheiten mit ihren echten Werten vom Server und der Frage, wer gewinnt.
+  Passen die Preise zueinander, kommt die Frage „3 Vipers oder 1 Badger?“ dazu. Die Antwort steht
+  bewusst nicht drin — die kann ein Clip aus dem Studio liefern. Ein Paar kommt frühestens nach
+  120 Tagen wieder.
+- **week-in-numbers** — zerstörte Bot-Einheiten, geschleifte Bot-Basen, Level, Quests aus der
+  Spielhistorie. Nur Zahlen, keine Namen. Eine Zahl unter 10 wird weggelassen, und mit weniger als
+  drei Zahlen lässt das Format die Woche aus, statt eine leere Welt zu zeigen. Braucht den
+  Endpunkt `/rest/editor/game-history-summary`, also einen Server-Deploy.
+- **devlog** — die Commits der Woche, die das Spiel betreffen, landen in
+  `data/drafts/devlog-<woche>.json`. Dort in `lines` 2–5 Sätze eintragen, die ein Spieler versteht,
+  dann denselben Befehl noch einmal: jetzt entsteht die Karte.
+
+### Das Inhaltsbuch
+
+```bash
+node ledger.mjs                     # was wann in welchem Format entstand, die letzten 8 Wochen
+node ledger.mjs --rebuild           # Beiträge aus den Review-Dateien übernehmen (einmalig, harmlos)
+node ledger.mjs --external data/clips/viper4-portrait.mp4 --date 2026-09-20 --note "Reel, von Hand"
+```
+
+`state/ledger.json` kennt jeden Beitrag mit Format, Thema und dem Hash seiner Medien.
+`compose.mjs`, `generate.mjs` und `produce.mjs` tragen dort selbst ein. **Was von Hand
+rausging, mit `--external` nachtragen** — dann lehnt `compose.mjs` denselben Clip ab, auch unter
+anderem Namen (`--force`, wenn er wirklich noch einmal soll).
+
+### Messen, was die Posts bringen
+
+Jeder Link auf razarion.com, den die Pipeline schreibt, trägt, woher er kommt: im Facebook-Text und in
+der YouTube-Beschreibung automatisch, mit der Post-ID als `utm_campaign`. X und Instagram haben
+keinen Link im Post — dort ist es der Profil-Link, und den setzt du **einmal von Hand**:
+
+```
+Instagram (Bio)          https://www.razarion.com/?utm_source=social-ig&utm_medium=social&utm_campaign=bio
+Facebook (Seite, Button) https://www.razarion.com/?utm_source=social-fb&utm_medium=social&utm_campaign=bio
+X (Website im Profil)    https://www.razarion.com/?utm_source=social-x&utm_medium=social&utm_campaign=bio
+YouTube (Kanal-Links)    https://www.razarion.com/?utm_source=social-yt&utm_medium=social&utm_campaign=bio
+```
+
+Im Backend, Tab *Daily*, zeigt **Own posts** diese Besucher. Wichtig ist das `social-`: Instagram und
+Facebook hängen jedem Link ein `fbclid` an, auch dem Bio-Link, und bisher zählte deshalb jeder
+Besucher von dort als Werbung. Werbelinks dürfen dieses Präfix nie tragen.
+
 ### Clips aufnehmen, ohne dabeizusitzen
 
 ```bash
@@ -304,6 +361,9 @@ data/youtube/                                      Clips und Metadaten für Stud
 state/posted*.json                                 was veröffentlicht wurde
                                                    (posted, posted_fb, posted_x, posted_yt)
 state/generate.json                                wo die Einheiten-Rotation steht
+state/ledger.json                                  das Inhaltsbuch: jeder Beitrag, Format, Medien-Hash
+data/drafts/                                       Devlog-Entwürfe zum Ausfüllen
+data/preview/                                      Bilder aus --dry-run
 state/scheduled.log                                Protokoll der geplanten Läufe
 ../.env                                            alle Zugangsdaten
 ```

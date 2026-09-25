@@ -22,6 +22,20 @@ public final class TrackingPlatforms {
     private TrackingPlatforms() {
     }
 
+    /**
+     * Whether the link came from one of the account's own posts or profiles: the social pipeline
+     * tags those {@code utm_source=social-ig}, {@code social-fb}, {@code social-x},
+     * {@code social-yt}, and no ad campaign uses that prefix.
+     * <p>
+     * This outranks the click id, which is otherwise the strongest signal there is. Meta's apps
+     * append an fbclid to <em>every</em> link that leaves them, the bio link and a Page post
+     * included, so on Facebook and Instagram a click id proves the app, not the ad. Without this
+     * every organic visitor from there was counted as bought.
+     */
+    public static boolean isOwnPost(String utmSource) {
+        return utmSource != null && utmSource.toLowerCase().startsWith("social-");
+    }
+
     /** The platform a click id names - the only one of the three that is not a guess. */
     public static TrackingPlatform ofClickIds(String rdtCid, String twclid, String fbclid) {
         if (notEmpty(rdtCid)) {
@@ -43,6 +57,9 @@ public final class TrackingPlatforms {
     public static TrackingPlatform ofUtmSource(String utmSource) {
         if (utmSource == null) {
             return null;
+        }
+        if (isOwnPost(utmSource)) {
+            return TrackingPlatform.SOCIAL;
         }
         String normalized = utmSource.toLowerCase();
         if (normalized.contains("reddit")) {

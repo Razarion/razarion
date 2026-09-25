@@ -95,6 +95,24 @@ class DailyProgressServiceTest {
     }
 
     @Test
+    void countsAnOwnPostUnderSocialEvenWithTheFbclidMetaAddedToIt() {
+        // Instagram's in-app browser appends an fbclid to the bio link like to any other.
+        PageRequest home = pageRequest(PageRequestType.HOME, "session-1", today());
+        home.setUtmSource("social-ig");
+        home.setFbclid("IwZXh0bgNhZW0");
+        home.setUserAgent(PHONE);
+        PageRequest game = pageRequest(PageRequestType.GAME, "session-1", today());
+        game.setUtmSource("social-ig");
+        game.setFbclid("IwZXh0bgNhZW0");
+        pageRequests.add(home);
+        pageRequests.add(game);
+
+        assertEquals(1, todayOf(TrackingPlatform.SOCIAL, null).getHome());
+        assertEquals(1, todayOf(TrackingPlatform.SOCIAL, null).getGame());
+        assertEquals(0, todayOf(TrackingPlatform.META, null).getHome());
+    }
+
+    @Test
     void countsAVisitorNamedOnlyByTheSiteTheyCameFrom() {
         PageRequest landing = pageRequest(PageRequestType.LANDING, "session-1", today());
         landing.setReferer("https://t.co/6TzmtWLVdT");

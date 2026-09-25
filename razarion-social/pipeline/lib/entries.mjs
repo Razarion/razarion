@@ -2,6 +2,8 @@ import {
   CAPTIONS_FILE, FB_POSTS_FILE, X_POSTS_FILE, YT_POSTS_FILE, readJson, writeJson,
 } from './paths.mjs';
 import { buildTitle, buildDescription, buildTags, DEFAULT_PRIVACY } from './youtube.mjs';
+import { loadLedger, saveLedger, record, hashMedia, mediumOf } from './ledger.mjs';
+import { trackedLink } from './links.mjs';
 
 // Instagram's caption ceiling and X's post ceiling. Facebook's is 63206, which nothing here
 // approaches.
@@ -47,7 +49,9 @@ export function buildEntries({ id, date, text, link, tags = [], media = [], sour
   if (igCaption.length > MAX_IG) igFlags.push('too-long');
   if (!media.length) igFlags.push('needs-card');
 
-  const fbMessage = link ? `${text}\n\n${link}` : text;
+  // Every razarion.com link carries the post it came from (lib/links.mjs): the only way to tell a
+  // visit it brings from one the ads bought.
+  const fbMessage = link ? `${text}\n\n${trackedLink(link, 'fb', id)}` : text;
 
   const common = { id, date, x_url: null, status: 'review', edited: false, source };
   const copyMedia = () => media.map((m) => ({ ...m }));
@@ -63,7 +67,7 @@ export function buildEntries({ id, date, text, link, tags = [], media = [], sour
         notes: [],
         media: [{ ...clip }],
         title,
-        description: buildDescription(text),
+        description: buildDescription(text, { playUrl: trackedLink('https://www.razarion.com', 'yt', id) }),
         tags: buildTags(text, tags),
         // See DEFAULT_PRIVACY in youtube.mjs: one line decides this for every new entry, and it
         // stays "private" until the compliance audit is through.
@@ -119,6 +123,31 @@ const TARGETS = [
  * entry is null - YouTube, for anything that is not a clip - is skipped rather than given an empty
  * one, so nothing sits in that queue that could never go out.
  */
+/**
+ * writeEntries plus a record in the content ledger (lib/ledger.mjs), which is what every producer
+ * should call: the ledger is only worth consulting if nothing bypasses it.
+ *
+ * `format` names the recipe the post came from, `subject` what it was about in a form the format
+ * compares against later. The media are hashed, so the same clip handed in again under another
+ * name is recognised.
+ */
+export async function writeAndRecord(entries, { format, subject = null, summary = null }) {
+  const post = entries.x || entries.fb || entries.ig;
+  const written = writeEntries(entries);
+  const ledger = loadLedger();
+  record(ledger, {
+    id: post.id,
+    format,
+    subject,
+    date: post.date,
+    medium: mediumOf(post.media),
+    media: await hashMedia(post.media),
+    summary: summary ?? post.source_text,
+  });
+  saveLedger(ledger);
+  return written;
+}
+
 export function writeEntries(entries) {
   const written = [];
   for (const target of TARGETS) {

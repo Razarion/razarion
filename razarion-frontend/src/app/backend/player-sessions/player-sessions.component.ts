@@ -166,6 +166,8 @@ export class PlayerSessionsComponent implements OnChanges {
         return 'X';
       case TrackingPlatform.META:
         return 'Meta';
+      case TrackingPlatform.SOCIAL:
+        return 'own post';
       default:
         return 'organic';
     }

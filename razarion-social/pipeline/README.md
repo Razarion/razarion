@@ -202,6 +202,12 @@ build_fb_posts.mjs     posts.json -> data/fb_posts.json
 publish_fb.mjs         fb_posts.json -> Facebook Page, state/posted_fb.json
 compose.mjs            one new post -> all three review files
 generate.mjs           the next unit from the live game -> all three, card and all
+produce.mjs            one post from a format in lib/formats/ (duel, week-in-numbers, devlog)
+ledger.mjs             the content ledger: every post, its format, its media hashes
+lib/formats/           the formats - where the material comes from and what is made of it
+lib/ledger.mjs         state/ledger.json, and where each post went (read from posted_*.json)
+lib/card.mjs           palette, backdrop and type fitting shared by the formats' pictures
+lib/links.mjs          utm tags on every razarion.com link, so own posts are told from ads
 lib/razarion.mjs       admin login, unit types, images from the running server
 lib/entries.mjs        one text -> the three shapes the feeds want
 publish_x.mjs          x_posts.json -> X, state/posted_x.json

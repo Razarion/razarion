@@ -18,7 +18,7 @@ import {
   DATA_DIR, STATE_DIR, ensureDir, readJson, writeJson, toRelative,
 } from './lib/paths.mjs';
 import { adminToken, baseItemTypes, fetchImage, roleOf } from './lib/razarion.mjs';
-import { buildEntries, writeEntries } from './lib/entries.mjs';
+import { buildEntries, writeAndRecord } from './lib/entries.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
 
 const OWN_DIR = join(DATA_DIR, 'own');
@@ -257,7 +257,7 @@ async function main() {
     media: [{ type: 'photo', file: toRelative(image), url: null }],
     source: 'composed',
   });
-  writeEntries(entries);
+  await writeAndRecord(entries, { format: 'unit-card', subject: `unit:${slug}` });
 
   rotation.used = [...rotation.used, item.id];
   rotation.last = { id: item.id, name: item.name, at: new Date().toISOString() };
