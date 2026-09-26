@@ -19,6 +19,7 @@ import {CockpitDisplayService} from '../cockpit-display.service';
 import {TipService} from '../../tip/tip.service';
 import {BabylonAudioService} from '../../renderer/babylon-audio.service';
 import {CompactLayoutService} from '../compact-layout.service';
+import {QuestMarkerService} from '../main/radar/quest-marker.service';
 
 @Component({
   selector: 'quest-cockpit',
@@ -48,6 +49,7 @@ export class QuestCockpitComponent implements QuestCockpit {
               private tipService: TipService,
               private babylonAudioService: BabylonAudioService,
               private compactLayout: CompactLayoutService,
+              private questMarkerService: QuestMarkerService,
               private zone: NgZone) {
   }
 
@@ -79,6 +81,11 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.setupProgress();
         this.showQuestSelectionButton = showQuestSelectionButton;
         this.cockpitDisplayService.showQuestCockpit = !!questDescriptionConfig;
+        // The quest's region on the minimap, for a quest without a tip - with one, the tip marks
+        // what the player has to look at next, which may be the region or a unit on the way to it.
+        this.questMarkerService.set('quest', questDescriptionConfig && !questDescriptionConfig.getTipConfig()
+          ? QuestMarkerService.fromPlaceConfig(this.conditionConfig?.getComparisonConfig().getPlaceConfig())
+          : null);
         if (questDescriptionConfig) {
           this.babylonAudioService.playQuestActivatedAudio();
         }

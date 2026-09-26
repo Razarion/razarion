@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.InitializeService;
@@ -69,6 +70,17 @@ public class BaseItemService {
     // Search radius (m) for a free spawn position if the requested base spawn position is occupied
     private static final double SPAWN_FREE_POSITION_SEARCH_RADIUS = 20;
     private final Logger logger = Logger.getLogger(BaseItemService.class.getName());
+    /**
+     * A server correction that moves one of the player's own units further than this is a jump the
+     * player sees. Units move below 1 unit per tick, and a correction of an in-sync unit is well under
+     * that; 3 units is a divergence.
+     */
+    private static final double SYNC_SNAP_DISTANCE = 3;
+    /** At most one [SyncSnap] line per unit in this time, so one diverged unit cannot eat the forwarding budget. */
+    private static final long SYNC_SNAP_LOG_INTERVAL_MILLIS = 5000;
+    /** The player this engine runs for; only a SLAVE worker sets it. Null on the server. */
+    private String localUserId;
+    private final Map<Integer, Long> lastSyncSnapLog = new HashMap<>();
     private final GameLogicService gameLogicService;
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private final LevelService levelService;
@@ -432,12 +444,71 @@ public class BaseItemService {
     }
 
     public void onSlaveSyncBaseItemChanged(SyncBaseItemInfo syncBaseItemInfo) {
+        onSlaveSyncBaseItemChanged(syncBaseItemInfo, 0, 0);
+    }
+
+    private void onSlaveSyncBaseItemChanged(SyncBaseItemInfo syncBaseItemInfo, double serverTick, long workerTick) {
         SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(syncBaseItemInfo.getId());
         if (syncBaseItem == null) {
             PlayerBase playerBase = getPlayerBase4BaseId(syncBaseItemInfo.getBaseId());
             syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, playerBase);
+        } else {
+            logSyncSnap(syncBaseItem, syncBaseItemInfo, serverTick, workerTick);
         }
         synchronizeActivateSlave(syncBaseItem, syncBaseItemInfo);
+    }
+
+    public void setLocalUserId(String localUserId) {
+        this.localUserId = localUserId;
+    }
+
+    /**
+     * One line when a server correction makes one of the player's own units jump - a harvester that
+     * stood short of its field and then 'flew' to it (local, 23.09.2026). Answers which of two things
+     * happened: the tick delta large means the worker ran behind or the server stood still and caught
+     * up; small, with the unit standing locally, means the two simulations went apart - the worker
+     * got stuck where the server did not, and SLAVE never replans (PlanetService.run). The only
+     * correction that arrives is the next event, often the start of harvesting.
+     */
+    private void logSyncSnap(SyncBaseItem syncBaseItem, SyncBaseItemInfo syncBaseItemInfo, double serverTick, long workerTick) {
+        try {
+            if (localUserId == null || syncBaseItem.getBase() == null || !localUserId.equals(syncBaseItem.getBase().getUserId())
+                    || syncBaseItemInfo.getSyncPhysicalAreaInfo() == null) {
+                return;
+            }
+            DecimalPosition local = syncBaseItem.getAbstractSyncPhysical().getPosition();
+            DecimalPosition server = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
+            if (local == null || server == null) {
+                return;
+            }
+            double jump = local.getDistance(server);
+            if (jump <= SYNC_SNAP_DISTANCE) {
+                return;
+            }
+            long now = System.currentTimeMillis();
+            Long last = lastSyncSnapLog.get(syncBaseItem.getId());
+            if (last != null && now - last < SYNC_SNAP_LOG_INTERVAL_MILLIS) {
+                return;
+            }
+            lastSyncSnapLog.put(syncBaseItem.getId(), now);
+            String localSpeed = "-";
+            if (syncBaseItem.getAbstractSyncPhysical() instanceof SyncPhysicalMovable) {
+                DecimalPosition velocity = ((SyncPhysicalMovable) syncBaseItem.getAbstractSyncPhysical()).getVelocity();
+                if (velocity != null) {
+                    localSpeed = String.valueOf(Math.round(velocity.magnitude() * 100) / 100.0);
+                }
+            }
+            logger.warning("[SyncSnap] " + syncBaseItem.getBaseItemType().getInternalName() + "#" + syncBaseItem.getId()
+                    + " jump=" + Math.round(jump * 10) / 10.0
+                    + " local=" + Math.round(local.getX()) + "/" + Math.round(local.getY())
+                    + " server=" + Math.round(server.getX()) + "/" + Math.round(server.getY())
+                    + " localIdle=" + syncBaseItem.isIdle()
+                    + " localSpeed=" + localSpeed
+                    + " workerTick=" + workerTick + " serverTick=" + Math.round(serverTick)
+                    + " pending=" + pendingReceivedTickInfos.size());
+        } catch (Throwable t) {
+            // A measurement must never break the synchronisation it measures.
+        }
     }
 
     private SyncBaseItem createSyncBaseItemSlave(SyncBaseItemInfo syncBaseItemInfo, PlayerBase playerBase) {
@@ -891,7 +962,7 @@ public class BaseItemService {
             TickInfo tickInfo = pendingReceivedTickInfos.remove();
             tickInfo.getSyncBaseItemInfos().forEach(info -> {
                 try {
-                    onSlaveSyncBaseItemChanged(info);
+                    onSlaveSyncBaseItemChanged(info, tickInfo.getTickCount(), tickCount);
                 } catch (Throwable t) {
                     logger.log(Level.SEVERE, "onSlaveSyncBaseItemChanged failed for syncBaseItemInfo id="
                             + (info != null ? info.getId() : "null"), t);

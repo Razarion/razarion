@@ -220,14 +220,17 @@
          would download the planet image again on every open.
          Over the build menu and the quest it does not hide at all any more - it docks under the
          status strip instead. Selecting a builder opens the build menu by itself, so a player who
-         had just finished a radar station never saw the map they had unlocked. -->
-    @if (cockpitDisplayService.showMainCockpit && mainCockpit.radarState === WORKING) {
+         had just finished a radar station never saw the map they had unlocked.
+         Since 23.09.2026 it is there from level 1 - fog, not a lock: the radar adds what is not
+         the player's, the map itself and the quest marker on it are for finding the way. -->
+    @if (cockpitDisplayService.showMainCockpit) {
       <div class="compact-radar"
            [class.compact-radar-expanded]="radarExpanded"
            [class.compact-radar-docked]="isRadarDocked()"
            [style.visibility]="isRadarHidden() ? 'hidden' : 'visible'">
         <radar [size]="radarExpanded ? expandedRadarSize : compactRadarSize"
                [showZoomControls]="radarExpanded"
+               [radarWorking]="mainCockpit.radarState === WORKING"
                (mapClicked)="radarExpanded = false"></radar>
         <!-- A sibling of the map, not a child: its taps must not also land on the map underneath. -->
         <button type="button" class="compact-radar-toggle"

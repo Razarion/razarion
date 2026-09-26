@@ -8,14 +8,19 @@ import {FirstInteractionTrackerService} from '../../tracking/first-interaction-t
 import {FakeBaseItem, FakeItemCockpit, FakeResourceItem, QuestCondition, Unit, World} from './fake-world';
 import {TipStallReason} from '../tip-stall';
 import {fakeBaseItemType, ItemTypeId, itemTypeSpec} from './fake-item-types';
+import {QuestMarkerService} from '../../cockpit/main/radar/quest-marker.service';
 
 /** A quest with a tip, as in catalog section 3. */
 export interface TipQuest {
   id: number;
-  tip: 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD';
+  tip: 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD' | 'SELL';
   actorTypeId: number;
   /** The typed part of the condition, which is also what the tip reads its target from. */
   typeCount: { typeId: number, count: number } | null;
+  /** More types after typeCount, for a condition that asks for several (396). */
+  moreTypeCounts?: { typeId: number, count: number }[];
+  /** ConditionConfig.conditionTrigger, where the tip reads it (SYNC_ITEM_POSITION without a region). */
+  trigger?: string;
   condition: QuestCondition;
   /** The tip asks for a group before the attack (TipConfig.group). */
   group?: boolean;
@@ -79,7 +84,25 @@ export const QUESTS: Record<number, TipQuest> = {
   486: {id: 486, tip: 'SAIL', actorTypeId: ItemTypeId.BUILDER, typeCount: {typeId: ItemTypeId.TRANSPORTER, count: 1},
     condition: {kind: 'loadedIn', containerTypeId: ItemTypeId.TRANSPORTER, region: REGION_COAST_WATER}, region: REGION_COAST_WATER},
   392: {id: 392, tip: 'UNLOAD', actorTypeId: ItemTypeId.BUILDER, typeCount: {typeId: ItemTypeId.BUILDER, count: 1},
-    condition: {kind: 'in', typeId: ItemTypeId.BUILDER, region: REGION_PHASE2}, region: REGION_PHASE2}
+    condition: {kind: 'in', typeId: ItemTypeId.BUILDER, region: REGION_PHASE2}, region: REGION_PHASE2},
+  // Level 9 moves the base: sell the factory, later the dockyard (2026-09-25).
+  393: {id: 393, tip: 'SELL', actorTypeId: ItemTypeId.FACTORY, typeCount: {typeId: ItemTypeId.FACTORY, count: 1},
+    condition: {kind: 'sold', typeId: ItemTypeId.FACTORY, count: 1}},
+  // SYNC_ITEM_POSITION in the Phase 2 start region: what stands there counts, whenever it was built.
+  395: {id: 395, tip: 'BUILD', actorTypeId: ItemTypeId.BUILDER, typeCount: {typeId: ItemTypeId.FACTORY, count: 1},
+    trigger: 'SYNC_ITEM_POSITION', region: REGION_PHASE2,
+    condition: {kind: 'owns', types: [{typeId: ItemTypeId.FACTORY, count: 1}], region: REGION_PHASE2}},
+  396: {id: 396, tip: 'BUILD', actorTypeId: ItemTypeId.BUILDER, typeCount: {typeId: ItemTypeId.RADAR, count: 1},
+    moreTypeCounts: [{typeId: ItemTypeId.POWERPLANT, count: 1}], trigger: 'SYNC_ITEM_POSITION', region: REGION_PHASE2,
+    condition: {kind: 'owns', types: [{typeId: ItemTypeId.RADAR, count: 1}, {typeId: ItemTypeId.POWERPLANT, count: 1}],
+      region: REGION_PHASE2}},
+  // A harvester and six vipers on the Phase 2 island, from the factory built there (395).
+  400: {id: 400, tip: 'FABRICATE', actorTypeId: ItemTypeId.FACTORY, typeCount: {typeId: ItemTypeId.HARVESTER, count: 1},
+    moreTypeCounts: [{typeId: ItemTypeId.VIPER, count: 6}], trigger: 'SYNC_ITEM_POSITION', region: REGION_PHASE2,
+    condition: {kind: 'owns', types: [{typeId: ItemTypeId.HARVESTER, count: 1}, {typeId: ItemTypeId.VIPER, count: 6}],
+      region: REGION_PHASE2}},
+  401: {id: 401, tip: 'SELL', actorTypeId: ItemTypeId.DOCKYARD, typeCount: {typeId: ItemTypeId.DOCKYARD, count: 1},
+    condition: {kind: 'sold', typeId: ItemTypeId.DOCKYARD, count: 1}}
 };
 
 /** What is on the player's screen that a tip put there. */
@@ -88,6 +111,8 @@ export interface PlayerView {
   prompts: { text: string, itemId: number, typeId: number }[];
   /** Direction arrow at the edge of the screen, as an angle; null when there is none. */
   arrowAngle: number | null;
+  /** The "go there" chip beside the arrow is up. */
+  jumpOffered: boolean;
   cockpitHintTypeId: number | null;
   placeMarker: boolean;
   placerActive: boolean;
@@ -95,6 +120,8 @@ export interface PlayerView {
   groupAsked: boolean;
   /** The hint stands on the Unload button of the item cockpit. */
   unloadHint: boolean;
+  /** The hint stands on the sell button of the item cockpit. */
+  sellHint: boolean;
 }
 
 export interface Violation {
@@ -122,6 +149,8 @@ export class TipTestbed {
   readonly action: ActionService;
   readonly tipService: TipService;
   readonly cockpit: FakeItemCockpit;
+  /** What the minimap would mark: the tip's target, as QuestMarkerService holds it. */
+  readonly questMarker = new QuestMarkerService();
   readonly stallReports: any[] = [];
   readonly errors: string[] = [];
   readonly violations: Violation[] = [];
@@ -161,7 +190,7 @@ export class TipTestbed {
       }
     };
     this.tipService = new TipService(this.world.renderer as any, gwtAngularService as any, this.selection,
-      uiSettings as any, stallTracker, tracker, this.action);
+      uiSettings as any, stallTracker, tracker, this.action, this.questMarker);
     this.tipService.setItemCockpit(this.cockpit as any);
     this.world.onQuestPassed = () => {
       this.questPassed = true;
@@ -249,6 +278,20 @@ export class TipTestbed {
     this.cockpit.clickUnload(this.world.renderer);
   }
 
+  /** One tap on the sell button - the first arms it, the second sells. */
+  /** The player taps the "go there" chip: the camera goes to the arrow's target, as setViewFieldCenter does. */
+  clickJump(): void {
+    const target = this.world.renderer.outOfViewTarget;
+    if (!target) {
+      throw new Error('There is no "go there" chip');
+    }
+    this.world.moveCamera(target.x, target.y);
+  }
+
+  clickSell(): void {
+    this.cockpit.clickSell();
+  }
+
   cancelPlacer(): void {
     this.world.renderer.cancelPlacer();
   }
@@ -318,11 +361,13 @@ export class TipTestbed {
     return {
       prompts,
       arrowAngle: renderer.outOfViewAngle,
+      jumpOffered: renderer.outOfViewTarget !== null,
       cockpitHintTypeId: this.cockpit.hintTypeId,
       placeMarker: renderer.placeMarkerShown,
       placerActive: renderer.baseItemPlacerActive,
       groupAsked: renderer.touchSelectionMode.asked,
-      unloadHint: this.cockpit.unloadHint
+      unloadHint: this.cockpit.unloadHint,
+      sellHint: this.cockpit.sellHint
     };
   }
 
@@ -337,7 +382,7 @@ export class TipTestbed {
 
   hasGuidance(view = this.view()): boolean {
     return view.prompts.length > 0 || view.arrowAngle !== null || view.cockpitHintTypeId !== null
-      || view.placeMarker || view.placerActive || view.groupAsked || view.unloadHint;
+      || view.placeMarker || view.placerActive || view.groupAsked || view.unloadHint || view.sellHint;
   }
 
   /** The one prompt on screen, if there is exactly one. */
@@ -450,8 +495,15 @@ export class TipTestbed {
    */
   private actorIsWorking(quest: TipQuest): boolean {
     return [...this.world.units.values()].some(unit =>
-      unit.owner === 'own' && (unit.spec.id === quest.actorTypeId || this.carriesActor(quest, unit))
+      unit.owner === 'own' && (unit.spec.id === quest.actorTypeId || this.carriesActor(quest, unit)
+        || (!!unit.spec.harvester && this.moneyShort(quest)))
       && (!this.world.isIdle(unit) || this.world.hasPendingOrder(unit.id)));
+  }
+
+  /** Too little Razarion for what the quest builds: a harvester at work works for the quest. */
+  private moneyShort(quest: TipQuest): boolean {
+    return (quest.tip === 'BUILD' || quest.tip === 'FABRICATE') && quest.typeCount !== null
+      && this.world.razarion < itemTypeSpec(quest.typeCount.typeId).price;
   }
 
   /**
@@ -513,6 +565,7 @@ export class TipTestbed {
     let moveAck: (() => void) | null = null;
     return {
       baseItemUiService: {
+        getResources: () => world.razarion,
         getNearestEnemyPosition: (x: number, y: number, typeId: number, typeIdUsed: boolean) => {
           let best: Unit | null = null;
           for (const unit of world.units.values()) {
@@ -560,6 +613,7 @@ export class TipTestbed {
         }
       },
       gameUiControl: {
+        getMyLimitation4ItemType: (typeId: number) => world.itemLimits.get(typeId) ?? Number.MAX_SAFE_INTEGER,
         getColdGameUiContext: () => ({
           getInGameQuestVisualConfig: () => ({
             getRadius: () => 3,
@@ -595,8 +649,10 @@ export class TipTestbed {
         isGroup: () => !!quest.group
       }),
       getConditionConfig: () => ({
+        getConditionTrigger: () => quest.trigger ?? null,
         getComparisonConfig: () => ({
-          toTypeCountAngular: () => quest.typeCount ? [[quest.typeCount.typeId, quest.typeCount.count]] : [],
+          toTypeCountAngular: () => [...(quest.typeCount ? [quest.typeCount] : []), ...(quest.moreTypeCounts ?? [])]
+            .map(typeCount => [typeCount.typeId, typeCount.count]),
           getPlaceConfig: () => quest.region ? {
             getPosition: () => null,
             toRadiusAngular: () => null,

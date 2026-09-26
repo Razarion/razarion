@@ -101,6 +101,7 @@ export default {
   name: 'devlog',
   medium: 'photo',
   summary: "what changed in the game this week - drafted from git, worded by a person",
+  tones: ['behind-the-scenes', 'matter-of-fact'],
 
   async produce(ctx) {
     const week = isoWeek(ctx.now);
@@ -144,6 +145,7 @@ export default {
       link: LINK,
       tags: ['devlog'],
       media: [{ type: 'photo', file: toRelative(file), url: null }],
+      facts: { week, changes: lines },
       flags: card.truncated ? ['card-truncated'] : [],
     };
   },

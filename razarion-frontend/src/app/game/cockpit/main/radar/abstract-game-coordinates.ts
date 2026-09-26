@@ -30,35 +30,31 @@ export abstract class AbstractGameCoordinates extends AbstractMiniMap {
         return real;
     }
 
+    /** The inverse of {@link canvasToReal}: where a ground point lands on the canvas, in pixels. */
+    public realToCanvas(realX: number, realY: number): { x: number, y: number } {
+        let planetSize: DecimalPosition = this.gameUiControl.getPlanetConfig().getSize();
+        let scale: number = this.setupGameScale();
+        let xShift = this.setupXShift(this.getWidth(), planetSize.getX(), scale, this.getViewField().getCenter());
+        let yShift = this.setupYShift(this.getHeight(), planetSize.getY(), scale, this.getViewField().getCenter());
+        return {x: (realX - xShift) * scale, y: (realY - yShift) * -scale};
+    }
+
     protected toCanvasPixel(pixels: number): number {
         return pixels / this.setupGameScale();
     }
 
-    private setupXShift(width: number, planetSizeX: number, scale: number, centerOffset: DecimalPosition): number {
-        let xDownerLimit: number = width / scale / 2.0;
-        let xUpperLimit: number = planetSizeX - xDownerLimit;
-        let xShift: number;
-        if (centerOffset.getX() < xDownerLimit) {
-            xShift = 0.0;
-        } else if (centerOffset.getX() > xUpperLimit) {
-            xShift = xUpperLimit - xDownerLimit;
-        } else {
-            xShift = centerOffset.getX() - xDownerLimit;
-        }
-        return xShift;
+    /**
+     * The map is always centred on the camera. It used to stop at the planet's edge instead, which
+     * pushed the camera - and the player's base - into a corner of the square: the noob island lies
+     * in the planet's lower left corner, and the desktop dock clips the map round, so the base was
+     * cut off exactly where every new player starts (23.09.2026). Beyond the planet the map is empty.
+     * MiniTerrain has to follow the same rule, or the ground and the units drift apart.
+     */
+    private setupXShift(width: number, _planetSizeX: number, scale: number, centerOffset: DecimalPosition): number {
+        return centerOffset.getX() - width / scale / 2.0;
     }
 
-    private setupYShift(height: number, playHeight: number, scale: number, centerOffset: DecimalPosition): number {
-        let yDownerLimit: number = height / scale / 2.0;
-        let yUpperLimit: number = playHeight - yDownerLimit;
-        let yShift: number;
-        if (centerOffset.getY() < yDownerLimit) {
-            yShift = playHeight - yUpperLimit + yDownerLimit;
-        } else if (centerOffset.getY() > yUpperLimit) {
-            yShift = playHeight;
-        } else {
-            yShift = centerOffset.getY() + yDownerLimit;
-        }
-        return yShift;
+    private setupYShift(height: number, _playHeight: number, scale: number, centerOffset: DecimalPosition): number {
+        return centerOffset.getY() + height / scale / 2.0;
     }
 }

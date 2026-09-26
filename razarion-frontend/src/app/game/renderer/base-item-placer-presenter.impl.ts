@@ -1,3 +1,4 @@
+import {markPlacerClosed} from './placer-release';
 import {
   Color3,
   Matrix,
@@ -605,6 +606,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   }
 
   deactivate(): void {
+    markPlacerClosed();
     this.cleanupPreviousPlacer();
     // Defer clearing so ActionManager handlers (terrain/water click) that fire
     // in the same event loop tick still see the placer as active.

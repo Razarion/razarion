@@ -29,20 +29,23 @@ export const BASE_HASHTAGS = ['rts', 'indiedev', 'opensource', 'webassembly', 'b
  * media. YouTube is the odd one out - it wants a title and a description rather than a caption,
  * and it takes video only, so a text or photo post produces no entry there at all. Everything
  * else stays identical so the same thing is being said in every place.
+ *
+ * `written` - what lib/writer.mjs returns - replaces the one text with a text per network. `text`
+ * stays the reference: it is kept as source_text and still feeds the YouTube tags.
  */
-export function buildEntries({ id, date, text, link, tags = [], media = [], source = 'composed' }) {
+export function buildEntries({ id, date, text, link, tags = [], media = [], source = 'composed', written = null }) {
   const hashtags = [...BASE_HASHTAGS, ...tags].slice(0, 10).map((t) => '#' + t);
 
   // X gets the text without the link, and it is the one network where that is the better post.
   // A link costs $0.20 an post against $0.015 without one - thirteen times the price - and X also
   // damps the reach of anything carrying one, so the link buys a smaller audience at a higher
   // price. The route to the site is the profile, the same as on Instagram.
-  const xText = text;
+  const xText = written ? written.x : text;
   const xFlags = [];
   if (xLength(xText) > MAX_X) xFlags.push('too-long');
   if (!media.length) xFlags.push('text-only');
 
-  const igCaption = [text, link ? 'Link in bio.' : null, hashtags.join(' ')]
+  const igCaption = [written ? written.instagram : text, link ? 'Link in bio.' : null, hashtags.join(' ')]
     .filter(Boolean)
     .join('\n\n');
   const igFlags = [];
@@ -51,7 +54,8 @@ export function buildEntries({ id, date, text, link, tags = [], media = [], sour
 
   // Every razarion.com link carries the post it came from (lib/links.mjs): the only way to tell a
   // visit it brings from one the ads bought.
-  const fbMessage = link ? `${text}\n\n${trackedLink(link, 'fb', id)}` : text;
+  const fbText = written ? written.facebook : text;
+  const fbMessage = link ? `${fbText}\n\n${trackedLink(link, 'fb', id)}` : fbText;
 
   const common = { id, date, x_url: null, status: 'review', edited: false, source };
   const copyMedia = () => media.map((m) => ({ ...m }));
@@ -59,7 +63,9 @@ export function buildEntries({ id, date, text, link, tags = [], media = [], sour
   // YouTube takes video and nothing else. A photo or a text card has no entry there rather than a
   // rejected one, which is why the caller has to cope with yt being null.
   const clip = media.find((m) => m.type === 'video');
-  const { title, truncated } = clip ? buildTitle(text) : { title: null, truncated: false };
+  const { title, truncated } = !clip
+    ? { title: null, truncated: false }
+    : written ? { title: written.youtube_title, truncated: false } : buildTitle(text);
   const yt = clip
     ? {
         ...common,
@@ -67,7 +73,7 @@ export function buildEntries({ id, date, text, link, tags = [], media = [], sour
         notes: [],
         media: [{ ...clip }],
         title,
-        description: buildDescription(text, { playUrl: trackedLink('https://www.razarion.com', 'yt', id) }),
+        description: buildDescription(written ? written.youtube_description : text, { playUrl: trackedLink('https://www.razarion.com', 'yt', id) }),
         tags: buildTags(text, tags),
         // See DEFAULT_PRIVACY in youtube.mjs: one line decides this for every new entry, and it
         // stays "private" until the compliance audit is through.
@@ -131,7 +137,7 @@ const TARGETS = [
  * compares against later. The media are hashed, so the same clip handed in again under another
  * name is recognised.
  */
-export async function writeAndRecord(entries, { format, subject = null, summary = null }) {
+export async function writeAndRecord(entries, { format, subject = null, summary = null, tone = null }) {
   const post = entries.x || entries.fb || entries.ig;
   const written = writeEntries(entries);
   const ledger = loadLedger();
@@ -143,6 +149,7 @@ export async function writeAndRecord(entries, { format, subject = null, summary 
     medium: mediumOf(post.media),
     media: await hashMedia(post.media),
     summary: summary ?? post.source_text,
+    tone,
   });
   saveLedger(ledger);
   return written;

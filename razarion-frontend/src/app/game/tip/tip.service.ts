@@ -9,6 +9,7 @@ import {TipStallTrackerService} from './tip-stall-tracker.service';
 import {FirstInteractionTrackerService} from '../tracking/first-interaction-tracker.service';
 import {ActionService} from '../action.service';
 import {TipGuide} from './guide/tip-guide';
+import {QuestMarkerService} from '../cockpit/main/radar/quest-marker.service';
 
 /**
  * The quest tip: shown for a quest that has a tip config, taken down when the quest ends or tips are
@@ -37,7 +38,8 @@ export class TipService {
     private readonly uiSettingsService: UiSettingsService,
     tipStallTrackerService: TipStallTrackerService,
     firstInteractionTracker: FirstInteractionTrackerService,
-    actionService: ActionService
+    actionService: ActionService,
+    questMarker: QuestMarkerService
   ) {
     this.guide = new TipGuide({
       renderService,
@@ -47,7 +49,8 @@ export class TipService {
       itemCockpit: () => this.itemCockpit,
       stallTracker: tipStallTrackerService,
       firstInteractionTracker,
-      outOfViewMarkerConfig: this.outOfViewMarkerConfig
+      outOfViewMarkerConfig: this.outOfViewMarkerConfig,
+      questMarker
     });
     // Turning tips off (e.g. for clean director footage) clears any active tip.
     this.uiSettingsService.tipsVisible$.subscribe(visible => {

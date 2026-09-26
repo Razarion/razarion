@@ -129,6 +129,7 @@ export default {
   name: 'week-in-numbers',
   medium: 'photo',
   summary: 'last week in the shared world, from the game history (counts only)',
+  tones: ['matter-of-fact', 'punchy', 'question'],
 
   async produce(ctx) {
     // Named after the week that just ended, since that is what the seven days cover.

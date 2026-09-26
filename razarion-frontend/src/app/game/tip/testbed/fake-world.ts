@@ -71,7 +71,11 @@ export type QuestCondition =
   /** LOADED_CONTAINER_POSITION */
   { kind: 'loadedIn', containerTypeId: number, region: { x: number, y: number }[] } |
   /** SYNC_ITEM_POSITION: contained units are nowhere and never count. */
-  { kind: 'in', typeId: number, region: { x: number, y: number }[] };
+  { kind: 'in', typeId: number, region: { x: number, y: number }[] } |
+  /** SELL */
+  { kind: 'sold', typeId: number, count: number } |
+  /** SYNC_ITEM_POSITION with typed counts: the finished items in the region (the base without one), whenever built. */
+  { kind: 'owns', types: { typeId: number, count: number }[], region?: { x: number, y: number }[] };
 
 /** Half widths and depths of the visible trapezoid around the camera, in ground units. */
 const VIEW = {near: 12, far: 18, nearHalfWidth: 14, farHalfWidth: 26};
@@ -126,6 +130,7 @@ export class World {
   /** Kills and harvest since the quest was activated, for its condition. */
   private questCondition: QuestCondition | null = null;
   private questKills: number[] = [];
+  private questSold: number[] = [];
   private questHarvested = 0;
   private questExistingIds = new Set<number>();
   onQuestPassed: (() => void) | null = null;
@@ -177,6 +182,7 @@ export class World {
   setQuestCondition(condition: QuestCondition | null): void {
     this.questCondition = condition;
     this.questKills = [];
+    this.questSold = [];
     this.questHarvested = 0;
     this.questExistingIds = new Set([...this.units.values()].filter(u => u.owner === 'own').map(u => u.id));
   }
@@ -317,6 +323,21 @@ export class World {
         });
         container.cargo = [];
       }
+    });
+  }
+
+  /** ItemCockpitBridge.sellItems: the items are gone, the quest counts them. */
+  sell(unitIds: number[]): void {
+    this.pendingCommands.push({
+      dueAt: this.time + this.commandLatencyMillis,
+      unitIds,
+      apply: () => unitIds.forEach(id => {
+        const unit = this.units.get(id);
+        if (unit && unit.owner === 'own') {
+          this.units.delete(id);
+          this.questSold.push(unit.spec.id);
+        }
+      })
     });
   }
 
@@ -578,6 +599,14 @@ export class World {
         passed = [...this.units.values()].some(u => u.owner === 'own' && u.spec.id === condition.typeId
           && u.containedIn === null && insidePolygon(u.x, u.y, condition.region));
         break;
+      case 'sold':
+        passed = this.questSold.filter(typeId => typeId === condition.typeId).length >= condition.count;
+        break;
+      case 'owns':
+        passed = condition.types.every(type => [...this.units.values()].filter(u => u.owner === 'own'
+          && u.spec.id === type.typeId && u.buildup >= 1 && u.containedIn === null
+          && (!condition.region || insidePolygon(u.x, u.y, condition.region))).length >= type.count);
+        break;
     }
     if (passed) {
       this.questCondition = null;
@@ -837,6 +866,8 @@ export class FakeRenderer {
   baseItemPlacerActive = false;
   /** The direction arrow as the player sees it: null when down. */
   outOfViewAngle: number | null = null;
+  /** Where the "go there" chip beside the arrow would take the camera; null without a chip. */
+  outOfViewTarget: { x: number, y: number } | null = null;
   placeMarkerShown = false;
   readonly touchSelectionMode = {asked: false, setAsked: (asked: boolean) => this.touchSelectionMode.asked = asked};
 
@@ -956,8 +987,9 @@ export class FakeRenderer {
     }
   }
 
-  showOutOfViewMarker(markerConfig: any, angle: number): void {
+  showOutOfViewMarker(markerConfig: any, angle: number, target?: { x: number, y: number }): void {
     this.outOfViewAngle = markerConfig ? angle : null;
+    this.outOfViewTarget = markerConfig && target ? target : null;
   }
 
   showPlaceMarker(placeConfig: any, _markerConfig: any): void {
@@ -1040,6 +1072,10 @@ export class FakeItemCockpit {
   hintTypeId: number | null = null;
   /** The hint stands on the Unload button. */
   unloadHint = false;
+  /** The hint stands on the sell button. */
+  sellHint = false;
+  /** The sell button took its first tap and waits for the second, as ItemCockpitComponent.sellArmed. */
+  sellArmed = false;
   private cockpitTypeId: number | null = null;
   private cockpitItemIds: number[] = [];
   private buildClickCallback: ((model: { itemTypeId: number }) => void) | null = null;
@@ -1048,6 +1084,8 @@ export class FakeItemCockpit {
   }
 
   rebuild(selectedRenderedItems: { getId(): number, getBaseItemType(): any }[]): void {
+    // A new selection is a new context: the armed sell button disarms (ItemCockpitComponent.ngDoCheck).
+    this.sellArmed = false;
     const types = new Set(selectedRenderedItems.map(item => item.getBaseItemType().getId()));
     if (types.size === 1) {
       this.cockpitTypeId = [...types][0];
@@ -1082,8 +1120,11 @@ export class FakeItemCockpit {
     if (!this.buttons().includes(itemTypeId)) {
       return TipStallReason.NOT_BUILDABLE;
     }
-    if (this.world.razarion < itemTypeSpec(itemTypeId).price || this.world.limitReached(itemTypeId, 1)) {
-      return TipStallReason.BUTTON_DISABLED;
+    if (this.world.limitReached(itemTypeId, 1)) {
+      return TipStallReason.ITEM_LIMIT;
+    }
+    if (this.world.razarion < itemTypeSpec(itemTypeId).price) {
+      return TipStallReason.NO_MONEY;
     }
     return null;
   }
@@ -1113,6 +1154,30 @@ export class FakeItemCockpit {
       return TipStallReason.BUTTON_DISABLED;
     }
     return null;
+  }
+
+  /** As ItemCockpitComponent.showSellTip. */
+  showSellTip(show: boolean): boolean {
+    this.sellHint = show && this.getSellTipBlockReason() === null;
+    return this.sellHint || !show;
+  }
+
+  /** The sell button is there while one type of own item is selected. */
+  getSellTipBlockReason(): string | null {
+    return this.cockpitTypeId === null ? TipStallReason.COCKPIT_NOT_READY : null;
+  }
+
+  /** The player taps the sell button: the first tap arms it, the second sells the selection. */
+  clickSell(): void {
+    if (this.cockpitTypeId === null) {
+      throw new Error('There is no sell button');
+    }
+    if (!this.sellArmed) {
+      this.sellArmed = true;
+      return;
+    }
+    this.sellArmed = false;
+    this.world.sell([...this.cockpitItemIds]);
   }
 
   /** The player presses Unload. */

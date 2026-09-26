@@ -13,6 +13,7 @@ import {ViewField, ViewFieldListener} from '../../renderer/view-field';
 import {decide, Decision, PendingOrder, PROMPT, ResourcePoint, TipKind, TipQuestSpec} from './tip-decision';
 import {GuidanceView} from './guidance-view';
 import {TipRegion} from './tip-region';
+import {QuestMarker, QuestMarkerService} from '../../cockpit/main/radar/quest-marker.service';
 
 export interface TipGuideDeps {
   renderService: BabylonRenderServiceAccessImpl;
@@ -23,6 +24,8 @@ export interface TipGuideDeps {
   stallTracker: TipStallTrackerService;
   firstInteractionTracker: FirstInteractionTrackerService;
   outOfViewMarkerConfig: MarkerConfig;
+  /** The minimap's copy of where the tip points. Optional: nothing else depends on it. */
+  questMarker?: QuestMarkerService;
 }
 
 /** An order as the guide remembers it, until the engine has carried it out or never took it up. */
@@ -54,6 +57,7 @@ export class TipGuide implements ViewFieldListener {
     [TipTaskName.SEND_MOVE_COMMAND]: 3,
     [TipTaskName.START_UNLOAD_PLACER]: 4,
     [TipTaskName.SEND_UNLOAD_COMMAND]: 5,
+    [TipTaskName.SEND_SELL_COMMAND]: 2,
     [TipTaskName.SEND_BUILD_COMMAND]: 3,
     [TipTaskName.IDLE_ITEM]: 4
   };
@@ -85,14 +89,23 @@ export class TipGuide implements ViewFieldListener {
     const tipConfig = questConfig.getTipConfig()!;
     const typeCount = questConfig.getConditionConfig()?.getComparisonConfig().toTypeCountAngular() ?? [];
     const targetTypeId = typeCount.length > 0 ? GwtHelper.gwtIssueNumber(typeCount[0][0]) : null;
+    const tip = tipConfig.getTipString() as TipKind;
+    this.placeConfig = questConfig.getConditionConfig()?.getComparisonConfig().getPlaceConfig() ?? null;
+    // SYNC_ITEM_POSITION counts the finished buildings in the region (a start region comes as one),
+    // whenever they were built.
+    const trigger = questConfig.getConditionConfig()?.getConditionTrigger();
+    const countsTheBase = (tip === 'BUILD' || tip === 'FABRICATE')
+      && !!trigger && GwtHelper.gwtIssue(trigger) === 'SYNC_ITEM_POSITION';
     this.quest = {
       questId: GwtHelper.gwtIssueNumberNull(questConfig.getId()) ?? null,
-      tip: tipConfig.getTipString() as TipKind,
+      tip,
       actorTypeId: GwtHelper.gwtIssueNumber(tipConfig.getActorItemTypeId()),
       targetTypeId,
-      group: !!tipConfig.isGroup?.()
+      group: !!tipConfig.isGroup?.(),
+      buildTargets: countsTheBase
+        ? typeCount.map(entry => ({typeId: GwtHelper.gwtIssueNumber(entry[0]), count: GwtHelper.gwtIssueNumber(entry[1])}))
+        : undefined
     };
-    this.placeConfig = questConfig.getConditionConfig()?.getComparisonConfig().getPlaceConfig() ?? null;
     this.region = this.placeConfig ? new TipRegion(this.placeConfig) : null;
     this.deps.selectionService.addSelectionListener(this.selectionListener);
     this.deps.actionService.addOrderListener(this.orderListener);
@@ -115,6 +128,7 @@ export class TipGuide implements ViewFieldListener {
     this.deps.renderService.setBaseItemPlacerCallback(null);
     this.deps.itemCockpit()?.setBuildClickCallback(null);
     this.view.clear();
+    this.deps.questMarker?.set('tip', null);
     this.deps.stallTracker.stop();
     this.quest = null;
     this.decision = null;
@@ -190,8 +204,8 @@ export class TipGuide implements ViewFieldListener {
         return cockpit ? cockpit.getBuildupTipBlockReason(itemTypeId) : 'COCKPIT_NOT_READY';
       },
       factoriesFor: itemTypeId => this.factoriesFor(facade, items, itemTypeId),
-      resourcesOnScreen: quest.tip === 'HARVEST'
-        ? this.resourcesOnScreen((x, y) => onScreen(x, y, PROMPT.HARVEST)) : [],
+      // Every tip may need a field: one that finds too little Razarion sends a harvester out.
+      resourcesOnScreen: this.resourcesOnScreen((x, y) => onScreen(x, y, PROMPT.HARVEST)),
       nearestResource: from => {
         const position = facade.resourceUiService?.getNearestResourcePosition(from.x, from.y);
         return position ? {x: position.getX(), y: position.getY()} : null;
@@ -211,6 +225,31 @@ export class TipGuide implements ViewFieldListener {
       unloadBlock: () => {
         const cockpit = this.deps.itemCockpit();
         return cockpit ? cockpit.getUnloadTipBlockReason() : 'COCKPIT_NOT_READY';
+      },
+      sellBlock: () => {
+        const cockpit = this.deps.itemCockpit();
+        return cockpit ? cockpit.getSellTipBlockReason() : 'COCKPIT_NOT_READY';
+      },
+      canAfford: itemTypeId => {
+        try {
+          return baseItemUiService.getResources() >= facade.itemTypeService.getBaseItemTypeAngular(itemTypeId).getPrice();
+        } catch (e) {
+          return true;
+        }
+      },
+      isHarvester: itemTypeId => {
+        try {
+          return !!facade.itemTypeService.getBaseItemTypeAngular(itemTypeId).getHarvesterType();
+        } catch (e) {
+          return false;
+        }
+      },
+      itemLimit: itemTypeId => {
+        try {
+          return facade.gameUiControl.getMyLimitation4ItemType(itemTypeId);
+        } catch (e) {
+          return Number.MAX_SAFE_INTEGER;
+        }
       },
       markedTargetId: this.markedTargetId
     });
@@ -233,6 +272,38 @@ export class TipGuide implements ViewFieldListener {
     this.reportStep(decision);
     this.reportGroupTip(quest, items, decision);
     this.view.show(decision.guidance, this.placeConfig);
+    this.deps.questMarker?.set('tip', this.markerFor(decision, items));
+  }
+
+  /**
+   * Where the minimap marks the tip's target: what the arrow or the prompt points at, or the quest's
+   * region. The arrow at the screen edge gives a direction and no distance; the map gives both, and a
+   * tap on it takes the camera there. Nothing to mark while the tip only waits and the quest has no
+   * region - a marker on the unit that is already working would only add noise.
+   */
+  private markerFor(decision: Decision, items: TipItemState[]): QuestMarker | null {
+    const guidance = decision.guidance;
+    const region = QuestMarkerService.fromPlaceConfig(this.placeConfig);
+    switch (guidance.kind) {
+      case 'arrow':
+        return {kind: 'point', x: guidance.x, y: guidance.y};
+      case 'group':
+        return guidance.arrow ? {kind: 'point', x: guidance.arrow.x, y: guidance.arrow.y} : region;
+      case 'prompt': {
+        if (guidance.resource) {
+          const resource = this.deps.renderService.getBabylonResourceItemImpls().find(item => item.getId() === guidance.itemId);
+          const position = resource?.getPosition();
+          return position ? {kind: 'point', x: position.getX(), y: position.getY()} : region;
+        }
+        const item = items.find(candidate => candidate.id === guidance.itemId);
+        return item ? {kind: 'point', x: item.x, y: item.y} : region;
+      }
+      case 'sell':
+        // The building to sell, on the island the player has just left.
+        return {kind: 'point', x: guidance.x, y: guidance.y};
+      default:
+        return region;
+    }
   }
 
   /**

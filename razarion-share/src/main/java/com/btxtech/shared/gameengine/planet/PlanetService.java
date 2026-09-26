@@ -36,6 +36,14 @@ public class PlanetService implements Runnable { // Only available in worker. On
     public static final int TICKS_PER_SECONDS = (int) (1000.0 / TICK_TIME_MILLI_SECONDS);
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
     private final Logger logger = Logger.getLogger(PlanetService.class.getName());
+    /**
+     * A tick gap or a tick longer than this is a standstill the players see: units freeze while the
+     * picture keeps moving, and the fixed-rate schedule then runs the missed ticks back to back -
+     * units fly to where they should have been. Reported as one [TickStall] line on the MASTER, so
+     * it is visible on PROD where the full tracker is switched off.
+     */
+    private static final long TICK_STALL_MILLIS = 1000;
+    private long lastTickStartMillis;
     private final InitializeService initializeService;
     private final PathingService pathingService;
     private final BaseItemService baseItemService;
@@ -96,6 +104,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     public void start() {
         planetServiceTracker.clear();
         tickCount = 0;
+        lastTickStartMillis = 0; // the time since the last run of the previous planet is no standstill
         scheduledFuture.start();
     }
 
@@ -125,6 +134,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     @Override
     public void run() {
         if (pause) {
+            lastTickStartMillis = 0; // a pause is not a standstill
             return;
         }
         try {
@@ -132,6 +142,13 @@ public class PlanetService implements Runnable { // Only available in worker. On
             if (gameEngineMode == GameEngineMode.MASTER) {
                 synchronizationSendingContext = new SynchronizationSendingContext();
             }
+            long tickStartMillis = System.currentTimeMillis();
+            if (gameEngineMode == GameEngineMode.MASTER && lastTickStartMillis > 0
+                    && tickStartMillis - lastTickStartMillis > TICK_STALL_MILLIS) {
+                logger.warning("[TickStall] no tick for " + (tickStartMillis - lastTickStartMillis)
+                        + " ms (scheduled every " + TICK_TIME_MILLI_SECONDS + " ms) before tick " + (tickCount + 1));
+            }
+            lastTickStartMillis = tickStartMillis;
             planetServiceTracker.startTick();
             // Apply server corrections BEFORE local tick to minimize SLAVE desync
             tickCount++;
@@ -159,6 +176,10 @@ public class PlanetService implements Runnable { // Only available in worker. On
             planetServiceTracker.afterTickListener();
             syncService.sendTickInfo(tickCount);
             planetServiceTracker.endTick();
+            long tickMillis = System.currentTimeMillis() - tickStartMillis;
+            if (gameEngineMode == GameEngineMode.MASTER && tickMillis > TICK_STALL_MILLIS) {
+                logger.warning("[TickStall] tick " + tickCount + " took " + tickMillis + " ms");
+            }
 
             // DebugHelperStatic.appendAfterTick(tickDatas, tickCount, syncItemContainerService);
         } catch (Throwable t) {

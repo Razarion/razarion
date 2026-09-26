@@ -32,27 +32,11 @@ export class MiniTerrain extends AbstractMiniMap {
         let divider = imageScale / gameScale;
         let centerOffset = this.getViewField().getCenter().divide(divider, divider);
 
+        // Centred on the camera, never stopped at the edge - see AbstractGameCoordinates.setupXShift.
         let xDownerLimit = (width / imageScale / 2.0);
-        let xUpperLimit = RadarComponent.MINI_MAP_IMAGE_WIDTH - xDownerLimit;
-        let  xShift;
-        if (centerOffset.getX() < xDownerLimit) {
-            xShift = xDownerLimit;
-        } else if (centerOffset.getX() > xUpperLimit) {
-            xShift = xUpperLimit;
-        } else {
-            xShift = centerOffset.getX();
-        }
-
-        let yDownerLimit =  (height / imageScale / 2.0);
-        let yUpperLimit = RadarComponent.MINI_MAP_IMAGE_HEIGHT - yDownerLimit;
-        let yShift;
-        if (centerOffset.getY() < yDownerLimit) {
-            yShift = yDownerLimit;
-        } else if (centerOffset.getY() > yUpperLimit) {
-            yShift = yUpperLimit;
-        } else {
-            yShift = centerOffset.getY();
-        }
+        let xShift = centerOffset.getX();
+        let yUpperLimit = RadarComponent.MINI_MAP_IMAGE_HEIGHT - (height / imageScale / 2.0);
+        let yShift = centerOffset.getY();
 
         ctx.translate(xDownerLimit - xShift, yShift - yUpperLimit);
     }

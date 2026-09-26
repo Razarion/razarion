@@ -33,7 +33,7 @@
           <!-- Two steps, because selling is not undoable and this button sits in the corner where a
                phone user reaches for "close". The armed state disarms itself after a few seconds. -->
           <div class="flex-none">
-            <p-button [label]="sellArmed ? 'Sell?' : '$'"
+            <p-button #sellButton [label]="sellArmed ? 'Sell?' : '$'"
                       [severity]="sellArmed ? 'danger' : 'primary'"
                       [style]="{padding: '0.1rem 0.4rem'}"
                       [title]="sellArmed ? 'Tap again to sell' : 'Sell'"

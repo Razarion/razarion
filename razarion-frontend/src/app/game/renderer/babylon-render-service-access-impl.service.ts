@@ -57,6 +57,7 @@ import {BabylonImpact} from "./babylon-impact";
 import {BabylonPerfOverlay} from "./babylon-perf-overlay";
 import {RenderTelemetry, RenderTelemetrySceneStats} from "./render-telemetry";
 import {ParkedMeshFilter} from "./parked-mesh-filter";
+import {OutOfViewJump} from './out-of-view-jump';
 import {ShadowQuality} from "./shadow-quality";
 import {TextureMemory} from "./texture-memory";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
@@ -195,6 +196,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   // (createTerrainTile) inherit the current state.
   private waterVisible: boolean = true;
   private interpolationListeners: BabylonBaseItemImpl[] = [];
+  /** How far beside an item a finger may land and still mean it: about 7 mm on a phone. */
+  private static readonly TOUCH_SLOP_CSS_PX = 28;
+  private readonly outOfViewJump = new OutOfViewJump(() => this.canvas ?? null);
   private babylonBaseItems: BabylonBaseItemImpl[] = [];
   /** Where the shooting is, for a camera that would rather film a battle than a factory. */
   readonly combatTracker = new CombatTracker();
@@ -598,7 +602,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     const DRAG_THRESHOLD = 5; // pixels
     const CLICK_DELAY = 150; // ms
 
-    const fireTerrainClick = (pickResult: any) => {
+    const fireTerrainClick = (pickResult: any, touch = false) => {
       if (!pickResult?.hit || !pickResult.pickedMesh || !pickResult.pickedPoint) return;
       const metadataNode = BabylonRenderServiceAccessImpl.findRazarionMetadataNode(pickResult.pickedMesh);
       if (!metadataNode) return;
@@ -611,6 +615,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         const actionable = this.findActionableItemUnderGroundPoint(pickResult.pickedPoint.x, pickResult.pickedPoint.z);
         if (actionable && this.actionCursorFor(actionable)) {
           actionable.triggerClick();
+          return;
+        }
+        const nearby = touch ? this.findItemNearTap(this.scene.pointerX, this.scene.pointerY) : null;
+        if (nearby) {
+          nearby.triggerClick();
           return;
         }
         this.actionService.onTerrainClicked(pickResult.pickedPoint.x, pickResult.pickedPoint.z);
@@ -669,7 +678,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         // No timer was ever started for this press, so the tap is decided here: it counts only if
         // the finger stayed put and moved no camera.
         if (wasDown && !terrainDragDetected && !this.touchCameraControl?.isGesturing()) {
-          fireTerrainClick(pickResult);
+          fireTerrainClick(pickResult, true);
         }
         return;
       }
@@ -1199,11 +1208,23 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.engine;
   }
 
-  showOutOfViewMarker(markerConfig: MarkerConfig | null, angle: number): void {
+  /**
+   * @param target where the arrow points, on the ground. With one, a "go there" chip sits by the
+   *               arrow and takes the camera to it in one tap (see OutOfViewJump).
+   */
+  showOutOfViewMarker(markerConfig: MarkerConfig | null, angle: number, target?: { x: number, y: number }): void {
     // Out-of-view direction arrows are a "tip" — some tip tasks call this
     // directly (bypassing TipService), so gate it here for clean footage.
     if (!this.uiSettingsService.tipsVisible) {
       markerConfig = null;
+    }
+    if (markerConfig && target) {
+      this.outOfViewJump.show(target, angle, (x, y) => {
+        this.firstInteractionTrackerService.report('ARROW_JUMP');
+        this.setViewFieldCenter(x, y);
+      });
+    } else {
+      this.outOfViewJump.hide();
     }
     if (markerConfig) {
       if (!markerConfig.outOfViewNodesMaterialId) {
@@ -1675,6 +1696,50 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
    * Linear scans are deliberate: both lists hold only what is streamed into the scene, tens of
    * entries, and this runs once per click and at most once per cursor throttle window.
    */
+  /**
+   * The item a finger meant when it landed on the ground next to it: the nearest own unit, or the
+   * nearest item the selection can act on, within {@link TOUCH_SLOP_CSS_PX} on screen.
+   * <p>
+   * A unit on a phone is a few millimetres across, and a tap that misses its mesh by one used to
+   * go to the ground - a move order for the selection, or nothing. Units standing close together
+   * were hard to select at all (phone test, 2026-09-25). Nearest on screen, not on the ground, so
+   * the camera's tilt does not make units at the far edge easier to hit than the near ones.
+   */
+  private findItemNearTap(pointerX: number, pointerY: number): BabylonItemImpl | null {
+    const canvas = this.scene.getEngine().getRenderingCanvas();
+    const renderPerCss = canvas && canvas.clientWidth > 0 ? this.scene.getEngine().getRenderWidth() / canvas.clientWidth : 1;
+    const tapX = pointerX * renderPerCss;
+    const tapY = pointerY * renderPerCss;
+    const slop = BabylonRenderServiceAccessImpl.TOUCH_SLOP_CSS_PX * renderPerCss;
+    let best: BabylonItemImpl | null = null;
+    let bestDistanceSq = slop * slop;
+    const consider = (item: BabylonItemImpl) => {
+      const position = item.getPosition();
+      if (!position) {
+        return;
+      }
+      const own = GwtHelper.gwtIssueStringEnum(item.diplomacy, Diplomacy) === Diplomacy.OWN;
+      if (!own && !this.actionCursorFor(item)) {
+        return;
+      }
+      const screen = this.projectGroundToScreen(position.getX(), position.getY());
+      if (!screen) {
+        return;
+      }
+      const dx = screen.x - tapX;
+      const dy = screen.y - tapY;
+      const distanceSq = dx * dx + dy * dy;
+      if (distanceSq <= bestDistanceSq) {
+        bestDistanceSq = distanceSq;
+        best = item;
+      }
+    };
+    this.babylonBaseItems.forEach(consider);
+    this.babylonResourceItems.forEach(consider);
+    this.babylonBoxItems.forEach(consider);
+    return best;
+  }
+
   private findActionableItemUnderGroundPoint(x: number, z: number): BabylonItemImpl | null {
     let best: BabylonItemImpl | null = null;
     let bestDistanceSq = Number.POSITIVE_INFINITY;

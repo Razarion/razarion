@@ -32,8 +32,13 @@ public class TerrainUiService {
     // Off-screen tiles are kept here so scrolling back is instant. Bounded (LRU-ish via
     // LinkedHashMap insertion order) and evicted+disposed once over the limit — an unbounded cache
     // used to accumulate every visited tile's meshes/materials/sprites for the whole session,
-    // degrading FPS until a reload. ~48 covers generous back-and-forth scrolling around a viewport.
-    private static final int MAX_CACHED_TILES = 48;
+    // degrading FPS until a reload. 16 still covers a ring of tiles around the viewport, so
+    // scrolling back and forth stays instant. It was 48 until 2026-09-25: a phone test that crossed
+    // to the Phase 2 island and back to sell the old base ended with 5090 parked meshes - the trees
+    // of the hidden tiles, ~106 per tile - and renderP50 went from 14 to 36 ms (58 -> 21 fps) with
+    // nothing more drawn. The ParkedMeshFilter takes the parked tiles out of two of Babylon's
+    // per-frame walks, but the frame time still follows the size of scene.meshes.
+    private static final int MAX_CACHED_TILES = 16;
     private final Map<Index, UiTerrainTile> cacheTerrainTiles = new LinkedHashMap<>();
     private final Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
     private final Map<Index, Runnable> terrainTypeOrdinalsCallbacks = new HashMap<>();

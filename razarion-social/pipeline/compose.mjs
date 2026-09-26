@@ -14,6 +14,15 @@
 // --format and --subject go into the content ledger (lib/ledger.mjs) and are what later runs use to
 // vary what comes next. Without them the format is just the medium: clip, photo or text.
 //
+//   node compose.mjs --portrait a.mp4 --landscape b.mp4 --text "19 Vipers gegen das Datacenter" --write
+//   node compose.mjs --media clip.mp4 --text "..." --write --tone behind-the-scenes
+//   node compose.mjs --media clip.mp4 --text "..." --write --facts "Staged on the live server, away from players"
+//
+// --write hands --text to the writer (lib/writer.mjs, claude -p on the subscription), which turns it
+// into an English text per network in the tone that is due. --text may be German; it is what has
+// to get across, not the wording. --facts adds true things it may use. Every number the writer
+// puts in must be in one of the two. Without a login, --text goes in as it is.
+//
 // Nothing is published here. The entries land on status "review" in captions.json, fb_posts.json,
 // x_posts.json and - for a clip - yt_posts.json; the publishers take it from there.
 //
@@ -28,6 +37,7 @@ import { probeVideo } from './lib/video.mjs';
 import { DATA_DIR, ensureDir, toRelative } from './lib/paths.mjs';
 import { buildEntries, writeAndRecord } from './lib/entries.mjs';
 import { loadLedger, hashMedia, findByHash, mediumOf, publishedMap } from './lib/ledger.mjs';
+import { writePost, pickTone } from './lib/writer.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
 
 const OWN_MEDIA_DIR = join(DATA_DIR, 'own');
@@ -114,11 +124,51 @@ async function main() {
     throw new Error('This media has been used before. Pass --force to post it again anyway.');
   }
 
-  let media = [];
   if ((portrait || landscape) && mediaArg && !videoLike(mediaArg)) {
     throw new Error('A post carries either a picture or a clip. Drop --media, or drop --portrait/--landscape.');
   }
-  if (portrait || landscape || (mediaArg && videoLike(mediaArg))) {
+  const isClip = Boolean(portrait || landscape || (mediaArg && videoLike(mediaArg)));
+  const medium = isClip ? 'video' : mediaArg ? 'photo' : 'text';
+  const format = args.format ? String(args.format) : isClip ? 'clip' : medium;
+
+  // Before anything is copied, so a --dry-run leaves data/own as it was.
+  let written = null;
+  let tone = null;
+  if (args.write) {
+    const wanted = args.tone ? String(args.tone) : pickTone(loadLedger());
+    step(`writing in the "${wanted}" tone (claude -p, on the subscription)`);
+    const result = await writePost({
+      format,
+      summary: `a ${isClip ? 'gameplay clip' : medium} from the game, described by its developer`,
+      facts: args.facts ? { also_true: String(args.facts) } : {},
+      reference: text,
+      tone: wanted,
+    });
+    if (result.written) {
+      written = result.written;
+      tone = wanted;
+    } else {
+      warn(`The writer gave nothing usable (${result.reason}). --text goes in as it is.`);
+    }
+  }
+
+  if (args['dry-run']) {
+    info('');
+    if (written) {
+      for (const [label, key] of [['X', 'x'], ['Instagram', 'instagram'], ['Facebook', 'facebook'], ['YouTube title', 'youtube_title']]) {
+        info(`  ${label}:`);
+        info(written[key].split('\n').map((l) => '    ' + l).join('\n'));
+      }
+    } else {
+      info(`  ${text}`);
+    }
+    info('');
+    warn('DRY RUN. Nothing copied, no review file or ledger entry written.');
+    return;
+  }
+
+  let media = [];
+  if (isClip) {
     media = [await clipItem(id, { media: mediaArg, portrait, landscape })];
   } else if (mediaArg) {
     media = [{ type: 'photo', file: adopt(id, mediaArg), url: null }];
@@ -132,18 +182,28 @@ async function main() {
     tags: extraTags,
     media,
     source: 'composed',
+    written,
   });
 
-  const written = await writeAndRecord(entries, {
-    format: args.format ? String(args.format) : mediumOf(media) === 'video' ? 'clip' : mediumOf(media),
+  const targets = await writeAndRecord(entries, {
+    format,
     subject: args.subject ? String(args.subject) : null,
+    tone: tone ?? (args.write ? 'template' : 'own'),
   });
+
+  if (written) {
+    info('');
+    for (const [label, key] of [['X', 'x'], ['Instagram', 'instagram'], ['Facebook', 'facebook'], ['YouTube title', 'youtube_title']]) {
+      info(`  ${label}:`);
+      info(written[key].split('\n').map((l) => '    ' + l).join('\n'));
+    }
+  }
 
   const { x: xFlags, ig: igFlags } = entries.flags;
   const lengths = entries.lengths;
 
   info('');
-  ok(`Composed ${id} into ${written.length} review file(s): ${written.join(', ')}.`);
+  ok(`Composed ${id}${tone ? ` (${tone})` : ''} into ${targets.length} review file(s): ${targets.join(', ')}.`);
   info(`  X          ${lengths.x}/${MAX_X} characters${xFlags.length ? '  [' + xFlags.join(',') + ']' : ''}`);
   info(`  Instagram  ${lengths.ig}/${MAX_IG} characters${igFlags.length ? '  [' + igFlags.join(',') + ']' : ''}`);
   info(`  Facebook   ${lengths.fb} characters`);

@@ -1,3 +1,4 @@
+import {placerJustClosed} from '../../renderer/placer-release';
 import {
   AfterViewInit,
   Component,
@@ -27,7 +28,7 @@ export interface BuildTipAnchor {
   x: number;
   y: number;
   /** open-menu-unload: the unload button is behind the collapsed panel. */
-  mode: 'build' | 'open-menu' | 'unload' | 'open-menu-unload';
+  mode: 'build' | 'open-menu' | 'unload' | 'open-menu-unload' | 'sell' | 'open-menu-sell';
 }
 
 @Component({
@@ -57,6 +58,8 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
   buildupCarousel?: Carousel;
   @ViewChild('unloadButton', {read: ElementRef})
   unloadButton?: ElementRef<HTMLElement>;
+  @ViewChild('sellButton', {read: ElementRef})
+  sellButton?: ElementRef<HTMLElement>;
   @ViewChildren('buildupItemDiv')
   buildupItemDiv?: QueryList<ElementRef>;
   private buildClickCallback: ((model: BuildupItemModel) => void) | null = null;
@@ -214,7 +217,7 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
    * player and the build menu. Looked up in the document because that button belongs to the game
    * component while the tip is drawn here, and re-measured on every call like the other anchor.
    */
-  private anchorToCompactBuildIcon(mode: 'open-menu' | 'open-menu-unload' = 'open-menu'): void {
+  private anchorToCompactBuildIcon(mode: 'open-menu' | 'open-menu-unload' | 'open-menu-sell' = 'open-menu'): void {
     const icon = document.getElementById('compact-build-icon');
     if (!icon) {
       this.buildTip = null;
@@ -239,8 +242,13 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
     if (itemIndex < 0) {
       return TipStallReason.NOT_BUILDABLE;
     }
-    if (!buildupItems![itemIndex].enabled) {
-      return TipStallReason.BUTTON_DISABLED;
+    const model = buildupItems![itemIndex];
+    if (!model.enabled) {
+      // Named apart: the tip can send a player without money to harvest, but not past a limit.
+      return model.buildNoMoney ? TipStallReason.NO_MONEY
+        : model.buildLimitReached ? TipStallReason.ITEM_LIMIT
+          : model.buildHouseSpaceReached ? TipStallReason.HOUSE_SPACE_FULL
+            : TipStallReason.BUTTON_DISABLED;
     }
     if (this.itemCockpitService.ownItemCockpit!.factoryQueueFull) {
       return TipStallReason.FACTORY_QUEUE_FULL;
@@ -301,8 +309,59 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
     return null;
   }
 
+  /**
+   * The same tip on the sell button: the level 9 quests ask the player to sell his factory and his
+   * dockyard and build again in the new land (393, 401). The button is a small '$' that wants two
+   * taps; the tip says which one is next.
+   */
+  showSellTip(show: boolean): boolean {
+    if (!show) {
+      if (this.buildTip?.mode === 'sell' || this.buildTip?.mode === 'open-menu-sell') {
+        this.buildTip = null;
+      }
+      return true;
+    }
+    const blockReason = this.getSellTipBlockReason();
+    if (blockReason === TipStallReason.ITEM_PANEL_CLOSED) {
+      this.anchorToCompactBuildIcon('open-menu-sell');
+      return false;
+    }
+    if (blockReason !== null) {
+      this.buildTip = null;
+      return false;
+    }
+    const rect = this.sellButton!.nativeElement.getBoundingClientRect();
+    this.buildTip = {x: rect.left + rect.width / 2, y: rect.top, mode: 'sell'};
+    this.updateBuildTipShift(this.buildTip.x);
+    return true;
+  }
+
+  /** Why the tip cannot be put on the sell button, null when it can. */
+  getSellTipBlockReason(): string | null {
+    const cockpit = this.itemCockpitService.ownItemCockpit;
+    if (!cockpit) {
+      return TipStallReason.COCKPIT_NOT_READY;
+    }
+    if (!cockpit.canSell) {
+      return TipStallReason.BUTTON_DISABLED;
+    }
+    if (!this.sellButton) {
+      return TipStallReason.BUTTON_NOT_RENDERED;
+    }
+    if (this.compactLayout.compact() && !this.compactLayout.isOpen('item')) {
+      return TipStallReason.ITEM_PANEL_CLOSED;
+    }
+    return null;
+  }
+
   protected buildTipText(tip: BuildTipAnchor): string {
     switch (tip.mode) {
+      case 'open-menu-sell':
+        return 'Tap here to sell';
+      case 'sell':
+        return this.sellArmed
+          ? (this.touch ? 'Tap again to sell' : 'Click again to sell')
+          : (this.touch ? 'Tap to sell' : 'Click to sell');
       case 'open-menu':
         return 'Tap here to build';
       case 'open-menu-unload':
@@ -336,6 +395,9 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
   }
 
   onBuildClick(buildupItem: BuildupItemModel) {
+    if (placerJustClosed()) {
+      return; // the tail of the tap that placed the last building, not a press for a new one
+    }
     const blockReason = this.buildBlockReason(buildupItem);
     if (blockReason !== null) {
       // The button answers instead of doing nothing. Five identical red tiles and no way to hover

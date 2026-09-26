@@ -19,7 +19,7 @@ test bed passes on it. Where a row says "the chain:", that is what the removed t
 
 The quest list and the configuration numbers come from the **local** DB; PROD may differ.
 
-**Scope.** Tips are for beginners. They run on the quests of levels 1-8 only (the last is 392), and those quests are
+**Scope.** Tips are for beginners. They run on the quests of levels 1-8 (the last is 392) and, since 2026-09-25, on the quests of level 9 (393, 395, 396, 400, 401), and those quests are
 prepared for them: each quest provides what the next one needs. A case that the quest chain
 prepares against still has to be handled gracefully (no stuck chain, no wrong prompt), but it does
 not have to teach anything.
@@ -120,8 +120,13 @@ SelectGroup is added today whenever the quest names a target type. **Decided:** 
 | 8 | 485 | LOAD | Builder | 1× Builder loaded (SYNC_ITEM_LOADED) |
 | 8 | 486 | SAIL | Builder | 1× Transporter **with cargo** in the strip of water along the Phase 2 coast, ~230 × 10 (LOADED_CONTAINER_POSITION) |
 | 8 | 392 | UNLOAD | Builder | 1× Builder in the Phase 2 region |
+| 9 | 393 | SELL | Factory | sell 1× Factory |
+| 9 | 395 | BUILD | Builder | 1× Factory **in start region 122** (Phase 2) |
+| 9 | 396 | BUILD | Builder | 1× Radar + 1× Powerplant **in start region 122** (Phase 2) |
+| 9 | 400 | FABRICATE | Factory | 1× Harvester + 6× Viper **in start region 122** (Phase 2) |
+| 9 | 401 | SELL | Dockyard | sell 1× Dockyard |
 
-After 392 no quest has a tip. Corrected 2026-09-18: 389 was missing from this table. 2026-09-22: 392
+Every quest of level 9 has a tip since 2026-09-25. Corrected 2026-09-18: 389 was missing from this table. 2026-09-22: 392
 ("carry the builder off the noob island") split into load, sail and unload, each with a tip - it
 passed at 0 % from 18.09. on, and PROD recorded not one load order: nobody was ever told to put
 the builder into the transporter. 485 and 486 are the local ids.
@@ -183,7 +188,7 @@ test bed should run the **actor** axis in full for *every* step.
 | Id | Situation | Expected | Today |
 |---|---|---|---|
 | PLC-01 | builder selected, button enabled | hint on the button | ✓ bed |
-| PLC-02 | button greyed out (money, limit, house space) | should not occur - quests pay Razarion (Q3); if it does: fail gracefully | ✓ bed: fails gracefully - no hint on the greyed-out button |
+| PLC-02 | button greyed out (money, limit, house space) | should not occur - quests pay Razarion (Q3); if it does: fail gracefully. Money: see MNY | ✓ bed: fails gracefully - no hint on the greyed-out button |
 | PLC-03 | button on another carousel page | hint reaches the button | ? `BUTTON_NOT_RENDERED` |
 | PLC-04 | compact layout, panel closed | hint on the panel icon | ~ |
 | PLC-05 | builder selected, drives off screen | cockpit stays, hint stays | ✓ bed |
@@ -249,6 +254,77 @@ One decision for all three quests: each can find the world in an earlier quest's
 | TRN-05 | 486, builder not aboard | the load steps of 485 | ✓ bed since 2026-09-22 |
 | TRN-06 | 392, transporter at the coast | select it, hint on the Unload button, the region marked while placing | ✓ bed since 2026-09-22 |
 | TRN-07 | 392, transporter still at home | sail first (arrow, marked region); the Unload hint once the region is within reach (range - 2) | ✓ bed since 2026-09-22 |
+
+### SLL - Sell a building (SELL)
+
+Level 9 moves the base: 393 sells the factory, 401 the dockyard, both on the island the player has
+just left. On PROD 393 fell from 30/36 to 1/7 once the transport tips brought players there
+(2026-09-25). The sell button is a small '$' that wants two taps; the hint says which one is next.
+
+| Id | Situation | Expected | Today |
+|---|---|---|---|
+| SLL-01 | 393, factory far behind the player | arrow and minimap marker back to it, "Click to select", the hint on the sell button through both taps | ✓ bed since 2026-09-25 |
+| SLL-02 | 401, dockyard already selected | straight to the sell button | ✓ bed since 2026-09-25 |
+| SLL-03 | 393, the dockyard selected instead | no sell hint; "Click to select" on the factory | ✓ bed since 2026-09-25 |
+
+### RBL - Build the base again (BUILD, counting the region)
+
+395 and 396 count what stands in the Phase 2 start region (`startRegionId` 122, which the client
+gets as the quest's place), whenever it was built. Level 9 allows one factory, radar and powerplant
+each - and the radar and powerplant from level 3 still stand on the noob island. They do not
+count, yet they fill the limit: the button of the new one is greyed out, and no quest says to sell
+the old one. The tip reads the region off the base like the server, asks for a type the limit
+still allows first, and sends the player back to sell the old building when that is what stands in
+the way. On PROD both passed at 97 % before the transport tips (31/32, 30/31).
+
+| Id | Situation | Expected | Today |
+|---|---|---|---|
+| RBL-01 | 395, builder in the region | "Click to select", hint on the factory button, quiet while it builds | ✓ bed since 2026-09-25 |
+| RBL-02 | 396, radar built | the hint moves on to the powerplant button | ✓ bed since 2026-09-25 |
+| RBL-03 | 396, the player places the powerplant first | quiet while it goes up, then the radar | ✓ bed since 2026-09-25 |
+| RBL-04 | 396, radar and powerplant from level 3 on the old island | arrow and minimap marker back to the old radar, select, sell twice, then the radar button | ✓ bed since 2026-09-25 |
+| RBL-05 | 396, only the old radar left | the powerplant first, then back to the old radar | ✓ bed since 2026-09-25 |
+
+### ARM - The army on the new island (FABRICATE, counting the region)
+
+400 wants a harvester and six vipers in the Phase 2 start region, made by the factory built there
+in 395. Level 9 allows one harvester and six vipers, and land units cannot cross: old ones on the
+noob island fill the limit until they are sold. The tip asks for a type the limit still allows
+first, then sends the player back to sell what stands in the way (as RBL, [396](#rbl---build-the-base-again-build-counting-the-region)).
+
+| Id | Situation | Expected | Today |
+|---|---|---|---|
+| ARM-01 | 400, nothing old left | "Click to select" on the factory, the harvester button, then the viper button six times | ✓ bed since 2026-09-25 |
+| ARM-02 | the old harvester still on the noob island | the vipers first, then arrow back to the old harvester, sell it, then the harvester button | ✓ bed since 2026-09-25 |
+| ARM-03 | the player queues all six vipers at once | quiet while the queue runs, then the harvester | ✓ bed since 2026-09-25 |
+
+### MNY - Too little Razarion (BUILD, FABRICATE)
+
+The quests pay for the way (Q3), but not for losses: on PROD a player who lost the builder and
+bought a new one for 50 stood before a greyed powerplant button (362), another lost harvester and
+army and had no income left (386) - and the tip said nothing (tip_stall `BUTTON_DISABLED`,
+2026-09-25). The cockpit now names the reason (`NO_MONEY`, `ITEM_LIMIT`, `HOUSE_SPACE_FULL`), and
+the tip checks the price against the base's Razarion before it asks for the actor: short of money,
+it sends a harvester out and waits while one is at work.
+
+| Id | Situation | Expected | Today |
+|---|---|---|---|
+| MNY-01 | 362 with 20 Razarion, harvester idle | "Click to select" on the harvester, "Click to harvest", quiet while the money comes in, then the builder and the powerplant button | ✓ bed since 2026-09-25 |
+| MNY-02 | the harvester already at work | nothing until the money is there, then the button hint | ✓ bed since 2026-09-25 |
+| MNY-03 | no harvester at all | nothing wrong shown (graceful) | ✓ bed since 2026-09-25 |
+
+### MAP - The quest marker on the minimap (all tips)
+
+Since 2026-09-23 the minimap is on screen from level 1 and marks what the tip points at: the arrow's
+target, the prompt's unit, or the quest region. Outside the map's window it is a wedge on the edge.
+
+| Id | Situation | Expected | Today |
+|---|---|---|---|
+| MAP-01 | target off screen | the map marks the target the arrow points at | ✓ bed since 2026-09-23 |
+| MAP-02 | prompt on screen | the map marks the same unit | ✓ bed since 2026-09-23 |
+| MAP-03 | sailing quest (486) | the water region is marked | ✓ bed since 2026-09-23 |
+| MAP-04 | unit working, no region; quest done | nothing marked | ✓ bed since 2026-09-23 |
+| MAP-05 | target off screen, the player taps the "go there" chip at the arrow's tip | the camera on the target, the prompt there, arrow and chip gone (tracked as `ARROW_JUMP`) | ✓ bed since 2026-09-25, checked in the browser |
 
 ### ATK - Attack (ATTACK)
 

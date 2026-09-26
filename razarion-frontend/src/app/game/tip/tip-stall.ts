@@ -23,6 +23,8 @@ export const TipTaskName = {
   SEND_MOVE_COMMAND: 'SEND_MOVE_COMMAND',
   START_UNLOAD_PLACER: 'START_UNLOAD_PLACER',
   SEND_UNLOAD_COMMAND: 'SEND_UNLOAD_COMMAND',
+  /** Selling a building (level 9 moves the base): select it, then the two taps on the sell button. */
+  SEND_SELL_COMMAND: 'SEND_SELL_COMMAND',
   IDLE_ITEM: 'IDLE_ITEM'
 } as const;
 
@@ -59,8 +61,14 @@ export const TipStallReason = {
   COCKPIT_NOT_READY: 'COCKPIT_NOT_READY',
   /** The quest asks for something this actor cannot build at all. */
   NOT_BUILDABLE: 'NOT_BUILDABLE',
-  /** Button is there but greyed out: item limit, house space or too little Razarion. */
+  /** Button is there but greyed out, for a reason none of the three below names. */
   BUTTON_DISABLED: 'BUTTON_DISABLED',
+  /** Build button greyed out: too little Razarion. Split from BUTTON_DISABLED on 2026-09-25. */
+  NO_MONEY: 'NO_MONEY',
+  /** Build button greyed out: the level's limit for the type is full. */
+  ITEM_LIMIT: 'ITEM_LIMIT',
+  /** Build button greyed out: no house space left. */
+  HOUSE_SPACE_FULL: 'HOUSE_SPACE_FULL',
   FACTORY_QUEUE_FULL: 'FACTORY_QUEUE_FULL',
   /** In the cockpit model but no DOM element carries it - carousel page not materialised. */
   BUTTON_NOT_RENDERED: 'BUTTON_NOT_RENDERED',
@@ -101,6 +109,8 @@ export const TipStallReason = {
   AWAIT_UNLOAD_CLICK: 'AWAIT_UNLOAD_CLICK',
   /** Unload placed, waiting for the unit to come out. */
   AWAIT_UNLOAD: 'AWAIT_UNLOAD',
+  /** The building is selected and the hint stands on the sell button; not pressed (or not twice). */
+  AWAIT_SELL_CLICK: 'AWAIT_SELL_CLICK',
   /** The group tip is up and the player has not put a second unit into the selection yet. */
   AWAIT_GROUP: 'AWAIT_GROUP',
   /**

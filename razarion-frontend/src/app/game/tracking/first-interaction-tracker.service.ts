@@ -107,6 +107,10 @@ export type InteractionKind =
   | 'CAMERA_PINCH'
   | 'CAMERA_KEYBOARD'
   | 'CAMERA_WHEEL'
+  /** A tap or click on the minimap that moved the camera there. */
+  | 'MINIMAP_JUMP'
+  /** A tap or click on the "go there" chip beside the tip's out-of-view arrow (2026-09-25). */
+  | 'ARROW_JUMP'
   /** A unit or building was picked. On a phone this can only come from a tap: the marquee ignores
    *  touch pointers and there is no keyboard, so it doubles as proof the tap path works. */
   | 'SELECT'
@@ -233,7 +237,7 @@ export class FirstInteractionTrackerService {
    */
   private static readonly PLAYER_KINDS: ReadonlySet<string> = new Set<InteractionKind>([
     'POINTER_DOWN', 'POINTER_DOWN_PAGE', 'CAMERA_PAN_TOUCH', 'CAMERA_PINCH', 'CAMERA_KEYBOARD',
-    'CAMERA_WHEEL', 'SELECT', 'COMMAND', 'SELECT_GROUP', 'COMMAND_GROUP', 'SELECTION_BOX_ARMED',
+    'CAMERA_WHEEL', 'MINIMAP_JUMP', 'ARROW_JUMP', 'SELECT', 'COMMAND', 'SELECT_GROUP', 'COMMAND_GROUP', 'SELECTION_BOX_ARMED',
     'PLACER_CONFIRMED', 'PLACER_REJECTED', 'TECH_TREE_OPENED']);
 
   /** When the player last did anything at all, or 0 if they never have. */

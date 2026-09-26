@@ -4,7 +4,6 @@ import {GameComponent} from '../../game.component';
 import {Nullable, Observer, PointerEventTypes, PointerInfo} from '@babylonjs/core';
 import {BabylonRenderServiceAccessImpl} from '../../renderer/babylon-render-service-access-impl.service';
 import {RadarComponent} from './radar/radar.component';
-import {RadarNoPowerComponent} from './radar/radar-no-power.component';
 import { CommonModule, NgClass } from '@angular/common';
 import {TooltipModule} from 'primeng/tooltip';
 import {Dialog} from 'primeng/dialog';
@@ -26,7 +25,6 @@ import {CompactLayoutService} from '../compact-layout.service';
   templateUrl: 'main-cockpit.component.html',
   imports: [
     RadarComponent,
-    RadarNoPowerComponent,
     NgClass,
     CommonModule,
     TooltipModule,

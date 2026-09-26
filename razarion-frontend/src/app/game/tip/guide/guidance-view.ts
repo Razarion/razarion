@@ -51,6 +51,9 @@ export class GuidanceView {
         // Re-anchored on every evaluation, like the build button.
         this.itemCockpit()?.showUnloadTip(true);
         break;
+      case 'sell':
+        this.itemCockpit()?.showSellTip(true);
+        break;
       case 'group':
         this.renderService.touchSelectionMode.setAsked(true);
         if (guidance.arrow) {
@@ -93,6 +96,9 @@ export class GuidanceView {
     if (previous.kind === 'unload' && next.kind !== 'unload') {
       this.itemCockpit()?.showUnloadTip(false);
     }
+    if (previous.kind === 'sell' && next.kind !== 'sell') {
+      this.itemCockpit()?.showSellTip(false);
+    }
     if (previous.kind === 'placeMarker') {
       this.renderService.showPlaceMarker(null, null);
     }
@@ -107,7 +113,7 @@ export class GuidanceView {
       return;
     }
     this.renderService.showOutOfViewMarker(this.outOfViewMarkerConfig,
-      viewField.getAngleTo(GwtInstance.newDecimalPosition(x, y)));
+      viewField.getAngleTo(GwtInstance.newDecimalPosition(x, y)), {x, y});
   }
 
   private findItem(id: number, resource: boolean): {

@@ -175,6 +175,7 @@ export default {
   name: 'duel',
   medium: 'photo',
   summary: 'two combat units, their real numbers, "which one wins?"',
+  tones: ['question', 'punchy'],
 
   async produce(ctx) {
     const units = fighters(await ctx.items());
@@ -212,6 +213,22 @@ export default {
       link: LINK,
       tags: ['strategygame'],
       media: [{ type: 'photo', file: toRelative(file), url: null }],
+      facts: {
+        units: [a, b].map((u) => {
+          const s = stats(u);
+          return {
+            name: u.name,
+            kind: s.water ? 'warship' : s.mobile ? 'unit' : 'tower',
+            health: s.health,
+            damage: s.damage,
+            reloadSeconds: s.reload,
+            range: s.range,
+            price: s.price,
+          };
+        }),
+        samePrice: even ? { count: even.n, cheaper: even.cheap.name, dearer: even.dear.name } : null,
+        answer: 'not known - the card only shows the numbers on paper',
+      },
     };
   },
 };

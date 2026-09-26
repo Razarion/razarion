@@ -387,8 +387,7 @@
 
 /* The component draws a 1px white border on its own container, which is a square edge inside a
    round hole. Inline style, so !important is the only way past it. */
-.game-main .hud-radar-clip radar > div,
-.game-main .hud-radar-clip .radarNoPower {
+.game-main .hud-radar-clip radar > div {
   border: 0 !important;
 }
 
@@ -408,6 +407,21 @@
 
 /* One rotating cone. A transform animation on its own layer, so it is composited and never
    repaints - this sits over a game that is already GPU bound and may not cost it frames. */
+/* Over the map, not instead of it: without power the others are gone from it, and this says why.
+   The map underneath still works for getting to the powerplant. */
+.game-main .hud-radar-no-power {
+  position: absolute;
+  left: 50%;
+  bottom: 38px;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #ffb300;
+  font-size: 12px;
+  pointer-events: none;
+}
+
 .game-main .hud-radar-sweep {
   position: absolute;
   inset: 16px;

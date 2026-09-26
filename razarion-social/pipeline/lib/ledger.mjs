@@ -87,6 +87,9 @@ export function record(ledger, item) {
     media: item.media ?? [],
     summary: item.summary ? String(item.summary).slice(0, 200) : null,
     source: item.source ?? 'pipeline',
+    // The writer's tone (lib/writer.mjs), or "template" when the format's own text went out. What
+    // a later comparison of reach per tone reads.
+    ...(item.tone ? { tone: item.tone } : {}),
     ...(item.note ? { note: item.note } : {}),
   };
   const at = ledger.items.findIndex((e) => e.id === entry.id);

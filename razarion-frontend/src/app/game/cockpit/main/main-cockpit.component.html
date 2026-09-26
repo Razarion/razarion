@@ -19,8 +19,8 @@
       <span class="menu-label">Energy</span>
       <span class="menu-value">{{ displayEnergyString }}</span>
     </div>
-    <!-- A state, not a control. On a phone the working radar is a corner map, so this is the only
-         place left that can say why the map is missing. -->
+    <!-- A state, not a control. The corner map stays without power but loses the others on it,
+         and this is the only place on a phone that says why. -->
     @if (radarState == NO_POWER) {
       <div class="menu-readout menu-readout-warn">
         <i class="pi pi-compass"></i>
@@ -207,36 +207,33 @@
   <!-- The map, in the corner an RTS player reaches for by reflex. Round: the component still draws
        the same three square canvases and still does its own click-to-move maths against them, the
        ring only clips what is shown - see .hud-radar-clip. -->
-  @if (radarState == WORKING) {
-    <div class="hud-radar-dock">
-      <div class="hud-radar-ring">
-        <div class="hud-radar-clip">
-          <!-- Its own zoom row is a rectangle stuck to a circle, so the two buttons below take
-               over. The component keeps the methods either way. -->
-          <radar #desktopRadar [showZoomControls]="false"></radar>
-        </div>
-        <div class="hud-radar-grid"></div>
+  <!-- There from level 1 since 23.09.2026 - fog, not a lock. The radar adds what is not the
+       player's and the sweep; without power the others disappear again and the plate says why,
+       while the map stays usable for getting to the powerplant. -->
+  <div class="hud-radar-dock">
+    <div class="hud-radar-ring">
+      <div class="hud-radar-clip">
+        <!-- Its own zoom row is a rectangle stuck to a circle, so the two buttons below take
+             over. The component keeps the methods either way. -->
+        <radar #desktopRadar [showZoomControls]="false" [radarWorking]="radarState == WORKING"></radar>
+      </div>
+      <div class="hud-radar-grid"></div>
+      @if (radarState == WORKING) {
         <div class="hud-radar-sweep"></div>
-      </div>
-      <button type="button" class="hud-radar-zoom hud-radar-zoom-out"
-              (click)="desktopRadar.zoomOuButtonClick()" pTooltip="Zoom out" aria-label="Zoom out">
-        <i class="pi pi-search-minus"></i>
-      </button>
-      <button type="button" class="hud-radar-zoom hud-radar-zoom-in"
-              (click)="desktopRadar.zoomInButtonClick()" pTooltip="Zoom in" aria-label="Zoom in">
-        <i class="pi pi-search-plus"></i>
-      </button>
+      }
+      @if (radarState == NO_POWER) {
+        <div class="hud-radar-no-power">No power</div>
+      }
     </div>
-  } @else if (radarState == NO_POWER) {
-    <div class="hud-radar-dock">
-      <div class="hud-radar-ring">
-        <div class="hud-radar-clip">
-          <radar-no-power></radar-no-power>
-        </div>
-        <div class="hud-radar-grid"></div>
-      </div>
-    </div>
-  }
+    <button type="button" class="hud-radar-zoom hud-radar-zoom-out"
+            (click)="desktopRadar.zoomOuButtonClick()" pTooltip="Zoom out" aria-label="Zoom out">
+      <i class="pi pi-search-minus"></i>
+    </button>
+    <button type="button" class="hud-radar-zoom hud-radar-zoom-in"
+            (click)="desktopRadar.zoomInButtonClick()" pTooltip="Zoom in" aria-label="Zoom in">
+      <i class="pi pi-search-plus"></i>
+    </button>
+  </div>
 </div>
 }
 

@@ -482,6 +482,8 @@ export enum Tip {
   LOAD = 'LOAD',
   SAIL = 'SAIL',
   UNLOAD = 'UNLOAD',
+  /** Selling a building to move the base (level 9); the actor is the building. */
+  SELL = 'SELL',
 }
 
 export interface TipConfig {

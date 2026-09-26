@@ -8,6 +8,11 @@
 //   node produce.mjs --format devlog                    # first run: writes a draft to fill in
 //   node produce.mjs --format duel --dry-run            # render into data/preview, write nothing else
 //   node produce.mjs --format week-in-numbers --url http://localhost:8080
+//   node produce.mjs --format duel --tone question      # instead of the tone that is due
+//   node produce.mjs --format duel --no-writer          # the format's template text only
+//
+// The texts come from lib/writer.mjs (claude -p on the subscription), one per network, in the
+// tone used longest ago among those the format allows. Without a login the template goes in.
 //
 // The formats live in lib/formats/. Like compose.mjs and generate.mjs this publishes nothing: the
 // entries land on "review", and publish*.mjs take it from there.
@@ -19,6 +24,7 @@ import { adminToken, baseItemTypes, fetchImage } from './lib/razarion.mjs';
 import { buildEntries, writeAndRecord } from './lib/entries.mjs';
 import { loadLedger, lastOf } from './lib/ledger.mjs';
 import { FORMATS, OTHER_FORMATS, NotReady, formatByName } from './lib/formats/index.mjs';
+import { writePost, pickTone } from './lib/writer.mjs';
 import { env } from '../src/config.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
 
@@ -95,8 +101,34 @@ async function main() {
   }
 
   for (const m of made.media) step(`media: ${m.file}`);
+
+  // The format's own text is the reference and the fallback; the writer turns it into one text
+  // per network in the tone that is due. Skipped with --no-writer.
+  let written = null;
+  let tone = 'template';
+  if (!args['no-writer']) {
+    const wanted = args.tone ? String(args.tone) : pickTone(ledger, format.tones);
+    step(`writing in the "${wanted}" tone (claude -p, on the subscription)`);
+    const result = await writePost({
+      format: format.name, summary: format.summary, facts: made.facts, reference: made.text, tone: wanted,
+    });
+    if (result.written) {
+      written = result.written;
+      tone = wanted;
+    } else {
+      warn(`The writer gave nothing usable (${result.reason}). The template text goes in instead.`);
+    }
+  }
+
   info('');
-  info(made.text.split('\n').map((l) => '  ' + l).join('\n'));
+  if (written) {
+    for (const [label, key] of [['X', 'x'], ['Instagram', 'instagram'], ['Facebook', 'facebook'], ['YouTube title', 'youtube_title']]) {
+      info(`  ${label}:`);
+      info(written[key].split('\n').map((l) => '    ' + l).join('\n'));
+    }
+  } else {
+    info(made.text.split('\n').map((l) => '  ' + l).join('\n'));
+  }
   info('');
 
   if (dryRun) {
@@ -112,13 +144,14 @@ async function main() {
     tags: made.tags ?? [],
     media: made.media,
     source: 'composed',
+    written,
   });
   for (const flag of made.flags ?? []) {
     for (const e of [entries.x, entries.ig, entries.fb, entries.yt]) if (e && !e.flags.includes(flag)) e.flags.push(flag);
   }
-  const written = await writeAndRecord(entries, { format: format.name, subject: made.subject });
+  const targets = await writeAndRecord(entries, { format: format.name, subject: made.subject, tone });
 
-  ok(`${format.name} (${made.subject}) written as ${id} to ${written.join(', ')}.`);
+  ok(`${format.name} (${made.subject}, ${tone}) written as ${id} to ${targets.join(', ')}.`);
   info(`  X ${entries.lengths.x}/280   Instagram ${entries.lengths.ig}/2200   Facebook ${entries.lengths.fb}`);
   if (entries.flags.x.includes('too-long')) warn('  The X text is over 280 characters. Shorten it before approving.');
   info('  Read them, set status to "ok", then upload and publish.');

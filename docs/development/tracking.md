@@ -46,7 +46,10 @@ folded into the desktops: it means the records carry no user agent at all.
 
 The social pipeline tags every link of an unpaid post or profile `utm_source=social-<network>`
 (`ig`, `fb`, `x`, `yt`), `utm_medium=social` and `utm_campaign=<post id>` or `bio`
-(`razarion-social/pipeline/lib/links.mjs`). `TrackingPlatforms.isOwnPost()` files these under
+(`razarion-social/pipeline/lib/links.mjs`). The links themselves are short -
+`razarion.com/ig` in a profile, `razarion.com/fb/<post id>` in a post - and `ProfileLinkController`
+redirects them to the landing page with those parameters, passing on whatever query the request
+carried (the fbclid Meta appends). `TrackingPlatforms.isOwnPost()` files these under
 their own platform, `SOCIAL` ("Own posts" in the Daily tab), and **ahead of the click id** — the
 only case where the click id does not win.
 

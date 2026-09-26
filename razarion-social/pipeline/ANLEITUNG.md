@@ -91,6 +91,20 @@ node compose.mjs --media clip.mp4 --text "..." --tags "harvester,economy"
 node compose.mjs --portrait clip-portrait.mp4 --landscape clip-landscape.mp4 --text "..."
 ```
 
+**Texte schreiben lassen** — `--write` gibt deinen `--text` an den Textschreiber (siehe unten), der
+daraus einen englischen Text pro Netzwerk in einer Tonlage macht. Dein Text darf deutsch sein; er
+sagt, *was* rüberkommen soll, nicht *wie*. `--dry-run` zeigt die Texte nur, ohne etwas zu kopieren
+oder einzutragen:
+
+```bash
+node compose.mjs --portrait a.mp4 --landscape b.mp4 --text "19 Vipers landen auf dem Datacenter..." --write --dry-run
+node compose.mjs --portrait a.mp4 --landscape b.mp4 --text "..." --write --tone behind-the-scenes
+node compose.mjs --media clip.mp4 --text "..." --write --facts "Inszeniert auf dem Live-Server"
+```
+
+Jede Zahl im Ergebnis muss in `--text` oder `--facts` stehen. Kleine Ausschmückungen („in seconds“)
+fängt die Prüfung nicht — dafür ist die Freigabe da.
+
 `--link` und `--tags` sind optional. Ohne `--media` rendert der nächste Schritt eine Textkarte,
 weil Instagram keine reinen Textbeiträge annimmt:
 
@@ -125,6 +139,33 @@ es ein Thema schon hatte. Die Formate liegen in `lib/formats/`. Wie `compose.mjs
   `data/drafts/devlog-<woche>.json`. Dort in `lines` 2–5 Sätze eintragen, die ein Spieler versteht,
   dann denselben Befehl noch einmal: jetzt entsteht die Karte.
 
+### Der Textschreiber
+
+`produce.mjs` lässt die Texte schreiben: einen pro Netzwerk (X, Instagram, Facebook, YouTube-Titel
+und -Beschreibung), in einer **Tonlage**. Er ruft dafür `claude -p` auf, also Claude Code auf deinem
+Abo — kein API-Key, keine zusätzliche Rechnung, es zählt nur gegen das Nutzungskontingent.
+
+```bash
+node produce.mjs --format duel                  # die Tonlage, die am längsten nicht dran war
+node produce.mjs --format duel --tone question  # eine bestimmte
+node produce.mjs --format duel --no-writer      # nur der Vorlagentext
+```
+
+| Tonlage | So klingt sie |
+|---|---|
+| `question` | Ich-Form, endet mit einer echten Frage an die Leser |
+| `matter-of-fact` | dritte Person, ruhig, konkret |
+| `behind-the-scenes` | Ich-Form, was ich gebaut oder bemerkt habe und warum es zählt |
+| `punchy` | kurz, ein starker erster Satz |
+
+Jedes Format erlaubt nur passende Tonlagen (Duell: `question`, `punchy`). Die Tonlage steht im
+Inhaltsbuch — später lässt sich vergleichen, welche mehr Reichweite bringt.
+
+**Was der Schreiber nicht darf, wird geprüft, nicht nur verlangt:** jede Zahl muss in den Fakten
+stehen, kein Link, kein Hashtag, kein Versprechen („stay tuned“, „next post“), X höchstens 240
+Zeichen. Eine abgelehnte Antwort geht einmal mit den Gründen zurück; scheitert auch die zweite, oder
+ist `claude` nicht angemeldet, kommt der Vorlagentext hinein. Alles landet wie immer auf `review`.
+
 ### Das Inhaltsbuch
 
 ```bash
@@ -141,15 +182,20 @@ anderem Namen (`--force`, wenn er wirklich noch einmal soll).
 ### Messen, was die Posts bringen
 
 Jeder Link auf razarion.com, den die Pipeline schreibt, trägt, woher er kommt: im Facebook-Text und in
-der YouTube-Beschreibung automatisch, mit der Post-ID als `utm_campaign`. X und Instagram haben
-keinen Link im Post — dort ist es der Profil-Link, und den setzt du **einmal von Hand**:
+der YouTube-Beschreibung automatisch, als `razarion.com/fb/<post-id>` bzw. `razarion.com/yt/<post-id>`.
+Der Server leitet diese kurzen Pfade auf die Startseite weiter und hängt die UTM-Parameter an
+(`ProfileLinkController`). X und Instagram haben keinen Link im Post — dort ist es der Profil-Link,
+und den setzt du **einmal von Hand**:
 
 ```
-Instagram (Bio)          https://www.razarion.com/?utm_source=social-ig&utm_medium=social&utm_campaign=bio
-Facebook (Seite, Button) https://www.razarion.com/?utm_source=social-fb&utm_medium=social&utm_campaign=bio
-X (Website im Profil)    https://www.razarion.com/?utm_source=social-x&utm_medium=social&utm_campaign=bio
-YouTube (Kanal-Links)    https://www.razarion.com/?utm_source=social-yt&utm_medium=social&utm_campaign=bio
+Instagram (Bio)          razarion.com/ig
+Facebook (Seite, Button) razarion.com/fb
+X (Website im Profil)    razarion.com/x
+YouTube (Kanal-Links)    razarion.com/yt
 ```
+
+Kurz, weil ein Profil seinen Link anzeigt, und die lange Form mit `?utm_source=...` nach
+„razarion.com/?utm_source=so…“ abgeschnitten wurde.
 
 Im Backend, Tab *Daily*, zeigt **Own posts** diese Besucher. Wichtig ist das `social-`: Instagram und
 Facebook hängen jedem Link ein `fbclid` an, auch dem Bio-Link, und bisher zählte deshalb jeder

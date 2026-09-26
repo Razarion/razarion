@@ -6,6 +6,7 @@ import {UserService} from '../../../auth/user.service';
 import {TipService} from '../../tip/tip.service';
 import {TipStallReason} from '../../tip/tip-stall';
 import {CompactLayoutService} from '../compact-layout.service';
+import {markPlacerClosed} from '../../renderer/placer-release';
 
 /**
  * The real service reads matchMedia, and the Karma context frame is small enough to match the
@@ -74,6 +75,10 @@ describe('ItemCockpitComponent resource title', () => {
 });
 
 describe('ItemCockpitComponent buildup tip', () => {
+  // The placer's release is module state, and the placer's own specs close a placer: a press
+  // right after one of them would be taken for the tail of that tap.
+  beforeEach(() => markPlacerClosed(-Infinity));
+
   function buildupItem(itemTypeId: number, enabled: boolean): BuildupItemModel {
     return {
       imageUrl: '',
@@ -229,7 +234,7 @@ describe('ItemCockpitComponent buildup tip', () => {
     // say whether the player is blocked or the cockpit is simply not there yet.
     const fixture = createFixture([buildupItem(4, false), buildupItem(6, true)]);
     const component = fixture.componentInstance;
-    expect(component.getBuildupTipBlockReason(4)).toBe(TipStallReason.BUTTON_DISABLED);
+    expect(component.getBuildupTipBlockReason(4)).toBe(TipStallReason.ITEM_LIMIT);
     expect(component.getBuildupTipBlockReason(23)).toBe(TipStallReason.NOT_BUILDABLE);
     expect(component.getBuildupTipBlockReason(6)).toBeNull();
   });
@@ -292,6 +297,21 @@ describe('ItemCockpitComponent buildup tip', () => {
       expect(fixture.componentInstance.itemCockpitService.onBuild).toHaveBeenCalledWith(4);
       expect(blockedText(fixture)).toBe('');
     });
+
+    // The tap on the placer's deploy button is followed by an emulated mousedown on whatever is
+    // under the finger once the placer has closed - on the phone that was the factory button, and
+    // the placer came back for a factory already going up (2026-09-25).
+    it('ignores the tail of the tap that closed the placer', () => {
+      const fixture = createFixture([buildupItem(4, true)]);
+      spyOn(fixture.componentInstance.itemCockpitService, 'onBuild');
+      markPlacerClosed();
+      tapFirstButton(fixture);
+      expect(fixture.componentInstance.itemCockpitService.onBuild).not.toHaveBeenCalled();
+
+      markPlacerClosed(-Infinity); // the release is module state: nothing of it may reach the next test
+      tapFirstButton(fixture);
+      expect(fixture.componentInstance.itemCockpitService.onBuild).toHaveBeenCalledWith(4);
+    });
   });
 
   describe('selling', () => {
@@ -348,7 +368,7 @@ describe('ItemCockpitComponent buildup tip', () => {
     it('reports the real blocker rather than the closed panel', () => {
       addBuildIcon();
       const fixture = createFixture([buildupItem(4, false)], false, compactLayoutStub(true, false));
-      expect(fixture.componentInstance.getBuildupTipBlockReason(4)).toBe(TipStallReason.BUTTON_DISABLED);
+      expect(fixture.componentInstance.getBuildupTipBlockReason(4)).toBe(TipStallReason.ITEM_LIMIT);
     });
 
     it('anchors to the button again once the panel is open', () => {

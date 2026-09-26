@@ -295,6 +295,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void initWarmInternal(PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, Runnable finishCallback, Consumer<String> failCallback) {
         this.gameEngineMode = gameEngineMode;
         this.userContext = userContext;
+        // For [SyncSnap]: which units are the player's own - the correction of those is what he sees.
+        baseItemService.setLocalUserId(gameEngineMode == GameEngineMode.SLAVE && userContext != null ? userContext.getUserId() : null);
         planetService.initialise(planetConfig, gameEngineMode, null, finishCallback, failCallback);
     }
 

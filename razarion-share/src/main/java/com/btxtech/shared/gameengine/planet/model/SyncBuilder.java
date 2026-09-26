@@ -366,6 +366,14 @@ public class SyncBuilder extends SyncBaseAbility {
         warmupTicksRemaining = -1;
         cooldownTicksRemaining = -1;
         repathAttempts = 0;
+        // A site left unfinished: the slaves go on building it until the builder's own sync
+        // reaches them, and a site the master left at 99 % is finished there. The player then
+        // sees a building the quest never counts, and the level's limit blocks another one
+        // (quest 361 on PROD, 2026-09-20). The site's real buildup puts it back.
+        if (tmpCurrentBuildup != null && tmpCurrentBuildup.isAlive() && !tmpCurrentBuildup.isBuildup()
+                && baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
+            syncService.notifySendSyncBaseItem(tmpCurrentBuildup);
+        }
         if (propagationNeeded) {
             gameLogicService.onSynBuilderStopped(getSyncBaseItem(), tmpCurrentBuildup);
         }

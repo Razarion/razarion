@@ -4,7 +4,7 @@ import {AbstractMesh, ISmartArrayLike, RenderTargetTexture, Scene, SmartArray} f
  * Keeps meshes that are in the scene but deliberately invisible out of Babylon's two per-frame
  * walks over every mesh.
  *
- * Why this exists. The terrain tile cache (TerrainUiService.MAX_CACHED_TILES) parks up to 48
+ * Why this exists. The terrain tile cache (TerrainUiService.MAX_CACHED_TILES) parks up to 16 (48 until 2026-09-25)
  * scrolled-away tiles with {@code container.setEnabled(false)} so scrolling back is instant. Those
  * tiles stay in {@code scene.meshes}, and PROD telemetry showed what that costs:
  *
