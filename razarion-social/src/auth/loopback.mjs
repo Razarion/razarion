@@ -33,8 +33,8 @@ function openBrowser(url) {
   }
 }
 
-// TikTok rejects http://localhost redirect URIs, and some setups run this over SSH where no
-// browser can open. Both cases fall back to the same thing: paste the URL you were redirected to.
+// Some setups run this over SSH where no browser can open. Then the fallback is to paste the URL
+// you were redirected to.
 async function pasteFallback(expectedState) {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   const pasted = await rl.question('\nPaste the full URL you were redirected to: ');

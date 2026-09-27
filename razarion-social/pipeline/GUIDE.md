@@ -12,10 +12,17 @@ cd C:\dev\projects\razarion\code\razarion2\razarion-social\pipeline
 ## Der übliche Ablauf
 
 ```
-1. Beitrag erzeugen      generate.mjs   oder   compose.mjs
-2. Lesen und freigeben   status auf "ok" in den Review-Dateien
-3. Ausliefern            upload + publish
+1. Beitrag erzeugen      plan.mjs (macht der Zeitplan)   oder   produce / compose / generate
+2. Lesen und freigeben   review.mjs   (oder status auf "ok" in den Review-Dateien)
+3. Ausliefern            upload + publish (macht der Zeitplan)
 ```
+
+Läuft der Zeitplan, bleibt dir nur Schritt 2: ab und zu `node review.mjs --open` und freigeben.
+
+**Von Hand anstoßen: Doppelklick auf `Razarion-Social.cmd`.** Macht dasselbe wie der Zeitplan
+(auffüllen, hochladen, je einen freigegebenen Beitrag pro Netzwerk veröffentlichen) und öffnet
+danach die Review-Seite. Das Fenster offen lassen, solange die Seite gebraucht wird. Was du jetzt
+freigibst, geht beim nächsten Doppelklick raus.
 
 Zwischen Schritt 2 und 3 kann beliebig viel Zeit liegen. Nichts wird veröffentlicht, was nicht
 auf `ok` steht.
@@ -127,6 +134,23 @@ Ein Format ist ein Rezept: woher das Material kommt, was daraus wird, und woran 
 es ein Thema schon hatte. Die Formate liegen in `lib/formats/`. Wie `compose.mjs` landet alles auf
 `review`.
 
+- **battle** — ein Gefecht auf dem Live-Planeten, ohne dass jemand danebensitzt. Einheit
+  (Viper, Badger), Bot-Basis und Kamerastil wechseln unabhängig voneinander: jedes ist das, was am
+  längsten nicht dran war, damit zwei Clips hintereinander sich möglichst in allem unterscheiden.
+  Kamerastile (`lib/director.mjs`): `overhead` (steil von oben, wie die September-Clips),
+  `low-orbit` (tief hinter der Truppe, kreist mit), `push-in` (fährt von weit oben heran), `side`
+  (flach, quer zum Angriff). Nur Bot-Basen mit mindestens 6 Items und 450 Abstand zu jedem
+  Spieler. Filmt mit `record_director.mjs` hochkant und quer (vor der zweiten Aufnahme wird die
+  Staging-Basis samt Überlebenden neu aufgestellt, danach immer entfernt). `record_director.mjs`
+  zählt während der Aufnahme jede Sekunde, was auf beiden Seiten noch steht; **geschnitten wird
+  von kurz vor dem ersten bis kurz nach dem letzten Abschuss** (8–18 s, `lib/cut.mjs`), weil eine
+  bewegte Kamera auch über einer stillen Basis viel Bildbewegung erzeugt. Weniger als 3 Abschüsse:
+  kein Beitrag, und die Basis kommt in `state/battle-attempts.json` ans Ende der Reihe. Eine
+  Aufnahme mit eingebrochener Bildrate wird verworfen; ist nur eine Form brauchbar, bekommt X die
+  Mitte der anderen. Zum Ausprobieren: `--style side`, `--unit badger`. Dauert
+  ein paar Minuten und braucht die GPU dieses Rechners. **Auch `--dry-run` filmt** — nur ins
+  Review und ins Inhaltsbuch schreibt er nicht. Die rohen 40-s-Aufnahmen bleiben als
+  `data/own/<id>-battle-take-*.mp4` liegen (je 40–80 MB) und dürfen weg.
 - **duel** — zwei Kampfeinheiten mit ihren echten Werten vom Server und der Frage, wer gewinnt.
   Passen die Preise zueinander, kommt die Frage „3 Vipers oder 1 Badger?“ dazu. Die Antwort steht
   bewusst nicht drin — die kann ein Clip aus dem Studio liefern. Ein Paar kommt frühestens nach
@@ -137,7 +161,26 @@ es ein Thema schon hatte. Die Formate liegen in `lib/formats/`. Wie `compose.mjs
   Endpunkt `/rest/editor/game-history-summary`, also einen Server-Deploy.
 - **devlog** — die Commits der Woche, die das Spiel betreffen, landen in
   `data/drafts/devlog-<woche>.json`. Dort in `lines` 2–5 Sätze eintragen, die ein Spieler versteht,
-  dann denselben Befehl noch einmal: jetzt entsteht die Karte.
+  dann denselben Befehl noch einmal: jetzt entsteht die Karte. Der Planer versucht es bei jedem
+  Lauf erneut, du musst also nur die Sätze eintragen.
+
+### Der Planer
+
+```bash
+node plan.mjs               # Warteschlange bis zum Ziel auffüllen
+node plan.mjs --dry-run     # nur sagen, was er machen würde
+node plan.mjs --target 4    # vier offene Beiträge statt drei
+```
+
+Hält **drei Beiträge offen** — zur Prüfung oder freigegeben und noch nicht draußen, also eine
+Woche Zeitplan. Fehlen welche, macht er höchstens zwei pro Lauf über `produce.mjs`: das Format,
+das am längsten nicht dran war, zuerst, und jedes höchstens so oft, wie sein Abstand erlaubt
+(Gefecht 1 Tag, Duell 2 Tage, Wochenbilanz und Devlog 6 Tage). Hat ein Format nichts (keine
+Bot-Basis weit genug von den Spielern, alle Duell-Paare kürzlich gelaufen, stille Woche,
+Devlog-Entwurf ohne Sätze) oder scheitert es, nimmt er das nächste.
+
+Er gibt **nichts frei und veröffentlicht nichts** — alles landet auf `review`. Beim Gefecht greift
+er allerdings in die Live-Welt ein, für die Dauer der Aufnahme.
 
 ### Der Textschreiber
 
@@ -200,6 +243,28 @@ Kurz, weil ein Profil seinen Link anzeigt, und die lange Form mit `?utm_source=.
 Im Backend, Tab *Daily*, zeigt **Own posts** diese Besucher. Wichtig ist das `social-`: Instagram und
 Facebook hängen jedem Link ein `fbclid` an, auch dem Bio-Link, und bisher zählte deshalb jeder
 Besucher von dort als Werbung. Werbelinks dürfen dieses Präfix nie tragen.
+
+### Reichweite je Format und Tonlage
+
+```bash
+node metrics.mjs              # Zahlen holen, was noch nicht fertig ist, dann der Bericht
+node metrics.mjs --report     # nur der Bericht aus dem Gespeicherten
+node metrics.mjs --only x     # ein Netzwerk: x, ig oder fb
+node metrics.mjs --refresh    # alles neu holen (kostet auf X)
+```
+
+Fragt X, Instagram und Facebook, wie weit jeder veröffentlichte Beitrag kam, legt es in
+`state/metrics.json` ab und zeigt Mediane nach Format, Tonlage und Medium — **nur innerhalb eines
+Netzwerks**, denn eine X-Impression und eine Instagram-Reichweite zählen Verschiedenes. Beiträge
+unter 2 Tagen zählen nicht mit. Die Review-Seite zeigt die Zahlen bei jedem veröffentlichten
+Beitrag, der Zeitplan holt sie am Ende jedes Laufs.
+
+Ein Beitrag, der beim Abruf 7 Tage alt war, gilt als fertig und wird nicht mehr gefragt. Das hält
+X billig: dort kostet jeder gelesene Beitrag $0.005, ein Lauf also ein paar Cent. YouTube fehlt,
+solange die Uploads privat sind.
+
+Auf Instagram und Facebook ist `mirrored` der Nachtrag vom August, in einem Schwung gepostet —
+diese Reichweite ist nicht vergleichbar. Auf X sind es die echten, von Hand geschriebenen Posts.
 
 ### Clips aufnehmen, ohne dabeizusitzen
 
@@ -277,6 +342,27 @@ Vorlage fehlt die Fassung zeigt nur die Bildmitte der anderen - beide Formate au
 
 ## 2. Lesen und freigeben
 
+### Auf der Review-Seite
+
+```bash
+node review.mjs            # dann http://127.0.0.1:4711 öffnen
+node review.mjs --open     # öffnet den Browser gleich mit
+node review.mjs --port 4800
+```
+
+Zeigt jeden Beitrag, der noch nicht überall draußen ist: das Medium (bei Clips jede Fassung, die
+ein Netzwerk bekommt), die Vorgabe, Format und Tonlage aus dem Inhaltsbuch, und daneben den Text
+pro Netzwerk mit Zeichenzähler. Texte direkt im Feld ändern, dann **Approve** oder
+**Skip** — pro Netzwerk oder mit **Approve all** für den ganzen Beitrag. *All* oben
+rechts zeigt auch die letzten veröffentlichten.
+
+Die Seite schreibt genau das, was man sonst von Hand schreibt: `status` und bei geändertem Text
+`"edited": true`, in dieselben vier Dateien. Was schon veröffentlicht ist, lässt sie nicht mehr
+ändern, und was über der Grenze eines Netzwerks liegt (X 280, Instagram 2200, YouTube-Titel 100),
+lässt sie nicht freigeben. Sie läuft nur auf diesem Rechner (127.0.0.1).
+
+### Von Hand
+
 Vier Dateien, ein Eintrag pro Netzwerk:
 
 ```
@@ -327,14 +413,20 @@ Warteschlange raus.
 
 ## Der Zeitplan
 
-`scheduled/run.ps1` erledigt Schritt 3 allein — Token prüfen, dann je einen freigegebenen Beitrag
-pro Netzwerk:
+`scheduled/run.ps1` erledigt Schritt 1 und 3 allein — Token prüfen, Warteschlange auffüllen
+(`plan.mjs`), Medien der freigegebenen Beiträge hochladen, dann je einen freigegebenen Beitrag pro
+Netzwerk veröffentlichen:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scheduled\run.ps1
 powershell -ExecutionPolicy Bypass -File scheduled\run.ps1 -Limit 2
-powershell -ExecutionPolicy Bypass -File scheduled\run.ps1 -PrepareOnly   # nichts veröffentlichen
+powershell -ExecutionPolicy Bypass -File scheduled\run.ps1 -PrepareOnly   # auffüllen, nichts veröffentlichen
+powershell -ExecutionPolicy Bypass -File scheduled\run.ps1 -NoPlan        # nichts Neues erzeugen
 ```
+
+Die Texte schreibt `claude -p` unter deinem Benutzer. Die Aufgabe muss deshalb als du laufen (der
+Standard von `schtasks /create`), und Claude Code muss dort angemeldet sein — sonst kommt der
+Vorlagentext hinein.
 
 Als wiederkehrende Aufgabe (Montag, Mittwoch, Freitag um 10 Uhr) — in `cmd`, nicht in PowerShell,
 wegen des `^`:

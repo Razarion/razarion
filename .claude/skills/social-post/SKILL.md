@@ -1,12 +1,12 @@
 ---
 name: social-post
-description: Turn one Razarion gameplay clip into a ready-to-publish post spec for YouTube, X, TikTok and Instagram. Use when the user wants to announce, publish, or write copy for a clip, screenshot, devlog or release on social media.
+description: Turn one Razarion gameplay clip into a ready-to-publish post spec for YouTube, X and Instagram. Use when the user wants to announce, publish, or write copy for a clip, screenshot, devlog or release on social media.
 ---
 
 # Writing a Razarion post spec
 
 Produces `razarion-social/posts/<date>-<slug>.json`, which `razarion-social/src/cli.mjs` publishes to
-all four platforms. Read `razarion-social/README.md` for what each platform does with the result.
+all three platforms. Read `razarion-social/README.md` for what each platform does with the result.
 
 ## What to ask for, once
 
@@ -39,8 +39,6 @@ UI is Angular, backend is Spring Boot; currently alpha.
   phrases. Leave `privacy` at `private`.
 - **X** — ≤ 280 characters including the link, which the user's audience there already knows the
   project from. Use `thread` only if there is genuinely more than one beat to the clip.
-- **TikTok** — one line, phrased as the hook a stranger scrolling past would need. This is the
-  one place where a question or a claim is appropriate, because nothing else earns the stop.
 - **Instagram** — two or three lines plus 5–8 hashtags. `videoUrl` must be a public URL; if the
   user has not hosted the file, say so and leave the field for them to fill.
 

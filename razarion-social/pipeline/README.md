@@ -8,13 +8,13 @@ and reuses its `.env`, HTTP layer and logging.
 |---|---|---|
 | Instagram | `build_captions` → `render_cards` → `upload_media` → `publish` | `state/posted.json` |
 | Facebook | `build_fb_posts` → `upload_media --source fb` → `publish_fb` | `state/posted_fb.json` |
-| YouTube | `build_yt_posts` → you, in Studio | none - not automated, and why is below |
+| YouTube | `publish_youtube` (private until the audit passes, see below) | `state/posted_yt.json` |
 
 Posts are written here now rather than mirrored from X: `generate.mjs` builds one from the live
 game data, `compose.mjs` from your own clip and a couple of sentences. `fetch_posts.mjs` and the
 two builders remain for the 2026 backfill they were written for.
 
-**[ANLEITUNG.md](ANLEITUNG.md) is the cheat sheet** - what to type, in order. This file explains why
+**[GUIDE.md](GUIDE.md) is the cheat sheet** - what to type, in order. This file explains why
 things are the way they are.
 
 ```bash
@@ -295,19 +295,23 @@ Login is the shorter path.
 
 ## YouTube
 
-Prepared, not published. `build_yt_posts.mjs` writes the 34 video clips into `data/youtube/`,
-named by date so dragging them all into YouTube Studio lands them in order, plus a
-`metadata.json` carrying a title, description and tag list for each.
+Published by `publish_youtube.mjs`, which `scheduled/run.ps1` runs after the other three. Like
+every publisher here it is a dry run unless `--live` is passed, and it records what went up in
+`state/posted_yt.json`.
 
 ```bash
-node build_yt_posts.mjs
+node publish_youtube.mjs                  # what it would upload
+node publish_youtube.mjs --live --limit 1
 ```
 
-**Why there is no uploader.** A video uploaded through an API project that has not passed Google's
-compliance audit is locked private, and that lock cannot be appealed - the video has to be
-re-uploaded by hand anyway. The rule applies to projects created after 28 July 2020, and the
-Razarion cloud project (`neural-passkey-426618-j3`) dates from June 2024. The audit is possible but
-takes weeks; uploading 34 clips by hand takes an hour and they are public immediately.
+**Uploads land private, for now.** A video uploaded through an API project that has not passed
+Google's compliance audit is set to private, whatever the request asked for. It is switched to
+public by hand in YouTube Studio, one click each. The audit was requested on 2026-09-27; once it
+passes, `DEFAULT_PRIVACY` in `lib/youtube.mjs` becomes `'public'`. `../YOUTUBE-AUDIT.md` has the
+details.
+
+`build_yt_posts.mjs` is left over from the 2026 backfill: it wrote the 34 mirrored X clips into
+`data/youtube/` for a manual upload in Studio.
 
 Quota, which used to be the other obstacle, no longer is: `videos.insert` cost 1600 units of a
 10000 daily budget until December 2025, capping a project at six uploads a day. Since June 2026

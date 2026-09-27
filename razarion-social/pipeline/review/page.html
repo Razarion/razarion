@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Razarion Review</title>
+<style>
+  :root {
+    --bg: #f4f5f7; --panel: #ffffff; --line: #dde1e6; --text: #1d2126; --muted: #69717c;
+    --accent: #2f6fd6; --ok: #1f8a4c; --ok-bg: #e3f4ea; --warn: #a86400; --warn-bg: #fdf1dc;
+    --skip: #7b8290; --skip-bg: #eceef1; --bad: #c0392b; --bad-bg: #fbe5e2; --posted: #5b4bb7; --posted-bg: #ebe8fa;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15181c; --panel: #1f2328; --line: #343a42; --text: #e4e7eb; --muted: #9aa3ad;
+      --accent: #6aa0ff; --ok: #5fd08e; --ok-bg: #1b3326; --warn: #f0b45a; --warn-bg: #3a2c14;
+      --skip: #9aa3ad; --skip-bg: #2a2f36; --bad: #ff7b6b; --bad-bg: #3d1f1b; --posted: #a99bff; --posted-bg: #2a2548;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, "Segoe UI", sans-serif; }
+  header.top { position: sticky; top: 0; z-index: 5; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+    padding: 12px 20px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  header.top h1 { font-size: 16px; margin: 0; }
+  header.top .summary { color: var(--muted); }
+  header.top .spacer { flex: 1; }
+  main { max-width: 1400px; margin: 0 auto; padding: 20px; display: grid; gap: 20px; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--text);
+    border-radius: 6px; padding: 5px 12px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; }
+  button.primary { background: var(--ok); border-color: var(--ok); color: #fff; }
+  button.primary:hover:not(:disabled) { filter: brightness(1.1); border-color: var(--ok); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .seg button { border: 0; border-radius: 0; }
+  .seg button.on { background: var(--accent); color: #fff; }
+
+  article.post { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  article.post > .head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+  .head .date { font-weight: 600; }
+  .head .id { color: var(--muted); font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+  .chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; background: var(--skip-bg); color: var(--muted); }
+  .chip.tone { background: var(--warn-bg); color: var(--warn); }
+  .body { display: grid; grid-template-columns: 300px minmax(0, 1fr); }
+  .media { padding: 16px; border-right: 1px solid var(--line); display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .media .frame { background: #000; border-radius: 6px; overflow: hidden; display: grid; place-items: center; min-height: 160px; }
+  .media video, .media img { display: block; max-width: 100%; max-height: 480px; }
+  .media .frame.empty { background: var(--bg); border: 1px dashed var(--line); }
+  .media .none { color: var(--muted); padding: 24px; text-align: center; }
+  .media .files { display: flex; flex-wrap: wrap; gap: 6px; }
+  .media .files button { font-size: 12px; padding: 2px 8px; }
+  .media .files button.on { border-color: var(--accent); color: var(--accent); }
+  .reference { font-size: 13px; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .reference b { color: var(--text); font-weight: 600; }
+  .nets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  section.net { min-width: 0; padding: 12px 16px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); display: grid; gap: 8px; align-content: start; }
+  section.net .title { display: flex; gap: 8px; align-items: center; }
+  section.net .title strong { font-size: 14px; }
+  .state { font-size: 12px; padding: 1px 8px; border-radius: 999px; font-weight: 600; }
+  .state.review { background: var(--warn-bg); color: var(--warn); }
+  .state.ok { background: var(--ok-bg); color: var(--ok); }
+  .state.skip { background: var(--skip-bg); color: var(--skip); }
+  .state.posted { background: var(--posted-bg); color: var(--posted); }
+  label.field { display: grid; gap: 3px; font-size: 12px; color: var(--muted); }
+  label.field .count { justify-self: end; font-variant-numeric: tabular-nums; }
+  label.field .count.over { color: var(--bad); font-weight: 600; }
+  label.field .count.soft { color: var(--warn); }
+  textarea, input.text { width: 100%; font: 13px/1.45 system-ui, "Segoe UI", sans-serif; color: var(--text); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; resize: vertical; }
+  textarea:focus, input.text:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  textarea[readonly], input.text[readonly] { opacity: .75; }
+  .flags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .flag { font-size: 11px; padding: 0 6px; border-radius: 4px; background: var(--bad-bg); color: var(--bad); }
+  .flag.note { background: var(--skip-bg); color: var(--muted); }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .actions .hint { color: var(--muted); font-size: 12px; }
+  .meta { color: var(--muted); font-size: 12px; }
+  .meta a { color: var(--accent); }
+  .empty { text-align: center; color: var(--muted); padding: 60px 20px; }
+  #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); max-width: min(680px, 90vw);
+    padding: 10px 16px; border-radius: 8px; background: var(--bad); color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.25); display: none; z-index: 10; }
+  #toast.info { background: var(--ok); }
+  @media (max-width: 800px) {
+    main { padding: 12px 0; }
+    article.post { border-radius: 0; border-left: 0; border-right: 0; }
+    .body { grid-template-columns: 1fr; }
+    .media { border-right: 0; border-bottom: 1px solid var(--line); }
+    .nets { grid-template-columns: 1fr; }
+    section.net { border-right: 0; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Review</h1>
+  <span class="summary" id="summary"></span>
+  <span class="spacer"></span>
+  <div class="seg" id="filter">
+    <button data-all="0" class="on">Open</button>
+    <button data-all="1">All</button>
+  </div>
+  <button id="reload">Reload</button>
+</header>
+<main id="list"></main>
+<div id="toast"></div>
+
+<script>
+const NETS = [
+  ['x', 'X'], ['ig', 'Instagram'], ['fb', 'Facebook'], ['yt', 'YouTube'],
+];
+const FIELD_LABEL = { text: 'Text', caption: 'Caption', message: 'Text', title: 'Title', description: 'Description' };
+const STATE_LABEL = { review: 'in review', ok: 'approved', skip: 'skipped', posted: 'published' };
+
+let showAll = false;
+let posts = [];
+// Unsaved edits, id -> net -> field -> value. Kept outside the DOM so a card re-rendered after
+// another network's save does not lose what is being typed in this one.
+const drafts = {};
+const preview = {};
+
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function toast(message, kind = 'error') {
+  const el = $('#toast');
+  el.textContent = message;
+  el.className = kind === 'info' ? 'info' : '';
+  el.style.display = 'block';
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => { el.style.display = 'none'; }, kind === 'info' ? 2500 : 8000);
+}
+
+async function load() {
+  const res = await fetch('/api/posts' + (showAll ? '?all=1' : ''));
+  posts = (await res.json()).posts;
+  render();
+}
+
+async function save(id, net, body) {
+  const res = await fetch('/api/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Review': '1' },
+    body: JSON.stringify({ id, network: net, ...body }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  const at = posts.findIndex((p) => p.id === id);
+  if (at >= 0) posts[at] = data.post;
+  return data.post;
+}
+
+// X counts every link as 23 characters, whatever its length; the other networks count characters.
+function measure(net, value) {
+  if (net === 'x') return value.replace(/https?:\/\/\S+/g, 'x'.repeat(23)).length;
+  return [...value].length;
+}
+
+function draftOf(id, net) {
+  return drafts[id]?.[net] || null;
+}
+
+function isDirty(id, net) {
+  const d = draftOf(id, net);
+  return !!d && Object.keys(d).length > 0;
+}
+
+function render() {
+  const open = posts.filter((p) => p.open);
+  $('#summary').textContent = `${posts.filter((p) => p.waiting).length} waiting for review · ${open.length} not fully out yet`;
+  const list = $('#list');
+  if (!posts.length) {
+    list.innerHTML = `<div class="empty">Nothing open. New posts come from <code>plan.mjs</code>, <code>produce.mjs</code>, <code>compose.mjs</code> or <code>generate.mjs</code>.</div>`;
+    return;
+  }
+  list.innerHTML = '';
+  for (const post of posts) list.appendChild(renderPost(post));
+}
+
+function rerenderPost(id) {
+  const old = document.getElementById('post-' + id);
+  const post = posts.find((p) => p.id === id);
+  if (old && post) old.replaceWith(renderPost(post));
+  const open = posts.filter((p) => p.open);
+  $('#summary').textContent = `${posts.filter((p) => p.waiting).length} waiting for review · ${open.length} not fully out yet`;
+}
+
+function mediaFiles(post) {
+  const files = new Map();
+  const add = (file, who) => {
+    if (!file) return;
+    if (!files.has(file)) files.set(file, new Set());
+    files.get(file).add(who);
+  };
+  for (const [net, label] of NETS) {
+    const e = post.networks[net];
+    if (!e) continue;
+    for (const m of e.media) add(m.file, label);
+    if (net === 'ig' && e.card) add(e.card, 'Card');
+  }
+  return [...files.entries()].map(([file, who]) => ({ file, who: [...who].join(', ') }));
+}
+
+function renderMedia(post) {
+  const files = mediaFiles(post);
+  const current = preview[post.id] && files.some((f) => f.file === preview[post.id]) ? preview[post.id] : files[0]?.file;
+  const isVideo = current && /\.(mp4|webm|mov)$/i.test(current);
+  const src = current ? '/media?file=' + encodeURIComponent(current) : null;
+  const needsCard = post.networks.ig?.needs_card && !post.networks.ig?.card;
+  let frame;
+  if (!src) frame = `<div class="none">${needsCard ? 'Text post – card not rendered yet.<br><code>node render_cards.mjs</code>' : 'No media'}</div>`;
+  else if (isVideo) frame = `<video src="${src}" controls muted loop playsinline preload="metadata"></video>`;
+  else frame = `<img src="${src}" alt="">`;
+  const chips = files.length > 1
+    ? `<div class="files">${files.map((f) => `<button data-file="${esc(f.file)}" class="${f.file === current ? 'on' : ''}" title="${esc(f.file)}">${esc(f.who)}</button>`).join('')}</div>`
+    : '';
+  const l = post.ledger;
+  const reference = post.source_text
+    ? `<div class="reference"><b>Brief</b>\n${esc(post.source_text)}</div>`
+    : '';
+  return `<div class="media"><div class="frame${src ? "" : " empty"}">${frame}</div>${chips}${reference}${l?.subject ? `<div class="meta">Subject: ${esc(l.subject)}</div>` : ''}</div>`;
+}
+
+function renderNet(post, net, label) {
+  const e = post.networks[net];
+  if (!e) {
+    return `<section class="net"><div class="title"><strong>${label}</strong><span class="meta">no entry${net === 'yt' ? ' – videos only' : ''}</span></div></section>`;
+  }
+  const locked = e.state === 'posted';
+  const draft = draftOf(post.id, net) || {};
+  const fields = Object.keys(e.fields).map((field) => {
+    const value = draft[field] ?? e.fields[field];
+    const length = measure(net, value);
+    const limit = e.limits[field];
+    const soft = e.soft[field];
+    const cls = length > limit ? 'over' : soft && length > soft ? 'soft' : '';
+    const counter = `<span class="count ${cls}" data-count="${field}">${length} / ${soft && length <= limit ? soft : limit}</span>`;
+    const input = field === 'title'
+      ? `<input class="text" data-field="${field}" value="${esc(value)}" ${locked ? 'readonly' : ''}>`
+      : `<textarea data-field="${field}" rows="${field === 'text' ? 5 : 8}" ${locked ? 'readonly' : ''}>${esc(value)}</textarea>`;
+    return `<label class="field"><span>${FIELD_LABEL[field] || field}</span>${input}${counter}</label>`;
+  }).join('');
+  const flags = [...e.flags.map((f) => `<span class="flag">${esc(f)}</span>`), ...e.notes.map((n) => `<span class="flag note">${esc(n)}</span>`)];
+  if (e.edited) flags.push('<span class="flag note">edited by hand</span>');
+  if (net === 'yt' && e.privacy) flags.push(`<span class="flag note">${esc(e.privacy)}</span>`);
+  const dirty = isDirty(post.id, net);
+  let actions;
+  if (locked) {
+    const when = e.published_at ? new Date(e.published_at).toLocaleString('en-GB') : '';
+    // What metrics.mjs last measured, and at what age: a number from day one is only a beginning.
+    const m = e.metrics;
+    const reach = m ? `<div class="meta"><b>${m.reach.toLocaleString('en-GB')}</b> reach · <b>${m.interactions}</b> interactions · at ${m.age_days} days</div>` : '';
+    actions = `<div class="meta">Published ${esc(when)}${e.url ? ` · <a href="${esc(e.url)}" target="_blank" rel="noopener">view</a>` : ''}</div>${reach}`;
+  } else {
+    actions = `<div class="actions">
+      ${e.state !== 'ok' ? `<button class="primary" data-act="ok">Approve</button>` : ''}
+      ${dirty ? `<button data-act="save">Save</button>` : ''}
+      ${e.state !== 'skip' ? `<button data-act="skip">Skip</button>` : ''}
+      ${e.state !== 'review' ? `<button data-act="review">Back to review</button>` : ''}
+      ${dirty ? '<span class="hint">unsaved</span>' : ''}
+    </div>`;
+  }
+  return `<section class="net" data-net="${net}">
+    <div class="title"><strong>${label}</strong><span class="state ${e.state}">${STATE_LABEL[e.state] || e.state}</span></div>
+    ${fields}
+    ${flags.length ? `<div class="flags">${flags.join('')}</div>` : ''}
+    ${actions}
+  </section>`;
+}
+
+function renderPost(post) {
+  const el = document.createElement('article');
+  el.className = 'post';
+  el.id = 'post-' + post.id;
+  const l = post.ledger;
+  const reviewable = NETS.filter(([net]) => post.networks[net]?.state === 'review');
+  el.innerHTML = `
+    <div class="head">
+      <span class="date">${esc(new Date(post.date).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }))}</span>
+      <span class="id">${esc(post.id)}</span>
+      ${l?.format ? `<span class="chip">${esc(l.format)}</span>` : ''}
+      ${l?.tone ? `<span class="chip tone">${esc(l.tone)}</span>` : ''}
+      <span class="spacer" style="flex:1"></span>
+      ${reviewable.length > 1 ? `<button class="primary" data-act="all-ok">Approve all ${reviewable.length}</button>` : ''}
+      ${reviewable.length > 1 ? `<button data-act="all-skip">Skip all</button>` : ''}
+    </div>
+    <div class="body">
+      ${renderMedia(post)}
+      <div class="nets">${NETS.map(([net, label]) => renderNet(post, net, label)).join('')}</div>
+    </div>`;
+  wire(el, post);
+  return el;
+}
+
+function wire(el, post) {
+  el.querySelectorAll('.files button').forEach((b) => b.addEventListener('click', () => {
+    preview[post.id] = b.dataset.file;
+    rerenderPost(post.id);
+  }));
+
+  el.querySelectorAll('section.net[data-net]').forEach((section) => {
+    const net = section.dataset.net;
+    const e = post.networks[net];
+    section.querySelectorAll('[data-field]').forEach((input) => input.addEventListener('input', () => {
+      const field = input.dataset.field;
+      drafts[post.id] ??= {};
+      drafts[post.id][net] ??= {};
+      if (input.value === e.fields[field]) delete drafts[post.id][net][field];
+      else drafts[post.id][net][field] = input.value;
+      const length = measure(net, input.value);
+      const limit = e.limits[field];
+      const soft = e.soft[field];
+      const count = section.querySelector(`[data-count="${field}"]`);
+      count.textContent = `${length} / ${soft && length <= limit ? soft : limit}`;
+      count.className = 'count ' + (length > limit ? 'over' : soft && length > soft ? 'soft' : '');
+      // The buttons depend on whether there is something unsaved; swap only that row so the
+      // textarea keeps focus and cursor.
+      const fresh = document.createElement('div');
+      fresh.innerHTML = renderNet(post, net, NETS.find(([n]) => n === net)[1]);
+      const row = section.querySelector('.actions');
+      const newRow = fresh.querySelector('.actions');
+      if (row && newRow) {
+        row.replaceWith(newRow);
+        wireActions(section, post, net);
+      }
+    }));
+    wireActions(section, post, net);
+  });
+
+  el.querySelectorAll('[data-act="all-ok"], [data-act="all-skip"]').forEach((b) => b.addEventListener('click', async () => {
+    const status = b.dataset.act === 'all-ok' ? 'ok' : 'skip';
+    b.disabled = true;
+    for (const [net] of NETS) {
+      if (post.networks[net]?.state !== 'review') continue;
+      try {
+        await commit(post.id, net, status);
+      } catch (err) {
+        toast(err.message);
+        break;
+      }
+    }
+    rerenderPost(post.id);
+  }));
+}
+
+function wireActions(section, post, net) {
+  section.querySelectorAll('.actions [data-act]').forEach((b) => b.addEventListener('click', async () => {
+    b.disabled = true;
+    try {
+      await commit(post.id, net, b.dataset.act === 'save' ? undefined : b.dataset.act);
+      toast(b.dataset.act === 'save' ? 'Saved' : `${NETS.find(([n]) => n === net)[1]}: ${STATE_LABEL[b.dataset.act]}`, 'info');
+    } catch (err) {
+      toast(err.message);
+    }
+    rerenderPost(post.id);
+  }));
+}
+
+// Saves what was typed for this network together with the new status, in one write.
+async function commit(id, net, status) {
+  const fields = draftOf(id, net);
+  const body = {};
+  if (fields && Object.keys(fields).length) body.fields = fields;
+  if (status) body.status = status;
+  await save(id, net, body);
+  if (drafts[id]) delete drafts[id][net];
+}
+
+$('#filter').addEventListener('click', (ev) => {
+  const b = ev.target.closest('button');
+  if (!b) return;
+  if (Object.values(drafts).some((d) => Object.values(d).some((f) => Object.keys(f).length))
+      && !confirm('Unsaved changes will be lost. Switch anyway?')) return;
+  showAll = b.dataset.all === '1';
+  $('#filter').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+  for (const k of Object.keys(drafts)) delete drafts[k];
+  load();
+});
+$('#reload').addEventListener('click', () => load());
+window.addEventListener('beforeunload', (ev) => {
+  if (Object.values(drafts).some((d) => Object.values(d).some((f) => Object.keys(f).length))) ev.preventDefault();
+});
+
+load().catch((err) => toast('Loading failed: ' + err.message));
+</script>
+</body>
+</html>

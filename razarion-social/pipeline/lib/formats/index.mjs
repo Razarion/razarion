@@ -16,10 +16,11 @@
 import duel from './duel.mjs';
 import weekInNumbers from './week-in-numbers.mjs';
 import devlog from './devlog.mjs';
+import battle from './battle.mjs';
 
 export { NotReady } from './not-ready.mjs';
 
-export const FORMATS = [duel, weekInNumbers, devlog];
+export const FORMATS = [battle, duel, weekInNumbers, devlog];
 
 /**
  * Formats made elsewhere, listed so the overview shows the whole mix and not just the part this

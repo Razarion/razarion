@@ -1,19 +1,21 @@
-# Razarion Social - geplanter Lauf
+# Razarion Social - scheduled run
 #
-# Veroeffentlicht, was in den Review-Dateien auf "ok" steht - auf X, Instagram, Facebook und YouTube.
-# Beitraege entstehen mit compose.mjs; dieser Lauf verteilt sie nur. Neue Beitraege werden NICHT automatisch freigegeben - sie warten
-# auf status "ok" in captions.json und fb_posts.json.
+# Fills the queue (plan.mjs) and publishes what stands on "ok" in the review files - on X,
+# Instagram, Facebook and YouTube. New posts are NOT approved automatically - they wait for
+# "Approve" in review.mjs.
 #
-# Damit ist die Arbeitsteilung: der Zeitplan holt, bereitet auf und liefert aus; du entscheidest
-# einmal pro Woche, was freigegeben wird.
+# That is the division of labour: the run makes, prepares and delivers; you decide on the review
+# page what gets approved.
 #
-#   .\run.ps1                 # ein Beitrag je Netzwerk aus dem freigegebenen Vorrat
+#   .\run.ps1                 # fill the queue, publish one post per network
 #   .\run.ps1 -Limit 2
-#   .\run.ps1 -PrepareOnly    # nur holen und aufbereiten, nichts veroeffentlichen
+#   .\run.ps1 -PrepareOnly    # fill and prepare only, publish nothing
+#   .\run.ps1 -NoPlan         # make nothing new
 
 param(
     [int]$Limit = 1,
-    [switch]$PrepareOnly
+    [switch]$PrepareOnly,
+    [switch]$NoPlan
 )
 
 $ErrorActionPreference = "Continue"
@@ -29,44 +31,85 @@ function Write-Log([string]$Message) {
     Add-Content -Path $Log -Value $line -Encoding utf8
 }
 
-# Ein fehlgeschlagener Schritt darf die folgenden nicht verhindern. Wenn Instagram klemmt, soll
-# Facebook trotzdem ausliefern - und der Token-Refresh laeuft ohnehin unabhaengig von beidem.
+# A failed step must not stop the ones after it. If Instagram is stuck, Facebook should still
+# deliver - and the token refresh runs independently of both anyway.
+#
+# The window shows each step's outcome lines ([ok], [!], [fail]) and, for a publish step, which
+# post went out; the full output goes to the log only. With just the step names on screen, two runs
+# that each published one post looked like two runs that did nothing.
+$script:Published = @()
 function Invoke-Step([string]$Name, [string[]]$NodeArgs) {
     Write-Log "--- $Name"
     $output = & node @NodeArgs 2>&1
     $exit = $LASTEXITCODE
-    foreach ($line in $output) { Add-Content -Path $Log -Value ("    " + $line) -Encoding utf8 }
+    $preview = $null
+    foreach ($line in $output) {
+        $text = "$line"
+        Add-Content -Path $Log -Value ("    " + $text) -Encoding utf8
+        # The first line of the post's text, as the publishers print it under "[1/1] <date>".
+        if (-not $preview -and $Name -like "Publish*" -and $text -match '^\s+> (?!waiting|X:|YouTube:|composed|data/)(.+)$') {
+            $preview = $Matches[1]
+        }
+        if ($text -match '\[ok\]|\[!\]|\[fail\]') { Write-Host ("    " + $text.Trim()) }
+        if ($Name -like "Publish*" -and $text -match 'published as|X: posted|uploaded as') {
+            $script:Published += ("{0}: {1}" -f ($Name -replace '^Publish to ', ''), $preview)
+        }
+    }
     if ($exit -ne 0) {
-        Write-Log "    FEHLGESCHLAGEN (exit $exit) - weiter mit dem naechsten Schritt"
+        Write-Log "    FAILED (exit $exit) - moving on to the next step"
         return $false
     }
     return $true
 }
 
 Set-Location $Pipeline
-Write-Log "=== Lauf gestartet"
+Write-Log "=== Run started"
 
-# Der Token erneuert sich nur, wenn weniger als 14 Tage Restlaufzeit bleiben - haeufiger
-# aufzurufen kostet nichts. Instagram-Token laufen nach 60 Tagen ab und lassen sich danach nur
-# noch von Hand im Meta-Dashboard neu erzeugen; deshalb steht das an erster Stelle.
-Invoke-Step "Instagram-Token pruefen" @("refresh_token.mjs") | Out-Null
+# The token only renews when fewer than 14 days are left, so calling it more often costs nothing.
+# Instagram tokens expire after 60 days and can then only be recreated by hand in the Meta
+# dashboard; that is why this comes first.
+Invoke-Step "Check Instagram token" @("refresh_token.mjs") | Out-Null
 
-# X ist nicht mehr Quelle. Beitraege entstehen mit compose.mjs, also gibt es nichts zu holen -
-# und jeder Lesezugriff auf die X-API kostet Geld, ohne etwas beizutragen. sync_new.mjs bleibt im
-# Repo, falls das Spiegeln je wieder gebraucht wird; der Zeitplan ruft es nicht mehr auf.
+# X is no longer the source. Posts are made here, so there is nothing to fetch - and every read
+# from the X API costs money without adding anything. sync_new.mjs stays in the repo in case
+# mirroring is ever needed again; the schedule no longer calls it.
+
+# The planner makes posts up to "review" and never further. It needs this user's Claude login for
+# the texts; without it, the template text goes in.
+if (-not $NoPlan) {
+    Invoke-Step "Fill the queue" @("plan.mjs") | Out-Null
+}
 
 if ($PrepareOnly) {
-    Write-Log "=== PrepareOnly - nichts veroeffentlicht"
+    Write-Log "=== PrepareOnly - nothing published"
     exit 0
 }
 
-# Veroeffentlicht ausschliesslich, was bereits auf "ok" steht. Ein Lauf ohne freigegebenen Vorrat
-# meldet "nothing to do" und ist damit ein No-op.
-Invoke-Step "Instagram veroeffentlichen" @("publish.mjs", "--live", "--limit", "$Limit") | Out-Null
-Invoke-Step "Facebook veroeffentlichen" @("publish_fb.mjs", "--live", "--limit", "$Limit") | Out-Null
-Invoke-Step "X veroeffentlichen" @("publish_x.mjs", "--live", "--limit", "$Limit") | Out-Null
-# YouTube laeuft zuletzt: ein Upload kostet 1600 von 10000 Kontingentpunkten am Tag, und anders als
-# die drei davor haelt er den Lauf minutenlang auf, waehrend die Datei hochgeht.
-Invoke-Step "YouTube veroeffentlichen" @("publish_youtube.mjs", "--live", "--limit", "$Limit") | Out-Null
+# Publishes only what is already on "ok". A run with nothing approved reports "nothing to do" and
+# is a no-op.
+# Instagram and Facebook fetch the media from a public URL. upload_media.mjs uploads only what is
+# on "ok", and skips what is already up.
+Invoke-Step "Upload media for Instagram" @("upload_media.mjs") | Out-Null
+Invoke-Step "Upload media for Facebook" @("upload_media.mjs", "--source", "fb") | Out-Null
+Invoke-Step "Publish to Instagram" @("publish.mjs", "--live", "--limit", "$Limit") | Out-Null
+Invoke-Step "Publish to Facebook" @("publish_fb.mjs", "--live", "--limit", "$Limit") | Out-Null
+Invoke-Step "Publish to X" @("publish_x.mjs", "--live", "--limit", "$Limit") | Out-Null
+# YouTube runs last: an upload costs 1600 of 10000 quota points a day, and unlike the three before
+# it, it holds the run up for minutes while the file goes up.
+Invoke-Step "Publish to YouTube" @("publish_youtube.mjs", "--live", "--limit", "$Limit") | Out-Null
 
-Write-Log "=== Lauf beendet"
+# How far the posts got. Only posts younger than seven days are asked again, so on X a run costs a
+# few cents at most.
+Invoke-Step "Collect metrics" @("metrics.mjs") | Out-Null
+
+Write-Host ""
+if ($script:Published.Count) {
+    Write-Host "Published in this run:"
+    foreach ($p in $script:Published) { Write-Host ("  " + $p) }
+} else {
+    Write-Host "Nothing published in this run - nothing approved was waiting."
+}
+Write-Host "One post per network per run, oldest approved first. The full output is in state\scheduled.log."
+Write-Host ""
+
+Write-Log "=== Run finished"

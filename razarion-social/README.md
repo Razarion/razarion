@@ -1,6 +1,13 @@
 # razarion-social
 
-One gameplay clip, one JSON file, four platforms. No npm dependencies — Node 20+ only.
+Razarion posts to four networks: YouTube, X, Instagram and Facebook. The normal way there is the
+pipeline in [`pipeline/`](pipeline/README.md): it plans, writes and films posts, puts them up for
+review, and publishes what was approved to all four, started by `pipeline/Razarion-Social.cmd`.
+
+What this README describes is the older, smaller tool underneath it: one gameplay clip, one JSON
+file, published by hand to YouTube, X and Instagram. It has no Facebook support, since Facebook
+only ever went through the pipeline. The pipeline reuses its YouTube uploader, OAuth, HTTP layer
+and logging. No npm dependencies — Node 20+ only.
 
 ```bash
 cd razarion-social
@@ -19,13 +26,16 @@ the safe path is the default one.
 | Platform | Result of `--live` | Still manual |
 |---|---|---|
 | YouTube | video + title, description, tags, thumbnail uploaded as **private** | flip to public in Studio |
-| TikTok | clip lands in your **drafts** | open the app, add caption, post |
 | X | posted immediately, optional thread | nothing |
 | Instagram | Reel published | nothing — but see the blocker below |
 
-The manual last step on YouTube and TikTok is deliberate. Both platforms only allow fully
-automatic *public* posting after an app audit that takes 2–4 weeks and several review rounds.
-The endpoints used here need no audit at all, and cost one click each.
+The manual last step on YouTube is deliberate: only an audited API project may upload public
+videos, and the audit was requested on 2026-09-27 (see `YOUTUBE-AUDIT.md`). Until it passes, each
+upload costs one click in Studio.
+
+TikTok is not supported. Its guidelines rule out "a utility tool to help upload contents to the
+account(s) you or your team manages", which is exactly what this is, so an app for it would not
+pass review.
 
 ## Credentials
 
@@ -49,14 +59,6 @@ is exactly why `privacy` defaults to `private` in the post spec.
 **This costs money.** X removed the free tier in February 2026; new developers are on pay-per-use
 at roughly **$0.015 per post, or $0.20 if the post contains a link**. Almost every Razarion post
 carries a link, so budget ~$0.20 each. The CLI prints the estimate before it spends anything.
-
-### TikTok
-1. [developers.tiktok.com](https://developers.tiktok.com) → app → add the **Content Posting API**.
-2. Request the `video.upload` scope. Do *not* request `video.publish` unless you intend to sit
-   through the audit — unaudited clients can only post content nobody but you can see.
-3. Redirect URI: TikTok rejects `http://localhost`. Register an https URL you control (it never
-   has to serve anything), set `TIKTOK_REDIRECT_URI` in `.env`, then:
-   `node src/cli.mjs auth tiktok --manual` and paste the URL you land on back into the terminal.
 
 ### Instagram — the one real blocker
 Needs all of:

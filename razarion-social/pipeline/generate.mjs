@@ -267,7 +267,7 @@ async function main() {
   ok(`${item.name} written to all three review files as ${id}`);
   info(`  X ${entries.lengths.x}/280   Instagram ${entries.lengths.ig}/2200   Facebook ${entries.lengths.fb}`);
   info('');
-  info('Read them, set status to "ok", then upload and publish.');
+  info('Read and approve them: node review.mjs --open. Then upload and publish.');
 }
 
 main().catch((err) => {

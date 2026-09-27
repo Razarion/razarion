@@ -1,15 +1,14 @@
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, dirname, isAbsolute } from 'node:path';
 
-export const PLATFORMS = ['youtube', 'x', 'tiktok', 'instagram'];
+export const PLATFORMS = ['youtube', 'x', 'instagram'];
 
 // Caption ceilings as the platforms enforce them. Checked up front rather than at the API call,
-// because finding out that the TikTok caption was too long after a 300 MB upload is a bad trade.
+// because finding out that the YouTube description was too long after a 300 MB upload is a bad trade.
 const LIMITS = {
   'youtube.title': 100,
   'youtube.description': 5000,
   'x.text': 280,
-  'tiktok.title': 2200,
   'instagram.caption': 2200,
 };
 

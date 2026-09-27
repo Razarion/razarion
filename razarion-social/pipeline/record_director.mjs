@@ -3,6 +3,7 @@
 //
 //   node record_director.mjs --target "Occupy 5m" --both            # portrait and landscape
 //   node record_director.mjs --target 390815 --count 20 --type Viper --seconds 40
+//   node record_director.mjs --target "Occupy 5m" --both --style low-orbit   # see CAMERA_STYLES
 //   node record_director.mjs --list                                 # the bot bases a battle may hit
 //   node record_director.mjs --target "Occupy 5m" --head            # watch it work
 //
@@ -22,20 +23,20 @@
 // Every take is a fresh strike force against what is left of the bot base. With --both the
 // landscape take therefore fights over a base the portrait take has already hit.
 
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { parseArgs } from './lib/args.mjs';
 import { PIPELINE_ROOT } from './lib/paths.mjs';
 import { adminToken, baseItemTypes } from './lib/razarion.mjs';
 import { withStudioPage, renderingCapabilities, isSoftwareRenderer } from './lib/browser.mjs';
 import { probeVideo } from './lib/video.mjs';
+import { fightFile } from './lib/cut.mjs';
+import { CAMERA_STYLES, MIN_HUMAN_CLEARANCE, clearance, directorApi, splitBases } from './lib/director.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
 
 const DEFAULT_ORIGIN = 'https://www.razarion.com';
 /** A clip this far below the requested frame rate is a failed take, not a slow one. */
 const MIN_FPS = 20;
-/** Kept clear of every player base, on top of what the server itself insists on. */
-const MIN_HUMAN_CLEARANCE = 400;
 
 const SHAPES = {
   portrait: { width: 1080, height: 1920 },
@@ -44,7 +45,8 @@ const SHAPES = {
 
 function usage() {
   info('node record_director.mjs --target "<bot base name or id>" [--both | --shape portrait|landscape]');
-  info('                         [--count 20] [--type Viper] [--seconds 40] [--distance 90] [--beta 1.0] [--radius 110]');
+  info('                         [--count 20] [--type Viper] [--seconds 40] [--distance 90] [--style overhead|low-orbit|push-in|side]');
+  info('                         [--beta <elevation>] [--radius <distance>]   override the style');
   info('                         [--settle 20] [--out data/clips/<name>.mp4] [--url https://www.razarion.com] [--head]');
   info('node record_director.mjs --list');
 }
@@ -58,8 +60,7 @@ async function main() {
   const api = directorApi(origin, token);
 
   const bases = await api.get('/bases');
-  const humans = bases.filter((b) => b.character === 'HUMAN' && b.centreX != null);
-  const bots = bases.filter((b) => b.character !== 'HUMAN' && b.centreX != null && b.itemCount > 0);
+  const { humans, bots } = splitBases(bases);
 
   if (args.list || !args.target) {
     info('Bot bases, biggest first (distance = to the nearest player base, edge to edge):');
@@ -95,15 +96,21 @@ async function main() {
   info(`${count} x ${typeName} · ${seconds}s · ${shapes.join(' + ')}`);
 
   let planId = null;
+  let goodTakes = 0;
   try {
-    const { spawn, ownBaseId } = await placeStaging(api, target, candidates, distance, type.id);
+    let { spawn, ownBaseId } = await placeStaging(api, target, candidates, distance, type.id);
     step(`own base #${ownBaseId}, strike force from ${Math.round(spawn.x)}/${Math.round(spawn.y)} `
       + `(${Math.round(spawn.clearance)} clear of players)`);
 
-    const plan = followPlan(target, seconds, Number(args.beta ?? 1.0), Number(args.radius ?? 110));
+    const style = String(args.style ?? 'overhead');
+    const plan = followPlan(target, seconds, {
+      style, spawn,
+      beta: args.beta != null ? Number(args.beta) : null,
+      radius: args.radius != null ? Number(args.radius) : null,
+    });
     const saved = await api.post('/plan', { name: `record_director ${stamp()}`, jsonContent: JSON.stringify(plan) });
     planId = saved.id;
-    step(`plan #${planId}`);
+    step(`plan #${planId}, camera ${style}`);
 
     await withStudioPage({ url: `${origin}/game/director`, apiBase: origin, headless: !args.head,
       // Upright like the take: the client holds the horizontal field when the take is narrower than
@@ -136,8 +143,20 @@ async function main() {
       // The camera flies to the base and the client asks for the terrain and units around it.
       await page.waitForTimeout(8000);
 
-      for (const shape of shapes) {
+      for (const [takeNo, shape] of shapes.entries()) {
         const file = shapes.length > 1 ? out.replace(/\.mp4$/, `-${shape}.mp4`) : out;
+        if (takeNo > 0) {
+          // The survivors of the last take stand on the spots the next strike force needs, and the
+          // server refuses every one of them - a second take then films an empty square. A fresh
+          // staging base, from the same side first, so the camera plan still looks the right way.
+          await api.post('/clear-staging', {});
+          ({ spawn, ownBaseId } = await placeStaging(api, target, [spawn, ...candidates.filter((c) => c !== spawn)], distance, type.id));
+          step(`fresh staging for the ${shape} take: own base #${ownBaseId}`);
+          // The window in the shape of the take. A landscape take drawn in the upright window of the
+          // portrait one came out at 18-28 fps against 36-72 for the portrait take before it.
+          await page.setViewportSize(SHAPES[shape]);
+          await page.waitForTimeout(2000);
+        }
         const left = (await api.get('/bases')).find((b) => b.baseId === target.baseId);
         if (!left || left.itemCount === 0) {
           warn(`Nothing left of the target for the ${shape} take - skipped.`);
@@ -154,16 +173,38 @@ async function main() {
         download.catch(() => {});
         await api.post('/command', { type: 'RECORD_START', fileName: `director-${shape}.mp4`, ...SHAPES[shape] });
         await recording;
+        // From here the clock runs with the file: what dies when, for the cut (lib/cut.mjs).
+        const fight = watchTheFight(api, target.baseId, ownBaseId);
 
         const result = await stageAround(api, spawn, count, type, target.baseId);
         step(`stage-attack: ${result.spawned} ${type.internalName} -> #${target.baseId}`
           + ` (${result.tried} spots tried)`);
-        if (!result.spawned) throw new Error('Nothing spawned - the clip would be of an empty square.');
+        if (!result.spawned) {
+          // The server refused every spot - most likely a player has come near since the first
+          // take, which is the staging rule doing its job. The recording runs on regardless; it is
+          // let finish and thrown away, and the other take still counts.
+          warn(`Nothing spawned for the ${shape} take - the clip would be of an empty square. Take dropped.`);
+          await (await download).delete().catch(() => {});
+          await fight.stop();
+          continue;
+        }
 
         await (await download).saveAs(file);
+        writeFileSync(fightFile(file), JSON.stringify(await fight.stop()) + '\n');
         assertEngineAlive();
-        await verifyTake(file, seconds);
+        // A broken take is put aside rather than ending the run: with --both the other shape may be
+        // fine, and an unattended run (the battle format) can post that one. Only no usable take
+        // at all is a failure.
+        try {
+          await verifyTake(file, seconds);
+          goodTakes++;
+        } catch (e) {
+          const broken = file.replace(/\.mp4$/, '-broken.mp4');
+          renameSync(file, broken);
+          warn(`${e.message} Put aside as ${rel(broken)}.`);
+        }
       }
+      if (!goodTakes) throw new Error('No usable take.');
     });
   } finally {
     // Both, whatever happened above. A green base with twenty units in it left standing on the
@@ -185,23 +226,31 @@ async function main() {
     : `  Next: node compose.mjs --${shapes[0]} ${rel(out)} --text "..."`);
 }
 
-/** Two follow keys on the bot base, following the fighting; the target is where the flight starts. */
-function followPlan(target, seconds, beta, radius) {
-  const key = (time) => ({
-    time,
+/**
+ * Follow keys on the bot base in the given style. `spawn` is where the strike force starts, which
+ * decides which side is "behind the attackers". --beta and --radius override every stop, as they
+ * did before there were styles.
+ */
+function followPlan(target, seconds, { style = 'overhead', spawn = null, beta = null, radius = null } = {}) {
+  const def = CAMERA_STYLES[style];
+  if (!def) throw new Error(`Unknown --style "${style}". Known: ${Object.keys(CAMERA_STYLES).join(', ')}`);
+  // Babylon's orbit puts the camera at target + (sin alpha, cos alpha) on the ground plane, and the
+  // game's y is Babylon's z.
+  const attackSide = spawn ? Math.atan2(spawn.x - target.centreX, spawn.y - target.centreY) : 0;
+  const stops = def.stops.length > 1 ? def.stops : [def.stops[0], def.stops[0]];
+  const cameraKeys = stops.map((s, i) => ({
+    time: Math.round((seconds * 1000 * i) / (stops.length - 1)),
     mode: 'follow',
     target: [target.centreX, 0, target.centreY],
-    // Square to the grid like the game's camera (DirectorTaskComponent.onModeChange), but steeper:
-    // an upright frame at the game's elevation is half sky.
-    alpha: 0,
-    beta,
-    radius,
+    alpha: def.absoluteAlpha ? s.alpha : attackSide + s.alpha,
+    beta: beta ?? s.beta,
+    radius: radius ?? s.radius,
     easing: 'ease',
     followWhat: 'combat',
     autoRadius: false,
     followBaseId: target.baseId,
-  });
-  return { version: 1, durationMs: seconds * 1000, cameraKeys: [key(0), key(seconds * 1000)], cues: [] };
+  }));
+  return { version: 1, durationMs: seconds * 1000, cameraKeys, cues: [] };
 }
 
 /** Points `distance` from the target, furthest from every player base first. */
@@ -285,10 +334,6 @@ function along(from, to, length) {
   return { x: from.centreX + (dx / n) * length, y: from.centreY + (dy / n) * length };
 }
 
-function clearance(x, y, humans) {
-  return Math.min(Infinity, ...humans.map((b) => Math.hypot(b.centreX - x, b.centreY - y) - (b.radius ?? 0)));
-}
-
 function findTarget(bots, wanted) {
   const byId = bots.find((b) => String(b.baseId) === wanted);
   const byName = bots.filter((b) => (b.name ?? '').toLowerCase() === wanted.toLowerCase());
@@ -298,21 +343,34 @@ function findTarget(bots, wanted) {
   throw new Error(`No bot base "${wanted}" with anything in it. --list shows them.`);
 }
 
-function directorApi(origin, token) {
-  const call = async (method, path, body) => {
-    const res = await fetch(`${origin}/rest/director${path}`, {
-      method,
-      headers: { Authorization: `Bearer ${token}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    const text = await res.text();
-    if (!res.ok) throw new Error(`${method} ${path}: HTTP ${res.status} ${text.slice(0, 300)}`);
-    return text ? JSON.parse(text) : null;
-  };
+/**
+ * Counts, once a second while a take records, what the bot base and the strike force still have.
+ * Every drop is something destroyed, and its second in the take is where the cut goes - the one
+ * signal that a moving camera cannot fake (a circling camera makes as much picture change over a
+ * quiet base as a fight does). Written next to the take as <take>.fight.json.
+ */
+function watchTheFight(api, targetBaseId, ownBaseId) {
+  const t0 = Date.now();
+  const samples = [];
+  let running = true;
+  const loop = (async () => {
+    while (running) {
+      try {
+        const bases = await api.get('/bases');
+        const count = (id) => bases.find((b) => b.baseId === id)?.itemCount ?? 0;
+        samples.push({ t: Math.round((Date.now() - t0) / 100) / 10, target: count(targetBaseId), own: count(ownBaseId) });
+      } catch {
+        // A missed second is a gap in the tally, not a reason to stop filming.
+      }
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  })();
   return {
-    get: (p) => call('GET', p),
-    post: (p, b) => call('POST', p, b),
-    del: (p) => call('DELETE', p),
+    async stop() {
+      running = false;
+      await loop;
+      return { samples };
+    },
   };
 }
 

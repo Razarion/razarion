@@ -16,10 +16,6 @@
     "attachVideo": true
   },
 
-  "tiktok": {
-    "title": "Every panel in the UI of an RTS that runs in a browser tab"
-  },
-
   "instagram": {
     "videoUrl": "https://www.razarion.com/media/ui-overview.mp4",
     "caption": "A walkthrough of the whole Razarion interface. Open-source RTS, runs in a browser tab, no account needed. Link in bio.\n\n#rts #indiedev #browsergame #opensource #gamedev"

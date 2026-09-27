@@ -218,7 +218,7 @@ async function main() {
   info('');
   if (igFlags.includes('needs-card')) info('  Text only: run render_cards.mjs so Instagram has something to show.');
   if (xFlags.includes('too-long')) warn('  The X text is over 280 characters as X counts them. Shorten it before approving.');
-  info('  Read them, set status to "ok", then: node upload_media.mjs && node publish.mjs');
+  info('  Read and approve them: node review.mjs --open. Then: node upload_media.mjs && node publish.mjs');
 }
 
 main().catch((err) => {

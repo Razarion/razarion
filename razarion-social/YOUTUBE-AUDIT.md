@@ -69,6 +69,9 @@ Beides ist erledigt, und danach ging die Autorisierung mit **Razarion** auf Anhi
 
 ## Was noch fehlt: das Audit
 
+**Eingereicht am 2026-09-27.** Google hat den Eingang am selben Tag per E-Mail bestätigt, ohne
+Fallnummer. Jetzt heisst es warten, bis die Prüfung durch ist.
+
 Es ist der einzige verbliebene Punkt, und er entscheidet über genau eine Sache — ob ein Upload
 öffentlich sein darf. Ohne bestandenes Audit setzt YouTube `privacyStatus: public` still auf
 `private` zurück; freischalten geht dann nur von Hand in Studio.
@@ -196,8 +199,9 @@ Projektnummer     579831821740      (ID: neural-passkey-426618-j3)
 Anwendungsfälle   Video-Upload und Kontoverwaltung
                   Internes Unternehmenstool
 OAuth 2.0         Ja
-Nutzungsvolumen   niedrigste Stufe - ~4800 Einheiten pro Woche
+Nutzungsvolumen   niedrigste Stufe - höchstens ein Upload am Tag, 1600 Einheiten
 ```
+Der Planer (`plan.mjs`) setzt höchstens einen Kampf-Clip pro Tag an, daher die Obergrenze.
 
 ### Die Nachweise
 
@@ -210,11 +214,26 @@ Deploy. Der Ordner ist gitignored und bleibt trotzdem liegen:
 3-terms-of-service.jpg                   Nutzungsbedingungen
 4a-oauth-consent-screen.jpg              Zustimmungsbildschirm mit App-Namen
 4b-oauth-scopes-and-revoke.jpg           beide Berechtigungen, samt Widerrufshinweis
+5-cli-check-and-publish.png              check.mjs, publish_youtube.mjs, Upload-Protokoll
 ```
 
-Für den bedingten Nachweis fehlt noch ein Terminal-Screenshot von `check.mjs` und
-`publish_youtube.mjs` — das ist die "Upload-Oberfläche" und das "Dashboard" eines Werkzeugs, das
-keine grafische Oberfläche hat. Nur von Hand aufzunehmen.
+**Stand des Formulars am 2026-09-27** (zweiter Anlauf, von Claude in Chrome ausgefüllt):
+
+- Jedes Upload-Feld nimmt nur *eine* Datei an. 4a, 4b und 5 stecken deshalb zusammen in
+  `6-conditional-evidence-oauth-upload-dashboard.pdf`. Der Antragstext liegt als
+  `7-application-summary.pdf` unter "Anderes ergänzendes Material" bei, denn das Formular hat dafür
+  kein eigenes Textfeld mehr.
+- Die Schweiz fehlt in der Länderliste, darum "Sonstiges" → "Schweiz". Neu verlangt das Formular
+  Adresse, Stadt und PLZ.
+- In den Kontingentdetails zuerst "Wähle die Endpunkte aus" anklicken, dann erscheint die Liste
+  (nur `youtube.videos.insert`), danach "Keine Änderung / Standardkontingent". Das separate
+  `youtube.videos.insert`-Kästchen darunter bleibt leer, sonst wird mehr Upload-Kontingent beantragt.
+- Frage "Wie erfahren": Google-Entwicklerdokumentation.
+
+Nummer 5 ist der bedingte Nachweis, also die "Upload-Oberfläche" und das "Dashboard" eines
+Werkzeugs ohne grafische Oberfläche. Das Bild wurde am 2026-09-27 aus der echten Ausgabe der drei
+Befehle gerendert. Das Protokoll darin zeigt elf Uploads, die alle auf `private` stehen, obwohl
+jeder davon öffentlich sein sollte. Genau diesen Zustand soll das Audit aufheben.
 
 ## Antragstext (Entwurf)
 
@@ -235,8 +254,9 @@ mehr als ihn aufzublasen.
 >
 > **How does your API Client use YouTube API Services?**
 >
-> One endpoint: `videos.insert`, to upload a video with a title, description and tags, plus
-> `thumbnails.set` for the still image. Nothing is read back, no other channel's data is accessed,
+> One endpoint: `videos.insert`, to upload a video with a title, description and tags. The tool
+> can also call `thumbnails.set` for a still image, but the publishing step does not use it today.
+> Nothing is read back, no other channel's data is accessed,
 > and no YouTube data is stored beyond the returned video id, which is written to a local JSON file
 > so the same clip is not uploaded twice.
 >
@@ -245,22 +265,19 @@ mehr als ihn aufzublasen.
 >
 > **Where does the content come from?**
 >
-> All of it is original material I produce: recordings of my own game, captured in its own scene
-> editor. No third-party content, no YouTube content is downloaded, re-uploaded or repurposed.
+> All of it is original material I produce: recordings of my own game, captured with the game's
+> own renderer. No third-party content, no YouTube content is downloaded, re-uploaded or
+> repurposed.
 >
 > **Expected quota use**
 >
-> Roughly three uploads a week. At 1600 units per upload that is about 4,800 units a week, well
-> inside the default 10,000-unit daily quota. I am not asking for a quota increase - only for the
-> ability to publish my own videos publicly rather than having them forced to private.
+> At most one upload a day, which is 1,600 units and well inside the default 10,000-unit daily
+> quota. Eleven videos have gone up through the client since 4 September 2026, and all of them were
+> forced to private. I am not asking for a quota increase, only for the ability to publish my own
+> videos publicly instead of having each one switched on by hand in YouTube Studio.
 
 ## Was danach zu tun bleibt
 
-Auch mit bestandenem Audit fehlt in der Pipeline noch:
-
-- **`build_yt_posts.mjs` liest nur `data/posts.json`**, also das X-Archiv. Neu komponierte Clips
-  aus dem Studio tauchen dort gar nicht auf und müssten ergänzt werden.
-- **Ein `publish_youtube.mjs`** nach dem Muster der drei vorhandenen Publisher, mit demselben
-  Review-Gatter und Zustandsschreiben nach `state/posted_yt.json`.
-
-Beides ist überschaubar, lohnt aber erst, wenn das Audit durch ist.
+Nur die eine Zeile. `publish_youtube.mjs` gibt es inzwischen, es läuft in `scheduled/run.ps1` mit
+und hat bis zum 2026-09-27 elf Clips hochgeladen. `DEFAULT_PRIVACY` in `pipeline/lib/youtube.mjs`
+auf `'public'` setzen genügt.

@@ -52,9 +52,11 @@ function context(args, ledger, id, now, dryRun) {
   const outDir = dryRun ? PREVIEW_DIR : OWN_DIR;
   return {
     args,
+    origin,
     now,
     dryRun,
     lastOf: (format, subject) => lastOf(ledger, format, subject),
+    history: (format) => ledger.items.filter((e) => e.format === format),
     mediaFile(slug, ext) {
       ensureDir(outDir);
       return join(outDir, `${id}-${slug}.${ext}`);
@@ -154,7 +156,7 @@ async function main() {
   ok(`${format.name} (${made.subject}, ${tone}) written as ${id} to ${targets.join(', ')}.`);
   info(`  X ${entries.lengths.x}/280   Instagram ${entries.lengths.ig}/2200   Facebook ${entries.lengths.fb}`);
   if (entries.flags.x.includes('too-long')) warn('  The X text is over 280 characters. Shorten it before approving.');
-  info('  Read them, set status to "ok", then upload and publish.');
+  info('  Read and approve them: node review.mjs --open. Then upload and publish.');
 }
 
 main().catch((err) => {
