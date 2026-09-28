@@ -1,4 +1,4 @@
-import {Vector3} from '@babylonjs/core';
+import {Vector3} from '@babylonjs/core/Maths/math.vector';
 import {BaseItemPlacerPresenterImpl} from './base-item-placer-presenter.impl';
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 

@@ -1,4 +1,4 @@
-import { Vector2 } from "@babylonjs/core";
+import {Vector2} from "@babylonjs/core/Maths/math.vector";
 import { Helpers } from "./helpers";
 import { MathUtils } from "./math-utils";
 import EAR_CUT from 'earcut';

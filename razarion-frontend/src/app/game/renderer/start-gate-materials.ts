@@ -18,13 +18,30 @@ import {UiConfigCollection} from "src/app/generated/razarion-share";
  * and moves 5.5 MB out of it (vehicles, buildings).
  */
 export function materialsForFirstFrame(uiConfigCollection: UiConfigCollection): number[] {
+  const namedByGlb = materialsNamedByGlb(uiConfigCollection);
+  return (uiConfigCollection.babylonMaterials ?? [])
+    .map(material => material.id)
+    .filter(id => !namedByGlb.has(id));
+}
+
+/**
+ * The other half: the materials only the glb models paint with. They come with the models, after
+ * the terrain (boot-gate.ts) - on the content of 2026-09-28 the vehicle and the building
+ * material, 765 KB on the wire that used to come down beside the terrain and the worker.
+ */
+export function materialsForModels(uiConfigCollection: UiConfigCollection): number[] {
+  const namedByGlb = materialsNamedByGlb(uiConfigCollection);
+  return (uiConfigCollection.babylonMaterials ?? [])
+    .map(material => material.id)
+    .filter(id => namedByGlb.has(id));
+}
+
+function materialsNamedByGlb(uiConfigCollection: UiConfigCollection): Set<number> {
   const namedByGlb = new Set<number>();
   for (const gltf of uiConfigCollection.gltfs ?? []) {
     for (const materialId of Object.values(gltf.materialGltfNames ?? {})) {
       namedByGlb.add(materialId);
     }
   }
-  return (uiConfigCollection.babylonMaterials ?? [])
-    .map(material => material.id)
-    .filter(id => !namedByGlb.has(id));
+  return namedByGlb;
 }

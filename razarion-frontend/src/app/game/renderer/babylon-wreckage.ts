@@ -1,15 +1,12 @@
-import {
-  AbstractMesh,
-  Color3,
-  Color4,
-  DynamicTexture,
-  Mesh,
-  MeshBuilder,
-  ParticleSystem,
-  Ray,
-  StandardMaterial,
-  Vector3,
-} from "@babylonjs/core";
+import {Ray} from "@babylonjs/core/Culling/ray.core";
+import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
+import {DynamicTexture} from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import {Color3, Color4} from "@babylonjs/core/Maths/math.color";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {ParticleSystem} from "@babylonjs/core/Particles/particleSystem";
 import {Scene} from "@babylonjs/core/scene";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 

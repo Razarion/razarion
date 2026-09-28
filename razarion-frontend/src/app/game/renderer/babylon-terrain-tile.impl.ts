@@ -12,26 +12,24 @@ import {
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {BabylonWaterRenderService, WaterTileResources} from "./babylon-water-render.service";
-import {
-  Color3,
-  Mesh,
-  MeshBuilder,
-  MultiMaterial,
-  Node,
-  NodeMaterial,
-  Ray,
-  Scalar,
-  Sprite,
-  SpriteManager,
-  StandardMaterial,
-  SubMesh,
-  Texture,
-  TextureBlock,
-  TransformNode,
-  Vector3,
-  VertexBuffer,
-  VertexData
-} from "@babylonjs/core";
+import {VertexBuffer} from "@babylonjs/core/Buffers/buffer";
+import {Ray} from "@babylonjs/core/Culling/ray.core";
+import {MultiMaterial} from "@babylonjs/core/Materials/multiMaterial";
+import {TextureBlock} from "@babylonjs/core/Materials/Node/Blocks/Dual/textureBlock";
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {Scalar} from "@babylonjs/core/Maths/math.scalar";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {VertexData} from "@babylonjs/core/Meshes/mesh.vertexData";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {SubMesh} from "@babylonjs/core/Meshes/subMesh";
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode";
+import {Node} from "@babylonjs/core/node";
+import {Sprite} from "@babylonjs/core/Sprites/sprite";
+import {SpriteManager} from "@babylonjs/core/Sprites/spriteManager";
 import {buildGroundMaterial} from "./ground-material";
 import {buildBotGroundTopMaterial} from "./bot-ground-top-material";
 import {buildBotGroundSideMaterial} from "./bot-ground-side-material";

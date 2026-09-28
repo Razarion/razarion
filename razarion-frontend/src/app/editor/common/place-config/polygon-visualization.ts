@@ -1,19 +1,15 @@
-import { SimpleMaterial } from "@babylonjs/materials";
-import {
-  Constants,
-  Mesh,
-  MeshBuilder,
-  Node,
-  Nullable,
-  Observer,
-  PlaneDragGizmo,
-  PointerEventTypes,
-  PointerInfo,
-  PolygonMeshBuilder,
-  UtilityLayerRenderer,
-  Vector2,
-  Vector3
-} from "@babylonjs/core";
+import {SimpleMaterial} from "@babylonjs/materials/simple/simpleMaterial";
+import {Constants} from "@babylonjs/core/Engines/constants";
+import {PointerEventTypes, PointerInfo} from "@babylonjs/core/Events/pointerEvents";
+import {PlaneDragGizmo} from "@babylonjs/core/Gizmos/planeDragGizmo";
+import {Vector2, Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {PolygonMeshBuilder} from "@babylonjs/core/Meshes/polygonMesh";
+import {Observer} from "@babylonjs/core/Misc/observable";
+import {Node} from "@babylonjs/core/node";
+import {UtilityLayerRenderer} from "@babylonjs/core/Rendering/utilityLayerRenderer";
+import {Nullable} from "@babylonjs/core/types";
 import { BabylonRenderServiceAccessImpl } from "../../../game/renderer/babylon-render-service-access-impl.service";
 import { EventEmitter } from "@angular/core";
 import { DecimalPosition, PlaceConfig } from "../../../generated/razarion-share";

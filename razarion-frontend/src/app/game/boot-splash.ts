@@ -19,3 +19,30 @@
 export function removeSplash(): void {
   document.getElementById('raz-boot')?.remove();
 }
+
+/**
+ * Size the loading-screen map (bmap=map, index.html) to the room left under the card. The page
+ * defines it, because it has to run before Angular exists; absent outside the map arm.
+ */
+export function fitBootMap(): void {
+  (window as { RAZ_fitBootMap?: () => void }).RAZ_fitBootMap?.();
+}
+
+/** As long as the cover's own fade (.cover-panel-fadeout), so the map and the card leave together. */
+const BOOT_MAP_FADE_MS = 2000;
+
+/**
+ * Take the loading-screen map away (the bmap=map arm, see index.html). It outlives the splash on
+ * purpose and goes with Angular's cover, once the game runs: faded like the cover, then removed.
+ */
+export function removeBootMap(): void {
+  const map = document.getElementById('raz-bmap');
+  if (!map) {
+    return;
+  }
+  map.style.opacity = '0';
+  setTimeout(() => {
+    map.remove();
+    document.documentElement.classList.remove('raz-bmap');
+  }, BOOT_MAP_FADE_MS);
+}

@@ -1,10 +1,15 @@
-import {FreeCamera, NullEngine, PickingInfo, PointerEventTypes, PointerInfo, Scene, Vector3} from '@babylonjs/core';
+import {FreeCamera} from '@babylonjs/core/Cameras/freeCamera';
+import {PickingInfo} from '@babylonjs/core/Collisions/pickingInfo';
+import {NullEngine} from '@babylonjs/core/Engines/nullEngine';
+import {PointerEventTypes, PointerInfo} from '@babylonjs/core/Events/pointerEvents';
+import {Vector3} from '@babylonjs/core/Maths/math.vector';
+import {Scene} from '@babylonjs/core/scene';
 import {BaseItemPlacerPresenterImpl} from './base-item-placer-presenter.impl';
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 import {BabylonModelService} from './babylon-model.service';
 import {BabylonAudioService} from './babylon-audio.service';
 import {BaseItemPlacer} from '../../gwtangular/GwtAngularFacade';
-import {AdvancedDynamicTexture} from '@babylonjs/gui';
+import {AdvancedDynamicTexture} from '@babylonjs/gui/2D/advancedDynamicTexture';
 
 /**
  * The touch half of the item placer. A phone player has one finger for three different intentions -
@@ -90,6 +95,8 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
       reportFirstInteraction: (kind: string, detail?: string) => {
         reportedInteractions.push(kind);
         reportedDetails.push(detail ? kind + '|' + detail : kind);
+      },
+      showGroundCommandMarker: () => {
       },
       touchCameraControl: {
         isGesturing: () => gesturing,

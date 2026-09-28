@@ -1,12 +1,10 @@
-import {
-  Color3,
-  Mesh,
-  MeshBuilder,
-  RawTexture,
-  StandardMaterial,
-  Vector3,
-  VertexData
-} from "@babylonjs/core";
+import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
+import {RawTexture} from "@babylonjs/core/Materials/Textures/rawTexture";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {VertexData} from "@babylonjs/core/Meshes/mesh.vertexData";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
 import {Scene} from "@babylonjs/core/scene";
 
 export class BabylonHarvestingBeam {

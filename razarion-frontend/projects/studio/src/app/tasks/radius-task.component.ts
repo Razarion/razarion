@@ -2,19 +2,16 @@ import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inje
 import {FormsModule} from '@angular/forms';
 import {DecimalPipe} from '@angular/common';
 import {HttpClient} from '@angular/common/http';
-import {
-  ArcRotateCamera,
-  Color3,
-  Color4,
-  DirectionalLight,
-  Mesh,
-  MeshBuilder,
-  ShadowGenerator,
-  StandardMaterial,
-  Tools,
-  TransformNode,
-  Vector3
-} from '@babylonjs/core';
+import {ArcRotateCamera} from '@babylonjs/core/Cameras/arcRotateCamera';
+import {DirectionalLight} from '@babylonjs/core/Lights/directionalLight';
+import {ShadowGenerator} from '@babylonjs/core/Lights/Shadows/shadowGenerator';
+import {StandardMaterial} from '@babylonjs/core/Materials/standardMaterial';
+import {Color3, Color4} from '@babylonjs/core/Maths/math.color';
+import {Vector3} from '@babylonjs/core/Maths/math.vector';
+import {Mesh} from '@babylonjs/core/Meshes/mesh';
+import {MeshBuilder} from '@babylonjs/core/Meshes/meshBuilder';
+import {TransformNode} from '@babylonjs/core/Meshes/transformNode';
+import {Tools} from '@babylonjs/core/Misc/tools';
 import {
   BaseItemTypeEditorControllerClient,
   BoxItemTypeEditorControllerClient,

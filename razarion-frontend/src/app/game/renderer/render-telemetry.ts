@@ -70,17 +70,6 @@ export interface RenderTelemetrySceneStats {
   /** False after F7 — the same picture drawn the old, slower way. */
   parkingFilter: boolean;
   /**
-   * Milliseconds the render loop insists on between frames, 0 when it draws as fast as it can.
-   *
-   * The arm of the frame-cap A/B, and the reason it is on this line: a phone measured on
-   * 2026-09-16 held 833 draw calls and 273 active meshes unchanged for four minutes while its
-   * render time went from 30 to 54 ms - identical work, twice the cost, which is the device
-   * throttling and not the renderer. Running at 45 fps is what makes the heat that later costs
-   * 19. Whether holding 30 avoids that is the question; frameP50 and the us-per-draw ratio in the
-   * two arms are the answer.
-   */
-  frameCapMs: number;
-  /**
    * Memory, added because nothing on this line could tell "this device is slower" from "this
    * device keeps stopping to tidy up" - and PROD says the 3-4 GB cohort is the second one.
    * See TextureMemory. Estimates in MB; -1 where the browser does not say (iOS has no
@@ -278,7 +267,6 @@ export class RenderTelemetry {
       `disabledMeshes=${stats.disabledMeshes} instanced=${stats.instancedMeshes} shadowCasters=${stats.shadowCasters} ` +
       `shadowMap=${stats.shadowMapSize} ` +
       `parked=${stats.parkedMeshes} parkingFilter=${stats.parkingFilter} ` +
-      `frameCapMs=${stats.frameCapMs} ` +
       `meshTop="${this.clean(stats.meshTop)}" indexTop="${this.clean(stats.indexTop)}" ` +
       `heapMb=${stats.heapUsedMb} heapLimitMb=${stats.heapLimitMb} textures=${stats.textureCount} textureMb=${stats.textureMb} geometries=${stats.geometries} ` +
       `backbuffer=${stats.renderWidth}x${stats.renderHeight} scaling=${stats.hardwareScaling.toFixed(2)} dpr=${window.devicePixelRatio} ` +
@@ -357,7 +345,7 @@ export class RenderTelemetry {
         disabledMeshes: -1, instancedMeshes: -1, shadowCasters: -1,
         shadowMapSize: -1, meshTop: "unknown", indexTop: "unknown",
         heapUsedMb: -1, heapLimitMb: -1, textureCount: -1, textureMb: -1, geometries: -1,
-        parkedMeshes: -1, parkingFilter: false, frameCapMs: -1,
+        parkedMeshes: -1, parkingFilter: false,
         renderWidth: -1, renderHeight: -1, hardwareScaling: -1, gpu: null
       };
     }

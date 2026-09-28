@@ -1,14 +1,11 @@
-import {
-  Color3,
-  Material,
-  Mesh,
-  MeshBuilder,
-  Scene,
-  StandardMaterial,
-  Texture,
-  Vector2,
-  Vector3,
-} from "@babylonjs/core";
+import {Material} from "@babylonjs/core/Materials/material";
+import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {Vector2, Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {Scene} from "@babylonjs/core/scene";
 import {BowWaveHalo} from "./bow-wave-halo";
 
 // Ship wake renderer: per ship, two continuous ribbon meshes (port + starboard

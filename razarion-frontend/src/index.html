@@ -135,6 +135,40 @@
       }
 
       /*
+       * Loading-screen experiment, 2026-09-28: bmap=map shows Noob Island above the card and zooms
+       * in on where the new player's base will stand; bmap=plain is the screen everybody had.
+       *
+       * The two that lost before (see above) lost to a picture that froze: requestAnimationFrame
+       * stops for the twelve to twenty-four seconds of INIT_WORKER. This one moves by a CSS
+       * transform animation alone, which the compositor runs on while the main thread is blocked.
+       *
+       * Per browser, stuck in storage, as the last one: several sessions of one browser are one
+       * observation, and vid= in the same line separates them. Only for a new visitor who can run
+       * the game at all - a player with a login may be anywhere by now, and a browser without
+       * WebAssembly GC never reaches the game in either arm. ?bmap=map|plain forces an arm and
+       * keeps it, ?bmap=off forgets it.
+       */
+      try {
+        var path = location.pathname;
+        var gamePage = path.indexOf('/backend') < 0 && path.indexOf('/invalid-token') < 0
+          && path.indexOf('/verify-email') < 0;
+        var forced = new URLSearchParams(location.search).get('bmap');
+        if (forced === 'off') {
+          localStorage.removeItem('razBootMap');
+        }
+        if (gamePage && !localStorage.getItem('app.token') && hasWasmGc()) {
+          var arm = forced === 'map' || forced === 'plain' ? forced : localStorage.getItem('razBootMap');
+          if (arm !== 'map' && arm !== 'plain') {
+            arm = Math.random() < 0.5 ? 'map' : 'plain';
+          }
+          localStorage.setItem('razBootMap', arm);
+          w.RAZ_bootMapArm = arm;
+        }
+      } catch (ignored) {
+        // No storage: no arm, and the plain screen. Such a browser was never counted in either.
+      }
+
+      /*
        * Three shadow arms lived here for two days - map size, caster list, refresh rate - and
        * all three came back null. See ShadowQuality in the renderer for the numbers. Matched on
        * the device class present in both halves they moved renderP50 by nothing, and the 20 %
@@ -295,6 +329,10 @@
         if (w.RAZ_visitorId) {
           add('vid', w.RAZ_visitorId);
         }
+        // The loading-screen arm, see where it is drawn above. Absent for a browser outside it.
+        if (w.RAZ_bootMapArm) {
+          add('bmap', w.RAZ_bootMapArm);
+        }
         try {
           add('coi', self.crossOriginIsolated === true);
           add('sab', typeof SharedArrayBuffer !== 'undefined');
@@ -430,6 +468,18 @@
     </ul>
   </div>
 </div>
+<!--
+  The map arm of the loading-screen experiment (bmap=map, see the head script). Beside the splash,
+  not inside it: Angular removes the splash for its own cover halfway through the start, and the
+  map has to stay put through that, still zooming. ScreenCoverComponent fades it out with its
+  cover once the game is running (removeBootMap in boot-splash.ts).
+-->
+<div id="raz-bmap" aria-hidden="true">
+  <div id="raz-bmap-view">
+    <img id="raz-bmap-img" alt="">
+    <div id="raz-bmap-ring"></div>
+  </div>
+</div>
 <style>
   /* Mirrors screen-cover.component.scss so the handover to Angular is not a visible jump. Both
      files carry the same background and the same portrait swap below; changing one alone shows up
@@ -549,7 +599,173 @@
   #raz-boot-tips li {
     padding: 0.3rem 0;
   }
+
+  /* ------------------------------------------------ loading-screen map (bmap=map)
+
+     Below the card, in the space the card leaves free: the card stays where it is in both arms,
+     so the handover to Angular's cover needs nothing from it, and nothing covers the logo at the
+     top of that cover's picture. How much space that is depends on the card, which on a phone is
+     far taller than on a desktop - so the script below measures it and sizes the map to it
+     (RAZ_fitBootMap), and hides it where too little is left. Such a browser is still counted in
+     its arm: what is measured is being assigned, not having had space. */
+  #raz-bmap {
+    display: none;
+  }
+
+  html.raz-bmap #raz-bmap {
+    display: block;
+    position: fixed;
+    z-index: 10001;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(28vh, 300px, calc(100vw - 2em));
+    aspect-ratio: 1;
+    box-sizing: border-box;
+    padding: 4px;
+    border-radius: 12px;
+    /* The plate's metal rim, as on the card above. */
+    background: linear-gradient(150deg,
+      #d3dde7 0%, #93a1b0 12%, #56626f 34%,
+      #303945 58%, #1d242c 76%, #7b8794 94%, #b8c4d1 100%);
+    box-shadow: 0 0 0 1px #0b1017, 0 10px 26px rgba(0, 0, 0, 0.7);
+    pointer-events: none;
+    transition: opacity 2s ease;
+  }
+
+  #raz-bmap-view {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #0b1420;
+  }
+
+  #raz-bmap-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    /* The start region's centre, about (120, 125) m, as a share of the 920 m square the server
+       cuts (StarterMiniMapService.NOOB_CROP_METRES) - measured from the top, the image's y runs
+       south. Zoomed about this point it stays where it is on screen, so the ring below sits on it
+       throughout without being scaled itself. */
+    transform-origin: 13% 86.4%;
+    will-change: transform;
+  }
+
+  /* A transform animation only: the compositor carries it on while INIT_WORKER holds the main
+     thread, which is exactly where the animated arm of the last experiment froze. Long and
+     easing out, so it is still moving - slowly - in the late part of a slow start. */
+  #raz-bmap.raz-bmap-loaded #raz-bmap-img {
+    opacity: 1;
+    transition: opacity 0.6s ease;
+    animation: raz-bmap-zoom 24s cubic-bezier(0.15, 0.55, 0.3, 1) forwards;
+  }
+
+  @keyframes raz-bmap-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(3); }
+  }
+
+  /* The edge darkens into cloud, as the in-game map does around Noob Island. */
+  #raz-bmap-view::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 40% 62%, transparent 45%, rgba(8, 12, 18, 0.9) 100%);
+    pointer-events: none;
+  }
+
+  /* Where the base will stand: the player's own green, pulsing. */
+  #raz-bmap-ring {
+    position: absolute;
+    left: 13%;
+    top: 86.4%;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #10b981, 0 0 10px 2px rgba(16, 185, 129, 0.6);
+    opacity: 0;
+    z-index: 1;
+  }
+
+  #raz-bmap.raz-bmap-loaded #raz-bmap-ring {
+    animation: raz-bmap-pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes raz-bmap-pulse {
+    0%, 100% { opacity: 0.35; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #raz-bmap.raz-bmap-loaded #raz-bmap-img {
+      animation: none;
+    }
+
+    #raz-bmap.raz-bmap-loaded #raz-bmap-ring {
+      animation: none;
+      opacity: 1;
+    }
+  }
 </style>
+<script>
+  /*
+   * The map arm: fetch the island and start the zoom once it is there - zooming into an empty
+   * frame would spend the animation on nothing. A failed image leaves the plain screen.
+   */
+  (function () {
+    if (window.RAZ_bootMapArm !== 'map' || !document.getElementById('raz-boot')) {
+      return;
+    }
+    var map = document.getElementById('raz-bmap');
+    var img = document.getElementById('raz-bmap-img');
+    if (!map || !img) {
+      return;
+    }
+    document.documentElement.classList.add('raz-bmap');
+
+    /*
+     * The map takes the space between the card and the bottom of the screen, never more than
+     * 300 px and never less than 120 - below that it is a stamp, not a map, and it goes. Asked
+     * again when Angular's cover replaces the splash (ScreenCoverComponent) and on a resize: the
+     * two cards are built alike, but a card that grows by a line must not end up under the map.
+     */
+    var MAX_PX = 300;
+    var MIN_PX = 120;
+    var GAP_PX = 16;
+    window.RAZ_fitBootMap = function () {
+      try {
+        var card = document.querySelector('.cover-panel-center') || document.getElementById('raz-boot-card');
+        if (!card || !map.isConnected) {
+          return;
+        }
+        var free = window.innerHeight - card.getBoundingClientRect().bottom - 2 * GAP_PX;
+        var size = Math.floor(Math.min(MAX_PX, free, window.innerWidth - 2 * GAP_PX));
+        if (size < MIN_PX) {
+          map.style.display = 'none';
+        } else {
+          map.style.display = '';
+          map.style.width = size + 'px';
+          map.style.bottom = GAP_PX + 'px';
+        }
+      } catch (ignored) {
+      }
+    };
+    window.RAZ_fitBootMap();
+    addEventListener('resize', window.RAZ_fitBootMap);
+    img.onload = function () {
+      map.classList.add('raz-bmap-loaded');
+    };
+    img.onerror = function () {
+      document.documentElement.classList.remove('raz-bmap');
+    };
+    img.src = '/rest/image/minimap/starter/noob';
+  })();
+</script>
 <script>
   /*
    * The splash belongs to the game only. The backend and the auth pages are ordinary Angular

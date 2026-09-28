@@ -1,4 +1,5 @@
-import {Constants, InternalTexture} from "@babylonjs/core";
+import {Constants} from "@babylonjs/core/Engines/constants";
+import {InternalTexture} from "@babylonjs/core/Materials/Textures/internalTexture";
 
 /**
  * How much GPU memory the loaded textures occupy, estimated.

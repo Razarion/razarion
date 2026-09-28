@@ -44,6 +44,8 @@ export class ActionService {
    * before assuming the acknowledgement is lost and opening the gate ourselves.
    */
   private static readonly MOVE_ACK_TIMEOUT_MS = 2000;
+  /** A move goes to a spot, not to a thing, so its ring has no target radius to take. */
+  private static readonly MOVE_MARKER_RADIUS = 1.5;
 
   constructor(private gwtAngularService: GwtAngularService,
               private babylonAudioService: BabylonAudioService,
@@ -105,6 +107,9 @@ export class ActionService {
     }
 
     this.babylonAudioService.speakCommand('Moving out');
+    // Shown for a queued move too: the click was understood, only its sending waits for the gate.
+    this.rendererService?.showGroundCommandMarker(xTerrainPosition, yTerrainPosition,
+      ActionService.MOVE_MARKER_RADIUS, 'move');
     this.ensureMoveAckCallback();
     if (this.hasPendingMoveCommand) {
       this.queuedMoveCommand = { movableIds, x: xTerrainPosition, y: yTerrainPosition };
@@ -252,6 +257,7 @@ export class ActionService {
         if (builderIds.length > 0) {
       
           this.babylonAudioService.speakCommand('Completing construction');
+          this.rendererService?.showCommandTargetMarker(item, 'build');
           this.reportCommand(builderIds.length);
           this.gameCommandService.finalizeBuildCmd(builderIds, id);
           this.notifyOrder({kind: 'finalize', unitIds: builderIds, targetId: id, targetTypeId: baseItemType.getId()});

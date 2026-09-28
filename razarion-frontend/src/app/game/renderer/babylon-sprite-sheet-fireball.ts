@@ -1,4 +1,8 @@
-import {Color4, ParticleSystem, SphereParticleEmitter, Texture, Vector3} from "@babylonjs/core";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
+import {Color4} from "@babylonjs/core/Maths/math.color";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {SphereParticleEmitter} from "@babylonjs/core/Particles/EmitterTypes/sphereParticleEmitter";
+import {ParticleSystem} from "@babylonjs/core/Particles/particleSystem";
 import {Scene} from "@babylonjs/core/scene";
 
 // Reusable sprite-sheet-animated fireball system. The 64-frame sheet at

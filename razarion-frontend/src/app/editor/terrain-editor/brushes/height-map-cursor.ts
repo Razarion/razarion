@@ -1,4 +1,10 @@
-import {Constants, Mesh, MeshBuilder, Scene, StandardMaterial, Vector3, VertexData} from '@babylonjs/core';
+import {Constants} from '@babylonjs/core/Engines/constants';
+import {StandardMaterial} from '@babylonjs/core/Materials/standardMaterial';
+import {Vector3} from '@babylonjs/core/Maths/math.vector';
+import {Mesh} from '@babylonjs/core/Meshes/mesh';
+import {VertexData} from '@babylonjs/core/Meshes/mesh.vertexData';
+import {MeshBuilder} from '@babylonjs/core/Meshes/meshBuilder';
+import {Scene} from '@babylonjs/core/scene';
 import {Color3} from '@babylonjs/core/Maths/math.color';
 import {BabylonTerrainTileImpl} from '../../../game/renderer/babylon-terrain-tile.impl';
 import {BrushValues, FixHeightBrushComponent} from './fix-height-brush.component';

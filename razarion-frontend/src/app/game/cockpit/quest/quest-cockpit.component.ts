@@ -1,4 +1,4 @@
-import {Component, NgZone} from "@angular/core";
+import {Component, NgZone, OnDestroy} from "@angular/core";
 import {
   ConditionConfig,
   QuestCockpit,
@@ -34,12 +34,34 @@ import {QuestMarkerService} from '../main/radar/quest-marker.service';
   ],
   styleUrls: ['quest-cockpit.component.scss']
 })
-export class QuestCockpitComponent implements QuestCockpit {
+export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
   title?: string
-  progressRows: { text: string, done: boolean }[] = [];
+  progressRows: { text: string, done: boolean, actual: number }[] = [];
   timeRow?: string = "";
   showQuestSelectionButton: boolean = false;
   showQuestInGameVisualisation: boolean = true;
+  /** Classes of the glow on the quest panel and the phone strip - see _quest-flash.scss. */
+  flashClass = '';
+  private flashAlternate = false;
+  private lastFlashTime = 0;
+  private pendingTickFlash: ReturnType<typeof setTimeout> | null = null;
+  private clearFlashTimer: ReturnType<typeof setTimeout> | null = null;
+  /** The quest the player has already been shown, so a reconnect to the same one does not glow. */
+  private shownQuestId: number | null = null;
+  /**
+   * Progress as last seen, kept across showQuestSideBar() for the same quest. That call resets
+   * the rows to zero, and the server resends the old count right after it - compared against the
+   * reset rows, that would glow as progress on every scene switch and reconnect.
+   */
+  private knownProgress: { done: boolean, actual: number }[] = [];
+  /**
+   * Harvest progress arrives once a second for as long as the harvesters work. Glowing at that
+   * rate turns the panel into a strobe, so a counter step glows at most this often; the steps in
+   * between are folded into the next one.
+   */
+  private static readonly TICK_FLASH_INTERVAL_MS = 3000;
+  /** A little longer than the longest glow, then the class goes so a re-rendered strip does not replay it. */
+  private static readonly FLASH_CLEAR_MS = 1300;
   private questDescriptionConfig?: QuestDescriptionConfig;
   private conditionConfig?: ConditionConfig;
   private questProgressInfo?: QuestProgressInfo;
@@ -79,6 +101,12 @@ export class QuestCockpitComponent implements QuestCockpit {
         this.questProgressInfo = undefined;
         this.setupTitle();
         this.setupProgress();
+        const questId = questDescriptionConfig ? GwtHelper.gwtIssueNumber(questDescriptionConfig.getId()) : null;
+        if (questId !== null && questId !== this.shownQuestId) {
+          this.shownQuestId = questId;
+          this.knownProgress = this.snapshotProgress();
+          this.flash('quest');
+        }
         this.showQuestSelectionButton = showQuestSelectionButton;
         this.cockpitDisplayService.showQuestCockpit = !!questDescriptionConfig;
         // The quest's region on the minimap, for a quest without a tip - with one, the tip marks
@@ -121,10 +149,79 @@ export class QuestCockpitComponent implements QuestCockpit {
       try {
         this.questProgressInfo = questProgressInfo || undefined;
         this.setupProgress();
+        if (questProgressInfo) {
+          this.flashOnProgress();
+        }
       } catch (e) {
         console.warn(e);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.clearTimer(this.pendingTickFlash);
+    this.clearTimer(this.clearFlashTimer);
+  }
+
+  /**
+   * Glow only where the player got closer to the goal: a counter going up, or a row turning done.
+   * The remaining time ticks every second and a unit leaving the region takes a count back down -
+   * neither is progress to point at.
+   */
+  private flashOnProgress(): void {
+    let rowDone = false;
+    let counted = false;
+    this.progressRows.forEach((row, index) => {
+      const known = this.knownProgress[index];
+      if (row.done && !known?.done) {
+        rowDone = true;
+      }
+      if (row.actual > (known?.actual ?? 0)) {
+        counted = true;
+      }
+    });
+    this.knownProgress = this.snapshotProgress();
+    if (rowDone) {
+      this.flash('done');
+    } else if (counted) {
+      this.requestTickFlash();
+    }
+  }
+
+  private snapshotProgress(): { done: boolean, actual: number }[] {
+    return this.progressRows.map(row => ({done: row.done, actual: row.actual}));
+  }
+
+  private requestTickFlash(): void {
+    const wait = this.lastFlashTime + QuestCockpitComponent.TICK_FLASH_INTERVAL_MS - Date.now();
+    if (wait <= 0) {
+      this.flash('tick');
+    } else if (!this.pendingTickFlash) {
+      this.pendingTickFlash = setTimeout(() => {
+        this.pendingTickFlash = null;
+        this.flash('tick');
+      }, wait);
+    }
+  }
+
+  private flash(level: 'tick' | 'done' | 'quest'): void {
+    // A stronger glow, or a new quest, stands in for a counter step still waiting its turn.
+    this.clearTimer(this.pendingTickFlash);
+    this.pendingTickFlash = null;
+    this.lastFlashTime = Date.now();
+    this.flashAlternate = !this.flashAlternate;
+    this.flashClass = `quest-flash-${level} quest-flash-${this.flashAlternate ? 'a' : 'b'}`;
+    this.clearTimer(this.clearFlashTimer);
+    this.clearFlashTimer = setTimeout(() => {
+      this.clearFlashTimer = null;
+      this.flashClass = '';
+    }, QuestCockpitComponent.FLASH_CLEAR_MS);
+  }
+
+  private clearTimer(timer: ReturnType<typeof setTimeout> | null): void {
+    if (timer) {
+      clearTimeout(timer);
+    }
   }
 
   private setupConditionConfig(): ConditionConfig | undefined {
@@ -207,7 +304,7 @@ export class QuestCockpitComponent implements QuestCockpit {
       }
       default: {
         console.warn(`Unknown ConditionTrigger ${this.conditionConfig.getConditionTrigger()}`)
-        this.progressRows.push({text: `???`, done: false})
+        this.progressRows.push({text: `???`, done: false, actual: 0})
       }
     }
     if (this.conditionConfig.getComparisonConfig().getTimeSeconds()) {
@@ -226,7 +323,8 @@ export class QuestCockpitComponent implements QuestCockpit {
     let expectedCount = GwtHelper.gwtIssueNumberNull((<QuestConfig>this.questDescriptionConfig).getConditionConfig()?.getComparisonConfig().getCount()) || 0;
     this.progressRows.push({
       text: `${text} ${actualCount} of ${expectedCount}`,
-      done: actualCount >= expectedCount
+      done: actualCount >= expectedCount,
+      actual: actualCount
     });
   }
 
@@ -239,7 +337,8 @@ export class QuestCockpitComponent implements QuestCockpit {
         let itemTypeName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(GwtHelper.gwtIssueNumber(itemTypeIdCount[0])).getName();
         this.progressRows.push({
           text: `${itemTypeName} ${textSpecific} ${actualCount} of ${itemTypeIdCount[1]}`,
-          done: actualCount >= itemTypeIdCount[1]
+          done: actualCount >= itemTypeIdCount[1],
+          actual: actualCount
         });
       });
     }

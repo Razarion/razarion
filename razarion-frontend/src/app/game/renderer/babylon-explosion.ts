@@ -1,13 +1,10 @@
-import {
-  Color3,
-  Color4,
-  MeshBuilder,
-  ParticleSystem,
-  SphereParticleEmitter,
-  StandardMaterial,
-  Texture,
-  Vector3,
-} from "@babylonjs/core";
+import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
+import {Color3, Color4} from "@babylonjs/core/Maths/math.color";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {SphereParticleEmitter} from "@babylonjs/core/Particles/EmitterTypes/sphereParticleEmitter";
+import {ParticleSystem} from "@babylonjs/core/Particles/particleSystem";
 import {Scene} from "@babylonjs/core/scene";
 
 // Building explosion effect — extracted from the data-driven "Explosion" particle system

@@ -124,12 +124,33 @@ public class PlanetCrudService extends AbstractConfigCrudService<PlanetConfig, P
     public void updateMiniMapImage(int planetId, byte[] data) {
         PlanetEntity planetEntity = getEntity(planetId);
         planetEntity.setMiniMapImage(data);
+        // In the same transaction as the bytes, for the reason given at the height map below.
+        planetEntity.setMiniMapDigest(data != null ? ContentDigest.of(data) : null);
         getJpaRepository().save(planetEntity);
     }
 
     @Transactional
     public byte[] getMiniMapImage(int planetId) {
         return getEntity(planetId).getMiniMapImage();
+    }
+
+    /**
+     * The entity tag for one planet's minimap image, or null if there is none. Like the height
+     * map's: the column alone answers, and a planet stored before the column existed gets its
+     * digest on the first request that needs it.
+     */
+    @Transactional
+    public String getMiniMapDigest(int planetId) {
+        PlanetEntity planetEntity = getEntity(planetId);
+        if (planetEntity.getMiniMapDigest() == null) {
+            byte[] image = planetEntity.getMiniMapImage();
+            if (image == null) {
+                return null;
+            }
+            planetEntity.setMiniMapDigest(ContentDigest.of(image));
+            getJpaRepository().save(planetEntity);
+        }
+        return planetEntity.getMiniMapDigest();
     }
 
     @Transactional

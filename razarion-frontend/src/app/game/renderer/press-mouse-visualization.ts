@@ -1,4 +1,8 @@
-import {Button, Control, Rectangle, StackPanel, TextBlock} from '@babylonjs/gui';
+import {Button} from '@babylonjs/gui/2D/controls/button';
+import {Control} from '@babylonjs/gui/2D/controls/control';
+import {Rectangle} from '@babylonjs/gui/2D/controls/rectangle';
+import {StackPanel} from '@babylonjs/gui/2D/controls/stackPanel';
+import {TextBlock} from '@babylonjs/gui/2D/controls/textBlock';
 import {Image} from '@babylonjs/gui/2D/controls/image';
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 import {Animation} from '@babylonjs/core/Animations/animation';

@@ -1,4 +1,11 @@
-import {AbstractActionManager, AbstractMesh, AnimationGroup, Node, Observable, ParticleSystemSet, TransformNode, Vector3} from '@babylonjs/core';
+import {AbstractActionManager} from '@babylonjs/core/Actions/abstractActionManager';
+import {AnimationGroup} from '@babylonjs/core/Animations/animationGroup';
+import {Vector3} from '@babylonjs/core/Maths/math.vector';
+import {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
+import {TransformNode} from '@babylonjs/core/Meshes/transformNode';
+import {Observable} from '@babylonjs/core/Misc/observable';
+import {Node} from '@babylonjs/core/node';
+import {ParticleSystemSet} from '@babylonjs/core/Particles/particleSystemSet';
 import {BabylonRenderServiceAccessImpl, RazarionMetadata} from './babylon-render-service-access-impl.service';
 import type {Nullable} from '@babylonjs/core/types';
 import {ParticleSystemEntity} from '../../generated/razarion-share';

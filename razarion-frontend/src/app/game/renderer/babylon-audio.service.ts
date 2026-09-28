@@ -1,6 +1,9 @@
 import {Injectable} from "@angular/core";
-import type {AbstractSound, AudioEngineV2, StaticSoundBuffer} from "@babylonjs/core";
-import {CreateAudioEngineAsync, CreateSoundAsync, CreateSoundBufferAsync} from "@babylonjs/core";
+import type {AbstractSound} from "@babylonjs/core/AudioV2/abstractAudio/abstractSound";
+import type {AudioEngineV2} from "@babylonjs/core/AudioV2/abstractAudio/audioEngineV2";
+import type {StaticSoundBuffer} from "@babylonjs/core/AudioV2/abstractAudio/staticSoundBuffer";
+import {CreateSoundAsync, CreateSoundBufferAsync} from "@babylonjs/core/AudioV2/abstractAudio/audioEngineV2";
+import {CreateAudioEngineAsync} from "@babylonjs/core/AudioV2/webAudio/webAudioEngine";
 import {Vector3} from "@babylonjs/core/Maths/math.vector";
 import type {Nullable} from '@babylonjs/core/types';
 import type {Node} from '@babylonjs/core/node';

@@ -211,7 +211,7 @@ test bed should run the **actor** axis in full for *every* step.
 | BLD-09 | construction site stalled > 10 s | "Click to continue building", select the builder first | ✓ bed since the guide (2026-09-18); the chain: the prompt comes only after the site has not grown for 10 s, although the builder stands idle elsewhere from the moment it arrives - nothing on screen until then |
 | BLD-10 | construction site off screen | arrow | ? |
 | BLD-11 | construction site destroyed | back to placing | ✓ bed since the guide (2026-09-18); the chain: a destroyed site looks like one out of view (no removed-listener, W5); the task waits for it forever and never offers the placement again |
-| BLD-12 | builder dies | fail gracefully (Q1) | ? |
+| BLD-12 | builder dies (e.g. drove through the Tesla bot) | a factory present: select it, hint on the builder button, quiet while it is built; no factory: quiet (Q1) | ✓ bed since 2026-09-28 |
 | BLD-13 | finished while off screen | quest done, everything gone | ✓ bed |
 | BLD-14 | 386, placer open and the region off screen, the player does not scroll for 30 s | arrow into the region the whole time, stall reason `TARGET_OUT_OF_VIEW` | ✓ bed since 2026-09-20 |
 | BLD-15 | 386, drive to the coast plus the build take longer than the watchdog | quiet (R3); the only reasons reported are `AWAIT_BUILD_SITE` and `AWAIT_BUILD_FINALIZE` | ✓ bed since 2026-09-20 |
@@ -254,6 +254,7 @@ One decision for all three quests: each can find the world in an earlier quest's
 | TRN-05 | 486, builder not aboard | the load steps of 485 | ✓ bed since 2026-09-22 |
 | TRN-06 | 392, transporter at the coast | select it, hint on the Unload button, the region marked while placing | ✓ bed since 2026-09-22 |
 | TRN-07 | 392, transporter still at home | sail first (arrow, marked region); the Unload hint once the region is within reach (range - 2) | ✓ bed since 2026-09-22 |
+| TRN-08 | 486, transporter sunk with the builder aboard (naval bot) | a new builder from the factory first, then a new transporter from the dockyard; was silent (`ACTOR_NOT_FOUND`) - the first phone player at level 13 lost a whole run to it | ✓ bed since 2026-09-28 |
 
 ### SLL - Sell a building (SELL)
 
@@ -404,7 +405,7 @@ Answered 2026-09-18.
 
 | Question | Decision |
 |---|---|
-| Q1 actor dead or missing (SEL-11, BLD-12, ATK-07) | attack quests with no unit of the actor type left: the tip becomes the fabricate tip, then continues with the attack. Everything else fails gracefully |
+| Q1 actor dead or missing (SEL-11, BLD-12, ATK-07, TRN-08) | no unit of the actor type left: the tip becomes the fabricate tip wherever an own factory can make one - attack quests since the guide, build, harvest and transport quests since 2026-09-28 ("graceful" had meant stuck: TRN-08) - then continues with the quest. Only where nothing can make it does it fail gracefully |
 | Q2 working off screen (IDL-02) | show nothing: the unit is working |
 | Q3 greyed-out button (PLC-02, FAB-02, FAB-03) | fixed in the quests: 50 Razarion reward on 363 and on 366 |
 | Q4 group tip on 365 (GRP-05) | no: the first attack teaches the basics, group selection comes later (379) |

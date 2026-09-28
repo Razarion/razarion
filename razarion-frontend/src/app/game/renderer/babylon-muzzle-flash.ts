@@ -1,4 +1,7 @@
-import {Color4, DynamicTexture, ParticleSystem, Vector3} from "@babylonjs/core";
+import {DynamicTexture} from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import {Color4} from "@babylonjs/core/Maths/math.color";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {ParticleSystem} from "@babylonjs/core/Particles/particleSystem";
 import {Scene} from "@babylonjs/core/scene";
 
 export class BabylonMuzzleFlash {

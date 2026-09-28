@@ -58,7 +58,13 @@ public class NoCacheRestFilter extends OncePerRequestFilter {
         return "GET".equals(req.getMethod())
                 && (uri.startsWith("/rest/gltf/glb/")
                 || uri.startsWith("/rest/terrainHeightMap/")
+                // The shape joined 2026-09-27, when the game page began fetching it ahead of the
+                // worker. The list of what to fetch is per starter planet and stays uncached.
+                || (uri.startsWith("/rest/terrainshape/") && !uri.endsWith("/prefetch"))
                 || uri.startsWith("/rest/babylon-material/data/")
+                // The minimap's background, 2026-09-27: 300 KB, and until then downloaded on
+                // every start with a timestamp in the url.
+                || uri.startsWith("/rest/image/minimap/")
                 || uri.startsWith("/rest/editor/particle-system/data/"));
     }
 }

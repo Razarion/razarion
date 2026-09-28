@@ -1,4 +1,6 @@
-import {Color3, NodeMaterial, Texture} from "@babylonjs/core";
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
+import {Color3} from "@babylonjs/core/Maths/math.color";
 import {loadSplatterTexture} from "./procedural-textures";
 import {DerivativeBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment/derivativeBlock";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";

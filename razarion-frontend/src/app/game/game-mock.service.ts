@@ -63,7 +63,7 @@ import {CockpitDisplayService} from './cockpit/cockpit-display.service';
 import {BabylonBaseItemImpl} from './renderer/babylon-base-item.impl';
 import {BabylonImpact} from './renderer/babylon-impact';
 import {BabylonEnergyBeam} from './renderer/babylon-energy-beam';
-import {Vector3} from '@babylonjs/core';
+import {Vector3} from '@babylonjs/core/Maths/math.vector';
 
 let staticGameConfigJson: any = {
   terrainObjectConfigs: []

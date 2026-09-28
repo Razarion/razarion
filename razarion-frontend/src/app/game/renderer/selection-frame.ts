@@ -1,4 +1,6 @@
-import {PointerEventTypes, Scene, Vector2} from "@babylonjs/core";
+import {PointerEventTypes} from "@babylonjs/core/Events/pointerEvents";
+import {Vector2} from "@babylonjs/core/Maths/math.vector";
+import {Scene} from "@babylonjs/core/scene";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {ActionService} from "../action.service";
 import {TouchSelectionModeService} from "./touch-selection-mode.service";

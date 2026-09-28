@@ -1,13 +1,11 @@
-import {
-  DynamicTexture,
-  Effect,
-  Material,
-  Mesh,
-  MeshBuilder,
-  Scene,
-  ShaderMaterial,
-  Texture,
-} from "@babylonjs/core";
+import {Effect} from "@babylonjs/core/Materials/effect";
+import {Material} from "@babylonjs/core/Materials/material";
+import {ShaderMaterial} from "@babylonjs/core/Materials/shaderMaterial";
+import {DynamicTexture} from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {Scene} from "@babylonjs/core/scene";
 
 // Bow-wave foam halo: soft foam patch under a water object (ship hull or
 // building footprint). Animated via UV-displacement in a custom fragment

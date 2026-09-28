@@ -1,23 +1,30 @@
-import {Color3, Mesh, MeshBuilder, Nullable, StandardMaterial, TransformNode} from "@babylonjs/core";
+import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode";
+import {Nullable} from "@babylonjs/core/types";
 import {Observer} from "@babylonjs/core/Misc/observable";
 import {Scene} from "@babylonjs/core/scene";
 
 /**
  * Which command the marker acknowledges. Only the colour differs - the pulse itself is the same
- * gesture, so the player learns one shape instead of two.
+ * gesture, so the player learns one shape instead of four.
  */
-export type CommandTargetKind = 'attack' | 'harvest';
+export type CommandTargetKind = 'attack' | 'harvest' | 'move' | 'build';
 
 /**
  * The short pulse that answers "yes, that one" when a command is sent at a target: two rings
- * that snap inwards onto the clicked enemy unit or razarion spot and fade out.
+ * that snap inwards onto the clicked enemy unit, razarion spot, construction site or ground
+ * point and fade out.
  *
  * Attack and harvest orders used to be acknowledged by sound alone. The unit itself often needs
  * seconds to react - it first has to drive there - so until it moved there was nothing on screen
  * saying the click had been understood, or which of several overlapping targets had been hit.
  *
  * The rings hang off the target's own node, so they follow a target that is moving away and die
- * with a target that is destroyed.
+ * with a target that is destroyed. A move or a new building has no item to hang off yet - those
+ * get a node of their own on the ground, which the marker then owns and disposes.
  */
 export class CommandTargetMarker {
   private static readonly RING_COUNT = 2;
@@ -42,7 +49,8 @@ export class CommandTargetMarker {
   constructor(private readonly scene: Scene,
               private readonly target: TransformNode,
               radius: number,
-              kind: CommandTargetKind) {
+              private readonly kind: CommandTargetKind,
+              private readonly ownsTarget = false) {
     const color = CommandTargetMarker.color(kind);
     // Scales with the target so a razarion spot gets a fine ring and a building a bolder one,
     // capped before it turns into a doughnut around the biggest bases.
@@ -73,11 +81,29 @@ export class CommandTargetMarker {
   }
 
   private static color(kind: CommandTargetKind): Color3 {
-    return kind === 'attack' ? new Color3(1, 0.25, 0.18) : new Color3(0.3, 0.8, 1);
+    switch (kind) {
+      case 'attack':
+        return new Color3(1, 0.25, 0.18);
+      case 'harvest':
+        return new Color3(0.3, 0.8, 1);
+      case 'move':
+        return new Color3(0.35, 1, 0.4);
+      case 'build':
+        return new Color3(1, 0.8, 0.2);
+    }
   }
 
   getTarget(): TransformNode {
     return this.target;
+  }
+
+  getKind(): CommandTargetKind {
+    return this.kind;
+  }
+
+  /** Sits on a ground point of its own rather than on an item. */
+  isGround(): boolean {
+    return this.ownsTarget;
   }
 
   isDisposed(): boolean {
@@ -136,5 +162,8 @@ export class CommandTargetMarker {
     this.materials.forEach(material => material.dispose());
     this.rings.length = 0;
     this.materials.length = 0;
+    if (this.ownsTarget && !this.target.isDisposed()) {
+      this.target.dispose();
+    }
   }
 }

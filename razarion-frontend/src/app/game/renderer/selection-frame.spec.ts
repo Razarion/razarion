@@ -1,4 +1,6 @@
-import {NullEngine, PointerEventTypes, Scene} from '@babylonjs/core';
+import {NullEngine} from '@babylonjs/core/Engines/nullEngine';
+import {PointerEventTypes} from '@babylonjs/core/Events/pointerEvents';
+import {Scene} from '@babylonjs/core/scene';
 import {SelectionFrame} from './selection-frame';
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 import {ActionService} from '../action.service';

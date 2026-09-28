@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AbstractBrush} from './abstract-brush';
-import {PointerEventTypes, Vector2, Vector3} from '@babylonjs/core';
+import {PointerEventTypes} from '@babylonjs/core/Events/pointerEvents';
+import {Vector2, Vector3} from '@babylonjs/core/Maths/math.vector';
 import {BrushConfigControllerClient, BrushConfigEntity} from 'src/app/generated/razarion-share';
 import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
 import {HttpClient} from '@angular/common/http';

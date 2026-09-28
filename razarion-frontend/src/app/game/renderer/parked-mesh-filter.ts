@@ -1,4 +1,7 @@
-import {AbstractMesh, ISmartArrayLike, RenderTargetTexture, Scene, SmartArray} from "@babylonjs/core";
+import {RenderTargetTexture} from "@babylonjs/core/Materials/Textures/renderTargetTexture";
+import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
+import {ISmartArrayLike, SmartArray} from "@babylonjs/core/Misc/smartArray";
+import {Scene} from "@babylonjs/core/scene";
 
 /**
  * Keeps meshes that are in the scene but deliberately invisible out of Babylon's two per-frame

@@ -1,23 +1,19 @@
 import {markPlacerClosed} from './placer-release';
-import {
-  Color3,
-  Matrix,
-  Mesh,
-  MeshBuilder,
-  Nullable,
-  Observer,
-  PointerEventTypes,
-  PointerInfo,
-  Scene,
-  StandardMaterial,
-  Tools,
-  Vector3
-} from "@babylonjs/core";
+import {PointerEventTypes, PointerInfo} from "@babylonjs/core/Events/pointerEvents";
+import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {Matrix, Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {Observer} from "@babylonjs/core/Misc/observable";
+import {Tools} from "@babylonjs/core/Misc/tools";
+import {Scene} from "@babylonjs/core/scene";
+import {Nullable} from "@babylonjs/core/types";
 import {BaseItemPlacer, BaseItemPlacerPresenter, Diplomacy} from "src/app/gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonModelService} from "./babylon-model.service";
 import {BabylonAudioService} from "./babylon-audio.service";
-import {AdvancedDynamicTexture} from "@babylonjs/gui";
+import {AdvancedDynamicTexture} from "@babylonjs/gui/2D/advancedDynamicTexture";
 import {RenderObject} from './render-object';
 import {PressMouseVisualization} from './press-mouse-visualization';
 
@@ -199,7 +195,12 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
      */
     this.movedByPlayer = false;
     this.noTerrainReported = false;
-    const pickedPoint = this.setupPickedPoint();
+    // The unload placer knows where the ground in the ship's reach takes a unit - often a strip too
+    // thin to find by trying (quest 392). Its spot beats the screen centre.
+    const openPosition = baseItemPlacer.getOpenPosition?.();
+    const pickedPoint = openPosition
+      ? new Vector3(openPosition.getX(), this.rendererService.getTerrainHeightAt(openPosition.getX(), openPosition.getY()) ?? 0, openPosition.getY())
+      : this.setupPickedPoint();
     if (pickedPoint) {
       this.openAt(baseItemPlacer, pickedPoint);
     } else {
@@ -415,6 +416,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       this.babylonAudioService.speakCommand('Building');
     }
     this.rendererService.reportFirstInteraction('PLACER_CONFIRMED');
+    // The ghost goes away with the placer, and the construction site only appears once the engine
+    // has created it - the rings bridge that gap on the green disc the player just confirmed.
+    this.rendererService.showGroundCommandMarker(position.x, position.z, this.discRadius, 'build', position.y);
     baseItemPlacer.onPlace(position.x, position.z);
   }
 

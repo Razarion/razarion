@@ -1,13 +1,11 @@
-import {
-  Color4,
-  DynamicTexture,
-  Mesh,
-  MeshBuilder,
-  ParticleSystem,
-  TransformNode,
-  Vector3,
-  VertexBuffer,
-} from "@babylonjs/core";
+import {VertexBuffer} from "@babylonjs/core/Buffers/buffer";
+import {DynamicTexture} from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import {Color4} from "@babylonjs/core/Maths/math.color";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode";
+import {ParticleSystem} from "@babylonjs/core/Particles/particleSystem";
 import {Scene} from "@babylonjs/core/scene";
 
 export class BabylonDamageEffect {

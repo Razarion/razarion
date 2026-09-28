@@ -2,30 +2,29 @@ import {Injectable, NgZone} from "@angular/core";
 import {Diplomacy} from "src/app/gwtangular/GwtAngularFacade";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {HttpClient} from "@angular/common/http";
-import {
-  AbstractMesh,
-  AnimationGroup,
-  Color3,
-  DracoCompression,
-  InstancedMesh,
-  Material,
-  Mesh,
-  Node,
-  NodeMaterial,
-  NodeParticleSystemSet,
-  Scene,
-  SceneLoader,
-  TransformNode
-} from "@babylonjs/core";
-import {GLTFFileLoader} from "@babylonjs/loaders";
+import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup";
+import {SceneLoader} from "@babylonjs/core/Loading/sceneLoader";
+import {Material} from "@babylonjs/core/Materials/material";
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
+import {DracoCompression} from "@babylonjs/core/Meshes/Compression/dracoCompression";
+import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode";
+import {Node} from "@babylonjs/core/node";
+import {NodeParticleSystemSet} from "@babylonjs/core/Particles/Node/nodeParticleSystemSet";
+import {Scene} from "@babylonjs/core/scene";
+import {GLTFFileLoader} from "@babylonjs/loaders/glTF/glTFFileLoader";
 import {Model3DEntity, ParticleSystemEntity} from "src/app/generated/razarion-share";
-import {SimpleMaterial} from "@babylonjs/materials";
+import {SimpleMaterial} from "@babylonjs/materials/simple/simpleMaterial";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
-import {materialsForFirstFrame} from "./start-gate-materials";
+import {materialsForFirstFrame, materialsForModels} from "./start-gate-materials";
 import {BabylonMaterialContainer, GlbContainer, ParticleSystemSetContainer} from "./babylon-model-container";
 import {GltfHelper} from "./gltf-helper";
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 import {BuildAnimationPhase, RenderObject} from './render-object';
+import {whenTerrainReady} from './boot-gate';
 
 type AnimationGroupClassification = BuildAnimationPhase | 'legacy';
 
@@ -185,6 +184,8 @@ export class BabylonModelService {
   private loadUiConfigCollection() {
     this.uiConfigCollectionService.getUiConfigCollection().then(uiConfigCollection => {
       this.babylonMaterialContainer.setRequired(materialsForFirstFrame(uiConfigCollection));
+      // The vehicle and building materials go with the models they paint, not beside the terrain.
+      this.babylonMaterialContainer.setDeferred(materialsForModels(uiConfigCollection));
       // None. Both particle systems are effects - smoke and a spawn burst - and 1.5 MB of them
       // stood in front of every first frame. createParticleSystem already answers "not here yet"
       // with a warning and no effect, so the worst case is a missing puff of smoke in the first
@@ -192,8 +193,13 @@ export class BabylonModelService {
       this.particleSystemContainer.setRequired([]);
       this.babylonMaterialContainer.load(uiConfigCollection.babylonMaterials, this, this.scene);
       this.setupModel3DEntities(uiConfigCollection.model3DEntities);
-      this.particleSystemContainer.load(uiConfigCollection.particleSystemEntities, this, this.scene)
-      this.glbContainer.load(uiConfigCollection.gltfs, this, this.scene);
+      // Neither is waited for by the start, and together they are 4.4 MB on the line the terrain
+      // needs - see boot-gate.ts. Whoever asks for a model before then is served first once they come.
+      whenTerrainReady().then(() => {
+        this.babylonMaterialContainer.releaseDeferred();
+        this.particleSystemContainer.load(uiConfigCollection.particleSystemEntities, this, this.scene);
+        this.glbContainer.load(uiConfigCollection.gltfs, this, this.scene);
+      });
     });
   }
 

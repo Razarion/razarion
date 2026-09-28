@@ -7,7 +7,7 @@ describe('RenderTelemetry', () => {
     shadowMapSize: 2048,
     heapUsedMb: 128.5, heapLimitMb: 512, textureCount: 40, textureMb: 96.25, geometries: 210,
     meshTop: 'Rock:200,Palm:120,ground:20',
-    parkedMeshes: 205, parkingFilter: true, frameCapMs: 0, indexTop: 'ground:900k,palm:430k',
+    parkedMeshes: 205, parkingFilter: true, indexTop: 'ground:900k,palm:430k',
     renderWidth: 1280, renderHeight: 720, hardwareScaling: 1, gpu: 'Test "GPU"'
   };
 

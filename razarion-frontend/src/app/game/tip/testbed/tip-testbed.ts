@@ -508,10 +508,12 @@ export class TipTestbed {
 
   /**
    * Crossing the water: the loaded container sails and unloads for the unit inside it, and a
-   * dockyard building a container to replace a sunk one works for it too.
+   * dockyard building a container to replace a sunk one works for it too. So does a factory
+   * building the actor itself, to replace one that was destroyed (2026-09-28).
    */
   private carriesActor(quest: TipQuest, unit: Unit): boolean {
     return unit.cargo.some(id => this.world.units.get(id)?.spec.id === quest.actorTypeId)
+      || unit.queue.includes(quest.actorTypeId)
       || unit.queue.some(typeId => !!itemTypeSpec(typeId).container?.carries.includes(quest.actorTypeId));
   }
 
@@ -593,7 +595,9 @@ export class TipTestbed {
             y: unit.y,
             idle: world.isIdle(unit),
             buildup: unit.buildup,
-            factoryBuildQueue: [...unit.queue],
+            // The head is the unit in production. The engine keeps that one apart (toBeBuiltType)
+            // and reports only what waits behind it - reporting the head hid a 15 s delay (FAB-06).
+            factoryBuildQueue: unit.queue.slice(1),
             cargo: unit.cargo.map(id => world.units.get(id)!.spec.id)
           }))
       },

@@ -1,4 +1,6 @@
-import {Color3, NodeMaterial, Texture} from "@babylonjs/core";
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
+import {Color3} from "@babylonjs/core/Maths/math.color";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
 import {NodeMaterialBlockConnectionPointTypes} from "@babylonjs/core/Materials/Node/Enums/nodeMaterialBlockConnectionPointTypes";
 import {NodeMaterialSystemValues} from "@babylonjs/core/Materials/Node/Enums/nodeMaterialSystemValues";

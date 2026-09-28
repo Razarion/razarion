@@ -1,5 +1,5 @@
 import {DecimalPosition} from "../../gwtangular/GwtAngularFacade";
-import {Vector3} from "@babylonjs/core";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
 import {GwtInstance} from "../../gwtangular/GwtInstance";
 
 export interface ViewFieldListener {

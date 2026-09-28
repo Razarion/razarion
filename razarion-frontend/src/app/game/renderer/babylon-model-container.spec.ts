@@ -1,4 +1,4 @@
-import {Scene} from '@babylonjs/core';
+import {Scene} from '@babylonjs/core/scene';
 import {BabylonModelContainer} from './babylon-model-container';
 import {BabylonModelService} from './babylon-model.service';
 import {BaseEntity} from '../../generated/razarion-share';
@@ -114,5 +114,61 @@ describe('Model container start gate', () => {
     container.fail(2);
 
     expect(seen).toEqual([true, false]);
+  });
+
+  /*
+   * Deferred (2026-09-28): the vehicle and building materials are painted only onto the glb models,
+   * which come after the terrain. Loaded at once they took 765 KB of the line the terrain and the
+   * worker needed. Held back they must still arrive - on release, or earlier for whoever asks.
+   */
+  it('holds the deferred ones back and loads them on release', () => {
+    container.setRequired([1]);
+    container.setDeferred([3, 4]);
+    load([1, 2, 3, 4]);
+    expect(container.started).toEqual([1, 2]);
+
+    container.finish(1);
+    container.finish(2);
+    expect(container.started).toEqual([1, 2]);
+    expect(container.isStartRequirementMet()).toBeTrue();
+
+    container.releaseDeferred();
+    expect(container.started).toEqual([1, 2, 3, 4]);
+    container.finish(3);
+    container.finish(4);
+    expect(container.isLoaded()).toBeTrue();
+  });
+
+  it('loads a deferred one at once when somebody waits for it', () => {
+    container.setDeferred([3, 4]);
+    load([1, 3, 4]);
+    expect(container.started).toEqual([1]);
+
+    let seen: boolean | null = null;
+    container.whenEntityLoaded(4, loaded => seen = loaded);
+    expect(container.started).toEqual([1, 4]);
+    container.finish(4);
+    expect(seen).toBeTrue();
+
+    container.releaseDeferred();
+    expect(container.started).toEqual([1, 4, 3]);
+  });
+
+  it('never defers a required one - the gate would wait for something held back', () => {
+    container.setRequired([3]);
+    container.setDeferred([3]);
+    load([3]);
+    expect(container.started).toEqual([3]);
+    container.finish(3);
+    expect(container.isStartRequirementMet()).toBeTrue();
+  });
+
+  it('keeps at most four in flight, also after a release', () => {
+    container.setDeferred([5, 6, 7, 8, 9]);
+    load([1, 5, 6, 7, 8, 9]);
+    container.releaseDeferred();
+    expect(container.started).toEqual([1, 5, 6, 7]);
+    container.finish(1);
+    expect(container.started).toEqual([1, 5, 6, 7, 8]);
   });
 });

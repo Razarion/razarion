@@ -1,5 +1,9 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject, signal} from '@angular/core';
-import {ArcRotateCamera, Color4, HemisphericLight, Tools, Vector3} from '@babylonjs/core';
+import {ArcRotateCamera} from '@babylonjs/core/Cameras/arcRotateCamera';
+import {HemisphericLight} from '@babylonjs/core/Lights/hemisphericLight';
+import {Color4} from '@babylonjs/core/Maths/math.color';
+import {Vector3} from '@babylonjs/core/Maths/math.vector';
+import {Tools} from '@babylonjs/core/Misc/tools';
 import {BabylonModelService} from '../../../../../src/app/game/renderer/babylon-model.service';
 import {BabylonRenderServiceAccessImpl} from '../../../../../src/app/game/renderer/babylon-render-service-access-impl.service';
 import {RenderObject} from '../../../../../src/app/game/renderer/render-object';

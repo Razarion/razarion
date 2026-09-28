@@ -1,23 +1,20 @@
 import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild, inject, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
-import {
-  AbstractMesh,
-  ArcRotateCamera,
-  Camera,
-  Color3,
-  Color4,
-  DirectionalLight,
-  GizmoManager,
-  Mesh,
-  PointerEventTypes,
-  Ray,
-  Scene,
-  ShadowGenerator,
-  Tools,
-  TransformNode,
-  Vector3
-} from '@babylonjs/core';
+import {ArcRotateCamera} from '@babylonjs/core/Cameras/arcRotateCamera';
+import {Camera} from '@babylonjs/core/Cameras/camera';
+import {Ray} from '@babylonjs/core/Culling/ray.core';
+import {PointerEventTypes} from '@babylonjs/core/Events/pointerEvents';
+import {GizmoManager} from '@babylonjs/core/Gizmos/gizmoManager';
+import {DirectionalLight} from '@babylonjs/core/Lights/directionalLight';
+import {ShadowGenerator} from '@babylonjs/core/Lights/Shadows/shadowGenerator';
+import {Color3, Color4} from '@babylonjs/core/Maths/math.color';
+import {Vector3} from '@babylonjs/core/Maths/math.vector';
+import {AbstractMesh} from '@babylonjs/core/Meshes/abstractMesh';
+import {Mesh} from '@babylonjs/core/Meshes/mesh';
+import {TransformNode} from '@babylonjs/core/Meshes/transformNode';
+import {Tools} from '@babylonjs/core/Misc/tools';
+import {Scene} from '@babylonjs/core/scene';
 import {StudioSceneSummary} from '../../../../../src/app/generated/razarion-share';
 import {BabylonModelService} from '../../../../../src/app/game/renderer/babylon-model.service';
 import {BabylonBuildupEffect} from '../../../../../src/app/game/renderer/babylon-buildup-effect';

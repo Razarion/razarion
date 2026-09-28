@@ -2,7 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import {CrudContainerChild} from '../crud-container/crud-container.component';
 import {ParticleSystemControllerClient, ParticleSystemEntity} from 'src/app/generated/razarion-share';
 import {BabylonRenderServiceAccessImpl} from 'src/app/game/renderer/babylon-render-service-access-impl.service';
-import {NodeParticleSystemSet} from '@babylonjs/core';
+import {NodeParticleSystemSet} from '@babylonjs/core/Particles/Node/nodeParticleSystemSet';
 import {TypescriptGenerator} from "../../../backend/typescript-generator";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "primeng/api";

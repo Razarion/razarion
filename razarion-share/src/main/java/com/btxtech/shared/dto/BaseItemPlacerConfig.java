@@ -23,6 +23,17 @@ public class BaseItemPlacerConfig {
      * the reach of the ship they are standing next to, and only the caller knows that.
      */
     private String allowedAreaText;
+    /**
+     * Open the placer on a valid spot inside {@link #allowedArea} instead of at the screen centre.
+     * Only for a small area: the whole area is probed once on opening. The unload placer sets it -
+     * its area is a ship's reach, and the ground in it that takes a unit is often a thin strip.
+     */
+    private boolean openInAllowedArea;
+    /**
+     * With {@link #openInAllowedArea}: where in the allowed area the opening spot should rather be,
+     * e.g. the region the active quest counts. Null = anywhere in the allowed area.
+     */
+    private PlaceConfig preferredArea;
 
     public DecimalPosition getSuggestedPosition() {
         return suggestedPosition;
@@ -99,6 +110,32 @@ public class BaseItemPlacerConfig {
 
     public BaseItemPlacerConfig allowedAreaText(String allowedAreaText) {
         setAllowedAreaText(allowedAreaText);
+        return this;
+    }
+
+    public boolean isOpenInAllowedArea() {
+        return openInAllowedArea;
+    }
+
+    public void setOpenInAllowedArea(boolean openInAllowedArea) {
+        this.openInAllowedArea = openInAllowedArea;
+    }
+
+    public BaseItemPlacerConfig openInAllowedArea(boolean openInAllowedArea) {
+        setOpenInAllowedArea(openInAllowedArea);
+        return this;
+    }
+
+    public PlaceConfig getPreferredArea() {
+        return preferredArea;
+    }
+
+    public void setPreferredArea(PlaceConfig preferredArea) {
+        this.preferredArea = preferredArea;
+    }
+
+    public BaseItemPlacerConfig preferredArea(PlaceConfig preferredArea) {
+        setPreferredArea(preferredArea);
         return this;
     }
 }

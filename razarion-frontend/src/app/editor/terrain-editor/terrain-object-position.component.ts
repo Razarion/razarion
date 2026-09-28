@@ -1,5 +1,6 @@
 import {Component} from "@angular/core";
-import {TransformNode, Vector3} from "@babylonjs/core";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode";
 import {TerrainObjectPosition} from "../../generated/razarion-share";
 import {Vector3EditorComponent} from './vector3-editor.component';
 import {AngleVector3EditorComponent} from './angle-vector3-editor.component';

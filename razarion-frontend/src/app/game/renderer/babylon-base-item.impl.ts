@@ -1,15 +1,13 @@
-import {
-  AbstractMesh,
-  Animation,
-  Color4,
-  DynamicTexture,
-  Mesh,
-  MeshBuilder,
-  ParticleSystem,
-  Scene,
-  UtilityLayerRenderer,
-  Vector3,
-} from "@babylonjs/core";
+import {Animation} from "@babylonjs/core/Animations/animation";
+import {DynamicTexture} from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import {Color4} from "@babylonjs/core/Maths/math.color";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {ParticleSystem} from "@babylonjs/core/Particles/particleSystem";
+import {UtilityLayerRenderer} from "@babylonjs/core/Rendering/utilityLayerRenderer";
+import {Scene} from "@babylonjs/core/scene";
 import {
   BabylonBaseItem,
   BaseItemType,
@@ -25,7 +23,8 @@ import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-im
 import {ActionService} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {SelectionService as TsSelectionService} from "../selection.service";
-import {AdvancedDynamicTexture, TextBlock} from '@babylonjs/gui';
+import {AdvancedDynamicTexture} from '@babylonjs/gui/2D/advancedDynamicTexture';
+import {TextBlock} from '@babylonjs/gui/2D/controls/textBlock';
 
 import {Nullable} from '@babylonjs/core/types';
 import {BabylonLightning} from "./babylon-lightning";

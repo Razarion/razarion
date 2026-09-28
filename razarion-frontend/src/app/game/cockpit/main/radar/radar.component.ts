@@ -17,6 +17,7 @@ import { GwtAngularService } from 'src/app/gwtangular/GwtAngularService';
 import { MiniTerrain } from './mini-terrain';
 import { MiniItemView } from './mini-item-view';
 import { MiniQuestMarker } from './mini-quest-marker';
+import { MiniFog } from './mini-fog';
 import { QuestMarkerService } from './quest-marker.service';
 import {Button} from 'primeng/button';
 import {Slider} from 'primeng/slider';
@@ -59,6 +60,11 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
    * 361/362), and the quests where players lose their target most - 358, 363, 365 - all come first.
    */
   @Input() radarWorking = true;
+  /**
+   * Whether the whole planet is open on the map, or only Noob Island with clouds around it. The
+   * cockpit opens it with the first radar; see MiniFog.
+   */
+  @Input() mapRevealed = true;
   /** A tap that moved the camera. The phone layout closes the expanded map on it. */
   @Output() mapClicked = new EventEmitter<void>();
   zoom = 1;
@@ -67,6 +73,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
   private miniTerrain!: MiniTerrain;
   private miniItemView!: MiniItemView;
   private miniQuestMarker!: MiniQuestMarker;
+  private miniFog!: MiniFog;
   /**
    * Whether the layers exist. They need the engine's GameUiControl and planet, and since the map is
    * on screen from level 1 it is created with the cockpit - before the engine has handed those over.
@@ -85,6 +92,8 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
   miniMapElement!: ElementRef<HTMLDivElement>;
   @ViewChild('miniTerrainElement', { static: true })
   miniTerrainElement!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('miniFogElement', { static: true })
+  miniFogElement!: ElementRef<HTMLCanvasElement>;
   @ViewChild('miniViewFieldElement', { static: true })
   miniViewFieldElement!: ElementRef<HTMLCanvasElement>;
   @ViewChild('miniItemViewElement', { static: true })
@@ -129,9 +138,12 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
     this.miniViewField = new MiniViewField(facade.gameUiControl, this.renderService);
     this.miniItemView = new MiniItemView(facade.gameUiControl, facade.baseItemUiService, this.renderService);
     this.miniQuestMarker = new MiniQuestMarker(facade.gameUiControl, this.renderService);
+    this.miniFog = new MiniFog(facade.gameUiControl, this.renderService);
     this.started = true;
     this.zoom = 1;
     this.miniTerrain.init(this.miniTerrainElement.nativeElement, this.size, this.size, this.zoom);
+    this.miniFog.init(this.miniFogElement.nativeElement, this.size, this.size, this.zoom);
+    this.miniFog.setRevealed(this.mapRevealed);
     this.miniViewField.init(this.miniViewFieldElement.nativeElement, this.size, this.size, this.zoom);
     this.miniItemView.init(this.miniItemViewElement.nativeElement, this.size, this.size, this.zoom);
     this.miniQuestMarker.init(this.miniQuestMarkerElement.nativeElement, this.size, this.size, this.zoom);
@@ -161,8 +173,13 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
       this.miniItemView.setShowForeign(this.radarWorking);
       this.miniItemView.update();
     }
+    if (changes['mapRevealed'] && !changes['mapRevealed'].firstChange) {
+      this.miniFog.setRevealed(this.mapRevealed);
+      this.miniFog.update();
+    }
     if (changes['size'] && !changes['size'].firstChange) {
       this.miniTerrain.resize(this.size, this.size);
+      this.miniFog.resize(this.size, this.size);
       this.miniViewField.resize(this.size, this.size);
       this.miniItemView.resize(this.size, this.size);
       this.miniQuestMarker.resize(this.size, this.size);
@@ -207,6 +224,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
       return;
     }
     this.miniTerrain.setViewField(viewField);
+    this.miniFog.setViewField(viewField);
     this.miniViewField.setViewField(viewField);
     this.miniItemView.setViewField(viewField);
     this.miniQuestMarker.setViewField(viewField);
@@ -274,6 +292,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
       return;
     }
     this.miniTerrain.setZoom(this.zoom);
+    this.miniFog.setZoom(this.zoom);
     this.miniViewField.setZoom(this.zoom);
     this.miniItemView.setZoom(this.zoom);
     this.miniQuestMarker.setZoom(this.zoom);
@@ -282,6 +301,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
 
   private updateMiniMap() {
     this.miniTerrain.update();
+    this.miniFog.update();
     this.miniViewField.update();
     this.miniItemView.update();
     this.miniQuestMarker.update();

@@ -1,4 +1,13 @@
-import {Color3, Constants, Matrix, Mesh, MeshBuilder, PointLight, Quaternion, RawTexture, StandardMaterial, Texture, TmpVectors, Vector3, VertexData} from "@babylonjs/core";
+import {Constants} from "@babylonjs/core/Engines/constants";
+import {PointLight} from "@babylonjs/core/Lights/pointLight";
+import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
+import {RawTexture} from "@babylonjs/core/Materials/Textures/rawTexture";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {Matrix, Quaternion, TmpVectors, Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {VertexData} from "@babylonjs/core/Meshes/mesh.vertexData";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
 import {Scene} from "@babylonjs/core/scene";
 
 export class BabylonLightning {

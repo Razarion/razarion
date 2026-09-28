@@ -1,6 +1,10 @@
 import {Injectable} from '@angular/core';
 import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render-service-access-impl.service';
-import {Color3, Color4, Matrix, Mesh, MeshBuilder, StandardMaterial} from '@babylonjs/core';
+import {StandardMaterial} from '@babylonjs/core/Materials/standardMaterial';
+import {Color3, Color4} from '@babylonjs/core/Maths/math.color';
+import {Matrix} from '@babylonjs/core/Maths/math.vector';
+import {Mesh} from '@babylonjs/core/Meshes/mesh';
+import {MeshBuilder} from '@babylonjs/core/Meshes/meshBuilder';
 import {BabylonTerrainTileImpl} from '../../game/renderer/babylon-terrain-tile.impl';
 import {BotConfig, BotGroundSlopeBox, DecimalPosition} from '../../generated/razarion-share';
 import {Observer} from '@babylonjs/core/Misc/observable';

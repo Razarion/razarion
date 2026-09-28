@@ -1,6 +1,12 @@
 import {BabylonMaterialEntity, GltfEntity} from "../../generated/razarion-share";
 import {BabylonMaterialContainer, GlbContainer} from "./babylon-model-container";
-import {BaseTexture, InputBlock, Material, Mesh, NodeMaterial, Nullable, PBRMaterial} from "@babylonjs/core";
+import {Material} from "@babylonjs/core/Materials/material";
+import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial";
+import {BaseTexture} from "@babylonjs/core/Materials/Textures/baseTexture";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {Nullable} from "@babylonjs/core/types";
 import {Diplomacy} from "../../gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {BabylonModelService} from "./babylon-model.service";

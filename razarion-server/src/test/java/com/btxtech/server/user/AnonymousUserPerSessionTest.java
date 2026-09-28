@@ -6,11 +6,16 @@ import com.btxtech.server.service.engine.LevelCrudService;
 import com.btxtech.server.service.tracking.UserActivityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,6 +23,7 @@ import java.util.concurrent.Future;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -69,6 +75,49 @@ class AnonymousUserPerSessionTest {
         }
         executor.shutdown();
         verify(userRepository, times(1)).save(any(UserEntity.class));
+    }
+
+    /**
+     * One id was not enough: the parallel request got it while the creating request had not
+     * committed, read the player from the database, found nothing - HTTP 500 on the cold game
+     * context, 15 new visitors in a week on PROD (2026-09-20..27). The row has to be committed
+     * before the id is handed out.
+     */
+    @Test
+    void thePlayerIsCommittedBeforeItsIdIsHandedOut() {
+        Map<String, UserEntity> pending = new ConcurrentHashMap<>();
+        Map<String, UserEntity> committed = new ConcurrentHashMap<>();
+        when(userRepository.save(any(UserEntity.class))).thenAnswer(invocation -> {
+            UserEntity entity = invocation.getArgument(0);
+            pending.put(entity.getUserId(), entity);
+            return entity;
+        });
+        when(userRepository.findByUserId(anyString())).thenAnswer(invocation -> Optional.ofNullable(committed.get((String) invocation.getArgument(0))));
+        userService.setTransactionManager(new AbstractPlatformTransactionManager() {
+            @Override
+            protected Object doGetTransaction() {
+                return new Object();
+            }
+
+            @Override
+            protected void doBegin(Object transaction, TransactionDefinition definition) {
+            }
+
+            @Override
+            protected void doCommit(DefaultTransactionStatus status) {
+                committed.putAll(pending);
+                pending.clear();
+            }
+
+            @Override
+            protected void doRollback(DefaultTransactionStatus status) {
+                pending.clear();
+            }
+        });
+
+        String userId = userService.getOrCreateUserId(null, "http-session-1");
+
+        assertTrue(userRepository.findByUserId(userId).isPresent(), "a parallel request has to find the player it was given");
     }
 
     @Test

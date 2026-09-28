@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build razarion-frontend && ng build studio --configuration=production",
+    "build": "ng build razarion-frontend && ng build studio --configuration=production && node scripts/precompress.mjs dist/razarion-frontend/browser dist/studio/browser",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "studio:start": "ng serve studio",

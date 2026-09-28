@@ -1,7 +1,9 @@
 import {Injectable, inject, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
-import {Camera, Scene, Vector3} from '@babylonjs/core';
+import {Camera} from '@babylonjs/core/Cameras/camera';
+import {Vector3} from '@babylonjs/core/Maths/math.vector';
+import {Scene} from '@babylonjs/core/scene';
 import {BabylonRenderServiceAccessImpl} from '../renderer/babylon-render-service-access-impl.service';
 import {UiSettingsService} from '../ui-settings.service';
 import {CombatTracker} from '../renderer/combat-tracker';

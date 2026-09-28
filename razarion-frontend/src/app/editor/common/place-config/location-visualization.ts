@@ -1,15 +1,12 @@
-import {
-  AbstractMesh,
-  Mesh,
-  MeshBuilder,
-  Nullable,
-  Observer,
-  PointerEventTypes,
-  PointerInfo,
-  Ray,
-  Vector3
-} from "@babylonjs/core";
-import {SimpleMaterial} from "@babylonjs/materials";
+import {Ray} from "@babylonjs/core/Culling/ray.core";
+import {PointerEventTypes, PointerInfo} from "@babylonjs/core/Events/pointerEvents";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {Observer} from "@babylonjs/core/Misc/observable";
+import {Nullable} from "@babylonjs/core/types";
+import {SimpleMaterial} from "@babylonjs/materials/simple/simpleMaterial";
 import {
   BabylonRenderServiceAccessImpl,
   RazarionMetadataType

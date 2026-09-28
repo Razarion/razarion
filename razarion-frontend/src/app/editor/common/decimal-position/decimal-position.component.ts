@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DecimalPosition } from "../../../generated/razarion-share";
 import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-render-service-access-impl.service';
-import { Nullable, Observer, PointerEventTypes, PointerInfo } from '@babylonjs/core';
+import {PointerEventTypes, PointerInfo} from '@babylonjs/core/Events/pointerEvents';
+import {Observer} from '@babylonjs/core/Misc/observable';
+import {Nullable} from '@babylonjs/core/types';
 import {InputNumber} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
 import {ToggleButton} from 'primeng/togglebutton';

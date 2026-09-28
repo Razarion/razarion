@@ -128,8 +128,9 @@ export class MiniQuestMarker extends AbstractGameCoordinates {
 
   /**
    * A triangle just inside the edge, on the line from the map's centre to the target, pointing out.
-   * On a circle rather than the square's border: the desktop dock clips the map round, and a wedge
-   * in a corner of the square would be cut off.
+   * On the square's border: the desktop dock was round until 2026-09-28 and the wedge ran on a
+   * circle so the dock would not cut it off; with a square dock that left the corners unused and
+   * put a target that lies diagonally away well inside the map rather than at its edge.
    */
   private drawWedge(ctx: CanvasRenderingContext2D, x: number, y: number): void {
     const w = this.getWidth();
@@ -142,10 +143,13 @@ export class MiniQuestMarker extends AbstractGameCoordinates {
       return;
     }
     const inset = MiniQuestMarker.EDGE_INSET_PX;
-    const radius = Math.min(cx, cy) - inset;
-    const length = Math.sqrt(dx * dx + dy * dy);
-    const ex = cx + dx / length * radius;
-    const ey = cy + dy / length * radius;
+    // How far along the line from the centre the border lies: the nearer of the vertical and the
+    // horizontal edge, whichever the line meets first.
+    const reach = Math.min(
+      dx !== 0 ? (cx - inset) / Math.abs(dx) : Infinity,
+      dy !== 0 ? (cy - inset) / Math.abs(dy) : Infinity);
+    const ex = cx + dx * reach;
+    const ey = cy + dy * reach;
     const angle = Math.atan2(dy, dx);
     const size = 6 + 3 * Math.sin(this.phase * Math.PI);
     ctx.fillStyle = MiniQuestMarker.COLOR;

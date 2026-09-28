@@ -1,7 +1,9 @@
 ﻿import {Component, NgZone} from '@angular/core';
 import {MainCockpit, RadarState} from "../../../gwtangular/GwtAngularFacade";
 import {GameComponent} from '../../game.component';
-import {Nullable, Observer, PointerEventTypes, PointerInfo} from '@babylonjs/core';
+import {PointerEventTypes, PointerInfo} from '@babylonjs/core/Events/pointerEvents';
+import {Observer} from '@babylonjs/core/Misc/observable';
+import {Nullable} from '@babylonjs/core/types';
 import {BabylonRenderServiceAccessImpl} from '../../renderer/babylon-render-service-access-impl.service';
 import {RadarComponent} from './radar/radar.component';
 import { CommonModule, NgClass } from '@angular/common';
@@ -82,6 +84,8 @@ export class MainCockpitComponent implements MainCockpit {
   energyConsuming = 0;
   energyGenerating = 0;
   radarState!: RadarState;
+  private radarSeen = false;
+  private static readonly MAP_REVEAL_LEVEL = 4;
   WORKING = RadarState.WORKING;
   NO_POWER = RadarState.NO_POWER;
   blinkUnlockEnabled = false;
@@ -128,7 +132,20 @@ export class MainCockpitComponent implements MainCockpit {
   showRadar(radarState: RadarState): void {
     this.zone.run(() => {
       this.radarState = radarState;
+      if (radarState !== RadarState.NONE) {
+        this.radarSeen = true;
+      }
     });
+  }
+
+  /**
+   * Whether the minimap shows the whole planet or only Noob Island under clouds (MiniFog). Open for
+   * good once the player has had a radar: losing its power takes the others off the map, not the
+   * ground they have already seen. The level is the same rule across a reload, where the radar may
+   * be gone - quests 361/362 build it on level 3, so every player on level 4 has had one.
+   */
+  get mapRevealed(): boolean {
+    return this.radarSeen || (this.levelNumber ?? 0) >= MainCockpitComponent.MAP_REVEAL_LEVEL;
   }
 
   clean(): void {

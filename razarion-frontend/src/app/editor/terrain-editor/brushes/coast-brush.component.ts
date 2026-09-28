@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AbstractBrush, SpatialHeight} from './abstract-brush';
-import {PointerEventTypes, Vector2, Vector3} from '@babylonjs/core';
+import {PointerEventTypes} from '@babylonjs/core/Events/pointerEvents';
+import {Vector2, Vector3} from '@babylonjs/core/Maths/math.vector';
 import {Slider} from 'primeng/slider';
 import {FormsModule} from '@angular/forms';
 import {Select} from 'primeng/select';

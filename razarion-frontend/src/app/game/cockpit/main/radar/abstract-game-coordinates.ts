@@ -44,17 +44,30 @@ export abstract class AbstractGameCoordinates extends AbstractMiniMap {
     }
 
     /**
-     * The map is always centred on the camera. It used to stop at the planet's edge instead, which
-     * pushed the camera - and the player's base - into a corner of the square: the noob island lies
-     * in the planet's lower left corner, and the desktop dock clips the map round, so the base was
-     * cut off exactly where every new player starts (23.09.2026). Beyond the planet the map is empty.
+     * The map follows the camera and stops at the planet's edge, so it never shows what lies
+     * beyond. Between 23.09. and 28.09.2026 it stayed centred instead: the desktop dock was round,
+     * and a map stopped at the edge pushed the noob island - in the planet's lower left corner,
+     * where every new player starts - into a corner the circle cut off. The dock is square now.
      * MiniTerrain has to follow the same rule, or the ground and the units drift apart.
      */
-    private setupXShift(width: number, _planetSizeX: number, scale: number, centerOffset: DecimalPosition): number {
-        return centerOffset.getX() - width / scale / 2.0;
+    private setupXShift(width: number, planetSizeX: number, scale: number, centerOffset: DecimalPosition): number {
+        const half = width / scale / 2.0;
+        return AbstractGameCoordinates.clampCenter(centerOffset.getX(), half, planetSizeX) - half;
     }
 
-    private setupYShift(height: number, _playHeight: number, scale: number, centerOffset: DecimalPosition): number {
-        return centerOffset.getY() + height / scale / 2.0;
+    private setupYShift(height: number, planetSizeY: number, scale: number, centerOffset: DecimalPosition): number {
+        const half = height / scale / 2.0;
+        return AbstractGameCoordinates.clampCenter(centerOffset.getY(), half, planetSizeY) + half;
+    }
+
+    /**
+     * The centre the map shows: the camera's, moved in just far enough that the window of
+     * half-width half stays on [0, size]. A window wider than the planet is centred on it.
+     */
+    static clampCenter(center: number, half: number, size: number): number {
+        if (2 * half >= size) {
+            return size / 2;
+        }
+        return Math.min(Math.max(center, half), size - half);
     }
 }

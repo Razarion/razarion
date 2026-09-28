@@ -6,6 +6,7 @@
    cockpit templates still carry for the phone layout. */
 @use "./app/game/cockpit/hud";
 @use "./app/game/cockpit/hud-panels";
+@use "./app/game/cockpit/quest/quest-flash";
 @plugin "tailwindcss-primeui";
 
 /*

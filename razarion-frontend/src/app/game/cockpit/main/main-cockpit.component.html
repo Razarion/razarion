@@ -204,22 +204,25 @@
     </div>
   </div>
 
-  <!-- The map, in the corner an RTS player reaches for by reflex. Round: the component still draws
-       the same three square canvases and still does its own click-to-move maths against them, the
-       ring only clips what is shown - see .hud-radar-clip. -->
+  <!-- The map, in the corner an RTS player reaches for by reflex. Square since 2026-09-28: it was
+       round, which hid a fifth of the map in the corners and took the room of a square anyway. -->
   <!-- There from level 1 since 23.09.2026 - fog, not a lock. The radar adds what is not the
        player's and the sweep; without power the others disappear again and the plate says why,
        while the map stays usable for getting to the powerplant. -->
   <div class="hud-radar-dock">
     <div class="hud-radar-ring">
       <div class="hud-radar-clip">
-        <!-- Its own zoom row is a rectangle stuck to a circle, so the two buttons below take
+        <!-- Its own zoom row would be a slider under the map; the two corner buttons below take
              over. The component keeps the methods either way. -->
-        <radar #desktopRadar [showZoomControls]="false" [radarWorking]="radarState == WORKING"></radar>
+        <radar #desktopRadar [showZoomControls]="false" [radarWorking]="radarState == WORKING"
+               [mapRevealed]="mapRevealed"></radar>
       </div>
       <div class="hud-radar-grid"></div>
       @if (radarState == WORKING) {
-        <div class="hud-radar-sweep"></div>
+        <!-- The rotating cone is wider than the map so it reaches the corners; this clips it. -->
+        <div class="hud-radar-sweep-clip">
+          <div class="hud-radar-sweep"></div>
+        </div>
       }
       @if (radarState == NO_POWER) {
         <div class="hud-radar-no-power">No power</div>

@@ -14,6 +14,7 @@ import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 
 import jakarta.inject.Inject;
+import org.teavm.jso.JSBody;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 import java.util.List;
@@ -63,7 +64,23 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
     @Override
     public void onTaskFinished(AbstractStartupTask task) {
         sendStartupTask(task, null);
+        try {
+            publishTaskFinished(task.getTaskEnum().name());
+        } catch (Throwable t) {
+            JsConsole.warn("publishTaskFinished failed: " + t.getMessage());
+        }
     }
+
+    /**
+     * Tells the page which startup task is done, for downloads that should not compete with the
+     * start: boot-gate.ts holds the models, the particle systems and the environment texture until
+     * INIT_WORKER, whose terrain they otherwise take the line from. The list is for a listener that
+     * arrives after the event.
+     */
+    @JSBody(params = {"taskEnum"}, script =
+            "(window.RAZ_finishedTasks = window.RAZ_finishedTasks || []).push(taskEnum);" +
+            "try { window.dispatchEvent(new CustomEvent('raz-startup-task-finished', { detail: taskEnum })); } catch (e) {}")
+    private static native void publishTaskFinished(String taskEnum);
 
     @Override
     public void onTaskFailed(AbstractStartupTask task, String error, Throwable t) {

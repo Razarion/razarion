@@ -83,6 +83,31 @@ describe('Tip test bed - transport', () => {
       'back to the builder');
   });
 
+  /*
+   * The first phone player to reach level 13 (2026-09-28) sailed too close past the naval bot at
+   * quest 486, and it sank the transporter with the builder aboard. The tip went silent
+   * (ACTOR_NOT_FOUND) and he built vipers and a transporter, never the builder the quest needs.
+   */
+  tipCase('TRN-08 quest 486, the transporter sunk with the builder aboard: a new builder first', bed => {
+    const scene = base(bed);
+    loaded(scene);
+    const factory = bed.own(ItemTypeId.FACTORY, -12, 0);
+    bed.world.kill(scene.transporter.id);
+    bed.world.kill(scene.builder.id);
+    bed.activateQuest(486);
+    bed.run(1500);
+    bed.check(bed.showsOnly('Click to select', factory.id), '"Click to select" on the factory, not silence');
+
+    bed.click(factory);
+    bed.run(1500);
+    bed.check(bed.view().cockpitHintTypeId === ItemTypeId.BUILDER, 'hint on the builder button');
+    bed.clickBuildButton(ItemTypeId.BUILDER);
+    bed.runUntil(() => bed.world.ownCount(ItemTypeId.BUILDER) === 1, 20000, 'builder built');
+    bed.run(1500);
+    bed.check(bed.view().prompts.some(prompt => prompt.text === 'Click to select' && prompt.typeId === ItemTypeId.DOCKYARD),
+      'then on to a new transporter');
+  });
+
   tipCase('TRN-04 the whole of quest 486: select the transporter, follow the arrow, tap the marked water', bed => {
     const scene = base(bed);
     loaded(scene);

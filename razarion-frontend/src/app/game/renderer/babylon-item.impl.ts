@@ -1,20 +1,17 @@
-import {
-  AbstractMesh,
-  ActionEvent,
-  ActionManager,
-  Animation,
-  Color3,
-  ExecuteCodeAction,
-  LinesMesh,
-  Matrix,
-  Mesh,
-  MeshBuilder,
-  NodeMaterial,
-  Nullable,
-  Tools,
-  TransformNode,
-  Vector3
-} from "@babylonjs/core";
+import {ActionEvent} from "@babylonjs/core/Actions/actionEvent";
+import {ActionManager} from "@babylonjs/core/Actions/actionManager";
+import {ExecuteCodeAction} from "@babylonjs/core/Actions/directActions";
+import {Animation} from "@babylonjs/core/Animations/animation";
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {Matrix, Vector3} from "@babylonjs/core/Maths/math.vector";
+import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
+import {LinesMesh} from "@babylonjs/core/Meshes/linesMesh";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode";
+import {Tools} from "@babylonjs/core/Misc/tools";
+import {Nullable} from "@babylonjs/core/types";
 import {Observer} from "@babylonjs/core/Misc/observable";
 import {
   BabylonItem,
@@ -35,7 +32,8 @@ import {SelectionService as TsSelectionService} from "../selection.service";
 import {GwtInstance} from '../../gwtangular/GwtInstance';
 import {RenderObject} from './render-object';
 import {PressMouseVisualization} from './press-mouse-visualization';
-import {AdvancedDynamicTexture, StackPanel} from '@babylonjs/gui';
+import {AdvancedDynamicTexture} from '@babylonjs/gui/2D/advancedDynamicTexture';
+import {StackPanel} from '@babylonjs/gui/2D/controls/stackPanel';
 import {Image} from '@babylonjs/gui/2D/controls/image';
 import {GwtHelper} from '../../gwtangular/GwtHelper';
 import {isTouchDevice, promptAssemblyLengthBeside, promptAssemblyWidthPx, promptFitsAt, promptOffsets, PROMPT_GEOMETRY, PROMPT_HEIGHT_PX, PROMPT_IDEAL_HEIGHT_PX, PromptSide} from './prompt-geometry';

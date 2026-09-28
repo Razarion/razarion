@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {Tools, Vector3} from "@babylonjs/core";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Tools} from "@babylonjs/core/Misc/tools";
 import {InputNumber} from 'primeng/inputnumber';
 import {FormsModule} from '@angular/forms';
 

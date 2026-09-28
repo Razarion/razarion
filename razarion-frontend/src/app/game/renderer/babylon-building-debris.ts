@@ -1,4 +1,7 @@
-import {AbstractMesh, Mesh, Ray, Vector3} from "@babylonjs/core";
+import {Ray} from "@babylonjs/core/Culling/ray.core";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
 import {Scene} from "@babylonjs/core/scene";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 

@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.resource.EncodedResourceResolver;
+import org.springframework.web.servlet.resource.PathResourceResolver;
 
 import java.util.concurrent.TimeUnit;
 
@@ -67,11 +69,23 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         // one can be kept forever. Without this the files went out with no Cache-Control at all
         // and every game start re-downloaded the full bundle.
         CacheControl immutable = CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable();
+        //
+        // The build also writes a brotli copy next to each of them (scripts/precompress.mjs), 19%
+        // smaller than the gzip the server made on the fly - half a megabyte of the 2.5 MB a phone
+        // waits for before the engine can run. EncodedResourceResolver hands it to a browser that
+        // asks for br, the plain file to the rest, and sets Vary: Accept-Encoding so the CDN keeps
+        // the two apart. Tomcat leaves a response alone that already carries a Content-Encoding.
         registry.addResourceHandler("/game/*.js", "/game/*.css")
                 .addResourceLocations("classpath:/generated/game/")
-                .setCacheControl(immutable);
+                .setCacheControl(immutable)
+                .resourceChain(true)
+                .addResolver(new EncodedResourceResolver())
+                .addResolver(new PathResourceResolver());
         registry.addResourceHandler("/studio/*.js", "/studio/*.css")
                 .addResourceLocations("classpath:/generated/studio/")
-                .setCacheControl(immutable);
+                .setCacheControl(immutable)
+                .resourceChain(true)
+                .addResolver(new EncodedResourceResolver())
+                .addResolver(new PathResourceResolver());
     }
 }

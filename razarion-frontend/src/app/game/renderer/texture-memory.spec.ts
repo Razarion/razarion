@@ -1,4 +1,5 @@
-import {Constants, InternalTexture} from '@babylonjs/core';
+import {Constants} from '@babylonjs/core/Engines/constants';
+import {InternalTexture} from '@babylonjs/core/Materials/Textures/internalTexture';
 import {TextureMemory} from './texture-memory';
 
 /** Enough of an InternalTexture for the arithmetic; the real one needs an engine. */

@@ -6,15 +6,13 @@ import {
   ParticleSystemControllerClient,
   ParticleSystemEntity
 } from "../../generated/razarion-share";
-import {
-  AssetContainer,
-  Material,
-  NodeMaterial,
-  NodeParticleSystemSet,
-  PBRMaterial,
-  Scene,
-  SceneLoader
-} from "@babylonjs/core";
+import {AssetContainer} from "@babylonjs/core/assetContainer";
+import {SceneLoader} from "@babylonjs/core/Loading/sceneLoader";
+import {Material} from "@babylonjs/core/Materials/material";
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial";
+import {NodeParticleSystemSet} from "@babylonjs/core/Particles/Node/nodeParticleSystemSet";
+import {Scene} from "@babylonjs/core/scene";
 import {TypescriptGenerator} from "../../backend/typescript-generator";
 import {HttpClient} from "@angular/common/http";
 import {BabylonModelService} from "./babylon-model.service";
@@ -55,6 +53,17 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
    */
   private required: Set<number> | null = null;
   private requiredOutstanding = 0;
+  /**
+   * Entities held back until {@link releaseDeferred}, unless somebody asks for one of them first.
+   * <p>
+   * The vehicle and building materials (2026-09-28): 765 KB on the wire, painted only onto the glb
+   * models - and those are held back until the terrain is in (boot-gate.ts). Loaded with the rest
+   * they came down beside the terrain and the worker, which the start does wait for, and took
+   * their bandwidth for something nobody could see yet.
+   */
+  private deferredIds: Set<number> = new Set();
+  private deferred: { entity: E; scene: Scene }[] = [];
+  private inFlight = 0;
 
   /** Max models parsed concurrently. Kept low for heavy main-thread parsing (e.g. glTF). */
   protected maxConcurrentLoads(): number {
@@ -73,6 +82,22 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
    * Whether everything the first frame needs is here. Not the same question as {@link isLoaded},
    * which asks whether the whole set has finished.
    */
+  /**
+   * Which entities wait for {@link releaseDeferred}. Call before {@link load}. A required entity is
+   * never deferred: the start gate would wait for something that is held back.
+   */
+  setDeferred(deferredIds: number[]): void {
+    this.deferredIds = new Set(deferredIds);
+  }
+
+  /** Let the held-back entities load. Idempotent. */
+  releaseDeferred(): void {
+    this.deferredIds = new Set();
+    this.pending.push(...this.deferred);
+    this.deferred = [];
+    this.fill();
+  }
+
   isStartRequirementMet(): boolean {
     return this.required === null ? this.loaded : this.requiredOutstanding <= 0;
   }
@@ -94,6 +119,12 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
       return {entity, scene};
     });
 
+    // Somebody may already be waiting: the load can start late (boot-gate.ts), and the placer asks
+    // for its model the moment it opens. Those go first; the required ones below go before them.
+    if (this.waiting.size > 0) {
+      this.pending.sort((a, b) =>
+        Number(this.waiting.has(b.entity.id)) - Number(this.waiting.has(a.entity.id)));
+    }
     // What the gate waits for goes first. Without this the required entities would sit behind
     // whatever the load order happened to be - and the whole point is not to wait for that.
     if (this.required !== null) {
@@ -108,8 +139,15 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
       }
     }
 
-    const initial = Math.min(this.maxConcurrentLoads(), this.pending.length);
-    for (let i = 0; i < initial; i++) {
+    const required = this.required;
+    this.deferred = this.pending.filter(p => this.deferredIds.has(p.entity.id) && !required?.has(p.entity.id));
+    this.pending = this.pending.filter(p => !this.deferred.includes(p));
+    this.fill();
+  }
+
+  /** Start queued loads until the concurrency limit is reached. */
+  private fill(): void {
+    while (this.inFlight < this.maxConcurrentLoads() && this.pending.length > 0) {
       this.pumpNext();
     }
   }
@@ -117,6 +155,7 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
   private pumpNext(): void {
     const next = this.pending.shift();
     if (next) {
+      this.inFlight++;
       this.loadBabylonModel(next.entity, next.scene);
     }
   }
@@ -145,6 +184,12 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
       this.waiting.set(entityId, callbacks);
     }
     callbacks.push(callback);
+    // Held back, but somebody needs it now: that is worth more than the reason it was held.
+    const deferredIndex = this.deferred.findIndex(p => p.entity.id === entityId);
+    if (deferredIndex >= 0) {
+      this.pending.unshift(this.deferred.splice(deferredIndex, 1)[0]);
+      this.fill();
+    }
     this.prioritise(entityId);
     return () => {
       const list = this.waiting.get(entityId);
@@ -189,6 +234,7 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
    *                 whose textures have not been assigned yet.
    */
   protected handleBabylonModelLaded(entityId?: number) {
+    this.inFlight = Math.max(0, this.inFlight - 1);
     if (entityId !== undefined) {
       const callbacks = this.waiting.get(entityId);
       this.waiting.delete(entityId);
@@ -212,7 +258,7 @@ export abstract class BabylonModelContainer<E extends BaseEntity, B> {
       this.babylonModelService.handleLoaded();
     } else {
       // Keep the pipeline full: start the next queued model now that a slot freed up.
-      this.pumpNext();
+      this.fill();
     }
   }
 }

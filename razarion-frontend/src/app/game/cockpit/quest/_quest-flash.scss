@@ -1,0 +1,76 @@
+/*
+ * The short glow that says "the quest just moved": the background lights up and fades back.
+ *
+ * Drawn as an inset shadow rather than a background colour, so it lies over whatever background
+ * the element already has - the opaque desktop panel and the translucent phone strip alike - and
+ * fades into it instead of into a colour picked here. Nothing moves and no text shifts, which is
+ * what keeps it from pulling the eye off the battlefield for longer than the flash itself.
+ *
+ * Global, like _hud.scss: the desktop panel and the phone strip live in two components, and the
+ * keyframes would otherwise sit in both - over the component style budget.
+ *
+ * Two identically keyed animations, a and b: QuestCockpitComponent alternates between them, and
+ * a changed animation name is what makes the browser start it over when the next change arrives
+ * while the last glow is still fading.
+ */
+/* On the desktop quest panel and on the phone quest strip. */
+.quest-flash-target {
+  --quest-flash-spread: 100vmax;
+
+  &.quest-flash-tick {
+    /* One more unit, one more load of razarion. Arrives up to once a second while harvesting,
+       so it is the faintest of the three - and throttled in the component on top. */
+    --quest-flash-color: rgba(52, 211, 153, 0.22);
+    --quest-flash-ms: 700ms;
+  }
+
+  &.quest-flash-done {
+    /* A progress row is complete - the same green as its check mark. */
+    --quest-flash-color: rgba(52, 211, 153, 0.45);
+    --quest-flash-ms: 1000ms;
+  }
+
+  &.quest-flash-quest {
+    /* A new quest. Amber, like the quest title in the phone strip. */
+    --quest-flash-color: rgba(251, 191, 36, 0.55);
+    --quest-flash-ms: 1200ms;
+  }
+
+  &.quest-flash-a {
+    animation: quest-flash-a var(--quest-flash-ms) ease-out;
+  }
+
+  &.quest-flash-b {
+    animation: quest-flash-b var(--quest-flash-ms) ease-out;
+  }
+
+  /* Not motion as such, but a full-panel flash is exactly what this setting asks to tone down:
+     only the edge lights up. */
+  @media (prefers-reduced-motion: reduce) {
+    --quest-flash-spread: 2px;
+  }
+}
+
+@keyframes quest-flash-a {
+  0% {
+    box-shadow: inset 0 0 0 var(--quest-flash-spread) transparent;
+  }
+  10% {
+    box-shadow: inset 0 0 0 var(--quest-flash-spread) var(--quest-flash-color);
+  }
+  100% {
+    box-shadow: inset 0 0 0 var(--quest-flash-spread) transparent;
+  }
+}
+
+@keyframes quest-flash-b {
+  0% {
+    box-shadow: inset 0 0 0 var(--quest-flash-spread) transparent;
+  }
+  10% {
+    box-shadow: inset 0 0 0 var(--quest-flash-spread) var(--quest-flash-color);
+  }
+  100% {
+    box-shadow: inset 0 0 0 var(--quest-flash-spread) transparent;
+  }
+}

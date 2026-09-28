@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, Si
 import {DecimalPosition, PlaceConfig} from "../../../generated/razarion-share";
 import {DecimalPosition as DecimalPositionGwt} from "../../../gwtangular/GwtAngularFacade";
 import {BabylonRenderServiceAccessImpl} from "../../../game/renderer/babylon-render-service-access-impl.service";
-import {Vector2} from "@babylonjs/core";
+import {Vector2} from "@babylonjs/core/Maths/math.vector";
 import {PolygonVisualization} from "./polygon-visualization";
 import {LocationVisualization} from "./location-visualization";
 import {ToggleButton} from 'primeng/togglebutton';

@@ -54,6 +54,9 @@ public class PlanetEntity extends BaseEntity {
      */
     @Column(length = 64)
     private String heightMapDigest;
+    /** SHA-256 of {@link #miniMapImage}, hex - the same arrangement as {@link #heightMapDigest}. */
+    @Column(length = 64)
+    private String miniMapDigest;
 
     public PlanetConfig toPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig()
@@ -117,6 +120,14 @@ public class PlanetEntity extends BaseEntity {
 
     public void setHeightMapDigest(String heightMapDigest) {
         this.heightMapDigest = heightMapDigest;
+    }
+
+    public String getMiniMapDigest() {
+        return miniMapDigest;
+    }
+
+    public void setMiniMapDigest(String miniMapDigest) {
+        this.miniMapDigest = miniMapDigest;
     }
 
     @Override

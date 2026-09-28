@@ -104,7 +104,8 @@ export type Guidance =
   { kind: 'prompt', itemId: number, resource: boolean, text: string } |
   { kind: 'arrow', x: number, y: number } |
   { kind: 'button', itemTypeId: number } |
-  { kind: 'placeMarker' } |
+  /** reach: the part of the region the unload placer takes is marked, not the whole region. */
+  { kind: 'placeMarker', reach?: { x: number, y: number, radius: number } } |
   { kind: 'unload' } |
   /** The hint on the sell button; the building it sells is where the minimap marks. */
   { kind: 'sell', x: number, y: number } |
@@ -197,7 +198,7 @@ function decideBuild(input: DecisionInput): Decision {
   const buildingTypeId = missing.find(typeId => oldBuildings(input, typeId).length === 0) ?? missing[0];
   const builders = own(input, quest.actorTypeId);
   if (builders.length === 0) {
-    return quiet(TipTaskName.SELECT, TipStallReason.ACTOR_NOT_FOUND); // prepared against: graceful
+    return replaceActor(input, quest.actorTypeId);
   }
   const site = ownOfTypes(input, missing).find(item => item.buildup < 1 && countsForQuest(input, item));
   if (site) {
@@ -337,7 +338,7 @@ function decideFabricateTargets(input: DecisionInput): Decision {
 function decideHarvest(input: DecisionInput): Decision {
   const harvesters = own(input, input.quest.actorTypeId);
   if (harvesters.length === 0) {
-    return quiet(TipTaskName.SELECT, TipStallReason.ACTOR_NOT_FOUND); // prepared against: graceful
+    return replaceActor(input, input.quest.actorTypeId);
   }
   if (harvesters.some(harvester => worksOn(input, harvester, ['harvest'], null))) {
     return quiet(TipTaskName.IDLE_ITEM, TipStallReason.AWAIT_IDLE);
@@ -423,7 +424,9 @@ function decideTransport(input: DecisionInput): Decision {
         reason: TipStallReason.TARGET_OUT_OF_VIEW
       };
     }
-    return {guidance: {kind: 'placeMarker'}, taskName: TipTaskName.SEND_UNLOAD_COMMAND, reason: TipStallReason.AWAIT_PLACEMENT};
+    // Only the part of the region in the ship's reach: the rest of it is "Too far" (quest 392).
+    const reach = {x: ship.x, y: ship.y, radius: input.containerRange(ship.itemTypeId)};
+    return {guidance: {kind: 'placeMarker', reach}, taskName: TipTaskName.SEND_UNLOAD_COMMAND, reason: TipStallReason.AWAIT_PLACEMENT};
   }
   const block = input.unloadBlock();
   if (block === null || block === TipStallReason.ITEM_PANEL_CLOSED) {
@@ -437,7 +440,7 @@ function decideLoad(input: DecisionInput, containers: TipItemState[], containerT
   const quest = input.quest;
   const units = own(input, quest.actorTypeId);
   if (units.length === 0) {
-    return quiet(TipTaskName.SELECT, TipStallReason.ACTOR_NOT_FOUND); // prepared against: graceful
+    return replaceActor(input, quest.actorTypeId);
   }
   if (quest.tip === 'UNLOAD' && units.some(unit => input.regionDistance(unit) === 0)) {
     return quiet(TipTaskName.SEND_UNLOAD_COMMAND, TipStallReason.AWAIT_IDLE); // passes with the next tick
@@ -570,6 +573,24 @@ function pointAt(input: DecisionInput, item: Point & { id: number }, resource: b
     return {guidance: {kind: 'prompt', itemId: item.id, resource, text}, taskName, reason: onScreenReason};
   }
   return {guidance: {kind: 'arrow', x: item.x, y: item.y}, taskName, reason: offScreenReason};
+}
+
+/**
+ * The unit the quest works with is gone - sunk with its transporter by the naval bot on the way to
+ * the coast, or a builder that drove through the Tesla bot on Noob Island. Build another, as the
+ * attack tip already does with a dead attacker.
+ * <p>
+ * This used to be a quiet ACTOR_NOT_FOUND ("prepared against: graceful"), and graceful turned out
+ * to mean stuck: the first phone player to reach level 13 (2026-09-28) lost his builder at quest
+ * 486, the tip went silent, and he built three vipers and a transporter but never a builder. Only a
+ * restart got him further. Quiet stays the answer where no factory can make the unit.
+ */
+function replaceActor(input: DecisionInput, actorTypeId: number): Decision {
+  const factory = ownOfTypes(input, input.factoriesFor(actorTypeId)).find(item => item.buildup >= 1);
+  if (factory) {
+    return decideFabricate(input, factory.itemTypeId, actorTypeId);
+  }
+  return quiet(TipTaskName.SELECT, TipStallReason.ACTOR_NOT_FOUND);
 }
 
 function quiet(taskName: string, reason: string): Decision {

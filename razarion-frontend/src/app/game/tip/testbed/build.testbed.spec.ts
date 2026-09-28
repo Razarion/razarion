@@ -151,6 +151,28 @@ describe('Tip test bed - build', () => {
     bed.run(2000);
   });
 
+  /* The builder drove through the Tesla bot on Noob Island (2026-09-28): the factory makes another. */
+  tipCase('BLD-12 quest 361, the builder was destroyed: a new one from the factory', bed => {
+    const builder = base(bed);
+    const factory = bed.own(ItemTypeId.FACTORY, 10, 0);
+    bed.world.kill(builder.id);
+    bed.activateQuest(361);
+    bed.run(1500);
+    bed.check(bed.showsOnly('Click to select', factory.id), '"Click to select" on the factory');
+
+    bed.click(factory);
+    bed.run(1500);
+    bed.check(bed.view().cockpitHintTypeId === ItemTypeId.BUILDER, 'hint on the builder button');
+  });
+
+  tipGraceful('BLD-12 quest 361, builder destroyed and no factory: nothing can make one, quiet', bed => {
+    const builder = base(bed);
+    bed.world.kill(builder.id);
+    bed.activateQuest(361);
+    bed.run(1500);
+    bed.check(bed.view().prompts.length === 0 && bed.view().cockpitHintTypeId === null, 'quiet');
+  });
+
   tipCase('BLD-03 / BLD-02 quest 386: arrow into the region, place marker once it is on screen', bed => {
     const builder = base(bed);
     bed.click(builder);

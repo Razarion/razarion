@@ -54,6 +54,11 @@ describe('Tip test bed - fabricate', () => {
       bed.check(bed.view().cockpitHintTypeId === ItemTypeId.VIPER, `hint on the viper button for viper ${viper}`);
       bed.clickBuildButton(ItemTypeId.VIPER);
       bed.runUntil(() => bed.world.ownCount(ItemTypeId.VIPER) === viper, 20000, `viper ${viper} built`);
+      if (viper < 3) {
+        // Soon, not when the order times out: the hint came back 15 s after the click (2026-09-27).
+        bed.runUntil(() => bed.view().cockpitHintTypeId === ItemTypeId.VIPER, 1500,
+          `hint back on the viper button right after viper ${viper}`);
+      }
       bed.run(2500);
       bed.check(!bed.view().prompts.some(prompt => prompt.text === 'Click to select'), 'no detour through select');
     }

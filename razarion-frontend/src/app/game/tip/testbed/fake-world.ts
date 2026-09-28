@@ -1,4 +1,4 @@
-import {Vector3} from '@babylonjs/core';
+import {Vector3} from '@babylonjs/core/Maths/math.vector';
 import {Diplomacy} from '../../../gwtangular/GwtAngularFacade';
 import {ViewField, ViewFieldListener} from '../../renderer/view-field';
 import {BaseItemPlacerPresenterEvent} from '../../renderer/base-item-placer-presenter.impl';
@@ -1001,6 +1001,9 @@ export class FakeRenderer {
   }
 
   showCommandTargetMarker(_item: any, _kind: string): void {
+  }
+
+  showGroundCommandMarker(_x: number, _z: number, _radius: number, _kind: string, _y?: number): void {
   }
 
   // --- The placer, driven by the player -----------------------------------------------------------

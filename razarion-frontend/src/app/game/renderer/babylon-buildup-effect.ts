@@ -1,36 +1,32 @@
-import {
-  AddBlock,
-  ClampBlock,
-  Color3,
-  Color4,
-  DerivativeBlock,
-  DivideBlock,
-  DotBlock,
-  GlowLayer,
-  InputBlock,
-  LerpBlock,
-  Material,
-  MaxBlock,
-  Mesh,
-  MeshBuilder,
-  MultiplyBlock,
-  NodeMaterial,
-  NodeMaterialBlockConnectionPointTypes,
-  NodeMaterialSystemValues,
-  NormalizeBlock,
-  ParticleSystem,
-  RawTexture,
-  StandardMaterial,
-  StepBlock,
-  SubtractBlock,
-  TransformBlock,
-  TrigonometryBlock,
-  TrigonometryBlockOperations,
-  Vector3,
-  VectorSplitterBlock,
-  VertexOutputBlock,
-  FragmentOutputBlock
-} from "@babylonjs/core";
+import {GlowLayer} from "@babylonjs/core/Layers/glowLayer";
+import {Material} from "@babylonjs/core/Materials/material";
+import {AddBlock} from "@babylonjs/core/Materials/Node/Blocks/addBlock";
+import {ClampBlock} from "@babylonjs/core/Materials/Node/Blocks/clampBlock";
+import {DivideBlock} from "@babylonjs/core/Materials/Node/Blocks/divideBlock";
+import {DotBlock} from "@babylonjs/core/Materials/Node/Blocks/dotBlock";
+import {DerivativeBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment/derivativeBlock";
+import {FragmentOutputBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment/fragmentOutputBlock";
+import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
+import {LerpBlock} from "@babylonjs/core/Materials/Node/Blocks/lerpBlock";
+import {MaxBlock} from "@babylonjs/core/Materials/Node/Blocks/maxBlock";
+import {MultiplyBlock} from "@babylonjs/core/Materials/Node/Blocks/multiplyBlock";
+import {NormalizeBlock} from "@babylonjs/core/Materials/Node/Blocks/normalizeBlock";
+import {StepBlock} from "@babylonjs/core/Materials/Node/Blocks/stepBlock";
+import {SubtractBlock} from "@babylonjs/core/Materials/Node/Blocks/subtractBlock";
+import {TransformBlock} from "@babylonjs/core/Materials/Node/Blocks/transformBlock";
+import {TrigonometryBlock, TrigonometryBlockOperations} from "@babylonjs/core/Materials/Node/Blocks/trigonometryBlock";
+import {VectorSplitterBlock} from "@babylonjs/core/Materials/Node/Blocks/vectorSplitterBlock";
+import {VertexOutputBlock} from "@babylonjs/core/Materials/Node/Blocks/Vertex/vertexOutputBlock";
+import {NodeMaterialBlockConnectionPointTypes} from "@babylonjs/core/Materials/Node/Enums/nodeMaterialBlockConnectionPointTypes";
+import {NodeMaterialSystemValues} from "@babylonjs/core/Materials/Node/Enums/nodeMaterialSystemValues";
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
+import {RawTexture} from "@babylonjs/core/Materials/Textures/rawTexture";
+import {Color3, Color4} from "@babylonjs/core/Maths/math.color";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {ParticleSystem} from "@babylonjs/core/Particles/particleSystem";
 import {Scene} from "@babylonjs/core/scene";
 
 export interface BuildingBeamOriginProvider {

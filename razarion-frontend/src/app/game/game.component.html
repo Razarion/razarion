@@ -167,7 +167,7 @@
          quest choice - which a tap on the line opens directly when there is a choice. -->
     @if (cockpitDisplayService.showQuestCockpit && questCockpitContainer.title) {
       @if (questCockpitContainer.showQuestSelectionButton) {
-        <button type="button" class="compact-quest"
+        <button type="button" class="compact-quest quest-flash-target {{ questCockpitContainer.flashClass }}"
                 (click)="cockpitDisplayService.showQuestDialog = true">
           <i class="pi pi-flag"></i>
           <span class="compact-quest-title">{{ questCockpitContainer.title }}</span>
@@ -175,7 +175,7 @@
           <i class="pi pi-list compact-quest-choose"></i>
         </button>
       } @else {
-        <div class="compact-quest">
+        <div class="compact-quest quest-flash-target {{ questCockpitContainer.flashClass }}">
           <i class="pi pi-flag"></i>
           <span class="compact-quest-title">{{ questCockpitContainer.title }}</span>
           <span class="compact-quest-progress">{{ questCockpitContainer.progressSummary }}</span>
@@ -231,6 +231,7 @@
         <radar [size]="radarExpanded ? expandedRadarSize : compactRadarSize"
                [showZoomControls]="radarExpanded"
                [radarWorking]="mainCockpit.radarState === WORKING"
+               [mapRevealed]="mainCockpit.mapRevealed"
                (mapClicked)="radarExpanded = false"></radar>
         <!-- A sibling of the map, not a child: its taps must not also land on the map underneath. -->
         <button type="button" class="compact-radar-toggle"

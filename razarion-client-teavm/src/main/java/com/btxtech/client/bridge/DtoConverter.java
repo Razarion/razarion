@@ -170,6 +170,7 @@ public class DtoConverter {
         setGetterDouble(obj, "getRallyOffsetX", () -> placer.getRallyOffsetX());
         setGetterDouble(obj, "getRallyOffsetY", () -> placer.getRallyOffsetY());
         setGetterDouble(obj, "getRallyRadius", () -> placer.getRallyRadius());
+        setGetterObj(obj, "getOpenPosition", () -> convertDecimalPosition(placer.getOpenPosition()));
 
         return obj;
     }

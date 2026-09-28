@@ -45,6 +45,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -115,6 +118,13 @@ public class UserService implements UserDetailsService {
     @Autowired
     @Lazy
     private ClientSystemConnectionService clientSystemConnectionService;
+    /** For committing a new anonymous player on its own, see {@link #createAnonymousUser}. */
+    @Autowired(required = false)
+    private PlatformTransactionManager transactionManager;
+
+    void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
 
     public UserService(LevelCrudService levelCrudPersistence,
                        UserRepository userRepository,
@@ -372,14 +382,34 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    /**
+     * Commits the new player before the id leaves the creation lock.
+     * <p>
+     * Saved in the caller's transaction, the row stayed invisible until that request finished, while
+     * a parallel request of the same page already had the id from {@link #anonymousMap}. The cold
+     * game context asked the database for it, found nothing and answered HTTP 500 - the game gave up
+     * on its first screen. All 15 such 500s on PROD 2026-09-20..27 came 0.2 to 1.6 s after the
+     * USER_CREATED of that very visitor. Without a transaction manager (unit tests) it saves as before.
+     */
     private String createAnonymousUser(String httpSessionId) {
+        String userId;
+        if (transactionManager != null) {
+            TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+            transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            userId = transactionTemplate.execute(status -> saveNewAnonymousUser());
+        } else {
+            userId = saveNewAnonymousUser();
+        }
+        userActivityService.onUserCreated(userId, httpSessionId);
+        return userId;
+    }
+
+    private String saveNewAnonymousUser() {
         var userEntity = new UserEntity();
         userEntity.setUserId(UUID.randomUUID().toString());
         userEntity.setLevel(levelCrudPersistence.getStarterLevel());
         userEntity.setCreationDate(new Date());
-        var userId = userRepository.save(userEntity).getUserId();
-        userActivityService.onUserCreated(userId, httpSessionId);
-        return userId;
+        return userRepository.save(userEntity).getUserId();
     }
 
     @Transactional

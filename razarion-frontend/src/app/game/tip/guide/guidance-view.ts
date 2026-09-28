@@ -3,6 +3,7 @@ import {BabylonRenderServiceAccessImpl} from '../../renderer/babylon-render-serv
 import {ItemCockpitComponent} from '../../cockpit/item/item-cockpit.component';
 import {GwtInstance} from '../../../gwtangular/GwtInstance';
 import {Guidance} from './tip-decision';
+import {regionInReach} from './reach-area';
 
 /**
  * Puts one Guidance on the screen and takes the previous one down.
@@ -24,7 +25,7 @@ export class GuidanceView {
   show(guidance: Guidance, placeConfig: PlaceConfig | null): void {
     const previous = this.current;
     this.current = guidance;
-    if (previous.kind !== guidance.kind || !samePrompt(previous, guidance)) {
+    if (previous.kind !== guidance.kind || !samePrompt(previous, guidance) || !sameReach(previous, guidance)) {
       this.takeDown(previous, guidance);
     }
     switch (guidance.kind) {
@@ -45,7 +46,8 @@ export class GuidanceView {
         this.itemCockpit()?.showBuildupTip(guidance.itemTypeId);
         break;
       case 'placeMarker':
-        this.renderService.showPlaceMarker(placeConfig, this.placeMarkerConfig());
+        this.renderService.showPlaceMarker(guidance.reach ? regionInReach(placeConfig, guidance.reach) : placeConfig,
+          this.placeMarkerConfig());
         break;
       case 'unload':
         // Re-anchored on every evaluation, like the build button.
@@ -135,4 +137,17 @@ function samePrompt(one: Guidance, other: Guidance): boolean {
     return true;
   }
   return one.itemId === other.itemId && one.text === other.text && one.resource === other.resource;
+}
+
+/** A marker cut to a ship's reach is rebuilt when the ship is another one or has moved. */
+function sameReach(one: Guidance, other: Guidance): boolean {
+  if (one.kind !== 'placeMarker' || other.kind !== 'placeMarker') {
+    return true;
+  }
+  const a = one.reach;
+  const b = other.reach;
+  if (!a || !b) {
+    return a === b;
+  }
+  return Math.abs(a.x - b.x) < 0.5 && Math.abs(a.y - b.y) < 0.5 && a.radius === b.radius;
 }

@@ -1,5 +1,14 @@
 import {Index, TerrainType, TerrainUiService} from "../../gwtangular/GwtAngularFacade";
-import {Color3, Mesh, MeshBuilder, MultiMaterial, StandardMaterial, SubMesh, Texture, Vector3, VertexBuffer, VertexData} from "@babylonjs/core";
+import {VertexBuffer} from "@babylonjs/core/Buffers/buffer";
+import {MultiMaterial} from "@babylonjs/core/Materials/multiMaterial";
+import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {VertexData} from "@babylonjs/core/Meshes/mesh.vertexData";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {SubMesh} from "@babylonjs/core/Meshes/subMesh";
 import {BabylonTerrainTileImpl} from 'src/app/game/renderer/babylon-terrain-tile.impl';
 import {AbstractBrush, BrushContext} from "./brushes/abstract-brush";
 import {BabylonRenderServiceAccessImpl} from "src/app/game/renderer/babylon-render-service-access-impl.service";

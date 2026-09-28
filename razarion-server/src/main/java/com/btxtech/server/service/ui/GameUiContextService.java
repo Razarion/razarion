@@ -17,10 +17,14 @@ import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiContextConfig;
 import com.btxtech.shared.dto.InGameQuestVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiContext;
+import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.alarm.Alarm;
 import com.btxtech.shared.system.alarm.AlarmService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -37,6 +41,14 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
     private final DbPropertiesService dbPropertiesService;
     private final BaseItemService baseItemService;
     private final StartPositionFinderService startPositionFinderService;
+    /**
+     * The static config the game engine runs with, handed over by {@link InitializeService} at start,
+     * on reloadStatic and on a terrain rebuild. Null until the first one, then loadCold reads the database.
+     */
+    private volatile StaticGameConfig engineStaticGameConfig;
+    /** Audio and quest-visualisation ids from the db properties, see {@link #cachedProperties()}. */
+    private volatile CachedProperties cachedProperties;
+    private static final long PROPERTIES_TTL_MILLIS = 60_000;
 
     public GameUiContextService(GameUiContextRepository gameUiContextRepository,
                                 StaticGameConfigService staticGameConfigService,
@@ -44,7 +56,8 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
                                 ServerGameEngineService serverGameEngineCrudPersistence, ServerLevelQuestService serverLevelQuestService, ServerUnlockService serverUnlockService,
                                 AlarmService alarmService, DbPropertiesService dbPropertiesService,
                                 BaseItemService baseItemService,
-                                StartPositionFinderService startPositionFinderService) {
+                                StartPositionFinderService startPositionFinderService,
+                                InitializeService initializeService) {
         super(GameUiContextEntity.class, gameUiContextRepository);
         this.staticGameConfigService = staticGameConfigService;
         this.levelCrudPersistence = levelCrudPersistence;
@@ -55,20 +68,47 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
         this.dbPropertiesService = dbPropertiesService;
         this.baseItemService = baseItemService;
         this.startPositionFinderService = startPositionFinderService;
+        initializeService.receiveStaticGameConfig(staticGameConfig -> engineStaticGameConfig = staticGameConfig);
     }
 
+    /**
+     * Every player's start waits for this, and it was rebuilt from the database each time: the whole
+     * static config (~100 ms locally), sixteen single property reads (~45 ms) and the warm part - on
+     * PROD 270 to 560 ms of server time for an answer that is the same for everybody but the warm part,
+     * 2026-09-27. The static config now comes from the game engine, which holds it anyway and is what
+     * the client has to agree with; the properties are kept for a minute.
+     */
     public ColdGameUiContext loadCold(UserContext userContext) {
         ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
-        coldGameUiContext.staticGameConfig(staticGameConfigService.loadStaticGameConfig());
+        StaticGameConfig staticGameConfig = engineStaticGameConfig;
+        coldGameUiContext.staticGameConfig(staticGameConfig != null ? staticGameConfig : staticGameConfigService.loadStaticGameConfig());
         coldGameUiContext.userContext(userContext);
         if (userContext.getLevelId() == null) {
             alarmService.riseAlarm(Alarm.Type.USER_HAS_NO_LEVEL, userContext.getUserId());
             userContext.levelId(levelCrudPersistence.getStarterLevelId());
         }
-        coldGameUiContext.audioConfig(setupAudioConfig());
-        coldGameUiContext.inGameQuestVisualConfig(setupInGameQuestVisualConfig());
+        CachedProperties properties = cachedProperties();
+        coldGameUiContext.audioConfig(properties.audioConfig());
+        coldGameUiContext.inGameQuestVisualConfig(properties.inGameQuestVisualConfig());
         coldGameUiContext.warmGameUiContext(loadWarm(userContext));
         return coldGameUiContext;
+    }
+
+    /**
+     * A minute old at most: the ids change only when somebody edits the db properties, and a player
+     * who starts within that minute gets the previous sound - there is no reload hook for them.
+     */
+    private CachedProperties cachedProperties() {
+        CachedProperties properties = cachedProperties;
+        long now = System.currentTimeMillis();
+        if (properties == null || now - properties.loadedAt() > PROPERTIES_TTL_MILLIS) {
+            properties = new CachedProperties(setupAudioConfig(), setupInGameQuestVisualConfig(), now);
+            cachedProperties = properties;
+        }
+        return properties;
+    }
+
+    private record CachedProperties(AudioConfig audioConfig, InGameQuestVisualConfig inGameQuestVisualConfig, long loadedAt) {
     }
 
     public WarmGameUiContext loadWarm(UserContext userContext) {
@@ -119,6 +159,16 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
                 .harvestColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_HARVEST_COLOR))
                 .attackColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_ATTACK_COLOR))
                 .pickColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_PICK_COLOR));
+    }
+
+    /**
+     * The planet a new player starts on - the one loadWarm hands a player of the starter level. The
+     * game page asks for its terrain before it knows anything else about the player, see
+     * TerrainShapeControllerImpl#prefetchUrls.
+     */
+    @Transactional
+    public PlanetConfig starterPlanetConfig() {
+        return load4Level(levelCrudPersistence.getStarterLevelId()).toGameWarmGameUiControlConfig().getPlanetConfig();
     }
 
     public GameUiContextEntity load4Level(int levelId) {

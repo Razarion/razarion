@@ -70,7 +70,8 @@ public class TestGameEngineControl extends GameEngineControl {
             TerrainTile terrainTile = new TerrainTile();
             terrainTile.setIndex((Index) data[0]);
             terrainTile.setGroundHeightMap(setupTerrainTileGroundHeightMap((Index) data[0]));
-            dispatch(new GameEngineControlPackage(TERRAIN_TILE_RESPONSE, terrainTile));
+            // Second datum: the worker's generation time, as GameEngineWorker sends it.
+            dispatch(new GameEngineControlPackage(TERRAIN_TILE_RESPONSE, terrainTile, 0.0));
         }
     }
 

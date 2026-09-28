@@ -1,4 +1,5 @@
-import {RawTexture, Texture} from "@babylonjs/core";
+import {RawTexture} from "@babylonjs/core/Materials/Textures/rawTexture";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
 import type {Scene} from "@babylonjs/core/scene";
 
 // ========== Tileable Perlin noise ==========

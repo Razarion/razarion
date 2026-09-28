@@ -1,14 +1,12 @@
 import {Injectable} from "@angular/core";
 import {GroundConfig, Index} from "../../gwtangular/GwtAngularFacade";
-import {
-  CubeTexture,
-  Mesh,
-  MeshBuilder,
-  NodeMaterial,
-  TransformNode,
-  Vector3,
-  VertexBuffer
-} from "@babylonjs/core";
+import {VertexBuffer} from "@babylonjs/core/Buffers/buffer";
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {CubeTexture} from "@babylonjs/core/Materials/Textures/cubeTexture";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode";
 import {BabylonModelService} from "./babylon-model.service";
 import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 import type {FloatArray} from '@babylonjs/core/types';

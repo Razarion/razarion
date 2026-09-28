@@ -9,6 +9,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.SyncBaseItemMonitor;
 import com.btxtech.uiservice.item.SyncBaseItemState;
@@ -35,7 +37,8 @@ public class JsItemCockpitBridge {
     public static JSObject createProxy(GameEngineControl gameEngineControl,
                                        BaseItemPlacerService baseItemPlacerService,
                                        ItemTypeService itemTypeService,
-                                       BaseItemUiService baseItemUiService) {
+                                       BaseItemUiService baseItemUiService,
+                                       GameUiControl gameUiControl) {
         JsObject proxy = JsObject.create();
 
         // requestBuild(builderId: number, itemTypeId: number)
@@ -131,7 +134,12 @@ public class JsItemCockpitBridge {
                     if (reach != null) {
                         BaseItemType containerType = itemTypeService.getBaseItemType(containerTypeId);
                         config.allowedArea(reach).allowedAreaText("Too far from the "
-                                + (containerType != null ? containerType.getInternalName() : "transport"));
+                                + (containerType != null ? containerType.getInternalName() : "transport"))
+                                // The ground in reach that takes a unit can be a thin strip nobody
+                                // finds by trying (quest 392): open the placer on it, in the quest's
+                                // region if the quest has one.
+                                .openInAllowedArea(true)
+                                .preferredArea(activeQuestRegion(gameUiControl));
                     }
                     baseItemPlacerService.activate(config, true, (decimalPositions, rallyPoint) -> {
                         gameEngineControl.unloadContainerCmd(containerId, CollectionUtils.getFirst(decimalPositions));
@@ -257,6 +265,15 @@ public class JsItemCockpitBridge {
      *
      * @return null when there is nothing to limit by - the placer then behaves as before
      */
+    /** The region the active quest counts in, or null. */
+    private static PlaceConfig activeQuestRegion(GameUiControl gameUiControl) {
+        QuestConfig quest = gameUiControl.getServerQuest();
+        if (quest == null || quest.getConditionConfig() == null || quest.getConditionConfig().getComparisonConfig() == null) {
+            return null;
+        }
+        return quest.getConditionConfig().getComparisonConfig().getPlaceConfig();
+    }
+
     private static PlaceConfig unloadReach(ItemTypeService itemTypeService, int containerTypeId,
                                            DecimalPosition containerPosition) {
         if (containerPosition == null) {

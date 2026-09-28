@@ -344,9 +344,9 @@
 
 /* ---------------------------------------------------------------- radar
 
-   Round, in the bottom-left corner. The map itself is still the three square canvases the radar
-   component draws - clipped to a circle here rather than rebuilt, so the click-to-move maths in
-   RadarComponent.onMapClicke keeps measuring against the same 200x200 box it always did. */
+   Square, in the bottom-left corner - the same plate as the rest of the cockpit. It was round until
+   2026-09-28: the circle hid a fifth of the map in the corners, where the quest marker and the edge
+   of the island often were, and the dock took the room of a square anyway. */
 
 .game-main .hud-radar-dock {
   position: absolute;
@@ -359,14 +359,8 @@
   position: relative;
   width: 232px;
   height: 232px;
-  border-radius: 50%;
+  border-radius: 12px;
   padding: 16px;
-  /* Load-bearing, not cosmetic. The sweep inside is a square that rotates, and a rotating square
-     has a growing bounding box - 200px becomes 283 at 45 degrees. That box counts towards the
-     document's scrollable area, and the ring sits 12px off the bottom of the screen, so four times
-     per revolution the page grew a scrollbar and lost it again: a visible flicker roughly twice a
-     second with nothing on screen actually moving. This contains it. */
-  overflow: hidden;
   background: linear-gradient(150deg,
     #d3dde7 0%, #93a1b0 12%, #56626f 34%,
     #303945 58%, #1d242c 76%, #7b8794 94%, #b8c4d1 100%);
@@ -377,7 +371,7 @@
   position: relative;
   width: 200px;
   height: 200px;
-  border-radius: 50%;
+  border-radius: 4px;
   overflow: hidden;
   background: #04121a;
   box-shadow:
@@ -385,8 +379,8 @@
     inset 0 0 26px rgba(0, 0, 0, 0.8);
 }
 
-/* The component draws a 1px white border on its own container, which is a square edge inside a
-   round hole. Inline style, so !important is the only way past it. */
+/* The component draws a 1px white border on its own container, a hard edge inside the plate's own
+   frame. Inline style, so !important is the only way past it. */
 .game-main .hud-radar-clip radar > div {
   border: 0 !important;
 }
@@ -396,7 +390,7 @@
 .game-main .hud-radar-grid {
   position: absolute;
   inset: 16px;
-  border-radius: 50%;
+  border-radius: 4px;
   pointer-events: none;
   background:
     radial-gradient(circle, transparent 0 31%, rgba(58, 208, 122, 0.22) 31% 32%, transparent 32%),
@@ -405,8 +399,6 @@
     linear-gradient(90deg, transparent 0 49.7%, rgba(58, 208, 122, 0.14) 49.7% 50.3%, transparent 50.3%);
 }
 
-/* One rotating cone. A transform animation on its own layer, so it is composited and never
-   repaints - this sits over a game that is already GPU bound and may not cost it frames. */
 /* Over the map, not instead of it: without power the others are gone from it, and this says why.
    The map underneath still works for getting to the powerplant. */
 .game-main .hud-radar-no-power {
@@ -422,11 +414,24 @@
   pointer-events: none;
 }
 
-.game-main .hud-radar-sweep {
+/* Load-bearing, not cosmetic. The sweep is a rotating square, and a rotating square has a growing
+   bounding box; unclipped it reached past the dock, and since the dock sits 12px off the bottom of
+   the screen the page grew a scrollbar and lost it again four times per revolution. This clips it
+   to the map. */
+.game-main .hud-radar-sweep-clip {
   position: absolute;
   inset: 16px;
-  border-radius: 50%;
+  border-radius: 4px;
+  overflow: hidden;
   pointer-events: none;
+}
+
+/* One rotating cone, wider than the map by the square's diagonal so it reaches the corners. A
+   transform animation on its own layer, so it is composited and never repaints - this sits over a
+   game that is already GPU bound and may not cost it frames. */
+.game-main .hud-radar-sweep {
+  position: absolute;
+  inset: -21%;
   background: conic-gradient(from 0deg,
     rgba(58, 208, 122, 0.28) 0deg, rgba(58, 208, 122, 0.1) 26deg,
     transparent 60deg, transparent 360deg);
@@ -438,9 +443,8 @@
   to { transform: rotate(360deg); }
 }
 
-/* Two buttons on the rim instead of the desktop slider row: on a round map a straight row of
-   controls underneath is a rectangle stuck to a circle, and the slider has nothing to aim at that
-   two steps do not reach. */
+/* Two buttons on the plate's upper corners, half over the edge: they cost the map a few pixels of
+   corner and nothing else, and a slider row under the map would push it up the screen. */
 .game-main .hud-radar-zoom {
   position: absolute;
   width: 34px;
@@ -461,8 +465,8 @@
   box-shadow: 0 0 10px rgba(58, 208, 122, 0.55);
 }
 
-.game-main .hud-radar-zoom-out { left: 0; top: 18px; }
-.game-main .hud-radar-zoom-in  { right: 0; bottom: 18px; }
+.game-main .hud-radar-zoom-out { left: -10px; top: -10px; }
+.game-main .hud-radar-zoom-in  { right: -10px; top: -10px; }
 
 /* ---------------------------------------------------------------- narrow desktop
 

@@ -335,8 +335,12 @@ export class TipGuide implements ViewFieldListener {
         this.orders.delete(unitId);
         continue;
       }
+      // A factory's queue holds only what waits behind the unit in production (SyncFactory.buildQueue),
+      // so a single click never shows up in it: the order was only ever dropped by the 15 s timeout,
+      // and the hint for the next viper came ten seconds after the last one stood (quest 369,
+      // 2026-09-27). Producing, the factory reports busy - that is the order arriving.
       const busy = order.kind === 'fabricate'
-        ? item.factoryBuildQueue.includes(order.targetTypeId ?? -1)
+        ? !item.idle || item.factoryBuildQueue.includes(order.targetTypeId ?? -1)
         : !item.idle;
       if (busy) {
         order.arrived = true;

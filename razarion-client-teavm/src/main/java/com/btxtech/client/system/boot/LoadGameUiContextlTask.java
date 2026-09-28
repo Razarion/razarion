@@ -46,11 +46,7 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
             deferredStartup.failed("LoadGameUiContextlTask fetch failed: " + errorMsg);
         };
 
-        if (bearerToken != null) {
-            fetchJson("/rest/game-ui-context-control/cold", bearerToken, onSuccess, onError);
-        } else {
-            fetchJsonNoAuth("/rest/game-ui-context-control/cold", onSuccess, onError);
-        }
+        fetchJson("/rest/game-ui-context-control/cold", bearerToken, onSuccess, onError);
     }
 
     @JSFunctor
@@ -58,17 +54,37 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
         void call(String value);
     }
 
+    /**
+     * Fetches the cold game context, and tries again where another try can succeed.
+     * <p>
+     * The first failure used to end the start: 58 sessions on PROD 2026-09-20..27 failed here with
+     * "TypeError: Failed to fetch", 0.15 s into the request, and the game reported itself failed a
+     * second later - not one of them reached the game. Same rule as the WASM download in
+     * client-bootstrap.js: three attempts, 1 s and 3 s apart, for a dead connection or a server
+     * error, and never for a 4xx, which the next attempt would only repeat. Every retry is logged
+     * as a warning, which the console hook forwards to the server, so it can be counted.
+     */
     @JSBody(params = {"url", "token", "onSuccess", "onError"}, script =
-            "fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': 'Bearer ' + token }, body: null })" +
-            ".then(function(response) { if (response.ok) { return response.text(); } else { throw new Error('HTTP ' + response.status); } })" +
-            ".then(function(text) { onSuccess(text); })" +
-            ".catch(function(error) { onError('' + error); });")
+            "var headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };" +
+            "if (token) { headers['Authorization'] = 'Bearer ' + token; }" +
+            "var attempts = 3;" +
+            "function attempt(i) {" +
+            "  fetch(url, { method: 'POST', headers: headers, body: null })" +
+            "    .then(function(response) { if (response.ok) { return response.text(); } var e = new Error('HTTP ' + response.status); e.status = response.status; throw e; })" +
+            "    .then(function(text) {" +
+            "      if (i > 1) { console.warn('LoadGameUiContextlTask recovered on attempt ' + i); }" +
+            "      onSuccess(text);" +
+            "    })" +
+            "    .catch(function(error) {" +
+            "      var retryable = error && error.status ? error.status >= 500 : true;" +
+            "      if (i < attempts && retryable) {" +
+            "        console.warn('LoadGameUiContextlTask attempt ' + i + ' failed, retrying: ' + error);" +
+            "        setTimeout(function() { attempt(i + 1); }, i * 2000 - 1000);" +
+            "      } else {" +
+            "        onError((i > 1 ? 'after ' + i + ' attempts: ' : '') + error);" +
+            "      }" +
+            "    });" +
+            "}" +
+            "attempt(1);")
     private static native void fetchJson(String url, String token, StringCallback onSuccess, StringCallback onError);
-
-    @JSBody(params = {"url", "onSuccess", "onError"}, script =
-            "fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: null })" +
-            ".then(function(response) { if (response.ok) { return response.text(); } else { throw new Error('HTTP ' + response.status); } })" +
-            ".then(function(text) { onSuccess(text); })" +
-            ".catch(function(error) { onError('' + error); });")
-    private static native void fetchJsonNoAuth(String url, StringCallback onSuccess, StringCallback onError);
 }

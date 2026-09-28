@@ -1,4 +1,7 @@
-import {Color4, ParticleSystem, RawTexture, Vector3} from "@babylonjs/core";
+import {RawTexture} from "@babylonjs/core/Materials/Textures/rawTexture";
+import {Color4} from "@babylonjs/core/Maths/math.color";
+import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {ParticleSystem} from "@babylonjs/core/Particles/particleSystem";
 import {Scene} from "@babylonjs/core/scene";
 
 export class BabylonResourceSparkle {

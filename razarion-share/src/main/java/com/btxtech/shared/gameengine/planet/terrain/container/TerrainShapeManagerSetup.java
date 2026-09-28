@@ -92,6 +92,23 @@ public class TerrainShapeManagerSetup {
         return Math.max(scale.getX(), scale.getY());
     }
 
+    /**
+     * Terrain objects are placed with up to twenty decimals - the editor's floating point noise - and
+     * the digits were most of what the worker downloaded: the shape of 26,017 objects is 983 KB gzip as
+     * placed and 506 KB at a millimetre, the largest single saving left in a phone's start (2026-09-27).
+     * Rounded here, where the shape is made, so the master engine and every worker read the same
+     * numbers (ServerNativeTerrainShapeAccess hands this very object to the server's own engine) - a
+     * rounding on the wire alone would put the client's obstacles where the server's are not.
+     * A millimetre moves 18 of 32,894 blocked pathing nodes on the live planet, a centimetre 168.
+     * Rotation and scale only draw; three decimals of a radian is a twentieth of a degree.
+     */
+    private static final double POSITION_PRECISION = 1000.0;
+    private static final double TRANSFORM_PRECISION = 1000.0;
+
+    private static double round(double value, double precision) {
+        return Math.round(value * precision) / precision;
+    }
+
     private void fillInRenderTerrainObject(Map<Index, MapList<Integer, TerrainObjectPosition>> renderTerrainObjects) {
         renderTerrainObjects.forEach((tileIndex, terrainObjectGroup) -> {
             NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists = new NativeTerrainShapeObjectList[terrainObjectGroup.getMap().size()];
@@ -104,19 +121,19 @@ public class TerrainShapeManagerSetup {
                     TerrainObjectPosition terrainObjectPosition = entry.getValue().get(positionIndex);
                     NativeTerrainShapeObjectPosition nativeTerrainShapeObjectPosition = new NativeTerrainShapeObjectPosition();
                     nativeTerrainShapeObjectPosition.terrainObjectId = terrainObjectPosition.getId();
-                    nativeTerrainShapeObjectPosition.x = terrainObjectPosition.getPosition().getX();
-                    nativeTerrainShapeObjectPosition.y = terrainObjectPosition.getPosition().getY();
+                    nativeTerrainShapeObjectPosition.x = round(terrainObjectPosition.getPosition().getX(), POSITION_PRECISION);
+                    nativeTerrainShapeObjectPosition.y = round(terrainObjectPosition.getPosition().getY(), POSITION_PRECISION);
                     if (terrainObjectPosition.getScale() != null) {
                         nativeTerrainShapeObjectPosition.scale = new NativeVertex();
-                        nativeTerrainShapeObjectPosition.scale.x = terrainObjectPosition.getScale().getX();
-                        nativeTerrainShapeObjectPosition.scale.y = terrainObjectPosition.getScale().getY();
-                        nativeTerrainShapeObjectPosition.scale.z = terrainObjectPosition.getScale().getZ();
+                        nativeTerrainShapeObjectPosition.scale.x = round(terrainObjectPosition.getScale().getX(), TRANSFORM_PRECISION);
+                        nativeTerrainShapeObjectPosition.scale.y = round(terrainObjectPosition.getScale().getY(), TRANSFORM_PRECISION);
+                        nativeTerrainShapeObjectPosition.scale.z = round(terrainObjectPosition.getScale().getZ(), TRANSFORM_PRECISION);
                     }
                     if (terrainObjectPosition.getRotation() != null) {
                         nativeTerrainShapeObjectPosition.rotation = new NativeVertex();
-                        nativeTerrainShapeObjectPosition.rotation.x = terrainObjectPosition.getRotation().getX();
-                        nativeTerrainShapeObjectPosition.rotation.y = terrainObjectPosition.getRotation().getY();
-                        nativeTerrainShapeObjectPosition.rotation.z = terrainObjectPosition.getRotation().getZ();
+                        nativeTerrainShapeObjectPosition.rotation.x = round(terrainObjectPosition.getRotation().getX(), TRANSFORM_PRECISION);
+                        nativeTerrainShapeObjectPosition.rotation.y = round(terrainObjectPosition.getRotation().getY(), TRANSFORM_PRECISION);
+                        nativeTerrainShapeObjectPosition.rotation.z = round(terrainObjectPosition.getRotation().getZ(), TRANSFORM_PRECISION);
                     }
                     if (terrainObjectPosition.getOffset() != null) {
                         nativeTerrainShapeObjectPosition.offset = new NativeVertex();

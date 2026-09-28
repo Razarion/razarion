@@ -103,7 +103,11 @@ export class TerrainEditorComponent extends EditorPanel implements AfterViewInit
 
   saveMiniMap() {
     const planetId = this.gwtAngularService.gwtAngularFacade.gameUiControl.getPlanetConfig().getId();
-    let dataUrl = this.miniMapCanvas.nativeElement.toDataURL("image/png");
+    // Drawn again without the bot grounds. The orange squares are for the editor's preview; saved
+    // from the preview canvas they ended up on every player's minimap (2026-09-27).
+    const clean = document.createElement('canvas');
+    this.shapeTerrainEditor.generateMiniMap(clean);
+    let dataUrl = clean.toDataURL("image/png");
     this.terrainEditorControllerClient.updateMiniMapImage(planetId, dataUrl).then(data => {
       this.messageService.add({
         severity: 'success',

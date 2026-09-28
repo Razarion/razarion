@@ -6,7 +6,7 @@ import {ProgressBarModule} from 'primeng/progressbar';
 import {ScreenCover} from '../../gwtangular/GwtAngularFacade';
 import {BabylonModelService} from '../renderer/babylon-model.service';
 import {announceReadyIfHidden} from './tab-ready-notice';
-import {removeSplash} from '../boot-splash';
+import {fitBootMap, removeBootMap, removeSplash} from '../boot-splash';
 
 @Component({
   selector: 'screen-cover',
@@ -37,12 +37,17 @@ export class ScreenCoverComponent implements ScreenCover, AfterViewInit {
    * removing the page's one once ours is actually painted is the whole of the handover.
    */
   ngAfterViewInit(): void {
-    requestAnimationFrame(() => removeSplash());
+    requestAnimationFrame(() => {
+      removeSplash();
+      // The loading-screen map sizes itself to the room under the card, and the card is ours now.
+      fitBootMap();
+    });
   }
 
   removeLoadingCover(): void {
     // The engine is up. If nobody is looking, say so in the tab strip.
     announceReadyIfHidden();
+    removeBootMap();
     this.zone.run(() => {
       this.fadeOutCover = true;
       setTimeout(() => {

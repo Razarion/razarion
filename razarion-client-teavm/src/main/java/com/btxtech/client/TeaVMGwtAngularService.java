@@ -105,7 +105,7 @@ public class TeaVMGwtAngularService {
         facade.setJavaService("inventoryUiService", AngularProxyFactory.createInventoryUiServiceProxy(inventoryUiService));
         facade.setJavaService("terrainUiService", AngularProxyFactory.createTerrainUiServiceProxy(terrainUiService));
         facade.setJavaService("gameCommandService", JsGameCommandService.createProxy(gameEngineControl.get(), inputService));
-        facade.setJavaService("itemCockpitBridge", JsItemCockpitBridge.createProxy(gameEngineControl.get(), baseItemPlacerService, itemTypeService, baseItemUiService));
+        facade.setJavaService("itemCockpitBridge", JsItemCockpitBridge.createProxy(gameEngineControl.get(), baseItemPlacerService, itemTypeService, baseItemUiService, gameUiControl));
 
         // Register cockpit state changed callback
         baseItemUiService.setCockpitStateChangedCallback(JsItemCockpitBridge::notifyCockpitStateChanged);

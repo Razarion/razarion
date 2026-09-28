@@ -1,3 +1,4 @@
+import './babylon-side-effects';
 import {Injectable} from "@angular/core";
 import {
   BabylonBaseItem,
@@ -21,34 +22,30 @@ import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 import {GwtAngularService} from "src/app/gwtangular/GwtAngularService";
 import {BabylonModelService} from "./babylon-model.service";
 import {BabylonWaterRenderService} from "./babylon-water-render.service";
-import {
-  AbstractMesh,
-  Color3,
-  DirectionalLight,
-  Engine,
-  EngineInstrumentation,
-  FreeCamera,
-  InputBlock,
-  InternalTexture,
-  Matrix,
-  Mesh,
-  MeshBuilder,
-  Node,
-  NodeMaterial,
-  Nullable,
-  ParticleSystemSet,
-  PolygonMeshBuilder,
-  Ray,
-  Scene,
-  SceneInstrumentation,
-  ShadowGenerator,
-  TransformNode,
-  Vector2,
-  Vector3,
-  VertexBuffer,
-  VertexData
-} from "@babylonjs/core";
-import {SimpleMaterial} from "@babylonjs/materials";
+import {VertexBuffer} from "@babylonjs/core/Buffers/buffer";
+import {FreeCamera} from "@babylonjs/core/Cameras/freeCamera";
+import {Ray} from "@babylonjs/core/Culling/ray.core";
+import {Engine} from "@babylonjs/core/Engines/engine";
+import {EngineInstrumentation} from "@babylonjs/core/Instrumentation/engineInstrumentation";
+import {SceneInstrumentation} from "@babylonjs/core/Instrumentation/sceneInstrumentation";
+import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight";
+import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator";
+import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
+import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {InternalTexture} from "@babylonjs/core/Materials/Textures/internalTexture";
+import {Color3} from "@babylonjs/core/Maths/math.color";
+import {Matrix, Vector2, Vector3} from "@babylonjs/core/Maths/math.vector";
+import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
+import {Mesh} from "@babylonjs/core/Meshes/mesh";
+import {VertexData} from "@babylonjs/core/Meshes/mesh.vertexData";
+import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
+import {PolygonMeshBuilder} from "@babylonjs/core/Meshes/polygonMesh";
+import {TransformNode} from "@babylonjs/core/Meshes/transformNode";
+import {Node} from "@babylonjs/core/node";
+import {ParticleSystemSet} from "@babylonjs/core/Particles/particleSystemSet";
+import {Scene} from "@babylonjs/core/scene";
+import {Nullable} from "@babylonjs/core/types";
+import {SimpleMaterial} from "@babylonjs/materials/simple/simpleMaterial";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
@@ -58,6 +55,7 @@ import {BabylonPerfOverlay} from "./babylon-perf-overlay";
 import {RenderTelemetry, RenderTelemetrySceneStats} from "./render-telemetry";
 import {ParkedMeshFilter} from "./parked-mesh-filter";
 import {OutOfViewJump} from './out-of-view-jump';
+import {whenTerrainReady} from './boot-gate';
 import {ShadowQuality} from "./shadow-quality";
 import {TextureMemory} from "./texture-memory";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
@@ -120,16 +118,6 @@ interface PendingZoomAnchor {
 })
 export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAccess {
   private readonly SPAWN_PARTICLE_HEIGHT = 15;
-  /**
-   * The capped arm's frame budget: 33 ms, i.e. thirty a second.
-   *
-   * Picked against the measurement rather than as a round number. The phone in question opened at
-   * 45 fps and ended at 19, so thirty sits below what it could sustain at the start and above
-   * where it finished - which is the only range in which a cap can trade a fast beginning for a
-   * steady middle. A cap at the peak would save nothing and one at the floor would give away what
-   * the device manages without help.
-   */
-  private static readonly FRAME_CAP_MS = 33;
   /** See setupViewFieldDirection. 3 degrees: from 20 m up, the view field reaches about 380 m. */
   private static readonly VIEW_FIELD_MIN_DOWN_ANGLE = 3 * Math.PI / 180;
   /** See getHudBottomPixels. Long enough to survive one tip evaluation, short enough to follow a
@@ -242,21 +230,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   // The overlay's server-side counterpart: same measurements, but summarised and shipped, because
   // the overlay only ever exists on the machine that is not the one reporting the lag.
   private renderTelemetry: RenderTelemetry | null = null;
-  /**
-   * How long the render loop waits between frames, 0 to draw as fast as the device will.
-   *
-   * A phone measured on 2026-09-16 held 833 draw calls and 273 active meshes unchanged for four
-   * minutes while its render time went from 30 to 54 ms: identical work at twice the cost, which
-   * is the device throttling, not the renderer. It had started at 45 fps and ended at 19 - and the
-   * 45 is what makes the heat that the 19 pays for. Thirty held steadily would feel better than
-   * forty-five that decays, but that is a belief until it is measured, so this is an arm rather
-   * than a setting.
-   *
-   * Touch devices only. A desktop has cooling and does not do this, and there a cap is nothing but
-   * a downgrade.
-   */
-  private frameCapMs = 0;
-  private lastRenderedAt = 0;
   // Keeps the parked terrain-tile cache out of Babylon's per-frame walks — the fix for the PROD
   // finding that the frame time follows scene.meshes rather than what is drawn.
   private readonly parkedMeshFilter = new ParkedMeshFilter();
@@ -471,7 +444,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     if (RenderTelemetry.ENABLED && !this.renderTelemetry) {
       this.renderTelemetry = new RenderTelemetry(() => this.collectSceneStats());
     }
-    this.assignFrameCapArm();
 
     // ----- Keyboard -----
     const self = this;
@@ -481,13 +453,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     window.addEventListener("keydown", e => {
       if (!self.keyPressed.has(e.key)) {
         self.keyPressed.set(e.key, Date.now());
-      }
-      if (e.key === "F6") {
-        e.preventDefault();
-        self.frameCapMs = self.frameCapMs > 0 ? 0 : BabylonRenderServiceAccessImpl.FRAME_CAP_MS;
-        console.log(`[PerfDebug] frame cap ${self.frameCapMs > 0 ? self.frameCapMs + "ms" : "OFF"} — `
-          + `the arm a touch device is assigned at random. Compare frameP50 and renderP50 over `
-          + `several minutes, not seconds: what this is about is the slide, not the first reading.`);
       }
       if (e.key === "F7") {
         e.preventDefault();
@@ -736,20 +701,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         if (!this.scene.activeCamera) {
           return;
         }
-        if (this.frameCapMs > 0) {
-          const now = performance.now();
-          /*
-           * The tolerance is what makes a cap land evenly. requestAnimationFrame offers a frame
-           * every 16.7 ms, and a bare "has the interval passed" test against 33.3 misses the frame
-           * at 33.4 by a hair and takes the next one at 50 - so a 30 fps cap delivers an alternating
-           * 33/50 judder that is worse than the uncapped picture it replaced. Half a display frame
-           * of slack lets it settle on every second one.
-           */
-          if (now - this.lastRenderedAt < this.frameCapMs - 8) {
-            return;
-          }
-          this.lastRenderedAt = now;
-        }
         const perfActive = this.perfOverlay?.isActive() === true;
         // Telemetry needs the same two timestamps the overlay needs, so take them once for both.
         const measure = perfActive || this.renderTelemetry !== null;
@@ -898,10 +849,18 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     (window as any).RAZ_engineError = (reason: string) => this.reportEngineError(reason);
     this.engine = new Engine(this.canvas)
     this.scene = new Scene(this.engine);
-    this.scene.createDefaultEnvironment({
-      createSkybox: false,
-      createGround: false,
-      environmentTexture: "renderer/env/sanGiuseppeBridge.env"
+    // 1 MB the start does not wait for, fetched once the terrain is in (boot-gate.ts); until then
+    // the scene has no image-based lighting, for a second or two after the first frame.
+    const scene = this.scene;
+    whenTerrainReady().then(() => {
+      if (scene.isDisposed) {
+        return;
+      }
+      scene.createDefaultEnvironment({
+        createSkybox: false,
+        createGround: false,
+        environmentTexture: "renderer/env/sanGiuseppeBridge.env"
+      });
     });
     this.scene.environmentIntensity = 1.0;
     this.babylonModelService.setScene(this.scene);
@@ -1281,6 +1240,26 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     });
     this.commandTargetMarkers.push(
       new CommandTargetMarker(this.scene, target.getContainer(), target.getRadius(), kind));
+  }
+
+  /**
+   * The same acknowledgement for an order aimed at a spot on the ground: where a move goes, or
+   * where a new building was placed. There is no item to hang the rings off yet, so they get a
+   * node of their own at the ground height.
+   */
+  showGroundCommandMarker(x: number, z: number, radius: number, kind: CommandTargetKind, y?: number): void {
+    const groundY = y ?? this.getTerrainHeightAt(x, z) ?? 0;
+    this.commandTargetMarkers = this.commandTargetMarkers.filter(marker => {
+      // A move replaces the previous move ring, so a burst of clicks shows only the last one.
+      if (marker.isDisposed() || (kind === 'move' && marker.getKind() === 'move' && marker.isGround())) {
+        marker.dispose();
+        return false;
+      }
+      return true;
+    });
+    const node = new TransformNode(`Command ground marker ${kind}`, this.scene);
+    node.position.set(x, groundY, z);
+    this.commandTargetMarkers.push(new CommandTargetMarker(this.scene, node, radius, kind, true));
   }
 
   showPlaceMarker(placeConfig: PlaceConfig | null, markerConfig: MarkerConfig | null): void {
@@ -2176,25 +2155,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
    * Anything that would have to *hook* the engine to be measured (GPU time, shader compilation)
    * still belongs to F9, because turning it on for every player would change what is measured.
    */
-  /**
-   * Puts this session in one of the two frame-cap arms.
-   *
-   * Random per session rather than rolled out, because the question cannot be answered by
-   * comparing before with after: the thing being measured is a slide over minutes, and which
-   * phones played at which hour would decide the answer instead of the cap. Both arms run at the
-   * same time, on the same mix of devices, and the telemetry line carries the arm.
-   *
-   * Touch devices only. What is being avoided is a phone heating itself up; a desktop does not do
-   * that, and there the cap would be a downgrade and nothing else.
-   */
-  private assignFrameCapArm(): void {
-    const touch = typeof window !== 'undefined'
-      && window.matchMedia?.('(pointer: coarse)').matches === true;
-    this.frameCapMs = touch && Math.random() < 0.5
-      ? BabylonRenderServiceAccessImpl.FRAME_CAP_MS
-      : 0;
-  }
-
   private collectSceneStats(): RenderTelemetrySceneStats {
     const glInfo = this.engine.getGlInfo();
     const census = this.censusMeshes();
@@ -2211,7 +2171,6 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       indexTop: census.indexTop,
       parkedMeshes: this.parkedMeshFilter.getParkedCount(),
       parkingFilter: this.parkedMeshFilter.isEnabled(),
-      frameCapMs: this.frameCapMs,
       ...this.collectMemoryStats(),
       renderWidth: this.engine.getRenderWidth(),
       renderHeight: this.engine.getRenderHeight(),

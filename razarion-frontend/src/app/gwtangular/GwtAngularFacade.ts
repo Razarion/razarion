@@ -820,6 +820,9 @@ export interface BaseItemPlacer {
   getRallyOffsetY(): number;
 
   getRallyRadius(): number;
+
+  /** A valid spot to open on instead of the screen centre (the unload placer); null = none. */
+  getOpenPosition(): DecimalPosition | null;
 }
 
 // ---------- Inventory ----------

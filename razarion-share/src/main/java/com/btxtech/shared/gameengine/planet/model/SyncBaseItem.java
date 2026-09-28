@@ -709,20 +709,32 @@ public class SyncBaseItem extends SyncItem {
      * questions this has to answer are whether the player ever asked for it, whether the unit ever
      * got there, and whether the unload was allowed - and none of them could be answered from
      * outside. MASTER only: the same code runs in the browser worker, where it would be noise.
+     * <p>
+     * A loaded unit has no position any more, so the distance is only computed while it has one.
+     * Until 2026-09-27 the "loaded" line asked for it anyway, threw a NullPointerException on every
+     * single load and took the stop() after it down too - the unit went into the container, but
+     * its command state was never cleared. And whatever a log line runs into, it must not break
+     * the thing it logs, hence the catch.
      */
     private void logContainer(String what, SyncBaseItem container) {
         if (baseItemService.getGameEngineMode() != GameEngineMode.MASTER) {
             return;
         }
-        logger.warning("[Container] " + what
-                + " item=" + getId() + " type=" + getBaseItemType().getInternalName()
-                + " container=" + container.getId()
-                + " containerType=" + container.getBaseItemType().getInternalName()
-                + " base=" + (getBase() != null ? getBase().getBaseId() : null)
-                + " distance=" + round(getAbstractSyncPhysical().getDistance(container))
-                + " range=" + round(container.getSyncItemContainer().getRange())
-                + " pos=" + getAbstractSyncPhysical().getPosition()
-                + " containerPos=" + container.getAbstractSyncPhysical().getPosition());
+        try {
+            DecimalPosition position = getAbstractSyncPhysical().getPosition();
+            DecimalPosition containerPosition = container.getAbstractSyncPhysical().getPosition();
+            logger.warning("[Container] " + what
+                    + " item=" + getId() + " type=" + getBaseItemType().getInternalName()
+                    + " container=" + container.getId()
+                    + " containerType=" + container.getBaseItemType().getInternalName()
+                    + " base=" + (getBase() != null ? getBase().getBaseId() : null)
+                    + " distance=" + (position != null && containerPosition != null ? round(getAbstractSyncPhysical().getDistance(container)) : "-")
+                    + " range=" + round(container.getSyncItemContainer().getRange())
+                    + " pos=" + position
+                    + " containerPos=" + containerPosition);
+        } catch (Throwable t) {
+            logger.warning("[Container] " + what + " item=" + getId() + " (log line failed: " + t.getMessage() + ")");
+        }
     }
 
     private static double round(double value) {

@@ -1,7 +1,9 @@
 package com.btxtech.uiservice.itemplacer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import jakarta.inject.Inject;
@@ -17,6 +19,10 @@ import java.util.logging.Logger;
  */
 
 public class BaseItemPlacer {
+    /** Grid of the opening-spot search: a crescent of dry ground a few units wide is not missed. */
+    private static final double OPEN_SEARCH_STEP = 2.0;
+    /** Largest area searched for an opening spot: a ship's reach is 40 x 40, a start region is not. */
+    private static final double MAX_OPEN_SEARCH_AREA = 100.0 * 100.0;
     private final Logger logger = Logger.getLogger(BaseItemPlacer.class.getName());
     private final BaseItemPlacerChecker baseItemPlacerChecker;
     private final ItemTypeService itemTypeService;
@@ -28,6 +34,8 @@ public class BaseItemPlacer {
     private String lastLoggedErrorText;
     /** What the caller wants said when the spot is outside its allowed area; null = the general wording. */
     private String allowedAreaText;
+    /** A valid spot to open on, see {@link #findOpenPosition}; null = the screen centre. */
+    private DecimalPosition openPosition;
 
     @Inject
     public BaseItemPlacer(ItemTypeService itemTypeService, BaseItemPlacerChecker baseItemPlacerChecker) {
@@ -45,7 +53,63 @@ public class BaseItemPlacer {
 //        if (baseItemPlacerConfig.getSuggestedPosition() != null) {
 //            onMove(new Vertex(baseItemPlacerConfig.getSuggestedPosition(), 0));
 //        }
+        openPosition = null;
+        if (baseItemPlacerConfig.isOpenInAllowedArea() && baseItemPlacerConfig.getAllowedArea() != null) {
+            try {
+                openPosition = findOpenPosition(baseItemPlacerConfig.getAllowedArea(), baseItemPlacerConfig.getPreferredArea());
+            } catch (Throwable t) {
+                // Without it the placer opens at the screen centre, as it always did.
+                logger.warning("BaseItemPlacer.findOpenPosition() failed: " + t.getMessage());
+            }
+        }
         return this;
+    }
+
+    /**
+     * Where the placer should open: a valid spot in the allowed area, one in the preferred area if
+     * there is any, and of those the one nearest to the area's centre. Null when nothing fits.
+     * <p>
+     * For the unload placer, whose allowed area is the reach of the ship. On PROD a ship at the
+     * Phase 2 coast (quest 392, 2026-09-27) had 33 valid spots on a 2-unit grid out of 375 in
+     * reach: a thin crescent of dry ground. The wet beach in front of the ship looks like land and
+     * is water, and the land the quest marks is mostly out of reach - "Terrain not suitable here"
+     * and "Too far from the Transporter" in turns, until the player gave up.
+     * <p>
+     * Only ground the client has on screen can be judged (TerrainUiService#isTerrainFree reads the
+     * displayed tiles); a ship off screen gets no opening spot, and the placer behaves as before.
+     */
+    private DecimalPosition findOpenPosition(PlaceConfig allowedArea, PlaceConfig preferredArea) {
+        Rectangle2D aabb = allowedArea.toAabb();
+        if (aabb == null || aabb.width() * aabb.height() > MAX_OPEN_SEARCH_AREA) {
+            return null;
+        }
+        DecimalPosition center = allowedArea.getPosition() != null
+                ? allowedArea.getPosition()
+                : new DecimalPosition(aabb.startX() + aabb.width() / 2.0, aabb.startY() + aabb.height() / 2.0);
+        DecimalPosition best = null;
+        double bestDistance = Double.MAX_VALUE;
+        boolean bestPreferred = false;
+        for (double x = aabb.startX(); x <= aabb.startX() + aabb.width(); x += OPEN_SEARCH_STEP) {
+            for (double y = aabb.startY(); y <= aabb.startY() + aabb.height(); y += OPEN_SEARCH_STEP) {
+                DecimalPosition position = new DecimalPosition(x, y);
+                baseItemPlacerChecker.check(position);
+                if (!baseItemPlacerChecker.isPositionValid()) {
+                    continue;
+                }
+                boolean preferred = preferredArea != null && preferredArea.checkInside(position);
+                double distance = position.getDistance(center);
+                if ((preferred && !bestPreferred) || (preferred == bestPreferred && distance < bestDistance)) {
+                    best = position;
+                    bestDistance = distance;
+                    bestPreferred = preferred;
+                }
+            }
+        }
+        return best;
+    }
+
+    public DecimalPosition getOpenPosition() {
+        return openPosition;
     }
 
     @SuppressWarnings("unused") // Called by Angular

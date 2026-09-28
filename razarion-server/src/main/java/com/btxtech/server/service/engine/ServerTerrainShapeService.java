@@ -1,5 +1,6 @@
 package com.btxtech.server.service.engine;
 
+import com.btxtech.server.service.ContentDigest;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -11,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManage
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeTerrainShape;
 import com.btxtech.shared.system.alarm.AlarmService;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,9 +21,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import static com.btxtech.shared.system.alarm.Alarm.Type.TERRAIN_SHAPE_SETUP_FAILED;
 import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray;
@@ -30,6 +34,9 @@ import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray
 public class ServerTerrainShapeService {
     final private Logger logger = Logger.getLogger(ServerTerrainShapeService.class.getName());
     private final Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
+    /** The shapes as served, see {@link #getSerializedTerrainShape}. Dropped whenever a shape is rebuilt. */
+    private final Map<Integer, SerializedTerrainShape> serializedTerrainShapes = new ConcurrentHashMap<>();
+    private final JsonMapper jsonMapper;
     private final PlanetCrudService planetCrudPersistence;
     private final TerrainTypeService terrainTypeService;
     private final AlarmService alarmService;
@@ -43,13 +50,15 @@ public class ServerTerrainShapeService {
                                      AlarmService alarmService,
                                      InitializeService initializeService,
                                      StaticGameConfigService staticGameConfigService,
-                                     BotService botService) {
+                                     BotService botService,
+                                     JsonMapper jsonMapper) {
         this.planetCrudPersistence = planetCrudPersistence;
         this.terrainTypeService = terrainTypeService;
         this.alarmService = alarmService;
         this.initializeService = initializeService;
         this.staticGameConfigService = staticGameConfigService;
         this.botService = botService;
+        this.jsonMapper = jsonMapper;
     }
 
     private static List<BabylonDecal> generateDecals() {
@@ -75,6 +84,7 @@ public class ServerTerrainShapeService {
 
     public void start(List<BotConfig> botConfigs) {
         terrainShapes.clear();
+        serializedTerrainShapes.clear();
         planetCrudPersistence.read().forEach(planetConfig -> {
             try {
                 createTerrainShape(botConfigs, planetConfig);
@@ -100,6 +110,7 @@ public class ServerTerrainShapeService {
                 ServerTerrainShapeService.generateDecals(),
                 BotService.generateBotGrounds(botConfigs));
         terrainShapes.put(planetConfig.getId(), terrainShapeManager.toNativeTerrainShape());
+        serializedTerrainShapes.remove(planetConfig.getId());
     }
 
     public void createTerrainShape(List<BotConfig> botConfigs, int planetConfigId) {
@@ -114,6 +125,37 @@ public class ServerTerrainShapeService {
             throw new IllegalArgumentException("Planet " + planetId + " does not exist");
         }
         return nativeTerrainShape;
+    }
+
+    /**
+     * The shape as the worker receives it: JSON, gzipped, with an entity tag over the JSON.
+     * <p>
+     * It used to go out no-store and serialized per request - a megabyte gzip that every start
+     * fetches and no cache could keep. With a tag the browser may keep it and ask again with
+     * If-None-Match, which is what lets the game page fetch it while its own JavaScript is still
+     * arriving and hand it to the worker through the HTTP cache (terrain-prefetch.ts). Serialized
+     * with the MVC's own mapper, so the bytes are the ones the controller produced before.
+     */
+    public SerializedTerrainShape getSerializedTerrainShape(int planetId) {
+        return serializedTerrainShapes.computeIfAbsent(planetId, id -> {
+            byte[] json = jsonMapper.writeValueAsBytes(getNativeTerrainShape(id));
+            return new SerializedTerrainShape(gzip(json), ContentDigest.eTag(ContentDigest.of(json) + "-shape"));
+        });
+    }
+
+    private static byte[] gzip(byte[] content) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream(content.length / 8);
+            try (GZIPOutputStream gzip = new GZIPOutputStream(out)) {
+                gzip.write(content);
+            }
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public record SerializedTerrainShape(byte[] gzippedJson, String eTag) {
     }
 
     public int getGroundHeightAt(int index) {
