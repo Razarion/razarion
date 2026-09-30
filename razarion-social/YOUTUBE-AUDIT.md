@@ -281,3 +281,32 @@ mehr als ihn aufzublasen.
 Nur die eine Zeile. `publish_youtube.mjs` gibt es inzwischen, es läuft in `scheduled/run.ps1` mit
 und hat bis zum 2026-09-27 elf Clips hochgeladen. `DEFAULT_PRIVACY` in `pipeline/lib/youtube.mjs`
 auf `'public'` setzen genügt.
+
+## Rückfrage vom 2026-09-29
+
+Das YouTube API Services Team verlangt innert sieben Arbeitstagen ein englisches Skript oder einen
+Screencast des ganzen Upload-Ablaufs samt Endergebnis. Das Skript liegt als
+`pipeline/data/audit/8-upload-process-script.pdf` bereit (Quelle: die `.html` daneben): Schritte 0–7
+von der OAuth-Autorisierung bis zum Video in Studio, mit echter Ausgabe des Uploads vom 2026-09-29
+(`aAEaOgpv360`) und der Liste aller zwölf Uploads. Nutzung neu angegeben als „typisch einer, höchstens drei Uploads am Tag (4800 Einheiten)", weiterhin im Standardkontingent; das weicht bewusst von „höchstens einer" im Formular ab und steht so auch in der Antwort.
+
+## Verstossbericht vom 2026-09-30
+
+Google hat einen „ToS Violations Report V.1“ geschickt, wieder mit sieben Arbeitstagen Frist (bis
+etwa 2026-10-09). Er enthält zwei Punkte, und beide haben mit dem Uploader selbst nichts zu tun.
+
+**III.D.1c: mehrere Projektnummern?** Das ist nur eine Frage zur Bestätigung. Es ist ein einziges Projekt,
+579831821740. Das belegt die OAuth-Client-ID in `.env`, denn sie beginnt mit der Projektnummer. Von den
+übrigen Projekten in `gcloud projects list` hat keines die YouTube Data API aktiv.
+`beaming-light-336511` („My Project 82497“) gehört jemand anderem: Beat darf dort nicht einmal die
+IAM-Richtlinie lesen.
+
+**III.F.2a: YouTube-Symbol entspricht nicht den Branding-Richtlinien.** Beanstandet wurde das Symbol
+in der Linkzeile der Startseite, die wir mit Nachweis 2 selbst vorgelegt hatten. Es war hellgrau, beim Hover
+orange, und die Form war nur 14 px hoch. Erlaubt ist nur das offizielle Symbol in Rot-Weiss oder
+Schwarz-Weiss mit mindestens 20 px Höhe. Wir haben es nicht nachgebaut, sondern entfernt: Auf der
+Startseite (`index.ftl`) und im Info-Dialog im Spiel steht jetzt nur noch das Wort „YouTube“. Ohne Symbol
+gelten die Markenregeln nicht, und es gibt nichts mehr, woran man hängen bleibt.
+
+Die Änderung ist auf PROD, der Nachweis liegt als `10-homepage-youtube-text-only.jpg` in
+`pipeline/data/audit/`. Die Antwort nennt beide Punkte und hat den Screenshot im Anhang.
