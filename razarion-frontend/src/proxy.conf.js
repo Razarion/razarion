@@ -1,3 +1,15 @@
+// A second checkout runs its own backend on another port, set as RAZ_SERVER_PORT in
+// razarion-server/docker/.env (see razarion-server/docker/README.md). Without that file it is 8080.
+function backendPort() {
+  try {
+    const env = require('fs').readFileSync(require('path').join(__dirname, '../../razarion-server/docker/.env'), 'utf8');
+    const match = env.match(/^\s*RAZ_SERVER_PORT\s*=\s*(\d+)/m);
+    return match ? match[1] : '8080';
+  } catch (e) {
+    return '8080';
+  }
+}
+
 const PROXY_CONFIG = [
   {
     context: [
@@ -18,7 +30,7 @@ const PROXY_CONFIG = [
       "/razarion-bg.webp",
       "/razarion-bg-portrait.webp"
     ],
-    target: "http://127.0.0.1:8080",
+    target: `http://127.0.0.1:${backendPort()}`,
     secure: false,
     ws: true,
     onProxyRes: function (proxyRes) {

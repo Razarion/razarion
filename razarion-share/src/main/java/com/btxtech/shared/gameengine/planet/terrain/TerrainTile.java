@@ -11,6 +11,9 @@ public class TerrainTile {
     private TerrainTileObjectList[] terrainTileObjectLists;
     private int groundConfigId;
     private Uint16ArrayEmu groundHeightMap;
+    // Sky visibility and curvature per node for the ground shader, see NativeTerrainShapeAccess.createTileGroundRelief().
+    // Null when not computed; the renderer then draws the ground without it.
+    private Uint16ArrayEmu groundRelief;
     private BabylonDecal[] babylonDecals;
     private BotGround[] botGrounds;
     // Per-node TerrainType ordinals (row-major, NODE_Y_COUNT * NODE_X_COUNT), computed in the worker
@@ -62,6 +65,15 @@ public class TerrainTile {
     public TerrainTile groundHeightMap(Uint16ArrayEmu groundHeightMap) {
         setGroundHeightMap(groundHeightMap);
         return this;
+    }
+
+    @SuppressWarnings("unused") // Used ba angular
+    public Uint16ArrayEmu getGroundRelief() {
+        return groundRelief;
+    }
+
+    public void setGroundRelief(Uint16ArrayEmu groundRelief) {
+        this.groundRelief = groundRelief;
     }
 
     @SuppressWarnings("unused") // Used ba angular

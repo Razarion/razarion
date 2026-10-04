@@ -648,6 +648,12 @@ public class TeaVMClientMarshaller {
         // [5] = botGrounds array
         terrainTile.setBotGrounds(demarshallBotGrounds(getArrayElementDirect(array, 5)));
 
+        // [6] = groundRelief (Uint16Array or null) - wrap it
+        JSObject reliefObj = getArrayElementDirect(array, 6);
+        if (!isNullOrUndefined(reliefObj)) {
+            terrainTile.setGroundRelief(JsUint16ArrayWrapper.wrap(reliefObj));
+        }
+
         return terrainTile;
     }
 

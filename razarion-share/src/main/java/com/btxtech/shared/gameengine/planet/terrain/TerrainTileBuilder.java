@@ -25,6 +25,7 @@ public class TerrainTileBuilder {
         terrainTile = new TerrainTile();
         terrainTile.setIndex(terrainTileIndex);
         terrainTile.setGroundHeightMap(nativeTerrainShapeAccess.createTileGroundHeightMap(terrainTileIndex));
+        terrainTile.setGroundRelief(nativeTerrainShapeAccess.createTileGroundRelief(terrainTileIndex));
     }
 
     public TerrainTile generate(PlanetConfig planetConfig) {

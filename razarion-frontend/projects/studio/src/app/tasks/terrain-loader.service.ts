@@ -358,6 +358,8 @@ function buildTerrainTile(
 
   return {
     getGroundHeightMap: () => heightMap,
+    // The relief comes from the game worker; the studio has none and draws the ground without it.
+    getGroundRelief: () => null,
     getGroundConfigId: () => groundConfigId,
     getTerrainTileObjectLists: () => objectLists,
     getBabylonDecals: () => decals,

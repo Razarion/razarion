@@ -21,4 +21,15 @@ public interface NativeTerrainShapeAccess {
     Uint16ArrayEmu createTileGroundHeightMap(Index terrainTileIndex);
 
     int getGroundHeightAt(int index);
+
+    /**
+     * Per-node relief of one tile, for the ground shader only: (NODE_X_COUNT + 1) * (NODE_Y_COUNT + 1)
+     * values laid out like {@link #createTileGroundHeightMap(Index)}. High byte = sky visibility
+     * (255 open, lower = occluded by the ground around it), low byte = curvature (128 flat, lower =
+     * hollow, higher = crest). It looks across tile edges, which is why it is made where the whole
+     * height map is - a tile on its own would draw seams. Null where nobody renders (server, tests).
+     */
+    default Uint16ArrayEmu createTileGroundRelief(Index terrainTileIndex) {
+        return null;
+    }
 }

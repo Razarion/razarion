@@ -214,6 +214,31 @@ Previously called "Bot material", the asphalt serves purely as a visual surface 
 
 The asphalt material is **not** programmatically built — it is a pre-authored `NodeMaterial` loaded from the database via `BabylonModelService`.
 
+## Light, Relief and Clouds
+
+**Light** (`babylon-render-service-access-impl.service.ts`): the sun stands about 40° high, from the
+right and a little behind the camera, slightly warm. Steeper (it was 67°) lit every slope alike and
+the land read as flat. An `ImageProcessingPostProcess` does ACES tone mapping, contrast and +25
+saturation for the whole frame - ground and water are node materials and skip the scene's own image
+processing. A `HemisphericLight` ("SkyLight") lights the models; ground tiles and bot-ground boxes
+exclude themselves from it, since the ground has its own sky term. The post process and the `.env`
+decoder need their shaders imported explicitly (`imageProcessing.fragment`, `postprocess.vertex`,
+`rgbdDecode.fragment`) - otherwise Babylon fetches them by URL, gets `index.html`, and the image
+based lighting never loads.
+
+**Relief** (UV3): the worker computes it per tile, where the whole height map is, so tiles agree at
+their seams (`TeaVMNativeTerrainShapeAccess.computeRelief`, ~9 ms per tile). Per node, packed in a
+Uint16: high byte = sky visibility (8 directions, steepest rise within 24 m), low byte = curvature
+(node against a 10 m ring, ±3 m full scale). It travels as element `[6]` of the marshalled
+`TerrainTile`; without it the tile counts as open and flat and looks as before. The ground shader
+uses it on land only: hollows darker and lusher, crests lighter and drier, sky light held back by
+the sky visibility. Steep but still passable slopes (from the mesh normal) show bare earth.
+
+**Clouds**: two octaves of simplex noise (`SimplexPerlin3DBlock`) drifting and changing shape take
+up to 60 % of the sun away - clouds 30-60 m across, so several are in view (at 150 m and more the
+screen sat inside one and never showed a shape). Computed, not sampled: the fragment shader already uses 15 of the 16
+texture units WebGL2 guarantees. Only the ground gets them.
+
 ## Water Surface
 
 **File:** `razarion-frontend/src/app/game/renderer/babylon-water-render.service.ts`

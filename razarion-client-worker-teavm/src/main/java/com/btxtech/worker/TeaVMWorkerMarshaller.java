@@ -618,6 +618,9 @@ public final class TeaVMWorkerMarshaller {
         // Bot grounds
         array.push(marshallBotGrounds(terrainTile.getBotGrounds()));
 
+        // Ground relief (null when not computed) - last, so the indices above stay as they were
+        array.push((JSObject) terrainTile.getGroundRelief());
+
         return array;
     }
 
@@ -794,6 +797,11 @@ public final class TeaVMWorkerMarshaller {
 
         // Bot grounds
         terrainTile.setBotGrounds(demarshallBotGrounds(array.get(5)));
+
+        // Ground relief
+        if (array.getLength() > 6 && array.get(6) != null) {
+            terrainTile.setGroundRelief(toUint16ArrayEmu(array.get(6)));
+        }
 
         return terrainTile;
     }

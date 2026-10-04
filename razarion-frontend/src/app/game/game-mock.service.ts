@@ -1087,6 +1087,10 @@ export class GameMockService {
                 return heightMap;
               }
 
+              getGroundRelief(): Uint16Array | null {
+                return null;
+              }
+
               getGroundConfigId(): number {
                 return 252;
               }

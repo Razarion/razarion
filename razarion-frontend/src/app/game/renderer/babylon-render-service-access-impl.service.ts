@@ -29,11 +29,23 @@ import {Engine} from "@babylonjs/core/Engines/engine";
 import {EngineInstrumentation} from "@babylonjs/core/Instrumentation/engineInstrumentation";
 import {SceneInstrumentation} from "@babylonjs/core/Instrumentation/sceneInstrumentation";
 import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight";
+import {HemisphericLight} from "@babylonjs/core/Lights/hemisphericLight";
+import {GroundPaths} from "./ground-paths";
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
 import {InternalTexture} from "@babylonjs/core/Materials/Textures/internalTexture";
 import {Color3} from "@babylonjs/core/Maths/math.color";
+import {ImageProcessingPostProcess} from "@babylonjs/core/PostProcesses/imageProcessingPostProcess";
+import {ImageProcessingConfiguration} from "@babylonjs/core/Materials/imageProcessingConfiguration";
+import {ColorCurves} from "@babylonjs/core/Materials/colorCurves";
+// The post process looks its shaders up in the ShaderStore and, finding nothing there, would fetch them
+// by URL - which the dev server and the CDN answer with index.html. Registering them up front avoids that.
+import "@babylonjs/core/Shaders/imageProcessing.fragment";
+import "@babylonjs/core/Shaders/postprocess.vertex";
+// Same for the decoder of the .env environment texture: without it the image-based lighting never
+// loaded, and the models were lit by the sun alone.
+import "@babylonjs/core/Shaders/rgbdDecode.fragment";
 import {Matrix, Vector2, Vector3} from "@babylonjs/core/Maths/math.vector";
 import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
 import {Mesh} from "@babylonjs/core/Meshes/mesh";
@@ -248,6 +260,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private terrainShadowsEnabled = true;
   public static readonly SCROLL_SPEED = 0.2;
   public static readonly SCROLL_SPEED_CAMERA_HEIGHT_FACTOR = 0.03;
+  /** Sky light for models; the ground excludes itself (it has its own, shaded by the relief). */
+  public static readonly SKY_LIGHT_NAME = "SkyLight";
   // Place marker draping: subdivide marker triangles down to this edge length (m)
   // so the mesh follows terrain slopes, clamped to a max recursion depth. Kept
   // small so the flat triangles between sampled vertices don't undershoot the
@@ -504,16 +518,29 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.babylonAudioService.setRendererService(this);
 
     // ----- Light -----
-    const lightDirection = new Vector3(-3, -10, 3);
+    // Sun from the right and a little behind the camera, about 40 degrees high. It stood at 67 degrees
+    // before, almost overhead, and lit every slope the same - the land read as flat however it was
+    // shaped. Lower and from the side, slopes facing it brighten, the others fall into the sky light
+    // (ground-material.ts) and shadows get long enough to show what casts them.
+    const lightDirection = new Vector3(-1, -0.85, 0.3);
     this.directionalLight = new DirectionalLight("DirectionalLight", lightDirection, this.scene);
-    this.directionalLight.intensity = 0.8;
+    this.directionalLight.intensity = 0.95;
     this.directionalLight.shadowMinZ = -100;
     this.directionalLight.shadowMaxZ = 200;
     this.directionalLight.autoUpdateExtends = false;
     this.directionalLight.shadowFrustumSize = 150;
-    this.directionalLight.diffuse = new Color3(1, 1, 1);
+    this.directionalLight.diffuse = new Color3(1.0, 0.95, 0.86); // warm sun against the cool sky light
     this.directionalLight.specular = new Color3(1, 1, 1);
     this.directionalLight.shadowEnabled = true;
+
+    // Sky light for units, buildings and plants. With the sun lower they lit only from one side and
+    // their shaded half went nearly black. The ground opts out (BabylonTerrainTileImpl): its shader
+    // has a sky term of its own, held back in hollows by the relief.
+    const skyLight = new HemisphericLight(BabylonRenderServiceAccessImpl.SKY_LIGHT_NAME, new Vector3(0, 1, 0), this.scene);
+    skyLight.diffuse = new Color3(0.70, 0.76, 0.86);
+    skyLight.groundColor = new Color3(0.38, 0.33, 0.26);
+    skyLight.specular = new Color3(0, 0, 0);
+    skyLight.intensity = 0.6;
 
     // Sized for the screen instead of a hardcoded 4096. See ShadowQuality for the three arms that
     // ran against this and all came back null: the size buys no frame time, and neither did
@@ -536,6 +563,20 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.shadowGenerator.darkness = 0.6;
     console.log(`[Razarion] Schattenkarte: ${this.shadowMapSize}x${this.shadowMapSize} `
       + `(Backbuffer ${this.engine.getRenderWidth()}x${this.engine.getRenderHeight()})`);
+
+    // One tone mapping for everything: ground and water are node materials, which skip the scene's
+    // image processing, so it runs as a post process over the whole frame instead (and the PBR
+    // models stop doing their own). ACES keeps the brighter sun from burning out and gives the
+    // midtones some contrast.
+    const imageProcessing = new ImageProcessingPostProcess("Image processing", 1.0, this.camera);
+    imageProcessing.toneMappingEnabled = true;
+    imageProcessing.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
+    imageProcessing.exposure = 0.95;
+    imageProcessing.contrast = 1.2;
+    // ACES pulls saturation out of the midtones and left the ground looking washed out; give it back.
+    imageProcessing.colorCurvesEnabled = true;
+    imageProcessing.colorCurves = new ColorCurves();
+    imageProcessing.colorCurves.globalSaturation = 25;
 
     // Must come after the shadow generator: the filter hooks both per-frame walks over the mesh
     // array, and the second one is the shadow map's render list. F7 bypasses it for an A/B.
@@ -933,6 +974,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       });
     });
     this.scene.environmentIntensity = 1.0;
+    // A few kB, long arrived by the time the first tile wants it (tiles wait for it otherwise)
+    GroundPaths.load();
     this.babylonModelService.setScene(this.scene);
     this.baseItemContainer = new TransformNode("Base items");
     this.resourceItemContainer = new TransformNode("Resource items");

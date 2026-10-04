@@ -22,6 +22,7 @@ import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {materialsForFirstFrame, materialsForModels} from "./start-gate-materials";
 import {BabylonMaterialContainer, GlbContainer, ParticleSystemSetContainer} from "./babylon-model-container";
 import {GltfHelper} from "./gltf-helper";
+import {WindPlugin} from "./wind-plugin";
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 import {BuildAnimationPhase, RenderObject} from './render-object';
 import {whenTerrainReady} from './boot-gate';
@@ -226,11 +227,14 @@ export class BabylonModelService {
    * Use this for visually static objects (no animations, no diplomacy color, no particles).
    * Use cloneModel3D() for SyncItems where each instance needs its own material/animations.
    */
-  instantiateStaticModel(model3DId: number, parent: Node | null): TransformNode {
+  /**
+   * @param wind plants sway (WindPlugin). Decided when the model's template is made, i.e. by its first use.
+   */
+  instantiateStaticModel(model3DId: number, parent: Node | null, wind = false): TransformNode {
     model3DId = GwtHelper.gwtIssueNumber(model3DId);
     let template = this.staticTemplates.get(model3DId);
     if (!template) {
-      template = this.createStaticTemplate(model3DId);
+      template = this.createStaticTemplate(model3DId, wind);
       this.staticTemplates.set(model3DId, template);
     }
     const sourceMeshSet = new Set(this.staticTemplateMeshes.get(model3DId) ?? []);
@@ -269,7 +273,7 @@ export class BabylonModelService {
     return this.staticTemplates.size;
   }
 
-  private createStaticTemplate(model3DId: number): TransformNode {
+  private createStaticTemplate(model3DId: number, wind: boolean): TransformNode {
     if (!this.staticTemplatesParent) {
       this.staticTemplatesParent = new TransformNode("StaticModelTemplates", this.scene);
     }
@@ -295,6 +299,11 @@ export class BabylonModelService {
         m.metadata.staticTemplateOriginalScaling = m.scaling.clone();
         m.scaling.setAll(0);
         m.alwaysSelectAsActiveMesh = true;
+        if (wind && m.material) {
+          // Its own copy: the glb may share the material with a model that must stand still (a rock).
+          m.material = m.material.clone(`${m.material.name}#wind`)!;
+          new WindPlugin(m.material);
+        }
         sourceMeshes.push(m);
       }
     });

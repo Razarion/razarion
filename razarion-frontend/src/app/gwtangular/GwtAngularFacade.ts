@@ -578,6 +578,9 @@ export interface BabylonRenderServiceAccess {
 export interface TerrainTile {
   getGroundHeightMap(): Uint16Array;
 
+  /** Per node: high byte sky visibility (255 open), low byte curvature (128 flat). Null if not computed. */
+  getGroundRelief(): Uint16Array | null;
+
   getGroundConfigId(): number;
 
   getTerrainTileObjectLists(): TerrainTileObjectList[];

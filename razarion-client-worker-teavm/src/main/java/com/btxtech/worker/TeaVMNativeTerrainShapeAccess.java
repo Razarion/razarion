@@ -228,6 +228,18 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
         return asUint16ArrayEmu(resultArray);
     }
 
+    @Override
+    public Uint16ArrayEmu createTileGroundRelief(Index terrainTileIndex) {
+        try {
+            return asUint16ArrayEmu(computeRelief(tileStore, flatValues, TILE_NODE_SIZE, NODE_X_COUNT,
+                    tileXCount, tileYCount, terrainTileIndex.getX(), terrainTileIndex.getY()));
+        } catch (Throwable t) {
+            // Only the look suffers: the renderer draws the tile without relief.
+            JsConsole.warn("createTileGroundRelief failed: " + t.getMessage());
+            return null;
+        }
+    }
+
     private int getTileHeightMapStart(Index terrainTileIndex) {
         return terrainTileIndex.getY() * (terrainService.getTerrainShape().getTileXCount() * TILE_NODE_SIZE)
                 + terrainTileIndex.getX() * TILE_NODE_SIZE;
@@ -376,6 +388,56 @@ public class TeaVMNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             "}")
     private static native void storeRegion(ArrayBuffer buffer, JSObject store, int tileXCount,
                                            int tileValues, int tileRow);
+
+    /**
+     * Sky visibility and curvature for every node of one tile, (n + 1) x (n + 1) like the tile's
+     * height map. Packed per node: high byte = sky visibility (255 = open sky), low byte =
+     * curvature (128 = flat, below = hollow, above = crest), see
+     * NativeTerrainShapeAccess.createTileGroundRelief().
+     *
+     * <p>Sky visibility: in 8 directions the steepest rise of the ground within 24 m, as the sine
+     * of its horizon angle; their mean is what the surroundings hide of the sky. Curvature: the
+     * node against the mean of a ring 10 m around it, +-3 m to the full byte.
+     *
+     * <p>All in one call on the JavaScript side - 24 height reads per node, ~620,000 per tile,
+     * would cost far more as bridge crossings than as arithmetic. Reads across tile edges come
+     * from the neighbours (or from the flat table), so adjacent tiles agree at their seam.
+     */
+    @JSBody(params = {"store", "flat", "tileValues", "n", "tileXCount", "tileYCount", "tileX", "tileY"}, script =
+            "var maxX = tileXCount * n - 1, maxY = tileYCount * n - 1;" +
+            "function h(x, y) {" +
+            "  x = x < 0 ? 0 : (x > maxX ? maxX : x); y = y < 0 ? 0 : (y > maxY ? maxY : y);" +
+            "  var tx = (x / n) | 0, ty = (y / n) | 0, t = ty * tileXCount + tx, tile = store[t];" +
+            "  return (tile ? tile[(y - ty * n) * n + (x - tx * n)] : flat[t]) * 0.01 - 200;" +
+            "}" +
+            "var DX = [1, 0.7071, 0, -0.7071, -1, -0.7071, 0, 0.7071];" +
+            "var DY = [0, 0.7071, 1, 0.7071, 0, -0.7071, -1, -0.7071];" +
+            "var RADII = [3, 8, 24];" +
+            "var size = n + 1, out = new Uint16Array(size * size);" +
+            "var ox = tileX * n, oy = tileY * n;" +
+            "for (var y = 0; y < size; y++) {" +
+            "  for (var x = 0; x < size; x++) {" +
+            "    var gx = ox + x, gy = oy + y, h0 = h(gx, gy), hidden = 0, ring = 0;" +
+            "    for (var d = 0; d < 8; d++) {" +
+            "      var steepest = 0;" +
+            "      for (var r = 0; r < 3; r++) {" +
+            "        var dist = RADII[r];" +
+            "        var dh = h(Math.round(gx + DX[d] * dist), Math.round(gy + DY[d] * dist)) - h0;" +
+            "        if (r === 1) { ring += dh; }" +
+            "        var slope = dh / dist;" +
+            "        if (slope > steepest) { steepest = slope; }" +
+            "      }" +
+            "      hidden += steepest / Math.sqrt(1 + steepest * steepest);" +
+            "    }" +
+            "    var sky = 1 - hidden / 8;" +
+            "    var curvature = -ring / 8 / 3;" +
+            "    curvature = curvature < -1 ? -1 : (curvature > 1 ? 1 : curvature);" +
+            "    out[y * size + x] = (Math.round(sky * 255) << 8) | Math.round((curvature + 1) * 127.5);" +
+            "  }" +
+            "}" +
+            "return out;")
+    private static native Uint16Array computeRelief(JSObject store, Uint16Array flat, int tileValues, int n,
+                                                    int tileXCount, int tileYCount, int tileX, int tileY);
 
     @JSBody(params = {"length"}, script = "return new Uint16Array(length);")
     private static native Uint16Array createUint16Array(int length);

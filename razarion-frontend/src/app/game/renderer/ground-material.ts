@@ -26,6 +26,7 @@ import {OneMinusBlock} from "@babylonjs/core/Materials/Node/Blocks/oneMinusBlock
 import {PowBlock} from "@babylonjs/core/Materials/Node/Blocks/powBlock";
 import {GradientBlock, GradientBlockColorStep} from "@babylonjs/core/Materials/Node/Blocks/gradientBlock";
 import {TriPlanarBlock} from "@babylonjs/core/Materials/Node/Blocks/triPlanarBlock";
+import {SimplexPerlin3DBlock} from "@babylonjs/core/Materials/Node/Blocks/simplexPerlin3DBlock";
 import type {Scene} from "@babylonjs/core/scene";
 
 const TEX_PATH = "renderer/textures/";
@@ -361,6 +362,92 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   diffuseLand.output.connectTo(diffuseFinal.right);
   underwaterStep.output.connectTo(diffuseFinal.gradient);
 
+  // ========== Relief (UV3 from the worker: x = sky visibility, y = curvature) ==========
+  // Only on land: beachStep and underwaterStep are both 1 there, so sand and sea floor stay as they were.
+  const relief = new InputBlock("relief uv3");
+  relief.setAsAttribute("uv3");
+  const reliefSplit = new VectorSplitterBlock("Split relief");
+  relief.output.connectTo(reliefSplit.xyIn);
+  const landMask = new MultiplyBlock("land mask");
+  beachStep.output.connectTo(landMask.left);
+  underwaterStep.output.connectTo(landMask.right);
+
+  // Hollows darker (neutral - a green tint made them read as a different grass), crests lighter and
+  // drier: the eye reads the shape from the colour
+  const curvatureNegated = new NegateBlock("hollow curvature");
+  reliefSplit.y.connectTo(curvatureNegated.value);
+  const hollowStep = new SmoothStepBlock("hollow step");
+  curvatureNegated.output.connectTo(hollowStep.value);
+  floatInput("hollow edge0", 0.0).output.connectTo(hollowStep.edge0);
+  floatInput("hollow edge1", 0.08).output.connectTo(hollowStep.edge1);
+  const crestStep = new SmoothStepBlock("crest step");
+  reliefSplit.y.connectTo(crestStep.value);
+  floatInput("crest edge0", 0.0).output.connectTo(crestStep.edge0);
+  floatInput("crest edge1", 0.08).output.connectTo(crestStep.edge1);
+
+  const hollowAmount = new MultiplyBlock("hollow amount");
+  hollowStep.output.connectTo(hollowAmount.left);
+  landMask.output.connectTo(hollowAmount.right);
+  const hollowTint = new MultiplyBlock("hollow tint");
+  diffuseFinal.output.connectTo(hollowTint.left);
+  color3Input("hollow color", 0.80, 0.79, 0.75).output.connectTo(hollowTint.right);
+  const diffuseHollow = new LerpBlock("Lerp diffuse hollow");
+  diffuseFinal.output.connectTo(diffuseHollow.left);
+  hollowTint.output.connectTo(diffuseHollow.right);
+  hollowAmount.output.connectTo(diffuseHollow.gradient);
+
+  const crestAmount = new MultiplyBlock("crest amount");
+  crestStep.output.connectTo(crestAmount.left);
+  landMask.output.connectTo(crestAmount.right);
+  const crestTint = new MultiplyBlock("crest tint");
+  diffuseHollow.output.connectTo(crestTint.left);
+  color3Input("crest color", 1.18, 1.10, 0.86).output.connectTo(crestTint.right);
+  const diffuseCrest = new LerpBlock("Lerp diffuse crest");
+  diffuseHollow.output.connectTo(diffuseCrest.left);
+  crestTint.output.connectTo(diffuseCrest.right);
+  crestAmount.output.connectTo(diffuseCrest.gradient);
+
+  // Steep but still passable slopes (corner range < 0.5 m, so at most ~25 degrees) show bare earth.
+  // From the mesh normal, before the normal maps: the shape of the land, not the grain of the texture.
+  const worldNormalSplit = new VectorSplitterBlock("Split world normal");
+  worldNormal.output.connectTo(worldNormalSplit.xyzw);
+  const slopeRaw = new OneMinusBlock("slope");
+  worldNormalSplit.y.connectTo(slopeRaw.input);
+  const slopeStep = new SmoothStepBlock("slope step");
+  slopeRaw.output.connectTo(slopeStep.value);
+  floatInput("slope edge0", 0.02).output.connectTo(slopeStep.edge0);
+  floatInput("slope edge1", 0.08).output.connectTo(slopeStep.edge1);
+  const slopeAmount = new MultiplyBlock("slope amount");
+  slopeStep.output.connectTo(slopeAmount.left);
+  landMask.output.connectTo(slopeAmount.right);
+  const slopeAmountScaled = new ScaleBlock("slope amount scaled");
+  slopeAmount.output.connectTo(slopeAmountScaled.input);
+  floatInput("slope earth strength", 0.75).output.connectTo(slopeAmountScaled.factor);
+  const slopeEarth = new ScaleBlock("slope earth");
+  groundUnderDiffuse.rgb.connectTo(slopeEarth.input);
+  floatInput("slope earth darken", 0.8).output.connectTo(slopeEarth.factor);
+  const diffuseRelief = new LerpBlock("Lerp diffuse slope");
+  diffuseCrest.output.connectTo(diffuseRelief.left);
+  slopeEarth.output.connectTo(diffuseRelief.right);
+  slopeAmountScaled.output.connectTo(diffuseRelief.gradient);
+
+  // ========== Paths (green channel of GroundUtility, see ground-paths.ts) ==========
+  // Trodden earth: half dirt, half sand, warmed and a little darker, so it reads as worn ground.
+  const pathMix = new LerpBlock("path earth mix");
+  groundUnderDiffuse.rgb.connectTo(pathMix.left);
+  beachDiffuse.rgb.connectTo(pathMix.right);
+  floatInput("path sand share", 0.35).output.connectTo(pathMix.gradient);
+  const pathEarth = new MultiplyBlock("path earth");
+  pathMix.output.connectTo(pathEarth.left);
+  color3Input("path color", 0.72, 0.6, 0.46).output.connectTo(pathEarth.right);
+  const pathAmount = new MultiplyBlock("path amount");
+  groundUtility.g.connectTo(pathAmount.left);
+  landMask.output.connectTo(pathAmount.right);
+  const diffusePath = new LerpBlock("Lerp diffuse path");
+  diffuseRelief.output.connectTo(diffusePath.left);
+  pathEarth.output.connectTo(diffusePath.right);
+  pathAmount.output.connectTo(diffusePath.gradient);
+
   // ========== Normal map textures ==========
   const beachNorm = new TextureBlock("Beach texture");
   uvBeach.output.connectTo(beachNorm.uv);
@@ -539,13 +626,114 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   cameraPosition.output.connectTo(light.cameraPosition);
   glossPow.output.connectTo(light.glossiness);
   glossPower.output.connectTo(light.glossPower);
-  diffuseFinal.output.connectTo(light.diffuseColor);
+  diffusePath.output.connectTo(light.diffuseColor);
   specLerp.output.connectTo(light.specularColor);
 
+  // Time for animation (shore foam, cloud shadows)
+  const foamTime = new InputBlock("FoamTime", undefined, NodeMaterialBlockConnectionPointTypes.Float);
+  foamTime.value = 0;
+  foamTime.isConstant = false;
+  // Shared clock, not per tile: every tile's clouds must be in the same place, or they would
+  // jump at tile seams for tiles built at different moments.
+  // Tie the per-frame animation observer to the material's lifetime. Ground materials are
+  // built once PER TILE; without this cleanup every tile ever scrolled into view left a live
+  // onBeforeRender callback running forever, so the frame cost grew the more the player scrolled
+  // (only a reload reset it). Disposing the material now removes the observer with it.
+  const foamObserver = scene.onBeforeRenderObservable.add(() => {
+    foamTime.value = performance.now() / 1000;
+  });
+  mat.onDisposeObservable.add(() => scene.onBeforeRenderObservable.remove(foamObserver));
+
+  // ========== Cloud shadows ==========
+  // Two octaves of simplex noise drifting with the wind and slowly changing shape; where they are
+  // high a cloud takes the sun away. Computed, not sampled: the fragment shader already uses 15 of
+  // the 16 texture units a WebGL2 GPU guarantees. Only the sun: sky light and foam stay as they are.
+  const cloudDrift = new ScaleBlock("cloud drift");
+  foamTime.output.connectTo(cloudDrift.input);
+  floatInput("cloud speed", 0.045).output.connectTo(cloudDrift.factor);
+  const cloudUvBase = new ScaleBlock("cloud uv base");
+  worldXZ.xy.connectTo(cloudUvBase.input);
+  floatInput("cloud scale", 0.022).output.connectTo(cloudUvBase.factor);
+  const cloudUv = new AddBlock("cloud uv");
+  cloudUvBase.output.connectTo(cloudUv.left);
+  cloudDrift.output.connectTo(cloudUv.right);
+  const cloudUvSplit = new VectorSplitterBlock("Split cloud uv");
+  cloudUv.output.connectTo(cloudUvSplit.xyIn);
+  const cloudEvolve = new ScaleBlock("cloud evolve");
+  foamTime.output.connectTo(cloudEvolve.input);
+  floatInput("cloud evolve speed", 0.02).output.connectTo(cloudEvolve.factor);
+  const cloudSeed = new VectorMergerBlock("cloud seed");
+  cloudUvSplit.x.connectTo(cloudSeed.x);
+  cloudUvSplit.y.connectTo(cloudSeed.y);
+  cloudEvolve.output.connectTo(cloudSeed.z);
+  const cloudNoise1 = new SimplexPerlin3DBlock("cloud noise 1");
+  cloudSeed.xyz.connectTo(cloudNoise1.seed);
+  const cloudSeedFine = new ScaleBlock("cloud seed fine");
+  cloudSeed.xyz.connectTo(cloudSeedFine.input);
+  floatInput("cloud fine scale", 2.7).output.connectTo(cloudSeedFine.factor);
+  const cloudNoise2 = new SimplexPerlin3DBlock("cloud noise 2");
+  cloudSeedFine.output.connectTo(cloudNoise2.seed);
+  const cloudNoise2Weighted = new ScaleBlock("cloud noise 2 weighted");
+  cloudNoise2.output.connectTo(cloudNoise2Weighted.input);
+  floatInput("cloud fine weight", 0.35).output.connectTo(cloudNoise2Weighted.factor);
+  const cloudCombined = new AddBlock("cloud combined");
+  cloudNoise1.output.connectTo(cloudCombined.left);
+  cloudNoise2Weighted.output.connectTo(cloudCombined.right);
+  const cloudStep = new SmoothStepBlock("cloud step");
+  cloudCombined.output.connectTo(cloudStep.value);
+  floatInput("cloud edge0", 0.1).output.connectTo(cloudStep.edge0);
+  floatInput("cloud edge1", 0.4).output.connectTo(cloudStep.edge1);
+  const cloudDarken = new ScaleBlock("cloud darken");
+  cloudStep.output.connectTo(cloudDarken.input);
+  floatInput("cloud shadow strength", 0.6).output.connectTo(cloudDarken.factor);
+  const cloudShade = new OneMinusBlock("cloud shade");
+  cloudDarken.output.connectTo(cloudShade.input);
+
   // ========== Lighting ==========
+  // Sun: dimmed under clouds, and a little in hollows (the sky visibility also stands for the light
+  // that the ground around a hollow blocks at grazing angles).
+  const skyForSun = new LerpBlock("sky for sun");
+  floatInput("one", 1).output.connectTo(skyForSun.left);
+  reliefSplit.x.connectTo(skyForSun.right);
+  floatInput("sun occlusion", 0.4).output.connectTo(skyForSun.gradient);
+  const sunShade = new MultiplyBlock("sun shade");
+  cloudShade.output.connectTo(sunShade.left);
+  skyForSun.output.connectTo(sunShade.right);
+  const sunDiffuse = new ScaleBlock("sun diffuse");
+  light.diffuseOutput.connectTo(sunDiffuse.input);
+  sunShade.output.connectTo(sunDiffuse.factor);
+  const sunSpecular = new ScaleBlock("sun specular");
+  light.specularOutput.connectTo(sunSpecular.input);
+  cloudShade.output.connectTo(sunSpecular.factor);
+
+  // Sky light: cool from above, warm bounce from below, held back where the land around hides the sky.
+  // There was no ambient term before, so shadowed ground fell to 40% of the sun and nothing else.
+  const hemiGradient = new ScaleBlock("hemi gradient");
+  worldNormalSplit.y.connectTo(hemiGradient.input);
+  floatInput("half", 0.5).output.connectTo(hemiGradient.factor);
+  const hemiGradientOffset = new AddBlock("hemi gradient offset");
+  hemiGradient.output.connectTo(hemiGradientOffset.left);
+  floatInput("half offset", 0.5).output.connectTo(hemiGradientOffset.right);
+  const hemiColor = new LerpBlock("hemi color");
+  color3Input("ground bounce", 0.32, 0.27, 0.20).output.connectTo(hemiColor.left);
+  color3Input("sky color", 0.52, 0.53, 0.52).output.connectTo(hemiColor.right);
+  hemiGradientOffset.output.connectTo(hemiColor.gradient);
+  const ambientLight = new ScaleBlock("ambient light");
+  hemiColor.output.connectTo(ambientLight.input);
+  reliefSplit.x.connectTo(ambientLight.factor);
+  const ambientStrength = new ScaleBlock("ambient strength");
+  ambientLight.output.connectTo(ambientStrength.input);
+  floatInput("ambient intensity", 0.3).output.connectTo(ambientStrength.factor);
+  const ambient = new MultiplyBlock("ambient");
+  diffusePath.output.connectTo(ambient.left);
+  ambientStrength.output.connectTo(ambient.right);
+
+  const sunLight = new AddBlock("sun light");
+  sunDiffuse.output.connectTo(sunLight.left);
+  sunSpecular.output.connectTo(sunLight.right);
   const addLighting = new AddBlock("Add");
-  light.diffuseOutput.connectTo(addLighting.left);
-  light.specularOutput.connectTo(addLighting.right);
+  sunLight.output.connectTo(addLighting.left);
+  ambient.output.connectTo(addLighting.right);
 
   // ========== Shore foam overlay (UV2.x = signed distance to shoreline) ==========
   const uv2 = new InputBlock("uv2");
@@ -553,21 +741,6 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   const uv2Split = new VectorSplitterBlock("Split UV2");
   uv2.output.connectTo(uv2Split.xyIn);
   // uv2Split.x = signed distance: positive on land, negative underwater
-
-  // Time for animation
-  const foamTime = new InputBlock("FoamTime", undefined, NodeMaterialBlockConnectionPointTypes.Float);
-  foamTime.value = 0;
-  foamTime.isConstant = false;
-  let accumulatedTime = 0;
-  // Tie the per-frame foam animation observer to the material's lifetime. Ground materials are
-  // built once PER TILE; without this cleanup every tile ever scrolled into view left a live
-  // onBeforeRender callback running forever, so the frame cost grew the more the player scrolled
-  // (only a reload reset it). Disposing the material now removes the observer with it.
-  const foamObserver = scene.onBeforeRenderObservable.add(() => {
-    accumulatedTime += scene.getEngine().getDeltaTime() / 1000;
-    foamTime.value = accumulatedTime;
-  });
-  mat.onDisposeObservable.add(() => scene.onBeforeRenderObservable.remove(foamObserver));
 
   // Foam band: visible where |distance| < threshold
   // Use abs(distance) via negate + max trick, or just smoothstep on both sides

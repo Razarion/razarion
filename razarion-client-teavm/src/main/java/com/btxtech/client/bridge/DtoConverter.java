@@ -577,6 +577,7 @@ public class DtoConverter {
         setGetterObj(obj, "getIndex", () -> convertIndex(tile.getIndex()));
         setGetterInt(obj, "getGroundConfigId", tile::getGroundConfigId);
         setGetterObj(obj, "getGroundHeightMap", () -> convertUint16ArrayEmu(tile.getGroundHeightMap()));
+        setGetterObj(obj, "getGroundRelief", () -> convertUint16ArrayEmu(tile.getGroundRelief()));
         setGetterObj(obj, "getTerrainTileObjectLists", () -> convertTerrainTileObjectLists(tile.getTerrainTileObjectLists()));
         setGetterObj(obj, "getBabylonDecals", () -> convertBabylonDecals(tile.getBabylonDecals()));
         setGetterObj(obj, "getBotGrounds", () -> convertBotGrounds(tile.getBotGrounds()));

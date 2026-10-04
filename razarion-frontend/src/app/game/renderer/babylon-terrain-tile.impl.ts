@@ -40,6 +40,7 @@ import {Nullable} from "@babylonjs/core/types";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import {GroundUtil} from './ground-util';
 import {ParkedMeshFilter} from "./parked-mesh-filter";
+import {GroundPaths} from "./ground-paths";
 
 enum MaterialIndex {
   GROUND = 0,
@@ -122,6 +123,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // Terrain objects as flat [x, z, radius, ...] (read once from the Java proxies) so the sprite loop
   // can grow undergrowth around them without crossing the bridge.
   private spriteAnchors: number[] = [];
+  // Path strength per metre cell (GroundPaths), null where no path comes near the tile. Drawn into the
+  // ground, and keeps the sprites off the path.
+  private pathMask: Float32Array | null = null;
 
   /** Whether a tile whose lowest node is at this height has any water to show. */
   public static needsWater(minHeight: number): boolean {
@@ -265,6 +269,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
               private threeJsWaterRenderService: BabylonWaterRenderService) {
     this.container = new TransformNode(`Terrain Tile ${terrainTile.getIndex().toString()}`);
     this.groundMesh = new Mesh("Ground", rendererService.getScene());
+    // The ground has its own sky light in its shader; the scene one is for the models. Babylon drops
+    // the mesh from this list again when the mesh is disposed.
+    rendererService.getScene().getLightByName(BabylonRenderServiceAccessImpl.SKY_LIGHT_NAME)?.excludedMeshes.push(this.groundMesh);
     BabylonTerrainTileImpl.pendingBuilds++;
 
     // Phase 1 (sync): Vertex data — needed immediately for visible ground mesh
@@ -340,10 +347,20 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const shoreSegments = detectShoreline(this.groundHeights, xCount, yCount);
     const groundUv2 = computeShoreDistance(shoreSegments, this.groundHeights, xCount, yCount);
     this.groundMesh.setVerticesData(VertexBuffer.UV2Kind, groundUv2);
+    // Relief from the worker (sky visibility, curvature) for the ground shader
+    this.groundMesh.setVerticesData(VertexBuffer.UV3Kind,
+      BabylonTerrainTileImpl.reliefUv3(this.terrainTile.getGroundRelief(), xCount * yCount));
 
-    // Phase 3 builds the heavy ground NodeMaterial — route it through the serialized queue so a burst
-    // of tiles can't compile all their shaders in one frame.
-    BabylonTerrainTileImpl.enqueueHeavyBuild(() => this.buildPhase3_Material());
+    // The paths go into the ground texture, which is built with the material. Fetched once at the start,
+    // so in practice long arrived; if not, the tile waits for it rather than being built without paths.
+    // Phase 3 (which settles a disposed tile itself) builds the heavy ground NodeMaterial — route it
+    // through the serialized queue so a burst of tiles can't compile all their shaders in one frame.
+    GroundPaths.load().then(() => {
+      if (!this.disposed) {
+        this.pathMask = GroundPaths.createTileMask(this.tileXOffset, this.tileYOffset, BabylonTerrainTileImpl.NODE_X_COUNT);
+      }
+      BabylonTerrainTileImpl.enqueueHeavyBuild(() => this.buildPhase3_Material());
+    });
   }
 
   /** @return true if the heavy NodeMaterial build actually ran, false for a tile
@@ -370,7 +387,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     // afterwards needs a second build(), which parallel shader compilation refuses while the
     // first one is still running - the sampler stays unwired and the tile renders flat green.
     const groundUtilityTexture = this.groundUtil
-      ? new Texture(this.groundUtil.createGroundTypeTexture().toDataURL(), this.rendererService.getScene())
+      ? new Texture(this.groundUtil.createGroundTypeTexture(this.pathMask).toDataURL(), this.rendererService.getScene())
       : null;
     this.groundMaterial = buildGroundMaterial(this.rendererService.getScene(), groundUtilityTexture);
     let asphaltMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(groundConfig.getAsphaltBabylonMaterialId());
@@ -586,7 +603,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     // Static-model path: hardware-instanced TerrainObjects share geometry+material across
     // all placements, so 1500 trees collapse to ~1 draw call per source mesh in both the
     // main and shadow passes.
-    const instanceRoot = babylonModelService.instantiateStaticModel(terrainObjectConfig.getModel3DId(), terrainObjectModelTransform);
+    // Everything but the rocks is a plant and sways. By name, since a TerrainObjectConfig has no kind.
+    const plant = !/rock/i.test(terrainObjectConfig.getInternalName() ?? "");
+    const instanceRoot = babylonModelService.instantiateStaticModel(terrainObjectConfig.getModel3DId(), terrainObjectModelTransform, plant);
     instanceRoot.name = `TerrainObject '${terrainObjectConfig.getInternalName()} (${terrainObjectConfig.getId()})'`;
 
     return terrainObjectModelTransform;
@@ -788,7 +807,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
 
     groundUtilityBlock.texture = new Texture(
-      groundUtil.createGroundTypeTexture().toDataURL(),
+      groundUtil.createGroundTypeTexture(this.pathMask).toDataURL(),
       this.rendererService.getScene()
     );
     this.groundMaterial.build();
@@ -1047,6 +1066,21 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
   }
 
+  /**
+   * The worker's packed relief as UV3: x = sky visibility (0..1, 1 = open sky), y = curvature (-1 hollow ..
+   * +1 crest). Without it (older worker, editor) every node counts as open and flat, which draws the ground
+   * as it was before relief existed.
+   */
+  public static reliefUv3(relief: Uint16Array | null, count: number): Float32Array {
+    const uv3 = new Float32Array(count * 2);
+    for (let i = 0; i < count; i++) {
+      const value = relief && relief.length === count ? relief[i] : 0xFF80;
+      uv3[i * 2] = (value >> 8) / 255;
+      uv3[i * 2 + 1] = (value & 0xFF) / 127.5 - 1;
+    }
+    return uv3;
+  }
+
   public static setupHeight(index: number, groundHeightMap: Uint16Array): number {
     if (!groundHeightMap || groundHeightMap[index] === undefined) {
       return BabylonTerrainTileImpl.HEIGHT_DEFAULT;
@@ -1115,6 +1149,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     box.position.y = 0;
     box.parent = this.container;
     box.receiveShadows = true;
+    // Ground, not a model: the scene sky light washed the bot-ground plates out to white.
+    scene.getLightByName(BabylonRenderServiceAccessImpl.SKY_LIGHT_NAME)?.excludedMeshes.push(box);
 
     box.material = this.ensureSharedBotGroundMaterials();
 
@@ -1368,6 +1404,10 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       return;
     }
     if (this.insideAnyDecal(x, z) || this.insideBotGround(x, z)) {
+      return;
+    }
+    // Nothing grows on a path; along its frayed edge a little does
+    if (this.pathMask && Math.random() < this.pathMask[Math.floor(z - this.tileYOffset) * BabylonTerrainTileImpl.NODE_X_COUNT + Math.floor(x - this.tileXOffset)] * 1.5) {
       return;
     }
 
