@@ -75,6 +75,22 @@ describe('Tip test bed - build', () => {
     bed.check(bed.view().cockpitHintTypeId === ItemTypeId.FACTORY, 'hint on the factory button');
   });
 
+  /*
+   * Phone test 2026-10-02, quest 386: the Dockyard placed, the player waited at the coast for the
+   * builder, still selected - and the next tap on the ground was a move order that threw the build
+   * away. Placed, the builder is put down; a tap while it drives does nothing to it.
+   */
+  tipCase('BLD-17 placed: the builder is put down, a tap on the ground while it drives does not stop the build', bed => {
+    const builder = base(bed);
+    bed.activateQuest(358);
+    placeFactory(bed, builder, 20, 12);
+    bed.run(500);
+    bed.check(bed.selection.getSelectedOwnItemIds().length === 0, 'the builder is no longer selected');
+
+    bed.clickTerrain(-8, -5);
+    bed.runUntil(() => bed.questPassed, 30000, 'quest 358 passing - the builder built on');
+  });
+
   tipCase('BLD-04 placer cancelled: back to the button hint', bed => {
     const builder = base(bed);
     bed.activateQuest(358);
@@ -93,6 +109,9 @@ describe('Tip test bed - build', () => {
     bed.activateQuest(358);
     placeFactory(bed, builder, 20, 12);
     bed.run(1000);
+    // Placed, the builder is put down (2026-10-02): sending it elsewhere takes selecting it again.
+    bed.click(builder);
+    bed.run(500);
     bed.clickTerrain(-8, -5);
     bed.runUntil(() => bed.world.isIdle(builder), 10000, 'builder arriving elsewhere');
     bed.run(5000);
@@ -112,6 +131,9 @@ describe('Tip test bed - build', () => {
     placeFactory(bed, builder, 8, 5);
     bed.runUntil(() => siteOf(bed, ItemTypeId.FACTORY) !== undefined, 10000, 'site laid down');
     bed.run(1000);
+    // Placed, the builder is put down (2026-10-02): sending it elsewhere takes selecting it again.
+    bed.click(builder);
+    bed.run(500);
     bed.clickTerrain(-10, -8);
     bed.run(13000);
 
@@ -136,6 +158,10 @@ describe('Tip test bed - build', () => {
     bed.world.kill(siteOf(bed, ItemTypeId.FACTORY)!.id);
     bed.run(5000);
 
+    // The builder was put down when it was placed: the way back to placing starts at selecting it.
+    bed.check(bed.showsOnly('Click to select', builder.id), '"Click to select" on the builder');
+    bed.click(builder);
+    bed.run(1500);
     bed.check(bed.view().cockpitHintTypeId === ItemTypeId.FACTORY, 'hint on the factory button');
   });
 
@@ -173,7 +199,12 @@ describe('Tip test bed - build', () => {
     bed.check(bed.view().prompts.length === 0 && bed.view().cockpitHintTypeId === null, 'quiet');
   });
 
-  tipCase('BLD-03 / BLD-02 quest 386: arrow into the region, place marker once it is on screen', bed => {
+  /*
+   * Since 2026-10-02 the camera travels to the region when the Dockyard button is pressed and the
+   * coast is off screen: on PROD every player who failed 386 in a week never placed one - the placer
+   * opened inland and the arrow asked them to scroll with it open (2026-09-30).
+   */
+  tipCase('BLD-03 / BLD-02 quest 386: the Dockyard button takes the camera to the region, place marker there', bed => {
     const builder = base(bed);
     bed.click(builder);
     bed.activateQuest(386);
@@ -181,13 +212,25 @@ describe('Tip test bed - build', () => {
     bed.clickBuildButton(ItemTypeId.DOCKYARD);
     bed.run(1500);
 
-    bed.check(bed.arrowPointsAt(60, 0), 'arrow into the region');
-    bed.lookAt(60, 0);
-    bed.run(1500);
+    bed.check(bed.world.renderer.lastFlight !== null, 'the camera travelled');
+    bed.check(!bed.arrowPointsAt(60, 0), 'no arrow - the region is on screen');
     bed.check(bed.view().placeMarker, 'place marker on the region');
     bed.place(60, 0);
     bed.runUntil(() => bed.questPassed, 60000, 'quest 386 passing');
     bed.check(REGION_386.length === 4, 'region');
+  });
+
+  tipCase('BLD-16 quest 386 with the coast already on screen: no camera flight', bed => {
+    const builder = base(bed);
+    bed.click(builder);
+    bed.lookAt(60, 0);
+    bed.activateQuest(386);
+    bed.run(1500);
+    bed.clickBuildButton(ItemTypeId.DOCKYARD);
+    bed.run(1500);
+
+    bed.check(bed.world.renderer.lastFlight === null, 'the camera stayed');
+    bed.check(bed.view().placeMarker, 'place marker on the region');
   });
 
   /*
@@ -203,6 +246,9 @@ describe('Tip test bed - build', () => {
     bed.activateQuest(386);
     bed.run(1500);
     bed.clickBuildButton(ItemTypeId.DOCKYARD);
+    bed.run(1500);
+    // The camera has travelled to the coast; the player scrolls back home with the placer open.
+    bed.lookAt(0, 0);
     bed.run(1500);
     bed.check(bed.arrowPointsAt(60, 0), 'test setup: arrow into the region');
 

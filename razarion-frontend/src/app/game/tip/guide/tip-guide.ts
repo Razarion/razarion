@@ -45,6 +45,8 @@ export class TipGuide implements ViewFieldListener {
    * transport decides how long a tick takes: without SharedArrayBuffer (Meta webview) it is seconds.
    */
   private static readonly ORDER_ARRIVAL_MILLIS = 15000;
+  /** After a camera flight: long enough for the terrain tiles at the target to be built. */
+  private static readonly GROUND_SETTLE_MILLIS = 400;
   /** Order of the steps, to tell the stall tracker a step forward from a step back. */
   private static readonly STEP_RANK: Record<string, number> = {
     [TipTaskName.SELECT]: 0,
@@ -70,6 +72,8 @@ export class TipGuide implements ViewFieldListener {
   private markedTargetId: number | null = null;
   private placerTypeId: number | null = null;
   private decision: Decision | null = null;
+  /** The world as the last evaluation saw it, for the build preparation between two evaluations. */
+  private lastItems: TipItemState[] = [];
   private readonly view: GuidanceView;
   private readonly stallSource: TipStallSource = {
     getTaskName: () => this.decision?.taskName ?? TipTaskName.SELECT,
@@ -127,14 +131,60 @@ export class TipGuide implements ViewFieldListener {
     this.deps.renderService.removeViewFieldListener(this);
     this.deps.renderService.setBaseItemPlacerCallback(null);
     this.deps.itemCockpit()?.setBuildClickCallback(null);
+    this.deps.itemCockpit()?.setBuildPreparation(null);
     this.view.clear();
     this.deps.questMarker?.set('tip', null);
     this.deps.stallTracker.stop();
     this.quest = null;
     this.decision = null;
+    this.lastItems = [];
     this.orders.clear();
     this.markedTargetId = null;
     this.placerTypeId = null;
+  }
+
+  /**
+   * Where the camera has to go before the build placer for this type opens: a point in the quest's
+   * region when the quest counts that building there and the region is out of view, else null.
+   * <p>
+   * The Dockyard of quest 386 has to stand in the water, the player stands inland, and the placer
+   * opens in the middle of the picture - on land. On PROD every player who failed 386 in a week
+   * never placed one (2026-09-30); the arrow to the coast asked them to scroll with an open placer,
+   * which is the navigation they had not understood.
+   */
+  buildRegionTarget(itemTypeId: number): { x: number, y: number } | null {
+    const quest = this.quest;
+    const wanted = quest !== null && (quest.targetTypeId === itemTypeId
+      || !!quest.buildTargets?.some(target => target.typeId === itemTypeId));
+    if (!quest || quest.tip !== 'BUILD' || !this.region || !wanted) {
+      return null;
+    }
+    const viewField = this.deps.renderService.getCurrentViewField();
+    if (!viewField || this.region.inView(viewField)) {
+      return null;
+    }
+    // The part of the region nearest to the builder, which has to drive there - not to the middle of
+    // the picture. From the picture, a base in the west was sent to a corner of the coast behind a
+    // cliff the builder could not cross (phone test, 2026-10-02).
+    const selected = new Set(this.deps.selectionService.getSelectedOwnItemIds());
+    const builders = this.lastItems.filter(item => item.own && item.itemTypeId === quest.actorTypeId);
+    const builder = builders.find(item => selected.has(item.id)) ?? builders[0];
+    const center = viewField.getScreenCenter();
+    return this.region.pointFor(builder ? {x: builder.x, y: builder.y} : {x: center.getX(), y: center.getY()});
+  }
+
+  /**
+   * Before the build placer opens: the camera travels to the quest's region when it is out of view,
+   * then waits a moment for the ground there to arrive - the placer can only judge ground on screen.
+   */
+  private prepareBuild(itemTypeId: number): Promise<void> | null {
+    const target = this.buildRegionTarget(itemTypeId);
+    if (!target) {
+      return null;
+    }
+    this.deps.firstInteractionTracker.report('BUILD_CAMERA_FLIGHT', 'type=' + itemTypeId);
+    return this.deps.renderService.flyViewFieldCenter(target.x, target.y)
+      .then(() => new Promise<void>(resolve => setTimeout(resolve, TipGuide.GROUND_SETTLE_MILLIS)));
   }
 
   onViewFieldChanged(_viewField: ViewField): void {
@@ -171,9 +221,11 @@ export class TipGuide implements ViewFieldListener {
       return;
     }
     const items = baseItemUiService.getTipItemStates(quest.tip === 'ATTACK' ? (quest.targetTypeId ?? 0) : -1);
+    this.lastItems = items;
     this.updateOrders(items);
     // Hooked on every evaluation: the cockpit component comes and goes with the game view.
     this.deps.itemCockpit()?.setBuildClickCallback(model => this.onFabricateClick(GwtHelper.gwtIssueNumber(model.itemTypeId)));
+    this.deps.itemCockpit()?.setBuildPreparation(itemTypeId => this.prepareBuild(GwtHelper.gwtIssueNumber(itemTypeId)));
 
     const renderService = this.deps.renderService;
     const viewField = renderService.getCurrentViewField();

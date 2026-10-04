@@ -3,6 +3,7 @@ import {BaseItemType, Diplomacy} from '../gwtangular/GwtAngularFacade';
 import {BabylonRenderServiceAccessImpl} from './renderer/babylon-render-service-access-impl.service';
 import {SelectionService} from './selection.service';
 import {GwtAngularService} from '../gwtangular/GwtAngularService';
+import {FirstInteractionTrackerService} from './tracking/first-interaction-tracker.service';
 
 // 'other' is the catch-all: every own item not covered by the typed groups above (buildings and any
 // unit without a builder/factory/harvester role or a weapon), so the navigation can still reach them.
@@ -77,7 +78,8 @@ export class SelectionShortcutsService {
   constructor(
     private rendererService: BabylonRenderServiceAccessImpl,
     private selectionService: SelectionService,
-    private gwtAngularService: GwtAngularService
+    private gwtAngularService: GwtAngularService,
+    private firstInteractionTracker: FirstInteractionTrackerService
   ) {
   }
 
@@ -167,6 +169,57 @@ export class SelectionShortcutsService {
       // or under load, so retry a few times over a short window until the item shows up.
       this.schedulePendingSelection(next.id, 0);
     }
+  }
+
+  /**
+   * Every own unit of the category in the hand at once - for the attack units, the group quest 379
+   * asks for. The box that does this on a phone was found but not worked: of the players who armed
+   * it, three in four never caught more than one unit (2026-09-16), and 65 group stalls on 379 in a
+   * week resolved 6 times (2026-09-30). One tap cannot miss.
+   * <p>
+   * Only rendered units can be selected. When some are not, the camera goes to the middle of them
+   * and the selection is retried until they are there - or takes what arrived by then.
+   */
+  selectAll(category: SelectionShortcutCategory): void {
+    this.ensureKnownTypesPopulated();
+    const entries = this.collectOwnEntriesForCategory(category);
+    if (entries.length === 0) {
+      return;
+    }
+    this.firstInteractionTracker.report('SELECT_ALL', 'category=' + category);
+    if (this.pendingSelectionTimeout !== null) {
+      clearTimeout(this.pendingSelectionTimeout);
+      this.pendingSelectionTimeout = null;
+    }
+    const ids = entries.map(entry => entry.id);
+    if (this.trySelectAll(ids, true)) {
+      return;
+    }
+    const x = entries.reduce((sum, entry) => sum + entry.x, 0) / entries.length;
+    const y = entries.reduce((sum, entry) => sum + entry.y, 0) / entries.length;
+    this.rendererService.setViewFieldCenter(x, y);
+    this.schedulePendingSelectAll(ids, 0);
+  }
+
+  private schedulePendingSelectAll(ids: number[], attempt: number): void {
+    this.pendingSelectionTimeout = setTimeout(() => {
+      this.pendingSelectionTimeout = null;
+      const last = attempt + 1 >= SelectionShortcutsService.PENDING_SELECTION_MAX_ATTEMPTS;
+      if (!this.trySelectAll(ids, !last) && !last) {
+        this.schedulePendingSelectAll(ids, attempt + 1);
+      }
+    }, SelectionShortcutsService.PENDING_SELECTION_INTERVAL_MS);
+  }
+
+  /** Selects the rendered ones of `ids`; with `requireAll` only when every one of them is there. */
+  private trySelectAll(ids: number[], requireAll: boolean): boolean {
+    const wanted = new Set(ids);
+    const found = this.rendererService.getBabylonBaseItemsByDiplomacy(Diplomacy.OWN).filter(item => wanted.has(item.getId()));
+    if (found.length === 0 || (requireAll && found.length < ids.length)) {
+      return false;
+    }
+    this.selectionService.selectOwnItems(found);
+    return true;
   }
 
   private static readonly PENDING_SELECTION_MAX_ATTEMPTS = 8;

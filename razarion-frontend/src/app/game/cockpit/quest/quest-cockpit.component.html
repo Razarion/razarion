@@ -14,7 +14,10 @@
             <i class="pi pi-check-circle" style="color: green"></i>
           }
         </div>
-        <div class="flex">{{ progressRow.text }}</div>
+        <div class="flex flex-col gap-1 grow">
+          {{ progressRow.text }}
+          <ng-container *ngTemplateOutlet="questMeter; context: {$implicit: progressRow}"></ng-container>
+        </div>
       </div>
     }
     @if (timeRow) {
@@ -32,6 +35,11 @@
       </p-toggleSwitch>
       <span class="quest-switch-label">Show in game</span>
     </label>
+    <div class="flex-none">
+      <p-button type="button" icon="pi pi-map-marker" styleClass="p-button-sm" ariaLabel="Show the quest target"
+        (onClick)="goToQuestTarget()">
+      </p-button>
+    </div>
     @if (showQuestSelectionButton) {
       <div class="flex-none">
         <p-button type="button" label="Quests" icon="pi pi-list" styleClass="p-button-sm"
@@ -41,6 +49,18 @@
     }
   </div>
 </div>
+
+<!-- The meter of one progress row, here and in the phone strip (GameComponent reads it through
+     meterTemplate). A bar of fixed width, one segment per item - see quest-meter.ts. -->
+<ng-template #questMeter let-row>
+  @if (row.meter; as meter) {
+    <span class="quest-meter" [class.quest-meter-done]="row.done">
+      @for (cell of meter.cells; track $index) {
+        <span class="quest-cell"><span class="quest-fill" [style.width.%]="cell * 100"></span></span>
+      }
+    </span>
+  }
+</ng-template>
 
 <!-- 30vw is 124px on a phone - narrower than its own header. -->
 <!-- On the body, not in the panel: in compact mode this panel is an overlay that scrolls

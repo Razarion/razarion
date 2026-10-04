@@ -107,23 +107,40 @@ function randInt(min, max) { return Math.floor(randRange(min, max + 1)); }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 function vary(base, amount) { return clamp(Math.round(base + (rand() - 0.5) * 2 * amount), 0, 255); }
 
-// ===== UPPER: Dense grass tufts, bushy plants, drooping grass =====
+// ===== UPPER: Dense grass tufts, bushy plants, drooping grass, flowers =====
+
+// Sprites are unlit while the ground is lit (grass ground renders around (95, 105, 35)), so the
+// sprites have to be brighter and more saturated than the ground to be seen at all.
+const GRASS_TIP = [70, 95, 35]; // before the lift below; ends up a pale yellow-green
+function liftGrass(px) {
+  for (let i = 0; i < px.length; i += 4) {
+    if (px[i + 3] === 0) continue;
+    px[i] = clamp(Math.round(px[i] * 2.0 + 12), 0, 255);
+    px[i + 1] = clamp(Math.round(px[i + 1] * 1.65 + 18), 0, 255);
+    px[i + 2] = clamp(Math.round(px[i + 2] * 1.3), 0, 255);
+  }
+}
 
 /** Single curved grass blade with pointed tip */
-function drawBlade(px, ox, oy, baseX, baseY, h, lean, thick, r, g, b, alphaBase) {
+function drawBlade(px, ox, oy, baseX, baseY, h, lean, thick, r, g, b, alphaBase, tipColor = GRASS_TIP) {
   for (let t = 0; t < h; t++) {
     const frac = t / h;
     const curve = lean * frac * frac;
     const x = ox + baseX + curve;
     const y = oy + baseY - t;
     // Taper from thick at base to pointed tip
-    const w = thick * (1 - frac * 0.85);
+    const w = thick * 1.5 * (1 - frac * 0.8);
     const shade = 0.75 + frac * 0.25; // lighter tips
-    const alpha = Math.round(alphaBase * (1 - frac * 0.3));
+    // Sun-bleached tips, so a tuft reads against the grass ground
+    const tip = frac * frac * 0.6;
+    const alpha = Math.round(Math.max(alphaBase, 230) * (1 - frac * 0.2));
     for (let dx = -w; dx <= w; dx++) {
       const edge = 1 - Math.abs(dx) / (w + 0.5);
       const a = Math.max(0, Math.min(255, Math.round(alpha * edge)));
-      setPixel(px, x + dx, y, Math.round(r * shade), Math.round(g * shade), Math.round(b * shade), a);
+      setPixel(px, x + dx, y,
+        Math.round(r * shade * (1 - tip) + tipColor[0] * tip),
+        Math.round(g * shade * (1 - tip) + tipColor[1] * tip),
+        Math.round(b * shade * (1 - tip) + tipColor[2] * tip), a);
     }
   }
 }
@@ -239,19 +256,51 @@ function drawSpikyGrass(px, ox, oy) {
     vary(22, 8), vary(48, 12), vary(12, 6), 170);
 }
 
+/** A few leaves with bright blossoms — the colour accents a green field otherwise lacks */
+function drawFlowerPatch(px, ox, oy) {
+  // Muted, so the flowers season the grass rather than shout
+  const palettes = [[235, 230, 215], [225, 200, 115], [170, 145, 190], [210, 135, 110]];
+  // One colour per cell (the cell seeds 103, 106, 109, 112 hit every palette once)
+  const petal = palettes[seed % palettes.length];
+  const baseY = 58 + randInt(-2, 2);
+  const centerX = 32;
+  for (let i = 0; i < randInt(5, 8); i++) {
+    fillEllipse(px, ox + centerX + randRange(-12, 12), oy + baseY - randRange(2, 10), randRange(3, 6), randRange(2, 3),
+      vary(70, 15), vary(140, 20), vary(30, 10), 230);
+  }
+  for (let i = 0; i < randInt(6, 10); i++) {
+    const fx = ox + centerX + randRange(-16, 16);
+    const fy = oy + baseY - randRange(6, 26);
+    // Stem, then a blossom with a darker heart
+    for (let t = 0; t < baseY - (fy - oy); t++) {
+      setPixel(px, fx, fy + t, vary(60, 10), vary(120, 15), vary(30, 8), 220);
+    }
+    const r = randRange(3, 4.5);
+    fillCircle(px, fx, fy, r, vary(petal[0], 10), vary(petal[1], 10), vary(petal[2], 10), 255);
+    fillCircle(px, fx, fy, r * 0.4, 120, 80, 20, 255);
+  }
+}
+
 function generateUpper() {
   const px = new Uint8Array(SIZE * SIZE * 4);
-  const drawFuncs = [drawGrassTuft, drawSpikyGrass, drawBushyPlant, drawDroopingGrass,
-                     drawSpikyGrass, drawGrassTuft, drawDroopingGrass, drawBushyPlant,
-                     drawDroopingGrass, drawBushyPlant, drawGrassTuft, drawSpikyGrass,
-                     drawBushyPlant, drawGrassTuft, drawSpikyGrass, drawDroopingGrass];
-  for (let cy = 0; cy < GRID; cy++) {
-    for (let cx = 0; cx < GRID; cx++) {
-      seed = 100 + cy * GRID + cx;
-      const idx = cy * GRID + cx;
-      drawFuncs[idx](px, cx * CELL, cy * CELL);
+  const drawFuncs = [drawGrassTuft, drawSpikyGrass, drawBushyPlant, drawFlowerPatch,
+                     drawSpikyGrass, drawGrassTuft, drawFlowerPatch, drawBushyPlant,
+                     drawDroopingGrass, drawFlowerPatch, drawGrassTuft, drawSpikyGrass,
+                     drawFlowerPatch, drawGrassTuft, drawSpikyGrass, drawDroopingGrass];
+  // Grass first, lifted to read against the lit ground; flowers afterwards in their final colours
+  const forEachCell = (flowers) => {
+    for (let cy = 0; cy < GRID; cy++) {
+      for (let cx = 0; cx < GRID; cx++) {
+        const draw = drawFuncs[cy * GRID + cx];
+        if ((draw === drawFlowerPatch) !== flowers) continue;
+        seed = 100 + cy * GRID + cx;
+        draw(px, cx * CELL, cy * CELL);
+      }
     }
-  }
+  };
+  forEachCell(false);
+  liftGrass(px);
+  forEachCell(true);
   return px;
 }
 
@@ -283,21 +332,24 @@ function pointInPoly(x, y, verts) {
 }
 
 function drawStone(px, cx, cy, rx, ry) {
+  // Darker and warmer than the grey blotches in the sand texture, which used to swallow the stones
   const palettes = [
-    [120, 115, 105], [100, 95, 88], [110, 105, 95],
-    [90, 85, 78],   [105, 100, 92],
+    [82, 72, 60], [70, 64, 58], [98, 84, 66],
+    [60, 56, 52], [112, 92, 70],
   ];
   const pal = palettes[randInt(0, palettes.length - 1)];
   const baseR = vary(pal[0], 15), baseG = vary(pal[1], 12), baseB = vary(pal[2], 10);
   const numVerts = randInt(5, 8);
   const verts = makeAngularShape(cx, cy, rx, ry, numVerts);
+  // Contact shadow (light comes from the top left)
+  fillEllipse(px, cx + rx * 0.3, cy + ry * 0.45, rx + 1.5, ry * 0.8 + 1, 25, 20, 15, 110);
 
   for (let dy = -ry - 2; dy <= ry + 2; dy++) {
     for (let dx = -rx - 2; dx <= rx + 2; dx++) {
       const px2 = cx + dx, py2 = cy + dy;
       if (!pointInPoly(px2, py2, verts)) continue;
       // Lighting: top-left lighter
-      const light = 1.0 + (-dx / rx + -dy / ry) * 0.18;
+      const light = 1.0 + (-dx / rx + -dy / ry) * 0.3;
       // Distance from center for edge darkening
       const dist = Math.sqrt(dx * dx / (rx * rx) + dy * dy / (ry * ry));
       const edge = 1.0 - Math.pow(Math.min(dist, 1), 3) * 0.25;
@@ -319,7 +371,7 @@ function drawStone(px, cx, cy, rx, ry) {
       const ey = v0[1] + (v1[1]-v0[1]) * frac;
       // Only highlight top-ish edges
       if (ey < cy) {
-        setPixel(px, ex, ey, clamp(baseR + 30, 0, 255), clamp(baseG + 25, 0, 255), clamp(baseB + 20, 0, 255), 120);
+        setPixel(px, ex, ey, clamp(baseR + 60, 0, 255), clamp(baseG + 55, 0, 255), clamp(baseB + 45, 0, 255), 170);
       } else {
         setPixel(px, ex, ey, clamp(baseR - 35, 0, 255), clamp(baseG - 30, 0, 255), clamp(baseB - 25, 0, 255), 100);
       }
@@ -333,7 +385,7 @@ function drawPebbleScatter(px, ox, oy) {
   for (let i = 0; i < count; i++) {
     const cx = ox + 32 + randRange(-22, 22);
     const cy = oy + 38 + randRange(-14, 18);
-    drawStone(px, cx, cy, randRange(2, 6), randRange(2, 5));
+    drawStone(px, cx, cy, randRange(3, 8), randRange(2.5, 6));
   }
 }
 
@@ -343,7 +395,7 @@ function drawPebbleGroup(px, ox, oy) {
   for (let i = 0; i < medCount; i++) {
     const cx = ox + 32 + randRange(-14, 14);
     const cy = oy + 38 + randRange(-10, 14);
-    drawStone(px, cx, cy, randRange(5, 10), randRange(3, 7));
+    drawStone(px, cx, cy, randRange(7, 13), randRange(4, 9));
   }
   const tinyCount = randInt(4, 8);
   for (let i = 0; i < tinyCount; i++) {
@@ -353,17 +405,17 @@ function drawPebbleGroup(px, ox, oy) {
   }
 }
 
-/** Dirt specks and small angular pebbles */
-function drawDirtPatch(px, ox, oy) {
-  const count = randInt(15, 30);
-  for (let i = 0; i < count; i++) {
-    const x = ox + 32 + randRange(-24, 24);
-    const y = oy + 38 + randRange(-18, 20);
-    const r = randRange(0.5, 2);
-    fillCircle(px, x, y, r, vary(105, 15), vary(100, 12), vary(90, 10), vary(160, 40));
+/** Dry straw-coloured grass tuft with a pebble or two — replaces dirt specks the sand texture hid */
+function drawDryTuft(px, ox, oy) {
+  const baseY = 58 + randInt(-2, 2);
+  const centerX = 32;
+  for (let i = 0; i < randInt(12, 20); i++) {
+    drawBlade(px, ox, oy, centerX + randRange(-10, 10), baseY, randRange(14, 32), randRange(-12, 12), randRange(0.9, 1.6),
+      vary(150, 20), vary(125, 15), vary(60, 12), 235, [225, 205, 140]);
   }
-  for (let i = 0; i < 4; i++) {
-    drawStone(px, ox + 32 + randRange(-18, 18), oy + 38 + randRange(-10, 12), randRange(2, 5), randRange(2, 4));
+  fillEllipse(px, ox + centerX, oy + baseY, randRange(8, 12), randRange(2, 3), vary(90, 10), vary(75, 8), vary(40, 8), 170);
+  for (let i = 0; i < randInt(1, 2); i++) {
+    drawStone(px, ox + centerX + randRange(-14, 14), oy + baseY + randRange(-2, 2), randRange(3, 6), randRange(2.5, 4));
   }
 }
 
@@ -371,7 +423,7 @@ function drawDirtPatch(px, ox, oy) {
 function drawStoneCluster(px, ox, oy) {
   const cx = ox + 32 + randRange(-6, 6);
   const cy = oy + 38 + randRange(-3, 5);
-  drawStone(px, cx, cy, randRange(8, 14), randRange(5, 10));
+  drawStone(px, cx, cy, randRange(11, 18), randRange(7, 12));
   const count = randInt(4, 8);
   for (let i = 0; i < count; i++) {
     drawStone(px, cx + randRange(-16, 16), cy + randRange(-8, 14), randRange(2, 5), randRange(2, 4));
@@ -380,10 +432,10 @@ function drawStoneCluster(px, ox, oy) {
 
 function generateUnder() {
   const px = new Uint8Array(SIZE * SIZE * 4);
-  const drawFuncs = [drawPebbleScatter, drawPebbleGroup, drawDirtPatch, drawStoneCluster,
-                     drawDirtPatch, drawPebbleScatter, drawStoneCluster, drawPebbleGroup,
-                     drawStoneCluster, drawDirtPatch, drawPebbleScatter, drawPebbleGroup,
-                     drawPebbleGroup, drawStoneCluster, drawDirtPatch, drawPebbleScatter];
+  const drawFuncs = [drawPebbleScatter, drawPebbleGroup, drawDryTuft, drawStoneCluster,
+                     drawDryTuft, drawPebbleScatter, drawStoneCluster, drawPebbleGroup,
+                     drawStoneCluster, drawDryTuft, drawPebbleScatter, drawPebbleGroup,
+                     drawPebbleGroup, drawStoneCluster, drawDryTuft, drawPebbleScatter];
   for (let cy = 0; cy < GRID; cy++) {
     for (let cx = 0; cx < GRID; cx++) {
       seed = 200 + cy * GRID + cx;
@@ -471,7 +523,7 @@ function drawBeachGrass(px, ox, oy) {
     const h = randRange(15, 30);
     const lean = randRange(-8, 8);
     // Pale yellowish-green
-    drawBlade(px, ox, oy, bx, baseY, h, lean, randRange(1.0, 1.8), vary(140, 20), vary(145, 20), vary(80, 15), 220);
+    drawBlade(px, ox, oy, bx, baseY, h, lean, randRange(1.0, 1.8), vary(140, 20), vary(145, 20), vary(80, 15), 220, [215, 205, 150]);
   }
 }
 

@@ -73,19 +73,27 @@ export class TipRegion {
     if (this.circle) {
       return this.circle.center;
     }
-    if (!this.corners || this.corners.length < 3) {
-      return null;
-    }
-    const candidates = interiorCandidates(this.corners);
-    if (candidates.length === 0) {
-      return null;
-    }
-    if (!from) {
-      return candidates.reduce((a, b) => b.width > a.width ? b : a);
-    }
-    return candidates.reduce((a, b) =>
-      squaredDistance(b, from) < squaredDistance(a, from) ? b : a);
+    return this.corners ? pointInPolygon(this.corners, from) : null;
   }
+}
+
+/**
+ * A point inside the polygon, nearest to `from`, or in its widest part without one. Also where the
+ * quest line takes the camera for a region (QuestMarkerService.jumpPoint).
+ */
+export function pointInPolygon(corners: Point[], from: Point | null): Point | null {
+  if (corners.length < 3) {
+    return null;
+  }
+  const candidates = interiorCandidates(corners);
+  if (candidates.length === 0) {
+    return null;
+  }
+  if (!from) {
+    return candidates.reduce((a, b) => b.width > a.width ? b : a);
+  }
+  return candidates.reduce((a, b) =>
+    squaredDistance(b, from) < squaredDistance(a, from) ? b : a);
 }
 
 /**

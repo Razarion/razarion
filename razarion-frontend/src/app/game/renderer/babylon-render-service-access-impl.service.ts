@@ -801,6 +801,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   setViewFieldCenter(x: number, y: number): void {
+    this.cancelCameraFlight();
     // Reference the screen-centre ground point at the TARGET's terrain height, not at zero level.
     // The camera is tilted forward-down, so a unit standing on elevated terrain projects higher on
     // screen than its zero-level footprint. Centering on the zero-level point would push such a unit
@@ -820,6 +821,75 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.camera.position.z += delta.y;
     this.ensureCameraViewOnMap();
     this.onViewFieldChanged();
+  }
+
+  /** The camera flight under way, see {@link flyViewFieldCenter}; cancelled by any other camera move. */
+  private cameraFlight: { frame: number, finish: () => void } | null = null;
+
+  /**
+   * Takes the camera to (x, y) the way a player would scroll there, not in a cut: the ground passes
+   * under the picture, so they see where they went and can find the way back. Asked for when the
+   * build tip sends the camera to the coast for the Dockyard (quest 386, 2026-10-02) - "the player
+   * does not understand the navigation", so a jump would lose them altogether.
+   * <p>
+   * Resolves when the camera is there, or at once when it cannot fly (no terrain under the picture
+   * yet) - then it is put there as setViewFieldCenter would. A move of the player's own ends the
+   * flight where it is and resolves too: they took over.
+   */
+  flyViewFieldCenter(x: number, y: number): Promise<void> {
+    this.cancelCameraFlight();
+    const terrainHeight = this.getTerrainHeightAt(x, y) ?? 0;
+    this.camera.getViewMatrix();
+    const invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
+    const center = this.setupTerrainLevelPosition(0, 0, invertCameraViewProj, terrainHeight);
+    if (!this.isValidVector3(center)) {
+      this.setViewFieldCenter(x, y);
+      return Promise.resolve();
+    }
+    const startX = this.camera.position.x;
+    const startZ = this.camera.position.z;
+    const deltaX = x - center.x;
+    const deltaZ = y - center.z;
+    const distance = Math.hypot(deltaX, deltaZ);
+    // Long enough to follow, short enough not to wait for: half a second across the screen, two
+    // seconds across the island.
+    const durationMs = Math.min(2000, Math.max(500, 300 + distance * 5));
+    const startTime = performance.now();
+    return new Promise<void>(resolve => {
+      let expectedX = startX;
+      let expectedZ = startZ;
+      const finish = () => {
+        if (this.cameraFlight) {
+          cancelAnimationFrame(this.cameraFlight.frame);
+          this.cameraFlight = null;
+        }
+        resolve();
+      };
+      const step = () => {
+        if (Math.abs(this.camera.position.x - expectedX) > 0.01 || Math.abs(this.camera.position.z - expectedZ) > 0.01) {
+          finish(); // the player moved the camera
+          return;
+        }
+        const t = Math.min(1, (performance.now() - startTime) / durationMs);
+        const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; // ease in and out
+        this.camera.position.x = startX + deltaX * eased;
+        this.camera.position.z = startZ + deltaZ * eased;
+        this.ensureCameraViewOnMap();
+        expectedX = this.camera.position.x;
+        expectedZ = this.camera.position.z;
+        this.onViewFieldChanged();
+        if (t >= 1) {
+          finish();
+        } else if (this.cameraFlight) {
+          this.cameraFlight.frame = requestAnimationFrame(step);
+        }
+      };
+      this.cameraFlight = {frame: requestAnimationFrame(step), finish};
+    });
+  }
+
+  private cancelCameraFlight(): void {
+    this.cameraFlight?.finish();
   }
 
   hasPendingSetViewFieldCenter(): boolean {

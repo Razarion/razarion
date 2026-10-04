@@ -272,6 +272,10 @@ export interface TipItemState {
   buildup: number;
   /** Item types a factory has queued, the one in production first; empty for anything else. */
   factoryBuildQueue: number[];
+  /** What a factory has in production or a builder is building, 0 for nothing - not in factoryBuildQueue. */
+  constructingTypeId: number;
+  /** How far that is, 0..1; 0 while a factory warms up. */
+  constructing: number;
   /** Item types a container carries; empty for anything else. Carried units are not in the list. */
   cargo: number[];
 }

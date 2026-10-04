@@ -587,6 +587,9 @@ public class BaseItemUiService {
             state.idle = info.idle;
             state.buildup = info.buildup;
             state.factoryBuildQueue = info.factoryBuildQueue != null ? info.factoryBuildQueue : new int[0];
+            state.constructingTypeId = info.constructingBaseItemTypeId;
+            // -1 is the factory's warmup sentinel, set where SyncBaseItem fills the tick info
+            state.constructing = Math.max(0, info.constructing);
             state.cargo = info.containingItemTypeIds != null ? info.containingItemTypeIds : new int[0];
             result.add(state);
         }
@@ -701,6 +704,15 @@ public class BaseItemUiService {
     public void onViewChanged(ViewField viewField, Rectangle2D viewFieldAabb) {
         this.viewField = viewField;
         this.viewFieldAabb = viewFieldAabb;
+    }
+
+    /** The middle of the ground on screen, or null before the first view. */
+    public DecimalPosition getViewFieldCenter() {
+        try {
+            return viewField != null ? viewField.calculateCenter() : null;
+        } catch (IllegalStateException e) {
+            return null; // a corner of the view has no ground under it
+        }
     }
 
     /**

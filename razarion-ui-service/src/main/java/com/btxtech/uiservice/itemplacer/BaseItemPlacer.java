@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import jakarta.inject.Inject;
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -54,9 +55,14 @@ public class BaseItemPlacer {
 //            onMove(new Vertex(baseItemPlacerConfig.getSuggestedPosition(), 0));
 //        }
         openPosition = null;
-        if (baseItemPlacerConfig.isOpenInAllowedArea() && baseItemPlacerConfig.getAllowedArea() != null) {
+        // The search area when the caller gives one - the allowed area can be far too large to probe
+        // (a quest region along a whole coast); the checker still refuses spots outside it.
+        PlaceConfig searchArea = baseItemPlacerConfig.getOpenSearchArea() != null
+                ? baseItemPlacerConfig.getOpenSearchArea()
+                : baseItemPlacerConfig.getAllowedArea();
+        if (baseItemPlacerConfig.isOpenInAllowedArea() && searchArea != null) {
             try {
-                openPosition = findOpenPosition(baseItemPlacerConfig.getAllowedArea(), baseItemPlacerConfig.getPreferredArea());
+                openPosition = findOpenPosition(searchArea, baseItemPlacerConfig.getPreferredArea());
             } catch (Throwable t) {
                 // Without it the placer opens at the screen centre, as it always did.
                 logger.warning("BaseItemPlacer.findOpenPosition() failed: " + t.getMessage());
@@ -263,12 +269,21 @@ public class BaseItemPlacer {
         } else if (!baseItemPlacerChecker.isResourcesOk()) {
             errorText = "Can not build on a razarion field";
         } else if (!baseItemPlacerChecker.isTerrainOk()) {
-            errorText = "Terrain not suitable here";
+            // The Dockyard is the first building in the game that stands in the water, and "not
+            // suitable" never said which ground would be: on PROD 7 of 13 players who stayed on quest
+            // 386 got this answer on land and never placed one (2026-09-30).
+            errorText = isWaterBuilding() ? "Build it on the water" : "Terrain not suitable here";
         } else if (!baseItemPlacerChecker.isRallyTerrainOk()) {
             errorText = "Needs free ground to the east for the rally point";
         } else {
             errorText = null;
         }
+    }
+
+    private boolean isWaterBuilding() {
+        return baseItemType != null
+                && baseItemType.getPhysicalAreaConfig() != null
+                && baseItemType.getPhysicalAreaConfig().getTerrainType() == TerrainType.WATER;
     }
 
     /**

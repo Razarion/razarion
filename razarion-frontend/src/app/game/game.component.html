@@ -106,6 +106,16 @@
                   pTooltip="Deselect" aria-label="Deselect">
             <i class="pi pi-times"></i>
           </button>
+          <!-- Every attack unit in one click - the phone's "All" beside its attack chip, here under the
+               grid across its width. The group tip names it (quest 379, 2026-09-30). -->
+          @if (selectionShortcuts.getCount('attack') >= 2) {
+            <button type="button" class="hud-btn col-span-3 !w-auto gap-2 text-sm font-bold"
+                    [class.animate-pulse]="touchSelectionMode.asked()"
+                    (click)="selectionShortcuts.selectAll('attack')"
+                    aria-label="Select all attack units">
+              <i class="pi pi-bolt"></i> All
+            </button>
+          }
         </div>
       </div>
     }
@@ -164,23 +174,29 @@
          with the build menu - "which panel is this, and why is it open again". Reported from a
          phone on 2026-09-18. What the panel had beyond this line: every progress row (now all on
          the line), the time limit (too), the in-game marker switch (in the settings) and the
-         quest choice - which a tap on the line opens directly when there is a choice. -->
+         quest choice - the list button at the end of the line, only for a quest that may be left.
+         A tap on the line itself takes the camera to the quest's target: until 2026-09-30 it opened
+         the list, and players looking for help there left the guided quest for another one. -->
     @if (cockpitDisplayService.showQuestCockpit && questCockpitContainer.title) {
-      @if (questCockpitContainer.showQuestSelectionButton) {
-        <button type="button" class="compact-quest quest-flash-target {{ questCockpitContainer.flashClass }}"
-                (click)="cockpitDisplayService.showQuestDialog = true">
+      <div class="compact-quest quest-flash-target {{ questCockpitContainer.flashClass }}">
+        <button type="button" class="compact-quest-go" aria-label="Show the quest target"
+                (click)="questCockpitContainer.goToQuestTarget()">
           <i class="pi pi-flag"></i>
           <span class="compact-quest-title">{{ questCockpitContainer.title }}</span>
+          <!-- Before the text, which gives way first: the meter says how far without being read. -->
+          @for (row of questCockpitContainer.progressRows; track $index) {
+            <ng-container *ngTemplateOutlet="questCockpitContainer.meterTemplate; context: {$implicit: row}"></ng-container>
+          }
           <span class="compact-quest-progress">{{ questCockpitContainer.progressSummary }}</span>
-          <i class="pi pi-list compact-quest-choose"></i>
+          <i class="pi pi-map-marker"></i>
         </button>
-      } @else {
-        <div class="compact-quest quest-flash-target {{ questCockpitContainer.flashClass }}">
-          <i class="pi pi-flag"></i>
-          <span class="compact-quest-title">{{ questCockpitContainer.title }}</span>
-          <span class="compact-quest-progress">{{ questCockpitContainer.progressSummary }}</span>
-        </div>
-      }
+        @if (questCockpitContainer.showQuestSelectionButton) {
+          <button type="button" class="compact-quest-choose" aria-label="Choose another quest"
+                  (click)="cockpitDisplayService.showQuestDialog = true">
+            <i class="pi pi-list"></i>
+          </button>
+        }
+      </div>
     }
 
     <!-- Unit navigation: one chip per category, stacked up the left edge opposite the minimap.
@@ -193,13 +209,36 @@
     @if (cockpitDisplayService.showMainCockpit) {
       <div class="compact-nav" [style.visibility]="compactLayout.openPanel() ? 'hidden' : 'visible'">
         @for (cat of selectionShortcuts.categories; track cat.id) {
-          <button type="button" class="compact-nav-chip"
-                  [disabled]="selectionShortcuts.getCount(cat.id) === 0"
-                  (click)="selectionShortcuts.cycle(cat.id)"
-                  [attr.aria-label]="cat.tooltip">
-            <i [ngClass]="cat.icon"></i>
-            <span class="compact-nav-count">{{ selectionShortcuts.getCount(cat.id) }}</span>
-          </button>
+          <div class="flex items-center gap-1.5">
+            <button type="button" class="compact-nav-chip"
+                    [disabled]="selectionShortcuts.getCount(cat.id) === 0"
+                    (click)="selectionShortcuts.cycle(cat.id)"
+                    [attr.aria-label]="cat.tooltip">
+              <i [ngClass]="cat.icon"></i>
+              <span class="compact-nav-count">{{ selectionShortcuts.getCount(cat.id) }}</span>
+            </button>
+            <!-- Sending several units is part of the game, and the box that selects them was found
+                 but not worked on a phone (quest 379, 2026-09-30). One tap takes all attack units;
+                 the group tip points here instead of at the box. -->
+            @if (cat.id === 'attack' && selectionShortcuts.getCount('attack') >= 2) {
+              <span class="compact-icon-anchor">
+                @if (touchSelectionMode.asked()) {
+                  <div class="compact-callout" role="status">
+                    <span class="compact-callout-text">Tap here to select all attack units</span>
+                    <svg class="compact-callout-arrow" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 22 3.5 12H9V2h6v10h5.5z"/>
+                    </svg>
+                  </div>
+                }
+                <button type="button" class="compact-nav-chip font-bold"
+                        [class.compact-icon-asked]="touchSelectionMode.asked()"
+                        (click)="selectionShortcuts.selectAll('attack')"
+                        aria-label="Select all attack units">
+                  All
+                </button>
+              </span>
+            }
+          </div>
         }
         <!-- Deselect closes the column: it is what you reach for right after the chip above it put
              something in your hands, so it sits at the bottom, nearest the thumb, and looks like
@@ -273,8 +312,11 @@
            with an arrow onto it. It used to be a line in the middle of the screen that an open panel
            hid - and after quest 369 the item panel is open, because selecting the factory opens it.
            On a phone on 2026-09-18 the ring on this icon also lost against the menu icon beside it,
-           pulsing for the tech tree in the same colour; that one waits while this is asked. -->
-      @if (touchSelectionMode.asked() && !touchSelectionMode.armed()) {
+           pulsing for the tech tree in the same colour; that one waits while this is asked.
+           Since 2026-09-30 the ask goes to the "All" button beside the attack chip - one tap instead
+           of a box drawn around the units, which 379's players did not manage. This one speaks only
+           when an open panel hides the chip column. -->
+      @if (touchSelectionMode.asked() && !touchSelectionMode.armed() && compactLayout.openPanel()) {
         <div class="compact-callout" role="status">
           <span class="compact-callout-text">Tap here to select several units at once</span>
           <svg class="compact-callout-arrow" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -284,7 +326,7 @@
       }
       <button type="button" class="compact-icon"
               [class.compact-icon-open]="touchSelectionMode.armed()"
-              [class.compact-icon-asked]="touchSelectionMode.asked() && !touchSelectionMode.armed()"
+              [class.compact-icon-asked]="touchSelectionMode.asked() && !touchSelectionMode.armed() && compactLayout.openPanel()"
               (click)="touchSelectionMode.toggle()"
               [attr.aria-pressed]="touchSelectionMode.armed()"
               aria-label="Select a group of units">
@@ -332,7 +374,7 @@
        button draws the marquee by itself - but the tip that asks for a group must not be the only
        one in the chain that waits in silence, which is what it would be outside the compact layout. -->
   @if (!compactLayout.compact() && touchSelectionMode.asked()) {
-    <div class="desktop-select-hint">Drag a box around your units to select all of them</div>
+    <div class="desktop-select-hint">Click "All" under the unit buttons - or drag a box around your units</div>
   }
 
   <server-restart #serverRestartComponent></server-restart>

@@ -860,6 +860,8 @@ public class DtoConverter {
                 }
             }
             obj.set("factoryBuildQueue", queue);
+            obj.set("constructingTypeId", state.constructingTypeId);
+            obj.set("constructing", state.constructing);
             JsArray<JSObject> cargo = JsArray.create();
             if (state.cargo != null) {
                 for (int itemTypeId : state.cargo) {

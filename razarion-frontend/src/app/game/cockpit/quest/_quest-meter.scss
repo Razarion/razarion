@@ -1,0 +1,57 @@
+/*
+ * The quest progress meter - QuestCockpitComponent's #questMeter, in the desktop quest panel and
+ * in the phone strip.
+ *
+ * In the look of the power meter of the main cockpit (_hud.scss): a dark well, glowing segments.
+ * A bar of fixed width, split into one segment per item the quest wants, so "1 of 1" is a whole
+ * bar and "1 of 3" a third of one. A segment fills from the left while its item is under
+ * construction, so the seconds a site or a factory takes show as something growing instead of a
+ * number that stands still. Amber while it fills, green once the row is done - the colours of the
+ * quest title and of its check mark.
+ *
+ * Global, like _quest-flash.scss: the template is defined in one component and stamped into
+ * another, where emulated encapsulation would not reach it.
+ */
+.quest-meter {
+  display: flex;
+  flex: 0 0 auto;
+  align-self: stretch;
+  gap: 2px;
+  width: 100%;
+  max-width: 220px;
+  height: 14px;
+  padding: 3px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background: #06101c;
+  box-shadow: inset 0 0 0 1px rgba(99, 200, 255, 0.25);
+}
+
+.quest-cell {
+  flex: 1 1 0;
+  display: flex;
+  border-radius: 1px;
+  background: #16222f;
+  overflow: hidden;
+}
+
+.quest-fill {
+  height: 100%;
+  background: linear-gradient(180deg, #ffcf6b 0%, #ff9d2e 55%, #d4670c 100%);
+  box-shadow: 0 0 5px rgba(255, 157, 46, 0.55);
+  /* Smooths the steps of the 400 ms construction poll. */
+  transition: width 0.4s linear;
+}
+
+.quest-meter-done .quest-fill {
+  background: linear-gradient(180deg, #8ff0c4 0%, #34d399 55%, #059669 100%);
+  box-shadow: 0 0 5px rgba(52, 211, 153, 0.55);
+}
+
+/* In the 26px phone strip, where it sits in a row with the title and gives way to nothing. */
+.compact-quest .quest-meter {
+  width: 56px;
+  height: 12px;
+  padding: 2px;
+  align-self: center;
+}

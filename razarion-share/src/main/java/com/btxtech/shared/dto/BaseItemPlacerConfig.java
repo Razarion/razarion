@@ -34,6 +34,13 @@ public class BaseItemPlacerConfig {
      * e.g. the region the active quest counts. Null = anywhere in the allowed area.
      */
     private PlaceConfig preferredArea;
+    /**
+     * With {@link #openInAllowedArea}: where to look for the opening spot, in place of
+     * {@link #allowedArea} - which can be far too large to probe - and without restricting where the
+     * player may place. The build placer of a quest that counts a region sets it around the spot the
+     * camera has just travelled to (quest 386, 2026-10-02); the region itself is the allowed area.
+     */
+    private PlaceConfig openSearchArea;
 
     public DecimalPosition getSuggestedPosition() {
         return suggestedPosition;
@@ -136,6 +143,19 @@ public class BaseItemPlacerConfig {
 
     public BaseItemPlacerConfig preferredArea(PlaceConfig preferredArea) {
         setPreferredArea(preferredArea);
+        return this;
+    }
+
+    public PlaceConfig getOpenSearchArea() {
+        return openSearchArea;
+    }
+
+    public void setOpenSearchArea(PlaceConfig openSearchArea) {
+        this.openSearchArea = openSearchArea;
+    }
+
+    public BaseItemPlacerConfig openSearchArea(PlaceConfig openSearchArea) {
+        setOpenSearchArea(openSearchArea);
         return this;
     }
 }

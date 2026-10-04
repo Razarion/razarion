@@ -15,6 +15,7 @@ import {CockpitDisplayService} from '../cockpit-display.service';
 import {BabylonAudioService} from '../../renderer/babylon-audio.service';
 import {BabylonBaseItemImpl} from '../../renderer/babylon-base-item.impl';
 import {CompactLayoutService} from '../compact-layout.service';
+import {onNextPlacement} from '../../renderer/placer-release';
 
 // --- View-Model Interfaces ---
 
@@ -592,11 +593,22 @@ export class ItemCockpitService {
     }
 
     if (baseItemType.getBuilderType() != null) {
+      // Placed, the builder is put down: it drives to the site and builds on its own, and while the
+      // player waits for it a tap on the ground would be a move order that throws the build away
+      // (phone test, quest 386, 2026-10-02). Only if the selection is still this builder.
+      onNextPlacement(() => this.deselectIfStill(selectedIds));
       this.itemCockpitBridge.requestBuild(firstId, itemTypeId);
     } else if (baseItemType.getFactoryType() != null) {
       const toBuildType = this.itemTypeService.getBaseItemTypeAngular(itemTypeId);
       this.babylonAudioService.speakCommand(`Producing ${toBuildType.getName()}`);
       this.itemCockpitBridge.requestFabricate(selectedIds, itemTypeId);
+    }
+  }
+
+  private deselectIfStill(ids: number[]): void {
+    const now = this.selectionService.getSelectedOwnItemIds();
+    if (now.length === ids.length && ids.every(id => now.includes(id))) {
+      this.selectionService.clearSelection();
     }
   }
 

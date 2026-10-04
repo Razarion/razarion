@@ -45,7 +45,7 @@ public class QuestController implements QuestAccess {
     public void activateQuest(@PathVariable("id") int questId) {
         try {
             var userContext = userService.getUserContextFromContext();
-            serverLevelQuestService.activateQuest(userContext, questId);
+            serverLevelQuestService.activateQuestByPlayer(userContext, questId);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;

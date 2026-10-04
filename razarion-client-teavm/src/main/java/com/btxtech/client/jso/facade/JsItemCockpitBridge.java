@@ -4,6 +4,8 @@ import com.btxtech.client.jso.JsObject;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
@@ -28,6 +30,8 @@ import java.util.logging.Logger;
  */
 public class JsItemCockpitBridge {
     private static final Logger logger = Logger.getLogger(JsItemCockpitBridge.class.getName());
+    /** Around the middle of the picture: small enough to probe at once, on screen so the ground can be judged. */
+    private static final double BUILD_OPEN_SEARCH_RADIUS = 25.0;
 
     private static JSObject cockpitStateCallback;
     private static SyncBaseItemMonitor watchedContainerMonitor;
@@ -46,6 +50,23 @@ public class JsItemCockpitBridge {
             try {
                 BaseItemType toBeBuild = itemTypeService.getBaseItemType(itemTypeId);
                 BaseItemPlacerConfig config = new BaseItemPlacerConfig().baseItemCount(1).baseItemTypeId(itemTypeId);
+                // A building the active quest wants in a region: open on a valid spot around the
+                // middle of the picture, in the region if it reaches there. The Angular side has
+                // taken the camera to the region first (quest 386: the Dockyard has to stand in the
+                // water, and the players who failed never got there - 2026-09-30). Without the
+                // spot the placer opens at the screen centre, as before.
+                PlaceConfig region = questRegionFor(gameUiControl, itemTypeId);
+                if (region != null) {
+                    // Outside the region the building would stand and cost and the quest would not
+                    // count it, without a word: it is refused there instead, saying why (2026-10-04).
+                    config.allowedArea(region).allowedAreaText("Build it in the marked region");
+                }
+                DecimalPosition viewCenter = region != null ? baseItemUiService.getViewFieldCenter() : null;
+                if (viewCenter != null) {
+                    config.openInAllowedArea(true)
+                            .preferredArea(region)
+                            .openSearchArea(new PlaceConfig().position(viewCenter).radius(BUILD_OPEN_SEARCH_RADIUS));
+                }
                 baseItemPlacerService.activate(config, true, (decimalPositions, rallyPoint) -> {
                     gameEngineControl.buildCmdIds(builderId, CollectionUtils.getFirst(decimalPositions), itemTypeId, rallyPoint);
                 });
@@ -266,6 +287,20 @@ public class JsItemCockpitBridge {
      * @return null when there is nothing to limit by - the placer then behaves as before
      */
     /** The region the active quest counts in, or null. */
+    /** The region of the active quest when it counts buildings of this type there, else null. */
+    private static PlaceConfig questRegionFor(GameUiControl gameUiControl, int itemTypeId) {
+        QuestConfig quest = gameUiControl.getServerQuest();
+        if (quest == null || quest.getConditionConfig() == null
+                || quest.getConditionConfig().getConditionTrigger() != ConditionTrigger.SYNC_ITEM_POSITION) {
+            return null;
+        }
+        ComparisonConfig comparison = quest.getConditionConfig().getComparisonConfig();
+        if (comparison == null || comparison.getTypeCount() == null || !comparison.getTypeCount().containsKey(itemTypeId)) {
+            return null;
+        }
+        return comparison.getPlaceConfig();
+    }
+
     private static PlaceConfig activeQuestRegion(GameUiControl gameUiControl) {
         QuestConfig quest = gameUiControl.getServerQuest();
         if (quest == null || quest.getConditionConfig() == null || quest.getConditionConfig().getComparisonConfig() == null) {

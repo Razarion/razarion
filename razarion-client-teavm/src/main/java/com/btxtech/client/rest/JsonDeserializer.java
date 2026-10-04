@@ -652,6 +652,7 @@ public class JsonDeserializer {
         r.setTipConfig(deserializeTipConfig(obj(json, "tipConfig")));
         // QuestConfig fields
         r.setConditionConfig(deserializeConditionConfig(obj(json, "conditionConfig")));
+        r.setSwitchable(!Boolean.FALSE.equals(json.getNullableBoolean("switchable")));
         return r;
     }
 

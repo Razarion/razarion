@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {PlaceConfig} from '../../../../gwtangular/GwtAngularFacade';
+import {pointInPolygon} from '../../../tip/guide/tip-region';
 
 export interface MarkerPoint {
   x: number;
@@ -70,6 +71,23 @@ export class QuestMarkerService {
     }
     const corners = placeConfig.getPolygon2D()?.toCornersAngular().map(corner => ({x: corner.getX(), y: corner.getY()}));
     return corners && corners.length >= 3 ? {kind: 'polygon', corners} : null;
+  }
+
+  /**
+   * Where the camera goes for a marker: the point itself, the circle's centre, or the point of the
+   * region nearest to `from` - not the polygon's centre, which for a bent coastal strip lies outside it.
+   */
+  static jumpPoint(marker: QuestMarker | null, from: MarkerPoint | null): MarkerPoint | null {
+    if (!marker) {
+      return null;
+    }
+    switch (marker.kind) {
+      case 'point':
+      case 'circle':
+        return {x: marker.x, y: marker.y};
+      case 'polygon':
+        return pointInPolygon(marker.corners, from);
+    }
   }
 }
 

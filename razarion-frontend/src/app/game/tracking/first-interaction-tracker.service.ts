@@ -109,6 +109,15 @@ export type InteractionKind =
   | 'CAMERA_WHEEL'
   /** A tap or click on the minimap that moved the camera there. */
   | 'MINIMAP_JUMP'
+  /** A tap on the quest line or the quest panel's "go there" button, which takes the camera to the
+   *  quest's target (2026-09-30). `target=none` when there was nowhere to go. */
+  | 'QUEST_JUMP'
+  /** The "all" button beside a unit chip: every own unit of the category selected at once
+   *  (2026-09-30). `category=attack` is the group quest 379 asks for. */
+  | 'SELECT_ALL'
+  /** The camera travelled to the quest's region before the build placer opened (quest 386, 2026-10-02).
+   *  Not a player action: the game moved the camera. */
+  | 'BUILD_CAMERA_FLIGHT'
   /** A tap or click on the "go there" chip beside the tip's out-of-view arrow (2026-09-25). */
   | 'ARROW_JUMP'
   /** A unit or building was picked. On a phone this can only come from a tap: the marquee ignores
@@ -237,7 +246,7 @@ export class FirstInteractionTrackerService {
    */
   private static readonly PLAYER_KINDS: ReadonlySet<string> = new Set<InteractionKind>([
     'POINTER_DOWN', 'POINTER_DOWN_PAGE', 'CAMERA_PAN_TOUCH', 'CAMERA_PINCH', 'CAMERA_KEYBOARD',
-    'CAMERA_WHEEL', 'MINIMAP_JUMP', 'ARROW_JUMP', 'SELECT', 'COMMAND', 'SELECT_GROUP', 'COMMAND_GROUP', 'SELECTION_BOX_ARMED',
+    'CAMERA_WHEEL', 'MINIMAP_JUMP', 'ARROW_JUMP', 'QUEST_JUMP', 'SELECT_ALL', 'SELECT', 'COMMAND', 'SELECT_GROUP', 'COMMAND_GROUP', 'SELECTION_BOX_ARMED',
     'PLACER_CONFIRMED', 'PLACER_REJECTED', 'TECH_TREE_OPENED']);
 
   /** When the player last did anything at all, or 0 if they never have. */

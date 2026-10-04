@@ -262,7 +262,29 @@ public class ServerLevelQuestService implements QuestListener {
     }
 
     public List<QuestConfig> readOpenQuestForDialog(UserContext userContext) {
+        if (!isActiveQuestSwitchable(userContext.getUserId())) {
+            return List.of();
+        }
         return serverGameEngineCrudPersistence.getQuests4Dialog(levelCrudPersistence.getEntity(userContext.getLevelId()), readActiveOrPassedQuestIds(userContext));
+    }
+
+    /**
+     * The player's own choice from the quest list. Refused while the active quest is not
+     * {@link QuestConfig#isSwitchable() switchable}: the list is not offered then, so a request
+     * here comes from an old client or from outside - and would throw the guided quest away.
+     * The backend's {@link #activateQuestBackend} is not bound by it.
+     */
+    @Transactional
+    public void activateQuestByPlayer(UserContext userContext, int questId) {
+        if (!isActiveQuestSwitchable(userContext.getUserId())) {
+            throw new IllegalStateException("Active quest can not be switched. User: " + userContext.getUserId() + " quest: " + questId);
+        }
+        activateQuest(userContext, questId);
+    }
+
+    private boolean isActiveQuestSwitchable(String userId) {
+        QuestConfig activeQuest = userService.findActiveQuestConfig4CurrentUser(userId);
+        return activeQuest == null || activeQuest.isSwitchable();
     }
 
     @Transactional

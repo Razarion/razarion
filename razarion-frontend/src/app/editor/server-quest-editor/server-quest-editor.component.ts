@@ -159,7 +159,8 @@ export class ServerQuestEditorComponent extends EditorPanel implements OnInit {
       internalName: "",
       razarion: 0,
       xp: 0,
-      tipConfig: null
+      tipConfig: null,
+      switchable: true
     })
   }
 

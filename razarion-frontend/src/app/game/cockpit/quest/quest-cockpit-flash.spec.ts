@@ -71,3 +71,46 @@ describe('QuestCockpitComponent flash', () => {
     expect(cockpit.flashClass).toContain('quest-flash-b');
   });
 });
+
+/**
+ * A tap on the quest line (2026-09-30): the camera goes to the quest's target instead of the quest
+ * list opening - players looking for help there left the guided quest.
+ */
+describe('QuestCockpitComponent goToQuestTarget', () => {
+  let cockpit: any;
+  let centers: { x: number, y: number }[];
+  let reported: [string, string | undefined][];
+
+  beforeEach(() => {
+    centers = [];
+    reported = [];
+    cockpit = Object.create(QuestCockpitComponent.prototype);
+    cockpit.flashClass = '';
+    cockpit.flashAlternate = false;
+    cockpit.pendingTickFlash = null;
+    cockpit.clearFlashTimer = null;
+    cockpit.renderService = {
+      getCurrentViewField: () => ({getScreenCenter: () => ({getX: () => 0, getY: () => 0})}),
+      setViewFieldCenter: (x: number, y: number) => centers.push({x, y}),
+      reportFirstInteraction: (kind: string, detail?: string) => reported.push([kind, detail])
+    };
+  });
+
+  afterEach(() => clearTimeout(cockpit.clearFlashTimer));
+
+  it('takes the camera to where the tip points', () => {
+    cockpit.questMarkerService = {get: () => ({kind: 'point', x: 120, y: 340})};
+    cockpit.goToQuestTarget();
+    expect(centers).toEqual([{x: 120, y: 340}]);
+    expect(reported).toEqual([['QUEST_JUMP', undefined]]);
+    expect(cockpit.flashClass).toContain('quest-flash-quest');
+  });
+
+  it('without a target it leaves the camera and still answers the tap', () => {
+    cockpit.questMarkerService = {get: () => null};
+    cockpit.goToQuestTarget();
+    expect(centers).toEqual([]);
+    expect(reported).toEqual([['QUEST_JUMP', 'target=none']]);
+    expect(cockpit.flashClass).toContain('quest-flash-quest');
+  });
+});

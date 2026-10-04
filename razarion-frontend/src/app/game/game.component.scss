@@ -280,9 +280,29 @@
     font: 700 14px sans-serif;
   }
 
-  /* The strip opens the quest choice when there is one; the list icon says it can be tapped. */
+  /* The line is two buttons: the quest itself (goes to its target) and, for a quest that may be
+     left, the list. Both inherit the strip's look rather than a button's. */
+  .compact-quest-go,
+  .compact-quest-choose {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+  }
+
+  .compact-quest-go {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* The target marker sits after the text, the list apart at the end of the line. */
   .compact-quest-choose {
     margin-left: auto;
+    padding-left: 12px;
   }
 
   /* The group button carries its own callout, so it needs a box to anchor it to. */

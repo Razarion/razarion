@@ -65,6 +65,15 @@ function warpedFbmTile(x: number, y: number, octaves: number, warpStr: number, w
   return fbmTile(x + wx, y + wy, octaves, 2.0, 0.5, px, py);
 }
 
+/**
+ * World-space fBm for scattering (sprite density, size, tint). Roughly in [-0.4, 0.4], std ~0.17.
+ * Callers pass world metres divided by the feature size. The 256-cell period is far beyond a planet
+ * at those scales, so no repetition is visible. Needs initPerm() first.
+ */
+export function scatterNoise(x: number, y: number): number {
+  return fbmTile(x, y, 3, 2.0, 0.5, 256, 256);
+}
+
 // ========== Splatter generation ==========
 
 export const SEED = 77;

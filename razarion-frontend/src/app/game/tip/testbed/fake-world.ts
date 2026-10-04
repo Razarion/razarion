@@ -3,6 +3,7 @@ import {Diplomacy} from '../../../gwtangular/GwtAngularFacade';
 import {ViewField, ViewFieldListener} from '../../renderer/view-field';
 import {BaseItemPlacerPresenterEvent} from '../../renderer/base-item-placer-presenter.impl';
 import {PROMPT_CLEARANCE_FRACTION} from '../../renderer/prompt-geometry';
+import {notifyPlacement, onNextPlacement} from '../../renderer/placer-release';
 import {TipStallReason} from '../tip-stall';
 import {fakeBaseItemType, FakeItemTypeSpec, itemTypeSpec} from './fake-item-types';
 
@@ -869,6 +870,8 @@ export class FakeRenderer {
   /** Where the "go there" chip beside the arrow would take the camera; null without a chip. */
   outOfViewTarget: { x: number, y: number } | null = null;
   placeMarkerShown = false;
+  /** Where the last camera flight went (flyViewFieldCenter), null without one. */
+  lastFlight: { x: number, y: number } | null = null;
   readonly touchSelectionMode = {asked: false, setAsked: (asked: boolean) => this.touchSelectionMode.asked = asked};
 
   constructor(private readonly world: World) {
@@ -955,6 +958,13 @@ export class FakeRenderer {
     return this.world.viewField();
   }
 
+  /** As the live renderer's camera flight, but over at once: the camera is there when it returns. */
+  flyViewFieldCenter(x: number, y: number): Promise<void> {
+    this.lastFlight = {x, y};
+    this.world.moveCamera(x, y);
+    return Promise.resolve();
+  }
+
   isPromptReadable(x: number, y: number): boolean {
     return this.world.promptReadable(x, y);
   }
@@ -1035,6 +1045,7 @@ export class FakeRenderer {
       throw new Error('No placer to place with');
     }
     this.placerCallback?.(BaseItemPlacerPresenterEvent.PLACED);
+    notifyPlacement(true); // as the live presenter: after PLACED, before the placer closes
     if (this.unloadContainerId !== null) {
       this.world.unload(this.unloadContainerId, x, y);
     } else {
@@ -1048,6 +1059,7 @@ export class FakeRenderer {
   }
 
   private deactivatePlacer(): void {
+    notifyPlacement(false);
     this.baseItemPlacerActive = false;
     this.placerTypeId = null;
     this.unloadContainerId = null;
@@ -1082,6 +1094,9 @@ export class FakeItemCockpit {
   private cockpitTypeId: number | null = null;
   private cockpitItemIds: number[] = [];
   private buildClickCallback: ((model: { itemTypeId: number }) => void) | null = null;
+  private buildPreparation: ((itemTypeId: number) => Promise<void> | null) | null = null;
+  /** The selection the live ItemCockpitService puts the builder down in after placing; set by the test bed. */
+  selection: { getSelectedOwnItemIds(): number[], clearSelection(): void } | null = null;
 
   constructor(private readonly world: World) {
   }
@@ -1134,6 +1149,11 @@ export class FakeItemCockpit {
 
   setBuildClickCallback(callback: ((model: { itemTypeId: number }) => void) | null): void {
     this.buildClickCallback = callback;
+  }
+
+  /** As ItemCockpitComponent.setBuildPreparation. */
+  setBuildPreparation(preparation: ((itemTypeId: number) => Promise<void> | null) | null): void {
+    this.buildPreparation = preparation;
   }
 
   /** As ItemCockpitComponent.showUnloadTip. */
@@ -1217,6 +1237,17 @@ export class FakeItemCockpit {
     }
     const spec = itemTypeSpec(this.cockpitTypeId!);
     if (spec.builds) {
+      // The live component waits for the preparation before the placer opens; the fake flight below
+      // is over at once, so the placer opens where the camera has arrived.
+      this.buildPreparation?.(itemTypeId);
+      // As ItemCockpitService.onBuild: placed, the builder is put down if it is still the selection.
+      const builderIds = [...this.cockpitItemIds];
+      onNextPlacement(() => {
+        const now = this.selection?.getSelectedOwnItemIds() ?? [];
+        if (now.length === builderIds.length && builderIds.every(id => now.includes(id))) {
+          this.selection?.clearSelection();
+        }
+      });
       renderer.activatePlacer(itemTypeId, this.cockpitItemIds);
     } else {
       this.world.fabricate(this.cockpitItemIds, itemTypeId);

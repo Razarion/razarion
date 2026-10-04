@@ -178,6 +178,7 @@ export class TipTestbed {
     this.world.renderer.selectionHooks = this.selection;
     const gwtAngularService = {gwtAngularFacade: this.createFacade()};
     this.cockpit = new FakeItemCockpit(this.world);
+    this.cockpit.selection = this.selection;
     // First, like ItemCockpitService, which exists before any tip does.
     this.selection.addSelectionListener(() => this.cockpit.rebuild(this.selection.getSelectedOwnItems()));
     this.action = new ActionService(gwtAngularService as any, audio as any, this.selection, tracker);
@@ -598,6 +599,8 @@ export class TipTestbed {
             // The head is the unit in production. The engine keeps that one apart (toBeBuiltType)
             // and reports only what waits behind it - reporting the head hid a 15 s delay (FAB-06).
             factoryBuildQueue: unit.queue.slice(1),
+            constructingTypeId: unit.queue[0] ?? 0,
+            constructing: unit.queue.length > 0 ? Math.min(1, unit.queueProgress) : 0,
             cargo: unit.cargo.map(id => world.units.get(id)!.spec.id)
           }))
       },

@@ -18,3 +18,24 @@ export function placerJustClosed(now = performance.now()): boolean {
 }
 
 export const PLACER_RELEASE_MILLIS = 700;
+
+/**
+ * Once, when the next placer is confirmed - not when it is cancelled. The build button sets it to
+ * put the builder down after placing (phone test, 2026-10-02): the builder drives to the site for
+ * half a minute, still selected, and the next tap on the ground while the player waits was a move
+ * order that threw the build away.
+ */
+let placedOnce: (() => void) | null = null;
+
+export function onNextPlacement(callback: (() => void) | null): void {
+  placedOnce = callback;
+}
+
+/** From the placer: confirmed (true) or closed without a placement (false). Either way it is spent. */
+export function notifyPlacement(placed: boolean): void {
+  const callback = placedOnce;
+  placedOnce = null;
+  if (placed && callback) {
+    callback();
+  }
+}

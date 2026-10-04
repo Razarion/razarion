@@ -274,7 +274,8 @@ server.tool(
   "update_quest_configs",
   `Update ALL quest configs for a server game engine. Replaces the entire list.
 ServerLevelQuestConfig fields: id, internalName, minimalLevelId, questConfigs[].
-QuestConfig fields: id, internalName, xp, razarion, crystal, conditionConfig, tipConfig.
+QuestConfig fields: id, internalName, xp, razarion, crystal, conditionConfig, tipConfig, switchable.
+switchable (boolean, default true): false = while the quest runs the player gets no quest list and cannot switch (guided quests up to leaving the beginners' island). Always send the value read back - a missing field turns a locked quest switchable again.
 ConditionConfig: conditionTrigger (SYNC_ITEM_KILLED|HARVEST|SYNC_ITEM_CREATED|BASE_KILLED|SYNC_ITEM_POSITION|BOX_PICKED|INVENTORY_ITEM_PLACED|UNLOCKED|SELL), comparisonConfig.
 ComparisonConfig: count, typeCount, includeExisting, timeSeconds, placeConfig, startRegionId, botIds[].`,
   {

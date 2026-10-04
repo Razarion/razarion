@@ -1,10 +1,11 @@
-import {Component, NgZone, OnDestroy} from "@angular/core";
+import {Component, NgZone, OnDestroy, TemplateRef, ViewChild} from "@angular/core";
 import {
   ConditionConfig,
   QuestCockpit,
   QuestConfig,
   QuestDescriptionConfig,
-  QuestProgressInfo
+  QuestProgressInfo,
+  TipItemState
 } from "../../../gwtangular/GwtAngularFacade";
 import {GwtHelper} from "../../../gwtangular/GwtHelper";
 import {GwtAngularService} from "../../../gwtangular/GwtAngularService";
@@ -20,6 +21,18 @@ import {TipService} from '../../tip/tip.service';
 import {BabylonAudioService} from '../../renderer/babylon-audio.service';
 import {CompactLayoutService} from '../compact-layout.service';
 import {QuestMarkerService} from '../main/radar/quest-marker.service';
+import {BabylonRenderServiceAccessImpl} from '../../renderer/babylon-render-service-access-impl.service';
+import {inProgressOf, questMeter, QuestMeter} from './quest-meter';
+
+export interface QuestProgressRow {
+  text: string;
+  done: boolean;
+  actual: number;
+  target: number;
+  meter: QuestMeter | null;
+  /** The item type whose construction fills the meter, for a quest that counts created items. */
+  constructionTypeId?: number;
+}
 
 @Component({
   selector: 'quest-cockpit',
@@ -35,8 +48,10 @@ import {QuestMarkerService} from '../main/radar/quest-marker.service';
   styleUrls: ['quest-cockpit.component.scss']
 })
 export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
+  /** The meter of one progress row - also drawn in the phone strip, which GameComponent owns. */
+  @ViewChild('questMeter', {static: true}) meterTemplate!: TemplateRef<unknown>;
   title?: string
-  progressRows: { text: string, done: boolean, actual: number }[] = [];
+  progressRows: QuestProgressRow[] = [];
   timeRow?: string = "";
   showQuestSelectionButton: boolean = false;
   showQuestInGameVisualisation: boolean = true;
@@ -62,6 +77,9 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
   private static readonly TICK_FLASH_INTERVAL_MS = 3000;
   /** A little longer than the longest glow, then the class goes so a re-rendered strip does not replay it. */
   private static readonly FLASH_CLEAR_MS = 1300;
+  /** How often the meter reads the construction under way - a factory site takes 8 s. */
+  private static readonly CONSTRUCTION_POLL_MS = 400;
+  private constructionPoll: ReturnType<typeof setInterval> | null = null;
   private questDescriptionConfig?: QuestDescriptionConfig;
   private conditionConfig?: ConditionConfig;
   private questProgressInfo?: QuestProgressInfo;
@@ -72,6 +90,7 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
               private babylonAudioService: BabylonAudioService,
               private compactLayout: CompactLayoutService,
               private questMarkerService: QuestMarkerService,
+              private renderService: BabylonRenderServiceAccessImpl,
               private zone: NgZone) {
   }
 
@@ -132,6 +151,24 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
     });
   }
 
+  /**
+   * A tap on the quest: the camera goes to what the quest wants now - where the tip points, or the
+   * quest's region. It used to open the quest list, and a player looking for help there picked
+   * another quest and lost the guided one (486 -> 392 on PROD, 2026-09-30). The list has its own
+   * button now, and only for a quest that may be left.
+   */
+  goToQuestTarget(): void {
+    const viewField = this.renderService.getCurrentViewField();
+    const from = viewField ? {x: viewField.getScreenCenter().getX(), y: viewField.getScreenCenter().getY()} : null;
+    const target = QuestMarkerService.jumpPoint(this.questMarkerService.get(), from);
+    if (target) {
+      this.renderService.setViewFieldCenter(target.x, target.y);
+    }
+    this.renderService.reportFirstInteraction('QUEST_JUMP', target ? undefined : 'target=none');
+    // Something happens on every tap, also without a place to go: the quest itself lights up.
+    this.flash('quest');
+  }
+
   // TODO unknown called from AbstractTipTask
   setShowQuestInGameVisualisation(): void {
   }
@@ -161,6 +198,7 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
   ngOnDestroy(): void {
     this.clearTimer(this.pendingTickFlash);
     this.clearTimer(this.clearFlashTimer);
+    this.stopConstructionPoll();
   }
 
   /**
@@ -304,9 +342,10 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
       }
       default: {
         console.warn(`Unknown ConditionTrigger ${this.conditionConfig.getConditionTrigger()}`)
-        this.progressRows.push({text: `???`, done: false, actual: 0})
+        this.progressRows.push({text: `???`, done: false, actual: 0, target: 0, meter: null})
       }
     }
+    this.updateConstruction();
     if (this.conditionConfig.getComparisonConfig().getTimeSeconds()) {
       if (this.questProgressInfo?.getSecondsRemaining()) {
         this.timeRow = `Time remaining: ${this.questProgressInfo?.getSecondsRemaining()} seconds`;
@@ -324,7 +363,9 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
     this.progressRows.push({
       text: `${text} ${actualCount} of ${expectedCount}`,
       done: actualCount >= expectedCount,
-      actual: actualCount
+      actual: actualCount,
+      target: expectedCount,
+      meter: questMeter(actualCount, expectedCount)
     });
   }
 
@@ -332,15 +373,53 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
     if (this.conditionConfig?.getComparisonConfig().getCount()) {
       this.setupSingleCount(textCount);
     } else if (this.conditionConfig?.getComparisonConfig().toTypeCountAngular()?.length) {
+      const counted = GwtHelper.gwtIssue(this.conditionConfig.getConditionTrigger()) === ConditionTrigger.SYNC_ITEM_CREATED;
       this.conditionConfig.getComparisonConfig().toTypeCountAngular().forEach((itemTypeIdCount) => {
+        const itemTypeId = GwtHelper.gwtIssueNumber(itemTypeIdCount[0]);
         let actualCount = this.findCurrentItemTypeCount(itemTypeIdCount[0]);
-        let itemTypeName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(GwtHelper.gwtIssueNumber(itemTypeIdCount[0])).getName();
+        let itemTypeName = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(itemTypeId).getName();
         this.progressRows.push({
           text: `${itemTypeName} ${textSpecific} ${actualCount} of ${itemTypeIdCount[1]}`,
           done: actualCount >= itemTypeIdCount[1],
-          actual: actualCount
+          actual: actualCount,
+          target: itemTypeIdCount[1],
+          meter: questMeter(actualCount, itemTypeIdCount[1]),
+          constructionTypeId: counted ? itemTypeId : undefined
         });
       });
+    }
+  }
+
+  /**
+   * Fills the meters with what is under construction, and keeps reading it for as long as a row
+   * counts created items and is not done yet. Only those rows: a unit on its way into a region is
+   * not progress the way a factory turning out that unit is.
+   */
+  private updateConstruction(): void {
+    const tracked = this.progressRows.filter(row => row.constructionTypeId !== undefined && !row.done);
+    if (tracked.length === 0) {
+      this.stopConstructionPoll();
+      return;
+    }
+    let items: TipItemState[];
+    try {
+      items = this.gwtAngularService.gwtAngularFacade.baseItemUiService.getTipItemStates(-1);
+    } catch (e) {
+      // Before the engine is up there is nothing under construction yet.
+      items = [];
+    }
+    for (const row of tracked) {
+      row.meter = questMeter(row.actual, row.target, inProgressOf(row.constructionTypeId!, items));
+    }
+    if (!this.constructionPoll) {
+      this.constructionPoll = setInterval(() => this.updateConstruction(), QuestCockpitComponent.CONSTRUCTION_POLL_MS);
+    }
+  }
+
+  private stopConstructionPoll(): void {
+    if (this.constructionPoll) {
+      clearInterval(this.constructionPoll);
+      this.constructionPoll = null;
     }
   }
 

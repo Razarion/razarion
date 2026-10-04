@@ -18,6 +18,13 @@ public class TipItemState {
     public double buildup;
     /** Item types a factory has queued, the one in production first; empty for anything else. */
     public int[] factoryBuildQueue;
+    /**
+     * What a factory has in production or a builder is building, 0 for nothing. The production
+     * itself is not in {@link #factoryBuildQueue}, which lists only what waits behind it.
+     */
+    public int constructingTypeId;
+    /** How far that is, 0..1; 0 while a factory warms up. */
+    public double constructing;
     /** Item types a container carries; empty for anything else. The carried units themselves are not listed. */
     public int[] cargo;
 }

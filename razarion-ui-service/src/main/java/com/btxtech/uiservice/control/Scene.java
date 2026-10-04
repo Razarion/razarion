@@ -246,7 +246,7 @@ public class Scene {
     }
 
     private void setupQuestVisualizer4Server() {
-        questCockpitService.showQuestSideBar(gameUiControl.getServerQuest(), true);
+        questCockpitService.showQuestSideBar(gameUiControl.getServerQuest(), isSwitchable(gameUiControl.getServerQuest()));
         inGameQuestVisualizationService.onQuestActivated(gameUiControl.getServerQuest());
         if (gameUiControl.getServerQuestProgress() != null) {
             questCockpitService.onQuestProgress(gameUiControl.getServerQuestProgress());
@@ -261,13 +261,21 @@ public class Scene {
 
     public void onQuestActivatedServer(QuestConfig quest) {
         if (sceneConfig.getProcessServerQuests() != null && sceneConfig.getProcessServerQuests()) {
-            questCockpitService.showQuestSideBar(quest, true);
+            questCockpitService.showQuestSideBar(quest, isSwitchable(quest));
             if (quest != null) {
                 inGameQuestVisualizationService.onQuestActivated(quest);
             } else {
                 inGameQuestVisualizationService.stop();
             }
         }
+    }
+
+    /**
+     * Whether the quest cockpit offers the quest list. Not while a guided quest runs: the list
+     * would let the player leave it, and the server refuses that anyway.
+     */
+    private static boolean isSwitchable(QuestConfig quest) {
+        return quest == null || quest.isSwitchable();
     }
 
     public void onQuestPassedServer(QuestConfig quest) {

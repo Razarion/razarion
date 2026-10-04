@@ -1,4 +1,4 @@
-import {markPlacerClosed} from './placer-release';
+import {markPlacerClosed, notifyPlacement} from './placer-release';
 import {PointerEventTypes, PointerInfo} from "@babylonjs/core/Events/pointerEvents";
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
 import {Color3} from "@babylonjs/core/Maths/math.color";
@@ -412,6 +412,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     if (this.baseItemPlacerCallback) {
       this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.PLACED);
     }
+    // After PLACED - the tip remembers the order from the selection - and before onPlace(), which
+    // closes the placer and with it spends the callback.
+    notifyPlacement(true);
     if (baseItemPlacer.isPlayBuildSound()) {
       this.babylonAudioService.speakCommand('Building');
     }
@@ -611,6 +614,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
   deactivate(): void {
     markPlacerClosed();
+    notifyPlacement(false); // closed without a placement - after one, the callback is already spent
     this.cleanupPreviousPlacer();
     // Defer clearing so ActionManager handlers (terrain/water click) that fire
     // in the same event loop tick still see the placer as active.

@@ -155,6 +155,12 @@
                         <p-inputNumber [(ngModel)]="questConfig.crystal" [min]="0"></p-inputNumber>
                       </div>
                     </div>
+                    <div class="grid grid-cols-12 gap-4">
+                      <span class="col-span-3" title="Off: while this quest runs the player gets no quest list and cannot switch to another quest - for guided quests">Switchable</span>
+                      <div class="col-span-9">
+                        <p-checkbox [(ngModel)]="questConfig.switchable" [binary]="true"></p-checkbox>
+                      </div>
+                    </div>
                     <p-divider align="left">
                       <div class="inline-flex items-center">
                         <i class="pi pi-dollar mr-2"></i>

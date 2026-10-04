@@ -1,5 +1,5 @@
 ﻿import {Component, effect, ElementRef, HostBinding, HostListener, NgZone, OnInit, ViewChild, Injector} from '@angular/core';
-import {NgClass} from '@angular/common';
+import {NgClass, NgTemplateOutlet} from '@angular/common';
 import {reportStartupTiming} from './tracking/startup-timing';
 import {StartupPayloadProbe} from './tracking/startup-payload';
 import {FirstInteractionTrackerService} from './tracking/first-interaction-tracker.service';
@@ -57,6 +57,7 @@ import {notifyAngularReady} from '../wasm-boot';
     ServerRestartComponent,
     RadarComponent,
     NgClass,
+    NgTemplateOutlet,
     TooltipModule
 ],
   styleUrls: ['game.component.scss']

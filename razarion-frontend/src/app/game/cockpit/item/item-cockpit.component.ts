@@ -63,6 +63,13 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
   @ViewChildren('buildupItemDiv')
   buildupItemDiv?: QueryList<ElementRef>;
   private buildClickCallback: ((model: BuildupItemModel) => void) | null = null;
+  /**
+   * Runs before the build placer opens; when it returns a promise, the placer waits for it. The tip
+   * guide uses it to take the camera to the quest's region first (quest 386, see
+   * TipGuide.buildRegionTarget).
+   */
+  private buildPreparation: ((itemTypeId: number) => Promise<void> | null) | null = null;
+  private buildPreparing = false;
 
   /**
    * A mouse with a blinking left button says nothing to a thumb, and "Click" is not what the
@@ -406,10 +413,30 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
       return;
     }
     this.clearBlockedMessage();
+    if (this.buildPreparing) {
+      return; // a second tap while the camera is still on its way
+    }
+    const build = () => {
+      try {
+        this.itemCockpitService.onBuild(buildupItem.itemTypeId);
+      } catch (e) {
+        console.error('onBuild() failed', e);
+      }
+    };
+    let preparing: Promise<void> | null = null;
     try {
-      this.itemCockpitService.onBuild(buildupItem.itemTypeId);
+      preparing = this.buildPreparation?.(buildupItem.itemTypeId) ?? null;
     } catch (e) {
-      console.error('onBuild() failed', e);
+      console.error('buildPreparation() failed', e);
+    }
+    if (preparing) {
+      this.buildPreparing = true;
+      preparing.catch(e => console.error('buildPreparation() failed', e)).finally(() => {
+        this.buildPreparing = false;
+        build();
+      });
+    } else {
+      build();
     }
     if (this.buildClickCallback) {
       this.buildClickCallback(buildupItem);
@@ -458,6 +485,10 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
       this.sellArmTimeout = null;
     }
     this.sellArmed = false;
+  }
+
+  setBuildPreparation(buildPreparation: ((itemTypeId: number) => Promise<void> | null) | null) {
+    this.buildPreparation = buildPreparation;
   }
 
   setBuildClickCallback(buildClickCallback: ((model: BuildupItemModel) => void) | null) {

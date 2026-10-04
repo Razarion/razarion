@@ -31,9 +31,12 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
     private BaseItemTypeEntity tipActorItemType;
     /** Nullable: the column is added to existing rows, which read as "no group". */
     private Boolean tipGroup;
+    /** Nullable: the column is added to existing rows, which read as switchable - as before the flag. */
+    private Boolean switchable;
 
     public QuestConfig toQuestConfig() {
-        QuestConfig questConfig = new QuestConfig().id(getId()).internalName(getInternalName()).xp(xp).razarion(razarion).crystal(crystal);
+        QuestConfig questConfig = new QuestConfig().id(getId()).internalName(getInternalName()).xp(xp).razarion(razarion).crystal(crystal)
+                .switchable(!Boolean.FALSE.equals(switchable));
         if (conditionConfigEntity != null) {
             questConfig.conditionConfig(conditionConfigEntity.toQuestConfig());
         }
@@ -51,6 +54,7 @@ public class QuestConfigEntity extends BaseEntity implements ObjectNameIdProvide
         xp = questConfig.getXp();
         razarion = questConfig.getRazarion();
         crystal = questConfig.getCrystal();
+        switchable = questConfig.isSwitchable();
         if (questConfig.getConditionConfig() != null) {
             if (conditionConfigEntity == null) {
                 conditionConfigEntity = new ConditionConfigEntity();

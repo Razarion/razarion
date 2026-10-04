@@ -19,7 +19,7 @@ import {TextureBlock} from "@babylonjs/core/Materials/Node/Blocks/Dual/textureBl
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
 import {Texture} from "@babylonjs/core/Materials/Textures/texture";
-import {Color3} from "@babylonjs/core/Maths/math.color";
+import {Color3, Color4} from "@babylonjs/core/Maths/math.color";
 import {Scalar} from "@babylonjs/core/Maths/math.scalar";
 import {Vector3} from "@babylonjs/core/Maths/math.vector";
 import {Mesh} from "@babylonjs/core/Meshes/mesh";
@@ -34,7 +34,7 @@ import {buildGroundMaterial} from "./ground-material";
 import {buildBotGroundTopMaterial} from "./bot-ground-top-material";
 import {buildBotGroundSideMaterial} from "./bot-ground-side-material";
 import {detectShoreline, computeShoreDistance} from "./shoreline-detection";
-import {initPerm, SEED, splatterValue} from "./procedural-textures";
+import {initPerm, scatterNoise, SEED, splatterValue} from "./procedural-textures";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {Nullable} from "@babylonjs/core/types";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
@@ -119,6 +119,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // flat [minX,minY,maxX,maxY,...] arrays so the sprite hot-loop is pure JS with zero bridge crossings.
   private botGroundBoxes: Float64Array | null = null;
   private decalBoxes: Float64Array | null = null;
+  // Terrain objects as flat [x, z, radius, ...] (read once from the Java proxies) so the sprite loop
+  // can grow undergrowth around them without crossing the bridge.
+  private spriteAnchors: number[] = [];
 
   /** Whether a tile whose lowest node is at this height has any water to show. */
   public static needsWater(minHeight: number): boolean {
@@ -452,11 +455,14 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           console.error(`TerrainObjectConfig has no model3DId: ${terrainObjectConfig.toString()}`);
           return;
         }
+        const radius = terrainObjectConfig.getRadius() || 0.5;
         terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
           if (!terrainObjectModel || !terrainObjectModel.position) {
             return;
           }
           pending.push({ config: terrainObjectConfig, model: terrainObjectModel });
+          const scale = terrainObjectModel.scale ? terrainObjectModel.scale.getX() : 1;
+          this.spriteAnchors.push(terrainObjectModel.position.getX(), terrainObjectModel.position.getY(), radius * scale);
         });
       } catch (error) {
         console.error(terrainTileObjectList);
@@ -1189,7 +1195,17 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
   private static readonly SPLATTER_UV_SCALE = 0.006;
   private static readonly SPRITE_CELL_SIZE = 64;
-  private static readonly SPRITES_PER_TILE = 2500;
+  // Random field positions tried per tile; the density noise keeps roughly 45% of them (~1350).
+  private static readonly SPRITE_CANDIDATES_PER_TILE = 3000;
+  // Upper bound for the sprites grown around terrain objects (1–3 per object).
+  private static readonly SPRITE_UNDERGROWTH_PER_TILE = 800;
+  private static readonly SPRITE_CAPACITY: Record<TerrainZone, number> = {
+    [TerrainZone.UPPER]: 2500, [TerrainZone.UNDER]: 1500, [TerrainZone.BEACH]: 800, [TerrainZone.UNDERWATER]: 800,
+  };
+  // Feature sizes (m) of the scatter noise: vegetation patches vs. bare ground, sprite size, tint
+  private static readonly SPRITE_DENSITY_SCALE = 48;
+  private static readonly SPRITE_SIZE_SCALE = 23;
+  private static readonly SPRITE_TINT_SCALE = 70;
   private static readonly SPRITES_PER_BATCH = 1000;
   private static readonly SPRITE_BATCH_DELAY = 16;
   private static permInitialized = false;
@@ -1258,11 +1274,12 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       return;
     }
     const scene = this.rendererService.getScene();
+    const capacity = BabylonTerrainTileImpl.SPRITE_CAPACITY;
     const spriteManagers: Record<TerrainZone, SpriteManager> = {
-      [TerrainZone.UPPER]: new SpriteManager("upperSprites", "sprites_upper_4x4.png", 2500, BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
-      [TerrainZone.UNDER]: new SpriteManager("underSprites", "sprites_under_4x4.png", 1500, BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
-      [TerrainZone.BEACH]: new SpriteManager("beachSprites", "sprites_beach_4x4.png", 800, BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
-      [TerrainZone.UNDERWATER]: new SpriteManager("underwaterSprites", "sprites_underwater_4x4.png", 800, BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
+      [TerrainZone.UPPER]: new SpriteManager("upperSprites", "sprites_upper_4x4.png", capacity[TerrainZone.UPPER], BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
+      [TerrainZone.UNDER]: new SpriteManager("underSprites", "sprites_under_4x4.png", capacity[TerrainZone.UNDER], BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
+      [TerrainZone.BEACH]: new SpriteManager("beachSprites", "sprites_beach_4x4.png", capacity[TerrainZone.BEACH], BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
+      [TerrainZone.UNDERWATER]: new SpriteManager("underwaterSprites", "sprites_underwater_4x4.png", capacity[TerrainZone.UNDERWATER], BabylonTerrainTileImpl.SPRITE_CELL_SIZE, scene),
     };
 
     // Track for dispose / active-state toggling. Sprite managers auto-register in
@@ -1272,12 +1289,44 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       .map(zone => spriteManagers[zone]);
     this.applyActiveState();
 
+    const placed: Record<TerrainZone, number> = {
+      [TerrainZone.UPPER]: 0, [TerrainZone.UNDER]: 0, [TerrainZone.BEACH]: 0, [TerrainZone.UNDERWATER]: 0,
+    };
     setTimeout(() => {
-      this.placeSprites(BabylonTerrainTileImpl.SPRITES_PER_TILE, spriteManagers);
+      if (this.disposed) {
+        return;
+      }
+      BabylonTerrainTileImpl.ensurePermInitialized();
+      this.placeUndergrowth(spriteManagers, placed);
+      setTimeout(() => {
+        this.placeSprites(BabylonTerrainTileImpl.SPRITE_CANDIDATES_PER_TILE, spriteManagers, placed);
+      }, BabylonTerrainTileImpl.SPRITE_BATCH_DELAY);
     }, BabylonTerrainTileImpl.SPRITE_BATCH_DELAY);
   }
 
-  private placeSprites(count: number, spriteManagers: Record<TerrainZone, SpriteManager>) {
+  /** A few smaller, shaded sprites around every terrain object, so plants and rocks sit in undergrowth. */
+  private placeUndergrowth(spriteManagers: Record<TerrainZone, SpriteManager>, placed: Record<TerrainZone, number>) {
+    const anchors = this.spriteAnchors;
+    const anchorCount = anchors.length / 3;
+    if (anchorCount === 0) {
+      return;
+    }
+    const perAnchor = Math.max(1, Math.min(3, Math.floor(BabylonTerrainTileImpl.SPRITE_UNDERGROWTH_PER_TILE / anchorCount)));
+    for (let i = 0; i < anchors.length; i += 3) {
+      const radius = anchors[i + 2];
+      for (let k = 0; k < perAnchor; k++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = radius + Scalar.RandomRange(0.3, 1.5 + radius);
+        this.addSprite(anchors[i] + Math.cos(angle) * distance, anchors[i + 1] + Math.sin(angle) * distance, 0.8, 0.95, spriteManagers, placed);
+      }
+    }
+  }
+
+  /**
+   * Field sprites. A low-frequency noise decides the density, so vegetation gathers in patches with
+   * bare ground between them instead of an even carpet.
+   */
+  private placeSprites(count: number, spriteManagers: Record<TerrainZone, SpriteManager>, placed: Record<TerrainZone, number>) {
     if (this.disposed) {
       return;
     }
@@ -1287,6 +1336,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const maxX = this.tileXOffset + BabylonTerrainTileImpl.NODE_X_COUNT;
     const minZ = this.tileYOffset;
     const maxZ = this.tileYOffset + BabylonTerrainTileImpl.NODE_Y_COUNT;
+    const densityScale = BabylonTerrainTileImpl.SPRITE_DENSITY_SCALE;
 
     for (let i = 0; i < BabylonTerrainTileImpl.SPRITES_PER_BATCH; i++) {
       if (count <= 0) {
@@ -1297,43 +1347,73 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       const x = Scalar.RandomRange(minX, maxX);
       const z = Scalar.RandomRange(minZ, maxZ);
 
-      if (this.insideAnyDecal(x, z)) {
+      // ~25% of the ground stays bare, ~12% is fully covered
+      const density = BabylonTerrainTileImpl.smoothstep(-0.12, 0.2, scatterNoise(x / densityScale, z / densityScale));
+      if (Math.random() >= density) {
         continue;
       }
-
-      if (this.insideBotGround(x, z)) {
-        continue;
-      }
-
-      const height = this.getHeightAt(x, z);
-      const zone = BabylonTerrainTileImpl.getTerrainZone(x, z, height);
-
-      // No sprites below -5m
-      if (height < -5) {
-        continue;
-      }
-
-      // 50% less sprites for beach and underwater
-      if ((zone === TerrainZone.BEACH || zone === TerrainZone.UNDERWATER) && Math.random() < 0.5) {
-        continue;
-      }
-
-      const manager = spriteManagers[zone];
-      const sprite = new Sprite("sprite", manager);
-      sprite.cellIndex = Math.floor(Math.random() * 16);
-      sprite.width = 2;
-      sprite.height = 2;
-      if (zone === TerrainZone.UNDERWATER) {
-        sprite.color.a = 0.5;
-      }
-      sprite.position.x = x;
-      sprite.position.y = height + 0.5;
-      sprite.position.z = z;
+      this.addSprite(x, z, 1, 1, spriteManagers, placed);
     }
     if (count > 0) {
       setTimeout(() => {
-        this.placeSprites(count, spriteManagers);
+        this.placeSprites(count, spriteManagers, placed);
       }, BabylonTerrainTileImpl.SPRITE_BATCH_DELAY);
     }
+  }
+
+  private addSprite(x: number, z: number, sizeFactor: number, shade: number,
+                    spriteManagers: Record<TerrainZone, SpriteManager>, placed: Record<TerrainZone, number>) {
+    if (x < this.tileXOffset || x >= this.tileXOffset + BabylonTerrainTileImpl.NODE_X_COUNT
+      || z < this.tileYOffset || z >= this.tileYOffset + BabylonTerrainTileImpl.NODE_Y_COUNT) {
+      return;
+    }
+    if (this.insideAnyDecal(x, z) || this.insideBotGround(x, z)) {
+      return;
+    }
+
+    const height = this.getHeightAt(x, z);
+    // No sprites below -5m
+    if (height < -5) {
+      return;
+    }
+    const zone = BabylonTerrainTileImpl.getTerrainZone(x, z, height);
+
+    // 50% less sprites for beach and underwater
+    if ((zone === TerrainZone.BEACH || zone === TerrainZone.UNDERWATER) && Math.random() < 0.5) {
+      return;
+    }
+    if (placed[zone] >= BabylonTerrainTileImpl.SPRITE_CAPACITY[zone]) {
+      return;
+    }
+    placed[zone]++;
+
+    // Neighbouring sprites share size and tint, so the variation reads as areas, not as noise
+    const sizeScale = BabylonTerrainTileImpl.SPRITE_SIZE_SCALE;
+    const sizeNoise = BabylonTerrainTileImpl.noise01(scatterNoise(x / sizeScale + 31.7, z / sizeScale + 17.3));
+    const size = (1.2 + 1.4 * sizeNoise) * sizeFactor * Scalar.RandomRange(0.85, 1.15);
+    const tintScale = BabylonTerrainTileImpl.SPRITE_TINT_SCALE;
+    const tint = BabylonTerrainTileImpl.noise01(scatterNoise(x / tintScale + 73.1, z / tintScale + 11.9));
+    const brightness = (0.92 + 0.2 * tint) * shade;
+
+    const sprite = new Sprite("sprite", spriteManagers[zone]);
+    sprite.cellIndex = Math.floor(Math.random() * 16);
+    sprite.width = size;
+    sprite.height = size;
+    // Warm and bright in one place, cool and dark in another
+    sprite.color = new Color4(brightness * (0.97 + 0.06 * tint), brightness, brightness * (1.03 - 0.06 * tint),
+      zone === TerrainZone.UNDERWATER ? 0.5 : 1);
+    sprite.position.x = x;
+    sprite.position.y = height + size * 0.25;
+    sprite.position.z = z;
+  }
+
+  /** Maps scatterNoise (roughly ±0.4) to [0, 1]. */
+  private static noise01(noise: number): number {
+    return BabylonTerrainTileImpl.smoothstep(-0.25, 0.25, noise);
+  }
+
+  private static smoothstep(edge0: number, edge1: number, value: number): number {
+    const t = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)));
+    return t * t * (3 - 2 * t);
   }
 }
