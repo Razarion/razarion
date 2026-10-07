@@ -1,4 +1,4 @@
-import {markPlacerClosed, notifyPlacement} from './placer-release';
+import {markPlacerClosed, notifyPlacement, setOpenPlacerCancel} from './placer-release';
 import {PointerEventTypes, PointerInfo} from "@babylonjs/core/Events/pointerEvents";
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
 import {Color3} from "@babylonjs/core/Maths/math.color";
@@ -96,6 +96,22 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private movedByPlayer = false;
   /** Whether this activation has already reported that it opened without terrain. */
   private noTerrainReported = false;
+  /**
+   * Whether this activation is a builder's or factory's placer rather than the start base's. The
+   * two report under different kinds: the tracker keeps the first record of a kind per session, and
+   * the start placer always comes first, so a shared kind never showed a single building placer.
+   * See BUILD_PLACER_SHOWN in first-interaction-tracker.service.ts.
+   */
+  private buildPlacer = false;
+  /**
+   * `type=<itemTypeId>` on every building placer kind. The tracker keys on kind and detail, so with
+   * it each building is on record once per session instead of only the first one - the factory of
+   * quest 358. Without it, what happened in the dockyard placer of quest 386 was invisible: 19 of 28
+   * players who failed there pressed the button, watched the camera fly to the coast and left.
+   */
+  private buildTypeDetail = '';
+  /** Set when this activation built something, so closing it is not reported as giving up. */
+  private placedThisActivation = false;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService,
@@ -109,7 +125,16 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   activate(baseItemPlacer: BaseItemPlacer): void {
     // Reported before anything is drawn: what this answers is whether the player was ever asked to
     // place a base, and that has to be true even if the drawing below fails.
-    this.rendererService.reportFirstInteraction('PLACER_SHOWN');
+    // Only the start placer cannot be cancelled, so that is what tells the two apart.
+    this.buildPlacer = baseItemPlacer.isCanBeCanceled();
+    this.buildTypeDetail = this.buildPlacer ? 'type=' + baseItemPlacer.getBaseItemTypeId() : '';
+    this.placedThisActivation = false;
+    setOpenPlacerCancel(this.buildPlacer ? () => baseItemPlacer.cancel() : null);
+    if (this.buildPlacer) {
+      this.rendererService.reportFirstInteraction('BUILD_PLACER_SHOWN', this.buildTypeDetail);
+    } else {
+      this.rendererService.reportFirstInteraction('PLACER_SHOWN');
+    }
     this.cleanupPreviousPlacer();
     this.activationGeneration++;
     const currentGeneration = this.activationGeneration;
@@ -203,6 +228,13 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       : this.setupPickedPoint();
     if (pickedPoint) {
       this.openAt(baseItemPlacer, pickedPoint);
+      if (openPosition && this.buildPlacer && this.currentPosition) {
+        // The spot was searched around the picture's middle, not at it - after the camera flight of
+        // quest 386 the nearest water lay up to 25 m above, so the ghost opened at the top edge and
+        // its hint bubble, which sits above it, slid under the quest line; the cancel button went
+        // under the minimap. Only DEPLOY was left to read. Bring the spot to the middle instead.
+        this.rendererService.flyViewFieldCenter(this.currentPosition.x, this.currentPosition.z);
+      }
     } else {
       const estimated = this.rendererService.setupCenterTerrainPosition();
       if (estimated) {
@@ -404,21 +436,31 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
        * Keyed with the kind, so a session reports each distinct reason once - the same shape
        * ENGINE_ERROR already uses, and MAX_PER_KIND caps it at five.
        */
-      this.rendererService.reportFirstInteraction('PLACER_REJECTED',
-        baseItemPlacer.getErrorText() || 'unknown');
+      const reason = baseItemPlacer.getErrorText() || 'unknown';
+      if (this.buildPlacer) {
+        this.rendererService.reportFirstInteraction('BUILD_PLACER_REJECTED', this.buildTypeDetail + ' reason=' + reason);
+      } else {
+        this.rendererService.reportFirstInteraction('PLACER_REJECTED', reason);
+      }
       baseItemPlacer.onInvalidPlaceAttempt();
       return;
     }
     if (this.baseItemPlacerCallback) {
       this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.PLACED);
     }
+    // Before notifyPlacement: that puts the builder down, and a builder leaving the selection closes
+    // an open building placer - which must not be this one, on its way to building.
+    this.placedThisActivation = true;
+    setOpenPlacerCancel(null);
     // After PLACED - the tip remembers the order from the selection - and before onPlace(), which
     // closes the placer and with it spends the callback.
     notifyPlacement(true);
     if (baseItemPlacer.isPlayBuildSound()) {
       this.babylonAudioService.speakCommand('Building');
     }
-    this.rendererService.reportFirstInteraction('PLACER_CONFIRMED');
+    // glb=0: the builder this base spawns will finish spawning with no model to draw. See MODELS_READY.
+    this.rendererService.reportFirstInteraction(this.buildPlacer ? 'BUILD_PLACER_CONFIRMED' : 'PLACER_CONFIRMED',
+      this.buildPlacer ? this.buildTypeDetail : 'glb=' + (this.babylonModelService.areModelsLoaded() ? 1 : 0));
     // The ghost goes away with the placer, and the construction site only appears once the engine
     // has created it - the rings bridge that gap on the green disc the player just confirmed.
     this.rendererService.showGroundCommandMarker(position.x, position.z, this.discRadius, 'build', position.y);
@@ -434,7 +476,10 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     if (!this.pressMouseVisualization || this.pressMouseVisualization.isTouchMode()) {
       return;
     }
-    this.pressMouseVisualization.setTouchMode(() => this.deploy(baseItemPlacer));
+    // A finger has no Escape key: a building placer gets a button to close it. The start base has
+    // to be placed, so its placer gets none.
+    this.pressMouseVisualization.setTouchMode(() => this.deploy(baseItemPlacer),
+      this.buildPlacer ? () => baseItemPlacer.cancel() : null);
     if (this.uiTexture) {
       // The button can only be tapped once the texture picks at all; picking is off for the mouse
       // because it fights with the terrain cursor.
@@ -615,6 +660,11 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   deactivate(): void {
     markPlacerClosed();
     notifyPlacement(false); // closed without a placement - after one, the callback is already spent
+    if (this.buildPlacer && !this.placedThisActivation) {
+      this.rendererService.reportFirstInteraction('BUILD_PLACER_ABANDONED', this.buildTypeDetail);
+    }
+    this.buildPlacer = false;
+    setOpenPlacerCancel(null);
     this.cleanupPreviousPlacer();
     // Defer clearing so ActionManager handlers (terrain/water click) that fire
     // in the same event loop tick still see the placer as active.

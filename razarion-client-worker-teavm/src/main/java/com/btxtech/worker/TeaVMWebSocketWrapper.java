@@ -128,7 +128,17 @@ public class TeaVMWebSocketWrapper {
                         JsConsole.error("TeaVMWebSocketWrapper: WebSocket Close. Code: " + closeEvent.getCode()
                                 + " Reason: " + closeEvent.getReason()
                                 + " WasClean: " + closeEvent.isWasClean());
-                        createNewSocket();
+                        /*
+                         * Lost, not reconnected. A reconnected game connection is sent the whole
+                         * world again and the worker lays it on top of the old one: "Id is not
+                         * free", null traps, and a scene chain that breaks - the quest line goes and
+                         * no quest comes back, although the server keeps handing them out. 22 of
+                         * 857 sessions with a base in the week to 2026-10-05. The connection-lost
+                         * path reloads the page once the server answers, which for a dropped mobile
+                         * connection is a few seconds, and the player is still the same player.
+                         * See project memory "slave reconnect corruption" for the proper repair.
+                         */
+                        connectionLostCallback.run();
                     }
                 } catch (Throwable t) {
                     JsConsole.warn("Error handling close event: " + t.getMessage());

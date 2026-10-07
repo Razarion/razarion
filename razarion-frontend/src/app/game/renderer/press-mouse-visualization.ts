@@ -21,6 +21,8 @@ export class PressMouseVisualization {
   private readonly stackPanel: StackPanel;
   private deployButton: Button | null = null;
   private deployCallback: (() => void) | null = null;
+  private cancelButton: Button | null = null;
+  private cancelCallback: (() => void) | null = null;
   private touchMode = false;
   /** Whether fitToText was told this is a touch device - see refitWidth. */
   private touchFit = false;
@@ -115,8 +117,9 @@ export class PressMouseVisualization {
    * Swaps the mouse hint for a deploy button. A finger has no left button to press, and with the
    * tap moving the building instead of building it there has to be something to press at the end.
    */
-  setTouchMode(deployCallback: () => void) {
+  setTouchMode(deployCallback: () => void, cancelCallback: (() => void) | null = null) {
     this.deployCallback = deployCallback;
+    this.cancelCallback = cancelCallback;
     if (this.touchMode) {
       return;
     }
@@ -159,7 +162,32 @@ export class PressMouseVisualization {
     // explanation, and a dead button would leave the player guessing why nothing happens.
     deployButton.onPointerClickObservable.add(() => this.deployCallback?.());
     this.deployButton = deployButton;
-    this.stackPanel.addControl(deployButton);
+    if (this.cancelCallback) {
+      // A building placer on a phone: without a key to press, this is the only way to close it
+      // without building (phone test, 2026-10-05). Beside DEPLOY rather than under it, so the
+      // bubble keeps its height and its distance to the building.
+      deployButton.width = "180px";
+      const cancelButton = Button.CreateSimpleButton("Base Item Placer Cancel", "✕");
+      cancelButton.width = "56px";
+      cancelButton.height = "56px";
+      cancelButton.cornerRadius = 12;
+      cancelButton.thickness = 3;
+      cancelButton.color = "white";
+      cancelButton.background = "#8b1a1a";
+      cancelButton.fontSize = 24;
+      cancelButton.fontWeight = "bold";
+      cancelButton.onPointerClickObservable.add(() => this.cancelCallback?.());
+      this.cancelButton = cancelButton;
+      const row = new StackPanel();
+      row.isVertical = false;
+      row.height = "56px";
+      row.spacing = 8;
+      row.addControl(deployButton);
+      row.addControl(cancelButton);
+      this.stackPanel.addControl(row);
+    } else {
+      this.stackPanel.addControl(deployButton);
+    }
 
     this.updateDeployButton();
     // Re-run the current verdict through the touch branch so the hint text matches the new controls.
@@ -287,7 +315,7 @@ export class PressMouseVisualization {
     if (!this.touchMode || !this.container.isVisible) {
       return false;
     }
-    if (this.deployButton?.contains(x, y)) {
+    if (this.deployButton?.contains(x, y) || this.cancelButton?.contains(x, y)) {
       return false;
     }
     return this.container.contains(x, y);

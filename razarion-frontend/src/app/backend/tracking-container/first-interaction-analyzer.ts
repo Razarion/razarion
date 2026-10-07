@@ -30,6 +30,8 @@ export const INTERACTION_KINDS = [
   // SCENE_FIRST is a session waiting for an initial synchronisation that never arrived.
   'GAME_START',
   'SCENE_FIRST',
+  // Every model has arrived; PLACER_CONFIRMED says glb=0 when the base went down before that.
+  'MODELS_READY',
   // A tip stood for ten seconds and nobody answered it, carrying the quest and the task. Beside
   // the two above rather than in tip_stall: that watchdog reports after thirty seconds, and the
   // players this is about are gone at fifteen.
@@ -73,7 +75,7 @@ const NOT_THE_PLAYER: InteractionKind[] = ['PLACER_SHOWN', 'PLACER_NO_TERRAIN', 
   'ENGINE_ERROR', 'STARTUP_TIMING', 'STARTUP_PAYLOAD',
   // The start reaching its own milestones. Like PLACER_SHOWN: the game got somewhere, the player
   // did nothing.
-  'GAME_START', 'SCENE_FIRST',
+  'GAME_START', 'SCENE_FIRST', 'MODELS_READY',
   // The strongest case of all: TIP_COLD exists precisely because the player did nothing.
   'TIP_COLD',
   // The game asking for a group, or deciding not to. Like PLACER_SHOWN: it says what the player

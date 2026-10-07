@@ -15,7 +15,7 @@ import {CockpitDisplayService} from '../cockpit-display.service';
 import {BabylonAudioService} from '../../renderer/babylon-audio.service';
 import {BabylonBaseItemImpl} from '../../renderer/babylon-base-item.impl';
 import {CompactLayoutService} from '../compact-layout.service';
-import {onNextPlacement} from '../../renderer/placer-release';
+import {cancelOpenPlacer, onNextPlacement} from '../../renderer/placer-release';
 
 // --- View-Model Interfaces ---
 
@@ -91,6 +91,12 @@ export class ItemCockpitService {
   otherItemCockpit: OtherItemCockpitModel | null = null;
   count: number = 0;
   private initialized = false;
+  /**
+   * The builders whose build button opened the placer. When none of them is selected any more the
+   * placer closes: in the phone test the player selected something else to get rid of it, and the
+   * builder went while the placer stayed (2026-10-05).
+   */
+  private buildPlacerBuilderIds: number[] | null = null;
   private watchedBuildupItem: BabylonBaseItemImpl | null = null;
   private watchedHealthItems: BabylonBaseItemImpl[] = [];
 
@@ -138,6 +144,7 @@ export class ItemCockpitService {
   }
 
   private onSelectionChanged(): void {
+    this.closeBuildPlacerWithoutBuilder();
     // Lazy init: bridge becomes available after WASM loads
     if (!this.gwtAngularService.gwtAngularFacade.itemCockpitBridge) return;
     if (!this.initialized) {
@@ -597,12 +604,26 @@ export class ItemCockpitService {
       // player waits for it a tap on the ground would be a move order that throws the build away
       // (phone test, quest 386, 2026-10-02). Only if the selection is still this builder.
       onNextPlacement(() => this.deselectIfStill(selectedIds));
+      this.buildPlacerBuilderIds = selectedIds;
       this.itemCockpitBridge.requestBuild(firstId, itemTypeId);
     } else if (baseItemType.getFactoryType() != null) {
       const toBuildType = this.itemTypeService.getBaseItemTypeAngular(itemTypeId);
       this.babylonAudioService.speakCommand(`Producing ${toBuildType.getName()}`);
       this.itemCockpitBridge.requestFabricate(selectedIds, itemTypeId);
     }
+  }
+
+  /** No-op once the placer has built or closed: the open-placer hook is cleared then. */
+  private closeBuildPlacerWithoutBuilder(): void {
+    if (!this.buildPlacerBuilderIds) {
+      return;
+    }
+    const selected = this.selectionService.getSelectedOwnItemIds();
+    if (this.buildPlacerBuilderIds.some(id => selected.includes(id))) {
+      return;
+    }
+    this.buildPlacerBuilderIds = null;
+    cancelOpenPlacer();
   }
 
   private deselectIfStill(ids: number[]): void {
@@ -626,6 +647,7 @@ export class ItemCockpitService {
   }
 
   onUnload(containerId: number): void {
+    this.buildPlacerBuilderIds = null; // the next placer is the unload's, which no builder owns
     this.itemCockpitBridge.requestUnload(containerId);
   }
 

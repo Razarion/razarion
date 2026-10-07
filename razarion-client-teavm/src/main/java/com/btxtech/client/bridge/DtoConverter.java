@@ -163,6 +163,7 @@ public class DtoConverter {
         setGetterObj(obj, "getRelativeItemPositions", () -> convertDecimalPositions(placer.getRelativeItemPositions()));
         setGetterObj(obj, "getSpawnAudioId", () -> convertNullableInt(placer.getSpawnAudioId()));
         setGetterBool(obj, "isPlayBuildSound", () -> placer.isPlayBuildSound());
+        setGetterInt(obj, "getBaseItemTypeId", placer::getBaseItemTypeId);
         setGetterBool(obj, "isCanBeCanceled", () -> placer.isCanBeCanceled());
         setMethodVoid(obj, "cancel", placer::cancel);
         setMethodVoid(obj, "onInvalidPlaceAttempt", placer::onInvalidPlaceAttempt);

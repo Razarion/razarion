@@ -19,6 +19,7 @@ import {TipService} from '../../tip/tip.service';
 import {BuildupItemModel, ItemCockpitService, OwnItemCockpitModel} from './item-cockpit.service';
 import {TipStallReason} from '../../tip/tip-stall';
 import {CompactLayoutService} from '../compact-layout.service';
+import {FirstInteractionTrackerService} from '../../tracking/first-interaction-tracker.service';
 
 /**
  * Where the build tip sits: viewport coordinates of the top centre of its button, plus what it is
@@ -92,7 +93,8 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
   constructor(public itemCockpitService: ItemCockpitService,
               private userService: UserService,
               private tipService: TipService,
-              protected compactLayout: CompactLayoutService) {
+              protected compactLayout: CompactLayoutService,
+              private firstInteractionTracker: FirstInteractionTrackerService) {
   }
 
   ngAfterViewInit(): void {
@@ -152,6 +154,18 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
       return `${buildupItem.itemTypeName}: the build queue is full. Wait for it to empty!`;
     }
     return null;
+  }
+
+  /** {@link buildBlockReason} as one word, for tracking. Same checks in the same order. */
+  private buildBlockKind(buildupItem: BuildupItemModel): string {
+    if (buildupItem.buildHouseSpaceReached) {
+      return 'house';
+    } else if (buildupItem.buildLimitReached) {
+      return buildupItem.itemLimit > 0 ? 'limit' : 'locked';
+    } else if (buildupItem.buildNoMoney) {
+      return 'money';
+    }
+    return 'queue';
   }
 
   /**
@@ -406,6 +420,11 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
       return; // the tail of the tap that placed the last building, not a press for a new one
     }
     const blockReason = this.buildBlockReason(buildupItem);
+    // Every press past the tail of the last placement, refused or not. Of the players who leave
+    // quest 358, 45% select the builder as fast as those who pass and never start the factory, and
+    // nothing recorded whether they ever pressed this button in between.
+    this.firstInteractionTracker.report('BUILD_BUTTON', `type=${buildupItem.itemTypeId}`
+      + (blockReason !== null ? ' blocked=' + this.buildBlockKind(buildupItem) : ''));
     if (blockReason !== null) {
       // The button answers instead of doing nothing. Five identical red tiles and no way to hover
       // is the whole problem this exists to solve.
