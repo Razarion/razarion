@@ -1,6 +1,3 @@
-import {RawTexture} from "@babylonjs/core/Materials/Textures/rawTexture";
-import {Texture} from "@babylonjs/core/Materials/Textures/texture";
-import type {Scene} from "@babylonjs/core/scene";
 
 // ========== Tileable Perlin noise ==========
 
@@ -25,7 +22,6 @@ export function initPerm(seed: number): void {
 
 function fade(t: number): number { return t * t * t * (t * (t * 6 - 15) + 10); }
 function lerp(a: number, b: number, t: number): number { return a + t * (b - a); }
-function clamp01(v: number): number { return Math.max(0, Math.min(1, v)); }
 
 /** Wrap-safe modulo (always positive) */
 function mod(n: number, m: number): number { return ((n % m) + m) % m; }
@@ -58,13 +54,6 @@ function fbmTile(x: number, y: number, octaves: number, lac: number, pers: numbe
   return value / max;
 }
 
-/** Domain-warped fBm, fully tileable */
-function warpedFbmTile(x: number, y: number, octaves: number, warpStr: number, warpSeed: number, px: number, py: number): number {
-  const wx = perlin2dTile(x + warpSeed, y + warpSeed, px, py) * warpStr;
-  const wy = perlin2dTile(x + warpSeed + 50, y + warpSeed + 50, px, py) * warpStr;
-  return fbmTile(x + wx, y + wy, octaves, 2.0, 0.5, px, py);
-}
-
 /**
  * World-space fBm for scattering (sprite density, size, tint). Roughly in [-0.4, 0.4], std ~0.17.
  * Callers pass world metres divided by the feature size. The 256-cell period is far beyond a planet
@@ -74,46 +63,5 @@ export function scatterNoise(x: number, y: number): number {
   return fbmTile(x, y, 3, 2.0, 0.5, 256, 256);
 }
 
-// ========== Splatter generation ==========
-
+// Seed of the scatter noise (initPerm)
 export const SEED = 77;
-const SIZE = 512;
-const SCALE = 4;
-const WARP_STRENGTH = 1.5;
-const SMOOTHSTEP_EDGE0 = 0.495;
-const SMOOTHSTEP_EDGE1 = 0.505;
-
-export function splatterValue(nx: number, ny: number): number {
-  const large = warpedFbmTile(nx * SCALE, ny * SCALE, 3, WARP_STRENGTH, SEED, SCALE, SCALE);
-  const mid = fbmTile(nx * SCALE * 2, ny * SCALE * 2, 2, 2.0, 0.5, SCALE * 2, SCALE * 2) * 0.2;
-  const raw = (large + mid) * 0.5 + 0.5;
-  // High-frequency noise adds scattered dots along the edge (like natural grass/dirt border)
-  const detail = fbmTile(nx * SCALE * 12, ny * SCALE * 12, 3, 2.0, 0.5, SCALE * 12, SCALE * 12) * 0.1;
-  // Smooth transition instead of hard binary cutoff
-  const v = raw + detail;
-  const t = clamp01((v - 0.48) / 0.04); // sharply ramp from 0.48 to 0.52
-  return t * t * (3 - 2 * t); // smoothstep
-}
-
-/** Procedural splatter mask: white = upper (grass), black = under (sand) */
-export function loadSplatterTexture(scene: Scene): Texture {
-  initPerm(SEED);
-
-  const data = new Uint8Array(SIZE * SIZE * 4);
-  for (let y = 0; y < SIZE; y++) {
-    const ny = y / SIZE;
-    for (let x = 0; x < SIZE; x++) {
-      const v = Math.round(splatterValue(x / SIZE, ny) * 255);
-      const i = (y * SIZE + x) * 4;
-      data[i] = v;
-      data[i + 1] = v;
-      data[i + 2] = v;
-      data[i + 3] = 255;
-    }
-  }
-
-  const tex = RawTexture.CreateRGBATexture(data, SIZE, SIZE, scene, true, false);
-  tex.wrapU = Texture.WRAP_ADDRESSMODE;
-  tex.wrapV = Texture.WRAP_ADDRESSMODE;
-  return tex;
-}

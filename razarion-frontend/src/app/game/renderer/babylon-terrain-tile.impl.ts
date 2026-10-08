@@ -34,13 +34,18 @@ import {buildGroundMaterial} from "./ground-material";
 import {buildBotGroundTopMaterial} from "./bot-ground-top-material";
 import {buildBotGroundSideMaterial} from "./bot-ground-side-material";
 import {detectShoreline, computeShoreDistance} from "./shoreline-detection";
-import {initPerm, scatterNoise, SEED, splatterValue} from "./procedural-textures";
+import {initPerm, scatterNoise, SEED} from "./procedural-textures";
+import {bareShare} from "./ground-rules";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {Nullable} from "@babylonjs/core/types";
+import type {Scene} from "@babylonjs/core/scene";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import {GroundUtil} from './ground-util';
 import {ParkedMeshFilter} from "./parked-mesh-filter";
 import {GroundPaths} from "./ground-paths";
+import {GroundZone} from "./ground-zone";
+import {createVegetationMask} from "./vegetation-mask";
+import {cloudSunShade, cloudTime} from "./cloud-shadow";
 
 enum MaterialIndex {
   GROUND = 0,
@@ -120,9 +125,14 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // flat [minX,minY,maxX,maxY,...] arrays so the sprite hot-loop is pure JS with zero bridge crossings.
   private botGroundBoxes: Float64Array | null = null;
   private decalBoxes: Float64Array | null = null;
-  // Terrain objects as flat [x, z, radius, ...] (read once from the Java proxies) so the sprite loop
-  // can grow undergrowth around them without crossing the bridge.
+  // Terrain objects as flat [x, z, radius, isPlant, ...] (read once from the Java proxies, in phase 2)
+  // for the growth under plants and the undergrowth sprites, without crossing the bridge again.
   private spriteAnchors: number[] = [];
+  // Growth strength per metre cell under plants (vegetation-mask.ts), null without plants
+  private vegetationMask: Float32Array | null = null;
+  // Sprites with their colour in full sun, re-shaded for sun and clouds by SpriteShading
+  private shadedSprites: Sprite[] = [];
+  private shadedBase: number[] = [];
   // Path strength per metre cell (GroundPaths), null where no path comes near the tile. Drawn into the
   // ground, and keeps the sprites off the path.
   private pathMask: Float32Array | null = null;
@@ -355,9 +365,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     // so in practice long arrived; if not, the tile waits for it rather than being built without paths.
     // Phase 3 (which settles a disposed tile itself) builds the heavy ground NodeMaterial — route it
     // through the serialized queue so a burst of tiles can't compile all their shaders in one frame.
+    this.collectTerrainObjectAnchors();
     GroundPaths.load().then(() => {
       if (!this.disposed) {
         this.pathMask = GroundPaths.createTileMask(this.tileXOffset, this.tileYOffset, BabylonTerrainTileImpl.NODE_X_COUNT);
+        this.vegetationMask = createVegetationMask(this.tileXOffset, this.tileYOffset, BabylonTerrainTileImpl.NODE_X_COUNT, this.spriteAnchors);
       }
       BabylonTerrainTileImpl.enqueueHeavyBuild(() => this.buildPhase3_Material());
     });
@@ -387,7 +399,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     // afterwards needs a second build(), which parallel shader compilation refuses while the
     // first one is still running - the sampler stays unwired and the tile renders flat green.
     const groundUtilityTexture = this.groundUtil
-      ? new Texture(this.groundUtil.createGroundTypeTexture(this.pathMask).toDataURL(), this.rendererService.getScene())
+      ? new Texture(this.groundUtil.createGroundTypeTexture(this.pathMask, this.vegetationMask).toDataURL(), this.rendererService.getScene())
       : null;
     this.groundMaterial = buildGroundMaterial(this.rendererService.getScene(), groundUtilityTexture);
     let asphaltMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(groundConfig.getAsphaltBabylonMaterialId());
@@ -458,6 +470,34 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.applyWaterVisibility();
   }
 
+  /** Plants and rocks of this tile as [x, z, radius, isPlant] - see spriteAnchors. */
+  private collectTerrainObjectAnchors(): void {
+    const lists = this.terrainTile.getTerrainTileObjectLists();
+    if (!lists) {
+      return;
+    }
+    lists.forEach(list => {
+      try {
+        if (!list.terrainObjectModels || list.terrainObjectModels.length === 0) {
+          return;
+        }
+        const config = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getTerrainObjectConfig(list.terrainObjectConfigId);
+        const radius = config.getRadius() || 0.5;
+        // By name, as for the wind: a TerrainObjectConfig has no kind
+        const plant = /rock/i.test(config.getInternalName() ?? "") ? 0 : 1;
+        list.terrainObjectModels.forEach(model => {
+          if (!model || !model.position) {
+            return;
+          }
+          const scale = model.scale ? model.scale.getX() : 1;
+          this.spriteAnchors.push(model.position.getX(), model.position.getY(), radius * scale, plant);
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  }
+
   private setupTerrainTileObjects(terrainTileObjectLists: TerrainTileObjectList[]): void {
     // Collect all terrain objects to create, then batch-process them
     const pending: { config: TerrainObjectConfig, model: TerrainObjectModel }[] = [];
@@ -472,14 +512,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           console.error(`TerrainObjectConfig has no model3DId: ${terrainObjectConfig.toString()}`);
           return;
         }
-        const radius = terrainObjectConfig.getRadius() || 0.5;
         terrainTileObjectList.terrainObjectModels.forEach(terrainObjectModel => {
           if (!terrainObjectModel || !terrainObjectModel.position) {
             return;
           }
           pending.push({ config: terrainObjectConfig, model: terrainObjectModel });
-          const scale = terrainObjectModel.scale ? terrainObjectModel.scale.getX() : 1;
-          this.spriteAnchors.push(terrainObjectModel.position.getX(), terrainObjectModel.position.getY(), radius * scale);
         });
       } catch (error) {
         console.error(terrainTileObjectList);
@@ -807,7 +844,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
 
     groundUtilityBlock.texture = new Texture(
-      groundUtil.createGroundTypeTexture(this.pathMask).toDataURL(),
+      groundUtil.createGroundTypeTexture(this.pathMask, this.vegetationMask).toDataURL(),
       this.rendererService.getScene()
     );
     this.groundMaterial.build();
@@ -1229,7 +1266,6 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     });
   }
 
-  private static readonly SPLATTER_UV_SCALE = 0.006;
   private static readonly SPRITE_CELL_SIZE = 64;
   // Random field positions tried per tile; the density noise keeps roughly 45% of them (~1350).
   private static readonly SPRITE_CANDIDATES_PER_TILE = 3000;
@@ -1254,28 +1290,35 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   /**
-   * Determine terrain zone at world position using height and splatter value.
-   * Matches the shader logic in ground-material.ts.
+   * The sprite sheet for a spot: the ground the shader draws there (ground-material.ts).
+   * Cheap decisions first - water, plants, sand - so the noise and the height lookups below run
+   * only for land.
    */
-  private static getTerrainZone(worldX: number, worldZ: number, height: number): TerrainZone {
+  private getTerrainZone(worldX: number, worldZ: number, height: number, growth: number): TerrainZone {
     if (height <= BabylonTerrainTileImpl.WATER_LEVEL - 0.5) {
       return TerrainZone.UNDERWATER;
     }
-    if (height < BabylonTerrainTileImpl.BEACH_HEIGHT + 0.1) {
+    // Under plants the ground shader draws growth (vegetation-mask.ts), and grass grows there
+    if (growth > 0.5 && height > BabylonTerrainTileImpl.WATER_LEVEL) {
+      return TerrainZone.UPPER;
+    }
+    // Sand exactly where the shader draws sand (ground-zone.ts); height alone if that is missing
+    const land = GroundZone.landStep(worldX, worldZ, height);
+    if (land === null ? height < BabylonTerrainTileImpl.BEACH_HEIGHT + 0.1 : land < 0.5) {
       return TerrainZone.BEACH;
     }
-    BabylonTerrainTileImpl.ensurePermInitialized();
-    const nx = (worldX * BabylonTerrainTileImpl.SPLATTER_UV_SCALE) % 1.0;
-    const ny = (worldZ * BabylonTerrainTileImpl.SPLATTER_UV_SCALE) % 1.0;
-    const sv = splatterValue(nx < 0 ? nx + 1 : nx, ny < 0 ? ny + 1 : ny);
-    // sv: 0 = under (rock/dirt), 1 = upper (grass)
-    if (sv > 0.6) {
-      return TerrainZone.UPPER;
-    } else if (sv < 0.4) {
+    // The 3 x 3 nodes around the spot: their spread says rock (gravel at its foot, in the shader),
+    // their difference across says the slope
+    const west = this.getHeightAt(worldX - 1, worldZ), east = this.getHeightAt(worldX + 1, worldZ);
+    const south = this.getHeightAt(worldX, worldZ - 1), north = this.getHeightAt(worldX, worldZ + 1);
+    const spread = Math.max(west, east, south, north, height) - Math.min(west, east, south, north, height);
+    if (spread >= BabylonTerrainTileImpl.WALL_HEIGHT_DIFF) {
       return TerrainZone.UNDER;
     }
-    // Transition zone — randomly pick based on splatter value
-    return Math.random() < sv ? TerrainZone.UPPER : TerrainZone.UNDER;
+    const dx = (east - west) / 2, dz = (north - south) / 2;
+    const slope = 1 - 1 / Math.sqrt(1 + dx * dx + dz * dz);
+    // Earth and stones where the shader draws them (ground-rules.ts); in between, as often as they show
+    return Math.random() < bareShare(worldX, worldZ, slope) ? TerrainZone.UNDER : TerrainZone.UPPER;
   }
 
   /** Fast height lookup from cached heightmap — no raycasting */
@@ -1328,7 +1371,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const placed: Record<TerrainZone, number> = {
       [TerrainZone.UPPER]: 0, [TerrainZone.UNDER]: 0, [TerrainZone.BEACH]: 0, [TerrainZone.UNDERWATER]: 0,
     };
-    setTimeout(() => {
+    BabylonTerrainTileImpl.registerSpriteShading(this, scene);
+    // The sand/land decision needs the splatter texture (ground-zone.ts), loaded once at the start
+    GroundZone.load().then(() => setTimeout(() => {
       if (this.disposed) {
         return;
       }
@@ -1337,18 +1382,18 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       setTimeout(() => {
         this.placeSprites(BabylonTerrainTileImpl.SPRITE_CANDIDATES_PER_TILE, spriteManagers, placed);
       }, BabylonTerrainTileImpl.SPRITE_BATCH_DELAY);
-    }, BabylonTerrainTileImpl.SPRITE_BATCH_DELAY);
+    }, BabylonTerrainTileImpl.SPRITE_BATCH_DELAY));
   }
 
   /** A few smaller, shaded sprites around every terrain object, so plants and rocks sit in undergrowth. */
   private placeUndergrowth(spriteManagers: Record<TerrainZone, SpriteManager>, placed: Record<TerrainZone, number>) {
     const anchors = this.spriteAnchors;
-    const anchorCount = anchors.length / 3;
+    const anchorCount = anchors.length / 4;
     if (anchorCount === 0) {
       return;
     }
     const perAnchor = Math.max(1, Math.min(3, Math.floor(BabylonTerrainTileImpl.SPRITE_UNDERGROWTH_PER_TILE / anchorCount)));
-    for (let i = 0; i < anchors.length; i += 3) {
+    for (let i = 0; i < anchors.length; i += 4) {
       const radius = anchors[i + 2];
       for (let k = 0; k < perAnchor; k++) {
         const angle = Math.random() * Math.PI * 2;
@@ -1416,7 +1461,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     if (height < -5) {
       return;
     }
-    const zone = BabylonTerrainTileImpl.getTerrainZone(x, z, height);
+    const cell = Math.floor(z - this.tileYOffset) * BabylonTerrainTileImpl.NODE_X_COUNT + Math.floor(x - this.tileXOffset);
+    const zone = this.getTerrainZone(x, z, height, this.vegetationMask ? this.vegetationMask[cell] : 0);
 
     // 50% less sprites for beach and underwater
     if ((zone === TerrainZone.BEACH || zone === TerrainZone.UNDERWATER) && Math.random() < 0.5) {
@@ -1440,11 +1486,84 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     sprite.width = size;
     sprite.height = size;
     // Warm and bright in one place, cool and dark in another
-    sprite.color = new Color4(brightness * (0.97 + 0.06 * tint), brightness, brightness * (1.03 - 0.06 * tint),
-      zone === TerrainZone.UNDERWATER ? 0.5 : 1);
+    const r = brightness * (0.97 + 0.06 * tint), g = brightness, b = brightness * (1.03 - 0.06 * tint);
+    const light = BabylonTerrainTileImpl.spriteLight(cloudSunShade(x, z, cloudTime()));
+    sprite.color = new Color4(r * light, g * light, b * light, zone === TerrainZone.UNDERWATER ? 0.5 : 1);
     sprite.position.x = x;
     sprite.position.y = height + size * 0.25;
     sprite.position.z = z;
+    this.shadedSprites.push(sprite);
+    this.shadedBase.push(r, g, b);
+  }
+
+  // Sprites are unlit: a sprite showed its texture at full strength next to ground the sun lights at
+  // well under that, and stayed bright under a passing cloud. Share of the light that is sky (not
+  // taken by a cloud) and the brightness in full sun, roughly what the lit ground gets.
+  private static readonly SPRITE_SKY_SHARE = 0.45;
+  private static readonly SPRITE_SUN_LIGHT = 0.85;
+  private static readonly SPRITE_SHADE_GRID = 8;   // m - clouds sampled on a grid, sprites interpolate
+  private static shadedTiles = new Set<BabylonTerrainTileImpl>();
+  private static shadingIterator: Iterator<BabylonTerrainTileImpl> | null = null;
+  private static shadingScene: Scene | null = null;
+
+  private static spriteLight(sunShade: number): number {
+    const sky = BabylonTerrainTileImpl.SPRITE_SKY_SHARE;
+    return BabylonTerrainTileImpl.SPRITE_SUN_LIGHT * (sky + (1 - sky) * sunShade);
+  }
+
+  /** One tile per frame: with the handful of tiles in view each is re-shaded several times a second. */
+  private static registerSpriteShading(tile: BabylonTerrainTileImpl, scene: Scene): void {
+    BabylonTerrainTileImpl.shadedTiles.add(tile);
+    if (BabylonTerrainTileImpl.shadingScene === scene) {
+      return;
+    }
+    BabylonTerrainTileImpl.shadingScene = scene;
+    scene.onBeforeRenderObservable.add(() => {
+      const tiles = BabylonTerrainTileImpl.shadedTiles;
+      for (let attempts = 0; attempts < tiles.size; attempts++) {
+        let next = BabylonTerrainTileImpl.shadingIterator?.next();
+        if (!next || next.done) {
+          BabylonTerrainTileImpl.shadingIterator = tiles.values();
+          next = BabylonTerrainTileImpl.shadingIterator.next();
+          if (next.done) {
+            return;
+          }
+        }
+        const tile = next.value;
+        if (tile.disposed) {
+          tiles.delete(tile);
+          continue;
+        }
+        if (tile.active) {
+          tile.shadeSprites(cloudTime());
+          return;
+        }
+      }
+    });
+  }
+
+  private shadeSprites(time: number): void {
+    const grid = BabylonTerrainTileImpl.SPRITE_SHADE_GRID;
+    const cells = Math.ceil(BabylonTerrainTileImpl.NODE_X_COUNT / grid) + 1;
+    const light = new Float32Array(cells * cells);
+    for (let gy = 0; gy < cells; gy++) {
+      for (let gx = 0; gx < cells; gx++) {
+        light[gy * cells + gx] = BabylonTerrainTileImpl.spriteLight(
+          cloudSunShade(this.tileXOffset + gx * grid, this.tileYOffset + gy * grid, time));
+      }
+    }
+    for (let i = 0; i < this.shadedSprites.length; i++) {
+      const sprite = this.shadedSprites[i];
+      const fx = Math.max(0, Math.min(cells - 1.001, (sprite.position.x - this.tileXOffset) / grid));
+      const fy = Math.max(0, Math.min(cells - 1.001, (sprite.position.z - this.tileYOffset) / grid));
+      const x0 = Math.floor(fx), y0 = Math.floor(fy), tx = fx - x0, ty = fy - y0;
+      const top = light[y0 * cells + x0] * (1 - tx) + light[y0 * cells + x0 + 1] * tx;
+      const bottom = light[(y0 + 1) * cells + x0] * (1 - tx) + light[(y0 + 1) * cells + x0 + 1] * tx;
+      const k = top * (1 - ty) + bottom * ty;
+      sprite.color.r = this.shadedBase[i * 3] * k;
+      sprite.color.g = this.shadedBase[i * 3 + 1] * k;
+      sprite.color.b = this.shadedBase[i * 3 + 2] * k;
+    }
   }
 
   /** Maps scatterNoise (roughly ±0.4) to [0, 1]. */

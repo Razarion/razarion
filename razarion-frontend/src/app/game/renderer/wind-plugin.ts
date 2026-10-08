@@ -15,6 +15,8 @@ import type {Scene} from "@babylonjs/core/scene";
  * origin and every instance gets its own phase without any per-instance data.
  */
 export class WindPlugin extends MaterialPluginBase {
+  /** 1 = normal sway, 0 = still (Showcase switches it). */
+  static strength = 1;
   private static time = 0;
   private static clockScene: Scene | null = null;
 
@@ -39,15 +41,17 @@ export class WindPlugin extends MaterialPluginBase {
 
   override getUniforms() {
     return {
-      ubo: [{name: "windTime", size: 1, type: "float"}],
+      ubo: [{name: "windTime", size: 1, type: "float"}, {name: "windStrength", size: 1, type: "float"}],
       vertex: `#ifdef WIND
         uniform float windTime;
+        uniform float windStrength;
       #endif`,
     };
   }
 
   override bindForSubMesh(uniformBuffer: UniformBuffer): void {
     uniformBuffer.updateFloat("windTime", WindPlugin.time);
+    uniformBuffer.updateFloat("windStrength", WindPlugin.strength);
   }
 
   override getClassName(): string {
@@ -66,7 +70,7 @@ export class WindPlugin extends MaterialPluginBase {
           float windPhase = dot(windOrigin.xz, vec2(0.13, 0.09));
           float windGust = 0.55 + 0.45 * sin(dot(windOrigin.xz, vec2(0.021, 0.013)) - windTime * 0.6);
           float windSway = sin(windTime * 1.3 + windPhase) * 0.7 + sin(windTime * 2.9 + windPhase * 1.7) * 0.3;
-          worldPos.xz += vec2(0.8, 0.6) * (windSway * windGust * windHeight * 0.08);
+          worldPos.xz += vec2(0.8, 0.6) * (windSway * windGust * windHeight * 0.08 * windStrength);
         #endif
       `,
     };

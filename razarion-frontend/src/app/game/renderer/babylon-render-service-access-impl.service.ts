@@ -31,6 +31,7 @@ import {SceneInstrumentation} from "@babylonjs/core/Instrumentation/sceneInstrum
 import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight";
 import {HemisphericLight} from "@babylonjs/core/Lights/hemisphericLight";
 import {GroundPaths} from "./ground-paths";
+import {GroundZone} from "./ground-zone";
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
@@ -540,7 +541,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     skyLight.diffuse = new Color3(0.70, 0.76, 0.86);
     skyLight.groundColor = new Color3(0.38, 0.33, 0.26);
     skyLight.specular = new Color3(0, 0, 0);
-    skyLight.intensity = 0.6;
+    skyLight.intensity = 0.8;
 
     // Sized for the screen instead of a hardcoded 4096. See ShadowQuality for the three arms that
     // ran against this and all came back null: the size buys no frame time, and neither did
@@ -973,9 +974,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         environmentTexture: "renderer/env/sanGiuseppeBridge.env"
       });
     });
-    this.scene.environmentIntensity = 1.0;
+    this.scene.environmentIntensity = 1.2;   // units read dark against the brighter, tone-mapped ground
     // A few kB, long arrived by the time the first tile wants it (tiles wait for it otherwise)
     GroundPaths.load();
+    GroundZone.load();
     this.babylonModelService.setScene(this.scene);
     this.baseItemContainer = new TransformNode("Base items");
     this.resourceItemContainer = new TransformNode("Resource items");

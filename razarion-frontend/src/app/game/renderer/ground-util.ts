@@ -13,9 +13,10 @@ export class GroundUtil {
 
   /**
    * One texel per metre cell. Red: blocked (the shader shows rock). Green: path strength from
-   * GroundPaths (trodden earth), or 0 where there is no path.
+   * GroundPaths (trodden earth), or 0 where there is no path. Blue: growth under plants
+   * (vegetation-mask.ts).
    */
-  createGroundTypeTexture(pathMask: Float32Array | null): HTMLCanvasElement {
+  createGroundTypeTexture(pathMask: Float32Array | null, vegetationMask: Float32Array | null = null): HTMLCanvasElement {
     const width = BabylonTerrainTileImpl.NODE_X_COUNT;
     const height = BabylonTerrainTileImpl.NODE_Y_COUNT;
     const canvas = document.createElement('canvas');
@@ -33,7 +34,7 @@ export class GroundUtil {
         const i = (y * width + x) * 4;
         image.data[i] = terrainType == TerrainType.BLOCKED ? 255 : 0;
         image.data[i + 1] = pathMask ? Math.round(pathMask[y * width + x] * 255) : 0;
-        image.data[i + 2] = 0;
+        image.data[i + 2] = vegetationMask ? Math.round(vegetationMask[y * width + x] * 255) : 0;
         image.data[i + 3] = 255;
       }
     }

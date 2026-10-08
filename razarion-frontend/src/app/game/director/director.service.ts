@@ -7,6 +7,7 @@ import {Scene} from '@babylonjs/core/scene';
 import {BabylonRenderServiceAccessImpl} from '../renderer/babylon-render-service-access-impl.service';
 import {UiSettingsService} from '../ui-settings.service';
 import {CombatTracker} from '../renderer/combat-tracker';
+import {Showcase} from '../renderer/showcase';
 
 /**
  * Camera keyframe. `mode` decides how it's resolved to a camera pose:
@@ -167,6 +168,8 @@ export class DirectorService {
     this.uiSettings.tipsVisible = false;
     this.uiSettings.questVisualizationVisible = false;
     renderer.directorCameraTick = (dt) => this.tick(dt);
+    // Before/after switches for the terrain look, driven by razarion-social/pipeline/record_showcase.mjs
+    Showcase.install(renderer);
     if (!this.pollHandle) {
       this.pollHandle = setInterval(() => this.poll(), 250);
     }
@@ -334,7 +337,8 @@ export class DirectorService {
 
     // The 4096 shadow map is re-rendered every frame and the recording is real time: any hitch is
     // baked into the file. Restored in recordStop.
-    if (r.directionalLight) {
+    // The showcase keeps them: the long shadows of the lower sun are part of what it films
+    if (r.directionalLight && !Showcase.keepShadows) {
       this.savedShadowEnabled = r.directionalLight.shadowEnabled;
       r.directionalLight.shadowEnabled = false;
     }
