@@ -8,8 +8,9 @@ import {BaseItemPlacerPresenterImpl} from './base-item-placer-presenter.impl';
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 import {BabylonModelService} from './babylon-model.service';
 import {BabylonAudioService} from './babylon-audio.service';
-import {BaseItemPlacer} from '../../gwtangular/GwtAngularFacade';
+import {BaseItemPlacer, DecimalPosition} from '../../gwtangular/GwtAngularFacade';
 import {AdvancedDynamicTexture} from '@babylonjs/gui/2D/advancedDynamicTexture';
+import {cancelOpenPlacer} from './placer-release';
 
 /**
  * The touch half of the item placer. A phone player has one finger for three different intentions -
@@ -46,7 +47,10 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
   let reportedInteractions: string[];
   /** kind plus the detail where one was given, so a test can assert the reason travelled. */
   let reportedDetails: string[];
+  let modelsLoaded: boolean;
   let errorText: string;
+  /** Where the camera was sent to centre the placer. */
+  let flights: { x: number, y: number }[];
 
   beforeEach(() => {
     engine = new NullEngine({renderWidth: WIDTH, renderHeight: HEIGHT, textureSize: 512, deterministicLockstep: false, lockstepMaxSteps: 1});
@@ -72,7 +76,9 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
     invalidAttempts = 0;
     reportedInteractions = [];
     reportedDetails = [];
+    modelsLoaded = true;
     errorText = '';
+    flights = [];
 
     const rendererService = {
       getScene: () => scene,
@@ -98,6 +104,10 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
       },
       showGroundCommandMarker: () => {
       },
+      flyViewFieldCenter: (x: number, y: number) => {
+        flights.push({x, y});
+        return Promise.resolve();
+      },
       touchCameraControl: {
         isGesturing: () => gesturing,
         setPanClaim: (claim: ((x: number, y: number) => boolean) | null) => panClaim = claim
@@ -121,6 +131,7 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
     };
     const modelService = {
       isModel3DReady: () => true,
+      areModelsLoaded: () => modelsLoaded,
       cloneModel3D: () => renderObject
     } as unknown as BabylonModelService;
     const audioService = {speakCommand: () => {
@@ -128,6 +139,7 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
 
     placer = {
       getModel3DId: () => 1,
+      getBaseItemTypeId: () => 11,
       getRelativeItemPositions: () => [],
       getSpawnAudioId: () => null,
       isPositionValid: () => positionValid,
@@ -348,6 +360,138 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
 
     expect(places.length).toBe(1);
     expect(reportedInteractions).toContain('PLACER_CONFIRMED');
+    expect(reportedDetails).toContain('PLACER_CONFIRMED|glb=1');
+  });
+
+  /**
+   * The builder this base spawns is drawn from the one glb. A base set down before that glb has
+   * landed spawns a builder with nothing to draw - which is what quest 358 needs to tell apart.
+   */
+  it('says when the base went down before the models had arrived', () => {
+    modelsLoaded = false;
+
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+    pressDeploy();
+
+    expect(reportedDetails).toContain('PLACER_CONFIRMED|glb=0');
+  });
+
+  /**
+   * The start placer always comes first and the tracker keeps one record per kind, so a factory
+   * placer reporting under the same kinds was never on record. A placer that can be cancelled is a
+   * building's and reports under its own kinds.
+   */
+  it('reports a building placer under its own kinds', () => {
+    presenter.deactivate();
+    reportedInteractions.length = 0;
+    presenter.activate({...placer, isCanBeCanceled: () => true} as BaseItemPlacer);
+    expect(reportedInteractions).toEqual(['BUILD_PLACER_SHOWN']);
+
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+    pressDeploy();
+    presenter.deactivate();
+
+    expect(places.length).toBe(1);
+    expect(reportedInteractions).toContain('BUILD_PLACER_CONFIRMED');
+    expect(reportedDetails).toContain('BUILD_PLACER_SHOWN|type=11');
+    expect(reportedDetails).toContain('BUILD_PLACER_CONFIRMED|type=11');
+    expect(reportedInteractions).not.toContain('PLACER_CONFIRMED');
+    expect(reportedInteractions).not.toContain('BUILD_PLACER_ABANDONED');
+  });
+
+  it('says when a building placer closes without building', () => {
+    presenter.deactivate();
+    expect(reportedInteractions).not.toContain('BUILD_PLACER_ABANDONED'); // the start placer is not abandoned
+    presenter.activate({...placer, isCanBeCanceled: () => true} as BaseItemPlacer);
+    presenter.deactivate();
+    presenter.deactivate();
+
+    expect(reportedInteractions.filter(kind => kind === 'BUILD_PLACER_ABANDONED').length).toBe(1);
+    expect(reportedDetails).toContain('BUILD_PLACER_ABANDONED|type=11');
+  });
+
+  /**
+   * Quest 386 on a phone: the searched spot lay at the top edge, the hint slid under the quest line
+   * and the cancel button under the minimap. A building placer opening on a searched spot brings it
+   * to the middle of the picture.
+   */
+  it('centres the camera on the spot a building placer opens on', () => {
+    presenter.deactivate();
+    const spot = {getX: () => 12, getY: () => -30} as DecimalPosition;
+    presenter.activate({...placer, isCanBeCanceled: () => true, getOpenPosition: () => spot} as BaseItemPlacer);
+
+    expect(flights).toEqual([{x: 12, y: -30}]);
+  });
+
+  it('leaves the camera alone for a building placer without a searched spot', () => {
+    presenter.deactivate();
+    presenter.activate({...placer, isCanBeCanceled: () => true} as BaseItemPlacer);
+
+    expect(flights).toEqual([]);
+  });
+
+  /** Quest 386: a refused dockyard must say which building it was, or it is filed under the factory of 358. */
+  it('names the building and the reason when a building placer refuses', () => {
+    presenter.deactivate();
+    presenter.activate({...placer, isCanBeCanceled: () => true} as BaseItemPlacer);
+    positionValid = false;
+    errorText = 'Build it on the water';
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+    pressDeploy();
+
+    expect(reportedDetails).toContain('BUILD_PLACER_REJECTED|type=11 reason=Build it on the water');
+  });
+
+  /** A phone has no Escape key: without this, a building placer opened by mistake could only be built with. */
+  it('gives a building placer a button to close it on touch', () => {
+    let cancels = 0;
+    presenter.deactivate();
+    presenter.activate({...placer, isCanBeCanceled: () => true, cancel: () => cancels++} as BaseItemPlacer);
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+
+    const cancelButton = placerUiTexture().getControlByName('Base Item Placer Cancel');
+    expect(cancelButton).withContext('cancel button').not.toBeNull();
+    cancelButton!.onPointerClickObservable.notifyObservers({} as any);
+
+    expect(cancels).toBe(1);
+    expect(places.length).toBe(0);
+  });
+
+  it('gives the start placer no button to close it, and the mouse none at all', () => {
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+    expect(placerUiTexture().getControlByName('Base Item Placer Cancel')).toBeNull();
+
+    presenter.deactivate();
+    presenter.activate({...placer, isCanBeCanceled: () => true} as BaseItemPlacer);
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERMOVE, 1, 'mouse');
+    expect(placerUiTexture().getControlByName('Base Item Placer Cancel')).toBeNull();
+  });
+
+  it('closes a building placer through the open-placer hook, and not after it has built', () => {
+    let cancels = 0;
+    presenter.deactivate();
+    presenter.activate({...placer, isCanBeCanceled: () => true, cancel: () => cancels++} as BaseItemPlacer);
+    expect(cancelOpenPlacer()).toBeTrue();
+    expect(cancels).toBe(1);
+
+    presenter.activate({...placer, isCanBeCanceled: () => true, cancel: () => cancels++} as BaseItemPlacer);
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+    pressDeploy();
+    expect(cancelOpenPlacer()).toBeFalse();
+    expect(cancels).toBe(1);
   });
 
   /**

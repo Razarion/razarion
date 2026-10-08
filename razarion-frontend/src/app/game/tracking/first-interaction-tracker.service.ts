@@ -99,8 +99,31 @@ export type InteractionKind =
  * Reported once per session like every other kind, though the condition is re-checked each second.
  */
   | 'PLACER_NO_TERRAIN'
-/** The placement went through. The base exists from here on. */
+/** The placement went through. The base exists from here on. Carries `glb=1` when every model had
+ *  arrived by then and `glb=0` when the builder it spawns will have none to be drawn with. */
   | 'PLACER_CONFIRMED'
+  /*
+   * The first building, from the button to the ground (2026-10-05). Before these, the placer kinds
+   * above were reported by every placer, but the start placer always comes first and the tracker
+   * keeps one record per kind, so not one factory placer was ever on record. They now belong to the
+   * start base alone.
+   *
+   * Why it matters: of the players who leave quest 358 ("build a factory"), 45% have selected the
+   * builder - as fast as those who pass - and never start the factory. Between the selection and
+   * leaving there was no trace at all. Read in order: pressed the button, the placer opened, it was
+   * refused, confirmed or closed without a building.
+   */
+  /** A build button in the item cockpit was pressed, as `type=<itemTypeId>`, with ` blocked=house|
+   *  limit|locked|money|queue` when the button refused. */
+  | 'BUILD_BUTTON'
+  /** A builder's or factory's placer opened. Not a player action - the button was. */
+  | 'BUILD_PLACER_SHOWN'
+  /** PLACER_REJECTED for a building placer, with the same reason text. */
+  | 'BUILD_PLACER_REJECTED'
+  /** A building placer built. */
+  | 'BUILD_PLACER_CONFIRMED'
+  /** A building placer closed without building - cancelled, replaced or the builder lost. */
+  | 'BUILD_PLACER_ABANDONED'
 /** The camera kinds name the input, not the effect. "The camera moved" is true on a desktop too
  *  and always has been, so it cannot answer whether the touch gesture was discovered. */
   | 'CAMERA_PAN_TOUCH'
@@ -127,6 +150,11 @@ export type InteractionKind =
    *  ever commanding is a different defect from never selecting, and the two look identical in
    *  every other record we keep. */
   | 'COMMAND'
+  /** Which order it was, as `kind=move|attack|harvest|finalize|load|pickBox`, each kind once
+   *  (2026-10-05). Its own kind so COMMAND keeps its one detail-less row per session. Asked because
+   *  the players who select the builder at quest 358 and never build issue orders anyway - a tap on
+   *  the ground with the builder selected drives it away instead of building. */
+  | 'ORDER'
   /*
    * The three below are one funnel of their own: found the box, filled it, used what was in it.
    * They are separate kinds rather than a detail on SELECT and COMMAND on purpose - those two
@@ -183,6 +211,9 @@ export type InteractionKind =
   /** The first scene actually ran. In SLAVE mode start() returns without one and the chain waits
    *  for the initial synchronisation, so GAME_START without this is a wait that never ended. */
   | 'SCENE_FIRST'
+  /** Every glb has landed - `failed=N` if some never will. Its millisSincePageLoad is the moment
+   *  the builder of the start base can be drawn at all; see BabylonModelService#reportModelsReady. */
+  | 'MODELS_READY'
   /**
    * A tip was on screen and nobody answered it - carrying which quest and which task, as
    * `quest=358 task=SELECT`.
@@ -247,7 +278,8 @@ export class FirstInteractionTrackerService {
   private static readonly PLAYER_KINDS: ReadonlySet<string> = new Set<InteractionKind>([
     'POINTER_DOWN', 'POINTER_DOWN_PAGE', 'CAMERA_PAN_TOUCH', 'CAMERA_PINCH', 'CAMERA_KEYBOARD',
     'CAMERA_WHEEL', 'MINIMAP_JUMP', 'ARROW_JUMP', 'QUEST_JUMP', 'SELECT_ALL', 'SELECT', 'COMMAND', 'SELECT_GROUP', 'COMMAND_GROUP', 'SELECTION_BOX_ARMED',
-    'PLACER_CONFIRMED', 'PLACER_REJECTED', 'TECH_TREE_OPENED']);
+    'PLACER_CONFIRMED', 'PLACER_REJECTED', 'TECH_TREE_OPENED', 'ORDER', 'BUILD_BUTTON',
+    'BUILD_PLACER_REJECTED', 'BUILD_PLACER_CONFIRMED']);
 
   /** When the player last did anything at all, or 0 if they never have. */
   public get lastPlayerAction(): number {

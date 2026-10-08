@@ -39,3 +39,26 @@ export function notifyPlacement(placed: boolean): void {
     callback();
   }
 }
+
+/**
+ * How to close the building placer that is open now, or null when none is - the start placer
+ * cannot be closed and never sets it. A phone has no Escape key, and until 2026-10-05 a building
+ * placer that was opened could only be built with or left open for good: the player in the phone
+ * test selected something else, the builder went out of the selection and the placer stayed.
+ */
+let cancelOpen: (() => void) | null = null;
+
+export function setOpenPlacerCancel(cancel: (() => void) | null): void {
+  cancelOpen = cancel;
+}
+
+/** Closes the open building placer without building. False when there was none. */
+export function cancelOpenPlacer(): boolean {
+  const cancel = cancelOpen;
+  cancelOpen = null;
+  if (!cancel) {
+    return false;
+  }
+  cancel();
+  return true;
+}

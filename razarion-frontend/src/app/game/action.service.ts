@@ -138,8 +138,9 @@ export class ActionService {
     this.orderListeners.forEach(listener => listener(order));
   }
 
-  private reportCommand(unitCount: number): void {
+  private reportCommand(unitCount: number, kind: OrderNote['kind']): void {
     this.firstInteractionTrackerService.report('COMMAND');
+    this.firstInteractionTrackerService.report('ORDER', 'kind=' + kind);
     if (unitCount > 1) {
       // The order went to a group. This is the end of the group funnel and the only part of it
       // that is worth anything on its own: a selection nobody commands was made by accident.
@@ -148,7 +149,7 @@ export class ActionService {
   }
 
   private sendMoveCommand(movableIds: number[], x: number, y: number): void {
-    this.reportCommand(movableIds.length);
+    this.reportCommand(movableIds.length, 'move');
     this.gameCommandService.moveCmd(movableIds, x, y);
     this.notifyOrder({kind: 'move', unitIds: movableIds, targetId: null, targetTypeId: null});
     this.hasPendingMoveCommand = true;
@@ -244,7 +245,7 @@ export class ActionService {
         if (containableIds.length > 0) {
       
           this.babylonAudioService.speakCommand('Loading up');
-          this.reportCommand(containableIds.length);
+          this.reportCommand(containableIds.length, 'load');
           this.gameCommandService.loadContainerCmd(containableIds, id);
           this.notifyOrder({kind: 'load', unitIds: containableIds, targetId: id, targetTypeId: baseItemType.getId()});
           return;
@@ -258,7 +259,7 @@ export class ActionService {
       
           this.babylonAudioService.speakCommand('Completing construction');
           this.rendererService?.showCommandTargetMarker(item, 'build');
-          this.reportCommand(builderIds.length);
+          this.reportCommand(builderIds.length, 'finalize');
           this.gameCommandService.finalizeBuildCmd(builderIds, id);
           this.notifyOrder({kind: 'finalize', unitIds: builderIds, targetId: id, targetTypeId: baseItemType.getId()});
           return;
@@ -286,7 +287,7 @@ export class ActionService {
       if (attackerIds.length > 0) {
         this.babylonAudioService.speakCommand('Engaging target');
         this.rendererService?.showCommandTargetMarker(babylonItem, 'attack');
-        this.reportCommand(attackerIds.length);
+        this.reportCommand(attackerIds.length, 'attack');
         this.gameCommandService.attackCmd(attackerIds, id);
         this.notifyOrder({kind: 'attack', unitIds: attackerIds, targetId: id, targetTypeId: item.getBaseItemType().getId()});
         return;
@@ -301,7 +302,7 @@ export class ActionService {
       if (harvesterIds.length > 0) {
         this.babylonAudioService.speakCommand('Harvesting');
         this.rendererService?.showCommandTargetMarker(babylonItem, 'harvest');
-        this.reportCommand(harvesterIds.length);
+        this.reportCommand(harvesterIds.length, 'harvest');
         this.gameCommandService.harvestCmd(harvesterIds, id);
         this.notifyOrder({kind: 'harvest', unitIds: harvesterIds, targetId: id, targetTypeId: itemTypeId});
         return;
@@ -315,7 +316,7 @@ export class ActionService {
       const movableIds = this.tsSelectionService.getMovableIds();
       if (movableIds.length > 0) {
         this.babylonAudioService.speakCommand('Picking up');
-        this.reportCommand(movableIds.length);
+        this.reportCommand(movableIds.length, 'pickBox');
         this.gameCommandService.pickBoxCmd(movableIds, id);
         this.notifyOrder({kind: 'pickBox', unitIds: movableIds, targetId: id, targetTypeId: itemTypeId});
         return;

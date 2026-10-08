@@ -46,6 +46,9 @@ export class BabylonModelService {
   private model3DEntities: Map<number, Model3DEntity> = new Map();
   private scene!: Scene;
   private gwtResolver?: () => void;
+  /** The glb ids asked for, so MODELS_READY can say whether every one of them arrived. Null until the load starts. */
+  private gltfIds: number[] | null = null;
+  private modelsReadyReported = false;
   public renderer!: BabylonRenderServiceAccessImpl;
   // Hardware-instancing templates for static models (TerrainObjects). Each template is a
   // single fully-set-up RenderObject hierarchy whose meshes serve as the source for
@@ -199,13 +202,23 @@ export class BabylonModelService {
       whenTerrainReady().then(() => {
         this.babylonMaterialContainer.releaseDeferred();
         this.particleSystemContainer.load(uiConfigCollection.particleSystemEntities, this, this.scene);
+        this.gltfIds = uiConfigCollection.gltfs.map(gltf => gltf.id);
         this.glbContainer.load(uiConfigCollection.gltfs, this, this.scene);
       });
     });
   }
 
 
+  /**
+   * Whether every glb has landed. One glb carries all the models today, so false means a builder
+   * that finishes spawning has nothing to be drawn with. Reported with PLACER_CONFIRMED.
+   */
+  areModelsLoaded(): boolean {
+    return this.gltfIds !== null && this.glbContainer.isLoaded();
+  }
+
   public handleLoaded(): void {
+    this.reportModelsReady();
     if (this.isStartGateOpen()) {
       if (this.gwtResolver) {
         // Once only: the glb container calls this again for every model that lands afterwards,
@@ -215,6 +228,24 @@ export class BabylonModelService {
         resolver();
       }
     }
+  }
+
+  /**
+   * When the models arrived, as a moment rather than a guess.
+   * <p>
+   * STARTUP_PAYLOAD looks at the downloads three times - playable, 20 s and 60 s - and quest 358
+   * needed to know whether the builder's model was there 2.5 s after the base went down. Measured
+   * 27.09.-05.10.: certainly not there for 15% of those who left against 8% of those who passed,
+   * and undecidable for 62% of the passers because the snapshots are 20 s apart. The record
+   * carries millisSincePageLoad like every other, which is the timestamp that was missing.
+   */
+  private reportModelsReady(): void {
+    if (this.modelsReadyReported || !this.areModelsLoaded() || !this.renderer) {
+      return;
+    }
+    this.modelsReadyReported = true;
+    const failed = this.gltfIds!.filter(id => !this.glbContainer.isEntityLoaded(id)).length;
+    this.renderer.reportFirstInteraction('MODELS_READY', failed ? 'failed=' + failed : undefined);
   }
 
   /**

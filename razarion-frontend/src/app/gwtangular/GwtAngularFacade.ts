@@ -816,6 +816,9 @@ export interface BaseItemPlacer {
   /** Report a click on a red position - the click is swallowed, this is the only trace it leaves. */
   onInvalidPlaceAttempt(): void;
 
+  /** The item type being placed - the base's builder for the start placer, the building otherwise. */
+  getBaseItemTypeId(): number;
+
   isCanBeCanceled(): boolean;
 
   cancel(): void;

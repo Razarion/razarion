@@ -239,6 +239,11 @@ public class BaseItemPlacer {
     }
 
     @SuppressWarnings("unused") // Called by Angular
+    public int getBaseItemTypeId() {
+        return baseItemType.getId();
+    }
+
+    @SuppressWarnings("unused") // Called by Angular
     public boolean isCanBeCanceled() {
         return canBeCanceled;
     }

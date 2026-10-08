@@ -7,6 +7,7 @@ import {TipService} from '../../tip/tip.service';
 import {TipStallReason} from '../../tip/tip-stall';
 import {CompactLayoutService} from '../compact-layout.service';
 import {markPlacerClosed} from '../../renderer/placer-release';
+import {FirstInteractionTrackerService} from '../../tracking/first-interaction-tracker.service';
 
 /**
  * The real service reads matchMedia, and the Karma context frame is small enough to match the
@@ -31,6 +32,7 @@ describe('ItemCockpitComponent resource title', () => {
         {provide: UserService, useValue: {isAdmin: () => false}},
         {provide: TipService, useValue: {setItemCockpit: () => {}}},
         {provide: CompactLayoutService, useValue: compactLayoutStub()},
+        {provide: FirstInteractionTrackerService, useValue: {report: () => {}}},
       ]
     });
     const fixture = TestBed.createComponent(ItemCockpitComponent);
@@ -126,6 +128,7 @@ describe('ItemCockpitComponent buildup tip', () => {
         {provide: UserService, useValue: {isAdmin: () => false}},
         {provide: TipService, useValue: {setItemCockpit: () => {}}},
         {provide: CompactLayoutService, useValue: compact},
+        {provide: FirstInteractionTrackerService, useValue: {report: () => {}}},
       ]
     });
     const fixture = TestBed.createComponent(ItemCockpitComponent);

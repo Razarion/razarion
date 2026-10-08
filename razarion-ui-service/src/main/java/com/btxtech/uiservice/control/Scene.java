@@ -29,6 +29,10 @@ import static com.btxtech.shared.system.alarm.Alarm.Type.INVALID_GAME_UI_CONTEXT
 
 // Better name: something with game-control
 public class Scene {
+    /** How long the quest line may wait for a requested server quest before it is taken down as missing. */
+    private static final long NO_SERVER_QUEST_CLEAR_MILLIS = 10000;
+    /** Not a quest in the database - only so the placeholder quest line has an id to hand over. */
+    private static final int DEPLOY_UNIT_PLACEHOLDER_ID = -1;
     private final Logger logger = Logger.getLogger(Scene.class.getName());
     private final ScreenCover screenCover;
     private final BabylonRendererService threeJsRendererService;
@@ -137,7 +141,12 @@ public class Scene {
         if (sceneConfig.getWaitForBaseCreated() != null && sceneConfig.getWaitForBaseCreated()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            questCockpitService.showQuestSideBar(new QuestDescriptionConfig(), false);
+            // "Deploy unit" (no condition, see QuestCockpitComponent.setupTitle). It needs an id: the
+            // bridge hands getId() over as an int, a null id threw there, and the cockpit swallowed it
+            // before showing anything - so since the TeaVM client no player ever saw this line.
+            QuestDescriptionConfig<?> deployUnit = new QuestDescriptionConfig<>();
+            deployUnit.setId(DEPLOY_UNIT_PLACEHOLDER_ID);
+            questCockpitService.showQuestSideBar(deployUnit, false);
         }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
@@ -153,12 +162,23 @@ public class Scene {
             gameEngineControl.dropBoxes(sceneConfig.getBoxItemPositions());
         }
         if (sceneConfig.getProcessServerQuests() != null && sceneConfig.getProcessServerQuests()) {
-            if (!gameUiControl.hasActiveServerQuest()) {
-                serverQuestProvider.activateNextPossibleQuest();
-            }
             hasCompletionCallback = true;
             completionCallbackCount++;
-            setupQuestVisualizer4Server();
+            if (gameUiControl.hasActiveServerQuest()) {
+                setupQuestVisualizer4Server();
+            } else {
+                // The quest is asked for here and arrives a round trip later via onQuestActivatedServer.
+                // Showing the missing quest meanwhile would empty the quest line, and right after the
+                // start base goes down that left the player with no line, no builder (it is still
+                // spawning) and no tip at once. Whatever the scene before left stands until then.
+                serverQuestProvider.activateNextPossibleQuest();
+                simpleExecutorService.schedule(NO_SERVER_QUEST_CLEAR_MILLIS, () -> {
+                    if (!gameUiControl.hasActiveServerQuest()) {
+                        // None came - the planet has nothing left to offer. Not a stale placeholder.
+                        questCockpitService.showQuestSideBar(null, true);
+                    }
+                }, SimpleExecutorService.Type.SCENE_WAIT);
+            }
         }
         if (!hasCompletionCallback) {
             gameUiControl.onSceneCompleted();
@@ -218,9 +238,8 @@ public class Scene {
             // TODO viewService.removeViewFieldListeners(this);
             questCockpitService.showQuestSideBar(null, false);
         }
-        if (sceneConfig.getWaitForBaseCreated() != null && sceneConfig.getWaitForBaseCreated()) {
-            questCockpitService.showQuestSideBar(null, false);
-        }
+        // Deliberately no clearing for waitForBaseCreated: "Process Server Quests" always follows it
+        // (GameUiControl) and replaces the placeholder once the real quest is there - see run().
         if (sceneConfig.getProcessServerQuests() != null && sceneConfig.getProcessServerQuests()) {
             questCockpitService.showQuestSideBar(null, false);
         }

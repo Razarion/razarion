@@ -379,10 +379,12 @@
 
   <server-restart #serverRestartComponent></server-restart>
 
-  @if (!!modelDialogPresenter.title) {
+  @if (!!modelDialogPresenter.title || modelDialogPresenter.showNext) {
     <div class="splash">
-      <div class="splash-title">
-        {{ modelDialogPresenter.title }}
+      <!-- Kept in place but hidden once the title is gone, so the next-quest line below stays
+           where it was read instead of jumping to the middle. -->
+      <div class="splash-title" [style.visibility]="modelDialogPresenter.title ? 'visible' : 'hidden'">
+        {{ modelDialogPresenter.title ?? 'Quest passed' }}
       </div>
       @if (modelDialogPresenter.messageLines) {
         <div class="splash-subtitle">
@@ -391,6 +393,14 @@
               {{ messageLine }} <br>
             </div>
           }
+        </div>
+      }
+      <!-- What comes next, read live from the quest strip: the next quest arrives some 100 ms
+           after the splash went up. Amber like the quest title it points to. Tailwind rather than
+           a rule in game.component.scss, which is at its 8 kB budget. -->
+      @if (modelDialogPresenter.showNext && cockpitDisplayService.showQuestCockpit && questCockpitContainer.title) {
+        <div class="mt-2 px-4 text-center font-bold text-amber-400 text-[max(16px,3.5vw)] [text-shadow:2px_2px_6px_black]">
+          Next: {{ questCockpitContainer.title }} · {{ questCockpitContainer.progressSummary }}
         </div>
       }
     </div>
