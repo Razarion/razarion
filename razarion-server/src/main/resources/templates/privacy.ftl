@@ -106,7 +106,7 @@
     <p>Clearing your browser's site data for razarion.com removes all of them, and the site works
         exactly as before afterwards.</p>
     <p>There are no advertising cookies, no analytics cookies, and no third-party scripts, pixels or
-        fonts on this site. The links to GitHub, X, Instagram, YouTube and Facebook are ordinary
+        fonts on this site. The links to GitHub, X, Instagram and Facebook are ordinary
         links: they load nothing until you click them.</p>
 
     <h2>5. Who else can see it</h2>

@@ -90,9 +90,15 @@
             @if (platform === 'all') {
               <em>All</em> adds the ones no platform can be derived for.
             }
-            The rows above <em>Game (total)</em> need the landing pixel, which only fires when the
-            page carries a query string &ndash; someone arriving over a plain link produces neither a
-            pixel nor a /game record, and is known from their startup records alone.
+            The two tables count different visitors. The landing page table needs the landing pixel,
+            which only fires when the page carries a query string &ndash; someone arriving over a
+            plain link produces neither a pixel nor a /game record, and is known from their startup
+            records alone. They appear in the game table only, which is why its first row is larger
+            than the last row of the landing page table.
+            <em>Of</em> names what a percentage is a share of. The first quest of a level is a share
+            of the players who reached the level, every further one of the quest above it &ndash; up
+            to level 8 the quest lock makes that the order players pass them in; from level 9 on
+            they pick, so a row can read over 100%. The colour runs from red at 50% to green at 80%.
             @if (device !== 'all') {
               <br>Device <em>{{ device }}</em>, read from the user agent, the same classification the
               Controls tab and the daily table use.
@@ -102,27 +108,49 @@
             }
           </div>
         </details>
-        <div class="table-scroll">
-          <!-- Striped through PrimeNG rather than a colour of our own: it paints the odd rows from
-               the theme's own surface token, so it follows the backend into dark and light instead
-               of being a value that has to be kept in step by hand. -->
-          <p-table [value]="progressStatistics" [stripedRows]="true">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Stage</th>
-                <th>Count</th>
-                <th>Percent</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-progressStatistic>
-              <tr>
-                <td>{{ progressStatistic.name }}</td>
-                <td>{{ progressStatistic.count }}</td>
-                <td>{{ progressStatistic.percent !== undefined ? progressStatistic.percent + "%" : "-" }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
+        <h3 class="funnel-title">Landing page &ndash; campaign visitors only</h3>
+        <p class="funnel-note">
+          Visitors whose link carried campaign parameters (ads, own posts).
+          @if (funnel.landingRequests !== undefined) {
+            Context: {{ funnel.landingRequests }} requests for the landing page in total, including
+            visitors without parameters and link previews &ndash; not a stage of either table.
+          }
+          The click beacon can be lost in the navigation it starts, so <em>Game opened</em> may be
+          larger than <em>Play Now clicked</em>.
+        </p>
+        <ng-container *ngTemplateOutlet="funnelTable; context: {$implicit: funnel.landingPage}"></ng-container>
+
+        <h3 class="funnel-title">Game &ndash; all visitors, incl. direct links</h3>
+        <p class="funnel-note">
+          Everyone who opened the game, whether or not they came over the landing page.
+        </p>
+        <ng-container *ngTemplateOutlet="funnelTable; context: {$implicit: funnel.game}"></ng-container>
+
+        <ng-template #funnelTable let-rows>
+          <div class="table-scroll">
+            <!-- Striped through PrimeNG rather than a colour of our own: it paints the odd rows from
+                 the theme's own surface token, so it follows the backend into dark and light instead
+                 of being a value that has to be kept in step by hand. -->
+            <p-table [value]="rows" [stripedRows]="true">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Stage</th>
+                  <th>Count</th>
+                  <th>Percent</th>
+                  <th>Of</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-progressStatistic>
+                <tr>
+                  <td>{{ progressStatistic.name }}</td>
+                  <td>{{ progressStatistic.count }}</td>
+                  <td [style.background-color]="percentBackground(progressStatistic.percent)">{{ progressStatistic.percent !== undefined ? progressStatistic.percent + "%" : "-" }}</td>
+                  <td class="funnel-of">{{ progressStatistic.referenceName ?? "" }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </ng-template>
       </p-tabpanel>
       <p-tabpanel value="4">
         <div class="flex flex-row flex-wrap items-center gap-2 pb-2">

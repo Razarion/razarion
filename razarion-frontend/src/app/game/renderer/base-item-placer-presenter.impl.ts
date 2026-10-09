@@ -1,4 +1,10 @@
-import {markPlacerClosed, notifyPlacement, setOpenPlacerCancel} from './placer-release';
+import {
+  markPlacerClosed,
+  notifyPlacement,
+  setOpenPlacerCancel,
+  setPlacerCloseReason,
+  takePlacerCloseReason
+} from './placer-release';
 import {PointerEventTypes, PointerInfo} from "@babylonjs/core/Events/pointerEvents";
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
 import {Color3} from "@babylonjs/core/Maths/math.color";
@@ -112,6 +118,14 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private buildTypeDetail = '';
   /** Set when this activation built something, so closing it is not reported as giving up. */
   private placedThisActivation = false;
+  /** When this building placer opened, for how long it stayed open before it was abandoned. */
+  private openedAt = 0;
+  /**
+   * An abandon waiting to be reported. The engine closes the open placer before it opens the next
+   * one, in the same call: a second press on the build button reads as abandoned and is not. Held
+   * until the end of the task, and labelled `replaced` if a placer opened in between.
+   */
+  private pendingAbandon: { detail: string, reason: string | null } | null = null;
 
   constructor(private rendererService: BabylonRenderServiceAccessImpl,
               private babylonModelService: BabylonModelService,
@@ -129,6 +143,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.buildPlacer = baseItemPlacer.isCanBeCanceled();
     this.buildTypeDetail = this.buildPlacer ? 'type=' + baseItemPlacer.getBaseItemTypeId() : '';
     this.placedThisActivation = false;
+    this.openedAt = Date.now();
+    this.flushAbandon('replaced');
     setOpenPlacerCancel(this.buildPlacer ? () => baseItemPlacer.cancel() : null);
     if (this.buildPlacer) {
       this.rendererService.reportFirstInteraction('BUILD_PLACER_SHOWN', this.buildTypeDetail);
@@ -320,6 +336,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
     this.keydownHandler = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && baseItemPlacer.isCanBeCanceled()) {
+        setPlacerCloseReason('esc');
         baseItemPlacer.cancel();
       }
     };
@@ -479,7 +496,10 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     // A finger has no Escape key: a building placer gets a button to close it. The start base has
     // to be placed, so its placer gets none.
     this.pressMouseVisualization.setTouchMode(() => this.deploy(baseItemPlacer),
-      this.buildPlacer ? () => baseItemPlacer.cancel() : null);
+      this.buildPlacer ? () => {
+        setPlacerCloseReason('x');
+        baseItemPlacer.cancel();
+      } : null);
     if (this.uiTexture) {
       // The button can only be tapped once the texture picks at all; picking is off for the mouse
       // because it fights with the terrain cursor.
@@ -660,8 +680,11 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   deactivate(): void {
     markPlacerClosed();
     notifyPlacement(false); // closed without a placement - after one, the callback is already spent
+    const reason = takePlacerCloseReason();
     if (this.buildPlacer && !this.placedThisActivation) {
-      this.rendererService.reportFirstInteraction('BUILD_PLACER_ABANDONED', this.buildTypeDetail);
+      const open = Math.round((Date.now() - this.openedAt) / 100) / 10;
+      this.pendingAbandon = {detail: `${this.buildTypeDetail} open=${open}`, reason};
+      setTimeout(() => this.flushAbandon(null), 0);
     }
     this.buildPlacer = false;
     setOpenPlacerCancel(null);
@@ -678,6 +701,21 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     if (this.baseItemPlacerCallback) {
       this.baseItemPlacerCallback(BaseItemPlacerPresenterEvent.DEACTIVATED);
     }
+  }
+
+  /**
+   * Reports the abandon held by deactivate(), if it is still waiting. A named reason (the ✕, Escape,
+   * the builder leaving the selection) wins; otherwise `fallback`, which is `replaced` when another
+   * placer opened right behind it and `other` when nothing did - a scene ending, for one.
+   */
+  private flushAbandon(fallback: string | null): void {
+    const pending = this.pendingAbandon;
+    if (!pending) {
+      return;
+    }
+    this.pendingAbandon = null;
+    this.rendererService.reportFirstInteraction('BUILD_PLACER_ABANDONED',
+      `${pending.detail} by=${pending.reason ?? fallback ?? 'other'}`);
   }
 
   setBaseItemPlacerCallback(callback: ((event: BaseItemPlacerPresenterEvent) => void) | null) {

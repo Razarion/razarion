@@ -310,3 +310,15 @@ gelten die Markenregeln nicht, und es gibt nichts mehr, woran man hängen bleibt
 
 Die Änderung ist auf PROD, der Nachweis liegt als `10-homepage-youtube-text-only.jpg` in
 `pipeline/data/audit/`. Die Antwort nennt beide Punkte und hat den Screenshot im Anhang.
+
+## Rückfrage 3: ToS Violations Report V.2 (2026-10-02)
+
+Frist wieder sieben Arbeitstage. Nur noch ein Punkt, III.F.2a: Google will das Wort „YouTube“ nicht
+allein stehen haben, sondern das **offizielle Symbol** daneben, so wie bei GitHub, X, Instagram und
+Facebook. Die Version „nur Text“ aus V.1 reicht also nicht.
+
+Entscheidung: Wir bauen das Symbol nicht ein, sondern lassen YouTube ganz weg. Keine Regel der
+YouTube API Services verlangt einen Link zum Kanal, und wo die Marke nicht erscheint, gelten auch
+die Branding-Regeln nicht. Der Link ist von der Startseite (`index.ftl`) und aus dem Info-Dialog im
+Spiel entfernt. In der Cookie-Passage der Datenschutzerklärung steht YouTube nicht mehr unter den
+verlinkten Netzwerken. Abschnitt 6 zur YouTube API bleibt, denn das ist Text und keine Marke.

@@ -14,7 +14,7 @@ import {
   UserActivity,
   UserActivityType
 } from '../../generated/razarion-share';
-import {createStatistics, ProgressStatistic} from './progress-statistic';
+import {createStatistics, FunnelTables} from './progress-statistic';
 
 /**
  * The percentages in this table are read as evidence for where the players stop, so a number that
@@ -87,9 +87,10 @@ describe('TrackingContainerAnalyzer level and quest statistics', () => {
   /**
    * The regression this guards: the quest rows used to be chained to each other in the order the
    * quest ids appeared in the activity list and only then sorted by size, so the bigger of two
-   * quests was divided by the smaller and showed over 100%.
+   * quests was divided by the smaller and showed over 100%. Chained they are again, but in the
+   * order the rows are shown in.
    */
-  it('measures a level 1 quest against the players who built a base, not against another quest', () => {
+  it('measures the first quest against the players who built a base, the next against the quest above it', () => {
     // Quest 359 appears first in the stream and is passed less often than 358.
     const rows = statistics([
       player('u1', questPassed('u1', 359, 1), questPassed('u1', 358, 1)),
@@ -101,7 +102,10 @@ describe('TrackingContainerAnalyzer level and quest statistics', () => {
     expect(row(rows, 'Quest 358 (Level 1)')!.count).toBe(3);
     // 3 of 4 players with a base - not 3 of the single 359 pass, which was 300%.
     expect(row(rows, 'Quest 358 (Level 1)')!.percent).toBe(75);
-    expect(row(rows, 'Quest 359 (Level 1)')!.percent).toBe(25);
+    expect(row(rows, 'Quest 358 (Level 1)')!.referenceName).toBe('Level 1 reached (4)');
+    // 1 of the 3 who built the factory - the question the table is read for.
+    expect(row(rows, 'Quest 359 (Level 1)')!.percent).toBe(33);
+    expect(row(rows, 'Quest 359 (Level 1)')!.referenceName).toBe('Quest 358 (3)');
   });
 
   it('measures a quest against the players who reached its level', () => {
@@ -114,6 +118,7 @@ describe('TrackingContainerAnalyzer level and quest statistics', () => {
     // Two of three players reached level 2, and one of those two passed the quest. Against all
     // three it would read 33%.
     expect(row(rows, 'Quest 363 (Level 2)')!.percent).toBe(50);
+    expect(row(rows, 'Quest 363 (Level 2)')!.referenceName).toBe('Level 2 reached (2)');
   });
 
   /**
@@ -199,7 +204,7 @@ describe('TrackingContainerAnalyzer level and quest statistics', () => {
       'Quest 359 (Level 1)']);
   });
 
-  it('sorting the rows does not change a percentage', () => {
+  it('measures a quest against the one the game offers before it', () => {
     const order: Record<number, number> = {358: 0, 359: 1};
     const rows = statistics([
       player('u1', questPassed('u1', 359, 1), questPassed('u1', 358, 1)),
@@ -209,6 +214,21 @@ describe('TrackingContainerAnalyzer level and quest statistics', () => {
     expect(names(rows)).toEqual(['Quest 358 (Level 1)', 'Quest 359 (Level 1)']);
     expect(row(rows, 'Quest 358 (Level 1)')!.percent).toBe(100);
     expect(row(rows, 'Quest 359 (Level 1)')!.percent).toBe(50);
+  });
+
+  /**
+   * From level 9 on the player picks the order, so a quest can be passed more often than the one
+   * listed before it. Left standing rather than hidden: the Of column says what it is a share of.
+   */
+  it('lets a freely ordered quest read over 100%', () => {
+    const order: Record<number, number> = {393: 0, 395: 1};
+    const rows = statistics([
+      player('u1', levelUp('u1', 9), questPassed('u1', 395, 9)),
+      player('u2', levelUp('u2', 9), questPassed('u2', 395, 9), questPassed('u2', 393, 9))
+    ], questId => ({label: '', order: order[questId]}));
+
+    expect(row(rows, 'Quest 395 (Level 9)')!.percent).toBe(200);
+    expect(row(rows, 'Quest 395 (Level 9)')!.referenceName).toBe('Quest 393 (1)');
   });
 });
 
@@ -268,8 +288,8 @@ function analyzerFor(view: FunnelView, pageRequests: PageRequest[],
   return analyzer;
 }
 
-function stage(rows: ProgressStatistic[], name: string) {
-  return rows.find(progressStatistic => progressStatistic.name === name);
+function stage(tables: FunnelTables, name: string) {
+  return [...tables.landingPage, ...tables.game].find(progressStatistic => progressStatistic.name === name);
 }
 
 /**
@@ -443,11 +463,11 @@ describe('TrackingContainerAnalyzer platform resolution', () => {
       [startup(true, 'session-1', {twclid: 'tw-1'})],
       [userCreated('u1', 'session-1'), baseCreated('u1')]));
 
-    expect(stage(rows, 'Home (landing pixel)')!.count).toBe(0);
-    expect(stage(rows, 'Play clicked')!.count).toBe(0);
-    expect(stage(rows, 'Game (total)')!.count).toBe(0);
+    expect(stage(rows, 'Landing page seen')!.count).toBe(0);
+    expect(stage(rows, 'Play Now clicked')!.count).toBe(0);
+    expect(stage(rows, 'Game opened (incl. direct links)')!.count).toBe(0);
     expect(stage(rows, 'Engine running')!.count).toBe(0);
-    expect(stage(rows, 'Initial Base created')!.count).toBe(0);
+    expect(stage(rows, 'Initial base created')!.count).toBe(0);
   });
 });
 
@@ -541,9 +561,9 @@ describe('TrackingContainerAnalyzer game stage', () => {
   it('counts a game opened without a page request of its own', () => {
     const rows = createStatistics(landingOnlyVisitor());
 
-    expect(stage(rows, 'Game (total)')!.count).toBe(1);
+    expect(stage(rows, 'Game opened (incl. direct links)')!.count).toBe(1);
     expect(stage(rows, 'Engine running')!.count).toBe(1);
-    expect(stage(rows, 'Initial Base created')!.count).toBe(1);
+    expect(stage(rows, 'Initial base created')!.count).toBe(1);
   });
 
   it('counts that visitor under the platform their referrer names', () => {
@@ -583,17 +603,17 @@ describe('TrackingContainerAnalyzer funnel table', () => {
     [startup(true, 'session-1', {twclid: 'tw-1'}, 'game-1'), startup(true, 'session-3', {}, 'game-3')]));
 
   it('measures the landing rows against the visitors who fired the pixel', () => {
-    expect(stage(rows(), 'Home (landing pixel)')!.count).toBe(2);
-    expect(stage(rows(), 'Play clicked')!.percent).toBe(50);
+    expect(stage(rows(), 'Landing page seen')!.count).toBe(2);
+    expect(stage(rows(), 'Play Now clicked')!.percent).toBe(50);
     // One of the two pixel visitors reached the game - the third visitor is not in this number,
     // and dividing them by Home would say 150%.
-    expect(stage(rows(), 'Game (from Home)')!.count).toBe(1);
-    expect(stage(rows(), 'Game (from Home)')!.percent).toBe(50);
+    expect(stage(rows(), 'Game opened')!.count).toBe(1);
+    expect(stage(rows(), 'Game opened')!.percent).toBe(50);
   });
 
   it('states the total game count without a percentage', () => {
-    expect(stage(rows(), 'Game (total)')!.count).toBe(2);
-    expect(stage(rows(), 'Game (total)')!.percent).toBeUndefined();
+    expect(stage(rows(), 'Game opened (incl. direct links)')!.count).toBe(2);
+    expect(stage(rows(), 'Game opened (incl. direct links)')!.percent).toBeUndefined();
   });
 
   it('measures the game rows against the total', () => {
@@ -602,15 +622,18 @@ describe('TrackingContainerAnalyzer funnel table', () => {
   });
 
   it('states the landing sessions as context in the all view only', () => {
-    const context = 'Landing (context, not a funnel stage)';
-    const landing = stage(rows(), context)!;
-    // Two sessions asked for the landing page, and no percentage anywhere refers to them.
-    expect(landing.count).toBe(2);
-    expect(landing.percent).toBeUndefined();
+    // Two sessions asked for the landing page, and no row of either table refers to them.
+    expect(rows().landingRequests).toBe(2);
 
     const platformRows = createStatistics(analyzerFor(TrackingPlatform.X,
       [request(PageRequestType.LANDING, 'session-1', {twclid: 'tw-1'})]));
-    expect(stage(platformRows, context)).toBeUndefined();
+    expect(platformRows.landingRequests).toBeUndefined();
+  });
+
+  it('names what every percentage is a share of', () => {
+    expect(stage(rows(), 'Play Now clicked')!.referenceName).toBe('Landing page seen');
+    expect(stage(rows(), 'Game opened')!.referenceName).toBe('Landing page seen');
+    expect(stage(rows(), 'Engine running')!.referenceName).toBe('Game opened (incl. direct links)');
   });
 });
 

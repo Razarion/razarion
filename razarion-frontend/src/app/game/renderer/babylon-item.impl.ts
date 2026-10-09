@@ -130,6 +130,14 @@ export class BabylonItemImpl implements BabylonItem {
 
     let actionManager = new ActionManager(rendererService.getScene());
     const fireItemClick = () => {
+      // While a building is being placed, a tap says where it goes - the ground path has always
+      // ignored it then, an item under the finger did not. A razarion field or a bot next to the
+      // spot got selected instead, the builder dropped out of the selection and the placer closed
+      // with it - the likeliest reason why, in quest 358 (2026-10-09), a quarter of the factory
+      // placers closed about a second after they opened. A box was worse: the builder drove off.
+      if (rendererService.baseItemPlacerActive) {
+        return;
+      }
       if (this.itemClickCallback) {
         this.itemClickCallback();
       }

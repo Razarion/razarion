@@ -27,11 +27,15 @@ Unlike the pixel it is recorded whether or not campaign parameters are present, 
 counted as a funnel step — it describes a wider population than `HOME` does. `DailyProgressService`
 skips it for exactly that reason.
 
-That is also why the backend funnel's table has two halves. Everything above `Game (total)` rests
-on the pixel; from there down it also holds the visitors who arrived over a plain link and fired
-none. `Game (from Home)` counts the ones in both, so the landing page's own conversion is measured
-on a single population and no row below is a share of a number it could never reach. The *All*
-view's landing count is shown as context, never as a percentage base.
+That is also why the backend funnel is two tables. *Landing page* rests on the pixel: `Landing page
+seen`, `Play Now clicked` and `Game opened`, the last two both measured against the first. *Game*
+also holds the visitors who arrived over a plain link and fired none, and starts at `Game opened
+(incl. direct links)`, so no row there is a share of a number it could never reach. Every row names
+what its percentage is a share of (the *Of* column): the first quest of a level is a share of the
+players who reached the level, every further one of the quest above it in the game's own order
+(exact up to level 8 thanks to the quest lock; from level 9 on a row can read over 100%). The
+percentage cell is tinted from red at 50% to green at 80%. The *All* view's landing count is shown as context in the
+note above the first table, never as a row or a percentage base.
 
 A visitor who arrives without parameters is invisible above that line twice over: no pixel, and no
 `GAME` record either, since `/game` is only recorded when it carries a query string. Their game

@@ -122,7 +122,8 @@ export type InteractionKind =
   | 'BUILD_PLACER_REJECTED'
   /** A building placer built. */
   | 'BUILD_PLACER_CONFIRMED'
-  /** A building placer closed without building - cancelled, replaced or the builder lost. */
+  /** A building placer closed without building - cancelled, replaced or the builder lost.
+   *  Detail: `type=<id> open=<seconds> by=x|esc|deselect sel=own|resource|enemy|friend|box|none|replaced|other`. */
   | 'BUILD_PLACER_ABANDONED'
 /** The camera kinds name the input, not the effect. "The camera moved" is true on a desktop too
  *  and always has been, so it cannot answer whether the touch gesture was discovered. */

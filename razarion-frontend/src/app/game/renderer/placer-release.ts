@@ -52,13 +52,37 @@ export function setOpenPlacerCancel(cancel: (() => void) | null): void {
   cancelOpen = cancel;
 }
 
+/**
+ * What is closing the placer right now, for BUILD_PLACER_ABANDONED. Quest 358, 2026-10-09: a quarter
+ * of the players who opened the factory placer had it close again about a second later without a
+ * build - those who left as well as a fifth of those who passed - and the record could not say
+ * whether the ✕ next to DEPLOY was hit, the builder dropped out of the selection or the build button
+ * was pressed a second time.
+ */
+let closeReason: string | null = null;
+
+/** Set immediately before a cancel; the placer takes it in the same call stack. */
+export function setPlacerCloseReason(reason: string): void {
+  closeReason = reason;
+}
+
+/** The reason set for the close now happening, or null when nobody named one. Clears it. */
+export function takePlacerCloseReason(): string | null {
+  const reason = closeReason;
+  closeReason = null;
+  return reason;
+}
+
 /** Closes the open building placer without building. False when there was none. */
-export function cancelOpenPlacer(): boolean {
+export function cancelOpenPlacer(reason = 'other'): boolean {
   const cancel = cancelOpen;
   cancelOpen = null;
   if (!cancel) {
     return false;
   }
+  closeReason = reason;
   cancel();
+  // Spent by the placer when the cancel went through; must not label a later close if it did not.
+  closeReason = null;
   return true;
 }

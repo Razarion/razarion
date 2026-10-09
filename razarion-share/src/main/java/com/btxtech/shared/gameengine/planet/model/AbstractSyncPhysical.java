@@ -124,7 +124,10 @@ public class AbstractSyncPhysical {
             }
         }
         position = syncPhysicalAreaInfo.getPosition();
-        syncItemContainerService.onPositionChanged(getSyncItem(), oldPosition2d, position, false);
+        // An item inside a container has no position and no cell, before and after
+        if (oldPosition2d != null || position != null) {
+            syncItemContainerService.onPositionChanged(getSyncItem(), oldPosition2d, position, false);
+        }
         angle = syncPhysicalAreaInfo.getAngle();
     }
 

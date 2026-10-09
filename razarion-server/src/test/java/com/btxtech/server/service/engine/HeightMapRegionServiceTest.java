@@ -30,6 +30,9 @@ import static org.mockito.Mockito.when;
  */
 class HeightMapRegionServiceTest {
     private static final int TILE = TerrainUtil.TILE_NODE_SIZE;
+    /** u16 tileX, tileY, countX, countY and the u32 checksum. */
+    private static final int HEADER = 12;
+    private static final int ROW = TerrainUtil.NODE_X_COUNT;
     private static final int TILES_X = 3;
     private static final int TILES_Y = 2;
 
@@ -68,7 +71,7 @@ class HeightMapRegionServiceTest {
         // Row-major, y outer: (1,0) (2,0) (1,1) (2,1)
         int[][] expectedTiles = {tile(heights, 1, 0), tile(heights, 2, 0), tile(heights, 1, 1), tile(heights, 2, 1)};
         for (int block = 0; block < expectedTiles.length; block++) {
-            assertArrayEquals(expectedTiles[block], decodeTile(region, 8 + block * TILE * 2),
+            assertArrayEquals(expectedTiles[block], decodeTile(region, HEADER + block * TILE * 2),
                     "block " + block + " of the region");
         }
     }
@@ -80,7 +83,7 @@ class HeightMapRegionServiceTest {
         int[] heights = planet();
         byte[] region = gunzip(service(heights).getRegion(1, "d", 0, 0, 3, 1));
 
-        assertArrayEquals(tile(heights, 2, 0), decodeTile(region, 8 + 2 * TILE * 2),
+        assertArrayEquals(tile(heights, 2, 0), decodeTile(region, HEADER + 2 * TILE * 2),
                 "the third tile read without the two before it");
     }
 
@@ -133,11 +136,18 @@ class HeightMapRegionServiceTest {
 
     /** The client's arithmetic: a running sum from zero, wrapping at 16 bits, one tile at a time. */
     private int[] decodeTile(byte[] region, int at) {
+        // The inverse of the service: each value is its residual plus left + above - corner, with
+        // the top row predicted from the left alone and the left column from above alone.
         int[] out = new int[TILE];
-        int acc = 0;
-        for (int i = 0; i < TILE; i++) {
-            acc = (acc + readU16(region, at + i * 2)) & 0xFFFF;
-            out[i] = acc;
+        for (int row = 0; row < ROW; row++) {
+            for (int column = 0; column < ROW; column++) {
+                int left = column > 0 ? out[row * ROW + column - 1] : 0;
+                int above = row > 0 ? out[(row - 1) * ROW + column] : 0;
+                int predicted = column == 0 || row == 0 ? (column > 0 ? left : above)
+                        : left + above - out[(row - 1) * ROW + column - 1];
+                int i = row * ROW + column;
+                out[i] = (readU16(region, at + i * 2) + predicted) & 0xFFFF;
+            }
         }
         return out;
     }

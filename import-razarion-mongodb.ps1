@@ -1,16 +1,23 @@
 param(
     [Parameter(Mandatory=$true)]
-    [string]$AtlasUri
+    [string]$AtlasUri,
+    # Host port of the local mongo to restore into - the same as RAZ_MONGO_PORT of the server.
+    # Picks the container when more than one mongo runs (e.g. a second checkout on 27018).
+    [int]$Port = $(if ($env:RAZ_MONGO_PORT) { [int]$env:RAZ_MONGO_PORT } else { 27017 })
 )
 
 $ErrorActionPreference = "Stop"
 $dbName = "razarion"
 $tempDir = "/tmp/mongodump"
 
-# Find local mongo container
-$mongoId = docker ps -qf "ancestor=mongo" 2>$null
+# Find local mongo container, by the host port it publishes
+$mongoId = docker ps -qf "ancestor=mongo" -f "publish=$Port" 2>$null
 if (-not $mongoId) {
-    Write-Error "Local mongo container not found. Is docker-compose running?"
+    Write-Error "No local mongo container publishes port $Port. Is docker-compose running?"
+    exit 1
+}
+if (@($mongoId).Count -gt 1) {
+    Write-Error "More than one mongo container publishes port ${Port}: $mongoId"
     exit 1
 }
 

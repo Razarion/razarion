@@ -20,7 +20,7 @@ import {FormsModule} from '@angular/forms';
 import {Select} from 'primeng/select';
 import {ButtonModule} from 'primeng/button';
 import {TabsModule} from 'primeng/tabs';
-import {createStatistics, ProgressStatistic} from './progress-statistic';
+import {createStatistics, FunnelTables} from './progress-statistic';
 import {TableModule} from 'primeng/table';
 import {ChartModule} from 'primeng/chart';
 import {
@@ -116,7 +116,7 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
    */
   dailyDaysOptions = [{name: "7 days", value: 7}, {name: "10 days", value: 10},
     {name: "14 days", value: 14}];
-  progressStatistics: ProgressStatistic[] = [];
+  funnel: FunnelTables = {landingPage: [], game: []};
   /** Per-day funnel, newest first. Fixed 10-day window, independent of the range picker. */
   dailyProgresses: DailyProgress[] = [];
   /**
@@ -557,12 +557,24 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
     this.loadDailyProgress();
   }
 
+  /**
+   * Red at 50% and below, green at 80% and above, and a hue sliding through orange and yellow in
+   * between - so a row that is merely worse than its neighbour reads as such, not only one that
+   * crossed a line. A translucent background rather than a text colour: it stays readable on the
+   * dark and the light surface alike.
+   */
+  percentBackground(percent: number | undefined): string | null {
+    if (percent === undefined) {
+      return null;
+    }
+    const share = Math.min(1, Math.max(0, (percent - 50) / 30));
+    return `hsla(${Math.round(share * 120)}, 75%, 45%, 0.35)`;
+  }
+
   /** Both filters run over the loaded data - no request, the container already carries everything. */
   private recomputeFunnel() {
     this.trackingContainerAnalyzer.setView(this.platform);
     this.trackingContainerAnalyzer.setDevice(this.device);
-    this.progressStatistics.length = 0;
-    this.progressStatistics.push(...createStatistics(
-      this.trackingContainerAnalyzer, questId => this.questInfos.get(questId)));
+    this.funnel = createStatistics(this.trackingContainerAnalyzer, questId => this.questInfos.get(questId));
   }
 }

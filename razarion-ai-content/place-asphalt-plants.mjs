@@ -72,6 +72,9 @@ for (const area of ASPHALT_AREAS) {
     const modelName = WEIGHTED[Math.floor(rand() * WEIGHTED.length)];
     const rotZ = rand() * Math.PI * 2;
     const scale = 0.7 + rand() * 0.6;
+    // The top row of areas sits at y=2, so its upper edge falls off the planet. The server drops
+    // a whole tile that holds a position outside it.
+    if (Math.round(pt.x) < 0 || Math.round(pt.y) < 0) continue;
     positions.push({ x: Math.round(pt.x), y: Math.round(pt.y), modelName, rotZ, scale });
   }
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
@@ -99,6 +100,14 @@ public class HeightMapRegionService {
                     return size() > REGION_CACHE_MAX;
                 }
             });
+    /**
+     * Regions being encoded right now, by the same key as {@link #regions}. A second request for one
+     * waits for the first instead of starting the same five seconds of gzip next to it - after a
+     * warm restart every reconnecting client asks at once.
+     */
+    private final ConcurrentHashMap<String, CompletableFuture<byte[]>> inFlight = new ConcurrentHashMap<>();
+    /** Planet -> the digest its {@link #maps} entry was last read for. */
+    private final ConcurrentHashMap<Integer, String> currentDigests = new ConcurrentHashMap<>();
 
     public HeightMapRegionService(PlanetCrudService planetCrudService) {
         this.planetCrudService = planetCrudService;
@@ -113,35 +122,51 @@ public class HeightMapRegionService {
      * somebody who has just arrived, which is where the funnel is thinnest.
      *
      * <p>On a thread of its own, so a server that is ready says so and starts serving. A request
-     * that arrives during the warm-up computes the same bytes a second time rather than waiting,
-     * which is wasteful for one request and simpler than a lock that would have to be right.
+     * that arrives during the warm-up waits for the warm-up's bytes - see {@link #inFlight}.
      *
      * <p>The whole planet is the only rectangle asked for today - see {@link #regions}. When the
      * client starts asking for the player's corner instead, this should warm that corner.
      */
     @EventListener(ApplicationReadyEvent.class)
     public void warmUp() {
-        Thread thread = new Thread(this::warmUpRegions, "height-map-warm-up");
+        startWarmUp("height-map-warm-up", () -> {
+            for (PlanetConfig planetConfig : planetCrudService.read()) {
+                warmUpPlanet(planetConfig.getId());
+            }
+        });
+    }
+
+    /**
+     * The same as at start, for one planet whose height map was just uploaded.
+     *
+     * <p>Without it the upload left a new digest and nothing encoded for it, and the clients that
+     * reconnect after the warm restart that follows every terrain edit each started on the 52 MB
+     * themselves - two at a time on 750m of CPU, 27 s each, measured on 2026-10-04: bases took 24 s
+     * to load instead of one.
+     */
+    public void warmUp(int planetId) {
+        startWarmUp("height-map-warm-up-" + planetId, () -> warmUpPlanet(planetId));
+    }
+
+    private void startWarmUp(String name, Runnable runnable) {
+        Thread thread = new Thread(runnable, name);
         thread.setDaemon(true);
         thread.start();
     }
 
-    private void warmUpRegions() {
-        for (PlanetConfig planetConfig : planetCrudService.read()) {
-            try {
-                String digest = planetCrudService.getCompressedHeightMapDigest(planetConfig.getId());
-                if (digest == null) {
-                    continue;
-                }
-                Map map = map(planetConfig.getId(), digest);
-                getFlatTable(planetConfig.getId(), digest);
-                getRegion(planetConfig.getId(), digest, 0, 0, map.tileXCount, map.tileYCount);
-            } catch (Throwable t) {
-                // One planet that cannot be warmed must not stop the others, and none of this is
-                // worth failing a start over: the request path computes it on demand as before.
-                logger.warn("Could not warm the height map of planet {}: {}",
-                        planetConfig.getId(), t.getMessage());
+    private void warmUpPlanet(int planetId) {
+        try {
+            String digest = planetCrudService.getCompressedHeightMapDigest(planetId);
+            if (digest == null) {
+                return;
             }
+            Map map = map(planetId, digest);
+            getFlatTable(planetId, digest);
+            getRegion(planetId, digest, 0, 0, map.tileXCount, map.tileYCount);
+        } catch (Throwable t) {
+            // One planet that cannot be warmed must not stop the others, and none of this is
+            // worth failing a start over: the request path computes it on demand as before.
+            logger.warn("Could not warm the height map of planet {}: {}", planetId, t.getMessage());
         }
     }
 
@@ -221,9 +246,22 @@ public class HeightMapRegionService {
         if (cached != null) {
             return cached;
         }
-        byte[] encoded = encodeRegion(planetId, digest, tileX, tileY, countX, countY);
-        regions.put(key, encoded);
-        return encoded;
+        CompletableFuture<byte[]> mine = new CompletableFuture<>();
+        CompletableFuture<byte[]> running = inFlight.putIfAbsent(key, mine);
+        if (running != null) {
+            return running.join();
+        }
+        try {
+            byte[] encoded = encodeRegion(planetId, digest, tileX, tileY, countX, countY);
+            regions.put(key, encoded);
+            mine.complete(encoded);
+            return encoded;
+        } catch (RuntimeException e) {
+            mine.completeExceptionally(e);
+            throw e;
+        } finally {
+            inFlight.remove(key);
+        }
     }
 
     private byte[] encodeRegion(int planetId, String digest, int tileX, int tileY, int countX, int countY) {
@@ -279,7 +317,15 @@ public class HeightMapRegionService {
     }
 
     private Map map(int planetId, String digest) {
-        return maps.computeIfAbsent(digest, ignored -> load(planetId));
+        Map map = maps.computeIfAbsent(digest, ignored -> load(planetId));
+        String previous = currentDigests.put(planetId, digest);
+        if (previous != null && !previous.equals(digest)) {
+            // The planet's map was replaced. Its old 50 MB would otherwise stay for the life of the
+            // server, one more for every upload.
+            maps.remove(previous);
+            regions.keySet().removeIf(key -> key.startsWith(previous + "-"));
+        }
+        return map;
     }
 
     private Map load(int planetId) {

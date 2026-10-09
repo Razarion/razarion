@@ -623,7 +623,10 @@ export class ItemCockpitService {
       return;
     }
     this.buildPlacerBuilderIds = null;
-    cancelOpenPlacer();
+    // What took the builder's place: own units, a resource, an enemy... or nothing at all.
+    const other = this.selectionService.getSelectedOtherDiplomacy();
+    const now = selected.length > 0 ? 'own' : other ? other.toLowerCase() : 'none';
+    cancelOpenPlacer('deselect sel=' + now);
   }
 
   private deselectIfStill(ids: number[]): void {

@@ -60,6 +60,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -419,7 +420,9 @@ public class UserService implements UserDetailsService {
     }
 
     public UserContext getUserContext(String userId) {
-        return userRepository.findByUserId(userId).orElseThrow().toUserContext();
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException("No user " + userId))
+                .toUserContext();
     }
 
     @Transactional

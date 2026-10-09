@@ -403,15 +403,58 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
     expect(reportedInteractions).not.toContain('BUILD_PLACER_ABANDONED');
   });
 
-  it('says when a building placer closes without building', () => {
+  /** The abandon waits for the end of the task: the engine closes a placer right before it opens the next. */
+  const endOfTask = () => new Promise(resolve => setTimeout(resolve, 0));
+  const abandons = () => reportedDetails.filter(detail => detail.startsWith('BUILD_PLACER_ABANDONED|'));
+
+  it('says when a building placer closes without building', async () => {
     presenter.deactivate();
+    await endOfTask();
     expect(reportedInteractions).not.toContain('BUILD_PLACER_ABANDONED'); // the start placer is not abandoned
     presenter.activate({...placer, isCanBeCanceled: () => true} as BaseItemPlacer);
     presenter.deactivate();
     presenter.deactivate();
+    await endOfTask();
 
-    expect(reportedInteractions.filter(kind => kind === 'BUILD_PLACER_ABANDONED').length).toBe(1);
-    expect(reportedDetails).toContain('BUILD_PLACER_ABANDONED|type=11');
+    expect(abandons()).toEqual(['BUILD_PLACER_ABANDONED|type=11 open=0 by=other']);
+  });
+
+  /**
+   * Quest 358, 2026-10-09: a quarter of the factory placers closed again about a second after they
+   * opened, and nothing said why. Each way out names itself.
+   */
+  it('says what closed a building placer', async () => {
+    const buildPlacer = {...placer, isCanBeCanceled: () => true, cancel: () => presenter.deactivate()} as BaseItemPlacer;
+    presenter.deactivate();
+
+    presenter.activate(buildPlacer);
+    pointAt(CENTRE_X + 200, CENTRE_Y);
+    fire(PointerEventTypes.POINTERDOWN);
+    fire(PointerEventTypes.POINTERUP);
+    placerUiTexture().getControlByName('Base Item Placer Cancel')!.onPointerClickObservable.notifyObservers({} as any);
+    await endOfTask();
+    expect(abandons().pop()).toContain('by=x');
+
+    presenter.activate(buildPlacer);
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+    await endOfTask();
+    expect(abandons().pop()).toContain('by=esc');
+
+    presenter.activate(buildPlacer);
+    cancelOpenPlacer('deselect sel=none');
+    await endOfTask();
+    expect(abandons().pop()).toContain('by=deselect sel=none');
+  });
+
+  it('calls a placer closed for the next one replaced, not abandoned for nothing', async () => {
+    presenter.deactivate();
+    presenter.activate({...placer, isCanBeCanceled: () => true} as BaseItemPlacer);
+    // What the engine does on a second press of the build button: close, then open, in one call.
+    presenter.deactivate();
+    presenter.activate({...placer, isCanBeCanceled: () => true} as BaseItemPlacer);
+    await endOfTask();
+
+    expect(abandons()).toEqual(['BUILD_PLACER_ABANDONED|type=11 open=0 by=replaced']);
   });
 
   /**

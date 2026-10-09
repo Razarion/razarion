@@ -52,6 +52,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -905,6 +906,13 @@ public class BaseItemService {
                             // Bases backed up before this field existed restore as 0, which the
                             // base management shows as "unknown" rather than as brand new.
                             playerBaseInfo.getCreatedMillis()));
+                } catch (NoSuchElementException e) {
+                    // Expected on every start: the unregistered users were deleted before the engine
+                    // started, their bases are still in the backup. One line, no stack trace, so that
+                    // a real restore failure below does not drown in them.
+                    failedBaseIds.add(playerBaseInfo.getBaseId());
+                    logger.info("BaseItemService.restore() owner gone, base dropped. baseId: "
+                            + playerBaseInfo.getBaseId() + " userId: " + playerBaseInfo.getUserId());
                 } catch (Exception e) {
                     failedBaseIds.add(playerBaseInfo.getBaseId());
                     logger.log(Level.WARNING, "BaseItemService.restore() base can not be restored. baseId: "

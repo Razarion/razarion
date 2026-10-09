@@ -31,6 +31,22 @@
   max-width: 100%;
 }
 
+// The funnel is two tables over two populations; the heading says which one a table counts.
+.funnel-title {
+  font-weight: bold;
+  padding-top: 1rem;
+}
+
+.funnel-note,
+.funnel-of {
+  color: var(--p-text-muted-color, #898781);
+  font-size: 0.875rem;
+}
+
+.funnel-note {
+  padding-bottom: 0.5rem;
+}
+
 .chart-title {
   color: var(--p-text-muted-color, #898781);
   font-size: 0.875rem;

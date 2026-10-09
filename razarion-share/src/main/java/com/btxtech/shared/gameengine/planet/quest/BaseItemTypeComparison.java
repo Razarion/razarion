@@ -13,12 +13,14 @@ import jakarta.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * User: Razarion contributors Date: 18.07.2010 Time: 21:06:41
  */
 
 public class BaseItemTypeComparison extends AbstractBaseItemComparison {
+    private final Logger logger = Logger.getLogger(BaseItemTypeComparison.class.getName());
 
     private final ItemTypeService itemTypeService;
 
@@ -102,6 +104,12 @@ public class BaseItemTypeComparison extends AbstractBaseItemComparison {
 
     @Override
     public void restoreFromGenericComparisonValue(BackupComparisionInfo backupComparisionInfo) {
+        if (backupComparisionInfo.getRemainingItemTypes() == null) {
+            // Backed up with nothing remaining: fulfilled, but not yet passed. Restoring that would
+            // leave a fulfilled quest nobody passes, so the quest starts over instead.
+            logger.info("BaseItemTypeComparison.restore() nothing remaining in backup, quest starts over: " + backupComparisionInfo);
+            return;
+        }
         remaining.clear();
         backupComparisionInfo.iterateOverRemainingItemType((itemTypeId, remainingCount) -> remaining.put(itemTypeService.getBaseItemType(itemTypeId), remainingCount));
     }

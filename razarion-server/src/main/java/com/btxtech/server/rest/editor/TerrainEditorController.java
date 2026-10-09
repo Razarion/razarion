@@ -2,6 +2,7 @@ package com.btxtech.server.rest.editor;
 
 import com.btxtech.server.model.DataUrlDecoder;
 import com.btxtech.server.model.Roles;
+import com.btxtech.server.service.engine.HeightMapRegionService;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class TerrainEditorController {
     private final Logger logger = LoggerFactory.getLogger(TerrainEditorController.class);
     private final PlanetCrudService planetCrudPersistence;
+    private final HeightMapRegionService heightMapRegionService;
 
-    public TerrainEditorController(PlanetCrudService planetCrudPersistence) {
+    public TerrainEditorController(PlanetCrudService planetCrudPersistence, HeightMapRegionService heightMapRegionService) {
         this.planetCrudPersistence = planetCrudPersistence;
+        this.heightMapRegionService = heightMapRegionService;
     }
 
     @PutMapping(value = "updateTerrain/{planetId}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -66,6 +69,8 @@ public class TerrainEditorController {
     public void updateCompressedHeightMap(@PathVariable("planetId") int planetId, @RequestBody byte[] zippedHeightMap) {
         try {
             planetCrudPersistence.updateCompressedHeightMap(planetId, zippedHeightMap);
+            // Encoded now, before the warm restart that follows brings every client back at once
+            heightMapRegionService.warmUp(planetId);
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             throw e;
