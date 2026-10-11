@@ -558,10 +558,19 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // That is not a corner of the budget. A census of every loaded texture there came to 787 MB,
     // of which the shadow map was 128 and the whole glb, after yesterday's resize, was about 148.
     // In the field a third of all reported periods run a 4096 map.
-    this.shadowGenerator = new ShadowGenerator(this.shadowMapSize, this.directionalLight, false,
+    //
+    // The third argument asks for 32-bit float. An exponential shadow map stores exp(depthScale *
+    // depth) over the whole depth range, and half float ends at exp(11): with the sun at 40 degrees
+    // (bde8a8c9a) the ground spans most of that range, and everything farther from the sun than a
+    // narrow band overflowed and lost its shadow - the player saw none at all. Twice the memory of
+    // the half float red channel, still half of the RGBA it replaced.
+    this.shadowGenerator = new ShadowGenerator(this.shadowMapSize, this.directionalLight, true,
       null, true);
     this.shadowGenerator.useExponentialShadowMap = true;
-    this.shadowGenerator.darkness = 0.6;
+    // darkness is how much sun a shadow lets through. 0.6 was set when the sun was the only light;
+    // since the ground, the bot plates and the models got a sky and ambient term on top of the sun
+    // (bde8a8c9a), 60 % of the sun plus that term left shadows a barely visible tint; 10 % read too black.
+    this.shadowGenerator.darkness = 0.4;
     console.log(`[Razarion] Schattenkarte: ${this.shadowMapSize}x${this.shadowMapSize} `
       + `(Backbuffer ${this.engine.getRenderWidth()}x${this.engine.getRenderHeight()})`);
 
@@ -582,6 +591,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // Must come after the shadow generator: the filter hooks both per-frame walks over the mesh
     // array, and the second one is the shadow map's render list. F7 bypasses it for an A/B.
     this.parkedMeshFilter.install(this.scene, this.shadowGenerator.getShadowMap());
+
 
     // Pre-fire hidden warmup VFX at Y=-1000 so the first user-visible Tesla shot's bolt and
     // impact don't render blank while Babylon compiles shaders / uploads textures on demand.

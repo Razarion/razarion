@@ -15,6 +15,7 @@ import {BabylonWaterRenderService, WaterTileResources} from "./babylon-water-ren
 import {VertexBuffer} from "@babylonjs/core/Buffers/buffer";
 import {Ray} from "@babylonjs/core/Culling/ray.core";
 import {MultiMaterial} from "@babylonjs/core/Materials/multiMaterial";
+import type {Material} from "@babylonjs/core/Materials/material";
 import {TextureBlock} from "@babylonjs/core/Materials/Node/Blocks/Dual/textureBlock";
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
@@ -33,6 +34,10 @@ import {SpriteManager} from "@babylonjs/core/Sprites/spriteManager";
 import {buildGroundMaterial} from "./ground-material";
 import {buildBotGroundTopMaterial} from "./bot-ground-top-material";
 import {buildBotGroundSideMaterial} from "./bot-ground-side-material";
+import {bakeBotGroundMarkings, BotGroundFootprint, GRAVEL_FULL, GRAVEL_REACH} from "./bot-ground-markings";
+import {buildBotGroundGravelMaterial} from "./bot-ground-gravel-material";
+import {addCloudShadow} from "./cloud-shadow-node";
+import {Showcase} from "./showcase";
 import {detectShoreline, computeShoreDistance} from "./shoreline-detection";
 import {initPerm, scatterNoise, SEED} from "./procedural-textures";
 import {bareShare} from "./ground-rules";
@@ -73,6 +78,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly HEIGHT_DEFAULT = 0.5;
   static readonly BOT_BOX_LENGTH = 8;
   static readonly BOT_BOX_Z_ROTATION = 22;
+  // The gravel bed around the bot grounds: its cells (m) and how far it floats over the terrain
+  private static readonly GRAVEL_CELL = 0.5;
+  private static readonly GRAVEL_LIFT = 0.05;
   public readonly container: TransformNode;
   private readonly groundMesh: Mesh;
   private waterMesh: Mesh | null = null;
@@ -403,6 +411,10 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       : null;
     this.groundMaterial = buildGroundMaterial(this.rendererService.getScene(), groundUtilityTexture);
     let asphaltMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(groundConfig.getAsphaltBabylonMaterialId());
+    // The clouds drift over the asphalt patches as over the ground around them
+    if (asphaltMaterial instanceof NodeMaterial && addCloudShadow(this.rendererService.getScene(), asphaltMaterial)) {
+      Showcase.register(asphaltMaterial);
+    }
 
     const multiMaterial = new MultiMaterial(`Ground ${groundConfig.getInternalName()}`, this.rendererService.getScene());
     multiMaterial.subMaterials[MaterialIndex.GROUND] = this.groundMaterial;
@@ -1020,8 +1032,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   /**
    * Materialise every bot-ground box (positions + slope boxes) into a flat [minX,minY,maxX,maxY,...]
    * array. This is the ONLY place that crosses the WASM↔JS bridge for bot grounds; it runs once per
-   * tile (lazily, on the first sprite). Each box is BOT_BOX_LENGTH wide, centred on its position —
-   * preserving the exact test that insideBotGroundPosition used to do per access.
+   * tile (lazily, on the first sprite). Each box is BOT_BOX_LENGTH wide, centred on its position, the
+   * flat ones widened by the closed part of the gravel bed around them (no sprites grow there either).
    */
   private getBotGroundBoxes(): Float64Array {
     if (this.botGroundBoxes !== null) {
@@ -1043,7 +1055,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
             if (typeof posX !== 'number' || typeof posY !== 'number' || isNaN(posX) || isNaN(posY)) {
               return;
             }
-            coords.push(posX - half, posY - half, posX + half, posY + half);
+            // The gravel bed counts too: no grass through the closed part of it
+            coords.push(posX - half - GRAVEL_FULL, posY - half - GRAVEL_FULL, posX + half + GRAVEL_FULL, posY + half + GRAVEL_FULL);
           });
         }
         if (botGround.botGroundSlopeBoxes) {
@@ -1141,44 +1154,40 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
   private botGroundMeshes: Mesh[] = [];
 
-  // Scene-global singletons so the Inspector shows exactly one editable
-  // "BotGround top" / "BotGround side" / "BotGround multi" instead of one copy
-  // per tile. Editing the shared material instantly updates every bot ground
-  // box. Re-created if the scene was disposed and replaced.
+  // Scene-global so every tile that shows a bot ground uses the same materials: one shared side
+  // material ("BotGround side") and one top material per bot ground, since each top carries its
+  // own baked markings (bot-ground-markings.ts). Keyed by the bot ground's boxes; re-created if the
+  // scene was disposed and replaced.
   private static sharedBotGroundScene: Nullable<any> = null;
-  private static sharedBotGroundTopMaterial: Nullable<NodeMaterial> = null;
   private static sharedBotGroundSideMaterial: Nullable<NodeMaterial> = null;
-  private static sharedBotGroundMultiMaterial: Nullable<MultiMaterial> = null;
+  private static botGroundMaterials = new Map<string, { plate: MultiMaterial, gravel: NodeMaterial }>();
 
-  // Top uses a dedicated NodeMaterial built in code (bot-ground-top-material.ts)
-  // that samples local clones of the asphalt textures — editable independently
-  // of the planet's shared asphalt patches. Sides use a sibling NodeMaterial
-  // (bot-ground-side-material.ts) without the faction-colored border pattern.
-  private ensureSharedBotGroundMaterials(): MultiMaterial {
+  private botGroundMaterial(footprints: BotGroundFootprint[]): { plate: MultiMaterial, gravel: NodeMaterial } {
     const scene = this.rendererService.getScene();
-    if (BabylonTerrainTileImpl.sharedBotGroundScene !== scene
-        || !BabylonTerrainTileImpl.sharedBotGroundMultiMaterial) {
-      const top = buildBotGroundTopMaterial(scene);
-      const side = buildBotGroundSideMaterial(scene);
-
-      const multi = new MultiMaterial("BotGround multi", scene);
-      multi.subMaterials.push(side);
-      multi.subMaterials.push(top);
-
+    if (BabylonTerrainTileImpl.sharedBotGroundScene !== scene || !BabylonTerrainTileImpl.sharedBotGroundSideMaterial) {
       BabylonTerrainTileImpl.sharedBotGroundScene = scene;
-      BabylonTerrainTileImpl.sharedBotGroundTopMaterial = top;
-      BabylonTerrainTileImpl.sharedBotGroundSideMaterial = side;
-      BabylonTerrainTileImpl.sharedBotGroundMultiMaterial = multi;
+      BabylonTerrainTileImpl.sharedBotGroundSideMaterial = buildBotGroundSideMaterial(scene);
+      BabylonTerrainTileImpl.botGroundMaterials = new Map();
     }
-    return BabylonTerrainTileImpl.sharedBotGroundMultiMaterial!;
+    const key = footprints.map(f => `${f.x},${f.z},${f.yRot},${f.zRot}`).join(";");
+    let materials = BabylonTerrainTileImpl.botGroundMaterials.get(key);
+    if (!materials) {
+      const name = `BotGround ${footprints[0].x},${footprints[0].z}`;
+      const markings = bakeBotGroundMarkings(scene, `${name} markings`, footprints);
+      const multi = new MultiMaterial(`${name} multi`, scene);
+      multi.subMaterials.push(BabylonTerrainTileImpl.sharedBotGroundSideMaterial);
+      multi.subMaterials.push(buildBotGroundTopMaterial(scene, markings));
+      materials = {plate: multi, gravel: buildBotGroundGravelMaterial(scene, `${name} gravel`, markings)};
+      BabylonTerrainTileImpl.botGroundMaterials.set(key, materials);
+    }
+    return materials;
   }
 
   // Builds a BOT_BOX_LENGTH cube with its origin at the top face, matching
   // the editor box layout so `botGround.height` aligns the top with the ground.
-  // Uses the shared BotGround MultiMaterial: top face (+Y) = material index 1
-  // (top), the other 5 faces = material index 0 (side). Box face index order:
-  // +Z, -Z, +X, -X, +Y, -Y, 6 indices per face — top occupies [24..30).
-  private createBotGroundBox(name: string): Mesh {
+  // Top face (+Y) = material index 1 (top), the other 5 faces = material index 0 (side).
+  // Box face index order: +Z, -Z, +X, -X, +Y, -Y, 6 indices per face — top occupies [24..30).
+  private createBotGroundBox(name: string, material: MultiMaterial): Mesh {
     const scene = this.rendererService.getScene();
     const box = MeshBuilder.CreateBox(name, {size: BabylonTerrainTileImpl.BOT_BOX_LENGTH}, scene);
     box.position.y = -BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2.0;
@@ -1189,7 +1198,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     // Ground, not a model: the scene sky light washed the bot-ground plates out to white.
     scene.getLightByName(BabylonRenderServiceAccessImpl.SKY_LIGHT_NAME)?.excludedMeshes.push(box);
 
-    box.material = this.ensureSharedBotGroundMaterials();
+    box.material = material;
 
     const totalVertices = box.getTotalVertices();
     box.subMeshes = [];
@@ -1216,7 +1225,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       if (!botGround || !botGround.positions) {
         return;
       }
-      let botGroundNorm = new Vector3(0, 1, 0).normalize();
+      const flats: { x: number, z: number }[] = [];
       botGround.positions.forEach((position) => {
         // Skip invalid positions
         if (!position || typeof position.getX !== 'function' || typeof position.getY !== 'function') {
@@ -1227,8 +1236,25 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         if (typeof posX !== 'number' || typeof posY !== 'number' || isNaN(posX) || isNaN(posY)) {
           return;
         }
-        const box = this.createBotGroundBox(`BotGround ${posX},${posY}`);
-        box.position = new Vector3(posX, botGround.height, posY);
+        flats.push({x: posX, z: posY});
+      });
+      const slopes = (botGround.botGroundSlopeBoxes || []).filter(botGroundSlopeBox =>
+        // Skip invalid slope boxes
+        botGroundSlopeBox && typeof botGroundSlopeBox.xPos === 'number' && typeof botGroundSlopeBox.yPos === 'number' &&
+        !isNaN(botGroundSlopeBox.xPos) && !isNaN(botGroundSlopeBox.yPos));
+      const footprints: BotGroundFootprint[] = flats.map(flat => ({x: flat.x, z: flat.z, yRot: 0, zRot: 0}))
+        .concat(slopes.map(slope => ({x: slope.xPos, z: slope.yPos, yRot: slope.yRot, zRot: slope.zRot})));
+      if (footprints.length === 0) {
+        return;
+      }
+      const materials = this.botGroundMaterial(footprints);
+      const material = materials.plate;
+      this.createBotGroundGravel(flats, slopes.map(slope => ({x: slope.xPos, z: slope.yPos})), materials.gravel);
+
+      let botGroundNorm = new Vector3(0, 1, 0).normalize();
+      flats.forEach(flat => {
+        const box = this.createBotGroundBox(`BotGround ${flat.x},${flat.z}`, material);
+        box.position = new Vector3(flat.x, botGround.height, flat.z);
         BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
           type: RazarionMetadataType.BOT_GROUND,
           configId: undefined,
@@ -1237,33 +1263,95 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           botGroundNorm: botGroundNorm
         });
       });
-      if (botGround.botGroundSlopeBoxes) {
-        botGround.botGroundSlopeBoxes.forEach(botGroundSlopeBox => {
-          // Skip invalid slope boxes
-          if (!botGroundSlopeBox || typeof botGroundSlopeBox.xPos !== 'number' || typeof botGroundSlopeBox.yPos !== 'number' ||
-              isNaN(botGroundSlopeBox.xPos) || isNaN(botGroundSlopeBox.yPos)) {
-            return;
-          }
-          const x = -Math.sin(botGroundSlopeBox.zRot) * Math.cos(botGroundSlopeBox.yRot);
-          const y = Math.cos(botGroundSlopeBox.zRot);
-          const z = Math.sin(botGroundSlopeBox.zRot) * Math.sin(botGroundSlopeBox.yRot);
-          let botGroundNorm = new Vector3(x, y, z).normalize();
+      slopes.forEach(botGroundSlopeBox => {
+        const x = -Math.sin(botGroundSlopeBox.zRot) * Math.cos(botGroundSlopeBox.yRot);
+        const y = Math.cos(botGroundSlopeBox.zRot);
+        const z = Math.sin(botGroundSlopeBox.zRot) * Math.sin(botGroundSlopeBox.yRot);
+        let botGroundNorm = new Vector3(x, y, z).normalize();
 
-          const box = this.createBotGroundBox(`Slope BotGround ${botGroundSlopeBox.xPos},${botGroundSlopeBox.yPos}`);
-          box.position = new Vector3(botGroundSlopeBox.xPos, botGroundSlopeBox.height, botGroundSlopeBox.yPos);
-          box.rotationQuaternion = null;
-          box.rotation.y = botGroundSlopeBox.yRot;
-          box.rotation.z = botGroundSlopeBox.zRot;
-          BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
-            type: RazarionMetadataType.BOT_GROUND,
-            configId: undefined,
-            id: undefined,
-            editorHintTerrainObjectPosition: undefined,
-            botGroundNorm: botGroundNorm
-          });
-        })
-      }
+        const box = this.createBotGroundBox(`Slope BotGround ${botGroundSlopeBox.xPos},${botGroundSlopeBox.yPos}`, material);
+        box.position = new Vector3(botGroundSlopeBox.xPos, botGroundSlopeBox.height, botGroundSlopeBox.yPos);
+        box.rotationQuaternion = null;
+        box.rotation.y = botGroundSlopeBox.yRot;
+        box.rotation.z = botGroundSlopeBox.zRot;
+        BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
+          type: RazarionMetadataType.BOT_GROUND,
+          configId: undefined,
+          id: undefined,
+          editorHintTerrainObjectPosition: undefined,
+          botGroundNorm: botGroundNorm
+        });
+      });
     });
+  }
+
+  /**
+   * The gravel bed around a bot ground: cells of GRAVEL_CELL along the outline of the flat boxes,
+   * draped over this tile's terrain a little above it; the material thins the pebbles out towards the
+   * edge (bot-ground-gravel-material.ts). Only the cells inside this tile - a neighbouring tile lays
+   * its own part. None next to the ramps.
+   */
+  private createBotGroundGravel(flats: { x: number, z: number }[], slopes: { x: number, z: number }[], material: Material) {
+    const half = BabylonTerrainTileImpl.BOT_BOX_LENGTH / 2, cell = BabylonTerrainTileImpl.GRAVEL_CELL;
+    let minX = Infinity, minZ = Infinity, maxX = -Infinity, maxZ = -Infinity;
+    flats.forEach(flat => {
+      minX = Math.min(minX, flat.x - half - GRAVEL_REACH);
+      minZ = Math.min(minZ, flat.z - half - GRAVEL_REACH);
+      maxX = Math.max(maxX, flat.x + half + GRAVEL_REACH);
+      maxZ = Math.max(maxZ, flat.z + half + GRAVEL_REACH);
+    });
+    minX = Math.max(minX, this.tileXOffset);
+    minZ = Math.max(minZ, this.tileYOffset);
+    maxX = Math.min(maxX, this.tileXOffset + BabylonTerrainTileImpl.NODE_X_COUNT);
+    maxZ = Math.min(maxZ, this.tileYOffset + BabylonTerrainTileImpl.NODE_Y_COUNT);
+    const positions: number[] = [], indices: number[] = [];
+    for (let z = Math.floor(minZ / cell) * cell; z < maxZ; z += cell) {
+      for (let x = Math.floor(minX / cell) * cell; x < maxX; x += cell) {
+        const cx = x + cell / 2, cz = z + cell / 2;
+        // Chessboard distance to the plate: square corners, like the bed in the bake
+        let distance = Infinity;
+        for (const flat of flats) {
+          distance = Math.min(distance, Math.max(Math.abs(cx - flat.x), Math.abs(cz - flat.z)) - half);
+        }
+        if (distance <= 0 || distance >= GRAVEL_REACH
+          || slopes.some(slope => Math.max(Math.abs(cx - slope.x), Math.abs(cz - slope.z)) < half + GRAVEL_REACH)) {
+          continue;
+        }
+        const first = positions.length / 3;
+        for (const [px, pz] of [[x, z], [x + cell, z], [x + cell, z + cell], [x, z + cell]]) {
+          positions.push(px, this.getHeightSmooth(px, pz) + BabylonTerrainTileImpl.GRAVEL_LIFT, pz);
+        }
+        // Same winding as the ground mesh (createVertexData), or the cells face down and are culled
+        indices.push(first, first + 1, first + 3, first + 1, first + 2, first + 3);
+      }
+    }
+    if (indices.length === 0) {
+      return;
+    }
+    const normals: number[] = [];
+    VertexData.ComputeNormals(positions, indices, normals);
+    const vertexData = new VertexData();
+    vertexData.positions = positions;
+    vertexData.indices = indices;
+    vertexData.normals = normals;
+    const scene = this.rendererService.getScene();
+    const gravel = new Mesh("BotGround gravel", scene);
+    vertexData.applyToMesh(gravel);
+    gravel.parent = this.container;
+    gravel.receiveShadows = true;
+    gravel.material = material;
+    gravel.setEnabled(Showcase.isOn("botGravel"));
+    scene.getLightByName(BabylonRenderServiceAccessImpl.SKY_LIGHT_NAME)?.excludedMeshes.push(gravel);
+    this.rendererService.directionalLight.includedOnlyMeshes.push(gravel);
+    this.botGroundMeshes.push(gravel);
+  }
+
+  /** Ground height between the nodes, interpolated - the gravel must lie on the ground, not step over it. */
+  private getHeightSmooth(worldX: number, worldZ: number): number {
+    const x = Math.floor(worldX), z = Math.floor(worldZ), fx = worldX - x, fz = worldZ - z;
+    const h00 = this.getHeightAt(x, z), h10 = this.getHeightAt(x + 1, z);
+    const h01 = this.getHeightAt(x, z + 1), h11 = this.getHeightAt(x + 1, z + 1);
+    return (h00 * (1 - fx) + h10 * fx) * (1 - fz) + (h01 * (1 - fx) + h11 * fx) * fz;
   }
 
   private static readonly SPRITE_CELL_SIZE = 64;

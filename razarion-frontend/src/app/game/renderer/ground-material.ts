@@ -25,7 +25,7 @@ import {OneMinusBlock} from "@babylonjs/core/Materials/Node/Blocks/oneMinusBlock
 import {PowBlock} from "@babylonjs/core/Materials/Node/Blocks/powBlock";
 import {GradientBlock, GradientBlockColorStep} from "@babylonjs/core/Materials/Node/Blocks/gradientBlock";
 import {TriPlanarBlock} from "@babylonjs/core/Materials/Node/Blocks/triPlanarBlock";
-import {CLOUD, cloudTime} from "./cloud-shadow";
+import {cloudShadeNode, cloudTimeInput} from "./cloud-shadow-node";
 import {SimplexPerlin3DBlock} from "@babylonjs/core/Materials/Node/Blocks/simplexPerlin3DBlock";
 import {NormalizeBlock} from "@babylonjs/core/Materials/Node/Blocks/normalizeBlock";
 import type {Scene} from "@babylonjs/core/scene";
@@ -579,6 +579,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   pathEarth.output.connectTo(diffusePath.right);
   pathAmount.output.connectTo(diffusePath.gradient);
 
+
   // ========== Normal map textures ==========
   const beachNorm = new TextureBlock("Beach texture");
   uvBeach.output.connectTo(beachNorm.uv);
@@ -777,64 +778,12 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   specLerp.output.connectTo(light.specularColor);
 
   // Time for animation (shore foam, cloud shadows)
-  const foamTime = new InputBlock("FoamTime", undefined, NodeMaterialBlockConnectionPointTypes.Float);
-  foamTime.value = 0;
-  foamTime.isConstant = false;
-  // Shared clock, not per tile: every tile's clouds must be in the same place, or they would
-  // jump at tile seams for tiles built at different moments.
-  // Tie the per-frame animation observer to the material's lifetime. Ground materials are
-  // built once PER TILE; without this cleanup every tile ever scrolled into view left a live
-  // onBeforeRender callback running forever, so the frame cost grew the more the player scrolled
-  // (only a reload reset it). Disposing the material now removes the observer with it.
-  const foamObserver = scene.onBeforeRenderObservable.add(() => {
-    foamTime.value = cloudTime();
-  });
-  mat.onDisposeObservable.add(() => scene.onBeforeRenderObservable.remove(foamObserver));
+  const foamTime = cloudTimeInput(scene, mat, "FoamTime");
 
   // ========== Cloud shadows ==========
-  // Two octaves of simplex noise drifting with the wind and slowly changing shape; where they are
-  // high a cloud takes the sun away. Computed, not sampled: the fragment shader already uses 15 of
-  // the 16 texture units a WebGL2 GPU guarantees. Only the sun: sky light and foam stay as they are.
-  const cloudDrift = new ScaleBlock("cloud drift");
-  foamTime.output.connectTo(cloudDrift.input);
-  floatInput("cloud speed", CLOUD.SPEED).output.connectTo(cloudDrift.factor);
-  const cloudUvBase = new ScaleBlock("cloud uv base");
-  worldXZ.xy.connectTo(cloudUvBase.input);
-  floatInput("cloud scale", CLOUD.SCALE).output.connectTo(cloudUvBase.factor);
-  const cloudUv = new AddBlock("cloud uv");
-  cloudUvBase.output.connectTo(cloudUv.left);
-  cloudDrift.output.connectTo(cloudUv.right);
-  const cloudUvSplit = new VectorSplitterBlock("Split cloud uv");
-  cloudUv.output.connectTo(cloudUvSplit.xyIn);
-  const cloudEvolve = new ScaleBlock("cloud evolve");
-  foamTime.output.connectTo(cloudEvolve.input);
-  floatInput("cloud evolve speed", CLOUD.EVOLVE_SPEED).output.connectTo(cloudEvolve.factor);
-  const cloudSeed = new VectorMergerBlock("cloud seed");
-  cloudUvSplit.x.connectTo(cloudSeed.x);
-  cloudUvSplit.y.connectTo(cloudSeed.y);
-  cloudEvolve.output.connectTo(cloudSeed.z);
-  const cloudNoise1 = new SimplexPerlin3DBlock("cloud noise 1");
-  cloudSeed.xyz.connectTo(cloudNoise1.seed);
-  const cloudSeedFine = new ScaleBlock("cloud seed fine");
-  cloudSeed.xyz.connectTo(cloudSeedFine.input);
-  floatInput("cloud fine scale", CLOUD.FINE_SCALE).output.connectTo(cloudSeedFine.factor);
-  const cloudNoise2 = new SimplexPerlin3DBlock("cloud noise 2");
-  cloudSeedFine.output.connectTo(cloudNoise2.seed);
-  const cloudNoise2Weighted = new ScaleBlock("cloud noise 2 weighted");
-  cloudNoise2.output.connectTo(cloudNoise2Weighted.input);
-  floatInput("cloud fine weight", CLOUD.FINE_WEIGHT).output.connectTo(cloudNoise2Weighted.factor);
-  const cloudCombined = new AddBlock("cloud combined");
-  cloudNoise1.output.connectTo(cloudCombined.left);
-  cloudNoise2Weighted.output.connectTo(cloudCombined.right);
-  const cloudStep = new SmoothStepBlock("cloud step");
-  cloudCombined.output.connectTo(cloudStep.value);
-  floatInput("cloud edge0", CLOUD.EDGE0).output.connectTo(cloudStep.edge0);
-  floatInput("cloud edge1", CLOUD.EDGE1).output.connectTo(cloudStep.edge1);
-  const cloudDarken = new ScaleBlock("cloud darken");
-  cloudStep.output.connectTo(cloudDarken.input);
-  floatInput("cloud shadow strength", CLOUD.SHADOW_STRENGTH).output.connectTo(cloudDarken.factor);
-  const cloudShade = new OneMinusBlock("cloud shade");
-  cloudDarken.output.connectTo(cloudShade.input);
+  // Where a cloud passes it takes the sun away (cloud-shadow-node.ts). Only the sun: sky light and
+  // foam stay as they are.
+  const cloudShade = cloudShadeNode(worldXZ.xy, foamTime.output);
 
   // ========== Lighting ==========
   // Sun: dimmed under clouds, and a little in hollows (the sky visibility also stands for the light
@@ -844,14 +793,14 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   reliefSplit.x.connectTo(skyForSun.right);
   floatInput("sun occlusion", 0.4).output.connectTo(skyForSun.gradient);
   const sunShade = new MultiplyBlock("sun shade");
-  cloudShade.output.connectTo(sunShade.left);
+  cloudShade.connectTo(sunShade.left);
   skyForSun.output.connectTo(sunShade.right);
   const sunDiffuse = new ScaleBlock("sun diffuse");
   light.diffuseOutput.connectTo(sunDiffuse.input);
   sunShade.output.connectTo(sunDiffuse.factor);
   const sunSpecular = new ScaleBlock("sun specular");
   light.specularOutput.connectTo(sunSpecular.input);
-  cloudShade.output.connectTo(sunSpecular.factor);
+  cloudShade.connectTo(sunSpecular.factor);
 
   // Sky light: cool from above, warm bounce from below, held back where the land around hides the sky.
   // There was no ambient term before, so shadowed ground fell to 40% of the sun and nothing else.

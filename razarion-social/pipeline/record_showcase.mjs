@@ -40,8 +40,14 @@ const SHAPES = {
   landscape: { width: 1920, height: 1080 },
 };
 
-/** Same order as SHOWCASE_FEATURES in showcase.ts: the order the improvements were made in. */
-const FEATURES = ['light', 'clouds', 'relief', 'wind', 'paths', 'growth'];
+/**
+ * Same order as SHOWCASE_FEATURES in showcase.ts: the order the improvements were made in. Two series:
+ * the terrain look and the bot-ground plates. A take switches only its own series; the other stays on.
+ */
+const SERIES = {
+  terrain: ['light', 'clouds', 'relief', 'wind', 'paths', 'growth'],
+  bot: ['botMarkings', 'botAsphalt', 'botClouds', 'botGravel'],
+};
 
 /**
  * Camera moves on the beginners' island (planet 117). Game x/y; the camera orbits target at
@@ -68,11 +74,36 @@ const SHOTS = {
     target: [232, 172], height: 0.5, shadows: 'off',
     keys: [{ alpha: -Math.PI / 2 + 0.35, beta: 0.6, radius: 80 }, { alpha: -Math.PI / 2 - 0.05, beta: 0.55, radius: 70 }],
   },
+  garrison: {
+    about: 'bot: the RazCore Garrison on the island, slow turn around the plate',
+    series: 'bot', target: [160, 124], height: 1,
+    keys: [{ alpha: Math.PI - 0.45, beta: 0.85, radius: 52 }, { alpha: Math.PI + 0.35, beta: 0.75, radius: 44 }],
+  },
+  edge: {
+    about: 'bot: low along the western edge of the Garrison plate',
+    series: 'bot', target: [146, 112], height: 1,
+    keys: [{ alpha: Math.PI - 0.6, beta: 0.7, radius: 18 }, { alpha: Math.PI - 0.1, beta: 0.65, radius: 16 }],
+  },
+  platform: {
+    about: 'bot: the RazCore Platform, an L of plates on the water',
+    series: 'bot', target: [402, 282], height: 0.5, shadows: 'off',
+    keys: [{ alpha: Math.PI - 0.3, beta: 0.9, radius: 70 }, { alpha: Math.PI + 0.25, beta: 0.8, radius: 60 }],
+  },
+  spire: {
+    about: 'bot: the Spire plate with its ramp, low from the west',
+    series: 'bot', target: [512, 576], height: 2,
+    keys: [{ alpha: Math.PI - 0.7, beta: 0.75, radius: 45 }, { alpha: Math.PI - 0.2, beta: 0.7, radius: 38 }],
+  },
+  occupy: {
+    about: 'bot: a large Phase 3 plate (Occupy 5m), high and wide',
+    series: 'bot', target: [1608, 248], height: 4, shadows: 'off',
+    keys: [{ alpha: Math.PI - 0.3, beta: 0.9, radius: 95 }, { alpha: Math.PI + 0.2, beta: 0.8, radius: 85 }],
+  },
 };
 
 function usage() {
   info('node record_showcase.mjs --shot <name> [--reveal | --states "none;light;light,clouds"] [--label <word>]');
-  info('                         [--seconds 14] [--shadows on|off] [--both | --shape landscape|portrait] [--settle 20] [--url http://localhost:8081] [--head]');
+  info('                         [--wireframe] [--seconds 14] [--shadows on|off] [--both | --shape landscape|portrait] [--settle 20] [--url http://localhost:8081] [--head]');
   info('node record_showcase.mjs --list');
 }
 
@@ -96,7 +127,9 @@ async function main() {
   const shadows = String(args.shadows ?? shot.shadows ?? 'on') !== 'off';
   const shapes = args.both ? ['landscape', 'portrait'] : [String(args.shape ?? 'landscape')];
   for (const s of shapes) if (!SHAPES[s]) throw new Error(`Unknown shape "${s}" - portrait or landscape.`);
-  const states = statesOf(args);
+  const features = SERIES[shot.series ?? 'terrain'];
+  const otherFeatures = Object.values(SERIES).flat().filter((f) => !features.includes(f));
+  const states = statesOf(args, features);
   const label = slugOf(String(args.label ?? (args.reveal ? 'reveal' : 'take')));
 
   const token = await adminToken(origin);
@@ -138,10 +171,10 @@ async function main() {
           await page.setViewportSize(SHAPES[shape]);
           await page.waitForTimeout(2000);
         }
-        for (const [stateNo, features] of states.entries()) {
-          const stateName = features.length === FEATURES.length ? 'all' : features.length ? features.join('+') : 'none';
+        for (const [stateNo, state] of states.entries()) {
+          const stateName = state.length === features.length ? 'all' : state.length ? state.join('+') : 'none';
           const file = join(OUT_DIR, `${runStamp}-${args.shot}-${label}-${String(stateNo + 1).padStart(2, '0')}-${stateName}-${shape}.mp4`);
-          await page.evaluate((f) => { window.razShowcase.only(f); window.razShowcase.hideGui(true); }, features);
+          await page.evaluate(([f, wire]) => { window.razShowcase.only(f); window.razShowcase.hideGui(true); window.razShowcase.wireframe?.(wire); }, [[...state, ...otherFeatures], !!args.wireframe]);
           // Tiles and sprites pick the switches up at once; a second for the shaders to settle
           await page.waitForTimeout(1500);
           step(`recording ${shape}, ${stateName}`);
@@ -153,7 +186,7 @@ async function main() {
           await (await download).saveAs(file);
           try {
             await verifyTake(file, seconds);
-            takes.push({ file: rel(file), shot: String(args.shot), label, shape, features, ...source, recordedAt: new Date().toISOString() });
+            takes.push({ file: rel(file), shot: String(args.shot), label, shape, features: state, ...source, recordedAt: new Date().toISOString() });
           } catch (e) {
             warn(e.message);
           }
@@ -172,7 +205,7 @@ async function main() {
 }
 
 /** --reveal: nothing, then one improvement more per take, in the order they were made. */
-function statesOf(args) {
+function statesOf(args, FEATURES) {
   if (args.reveal) return FEATURES.map((_, i) => FEATURES.slice(0, i)).concat([FEATURES]);
   if (args.states) {
     return String(args.states).split(';').map((s) => {

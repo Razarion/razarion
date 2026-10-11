@@ -12,7 +12,11 @@ import {PerturbNormalBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment
 import {TextureBlock} from "@babylonjs/core/Materials/Node/Blocks/Dual/textureBlock";
 import {AddBlock} from "@babylonjs/core/Materials/Node/Blocks/addBlock";
 import {ScaleBlock} from "@babylonjs/core/Materials/Node/Blocks/scaleBlock";
+import {VectorSplitterBlock} from "@babylonjs/core/Materials/Node/Blocks/vectorSplitterBlock";
+import {VectorMergerBlock} from "@babylonjs/core/Materials/Node/Blocks/vectorMergerBlock";
 import type {Scene} from "@babylonjs/core/scene";
+import {Showcase} from "./showcase";
+import {cloudShadeNode, cloudTimeInput} from "./cloud-shadow-node";
 
 const TEX_PATH = "renderer/textures/";
 
@@ -115,9 +119,22 @@ export function buildBotGroundSideMaterial(scene: Scene): NodeMaterial {
   diffuseTex.rgb.connectTo(light.diffuseColor);
   specularColor.output.connectTo(light.specularColor);
 
+  const worldSplit = new VectorSplitterBlock("World pos splitter");
+  worldPos.output.connectTo(worldSplit.xyzw);
+  const worldXZ = new VectorMergerBlock("World XZ");
+  worldSplit.x.connectTo(worldXZ.x);
+  worldSplit.z.connectTo(worldXZ.y);
+  // The sun goes under the drifting clouds like on the ground around (cloud-shadow-node.ts)
+  const cloudShade = cloudShadeNode(worldXZ.xy, cloudTimeInput(scene, mat, "cloud time").output, "bot cloud shadow strength");
+  const sunDiffuse = new ScaleBlock("sun diffuse");
+  light.diffuseOutput.connectTo(sunDiffuse.input);
+  cloudShade.connectTo(sunDiffuse.factor);
+  const sunSpecular = new ScaleBlock("sun specular");
+  light.specularOutput.connectTo(sunSpecular.input);
+  cloudShade.connectTo(sunSpecular.factor);
   const addLighting = new AddBlock("Add lighting");
-  light.diffuseOutput.connectTo(addLighting.left);
-  light.specularOutput.connectTo(addLighting.right);
+  sunDiffuse.output.connectTo(addLighting.left);
+  sunSpecular.output.connectTo(addLighting.right);
 
   const ambientStrength = floatInput("ambient strength", 0.35);
   const ambient = new ScaleBlock("Ambient");
@@ -136,6 +153,7 @@ export function buildBotGroundSideMaterial(scene: Scene): NodeMaterial {
   mat.addOutputNode(vertexOutput);
   mat.addOutputNode(fragmentOutput);
   mat.build();
+  Showcase.applyToGround(mat);
 
   return mat;
 }

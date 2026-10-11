@@ -66,8 +66,13 @@ export function publishedPosts() {
   for (const [id, rec] of Object.entries(readJson(POSTED_FILE, { posted: {} }).posted || {})) {
     if (rec.ig_media_id) out.ig.push({ id, remoteId: rec.ig_media_id, publishedAt: rec.published_at });
   }
+  // A few backfilled videos were recorded by their bare video id; insights only answer to the
+  // page-scoped post id, which is the page id and that id joined by an underscore.
+  const [pageId] = facebook.pageCredentials();
   for (const [id, rec] of Object.entries(readJson(POSTED_FB_FILE, { posted: {} }).posted || {})) {
-    if (rec.fb_post_id) out.fb.push({ id, remoteId: rec.fb_post_id, publishedAt: rec.published_at });
+    if (!rec.fb_post_id) continue;
+    const remoteId = rec.fb_post_id.includes('_') ? rec.fb_post_id : `${pageId}_${rec.fb_post_id}`;
+    out.fb.push({ id, remoteId, publishedAt: rec.published_at });
   }
   return out;
 }

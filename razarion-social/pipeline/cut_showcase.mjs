@@ -44,6 +44,10 @@ const LABELS = {
   wind: '+ Wind',
   paths: '+ Paths',
   growth: '+ Growth under plants',
+  botMarkings: '+ Markings and logo',
+  botAsphalt: '+ Even asphalt',
+  botClouds: '+ Clouds on the plates',
+  botGravel: '+ Gravel bed',
 };
 
 async function main() {

@@ -16,10 +16,12 @@ import {WindPlugin} from "./wind-plugin";
  * Only the director client installs it (window.razShowcase); players never get it. "Off" is the look
  * before the improvement as closely as the current code allows: the old sun and no tone mapping for
  * light, neutral tints for relief, zero strength for clouds, wind, paths and growth. The hills are in
- * the height map and cannot be switched here.
+ * the height map and cannot be switched here. The bot features switch the bot-ground plates back to
+ * the dashed border per 8 m box (botMarkings), to the raw asphalt photo (botAsphalt) and to no cloud
+ * shadows on the plates (botClouds) and to no gravel bed around them (botGravel).
  */
-export type ShowcaseFeature = "light" | "clouds" | "relief" | "wind" | "paths" | "growth";
-export const SHOWCASE_FEATURES: ShowcaseFeature[] = ["light", "clouds", "relief", "wind", "paths", "growth"];
+export type ShowcaseFeature = "light" | "clouds" | "relief" | "wind" | "paths" | "growth" | "botMarkings" | "botAsphalt" | "botClouds" | "botGravel";
+export const SHOWCASE_FEATURES: ShowcaseFeature[] = ["light", "clouds", "relief", "wind", "paths", "growth", "botMarkings", "botAsphalt", "botClouds", "botGravel"];
 
 /** What the showcase needs of BabylonRenderServiceAccessImpl. */
 export interface ShowcaseRenderer {
@@ -29,15 +31,22 @@ export interface ShowcaseRenderer {
 
 type BlockValue = number | Color3;
 
-/** Ground shader inputs (ground-material.ts block names) and their value with the feature off. */
+/** Shader inputs (ground-material.ts, bot-ground-top-material.ts block names) and their value with the feature off. */
 const GROUND_OFF: Record<ShowcaseFeature, Record<string, BlockValue>> = {
   light: {"ambient intensity": 0},   // the ground had no sky term before
-  clouds: {"cloud shadow strength": 0},
+  clouds: {"cloud shadow strength": 0, "bot cloud shadow strength": 0},
   relief: {"hollow color": new Color3(1, 1, 1), "crest color": new Color3(1, 1, 1), "sun occlusion": 0, "slope earth strength": 0},
   wind: {},
   paths: {"path strength": 0},
   growth: {"growth strength": 0, "growth core darken": 1},
+  botMarkings: {"markings strength": 0, "old border strength": 1},
+  botAsphalt: {"grain strength": 0},
+  botClouds: {"bot cloud shadow strength": 0},
+  botGravel: {},   // the gravel meshes, see applyScene
 };
+
+/** The materials the inputs above live in. */
+const SWITCHED_MATERIALS = ["Ground", "BotGround top", "BotGround side"];
 
 /** The sun before it was lowered and warmed (commit bde8a8c9a). */
 const OLD_SUN = {direction: new Vector3(-3, -10, 3), intensity: 0.8, diffuse: new Color3(1, 1, 1)};
@@ -59,6 +68,8 @@ export class Showcase {
   private static scene: Scene | null = null;
   private static sun: DirectionalLight | null = null;
   private static saved: SavedLight | null = null;
+  /** Materials authored elsewhere that got switchable inputs (the asphalt's cloud shadows). */
+  private static readonly registered = new WeakSet<Material>();
   /** The value each ground input had when first switched, per material: that is "on". */
   private static readonly onValues = new WeakMap<InputBlock, BlockValue>();
 
@@ -73,8 +84,20 @@ export class Showcase {
       features: SHOWCASE_FEATURES,
       keepShadows: (keep: boolean) => Showcase.keepShadows = keep,
       hideGui: (hide: boolean) => Showcase.hideGui(hide),
+      /** The whole scene as a wire model - the technical shots of a devlog. */
+      wireframe: (on: boolean) => {
+        const scene = Showcase.renderer?.getScene();
+        if (scene) {
+          scene.forceWireframe = on;
+        }
+      },
     };
     console.log("[Showcase] installed: window.razShowcase");
+  }
+
+  /** Whether a feature is shown; true in every player's client, where nothing is ever switched. */
+  static isOn(feature: ShowcaseFeature): boolean {
+    return !Showcase.off.has(feature);
   }
 
   static set(feature: ShowcaseFeature, on: boolean): void {
@@ -93,10 +116,16 @@ export class Showcase {
     Showcase.scene?.materials.forEach(m => Showcase.applyToGround(m));
   }
 
-  /** Called for every ground material as it is built, so tiles that stream in later match. */
+  /** A material that is not named like the ones above but carries switchable inputs. */
+  static register(material: Material): void {
+    Showcase.registered.add(material);
+    Showcase.applyToGround(material);
+  }
+
+  /** Called for every ground and bot-ground material as it is built, so tiles that stream in later match. */
   static applyToGround(material: Material): void {
     // Nothing was ever switched (every player's client): leave the material as built
-    if (!Showcase.saved || !(material instanceof NodeMaterial) || material.name !== "Ground") {
+    if (!Showcase.saved || !(material instanceof NodeMaterial) || (!SWITCHED_MATERIALS.includes(material.name) && !Showcase.registered.has(material))) {
       return;
     }
     for (const feature of SHOWCASE_FEATURES) {
@@ -158,6 +187,8 @@ export class Showcase {
     // Sprites shade themselves from these on the CPU (cloud-shadow.ts)
     CLOUD.SHADOW_STRENGTH = Showcase.off.has("clouds") ? 0 : saved.cloudStrength;
     WindPlugin.strength = Showcase.off.has("wind") ? 0 : 1;
+    // A mesh, not a shader input: tiles built later read isOn("botGravel")
+    scene.meshes.filter(mesh => mesh.name === "BotGround gravel").forEach(mesh => mesh.setEnabled(!Showcase.off.has("botGravel")));
   }
 
   /**

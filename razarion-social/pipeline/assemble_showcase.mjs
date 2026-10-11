@@ -4,6 +4,7 @@
 //
 //   node assemble_showcase.mjs --story terrain-1             # data/showcase/cuts/devlog-terrain-1.mp4
 //   node assemble_showcase.mjs --story terrain-1 --check     # only list what the story needs
+//   node assemble_showcase.mjs --story bot-1 --thumbnail     # only the thumbnail of the story
 //
 // The story is written here, in the first person - the posts that do well are Beat's own voice.
 // Each segment is rendered to the same format first (1920x1080, 30 fps, a silent audio track so
@@ -27,17 +28,19 @@ const CUT_DIR = join(SHOWCASE_DIR, 'cuts');
 const WIDTH = 1920, HEIGHT = 1080, FPS = 30, FADE = 0.35;
 
 const take = (name) => join(SHOWCASE_DIR, `${name}.mp4`);
+const graphic = (name) => join(SHOWCASE_DIR, 'graphics', `${name}.png`);
 const cut = (name) => join(CUT_DIR, `${name}-landscape.mp4`);
 
 /**
  * Segments: {clip, from, to, title?, subtitle?} plays a stretch of a file with an optional caption,
  * {card: [title, subtitle], seconds} a text card, {split: [left, right], labels, from, to} the same
- * camera move from two takes side by side, {outro: seconds} the closing card.
+ * camera move from two takes side by side, {image, seconds} a still picture (bot_devlog_graphics.mjs)
+ * with a slow push in, {outro: seconds} the closing card.
  */
 const STORIES = {
   'terrain-1': [
     { clip: take('20261007-1810-island-reveal-01-none-landscape'), from: 2, to: 6.5, title: 'My island looked boring.' },
-    { clip: take('20261007-1929-island-textures-v2-hills-01-all-landscape'), from: 6.5, to: 11, title: 'So I changed it, one thing at a time.' },
+    { clip: take('20261008-1833-island-final-01-all-landscape'), from: 6.5, to: 11, title: 'So I changed it, one thing at a time.' },
     { card: ['Razarion devlog', 'Terrain: light, clouds, relief, wind, paths and the ground itself'], seconds: 3.5 },
     { card: ['1 · From above', 'Same camera, same island - one improvement more every few seconds'], seconds: 3 },
     { clip: cut('ch-island-reveal') },
@@ -45,16 +48,52 @@ const STORIES = {
     { clip: cut('ch-hills-reveal') },
     { card: ['3 · At player height', 'Where you actually play'], seconds: 3 },
     { clip: cut('ch-ground-reveal') },
-    { card: ['4 · The ground itself', 'The photo grass read like a balcony carpet - so the ground went through four versions'], seconds: 4.5 },
+    { card: ['4 · The ground itself', 'The photo grass read like a balcony carpet - so the ground went through five versions'], seconds: 4.5 },
     { clip: cut('ch-hills-iterations') },
     { clip: cut('ch-ground-iterations') },
     {
-      split: [take('20261007-1810-island-reveal-01-none-landscape'), take('20261007-1929-island-textures-v2-hills-01-all-landscape')],
+      split: [take('20261007-1810-island-reveal-01-none-landscape'), take('20261008-1833-island-final-01-all-landscape')],
       labels: ['Before', 'Now'], from: 4, to: 16,
     },
     { card: ['Next', 'Every phase of the world gets a look of its own'], seconds: 3.5 },
     { outro: 5 },
   ],
+  // Opens on the finished bases - the picture that makes people stay - and only then shows where
+  // they came from.
+  'bot-1': [
+    { clip: take('20261011-0748-garrison-final-reveal-05-all-landscape'), from: 3, to: 8, title: 'My RTS bot bases look like this now.' },
+    { clip: take('20261011-final-platform-landscape'), from: 4, to: 8.5 },
+    { clip: take('20261011-0748-garrison-final-reveal-01-none-landscape'), from: 3, to: 8, title: 'A week ago: grey parking lots.' },
+    { card: ['Razarion devlog', 'Bot bases: markings, a logo, clouds and a bed of gravel'], seconds: 3.5 },
+    { card: ['1 · The Garrison', 'Same camera - one improvement more every few seconds'], seconds: 3 },
+    { clip: cut('ch-garrison-reveal') },
+    { image: graphic('bot-bake'), seconds: 7 },
+    { card: ['2 · The naval platform', 'An L of plates in the sea'], seconds: 3 },
+    { clip: cut('ch-platform-reveal') },
+    { image: graphic('bot-pebbles'), seconds: 6 },
+    { card: ['3 · Under the hood', 'The same base as a wire model'], seconds: 3 },
+    {
+      split: [take('20261011-wire-garrison-landscape'), take('20261011-0748-garrison-final-reveal-05-all-landscape')],
+      labels: ['Wireframe', 'Rendered'], from: 4, to: 14,
+    },
+    { clip: take('20261011-wire-platform-landscape'), from: 6, to: 12 },
+    { card: ['4 · Ramps and big plates', 'Chevrons point the way up'], seconds: 3 },
+    { clip: take('20261011-final-spire-landscape'), from: 4, to: 12 },
+    { clip: take('20261011-final-occupy-landscape'), from: 4, to: 11 },
+    { image: graphic('bot-shadow'), seconds: 7 },
+    { image: graphic('bot-performance'), seconds: 7 },
+    {
+      split: [take('20261011-0748-garrison-final-reveal-01-none-landscape'), take('20261011-0748-garrison-final-reveal-05-all-landscape')],
+      labels: ['Before', 'Now'], from: 4, to: 16,
+    },
+    { card: ['Next', 'The bases get company: props and buildings made for them'], seconds: 3.5 },
+    { outro: 5 },
+  ],
+};
+
+/** The thumbnail: a still of the finished base with a short, big line on it. */
+const THUMBNAILS = {
+  'bot-1': { clip: take('20261011-0748-garrison-final-reveal-05-all-landscape'), at: 9, lines: ['BOT BASES', 'REBUILT'] },
 };
 
 async function main() {
@@ -63,7 +102,8 @@ async function main() {
   const story = STORIES[name];
   if (!story) throw new Error(`Unknown story "${name}". Known: ${Object.keys(STORIES).join(', ')}`);
 
-  const missing = story.flatMap((s) => [s.clip, ...(s.split ?? [])]).filter((f) => f && !existsSync(f));
+  if (args.thumbnail) return makeThumbnail(name);
+  const missing = story.flatMap((s) => [s.clip, s.image, ...(s.split ?? [])]).filter((f) => f && !existsSync(f));
   for (const f of missing) info(`  missing: ${f}`);
   if (missing.length) throw new Error('The story needs files that are not there - record or cut them first (cut_showcase.mjs --outro off).');
   if (args.check) return ok('Everything the story needs is there.');
@@ -85,6 +125,7 @@ async function main() {
   const probe = await probeVideo(out);
   if (!probe) throw new Error(`${out} came out unreadable.`);
   rmSync(work, { recursive: true, force: true });
+  if (THUMBNAILS[name]) await makeThumbnail(name);
   ok(`${out}: ${probe.width}x${probe.height}, ${Math.floor(probe.duration / 60)}:${String(Math.round(probe.duration % 60)).padStart(2, '0')} min`);
 }
 
@@ -92,6 +133,7 @@ function describe(s) {
   if (s.clip) return `${s.clip.split(/[\\/]/).pop()}${s.title ? ` "${s.title}"` : ''}`;
   if (s.card) return `card "${s.card[0]}"`;
   if (s.split) return `split ${s.labels.join(' | ')}`;
+  if (s.image) return `image ${s.image.split(/[\/]/).pop()}`;
   return 'outro';
 }
 
@@ -122,6 +164,13 @@ async function renderSegment(s, out, work, i) {
       `[0:v]${base}[b];[b][1:v]overlay=0:0:shortest=1,${fades(length)}[v]`,
       '-map', '[v]', '-map', '2:a', '-t', length.toFixed(3), ...ENCODE, out]);
   }
+  if (s.image) {
+    // A slow push in, so a still picture does not read as a frozen video
+    const frames = Math.round(s.seconds * FPS);
+    return ffmpeg(['-loop', '1', '-t', String(s.seconds), '-i', s.image, ...SILENCE, '-filter_complex',
+      `[0:v]scale=${WIDTH * 2}:${HEIGHT * 2},zoompan=z='1+0.06*on/${frames}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=${frames}:s=${WIDTH}x${HEIGHT}:fps=${FPS},format=yuv420p,${fades(s.seconds)}[v]`,
+      '-map', '[v]', '-map', '1:a', '-t', String(s.seconds), ...ENCODE, out]);
+  }
   if (s.split) {
     // The same camera move from both takes, each showing its own half of the frame
     const length = s.to - s.from, half = WIDTH / 2;
@@ -133,6 +182,35 @@ async function renderSegment(s, out, work, i) {
       '-map', '[v]', '-map', '3:a', '-t', length.toFixed(3), ...ENCODE, out]);
   }
   throw new Error('Unknown segment.');
+}
+
+async function makeThumbnail(name) {
+  const spec = THUMBNAILS[name];
+  if (!spec) throw new Error(`No thumbnail for "${name}".`);
+  const frame = join(CUT_DIR, `devlog-${name}-frame.png`);
+  await ffmpeg(['-ss', String(spec.at), '-i', spec.clip, '-frames:v', '1', '-vf', `scale=${WIDTH}:${HEIGHT}`, frame]);
+  const { loadImage } = await import('@napi-rs/canvas');
+  const canvas = createCanvas(1280, 720);
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(await loadImage(frame), 0, 0, 1280, 720);
+  // Dark on the left for the words, the base stays bright
+  const shade = ctx.createLinearGradient(0, 0, 760, 0);
+  shade.addColorStop(0, 'rgba(12,10,9,0.85)');
+  shade.addColorStop(1, 'rgba(12,10,9,0)');
+  ctx.fillStyle = shade;
+  ctx.fillRect(0, 0, 760, 720);
+  ctx.font = `800 120px ${FONT}`;
+  spec.lines.forEach((line, i) => {
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+    ctx.strokeText(line, 60, 300 + i * 135);
+    ctx.fillStyle = i === 0 ? COLORS.text : COLORS.accent;
+    ctx.fillText(line, 60, 300 + i * 135);
+  });
+  const out = join(CUT_DIR, `devlog-${name}-thumbnail.png`);
+  writeFileSync(out, canvas.toBuffer('image/png'));
+  rmSync(frame, { force: true });
+  ok(`thumbnail ${out}`);
 }
 
 function cardPng(title, subtitle) {

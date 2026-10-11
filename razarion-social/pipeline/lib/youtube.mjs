@@ -11,16 +11,16 @@ export const MAX_TITLE = 70;
 export const PREFIX = 'Razarion – ';
 
 /**
- * What a new entry asks for, and the one line to change when the compliance audit is through.
+ * What a new entry asks for.
  *
- * Until it is, an OAuth client that has not passed the audit may only create private videos, and
- * asking for public is not refused - it is silently reset. So "private" is not caution here, it is
- * a description of what will happen; the video is then made public by hand in Studio.
+ * Google documents that an OAuth client without a passed compliance audit may only create private
+ * videos, and that asking for public is silently reset. On 2026-10-09 an upload that asked for
+ * public stayed public (tNPiJ0_wTy0), so the queue goes out public now. If uploads ever land
+ * private again, the lock is back: set this to 'private' and publish by hand in Studio.
  *
- * Change this to 'public' once the audit has passed and the whole queue goes out finished. Entries
- * already written keep whatever privacy they were given, so a run in flight is not affected.
+ * Entries already written keep whatever privacy they were given, so a run in flight is not affected.
  */
-export const DEFAULT_PRIVACY = 'private';
+export const DEFAULT_PRIVACY = 'public';
 
 const BASE_TAGS = [
   'razarion',

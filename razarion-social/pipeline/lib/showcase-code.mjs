@@ -43,6 +43,23 @@ export const SNIPPETS = {
     ref: 'master', from: 20, to: 29, pick: [20, 25, 26, 27, 28, 29],
     file: 'razarion-frontend/src/app/game/renderer/vegetation-mask.ts',
   },
+  // master, resolved to its commit when the cut is made: the bot work was squashed before it went out
+  botMarkings: {
+    ref: 'master', from: 235, to: 242, pick: [235, 236, 238, 241, 242],
+    file: 'razarion-frontend/src/app/game/renderer/bot-ground-markings.ts',
+  },
+  botAsphalt: {
+    ref: 'master', from: 125, to: 130,
+    file: 'razarion-frontend/src/app/game/renderer/bot-ground-top-material.ts',
+  },
+  botClouds: {
+    ref: 'master', from: 259, to: 259,
+    file: 'razarion-frontend/src/app/game/renderer/bot-ground-top-material.ts',
+  },
+  botGravel: {
+    ref: 'master', from: 94, to: 96,
+    file: 'razarion-frontend/src/app/game/renderer/bot-ground-gravel-material.ts',
+  },
 };
 
 const git = (args) => execFileSync('git', args, { cwd: REPO_ROOT, encoding: 'utf8' });

@@ -322,3 +322,11 @@ YouTube API Services verlangt einen Link zum Kanal, und wo die Marke nicht ersch
 die Branding-Regeln nicht. Der Link ist von der Startseite (`index.ftl`) und aus dem Info-Dialog im
 Spiel entfernt. In der Cookie-Passage der Datenschutzerklärung steht YouTube nicht mehr unter den
 verlinkten Netzwerken. Abschnitt 6 zur YouTube API bleibt, denn das ist Text und keine Marke.
+
+## 2026-10-09: Öffentlich hochladen geht
+
+Ein Upload, der `privacyStatus: public` verlangt hat (Devlog Terrain, `tNPiJ0_wTy0`), ist nach der
+Verarbeitung öffentlich geblieben und ohne Anmeldung abrufbar. Die elf privaten Uploads davor
+hatten selbst `private` verlangt, sie belegten die Sperre also nie. `DEFAULT_PRIVACY` in
+`pipeline/lib/youtube.mjs` steht jetzt auf `'public'`, die vier freigegebenen Einträge in der
+Warteschlange ebenfalls. Landet ein Upload wieder privat, ist die Sperre zurück: zurückstellen.
