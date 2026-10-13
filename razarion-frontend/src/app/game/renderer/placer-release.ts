@@ -53,6 +53,28 @@ export function setOpenPlacerCancel(cancel: (() => void) | null): void {
 }
 
 /**
+ * Where the last building was placed. The engine knows the site only once the builder has reached
+ * it and put it up; until then the spot the player confirmed is the only answer to "how far has
+ * the builder still to go" - which is what the wait after placing shows (quest 386, 2026-10-09:
+ * 10 of 16 who failed 387 left during the half minute the builder drove to the coast and built).
+ */
+export interface BuildPlacement {
+  x: number;
+  y: number;
+  typeId: number | null;
+}
+
+let lastBuildPlacement: BuildPlacement | null = null;
+
+export function setLastBuildPlacement(placement: BuildPlacement | null): void {
+  lastBuildPlacement = placement;
+}
+
+export function getLastBuildPlacement(): BuildPlacement | null {
+  return lastBuildPlacement;
+}
+
+/**
  * What is closing the placer right now, for BUILD_PLACER_ABANDONED. Quest 358, 2026-10-09: a quarter
  * of the players who opened the factory placer had it close again about a second later without a
  * build - those who left as well as a fifth of those who passed - and the record could not say

@@ -74,7 +74,7 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     public void loadWorker(DeferredStartup deferredStartup) {
         this.deferredStartup = deferredStartup;
         try {
-            worker = JsWorker.create(CommonUrl.getWorkerScriptUrl());
+            worker = JsWorker.create(CommonUrl.getWorkerScriptUrl(), "GameEngine");
             worker.setOnMessage(evt -> safeWasmCall(() -> {
                 JSObject data = evt.getData();
                 GameEngineControlPackage controlPackage;
@@ -196,7 +196,8 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
         safeWasmCall(() -> {
             if (initialSyncComplete && sharedTickBufferReader != null && sharedTickBufferReader.hasNewData()) {
                 NativeTickInfo tickInfo = sharedTickBufferReader.readTickData();
-                onTickUpdate(tickInfo);
+                // The cockpit shows what the tick changed: Angular looks once a tick, not once a frame
+                insideAngular(() -> onTickUpdate(tickInfo));
             }
         });
         if (worker != null) {
@@ -560,8 +561,15 @@ public class TeaVMClientGameEngineControl extends GameEngineControl {
     @JSBody(params = {"reason"}, script = "try { if (window.RAZ_engineError) { window.RAZ_engineError(reason); } } catch (ignored) {}")
     private static native void reportEngineErrorToServer(String reason);
 
-    @JSBody(params = {"callback"}, script = "requestAnimationFrame(callback);")
+    /**
+     * Scheduled outside Angular where the renderer offers it (RAZ_outsideAngular): inside, every
+     * frame's look for a new tick ended in a change detection run over the whole cockpit.
+     */
+    @JSBody(params = {"callback"}, script = "if (window.RAZ_outsideAngular) { window.RAZ_outsideAngular(function () { requestAnimationFrame(callback); }); } else { requestAnimationFrame(callback); }")
     private static native void requestAnimationFrame(RafCallback callback);
+
+    @JSBody(params = {"fn"}, script = "if (window.RAZ_insideAngular) { window.RAZ_insideAngular(fn); } else { fn(); }")
+    private static native void insideAngular(SafeCallback fn);
 
     /**
      * Runs a call that may trap in WASM, and says so where somebody can read it.

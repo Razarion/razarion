@@ -14,6 +14,7 @@ import {decide, Decision, PendingOrder, PROMPT, ResourcePoint, TipKind, TipQuest
 import {GuidanceView} from './guidance-view';
 import {TipRegion} from './tip-region';
 import {QuestMarker, QuestMarkerService} from '../../cockpit/main/radar/quest-marker.service';
+import {getLastBuildPlacement} from '../../renderer/placer-release';
 
 export interface TipGuideDeps {
   renderService: BabylonRenderServiceAccessImpl;
@@ -78,7 +79,8 @@ export class TipGuide implements ViewFieldListener {
   private readonly stallSource: TipStallSource = {
     getTaskName: () => this.decision?.taskName ?? TipTaskName.SELECT,
     getStallReason: () => this.decision?.reason ?? 'WAITING',
-    asksPlayer: () => this.decision?.guidance.kind !== 'quiet'
+    // Showing the wait is not asking for anything: the watchdog counts it as quiet.
+    asksPlayer: () => this.decision?.guidance.kind !== 'quiet' && this.decision?.guidance.kind !== 'progress'
   };
   private readonly selectionListener = () => this.evaluate();
   private readonly orderListener = (order: OrderNote) => this.onOrder(order);
@@ -185,6 +187,11 @@ export class TipGuide implements ViewFieldListener {
     this.deps.firstInteractionTracker.report('BUILD_CAMERA_FLIGHT', 'type=' + itemTypeId);
     return this.deps.renderService.flyViewFieldCenter(target.x, target.y)
       .then(() => new Promise<void>(resolve => setTimeout(resolve, TipGuide.GROUND_SETTLE_MILLIS)));
+  }
+
+  /** See GuidanceView.setClock. */
+  setClock(now: () => number): void {
+    this.view.setClock(now);
   }
 
   onViewFieldChanged(_viewField: ViewField): void {
@@ -303,7 +310,8 @@ export class TipGuide implements ViewFieldListener {
           return Number.MAX_SAFE_INTEGER;
         }
       },
-      markedTargetId: this.markedTargetId
+      markedTargetId: this.markedTargetId,
+      buildPlacement: getLastBuildPlacement()
     });
 
     if (decision.guidance.kind === 'prompt' && quest.tip === 'ATTACK' && !decision.guidance.resource) {

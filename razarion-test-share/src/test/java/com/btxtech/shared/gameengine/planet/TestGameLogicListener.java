@@ -19,6 +19,7 @@ import java.util.List;
 public class TestGameLogicListener implements GameLogicListener {
     private final List<EnergyStateChangedEntry> energyStateChangedEntries = new ArrayList<>();
     private final List<SyncBaseItem> syncBaseItemKilled = new ArrayList<>();
+    private final List<PlayerBase> baseDeleted = new ArrayList<>();
     private final List<SyncResourceItem> resourceCreated = new ArrayList<>();
     private final List<SyncResourceItem> resourceDeleted = new ArrayList<>();
     private final List<BoxPickedEntry> boxPicked = new ArrayList<>();
@@ -28,12 +29,18 @@ public class TestGameLogicListener implements GameLogicListener {
     public void clearAll() {
         energyStateChangedEntries.clear();
         syncBaseItemKilled.clear();
+        baseDeleted.clear();
         resourceCreated.clear();
         resourceDeleted.clear();
     }
 
     public List<EnergyStateChangedEntry> getEnergyStateChangedEntries() {
         return energyStateChangedEntries;
+    }
+
+    /** Every onBaseDeleted, in order: each one is a BASE_DELETED packet to every client and a BASE_DEFEATED record. */
+    public List<PlayerBase> getBaseDeleted() {
+        return baseDeleted;
     }
 
     public List<SyncBaseItem> getSyncBaseItemKilled() {
@@ -72,6 +79,7 @@ public class TestGameLogicListener implements GameLogicListener {
 
     @Override
     public void onBaseDeleted(PlayerBase playerBase, PlayerBase actorBase) {
+        baseDeleted.add(playerBase);
         testWebSocket.onBaseDeleted(playerBase);
     }
 

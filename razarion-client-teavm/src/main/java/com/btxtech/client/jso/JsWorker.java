@@ -7,8 +7,9 @@ import org.teavm.jso.JSProperty;
 
 public abstract class JsWorker implements JSObject {
 
-    @JSBody(params = {"url"}, script = "return new Worker(url);")
-    public static native JsWorker create(String url);
+    // name: what DevTools lists the worker as - otherwise only by its script file
+    @JSBody(params = {"url", "name"}, script = "return new Worker(url, {name: name});")
+    public static native JsWorker create(String url, String name);
 
     @JSBody(params = {"data"}, script = "this.postMessage(data);")
     public abstract void postMessage(JSObject data);

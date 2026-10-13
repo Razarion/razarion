@@ -2,7 +2,9 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  inject,
   Input,
+  NgZone,
   OnChanges,
   OnDestroy,
   OnInit,
@@ -100,6 +102,8 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
   miniItemViewElement!: ElementRef<HTMLCanvasElement>;
   @ViewChild('miniQuestMarkerElement', { static: true })
   miniQuestMarkerElement!: ElementRef<HTMLCanvasElement>;
+
+  private readonly zone = inject(NgZone);
 
   constructor(private gwtAngularService: GwtAngularService, private renderService: BabylonRenderServiceAccessImpl,
               private questMarkerService: QuestMarkerService) {
@@ -339,7 +343,9 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
       }
       this.pulseFrame = requestAnimationFrame(step);
     };
-    this.pulseFrame = requestAnimationFrame(step);
+    // Outside Angular: it draws on the radar canvas, and inside every frame of it ended in a change
+    // detection run over the whole cockpit - 90 a second on a Pixel 7 (2026-10-12)
+    this.pulseFrame = this.zone.runOutsideAngular(() => requestAnimationFrame(step));
   }
 
   private stopPulse(): void {

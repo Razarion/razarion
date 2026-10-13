@@ -8,17 +8,19 @@ import {Mesh} from "@babylonjs/core/Meshes/mesh";
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode";
 import {BabylonModelService} from "./babylon-model.service";
+import type {Scene} from "@babylonjs/core/scene";
+import {SphericalPolynomial} from "@babylonjs/core/Maths/sphericalPolynomial";
 import {BabylonTerrainTileImpl} from "./babylon-terrain-tile.impl";
 import type {FloatArray} from '@babylonjs/core/types';
 import {ReflectionTextureBaseBlock} from '@babylonjs/core/Materials/Node/Blocks/Dual/reflectionTextureBaseBlock';
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
-import {buildWhitecapMaterial} from "./whitecap-material";
+import {whitecapMaterial} from "./whitecap-material";
 
 /**
- * Per-tile water resources plus a dispose() that releases only the PER-TILE parts
- * (whitecap material + reflection CubeTexture). The water NodeMaterial itself is a shared
- * model material fetched from BabylonModelService and must NOT be disposed here; the water and
- * whitecap MESHES are children of the tile container and are disposed by the container.
+ * Per-tile water resources. Nothing in them is the tile's own to release: the water NodeMaterial is a
+ * shared model material fetched from BabylonModelService, the whitecap material and the reflection
+ * cube texture are the scene's; the water and whitecap MESHES are children of the tile container and
+ * are disposed by the container. dispose() stays for the tile to call.
  */
 export interface WaterTileResources {
   waterMesh: Mesh;
@@ -26,11 +28,57 @@ export interface WaterTileResources {
   dispose(): void;
 }
 
+/**
+ * The spherical polynomial Babylon works out for the clouds.jpg cube (x, y, z, xx, yy, zz, yz, zx, xy),
+ * read off a Pixel 7 after it had (2026-10-12). Redo it if the picture changes: let the texture
+ * compute it once (comment out the assignment in reflection()) and read
+ * reflectionCubeTexture._texture._sphericalPolynomial.
+ */
+const CLOUDS_SPHERICAL_POLYNOMIAL: number[][] = [
+  [-0.00485989, -0.00442480, -0.00335805],
+  [-0.00072347, -0.00244799, -0.00358058],
+  [0, 0, 0],
+  [0.28752938, 0.38278582, 0.49801066],
+  [0.28841903, 0.38352570, 0.49848199],
+  [0.28797421, 0.38315576, 0.49824633],
+  [0.00022214, 0.00060267, 0.00084347],
+  [0, 0, 0],
+  [0, 0, 0],
+];
+
 @Injectable({
   providedIn: 'root'
 })
 export class BabylonWaterRenderService {
+  private reflectionScene: Scene | null = null;
+  private reflectionCubeTexture: CubeTexture | null = null;
+
   constructor(private babylonModelService: BabylonModelService) {
+  }
+
+  /**
+   * The sky the water reflects, one for the scene. Every water tile used to make its own from the same
+   * picture and put it on the shared water material - and the material's reflection works out the
+   * texture's spherical harmonics, which reads the six faces back from the GPU and folds them on the
+   * CPU: 1.1 s on the main thread of a Pixel 7 for every water tile that came into view (2026-10-12).
+   * And the one texture still cost that once, on the first water tile, often well into the game: the
+   * picture never changes, so its polynomial is written down (CLOUDS_SPHERICAL_POLYNOMIAL) and Babylon
+   * finds it there instead of working it out.
+   */
+  private reflection(scene: Scene): CubeTexture {
+    if (!this.reflectionCubeTexture || this.reflectionScene !== scene) {
+      this.reflectionScene = scene;
+      this.reflectionCubeTexture = CubeTexture.CreateFromImages([
+        "renderer/env/clouds.jpg", // +X
+        "renderer/env/clouds.jpg", // +Y
+        "renderer/env/clouds.jpg", // +Z
+        "renderer/env/clouds.jpg", // -X
+        "renderer/env/clouds.jpg", // -Y
+        "renderer/env/clouds.jpg", // -Z
+      ], scene);
+      this.reflectionCubeTexture.sphericalPolynomial = SphericalPolynomial.FromArray(CLOUDS_SPHERICAL_POLYNOMIAL);
+    }
+    return this.reflectionCubeTexture;
   }
 
   public setup(index: Index, groundConfig: GroundConfig, container: TransformNode, uv2GroundHeightMap: FloatArray, rendererService: BabylonRenderServiceAccessImpl): WaterTileResources {
@@ -44,15 +92,10 @@ export class BabylonWaterRenderService {
     const sharedWaterMaterial = <NodeMaterial>water.material;
     sharedWaterMaterial.ignoreAlpha = false; // Can not be saved in the NodeEditor
     const reflectionBlock = <ReflectionTextureBaseBlock>sharedWaterMaterial.getBlockByName("Reflection");
-    const reflectionCubeTexture = CubeTexture.CreateFromImages([
-      "renderer/env/clouds.jpg", // +X
-      "renderer/env/clouds.jpg", // +Y
-      "renderer/env/clouds.jpg", // +Z
-      "renderer/env/clouds.jpg", // -X
-      "renderer/env/clouds.jpg", // -Y
-      "renderer/env/clouds.jpg", // -Z
-    ], rendererService.getScene());
-    reflectionBlock.texture = reflectionCubeTexture;
+    const reflection = this.reflection(rendererService.getScene());
+    if (reflectionBlock.texture !== reflection) {
+      reflectionBlock.texture = reflection;
+    }
 
     // Reduce water texture tiling — default Ground Scale of 15 is too repetitive
     const waterMat = water.material as NodeMaterial;
@@ -74,14 +117,11 @@ export class BabylonWaterRenderService {
 
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(water, RazarionMetadataType.GROUND, undefined, undefined);
 
-    // Whitecap overlay mesh — sits just above water surface
-    const whitecaps = MeshBuilder.CreateGround("Whitecaps", {
-      width: BabylonTerrainTileImpl.NODE_X_COUNT,
-      height: BabylonTerrainTileImpl.NODE_Y_COUNT,
-      subdivisions: 160
-    });
-    whitecaps.material = buildWhitecapMaterial(rendererService.getScene());
-    whitecaps.setVerticesData(VertexBuffer.UV2Kind, uv2GroundHeightMap);
+    // Whitecap overlay mesh — sits just above water surface. The same grid and uv2 as the water, so
+    // it shares the water's geometry instead of building a second one.
+    const whitecaps = new Mesh("Whitecaps", rendererService.getScene());
+    water.geometry!.applyToMesh(whitecaps);
+    whitecaps.material = whitecapMaterial(rendererService.getScene());
     whitecaps.parent = container;
     whitecaps.position.x = water.position.x;
     whitecaps.position.y = 0.02;
@@ -89,24 +129,11 @@ export class BabylonWaterRenderService {
     whitecaps.isPickable = false;
     container.getChildren().push(whitecaps);
 
-    const whitecapMaterial = whitecaps.material;
-
     return {
       waterMesh: water,
       whitecapMesh: whitecaps,
       dispose: () => {
-        // Whitecap material is built fresh per tile (buildWhitecapMaterial) — dispose it and its
-        // textures; its onDispose hook removes the per-frame whitecap animation observer.
-        if (whitecapMaterial) {
-          whitecapMaterial.dispose(false, true);
-        }
-        // The reflection CubeTexture is created per tile but assigned onto the SHARED water
-        // material's Reflection block, so only the most recently created tile's texture is actually
-        // bound. Dispose ours unless it is still the bound one (that tile is currently visible, not
-        // being evicted); disposing the bound texture would blank every water surface.
-        if (reflectionCubeTexture && reflectionBlock.texture !== reflectionCubeTexture) {
-          reflectionCubeTexture.dispose();
-        }
+        // Nothing of the tile's own - see WaterTileResources
       }
     };
   }

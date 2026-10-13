@@ -1,6 +1,7 @@
 import {
   markPlacerClosed,
   notifyPlacement,
+  setLastBuildPlacement,
   setOpenPlacerCancel,
   setPlacerCloseReason,
   takePlacerCloseReason
@@ -469,6 +470,10 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     // an open building placer - which must not be this one, on its way to building.
     this.placedThisActivation = true;
     setOpenPlacerCancel(null);
+    if (this.buildPlacer) {
+      // Before notifyPlacement too: the tip evaluates on the selection change it causes.
+      setLastBuildPlacement({x: position.x, y: position.z, typeId: baseItemPlacer.getBaseItemTypeId()});
+    }
     // After PLACED - the tip remembers the order from the selection - and before onPlace(), which
     // closes the placer and with it spends the callback.
     notifyPlacement(true);

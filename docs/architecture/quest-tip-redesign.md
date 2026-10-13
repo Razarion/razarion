@@ -104,7 +104,8 @@ type Guidance =
   | { kind: 'arrow', x: number, y: number, reason: string }    // target off screen
   | { kind: 'button', itemTypeId: number, reason: string }     // cockpit hint
   | { kind: 'region', reason: string }                         // place marker, or arrow into the region
-  | { kind: 'group', arrow: {x: number, y: number} | null, reason: string };
+  | { kind: 'group', arrow: {x: number, y: number} | null, reason: string }
+  | { kind: 'progress', phase: 'driving' | 'building', itemId: number, ... };  // a wait, shown
 ```
 
 `reason` is the stall reason (`AWAIT_SELECTION`, `ENEMY_OUT_OF_VIEW`, ...) - the same strings as
@@ -143,16 +144,22 @@ The marked target is kept while it lives, so a respawning bot does not make the 
 ```
 site = own item of the building type with buildup < 1
 if site:
-    if a builder works on it (or the order is on its way):   return quiet
+    if a builder works on it (or the order is on its way):   return progress(building, site)
     if no builder selected:                                  return select step
     return pointAt(site, 'Click to continue building')      // at once, not after 10 s - BLD-09
-if a builder has a build order on its way (placed, driving): return quiet   // BLD-06
+if a builder has a build order on its way (placed, driving): return progress(driving, builder)   // BLD-06, BLD-16
 if the placer is open for the building type:
     return region (quest 386) or quiet (the placer is the guidance)
 if no builder selected:                                      return select step
 if the button is enabled:                                    return button
 return quiet(block reason)                                  // graceful - PLC-02
 ```
+
+`progress` asks nothing of the player (the stall watchdog counts it as quiet) but shows the wait: a
+label "On the way · 12 s" on the builder, then "Building · 4 s" on the site, and the camera follows
+until the player moves it. The time left is measured from the samples (distance to the placed spot,
+buildup), not computed from item types. Added after PROD 05.-09.10.2026: 10 of 16 who failed quest
+387 had left during the ~28 s wait at the end of 386 (BLD-16).
 
 A destroyed site is simply no site any more (BLD-11). A builder sent elsewhere has no build order,
 so the next evaluation is back at the button (BLD-07).

@@ -222,11 +222,23 @@ public class BaseItemService {
 
     public void surrenderHumanBase(String userId) {
         PlayerBaseFull playerBase = getPlayerBaseFull4UserId(userId);
-        if (playerBase != null) {
+        if (playerBase == null) {
+            return;
+        }
+        if (playerBase.getItems().isEmpty()) {
+            // Nothing to remove, so nothing below would report the base gone.
             gameLogicService.onSurrenderBase(playerBase);
-            while (!playerBase.getItems().isEmpty()) {
-                removeSyncItem(CollectionUtils.getFirst(playerBase.getItems()));
+            synchronized (bases) {
+                bases.remove(playerBase.getBaseId());
             }
+            energyService.onBaseKilled(playerBase);
+            return;
+        }
+        // Removing the last item reports the base gone (removeSyncItem -> onBaseRemoved). Reporting
+        // the surrender as well sent every client a second BASE_DELETED for a base it had already
+        // dropped, and wrote BASE_DEFEATED into the history twice.
+        while (!playerBase.getItems().isEmpty()) {
+            removeSyncItem(CollectionUtils.getFirst(playerBase.getItems()));
         }
     }
 

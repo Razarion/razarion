@@ -4,6 +4,7 @@ import {ItemCockpitComponent} from '../../cockpit/item/item-cockpit.component';
 import {GwtInstance} from '../../../gwtangular/GwtInstance';
 import {Guidance} from './tip-decision';
 import {regionInReach} from './reach-area';
+import {ETA_WINDOW_MILLIS, progressText, ProgressSample, remainingSeconds} from './progress-eta';
 
 /**
  * Puts one Guidance on the screen and takes the previous one down.
@@ -14,7 +15,18 @@ import {regionInReach} from './reach-area';
  * id every time (W2).
  */
 export class GuidanceView {
+  private static readonly PROGRESS_SAMPLE_MILLIS = 250;
   private current: Guidance = {kind: 'quiet'};
+  /** The wait being shown - see showProgress. Its samples belong to one phase of one item. */
+  private progressKey: string | null = null;
+  private progressSamples: ProgressSample[] = [];
+  /** Where the camera follows to, updated on every evaluation; the renderer eases toward it. */
+  private followTarget: { x: number, y: number } | null = null;
+  private stopFollow: (() => void) | null = null;
+  /** The player moved the camera during this build: the camera is theirs until it is over. */
+  private followDeclined = false;
+  /** The clock the time left is measured with; the test bed runs on a clock of its own. */
+  private now: () => number = () => Date.now();
 
   constructor(private readonly renderService: BabylonRenderServiceAccessImpl,
               private readonly itemCockpit: () => ItemCockpitComponent | null,
@@ -64,9 +76,49 @@ export class GuidanceView {
           this.renderService.showOutOfViewMarker(null, 0);
         }
         break;
+      case 'progress':
+        this.showProgress(guidance);
+        break;
       case 'quiet':
         break;
     }
+  }
+
+  /**
+   * The builder on its way, then the site going up, with the time it still takes - and the camera
+   * along with it. The wait after placing a building was a blank half minute at the coast in quest
+   * 386, and 10 of 16 who failed the quest after it left during it (2026-10-09).
+   */
+  private showProgress(guidance: Extract<Guidance, { kind: 'progress' }>): void {
+    const key = guidance.phase + ':' + guidance.itemId;
+    if (key !== this.progressKey) {
+      this.progressKey = key;
+      this.progressSamples = [];
+    }
+    const value = guidance.phase === 'driving' ? guidance.distance : guidance.buildup;
+    if (value !== null) {
+      const now = this.now();
+      const last = this.progressSamples[this.progressSamples.length - 1];
+      // The guide evaluates on every camera move, and the camera moves every frame while it
+      // follows: without a minimum spacing the window filled up within a fraction of a second.
+      if (!last || now - last.t >= GuidanceView.PROGRESS_SAMPLE_MILLIS) {
+        this.progressSamples.push({t: now, value});
+        this.progressSamples = this.progressSamples.filter(sample => now - sample.t <= ETA_WINDOW_MILLIS);
+      }
+    }
+    const seconds = value !== null ? remainingSeconds(this.progressSamples, guidance.phase === 'driving' ? 0 : 1) : null;
+    this.renderService.showBuildProgress(guidance.itemId, progressText(guidance.phase, seconds, guidance.buildup));
+    this.followTarget = {x: guidance.x, y: guidance.y};
+    if (!this.followDeclined && !this.stopFollow) {
+      this.stopFollow = this.renderService.followViewFieldCenter(() => this.followTarget, () => {
+        this.followDeclined = true;
+        this.stopFollow = null;
+      });
+    }
+  }
+
+  setClock(now: () => number): void {
+    this.now = now;
   }
 
   /** Recomputes the arrow's angle for the new view; everything else does not depend on it. */
@@ -106,6 +158,15 @@ export class GuidanceView {
     }
     if (previous.kind === 'group' && next.kind !== 'group') {
       this.renderService.touchSelectionMode.setAsked(false);
+    }
+    if (previous.kind === 'progress' && next.kind !== 'progress') {
+      this.renderService.showBuildProgress(null, '');
+      this.stopFollow?.();
+      this.stopFollow = null;
+      this.followTarget = null;
+      this.followDeclined = false;
+      this.progressKey = null;
+      this.progressSamples = [];
     }
   }
 

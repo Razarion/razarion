@@ -16,7 +16,7 @@ export interface ShorelineSegment {
  * @param yCount Number of rows in the grid
  * @returns Array of line segments representing the shoreline
  */
-export function detectShoreline(heights: number[], xCount: number, yCount: number): ShorelineSegment[] {
+export function detectShoreline(heights: ArrayLike<number>, xCount: number, yCount: number): ShorelineSegment[] {
   const segments: ShorelineSegment[] = [];
 
   function h(x: number, y: number): number {
@@ -102,7 +102,7 @@ export function detectShoreline(heights: number[], xCount: number, yCount: numbe
  */
 export function computeShoreDistance(
   segments: ShorelineSegment[],
-  heights: number[],
+  heights: ArrayLike<number>,
   xCount: number,
   yCount: number,
   maxDist: number = 15
@@ -112,23 +112,62 @@ export function computeShoreDistance(
 
   const uv2: number[] = new Array(xCount * yCount * 2);
 
+  // Every vertex used to be measured against every shore segment of the tile: 161 x 161 vertices
+  // times the whole coastline, 250 ms per coastal tile on a desktop and up to 620 (2026-10-11),
+  // seconds on a phone - on the main thread, while the tile appears. A segment farther away than
+  // maxDist can never win, so the segments go into a coarse grid and a vertex only looks at the
+  // cells within maxDist. Ties keep going to the segment the full scan would have met first (the
+  // lower sequence number), so the result is the same, value for value.
+  const flat = flattenSegments(polylines);
+  const grid = SegmentGrid.build(flat, xCount, yCount, maxDist);
+  const seen = new Int32Array(flat.count).fill(-1);
+
   for (let y = 0; y < yCount; y++) {
     for (let x = 0; x < xCount; x++) {
-      const idx = (y * xCount + x) * 2;
+      const vertex = y * xCount + x;
+      const idx = vertex * 2;
       let minDist = maxDist;
       let arcLen = 0;
+      let bestSeq = -1;
 
-      // Find closest point on any polyline
-      for (const poly of polylines) {
-        for (let i = 0; i < poly.points.length - 1; i++) {
-          const p1 = poly.points[i];
-          const p2 = poly.points[i + 1];
-          const result = pointToSegmentClosest(x, y, p1[0], p1[1], p2[0], p2[1]);
-          if (result.dist < minDist) {
-            minDist = result.dist;
+      // Find closest point on any polyline segment near enough to matter
+      const cells = grid.cellsNear(x, y, maxDist);
+      for (let ci = 0; ci < cells.length; ci++) {
+        const cell = cells[ci];
+        for (let k = 0; k < cell.length; k++) {
+          const seq = cell[k];
+          if (seen[seq] === vertex) {
+            continue;
+          }
+          seen[seq] = vertex;
+          const o = seq * 4;
+          const x1 = flat.coords[o], y1 = flat.coords[o + 1], x2 = flat.coords[o + 2], y2 = flat.coords[o + 3];
+          // Cheap reject: the bounding box alone is already farther than the best so far
+          const bx = x < Math.min(x1, x2) ? Math.min(x1, x2) - x : x > Math.max(x1, x2) ? x - Math.max(x1, x2) : 0;
+          const by = y < Math.min(y1, y2) ? Math.min(y1, y2) - y : y > Math.max(y1, y2) ? y - Math.max(y1, y2) : 0;
+          if (bx > minDist || by > minDist) {
+            continue;
+          }
+          // Closest point on the segment and its parameter t (0..1), inline: no object per segment
+          const dx = x2 - x1;
+          const dy = y2 - y1;
+          const lenSq = dx * dx + dy * dy;
+          let dist: number;
+          let t: number;
+          if (lenSq === 0) {
+            dist = Math.sqrt((x - x1) ** 2 + (y - y1) ** 2);
+            t = 0;
+          } else {
+            t = Math.max(0, Math.min(1, ((x - x1) * dx + (y - y1) * dy) / lenSq));
+            const cx = x1 + t * dx;
+            const cy = y1 + t * dy;
+            dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+          }
+          if (dist < minDist || (bestSeq >= 0 && dist === minDist && seq < bestSeq)) {
+            minDist = dist;
+            bestSeq = seq;
             // Arc-length = cumulative distance to segment start + t * segment length
-            const segLen = poly.cumDist[i + 1] - poly.cumDist[i];
-            arcLen = poly.cumDist[i] + result.t * segLen;
+            arcLen = flat.cumStart[seq] + t * flat.length[seq];
           }
         }
       }
@@ -194,6 +233,98 @@ function smoothU(uv2: number[], xCount: number, yCount: number, iterations: numb
 interface Polyline {
   points: Array<[number, number]>;
   cumDist: number[];
+}
+
+/**
+ * Every segment of every polyline in the order the full scan visited them, which is the sequence
+ * number ties are decided by: x1, y1, x2, y2 per segment, its arc-length start and its length.
+ */
+interface FlatSegments {
+  count: number;
+  coords: Float64Array;
+  cumStart: Float64Array;
+  length: Float64Array;
+}
+
+function flattenSegments(polylines: Polyline[]): FlatSegments {
+  let count = 0;
+  for (const poly of polylines) {
+    count += Math.max(0, poly.points.length - 1);
+  }
+  const coords = new Float64Array(count * 4);
+  const cumStart = new Float64Array(count);
+  const length = new Float64Array(count);
+  let seq = 0;
+  for (const poly of polylines) {
+    for (let i = 0; i < poly.points.length - 1; i++) {
+      coords[seq * 4] = poly.points[i][0];
+      coords[seq * 4 + 1] = poly.points[i][1];
+      coords[seq * 4 + 2] = poly.points[i + 1][0];
+      coords[seq * 4 + 3] = poly.points[i + 1][1];
+      cumStart[seq] = poly.cumDist[i];
+      length[seq] = poly.cumDist[i + 1] - poly.cumDist[i];
+      seq++;
+    }
+  }
+  return {count, coords, cumStart, length};
+}
+
+/** Segments bucketed by the grid cells their bounding box touches. */
+class SegmentGrid {
+  private constructor(private readonly cellSize: number,
+                      private readonly columns: number,
+                      private readonly rows: number,
+                      private readonly cells: number[][]) {
+  }
+
+  static build(flat: FlatSegments, xCount: number, yCount: number, maxDist: number): SegmentGrid {
+    // About maxDist/2: a query then covers a handful of cells, and a cell holds few segments.
+    const cellSize = Math.max(1, Math.ceil(maxDist / 2));
+    const columns = Math.ceil(xCount / cellSize) + 1;
+    const rows = Math.ceil(yCount / cellSize) + 1;
+    const cells: number[][] = new Array(columns * rows);
+    for (let seq = 0; seq < flat.count; seq++) {
+      const o = seq * 4;
+      const c0 = clampCell(Math.floor(Math.min(flat.coords[o], flat.coords[o + 2]) / cellSize), columns);
+      const c1 = clampCell(Math.floor(Math.max(flat.coords[o], flat.coords[o + 2]) / cellSize), columns);
+      const r0 = clampCell(Math.floor(Math.min(flat.coords[o + 1], flat.coords[o + 3]) / cellSize), rows);
+      const r1 = clampCell(Math.floor(Math.max(flat.coords[o + 1], flat.coords[o + 3]) / cellSize), rows);
+      for (let r = r0; r <= r1; r++) {
+        for (let c = c0; c <= c1; c++) {
+          (cells[r * columns + c] ??= []).push(seq);
+        }
+      }
+    }
+    return new SegmentGrid(cellSize, columns, rows, cells);
+  }
+
+  private readonly near: number[][] = [];
+
+  /**
+   * The non-empty cells within `radius` of the point; a segment may be in more than one of them.
+   * The returned array is reused by the next call.
+   */
+  cellsNear(x: number, y: number, radius: number): number[][] {
+    const near = this.near;
+    near.length = 0;
+    const c0 = clampCell(Math.floor((x - radius) / this.cellSize), this.columns);
+    const c1 = clampCell(Math.floor((x + radius) / this.cellSize), this.columns);
+    const r0 = clampCell(Math.floor((y - radius) / this.cellSize), this.rows);
+    const r1 = clampCell(Math.floor((y + radius) / this.cellSize), this.rows);
+    for (let r = r0; r <= r1; r++) {
+      for (let c = c0; c <= c1; c++) {
+        const cell = this.cells[r * this.columns + c];
+        if (cell) {
+          near.push(cell);
+        }
+      }
+    }
+    return near;
+  }
+}
+
+function clampCell(index: number, count: number): number {
+  return Math.max(0, Math.min(count - 1, index));
 }
 
 /** Chain segments into polylines with cumulative arc-length */
@@ -284,21 +415,3 @@ function chainSegmentsToPolylines(segments: ShorelineSegment[]): Polyline[] {
 
   return result;
 }
-
-/** Closest point on segment, returns distance and parameter t (0..1) */
-function pointToSegmentClosest(
-  px: number, py: number,
-  x1: number, y1: number, x2: number, y2: number
-): { dist: number; t: number } {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const lenSq = dx * dx + dy * dy;
-  if (lenSq === 0) {
-    return { dist: Math.sqrt((px - x1) ** 2 + (py - y1) ** 2), t: 0 };
-  }
-  const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lenSq));
-  const cx = x1 + t * dx;
-  const cy = y1 + t * dy;
-  return { dist: Math.sqrt((px - cx) ** 2 + (py - cy) ** 2), t };
-}
-

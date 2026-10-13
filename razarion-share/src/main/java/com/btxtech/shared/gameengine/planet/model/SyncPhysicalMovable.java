@@ -385,6 +385,14 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
             Path path = instancePath.get();
             path.synchronize(syncPhysicalAreaInfo);
             this.path = path;
+            // A path from the server is a new approach, as setPath() is on the server. Without this
+            // the slave kept the closest distance it had reached to the PREVIOUS goal: a unit sent
+            // somewhere else while still under way "made no progress" against that, gave up after
+            // NO_APPROACH_TICK_THRESHOLD and stood still metres short, while the server drove on -
+            // until the server's stop arrived and the unit jumped (local test, 2026-10-11: 3.7-5 m on
+            // every corner of a triangle, TELEPORTING 32 m in a longer drive). The server stays the
+            // judge of a real give-up: its stop reaches the slave like every other one.
+            resetApproachTracking();
         } else {
             this.path = null;
         }

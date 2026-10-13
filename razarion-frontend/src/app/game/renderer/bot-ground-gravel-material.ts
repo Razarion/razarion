@@ -39,6 +39,41 @@ function floatInput(name: string, value: number): InputBlock {
 let pebbleScene: Scene | null = null;
 let pebbleTexture: Texture | null = null;
 
+// The pebble pixels, filled row by row (see prewarmPebbles), and the pebbles they are made of
+let pebbleData: Uint8Array | null = null;
+let pebbleRowsDone = 0;
+let pebbleSet: PebbleSet | null = null;
+// Rows per idle step, a few ms on a desktop
+const PEBBLE_ROWS_PER_STEP = 16;
+
+interface PebbleSet {
+  pointX: Float32Array;
+  pointY: Float32Array;
+  tone: Float32Array;
+  radius: Float32Array;
+}
+
+/**
+ * Works the pebble pixels out in idle time, a few rows at a time. The first bot ground to be shown
+ * used to make them all at once - 70 ms on the main thread in the middle of building a tile
+ * (2026-10-11). They do not depend on the scene; whatever is still missing when a bot ground needs
+ * them is made then.
+ */
+export function prewarmPebbles(): void {
+  if (typeof requestIdleCallback !== 'function') {
+    return;
+  }
+  const step = (deadline: IdleDeadline) => {
+    while (pebbleRowsDone < PEBBLE_TEXTURE_SIZE && deadline.timeRemaining() > 4) {
+      computePebbleRows(PEBBLE_ROWS_PER_STEP);
+    }
+    if (pebbleRowsDone < PEBBLE_TEXTURE_SIZE) {
+      requestIdleCallback(step);
+    }
+  };
+  requestIdleCallback(step);
+}
+
 /**
  * A bed of rounded pebbles, light grey to beige, tiling: rgb the stone (darker in the gaps, rounded
  * by shading towards the stone's edge), alpha its height (0 in the gaps). Made once per scene - a
@@ -48,27 +83,29 @@ function pebbles(scene: Scene): Texture {
   if (pebbleTexture && pebbleScene === scene) {
     return pebbleTexture;
   }
+  const size = PEBBLE_TEXTURE_SIZE;
+  computePebbleRows(size);
+  pebbleTexture = RawTexture.CreateRGBATexture(pebbleData!, size, size, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
+  pebbleTexture.name = "BotGround pebbles";
+  // RawTexture clamps by default: the world-space uv would read one edge pixel everywhere
+  pebbleTexture.wrapU = Texture.WRAP_ADDRESSMODE;
+  pebbleTexture.wrapV = Texture.WRAP_ADDRESSMODE;
+  pebbleTexture.anisotropicFilteringLevel = 8;
+  pebbleScene = scene;
+  return pebbleTexture;
+}
+
+/** The next rows (up to the given number) of the pebble pixels. */
+function computePebbleRows(rows: number): void {
   const n = PEBBLE_CELLS, size = PEBBLE_TEXTURE_SIZE;
-  let seed = 9173;
-  const random = () => {
-    seed = (seed * 16807) % 2147483647;
-    return (seed - 1) / 2147483646;
-  };
-  const pointX = new Float32Array(n * n), pointY = new Float32Array(n * n), tone = new Float32Array(n * n * 3);
-  const radius = new Float32Array(n * n);
-  for (let k = 0; k < n * n; k++) {
-    pointX[k] = (k % n + 0.15 + random() * 0.7) / n;
-    pointY[k] = (Math.floor(k / n) + 0.15 + random() * 0.7) / n;
-    // Grey to beige, a few darker and a few nearly white ones
-    const light = 0.58 + random() * 0.3 - (random() < 0.12 ? 0.18 : 0);
-    const warm = random() * 0.06;
-    tone[k * 3] = light + warm;
-    tone[k * 3 + 1] = light + warm * 0.6;
-    tone[k * 3 + 2] = light - warm * 0.4;
-    radius[k] = 0.6 + random() * 0.5;
+  if (!pebbleSet) {
+    pebbleSet = createPebbleSet();
+    pebbleData = new Uint8Array(size * size * 4);
   }
-  const data = new Uint8Array(size * size * 4);
-  for (let j = 0; j < size; j++) {
+  const {pointX, pointY, tone, radius} = pebbleSet;
+  const data = pebbleData!;
+  const end = Math.min(size, pebbleRowsDone + rows);
+  for (let j = pebbleRowsDone; j < end; j++) {
     for (let i = 0; i < size; i++) {
       const u = (i + 0.5) / size, v = (j + 0.5) / size;
       const ci = Math.floor(u * n), cj = Math.floor(v * n);
@@ -101,14 +138,31 @@ function pebbles(scene: Scene): Texture {
       data[k + 3] = Math.round(height * 255);
     }
   }
-  pebbleTexture = RawTexture.CreateRGBATexture(data, size, size, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
-  pebbleTexture.name = "BotGround pebbles";
-  // RawTexture clamps by default: the world-space uv would read one edge pixel everywhere
-  pebbleTexture.wrapU = Texture.WRAP_ADDRESSMODE;
-  pebbleTexture.wrapV = Texture.WRAP_ADDRESSMODE;
-  pebbleTexture.anisotropicFilteringLevel = 8;
-  pebbleScene = scene;
-  return pebbleTexture;
+  pebbleRowsDone = end;
+}
+
+/** One jittered point per cell, with its tone and size - the same pebbles every time (fixed seed). */
+function createPebbleSet(): PebbleSet {
+  const n = PEBBLE_CELLS;
+  let seed = 9173;
+  const random = () => {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
+  const pointX = new Float32Array(n * n), pointY = new Float32Array(n * n), tone = new Float32Array(n * n * 3);
+  const radius = new Float32Array(n * n);
+  for (let k = 0; k < n * n; k++) {
+    pointX[k] = (k % n + 0.15 + random() * 0.7) / n;
+    pointY[k] = (Math.floor(k / n) + 0.15 + random() * 0.7) / n;
+    // Grey to beige, a few darker and a few nearly white ones
+    const light = 0.58 + random() * 0.3 - (random() < 0.12 ? 0.18 : 0);
+    const warm = random() * 0.06;
+    tone[k * 3] = light + warm;
+    tone[k * 3 + 1] = light + warm * 0.6;
+    tone[k * 3 + 2] = light - warm * 0.4;
+    radius[k] = 0.6 + random() * 0.5;
+  }
+  return {pointX, pointY, tone, radius};
 }
 
 /**

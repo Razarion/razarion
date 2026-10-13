@@ -34,7 +34,9 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.btxtech.server.gameengine.ClientGameConnection.MAPPER;
@@ -43,7 +45,13 @@ import static com.btxtech.server.gameengine.ClientGameConnection.MAPPER;
 public class ClientGameConnectionService extends TextWebSocketHandler {
     private static final String CLIENT_GAME_CONNECTION = "ClientGameConnection";
     private final Logger logger = LoggerFactory.getLogger(ClientGameConnectionService.class);
-    private final Map<String, ClientGameConnection> gameConnections = new HashMap<>();
+    /**
+     * Every open game connection of a user, oldest first. A list, not one per user: a second tab of
+     * the same player used to replace the first, which from then on got nothing from the server -
+     * no base, no builder, no tick - while its orders still arrived and were carried out (local
+     * test, 2026-10-11). Each of the user's tabs is served now; sends to the user go to all of them.
+     */
+    private final Map<String, List<ClientGameConnection>> gameConnections = new HashMap<>();
     private final Provider<ClientGameConnection> provider;
     private final Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter;
     private final UserService userService;
@@ -79,7 +87,7 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         clientGameConnection.init(wsSession, userId);
         wsSession.getAttributes().put(CLIENT_GAME_CONNECTION, clientGameConnection);
         synchronized (gameConnections) {
-            gameConnections.put(userId, clientGameConnection);
+            gameConnections.computeIfAbsent(userId, id -> new ArrayList<>()).add(clientGameConnection);
         }
         clientGameConnection.sendInitialSlaveSyncInfo(clientGameConnection.getUserId());
         String rdtCid = pageRequestService.findRdtCidByHttpSessionId(httpSessionId);
@@ -116,9 +124,18 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession wsSession, CloseStatus closeStatus) {
         var clientGameConnection = (ClientGameConnection) wsSession.getAttributes().get(CLIENT_GAME_CONNECTION);
+        boolean last;
         synchronized (gameConnections) {
-            gameConnections.remove(clientGameConnection.getUserId());
-            logger.info("Websocket clientGameConnection closed {}", clientGameConnection);
+            // Only this connection - see ClientSystemConnectionService.afterConnectionClosed. Removing
+            // by user id took out the newer connection of a reload, and from then on the player's tab
+            // got no base, no builder and no tick from the server while its orders still arrived.
+            last = ClientSystemConnectionService.removeConnection(gameConnections, clientGameConnection.getUserId(), clientGameConnection);
+            logger.info("Websocket clientGameConnection closed {}{}", clientGameConnection,
+                    last ? "" : " (the user still holds another connection)");
+        }
+        if (!last) {
+            // The conversion registrations go on for the connection that is still open.
+            return;
         }
         redditConversionService.unregisterUser(clientGameConnection.getUserId());
         xConversionService.unregisterUser(clientGameConnection.getUserId());
@@ -174,8 +191,11 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         sendToClients(GameConnectionPacket.SYNC_BOX_ITEM_CHANGED, syncBoxItem.getSyncInfo());
     }
 
+    /** The user's newest connection, or null when he has none. */
     public ClientGameConnection getClientGameConnection(String userId) {
-        return gameConnections.get(userId);
+        synchronized (gameConnections) {
+            return ClientSystemConnectionService.newest(gameConnections.get(userId));
+        }
     }
 
     /**
@@ -184,7 +204,9 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
      */
     public Map<String, ClientGameConnection> getOpenConnections() {
         synchronized (gameConnections) {
-            return new HashMap<>(gameConnections);
+            Map<String, ClientGameConnection> open = new HashMap<>();
+            gameConnections.forEach((userId, connections) -> open.put(userId, ClientSystemConnectionService.newest(connections)));
+            return open;
         }
     }
 
@@ -198,30 +220,33 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         }
 
         synchronized (gameConnections) {
-            gameConnections.values().forEach(gameConnection -> {
+            gameConnections.values().forEach(connections -> connections.forEach(gameConnection -> {
                 try {
                     gameConnection.sendToClient(text);
                 } catch (Throwable throwable) {
                     logger.warn(throwable.getMessage(), throwable);
                 }
-            });
+            }));
         }
     }
 
     private void sendToClient(String userId, GameConnectionPacket packet, Object object) {
-        ClientGameConnection clientGameConnection;
+        List<ClientGameConnection> connections;
         synchronized (gameConnections) {
-            clientGameConnection = gameConnections.get(userId);
-            if (clientGameConnection == null) {
+            List<ClientGameConnection> open = gameConnections.get(userId);
+            if (open == null) {
                 return;
             }
+            connections = new ArrayList<>(open);
         }
         try {
             String text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
-            try {
-                clientGameConnection.sendToClient(text);
-            } catch (Throwable throwable) {
-                logger.warn(throwable.getMessage(), throwable);
+            for (ClientGameConnection clientGameConnection : connections) {
+                try {
+                    clientGameConnection.sendToClient(text);
+                } catch (Throwable throwable) {
+                    logger.warn(throwable.getMessage(), throwable);
+                }
             }
         } catch (Throwable throwable) {
             logger.warn(throwable.getMessage(), throwable);

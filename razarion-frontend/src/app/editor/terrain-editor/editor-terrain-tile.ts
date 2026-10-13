@@ -8,7 +8,6 @@ import {Vector3} from "@babylonjs/core/Maths/math.vector";
 import {Mesh} from "@babylonjs/core/Meshes/mesh";
 import {VertexData} from "@babylonjs/core/Meshes/mesh.vertexData";
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
-import {SubMesh} from "@babylonjs/core/Meshes/subMesh";
 import {BabylonTerrainTileImpl} from 'src/app/game/renderer/babylon-terrain-tile.impl';
 import {AbstractBrush, BrushContext} from "./brushes/abstract-brush";
 import {BabylonRenderServiceAccessImpl} from "src/app/game/renderer/babylon-render-service-access-impl.service";
@@ -262,19 +261,12 @@ export class EditorTerrainTile {
     const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     const quadsPerRow = xCount - 1;
 
-    const groundMesh = this.babylonTerrainTileImpl!.getGroundMesh();
-    const subMeshes: SubMesh[] = groundMesh.subMeshes;
-
-    // Build a per-quad color map from subMesh data
+    // Per-quad colors from the tile's quad materials (its sub meshes are grouped by material, not
+    // laid out in grid order)
     const quadColors: string[] = new Array(quadsPerRow * quadsPerRow).fill("rgba(128, 128, 128, 0.5)");
-
-    for (const subMesh of subMeshes) {
-      const color = MATERIAL_COLORS[subMesh.materialIndex] || "rgba(128, 128, 128, 0.5)";
-      const startQuad = subMesh.indexStart / 6;
-      const quadCount = subMesh.indexCount / 6;
-      for (let i = 0; i < quadCount; i++) {
-        quadColors[startQuad + i] = color;
-      }
+    for (let quad = 0; quad < quadColors.length; quad++) {
+      const materialIndex = this.babylonTerrainTileImpl!.getGroundQuadMaterialIndex(quad);
+      quadColors[quad] = MATERIAL_COLORS[materialIndex] || "rgba(128, 128, 128, 0.5)";
     }
 
     // Draw quads

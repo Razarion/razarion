@@ -19,7 +19,6 @@ import type {Material} from "@babylonjs/core/Materials/material";
 import {TextureBlock} from "@babylonjs/core/Materials/Node/Blocks/Dual/textureBlock";
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
-import {Texture} from "@babylonjs/core/Materials/Textures/texture";
 import {Color3, Color4} from "@babylonjs/core/Maths/math.color";
 import {Scalar} from "@babylonjs/core/Maths/math.scalar";
 import {Vector3} from "@babylonjs/core/Maths/math.vector";
@@ -34,22 +33,22 @@ import {SpriteManager} from "@babylonjs/core/Sprites/spriteManager";
 import {buildGroundMaterial} from "./ground-material";
 import {buildBotGroundTopMaterial} from "./bot-ground-top-material";
 import {buildBotGroundSideMaterial} from "./bot-ground-side-material";
-import {bakeBotGroundMarkings, BotGroundFootprint, GRAVEL_FULL, GRAVEL_REACH} from "./bot-ground-markings";
+import {BotGroundFootprint, botGroundMarkingsTextures, GRAVEL_FULL, GRAVEL_REACH} from "./bot-ground-markings";
 import {buildBotGroundGravelMaterial} from "./bot-ground-gravel-material";
 import {addCloudShadow} from "./cloud-shadow-node";
 import {Showcase} from "./showcase";
-import {detectShoreline, computeShoreDistance} from "./shoreline-detection";
 import {initPerm, scatterNoise, SEED} from "./procedural-textures";
 import {bareShare} from "./ground-rules";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
-import {Nullable} from "@babylonjs/core/types";
+import {FloatArray, Nullable} from "@babylonjs/core/types";
 import type {Scene} from "@babylonjs/core/scene";
 import {GwtHelper} from "src/app/gwtangular/GwtHelper";
 import {GroundUtil} from './ground-util';
 import {ParkedMeshFilter} from "./parked-mesh-filter";
 import {GroundPaths} from "./ground-paths";
 import {GroundZone} from "./ground-zone";
-import {createVegetationMask} from "./vegetation-mask";
+import {computeShoreDirections, computeTileMesh, TerrainKind, terrainKind, TileMesh, WALL_HEIGHT_DIFF, WATER_LEVEL} from "./tile-ground-compute";
+import {TerrainHelper} from "./terrain-helper";
 import {cloudSunShade, cloudTime} from "./cloud-shadow";
 
 enum MaterialIndex {
@@ -72,9 +71,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   static readonly TILE_NODE_SIZE = this.NODE_X_COUNT * this.NODE_Y_COUNT;
   static readonly HEIGHT_PRECISION = 0.01;
   static readonly HEIGHT_MIN = -200;
-  static readonly WATER_LEVEL = 0;
+  static readonly WATER_LEVEL = WATER_LEVEL;
   static readonly BEACH_HEIGHT = 0.3;
-  static readonly WALL_HEIGHT_DIFF = 0.5;
+  static readonly WALL_HEIGHT_DIFF = WALL_HEIGHT_DIFF;
   static readonly HEIGHT_DEFAULT = 0.5;
   static readonly BOT_BOX_LENGTH = 8;
   static readonly BOT_BOX_Z_ROTATION = 22;
@@ -150,25 +149,15 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     return minHeight < BabylonTerrainTileImpl.WATER_LEVEL + BabylonTerrainTileImpl.WATER_MARGIN;
   }
 
-  /**
-   * Canonical terrain-type classification. Mirrors the authoritative game-engine rule in
-   * TerrainAnalyzer.analyze() (razarion-share): avg of the 4 quad corners < WATER_LEVEL => WATER;
-   * corner height delta < WALL_HEIGHT_DIFF (0.5 m over a 1 m node) => LAND (passable, grass);
-   * else => BLOCKED (cliff, rendered as rock via GroundUtil). Single source of truth used by the
-   * renderer, GroundUtil and the editor terrain-type overlay so the editor never disagrees with
-   * gameplay/rendering.
-   */
+  /** The canonical terrain-type classification - see terrainKind (tile-ground-compute.ts). */
   public static setupTerrainType(bLHeight: number, bRHeight: number, tRHeight: number, tLHeight: number): TerrainType {
-    const avgHeight = (bLHeight + bRHeight + tRHeight + tLHeight) / 4.0;
-    if (avgHeight < BabylonTerrainTileImpl.WATER_LEVEL) {
-      return TerrainType.WATER;
-    }
-    const maxHeight = Math.max(bLHeight, bRHeight, tRHeight, tLHeight);
-    const minHeight = Math.min(bLHeight, bRHeight, tRHeight, tLHeight);
-    if (Math.abs(maxHeight - minHeight) < BabylonTerrainTileImpl.WALL_HEIGHT_DIFF) {
-      return TerrainType.LAND;
-    } else {
-      return TerrainType.BLOCKED;
+    switch (terrainKind(bLHeight, bRHeight, tRHeight, tLHeight)) {
+      case TerrainKind.WATER:
+        return TerrainType.WATER;
+      case TerrainKind.LAND:
+        return TerrainType.LAND;
+      default:
+        return TerrainType.BLOCKED;
     }
   }
 
@@ -292,36 +281,35 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     rendererService.getScene().getLightByName(BabylonRenderServiceAccessImpl.SKY_LIGHT_NAME)?.excludedMeshes.push(this.groundMesh);
     BabylonTerrainTileImpl.pendingBuilds++;
 
-    // Phase 1 (sync): Vertex data — needed immediately for visible ground mesh
-    this.buildPhase1_VertexData();
+    // Phase 1 (sync): the heights - the camera, the sprites and phase 2 need them - and the placeholder
+    this.buildPhase1_Heights();
+    // The ground mesh itself comes from the terrain helper with phase 2; the editor reads the
+    // mesh's positions the moment the tile exists, so there it is built right away
+    if (rendererService.needsGroundMeshAtOnce()) {
+      this.applyTileMesh(computeTileMesh(this.groundHeights, BabylonTerrainTileImpl.NODE_X_COUNT,
+        this.tileXOffset, this.tileYOffset, this.getDecalBoxes()));
+    }
 
-    // Phase 2 (deferred): Shore detection, materials, water, objects, sprites
-    BabylonTerrainTileImpl.scheduleIdle(() => this.buildPhase2_ShoreAndMaterial());
+    // Phase 2: shore, paths, plant patches, ground type - and the ground mesh - in the terrain
+    // helper, asked at once: until it answers the tile has no ground to show
+    this.buildPhase2_ShoreAndMaterial();
   }
 
-  private buildPhase1_VertexData(): void {
+  private buildPhase1_Heights(): void {
     const terrainTile = this.terrainTile;
-    this.uv2GroundHeightMap = [];
-    this.materialSubmeshes = [];
-    this.groundUtil = new GroundUtil();
-
-    let vertexData = this.createVertexData(terrainTile.getGroundHeightMap(),
-      this.uv2GroundHeightMap,
-      this.materialSubmeshes,
-      terrainTile.getBabylonDecals(),
-      this.groundUtil);
-    vertexData.applyToMesh(this.groundMesh, true);
-
-    // Cache ground heights for sprite placement
     const groundHeightMap = terrainTile.getGroundHeightMap();
     const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     const yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     this.tileXOffset = terrainTile.getIndex().getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
     this.tileYOffset = terrainTile.getIndex().getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
     this.groundHeights = [];
+    let minHeight = Number.POSITIVE_INFINITY;
     for (let i = 0; i < xCount * yCount; i++) {
-      this.groundHeights.push(BabylonTerrainTileImpl.setupHeight(i, groundHeightMap));
+      const height = BabylonTerrainTileImpl.setupHeight(i, groundHeightMap);
+      this.groundHeights.push(height);
+      minHeight = Math.min(minHeight, height);
     }
+    this.hasWater = BabylonTerrainTileImpl.needsWater(minHeight);
 
     this.container.getChildren().push(this.groundMesh);
     this.groundMesh.receiveShadows = true;
@@ -339,9 +327,13 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.groundMesh.material = placeholder;
   }
 
-  private uv2GroundHeightMap: number[] = [];
+  private uv2GroundHeightMap: FloatArray = [];
   private materialSubmeshes: { materialIndex: MaterialIndex, indexStart: number, indexCount: number }[] = [];
-  private groundUtil: GroundUtil | null = null;
+  // The material of every ground quad, row-major ((NODE_X_COUNT) x (NODE_Y_COUNT)), for the editor's
+  // terrain type overlay - the sub meshes no longer follow the grid
+  private groundQuadMaterials: Uint8Array | null = null;
+  // The texels of the ground type texture, from the terrain helper; consumed by phase 3
+  private groundTypePixels: Uint8Array | null = null;
 
   private buildPhase2_ShoreAndMaterial(): void {
     if (this.disposed) {
@@ -360,27 +352,46 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private buildPhase2_ShoreAndMaterialInternal(): void {
     const xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
     const yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
+    // Relief from the engine worker (sky visibility, curvature) for the ground shader - read now,
+    // set once the mesh is there
+    const reliefUv3 = BabylonTerrainTileImpl.reliefUv3(this.terrainTile.getGroundRelief(), xCount * yCount);
+    const withMesh = !this.meshApplied;
 
-    // Shore detection + UV2
-    const shoreSegments = detectShoreline(this.groundHeights, xCount, yCount);
-    const groundUv2 = computeShoreDistance(shoreSegments, this.groundHeights, xCount, yCount);
-    this.groundMesh.setVerticesData(VertexBuffer.UV2Kind, groundUv2);
-    // Relief from the worker (sky visibility, curvature) for the ground shader
-    this.groundMesh.setVerticesData(VertexBuffer.UV3Kind,
-      BabylonTerrainTileImpl.reliefUv3(this.terrainTile.getGroundRelief(), xCount * yCount));
-
-    // The paths go into the ground texture, which is built with the material. Fetched once at the start,
-    // so in practice long arrived; if not, the tile waits for it rather than being built without paths.
-    // Phase 3 (which settles a disposed tile itself) builds the heavy ground NodeMaterial — route it
-    // through the serialized queue so a burst of tiles can't compile all their shaders in one frame.
+    // The shore distance (UV2), the paths and the plant patches, and from them the ground type
+    // texture, are plain arithmetic: the terrain helper works them out off the main thread. The paths
+    // are fetched once at the start, so in practice long arrived; if not, the tile waits for them
+    // rather than being built without paths. Phase 3 (which settles a disposed tile itself) builds
+    // the heavy ground NodeMaterial — route it through the serialized queue so a burst of tiles
+    // can't compile all their shaders in one frame.
     this.collectTerrainObjectAnchors();
-    GroundPaths.load().then(() => {
-      if (!this.disposed) {
-        this.pathMask = GroundPaths.createTileMask(this.tileXOffset, this.tileYOffset, BabylonTerrainTileImpl.NODE_X_COUNT);
-        this.vegetationMask = createVegetationMask(this.tileXOffset, this.tileYOffset, BabylonTerrainTileImpl.NODE_X_COUNT, this.spriteAnchors);
-      }
-      BabylonTerrainTileImpl.enqueueHeavyBuild(() => this.buildPhase3_Material());
-    });
+    GroundPaths.load()
+      .then(() => TerrainHelper.computeGround({
+        heights: Float64Array.from(this.groundHeights),
+        size: BabylonTerrainTileImpl.NODE_X_COUNT,
+        x0: this.tileXOffset,
+        y0: this.tileYOffset,
+        anchors: Float64Array.from(this.spriteAnchors),
+        decalBoxes: withMesh ? this.getDecalBoxes() : undefined,
+        withMesh
+      }))
+      .then(ground => {
+        if (!this.disposed) {
+          if (ground.mesh) {
+            this.applyTileMesh(ground.mesh);
+          }
+          this.groundMesh.setVerticesData(VertexBuffer.UV3Kind, reliefUv3);
+          this.groundMesh.setVerticesData(VertexBuffer.UV2Kind, ground.uv2);
+          this.pathMask = ground.pathMask;
+          this.vegetationMask = ground.vegetationMask;
+          this.groundTypePixels = ground.pixels;
+        }
+        BabylonTerrainTileImpl.enqueueHeavyBuild(() => this.buildPhase3_Material());
+      })
+      .catch(error => {
+        // Nobody else would settle the tile: phase 3 is never queued
+        this.markBuildSettled();
+        console.error(error);
+      });
   }
 
   /** @return true if the heavy NodeMaterial build actually ran, false for a tile
@@ -406,8 +417,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     // The ground type texture goes into the graph before the material is built. Attaching it
     // afterwards needs a second build(), which parallel shader compilation refuses while the
     // first one is still running - the sampler stays unwired and the tile renders flat green.
-    const groundUtilityTexture = this.groundUtil
-      ? new Texture(this.groundUtil.createGroundTypeTexture(this.pathMask, this.vegetationMask).toDataURL(), this.rendererService.getScene())
+    const groundUtilityTexture = this.groundTypePixels
+      ? GroundUtil.textureFromPixels(this.rendererService.getScene(), this.groundTypePixels)
       : null;
     this.groundMaterial = buildGroundMaterial(this.rendererService.getScene(), groundUtilityTexture);
     let asphaltMaterial = <NodeMaterial>this.babylonModelService.getBabylonMaterial(groundConfig.getAsphaltBabylonMaterialId());
@@ -434,7 +445,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     BabylonRenderServiceAccessImpl.setRazarionMetadataSimple(this.groundMesh, RazarionMetadataType.GROUND, undefined, terrainTile.getGroundConfigId());
 
     // Free references no longer needed
-    this.groundUtil = null;
+    this.groundTypePixels = null;
     this.materialSubmeshes = [];
 
     BabylonTerrainTileImpl.scheduleIdle(() => this.buildPhase4_WaterAndObjects());
@@ -448,14 +459,17 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     // In a finally: a tile that throws half way through is still a tile that will never finish,
     // and leaving the count raised would make whenBuildsSettled() unresolvable for the life of
     // the page - "Building ground..." for ever, in a studio where nothing is building any more.
+    // The bot grounds are baked by the terrain helper: the tile is built when they stand.
+    let botGrounds: Promise<void> = Promise.resolve();
     try {
-      this.buildPhase4_WaterAndObjectsInternal();
+      botGrounds = this.buildPhase4_WaterAndObjectsInternal();
     } finally {
-      this.markBuildSettled();
+      botGrounds.catch(error => console.error(error)).finally(() => this.markBuildSettled());
     }
   }
 
-  private buildPhase4_WaterAndObjectsInternal(): void {
+  /** @return the bot grounds, which stand when it resolves */
+  private buildPhase4_WaterAndObjectsInternal(): Promise<void> {
     const terrainTile = this.terrainTile;
     let groundConfig = this.gwtAngularService.gwtAngularFacade.terrainTypeService.getGroundConfig(GwtHelper.gwtIssueNumber(terrainTile.getGroundConfigId()));
 
@@ -467,12 +481,14 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       this.setupTerrainTileObjects(terrainTile.getTerrainTileObjectLists());
     }
 
-    this.setupBotGrounds(terrainTile.getBotGrounds());
+    const botGrounds = this.setupBotGrounds(terrainTile.getBotGrounds());
 
     this.setupSprites();
+    return botGrounds;
   }
 
-  private static readonly TERRAIN_OBJECTS_PER_BATCH = 100;
+  // 100 per batch took up to 44 ms in one piece on a desktop (2026-10-11)
+  private static readonly TERRAIN_OBJECTS_PER_BATCH = 50;
   private static readonly TERRAIN_OBJECT_BATCH_DELAY = 16;
 
   private setupWater(groundConfig: GroundConfig): void {
@@ -763,8 +779,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     });
     this.spriteManagers = [];
 
-    // Per-tile water resources: whitecap material + reflection cube texture (shared water material
-    // is left alone). The water/whitecap meshes are disposed with the container below.
+    // Water resources: the materials and the reflection are the scene's (see WaterTileResources);
+    // the water/whitecap meshes are disposed with the container below.
     if (this.waterResources) {
       this.waterResources.dispose();
       this.waterResources = null;
@@ -800,6 +816,32 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     this.groundHeights = [];
     this.botGroundBoxes = null;
     this.decalBoxes = null;
+  }
+
+  /**
+   * The height of the surface a vertical ray would hit at a world point inside this tile, as far as
+   * ground and water go: the ground on the triangle computeTileMesh lays there - every quad is
+   * (bL, bR, tL) and (bR, tR, tL) - and the water surface (0) where the tile has its water mesh.
+   * Bot-ground plates are not counted. Null outside the tile or before its heights are there.
+   */
+  surfaceHeightAt(worldX: number, worldZ: number): number | null {
+    const size = BabylonTerrainTileImpl.NODE_X_COUNT;
+    const lx = worldX - this.tileXOffset, lz = worldZ - this.tileYOffset;
+    if (!(lx >= 0 && lz >= 0 && lx <= size && lz <= size) || this.groundHeights.length === 0) {
+      return null;
+    }
+    const x = Math.min(Math.floor(lx), size - 1), z = Math.min(Math.floor(lz), size - 1);
+    const fx = lx - x, fz = lz - z, nodes = size + 1, h = this.groundHeights;
+    const bL = h[x + z * nodes], bR = h[x + 1 + z * nodes], tL = h[x + (z + 1) * nodes], tR = h[x + 1 + (z + 1) * nodes];
+    const ground = fx + fz <= 1
+      ? bL + (bR - bL) * fx + (tL - bL) * fz
+      : tR + (tL - tR) * (1 - fx) + (bR - tR) * (1 - fz);
+    return this.waterMesh ? Math.max(ground, BabylonTerrainTileImpl.WATER_LEVEL) : ground;
+  }
+
+  /** The MaterialIndex (0 ground, 1 asphalt) of a ground quad, row-major, or -1 before the tile is built. */
+  getGroundQuadMaterialIndex(quad: number): number {
+    return this.groundQuadMaterials ? this.groundQuadMaterials[quad] : -1;
   }
 
   getGroundMesh(): Mesh {
@@ -855,10 +897,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       groundUtilityBlock.texture.dispose();
     }
 
-    groundUtilityBlock.texture = new Texture(
-      groundUtil.createGroundTypeTexture(this.pathMask, this.vegetationMask).toDataURL(),
-      this.rendererService.getScene()
-    );
+    groundUtilityBlock.texture = groundUtil.createGroundTypeTexture(this.rendererService.getScene(), this.pathMask, this.vegetationMask);
     this.groundMaterial.build();
 
     // Update water UV2 for transparency
@@ -867,139 +906,32 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     }
   }
 
-  private createVertexData(groundHeightMap: Uint16Array, uv2GroundHeightMap: number[], materialSubmeshes: {
-    materialIndex: MaterialIndex,
-    indexStart: number,
-    indexCount: number
-  }[], babylonDecals: BabylonDecal[], groundUtil: GroundUtil): VertexData {
-    const indices = [];
-    const positions = [];
-    const normals = [];
-    const uvs = [];
+  private meshApplied = false;
 
-    let xCount = (BabylonTerrainTileImpl.NODE_X_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
-    let yCount = (BabylonTerrainTileImpl.NODE_Y_COUNT / BabylonTerrainTileImpl.NODE_SIZE) + 1;
-    let xOffset = this.terrainTile.getIndex().getX() * BabylonTerrainTileImpl.NODE_X_COUNT;
-    let yOffset = this.terrainTile.getIndex().getY() * BabylonTerrainTileImpl.NODE_Y_COUNT;
-
-    // Vertices
-    let minHeight = Number.POSITIVE_INFINITY;
-    for (let y = 0; y < yCount; y++) {
-      for (let x = 0; x < xCount; x++) {
-        const index = x + y * xCount;
-        const height = BabylonTerrainTileImpl.setupHeight(index, groundHeightMap);
-        minHeight = Math.min(minHeight, height);
-
-        groundUtil.addHeightAt(height, x, y);
-
-        positions.push(
-          x * BabylonTerrainTileImpl.NODE_SIZE + xOffset,
-          height,
-          y * BabylonTerrainTileImpl.NODE_SIZE + yOffset);
-        normals.push(0, 0, 0);
-        const uvx = x / (xCount - 1);
-        const uvy = 1.0 - y / (yCount - 1);
-        uvs.push(uvx, uvy);
-
-        const invertedY = xCount - y - 1;
-        const index2 = x + invertedY * xCount;
-        const invertedGroundHeight = BabylonTerrainTileImpl.setupHeight(index2, groundHeightMap);
-        uv2GroundHeightMap.push(invertedGroundHeight, 0);
-      }
-    }
-
-    this.hasWater = BabylonTerrainTileImpl.needsWater(minHeight);
-
-    // Compute shore direction (gradient of ground height) and store angle in UV2.y
-    BabylonTerrainTileImpl.computeShoreDirections(uv2GroundHeightMap, xCount, yCount);
-
-    // Indices
-    let currentStart = 0;
-    let indexCount = 0;
-    let materialIndex: MaterialIndex | null = null;
-
-    let materialSubmesh: {
-      materialIndex: MaterialIndex,
-      indexStart: number,
-      indexCount: number
-    } | null = null;
-
-    for (let y = 0; y < yCount - 1; y++) {
-      for (let x = 0; x < xCount - 1; x++) {
-        const bLIdx = x + y * xCount;
-        const bRIdx = x + 1 + y * xCount;
-        const tLIdx = x + (y + 1) * xCount;
-        const tRIdx = x + 1 + (y + 1) * xCount;
-
-        const terrainX = x * BabylonTerrainTileImpl.NODE_SIZE + xOffset;
-        const terrainY = y * BabylonTerrainTileImpl.NODE_SIZE + yOffset;
-
-        const bLHeight = BabylonTerrainTileImpl.setupHeight(bLIdx, groundHeightMap);
-        const bRHeight = BabylonTerrainTileImpl.setupHeight(bRIdx, groundHeightMap);
-        const tLHeight = BabylonTerrainTileImpl.setupHeight(tLIdx, groundHeightMap);
-        const tRHeight = BabylonTerrainTileImpl.setupHeight(tRIdx, groundHeightMap);
-        const decal = this.findDecal(babylonDecals, terrainX, terrainY);
-
-        let newMaterialIndex;
-        const terrainType = BabylonTerrainTileImpl.setupTerrainType(bLHeight, bRHeight, tRHeight, tLHeight);
-        if (decal && (terrainType == TerrainType.LAND || terrainType == TerrainType.BLOCKED)) {
-          newMaterialIndex = MaterialIndex.ASPHALT;
-        } else {
-          newMaterialIndex = MaterialIndex.GROUND;
-        }
-        if (materialIndex !== newMaterialIndex) {
-          if (materialSubmesh != null) {
-            materialSubmesh.indexCount = indexCount;
-            materialSubmeshes.push(materialSubmesh)
-          }
-          materialSubmesh = {
-            materialIndex: newMaterialIndex, indexStart: currentStart, indexCount: 0
-          }
-          indexCount = 0;
-        }
-        materialIndex = newMaterialIndex;
-
-        indices.push(bLIdx);
-        indices.push(bRIdx);
-        indices.push(tLIdx);
-
-        indices.push(bRIdx);
-        indices.push(tRIdx);
-        indices.push(tLIdx);
-
-        currentStart += 6;
-        indexCount += 6;
-      }
-    }
-    if (materialSubmesh) {
-      materialSubmesh.indexCount = indexCount;
-      materialSubmeshes.push(materialSubmesh)
-    }
-
-    VertexData.ComputeNormals(positions, indices, normals);
-
+  /** Puts the vertex data of computeTileMesh on the ground mesh, with one sub mesh per material. */
+  private applyTileMesh(mesh: TileMesh): void {
     const vertexData = new VertexData();
-
-    vertexData.indices = indices;
-    vertexData.positions = positions;
-    vertexData.normals = normals;
-    vertexData.uvs = uvs;
-
-    return vertexData;
+    vertexData.positions = mesh.positions;
+    vertexData.normals = mesh.normals;
+    vertexData.uvs = mesh.uvs;
+    vertexData.indices = mesh.indices;
+    vertexData.applyToMesh(this.groundMesh, true);
+    this.groundQuadMaterials = mesh.quadMaterials;
+    this.uv2GroundHeightMap = mesh.waterUv2;
+    this.materialSubmeshes = [];
+    if (mesh.groundIndexCount > 0) {
+      this.materialSubmeshes.push({materialIndex: MaterialIndex.GROUND, indexStart: 0, indexCount: mesh.groundIndexCount});
+    }
+    if (mesh.asphaltIndexCount > 0) {
+      this.materialSubmeshes.push({materialIndex: MaterialIndex.ASPHALT, indexStart: mesh.groundIndexCount, indexCount: mesh.asphaltIndexCount});
+    }
+    this.meshApplied = true;
   }
 
-  private findDecal(babylonDecals: BabylonDecal[], terrainX: number, terrainY: number) {
-    return babylonDecals && babylonDecals.find(babylonDecal => {
-      return this.insideDecal(terrainX, terrainY, babylonDecal);
-    });
-  }
 
-  private insideDecal(x: number, y: number, babylonDecal: BabylonDecal) {
-    return x >= babylonDecal.xPos
-      && x < babylonDecal.xSize + babylonDecal.xPos
-      && y >= babylonDecal.yPos
-      && y < babylonDecal.ySize + babylonDecal.yPos;
-  }
+
+
+
 
   // Same bridge-avoidance as bot grounds: cache decal extents once per tile as a flat
   // [minX,minY,maxX,maxY,...] array so the sprite loop never reads Java decal proxies per sprite.
@@ -1018,7 +950,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     return this.decalBoxes;
   }
 
-  // Pure-JS point-in-decal test against the cached flat array (matches insideDecal semantics).
+  // Pure-JS point-in-decal test against the cached flat array.
   private insideAnyDecal(x: number, y: number): boolean {
     const boxes = this.decalBoxes ?? this.getDecalBoxes();
     for (let i = 0; i < boxes.length; i += 4) {
@@ -1093,28 +1025,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
    * The gradient of ground height points uphill (toward shore).
    * UV2 layout: [height0, angle0, height1, angle1, ...]
    */
+  /** See computeShoreDirections in tile-ground-compute.ts. */
   public static computeShoreDirections(uv2: number[], xCount: number, yCount: number): void {
-    for (let y = 0; y < yCount; y++) {
-      for (let x = 0; x < xCount; x++) {
-        const idx = (y * xCount + x) * 2;
-        const h = uv2[idx]; // ground height at this vertex
-
-        // Central differences for gradient (clamped at edges)
-        const xL = x > 0 ? uv2[((y * xCount) + (x - 1)) * 2] : h;
-        const xR = x < xCount - 1 ? uv2[((y * xCount) + (x + 1)) * 2] : h;
-        const yD = y > 0 ? uv2[(((y - 1) * xCount) + x) * 2] : h;
-        const yU = y < yCount - 1 ? uv2[(((y + 1) * xCount) + x) * 2] : h;
-
-        const dx = xR - xL;
-        const dy = yU - yD;
-
-        // atan2 gives angle of gradient (direction toward shore)
-        // Default to 0 on flat areas (no gradient)
-        const angle = (dx === 0 && dy === 0) ? 0 : Math.atan2(dy, dx);
-        uv2[idx + 1] = angle;
-      }
-    }
+    computeShoreDirections(uv2, xCount, yCount);
   }
+
 
   /**
    * The worker's packed relief as UV3: x = sky visibility (0..1, 1 = open sky), y = curvature (-1 hollow ..
@@ -1160,9 +1075,9 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // scene was disposed and replaced.
   private static sharedBotGroundScene: Nullable<any> = null;
   private static sharedBotGroundSideMaterial: Nullable<NodeMaterial> = null;
-  private static botGroundMaterials = new Map<string, { plate: MultiMaterial, gravel: NodeMaterial }>();
+  private static botGroundMaterials = new Map<string, Promise<{ plate: MultiMaterial, gravel: NodeMaterial }>>();
 
-  private botGroundMaterial(footprints: BotGroundFootprint[]): { plate: MultiMaterial, gravel: NodeMaterial } {
+  private botGroundMaterial(footprints: BotGroundFootprint[]): Promise<{ plate: MultiMaterial, gravel: NodeMaterial }> {
     const scene = this.rendererService.getScene();
     if (BabylonTerrainTileImpl.sharedBotGroundScene !== scene || !BabylonTerrainTileImpl.sharedBotGroundSideMaterial) {
       BabylonTerrainTileImpl.sharedBotGroundScene = scene;
@@ -1173,11 +1088,24 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     let materials = BabylonTerrainTileImpl.botGroundMaterials.get(key);
     if (!materials) {
       const name = `BotGround ${footprints[0].x},${footprints[0].z}`;
-      const markings = bakeBotGroundMarkings(scene, `${name} markings`, footprints);
-      const multi = new MultiMaterial(`${name} multi`, scene);
-      multi.subMaterials.push(BabylonTerrainTileImpl.sharedBotGroundSideMaterial);
-      multi.subMaterials.push(buildBotGroundTopMaterial(scene, markings));
-      materials = {plate: multi, gravel: buildBotGroundGravelMaterial(scene, `${name} gravel`, markings)};
+      const sideMaterial = BabylonTerrainTileImpl.sharedBotGroundSideMaterial;
+      const pending = TerrainHelper.computeBotGroundMarkings(footprints).then(pixels => {
+        if (scene.isDisposed) {
+          throw new Error(`${name}: scene disposed while the markings were baked`);
+        }
+        const markings = botGroundMarkingsTextures(scene, `${name} markings`, pixels);
+        const multi = new MultiMaterial(`${name} multi`, scene);
+        multi.subMaterials.push(sideMaterial);
+        multi.subMaterials.push(buildBotGroundTopMaterial(scene, markings));
+        return {plate: multi, gravel: buildBotGroundGravelMaterial(scene, `${name} gravel`, markings)};
+      });
+      // A failed bake is not kept: the next tile showing this bot ground tries again
+      pending.catch(() => {
+        if (BabylonTerrainTileImpl.botGroundMaterials.get(key) === pending) {
+          BabylonTerrainTileImpl.botGroundMaterials.delete(key);
+        }
+      });
+      materials = pending;
       BabylonTerrainTileImpl.botGroundMaterials.set(key, materials);
     }
     return materials;
@@ -1217,10 +1145,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     return box;
   }
 
-  private setupBotGrounds(botGrounds: BotGround[]) {
+  private setupBotGrounds(botGrounds: BotGround[]): Promise<void> {
     if (!botGrounds) {
-      return;
+      return Promise.resolve();
     }
+    const built: Promise<void>[] = [];
     botGrounds.forEach((botGround: BotGround) => {
       if (!botGround || !botGround.positions) {
         return;
@@ -1247,42 +1176,51 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       if (footprints.length === 0) {
         return;
       }
-      const materials = this.botGroundMaterial(footprints);
-      const material = materials.plate;
-      this.createBotGroundGravel(flats, slopes.map(slope => ({x: slope.xPos, z: slope.yPos})), materials.gravel);
+      built.push(this.botGroundMaterial(footprints).then(materials => {
+        if (this.disposed) {
+          return;
+        }
+        const material = materials.plate;
+        this.createBotGroundGravel(flats, slopes.map(slope => ({x: slope.xPos, z: slope.yPos})), materials.gravel);
 
-      let botGroundNorm = new Vector3(0, 1, 0).normalize();
-      flats.forEach(flat => {
-        const box = this.createBotGroundBox(`BotGround ${flat.x},${flat.z}`, material);
-        box.position = new Vector3(flat.x, botGround.height, flat.z);
-        BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
-          type: RazarionMetadataType.BOT_GROUND,
-          configId: undefined,
-          id: undefined,
-          editorHintTerrainObjectPosition: undefined,
-          botGroundNorm: botGroundNorm
+        let botGroundNorm = new Vector3(0, 1, 0).normalize();
+        flats.forEach(flat => {
+          const box = this.createBotGroundBox(`BotGround ${flat.x},${flat.z}`, material);
+          box.position = new Vector3(flat.x, botGround.height, flat.z);
+          BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
+            type: RazarionMetadataType.BOT_GROUND,
+            configId: undefined,
+            id: undefined,
+            editorHintTerrainObjectPosition: undefined,
+            botGroundNorm: botGroundNorm
+          });
         });
-      });
-      slopes.forEach(botGroundSlopeBox => {
-        const x = -Math.sin(botGroundSlopeBox.zRot) * Math.cos(botGroundSlopeBox.yRot);
-        const y = Math.cos(botGroundSlopeBox.zRot);
-        const z = Math.sin(botGroundSlopeBox.zRot) * Math.sin(botGroundSlopeBox.yRot);
-        let botGroundNorm = new Vector3(x, y, z).normalize();
+        slopes.forEach(botGroundSlopeBox => {
+          const x = -Math.sin(botGroundSlopeBox.zRot) * Math.cos(botGroundSlopeBox.yRot);
+          const y = Math.cos(botGroundSlopeBox.zRot);
+          const z = Math.sin(botGroundSlopeBox.zRot) * Math.sin(botGroundSlopeBox.yRot);
+          let botGroundNorm = new Vector3(x, y, z).normalize();
 
-        const box = this.createBotGroundBox(`Slope BotGround ${botGroundSlopeBox.xPos},${botGroundSlopeBox.yPos}`, material);
-        box.position = new Vector3(botGroundSlopeBox.xPos, botGroundSlopeBox.height, botGroundSlopeBox.yPos);
-        box.rotationQuaternion = null;
-        box.rotation.y = botGroundSlopeBox.yRot;
-        box.rotation.z = botGroundSlopeBox.zRot;
-        BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
-          type: RazarionMetadataType.BOT_GROUND,
-          configId: undefined,
-          id: undefined,
-          editorHintTerrainObjectPosition: undefined,
-          botGroundNorm: botGroundNorm
+          const box = this.createBotGroundBox(`Slope BotGround ${botGroundSlopeBox.xPos},${botGroundSlopeBox.yPos}`, material);
+          box.position = new Vector3(botGroundSlopeBox.xPos, botGroundSlopeBox.height, botGroundSlopeBox.yPos);
+          box.rotationQuaternion = null;
+          box.rotation.y = botGroundSlopeBox.yRot;
+          box.rotation.z = botGroundSlopeBox.zRot;
+          BabylonRenderServiceAccessImpl.setRazarionMetadata(box, {
+            type: RazarionMetadataType.BOT_GROUND,
+            configId: undefined,
+            id: undefined,
+            editorHintTerrainObjectPosition: undefined,
+            botGroundNorm: botGroundNorm
+          });
         });
-      });
+        if (!this.active) {
+          // Scrolled away while the markings were baked: park what was just made, as the rest
+          this.applyActiveState();
+        }
+      }));
     });
+    return Promise.all(built).then(() => undefined);
   }
 
   /**
@@ -1321,7 +1259,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         for (const [px, pz] of [[x, z], [x + cell, z], [x + cell, z + cell], [x, z + cell]]) {
           positions.push(px, this.getHeightSmooth(px, pz) + BabylonTerrainTileImpl.GRAVEL_LIFT, pz);
         }
-        // Same winding as the ground mesh (createVertexData), or the cells face down and are culled
+        // Same winding as the ground mesh (computeTileMesh), or the cells face down and are culled
         indices.push(first, first + 1, first + 3, first + 1, first + 2, first + 3);
       }
     }
@@ -1590,6 +1528,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private static readonly SPRITE_SKY_SHARE = 0.45;
   private static readonly SPRITE_SUN_LIGHT = 0.85;
   private static readonly SPRITE_SHADE_GRID = 8;   // m - clouds sampled on a grid, sprites interpolate
+  // A tile's sprites are shaded at most this often. The clouds drift ~2 m/s: 0.2 m in that time,
+  // against a grid of 8 m. Every frame (one tile a frame, 45 times a second each for two tiles at
+  // 90 fps) cost 3 % of a Pixel 7's main thread for a change nobody could see (2026-10-12).
+  private static readonly SPRITE_SHADE_PERIOD_MS = 100;
+  private lastShadedAt = 0;
   private static shadedTiles = new Set<BabylonTerrainTileImpl>();
   private static shadingIterator: Iterator<BabylonTerrainTileImpl> | null = null;
   private static shadingScene: Scene | null = null;
@@ -1608,6 +1551,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     BabylonTerrainTileImpl.shadingScene = scene;
     scene.onBeforeRenderObservable.add(() => {
       const tiles = BabylonTerrainTileImpl.shadedTiles;
+      const now = performance.now();
       for (let attempts = 0; attempts < tiles.size; attempts++) {
         let next = BabylonTerrainTileImpl.shadingIterator?.next();
         if (!next || next.done) {
@@ -1622,7 +1566,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           tiles.delete(tile);
           continue;
         }
-        if (tile.active) {
+        if (tile.active && now - tile.lastShadedAt >= BabylonTerrainTileImpl.SPRITE_SHADE_PERIOD_MS) {
+          tile.lastShadedAt = now;
           tile.shadeSprites(cloudTime());
           return;
         }

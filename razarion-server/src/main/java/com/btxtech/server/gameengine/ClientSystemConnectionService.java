@@ -27,7 +27,9 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -38,7 +40,13 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
     private static final String CLIENT_SYSTEM_CONNECTION = "ClientSystemConnection";
     private final Logger logger = LoggerFactory.getLogger(ClientSystemConnectionService.class);
     private final ObjectMapper mapper = new ObjectMapper();
-    private final Map<String, ClientSystemConnection> systemConnections = new TreeMap<>();
+    /**
+     * Every open system connection of a user, oldest first. A list, not one per user: a second tab of
+     * the same player used to replace the first, which from then on got nothing from the server -
+     * no base, no builder, no tick - while its orders still arrived and were carried out (local
+     * test, 2026-10-11). Each of the user's tabs is served now; sends to the user go to all of them.
+     */
+    private final Map<String, List<ClientSystemConnection>> systemConnections = new TreeMap<>();
     private final Provider<ClientSystemConnection> provider;
     private final Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter;
     private final UserService userService;
@@ -67,7 +75,7 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
         wsSession.getAttributes().put(CLIENT_SYSTEM_CONNECTION, clientSystemConnection);
 
         synchronized (systemConnections) {
-            systemConnections.put(userId, clientSystemConnection);
+            systemConnections.computeIfAbsent(userId, id -> new ArrayList<>()).add(clientSystemConnection);
         }
 
         userService.onClientSystemConnectionOpened(userId);
@@ -96,12 +104,22 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession wsSession, CloseStatus closeStatus) {
         var clientSystemConnection = (ClientSystemConnection) wsSession.getAttributes().get(CLIENT_SYSTEM_CONNECTION);
+        boolean last;
         synchronized (systemConnections) {
-            systemConnections.remove(clientSystemConnection.getUserId());
-            logger.info("Websocket clientSystemConnection closed {}", clientSystemConnection);
+            // Only this connection, not whatever else the user holds. A reload or a reconnect opens
+            // the new connection first and the server may learn of the old one's end only after
+            // that - an unclean drop surfaces late. Removing by user id then dropped the NEW one:
+            // the player's only tab got nothing from the server any more (2026-10-11, reproduced
+            // locally with two tabs).
+            last = removeConnection(systemConnections, clientSystemConnection.getUserId(), clientSystemConnection);
+            logger.info("Websocket clientSystemConnection closed {}{}", clientSystemConnection,
+                    last ? "" : " (the user still holds another connection)");
         }
-
-        userService.onClientSystemConnectionClosed(clientSystemConnection.getUserId());
+        if (last) {
+            // Not before the last one: sixty minutes after the close stamp the cleanup deletes an
+            // anonymous player - who would still be playing on his other connection.
+            userService.onClientSystemConnectionClosed(clientSystemConnection.getUserId());
+        }
     }
 
     public void onQuestProgressInfo(String userId, QuestProgressInfo questProgressInfo) {
@@ -158,23 +176,24 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
         }
 
         synchronized (systemConnections) {
-            systemConnections.values().forEach(gameConnection -> {
+            systemConnections.values().forEach(connections -> connections.forEach(connection -> {
                 try {
-                    gameConnection.sendToClient(text);
+                    connection.sendToClient(text);
                 } catch (Throwable throwable) {
                     logger.warn(throwable.getMessage(), throwable);
                 }
-            });
+            }));
         }
     }
 
     private void sendToClient(String userId, SystemConnectionPacket packet, Object object) {
-        ClientSystemConnection clientSystemConnection;
+        List<ClientSystemConnection> connections;
         synchronized (systemConnections) {
-            clientSystemConnection = systemConnections.get(userId);
-            if (clientSystemConnection == null) {
+            List<ClientSystemConnection> open = systemConnections.get(userId);
+            if (open == null) {
                 return;
             }
+            connections = new ArrayList<>(open);
         }
         try {
             String text;
@@ -183,10 +202,12 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
             } else {
                 text = ConnectionMarshaller.marshall(packet, MAPPER.writeValueAsString(object));
             }
-            try {
-                clientSystemConnection.sendToClient(text);
-            } catch (Throwable throwable) {
-                logger.warn(throwable.getMessage(), throwable);
+            for (ClientSystemConnection clientSystemConnection : connections) {
+                try {
+                    clientSystemConnection.sendToClient(text);
+                } catch (Throwable throwable) {
+                    logger.warn(throwable.getMessage(), throwable);
+                }
             }
         } catch (Throwable throwable) {
             logger.warn(throwable.getMessage(), throwable);
@@ -213,8 +234,11 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
         }
     }
 
+    /** The user's newest connection, or null when he has none. */
     public ClientSystemConnection getClientSystemConnection(String userId) {
-        return systemConnections.get(userId);
+        synchronized (systemConnections) {
+            return newest(systemConnections.get(userId));
+        }
     }
 
     /**
@@ -223,8 +247,30 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
      */
     public Map<String, ClientSystemConnection> getOpenConnections() {
         synchronized (systemConnections) {
-            return new TreeMap<>(systemConnections);
+            Map<String, ClientSystemConnection> open = new TreeMap<>();
+            systemConnections.forEach((userId, connections) -> open.put(userId, newest(connections)));
+            return open;
         }
+    }
+
+    /**
+     * Takes this connection out of the user's list; true when it was his last one. Callers hold the
+     * map's lock.
+     */
+    static <C> boolean removeConnection(Map<String, List<C>> connectionsPerUser, String userId, C connection) {
+        List<C> connections = connectionsPerUser.get(userId);
+        if (connections == null || !connections.remove(connection)) {
+            return false;
+        }
+        if (connections.isEmpty()) {
+            connectionsPerUser.remove(userId);
+            return true;
+        }
+        return false;
+    }
+
+    static <C> C newest(List<C> connections) {
+        return connections == null || connections.isEmpty() ? null : connections.get(connections.size() - 1);
     }
 
 }

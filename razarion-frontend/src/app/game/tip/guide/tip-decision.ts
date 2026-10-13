@@ -97,6 +97,12 @@ export interface DecisionInput {
   canAfford: (itemTypeId: number) => boolean;
   /** The enemy the attack prompt stood on last time, kept while it lives so the prompt does not jump. */
   markedTargetId: number | null;
+  /**
+   * BUILD: where the player last placed a building, and of which type (null when unknown). Only a
+   * type the quest still asks for counts as where the builder is going. Optional so that a caller
+   * without a placer, the decision tests, needs not name it.
+   */
+  buildPlacement?: (Point & { typeId: number | null }) | null;
 }
 
 export type Guidance =
@@ -109,7 +115,13 @@ export type Guidance =
   { kind: 'unload' } |
   /** The hint on the sell button; the building it sells is where the minimap marks. */
   { kind: 'sell', x: number, y: number } |
-  { kind: 'group', arrow: Point | null };
+  { kind: 'group', arrow: Point | null } |
+  /**
+   * Nothing to do but wait, and the player is shown that something is happening: the builder on its
+   * way (distance left to the spot it was sent to, null when unknown), then the site going up. Not a
+   * request - the stall watchdog treats it as quiet.
+   */
+  { kind: 'progress', phase: 'driving' | 'building', itemId: number, x: number, y: number, distance: number | null, buildup: number };
 
 export interface Decision {
   guidance: Guidance;
@@ -203,7 +215,7 @@ function decideBuild(input: DecisionInput): Decision {
   const site = ownOfTypes(input, missing).find(item => item.buildup < 1 && countsForQuest(input, item));
   if (site) {
     if (builders.some(builder => missing.some(typeId => worksOn(input, builder, ['build', 'finalize'], typeId)))) {
-      return quiet(TipTaskName.SEND_BUILD_COMMAND, TipStallReason.AWAIT_BUILD_FINALIZE);
+      return progress('building', site, null, TipStallReason.AWAIT_BUILD_FINALIZE);
     }
     if (!builders.some(builder => input.selectedIds.has(builder.id))) {
       return selectStep(input, builders);
@@ -212,8 +224,12 @@ function decideBuild(input: DecisionInput): Decision {
     return pointAt(input, site, false, PROMPT.CONTINUE_BUILDING, TipTaskName.SEND_BUILD_COMMAND,
       TipStallReason.BUILD_NOT_PROGRESSING, TipStallReason.TARGET_OUT_OF_VIEW);
   }
-  if (builders.some(builder => missing.some(typeId => worksOn(input, builder, ['build'], typeId)))) {
-    return quiet(TipTaskName.SEND_BUILD_COMMAND, TipStallReason.AWAIT_BUILD_SITE);
+  const driving = builders.find(builder => missing.some(typeId => worksOn(input, builder, ['build'], typeId)));
+  if (driving) {
+    const placement = input.buildPlacement ?? null;
+    const target = placement && (placement.typeId === null || missing.includes(placement.typeId)) ? placement : null;
+    return progress('driving', driving, target ? Math.hypot(target.x - driving.x, target.y - driving.y) : null,
+      TipStallReason.AWAIT_BUILD_SITE);
   }
   // A placer of unknown type counts as ours: the placer starts before the cockpit reports the click.
   if (input.placer.active && (input.placer.typeId === null || missing.includes(input.placer.typeId))) {
@@ -591,6 +607,14 @@ function replaceActor(input: DecisionInput, actorTypeId: number): Decision {
     return decideFabricate(input, factory.itemTypeId, actorTypeId);
   }
   return quiet(TipTaskName.SELECT, TipStallReason.ACTOR_NOT_FOUND);
+}
+
+function progress(phase: 'driving' | 'building', item: TipItemState, distance: number | null, reason: string): Decision {
+  return {
+    guidance: {kind: 'progress', phase, itemId: item.id, x: item.x, y: item.y, distance, buildup: item.buildup},
+    taskName: TipTaskName.SEND_BUILD_COMMAND,
+    reason
+  };
 }
 
 function quiet(taskName: string, reason: string): Decision {

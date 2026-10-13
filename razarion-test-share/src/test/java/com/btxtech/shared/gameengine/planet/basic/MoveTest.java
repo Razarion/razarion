@@ -111,4 +111,55 @@ public class MoveTest extends BaseBasicTest {
         Assert.assertNull(slaveBuilder.getSyncPhysicalMovable().getVelocity());
     }
 
+    /**
+     * Redirected while still under way, a few metres short of the first goal, on to a goal 20 m
+     * further. The slave kept the closest distance it had reached to the first goal, measured the new
+     * approach against it, "made no progress" and gave up after 2.5 s - standing metres short while
+     * the master drove on, until the master's stop made it jump (local test, 2026-10-11: TELEPORTING
+     * 3.7-32 m). Fails without the reset in SyncPhysicalMovable.synchronize() at tick 24.
+     * <p>
+     * Not a U-turn: turning on the spot gets no closer either, and there the master replans (which
+     * resets its watch) while the slave, which never replans, gives up until the replanned path
+     * arrives. That is a separate, shorter stall.
+     */
+    @Test
+    public void landRedirectedShortlyBeforeArrival() {
+        setup();
+
+        UserContext userContext = createLevel1UserContext();
+        DaggerSlaveEmulator permSlave = new DaggerSlaveEmulator();
+        permSlave.connectToMaster(userContext, this);
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(17, 20), userContext);
+        tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
+        DecimalPosition firstGoal = new DecimalPosition(55, 20);
+        DecimalPosition secondGoal = new DecimalPosition(75, 20);
+
+        getCommandService().move(builder, firstGoal);
+        for (int tick = 0; tick < 300 && builder.getAbstractSyncPhysical().getPosition().getDistance(firstGoal) > 3; tick++) {
+            tickPlanetService(1);
+            permSlave.tickPlanetService(1);
+        }
+        Assert.assertTrue("still under way to the first goal", builder.getSyncPhysicalMovable().hasDestination());
+
+        getCommandService().move(builder, secondGoal);
+        for (int tick = 0; tick < 300 && builder.getSyncPhysicalMovable().hasDestination(); tick++) {
+            tickPlanetService(1);
+            permSlave.tickPlanetService(1);
+            if (builder.getSyncPhysicalMovable().hasDestination()) {
+                Assert.assertTrue("the slave stopped at " + slaveBuilder.getAbstractSyncPhysical().getPosition()
+                                + " while the master drove on at " + builder.getAbstractSyncPhysical().getPosition() + " (tick " + tick + ")",
+                        slaveBuilder.getSyncPhysicalMovable().hasDestination()
+                                || slaveBuilder.getAbstractSyncPhysical().getPosition().getDistance(secondGoal) < 1);
+            }
+        }
+        tickPlanetService(2);
+        permSlave.tickPlanetService(2);
+
+        TestHelper.assertDecimalPosition(null, secondGoal, builder.getAbstractSyncPhysical().getPosition(), 0.5);
+        TestHelper.assertDecimalPosition(null, secondGoal, slaveBuilder.getAbstractSyncPhysical().getPosition(), 0.5);
+    }
+
 }

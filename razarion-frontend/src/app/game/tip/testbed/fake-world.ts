@@ -3,7 +3,7 @@ import {Diplomacy} from '../../../gwtangular/GwtAngularFacade';
 import {ViewField, ViewFieldListener} from '../../renderer/view-field';
 import {BaseItemPlacerPresenterEvent} from '../../renderer/base-item-placer-presenter.impl';
 import {PROMPT_CLEARANCE_FRACTION} from '../../renderer/prompt-geometry';
-import {notifyPlacement, onNextPlacement} from '../../renderer/placer-release';
+import {notifyPlacement, onNextPlacement, setLastBuildPlacement} from '../../renderer/placer-release';
 import {TipStallReason} from '../tip-stall';
 import {fakeBaseItemType, FakeItemTypeSpec, itemTypeSpec} from './fake-item-types';
 
@@ -872,6 +872,9 @@ export class FakeRenderer {
   placeMarkerShown = false;
   /** Where the last camera flight went (flyViewFieldCenter), null without one. */
   lastFlight: { x: number, y: number } | null = null;
+  /** The label over a builder on its way or a site going up, as the player sees it; null when down. */
+  buildProgress: { itemId: number, text: string } | null = null;
+  private follow: { target: () => { x: number, y: number } | null, onTakeOver: () => void } | null = null;
   readonly touchSelectionMode = {asked: false, setAsked: (asked: boolean) => this.touchSelectionMode.asked = asked};
 
   constructor(private readonly world: World) {
@@ -969,6 +972,45 @@ export class FakeRenderer {
     return this.world.promptReadable(x, y);
   }
 
+  /** As the live renderer: no label on an item that is out of view. */
+  showBuildProgress(itemId: number | null, text: string): void {
+    this.buildProgress = itemId !== null && this.getBabylonBaseItemById(itemId) ? {itemId, text} : null;
+  }
+
+  /** Records the follow; {@link applyFollow} moves the camera along. */
+  followViewFieldCenter(target: () => { x: number, y: number } | null, onTakeOver: () => void): () => void {
+    const follow = {target, onTakeOver};
+    this.follow = follow;
+    return () => {
+      if (this.follow === follow) {
+        this.follow = null;
+      }
+    };
+  }
+
+  /** Where the camera is following to, null when it is not following. */
+  followTarget(): { x: number, y: number } | null {
+    return this.follow?.target() ?? null;
+  }
+
+  /**
+   * The camera on the follow target, once per step. The live renderer eases toward it over half a
+   * second; at the bed's step size that is the same picture. Not a move of the player's.
+   */
+  applyFollow(): void {
+    const target = this.follow?.target();
+    if (target) {
+      this.world.moveCamera(target.x, target.y);
+    }
+  }
+
+  /** As the live renderer: a camera move of the player's own ends the follow. */
+  playerMovedCamera(): void {
+    const follow = this.follow;
+    this.follow = null;
+    follow?.onTakeOver();
+  }
+
   addViewFieldListener(listener: ViewFieldListener): void {
     if (!this.viewFieldListeners.includes(listener)) {
       this.viewFieldListeners.push(listener);
@@ -1049,6 +1091,7 @@ export class FakeRenderer {
     if (this.unloadContainerId !== null) {
       this.world.unload(this.unloadContainerId, x, y);
     } else {
+      setLastBuildPlacement({x, y, typeId: this.placerTypeId});
       this.world.command(this.placerBuilderIds, {kind: 'build', typeId: this.placerTypeId!, x, y});
     }
     this.deactivatePlacer();
