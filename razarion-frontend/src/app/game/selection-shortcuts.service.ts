@@ -74,6 +74,10 @@ export class SelectionShortcutsService {
   // so getCount() returns correct totals from the start — without waiting until a unit of that
   // category has shown up in the viewport.
   private allTypesPopulated = false;
+  // The counts of all categories, worked out together and kept for COUNT_CACHE_MILLIS - see getCount()
+  private cachedCounts: Record<SelectionShortcutCategory, number> | null = null;
+  private cachedCountsAt = 0;
+  private static readonly COUNT_CACHE_MILLIS = 100;
 
   constructor(
     private rendererService: BabylonRenderServiceAccessImpl,
@@ -87,8 +91,26 @@ export class SelectionShortcutsService {
     // Count from the exact same set cycle() walks (selectable own units only). Using
     // getMyItemCount() here would inflate the badge with spawning/contained units that are never
     // rendered, so the button would look active but a click could land on a non-selectable entry.
-    this.ensureKnownTypesPopulated();
-    return this.collectOwnEntriesForCategory(category).length;
+    //
+    // The chips ask two or three times per category on every change detection run, and each
+    // answer fetched all own units over the engine bridge, filtered and sorted them: ten bridge
+    // calls a run, the costliest template on a phone (2026-10-12). The counts only change with a
+    // tick, so all categories are counted together and kept for a tenth of a second.
+    const now = performance.now();
+    if (!this.cachedCounts || now - this.cachedCountsAt > SelectionShortcutsService.COUNT_CACHE_MILLIS) {
+      this.ensureKnownTypesPopulated();
+      const counts: Record<SelectionShortcutCategory, number> = {builder: 0, factory: 0, harvester: 0, attack: 0, other: 0};
+      const categories = Object.keys(counts) as SelectionShortcutCategory[];
+      const all = this.ownTickInfos();
+      for (const c of categories) {
+        counts[c] = all
+          ? all.filter(info => this.knownTypeIds[c].has(info.itemTypeId)).length
+          : this.collectOwnEntriesForCategory(c).length;
+      }
+      this.cachedCounts = counts;
+      this.cachedCountsAt = now;
+    }
+    return this.cachedCounts[category];
   }
 
   private ensureKnownTypesPopulated(): void {
@@ -240,17 +262,26 @@ export class SelectionShortcutsService {
   // Fetches all own units from the server-aware API (not view-culled) and filters by category.
   // Falls back to the visible-items cache if the server-side method isn't available yet (older
   // WASM, or facade not ready).
-  private collectOwnEntriesForCategory(category: SelectionShortcutCategory): { id: number, x: number, y: number }[] {
+  /** All own units from the engine, or null where it has none to give (then the visible ones count). */
+  private ownTickInfos(): { id: number, itemTypeId: number, x: number, y: number }[] | null {
     const facade = this.gwtAngularService.gwtAngularFacade;
     if (facade?.baseItemUiService && typeof facade.baseItemUiService.getMyOwnSyncItemTickInfos === 'function') {
       const all = facade.baseItemUiService.getMyOwnSyncItemTickInfos();
       if (all && all.length > 0) {
-        const typeIds = this.knownTypeIds[category];
-        return all
-          .filter(info => typeIds.has(info.itemTypeId))
-          .map(info => ({id: info.id, x: info.x, y: info.y}))
-          .sort((a, b) => a.id - b.id);
+        return all;
       }
+    }
+    return null;
+  }
+
+  private collectOwnEntriesForCategory(category: SelectionShortcutCategory): { id: number, x: number, y: number }[] {
+    const all = this.ownTickInfos();
+    if (all) {
+      const typeIds = this.knownTypeIds[category];
+      return all
+        .filter(info => typeIds.has(info.itemTypeId))
+        .map(info => ({id: info.id, x: info.x, y: info.y}))
+        .sort((a, b) => a.id - b.id);
     }
     // Fallback: only visible items
     this.updateOwnItemCache();

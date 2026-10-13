@@ -285,6 +285,51 @@ describe('Tip test bed - build', () => {
     bed.runUntil(() => bed.questPassed, 20000, 'quest 386 passing');
   });
 
+  /*
+   * PROD 05.-09.10.2026: 10 of the 16 players who failed quest 387 had left during the wait at the
+   * end of 386 - the builder driving to the coast and putting the dockyard up, 28 s at the median,
+   * with nothing on the screen to say anything was happening. The wait now shows: a label on the
+   * builder with the time left, then on the site, and the camera goes along until the player moves
+   * it themselves.
+   */
+  tipCase('BLD-16 quest 386, the wait shows: on the way, then building, the camera along until the player takes it', bed => {
+    const builder = bed.own(ItemTypeId.BUILDER, -40, 0);
+    bed.lookAt(-40, 0);
+    bed.click(builder);
+    bed.activateQuest(386);
+    bed.run(1500);
+    bed.clickBuildButton(ItemTypeId.DOCKYARD);
+    bed.run(1000);
+    bed.lookAt(60, 0);
+    bed.run(1000);
+    bed.place(60, 0);
+    bed.run(500);
+    bed.check(bed.view().buildProgress?.itemId === builder.id && bed.view().buildProgress?.text === 'On the way',
+      `"On the way" on the builder before a time can be told, got ${JSON.stringify(bed.view().buildProgress)}`);
+    bed.run(3000);
+    const driving = bed.view().buildProgress;
+    const seconds = Number(/^On the way · (\d+) s$/.exec(driving?.text ?? '')?.[1]);
+    // 100 units at speed 4, three and a half seconds of it gone.
+    bed.check(driving?.itemId === builder.id && seconds >= 18 && seconds <= 26, `the time left on the way, got ${driving?.text}`);
+    const follows = bed.view().cameraFollows;
+    bed.check(follows !== null && Math.hypot(follows.x - builder.x, follows.y - builder.y) < 3, 'the camera goes along with the builder');
+    bed.check(bed.view().prompts.length === 0 && bed.view().arrowAngle === null, 'nothing asked of the player meanwhile');
+
+    bed.runUntil(() => [...bed.world.units.values()].some(unit => unit.spec.id === ItemTypeId.DOCKYARD && unit.buildup < 1),
+      40000, 'the site going up');
+    bed.run(2500);
+    const site = [...bed.world.units.values()].find(unit => unit.spec.id === ItemTypeId.DOCKYARD)!;
+    bed.check(bed.view().buildProgress?.itemId === site.id && /^Building · \d+ (s|%)$/.test(bed.view().buildProgress?.text ?? ''),
+      `"Building" on the site, got ${JSON.stringify(bed.view().buildProgress)}`);
+
+    bed.lookAt(-40, 0);
+    bed.run(1000);
+    bed.check(bed.view().cameraFollows === null, 'the player moved the camera: it is theirs');
+    bed.runUntil(() => bed.questPassed, 20000, 'quest 386 passing');
+    bed.run(1000);
+    bed.check(bed.view().buildProgress === null && bed.view().cameraFollows === null, 'the label is gone with the wait');
+  });
+
   tipGraceful('PLC-02 too little Razarion: no hint on a disabled button', bed => {
     const builder = base(bed);
     bed.world.razarion = 20;

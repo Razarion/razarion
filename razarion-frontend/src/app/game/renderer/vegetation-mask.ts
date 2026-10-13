@@ -9,7 +9,7 @@ import {initPerm, scatterNoise, SEED} from "./procedural-textures";
  * merge, so a grove gets one patch. Only plants of this tile count - a plant just across the tile
  * edge does not green this side of it.
  */
-export function createVegetationMask(x0: number, y0: number, size: number, anchors: number[]): Float32Array | null {
+export function createVegetationMask(x0: number, y0: number, size: number, anchors: ArrayLike<number>): Float32Array | null {
   let mask: Float32Array | null = null;
   initPerm(SEED);
   for (let a = 0; a < anchors.length; a += 4) {

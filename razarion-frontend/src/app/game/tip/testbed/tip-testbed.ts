@@ -122,6 +122,10 @@ export interface PlayerView {
   unloadHint: boolean;
   /** The hint stands on the sell button of the item cockpit. */
   sellHint: boolean;
+  /** The label over a builder on its way or a site going up; null when there is none. */
+  buildProgress: { itemId: number, text: string } | null;
+  /** Where the camera follows to; null when it does not. */
+  cameraFollows: { x: number, y: number } | null;
 }
 
 export interface Violation {
@@ -193,6 +197,7 @@ export class TipTestbed {
     this.tipService = new TipService(this.world.renderer as any, gwtAngularService as any, this.selection,
       uiSettings as any, stallTracker, tracker, this.action, this.questMarker);
     this.tipService.setItemCockpit(this.cockpit as any);
+    this.tipService.setClock(() => this.world.time);
     this.world.onQuestPassed = () => {
       this.questPassed = true;
       this.tipService.deactivate();
@@ -212,6 +217,8 @@ export class TipTestbed {
   /** Puts the world on screen as it is now. Call after setting the scene, before the quest. */
   lookAt(x: number, y: number): void {
     this.world.moveCamera(x, y);
+    // The player's own move: it ends a camera follow, as on the live renderer.
+    this.world.renderer.playerMovedCamera();
   }
 
   lookAtUnit(unit: Unit): void {
@@ -312,6 +319,7 @@ export class TipTestbed {
   run(millis: number): void {
     for (let elapsed = 0; elapsed < millis; elapsed += STEP_MILLIS) {
       this.world.step(STEP_MILLIS);
+      this.world.renderer.applyFollow();
       try {
         tick(STEP_MILLIS);
       } catch (error) {
@@ -368,7 +376,9 @@ export class TipTestbed {
       placerActive: renderer.baseItemPlacerActive,
       groupAsked: renderer.touchSelectionMode.asked,
       unloadHint: this.cockpit.unloadHint,
-      sellHint: this.cockpit.sellHint
+      sellHint: this.cockpit.sellHint,
+      buildProgress: renderer.buildProgress,
+      cameraFollows: renderer.followTarget()
     };
   }
 

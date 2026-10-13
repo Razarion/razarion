@@ -153,7 +153,7 @@
   </div>
 
   @if (compactLayout.compact()) {
-    <!-- Status strip: the three numbers a player needs while looking at the field. Read straight
+    <!-- Status strip: the numbers a player needs while looking at the field. Read straight
          off the main cockpit component so there is one source for them, not a second copy that
          can drift. Numbers only - the menu button that used to sit here has moved down to the icon
          bar, out of the corner a thumb reaches worst and in with the other buttons. -->
@@ -166,6 +166,15 @@
         <i class="pi pi-sparkles"></i> {{ mainCockpit.resources }}
       </span>
       <span><i class="pi pi-home"></i> {{ mainCockpit.displayHouseSpace }}</span>
+      <!-- Power was only in the menu behind the burger, so on a phone nobody saw it run out - and over
+           budget the base stops without a word (reported 2026-10-12). Red then, as on the desktop.
+           Left out until the base has power at all: the worker only reports a change, so a base
+           without a consumer or a plant never gets a number and the bolt stood there empty. -->
+      @if (mainCockpit.energyConsuming || mainCockpit.energyGenerating) {
+        <span [class.compact-status-power-over]="mainCockpit.powerOverloaded">
+          <i class="pi pi-bolt"></i> {{ mainCockpit.displayEnergyString }}
+        </span>
+      }
     </div>
 
     <!-- The current quest, always on screen, and the only place it shows on a phone. There used to

@@ -60,6 +60,11 @@ export class TipService {
     });
   }
 
+  /** For the test bed, whose world runs on a clock of its own. */
+  setClock(now: () => number): void {
+    this.guide.setClock(now);
+  }
+
   get gwtAngularFacade(): GwtAngularFacade {
     return this.gwtAngularService.gwtAngularFacade;
   }

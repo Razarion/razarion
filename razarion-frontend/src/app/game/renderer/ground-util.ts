@@ -1,5 +1,8 @@
 import {BabylonTerrainTileImpl} from './babylon-terrain-tile.impl';
-import {TerrainType} from '../../gwtangular/GwtAngularFacade';
+import {RawTexture} from '@babylonjs/core/Materials/Textures/rawTexture';
+import {Texture} from '@babylonjs/core/Materials/Textures/texture';
+import type {Scene} from '@babylonjs/core/scene';
+import {groundTypePixels} from './tile-ground-compute';
 
 export class GroundUtil {
   private heightMap: number[][] = [];
@@ -12,33 +15,34 @@ export class GroundUtil {
   }
 
   /**
-   * One texel per metre cell. Red: blocked (the shader shows rock). Green: path strength from
-   * GroundPaths (trodden earth), or 0 where there is no path. Blue: growth under plants
-   * (vegetation-mask.ts).
+   * The ground type texture of the heights added so far - see groundTypePixels (tile-ground-compute.ts)
+   * for the channels. Used by the editor; a streamed tile gets its texels from the terrain helper.
    */
-  createGroundTypeTexture(pathMask: Float32Array | null, vegetationMask: Float32Array | null = null): HTMLCanvasElement {
-    const width = BabylonTerrainTileImpl.NODE_X_COUNT;
-    const height = BabylonTerrainTileImpl.NODE_Y_COUNT;
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const context = canvas.getContext('2d')!;
-    const image = context.createImageData(width, height);
+  createGroundTypeTexture(scene: Scene, pathMask: Float32Array | null, vegetationMask: Float32Array | null = null): Texture {
+    return GroundUtil.textureFromPixels(scene, this.createGroundTypePixels(pathMask, vegetationMask));
+  }
 
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const terrainType = BabylonTerrainTileImpl.setupTerrainType(this.heightMap[x][y],
-          this.heightMap[x + 1][y],
-          this.heightMap[x + 1][y + 1],
-          this.heightMap[x][y + 1])
-        const i = (y * width + x) * 4;
-        image.data[i] = terrainType == TerrainType.BLOCKED ? 255 : 0;
-        image.data[i + 1] = pathMask ? Math.round(pathMask[y * width + x] * 255) : 0;
-        image.data[i + 2] = vegetationMask ? Math.round(vegetationMask[y * width + x] * 255) : 0;
-        image.data[i + 3] = 255;
+  /** The texels of createGroundTypeTexture, RGBA, row 0 first. */
+  createGroundTypePixels(pathMask: Float32Array | null, vegetationMask: Float32Array | null = null): Uint8Array {
+    const size = BabylonTerrainTileImpl.NODE_X_COUNT;
+    const nodes = size + 1;
+    const heights = new Float64Array(nodes * nodes);
+    for (let y = 0; y < nodes; y++) {
+      for (let x = 0; x < nodes; x++) {
+        heights[y * nodes + x] = this.heightMap[x][y];
       }
     }
-    context.putImageData(image, 0, 0);
-    return canvas;
+    return groundTypePixels(heights, size, pathMask, vegetationMask);
+  }
+
+  /**
+   * Straight from the bytes. It used to be painted into a canvas, encoded to a PNG with toDataURL()
+   * and decoded again by the Texture - 10-19 ms per tile on the main thread (2026-10-11) for a
+   * round trip that changes nothing: alpha is always 255, so nothing is premultiplied on the way.
+   * invertY as the image Texture had it, so row 0 still lands where it did.
+   */
+  static textureFromPixels(scene: Scene, pixels: Uint8Array): Texture {
+    return RawTexture.CreateRGBATexture(pixels, BabylonTerrainTileImpl.NODE_X_COUNT, BabylonTerrainTileImpl.NODE_Y_COUNT,
+      scene, true, true, Texture.TRILINEAR_SAMPLINGMODE);
   }
 }

@@ -1,0 +1,15 @@
+/* Web workers of the app (the *.worker.ts files), see "webWorkerTsConfig" in angular.json. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/worker",
+    "lib": [
+      "es2022",
+      "webworker"
+    ],
+    "types": []
+  },
+  "include": [
+    "src/**/*.worker.ts"
+  ]
+}

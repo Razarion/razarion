@@ -1,5 +1,5 @@
 import './babylon-side-effects';
-import {Injectable} from "@angular/core";
+import {inject, Injectable, NgZone} from "@angular/core";
 import {
   BabylonBaseItem,
   BabylonBoxItem,
@@ -32,6 +32,7 @@ import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight";
 import {HemisphericLight} from "@babylonjs/core/Lights/hemisphericLight";
 import {GroundPaths} from "./ground-paths";
 import {GroundZone} from "./ground-zone";
+import {prewarmPebbles} from "./bot-ground-gravel-material";
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
@@ -48,6 +49,7 @@ import "@babylonjs/core/Shaders/postprocess.vertex";
 // loaded, and the models were lit by the sun alone.
 import "@babylonjs/core/Shaders/rgbdDecode.fragment";
 import {Matrix, Vector2, Vector3} from "@babylonjs/core/Maths/math.vector";
+import {BuildProgressBubble} from "./build-progress-bubble";
 import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
 import {Mesh} from "@babylonjs/core/Meshes/mesh";
 import {VertexData} from "@babylonjs/core/Meshes/mesh.vertexData";
@@ -271,6 +273,19 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private static readonly MARKER_MAX_SUBDIV = 5;
   // Lift the draped marker slightly above terrain/water to avoid z-fighting.
   private static readonly MARKER_GROUND_OFFSET = 0.15;
+
+  private readonly zone = inject(NgZone);
+
+  /**
+   * For the WASM client (TeaVMClientGameEngineControl.pollTick): it looks for a new tick every frame
+   * and schedules that check outside Angular, entering Angular only when a tick has arrived - about
+   * ten times a second instead of once per frame.
+   */
+  private static exposeZoneBridges(zone: NgZone): void {
+    const w = window as any;
+    w.RAZ_outsideAngular = (fn: () => void) => zone.runOutsideAngular(fn);
+    w.RAZ_insideAngular = (fn: () => void) => zone.run(fn);
+  }
 
   constructor(private gwtAngularService: GwtAngularService,
               private babylonModelService: BabylonModelService,
@@ -748,7 +763,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       );
     });
 
-    this.engine.runRenderLoop(() => {
+    // Outside Angular: inside, every frame ended in a change detection run over the whole cockpit -
+    // a fifth of the main thread on a Pixel 7 (2026-10-11 CPU profile). Nothing the frame changes is
+    // shown by an Angular template: the scene, the GUI and the radar draw themselves. The game state
+    // the cockpit shows arrives with the ticks, which enter Angular for it (RAZ_insideAngular).
+    BabylonRenderServiceAccessImpl.exposeZoneBridges(this.zone);
+    this.zone.runOutsideAngular(() => this.engine.runRenderLoop(() => {
       try {
         if (!this.scene.activeCamera) {
           return;
@@ -777,7 +797,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         console.log(e);
         throw e;
       }
-    });
+    }));
 
     // The rest of the audio configuration still has to reach the service; only the two terrain
     // loops are gone. Same delay as before, because what is being waited for is the cold
@@ -794,13 +814,26 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }, 2000);
   }
 
+  /**
+   * Whether a new terrain tile must have its ground mesh the moment it exists. The editor reads the
+   * mesh's positions as soon as it is handed the tile; the game waits for the terrain helper.
+   */
+  needsGroundMeshAtOnce(): boolean {
+    return !!this.editorTerrainTileCreationCallback;
+  }
+
   createTerrainTile(terrainTile: TerrainTile): BabylonTerrainTile {
     try {
-      let babylonTerrainTileImpl = new BabylonTerrainTileImpl(terrainTile,
+      // Built outside Angular. A tile goes up in dozens of small tasks - idle callbacks, a timer
+      // every 16 ms for its objects and sprites, the terrain helper's answers - and inside the zone
+      // every one of them ended in a change detection run over the whole cockpit: 40 % of the main
+      // thread on a Pixel 7 while an area loaded (2026-10-12). Nothing a tile builds is shown by an
+      // Angular template; whoever waits for it (whenBuildsSettled) resumes in their own zone.
+      let babylonTerrainTileImpl = this.zone.runOutsideAngular(() => new BabylonTerrainTileImpl(terrainTile,
         this.gwtAngularService,
         this,
         this.babylonModelService,
-        this.threeJsWaterRenderService);
+        this.threeJsWaterRenderService));
       if (this.editorTerrainTileCreationCallback) {
         this.editorTerrainTileCreationCallback(babylonTerrainTileImpl);
       }
@@ -936,12 +969,104 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           this.cameraFlight.frame = requestAnimationFrame(step);
         }
       };
-      this.cameraFlight = {frame: requestAnimationFrame(step), finish};
+      // Outside Angular like the render loop: it moves the camera, nothing in a template
+      this.cameraFlight = {frame: this.zone.runOutsideAngular(() => requestAnimationFrame(step)), finish};
     });
   }
 
   private cancelCameraFlight(): void {
     this.cameraFlight?.finish();
+  }
+
+  /** See {@link showBuildProgress}. */
+  private buildProgressBubble: BuildProgressBubble | null = null;
+
+  /**
+   * The label over a builder on its way or a site going up (see BuildProgressBubble); null takes it
+   * down. An item out of view has no instance to hang it on, and then there is none.
+   */
+  showBuildProgress(itemId: number | null, text: string): void {
+    const item = itemId !== null ? this.getBabylonBaseItemById(itemId) : null;
+    if (!item && !this.buildProgressBubble) {
+      return;
+    }
+    if (!this.buildProgressBubble) {
+      this.buildProgressBubble = new BuildProgressBubble(this.scene);
+    }
+    this.buildProgressBubble.show(item ? item.getContainer() : null, text);
+  }
+
+  /** The follow under way, see {@link followViewFieldCenter}. */
+  private cameraFollow: { frame: number, stop: () => void } | null = null;
+
+  /**
+   * Keeps the camera on a point that moves - the builder driving to the spot it was sent to - until
+   * the point is gone or the player moves the camera themselves. Eases toward it rather than locking
+   * on, so the ground glides and the half-second steps the point arrives in do not show.
+   * <p>
+   * The player always wins: any camera move that is not this one ends the follow and calls
+   * onTakeOver, the same test the flight above uses. Returns the function that ends it.
+   */
+  followViewFieldCenter(target: () => { x: number, y: number } | null, onTakeOver: () => void): () => void {
+    this.stopCameraFollow();
+    this.cancelCameraFlight();
+    let expectedX = this.camera.position.x;
+    let expectedZ = this.camera.position.z;
+    let last = performance.now();
+    const stop = () => {
+      if (this.cameraFollow) {
+        cancelAnimationFrame(this.cameraFollow.frame);
+        this.cameraFollow = null;
+      }
+    };
+    const step = () => {
+      if (!this.cameraFollow) {
+        return;
+      }
+      if (Math.abs(this.camera.position.x - expectedX) > 0.01 || Math.abs(this.camera.position.z - expectedZ) > 0.01) {
+        stop();
+        onTakeOver();
+        return;
+      }
+      const now = performance.now();
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      const point = target();
+      if (point) {
+        const terrainHeight = this.getCameraTerrainHeightAt(point.x, point.y) ?? 0;
+        this.camera.getViewMatrix();
+        const center = this.setupTerrainLevelPosition(0, 0, Matrix.Invert(this.camera.getTransformationMatrix()), terrainHeight);
+        if (this.isValidVector3(center)) {
+          // About two thirds of the way in half a second, whatever the frame rate.
+          const share = 1 - Math.exp(-dt / 0.45);
+          const moveX = (point.x - center.x) * share;
+          const moveZ = (point.y - center.z) * share;
+          // Arrived and the point stands still - a site going up: no view field change every frame.
+          if (Math.abs(moveX) > 0.005 || Math.abs(moveZ) > 0.005) {
+            this.camera.position.x += moveX;
+            this.camera.position.z += moveZ;
+            this.ensureCameraViewOnMap();
+            this.onViewFieldChanged();
+          }
+        }
+      }
+      expectedX = this.camera.position.x;
+      expectedZ = this.camera.position.z;
+      if (this.cameraFollow) {
+        this.cameraFollow.frame = requestAnimationFrame(step);
+      }
+    };
+    // Outside Angular like the render loop: it moves the camera, nothing in a template
+    this.cameraFollow = {frame: this.zone.runOutsideAngular(() => requestAnimationFrame(step)), stop};
+    return () => {
+      if (this.cameraFollow?.stop === stop) {
+        stop();
+      }
+    };
+  }
+
+  private stopCameraFollow(): void {
+    this.cameraFollow?.stop();
   }
 
   hasPendingSetViewFieldCenter(): boolean {
@@ -988,6 +1113,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // A few kB, long arrived by the time the first tile wants it (tiles wait for it otherwise)
     GroundPaths.load();
     GroundZone.load();
+    prewarmPebbles();
     this.babylonModelService.setScene(this.scene);
     this.baseItemContainer = new TransformNode("Base items");
     this.resourceItemContainer = new TransformNode("Resource items");
@@ -1714,18 +1840,35 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       const horizScale = this.cameraTerrainDistance / -forward.y;
       const centerX = this.camera.position.x + forward.x * horizScale;
       const centerZ = this.camera.position.z + forward.z * horizScale;
-      const centerTerrain = this.getTerrainHeightAt(centerX, centerZ);
+      const centerTerrain = this.getCameraTerrainHeightAt(centerX, centerZ);
       this.centerTerrainHeight = centerTerrain ?? 0;
       targetY = this.centerTerrainHeight + this.cameraTerrainDistance;
     } else {
       // Camera looking (near-)horizontal — no meaningful view-centre ground point.
       targetY = this.cameraTerrainDistance;
     }
-    const underCamera = this.getTerrainHeightAt(this.camera.position.x, this.camera.position.z);
+    const underCamera = this.getCameraTerrainHeightAt(this.camera.position.x, this.camera.position.z);
     if (underCamera !== null) {
       targetY = Math.max(targetY, underCamera + MIN_CLEARANCE);
     }
     this.camera.position.y = targetY;
+  }
+
+  /**
+   * Ground and water height for the camera, read off the tiles instead of picked: updateCameraHeight
+   * asks twice a frame, and the pick runs a ray through every triangle of the tile's ground mesh -
+   * 21 % of the main thread on a Pixel 7 once the mesh came in two sub meshes instead of hundreds
+   * (2026-10-12). Same surface as the pick, but bot-ground plates do not count: the camera keeps its
+   * height over a base instead of stepping up onto the plates.
+   */
+  private getCameraTerrainHeightAt(x: number, z: number): number | null {
+    for (const tile of this.loadedTerrainTiles) {
+      const height = tile.surfaceHeightAt(x, z);
+      if (height !== null) {
+        return height;
+      }
+    }
+    return null;
   }
 
   public getTerrainHeightAt(x: number, z: number): number | null {

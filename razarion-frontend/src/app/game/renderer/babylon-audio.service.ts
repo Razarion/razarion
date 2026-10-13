@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import {inject, Injectable, NgZone} from "@angular/core";
 import type {AbstractSound} from "@babylonjs/core/AudioV2/abstractAudio/abstractSound";
 import type {AudioEngineV2} from "@babylonjs/core/AudioV2/abstractAudio/audioEngineV2";
 import type {StaticSoundBuffer} from "@babylonjs/core/AudioV2/abstractAudio/staticSoundBuffer";
@@ -18,6 +18,11 @@ const SPATIAL_MAX_DISTANCE = 300;
 
 @Injectable({providedIn: 'root'})
 export class BabylonAudioService {
+  // Babylon's spatial audio keeps itself up to date with a requestAnimationFrame loop per listener
+  // and per spatial sound, started where the object is made. Made inside Angular, every one of
+  // those frames ended in a change detection run: the listener alone was 90 runs a second on a
+  // Pixel 7 (2026-10-12). So the engine, the listener and the spatial sounds are made outside.
+  private readonly zone = inject(NgZone);
   private audioEngine: AudioEngineV2 | null = null;
   private soundBufferCache = new Map<number, StaticSoundBuffer>();
   // Dedup parallel first-loads: N simultaneous Tesla shots should trigger ONE
@@ -36,7 +41,7 @@ export class BabylonAudioService {
 
   async init(): Promise<void> {
     try {
-      this.audioEngine = await CreateAudioEngineAsync();
+      this.audioEngine = await this.zone.runOutsideAngular(() => CreateAudioEngineAsync());
       await this.audioEngine.unlockAsync();
     } catch (e) {
       console.error("BabylonAudioService: Failed to initialize audio engine", e);
@@ -112,7 +117,7 @@ export class BabylonAudioService {
     if (!this.audioEngine) {
       return;
     }
-    this.audioEngine.listener.attach(node);
+    this.zone.runOutsideAngular(() => this.audioEngine!.listener.attach(node));
   }
 
   setRendererService(service: any): void {
@@ -181,7 +186,7 @@ export class BabylonAudioService {
     if (!this.audioEngine) {
       return;
     }
-    this.getOrLoadBuffer(audioId)
+    this.zone.runOutsideAngular(() => this.getOrLoadBuffer(audioId)
       .then(buffer => CreateSoundAsync(`sound-${audioId}`, buffer, {
         maxInstances: MAX_INSTANCES,
         spatialEnabled: true,
@@ -189,7 +194,7 @@ export class BabylonAudioService {
         spatialMaxDistance: SPATIAL_MAX_DISTANCE,
       }, this.audioEngine!))
       .then(sound => this.trackAndPlay(sound))
-      .catch(e => console.error(`BabylonAudioService: playAudioAtPosition failed for ${audioId}`, e));
+      .catch(e => console.error(`BabylonAudioService: playAudioAtPosition failed for ${audioId}`, e)));
   }
 
   playAudioAtPositionWithConfig(config: AudioItemConfig, position: Vector3): void {
@@ -201,7 +206,7 @@ export class BabylonAudioService {
     const pitchMax = config.getPitchCentsMax();
     const volMin = config.getVolumeMin();
     const volMax = config.getVolumeMax();
-    this.getOrLoadBuffer(audioId)
+    this.zone.runOutsideAngular(() => this.getOrLoadBuffer(audioId)
       .then(buffer => CreateSoundAsync(`sound-${audioId}`, buffer, {
         maxInstances: MAX_INSTANCES,
         spatialEnabled: true,
@@ -213,7 +218,7 @@ export class BabylonAudioService {
         sound.volume = volMin + Math.random() * (volMax - volMin);
         this.trackAndPlay(sound);
       })
-      .catch(e => console.error(`BabylonAudioService: playAudioAtPositionWithConfig failed for ${audioId}`, e));
+      .catch(e => console.error(`BabylonAudioService: playAudioAtPositionWithConfig failed for ${audioId}`, e)));
   }
 
   playQuestActivatedAudio() {

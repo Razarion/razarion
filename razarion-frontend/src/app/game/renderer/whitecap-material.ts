@@ -26,13 +26,30 @@ function floatInput(name: string, value: number): InputBlock {
   return b;
 }
 
+let sharedScene: Scene | null = null;
+let sharedMaterial: NodeMaterial | null = null;
+
+/**
+ * The whitecap material of the scene, shared by every water tile. Nothing in it belongs to a tile;
+ * a material of its own per tile cost 19 ms on average, up to 38, for every water tile built
+ * (2026-10-11) - and each started its animation at 0, so neighbouring tiles drifted apart. It lives
+ * as long as the scene; the tiles do not dispose it.
+ */
+export function whitecapMaterial(scene: Scene): NodeMaterial {
+  if (!sharedMaterial || sharedScene !== scene) {
+    sharedScene = scene;
+    sharedMaterial = buildWhitecapMaterial(scene);
+  }
+  return sharedMaterial;
+}
+
 /**
  * Builds a transparent whitecap material for the water surface.
  * Uses two animated noise layers to position foam patches,
  * and a procedural foam texture for realistic appearance.
  * UV2.x = ground height (used to mask: only show where underwater).
  */
-export function buildWhitecapMaterial(scene: Scene): NodeMaterial {
+function buildWhitecapMaterial(scene: Scene): NodeMaterial {
   const mat = new NodeMaterial("Whitecaps", scene);
 
   // ========== Vertex attributes ==========
@@ -53,8 +70,8 @@ export function buildWhitecapMaterial(scene: Scene): NodeMaterial {
   time.value = 0;
   time.isConstant = false;
   let accumulatedTime = 0;
-  // Per-tile whitecap material: bind the animation observer to the material lifetime so disposing
-  // the tile's whitecap material also removes this per-frame callback (see ground-material.ts).
+  // Bind the animation observer to the material lifetime so disposing the material (with the
+  // scene) also removes this per-frame callback (see ground-material.ts).
   const timeObserver = scene.onBeforeRenderObservable.add(() => {
     accumulatedTime += scene.getEngine().getDeltaTime() / 1000;
     time.value = accumulatedTime;

@@ -27,6 +27,34 @@ import '@babylonjs/core/Materials/Textures/Loaders/envTextureLoader';
 // materials and particle systems come from the database: any block may be named in there.
 import '@babylonjs/core/Materials/Node/Blocks/index';
 import '@babylonjs/core/Particles/Node/Blocks/index';
+// Shaders Babylon would otherwise import on demand when the first shadow map, particle system, sprite
+// manager or layer is built. On the dev server those late imports did not reach the ShaderStore the
+// effect reads from, so Babylon fetched the .fx by URL, got index.html and failed to compile: no
+// shadows, no spawn particles, no sprites (2026-10-11). Same remedy as the post-process shaders in
+// babylon-render-service-access-impl.service.ts. The glow layer and its blur: the buildup effect
+// (babylon-buildup-effect.ts), failing on a phone every time a building went up.
+import '@babylonjs/core/Shaders/shadowMap.vertex';
+import '@babylonjs/core/Shaders/shadowMap.fragment';
+import '@babylonjs/core/Shaders/particles.vertex';
+import '@babylonjs/core/Shaders/particles.fragment';
+import '@babylonjs/core/Shaders/sprites.vertex';
+import '@babylonjs/core/Shaders/sprites.fragment';
+import '@babylonjs/core/Shaders/layer.vertex';
+import '@babylonjs/core/Shaders/layer.fragment';
+import '@babylonjs/core/Shaders/glowMapGeneration.vertex';
+import '@babylonjs/core/Shaders/glowMapGeneration.fragment';
+import '@babylonjs/core/Shaders/glowMapMerge.vertex';
+import '@babylonjs/core/Shaders/glowMapMerge.fragment';
+import '@babylonjs/core/Shaders/glowBlurPostProcess.fragment';
+import '@babylonjs/core/Shaders/kernelBlur.vertex';
+import '@babylonjs/core/Shaders/kernelBlur.fragment';
+// Lines (LinesMesh: the selection brackets) and the edges renderer
+import '@babylonjs/core/Shaders/color.vertex';
+import '@babylonjs/core/Shaders/color.fragment';
+import '@babylonjs/core/Shaders/line.vertex';
+import '@babylonjs/core/Shaders/line.fragment';
+// Not a Babylon module: patches TextureBlock.bind, which walked the shader graph every frame
+import './texture-block-bind-cache';
 // The glTF 2.0 loader registers itself with GLTFFileLoader on import; its extensions (Draco, the
 // KHR materials) are registered to load on demand, when a model first names one.
 import '@babylonjs/loaders/glTF/2.0/glTFLoader';
